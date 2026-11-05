@@ -1,0 +1,38 @@
+{
+  "schema": "d06.macro_ci.packing_calibration.v1",
+  "base": "eb7ebc890073b9498e026e9b2102c4a74fbc9d15",
+  "test_source_before_sha256": "bbb429a0ff78001734d7103c1c10aadd884c24efe810dcb9b586e9d6c4c0d239",
+  "test_source_after_sha256": "58b1de61bb5ca26d410b7d2ab3df9ec747ded5e1202e95795198ca0d055a309d",
+  "initial_census_exit": 1,
+  "initial_findings": 3,
+  "initial_inherited_findings": 0,
+  "initial_census_log": "contract-delta-before.log",
+  "measurements": [
+    {
+      "path": "templates/index.html",
+      "jobs": 137,
+      "max_jobs_unchanged": 137,
+      "base_weight": 5912,
+      "head_weight_and_new_ceiling": 5916,
+      "packs": 10
+    },
+    {
+      "path": "scripts/build_free_content.py",
+      "jobs": 137,
+      "max_jobs_unchanged": 138,
+      "base_weight": 5927,
+      "head_weight_and_new_ceiling": 5931,
+      "packs": 10
+    },
+    {
+      "path": "engine/prophet/plan_book.py",
+      "jobs": 131,
+      "max_jobs_unchanged": 131,
+      "base_weight": 5668,
+      "head_weight_and_new_ceiling": 5672,
+      "packs": 10
+    }
+  ],
+  "reason": "Exact intended suite-registration increase in two already-selected owners; documented using existing packing-probe calibration protocol.",
+  "estimates_not_runtime": true
+}

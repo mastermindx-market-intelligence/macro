@@ -2992,6 +2992,7 @@
     ]
   },
   "systematic": {
+    "flow_window_n": 5,
     "vc": {
       "alloc_bn": 228.6,
       "alloc_frac": 0.762,

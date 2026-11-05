@@ -1,0 +1,1029 @@
+{
+  "schema": "d06.artifact_inventory.v1",
+  "member_count": 204,
+  "aggregate_sha256": "7d72bbf78ee75edfd01942882db6bbb85d221b9251f3615151ed20bc548c6762",
+  "aggregate_rule": "SHA256 of sorted lines: sha256 + space + repository-relative path + LF",
+  "manifest_self_excluded": true,
+  "members": [
+    {
+      "path": "docs/d06-macro-ci-20261104.md",
+      "bytes": 11402,
+      "sha256": "978d8f2b0dfcf165c9abe131bbc6a5990c4117357098edcab0aa5292f74b924b"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/actual-browser.json",
+      "bytes": 8904,
+      "sha256": "e1c615b57b8710b1f1df8ee201369dd1af2a857a9db90b453bc9579deb3fff62"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/actual.log",
+      "bytes": 72,
+      "sha256": "d3c4e846ab687739e47ac07e8cea486fe9aca5fc28364948d442393ad5612230"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/canonical-capture-runs.json",
+      "bytes": 3198,
+      "sha256": "e3d938c68133269394cfa39fe8fae33ec86d3abdd5e7e2a12a99192a481cb6ba"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/canonical-integrity-initial.json",
+      "bytes": 9636,
+      "sha256": "2951ceae1c9a71974723e66996d322f1b23bbb5084e729206c937cf4ebf23ff8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/canonical-integrity.json",
+      "bytes": 13124,
+      "sha256": "ea5263720a7aa967fb1f1b214ae5cd7dfe48340b2e5520fc80c6e2f661fadc88"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/ci-manifest.log",
+      "bytes": 4901,
+      "sha256": "2c67299d7a5437dd1c0c251fbd65ff5484fac61df9bfcea3e4cae62a9c3c7ab2"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/contract-delta-before.log",
+      "bytes": 2569,
+      "sha256": "a6bdc220b18f026a5140402b318c201be7ddf017797370ff5dca327d6fb10370"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/design-gate-final.log",
+      "bytes": 279,
+      "sha256": "5a3185db49b0df1672bd3045336767a0ff85203e65282f00db172e2b96b904a0"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/design-ratchet-initial.log",
+      "bytes": 279,
+      "sha256": "5a3185db49b0df1672bd3045336767a0ff85203e65282f00db172e2b96b904a0"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/governance-initial.json",
+      "bytes": 904,
+      "sha256": "e372573ea341c7317cf27998e02bbabb24d2e4976bf83ff0799965cc95443a59"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/help-stack-observation.json",
+      "bytes": 5908,
+      "sha256": "ded8eedb1203d0a53918837a711eb3eeae86173e74cd2683ad1e36d077f84d7b"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/help-viewport-observation.json",
+      "bytes": 2580,
+      "sha256": "f96c5ed271bbfa1c6ddc1831719dbbdd838f0abd054753357b7bb238f2c733dc"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/help-viewport-settled.json",
+      "bytes": 7520,
+      "sha256": "c7065b980f25dd247779c33a2adfe126f2ef839c6e5309e557ce77da9b71f163"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-1440-dark-zh.png",
+      "bytes": 179328,
+      "sha256": "b9f3ac13b55ff6fbb0bd1b3b95dfd0edccc3897148328142ce9dcba64bdbfd0c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-1440-light-en.png",
+      "bytes": 175236,
+      "sha256": "52d147107daa3d4ec0ff4489fe6688cce2396187cfa39670791955c799d0ea45"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-320-light-en.png",
+      "bytes": 96603,
+      "sha256": "5b686717d1426591825e69d872a115808d6015b0d931f5f585c25a887c2e0f9d"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-390-dark-en.png",
+      "bytes": 109492,
+      "sha256": "a1a773e16ae01c1fa58ad5537815edff6462dad67ba8905a72107e50b11c3ad7"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-390-light-zh.png",
+      "bytes": 109880,
+      "sha256": "a85f60c549084bc5b45818d72ffe6560f341248f571d5d3c1bdc8ccb639d2822"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-720-light-en.png",
+      "bytes": 135454,
+      "sha256": "4d90fcd8e26f861d4a02bb46d7e90da2998925c721bb05cb972aebf2eb70a85b"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-browser.json",
+      "bytes": 3663,
+      "sha256": "d6cd580b03956eefdfc9d374208ca5a0151e525f7eae81a3b1e7efc4f1c5bfdd"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/canonical-capture.log",
+      "bytes": 207,
+      "sha256": "995fc13297ec575dc7435bbe47eb77935a7aa4ee99f8fdfce571915010f1f654"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/help-viewport-settled.json",
+      "bytes": 7857,
+      "sha256": "15417c8d6cf7e8ea2912127a2ac9e1699e7c812ea59d993688b986b29ee4da87"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/help-viewport.log",
+      "bytes": 40,
+      "sha256": "2ffadc7df0488a2efee97427d765192507f70be79121f2a9fc24d47758340134"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-1440-dark-zh.png",
+      "bytes": 179328,
+      "sha256": "b9f3ac13b55ff6fbb0bd1b3b95dfd0edccc3897148328142ce9dcba64bdbfd0c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-1440-light-en.png",
+      "bytes": 175236,
+      "sha256": "52d147107daa3d4ec0ff4489fe6688cce2396187cfa39670791955c799d0ea45"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-320-light-en.png",
+      "bytes": 96603,
+      "sha256": "5b686717d1426591825e69d872a115808d6015b0d931f5f585c25a887c2e0f9d"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-390-dark-en.png",
+      "bytes": 109492,
+      "sha256": "a1a773e16ae01c1fa58ad5537815edff6462dad67ba8905a72107e50b11c3ad7"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-390-light-zh.png",
+      "bytes": 109880,
+      "sha256": "a85f60c549084bc5b45818d72ffe6560f341248f571d5d3c1bdc8ccb639d2822"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-720-light-en.png",
+      "bytes": 135454,
+      "sha256": "4d90fcd8e26f861d4a02bb46d7e90da2998925c721bb05cb972aebf2eb70a85b"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-browser.json",
+      "bytes": 3791,
+      "sha256": "919b89d4936f15b1e35641372b9ae6558b14381c81f431d88a04ccb8ebae0b1a"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-browser.log",
+      "bytes": 72,
+      "sha256": "c8203a50100b871adc865db6a169457365d8fb8326647c2b707991d302deaf64"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-help-settled-1440-dark.png",
+      "bytes": 208155,
+      "sha256": "d1b8aa8e99ca8c8aef8b2a2f5d2375be8926752ece7ce27a8d8320382d69ec06"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-help-settled-1440-light.png",
+      "bytes": 201839,
+      "sha256": "74e03bc04585ad8293a4b2e8fb417bd042448b6b498ea2ec874a9fb71c19b20c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-help-settled-390-dark.png",
+      "bytes": 94560,
+      "sha256": "6dbf79830ca35de2c9d1552a79304c74036ef44e148154efcd9e05111fbce926"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-help-settled-390-light.png",
+      "bytes": 93313,
+      "sha256": "36576da0d3a3ed23abdce33a7c87892b74948d926198a38dc3d22b63a4c532a4"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-missing-zh.png",
+      "bytes": 37866,
+      "sha256": "96f624f4834be8e43cb7d746950d46881841029dff395f56d3d56bd5338bddb4"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-partial-outer-only.png",
+      "bytes": 50100,
+      "sha256": "789265c370d61188fa256360a92c51f1b064288824dae365c3b60930c8dcb936"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/market-unit.log",
+      "bytes": 180,
+      "sha256": "229e3049a45f9f57994a3c9f6b462ca5e1d1dc8a106bc8b868ebba55991cd2f7"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/run_browser.py",
+      "bytes": 216,
+      "sha256": "b4aa505952350bc87016a24fa5f73eb3b288ece8b2610dad000c52f9f19b7bf1"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-fix/source-verification.json",
+      "bytes": 3079,
+      "sha256": "745ce51bee9abcfb07b87eedb969677b44e872c73699d8f92083c6f1c3a0f92a"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-settled-1440-dark.png",
+      "bytes": 208151,
+      "sha256": "4700dfa401587b3796ae032d4563223c6d4d5eb231153ae8818a2ceae25f290a"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-settled-1440-light.png",
+      "bytes": 201836,
+      "sha256": "85183fff9451ac1f7492dd3103bf782b6b8a561a5d4e8665c83e3926a44087fc"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-settled-390-dark.png",
+      "bytes": 99318,
+      "sha256": "08cc3532dc7eefca5a245d5d073bbc44de0cdb6a8cedf4f084eedc7b8ece0066"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-help-settled-390-light.png",
+      "bytes": 101029,
+      "sha256": "e731f3f8b73f0963a6945b3b0f6ad14555e297eb5534209864be5a4f836fe3a5"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-missing-zh.png",
+      "bytes": 37866,
+      "sha256": "96f624f4834be8e43cb7d746950d46881841029dff395f56d3d56bd5338bddb4"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market-partial-outer-only.png",
+      "bytes": 50100,
+      "sha256": "789265c370d61188fa256360a92c51f1b064288824dae365c3b60930c8dcb936"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market.log",
+      "bytes": 72,
+      "sha256": "c8203a50100b871adc865db6a169457365d8fb8326647c2b707991d302deaf64"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/market_structure-canonical-capture.log",
+      "bytes": 207,
+      "sha256": "995fc13297ec575dc7435bbe47eb77935a7aa4ee99f8fdfce571915010f1f654"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/materialize-mockups.log",
+      "bytes": 38,
+      "sha256": "ad48e96188fc9278fdfb5df4643551875fb7e4846c97bc675320cf0641155a15"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/packing-calibration.json",
+      "bytes": 1244,
+      "sha256": "b671130b7db8f78c4f400a83d668c45b408d578fed363b0682031133d586e550"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/packing-seam-tests.log",
+      "bytes": 98,
+      "sha256": "a04b7cf548763fe1cd618556187d0199fa717f27d0bb722c18838daf602baca4"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/packing-verdict-replay.json",
+      "bytes": 2488,
+      "sha256": "fa48ff62b41a3e6bfb74a6f37d680cdc073062ed6bf49c77cc515db9b2d3c6de"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/preview-mapping-final.json",
+      "bytes": 3514,
+      "sha256": "b347f3e94fa6678153b9a794eb5d02fc84a2571dc1a900d865ca5d0f8753cd10"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/preview-mapping.json",
+      "bytes": 3348,
+      "sha256": "9865322c2863386770adef40c32f62da3d3591d65a13b40ca325d49817fd042e"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/run_browser.py",
+      "bytes": 309,
+      "sha256": "cd6d69a5a9e4bc83eec7c1bd8e8b00494808a3daf95f0fe36c8a2857a76390b8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/source-citation-guards.log",
+      "bytes": 179,
+      "sha256": "771b00820163b2afebc48bd2e8dca4e1a904809b0777e08750d3f8afb896c1d1"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/source-citation-repair.json",
+      "bytes": 1529,
+      "sha256": "906b74d93c68dcb537c3bb55bbd4cdde4a5124560fde02f3ea37263f666920f8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/source-verification.json",
+      "bytes": 6023,
+      "sha256": "6fe8abb2d0dff1c78b8edc14614bec7bc52aaa7350d997eafa81718d5f36f780"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-1440-dark-zh.png",
+      "bytes": 120086,
+      "sha256": "856ec61780f069948a4c679743b95333251e15506eda21433e38a97765b331ee"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-1440-light-en.png",
+      "bytes": 121350,
+      "sha256": "52b8b2688d6dedde881401f5484a3087ba8ab7235b4cf63eae56d5419a4f86a0"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-320-light-en.png",
+      "bytes": 70409,
+      "sha256": "a1e0305fcae0a16a8c15231e8751c854df75206844e5b58369a2a6b3e6ac5599"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-390-dark-en.png",
+      "bytes": 74100,
+      "sha256": "5570d0c136deb982226c15600a9530066f5c6c0db7b1125b4c148195f783b5d2"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-390-light-zh.png",
+      "bytes": 83117,
+      "sha256": "4efadb9fba4b60c729539e42f383311d3600b3a9f1c50fa5f98466543383d47c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-actual-1440-en.png",
+      "bytes": 123439,
+      "sha256": "e58a5c53962dd779babbb81d49f8dfef57c8b9e224a91f94f1ad47e7a2ad20ac"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-actual-390-zh.png",
+      "bytes": 80961,
+      "sha256": "3ba4b672c631aa687e5b8311486ca60823d64d80c07a07274814156689701439"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-browser.json",
+      "bytes": 10891,
+      "sha256": "593060ef15caf69a734810cd61b5a96dbe3cd87df7dfa6742614b84402fede51"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-depth.png",
+      "bytes": 40992,
+      "sha256": "a60df1df76880a294212a56ba2148089cecbc590f7c89e0d0d399f115c2ba5d3"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-last-available.png",
+      "bytes": 35697,
+      "sha256": "dedc9cbdf5d1b04be940b16391573497b5cc6ab2e6a3ff0bce456c9f395e9c0f"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-missing.png",
+      "bytes": 33547,
+      "sha256": "d95f8d3a338e3d845803c6237d9e7fda9165ab7cbf6f0b580eee10e960bcd9c6"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-study-1440.png",
+      "bytes": 68427,
+      "sha256": "0377ef20c6a6fecda59733b296b7c8b30a13c9039944daa8f84e66a1fbb179a2"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv-study-390.png",
+      "bytes": 59373,
+      "sha256": "955e71b7c2b838d1bdf503df9c5b157e441e5243865721af1feacf1ef425c613"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spv.log",
+      "bytes": 69,
+      "sha256": "7355e42c9e1a087bc9cd4a102fcdfcbe42f0ea94cc47af98918bb2b97bccc5a8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/spvector-canonical-capture.log",
+      "bytes": 191,
+      "sha256": "56f79eae01388952c399e04c031e55168359d031d17c5dda4e5a70235e70cac5"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-1440-dark-en.png",
+      "bytes": 268764,
+      "sha256": "8c77703c74489e09ad97e5607a56a031247a9c821182e728000bb489e6087c52"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-1440-light-zh.png",
+      "bytes": 257122,
+      "sha256": "5f2b1d220b405986731b0397ea47727b42c57f314d942315ca11114326f848bc"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-320-light-en.png",
+      "bytes": 112414,
+      "sha256": "141d4bd2f537855ecc3eed01002f2f92a47063434bcc42efb203aea2c643da61"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-390-dark-zh.png",
+      "bytes": 125691,
+      "sha256": "e6ce28b22db8881d42623eabde5ad96a670a3eeee49506047f8b217e90862cab"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-390-light-en.png",
+      "bytes": 118578,
+      "sha256": "2b31fe55ec00faa519e678d2122db61adc4d79a0a0282baf87d329fc43ebcbd6"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-actual-1440-en.png",
+      "bytes": 268673,
+      "sha256": "4b5f4fe5094914f00a3cb14fd8bd0fe0272ebdc0486534209b9ff76876dfba7d"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-actual-390-zh.png",
+      "bytes": 123014,
+      "sha256": "8a37ace982bc5e7fbc4f3cd6c42734f60c6c1798bf6e6d446d4506276154d1fe"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-arc-empty.png",
+      "bytes": 43539,
+      "sha256": "051328ed1246a102d198c10d6db2a118851418b5b807eb6c9dcbff2d6a0848d4"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-arc-unknown.png",
+      "bytes": 43455,
+      "sha256": "f4c548ba57a70c5b0788a7d43b7293743b63f4268121b45919bb53b483ad0d2c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-browser.json",
+      "bytes": 7195,
+      "sha256": "8eb9c69c08818c0630887a9f416c779ad4c41811657cde707365bcea8433fe1f"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-filtered-fixture.csv",
+      "bytes": 570,
+      "sha256": "0ad7acc2b9f912697baaf1253ccee14de251214b1dfec3c3b50448ce723d7167"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-independent-board.png",
+      "bytes": 69221,
+      "sha256": "042a5de9961638b37237da8c0f3371803ce3a3e2aa2d50dced72ac4367da8d7c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-nonempty-earnings-en.png",
+      "bytes": 50560,
+      "sha256": "827f8526d212d146e5d4d35da7c60ad1abffc807727129100c44acaef1161b61"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-nonempty-earnings-zh.png",
+      "bytes": 48778,
+      "sha256": "26cc6beae53b85d3ea25ca4c676f2b0fba2d1f613ba824ea44903fd48d3ee16d"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-recovered-filtered.png",
+      "bytes": 53070,
+      "sha256": "adec93d2f6b2121d79e0d4d4962b89686a35163546ea3c0d9cd266d672456b2e"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage-valid-empty-research.png",
+      "bytes": 39804,
+      "sha256": "49bd127afd28d43ee299c9447d0e4982b98d4fdffdd36af99db9aad64443bed3"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage.log",
+      "bytes": 71,
+      "sha256": "1c40fb7a894d6a6557cb054a64eb1b10e22890726f041ef2c22c573700703456"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/stage_analysis-canonical-capture.log",
+      "bytes": 203,
+      "sha256": "e0d235a9f7a7a0ad587cad7a86d18db62bcb5fc72867c352e7dc4bb0da7b2e3c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/unit.log",
+      "bytes": 341,
+      "sha256": "0c8ce45924bcaeaf0f1a6d2b6e41c0eb389d5a90f6bff18884350e411a708535"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/verification.json",
+      "bytes": 6166,
+      "sha256": "b35df857e5f11dd1823c6572d3fe8f45090ff6aa110eb06bc6f5394d4fda0be8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/visual-gate-final-source.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/visual-gate-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/visual-gate.log",
+      "bytes": 184,
+      "sha256": "1ff14c42bdeba2c1b81f87355c8ff482f50ee88fe1198d5e205d3888a11760fb"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/EVIDENCE.yml",
+      "bytes": 178,
+      "sha256": "4567a0c7f45f9f0195269176edf779234b6c4da7b4b9db4d3185e2e3b49e8ee0"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/manifest-before-help-fix.json",
+      "bytes": 25562,
+      "sha256": "cc05338a79ec6387e107950ef52d8abdf6c468f9e38539028bcacaabffb6c35c"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/manifest.json",
+      "bytes": 25557,
+      "sha256": "16072264adddadead919fb4ce6402d07abbd80d339cc6da2b8c88e5f7b43740b"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/0178dfb208994744.png",
+      "bytes": 506092,
+      "sha256": "0178dfb208994744667cd3b33abcb4177fd55be2405957e46b945ea00e6f89b2"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/122e7b49b057c29e--help-focus.png",
+      "bytes": 417975,
+      "sha256": "122e7b49b057c29efc3111474be5923cf2f8f9fafbbd0d5d9bde1bf2a0e9df95"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/175dfa464f1b3c07--help-hover.png",
+      "bytes": 421271,
+      "sha256": "175dfa464f1b3c077dccc46a82b7b33a5c7ecfebb2aacffee2c7f4fbd60cd070"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/1b5b5a43ee08d100.png",
+      "bytes": 516177,
+      "sha256": "1b5b5a43ee08d10086ccace48300ba22c54a2f7afefe76128621a190e803c30c"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/2767e98881cb6e8d--help-hover.png",
+      "bytes": 525141,
+      "sha256": "2767e98881cb6e8d9ecc8c71e3352b350eb398b7693818d70a53c67dfbd48c21"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/3513f1e234f5e648--help-hover.png",
+      "bytes": 419410,
+      "sha256": "3513f1e234f5e648631002c9843ef793bb14341d88c70ccc1fc913b183bf78f2"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/40cdfc68e96a6572--help-focus.png",
+      "bytes": 511742,
+      "sha256": "40cdfc68e96a6572519d85e61daaa21fac59237d063b3af2c31b9836553af4da"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/4297d50512a0074f--help-hover.png",
+      "bytes": 427460,
+      "sha256": "4297d50512a0074fc4c114bd8616518c1adb891789550c4f6a6cb1908b23bf4d"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/44d4cf6bddf35f5b--help-focus.png",
+      "bytes": 415204,
+      "sha256": "44d4cf6bddf35f5baa175bf06620ce068b7a216937aba3a730f06fb15bdd5c7b"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/477f40aa0dfb1b66--help-hover.png",
+      "bytes": 403206,
+      "sha256": "477f40aa0dfb1b663ac9419e9aba56e90dd761d86b004f23ff8534c945994d07"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/48768eb22fe0d19e.png",
+      "bytes": 516117,
+      "sha256": "48768eb22fe0d19eddeff6a2e68debdbd99080ea852100fd798cd9271330dd96"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/49056e786e082e3d--help-focus.png",
+      "bytes": 531635,
+      "sha256": "49056e786e082e3d62649852fbbdab0c45849139849fb0663b6d56325e9fa9a1"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/4bcd1315bbbe961c--help-hover.png",
+      "bytes": 429677,
+      "sha256": "4bcd1315bbbe961c5457830461b21e04860406e613930333a71f08ef76c602cf"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/5fd795e502521e0e--help-hover.png",
+      "bytes": 422905,
+      "sha256": "5fd795e502521e0eeeb99559937271400c8e3e2e4f56385957d67e33c49d14f2"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/60e87176fbe950fc--help-focus.png",
+      "bytes": 393020,
+      "sha256": "60e87176fbe950fc99239ce3fbfdc68b46525770d3735933f9881646e963f78e"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/63969e4c2b5fa480--help-focus.png",
+      "bytes": 525426,
+      "sha256": "63969e4c2b5fa480567646a14fa9b385e3c5b65797a85431198ecbf5b5614aca"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/684cd4d5f9d153ae.png",
+      "bytes": 398302,
+      "sha256": "684cd4d5f9d153aeb57b66132f48a586ccaa6ed185759c725dcaf5cce3ea1d93"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/68614eb18a782396.png",
+      "bytes": 397790,
+      "sha256": "68614eb18a7823964736a7e5b0327d9d20f89df91e5015b0a7f5c00fbe9219f4"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/6b1a8652d07cefd8--help-hover.png",
+      "bytes": 530476,
+      "sha256": "6b1a8652d07cefd869477aa0bc9a8ef90c2810edfd5e0a8cde6a89358d4089f0"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/70018bd602eca3fc.png",
+      "bytes": 492361,
+      "sha256": "70018bd602eca3fce443527293ea9156aa66ba284b923627d81411bb29ebd519"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/72be67fe049739d7--help-focus.png",
+      "bytes": 412417,
+      "sha256": "72be67fe049739d7adf4e7d750caf8a1a3d12f01857381d0c54ed95d862cfb58"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/770a9a4ee95d35a2.png",
+      "bytes": 391242,
+      "sha256": "770a9a4ee95d35a2ba980ac95bce5f9d137c515d6e82e3579f8df3fd9bc43c85"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/77fcb00251cb30ed--help-hover.png",
+      "bytes": 521511,
+      "sha256": "77fcb00251cb30ed207ef0ca378762c056a60f47a6abe79a9b485bf204808df1"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/7a71401f3f248e88--help-focus.png",
+      "bytes": 424664,
+      "sha256": "7a71401f3f248e880843de8405588100b62060449dc18a75f4ae5aa89dc1ca6e"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/7f5f73854eca16b2--help-focus.png",
+      "bytes": 400807,
+      "sha256": "7f5f73854eca16b27c86bcfef439ed61295680acaa152a4ebb8959d35167c8eb"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/8251077f99a2a1d3.png",
+      "bytes": 397777,
+      "sha256": "8251077f99a2a1d33c29b171d16eaf81b839a342e19fe9b269982d630ea05575"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/857af2bae45c88bf--help-hover.png",
+      "bytes": 519188,
+      "sha256": "857af2bae45c88bf39b645f82985467ec0cd84ba6abc5c269856f3757fb91793"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/8fad6adaf3d05d58.png",
+      "bytes": 504096,
+      "sha256": "8fad6adaf3d05d583bd2c0c2835259020b6cf254331c8ff5c00048a69179b08e"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/9f760e9435cbea90--help-hover.png",
+      "bytes": 508715,
+      "sha256": "9f760e9435cbea906940052aaa9eadf426143917a70947d4ea9bc44ad025fa03"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/a650219cd166ff0c--help-focus.png",
+      "bytes": 405661,
+      "sha256": "a650219cd166ff0c1fe3d327776259c6f806acb783a550ee137ad848d37106c5"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/a8fde1c65ea64e88--help-focus.png",
+      "bytes": 511542,
+      "sha256": "a8fde1c65ea64e8889ab6b0b7bfcb0e42857dc74d1881e5d7467959749a625ae"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/b1363813df1a46d2--help-hover.png",
+      "bytes": 414650,
+      "sha256": "b1363813df1a46d2d0929bf29c57cfeb056795d071ee361abf4f619eeee7bbe5"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/b46fc98012991361--help-focus.png",
+      "bytes": 524936,
+      "sha256": "b46fc980129913618ed2de59e39ac4e92f402eb42ad692e8e34be3538f513a3a"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/b83be090e6bcfc11--help-focus.png",
+      "bytes": 533041,
+      "sha256": "b83be090e6bcfc113aedb37a5143eeb9babe3a52691dc730217718b9058e8781"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/ba1f8451dcbf1271.png",
+      "bytes": 398289,
+      "sha256": "ba1f8451dcbf12710e66700dbd74b1da3174bce1552e2c86cee510590f932fda"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/bb6b8d319f72e8db.png",
+      "bytes": 492356,
+      "sha256": "bb6b8d319f72e8db575fceacd0422e98055b0063bb33ed5a9ff78c8f8927004a"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/bbb3cbfb16cb344c.png",
+      "bytes": 393205,
+      "sha256": "bbb3cbfb16cb344cce41c28f4496a25647d22a09481347dfe2ac799a696fc0c1"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/beec5000343a08ea--help-focus.png",
+      "bytes": 519334,
+      "sha256": "beec5000343a08ea6e14293c27f495a9753bc79ca59a948e7c771fc7ff294730"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/c0464c8581f90f3a--help-focus.png",
+      "bytes": 517892,
+      "sha256": "c0464c8581f90f3a8ba3a8061a2615b1fc7cc8747ade72822e5f13e7d340bc9a"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/c3ab911a693493f2.png",
+      "bytes": 391318,
+      "sha256": "c3ab911a693493f2e53f8a8022859a2c6239a4a469fdb3ec65699198cf2989ca"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/ca3e5eb7f5b7cb14--help-hover.png",
+      "bytes": 508900,
+      "sha256": "ca3e5eb7f5b7cb14f3b0db7705abd4a0faf87d574a4a6ed393824ffe83a0c8e2"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/cd0aceed762f4012--help-hover.png",
+      "bytes": 531561,
+      "sha256": "cd0aceed762f40126d5d5098cbde6a71a9591c090e28e13b3f411ea5e7487295"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/d4580556c44a7cca.png",
+      "bytes": 506103,
+      "sha256": "d4580556c44a7cca7fc5a40144227b8a58c6fb32545996206b3a66089c9df207"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/da87ba30d3b73be3--help-hover.png",
+      "bytes": 519142,
+      "sha256": "da87ba30d3b73be3432fff279272f9a30dcee51b37077b13ac78d2217f872c6a"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/dc19c70129043be1--help-focus.png",
+      "bytes": 440939,
+      "sha256": "dc19c70129043be1da633df29e9a65996453db4645d1679e6b305a3083ac92cf"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/dfddcd15c5106598--help-hover.png",
+      "bytes": 410779,
+      "sha256": "dfddcd15c510659803a9a4387546ae3556510ea74204cba98d3bab37ffd54ad9"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/eeceb7d55352a03b.png",
+      "bytes": 393213,
+      "sha256": "eeceb7d55352a03b355711c7354c6c4017f2787da42ef564f83ca15b56eed842"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/png/f0f7ebdc136e21a3.png",
+      "bytes": 504086,
+      "sha256": "f0f7ebdc136e21a3d591ff696fdeb87cbb5974dc0f85a84d98b318a51d056399"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/smells-before-help-fix.json",
+      "bytes": 3530,
+      "sha256": "f899ba6b23129b3c2a9efd0410650e681b72a6e41d1567485dc2f3df8d003c79"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/market_structure/smells.json",
+      "bytes": 3530,
+      "sha256": "194a1b173d0b3c1499b596042d1fbc563d0db178ed0532f2fe84122a4ae8afac"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/EVIDENCE.yml",
+      "bytes": 162,
+      "sha256": "adfc41efc70579e903d95a665681e75ab473f1b3ca633209ec3a67f9b4a2838b"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/manifest.json",
+      "bytes": 25625,
+      "sha256": "077df28b5cbc74ffd85511cd73fad9d4944e42448d2fa4b999140b97f148eae7"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/01716e5c0cde0163.png",
+      "bytes": 248112,
+      "sha256": "01716e5c0cde01634d4a873695a8641ee0d73e1798a480f87838d50730f217e2"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/2e27e436702689f2.png",
+      "bytes": 311152,
+      "sha256": "2e27e436702689f25e75d313cb84c54cf924dc4fc2f603a44997ca8e3b702b42"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/3669b4ad2527413b--nav-hover.png",
+      "bytes": 326290,
+      "sha256": "3669b4ad2527413be45ad27179700573916113bfbd6dd3a84d2586881a496159"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/4c014b75af60b668--nav-hover.png",
+      "bytes": 248447,
+      "sha256": "4c014b75af60b668e12318aeebf1334ad96e0600151e95b52f7a47be37126795"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/5b32080485a3b300--disclosure-focus.png",
+      "bytes": 236690,
+      "sha256": "5b32080485a3b30077bae5f40983bfe416e1f8fed80dfa9c983245ad3bc6673b"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/640d1c86cac46e9c--disclosure-focus.png",
+      "bytes": 240179,
+      "sha256": "640d1c86cac46e9cda0a2240832c9c9ac2418f582d2e477d7a8bf3776971d062"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/65953222c98c0d1c--disclosure-focus.png",
+      "bytes": 245204,
+      "sha256": "65953222c98c0d1cc076a4e6d0dc2053f29164d6b41dc7b1291305e0feeac0e3"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/6f9ef57df54ae29e.png",
+      "bytes": 246146,
+      "sha256": "6f9ef57df54ae29e5fe3a583cd7816202d80806cced52e8fa8c9495a9e4d8f1e"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/74bf5286d1b7c3bc.png",
+      "bytes": 310980,
+      "sha256": "74bf5286d1b7c3bc0f2e47498218c1d317b00ed49ca36399d4a9702109508611"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/750d46083f7c8c29--nav-hover.png",
+      "bytes": 238109,
+      "sha256": "750d46083f7c8c291f3f2f9086a997431169cbac74d0f38140a884aa8e2ec420"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/7da1978167527e96--nav-hover.png",
+      "bytes": 327906,
+      "sha256": "7da1978167527e9666c2e13a747cbd87bab8599eba9712f02c59e9a2b559412c"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/7ff2ba3a23f93a37.png",
+      "bytes": 237657,
+      "sha256": "7ff2ba3a23f93a377411c5aff9cc6fc9ca799db3553d19130dcfd7fb658cf81e"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/87868c1c8b78b63c--disclosure-focus.png",
+      "bytes": 326395,
+      "sha256": "87868c1c8b78b63c14ea8702d196e0db193f48109f5b3f0705467d4d615e6c91"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/88b5efbc2a50dd1a--disclosure-focus.png",
+      "bytes": 309265,
+      "sha256": "88b5efbc2a50dd1abd30c5dd97e48e6ef858ec8f1231aa558ef7a3b7857e15e4"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/92ca0257735b7d03--nav-hover.png",
+      "bytes": 241739,
+      "sha256": "92ca0257735b7d03f0429a62e50d5f08feec06b13691803b0d5e7775da9ef896"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/95eed5ddcfbefe31--disclosure-focus.png",
+      "bytes": 309715,
+      "sha256": "95eed5ddcfbefe31b027b2aa0bc5912610775b04e69da04f521914bdaedfb5ff"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/9bb4da14571ed739--disclosure-focus.png",
+      "bytes": 246599,
+      "sha256": "9bb4da14571ed7397b0d2e44a868c5da80e725aa07876722b78bbe15c93c83bd"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/b743a6a035991b3a.png",
+      "bytes": 325820,
+      "sha256": "b743a6a035991b3a1edb73824ed494fe6341be749f6cdc415ab15bee31738bbe"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/cbd9ee46f2869339--nav-hover.png",
+      "bytes": 246639,
+      "sha256": "cbd9ee46f28693395195c97e5e9329b3042fe69fec665b07f3e1bb0ffd24361a"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/d12db3c142444fe6--disclosure-focus.png",
+      "bytes": 324839,
+      "sha256": "d12db3c142444fe61243b877765319551c0410950477ddedc2768543980e2c3f"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/d2b3666db9a23fbe.png",
+      "bytes": 241272,
+      "sha256": "d2b3666db9a23fbe2c2c9aa5b1f5a9df77f627d32dba92713cbeea0ac626bd92"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/d8784be26f890b28.png",
+      "bytes": 327497,
+      "sha256": "d8784be26f890b28ce50cd6ff2249c6a06a60839a77284f539fdbd881bbf3183"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/de01cc50cef95c1c--nav-hover.png",
+      "bytes": 311746,
+      "sha256": "de01cc50cef95c1ce04b3da2abc22fd111ac9819d06406d862d7da5351a6c593"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/png/f2328b7cc4963e2a--nav-hover.png",
+      "bytes": 311718,
+      "sha256": "f2328b7cc4963e2a72496036afe131044ee13c625e0361c8cab8e0316399ae1b"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/spvector/smells.json",
+      "bytes": 3520,
+      "sha256": "6d726eb8871be77605942afcdcb238d9b3ca9126b2d737f1f01ea5ac648420a3"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/EVIDENCE.yml",
+      "bytes": 174,
+      "sha256": "251fd4d9ed990ddf2131295e1d39061e8691e7c94e900ab2aa9a6bbd12acdd39"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/manifest.json",
+      "bytes": 25440,
+      "sha256": "8d10a3fc7cd4c11786cb222b78bb53d46cb50eb455c1df1ee03270986de6d219"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/1215a6abf0130848--tab-hover.png",
+      "bytes": 428153,
+      "sha256": "1215a6abf01308485397fe5ab3a0a836cc8637454d010d389f6d0291b450f40c"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/13dd3e496eb07cfb--tab-hover.png",
+      "bytes": 209151,
+      "sha256": "13dd3e496eb07cfbc436d64286ad34fe3e2cf19aaad92aa11a3dab6d02f6fb40"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/1d2f9fc9a0032dec--tab-hover.png",
+      "bytes": 433828,
+      "sha256": "1d2f9fc9a0032decc55d30af2dc33ea0b61f9c0ba7ecbe88e69c382e56c0ff1e"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/214035e176606951--tab-hover.png",
+      "bytes": 212176,
+      "sha256": "214035e176606951d011d99a617378089b720297a5126de7c59ff4413ab88001"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/282075f1388781a0--tab-focus.png",
+      "bytes": 212777,
+      "sha256": "282075f1388781a01c25e1ee081bc78ed30ceb4625bef348fb5a57c6b44abc2c"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/3db7cb2359e8fc7a--tab-focus.png",
+      "bytes": 428619,
+      "sha256": "3db7cb2359e8fc7a3ec791f8a0d203753b4fd945b7b08560a795a23a102cbc2a"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/69030eb635d71f5e.png",
+      "bytes": 248711,
+      "sha256": "69030eb635d71f5e1733e3c4b1d1a903129578d8882586b29b0d9f04b9860cf4"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/73db9168c5fd725e.png",
+      "bytes": 425782,
+      "sha256": "73db9168c5fd725e746d016f82a9aa283c43bf72134b42d7c747c9d16855da03"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/89d45eeda4688d0d.png",
+      "bytes": 253008,
+      "sha256": "89d45eeda4688d0dc3a164323ea0dbcb60be2b26a6eb0234406e5c397a8719b5"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/99a50cf53b80e9ff.png",
+      "bytes": 253158,
+      "sha256": "99a50cf53b80e9fffee7d416367794484573790cfee9d81309074a6c6783f551"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/9a536cd0b1461fff--tab-hover.png",
+      "bytes": 433062,
+      "sha256": "9a536cd0b1461fff674cea4b3d131cefead32ab3c4c172ef2c727316680ed428"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/9ac977f0340e812c.png",
+      "bytes": 434136,
+      "sha256": "9ac977f0340e812cfffcfd87758a327103bb6ebc7a220f8130d58e3b3cbce680"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/9bd391ffe2ad60e1--tab-focus.png",
+      "bytes": 434331,
+      "sha256": "9bd391ffe2ad60e1d90790ab7e0cdb7e71d678e51e65548f633657b3b090deff"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/a2f605ca034a9016--tab-focus.png",
+      "bytes": 209898,
+      "sha256": "a2f605ca034a90168743cb8e8fab2d4abc6743c769b18be601ed221dd74a7e04"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/bda8099682e08d50.png",
+      "bytes": 428502,
+      "sha256": "bda8099682e08d50f6b123be922b652593935c340676efaadda12d8e22f704b8"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/c296fd9b0ff412b3--tab-hover.png",
+      "bytes": 206363,
+      "sha256": "c296fd9b0ff412b38427ac9249a2690a621465a7bbbc1d8627a67df23f8989a7"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/c6f1fdfe1ac4ca9a.png",
+      "bytes": 247965,
+      "sha256": "c6f1fdfe1ac4ca9a90981bb618a9ae46c4728c39766e4e6fca23e1828119d3d7"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/c8685d3e2a8acd4a--tab-focus.png",
+      "bytes": 207054,
+      "sha256": "c8685d3e2a8acd4af613e46b8acab05c5e622fca6da5fdcdc362ae8675f95035"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/cb706a855ab4b7f1--tab-hover.png",
+      "bytes": 203009,
+      "sha256": "cb706a855ab4b7f14c7a46e57fcf6325f24e5a93305d40bc458b06b330bede5d"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/e74dfbf51e1109ed--tab-hover.png",
+      "bytes": 425818,
+      "sha256": "e74dfbf51e1109edd761b654a320c135cf16ea188bc2cb3c6fa7cf1207245c39"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/f1614f0770072dad--tab-focus.png",
+      "bytes": 426034,
+      "sha256": "f1614f0770072dad02677e7b00beaf949f8b8f63fb87ca85b8afe3241cf7fa05"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/f262ecd6578b0815--tab-focus.png",
+      "bytes": 433520,
+      "sha256": "f262ecd6578b0815044f9ff163459a6512bed7611da0450d98efa4d515c467cb"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/fbf860ad1aa2c6a1.png",
+      "bytes": 433265,
+      "sha256": "fbf860ad1aa2c6a164268cacae93c6aeff0aed0244e7c4cb543ae2f9f4f0b5e0"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/png/ff0ae3ef892b6f0f--tab-focus.png",
+      "bytes": 203743,
+      "sha256": "ff0ae3ef892b6f0f1e1eb3329d48b21feb88fa9ec7f84756823ae5bda01a161a"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/smells.json",
+      "bytes": 3535,
+      "sha256": "cf864756ae4c46141c6a30c01b3fc38627f9b29b07ea278b498a0b880ce9bf3a"
+    }
+  ]
+}

@@ -13,7 +13,7 @@ lazily per-tab from `site/stagedata/*.json`. This builder:
 
 Fail-open throughout: any missing artifact -> the corresponding surface renders
 an explicit ingestion-health state, never a misleading scheduled "warm-up",
-never a blank page, and never a build crash.
+never a blank page. A failure to revoke an unusable public copy stops the build.
 The stage classification is display_only / context-only (SGA-R4/R5) — never an
 authority signal or a sizing input.
 
@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import logging
 import os
 import sys
@@ -111,13 +112,25 @@ def _is_stale_artifact(payload: dict) -> bool:
     return False
 
 
+def _revoke_public_copy(dest: Path, name: str, reason: str) -> int:
+    """An unusable current source cannot silently leave an older public file."""
+    try:
+        dest.unlink()
+    except FileNotFoundError:
+        return 0
+    except OSError as exc:
+        raise RuntimeError(f"Cannot revoke unusable stagedata {name}: {reason}") from exc
+    print(f"::warning title=stagedata-revoked::{name} {reason} — public copy revoked", flush=True)
+    return 1
+
+
 def _copy_stagedata(data_dir: Path, site_dir: Path) -> tuple[int, int, int]:
     """Copy the per-surface JSON artifacts into site/stagedata/.
 
     Wave 8 §8 publication integrity — required behavior per artifact:
       - source present and valid (parses as JSON into a NON-EMPTY object) ->
         copy it atomically (temp + os.replace).
-      - source ABSENT -> remove the public destination (if any) and disclose
+      - source ABSENT, unreadable, invalid JSON, or unusable envelope -> remove the public destination (if any) and disclose
         the revocation via `::warning title=stagedata-revoked::`. A missing
         current source must never preserve yesterday's destination as though
         it were current.
@@ -150,27 +163,18 @@ def _copy_stagedata(data_dir: Path, site_dir: Path) -> tuple[int, int, int]:
         src = src_dir / name
         dest = out_dir / name
         if not src.exists():
-            if dest.exists():
-                try:
-                    dest.unlink()
-                    revoked += 1
-                    print(f"::warning title=stagedata-revoked::{name} source "
-                          "absent — public copy revoked", flush=True)
-                except Exception as exc:  # noqa: BLE001
-                    log.warning("stagedata: failed to revoke %s: %s", name, exc)
-            else:
-                log.info("stagedata: %s absent — surface shows unavailable state", name)
+            revoked += _revoke_public_copy(dest, name, "source absent")
             continue
         try:
             raw = src.read_text(encoding="utf-8")
             payload = json.loads(raw)
         except Exception as exc:  # noqa: BLE001
-            log.warning("stagedata: %s unreadable/invalid JSON, skipping copy: %s",
-                        name, exc)
+            log.warning("stagedata: %s unreadable/invalid JSON: %s", name, exc)
+            revoked += _revoke_public_copy(dest, name, "source unreadable or invalid JSON")
             continue
         if not isinstance(payload, dict) or not payload:
-            log.warning("stagedata: %s is not a non-empty JSON object, skipping copy",
-                        name)
+            log.warning("stagedata: %s is not a non-empty JSON object", name)
+            revoked += _revoke_public_copy(dest, name, "source envelope unusable")
             continue
         try:
             tmp = dest.with_suffix(dest.suffix + ".tmp")
@@ -211,7 +215,18 @@ def render(root: Path, fixture: Path | None = None) -> str:
         env.globals.update(td=_td, tr=lambda en: en)
 
     tpl = env.get_template("stage_analysis.html.j2")
-    return tpl.render(sga=sga)
+    counts = (sga or {}).get("counts")
+    population = (sga or {}).get("population")
+    values = [counts.get(key) for key in ("stage1", "stage2", "stage3", "stage4")] if isinstance(counts, dict) else []
+    known = len(values) == 4 and all(
+        isinstance(value, (int, float)) and not isinstance(value, bool)
+        and math.isfinite(value) and 0 <= value <= 2**53 - 1 and int(value) == value
+        for value in values
+    )
+    if isinstance(population, dict) and population.get("status") in ("no_target_week", "unavailable"):
+        known = False
+    population_display_state = ("ready" if sum(values) else "empty") if known else "unknown"
+    return tpl.render(sga=sga, population_display_state=population_display_state)
 
 
 def build(root: Path, fixture: Path | None = None) -> Path:

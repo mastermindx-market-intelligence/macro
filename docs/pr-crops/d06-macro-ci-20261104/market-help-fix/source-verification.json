@@ -1,0 +1,85 @@
+{
+  "schema": "d06.macro_ci.market_help_fix.v1",
+  "status": "passed",
+  "cause": "The existing floating launcher z2147483000 overlapped the phone help sheet z12600; actual DOM hit testing and viewport screenshots retained in the parent directory.",
+  "change": "On this route only, the existing html.lens-lock state hides the existing launcher at max-width640px; closing the sheet restores it. No new popup, overlay controller or shared-theme change.",
+  "source_before": {
+    "templates/market_structure.html.j2": "5ae738754c3af03b04c62b314a020cce4cf74078c48ab623418442db404d3494",
+    "site/market_structure.html": "54ad8e25432bb9162d1337fd2fbadc279f48a9acbbfb282b63d93e4a70553c9f"
+  },
+  "source_after": {
+    "templates/market_structure.html.j2": "75d07b074bad490b2a9ede4610b521e77d18ac9fa5c8f7c83ff55202bb14a0e8",
+    "site/market_structure.html": "efdfad4eb2570b9cc98d4f73a2a67c4a5cfe359de8314da1c9893f0186ffd10f"
+  },
+  "runs": [
+    {
+      "name": "market-unit",
+      "exit_code": 0,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_d06_market_structure.py",
+        "tests/test_build_market_structure_page.py",
+        "tests/test_market_structure_glance_copy.py"
+      ],
+      "log": "market-unit.log"
+    },
+    {
+      "name": "market-browser",
+      "exit_code": 0,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4/docs/pr-crops/d06-macro-ci-20261104/market-help-fix/run_browser.py",
+        "--only",
+        "market"
+      ],
+      "log": "market-browser.log"
+    },
+    {
+      "name": "help-viewport",
+      "exit_code": 0,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/d06-macro-c4-11l44i0i/inspect-help-viewport-final.py"
+      ],
+      "log": "help-viewport.log"
+    },
+    {
+      "name": "canonical-capture",
+      "exit_code": 0,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/capture_page_evidence.py",
+        "--site-dir",
+        "/tmp/d06-macro-c4-11l44i0i/ci-visual-preview",
+        "--routes",
+        "/market_structure.html",
+        "--viewports",
+        "desktop,mobile",
+        "--locales",
+        "en,zh",
+        "--themes",
+        "dark,light",
+        "--max-pages",
+        "1",
+        "--settle-ms",
+        "1200",
+        "--force-state",
+        "help-hover:hover([data-driver=\"gex\"] .help)",
+        "--force-state",
+        "help-focus:focus([data-driver=\"gex\"] .help)",
+        "--output-dir",
+        "mockups/evidence/d06-macro-ci-20261104/market_structure/png",
+        "--manifest",
+        "mockups/evidence/d06-macro-ci-20261104/market_structure/manifest.json",
+        "--smells",
+        "mockups/evidence/d06-macro-ci-20261104/market_structure/smells.json"
+      ],
+      "log": "canonical-capture.log"
+    }
+  ],
+  "source_unchanged_during_run": true,
+  "finished_at": "2026-11-04T12:18:36.719347+00:00"
+}

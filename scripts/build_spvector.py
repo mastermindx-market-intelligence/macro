@@ -1,8 +1,8 @@
 """S&P / Macro Vector — US allocation deep-dive page builder.
 
 Renders site/spvector.html (the US equivalent of the Bitcoin vector_allocation
-page) from engine.equity_alloc.vector_alloc — the validated de-risk + Fed-put-gated
-re-deploy strategy (Phases 0-3, PIT-confirmed). Reached from a card on macro.html,
+page) from engine.equity_alloc.vector_alloc — the existing mechanical de-risk and
+re-deploy model. Display changes do not certify its forecasts or trade authority. Reached from a card on macro.html,
 exactly like the BTC "Allocation strategy" card. House Jinja style; reuses the
 build_vector Plotly size-helpers + light palette so it stays light on weight and
 consistent with the Bitcoin allocation page.
@@ -16,11 +16,14 @@ card. Run: python -m scripts.build_spvector
 """
 from __future__ import annotations
 
+import argparse
 import json
+import math
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -184,13 +187,52 @@ def _put_leg_flags(msf) -> dict | None:
 # --------------------------------------------------------------------------- #
 # builder
 # --------------------------------------------------------------------------- #
-def build() -> str:
+def _finite_number(value: object) -> bool:
+    return isinstance(value, (int, float, np.number)) and not isinstance(value, (bool, np.bool_)) and math.isfinite(float(value))
+
+
+def _number_reading(series: pd.Series | None) -> tuple[float | None, str | None]:
+    if series is None:
+        return None, None
+    usable = series[series.map(_finite_number)]
+    if usable.empty:
+        return None, None
+    return float(usable.iloc[-1]), usable.index[-1].strftime("%Y-%m-%d")
+
+
+def _score_reading(rs: pd.Series, aligned: pd.Series) -> dict:
+    """Keep the existing last finite reading and identify its actual contributor."""
+    usable = aligned[aligned.map(_finite_number)]
+    current = bool(len(aligned) and _finite_number(aligned.iloc[-1]))
+    if usable.empty:
+        return {"score": None, "score_as_of": None, "score_aligned_as_of": None,
+                "score_current_available": False}
+    aligned_at = usable.index[-1]
+    source_pos = rs.index.get_indexer([aligned_at], method="ffill")[0]
+    source_at = rs.index[source_pos] if source_pos >= 0 else None
+    return {"score": round(float(usable.iloc[-1])),
+            "score_as_of": source_at.strftime("%Y-%m-%d") if source_at is not None else None,
+            "score_aligned_as_of": aligned_at.strftime("%Y-%m-%d"),
+            "score_current_available": current}
+
+
+def render_page(vm: dict) -> str:
+    """Pure template rendering: no model evaluation, overlay log or hub publication."""
+    from jinja2 import Environment, FileSystemLoader
+    env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
+    try:
+        from engine import i18n
+        env.globals.update(td=i18n.td, tr=i18n.tr)
+    except Exception:  # noqa: BLE001
+        env.globals.update(td=lambda en: en, tr=lambda en: en)
+    return env.get_template("spvector.html.j2").render(**vm, C=C)
+
+
+def build(*, page_only: bool = False) -> str:
     from engine.inputs import build_features
     from engine.conditions import conditions_frame
     from engine.dislocation import master_switch_frame
     from lib import store
-    from jinja2 import Environment, FileSystemLoader
-
     f = build_features(); cf = conditions_frame(f); reg = store.read("regime", "regime_history")
     spy = ea.index_close("SPY"); bills = ea.bill_yield()
     rs = ea.risk_score(f, reg, cf)
@@ -209,13 +251,17 @@ def build() -> str:
     rs_on_spy = rs.reindex(spy.index, method="ffill")
 
     # current reading
-    score = round(float(rs_on_spy.dropna().iloc[-1]))
+    score_state = _score_reading(rs, rs_on_spy)
+    score = score_state['score']
+    allow_auxiliary = not page_only and score_state['score_current_available']
     a = alloc.dropna()
     equity_w = round(float(a.iloc[-1]) * 100)
     cash_w = 100 - equity_w
     asof = spy.index[-1].strftime("%b %d, %Y")
 
-    if score < 25:
+    if score is None:
+        band_key, band_label, band_label_zh, band_color = 'unavailable', 'Unavailable', '暂无数据', C['muted']
+    elif score < 25:
         band_key, band_label, band_label_zh, band_color = "low", "LOW — fully invested", "低 — 满仓", "#1FA971"
     elif score < 50:
         band_key, band_label, band_label_zh, band_color = "elevated", "ELEVATED — trim", "偏高 — 减仓", C["amber"]
@@ -235,13 +281,16 @@ def build() -> str:
                        "to": round(float(a.loc[d0]) * 100)}
 
     bands = [
-        {"label": "Low", "label_zh": "低", "rng": "< 25", "weight": 100, "cur": score < 25},
-        {"label": "Elevated", "label_zh": "偏高", "rng": "25–50", "weight": 66, "cur": 25 <= score < 50},
-        {"label": "High", "label_zh": "高", "rng": "50–75", "weight": 33, "cur": 50 <= score < 75},
-        {"label": "Extreme", "label_zh": "极端", "rng": "≥ 75", "weight": 0, "cur": score >= 75},
+        {"label": "Low", "label_zh": "低", "rng": "< 25", "weight": 100, "cur": score_state["score_current_available"] and score < 25},
+        {"label": "Elevated", "label_zh": "偏高", "rng": "25–50", "weight": 66, "cur": score_state["score_current_available"] and 25 <= score < 50},
+        {"label": "High", "label_zh": "高", "rng": "50–75", "weight": 33, "cur": score_state["score_current_available"] and 50 <= score < 75},
+        {"label": "Extreme", "label_zh": "极端", "rng": "≥ 75", "weight": 0, "cur": score_state["score_current_available"] and score >= 75},
     ]
-    bi = next(i for i, b in enumerate(bands) if b["cur"])
-    if bi < 3:
+    bi = next((i for i, b in enumerate(bands) if b["cur"]), None)
+    if bi is None:
+        next_note_en = "A current model score is unavailable. The displayed mechanical weight remains the existing model output."
+        next_note_zh = "当前模型评分暂缺；所示机械权重仍为现有模型输出。"
+    elif bi < 3:
         nxt = bands[bi + 1]
         next_note_en = f"Next de-risk: a sustained score above {(25, 50, 75)[bi]} trims equity to {nxt['weight']}%."
         next_note_zh = f"下一步降险：分数持续高于 {(25, 50, 75)[bi]} 时，股票权重降至 {nxt['weight']}%。"
@@ -251,21 +300,33 @@ def build() -> str:
         next_note_zh = "完全防守；出现可买入的恐慌底（投降且美联储看跌在场）时可再部署至满仓。"
 
     # dislocation / capitulation chips
-    cap_now = int(cf["capitulation_score"].dropna().iloc[-1]) if "capitulation_score" in cf and cf["capitulation_score"].notna().any() else 0
+    cap_value, cap_as_of = _number_reading(cf.get("capitulation_score"))
+    cap_available = cap_value is not None
+    cap_now = int(cap_value) if cap_available else 0
     put_absent = False
+    put_available = False
+    put_as_of = put_legs_as_of = None
     put_legs = None
     try:
         msf = master_switch_frame(f)
-        pa = msf["put_absent"].dropna()
-        put_absent = bool(pa.iloc[-1]) if len(pa) else False
+        pa = msf["put_absent"] if "put_absent" in msf else pd.Series(dtype=bool)
+        pa = pa[pa.map(lambda value: isinstance(value, (bool, np.bool_)))]
+        put_available = not pa.empty
+        put_absent = bool(pa.iloc[-1]) if put_available else False
+        put_as_of = pa.index[-1].strftime("%Y-%m-%d") if put_available else None
         put_legs = _put_leg_flags(msf)
+        if put_legs is not None:
+            put_legs_as_of = msf[["recession", "fedput_off"]].dropna().index[-1].strftime("%Y-%m-%d")
     except Exception:  # noqa: BLE001 — never let the chip break the build
         put_absent = False
+        put_available = False
+        put_as_of = put_legs_as_of = None
         put_legs = None
     disloc_verdict, disloc_verdict_zh = _redeploy_gate_label(put_absent, cap_now)
 
     # leg breakdown view-model (canonical order, then any extras)
     legs = []
+    legs_score, legs_as_of = _number_reading(rl.get('score'))
     order = LEG_ORDER + [n for n in rl["legs"] if n not in LEG_ORDER]
     for n in order:
         lg = rl["legs"].get(n)
@@ -278,36 +339,27 @@ def build() -> str:
 
     episodes = ea.bear_episodes(spy, 0.20)
 
-    # LLM context / knife-veto overlay — firewalled, LIVE-ONLY (never in the backtest):
-    # if the engine is taking a buyable-washout redeploy but the LLM reads the shock as a
-    # regime break, defer the buy. Off (no DeepSeek key) -> mechanical recommendation stands.
-    # Logged forward for future validation. (engine.spvector_overlay; preserved across the merge.)
-    #
-    # W7 #33 spvector veto fix: `on_stress_day` was always False (default), making
-    # context_snapshot() skip event_snapshot() and always use the FOMC digest whose
-    # shock_reversible is always 'unknown' → 0 vetoes in 202 log rows. Fix: derive
-    # `on_stress_day` from the SAME mechanical capitulation trigger the redeploy leg
-    # uses (capitulation_score >= 2: VRP-pctile>0.90 / VIX>30 / COT washout). This is
-    # a DEFINED stress flag with a real definition; the LLM veto remains LOG-ONLY
-    # (shadow) — it never moves a live weight until the overlay log accrues precision.
+    # Shadow evaluation is recorded only. It never changes alloc, score or backtest.
+    # Missing current scores and explicit page-only renders cannot append a log.
     overlay = {"enabled": False}
-    try:
-        from engine import spvector_overlay as sov
-        glide_w = float(ea.glide_path(rs).reindex(spy.index, method="ffill").fillna(1.0).iloc[-1])
-        # Determine stress day from the mechanical capitulation_score (same trigger as redeploy)
-        _cap_score = cf.get("capitulation_score")
-        _is_stress_day = bool(
-            _cap_score is not None
-            and _cap_score.notna().any()
-            and int(_cap_score.dropna().iloc[-1]) >= 2
-        )
-        overlay = sov.live_overlay(
-            glide_w, float(alloc.iloc[-1]),
-            snapshot=sov.context_snapshot(on_stress_day=_is_stress_day),
-        )
-        sov.log_overlay(overlay, asof=spy.index[-1].strftime("%Y-%m-%d"))
-    except Exception:  # noqa: BLE001 — advisory overlay must never break the page
-        overlay = {"enabled": False}
+    if allow_auxiliary:
+        try:
+            from engine import spvector_overlay as sov
+            glide_w = float(ea.glide_path(rs).reindex(spy.index, method="ffill").fillna(1.0).iloc[-1])
+            # Determine stress day from the mechanical capitulation_score (same trigger as redeploy)
+            _cap_score = cf.get("capitulation_score")
+            _is_stress_day = bool(
+                _cap_score is not None
+                and _cap_score.notna().any()
+                and int(_cap_score.dropna().iloc[-1]) >= 2
+            )
+            overlay = sov.live_overlay(
+                glide_w, float(alloc.iloc[-1]),
+                snapshot=sov.context_snapshot(on_stress_day=_is_stress_day),
+            )
+            sov.log_overlay(overlay, asof=spy.index[-1].strftime("%Y-%m-%d"))
+        except Exception:  # noqa: BLE001 — advisory overlay must never break the page
+            overlay = {"enabled": False}
 
     charts = {"strategy": _chart_strategy(spy, alloc, rs_on_spy, eq),
               "growth": _chart_growth(eq, hodl), "dd": _chart_dd(dd_s, dd_h)}
@@ -315,44 +367,52 @@ def build() -> str:
     vm = {
         "as_of": asof, "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "price": float(spy.iloc[-1]),
+        **score_state,
+        "allocation_as_of": a.index[-1].strftime("%Y-%m-%d"),
+        "legs_as_of": legs_as_of, "legs_score": legs_score,
+        "auxiliary_allowed": allow_auxiliary,
         "score": score, "band_label": band_label, "band_label_zh": band_label_zh,
         "band_key": band_key, "band_color": band_color,
         "equity_w": equity_w, "cash_w": cash_w,
         "last_switch": last_switch, "next_note": next_note_en, "next_note_zh": next_note_zh,
         "legs": legs,
         "disloc": {"verdict": disloc_verdict, "verdict_zh": disloc_verdict_zh,
-                   "put_absent": put_absent, "capitulation": cap_now, "put_legs": put_legs},
+                   "put_absent": put_absent, "capitulation": cap_now, "put_legs": put_legs,
+                   "put_available": put_available, "put_as_of": put_as_of,
+                   "cap_available": cap_available, "cap_as_of": cap_as_of,
+                   "put_legs_as_of": put_legs_as_of,
+                   "gate_model_available": cap_available and put_available,
+                   # These model frames do not carry source-freshness/coverage receipts.
+                   "input_coverage_qualified": False},
         "sc": sc, "at": at, "bands": bands, "episodes": episodes, "charts": charts,
         "overlay": overlay,
         "bench_start": spy.index[0].strftime("%b %d, %Y"),
         "overlay_log": _overlay_log_summary(config.data_dir() / "spvector" / "overlay_log.jsonl"),
     }
 
-    env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
-    try:
-        from engine import i18n
-        env.globals.update(td=i18n.td, tr=i18n.tr)
-    except Exception:  # noqa: BLE001 — i18n absent -> English-only, still builds
-        env.globals.update(td=lambda en: en, tr=lambda en: en)
-    html = env.get_template("spvector.html.j2").render(**vm, C=C)
+    html = render_page(vm)
     out = config.ROOT / "site" / "spvector.html"
     write_page(out, html)
 
-    # snapshot for the landing-hub US allocation/vector card
-    snap = {"date": spy.index[-1].strftime("%Y-%m-%d"), "score": score,
-            "band": band_key, "band_label": band_label, "equity_w": equity_w,
-            "cash_w": cash_w, "stance": f"{equity_w}% equity",
-            "cagr": sc["cagr"], "sharpe": sc["sharpe"], "maxdd": sc["maxdd"],
-            # alias keys read by build_vector._spvector_state (hub S&P Vector card)
-            "equity_weight": equity_w, "risk_score": score, "asof": spy.index[-1].strftime("%Y-%m-%d")}
-    snap_dir = config.data_dir() / "regime"
-    snap_dir.mkdir(parents=True, exist_ok=True)
-    (snap_dir / "spvector_latest.json").write_text(json.dumps(snap, indent=2))
+    if allow_auxiliary:
+        # snapshot for the landing-hub US allocation/vector card
+        snap = {"date": spy.index[-1].strftime("%Y-%m-%d"), "score": score,
+                "band": band_key, "band_label": band_label, "equity_w": equity_w,
+                "cash_w": cash_w, "stance": f"{equity_w}% equity",
+                "cagr": sc["cagr"], "sharpe": sc["sharpe"], "maxdd": sc["maxdd"],
+                # alias keys read by build_vector._spvector_state (hub S&P Vector card)
+                "equity_weight": equity_w, "risk_score": score, "asof": spy.index[-1].strftime("%Y-%m-%d")}
+        snap_dir = config.data_dir() / "regime"
+        snap_dir.mkdir(parents=True, exist_ok=True)
+        (snap_dir / "spvector_latest.json").write_text(json.dumps(snap, indent=2))
     return str(out)
 
 
 def main() -> int:
-    out = build()
+    parser = argparse.ArgumentParser(description="Render the S&P model allocation page")
+    parser.add_argument("--page-only", action="store_true", help="Render from model inputs without evaluating/logging the shadow overlay or publishing the hub snapshot")
+    args = parser.parse_args()
+    out = build(page_only=args.page_only)
     print(f"[built] {out}")
     return 0
 

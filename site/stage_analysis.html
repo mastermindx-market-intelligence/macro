@@ -50,8 +50,8 @@
 @font-face{font-family:Inter;font-style:normal;font-weight:900;font-display:swap;src:url("fonts/Inter-900.woff2") format("woff2");}
 </style>
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
-<script defer src="theme.js?v=3c193891"></script>
+<link rel="stylesheet" href="theme.css">
+<script defer src="theme.js"></script>
 <title>Stage Analysis — Where Each Market Sits in Its Cycle</title>
 
 
@@ -71,9 +71,682 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="assets/css/8bc679c1.css?v=8bc679c1">
-<link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+<style>
+/* =====================================================================
+   STAGE PALETTE — page-local accents, derived from theme tokens.
+   These NEVER redefine core tokens; they only name the four stages so the
+   arc, chips and bands share one ramp. Each is verified legible on --panel
+   in dark AND light (light overrides below).
+   ===================================================================== */
+:root{
+  --s1:#7f97b3;              /* base — steel / dormant */
+  --s2:var(--up);           /* advance — green */
+  --s3:#d9a441;             /* top — amber / ripe */
+  --s4:var(--down);         /* decline — red */
+  /* Canonical Mastermind face: San Francisco on Apple platforms, with the
+     self-hosted Inter family as the consistent cross-platform fallback. */
+  --font-display:-apple-system,BlinkMacSystemFont,'SF Pro Display',Inter,system-ui,'Segoe UI',Roboto,sans-serif;
+  --hair:color-mix(in srgb,var(--text) 8%,transparent);
+  /* sentence-level secondary copy — clears the 7:1 body gate in BOTH themes
+     (dark 8.26:1 / light 8.73:1 on the worst panel). --muted stays reserved
+     for true labels / eyebrows / captions (short, non-sentence). */
+  --muted-strong:color-mix(in srgb,var(--text) 55%,var(--muted));
+}
+html[data-theme="light"]{
+  --s1:#5b7391; --s3:#a8791c;  /* darker steel/amber so chips clear 4.5:1 on white */
+}
+*,*::before,*::after{box-sizing:border-box}
+html:not([data-lang="zh"]) .l-zh{display:none}
+html[data-lang="zh"] .l-en{display:none}
+html[data-lang="zh"] body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",Inter,sans-serif}
+html body{margin:0;padding-top:24px;background:var(--bg);color:var(--text);
+  font:14px/1.5 var(--font-display);
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:var(--ink-link, var(--link));text-decoration:none}
+.tnum{font-variant-numeric:tabular-nums}
+.mut{color:var(--muted)}
+.wrap{max-width:1440px;margin:0 auto;padding:0 26px 96px;position:relative;z-index:1}
+@media(max-width:640px){.wrap{padding:0 14px 72px}}
+
+/* ── ambient wash (very restrained; static on reduced-motion) ── */
+.aura{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.aura::before{content:"";position:absolute;top:-220px;left:4%;width:820px;height:560px;
+  border-radius:50%;filter:blur(110px);
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--up) 9%,transparent) 0%,transparent 70%)}
+.aura::after{content:"";position:absolute;bottom:-120px;right:-60px;width:680px;height:520px;
+  border-radius:50%;filter:blur(110px);
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--info) 8%,transparent) 0%,transparent 70%)}
+[data-theme="light"] .aura::before,[data-theme="light"] .aura::after{opacity:.5}
+
+/* ── page header row ── */
+.pghead{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
+  flex-wrap:wrap;margin:6px 0 4px}
+.kick{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 6px}
+.pghead h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--text);
+  font-family:var(--font-display)}
+.pghead .sub{margin:5px 0 0;font-size:13px;color:var(--muted-strong);max-width:52ch;line-height:1.55}
+/* `white-space:nowrap` was safe for the old one-word "Priced <date>" label, but
+   the Wave 8 clock ("Stage week ended <date> · source tape through <date>") plus
+   the coverage receipt are far longer and overflowed the viewport at 375px —
+   measured .asof scrollWidth 374px inside a 347px .pghead, clipping the second
+   date, "Weekly stage read" and "unknown". Wrap on narrow viewports; keep each
+   clause and its date together so a line never breaks mid-phrase. */
+.asof{font-size:11.5px;color:var(--muted);text-align:right;white-space:nowrap;
+  max-width:100%;min-width:0}
+.asof b{color:var(--text);font-weight:700;white-space:nowrap}
+.asof .clk{display:inline-block}
+@media (max-width:760px){
+  .pghead .asof{white-space:normal;text-align:left;width:100%}
+}
+
+/* =====================================================================
+   HERO — the stage arc (signature). An idealised Weinstein cycle with the
+   whole universe scattered as density dots, four count-stations, one stance.
+   ===================================================================== */
+.hero{position:relative;margin:20px 0 8px;border:1px solid var(--line);border-radius:20px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 92%,transparent),var(--panel2));
+  overflow:hidden;padding:26px 28px 22px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:center}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+.arc-wrap{position:relative;width:100%}
+.arc-wrap svg{display:block;width:100%;height:auto}
+.arc-stance-eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 8px}
+.arc-state{font-size:30px;font-weight:800;letter-spacing:-.025em;line-height:1.08;margin:0 0 8px;
+  font-family:var(--font-display)}
+/* the big weather word — coloured to the dominant stage. The colour is set on
+   --accent-c so light mode can darken it (the raw token is pale on white). It
+   is 30px display text, so 3:1 is the WCAG floor, but we clear ~6:1 anyway. */
+.arc-state .accent{color:var(--accent-c,var(--s2))}
+.arc-state .accent.s3{--accent-c:var(--s3)}
+.arc-state .accent.s4{--accent-c:var(--s4)}
+html[data-theme="light"] .arc-state .accent{color:color-mix(in srgb,var(--accent-c,var(--s2)) 65%,var(--text))}
+.arc-stance{font-size:14.5px;color:var(--text);line-height:1.55;margin:0 0 14px;max-width:40ch}
+.arc-stance .em{color:var(--muted-strong)}
+.stancepill{display:inline-flex;align-items:center;gap:7px;padding:6px 15px;border-radius:999px;
+  font-size:13px;font-weight:700;border:1px solid var(--line)}
+.stancepill.act{color:var(--ink-up, var(--up));border-color:color-mix(in srgb,var(--up) 45%,var(--line));
+  background:color-mix(in srgb,var(--up) 12%,transparent)}
+.stancepill.watch{color:var(--s3);border-color:color-mix(in srgb,var(--s3) 45%,var(--line));
+  background:color-mix(in srgb,var(--s3) 12%,transparent)}
+.stancepill.stand{color:var(--muted)}
+.stancepill .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+
+/* count stations under the arc */
+.stations{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.stn{position:relative;padding:11px 12px 12px;border-radius:13px;border:1px solid var(--line);
+  background:var(--panel);overflow:hidden}
+.stn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sc,var(--muted))}
+.stn .num{font-family:var(--font-display);font-size:26px;font-weight:700;line-height:1;letter-spacing:-.02em;
+  color:var(--text)}
+.stn .lab{display:block;font-size:11.5px;font-weight:600;margin-top:5px;color:var(--sc,var(--muted))}
+.stn .sub{display:block;font-size:11px;color:var(--muted);margin-top:2px;line-height:1.35}
+.stn.s1{--sc:var(--s1)} .stn.s2{--sc:var(--s2)} .stn.s3{--sc:var(--s3)} .stn.s4{--sc:var(--s4)}
+.stn .roman{position:absolute;right:9px;top:7px;font-family:var(--font-display);font-size:12px;
+  font-weight:700;color:var(--sc);opacity:.6}
+
+/* =====================================================================
+   TAB BAR + CONTROLS
+   ===================================================================== */
+.tabbar{display:flex;gap:3px;margin:22px 0 0;padding:4px;border-radius:14px;
+  border:1px solid var(--line);background:var(--panel2);overflow-x:auto;scrollbar-width:none}
+.tabbar::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:10px;
+  font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:transparent;
+  white-space:nowrap;transition:color .16s,background .16s}
+.tab:hover{color:var(--text)}
+.tab[aria-selected="true"]{color:var(--text);background:var(--panel);
+  box-shadow:0 1px 0 color-mix(in srgb,var(--text) 6%,transparent),0 6px 18px -12px rgba(0,0,0,.5)}
+.tab .tnum{font-family:var(--font-display);font-size:12px;font-weight:700;color:var(--muted);
+  border:1px solid var(--line);border-radius:6px;padding:0 5px;line-height:16px}
+.tab[aria-selected="true"] .tnum{color:var(--ink-info, var(--info));border-color:color-mix(in srgb,var(--info) 40%,var(--line))}
+.tab:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 70%,transparent);outline-offset:2px}
+
+.controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:16px 0 4px}
+.seg{display:inline-flex;padding:3px;border-radius:10px;border:1px solid var(--line);background:var(--panel2)}
+.seg button{border:none;background:transparent;color:var(--muted);font-size:12.5px;font-weight:600;
+  padding:5px 12px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--text);
+  box-shadow:0 1px 0 color-mix(in srgb,var(--text) 6%,transparent)}
+.seg button:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 70%,transparent);outline-offset:1px}
+.ctl-lab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.searchbox{display:inline-flex;align-items:center;gap:7px;flex:1 1 200px;min-width:170px;max-width:320px;
+  padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text)}
+.searchbox input{flex:1;border:none;background:transparent;color:var(--text);font-size:13px;outline:none}
+.searchbox input::placeholder{color:var(--muted)}
+.searchbox svg{flex:0 0 auto;opacity:.7}
+
+/* =====================================================================
+   SURFACE PANELS
+   ===================================================================== */
+.surface{margin-top:18px}
+.surface[hidden]{display:none}
+
+/* filter bar */
+.filterbar{display:flex;flex-wrap:wrap;gap:9px 12px;align-items:flex-end;padding:14px 16px;
+  border:1px solid var(--line);border-radius:14px;background:var(--panel2);margin-bottom:12px}
+.filt{display:flex;flex-direction:column;gap:4px}
+.filt label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.filt select,.filt input{background:var(--panel);border:1px solid var(--line);color:var(--text);
+  border-radius:8px;padding:5px 8px;font-size:12.5px;font-family:inherit;min-width:78px}
+.filt input[type="number"]{width:74px}
+.filt select:focus,.filt input:focus{outline:2px solid color-mix(in srgb,var(--info) 60%,transparent);
+  outline-offset:0;border-color:color-mix(in srgb,var(--info) 45%,var(--line))}
+@media(max-width:640px){
+  .filterbar .filt{min-width:0;flex:1 1 140px;max-width:100%}
+  .filterbar .filt select{width:100%;min-width:0;max-width:100%}
+}
+.fb-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:9px;font-size:12.5px;
+  font-weight:600;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text)}
+.btn:hover{border-color:color-mix(in srgb,var(--info) 45%,var(--line));color:var(--text)}
+.btn.ghost{background:transparent;color:var(--muted)}
+.btn:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 70%,transparent);outline-offset:2px}
+.showing{font-size:12px;color:var(--muted-strong)}
+.showing b{color:var(--text);font-weight:700}
+
+/* table */
+.tbl-scroll{position:relative;border:1px solid var(--line);border-radius:14px;overflow:auto;
+  background:var(--panel);max-height:74vh}
+table.screener{border-collapse:separate;border-spacing:0;width:100%;min-width:1100px;font-size:12.5px}
+.screener thead th{position:sticky;top:0;z-index:3;background:var(--panel2);color:var(--muted);
+  font-weight:700;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;text-align:left;
+  padding:11px 10px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+.screener thead th:hover{color:var(--text)}
+.screener .sort-button{font:inherit;letter-spacing:inherit;color:inherit;background:none;border:0;padding:0;min-width:44px;min-height:44px;width:100%;text-align:inherit;cursor:pointer}
+.screener thead th .caret{opacity:0;font-size:9px;margin-left:3px;color:var(--ink-info, var(--info))}
+.screener thead th[data-dir] .caret{opacity:1}
+.screener thead th.num{text-align:right}
+.screener thead th.sticky-l,.screener td.sticky-l{position:sticky;left:0;z-index:2;background:var(--panel)}
+.screener thead th.sticky-l{z-index:4;background:var(--panel2)}
+.screener tbody td{padding:9px 10px;border-bottom:1px solid var(--hair);vertical-align:middle;
+  white-space:nowrap;color:var(--text)}
+.screener tbody tr:hover td{background:color-mix(in srgb,var(--info) 5%,transparent)}
+.screener tbody tr:hover td.sticky-l{background:color-mix(in srgb,var(--info) 7%,var(--panel))}
+.screener td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tk{font-weight:700;color:var(--text);font-family:var(--font-display);letter-spacing:-.01em}
+.tk[data-tip-en]{cursor:help;border-bottom:1px dotted color-mix(in srgb,var(--text) 30%,transparent)}
+.nm{color:var(--muted);max-width:190px;overflow:hidden;text-overflow:ellipsis;display:inline-block;
+  vertical-align:bottom}
+.ind{color:var(--muted);font-size:12px;max-width:150px;overflow:hidden;text-overflow:ellipsis;
+  display:inline-block;vertical-align:bottom}
+.exp-btn{border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;
+  padding:2px 4px;line-height:1;transition:transform .18s,color .16s}
+.exp-btn:hover{color:var(--text)}
+tr.open .exp-btn{transform:rotate(90deg);color:var(--ink-info, var(--info))}
+.exp-btn:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 70%,transparent);outline-offset:1px;border-radius:4px}
+
+/* score chips — shared ramp. --c set inline per band. */
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:2px 8px;
+  border-radius:7px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;
+  color:color-mix(in srgb,var(--c) 88%,var(--text));
+  background:color-mix(in srgb,var(--c) 15%,transparent);
+  border:1px solid color-mix(in srgb,var(--c) 34%,transparent);cursor:help}
+.chip.c-up{--c:var(--up)} .chip.c-dn{--c:var(--down)} .chip.c-amb{--c:var(--s3)}
+.chip.c-steel{--c:var(--s1)} .chip.c-info{--c:var(--info)} .chip.c-mut{--c:var(--muted)}
+.chip.plain{background:none;border:none;color:var(--muted);font-weight:600;min-width:0;padding:0}
+.delta{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.delta.up{color:var(--ink-up, var(--up))} .delta.dn{color:var(--ink-down, var(--down))} .delta.flat{color:var(--muted)}
+
+/* stage chip (the star of the row) */
+.stagechip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px 3px 8px;border-radius:8px;
+  font-size:11.5px;font-weight:700;border:1px solid color-mix(in srgb,var(--sc) 40%,transparent);
+  background:color-mix(in srgb,var(--sc) 14%,transparent);
+  color:color-mix(in srgb,var(--sc) 90%,var(--text));cursor:help;white-space:nowrap}
+.stagechip .glyph{width:16px;height:12px;flex:0 0 auto}
+.stagechip.st1{--sc:var(--s1)} .stagechip.st2{--sc:var(--s2)} .stagechip.st3{--sc:var(--s3)} .stagechip.st4{--sc:var(--s4)}
+.freshdot{width:6px;height:6px;border-radius:var(--r-pill, 999px);background:var(--ok);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 22%,transparent);display:inline-block;margin-left:1px}
+
+/* tag pills in table */
+.tagcell{display:inline-flex;gap:4px;flex-wrap:nowrap}
+.tagpill{font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:999px;
+  border:1px solid var(--line);color:var(--muted);background:var(--panel2);white-space:nowrap}
+.tagpill.pos{color:var(--ink-up, var(--up));border-color:color-mix(in srgb,var(--up) 35%,var(--line))}
+.tagpill.neg{color:var(--ink-down, var(--down));border-color:color-mix(in srgb,var(--down) 35%,var(--line))}
+.tagmore{font-size:10.5px;color:var(--muted)}
+/* seed-provenance chip on EU/Asia rows sourced from the EquityDesk backfill
+   (no live non-US price feed yet). Muted amber, cursor:help → hover receipt. */
+.seedtag{display:inline-block;margin-left:5px;font-size:9.5px;font-weight:700;letter-spacing:.04em;
+  padding:1px 6px;border-radius:5px;vertical-align:middle;cursor:help;
+  border:1px solid color-mix(in srgb,var(--s3) 34%,var(--line));
+  color:color-mix(in srgb,var(--s3) 78%,var(--text));
+  background:color-mix(in srgb,var(--s3) 10%,transparent)}
+html[data-theme="light"] .seedtag{color:color-mix(in srgb,var(--s3) 55%,var(--text))}
+/* Wave 8 §3 — a stale row stays browseable but must SAY it is stale. Same chip
+   idiom as .seedtag, warmer hue so "old reading" reads differently from
+   "seed universe". The row also carries no rating (rank is withheld upstream). */
+.staletag{display:inline-block;margin-left:5px;font-size:9.5px;font-weight:700;letter-spacing:.04em;
+  padding:1px 6px;border-radius:5px;vertical-align:middle;cursor:help;
+  border:1px solid color-mix(in srgb,var(--s4) 34%,var(--line));
+  color:color-mix(in srgb,var(--s4) 78%,var(--text));
+  background:color-mix(in srgb,var(--s4) 10%,transparent)}
+html[data-theme="light"] .staletag{color:color-mix(in srgb,var(--s4) 55%,var(--text))}
+.addbtn{border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:7px;
+  width:24px;height:24px;font-size:15px;line-height:1;cursor:pointer;padding:0}
+.addbtn:hover{color:var(--ink-up, var(--up));border-color:color-mix(in srgb,var(--up) 45%,var(--line))}
+.addbtn.on{color:var(--ink-up, var(--up));border-color:var(--up);background:color-mix(in srgb,var(--up) 12%,transparent)}
+
+/* row-expand panel */
+tr.detail-row td{padding:0;background:var(--panel2);border-bottom:1px solid var(--line)}
+.detail{display:grid;grid-template-columns:minmax(300px,1.4fr) 1fr;gap:20px;padding:18px 20px}
+@media(max-width:820px){.detail{grid-template-columns:1fr}}
+.detail h4{margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted)}
+.stagechart{width:100%;height:150px;display:block;border-radius:10px;
+  background:color-mix(in srgb,var(--bg) 60%,var(--panel));border:1px solid var(--line)}
+.chart-note{font-size:11px;color:var(--muted-strong);margin:6px 0 0;line-height:1.5}
+.detail .facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.fact{font-size:11.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:5px 9px}
+.fact b{color:var(--text);font-weight:700}
+.ec-block{font-size:12.5px;line-height:1.55}
+.ec-hi{margin:6px 0;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:var(--panel)}
+.ec-hi.pos{border-left:3px solid var(--up)}
+.ec-hi.neg{border-left:3px solid var(--down)}
+.ec-hi .lab{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+
+/* ── data tooltip (Tier-2 home) ── */
+[data-tip-en]{position:relative}
+[data-tip-en]::after{display:none;content:attr(data-tip-en);position:absolute;bottom:calc(100% + 8px);left:var(--tip-left,50%);
+  transform:translateX(-50%) translateY(4px);width:min(270px,calc(100vw - 32px));white-space:normal;
+  background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:10px;
+  padding:9px 12px;font-size:11.5px;font-weight:500;line-height:1.5;text-transform:none;letter-spacing:0;
+  box-shadow:0 12px 34px -14px rgba(0,0,0,.6);opacity:0;pointer-events:none;z-index:60;
+  transition:opacity .14s,transform .14s}
+html[data-lang="zh"] [data-tip-en]::after{content:attr(data-tip-zh)}
+[data-tip-en]:hover::after,
+[data-tip-en]:focus-visible::after,
+[data-tip-en].tip-open::after{display:block;opacity:1;transform:translateX(-50%) translateY(0)}
+@media(hover:none){
+  [data-tip-en]::after{display:none}
+  [data-tip-en]:focus-visible::after,
+  [data-tip-en].tip-open::after{display:block}
+}
+[data-tip-en].tip-dismissed::after{display:none}
+.tip-q{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;
+  margin-left:4px;padding:0;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:var(--panel);
+  color:var(--muted);font-size:10px;font-weight:700;line-height:1;cursor:help;vertical-align:middle}
+.tip-q:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 70%,transparent);outline-offset:1px}
+#region-seg button:disabled{opacity:.4;cursor:not-allowed}
+#region-seg button:disabled.tip-open{opacity:.75}
+
+/* ── warm-up / empty states ── */
+.empty{border:1px dashed var(--line);border-radius:16px;background:var(--panel2);
+  padding:44px 30px;text-align:center;color:var(--muted)}
+.empty .ico{font-size:30px;margin-bottom:10px;opacity:.8}
+.empty h3{margin:0 0 6px;font-size:16px;font-weight:700;color:var(--text)}
+.empty p{margin:0 auto;max-width:44ch;font-size:13px;line-height:1.6;color:var(--muted-strong)}
+.empty.soon .ico{filter:grayscale(.2)}
+.warmnote{display:inline-block;margin-top:14px;font-size:11.5px;color:var(--muted);
+  border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.spinner{width:26px;height:26px;border-radius:50%;border:2.5px solid var(--line);
+  border-top-color:var(--info);animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* C14 — wordless skeleton at table geometry (loading ≠ empty). */
+.sk-load{padding:18px 16px;display:flex;flex-direction:column;gap:10px}
+.sk-row{height:14px;border-radius:var(--r-ctl,8px);background:linear-gradient(90deg,
+  color-mix(in srgb,var(--text) 6%,var(--panel2)) 0%,
+  color-mix(in srgb,var(--text) 12%,var(--panel2)) 45%,
+  color-mix(in srgb,var(--text) 6%,var(--panel2)) 100%);
+  background-size:220% 100%;animation:sk-shimmer 1.2s ease-in-out infinite}
+.sk-row:nth-child(1){width:92%}.sk-row:nth-child(2){width:78%}.sk-row:nth-child(3){width:86%}
+.sk-row:nth-child(4){width:64%}.sk-row:nth-child(5){width:72%}
+@keyframes sk-shimmer{to{background-position:-220% 0}}
+@media(prefers-reduced-motion:reduce){.sk-row{animation:none}}
+
+/* section provenance footer — real honesty sentences, so body-tier contrast */
+.provfoot{margin-top:14px;font-size:11.5px;color:var(--muted-strong);line-height:1.55}
+.provfoot .rec{cursor:help;border-bottom:1px dotted var(--muted-strong)}
+
+/* =====================================================================
+   INDUSTRIES + STAGE BOARD — surfaces built on the same system as the
+   screener. No second visual language: reuse .seg, .chip, .stagechip,
+   table.screener, .provfoot. New here = the rank-ramp heatmap grid and the
+   stage-2/stage-4 diverging bar. Every colour is a theme token or a stage
+   accent (--s1..--s4); never a literal text colour.
+   ===================================================================== */
+
+/* inner sub-tab bar (lighter than the main .tabbar) */
+.subtabs{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin:2px 0 4px}
+.subseg{display:inline-flex;gap:2px;padding:3px;border-radius:11px;border:1px solid var(--line);
+  background:var(--panel2);overflow-x:auto;scrollbar-width:none}
+.subseg::-webkit-scrollbar{display:none}
+.subseg button{flex:0 0 auto;border:none;background:transparent;color:var(--muted);font-size:12.5px;
+  font-weight:600;padding:6px 13px;border-radius:8px;cursor:pointer;white-space:nowrap;
+  transition:color .16s,background .16s}
+.subseg button:hover{color:var(--text)}
+.subseg button[aria-pressed="true"]{background:var(--panel);color:var(--text);
+  box-shadow:0 1px 0 color-mix(in srgb,var(--text) 6%,transparent)}
+.subseg button:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 70%,transparent);outline-offset:1px}
+.subcap{font-size:12.5px;color:var(--muted-strong);line-height:1.5;margin:0 0 12px;max-width:64ch}
+.subcap b{color:var(--text);font-weight:700}
+
+/* state chip for flows (BASING/LEADING/BREAKING/…) — plain words, colour-coded */
+.statechip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:7px;
+  font-size:11px;font-weight:700;white-space:nowrap;cursor:help;
+  border:1px solid color-mix(in srgb,var(--sc) 40%,transparent);
+  background:color-mix(in srgb,var(--sc) 13%,transparent);
+  color:color-mix(in srgb,var(--sc) 90%,var(--text))}
+.statechip .dot{width:6px;height:6px;border-radius:50%;background:var(--sc)}
+.statechip.st-basing{--sc:var(--info)} .statechip.st-leading{--sc:var(--s2)}
+.statechip.st-breaking{--sc:var(--s4)} .statechip.st-distributing{--sc:var(--s3)}
+.statechip.st-neutral{--sc:var(--muted)}
+.turnpill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.03em;padding:1px 7px;
+  border-radius:999px;border:1px solid color-mix(in srgb,var(--s2) 40%,var(--line));
+  color:var(--s2);background:color-mix(in srgb,var(--s2) 10%,transparent);white-space:nowrap}
+.turnpill.roll{color:var(--s4);border-color:color-mix(in srgb,var(--s4) 40%,var(--line));
+  background:color-mix(in srgb,var(--s4) 10%,transparent)}
+.dashcell{color:var(--muted);opacity:.5}
+
+/* a numeric cell whose background is a green→red ramp (--rc set inline) */
+.rampcell{position:relative;text-align:right;font-variant-numeric:tabular-nums;
+  color:color-mix(in srgb,var(--rc,var(--muted)) 80%,var(--text))}
+.rampcell::before{content:"";position:absolute;inset:3px 4px;border-radius:6px;z-index:0;
+  background:color-mix(in srgb,var(--rc,transparent) 20%,transparent)}
+.rampcell>span{position:relative;z-index:1}
+
+/* the stage-2 vs stage-4 diverging bar (flows signature mini-viz) */
+.divbar{display:inline-grid;grid-template-columns:1fr 1fr;align-items:center;width:96px;height:16px;
+  border-radius:5px;overflow:hidden;background:color-mix(in srgb,var(--text) 5%,transparent);
+  border:1px solid var(--hair);cursor:help;vertical-align:middle}
+.divbar i{display:block;height:100%}
+.divbar .s4{justify-self:end;background:color-mix(in srgb,var(--s4) 55%,transparent);
+  border-right:1px solid color-mix(in srgb,var(--text) 22%,transparent)}
+.divbar .s2{justify-self:start;background:color-mix(in srgb,var(--s2) 55%,transparent)}
+
+/* heatmap grid — dense integer-rank cells on a smooth green→red ramp */
+.heatscroll{position:relative;border:1px solid var(--line);border-radius:14px;overflow:auto;
+  background:var(--panel);max-height:78vh}
+table.heat{border-collapse:separate;border-spacing:0;font-size:11px;font-variant-numeric:tabular-nums}
+.heat thead th{position:sticky;top:0;z-index:3;background:var(--panel2);color:var(--muted);
+  font-weight:700;font-size:10px;letter-spacing:.02em;padding:8px 6px;text-align:center;
+  border-bottom:1px solid var(--line);white-space:nowrap;min-width:38px}
+.heat thead th.hind,.heat tbody th.hind{position:sticky;left:0;z-index:2;text-align:left;
+  background:var(--panel);min-width:210px;max-width:240px;white-space:normal;line-height:1.3;
+  padding:8px 12px;border-right:1px solid var(--line);font-weight:600;color:var(--text);font-size:11.5px}
+.heat thead th.hind{z-index:5;background:var(--panel2);color:var(--muted);vertical-align:bottom}
+.heat tbody th.hind{font-weight:600}
+.heat tbody td{padding:0;text-align:center;height:26px;position:relative}
+.heat tbody td .hc{display:flex;align-items:center;justify-content:center;height:100%;margin:1px;
+  border-radius:5px;font-weight:700;color:var(--text);cursor:default}
+.heat tbody td.na .hc{color:var(--muted);opacity:.4;background:transparent}
+.heat tbody tr:hover th.hind{background:color-mix(in srgb,var(--info) 8%,var(--panel))}
+.heatlegend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 0;font-size:11.5px;
+  color:var(--muted)}
+.heatlegend .grad{width:150px;height:10px;border-radius:5px;
+  background:linear-gradient(90deg,var(--s2),var(--s3),var(--s4))}
+.heatlegend .grad.rev{background:linear-gradient(90deg,var(--s4),var(--s3),var(--s2))}
+
+/* stage board — a card-lite list that reuses screener chips */
+.boardhead{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  margin:2px 0 12px}
+.boardnote{font-size:11.5px;color:var(--muted-strong);line-height:1.5;border:1px solid var(--line);
+  border-radius:10px;background:var(--panel2);padding:9px 13px;max-width:70ch}
+.boardnote b{color:var(--text);font-weight:700}
+.gatechip{display:inline-flex;align-items:center;padding:1px 7px;border-radius:6px;font-size:10.5px;
+  font-weight:700;border:1px solid color-mix(in srgb,var(--info) 38%,var(--line));color:var(--ink-info, var(--info));
+  background:color-mix(in srgb,var(--info) 10%,transparent);cursor:help}
+.gatechip.t1{border-color:color-mix(in srgb,var(--s2) 42%,var(--line));color:var(--s2);
+  background:color-mix(in srgb,var(--s2) 11%,transparent)}
+.evchip{font-size:10.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.rschip{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.rschip.up{color:var(--ink-up, var(--up))} .rschip.dn{color:var(--ink-down, var(--down))} .rschip.flat{color:var(--muted)}
+
+/* =====================================================================
+   EARNINGS CALLS · ALT-DATA · RESEARCH — same visual system as above.
+   No second language: reuse .subtabs/.subseg, .chip, .stagechip, .tagpill,
+   table.screener, .empty, .provfoot, [data-tip-*], the stage accents.
+   New here: the two-part earnings tone/result score block, the transcript
+   reader drawer (the "I can't view the transcripts" fix), the alt-data
+   source columns, and the research thesis cards. Colour is always a theme
+   token or a stage accent — never a literal text colour.
+   ===================================================================== */
+
+/* two-part earnings score: tone (0–100) over result (0–10), stacked + colour */
+.ecscore{display:inline-flex;flex-direction:column;gap:2px;min-width:56px;vertical-align:middle;cursor:help}
+.ecscore .bar{position:relative;height:5px;border-radius:3px;background:color-mix(in srgb,var(--text) 8%,transparent);overflow:hidden}
+.ecscore .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--ec,var(--muted))}
+.ecscore .duo{display:flex;align-items:baseline;gap:5px;font-variant-numeric:tabular-nums;line-height:1}
+.ecscore .tone{font-size:13px;font-weight:700;color:color-mix(in srgb,var(--ec,var(--muted)) 88%,var(--text))}
+.ecscore .perf{font-size:10.5px;font-weight:600;color:var(--muted)}
+.ecscore.up{--ec:var(--up)} .ecscore.mid{--ec:var(--info)} .ecscore.dn{--ec:var(--down)} .ecscore.amb{--ec:var(--s3)}
+
+/* tone word chip */
+.toneword{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;
+  border:1px solid color-mix(in srgb,var(--ec,var(--muted)) 40%,transparent);
+  background:color-mix(in srgb,var(--ec,var(--muted)) 12%,transparent);
+  color:color-mix(in srgb,var(--ec,var(--muted)) 90%,var(--text))}
+.toneword.up{--ec:var(--up)} .toneword.mid{--ec:var(--info)} .toneword.dn{--ec:var(--down)} .toneword.amb{--ec:var(--s3)}
+
+/* highlight-count mini pills in the calls table (green / red) */
+.hicount{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+  font-variant-numeric:tabular-nums}
+.hicount.pos{color:var(--ink-up, var(--up))} .hicount.neg{color:var(--ink-down, var(--down))}
+.hicount .g{width:7px;height:7px;border-radius:2px;background:currentColor;opacity:.85}
+.callrow{cursor:pointer}
+.callrow:hover .tk{color:var(--ink-info, var(--info))}
+.readcue{font-size:10.5px;color:var(--muted);opacity:0;transition:opacity .14s}
+.callrow:hover .readcue{opacity:1}
+
+/* ── the transcript reader drawer (signature of this lane) ── */
+.reader-scrim{position:fixed;inset:0;z-index:80;background:color-mix(in srgb,var(--bg) 72%,transparent);
+  backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s}
+.reader-scrim.open{opacity:1;pointer-events:auto}
+.reader{position:fixed;top:0;right:0;bottom:0;z-index:81;width:min(560px,94vw);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 94%,transparent),var(--panel2));
+  border-left:1px solid var(--line);box-shadow:-30px 0 80px -40px rgba(0,0,0,.7);
+  transform:translateX(102%);transition:transform .26s cubic-bezier(.2,.7,.2,1);
+  display:flex;flex-direction:column;overflow:hidden}
+.reader.open{transform:none}
+.reader[hidden]{display:none}
+.reader-close,.reader-terminal{min-width:44px;min-height:44px}
+@media(prefers-reduced-motion:reduce){.reader,.reader-scrim{transition:none}}
+.reader-head{position:relative;padding:20px 22px 16px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.reader-head .co{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.reader-head h3{margin:0;font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--text);font-family:var(--font-display)}
+.reader-head .meta{margin:6px 0 0;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:5px 12px}
+.reader-head .meta b{color:var(--text);font-weight:700}
+.reader-actions{display:flex;gap:8px;margin-top:12px;padding-right:40px}
+.reader-terminal{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:34px;padding:0 13px;border:1px solid color-mix(in srgb,var(--info) 48%,var(--line));border-radius:9px;background:color-mix(in srgb,var(--info) 12%,var(--panel2));color:var(--text);font-size:11.5px;font-weight:750;text-decoration:none;transition:border-color .16s ease,background .16s ease,transform .16s ease}
+.reader-terminal:hover{border-color:color-mix(in srgb,var(--info) 75%,var(--line));background:color-mix(in srgb,var(--info) 18%,var(--panel2));transform:translateY(-1px)}
+.reader-terminal:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 70%,transparent);outline-offset:2px}
+.reader-terminal .arr{color:var(--ink-info, var(--info));font-size:14px}
+.reader-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:9px;
+  border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:17px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center}
+.reader-close:hover{color:var(--text);border-color:color-mix(in srgb,var(--info) 45%,var(--line))}
+.reader-close:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 70%,transparent);outline-offset:2px}
+/* tone gauge in the reader header */
+.tonegauge{display:flex;align-items:center;gap:12px;margin-top:14px}
+.tonegauge .track{position:relative;flex:1;height:8px;border-radius:5px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--down) 55%,transparent),
+    color-mix(in srgb,var(--s3) 45%,transparent),color-mix(in srgb,var(--up) 55%,transparent))}
+.tonegauge .track .pin{position:absolute;top:50%;width:3px;height:16px;border-radius:2px;background:var(--text);
+  transform:translate(-50%,-50%);box-shadow:0 0 0 2px var(--panel)}
+.tonegauge .val{font-family:var(--font-display);font-size:20px;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums;color:color-mix(in srgb,var(--ec,var(--muted)) 88%,var(--text))}
+.tonegauge .val small{font-size:11px;font-weight:600;color:var(--muted)}
+.reader-body{flex:1;overflow-y:auto;padding:18px 22px 40px;scrollbar-width:thin}
+.reader-sec{margin:0 0 20px}
+.reader-sec h4{margin:0 0 9px;font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);display:flex;align-items:center;gap:7px}
+.reader-sec h4::after{content:"";flex:1;height:1px;background:var(--hair)}
+.hlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.hlist li{position:relative;padding:9px 12px 9px 13px;border-radius:10px;font-size:13px;line-height:1.55;
+  color:var(--text);border:1px solid var(--line);background:var(--panel)}
+.hlist.pos li{border-left:3px solid var(--up)}
+.hlist.neg li{border-left:3px solid var(--down)}
+.hlist li .n{font-family:var(--font-display);font-weight:700;font-size:11px;margin-right:6px;
+  color:var(--muted)}
+.hlist.pos li .n{color:var(--ink-up, var(--up))} .hlist.neg li .n{color:var(--ink-down, var(--down))}
+.quoteblock{margin:0;padding:14px 16px 14px 18px;border-radius:12px;position:relative;
+  border:1px solid var(--line);background:color-mix(in srgb,var(--info) 6%,var(--panel));
+  border-left:3px solid var(--info);font-size:14px;line-height:1.6;color:var(--text);font-style:italic}
+.quoteblock::before{content:"\201C";position:absolute;top:2px;left:8px;font-size:34px;line-height:1;
+  color:color-mix(in srgb,var(--info) 40%,transparent);font-family:Georgia,serif}
+.quoteblock .qtxt{display:block;padding-left:14px}
+.readertags{display:flex;flex-wrap:wrap;gap:6px}
+.reader-empty{padding:14px 16px;border:1px dashed var(--line);border-radius:11px;background:var(--panel2);
+  font-size:12.5px;color:var(--muted-strong);line-height:1.55}
+
+/* ── alt-data: four source columns, each a compact trending list ── */
+.altwrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:4px}
+@media(max-width:1080px){.altwrap{grid-template-columns:1fr}}
+.altcol{border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden;
+  display:flex;flex-direction:column}
+.altcol-head{display:flex;align-items:center;gap:9px;padding:13px 16px;border-bottom:1px solid var(--line);
+  background:var(--panel2)}
+.altcol-head .ico{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--text)}
+.altcol-head .nm{font-size:14px;font-weight:700;color:var(--text)}
+.altcol-head .cnt{font-size:11.5px;color:var(--muted)}
+.altcol-head .seedflag{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;
+  border-radius:999px;border:1px solid color-mix(in srgb,var(--s3) 40%,var(--line));color:var(--s3);
+  background:color-mix(in srgb,var(--s3) 10%,transparent);cursor:help}
+.altcol-head .liveflag{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;
+  border-radius:999px;border:1px solid color-mix(in srgb,var(--up) 34%,var(--line));color:var(--ink-up, var(--up));
+  background:color-mix(in srgb,var(--up) 9%,transparent);cursor:help}
+.altcol-head .outageflag{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;
+  border-radius:var(--r-pill,999px);border:1px solid var(--line);color:var(--muted);
+  background:color-mix(in srgb,var(--muted) 10%,transparent);cursor:help}
+.empty-why{margin-top:6px;font-size:12px;line-height:1.55;color:var(--muted);font-weight:500}
+.altlist{list-style:none;margin:0;padding:6px;display:flex;flex-direction:column;gap:2px;
+  max-height:520px;overflow-y:auto;scrollbar-width:thin}
+.altitem{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:9px 10px;border-radius:11px;
+  cursor:help;transition:background .14s}
+.altitem:hover{background:color-mix(in srgb,var(--info) 6%,transparent)}
+.altitem .top{grid-column:1;display:flex;align-items:center;gap:7px;min-width:0}
+.altitem .topic{font-size:12.5px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+.altitem .typ{font-size:10px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:5px;
+  padding:0 5px;white-space:nowrap;flex:0 0 auto}
+.altitem .yoy{grid-column:2;grid-row:1;align-self:center;font-family:var(--font-display);font-size:12.5px;
+  font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink-up, var(--up));white-space:nowrap}
+.altitem .yoy.dn{color:var(--ink-down, var(--down))}
+.altitem .match{grid-column:1;display:flex;align-items:center;gap:6px;min-width:0;margin-top:1px}
+.altitem .match .arrow{color:var(--muted);font-size:11px}
+.altitem .mtk{font-size:11px;font-weight:700;font-family:var(--font-display);color:var(--ink-info, var(--info));flex:0 0 auto}
+.altitem .mco{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.altitem .add2{grid-column:2;grid-row:2;justify-self:end;align-self:center}
+
+/* ── research: thesis cards with model badges + expand ── */
+.reswrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px;margin-top:4px}
+.rescard{min-width:0;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);padding:15px 16px 14px;
+  display:flex;flex-direction:column;gap:8px;transition:border-color .16s}
+.rescard:hover{border-color:color-mix(in srgb,var(--info) 40%,var(--line))}
+.rescard-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.rescard .tk{font-size:15px}
+.rescard .cnm{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  flex:1;min-width:0}
+.modelbadges{display:inline-flex;gap:4px;flex:0 0 auto}
+.mbadge{font-size:9.5px;font-weight:700;letter-spacing:.02em;padding:1px 6px;border-radius:6px;
+  border:1px solid var(--line);background:var(--panel2);color:var(--muted);cursor:help}
+.mbadge.g{color:var(--ink-info, var(--info));border-color:color-mix(in srgb,var(--info) 38%,var(--line))}
+.mbadge.o{color:var(--s2);border-color:color-mix(in srgb,var(--s2) 38%,var(--line))}
+.mbadge.c{color:var(--s3);border-color:color-mix(in srgb,var(--s3) 38%,var(--line))}
+.rescard .thesis{font-size:12.5px;line-height:1.6;color:var(--text);margin:0;
+  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.rescard.open .thesis{-webkit-line-clamp:unset;overflow:visible;overflow-wrap:anywhere}
+.rescard .more,.rescard .rlink{min-height:44px;min-width:44px;display:inline-flex;align-items:center}
+.rescard-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:auto}
+.rescard .more{border:none;background:none;color:var(--ink-info, var(--info));font-size:11.5px;font-weight:600;cursor:pointer;
+  padding:0}
+.rescard .more:hover{text-decoration:underline}
+.rescard .rlink{font-size:11.5px;color:var(--ink-link, var(--link));font-weight:600}
+.rescount{font-size:12px;color:var(--muted-strong);margin:2px 0 12px}
+.rescount b{color:var(--text);font-weight:700}
+
+/* =====================================================================
+   LIGHT-MODE CONTRAST GATE (spec §1: chips ≥ 4.5:1, light mode MUST pass).
+   In light mode the --up/--down/--info/--s* tokens are pale-on-white, so any
+   chip that renders a colour token AS TEXT (color-mix(--c 88–90%, --text))
+   falls to ~3.2–4.5:1. We rebalance every such family to a 55% colour / 45%
+   --text share on white — measured worst case is chip "up" 5.89:1, stagechip
+   S2 5.97:1, statechip Leading 6.04:1, tagpill pos 6.18:1. The chip
+   BACKGROUND fill (color-mix(--c 14–15%, transparent)) is unchanged, so the
+   accent colour still reads; only the text darkens. Dark mode is untouched
+   (already ≥ 4.5:1). Verified with the contrast harness in the PR notes.
+   ===================================================================== */
+/* score chips + stage chip + flow state chip + tone word + earnings-tone
+   numeral + setup gate chip — all share the "colour-as-text" recipe */
+html[data-theme="light"] .chip{color:color-mix(in srgb,var(--c) 55%,var(--text))}
+html[data-theme="light"] .stagechip{color:color-mix(in srgb,var(--sc) 55%,var(--text))}
+html[data-theme="light"] .statechip{color:color-mix(in srgb,var(--sc) 55%,var(--text))}
+html[data-theme="light"] .toneword{color:color-mix(in srgb,var(--ec) 55%,var(--text))}
+html[data-theme="light"] .ecscore .tone{color:color-mix(in srgb,var(--ec) 55%,var(--text))}
+html[data-theme="light"] .gatechip{color:color-mix(in srgb,var(--info) 55%,var(--text))}
+html[data-theme="light"] .gatechip.t1{color:color-mix(in srgb,var(--s2) 55%,var(--text))}
+html[data-theme="light"] .turnpill{color:color-mix(in srgb,var(--s2) 55%,var(--text))}
+html[data-theme="light"] .turnpill.roll{color:color-mix(in srgb,var(--s4) 55%,var(--text))}
+/* semantic green/red TEXT that sits on the panel with no chip bg
+   (deltas, relative-strength cells, highlight counts) */
+html[data-theme="light"] .delta.up,html[data-theme="light"] .rschip.up{color:color-mix(in srgb,var(--up) 55%,var(--text))}
+html[data-theme="light"] .delta.dn,html[data-theme="light"] .rschip.dn{color:color-mix(in srgb,var(--down) 60%,var(--text))}
+html[data-theme="light"] .hicount.pos{color:color-mix(in srgb,var(--up) 55%,var(--text))}
+html[data-theme="light"] .hicount.neg{color:color-mix(in srgb,var(--down) 60%,var(--text))}
+/* tag pills + model badges: colour token on the pale --panel2 fill */
+html[data-theme="light"] .tagpill.pos{color:color-mix(in srgb,var(--up) 55%,var(--text))}
+html[data-theme="light"] .tagpill.neg{color:color-mix(in srgb,var(--down) 55%,var(--text))}
+html[data-theme="light"] .mbadge.g{color:color-mix(in srgb,var(--info) 55%,var(--text))}
+html[data-theme="light"] .mbadge.o{color:color-mix(in srgb,var(--s2) 55%,var(--text))}
+html[data-theme="light"] .mbadge.c{color:color-mix(in srgb,var(--s3) 55%,var(--text))}
+/* hero stance pill — the Tier-1 signature; the colour token as text is pale on
+   the light tinted fill, so darken to the 55% share (act 5.46:1 / watch 5.72:1) */
+html[data-theme="light"] .stancepill.act{color:color-mix(in srgb,var(--up) 55%,var(--text))}
+html[data-theme="light"] .stancepill.watch{color:color-mix(in srgb,var(--s3) 55%,var(--text))}
+/* hero station labels are coloured to their stage token (11.5px, so must clear
+   4.5:1) — darken on white to the 65% share (worst = Advancing/green 5.98:1) */
+html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)) 65%,var(--text))}
+
+/* W7-r3 LIGHT TREATMENT — research workspace (cool canvas, white material,
+   hairline, shadow). Dark remains the command-center. Marker: w7-r3-light.
+   Token substitution alone is not this block: surfaces that glowed on dark
+   become paper + hairline + a short shadow here. */
+html[data-theme="light"] body{background:var(--panel2)}
+html[data-theme="light"] .aura{display:none}
+html[data-theme="light"] .hero{
+  background:var(--panel);
+  border-color:color-mix(in srgb,var(--text) 12%,transparent);
+  box-shadow:0 1px 0 color-mix(in srgb,var(--text) 5%,transparent),0 12px 28px -22px color-mix(in srgb,var(--text) 28%,transparent);
+}
+html[data-theme="light"] .stn{background:var(--panel);box-shadow:0 1px 0 color-mix(in srgb,var(--text) 6%,transparent)}
+html[data-theme="light"] .tabbar,
+html[data-theme="light"] .filterbar,
+html[data-theme="light"] .tbl-scroll,
+html[data-theme="light"] .empty{
+  background:var(--panel);
+  border-color:color-mix(in srgb,var(--text) 12%,transparent);
+  box-shadow:0 8px 22px -20px color-mix(in srgb,var(--text) 30%,transparent);
+}
+html[data-theme="light"] .screener thead th{background:var(--bg)}
+html[data-theme="light"] .screener tbody td.sticky-l{background:var(--panel)}
+html[data-theme="light"] .tip-q{background:var(--panel)}
+
+/* page-load stagger + reduced motion */
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rise{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.rise.d1{animation-delay:.05s}.rise.d2{animation-delay:.12s}.rise.d3{animation-delay:.2s}
+@media(prefers-reduced-motion:reduce){
+  .rise{animation:none}
+  .spinner{animation:none}
+}
+/* D06: quiet materials, usable controls, selected-view status geometry. */
+.aura{display:none}
+.hero{background:var(--panel);box-shadow:none}
+.arc-state,.stn .num{text-shadow:none}
+.read-state{min-height:220px;padding:28px;text-align:left}
+.read-state h3{margin:0 0 8px}
+.read-skeleton{display:flex;flex-direction:column;gap:12px;margin-top:22px;max-width:640px}
+.read-skeleton i{display:block;height:14px;border-radius:var(--r-ctl,8px);background:var(--panel2)}
+.read-skeleton i:nth-child(2){width:82%}.read-skeleton i:nth-child(3){width:94%}
+.arc-availability{font-size:13px;color:var(--muted);text-align:center;margin:0}
+.surface button,.tab,.seg button,.subseg button,.searchbox input{min-height:44px}
+button:disabled{cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--info);outline-offset:3px}
+@media(max-width:600px){.stations{grid-template-columns:repeat(2,minmax(0,1fr))}.tabbar{flex-wrap:wrap;overflow:visible}.read-state{padding:20px}.surface{min-width:0}}
+</style>
 </head>
 <body>
 
@@ -85,9 +758,9 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
-    
+
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
       <svg class="brand-glyph" width="29" height="29" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
@@ -112,24 +785,24 @@
       </svg>
       <span class="brand-word">MASTERMINDX</span>
     </a>
-    
+
     <div class="nav-dd">
       <a class="nav-link" href="macro.html"><span class="menu-icon menu-icon-flag menu-icon-us" aria-hidden="true"></span><span class="l-en">United States</span><span class="l-zh">美国</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="macro.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">Regime · growth · inflation · nowcast</span><span class="l-zh">市况 · 增长 · 通胀 · 实时测算</span></span></a>
         <a href="us_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · sectors · flows</span><span class="l-zh">Prophet · 板块 · 资金</span></span></a>
-        
+
         <a href="intraday_flow.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Intraday Flow Tracker</span><span class="l-zh">盘中资金流追踪</span><span class="d"><span class="l-en">Live session board — volume, tape and stance lanes · ≈15-min delayed</span><span class="l-zh">盘中实时看板 — 量能、盘面与操作分级 · 约延迟15分钟</span></span></a>
         <a href="stage_analysis.html"><span class="submenu-icon submenu-icon-stage" aria-hidden="true"></span><span class="l-en">Stage Analysis</span><span class="l-zh">阶段分析</span><span class="d"><span class="l-en">Stage 1-4 cycle · fresh breakouts · earnings tone</span><span class="l-zh">阶段1-4周期 · 新突破 · 财报语气</span></span></a>
-        
+
         <a href="winner_health.html"><span class="submenu-icon submenu-icon-leader" aria-hidden="true"></span><span class="l-en">Winner Health</span><span class="l-zh">持仓健康度</span><span class="d"><span class="l-en">Big gains near their highs · how the move is aging · what similar past runs did</span><span class="l-zh">涨幅可观且仍在高位 · 行情老化到什么程度 · 相似历史行情走过的路</span></span></a>
-        
+
         <a href="sector_central.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Sectors, themes & rotation in one read · lanes · cycle map · graded</span><span class="l-zh">板块·主题·轮动一页读 · 操作清单 · 周期图谱 · 自评分</span></span></a>
         <a href="sector_central.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now S&P 500 subsectors · T1-T4 tiers · two-way confirmed stocks · basket charts</span><span class="l-zh">S&P 500 现可入场子行业 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="strategies.html"><span class="submenu-icon submenu-icon-strategy" aria-hidden="true"></span><span class="l-en">Strategies</span><span class="l-zh">策略</span><span class="d"><span class="l-en">Tactical strategy scorecards</span><span class="l-zh">战术策略记分卡</span></span></a>
         <a href="news.html"><span class="submenu-icon submenu-icon-news" aria-hidden="true"></span><span class="l-en">News Feed</span><span class="l-zh">新闻流</span><span class="d"><span class="l-en">Macro headlines · catalysts · sentiment</span><span class="l-zh">宏观头条 · 日程 · 情绪</span></span></a>
         <a href="alerts.html"><span class="submenu-icon submenu-icon-alert" aria-hidden="true"></span><span class="l-en">Alert Center</span><span class="l-zh">警报中心</span><span class="d"><span class="l-en">Ranked & triaged alerts</span><span class="l-zh">分级分诊的警报</span></span></a>
-        
+
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="options.html"><span class="nav-sub-text"><span class="submenu-icon submenu-icon-options" aria-hidden="true"></span><span class="l-en">Options & Market Structure</span><span class="l-zh">期权与市场结构</span><span class="d"><span class="l-en">Workspace · dark pool · index regime</span><span class="l-zh">工作台 · 暗池 · 指数结构</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -146,7 +819,7 @@
       <div class="nav-dd-menu" role="menu">
         <a href="china.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">A-share regime · sectors · flows</span><span class="l-zh">A股周期 · 板块 · 资金</span></span></a>
         <a href="china_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · alpha · setups</span><span class="l-zh">Prophet · 超额收益 · 买点</span></span></a>
-        
+
         <a href="sector_central_china.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Gated board · cycle map · whole-market rotation · theme baskets — one page</span><span class="l-zh">门控研判 · 周期图谱 · 全市场轮动 · 主题篮子 — 一页尽览</span></span></a>
         <a href="sector_central_china.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now 同花顺 concepts · T1-T4 tiers · two-way confirmed A-shares · basket charts</span><span class="l-zh">同花顺现可入场概念 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="china_heatmap.html"><span class="submenu-icon submenu-icon-heatmap" aria-hidden="true"></span><span class="l-en">Market Heatmap</span><span class="l-zh">市场热力图</span><span class="d"><span class="l-en">Every A-share · sector treemap · market-cap</span><span class="l-zh">全部A股 · 板块树图 · 按市值</span></span></a>
@@ -193,7 +866,7 @@
       <a class="nav-link" href="intl.html"><span class="menu-icon menu-icon-intl" aria-hidden="true"></span><span class="l-en">International</span><span class="l-zh">国际</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="intl.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">JP · KR · TW · UK · EU compared</span><span class="l-zh">日 · 韩 · 台 · 英 · 欧 对比</span></span></a>
-        
+
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="japan.html"><span class="nav-sub-text"><span aria-hidden="true">🌐</span> <span class="l-en">Country Dashboards</span><span class="l-zh">国家看板</span><span class="d"><span class="l-en">Japan · Korea · Euro Area · UK · India</span><span class="l-zh">日本 · 韩国 · 欧元区 · 英国 · 印度</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -224,7 +897,7 @@
         <a href="bonds.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Bonds</span><span class="l-zh">债券</span><span class="d"><span class="l-en">Curve · credit · duration compass</span><span class="l-zh">曲线 · 信用 · 久期罗盘</span></span></a>
       </div>
     </div>
-    
+
     <div class="nav-dd nav-mega-dd">
       <a class="nav-link" href="intelligence_hub.html"><span class="menu-icon menu-icon-research" aria-hidden="true"></span><span class="l-en">Research</span><span class="l-zh">研究</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu nav-mega mega-menu" role="menu">
@@ -233,9 +906,9 @@
             <h2 class="section-label nav-mega-h"><span class="l-en">Core Research</span><span class="l-zh">核心研究</span></h2>
             <div class="item-grid nav-mega-item-grid">
               <a class="mega-item nm-feat" href="intelligence_hub.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 12 24 3l18 9v23l-18 10L6 35Z"/><path d="m24 9 12 7v15l-12 7-12-7V16Z"/><circle class="soft-fill" cx="24" cy="24" r="4"/><path class="accent" d="M24 20V9M28 24h8M24 28v10M20 24h-8M21 21l-6-5M27 21l6-5M21 27l-6 5M27 27l6 5"/><circle cx="24" cy="9" r="1.5"/><circle cx="36" cy="24" r="1.5"/><circle cx="24" cy="38" r="1.5"/><circle cx="12" cy="24" r="1.5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Intelligence Hub</span><span class="l-zh">情报中心</span></span><span class="item-desc d"><span class="l-en">Your complete market command center</span><span class="l-zh">你的完整市场指挥中心</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="watchlist.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M25 7a17 17 0 0 1 16 16"/><circle cx="21" cy="26" r="14"/><circle class="ghost" cx="21" cy="26" r="6"/><path class="accent" d="M21 12a14 14 0 0 1 12.1 7L21 26Z"/><path d="M21 12v14l12.1-7"/><circle class="soft-fill" cx="21" cy="26" r="3.2"/><path class="accent" d="M39 41v-9M44 41v-15"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Portfolio</span><span class="l-zh">Mastermind 组合</span></span><span class="item-desc d"><span class="l-en">Your holdings with tonight’s signals</span><span class="l-zh">你的持仓与今晚信号</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="https://bot.mastermind-x.com" target="_blank" rel="noopener"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M17 11V6M24 11V6M31 11V6M17 37v5M24 37v5M31 37v5M11 17H6M11 24H6M11 31H6M37 17h5M37 24h5M37 31h5"/><rect x="11" y="11" width="26" height="26" rx="5"/><path class="accent" d="m15 29 4-4 3.5 2.5 3.5-5.5"/><circle class="soft-fill" cx="26" cy="22" r="2.4"/><path class="ghost" d="m28 20.5 6-5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Bot</span><span class="l-zh">Mastermind 交易机器人</span><span class="nm-tier">PRO</span></span><span class="item-desc d"><span class="l-en">The AI’s own paper account — every trade explained</span><span class="l-zh">AI 自己的模拟账户，每笔交易都附理由</span></span></span></a>
               <a class="mega-item nm-feat" href="reports.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M13 7h22l6 6v28H13z"/><path d="M9 4h22l6 6v28H9z"/><path d="M31 4v7h6"/><path class="accent" d="M15 29h16M15 33h12M15 16h16"/><path d="m15 25 4-4 4 2 6-7 3 3"/><circle class="soft-fill" cx="29" cy="16" r="2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Reports</span><span class="l-zh">研究报告</span></span><span class="item-desc d"><span class="l-en">Deep dives and market calls</span><span class="l-zh">深度研究与市场判断</span></span></span></a>
               <a class="mega-item nm-feat" href="research_vault.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="m7 14 17-9 17 9v23l-17 8-17-8Z"/><path d="m10 16 14-7 14 7v19l-14 7-14-7Z"/><path d="M10 16l14 7 14-7M24 23v19"/><circle class="soft-fill" cx="24" cy="27" r="6"/><path class="accent" d="M24 24v6M21 27h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Vault</span><span class="l-zh">研报库</span></span><span class="item-desc d"><span class="l-en">Search every published research note</span><span class="l-zh">搜索所有已发布研究</span></span></span></a>
@@ -244,7 +917,7 @@
               <a class="mega-item nm-feat" href="neural_web.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 24h36M24 6v36"/><circle class="soft-fill" cx="24" cy="24" r="5"/><circle cx="11" cy="12" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="9" cy="34" r="3"/><circle cx="39" cy="34" r="3"/><path class="accent" d="M20 21 13 14M28 21l7-7M20 27l-8 5M28 27l8 5M14 12h20M11 15l-2 16M37 15l2 16M12 34h24"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Neural Web</span><span class="l-zh">智脑</span></span><span class="item-desc d"><span class="l-en">See how every signal votes</span><span class="l-zh">查看每个信号如何投票</span></span></span></a>
               <a class="mega-item nm-feat" href="market_memory.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 10h32v28H8z"/><path d="M7 8h14c5 0 8 3 8 8v24c0-5-3-8-8-8H7zM41 8H27v32c0-5 3-8 8-8h6z"/><path class="accent" d="M13 16h9M13 21h7M33 15h4M33 20h4"/><circle class="soft-fill" cx="27" cy="29" r="4"/><path d="M24 29h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></span><span class="item-desc d"><span class="l-en">Put today beside comparable episodes</span><span class="l-zh">将今天与可比历史片段并排</span></span></span></a>
               <a class="mega-item nm-feat" href="reference.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h28v26H10z"/><path d="M7 12h28a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3Z"/><path class="accent" d="M16 12V8h12v4"/><path d="M11 22h18M11 28h13"/><circle class="soft-fill" cx="33" cy="28" r="3"/><path class="accent" d="M11 34h9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span></span><span class="item-desc d"><span class="l-en">Look up any indicator or term</span><span class="l-zh">查询任意指标与术语</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="am_edition.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 32h36M9 26h30"/><path class="accent" d="M24 22V8M24 8l-7 7M24 8l7 7"/><circle class="soft-fill" cx="24" cy="28" r="6"/><path d="M14 32v3M34 32v3M9 35v3M39 35v3"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span></span><span class="item-desc d"><span class="l-en">Tape, session clock, regime and watch — before the open</span><span class="l-zh">开盘前 — 盘面、交易时段、周期与观察</span></span></span></a>
             </div>
           </section>
@@ -304,11 +977,11 @@
       </div>
     </div>
   </div>
-  
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -317,7 +990,7 @@
     <div class="nav-sugg"></div>
   </div>
   <div class="nav-ctrls">
-    
+
     <a class="ai-brief-link terminal-link" href="https://app.mastermind-x.com" target="_blank" rel="noopener"><span class="product-icon product-icon-terminal" aria-hidden="true"></span><span class="l-en">Terminal</span><span class="l-zh">终端</span></a>
     <button class="theme-switch" aria-label="Toggle dark / light mode">
       <span class="ic sun">☀️</span><span class="ic moon">🌙</span><span class="knob"></span>
@@ -334,48 +1007,48 @@
 
 <div class="wrap">
 
-  
+
   <div class="pghead rise">
     <div>
       <div class="kick"><span class="l-en">Stage Analysis</span><span class="l-zh">阶段分析</span></div>
-      <h1><span class="l-en">The market, placed on the cycle</span><span class="l-zh">把全市场放到周期上</span></h1>
+      <h1><span class="l-en">Find companies worth investigating</span><span class="l-zh">下一步，研究哪些公司？</span></h1>
       <p class="sub"><span class="l-en">Every stock sorted into one of four seasons — building a base, advancing, topping, or declining. Trend quality, earnings tone, and where the money is rotating, in plain words.</span><span class="l-zh">把每只股票归入四个阶段之一 —— 筑底、上升、见顶、下行。趋势质量、财报语气、资金轮动去向，全用大白话说清。</span></p>
     </div>
     <div class="asof">
-      
-      
-        
+
+
+
         <span class="l-en"><span class="clk">Stage week ended <b>2026-10-30</b></span> <span class="clk">· source tape through <b>2026-11-03</b></span></span>
         <span class="l-zh"><span class="clk">阶段周截至 <b>2026-10-30</b></span> <span class="clk">· 数据行情至 <b>2026-11-03</b></span></span>
-      
+
       <div style="margin-top:3px"><span class="l-en">Weekly stage read</span><span class="l-zh">周线阶段判定</span></div>
-      
+
         <div class="popreceipt" style="margin-top:3px">
           <span class="l-en">2,706 current · 53 stale · 0 unresolved</span>
           <span class="l-zh">2,706 当前 · 53 过时 · 0 未能判定</span>
         </div>
-        
-      
+
+
     </div>
   </div>
 
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
   <section class="hero rise d1" aria-label="Market stage overview">
     <div class="hero-grid">
-      <div class="arc-wrap" id="arc-wrap"></div>
+      <div class="arc-wrap" id="arc-wrap" data-counts="[186, 1366, 221, 933]" data-population-status="ready"></div>
       <div>
         <p class="arc-stance-eyebrow"><span class="l-en">US market weather</span><span class="l-zh">美股市场天气</span></p>
-        
+
           <h2 class="arc-state"><span class="l-en">The market is <span class="accent s3">mixed</span></span><span class="l-zh">市场<span class="accent s3">分化</span></span></h2>
           <p class="arc-stance"><span class="l-en">No clear season — advances and declines roughly balance. <span class="em">Let the strongest names lead; don't force it.</span></span><span class="l-zh">没有明确的季节 —— 上升与下行大致均衡。<span class="em">让最强的股票领路，别硬做。</span></span></p>
           <span class="stancepill watch"><span class="dot"></span><span class="l-en">Watch — dont chase</span><span class="l-zh">观察 —— 别追</span></span>
-        
+
 
         <div class="stations">
           <div class="stn s1"><span class="roman">I</span><div class="num tnum" data-cnt="s1">186</div><span class="lab"><span class="l-en">Building a base</span><span class="l-zh">筑底</span></span><span class="sub"><span class="l-en">resting; wait</span><span class="l-zh">盘整；等待</span></span></div>
@@ -395,17 +1068,17 @@
       <span class="rec" data-tip-en="Display-tier: ATR-extension matches ≈1.0, SATA rank ≈0.92; coarse stage (1–4) agrees ≈73%. The fine sub-stage label agrees ≈0.40." data-tip-zh="仅展示层：ATR 扩张匹配度≈1.0，SATA 排名≈0.92；粗阶段一致率≈73%；细分标签一致率≈0.40。">与源数据有多接近？</span></span>
   </p>
 
-  
+
   <div class="tabbar rise d2" role="tablist" aria-label="Stage analysis surfaces">
-    <button class="tab" role="tab" data-tab="screener" aria-selected="true" aria-controls="s-screener"><span class="tnum">1</span><span class="l-en">Screener</span><span class="l-zh">选股器</span></button>
-    <button class="tab" role="tab" data-tab="board" aria-selected="false" aria-controls="s-board"><span class="tnum">2</span><span class="l-en">Stage Board</span><span class="l-zh">阶段异动</span></button>
-    <button class="tab" role="tab" data-tab="industries" aria-selected="false" aria-controls="s-industries"><span class="tnum">3</span><span class="l-en">Industries</span><span class="l-zh">行业</span></button>
-    <button class="tab" role="tab" data-tab="earnings" aria-selected="false" aria-controls="s-earnings"><span class="tnum">4</span><span class="l-en">Earnings Calls</span><span class="l-zh">财报电话会</span></button>
-    <button class="tab" role="tab" data-tab="altdata" aria-selected="false" aria-controls="s-altdata"><span class="tnum">5</span><span class="l-en">Alt-Data</span><span class="l-zh">另类数据</span></button>
-    <button class="tab" role="tab" data-tab="research" aria-selected="false" aria-controls="s-research"><span class="tnum">6</span><span class="l-en">Research</span><span class="l-zh">深度研究</span></button>
+    <button class="tab" role="tab" id="tab-screener" data-tab="screener" aria-selected="true" aria-controls="s-screener"><span class="tnum">1</span><span class="l-en">Screener</span><span class="l-zh">选股器</span></button>
+    <button class="tab" role="tab" id="tab-board" data-tab="board" aria-selected="false" aria-controls="s-board"><span class="tnum">2</span><span class="l-en">Stage Board</span><span class="l-zh">阶段异动</span></button>
+    <button class="tab" role="tab" id="tab-industries" data-tab="industries" aria-selected="false" aria-controls="s-industries"><span class="tnum">3</span><span class="l-en">Industries</span><span class="l-zh">行业</span></button>
+    <button class="tab" role="tab" id="tab-earnings" data-tab="earnings" aria-selected="false" aria-controls="s-earnings"><span class="tnum">4</span><span class="l-en">Earnings Calls</span><span class="l-zh">财报电话会</span></button>
+    <button class="tab" role="tab" id="tab-altdata" data-tab="altdata" aria-selected="false" aria-controls="s-altdata"><span class="tnum">5</span><span class="l-en">Alt-Data</span><span class="l-zh">另类数据</span></button>
+    <button class="tab" role="tab" id="tab-research" data-tab="research" aria-selected="false" aria-controls="s-research"><span class="tnum">6</span><span class="l-en">Research</span><span class="l-zh">深度研究</span></button>
   </div>
 
-  
+
   <div class="controls rise d2">
     <span class="ctl-lab"><span class="l-en">Region</span><span class="l-zh">地区</span><button type="button" class="tip-q" id="region-tip-q" data-tip-en="US coverage only for now; other markets land when their price feed is wired" data-tip-zh="目前仅覆盖美股；其他市场待行情接入后上线" aria-label="Why other regions are disabled">?</button></span>
     <div class="seg" id="region-seg" role="group" aria-label="Region">
@@ -426,7 +1099,7 @@
     </label>
   </div>
 
-  
+
   <section class="surface" id="s-screener" role="tabpanel" aria-labelledby="tab-screener">
     <div class="filterbar" id="screener-filters">
       <div class="filt"><label for="f-pctile"><span class="l-en">Industry rank ≥</span><span class="l-zh">行业分位 ≥</span><button type="button" class="tip-q" data-tip-en="Momentum rank inside the stock’s own industry." data-tip-zh="该股在所属行业内的动能排名。" aria-label="What Industry rank means">?</button></label><input type="number" id="f-pctile" min="0" max="100" step="5" placeholder="0"></div>
@@ -455,7 +1128,7 @@
     <p class="provfoot"><span class="l-en">Scores explained on hover. Δ SATA = week-over-week change in trend quality. Fresh = an advance that began within the last few weeks.</span><span class="l-zh">各项评分悬停可看解释。Δ 趋势分 = 趋势质量的周环比变化。新转强 = 最近几周才开始的上升。</span></p>
   </section>
 
-  
+
   <section class="surface" id="s-board" role="tabpanel" hidden>
     <div class="boardhead">
       <div class="seg" id="board-seg" role="group" aria-label="Board cadence">
@@ -474,7 +1147,7 @@
     <p class="provfoot" id="board-prov"></p>
   </section>
 
-  
+
   <section class="surface" id="s-industries" role="tabpanel" hidden>
     <div class="subtabs">
       <div class="subseg" id="ind-seg" role="group" aria-label="Industry view">
@@ -488,7 +1161,7 @@
       <div class="sk-load" aria-busy="true" aria-label="Loading"><div class="sk-row"></div><div class="sk-row"></div><div class="sk-row"></div><div class="sk-row"></div><div class="sk-row"></div></div>
     </div>
   </section>
-  
+
   <section class="surface" id="s-earnings" role="tabpanel" hidden>
     <div class="subtabs">
       <div class="subseg" id="ern-seg" role="group" aria-label="Earnings view">
@@ -502,7 +1175,7 @@
     </div>
   </section>
 
-  
+
   <section class="surface" id="s-altdata" role="tabpanel" hidden>
     <p class="subcap" id="alt-cap"><b><span class="l-en">What is drawing attention right now.</span><span class="l-zh">现在什么正在吸引关注。</span></b> <span class="l-en">Search-and-social topics that surged, matched to the stocks they touch. This is context and curiosity — never a buy signal, a threshold, or a sizing input.</span><span class="l-zh">搜索与社交平台上激增的话题，匹配到相关个股。仅供参考与好奇 —— 绝非买入信号、门槛或仓位依据。</span></p>
     <div id="alt-body" aria-live="polite">
@@ -511,7 +1184,7 @@
     <p class="provfoot" id="alt-prov"></p>
   </section>
 
-  
+
   <section class="surface" id="s-research" role="tabpanel" hidden>
     <p class="subcap"><b><span class="l-en">A one-paragraph primer on each company.</span><span class="l-zh">每家公司的一段简介。</span></b> <span class="l-en">What the business does and where its revenue comes from — background, never a recommendation or a signal. Filter by ticker above.</span><span class="l-zh">公司在做什么、收入来自哪里 —— 仅供参考资料，绝非推荐或信号。可用上方搜索按代码筛选。</span></p>
     <p class="rescount" id="res-count"></p>
@@ -520,7 +1193,7 @@
     </div>
   </section>
 
-  
+
   <div class="reader-scrim" id="reader-scrim" tabindex="-1"></div>
   <aside class="reader" id="reader" role="dialog" aria-modal="true" aria-labelledby="reader-title" hidden>
     <div class="reader-head">
@@ -680,8 +1353,8 @@
   function ratingChip(v){
     if(v==null)return chip(null,'','Overall stage rating.','综合阶段评分。');
     var cls=v>=60?'c-up':v>=40?'c-info':v>=20?'c-amb':'c-dn';
-    var tE='Overall stage rating, 0–100 — trend quality, extension, relative strength and earnings tone combined.';
-    var tZ='综合阶段评分，0–100 —— 融合趋势质量、拉伸度、相对强度与财报语气。';
+    var tE='Overall stage rating, 0–100, from the indicated source. Earnings-call tone is displayed separately.';
+    var tZ='综合阶段评分，0–100，来自所示来源。财报电话会语气另行显示。';
     return chip(v,cls,tE,tZ);
   }
   function stageChip(row){
@@ -793,6 +1466,9 @@
       ecs:n('f-ecs'),ecp:n('f-ecp'),rating:n('f-rating')};
   }
   function applyView(){
+    var ready=!!(LOADED.screener&&LOADED.screener.phase==='ready');
+    var csv=qs('#screener-csv');if(csv)csv.disabled=!ready;
+    if(!ready){renderBody();var pending=qs('#screener-showing');if(pending)pending.innerHTML='';return;}
     VIEW=RAW.filter(passFilters);
     VIEW.sort(function(a,b){
       var av=a[sortKey],bv=b[sortKey];
@@ -831,21 +1507,24 @@
       var lab=(c.labEn===undefined)?(c.lab||''):('<span class="l-en">'+(c.labEn||'')+'</span><span class="l-zh">'+(c.labZh||c.labEn||'')+'</span>');
       var cls=(c.num?'num ':'')+(c.sticky?'sticky-l ':'');
       var tip=COLTIP[c.k]?' data-tip-en="'+esc(COLTIP[c.k][0])+'" data-tip-zh="'+esc(COLTIP[c.k][1])+'"':'';
-      var dir=(c.k===sortKey)?(' data-dir="'+(sortDir<0?'d':'a')+'"'):'';
+      var dir=(c.k===sortKey)?(' data-dir="'+(sortDir<0?'d':'a')+'" aria-sort="'+(sortDir<0?'descending':'ascending')+'"'):' aria-sort="none"';
       var sortable=c.sortable!==false;
-      return '<th class="'+cls+'"'+(sortable?' data-k="'+c.k+'"':' style="cursor:default"')+tip+dir+'>'+lab+(sortable?'<span class="caret">'+(sortDir<0?'▼':'▲')+'</span>':'')+'</th>';
+      return '<th scope="col" class="'+cls+'"'+(sortable?' data-k="'+c.k+'"'+dir:' style="cursor:default"')+'>'+(sortable?'<button class="sort-button" type="button"'+tip+'>':'')+lab+(sortable?'<span class="caret" aria-hidden="true">'+(sortDir<0?'▼':'▲')+'</span></button>':'')+'</th>';
     }).join('');
     qsa('#screener-head th[data-k]').forEach(function(th){
       th.addEventListener('click',function(){
-        var k=th.getAttribute('data-k');
+        var k=th.getAttribute('data-k'),keepFocus=th.contains(document.activeElement);
         if(k===sortKey)sortDir=-sortDir;else{sortKey=k;sortDir=(k==='name'||k==='ticker'||k==='sector')?1:-1;}
         renderHead();applyView();
+        if(keepFocus){var next=qs('#screener-head th[data-k="'+k+'"] button');if(next)next.focus();}
       });
     });
   }
   function watchOn(t){return WATCH.indexOf(t)>=0;}
   function renderBody(){
     var body=qs('#screener-body');if(!body)return;
+    if(paintSlice(body,LOADED,'screener','screener.json',16))return;
+    if(!RAW.length){body.innerHTML='<tr><td colspan="16"><div class="empty"><h3>'+TT('No screener rows supplied','未提供选股器记录')+'</h3><p>'+TT('The file loaded with an empty list.','文件已加载，返回的记录集为空。')+'</p></div></td></tr>';return;}
     if(!VIEW.length){body.innerHTML='<tr><td colspan="16"><div class="empty" style="border:none;background:none;padding:34px 0"><div class="ico">🔍</div><h3>'+TT('Nothing matches','没有符合的股票')+'</h3><p>'+TT('Loosen a filter to see names again.','放宽某个筛选条件即可再次看到股票。')+'</p></div></td></tr>';return;}
     var frag=VIEW.slice(0,600).map(function(r){
       var tagsHtml='';
@@ -976,31 +1655,93 @@
 
   /* ---- CSV export ---- */
   function exportCSV(){
+    if(!LOADED.screener||LOADED.screener.phase!=='ready'||!SCREENER_META)return;
     var head=isZH()
-      ?['代码','名称','行业','行业分位','趋势分','趋势分变化','阶段','阶段标签','周数','拉伸','波动','标签','财报语气','财报表现','综合评分']
-      :['Ticker','Name','Industry','Industry rank','Trend quality','Trend change','Stage','Stage label','Weeks','Stretch','Volatility','Tags','Call tone','Earnings result','Rating'];
-    var lines=[head.join(',')];
+      ?['代码','名称','行业','行业分位','趋势分','趋势分变化','阶段','阶段标签','周数','拉伸（周ATR倍数）','周ATR/价格（比例）','标签','财报语气','财报表现','综合评分','行来源','分类状态','行分类周','行来源日期','目标分类周','目标周来源','总体状态','行情日期','数据文件日期','构建时间']
+      :['Ticker','Name','Industry','Industry rank','Trend quality','Trend change','Stage','Stage label','Weeks','Extension (weekly ATR multiples)','Weekly ATR / price (fraction)','Tags','Call tone','Earnings result','Rating','Row source','Classification status','Row stage week','Row source date','Target stage week','Target week source','Population status','Price data session','Artifact date','Built at'];
+    var lines=[head.join(',')],meta=SCREENER_META,pop=meta.population||{};
     VIEW.forEach(function(r){
       var tone=r.ec_sent==null?'':Math.round(r.ec_sent);
-      var cells=[r.ticker,r.name,r.sector,r.industry_percentile,r.sata_score,r.sata_change_1w,r.stage,r.stage_label,r.weeks_in_stage,r.atr_ext,r.atr_pct_price,(r.tags||[]).join('|'),tone,r.ec_perf,r.rating];
-      lines.push(cells.map(function(c){c=c==null?'':String(c);return /[,"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(','));
+      var cells=[r.ticker,r.name,r.sector,r.industry_percentile,r.sata_score,r.sata_change_1w,r.stage,r.stage_label,r.weeks_in_stage,r.atr_ext,r.atr_pct_price,(r.tags||[]).join('|'),tone,r.ec_perf,r.rating,r.source,r.stage_current===true?'current':r.stage_current===false?'stale':'unresolved',r.stage_week_end,r.stage_source_asof,meta.target_stage_week,meta.target_week_source,pop.status,pop.data_session,meta.asof,meta.built];
+      lines.push(cells.map(function(c){c=c==null?'':String(c);return /[,"\n\r]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(','));
     });
-    var blob=new Blob([lines.join('\n')],{type:'text/csv'});
+    var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='stage_screener.csv';a.click();
     setTimeout(function(){URL.revokeObjectURL(a.href);},1500);
   }
 
   /* ---- data load (lazy) ---- */
-  var LOADED={};
-  function loadScreener(){
-    if(LOADED.screener)return;LOADED.screener=true;
-    fetch('stagedata/screener.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
-      RAW=(d.rows||[]);
-      renderHead();applyView();
-    }).catch(function(){
-      var body=qs('#screener-body');
-      if(body)body.innerHTML='<tr><td colspan="16"><div class="empty" style="border:none;background:none"><div class="ico">⚠️</div><h3>'+TT('Screener isn\'t loading','选股器暂时无法加载')+'</h3><p>'+TT('The screener table didn\'t load. The Stage Board and Industries are unaffected. We\'re on it.','选股器表格未能加载。阶段异动与行业视图不受影响，我们正在修复。')+'</p></div></td></tr>';
-    });
+  /* One request state per existing artifact owner; no automatic retries. */
+  function objectRecord(v){return !!v&&typeof v==='object'&&!Array.isArray(v);}
+  function objectRows(v){return Array.isArray(v)&&v.every(objectRecord);}
+  function rowEnvelope(v){return objectRecord(v)&&objectRows(v.rows)&&v.rows.every(function(r){return ['tags','level1_tags','level2_tags','new_tags'].every(function(k){return r[k]==null||(Array.isArray(r[k])&&r[k].every(function(x){return typeof x==='string';}));})&&['ticker','name','company_name','region','sector','gics_industry','gics_sector'].every(function(k){return r[k]==null||typeof r[k]==='string';});});}
+  function regionRows(v){return objectRecord(v)&&Object.keys(v).every(function(k){return objectRows(v[k]);});}
+  function heatRegions(v,kind){return objectRecord(v)&&Object.keys(v).every(function(k){var r=v[k];return objectRecord(r)&&Array.isArray(r.weeks)&&r.weeks.every(function(w){return typeof w==='string';})&&objectRows(r.rows)&&r.rows.every(function(row){return kind==='ec'?(Array.isArray(row.cells)&&row.cells.every(function(c){return c===null||objectRecord(c);})):Array.isArray(row.ranks);});});}
+  function seasonEnvelope(d){return objectRecord(d)&&objectRows(d.quarters)&&d.quarters.every(function(q){return ['raisers','decliners'].every(function(k){var side=q[k];return objectRecord(side)&&(side.industry_allocation==null||objectRows(side.industry_allocation))&&(side.level1_tags==null||objectRows(side.level1_tags));});});}
+  function researchEnvelope(d){return objectRecord(d)&&objectRows(d.items)&&d.items.every(function(row){return ['ticker_ui','thesis_summary'].every(function(k){return row[k]==null||typeof row[k]==='string';});});}
+  var SLICE_NAMES={
+    'screener.json':['Screener','选股器'],
+    'stage_board_weekly.json':['Weekly stage board','周线阶段看板'],
+    'stage_board_daily.json':['Daily stage board','日线阶段看板'],
+    'industry_ranks.json':['Industry ranking','行业排名'],
+    'industry_heatmap.json':['Rank history','排名历史'],
+    'ec_industry_heatmap.json':['Earnings heatmap','财报热图'],
+    'industry_flows.json':['Industry flows','行业资金流'],
+    'earnings_table.json':['Earnings calls','财报电话会'],
+    'earnings_season.json':['Earnings season','财报季'],
+    'earnings_compare.json':['Earnings comparison','财报对比'],
+    'altdata_trending.json':['Alternative data','另类数据'],
+    'research_index.json':['Research','深度研究']
+  };
+  function readOwnedSlice(states,key,file,valid,accept,repaint,retry){
+    var prior=states[key];
+    if(prior&&(prior.phase==='loading'||prior.phase==='ready'||(prior.phase==='error'&&!retry)))return prior.promise;
+    var state={phase:'loading',file:file,promise:null};states[key]=state;repaint();
+    var controller=new AbortController();
+    var deadline=setTimeout(function(){controller.abort();},10000);
+    state.promise=Promise.resolve().then(function(){
+      return fetch('stagedata/'+file,{cache:'no-store',signal:controller.signal});
+    }).then(function(r){if(!r.ok)throw new Error('read failed');return r.json();}).then(function(d){
+      if(!valid(d))throw new Error('invalid slice');
+      accept(d);state.phase='ready';repaint();
+    }).catch(function(){state.phase='error';repaint();}).finally(function(){clearTimeout(deadline);});
+    return state.promise;
+  }
+  function sliceStatus(states,key,file){
+    var state=states[key],phase=state?state.phase:'idle';
+    if(phase==='ready')return '';
+    var busy=phase!=='error',name=SLICE_NAMES[file]||['Selected view','所选视图'];
+    var title=busy?TT('Loading '+name[0],name[1]+'正在加载'):TT(name[0]+' could not load',name[1]+'未能加载');
+    var detail=busy?TT('Reading this view. Your controls stay available.','正在读取此视图，操作控件仍可使用。'):TT('This read did not complete. Your filters and watchlist are retained.','本次读取未完成，筛选条件与自选名单已保留。');
+    return '<div class="empty read-state" data-read-state="'+(busy?'loading':'error')+'" data-read-file="'+esc(file)+'" data-read-lang="'+(isZH()?'zh':'en')+'" role="status" aria-live="polite" tabindex="-1"><h3>'+title+'</h3><p>'+detail+'</p>'+
+      (busy?'<div class="read-skeleton" aria-hidden="true"><i></i><i></i><i></i></div>':'<button class="btn" type="button" data-retry-slice="'+esc(file)+'">'+TT('Retry '+name[0],'重试加载'+name[1])+'</button>')+'</div>';
+  }
+  function paintSlice(host,states,key,file,columns){
+    var html=sliceStatus(states,key,file);
+    host.setAttribute('aria-busy',states[key]&&states[key].phase==='loading'?'true':'false');
+    if(!html)return false;
+    /* Filter blur can run between pointerdown and click. Keep an unchanged
+       status node so the focused retry button survives that repaint. */
+    var existing=host.querySelector('[data-read-state]');
+    var phase=states[key]&&states[key].phase==='error'?'error':'loading';
+    if(existing&&existing.getAttribute('data-read-state')===phase&&existing.getAttribute('data-read-file')===file&&existing.getAttribute('data-read-lang')===(isZH()?'zh':'en'))return true;
+    host.innerHTML=columns?'<tr><td colspan="'+columns+'">'+html+'</td></tr>':html;
+    return true;
+  }
+  function retryOwnedFile(file){
+    if(file==='screener.json')return loadScreener(true);
+    if(file==='stage_board_weekly.json')return loadBoard('weekly',true);
+    if(file==='stage_board_daily.json')return loadBoard('daily',true);
+    var ind={'industry_ranks.json':'ranks','industry_heatmap.json':'heat','ec_industry_heatmap.json':'ec','industry_flows.json':'flows'};
+    if(ind[file])return loadIndustries(ind[file],true);
+    var ern={'earnings_table.json':'table','earnings_season.json':'season','earnings_compare.json':'compare'};
+    if(ern[file])return loadEarnings(ern[file],true);
+    if(file==='altdata_trending.json')return loadAlt(true);
+    if(file==='research_index.json')return loadResearch(true);
+  }
+  var LOADED={},SCREENER_META=null;
+  function loadScreener(retry){
+    return readOwnedSlice(LOADED,'screener','screener.json',rowEnvelope,function(d){SCREENER_META=d;RAW=d.rows;},function(){renderHead();applyView();},retry);
   }
 
   /* =====================================================================
@@ -1054,8 +1795,8 @@
   }
   function renderBoard(){
     var body=qs('#board-body');if(!body)return;
+    if(paintSlice(body,boardLoaded,boardCadence,'stage_board_'+boardCadence+'.json',BCOLS.length)){var count=qs('#board-showing');if(count)count.innerHTML='';return;}
     var d=BOARD[boardCadence];
-    if(!d){body.innerHTML='<tr><td colspan="'+BCOLS.length+'"><div class="empty" style="border:none;background:none"><div class="ico">⚠️</div><h3>'+TT('The board isn\'t loading','榜单暂时无法加载')+'</h3><p>'+TT('The board didn\'t load. The Screener and Industries are unaffected. We\'re on it.','榜单未能加载。选股器与行业视图不受影响，我们正在修复。')+'</p></div></td></tr>';return;}
     var rows=boardRows();
     var showing=qs('#board-showing');
     if(showing)showing.innerHTML=TT('<b>'+rows.length.toLocaleString()+'</b> fresh advances','<b>'+rows.length.toLocaleString()+'</b> 只新转强');
@@ -1122,11 +1863,13 @@
     qsa('#board-seg button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-cadence')===c?'true':'false');});
     renderBoard();renderBoardProv();
   }
-  function loadBoard(){
-    if(boardLoaded.done){renderBoard();renderBoardProv();return;}
+  function loadBoard(only,retry){
     boardLoaded.done=true;boardHead();
-    function grab(name,key){return fetch('stagedata/stage_board_'+name+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){BOARD[key]=d;}).catch(function(){BOARD[key]=null;});}
-    Promise.all([grab('weekly','weekly'),grab('daily','daily')]).then(function(){renderBoard();renderBoardProv();});
+    ['weekly','daily'].forEach(function(key){
+      if(only&&key!==only)return;
+      readOwnedSlice(boardLoaded,key,'stage_board_'+key+'.json',rowEnvelope,function(d){BOARD[key]=d;},function(){if(boardCadence===key){renderBoard();renderBoardProv();}},retry);
+    });
+    renderBoard();renderBoardProv();
   }
 
   /* =====================================================================
@@ -1271,11 +2014,12 @@
     if(!reg||!reg.rows||!reg.rows.length)return indEmpty();
     var weeks=reg.weeks||[];
     /* find the value range for the combined ramp */
-    var vals=[];reg.rows.forEach(function(row){(row.cells||[]).forEach(function(c){var v=indEcMode==='combined'?c.combined:c.count;if(v!=null)vals.push(v);});});
+    var vals=[];reg.rows.forEach(function(row){(row.cells||[]).forEach(function(c){if(c===null)return;var v=indEcMode==='combined'?c.combined:c.count;if(v!=null)vals.push(v);});});
     var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals);if(!isFinite(lo)){lo=0;hi=1;}if(hi===lo)hi=lo+1;
     var head='<tr><th class="hind">'+LT('Industry','行业')+'</th>'+weeks.map(function(w){return '<th>'+esc((w||'').slice(5))+'</th>';}).join('')+'</tr>';
     var body=reg.rows.map(function(row){
       var cells=(row.cells||[]).map(function(c){
+        if(c===null)return '<td class="na"><span class="hc">·</span></td>';
         var v=indEcMode==='combined'?c.combined:c.count;
         if(v==null)return '<td class="na"><span class="hc">·</span></td>';
         var t=(v-lo)/(hi-lo); /* 0 weak … 1 strong */
@@ -1341,9 +2085,13 @@
     return '<span class="turnpill'+(m.roll?' roll':'')+'" data-tip-en="'+esc(m.tip_en)+'" data-tip-zh="'+esc(m.tip_zh)+'">'+LT(m.en,m.zh)+'</span>';
   }
   function divBar(r){
-    var s2=r.stage2_count||0,s4=r.stage4_count||0,tot=(s2+s4)||1;
+    var s2=r.stage2_count,s4=r.stage4_count;
+    var valid=function(v){return typeof v==='number'&&Number.isSafeInteger(v)&&v>=0;};
+    if(!valid(s2)||!valid(s4))return '<span class="dashcell" data-population="unknown">'+TT('Unavailable','暂无数据')+'</span>';
+    var tot=s2+s4;
+    if(tot===0)return '<span class="dashcell" data-population="empty">'+TT('No advancing or declining names','无上升或下行股票')+'</span>';
     var p2=Math.round(s2/tot*100),p4=100-p2;
-    return '<span class="divbar" data-tip-en="'+s4+' declining · '+s2+' advancing" data-tip-zh="'+s4+' 只下行 · '+s2+' 只上升"><i class="s4" style="width:'+p4+'%"></i><i class="s2" style="width:'+p2+'%"></i></span>';
+    return '<span class="divbar" data-population="ready" data-tip-en="'+s4+' declining · '+s2+' advancing" data-tip-zh="'+s4+' 只下行 · '+s2+' 只上升"><i class="s4" style="width:'+p4+'%"></i><i class="s2" style="width:'+p2+'%"></i></span>';
   }
   function rsDeltaCell(v){
     if(v==null)return '<td class="num"><span class="delta flat">—</span></td>';
@@ -1359,19 +2107,22 @@
   function indFlows(){
     var map=(indFlowGrain==='industry')?(IND.flows&&IND.flows.industry_regions):(IND.flows&&IND.flows.sub_industry_regions);
     var rows=(pickRegion(map)||[]).slice();
-    if(!rows.length)return indEmpty();
+    var grainControls='<div class="subtabs"><div class="subseg" id="flow-grain" role="group" aria-label="Flows grain">'+
+        '<button data-grain="industry" aria-pressed="'+(indFlowGrain==='industry')+'">'+LT('Industry','行业')+'</button>'+
+        '<button data-grain="sub" aria-pressed="'+(indFlowGrain==='sub')+'">'+LT('Sub-industry','子行业')+'</button></div></div>';
+    if(!rows.length)return grainControls+indEmpty();
     rows.sort(function(a,b){
       var av=a[flowSortKey],bv=b[flowSortKey];
       if(av==null)av=-Infinity;if(bv==null)bv=-Infinity;
       if(typeof av==='string')return (av<bv?-flowSortDir:av>bv?flowSortDir:0);
       return (av-bv)*flowSortDir;
     });
-    var head='<tr><th class="sticky-l" data-fk="industry_name">'+LT('Industry','行业')+'</th>'+
+    var head='<tr><th scope="col" class="sticky-l" data-fk="industry_name" aria-sort="'+(flowSortKey==='industry_name'?(flowSortDir<0?'descending':'ascending'):'none')+'"><button class="sort-button" type="button">'+LT('Industry','行业')+'</button></th>'+
       FLOWCOLS.map(function(c){
         var tip=c.tip?' data-tip-en="'+esc(c.tip[0])+'" data-tip-zh="'+esc(c.tip[1])+'"':'';
         var sortable=c.k.charAt(0)!=='_';
-        var dir=(c.k===flowSortKey)?(' data-dir="'+(flowSortDir<0?'d':'a')+'"'):'';
-        return '<th class="'+(c.num?'num ':'')+'"'+(sortable?' data-fk="'+c.k+'"':' style="cursor:default"')+tip+dir+'>'+LT(c.en,c.zh)+(sortable?'<span class="caret">'+(flowSortDir<0?'▼':'▲')+'</span>':'')+'</th>';
+        var dir=(c.k===flowSortKey)?(' data-dir="'+(flowSortDir<0?'d':'a')+'" aria-sort="'+(flowSortDir<0?'descending':'ascending')+'"'):' aria-sort="none"';
+        return '<th scope="col" class="'+(c.num?'num ':'')+'"'+(sortable?' data-fk="'+c.k+'"'+dir:' style="cursor:default"')+'>'+(sortable?'<button class="sort-button" type="button"'+tip+'>':'')+LT(c.en,c.zh)+(sortable?'<span class="caret" aria-hidden="true">'+(flowSortDir<0?'▼':'▲')+'</span></button>':'')+'</th>';
       }).join('')+'</tr>';
     var body=rows.map(function(r){
       return '<tr>'+
@@ -1390,15 +2141,13 @@
         '<td class="num">'+(r.stage2_median_age_wks==null?'—':Math.round(r.stage2_median_age_wks))+'</td>'+
       '</tr>';
     }).join('');
-    return '<div class="subtabs"><div class="subseg" id="flow-grain" role="group" aria-label="Flows grain">'+
-        '<button data-grain="industry" aria-pressed="'+(indFlowGrain==='industry')+'">'+LT('Industry','行业')+'</button>'+
-        '<button data-grain="sub" aria-pressed="'+(indFlowGrain==='sub')+'">'+LT('Sub-industry','子行业')+'</button></div></div>'+
+    return grainControls+
       '<p class="subcap"><b>'+LT('Where the money is rotating, by stage.','按阶段看资金轮动去向。')+'</b> '+LT('Leading groups have money flowing in; breaking groups are rolling over. Sorted by 4-week relative-strength change.','领先组资金流入；转弱组开始走弱。默认按相对强度4周变化排序。')+indCalibNote(IND.flows&&IND.flows.calibration,'flows')+'</p>'+
       '<div class="tbl-scroll"><table class="screener" id="flow-table" style="min-width:1000px"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
   }
 
   function indEmpty(){
-    return '<div class="empty soon"><div class="ico"></div><h3>'+TT('Industry rankings aren\'t available','行业排名暂不可用')+'</h3><p>'+TT('The file for this view didn\'t load. The Screener and Stage Board still work.','该视图的数据文件未能加载。选股器与阶段异动仍可用。')+'</p></div>';
+    return '<div class="empty"><h3>'+TT('No supplied entries for this view','此视图没有提供记录')+'</h3><p>'+TT('The file loaded. No entries match this region and view.','文件已加载，当前地区与视图没有记录。')+'</p></div>';
   }
   function indCoverageNote(){
     /* Spec 2: one provenance line for the whole Industries tab, read from
@@ -1430,6 +2179,8 @@
   }
   function renderIndustries(){
     var host=qs('#ind-body');if(!host)return;
+    var slice={ranking:['ranks','industry_ranks.json'],heatmap:['heat','industry_heatmap.json'],echeat:['ec','ec_industry_heatmap.json'],flows:['flows','industry_flows.json']}[indView];
+    if(paintSlice(host,indLoaded,slice[0],slice[1]))return;
     var html;
     if(indView==='ranking')html=indRanking();
     else if(indView==='heatmap')html=indHeatmap();
@@ -1440,9 +2191,10 @@
     qsa('#flow-grain button').forEach(function(b){b.addEventListener('click',function(){indFlowGrain=b.getAttribute('data-grain');renderIndustries();});});
     qsa('#ec-mode button').forEach(function(b){b.addEventListener('click',function(){indEcMode=b.getAttribute('data-ecm');renderIndustries();});});
     qsa('#flow-table th[data-fk]').forEach(function(th){th.addEventListener('click',function(){
-      var k=th.getAttribute('data-fk');
+      var k=th.getAttribute('data-fk'),keepFocus=th.contains(document.activeElement);
       if(k===flowSortKey)flowSortDir=-flowSortDir;else{flowSortKey=k;flowSortDir=(k==='industry_name'||k==='state')?1:-1;}
       renderIndustries();
+      if(keepFocus){var next=qs('#flow-table th[data-fk="'+k+'"] button');if(next)next.focus();}
     });});
   }
   function selectIView(v){
@@ -1450,11 +2202,19 @@
     qsa('#ind-seg button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-iview')===v?'true':'false');});
     renderIndustries();
   }
-  function loadIndustries(){
-    if(indLoaded.done){renderIndustries();return;}
+  function loadIndustries(only,retry){
     indLoaded.done=true;
-    function grab(name,key){return fetch('stagedata/'+name+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){IND[key]=d;}).catch(function(){IND[key]=null;});}
-    Promise.all([grab('industry_ranks','ranks'),grab('industry_heatmap','heat'),grab('ec_industry_heatmap','ec'),grab('industry_flows','flows')]).then(function(){renderIndustries();});
+    var spec={
+      ranks:['industry_ranks.json',function(d){return objectRecord(d)&&regionRows(d.regions);}],
+      heat:['industry_heatmap.json',function(d){return objectRecord(d)&&heatRegions(d.regions,'rank');}],
+      ec:['ec_industry_heatmap.json',function(d){return objectRecord(d)&&heatRegions(d.regions,'ec');}],
+      flows:['industry_flows.json',function(d){return objectRecord(d)&&(regionRows(d.industry_regions)||regionRows(d.sub_industry_regions))&&(d.industry_regions==null||regionRows(d.industry_regions))&&(d.sub_industry_regions==null||regionRows(d.sub_industry_regions));}]
+    };
+    Object.keys(spec).forEach(function(key){
+      if(only&&key!==only)return;
+      readOwnedSlice(indLoaded,key,spec[key][0],spec[key][1],function(d){IND[key]=d;},function(){if(({ranking:'ranks',heatmap:'heat',echeat:'ec',flows:'flows'})[indView]===key)renderIndustries();},retry);
+    });
+    renderIndustries();
   }
 
   /* =====================================================================
@@ -1570,8 +2330,8 @@
     if(!ERN.table||!(ERN.table.rows||[]).length)return ernEmpty();
     var dataStatus=ERN.table.data_status||'empty';
     var healthNote='';
-    if(dataStatus==='degraded')healthNote='<p class="subcap" style="color:var(--ink-warn, var(--amber))">⚠ '+LT('We\'re showing the last complete set of earnings calls because the latest history hasn\'t arrived. Quarter-over-quarter comparison is paused; the calls table still works.','目前显示上一份完整的财报电话会，因为最新历史尚未到达。季度对比暂停；电话会明细仍可用。')+'</p>';
-    else if(dataStatus==='stale')healthNote='<p class="subcap" style="color:var(--ink-warn, var(--amber))">⚠ '+LT('Earnings history is more than two weeks old. Latest call: ','财报历史已超过两周。最近电话会：')+esc(ERN.table.latest_call_date||'—')+LT('. The calls table still works; newer calls will appear when they land.','。电话会明细仍可用；新的电话会到达后会显示。')+'</p>';
+    if(dataStatus==='degraded')healthNote='<p class="subcap" style="color:var(--ink-warn, var(--amber))">⚠ '+LT('This calls file reports incomplete history. The rows below are the supplied calls; comparison keeps its own data state.','电话会文件报告历史不完整。下方为该文件提供的记录；对比视图保留自身的数据状态。')+'</p>';
+    else if(dataStatus==='stale')healthNote='<p class="subcap" style="color:var(--ink-warn, var(--amber))">⚠ '+LT('This calls file is marked stale. Latest supplied call: ','电话会文件标记为过时。最新提供的电话会：')+esc(ERN.table.latest_call_date||'—')+LT('. Displayed rows retain their supplied dates.','。所显示记录保留各自提供的日期。')+'</p>';
     var inds=ernIndustries();
     /* opt() — single-language <option> label carrying both langs on data-en/zh
        (the l-en/l-zh span trick is flattened inside <option>; relangOptions()
@@ -1592,8 +2352,8 @@
       var cls=(c.num?'num ':'')+(c.sticky?'sticky-l ':'');
       var tip=c.tip?' data-tip-en="'+esc(c.tip[0])+'" data-tip-zh="'+esc(c.tip[1])+'"':'';
       var sortable=c.sortable!==false&&c.k.charAt(0)!=='_';
-      var dir=(c.k===ernSortKey)?(' data-dir="'+(ernSortDir<0?'d':'a')+'"'):'';
-      return '<th class="'+cls+'"'+(sortable?' data-ek="'+c.k+'"':' style="cursor:default"')+tip+dir+'>'+LT(c.en,c.zh)+(sortable?'<span class="caret">'+(ernSortDir<0?'▼':'▲')+'</span>':'')+'</th>';
+      var dir=(c.k===ernSortKey)?(' data-dir="'+(ernSortDir<0?'d':'a')+'" aria-sort="'+(ernSortDir<0?'descending':'ascending')+'"'):' aria-sort="none"';
+      return '<th scope="col" class="'+cls+'"'+(sortable?' data-ek="'+c.k+'"'+dir:' style="cursor:default"')+'>'+(sortable?'<button class="sort-button" type="button"'+tip+'>':'')+LT(c.en,c.zh)+(sortable?'<span class="caret" aria-hidden="true">'+(ernSortDir<0?'▼':'▲')+'</span></button>':'')+'</th>';
     }).join('')+'</tr>';
     var body=rows.slice(0,500).map(function(r){
       var tw=toneWord(r.ec_sent);
@@ -1610,10 +2370,17 @@
         '<td><span class="tagcell">'+ernTags(r.level1_tags,3)+'</span> <span class="readcue">'+LT('read →','阅读 →')+'</span></td>'+
       '</tr>';
     }).join('');
+    if(!rows.length)body='<tr><td colspan="'+ECOLS.length+'"><div class="empty"><h3>'+TT('No earnings calls match these filters','没有符合筛选条件的财报电话会')+'</h3><p>'+TT('Adjust the industry, tone or company search.','调整行业、语气或公司搜索条件。')+'</p></div></td></tr>';
     if(rows.length>500)body+='<tr><td colspan="'+ECOLS.length+'" style="text-align:center;padding:14px;color:var(--muted)">'+TT('Showing the first 500 — filter to narrow.','已显示前 500 场 —— 请用筛选收窄。')+'</td></tr>';
     return healthNote+filt+
       '<p class="subcap">'+LT('Click any row to read the call — tone, the points it raised, guidance and a key quote.','点击任意一行即可阅读该场电话会 —— 语气、要点、指引与一句关键引述。')+'</p>'+
       '<div class="tbl-scroll"><table class="screener" id="ern-table" style="min-width:1000px"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
+  }
+  function ernHealthNote(src){
+    var status=src&&src.data_status;if(status!=='stale'&&status!=='degraded')return '';
+    var text=status==='stale'?LT('This earnings file is marked stale. Displayed records retain their supplied dates.','此财报文件标记为过时。所显示记录保留各自提供的日期。'):LT('This earnings file reports incomplete history. The supplied records remain available.','此财报文件报告历史不完整，仍可查看已提供的记录。');
+    var latest=src.latest_call_date;
+    return '<p class="subcap" data-earnings-health="'+status+'" role="status" style="color:var(--ink-warn, var(--amber))">⚠ '+text+(latest?' '+LT('Latest supplied call: ','最新提供的电话会：')+esc(latest):'')+'</p>';
   }
   function ernSeasonView(){
     var qs2=(ERN.season&&ERN.season.quarters)||[];
@@ -1635,7 +2402,7 @@
         '<span class="cnt">'+TT(q.n_calls+' calls','共 '+q.n_calls+' 场')+'</span></div>'+
         '<div style="padding:14px 16px">'+side(q.raisers,'up')+side(q.decliners,'dn')+'</div></div>';
     }).join('');
-    return '<p class="subcap"><b>'+LT('Which quarters ran warm or cold.','哪些季度整体转暖或转冷。')+'</b> '+
+    return ernHealthNote(ERN.season)+'<p class="subcap"><b>'+LT('Which quarters ran warm or cold.','哪些季度整体转暖或转冷。')+'</b> '+
       LT('Per quarter: how many calls improved their tone versus last time, versus how many worsened, and where they clustered.','按季度统计：相比上次，有多少场电话会语气转好、多少转差，以及集中在哪些行业。')+'</p>'+
       '<div class="altwrap">'+cards+'</div>';
   }
@@ -1666,29 +2433,27 @@
       '</tr>';
     }).join('');
     if(rows.length>400)body+='<tr><td colspan="8" style="text-align:center;padding:14px;color:var(--muted)">'+TT('Showing the 400 biggest swings.','显示变化最大的 400 家。')+'</td></tr>';
-    return '<p class="subcap"><b>'+LT('How each company’s call changed since last quarter.','每家公司的电话会相比上季有何变化。')+'</b> '+
+    return ernHealthNote(ERN.compare)+'<p class="subcap"><b>'+LT('How each company’s call changed since last quarter.','每家公司的电话会相比上季有何变化。')+'</b> '+
       LT('Biggest tone swings first. A rising score means a warmer call than the quarter before.','语气变化最大者排前。分数上升＝这场电话会比上一季更正面。')+'</p>'+
       '<div class="tbl-scroll"><table class="screener" style="min-width:900px"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
   }
   function ernEmpty(){
-    var status=(ERN.table&&ERN.table.data_status)||'empty';
-    var latest=(ERN.table&&ERN.table.latest_call_date)||'';
-    if(status==='degraded'){
-      return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Earnings history is incomplete','财报历史不完整')+'</h3><p>'+TT('Recent calls remain available, but quarter-over-quarter history is incomplete. The Screener, Stage Board and Industries are unaffected. We\'re repairing the history feed.','近期电话会仍可用，但季度对比历史不完整。选股器、阶段异动与行业视图不受影响，我们正在修复历史数据。')+(latest?' '+TT('Latest call: ','最新电话会：')+esc(latest)+'.':'')+'</p></div>';
-    }
-    if(status==='stale'){
-      return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Earnings history is more than two weeks old','财报历史已超过两周')+'</h3><p>'+TT('No new verified earnings call has landed in 14 days. Latest call: ','过去14天内没有新的已验证电话会。最近电话会：')+esc(latest||'—')+'. '+TT('The Screener, Stage Board and Industries are unaffected.','选股器、阶段异动与行业视图不受影响。')+'</p></div>';
-    }
-    return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Earnings calls aren\'t loading','财报电话会暂时无法加载')+'</h3><p>'+TT('Our earnings feed is down; the Screener, Stage Board and Industries are unaffected. We\'re on it.','财报数据源中断；选股器、阶段异动与行业视图不受影响，我们正在修复。')+'</p></div>';
+    var selected=ernView==='season'?ERN.season:ernView==='compare'?ERN.compare:ERN.table;
+    var status=(selected&&selected.data_status)||'empty',latest=(selected&&selected.latest_call_date)||'';
+    if(status==='degraded')return '<div class="empty"><h3>'+TT('Earnings history is incomplete','财报历史不完整')+'</h3><p>'+TT('This selected file reports incomplete history.','当前所选文件报告历史不完整。')+(latest?' '+TT('Latest supplied call: ','最新提供的电话会：')+esc(latest):'')+'</p></div>';
+    if(status==='stale')return '<div class="empty"><h3>'+TT('Earnings history is marked stale','财报历史标记为过时')+'</h3><p>'+TT('The selected file is explicitly marked stale. Latest supplied call: ','所选文件明确标记为过时。最新提供的电话会：')+esc(latest||'—')+'</p></div>';
+    return '<div class="empty"><h3>'+TT('No earnings entries for this view','此视图没有财报记录')+'</h3><p>'+TT('The file loaded but supplied no entries for the selected view.','文件已加载，但没有提供当前视图的记录。')+'</p></div>';
   }
   function altEmpty(){
-    return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('No trending topics to show right now.','暂无热门话题可显示。')+'</h3><p class="empty-why">'+TT('feeds haven\'t updated','数据源尚未更新')+'</p></div>';
+    return '<div class="empty"><h3>'+TT('No trending topics to show right now.','暂无热门话题可显示。')+'</h3><p class="empty-why">'+TT('Update dates unavailable','更新日期暂缺')+'</p></div>';
   }
   function resEmpty(){
-    return '<div class="empty soon"><div class="ico"></div><h3>'+TT('Company primers are being written','公司简介正在撰写中')+'</h3><p>'+TT('This desk fills in as primers land. The Screener and Stage Board are unaffected.','本栏会随简介完成情况更新。选股器与阶段异动不受影响。')+'</p></div>';
+    return '<div class="empty"><h3>'+TT('No company research entries supplied','未提供公司研究记录')+'</h3><p>'+TT('The research file loaded with an empty list.','研究文件已加载，返回的记录集为空。')+'</p></div>';
   }
   function renderErn(){
     var host=qs('#ern-body');if(!host)return;
+    var slice={calls:['table','earnings_table.json'],season:['season','earnings_season.json'],compare:['compare','earnings_compare.json']}[ernView];
+    if(paintSlice(host,ernLoaded,slice[0],slice[1])){var count=qs('#ern-showing');if(count)count.innerHTML='';return;}
     var html;
     if(ernView==='season')html=ernSeasonView();
     else if(ernView==='compare')html=ernCompareView();
@@ -1697,9 +2462,10 @@
     if(ernView==='calls'){
       var showing=qs('#ern-showing');if(showing){var n=ernRows().length;showing.innerHTML=TT('<b>'+n.toLocaleString()+'</b> calls','<b>'+n.toLocaleString()+'</b> 场');}
       qsa('#ern-table th[data-ek]').forEach(function(th){th.addEventListener('click',function(){
-        var k=th.getAttribute('data-ek');
+        var k=th.getAttribute('data-ek'),keepFocus=th.contains(document.activeElement);
         if(k===ernSortKey)ernSortDir=-ernSortDir;else{ernSortKey=k;ernSortDir=(k==='ticker'||k==='company_name'||k==='gics_industry'||k==='quarter'||k==='call_date')?1:-1;}
         renderErn();
+        if(keepFocus){var next=qs('#ern-table th[data-ek="'+k+'"] button');if(next)next.focus();}
       });});
       var fi=qs('#ern-f-ind');if(fi)fi.addEventListener('change',function(){ernFilters.ind=fi.value;renderErn();});
       var fb=qs('#ern-f-band');if(fb)fb.addEventListener('change',function(){ernFilters.band=fb.value;renderErn();});
@@ -1710,11 +2476,14 @@
     qsa('#ern-seg button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-eview')===v?'true':'false');});
     renderErn();
   }
-  function loadEarnings(){
-    if(ernLoaded.done){renderErn();return;}
+  function loadEarnings(only,retry){
     ernLoaded.done=true;
-    function grab(name,key){return fetch('stagedata/'+name+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){ERN[key]=d;}).catch(function(){ERN[key]=null;});}
-    Promise.all([grab('earnings_table','table'),grab('earnings_season','season'),grab('earnings_compare','compare')]).then(function(){renderErn();});
+    var spec={table:['earnings_table.json',rowEnvelope],season:['earnings_season.json',seasonEnvelope],compare:['earnings_compare.json',rowEnvelope]};
+    Object.keys(spec).forEach(function(key){
+      if(only&&key!==only)return;
+      readOwnedSlice(ernLoaded,key,spec[key][0],spec[key][1],function(d){ERN[key]=d;},function(){if(({calls:'table',season:'season',compare:'compare'})[ernView]===key)renderErn();},retry);
+    });
+    renderErn();
   }
 
   /* =====================================================================
@@ -1723,12 +2492,13 @@
      highlight rails, a key quote and the call's themes. Real text only;
      an absent field shows a plain-word empty state, never a raw dict.
      ===================================================================== */
-  var readerLast=null;
+  var readerLast=null,readerHideTimer=null,readerOpenTimer=null,readerOpenFrame=null;
   function openReader(ticker,quarter){
     var rows=(ERN.table&&ERN.table.rows)||[];
     var r=rows.filter(function(x){return x.ticker===ticker&&(!quarter||x.quarter===quarter);})[0]||rows.filter(function(x){return x.ticker===ticker;})[0];
     if(!r)return;
     var drawer=qs('#reader'),scrim=qs('#reader-scrim');
+    clearTimeout(readerHideTimer);clearTimeout(readerOpenTimer);cancelAnimationFrame(readerOpenFrame);
     readerLast=document.activeElement;
     qs('#reader-co').innerHTML=esc(r.gics_industry||'')+(r.gics_sector?' · '+esc(r.gics_sector):'');
     qs('#reader-title').textContent=r.company_name||r.ticker;
@@ -1775,19 +2545,28 @@
        where requestAnimationFrame is throttled. */
     void drawer.offsetWidth;
     var opened=false;function openNow(){if(opened)return;opened=true;drawer.classList.add('open');scrim.classList.add('open');}
-    requestAnimationFrame(openNow);setTimeout(openNow,30);
+    readerOpenFrame=requestAnimationFrame(openNow);readerOpenTimer=setTimeout(openNow,30);
     qs('#reader-body').scrollTop=0;
     try{qs('#reader-close').focus();}catch(_){}
     document.addEventListener('keydown',readerEsc);
   }
   function closeReader(){
     var drawer=qs('#reader'),scrim=qs('#reader-scrim');
+    clearTimeout(readerOpenTimer);cancelAnimationFrame(readerOpenFrame);clearTimeout(readerHideTimer);
     drawer.classList.remove('open');scrim.classList.remove('open');
     document.removeEventListener('keydown',readerEsc);
-    setTimeout(function(){drawer.hidden=true;},260);
-    if(readerLast&&readerLast.focus)readerLast.focus();
+    readerHideTimer=setTimeout(function(){drawer.hidden=true;},window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:260);
+    if(readerLast&&readerLast.isConnected&&readerLast.focus)readerLast.focus();
   }
-  function readerEsc(e){if(e.key==='Escape')closeReader();}
+  function readerEsc(e){
+    if(e.key==='Escape'){e.preventDefault();closeReader();return;}
+    if(e.key!=='Tab')return;
+    var drawer=qs('#reader'),items=Array.from(drawer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter(function(el){return el.getClientRects().length;});
+    if(!items.length)return;
+    var first=items[0],last=items[items.length-1],active=document.activeElement;
+    if(e.shiftKey&&(active===first||!drawer.contains(active))){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&(active===last||!drawer.contains(active))){e.preventDefault();first.focus();}
+  }
 
   /* =====================================================================
      SURFACE E — ALT-DATA (Google · Reddit · Wikipedia · TikTok)
@@ -1809,7 +2588,7 @@
   function altFlag(src, nTopics){
     var seedflag='<span class="seedflag" data-tip-en="Seed backfill only — no lawful live source yet; treat as historical curiosity." data-tip-zh="仅为种子回填 —— 暂无合规实时来源；仅作历史参考。">'+TT('seed only','仅种子')+'</span>';
     var liveflag='<span class="liveflag" data-tip-en="Seeded from backfill; our own collector runs forward from here." data-tip-zh="以回填为种子；此后由我们自己的采集器持续更新。">'+TT('live','实时')+'</span>';
-    var outageflag='<span class="outageflag" data-tip-en="No update timestamp on this source — we cannot claim it is current." data-tip-zh="该来源没有更新时间 —— 不能称为正在更新。">'+TT('not updating','未更新')+'</span>';
+    var outageflag='<span class="outageflag" data-tip-en="No update timestamp on this source — we cannot claim it is current." data-tip-zh="该来源没有更新时间 —— 不能称为正在更新。">'+TT('Update date unavailable','更新日期暂缺')+'</span>';
     if(!src || (!src.seed_only && (src.asof==null || src.asof===''))) return outageflag;
     if(src.seed_only) return seedflag;
     if(nTopics>0) return liveflag;
@@ -1822,7 +2601,7 @@
       var src=ALT&&ALT.sources&&ALT.sources[k];
       if(src&&src.asof) named.push(LT(ALT_SRC[k].en,ALT_SRC[k].zh)+' '+esc(String(src.asof)));
     });
-    if(!named.length) return TT('feeds haven\'t updated','数据源尚未更新');
+    if(!named.length) return TT('Update dates unavailable','更新日期暂缺');
     return named.join(' · ');
   }
   function altColumn(key){
@@ -1847,6 +2626,7 @@
   }
   function renderAlt(){
     var host=qs('#alt-body');if(!host)return;
+    if(paintSlice(host,altLoaded,'data','altdata_trending.json'))return;
     if(!ALT||!ALT.sources){host.innerHTML=altEmpty();return;}
     host.innerHTML='<div class="altwrap">'+['google','reddit','wikipedia','tiktok'].map(altColumn).join('')+'</div>';
     var nTopics=['google','reddit','wikipedia','tiktok'].reduce(function(n,k){
@@ -1860,10 +2640,9 @@
     var prov=qs('#alt-prov');
     if(prov)prov.innerHTML=LT('YoY = how much bigger the topic is than a year ago. Google, Reddit and Wikipedia run live forward from a seed backfill; TikTok is seed-only until a lawful live source exists. Matching to a stock is the source model’s guess — sanity-check it.','同比 = 该话题相比一年前扩大的幅度。Google、Reddit、维基百科在种子回填基础上持续实时更新；TikTok 在合规实时来源出现前仅为种子数据。与个股的匹配来自来源模型的推断 —— 请自行核对。');
   }
-  function loadAlt(){
-    if(altLoaded.done){renderAlt();return;}
+  function loadAlt(retry){
     altLoaded.done=true;
-    fetch('stagedata/altdata_trending.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){ALT=d;renderAlt();}).catch(function(){ALT=null;renderAlt();});
+    return readOwnedSlice(altLoaded,'data','altdata_trending.json',function(d){return objectRecord(d)&&objectRecord(d.sources)&&Object.keys(d.sources).every(function(k){var s=d.sources[k];return objectRecord(s)&&objectRows(s.topics);});},function(d){ALT=d;},renderAlt,retry);
   }
 
   /* =====================================================================
@@ -1889,6 +2668,7 @@
   }
   function renderRes(){
     var host=qs('#res-body');if(!host)return;
+    if(paintSlice(host,resLoaded,'data','research_index.json')){var count=qs('#res-count');if(count)count.innerHTML='';return;}
     if(!RES||!(RES.items||[]).length){host.innerHTML=resEmpty();var c0=qs('#res-count');if(c0)c0.innerHTML='';return;}
     var its=resItems();
     var cnt=qs('#res-count');
@@ -1910,10 +2690,9 @@
       btn.textContent=open?TT('Show less','收起'):TT('Read more','展开');
     });});
   }
-  function loadResearch(){
-    if(resLoaded.done){renderRes();return;}
+  function loadResearch(retry){
     resLoaded.done=true;
-    fetch('stagedata/research_index.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){RES=d;renderRes();}).catch(function(){RES=null;renderRes();});
+    return readOwnedSlice(resLoaded,'data','research_index.json',researchEnvelope,function(d){RES=d;},renderRes,retry);
   }
 
   /* ---- tabs ---- */
@@ -1959,6 +2738,14 @@
   /* ---- wiring ---- */
   function wire(){
     renderHead();
+    var exportButton=qs('#screener-csv');if(exportButton)exportButton.disabled=true;
+    document.addEventListener('click',function(e){
+      var button=e.target.closest&&e.target.closest('[data-retry-slice]');
+      if(!button||button.disabled)return;
+      var tab=qs('.tab[aria-selected="true"]');
+      button.disabled=true;retryOwnedFile(button.getAttribute('data-retry-slice'));
+      if(tab)tab.focus();
+    });
     qsa('.tab').forEach(function(t){t.addEventListener('click',function(){selectTab(t.getAttribute('data-tab'),true);});
       t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowLeft'){var tabs=qsa('.tab');var i=tabs.indexOf(t);var j=e.key==='ArrowRight'?(i+1)%tabs.length:(i-1+tabs.length)%tabs.length;tabs[j].focus();tabs[j].click();}});
     });
@@ -1983,6 +2770,17 @@
     var csv=qs('#screener-csv');if(csv)csv.addEventListener('click',exportCSV);
     /* §14: hover is never the only path. Filter/region tips open on pointerdown,
        click and keyboard (Enter/Space). hover:none otherwise hides ::after. */
+    var activeTip=null;
+    function positionTip(q){
+      if(!q)return;
+      activeTip=q;var rect=q.getBoundingClientRect(),width=Math.min(270,window.innerWidth-32);
+      var center=Math.max(16+width/2,Math.min(window.innerWidth-16-width/2,rect.left+rect.width/2));
+      q.style.setProperty('--tip-left',(center-rect.left)+'px');
+      q.setAttribute('aria-description',q.getAttribute(isZH()?'data-tip-zh':'data-tip-en')||'');
+    }
+    document.addEventListener('mouseover',function(e){var q=e.target.closest&&e.target.closest('[data-tip-en]');if(q&&(!e.relatedTarget||!q.contains(e.relatedTarget))){q.classList.remove('tip-dismissed');positionTip(q);}});
+    document.addEventListener('focusin',function(e){var q=e.target.closest&&e.target.closest('[data-tip-en]');if(q){q.classList.remove('tip-dismissed');positionTip(q);}});
+    window.addEventListener('resize',function(){if(activeTip&&activeTip.isConnected)positionTip(activeTip);});
     function closeTips(except){
       qsa('[data-tip-en].tip-open').forEach(function(el){if(el!==except)el.classList.remove('tip-open');});
     }
@@ -1990,17 +2788,18 @@
       var q=e.target&&e.target.closest&&e.target.closest('.tip-q, #region-seg button[disabled]');
       if(!q){closeTips(null);return;}
       e.preventDefault();e.stopPropagation();
+      positionTip(q);q.classList.remove('tip-dismissed');
       var was=q.classList.contains('tip-open');
       closeTips(null);
       if(!was)q.classList.add('tip-open');
     }
-    document.addEventListener('pointerdown',onTipActivate,true);
+    document.addEventListener('pointerdown',function(e){if(e.target.closest&&e.target.closest('#region-seg button[disabled]'))onTipActivate(e);},true);
     document.addEventListener('click',onTipActivate,true);
     document.addEventListener('keydown',function(e){
       var t=e.target;if(!t||!t.classList)return;
       if(!(t.classList.contains('tip-q')||(t.matches&&t.matches('#region-seg button[disabled]'))))return;
-      if(e.key==='Enter'||e.key===' '){e.preventDefault();t.classList.toggle('tip-open');}
-      if(e.key==='Escape')t.classList.remove('tip-open');
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();positionTip(t);t.classList.remove('tip-dismissed');t.classList.toggle('tip-open');}
+      if(e.key==='Escape'){t.classList.remove('tip-open');t.classList.add('tip-dismissed');}
     });
     /* delegated row expand + watch add */
     var body=qs('#screener-body');if(body)body.addEventListener('click',function(e){
@@ -2013,10 +2812,10 @@
        markup from option text, showing BOTH languages), so every option carries
        its labels on data-en/data-zh and we set textContent to the active lang. */
     function relangOptions(){var zh=isZH();qsa('option[data-en]').forEach(function(o){var v=zh?o.getAttribute('data-zh'):o.getAttribute('data-en');if(v!=null)o.textContent=v;});}
-    function relang(){var s=qs('#tick-search');if(s)s.placeholder=isZH()?s.getAttribute('data-ph-zh'):s.getAttribute('data-ph-en');relangOptions();if(RAW.length)applyView();}
+    function relang(){var s=qs('#tick-search');if(s)s.placeholder=isZH()?s.getAttribute('data-ph-zh'):s.getAttribute('data-ph-en');relangOptions();if(LOADED.screener)applyView();if(boardLoaded.done)renderBoard();if(indLoaded.done)renderIndustries();if(ernLoaded.done)renderErn();if(altLoaded.done)renderAlt();if(resLoaded.done)renderRes();drawArc();}
     var mo=new MutationObserver(relang);mo.observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']});relang();
     /* stamp final counts (so the arc reads them even mid-animation) */
-    qsa('.stn .num[data-cnt]').forEach(function(el){el.setAttribute('data-final',(el.textContent||'').replace(/[^\d]/g,''));});
+    qsa('.stn .num[data-cnt]').forEach(function(el){var raw=(el.textContent||'').trim().replace(/,/g,'');el.setAttribute('data-final',/^\d+$/.test(raw)&&Number.isSafeInteger(Number(raw))?raw:'');});
     drawArc();
     /* hero count roll-in. CRITICAL: the true count (152/1609/…) is written
        FIRST and is guaranteed to end there even if requestAnimationFrame is
@@ -2047,11 +2846,11 @@
     var host=qs('#arc-wrap');if(!host)return;
     var css=getComputedStyle(document.documentElement);
     var tok=function(n){return css.getPropertyValue(n).trim();};
-    var raw={s1:0,s2:0,s3:0,s4:0};
-    qsa('.stn').forEach(function(st){
-      var key=st.className.match(/\bs(\d)\b/);var num=st.querySelector('.num');
-      if(key&&num){var v=parseInt((num.getAttribute('data-final')||num.textContent).replace(/[^\d]/g,''),10);raw['s'+key[1]]=isNaN(v)?0:v;}
-    });
+    var values;try{values=JSON.parse(host.getAttribute('data-counts')||'null');}catch(_){values=null;}
+    var known=Array.isArray(values)&&values.length===4&&values.every(function(v){return typeof v==='number'&&Number.isSafeInteger(v)&&v>=0;});
+    var populationStatus=host.getAttribute('data-population-status');
+    known=known&&populationStatus!=='no_target_week'&&populationStatus!=='unavailable';
+    var raw={s1:values&&values[0],s2:values&&values[1],s3:values&&values[2],s4:values&&values[3]};
     var W=560,H=300,padX=26,padTop=26,baseY=214;
     var scol={1:tok('--s1'),2:tok('--s2'),3:tok('--s3'),4:tok('--s4')};
     var line=tok('--line'),mut=tok('--muted');
@@ -2066,11 +2865,12 @@
     var pathD='';for(var i=0;i<=100;i++){var x=i/100;var px=padX+x*(W-2*padX);var py=curveY(x);pathD+=(i?'L':'M')+px.toFixed(1)+' '+py.toFixed(1)+' ';}
     /* stage x-centres for the dot clouds */
     var centres={1:0.09,2:0.34,3:0.56,4:0.82};
-    var total=raw.s1+raw.s2+raw.s3+raw.s4||1;
+    var total=known?raw.s1+raw.s2+raw.s3+raw.s4:0;
+    host.setAttribute('data-population',known?(total?'ready':'empty'):'unknown');
     var dots='';
     function seed(s){var t=0;for(var i=0;i<s.length;i++)t=(t*31+s.charCodeAt(i))>>>0;return function(){t=(t*1103515245+12345)>>>0;return (t>>>8)/16777216;};}
     Object.keys(centres).forEach(function(k){
-      var n=raw['s'+k];var shown=Math.max(0,Math.min(46,Math.round(n/total*120)));
+      var n=raw['s'+k];var shown=known&&total>0?Math.max(0,Math.min(46,Math.round(n/total*120))):0;
       var cx0=centres[k];var rnd=seed('stage'+k);
       for(var d=0;d<shown;d++){
         var xj=cx0+(rnd()-0.5)*0.14;xj=Math.max(0.02,Math.min(0.98,xj));
@@ -2091,6 +2891,8 @@
     var arcLabel=isZH()
       ? '市场阶段曲线：'+raw.s2+' 只上升，'+raw.s1+' 只筑底，'+raw.s3+' 只见顶，'+raw.s4+' 只下行。'
       : 'Market stage arc: '+raw.s2+' advancing, '+raw.s1+' building a base, '+raw.s3+' topping, '+raw.s4+' declining.';
+    if(!known)arcLabel=isZH()?'分类总体暂缺；不绘制占比。':'Classification population unavailable; no proportions are drawn.';
+    else if(total===0)arcLabel=isZH()?'已知分类总体为零。':'Known classified population is zero.';
     var svg='<svg viewBox="0 0 '+W+' '+(H)+'" role="img" aria-label="'+esc(arcLabel)+'">'+
       '<defs><linearGradient id="arcg" x1="0" y1="0" x2="1" y2="0">'+
         '<stop offset="0" stop-color="'+scol[1]+'"/><stop offset="0.34" stop-color="'+scol[2]+'"/>'+
@@ -2098,16 +2900,16 @@
       '</linearGradient></defs>'+
       '<line x1="'+padX+'" y1="'+baseY+'" x2="'+(W-padX)+'" y2="'+baseY+'" stroke="'+line+'" stroke-width="1"/>'+
       dots+
-      '<path d="'+pathD+'" fill="none" stroke="url(#arcg)" stroke-width="2.6" stroke-linecap="round"/>'+
+      '<path d="'+pathD+'" fill="none" stroke="'+(known?'url(#arcg)':mut)+'" stroke-width="2.6" stroke-linecap="round"/>'+
       labs+
       '</svg>';
-    host.innerHTML=svg;
+    host.innerHTML=svg+(!known?'<p class="arc-availability" role="status">'+TT('Classification population unavailable','分类总体暂缺')+'</p>':total===0?'<p class="arc-availability" role="status">'+TT('No classified names in the supplied population','已有分类总体中没有股票')+'</p>':'');
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
 })();
 </script>
-<script src="live_config.js?v=52943e92" defer></script>
-<script src="live.js?v=f8cda39d" defer></script>
+<script src="live_config.js"></script>
+<script src="live.js"></script>
 </body>
 </html>
