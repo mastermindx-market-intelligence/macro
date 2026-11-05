@@ -22,7 +22,10 @@ from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from app import paywall
+from app.forensics import FIF_FINANCIAL_DATASET_MODE_ENV
 from app.main import app, require_user
+
+import app.main as main
 
 UID = "11111111-1111-1111-1111-111111111111"
 ALICE = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
@@ -287,3 +290,56 @@ def test_missing_bearer_is_rejected_without_touching_the_cache():
     assert ei.value.status_code == 401
     assert ei.value.detail == "missing bearer token"
     assert paywall._AUTH_CACHE == {}
+
+
+# ── FIF A0-a: names-only dataset-mode readout on /api/health ──────────────────
+# ONE additive key, resolved by the same helper the forensics routes use, so
+# the production switch is verifiable on the installed site without an
+# entitled session. The env-var NAME comes from app.forensics — never a second
+# hardcoded copy of the string.
+
+
+def test_health_dataset_mode_is_golden_when_unset_or_empty(monkeypatch):
+    monkeypatch.delenv(FIF_FINANCIAL_DATASET_MODE_ENV, raising=False)
+    body = client.get("/api/health").json()
+    assert body["fif_financial_dataset_mode"] == "golden"
+
+    monkeypatch.setenv(FIF_FINANCIAL_DATASET_MODE_ENV, "")
+    body = client.get("/api/health").json()
+    assert body["fif_financial_dataset_mode"] == "golden"
+
+
+def test_health_dataset_mode_reports_lawful_modes_verbatim(monkeypatch):
+    for value in ("golden", "production"):
+        monkeypatch.setenv(FIF_FINANCIAL_DATASET_MODE_ENV, value)
+        body = client.get("/api/health").json()
+        assert body["fif_financial_dataset_mode"] == value
+
+
+def test_health_dataset_mode_invalid_is_names_only_and_still_200(monkeypatch):
+    canary = "prod-SECRET-canary-7f3"
+    monkeypatch.setenv(FIF_FINANCIAL_DATASET_MODE_ENV, canary)
+    r = client.get("/api/health")
+    assert r.status_code == 200
+    assert canary not in r.text, "the configured value must never be echoed"
+    assert r.json()["fif_financial_dataset_mode"] == "invalid"
+
+
+def test_health_dataset_mode_key_is_additive_and_existing_keys_unchanged(monkeypatch):
+    monkeypatch.delenv(FIF_FINANCIAL_DATASET_MODE_ENV, raising=False)
+    body = client.get("/api/health").json()
+    assert set(body) == {"status", "commit", "checkout", "fif_financial_dataset_mode"}
+    assert body["status"] == "ok"
+    assert body["commit"] == main._PROCESS_COMMIT, "process-pinned commit contract"
+    assert body["checkout"], "live checkout read stays present with today's meaning"
+
+
+def test_health_dataset_mode_foreign_error_is_never_masked_as_invalid(monkeypatch):
+    """Only ProductionDatasetModeError becomes "invalid" — a resolver bug surfaces."""
+
+    def _bug():
+        raise RuntimeError("resolver bug — must surface, not become 'invalid'")
+
+    monkeypatch.setattr(main, "_financial_dataset_mode", _bug)
+    with pytest.raises(RuntimeError):
+        client.get("/api/health")

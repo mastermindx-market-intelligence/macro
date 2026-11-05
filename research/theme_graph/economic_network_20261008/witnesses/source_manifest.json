@@ -1,0 +1,32 @@
+[
+  {
+    "repo": "mastermindx-market-intelligence/macro",
+    "path": "contracts/economic_propagation/propagation_hypothesis.v1.schema.json",
+    "ref": "74b6426c8be71adec27df00f2f98172f8528c2b2",
+    "blob": "847c47e557aa9b5b3e2a0bab11a0b3c9fc2a9907",
+    "local": "source_snapshots/contracts__economic_propagation__propagation_hypothesis.v1.schema.json",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/74b6426c8be71adec27df00f2f98172f8528c2b2/contracts/economic_propagation/propagation_hypothesis.v1.schema.json",
+    "sha256": "2fb402368b71693d457a173efe03d5b3e7144bae7bba1573eb90730e01a375d6",
+    "bytes": 22585
+  },
+  {
+    "repo": "mastermindx-market-intelligence/macro",
+    "path": "lib/dataos/temporal.py",
+    "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+    "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+    "local": "source_snapshots/lib__dataos__temporal.py",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/lib/dataos/temporal.py",
+    "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+    "bytes": 12847
+  },
+  {
+    "repo": "mastermindx-market-intelligence/macro",
+    "path": "engine/theme_graph/theme_state.py",
+    "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+    "blob": "38274c5002bcd5d5773c28dee27016fb2eef830e",
+    "local": "source_snapshots/engine__theme_graph__theme_state.py",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/engine/theme_graph/theme_state.py",
+    "sha256": "2cb329073277cb9e037b2fc8602226d7e375d144a06d0c9d847d77ff3ab4dbc6",
+    "bytes": 31552
+  }
+]

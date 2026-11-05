@@ -1,0 +1,786 @@
+[
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
+    "force_state": null,
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 1424,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 574.734375,
+        "found": true,
+        "height": 131.828125,
+        "left": 52,
+        "name": "lead",
+        "rendered": true,
+        "right": 707.015625,
+        "selector": "#ff-quick-signal",
+        "top": 442.90625,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 306.609375,
+        "found": true,
+        "height": 56.9375,
+        "left": 45,
+        "name": "saved",
+        "rendered": true,
+        "right": 955,
+        "selector": "#ff-saved-controls",
+        "top": 249.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|saved_write_failure",
+    "force_state": "saved_write_failure",
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 1424,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 656.234375,
+        "found": true,
+        "height": 131.828125,
+        "left": 52,
+        "name": "lead",
+        "rendered": true,
+        "right": 707.015625,
+        "selector": "#ff-quick-signal",
+        "top": 524.40625,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 306.609375,
+        "found": true,
+        "height": 56.9375,
+        "left": 45,
+        "name": "saved",
+        "rendered": true,
+        "right": 955,
+        "selector": "#ff-saved-controls",
+        "top": 249.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous",
+    "force_state": null,
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 1424,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 574.734375,
+        "found": true,
+        "height": 131.828125,
+        "left": 52,
+        "name": "lead",
+        "rendered": true,
+        "right": 707.015625,
+        "selector": "#ff-quick-signal",
+        "top": 442.90625,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 306.609375,
+        "found": true,
+        "height": 56.9375,
+        "left": 45,
+        "name": "saved",
+        "rendered": true,
+        "right": 955,
+        "selector": "#ff-saved-controls",
+        "top": 249.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|saved_write_failure",
+    "force_state": "saved_write_failure",
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 1424,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 656.234375,
+        "found": true,
+        "height": 131.828125,
+        "left": 52,
+        "name": "lead",
+        "rendered": true,
+        "right": 707.015625,
+        "selector": "#ff-quick-signal",
+        "top": 524.40625,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 306.609375,
+        "found": true,
+        "height": 56.9375,
+        "left": 45,
+        "name": "saved",
+        "rendered": true,
+        "right": 955,
+        "selector": "#ff-saved-controls",
+        "top": 249.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous",
+    "force_state": null,
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 1424,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 574.734375,
+        "found": true,
+        "height": 131.828125,
+        "left": 52,
+        "name": "lead",
+        "rendered": true,
+        "right": 707.015625,
+        "selector": "#ff-quick-signal",
+        "top": 442.90625,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 306.609375,
+        "found": true,
+        "height": 56.9375,
+        "left": 45,
+        "name": "saved",
+        "rendered": true,
+        "right": 955,
+        "selector": "#ff-saved-controls",
+        "top": 249.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|saved_write_failure",
+    "force_state": "saved_write_failure",
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 1424,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 656.234375,
+        "found": true,
+        "height": 131.828125,
+        "left": 52,
+        "name": "lead",
+        "rendered": true,
+        "right": 707.015625,
+        "selector": "#ff-quick-signal",
+        "top": 524.40625,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 306.609375,
+        "found": true,
+        "height": 56.9375,
+        "left": 45,
+        "name": "saved",
+        "rendered": true,
+        "right": 955,
+        "selector": "#ff-saved-controls",
+        "top": 249.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous",
+    "force_state": null,
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 1424,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 574.734375,
+        "found": true,
+        "height": 131.828125,
+        "left": 52,
+        "name": "lead",
+        "rendered": true,
+        "right": 707.015625,
+        "selector": "#ff-quick-signal",
+        "top": 442.90625,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 306.609375,
+        "found": true,
+        "height": 56.9375,
+        "left": 45,
+        "name": "saved",
+        "rendered": true,
+        "right": 955,
+        "selector": "#ff-saved-controls",
+        "top": 249.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|saved_write_failure",
+    "force_state": "saved_write_failure",
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 86,
+        "found": true,
+        "height": 42,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 1424,
+        "selector": "nav.site-nav",
+        "top": 44,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 656.234375,
+        "found": true,
+        "height": 131.828125,
+        "left": 52,
+        "name": "lead",
+        "rendered": true,
+        "right": 707.015625,
+        "selector": "#ff-quick-signal",
+        "top": 524.40625,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 306.609375,
+        "found": true,
+        "height": 56.9375,
+        "left": 45,
+        "name": "saved",
+        "rendered": true,
+        "right": 955,
+        "selector": "#ff-saved-controls",
+        "top": 249.671875,
+        "viewport_height": 900,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous",
+    "force_state": null,
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 374,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 848.21875,
+        "found": true,
+        "height": 193.421875,
+        "left": 26,
+        "name": "lead",
+        "rendered": true,
+        "right": 364,
+        "selector": "#ff-quick-signal",
+        "top": 654.796875,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 487.734375,
+        "found": true,
+        "height": 140.9375,
+        "left": 21,
+        "name": "saved",
+        "rendered": true,
+        "right": 369,
+        "selector": "#ff-saved-controls",
+        "top": 346.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|saved_write_failure",
+    "force_state": "saved_write_failure",
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 374,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 939.8125,
+        "found": true,
+        "height": 193.421875,
+        "left": 26,
+        "name": "lead",
+        "rendered": true,
+        "right": 364,
+        "selector": "#ff-quick-signal",
+        "top": 746.390625,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 487.734375,
+        "found": true,
+        "height": 140.9375,
+        "left": 21,
+        "name": "saved",
+        "rendered": true,
+        "right": 369,
+        "selector": "#ff-saved-controls",
+        "top": 346.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
+    "force_state": null,
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 374,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 848.21875,
+        "found": true,
+        "height": 193.421875,
+        "left": 26,
+        "name": "lead",
+        "rendered": true,
+        "right": 364,
+        "selector": "#ff-quick-signal",
+        "top": 654.796875,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 487.734375,
+        "found": true,
+        "height": 140.9375,
+        "left": 21,
+        "name": "saved",
+        "rendered": true,
+        "right": 369,
+        "selector": "#ff-saved-controls",
+        "top": 346.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|saved_write_failure",
+    "force_state": "saved_write_failure",
+    "locale": "en",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 374,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 939.8125,
+        "found": true,
+        "height": 193.421875,
+        "left": 26,
+        "name": "lead",
+        "rendered": true,
+        "right": 364,
+        "selector": "#ff-quick-signal",
+        "top": 746.390625,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 487.734375,
+        "found": true,
+        "height": 140.9375,
+        "left": 21,
+        "name": "saved",
+        "rendered": true,
+        "right": 369,
+        "selector": "#ff-saved-controls",
+        "top": 346.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous",
+    "force_state": null,
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 374,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 830.21875,
+        "found": true,
+        "height": 175.421875,
+        "left": 26,
+        "name": "lead",
+        "rendered": true,
+        "right": 364,
+        "selector": "#ff-quick-signal",
+        "top": 654.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 487.734375,
+        "found": true,
+        "height": 140.9375,
+        "left": 21,
+        "name": "saved",
+        "rendered": true,
+        "right": 369,
+        "selector": "#ff-saved-controls",
+        "top": 346.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|saved_write_failure",
+    "force_state": "saved_write_failure",
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 374,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 909.71875,
+        "found": true,
+        "height": 175.421875,
+        "left": 26,
+        "name": "lead",
+        "rendered": true,
+        "right": 364,
+        "selector": "#ff-quick-signal",
+        "top": 734.296875,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 487.734375,
+        "found": true,
+        "height": 140.9375,
+        "left": 21,
+        "name": "saved",
+        "rendered": true,
+        "right": 369,
+        "selector": "#ff-saved-controls",
+        "top": 346.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "dark",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous",
+    "force_state": null,
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 374,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 830.21875,
+        "found": true,
+        "height": 175.421875,
+        "left": 26,
+        "name": "lead",
+        "rendered": true,
+        "right": 364,
+        "selector": "#ff-quick-signal",
+        "top": 654.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 487.734375,
+        "found": true,
+        "height": 140.9375,
+        "left": 21,
+        "name": "saved",
+        "rendered": true,
+        "right": 369,
+        "selector": "#ff-saved-controls",
+        "top": 346.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|saved_write_failure",
+    "force_state": "saved_write_failure",
+    "locale": "zh",
+    "measurements": [
+      {
+        "bottom": 114,
+        "found": true,
+        "height": 88,
+        "left": 16,
+        "name": "nav",
+        "rendered": true,
+        "right": 374,
+        "selector": "nav.site-nav",
+        "top": 26,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      },
+      {
+        "bottom": 909.71875,
+        "found": true,
+        "height": 175.421875,
+        "left": 26,
+        "name": "lead",
+        "rendered": true,
+        "right": 364,
+        "selector": "#ff-quick-signal",
+        "top": 734.296875,
+        "viewport_height": 844,
+        "within_first_viewport": false
+      },
+      {
+        "bottom": 487.734375,
+        "found": true,
+        "height": 140.9375,
+        "left": 21,
+        "name": "saved",
+        "rendered": true,
+        "right": 369,
+        "selector": "#ff-saved-controls",
+        "top": 346.796875,
+        "viewport_height": 844,
+        "within_first_viewport": true
+      }
+    ],
+    "mode": "populated",
+    "theme": "light",
+    "viewport": "mobile"
+  }
+]

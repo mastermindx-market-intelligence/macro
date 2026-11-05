@@ -65,43 +65,76 @@
 
   var _index = null, _indexBy = null, _tickerCache = {};
   var _mkt = {}, _mktLoading = {};   // market -> {list, byTicker} / in-flight promise
+  var _indexLoading = null;          // the ONE in-flight US index read (direct + indirect callers)
+  var _mktNeg = {};                  // market -> epoch ms before which a FAILED index is not refetched
+  var _recoverSubs = [];             // recovery controllers, told when a FAILED market loads (any reader)
+
+  // Build {list, byTicker} OFF TO THE SIDE so a malformed payload never reaches the
+  // successful cache. A non-array top level throws; a non-object row (null or a
+  // primitive) is dropped from BOTH list and lookup so it cannot poison the
+  // generation. Every object row is kept exactly as the pre-fix module kept it (no
+  // stricter ticker-identity rule); optional/null fields are left exactly as served.
+  function _buildIndex(raw, mktOf) {
+    if (!Array.isArray(raw)) throw new Error('malformed index');
+    var list = [], by = {};
+    raw.forEach(function (x) {
+      if (!x || typeof x !== 'object') return;
+      x.mkt = mktOf(x);
+      list.push(x); by[x.t] = x;
+    });
+    return { list: list, byTicker: by };
+  }
 
   // fetch + cache the full US search index once -> {list, byTicker}. Unchanged contract:
   // REJECTS when the index is unavailable (callers rely on the catch to still paint).
+  // Concurrent callers share one in-flight read; a failure rejects every waiter and
+  // the next call retries.
   function loadIndex() {
     if (_index) return Promise.resolve({ list: _index, byTicker: _indexBy });
-    return fetch('stockdata/index.json').then(function (r) {
-      if (!r.ok) throw new Error('index unavailable');
+    if (_indexLoading) return _indexLoading;
+    var p = fetch('stockdata/index.json').then(function (r) {
+      if (!r.ok) throw _httpErr(r, 'index unavailable');
       return r.json();
-    }).then(function (list) {
-      _index = list; _indexBy = {};
-      list.forEach(function (x) { x.mkt = x.mkt || 'us'; _indexBy[x.t] = x; });
+    }).then(function (raw) {
+      var built = _buildIndex(raw, function (x) { return x.mkt || 'us'; });
+      _index = built.list; _indexBy = built.byTicker;
       _mkt.us = { list: _index, byTicker: _indexBy };
+      _loadedAfterFailure('us');
       return { list: _index, byTicker: _indexBy };
     });
+    _indexLoading = p;
+    var clear = function () { if (_indexLoading === p) _indexLoading = null; };
+    p.then(clear, clear);
+    return p;
   }
 
-  // one market's index, memoized. Fail-OPEN: a missing store contributes nothing
-  // rather than breaking the merge (a market the user holds nothing in may 404).
+  // one market's index, memoized. Fail-OPEN for the merge: a missing store contributes
+  // nothing rather than breaking the merge (a market the user holds nothing in may 404).
+  // But a failure is never cached as success — it is retried after a bounded window:
+  // short for transient failures / Retry-After, long for a definitive 404.
   function loadMarketIndex(m) {
     m = normMkt(m);
     if (_mkt[m]) return Promise.resolve(_mkt[m]);
     if (_mktLoading[m]) return _mktLoading[m];
     var dir = MKT_DIR[m];
     if (!dir) return Promise.resolve({ list: [], byTicker: {} });
+    if (_mktNeg[m] != null && Date.now() < _mktNeg[m]) return Promise.resolve({ list: [], byTicker: {} });
     var p = (m === 'us' ? loadIndex() : fetch(dir + '/index.json').then(function (r) {
-      if (!r.ok) throw new Error('absent');
+      if (!r.ok) throw _httpErr(r, 'absent');
       return r.json();
-    }).then(function (list) {
-      var by = {};
-      list.forEach(function (x) { x.mkt = m; by[x.t] = x; });
-      _mkt[m] = { list: list, byTicker: by };
+    }).then(function (raw) {
+      _mkt[m] = _buildIndex(raw, function () { return m; });
+      _loadedAfterFailure(m);
       return _mkt[m];
-    })).catch(function () {
-      _mkt[m] = { list: [], byTicker: {} };
-      return _mkt[m];
+    })).then(function (res) {
+      delete _mktNeg[m];
+      return res;
+    }, function (err) {
+      _mktNeg[m] = Date.now() + _failTtl(err);
+      return { list: [], byTicker: {} };
     });
     _mktLoading[m] = p;
+    p.then(function () { if (_mktLoading[m] === p) delete _mktLoading[m]; });
     return p;
   }
 
@@ -127,6 +160,119 @@
     });
   }
 
+  /* ---- consumer recovery (S3-01 consumer half) ------------------------------
+     loadIndexes() is fail-OPEN, so a market whose index read failed comes back as an
+     empty part and the caller cannot tell "nothing here" from "not loaded yet". The
+     loader re-fetches after its failure window, but only when someone asks again —
+     and the pages ask once, at init. These two read-only additions let a consumer
+     ask again without polling. Nothing above changes beyond one notice when a
+     failed market loads: same caches, same failure windows, same shared in-flight
+     reads (a re-ask goes through loadIndexes).
+
+     indexRetryAt(markets) -> epoch ms of the earliest failure window among the named
+       markets that are still unloaded, or null when none failed. It may already be
+       in the past (the window has closed but nobody has asked since). Never fetches.
+
+     indexRecovery(marketsFn, onRecover) -> { check }. The consumer calls check()
+       after it applies a read. While a market in marketsFn() is unloaded after a
+       failure, it arms ONE timer per failed market for when that market's window
+       closes, and re-asks on `visibilitychange` (visible) and `online`. A timed
+       re-ask that fails again is not re-timed — from then on only those page events
+       re-ask, so an outage costs one extra read per market per controller, not a
+       loop. onRecover(r) runs once for every market this consumer last saw failed
+       that has since loaded — by this controller's re-ask OR by any other reader of
+       the shared cache (a search widen, an import dialog) — with the merged read of
+       the loaded markets, taken from the cache, never a fetch. */
+  function _failedMkts(markets) {
+    var want = [];
+    (markets || ['us']).forEach(function (m) {
+      m = normMkt(m);
+      if (MKT_DIR[m] && want.indexOf(m) < 0) want.push(m);
+    });
+    if (!want.length) want = ['us'];
+    return want.filter(function (m) { return !_mkt[m] && _mktNeg[m] != null; });
+  }
+  function indexRetryAt(markets) {
+    var at = null;
+    _failedMkts(markets).forEach(function (m) { if (at == null || _mktNeg[m] < at) at = _mktNeg[m]; });
+    return at;
+  }
+  // a market that had failed just loaded: every controller settles on its own, after
+  // the read that loaded it has finished (a microtask — never inside the loader)
+  function _loadedAfterFailure(m) {
+    if (_mktNeg[m] == null) return;
+    _recoverSubs.slice().forEach(function (fn) { Promise.resolve().then(fn); });
+  }
+  var RECOVER_SLACK = 250;   // ms past the window, so the re-ask never lands inside it
+  function indexRecovery(marketsFn, onRecover) {
+    var timer = null, timerAt = 0, busy = false, wired = false, timed = {}, owed = {};
+    function markets() { try { return marketsFn() || ['us']; } catch (e) { return ['us']; } }
+    function hidden() { return typeof document !== 'undefined' && document.hidden === true; }
+    function offline() { return typeof navigator !== 'undefined' && navigator.onLine === false; }
+    function arm(at) {
+      if (timer && timerAt <= at) return;          // an earlier window replaces a later timer
+      if (timer) clearTimeout(timer);
+      timerAt = at;
+      timer = setTimeout(fire, Math.max(0, at - Date.now()) + RECOVER_SLACK);
+    }
+    function fire() {
+      timer = null;
+      var now = Date.now();
+      _failedMkts(markets()).forEach(function (m) { if (_mktNeg[m] <= now) timed[m] = 1; });
+      if (hidden() || offline()) return;   // the visible / online event re-asks instead
+      reask();
+    }
+    // report what this consumer still holds as failed but the cache now has. Reads
+    // only markets already loaded, so it can never start a fetch.
+    function settle() {
+      var got = Object.keys(owed).filter(function (m) { return !!_mkt[m]; });
+      if (!got.length) return;
+      got.forEach(function (m) { delete owed[m]; });
+      var ms = markets().filter(function (m) { return !!_mkt[normMkt(m)]; });
+      if (!ms.length) return;
+      loadIndexes(ms).then(function (r) {
+        try { if (onRecover) onRecover(r); } finally { check(); }
+      });
+    }
+    function reask() {
+      if (busy) return;
+      var ms = markets();
+      if (!_failedMkts(ms).length) { settle(); return; }
+      busy = true;
+      loadIndexes(ms).then(function () {
+        busy = false;
+        settle();
+        check();
+      }, function () { busy = false; });
+    }
+    function onEvent() {
+      if (hidden()) return;
+      settle();
+      var at = indexRetryAt(markets());
+      if (at == null) return;
+      if (Date.now() >= at) reask(); else arm(at);
+    }
+    function check() {
+      var failed = _failedMkts(markets());
+      failed.forEach(function (m) { owed[m] = 1; });
+      if (!failed.length) {
+        if (timer) { clearTimeout(timer); timer = null; }
+        return false;
+      }
+      if (!wired) {
+        wired = true;
+        if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('visibilitychange', onEvent);
+        if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('online', onEvent);
+        _recoverSubs.push(settle);
+      }
+      var at = null;
+      failed.forEach(function (m) { if (!timed[m] && (at == null || _mktNeg[m] < at)) at = _mktNeg[m]; });
+      if (at != null) arm(at);
+      return true;
+    }
+    return { check: check };
+  }
+
   /* ---- per-ticker reads ----------------------------------------------------
      Two properties this layer must hold that it did not before W2, both of which
      the large-list gate (55 and 100 names) makes load-bearing:
@@ -135,10 +281,9 @@
         answered from it forever, so one transient network blip — or a 401 landed in
         the split second before the session cookie arrived — permanently blanked that
         name for the rest of the page's life, with no way back short of a reload. The
-        negative entry now carries an expiry: a real HTTP answer (404 "not in
-        tonight's library", 403/401) is stable for the session's practical purposes
-        and gets a long TTL; a thrown fetch (network down, DNS, abort) gets a short
-        one, so recovering the connection recovers the rows.
+        negative entry now carries an expiry: 404/410 and 401/403 keep the long TTL;
+        a thrown fetch AND a transient server answer (5xx/408/429) get the short one,
+        or the server's Retry-After clamped to [30 s, 10 min].
      2. FAN-OUT IS BOUNDED. A 100-name list used to issue 100 simultaneous requests
         the moment it painted; browsers queue them 6-per-host anyway, so the only
         real effects were a stalled main thread and a request storm that starved the
@@ -149,6 +294,32 @@
   var NEG_TTL_NET  = 30 * 1000;        // the network answered nothing: retry soon
   var _neg = {};                        // ticker -> epoch ms after which we may retry
   var _inflight = {};                   // ticker -> in-flight promise (dedupes concurrent asks)
+
+  function _httpErr(r, msg) {
+    var e = new Error(msg); e.http = true; e.status = r.status;
+    e.retryAfter = (r.headers && typeof r.headers.get === 'function') ? r.headers.get('Retry-After') : null;
+    return e;
+  }
+  function _retryAfterMs(v) {
+    if (v == null) return null;
+    var s = String(v).trim();
+    if (!s) return null;
+    if (/^\d+$/.test(s)) return parseInt(s, 10) * 1000;
+    var at = Date.parse(s);
+    return isNaN(at) ? null : Math.max(0, at - Date.now());
+  }
+  // How long a failure stays negative. Transient (thrown fetch, malformed body, 5xx,
+  // 408, 429): short, or the server's Retry-After clamped to [NEG_TTL_NET, NEG_TTL_HTTP]
+  // so it can neither storm nor stick. A definitive answer (404/410 "not in tonight's
+  // library", 401/403 "not for you"): long, exactly as before — no access semantics change.
+  function _failTtl(err) {
+    var st = err && err.status;
+    var transient = !(err && err.http) || st >= 500 || st === 408 || st === 429;
+    if (!transient) return NEG_TTL_HTTP;
+    var ra = _retryAfterMs(err && err.retryAfter);
+    if (ra == null) return NEG_TTL_NET;
+    return Math.min(NEG_TTL_HTTP, Math.max(NEG_TTL_NET, ra));
+  }
 
   function _negFresh(t) {
     var until = _neg[t];
@@ -164,7 +335,7 @@
     if (_inflight[t]) return _inflight[t];
 
     var p = fetch(storeOf(t) + '/' + safeTicker(t) + '.json').then(function (r) {
-      if (!r.ok) { var e = new Error('absent'); e.http = true; throw e; }
+      if (!r.ok) throw _httpErr(r, 'absent');
       return r.json();
     }).then(function (j) {
       _tickerCache[t] = j;
@@ -173,7 +344,7 @@
       return j;
     }).catch(function (err) {
       _tickerCache[t] = null;
-      _neg[t] = Date.now() + ((err && err.http) ? NEG_TTL_HTTP : NEG_TTL_NET);
+      _neg[t] = Date.now() + _failTtl(err);
       delete _inflight[t];
       return null;
     });
@@ -219,6 +390,7 @@
     lang: lang, lz: lz, disp: disp, label: label, action: action, dir: dir,
     stClass: stClass, safeTicker: safeTicker, storeOf: storeOf,
     loadIndex: loadIndex, loadIndexes: loadIndexes,
+    indexRetryAt: indexRetryAt, indexRecovery: indexRecovery,
     loadTicker: loadTicker, loadTickers: loadTickers
   };
 })();

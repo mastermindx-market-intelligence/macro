@@ -94,7 +94,7 @@ def _collect(root: Path):
     return signals, reads, spender_burden
 
 
-def _chain_cards(signals: dict, reads: dict) -> list[dict]:
+def _chain_cards(signals: dict, reads: dict, rpo_as_of=None) -> list[dict]:
     cards = []
     for chain in dc.CHAINS:
         sg = signals.get(chain["key"])
@@ -119,6 +119,7 @@ def _chain_cards(signals: dict, reads: dict) -> list[dict]:
             "fy": rpo[0]["fy_latest"], "n": len(rpo), "series": [],
             "leaders": [{"t": _ticker_of(r, reads), "yoy": r.get("yoy_pct"),
                          "bn": r.get("total_latest_bn")} for r in leaders],
+            "cache_as_of": rpo_as_of,
         })
     return cards
 
@@ -130,10 +131,40 @@ def _ticker_of(read: dict, reads: dict) -> str:
     return "?"
 
 
+def _open_theses(root: Path) -> list[dict]:
+    """W18-C14: open theses rows projected to board-safe keys; [] when absent."""
+    try:
+        text = (root / "data" / "demand_chain" / "theses.jsonl").read_text()
+    except Exception:  # noqa: BLE001 — an absent ledger never breaks the build
+        return []
+    rows: list[dict] = []
+    for line in text.splitlines():
+        try:
+            row = json.loads(line)
+        except Exception:  # noqa: BLE001 — skip malformed lines
+            continue
+        if isinstance(row, dict) and row.get("status") == "open":
+            rows.append({k: row.get(k) for k in
+                         ("subject", "chain", "lean", "check_by", "state_asof")})
+    rows.sort(key=lambda r: (r.get("check_by") or "", r.get("subject") or ""))
+    return rows
+
+
+def _rpo_as_of(root: Path):
+    """W18-C14: latest committed rpo.parquet stamp (YYYY-MM-DD), or None."""
+    try:
+        s = pd.read_parquet(root / "data" / "edgar" / "rpo.parquet",
+                            columns=["as_of"])["as_of"].dropna()
+    except Exception:  # noqa: BLE001 — an absent cache never breaks the build
+        return None
+    return str(s.max())[:10] if len(s) else None
+
+
 def build(root=None) -> str:
     root = Path(root or config.ROOT)
     signals, reads, spender_burden = _collect(root)
-    cards = _chain_cards(signals, reads)
+    rpo_as_of = _rpo_as_of(root)
+    cards = _chain_cards(signals, reads, rpo_as_of=rpo_as_of)
 
     groups = {k: [] for k in _DIV_ORDER}
     for tkr, r in reads.items():
@@ -155,6 +186,7 @@ def build(root=None) -> str:
             return None
 
     track, phase0 = _load("track_record.json"), _load("phase0.json")
+    open_theses = _open_theses(root)
     n_variants = len(groups["ahead_of_consensus"])
     built = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
     as_of = (track or {}).get("as_of") or built[:10]
@@ -173,7 +205,7 @@ def build(root=None) -> str:
     html = env.get_template("demand.html.j2").render(
         cards=cards, groups=groups, div_order=_DIV_ORDER, div_meta=_DIV_META,
         track=track, phase0=phase0, n_variants=n_variants, as_of=as_of, built=built,
-        spender_burden=spender_burden)
+        spender_burden=spender_burden, open_theses=open_theses, rpo_as_of=rpo_as_of)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     site.mkdir(parents=True, exist_ok=True)
     write_page(site / "demand.html", html)

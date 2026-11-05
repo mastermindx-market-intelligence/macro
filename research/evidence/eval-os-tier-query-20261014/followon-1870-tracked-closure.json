@@ -1,0 +1,22 @@
+{
+  "head": "1870efdb15dfa1e5ce22978eb7a0e5e31549db62",
+  "manifest_sha256": "13e0a07986b3e67817d83d5337fe32612dd03f8fd2ff2b6293b997fe1ac79616",
+  "inventory_sha256": "93cbd887256ddffb7b68bc5a8bff6f3ab8d7ae27cc019817a6744f2cb2ff34e5",
+  "jobs": {
+    "eval-os-a1": {
+      "declared": 1180,
+      "closure": 1180,
+      "missing": []
+    },
+    "intelligence-registry": {
+      "declared": 219,
+      "closure": 775,
+      "missing": []
+    },
+    "agentos-knowledge-contracts": {
+      "declared": 45,
+      "closure": 44,
+      "missing": []
+    }
+  }
+}
