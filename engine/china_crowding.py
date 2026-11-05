@@ -62,6 +62,7 @@ FLAG_LABELS: dict[str, tuple[str, str]] = {
     "limitup_froth": ("Limit-up froth", "涨停拥挤"),
     "attention_spike": ("Attention spike", "关注度飙升"),
     "rich_valuation": ("Rich valuation", "估值偏高"),
+    "leverage_crowded": ("Leverage crowded", "杠杆拥挤"),
 }
 
 

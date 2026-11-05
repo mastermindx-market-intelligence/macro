@@ -12,7 +12,10 @@ merge-binding B12-B14 battery from
   shell's own marginal contribution (tab + orchestration wiring only -- the
   inspector's rich U5 copy lives in the separate, unfenced
   ``government-revenue-dossiers.js``) stays inside the 8,192-byte shell
-  budget.
+  budget. The tab is the only FMS byte still inside the fenced HTML template;
+  the orchestration wiring moved into the external
+  ``government-revenue-page.js.j2`` page controller, so the marginal cost is
+  measured across the HTML render and the page controller source together.
 * B14 -- both new routes reject an anonymous reader, and the baked HTML never
   embeds an FMS case body (only the entitled JSON does).
 """
@@ -33,6 +36,9 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_PATH = ROOT / "templates" / "government_revenue.html.j2"
 TEMPLATE = TEMPLATE_PATH.read_text(encoding="utf-8")
 DOSSIERS_JS = (ROOT / "templates" / "government-revenue-dossiers.js").read_text(encoding="utf-8")
+# D6-B1 packet 2's mode wiring moved out of the byte-fenced HTML template into
+# this external page controller script; the shell budget spans both artifacts.
+PAGE_JS = (ROOT / "templates" / "government-revenue-page.js.j2").read_text(encoding="utf-8")
 SITE_PATH = ROOT / "site" / "government_revenue.html"
 SITE = SITE_PATH.read_text(encoding="utf-8")
 
@@ -79,14 +85,19 @@ U5_TABLE = (
 
 
 def test_fms_tab_and_mode_wiring_present_in_the_shell() -> None:
+    """The tab itself is byte-fenced HTML; the mode's orchestration wiring
+    moved with the page controller into the external
+    ``templates/government-revenue-page.js.j2`` page script."""
+    # Byte-fenced HTML template -- the tab is the only FMS byte left in it.
     assert 'data-mode="fms"' in TEMPLATE
     assert 'id="countFms"' in TEMPLATE
     assert "FMS Congressional Notifications" in TEMPLATE
     assert "FMS 国会通知" in TEMPLATE
-    assert "rowsByMode.fms" in TEMPLATE
-    assert "fmsUI" in TEMPLATE
-    assert "createGovernmentRevenueFms" in TEMPLATE
-    assert "fms_case" in TEMPLATE
+    # External page controller -- the wiring that used to be inline in the HTML.
+    assert "rowsByMode.fms" in PAGE_JS
+    assert "fmsUI" in PAGE_JS
+    assert "createGovernmentRevenueFms" in PAGE_JS
+    assert "fms_case" in PAGE_JS
 
 
 def _assert_u5_table_present_verbatim(haystack: str) -> None:
@@ -174,22 +185,30 @@ def test_generated_html_stays_inside_the_raw_edge_budget() -> None:
     assert len(rendered) <= RAW_HTML_BUDGET_BYTES
 
 
-def _strip_fms_shell(template_text: str) -> str:
+def _strip_fms_shell(template_text: str, page_js_text: str) -> tuple[str, str]:
     """Mechanically remove every D6-B1 packet-2 shell addition.
 
     Each removal below is the exact literal text inserted by this packet
     (never a heuristic regex over unrelated markup), so this reconstructs the
-    pre-FMS template byte-for-byte regardless of git history/HEAD state --
+    pre-FMS artifacts byte-for-byte regardless of git history/HEAD state --
     the mechanical "bake with the fms tab/section removed vs present"
     measurement the spec calls for (§11 B13), without depending on this
     branch never being squash-merged.
+
+    The tab button is the only fragment still inside the byte-fenced HTML
+    template; every other fragment moved with the page controller into the
+    external ``government-revenue-page.js.j2`` page script. Returns
+    ``(stripped_template, stripped_page_js)`` so the caller can measure the
+    marginal FMS cost across both artifacts.
     """
-    removals = [
+    html_removals = [
         '\n      <button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="fms">{{ t(\'FMS Congressional Notifications\',\'FMS 国会通知\') }}<span class="mode-count" id="countFms">—</span></button>',
+    ]
+    page_js_removals = [
         ",fms:[]",
         ",fmsStatus='loading'",
         (
-            "\n  // freshness.fms fallback applies ONLY with no module (mirrors budget above).\n"
+            "\n  // {# freshness.fms fallback applies ONLY with no module (mirrors budget above). #}\n"
             "  function fmsFailureState(){var wf=obj(WORKSPACE.freshness)?WORKSPACE.freshness:{},root=obj(DATA.freshness)?DATA.freshness:{},block=obj(wf.fms)?wf.fms:(obj(root.fms)?root.fms:null),fs=block&&block.failure_state;return fs==='projection_missing'||fs==='source_unavailable'?fs:null}\n"
             "  function fallbackFmsStatus(){var fs=fmsFailureState();return fs==='projection_missing'?'projection_missing':'unavailable'}"
         ),
@@ -201,11 +220,12 @@ def _strip_fms_shell(template_text: str) -> str:
             "tr('No official-union coverage manifest is active in this evidence cut. No case was inferred.','当前证据截点没有生效的官方联合覆盖清单。未推断任何案例。')];"
         ),
         (
-            "\n  var fmsUI=typeof window.createGovernmentRevenueFms==='function'?window.createGovernmentRevenueFms({obj:obj,arr:arr,esc:esc,text:text,n:n,money:money,date:date,tr:tr,safeUrl:safeUrl,host:function(){return $('inspector')},"
-            "isSelected:function(id){return state.selected===id},openEvidenceDrawer:openEvidenceDrawer,copyLink:copyLink,setMobile:setMobileSummary,onRows:function(rows,meta){rowsByMode.fms=arr(rows).filter(obj);fmsStatus=text((meta||{}).status,'unavailable');"
-            "syncCounts();populateFilters();if(state.mode==='fms'){state.selected='';applyFilters()}}}):(function(){fmsStatus=fallbackFmsStatus();return{load:function(){return Promise.resolve([])},refresh:function(){return[]},render:function(){},invalidate:function(){},state:function(){return fmsStatus}}})();"
+            "\n  var fmsUI=typeof window.createGovernmentRevenueFms==='function'?window.createGovernmentRevenueFms({authReloadOwner:true,obj:obj,arr:arr,esc:esc,text:text,n:n,money:money,date:date,tr:tr,safeUrl:safeUrl,host:function(){return $('inspector')},"
+            "isSelected:function(id){return state.selected===id},openEvidenceDrawer:openEvidenceDrawer,copyLink:copyLink,setMobile:setMobileSummary,onRows:function(rows,meta){var requested=pendingSelection||state.selected;rowsByMode.fms=arr(rows).filter(obj);fmsStatus=text((meta||{}).status,'unavailable');"
+            "syncCounts();populateFilters();if(state.mode==='fms'){state.selected=requested;applyFilters()}}}):(function(){fmsStatus=fallbackFmsStatus();return{load:function(){return Promise.resolve([])},refresh:function(){return[]},render:function(){},invalidate:function(){},state:function(){return fmsStatus}}})();"
         ),
         "if(!r||r.kind!=='fms_case')fmsUI.invalidate();",
+        "fmsUI.invalidate();",
         "if(r.kind==='fms_case'){fmsUI.render(r);return}",
         ";$('countFms').textContent=rowsByMode.fms.length",
         ",rowsByMode.fms",
@@ -213,11 +233,15 @@ def _strip_fms_shell(template_text: str) -> str:
         ";fmsUI.refresh()",
         ",'fms'",
     ]
-    stripped = template_text
-    for needle in removals:
-        assert needle in stripped, f"expected FMS shell fragment not found (test is stale): {needle[:80]!r}"
-        stripped = stripped.replace(needle, "")
-    return stripped
+    stripped_template = template_text
+    for needle in html_removals:
+        assert needle in stripped_template, f"expected FMS shell fragment not found in the HTML template (test is stale): {needle[:80]!r}"
+        stripped_template = stripped_template.replace(needle, "")
+    stripped_page_js = page_js_text
+    for needle in page_js_removals:
+        assert needle in stripped_page_js, f"expected FMS shell fragment not found in the page controller script (test is stale): {needle[:80]!r}"
+        stripped_page_js = stripped_page_js.replace(needle, "")
+    return stripped_template, stripped_page_js
 
 
 def _render(template_text: str) -> str:
@@ -233,9 +257,25 @@ def _render(template_text: str) -> str:
 
 
 def test_fms_shell_delta_stays_inside_its_own_byte_budget() -> None:
+    """Marginal FMS cost across the HTML render AND the page controller.
+
+    The tab is the only FMS byte inside the fenced HTML template; the mode's
+    orchestration wiring (rowsByMode slot, status fallback, empty-copy, module
+    binding, counts/filters/URL plumbing) now ships in the external
+    ``government-revenue-page.js.j2`` page controller. A HTML-only measurement
+    would silently stop bounding the wiring (spec §11 B13), so the two
+    marginal byte costs are summed under the same 8,192-byte shell budget.
+    The page controller is measured on its raw template source -- the same
+    frozen source the shipped page script is generated from.
+    """
     with_fms = _render(TEMPLATE).encode("utf-8")
-    without_fms = _render(_strip_fms_shell(TEMPLATE)).encode("utf-8")
-    delta = len(with_fms) - len(without_fms)
+    stripped_template, stripped_page_js = _strip_fms_shell(TEMPLATE, PAGE_JS)
+    for symbol in ("fmsUI", "fmsStatus", "rowsByMode.fms"):
+        assert symbol not in stripped_page_js, f"unmeasured FMS wiring remains: {symbol}"
+    without_fms = _render(stripped_template).encode("utf-8")
+    html_delta = len(with_fms) - len(without_fms)
+    page_js_delta = len(PAGE_JS.encode("utf-8")) - len(stripped_page_js.encode("utf-8"))
+    delta = html_delta + page_js_delta
     assert delta > 0, "FMS shell measured zero or negative bytes; the strip helper is stale"
     assert delta <= FMS_SHELL_DELTA_BUDGET_BYTES, f"FMS shell delta {delta} exceeds the {FMS_SHELL_DELTA_BUDGET_BYTES}-byte budget"
 

@@ -231,9 +231,10 @@ def track_record() -> dict | None:
                 hit = (fwd > 0) if r.sign == "positive" else (fwd < 0)
                 hits += 1 if hit else 0
                 status = "hit" if hit else "miss"
+            fam = getattr(r, "family", None)
             rows.append({"fired_date": r.fired_date, "pair": r.pair,
                          "signal_key": r.signal_key,
-                         "family": getattr(r, "family", None),
+                         "family": fam if isinstance(fam, str) else None,
                          "sector_en": r.sector_en,
                          "sector_zh": (getattr(r, "sector_zh", None) or r.sector_en),
                          "sign": r.sign, "rs_at_fire": r.rs_at_fire,

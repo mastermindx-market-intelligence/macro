@@ -333,9 +333,9 @@ def test_compute_grids_empty_on_no_usable_contracts():
 # `np.where(step_ok, sigma - diff / vega, sigma)`, and np.where evaluates BOTH branches — so
 # `diff / vega` runs even for elements the step_ok mask discards. vega is EXACTLY 0.0
 # whenever _pdf(d1) underflows (|d1| > ~38.6 → exp(-d1²/2) == 0.0 in float64), which a
-# late-day 0DTE wing reaches easily: T floored at MIN_T (1 minute) gives σ·√T ≈ 4e-4, so a
-# strike ~2% OTM already has |d1| ≈ 49. The fix masks the DENOMINATOR; it must not change
-# any solved value.
+# late-day 0DTE wing reaches easily: T at MIN_T (1 minute, the shortest solvable clock) gives
+# σ·√T ≈ 4e-4, so a strike ~2% OTM already has |d1| ≈ 49. The fix masks the DENOMINATOR; it
+# must not change any solved value.
 
 def _late_day_0dte_wing():
     """A 2¢ SPY-like wing, ~2% OTM, one minute from expiry — the live warning's input."""
@@ -406,6 +406,262 @@ def test_iv_solve_is_unchanged_by_the_guard():
         iv = implied_vol_vec(px, S0, K, T, isc, R, Q)
         assert np.all(np.isfinite(iv))
         assert np.max(np.abs(iv - sig)) < 1e-4
+
+
+# ── (10) V01: the IV inversion refuses inside MIN_T instead of solving on a floored clock ──
+# implied_vol_vec used to floor T at MIN_T (60 s) while bs_greeks_vec used the raw T, so a
+# contract with 0 < T < 60 s got its IV from one clock and its greeks from another. Inside
+# MIN_T the inversion is now refused (NaN); T == MIN_T stays the smallest valid clock.
+
+_SECONDS_PER_YEAR = 365.0 * 24.0 * 3600.0
+
+
+def test_iv_solve_refuses_inside_min_t_instead_of_flooring_tte():
+    from engine.intraday_greeks import MIN_T
+
+    S = 5000.0
+    seconds = np.array([30.0, 59.0, 61.0, 120.0])
+    T = seconds / _SECONDS_PER_YEAR
+    K = np.full(seconds.shape, 5000.0)
+    isc = np.full(seconds.shape, True)
+    sig = np.full(seconds.shape, 0.20)
+    mid = bs_price(S, K, T, sig, isc, R, Q)          # each call priced at its OWN raw T
+    iv = implied_vol_vec(mid, S, K, T, isc, R, Q)
+    assert np.isnan(iv[0]) and np.isnan(iv[1]), f"IV solved inside MIN_T: {iv[:2]}"
+    assert np.max(np.abs(iv[2:] - 0.20)) < 1e-4, f"IV outside MIN_T drifted: {iv[2:]}"
+
+    t_edge = np.array([MIN_T])
+    mid_edge = bs_price(S, K[:1], t_edge, sig[:1], isc[:1], R, Q)
+    iv_edge = implied_vol_vec(mid_edge, S, K[:1], t_edge, isc[:1], R, Q)
+    assert np.isfinite(iv_edge[0]), "T == MIN_T must stay solvable"
+    assert abs(iv_edge[0] - 0.20) < 1e-4
+
+
+def test_greek_grids_exclude_contracts_inside_min_t():
+    S = 5000.0
+    T = 30.0 / _SECONDS_PER_YEAR
+    contracts = []
+    for right, isc in (("C", True), ("P", False)):
+        mid = float(bs_price(S, np.array([5000.0]), np.array([T]), np.array([0.20]),
+                             np.array([isc]), R, Q)[0])
+        contracts.append({"exp_years": T, "strike": 5000.0, "right": right,
+                          "mid": mid, "oi": 1000.0})
+    gg = compute_greek_grids(contracts, spot=S, r=R, q=Q)
+    assert gg.n_contracts == 0, f"{gg.n_contracts} contracts inside MIN_T contributed greeks"
+    assert gg.strikes == []
+
+
+def test_kernel_declares_model_exercise_units_and_carry():
+    from engine.intraday_greeks import KERNEL_CONVENTIONS, MIN_T
+
+    assert KERNEL_CONVENTIONS == {
+        "kernel": "engine.intraday_greeks",
+        "model": "black_scholes_merton",
+        "exercise": "european",
+        "carry": "continuous_r_and_q",
+        "r_source": "fixed_default_constant",
+        "q_source": "fixed_default_constant",
+        "year_basis": "ACT/365F_calendar_seconds",
+        "iv_unit": "decimal_annualized",
+        "price_unit": "per_underlying_unit",
+        "delta_unit": "per_underlying_unit",
+        "gamma_unit": "delta_per_underlying_price_unit",
+        "vega_unit": "price_per_1.00_vol",
+        "vanna_unit": "delta_per_1.00_vol",
+        "charm_unit": "delta_per_calendar_year",
+        "iv_inversion_min_t_years": MIN_T,
+        "inside_min_t": "refused_nan",
+    }
+
+
+_REFUSED = "refused"
+_SUPPORTED = "supported"
+
+# (exercise_style, right, seconds_to_economic_expiry, discrete_dividend_before_expiry,
+#  expected (status, reason, model)) — rows are grouped by the rule that must decide them,
+# in rule order; the cross-rule rows pin that an earlier rule wins.
+_APPLICABILITY_TABLE = [
+    # 1. invalid_right
+    ("european", "X", 3600.0, False, (_REFUSED, "invalid_right", None)),
+    ("european", None, None, None, (_REFUSED, "invalid_right", None)),
+    ("bermudan", "", -1.0, True, (_REFUSED, "invalid_right", None)),
+    # 2. unknown_economic_clock
+    ("european", "C", None, False, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "P", float("nan"), False, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "C", float("inf"), False, (_REFUSED, "unknown_economic_clock", None)),
+    ("bermudan", "C", None, None, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "C", True, False, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "P", np.True_, False, (_REFUSED, "unknown_economic_clock", None)),
+    ("european", "C", 10**400, False, (_REFUSED, "unknown_economic_clock", None)),
+    # 3. at_or_after_economic_expiry
+    ("european", "C", 0.0, False, (_REFUSED, "at_or_after_economic_expiry", None)),
+    ("american", "P", -5.0, False, (_REFUSED, "at_or_after_economic_expiry", None)),
+    # 4. inside_min_t_indeterminate
+    ("european", "C", 59.0, False, (_REFUSED, "inside_min_t_indeterminate", None)),
+    ("american", "P", 30.0, None, (_REFUSED, "inside_min_t_indeterminate", None)),
+    # 5. european → supported
+    ("european", "C", 60.0, None, (_SUPPORTED, "european_exercise", "black_scholes_merton")),
+    ("European", "put", 3600.0, False,
+     (_SUPPORTED, "european_exercise", "black_scholes_merton")),
+    # 6. american put
+    ("american", "P", 3600.0, False, (_REFUSED, "american_put_early_exercise", None)),
+    # 7. american call, by dividend schedule
+    ("american", "C", 3600.0, None, (_REFUSED, "unknown_dividend_schedule", None)),
+    ("american", "C", 3600.0, True, (_REFUSED, "american_call_dividend_before_expiry", None)),
+    ("american", "call", 3600.0, False,
+     (_SUPPORTED, "american_call_without_dividend", "european_equivalent")),
+    # 8. unknown_exercise_style
+    ("bermudan", "C", 3600.0, False, (_REFUSED, "unknown_exercise_style", None)),
+    (None, "P", 3600.0, False, (_REFUSED, "unknown_exercise_style", None)),
+]
+
+
+@pytest.mark.parametrize("style,right,seconds,dividend,expected", _APPLICABILITY_TABLE)
+def test_kernel_applicability_refuses_unsupported_contracts(style, right, seconds, dividend,
+                                                            expected):
+    from engine.intraday_greeks import kernel_applicability
+
+    got = kernel_applicability(exercise_style=style, right=right,
+                               seconds_to_economic_expiry=seconds,
+                               discrete_dividend_before_expiry=dividend)
+    status, reason, model = expected
+    assert got == {"status": status, "reason": reason, "model": model}
+
+
+# ── (11) V01 qualification: the kernel against references that live only in this file ──
+# Closed forms and finite differences of bs_price itself, with a nonzero carry (r=0.03,
+# q=0.01) so a dropped e^{-qT} or e^{-rT} factor is visible. Steps are scaled to the
+# distribution width S·σ√T, and every tolerance is normalised to a dimensionless greek.
+
+_QR = 0.03
+_QQ = 0.01
+_QUAL_CASES = [(600.0, K, T, 0.25) for T in (1.0 / 365.0, 30.0 / 365.0, 1.0)
+               for K in (570.0, 600.0, 630.0)] \
+    + [(5000.0, 5000.0, 3600.0 / _SECONDS_PER_YEAR, 0.20)]
+
+
+def _px(S, K, T, sig, isc):
+    return float(bs_price(S, np.array([K]), np.array([T]), np.array([sig]), np.array([isc]),
+                          _QR, _QQ)[0])
+
+
+def _greeks(S, K, T, sig, isc):
+    out = bs_greeks_vec(S, np.array([K]), np.array([T]), np.array([sig]), np.array([isc]),
+                        _QR, _QQ)
+    return tuple(float(g[0]) for g in out)
+
+
+@pytest.mark.parametrize("S,K,T,sig", [(600.0, K, T, 0.20) for T in (30.0 / 365.0, 0.25, 1.0)
+                                       for K in (570.0, 600.0, 630.0)]
+                         + [(5000.0, 5000.0, 3600.0 / _SECONDS_PER_YEAR, 0.20)])
+def test_vega_matches_price_finite_difference_in_sigma(S, K, T, sig):
+    from engine.intraday_greeks import bs_vega
+
+    h = 1e-5
+    fd = (_px(S, K, T, sig + h, True) - _px(S, K, T, sig - h, True)) / (2.0 * h)
+    vega = float(bs_vega(S, np.array([K]), np.array([T]), np.array([sig]), _QR, _QQ)[0])
+    # truncation h²/6·∂³P/∂σ³ < 1e-9 here; rounding ~2·eps·S/(2h) ≤ 1.1e-7 at S=5000
+    assert abs(fd - vega) < 1e-5
+
+
+@pytest.mark.parametrize("S,K,T", [(600.0, 600.0, 0.25),
+                                   (5000.0, 5000.0, 3600.0 / _SECONDS_PER_YEAR)])
+def test_vega_is_per_one_point_zero_vol(S, K, T):
+    """A 1-vol-point move (0.01) changes the price by 0.01·vega: vega is per 1.00 of vol."""
+    from engine.intraday_greeks import bs_vega
+
+    sig = 0.20
+    vega = float(bs_vega(S, np.array([K]), np.array([T]), np.array([sig]), _QR, _QQ)[0])
+    move = _px(S, K, T, sig + 0.01, True) - _px(S, K, T, sig, True)
+    # ATM with r−q = σ²/2 → d2 = 0 → volga = 0; the residual h³/6·ultima is < 1e-5
+    assert abs(move - 0.01 * vega) < 2e-3
+
+
+@pytest.mark.parametrize("isc", [True, False])
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_delta_matches_price_finite_difference(S, K, T, sig, isc):
+    h = 1e-3 * S * sig * np.sqrt(T)
+    fd = (_px(S + h, K, T, sig, isc) - _px(S - h, K, T, sig, isc)) / (2.0 * h)
+    delta = _greeks(S, K, T, sig, isc)[0]
+    # truncation h²·|speed|/6 ≤ 1e-6/6·φ(d1)·(σ√T + |d1|) < 6e-8; rounding ~eps·S/h < 1e-10
+    assert abs(fd - delta) < 1e-6
+
+
+@pytest.mark.parametrize("isc", [True, False])
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_gamma_matches_price_second_difference(S, K, T, sig, isc):
+    h = 1e-3 * S * sig * np.sqrt(T)
+    fd = (_px(S + h, K, T, sig, isc) - 2.0 * _px(S, K, T, sig, isc)
+          + _px(S - h, K, T, sig, isc)) / (h * h)
+    gamma = _greeks(S, K, T, sig, isc)[1]
+    # normalised by S·σ√T (Γ·S·σ√T = e^{-qT}φ(d1) ≤ 0.4): truncation ~(1e-3)²/12·O(1) < 1e-6;
+    # rounding ~8·eps·S/h²·S·σ√T < 7e-7 at the S=5000, 1-hour case
+    assert abs(fd - gamma) * S * sig * np.sqrt(T) < 1e-5
+
+
+@pytest.mark.parametrize("isc", [True, False])
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_vanna_matches_price_mixed_difference(S, K, T, sig, isc):
+    h = 1e-3 * S * sig * np.sqrt(T)
+    k = 1e-4
+    fd = (_px(S + h, K, T, sig + k, isc) - _px(S + h, K, T, sig - k, isc)
+          - _px(S - h, K, T, sig + k, isc) + _px(S - h, K, T, sig - k, isc)) / (4.0 * h * k)
+    vanna = _greeks(S, K, T, sig, isc)[2]
+    # normalised by σ (vanna·σ = −e^{-qT}φ(d1)·d2): truncation O((1e-3)² + (k/σ)²) < 1e-6;
+    # rounding ~2·eps·S·σ/(h·k) < 5e-7 at the S=5000, 1-hour case
+    assert abs(fd - vanna) * sig < 1e-5
+
+
+@pytest.mark.parametrize("isc", [True, False])
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_charm_matches_price_mixed_difference_in_calendar_time(S, K, T, sig, isc):
+    h = 1e-3 * S * sig * np.sqrt(T)
+    tau = 1e-3 * T
+
+    def fd_delta(t):
+        return (_px(S + h, K, t, sig, isc) - _px(S - h, K, t, sig, isc)) / (2.0 * h)
+
+    fd = -(fd_delta(T + tau) - fd_delta(T - tau)) / (2.0 * tau)   # per calendar year: −∂Δ/∂T
+    charm = _greeks(S, K, T, sig, isc)[3]
+    # normalised by T (charm·T = delta drift over the remaining life): truncation
+    # O((τ/T)² + (h/(Sσ√T))²) < 1e-6; rounding ~2·eps·S·T/(h·τ) < 3e-7
+    assert abs(fd - charm) * T < 1e-5
+
+
+@pytest.mark.parametrize("S,K,T,sig", _QUAL_CASES)
+def test_put_call_parity_of_prices(S, K, T, sig):
+    c = _px(S, K, T, sig, True)
+    p = _px(S, K, T, sig, False)
+    assert abs((c - p) - (S * np.exp(-_QQ * T) - K * np.exp(-_QR * T))) < 1e-10
+
+
+def test_floored_refit_is_not_a_universal_gamma_multiplier():
+    """No single constant converts greeks at a floored clock into greeks at the raw clock.
+
+    Re-pricing at max(T, 1 h) rescales gamma and vega by ~√(1 h / T), a factor that grows
+    as expiry nears; a fixed multiplier cannot undo a floored clock across maturities.
+    """
+    from engine.intraday_greeks import bs_vega
+
+    S = K = 5000.0
+    sig = 0.20
+    seconds = np.array([3600.0, 1800.0, 900.0, 300.0, 60.0])
+    T_raw = seconds / _SECONDS_PER_YEAR
+    T_floor = np.maximum(seconds, 3600.0) / _SECONDS_PER_YEAR
+    Ks = np.full(seconds.shape, K)
+    sigs = np.full(seconds.shape, sig)
+    calls = np.full(seconds.shape, True)
+
+    _, g_raw, _, _ = bs_greeks_vec(S, Ks, T_raw, sigs, calls, 0.0, 0.0)
+    _, g_floor, _, _ = bs_greeks_vec(S, Ks, T_floor, sigs, calls, 0.0, 0.0)
+    v_raw = bs_vega(S, Ks, T_raw, sigs, 0.0, 0.0)
+    v_floor = bs_vega(S, Ks, T_floor, sigs, 0.0, 0.0)
+
+    vega_ratio = v_floor / v_raw
+    gamma_ratio = g_raw / g_floor
+    assert np.ptp(vega_ratio) > 0.5, f"vega ratio is ~constant: {vega_ratio}"
+    assert np.ptp(gamma_ratio) > 0.5, f"gamma ratio is ~constant: {gamma_ratio}"
+    assert np.all(vega_ratio[seconds <= 1800.0] >= 1.4), f"vega ratio: {vega_ratio}"
 
 
 if __name__ == "__main__":

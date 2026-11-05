@@ -121,10 +121,14 @@ def test_biocatalyst_ci_uses_bounded_complete_lanes_with_no_unowned_test_file():
     expected_paths |= {
         "tests/test_clinicaltrials_biocatalyst.py",
         "tests/test_clinicaltrials_history.py",
+        "tests/test_sector_dossier_contract.py",
         "tests/test_sector_intelligence_contracts.py",
         "tests/test_sector_intelligence_ownership.py",
         "tests/test_launch_slo_evidence_verifier.py",
         "tests/test_deploy_update_self_heal.py",
+        "tests/test_caddy_autosave_driver.py",
+        "tests/test_macro_caddy_overlay.py",
+        "tests/test_macro_caddy_publication.py",
     }
     assert seen_paths == expected_paths
 
