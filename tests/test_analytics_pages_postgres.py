@@ -1,8 +1,7 @@
-"""Optional real-PostgreSQL equivalence proof using only fictional, rolled-back rows.
+"""Real PostgreSQL equivalence on fictional rows in a private, Unix-only cluster.
 
-Run with MMX_TEST_PG_SOCKET pointing to a private local test server and
-MMX_TEST_PG_PORT (default 65479). No remote DSN or production tables are used.
-Ordinary CI still runs the unconditional SQL-contract tests in test_analytics_exclusions.
+CI requires the native PostgreSQL tools. Local runs may skip when tools are
+unavailable. The fixture never accepts a remote DSN or an existing database.
 """
 import getpass
 import json
@@ -10,6 +9,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import tempfile
 import uuid
 
 import pytest
@@ -31,13 +31,39 @@ def _literal(value):
     return "NULL" if value is None else "'" + str(value).replace("'", "''") + "'"
 
 
+@pytest.fixture(scope="module")
+def pages_postgres():
+    missing = [name for name in ("psql", "initdb", "pg_ctl") if not shutil.which(name)]
+    unavailable = bool(missing) or (hasattr(os, "geteuid") and os.geteuid() == 0)
+    if unavailable:
+        reason = f"Private PostgreSQL requires native tools and a non-root user: {missing}"
+        if os.environ.get("CI"):
+            pytest.fail(reason)
+        pytest.skip(reason)
+    # A short private directory avoids the platform Unix socket path limit.
+    # This is a disposable fictional database, never a source worktree.
+    # libpq environment must not redirect a private Unix-socket proof.
+    pg_env = {key: value for key, value in os.environ.items() if not key.startswith("PG")}
+    with tempfile.TemporaryDirectory(prefix="mmx-pages-pg-", dir="/tmp") as scratch:
+        root = Path(scratch)
+        data, socket = root / "db", root / "socket"
+        socket.mkdir(mode=0o700)
+        subprocess.run(["initdb", "-D", str(data), "-A", "trust", "--no-locale"],
+                       capture_output=True, check=True, timeout=30, env=pg_env)
+        port = 65479  # Unique socket directory; no TCP listener or shared port.
+        try:
+            subprocess.run(["pg_ctl", "-D", str(data), "-l", str(root / "pg.log"),
+                            "-o", f"-F -p {port} -h '' -k {socket}", "-w", "start"],
+                           capture_output=True, check=True, timeout=30, env=pg_env)
+            yield str(socket), port, pg_env
+        finally:
+            subprocess.run(["pg_ctl", "-D", str(data), "-m", "fast", "-w", "stop"],
+                           capture_output=True, check=True, timeout=30, env=pg_env)
+
+
 @pytest.mark.parametrize("private_filters", [False, True])
-def test_pages_postgres_preserves_event_multiset_and_complete_metrics(monkeypatch, private_filters):
-    socket = os.environ.get("MMX_TEST_PG_SOCKET")
-    if not socket or not shutil.which("psql"):
-        pytest.skip("Requires an explicitly supplied private local PostgreSQL test socket")
-    assert Path(socket).is_absolute() and Path(socket).is_dir()
-    port = int(os.environ.get("MMX_TEST_PG_PORT", "65479"))
+def test_pages_postgres_preserves_event_multiset_and_complete_metrics(monkeypatch, private_filters, pages_postgres):
+    socket, port, pg_env = pages_postgres
     cfg = {"emails": [], "locations": [], "ips": [], "visitor_ids": [],
            "bots": {"fp_fanout": 3}, "geo_overrides": []}
     if private_filters:
@@ -118,7 +144,7 @@ INSERT INTO {schema}.analytics_events VALUES {','.join(values)};
     sql += isolated(prefix) + "SELECT json_build_object('null_rhs',(SELECT count(*) FROM (SELECT visitor_id FROM excluded UNION ALL SELECT visitor_id FROM bots) s WHERE visitor_id IS NULL),'accepted_ids',(SELECT json_agg(id ORDER BY id) FROM (" + isolated(new_events) + ") s));\nROLLBACK;"
     run = subprocess.run(["psql", "-X", "-q", "-A", "-t", "-v", "ON_ERROR_STOP=1", "-h", socket,
                           "-p", str(port), "-U", getpass.getuser(), "-d", "postgres"], input=sql,
-                         text=True, capture_output=True, timeout=30, check=True)
+                         text=True, capture_output=True, timeout=30, check=True, env=pg_env)
     results = [json.loads(line) for line in run.stdout.splitlines() if line.startswith("{")]
     assert len(results) == 4
     assert all(row == {"old_minus_new": 0, "new_minus_old": 0} for row in results[:3])
