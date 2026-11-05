@@ -550,10 +550,8 @@ def test_unknown_clock_phase_is_a_typed_absence_not_a_present_reading() -> None:
     (#10759 review F2)."""
     import copy
 
-    from engine.business_cycle import _phase
     from engine.market_os.macro_workspaces import business_activity as mod
 
-    assert _phase(None, 1.0) == ("unknown", "未知")
     regime = copy.deepcopy(_base_regime())
     regime["business_cycle"]["phase"] = {"label": "unknown", "label_zh": "未知"}
     snap = _compose(regime)
@@ -565,17 +563,30 @@ def test_unknown_clock_phase_is_a_typed_absence_not_a_present_reading() -> None:
     # The clock-read implication quotes the raw token in both languages, so a
     # refused read must not emit it either.
     assert "phase_clock_read" not in {i["implication_id"] for i in snap["implications"]["items"]}
-    # The closed vocabulary is checked against the producer, not against the
-    # constant under test: the four sign quadrants of `_phase` are the phases.
-    producer_phases = {_phase(lead, coin)[0] for lead in (1.0, -1.0) for coin in (1.0, -1.0)}
-    assert producer_phases == {"expansion", "slowdown", "contraction", "recovery"} == mod.BUSINESS_CYCLE_PHASES
+    assert mod.BUSINESS_CYCLE_PHASES == {"expansion", "slowdown", "contraction", "recovery"}
     # The four real phases are still published as present readings with the read.
-    for label in ("expansion", "slowdown", "contraction", "recovery"):
+    for label in sorted(mod.BUSINESS_CYCLE_PHASES):
         regime["business_cycle"]["phase"] = {"label": label}
         snap = _compose(regime)
         phase = next(m for m in snap["metrics"]["items"] if m["metric_id"] == "business_cycle_phase")
         assert phase["value"] == label and phase["status"] == "PRESENT" and phase["null_reason"] is None
         assert "phase_clock_read" in {i["implication_id"] for i in snap["implications"]["items"]}
+
+
+def test_business_cycle_phase_vocabulary_matches_the_producer() -> None:
+    """The closed vocabulary is checked against the producer, not against the
+    constant under test: the four sign quadrants of `engine.business_cycle._phase`
+    are the phases, and a None leg is its refusal. `engine.business_cycle` imports
+    numpy, which the workspace job's environment does not install (#10774 CI,
+    pack market-os-macro-workspaces), so this pin runs where the engine's own
+    dependencies exist and skips, visibly, where they do not."""
+    pytest.importorskip("numpy")
+    from engine.business_cycle import _phase
+    from engine.market_os.macro_workspaces import business_activity as mod
+
+    assert _phase(None, 1.0) == ("unknown", "未知")
+    producer_phases = {_phase(lead, coin)[0] for lead in (1.0, -1.0) for coin in (1.0, -1.0)}
+    assert producer_phases == mod.BUSINESS_CYCLE_PHASES
 
 
 def test_recession_signal_state_tokens_have_reviewed_zh_pairs() -> None:
