@@ -8,6 +8,8 @@ mission: Continue the original Shared Shell commission through protected Macro p
 state_before: 'November 4 continuation: the full product remains NOT_ACCEPTED. Projection current CI failed and is visibly unarmed; Company P9 is unmerged. Accepted source, installation and routing evidence is retained at its exact scope.'
 changed:
 - path: research/market_os/SHARED_SHELL_WEBAPP_PRODUCTION_PLAN_2026-10-18.md
+  what: Replaces current source checkpoint with original terminal CI accounting, qualified causal repairs and explicit legacy/new History publication boundary.
+- path: research/market_os/SHARED_SHELL_WEBAPP_PRODUCTION_PLAN_2026-10-18.md
   what: Updates existing joined source delivery node from the validated November5 export and immutable current-base/API/History source boundaries; no completion or release claim.
 - path: research/market_os/SHARED_SHELL_CEO_CONTINUATION_2026-10-21.md
   what: Restored original W0-W10 scope and the existing delivery task IDs with current dependency boundaries, accepted evidence and remaining Paper/runtime obligations.
@@ -121,6 +123,14 @@ changed:
   what: Append actual hosted failure, scratch replay, regression, canonical capture/adoption, review and previous
     publication receipts while preserving all 1,219 prior indexed entries and prose history.
 verified:
+- claim: Same10674 terminal failure consumed and genuine coherent source repairs remain
+    unpublished; actual legacyIntl asset compatibility qualified without claiming
+    newHistory installation.
+  command: Exact619PASS/69UNKNOWN/1PRregression original420652 receipt e984463f; local4f4024/current39133
+    source; accepted792/6667; nativeasset-only f37d84ba with old/new fullbody sourceDOM;
+    mmtask export19:24:43Z validates153/0errors/1warning.
+  result: SOURCE/LOCAL ONLY; originalUNKNOWNs and actual current-head CI/formal/protected/native/served/product
+    obligations remain.
 - claim: Same original10674 coherent source preparation preserves accepted runtime
     and explicit held effects; final API lazy ECB restart omission repaired before
     freeze.
@@ -423,6 +433,7 @@ unresolved:
 - Preserve Sector six views and basket behavior, Paper REVISE, and C4 SPEC_ONLY/UNAPPLIED/UNRUN. previous_runtime=null
   does not establish A-to-B-to-A rollback.
 next_actions:
+- "Finish qualified current source diagnostics/records/plan, publish one genuine10674 successor unarmed for natural exacthead proof and normal independentrelease; then native/API/beta/served. Keep10696/GMIatomic/JP/runtime/browser/UNKNOWN holds and newHistoryNOT_INSTALLED explicit."
 - "Freeze coherent Company/T55/History/Risk/official API source and actual current-base plan, publish same10674 branch unarmed for one natural proof, then qualify genuine formal/non-author protected release; preserve original10696/9533/runtime/browser effects."
 - Continue the existing Company owner's independently ready T52 composition. The finite P9 publication window has expired; actual review/CI/custody gates still apply.
 - Preserve Projection10696 unarmed until the existing Ontology repair, original effects, current CI and actual independent formal review/release decision qualify; then export through the original canonical owner.
@@ -486,57 +497,71 @@ prs:
 ## Current joined source delivery — 2026-11-05
 
 Programme remains **NOT_ACCEPTED**. Original W0–W10, six workspaces, 24 groups,
-19 renderer shapes and 61 cases remain the acceptance boundary. This checkpoint
-updates the existing task tree; source readiness does not establish runtime,
-scientific/PIT, authenticated-consumer, Paper or whole-product acceptance.
+19 renderer shapes and 61 cases remain the acceptance boundary. This replaces
+only the current source-delivery checkpoint in the existing task tree. Local
+source, CI, merge, installation, native publication and product acceptance are
+separate facts; task counts do not measure completion.
 
-The same Macro #10674 carrier is preparing a genuinely changed successor. Its
-remote `8c07b51a` remains unarmed/merge-blocked. Historical exact-run41990261350
-687PASS and formal review5782911631 apply only to that original head/tested/base;
-current-base whole-store freshness invalidated its release, so neither is promoted
-to the successor. Proposed P9 native-main adoption is not installed and is not a
-blanket prerequisite: use the currently installed lawful legacy mechanism and
-actual current-head/base proof, genuine formal review and independent arming.
+The same Macro #10674 carrier remains unarmed/merge-blocked at published
+`4462b2a4129199e7739b44832052aa0a2affcf15`. Its original run42065204216 is terminal:
+**619 PASS, 69 UNKNOWN, 1 PR_REGRESSION, 0 inherited; clear=false** at tested
+`245162700ec557962a14d8c6f430fdda772ca0b6`, base
+`d3ab2890c210be72d0a8dd21cdf14af87d10b10f`, plan `ff871eb1`.
+Original observer69181 is closed. Formal5788443077 applies only to4462;
+historical8c/687PASS/formal5782911631 are not successor proof.
 
-Current local runtime boundary is `b829b8f4d253127af035fc2eec0d50c860834758` on protected
-`d3ab2890c210be72d0a8dd21cdf14af87d10b10f`. It preserves reviewed Company/T55,
-Bonds/Forensics/Business/China/Radar/Calendar/History/HK/T52 scope and accepted B2
-outline projection. Accepted Projection `f456c844` adds the bounded History/source
-and complete official-field/policy → evidence/Investigate → source-return/feed
-chain. All seven raw History payloads and 62,495 points remain unchanged; bounded
-HTML size is 3.10MB, not a measured browser-latency or visual-acceptance claim.
-JP annual/yield remain withheld. Official inputs are the original retained clocks,
-not a current-data/PIT grant or new acquisition.
+Current unpublished product-source boundary is `4f4024c996f663c4786c237df68af4a5cb9f6c5f` on actual
+protected `39133a6dfe1c9ff2100e5726bb82a61416682828`. All407 prior owned diff
+entries and all ten nonoverlapping newer protected entries were preserved by
+mode/blob. Reviewed Company/T55, Bonds/Forensics/Business/China/Radar/Calendar/HK/
+T52 scope, B2 outline projection, current API/MarketMemory/Options contracts and
+protected quote-board cap640 remain. Source clocks and B2 activation are
+**NOT_YET_LIVE** until their actual normal installation/publication and consumer
+proof; source inclusion does not establish an API restart or authenticated use.
 
-The policy-preview API uses the existing authenticated family, fixed origin,
-closed request/response and source-generation/digest checks. Current Macro Command,
-Business nullable-clock/artifact qualification, Research/B2, Market Memory and
-Options contracts remain. Two newly found lazy ECB imports now participate in the
-incumbent updater restart selector (2RED/negativePASS → 3PASS). This is source-only:
-actual updater inclusion, enabled API/unit/dependency/PID reconciliation and real
-pinned-revision response remain separate. No restart or activation occurred.
+Terminal faults have concrete bounded source repairs: three exact packing
+baselines increase by two measured estimator units for the required API test,
+with unchanged selected-job/count/pack/security/execution limits; exact annual
+fixture and declared-decimal independent oracle repairs retain all original
+vectors/assertions; the surveillance guard preserves ordered protected owner
+flow and rejects early-return/observation-overwrite counterexamples. Neutral
+EN/ZH History withholding copy and the exact payload/metadata tests are restored.
+The fixture-only IM14 preparation removes a discarded Foundation rendition while
+preserving normal Foundation output/failure ordering and Dossier's own renders.
+No measured browser-speed improvement or original failed-command replay is claimed.
 
-The current protected quote-board cap640 is preserved; earlier512 peer evidence is
-not transferred. The current retained Business raw object and manifest remain
-immutable. The existing single-page renderer and native asset stages produce the
-matching page while preserving all31 values, reference periods and source refs;
-its observed/calculation clocks remain unknown where unsupported. Source clocks
-are **NOT_YET_LIVE** until normal covering publication and served readback.
+Accepted f456/792/6667 inputs are source preparation. All seven retained History
+payloads and62,495 points remain unchanged, but the3.10MB bounded History proof is
+not the tracked native page. Actual tracked `site/intl.html` remains the incumbent
+22,834,078-byte body, with seven History slots and no authored Compare/paging
+controls. Full-body source-DOM old/new checks preserve manual Scenario and view
+roundtrip with zero network/errors. The existing one-page optimizer changed only
+two cache URLs; the literal whole body, data, clocks and inline payloads remain
+byte-exact. **New paginated History/Compare is NOT_INSTALLED**. Its actual lawful
+normal producer/rendition, receipts/generation/feeds and served acceptance remain
+owed; no fixture HTML or raw snapshot was substituted.
 
-The current-base join also preserves the retained Forensics summary clock: the native public-shell renderer restores Counted/统计日2026-11-04 for the unchanged1493/1058 counts, with canonical asset fingerprint/defer/preload output. The newly protected admin job receives only its six missing readpaths; no command, gate or budget changes.
+The original Ontology timeout remains UNKNOWN. Retained logs prove a cumulative
+600-second logical-job deadline:373.41s acquisition plus63.78s earlier suites
+left162.81s for the browser suite, still advancing at cutoff. Original execution
+quiescence is qualified narrowly through the documented hosted-VM lifecycle and
+mock/local side-effect audit, not semantic PASS or a speed fix. Current CI owner
+is preparing bounded phase diagnostics for a genuinely changed next proof; no
+budget increase, old rerun or unproved setup shortcut is authorized. Future P9
+rollout is not a release prerequisite. Use the currently installed lawful mechanism with actual
+current-head/base/plan proof, genuine formal review and independent arming.
 
-Original #10696/head/unknown effects remain held on their original carrier. This
-successor carries only the accepted three-path PLNT/registry source preparation;
-no canonical registry/overlay generation/export or SS05 release is inferred.
+Root's scoped source disposition at #10674/comment6663828912 releases only the
+three accepted withdrawal/scanner postimages under actual source-release gates.
+Original #10696/e5dd/UNKNOWN remains held on its original carrier. Atomic GMI
+registry/overlay/report/current-generation/export and SS05 runtime remain deferred;
 T55 original UNKNOWN tuples, foreign9533, JP/source/runtime/SQL/private/default-OFF,
-Gold/admin and browser refusals remain intact. No new browser, provider, financial
-producer, host or publication effect was used for this preparation.
+Gold/admin and actual browser refusals remain. No new provider, host, SQL, browser,
+financial recomputation or production activation occurred in this source repair.
 
-The latest validated `mmtask export` is15:59:53Z, 143 verified entries,0 errors/1
-warning, PREPARED ONLY. Its task facts are reflected below; counts do not establish
-product completion. Full retained export SHA256: `49ddd863bfd43162fd8f5f8e32feb3dd3fcb3e54a2913ab3fe9e40f2d4beb086`.
-Root's existing canonical comment6589273748 was saved15:20:11Z/body44c25da8;
-this source checkpoint carries the subsequent scoped integration facts.
+The latest validated mmtask export is2026-11-05T19:24:43Z:153 verified entries,
+0 errors/1 warning, **PREPARED ONLY**. Export SHA256:
+`41f4981f35b398371cd2dc41aa6c7c54d9e5dd4c67463a655b6fe3b730c5ed1c`.
 
 | Existing task | Buffered source state | Bounded outcome |
 | --- | --- | --- |
@@ -545,19 +570,27 @@ this source checkpoint carries the subsequent scoped integration facts.
 | P12.T2.S14.S8.S2 | reviewed | Prepare read-only Company T55 and native History Risk release composition |
 | P12.T2.S14.S8.S3 | implementation_complete | Compose Company current-base source and six preservation seams locally |
 | P12.T2.S14.S8.S3.S1 | implementation_complete | Restore accepted B2 outline producer in current Company composition |
-| P12.T2.S14.S8.S4 | in_progress | Join final native History Risk source and five existing CI jobs on Company carrier |
+| P12.T2.S14.S8.S4 | implementation_complete | Join final native History Risk source and five existing CI jobs on Company carrier |
 | P12.T2.S14.S8.S4.S1 | implementation_complete | Close actual History Risk transitive CI read edges |
 | P12.T2.S14.S8.S5 | implementation_complete | Prepare scoped PLNT withdrawal and registry source split |
 | P12.T2.S14.S8.S6 | implementation_complete | Compose original B5 policy preview API and updater contracts |
 | P12.T2.S14.S8.S6.S1 | implementation_complete | Close policy-preview lazy ECB helper restart selector gap |
+| P12.T2.S14.S8.S7 | reviewed | Diagnose exact current contract-delta failure without replaying CI |
+| P12.T2.S14.S8.S7.S1 | reviewed | Compose exact Intl CI fixture/oracle repairs and qualify declaration closure |
+| P12.T2.S14.S8.S7.S2 | reviewed | Restore canonical Intl template asset pairing exposed by final same-run sync guard |
+| P12.T2.S14.S8.S7.S3 | reviewed | Restamp Intl page through existing asset optimizer after paired runtime repair |
+| P12.T2.S14.S8.S7.S4 | reviewed | Compose accepted History missing-value explanation and bounded-payload assertion repair |
+| P12.T2.S14.S8.S7.S5 | reviewed | Integrate accepted surveillance ordered-owner guard successor |
+| P12.T2.S14.S8.S7.S6 | reviewed | Compose qualified IM14 fixture-only preparation without discarded full render |
 
-Next action: freeze the coherent source/readset/actual eligible plan, retain the
-same independent review actor, then one normal same-branch nonforce publication
-and one natural exact-head CI observer. Keep merge-blocked/unarmed until actual
-current proof, formal non-author review, source holds and independent release
-requirements qualify. Normal native/static publication, API adoption, exact beta
-serving and the original real investor journeys remain owed. No old green or
-fixture exception is inherited by changed inputs.
+Next: freeze the actual final source/closure/eligible plan with qualified diagnostic
+input, retain this same independent reviewer, then one normal same-branch nonforce
+publication and one natural exact-head CI return. Keep unarmed until actual proof,
+formal non-author review, source holds and independent release predicates qualify.
+Continue through trusted protected landing, normal native/API installation and
+Compatibility's eligible beta/served proof. Full real investor journeys, current
+provenance/PIT, authenticated evidence/Investigate/preview return, visual/Paper and
+whole-programme acceptance remain open; no old green or fixture exception transfers.
 
 
 
