@@ -1,0 +1,23 @@
+{
+  "auto_retry": false,
+  "completed_at_utc": "2026-10-22T02:43:51.727682+00:00",
+  "execution_authority": "current Forex R26 nine-pair qualification assignment; Chairman6331071428 licensing/product-use approval",
+  "max_requests": 16,
+  "owner": "scripts.tiingo_ingest.collect",
+  "pause_seconds": 1.25,
+  "plan_sha256": "edc99ec670790134596f79efcbc00400352857046136e0319201481191fa5bb6",
+  "result": {
+    "attempted": 16,
+    "bytes": 1168273,
+    "errors": [],
+    "failed": 0,
+    "new": 16,
+    "ok": 16,
+    "row_hints": 10069
+  },
+  "schema": "forex_r26.paired_collect.v1",
+  "scope": "RESEARCH_ONLY_NOT_CANONICAL",
+  "source_head": "a1ff21e17ab43872758d653e4295f9a805fca350",
+  "started_at_utc": "2026-10-22T02:43:19.390715+00:00",
+  "status": "RETURNED"
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "tiingo.original_interrupted_source_merge_same_carrier_reconciliation/v1",
+  "recorded_at_utc": "2026-10-13T04:27:24.841689+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 77134,
+  "original_terminal_return_unavailable_after_restart": true,
+  "unknown_process_id_observed": true,
+  "actual_original_exit_code_not_invented": true,
+  "original_source_head_unchanged": "ca8852fee5089c747fa24c694e1ce50274420546",
+  "tracked_worktree_clean": true,
+  "merge_head_absent": true,
+  "same_checkout_no_original_git_writer_observed_after_status_reader_settled": true,
+  "exact_lock_and_index_no_holder_observed": true,
+  "preserved_orphan_lock": "owned-source-integration77134-orphan-index-lock-preserved",
+  "preserved_orphan_lock_metadata": {
+    "bytes": 0,
+    "mtime_utc": "2026-10-13T03:10:34.218389+00:00",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_integration_effect_absent_at_reconciliation": true,
+  "original_source_branch_retained": true,
+  "next_action": "Push unchanged reviewed source head and verify current GitHub integrated compatibility before protected merge",
+  "runtime_changes": false
+}

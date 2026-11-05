@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-25T22:10:23Z",
+ "accession": "0001104659-26-034697",
+ "cik": "0001649752",
+ "doc_byte_length": 1622055,
+ "doc_sha256": "3d935d1d878c18a1384040e4daa11959c4fb8876a4b5efec11218b3f9edd471d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-26",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nmg-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 163895,
+  "byte_start": 163121,
+  "normalized": "The Panasonic Energy Agreement, which is expected to be fulfilled by the First-Stage Bécancour Battery Material Plant, is the only offtake agreement in place for active anode material and other existing commercial offtake agreements are directly related to the Matawinie Mine Project, and not the Second-Stage Bécancour Battery Material Plant, see “Three Year History - Project Execution Strategy Update”, of this Annual Information Form. In order to advance the development of the Second-Stage Bécancour Battery Material Plant, the Corporation is pursuing active anode material offtake agreements with other clients and will need to undertake a comprehensive review of its existing commercial offtake agreements.",
+  "normalized_sha256": "432237ffb65e516e5619e0c24f2a58fd7485aba10e11502a064133b33d342bba",
+  "raw": "The Panasonic Energy Agreement, which is expected to be fulfilled by the First-Stage B&#233;cancour Battery Material Plant, is the only offtake agreement in place for active anode material and other existing commercial offtake agreements are directly related to the Matawinie Mine Project, and not the Second-Stage B&#233;cancour Battery Material Plant, see &#8220;<i style=\"font-style:italic;\">Three Year History - Project Execution Strategy Update</i>&#8221;, of this Annual Information Form. In order to advance the development of the Second-Stage B&#233;cancour Battery Material Plant, the Corporation is pursuing active anode material offtake agreements with other clients and will need to undertake a comprehensive review of its existing commercial offtake agreements.",
+  "raw_sha256": "34fb820c3b6f0b77e72c452bc1c318f9200d457c9d4a7c802395e7a5643bfa52"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1649752/000110465926034697/nmg-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

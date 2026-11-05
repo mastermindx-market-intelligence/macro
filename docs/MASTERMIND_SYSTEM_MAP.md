@@ -93,6 +93,7 @@ Mastermind
 │  ├─ Macro Context Index (project_infrastructure; building)
 │  ├─ Mastermind-X Semantic System Map (project_infrastructure; operating)
 │  ├─ Project Active Build Control (project_infrastructure; operating)
+│  ├─ Reproducible Worker Environments (infrastructure; operating)
 │  ├─ Shared AI Provider Control Plane (project_infrastructure; operating)
 │  └─ Shared Authentication and Entitlements (project_infrastructure; operating)
 ├─ Semantic and data rails [semantic_and_data_rails]
@@ -1593,7 +1594,7 @@ Govern options flow, structure, exposure, dislocation, Prophet overlays, and iss
 - `feeds_context_to` → `terminal-signal-layer` (`conceptual`; authority transfer: none)
 - `renders_through` → `terminal-charting` (`conceptual`; authority transfer: none)
 
-**Canonical docs:** `macro:research/OPTIONS_CONFLUENCE_PROGRAM_BY_FABLE.md`, `terminal:docs/OPTIONS_SUPERINTELLIGENCE_MASTERPLAN_2026-07-31.md`
+**Canonical docs:** `macro:research/OPTIONS_CONFLUENCE_PROGRAM_BY_FABLE.md`, `terminal:docs/OPTIONS_SUPERINTELLIGENCE_MASTERPLAN_2026-07-31.md`, `macro:research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md`
 
 **Implementation anchors:** `macro:engine/options_hub.py`, `macro:engine/options_dislocation.py`, `macro:contracts/options`, `terminal:terminal/app/(shell)/options`, `terminal:terminal/app/api/flow`
 
@@ -2169,6 +2170,48 @@ Show current and recently merged work, collisions, and declared cross-repo depen
 **Canonical docs:** `macro:docs/PROJECT_ACTIVE_BUILD_MAP.md`, `macro:docs/ACTIVE_BUILD_MAP.md`
 
 **Implementation anchors:** `macro:scripts/build_project_active_build_map.py`, `macro:data/governance/project_active_builds.json`
+
+**Product surfaces:** —
+
+#### Reproducible Worker Environments (`reproducible-worker-environments`)
+
+- **Kind:** `infrastructure`
+- **Lifecycle:** `operating`
+- **Scope:** `project`
+- **Repositories:** `macro`, `mastermind`
+
+Own declared, hash-locked, receipted build/test toolchain environments for selected worker task classes across hosts and CI, starting with the Mastermind repository test gate.
+
+**Strategic role.** Bound environment drift (interpreter, package, PATH, vendored-input) so worker and CI results are comparable and drift incidents become visible receipts instead of silent divergence.
+
+**Owns**
+
+- Per-platform hash-locked environment definitions for admitted pilot task classes (requirements/gate-*.lock in Mastermind)
+- The rwe_env task interface (lock/realize/receipt/gate) and the mastermind.worker_environment/v1 receipt contract
+- Environment-parity evidence between local hosts and CI for admitted task classes
+
+**Does not own**
+
+- Provider credentials, provider homes, Keychain, browser profiles, or worker identity (shared-ai-provider-control and harness owners)
+- Executive host installation, launchd services, or lifecycle authority (executive-os)
+- Third-party artifact trust and admission (supply-chain admission program, not yet registered)
+- The repository's primary CI gate definition (its owners; the shadow lane never displaces it)
+
+**Derived operational footprint**
+
+- Synapse owners: none
+- Lobe owners: none
+- Synapse artifacts: **0**; tier mix: none
+- Lobe charters: **0**
+- Information domains: none declared
+
+**Relationships**
+
+- `coordinates_with` → `executive-os` (`conceptual`; authority transfer: none)
+
+**Canonical docs:** `macro:research/REPRODUCIBLE_WORKER_ENVIRONMENTS_MASTERPLAN_V1.md`
+
+**Implementation anchors:** `mastermind:scripts/rwe_env.py`, `mastermind:requirements`, `mastermind:.github/workflows/rwe-shadow.yml`, `mastermind:docs/RWE_RUNBOOK.md`
 
 **Product surfaces:** —
 
@@ -2816,6 +2859,7 @@ A plain relationship is conceptual and makes no runtime or authority-transfer cl
 | `rates-inflation-command` | `feeds_context_to` | `conceptual` | `market-regime-risk` | — | none | — |
 | `rates-inflation-command` | `feeds_context_to` | `conceptual` | `neural-web` | — | none | — |
 | `rates-inflation-command` | `feeds_context_to` | `conceptual` | `prophet` | — | none | — |
+| `reproducible-worker-environments` | `coordinates_with` | `conceptual` | `executive-os` | — | none | — |
 | `research-factory` | `feeds_context_to` | `conceptual` | `neural-web` | — | none | — |
 | `research-factory` | `feeds_context_to` | `conceptual` | `signal-governance` | — | none | — |
 | `research-factory` | `coordinates_with` | `conceptual` | `causal-hypothesis-factory` | — | none | — |
@@ -3252,6 +3296,14 @@ These are non-binding semantic posture summaries, not a second authority system.
 - **Explicit authority sources:** none; this posture asserts no independent runtime authority
 - **Operational registry checks:** `macro:config/synapse.yml`, `macro:config/lobe_charters.yml`
 - **Repository guardrails:** `macro:CLAUDE.md`
+
+### Reproducible Worker Environments (`reproducible-worker-environments`)
+
+- **Semantic posture:** `operational_control`
+- **Non-binding summary:** Environment identity and assembly only; it selects no worker, provider, model, or workspace, grants no install or deployment authority, and its receipts are evidence, never gates, until separately promoted.
+- **Explicit authority sources:** `macro:research/REPRODUCIBLE_WORKER_ENVIRONMENTS_MASTERPLAN_V1.md`
+- **Operational registry checks:** none
+- **Repository guardrails:** `macro:CLAUDE.md`, `mastermind:AGENTS.md`, `mastermind:config/authority_map.yml`
 
 ### Research Factory (`research-factory`)
 
@@ -3708,7 +3760,7 @@ Every raw owner from the Synapse/lobe-charter union must have one explicit dispo
 | Source | SHA-256 |
 |---|---|
 | `config/lobe_charters.yml` | `87b9f27ef1703f676fc5b34b0fc58bc835eb2b00a5ef8f469c8032046a7409ef` |
-| `config/mastermind_programs.yml` | `5c54b13277e15eecfb309da53804ca662ef351b342faae635a44b3010283fbb2` |
-| `config/synapse.yml` | `82022e1c804177208e908429ff69301c80fa3120e003d4057f2a2344d90c73b8` |
+| `config/mastermind_programs.yml` | `268971b99700c149ef0500b8b73545863fbf0a9cda66671c8ed85d9fcba93fcc` |
+| `config/synapse.yml` | `733e95496c8ef8278ed1aec94bbf365b3e09745c85c74fd35848c7a40ade6cf9` |
 
 The renderer records no wall-clock timestamp. Identical source bytes produce byte-identical output.

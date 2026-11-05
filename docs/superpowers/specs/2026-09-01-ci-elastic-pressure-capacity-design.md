@@ -1,5 +1,24 @@
 # CI Elastic Pressure + Capacity Architecture Freeze
 
+## Archival publication and hierarchy erratum — 2026-11-05
+
+This document preserves the September 1–2 architecture record. Its capability states, references to "current" source or owners, and proposed next actions describe that dated record. They do not reopen accepted work, establish present fleet state, or commission implementation. The original text below is retained unchanged; subsequent action remains governed by current protected source, Chairman intent, existing carriers, and actual unresolved effects.
+
+**This erratum takes precedence over every flat `/mastermind-ci.slice` filesystem example below.** Accepted [Macro #6728](https://github.com/mastermindx-market-intelligence/macro/pull/6728), merged as [`6ba3db8543241a2117980206f096b4643aab5163`](https://github.com/mastermindx-market-intelligence/macro/commit/6ba3db8543241a2117980206f096b4643aab5163), corrected the systemd hierarchy:
+
+```text
+systemd unit name = mastermind-ci.slice
+aggregate_cgroup = /mastermind.slice/mastermind-ci.slice
+candidate_cgroup = /mastermind.slice/mastermind-ci.slice/<exact-runner-service>.service
+```
+
+The exact runner service remains one direct child of the full parent chain. Its identity proves membership; the aggregate node supplies the combined envelope and counters. The flat path is historical error evidence, not an installation or acceptance target. This correction preserves the separate candidate/aggregate identities, exact envelope, nested/lookalike/path-redirection refusals, and all unavailable-evidence rules. The [protected resource guard at `04eddd55a22f9499995d213d4c55fcf46bed379f`](https://github.com/mastermindx-market-intelligence/macro/blob/04eddd55a22f9499995d213d4c55fcf46bed379f/ops/runner-host/pc/mastermind_ci_resource_guard.py), blob `042d2dcd8be3180b076818f0282e28413a106622`, retains that accepted hierarchy.
+
+Publication is a dated source record only. It neither changes capacity, checks, merge authority, host configuration or credentials, nor proves a fourth listener, a production promotion, native main enforcement, or elastic provisioning. Actual implementation, host, runtime, review and unknown-effect gates remain separate and must be reconciled on their original carriers.
+
+## Preserved September architecture record
+
+
 **Status:** records-only architecture freeze; implementation not started  
 **Operation:** `ci-elastic-capacity-architecture-20260901-sol-001`  
 **Parent program:** Macro #6351 / `WS:CI-MERGE-CONTROL-PLANE` + `WS:RUNNER-FLEET-RESILIENCE`  

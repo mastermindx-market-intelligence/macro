@@ -1,0 +1,134 @@
+{
+  "authority": {
+    "gate_changed": false,
+    "live_model_changed": false,
+    "policy_changed": false,
+    "probability_changed": false,
+    "status": "descriptive_only"
+  },
+  "corrections": [
+    {
+      "issue": "new synthetic tests omitted pandas import",
+      "outcome_read": false,
+      "repair": "imported pandas in existing scorecard test module only",
+      "stage": "pre_outcome_tests"
+    },
+    {
+      "issue": "event first-persistence at T-21 was left-censored but naive median treated it as exact",
+      "outcome_read": true,
+      "repair": "preserved T-21 window, added left-censor flag/count and separate uncensored median; no target/streak/state rule changed",
+      "stage": "first_successful_execution"
+    }
+  ],
+  "method": {
+    "canonical_crosscheck": {
+      "full": {
+        "confusion": {
+          "fn": 1031,
+          "fp": 596,
+          "tn": 6153,
+          "tp": 415
+        },
+        "n_days": 8195,
+        "outcomes_sha256": "68f48021c4ef9e1a4f07207775ff4701818770c78f9a111f9a7b3d91aeb5346c"
+      },
+      "since_2020": {
+        "confusion": {
+          "fn": 186,
+          "fp": 167,
+          "tn": 1205,
+          "tp": 108
+        },
+        "n_days": 1666,
+        "outcomes_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec"
+      }
+    },
+    "full_population_sha256": "a2436bd50b075cb838540f0925628cbc79a5357ae11a16c88e0ac233395c1608",
+    "persistence_sessions": 5,
+    "since_2020_population_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec",
+    "target": {
+      "depth": 0.05,
+      "horizon_observations": 21,
+      "persistence_sessions": 5
+    },
+    "threshold_sweep": false
+  },
+  "protected_skillpack": {
+    "bootstrap_major": 1,
+    "commit": "0f4aeae4d25f3770474a7ac70e0ce12af6e2d075",
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "version": "1.0.1"
+  },
+  "protocol_commit": "1882492ee09ef9baefbf0412aed175388c23c631",
+  "schema": "mastermind.risk_radar_caution_persistence_evidence.v1",
+  "selected_result": {
+    "event_summary": {
+      "caution_by_t0": 106,
+      "caution_event_recall": 0.9636363636363636,
+      "definition": "risk_radar_caution_persistence_event.v1",
+      "event_params": {
+        "depth": 0.05,
+        "fwd": 21,
+        "min_gap": 21
+      },
+      "n_events": 110,
+      "persistent_before_breach_n": 99,
+      "persistent_by_t0": 99,
+      "persistent_event_recall": 0.9,
+      "persistent_exact_lead_n": 22,
+      "persistent_left_censored_n": 77,
+      "persistent_median_lead_sessions_window_bounded": 21.0,
+      "persistent_median_lead_uncensored_sessions": 11.5
+    },
+    "full": {
+      "base_rate": 0.17653522158466609,
+      "persistent": {
+        "confusion": {
+          "fn": 394,
+          "fp": 4142,
+          "tn": 2603,
+          "tp": 1052
+        },
+        "event_rate": 0.202541393916057,
+        "f1": 0.31686746987951814,
+        "fire_rate": 0.6341106092052252,
+        "lift_vs_base": 1.1473143551635014,
+        "n": 8191,
+        "precision": 0.202541393916057,
+        "recall": 0.7275242047026279
+      }
+    },
+    "since_2020": {
+      "base_rate": 0.17647058823529413,
+      "persistent": {
+        "confusion": {
+          "fn": 16,
+          "fp": 944,
+          "tn": 428,
+          "tp": 278
+        },
+        "event_rate": 0.22749590834697217,
+        "f1": 0.36675461741424803,
+        "fire_rate": 0.7334933973589436,
+        "lift_vs_base": 1.2891434806328421,
+        "n": 1666,
+        "precision": 0.22749590834697217,
+        "recall": 0.9455782312925171
+      }
+    }
+  },
+  "source_base": "1dc11fb3eb326393c803bc2eff408db89bb91bc1",
+  "verification": {
+    "agentos": "0 errors; inherited warnings only",
+    "agentos_log_sha256": "493bc2cd713066113cbff72a461b3f20a7a2ab9143d3f20c6550c6e75190a245",
+    "diff_check": "pass",
+    "focused_method_tests": "6 passed",
+    "owning_suites": "128 passed",
+    "py_compile": "pass",
+    "result_sha256": "858b61f9446fabebdfadb8a7dde10c2cdc407a4e347c48d4be0bdd03a4318521",
+    "run_log_sha256": "579d7f02889303c4abf40d2cc7a5f473a0012c9856944ea9b20e0e09f40a32f0",
+    "script_sha256": "008383d82c7fb104dd1a2d3c6d1560a5ffeb0ba86ee0cfaf8242322e559046ec",
+    "test_file_sha256": "e51c848da1dfce6c394038f97f09ae90062f4c0da0b4edf64b996a14483dd9bb",
+    "tests_log_sha256": "8a79a813f0e891eba71f9ddb6716c667b133fd8c177e45a06a313905fbeef994"
+  }
+}
