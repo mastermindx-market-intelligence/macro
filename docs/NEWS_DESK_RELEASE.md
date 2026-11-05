@@ -1143,3 +1143,70 @@ The complete result is in `late-final-canonical-20261103.json`. Its full log is 
 The next evidence-only commit changes release documentation and these proof files; its source implementation and verified test constants are identical to 2a50cfbed676. Publish the source correction and this evidence together through the original managed branch, then consume the required hosted checks on the actual published head. Earlier hosted failure on head26baacec is preserved as the causal budget finding, not confused with the corrected source.
 
 Paper, desktop/mobile browser acceptance, News application integration and the corrected CI contracts are locally complete. The original independent-review hold, formal non-author approval, protected merge, covering production render/deployment and authenticated live-URL verification remain open. **This record does not claim a live replacement or SHIPPED status.**
+
+
+## 2026-11-05 — current-main repair and local qualification
+
+The original operation and PR #9612 have resumed in the registered M2 workspace.
+Protected source law is pinned at `0efd0744ac705ddc24880acde1cb4ac6e8c55d05`.
+Source repairs are committed in `fd3799842269da0c7b442bbb9b54a22b6ef805ce`;
+`e7a99ccaaf5afea167d3d6a6cf5aad5cab0a692e` completes the local integration of main
+`883c4654fad55b7b61ef036587ded53fc103e1f9` with the identical source tree and both
+parents recorded. The initial managed commit lost its transport response after
+application; original-owner status and Git readback reconciled it before any
+further mutation. No duplicate source commit was attempted.
+
+### Repairs and evidence
+
+The institutional RSS path gate now rejects literal/encoded dot-segment traversal,
+encoded separators/nested escapes and browser-significant backslashes across the
+original URL target, including authority and final path parameters. Host/prefix
+configuration, accepted URL identity and source-rights labels are preserved. The
+formal source finding in review `5763807063` is repaired in code; that is not a new
+formal approval or release of the recorded hold.
+
+Incoming #10610 refresh guarantees are implemented in the canonical modular desk.
+Banners now repaint in English/Chinese, an unloaded desk has truthful failure copy,
+and the failure message is a polite status announcement. Five mounted regression
+cases replace the removed legacy inline harness and cover network failure, actual
+request deadline, invalid schema, first-load recovery and honest publication clocks.
+Reader/filter/evidence preservation and later successful recovery are exercised.
+
+Current local results: **78 source-intake tests, 183 page/API/client checks and
+71 mounted desk/company interactions passed**. A Chromium fixture smoke passed at
+1440×1000 and 390×844, including translated failure disclosure, retained reading,
+first-load failure, no mobile horizontal overflow and real Retry recovery. It uses
+the incumbent illustrative preview and fixture-auth API through intercepted ASGI
+transport; it is not authenticated production proof. Full local logs and browser
+receipts are retained under `docs/evidence/news-cockpit-20261102/*20261105*`.
+
+Exact-source CI planning measured all 386 registry jobs and 144,107 tracked paths.
+The incoming-main manifest and composed manifest select identical job IDs; only
+`collector-registry` changes weight 17→27. The three measured planning ceilings
+are 5,922 / 5,937 / 5,678. Job-count ceilings, ten-pack limit, timeouts, selectors,
+admission and all suites stay unchanged. The evidence is
+`ci-packing-20261105.json`; hosted checks on the eventual published head are still
+required, and no hosted green is inferred from these local measurements.
+
+The generated News page includes the repaired module and current canonical asset
+finalizer, with a byte-stable second pass. `ndSeed`, `ndCalendar` and `ndImpact`
+remain byte-identical to the accepted donor. This is retained-edition composition:
+48 seed stories with the original 18 October edition timestamp. Newer reporting
+embedded in main's legacy HTML was not reconstructed into a new seed. The covering
+owner render remains owed. See `source-composition-20261105.json`.
+
+### Design, worker disposition and continuation
+
+Accepted Paper desktop/mobile boards and CSS layout are preserved. Paper reports
+that this file is too large for safe further writes; no new design write was
+needed. The bounded paid source proposal returned terminal rc0, but was not accepted
+as a patch: its indentation/fixture assumptions and missing authority/params cases
+needed parent correction. Its exact response and disposition are retained. It is
+not formal GitHub review. The old review run and its no-retry disposition remain
+unchanged; no duplicate review was dispatched.
+
+**Existing Draft/HOLD, non-merge and source-rights release boundaries remain in
+force.** The assigned session continues with final evidence publication and
+exact-head hosted CI. Genuine formal non-author approval, permitted protected
+release, covering render, deployment and real authenticated user-path acceptance
+remain separate. This milestone is local qualification, not SHIPPED.

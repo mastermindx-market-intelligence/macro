@@ -1,0 +1,35 @@
+{
+  "schema": "news.retained-edition-source-composition.v1",
+  "donor_head": "a3e5abab312e75e503a84410083036ed347b1ab7",
+  "incoming_main": "883c4654fad55b7b61ef036587ded53fc103e1f9",
+  "artifact_before_sha256": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf",
+  "artifact_after_sha256": "ea0a47dbd83e8cc664fa9f99769fcfbb86b3a4f8dba1a9adc77e333864e9ee8b",
+  "source_hashes": {
+    "news.html.j2": "44b10db4d430d2b6819d64bc4e4fee8a14230da109b734266170280c778a5290",
+    "news_desk.js": "eb69c07b45cdc36331144517b774fdb65385fdd9658593b02cfd401be4e2010d",
+    "news_research.js": "71d95fc988d820bfb825d4368495168b425103b1ab433aa3fd5084c6009787b8",
+    "news_company.js": "7b80decdde0425e4e22413bde6a5fbe76d3d9dd945214fc756b919e3f14f4cf9",
+    "news_desk.css": "4a12a0e0569a38ff3b038b6b7a963baf047c713722b957d28684addbf5fb920f"
+  },
+  "preserved_blocks": {
+    "ndSeed": {
+      "sha256": "af3749d343622526c2abfa6e70bc54ccabbc85948e2cf8a6e86e1fe4226b1071",
+      "byte_identical": true
+    },
+    "ndCalendar": {
+      "sha256": "983358700d4c93787bca6f39f52325913f5cc7be333a44b81e1be91827e74023",
+      "byte_identical": true
+    },
+    "ndImpact": {
+      "sha256": "96e26bd9ca51f9ee90a3673320034486aeddc64d1e69485ceebc179a581b917a",
+      "byte_identical": true
+    }
+  },
+  "seed_story_count": 48,
+  "seed_updated_at": "2026-10-18T08:02:06.876364+00:00",
+  "fixed_point": true,
+  "newer_main_embedded_reporting_incorporated": false,
+  "covering_owner_render_required": true,
+  "not_a_fresh_data_build": true,
+  "not_deployed": true
+}

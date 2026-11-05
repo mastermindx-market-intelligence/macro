@@ -1,0 +1,60 @@
+{
+  "schema": "news.recovery-milestone.v1",
+  "recorded_at": "2026-11-05T08:32:17.719106+00:00",
+  "mission": "Complete the original News Intelligence dashboard design and implementation journeys",
+  "operation": "news-cockpit-rebuild-20261018-astra-01",
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 9612,
+  "branch": "sol/web-news-cockpit-rebuild-20261018-astra-01",
+  "protected_law_pin": "0efd0744ac705ddc24880acde1cb4ac6e8c55d05",
+  "prior_published_head": "a3e5abab312e75e503a84410083036ed347b1ab7",
+  "source_commit": "fd3799842269da0c7b442bbb9b54a22b6ef805ce",
+  "integrated_main": "883c4654fad55b7b61ef036587ded53fc103e1f9",
+  "same_tree_integration_commit": "e7a99ccaaf5afea167d3d6a6cf5aad5cab0a692e",
+  "commit_transport_reconciliation": "Managed commit connection failed after application. Original publication-status owner and Git readback proved fd379984 and clean state; no commit retry. Exposed schema omitted merge fields, so the existing pending local merge was completed once with normal Git hooks in the same workspace. Both parents and unchanged tree were read back.",
+  "source_fixes": [
+    "Reject institutional-link traversal and decoding ambiguity across original authority/path/params before source-rights admission; preserve configured host/prefix policy and accepted URL identity.",
+    "Retain bilingual failure-banner state and truthful empty-first-load copy, with polite status semantics.",
+    "Migrate incoming #10610 refresh guarantees to the existing mounted desk owner; network, deadline, schema, locale, ordering and source-clock contracts remain covered.",
+    "Compose deployment restart dependency and all incoming CI registry jobs."
+  ],
+  "paper": {
+    "file": "01M2WGNCX9475G79JRKJTCM08P",
+    "page": "p-3-1",
+    "accepted_design_preserved": true,
+    "new_writes": 0,
+    "observed_capacity_warning": "Further changes may cause data loss; start a new file. No new design write was necessary for the accepted boards."
+  },
+  "fabric": {
+    "run": "news-9612-path-repair-20261105-c2-v1",
+    "root": "news-cockpit-rebuild-20261018-astra-01",
+    "state": "TERMINAL",
+    "rc": 0,
+    "result_sha256": "6506044b4aefb1f3bbb3f1ca36351abe4cf62116c499cedd580696623874fae1",
+    "disposition": "REVIEWED_NOT_ACCEPTED_AS_PATCH",
+    "reason": "Useful diagnostic proposal, but returned diff indentation and fixture placement/prefixes required correction; authority/params escapes were missing. Parent independently repaired the real owner and verified the results. Worker claims are not substituted for parent receipts.",
+    "source_write_access": false,
+    "retry_or_replacement": false
+  },
+  "old_review": {
+    "run": "news-9612-f07ba3-source-review-20261022",
+    "unchanged": true,
+    "new_dispatch": false,
+    "terminal_rc": 1,
+    "verdict": "QWEN_FINAL_RESPONSE_UNCONFIRMED"
+  },
+  "do_not_redo": [
+    "Accepted Paper boards and unchanged CSS/layout acceptance",
+    "Original operation, registered M2 workspace and PR custody",
+    "Old refused/uncertain review disposition through another carrier"
+  ],
+  "remaining": [
+    "Publish final funded/evidenced head on original branch and consume exact-head hosted CI.",
+    "Retain existing Draft/HOLD and non-merge assignment boundaries; no self-approval, label arming or deployment.",
+    "Genuine formal non-author GitHub approval and permitted release remain separate gates.",
+    "Covering owner render and authenticated production News/history/stream/source-clock acceptance remain owed."
+  ],
+  "lifecycle": "MORE_WORK_EXISTS",
+  "not_merged": true,
+  "not_deployed": true
+}
