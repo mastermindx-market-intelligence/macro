@@ -1,0 +1,117 @@
+{
+  "observed_at": "2026-10-14T00:19:23.216786+00:00",
+  "observations": [
+    {
+      "url": "https://www.mastermind-x.com/stocks/BAC.html",
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/stocks/BAC.html",
+      "sha256": "10be1065ee923520aa0fdfade4626b6c9fa046d76241e69d0a05d3aa5bff8c29",
+      "title": "BAC \u2014 Bank of America: signals, options & factor profile | MastermindX",
+      "canonical": [
+        "https://www.mastermind-x.com/stocks/BAC.html"
+      ],
+      "links": [
+        "../watchlist.html"
+      ]
+    },
+    {
+      "path": "data/edgar/material_8k_events.parquet",
+      "sha256": "b836f8cd461c18f6db004ec57bc60d238f0181a818b11f92442ffdb1645b0e60",
+      "columns": [
+        "ticker",
+        "cik",
+        "form",
+        "filing_date",
+        "items",
+        "accession",
+        "_first_seen",
+        "amount_usd",
+        "counterparty",
+        "extraction_ok",
+        "counterparty_ok",
+        "amount_src",
+        "counterparty_src",
+        "enrich_rev"
+      ],
+      "rows": 51617,
+      "bac_tail": [
+        {
+          "ticker": "BAC",
+          "cik": 70858,
+          "form": "8-K",
+          "filing_date": "2025-07-16",
+          "items": "7.01",
+          "accession": "0000070858-25-000254",
+          "_first_seen": "2026-06-28T08:02:43.865145+00:00",
+          "amount_usd": null,
+          "counterparty": null,
+          "extraction_ok": null,
+          "counterparty_ok": null,
+          "amount_src": null,
+          "counterparty_src": null,
+          "enrich_rev": null
+        },
+        {
+          "ticker": "BAC",
+          "cik": 70858,
+          "form": "8-K",
+          "filing_date": "2025-07-01",
+          "items": "8.01",
+          "accession": "0000070858-25-000249",
+          "_first_seen": "2026-06-28T08:02:43.865145+00:00",
+          "amount_usd": null,
+          "counterparty": null,
+          "extraction_ok": null,
+          "counterparty_ok": null,
+          "amount_src": null,
+          "counterparty_src": null,
+          "enrich_rev": null
+        },
+        {
+          "ticker": "BAC",
+          "cik": 70858,
+          "form": "8-K",
+          "filing_date": "2026-07-14",
+          "items": "7.01",
+          "accession": "0000070858-26-000353",
+          "_first_seen": "2026-07-16T04:33:23.940926+00:00",
+          "amount_usd": null,
+          "counterparty": null,
+          "extraction_ok": null,
+          "counterparty_ok": null,
+          "amount_src": null,
+          "counterparty_src": null,
+          "enrich_rev": null
+        },
+        {
+          "ticker": "BAC",
+          "cik": 70858,
+          "form": "8-K",
+          "filing_date": "2026-07-24",
+          "items": "8.01",
+          "accession": "0000070858-26-000364",
+          "_first_seen": "2026-07-25T00:10:02.637024+00:00",
+          "amount_usd": null,
+          "counterparty": null,
+          "extraction_ok": null,
+          "counterparty_ok": null,
+          "amount_src": null,
+          "counterparty_src": null,
+          "enrich_rev": null
+        }
+      ]
+    },
+    {
+      "path": "data/edgar/edgar_8k__ingest.parquet",
+      "sha256": "181c661e647a545fc03627456d90bf6cf62e855579f24970636d47250877a39d",
+      "columns": [
+        "new_scanned",
+        "total_rows",
+        "baskets"
+      ],
+      "rows": 90,
+      "bac_tail": []
+    }
+  ],
+  "publication_approved": false
+}

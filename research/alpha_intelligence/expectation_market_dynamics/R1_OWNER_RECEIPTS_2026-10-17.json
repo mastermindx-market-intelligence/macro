@@ -1,0 +1,354 @@
+{
+  "schema_version": "r1-owner-receipts.v1",
+  "issued_on": "2026-10-17",
+  "cutoff": "2026-10-15T13:32:43Z",
+  "spec": "research/alpha_intelligence/expectation_market_dynamics/R1_COMPLETION_SPEC_2026-10-06.md",
+  "spec_blob": "d02c30d087509a6b44ddb088fe861c18b28993f4",
+  "measured_at_revision": "1aeaf6874e4d3ed8d4f76205c236994ec7a3bcb9",
+  "measured_with": "python3 research/alpha_intelligence/expectation_market_dynamics/r1_readiness_probe.py --rev 1aeaf6874e4d3ed8d4f76205c236994ec7a3bcb9 --cutoff 2026-10-15T13:32:43Z --expected-universe-sha256 dae001f6cfda644ae9c292db5555cca599b7f7cf03455a5d56ec7cc5adc7daec --owner-receipts research/alpha_intelligence/expectation_market_dynamics/R1_OWNER_RECEIPTS_2026-10-17.json (schema r1-readiness-probe.v2; counts below are the probe's own values at this revision)",
+  "universe": {
+    "names": 1502,
+    "sha256": "dae001f6cfda644ae9c292db5555cca599b7f7cf03455a5d56ec7cc5adc7daec",
+    "matched": true,
+    "note": "The constituent universe at the measured revision is the 2026-10-15 daily collection (1502 names); the 2026-10-03 receipt measured 1503 names (sha256 441a942e97950e2fae5c6a015f38535058b0647a540f8ee1ac2342d02bd6ddc5). The probe is run with --expected-universe-sha256 set to this receipt's digest."
+  },
+  "issuer": {
+    "workstream": "WS:ALPHA-INTELLIGENCE-INTEGRATION",
+    "workstream_owner": "fable",
+    "seat": "Information-to-Price Meta-CEO seat, Claude session 2fc05761",
+    "authority": "Chairman per-program directive of 2026-10-06 (DEC:ITP-SEAT-RELEASES-ADMINISTRATIVE-BLOCKS-UNDER-CHAIRMAN-2026-10-06). This is a workstream-owner receipt. It is not a Sol ruling.",
+    "decision": "DEC:ITP-R1-DEGRADED-RECEIPT-REFRESH-2026-10-17",
+    "prior_decision": "DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07"
+  },
+  "verdict": "R1 COMPLETE IN DEGRADED FORM at the refreshed cutoff; no gap is CLOSED",
+  "prospective_only": true,
+  "backfill": false,
+  "rights_class_minted": false,
+  "financial_influence": false,
+  "k3e_admissible": false,
+  "promotion_eligible": false,
+  "upgrade_path": "A later prospective owner receipt (real issuer ids, dated aliases, currency/fiscal-year-end/basis, a rights class from the shared-base owner, or real source clocks) upgrades the matching gap to CLOSED at a later cutoff. It never re-labels rows at or before this cutoff.",
+  "future_options": [
+    "A prospective SEC/EDGAR or vendor identity and clock receipt. Fetched after the cutoff, it counts 0 at this cutoff. Recorded as an option only; not built."
+  ],
+  "gaps": {
+    "G1": {
+      "gap": "issuer identity spine",
+      "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+      "owner_paths": [
+        "data/reference/",
+        "data/reference/security_master.parquet",
+        "data/reference/vendor_aliases.parquet",
+        "data/reference/issuer_master.parquet",
+        "data/symbol_directory/",
+        "data/openfigi/"
+      ],
+      "receipt_form": "DEGRADED_LABELED_ABSENCE",
+      "cutoff": "2026-10-15T13:32:43Z",
+      "counts": {
+        "issuer_id_resolved": 1495,
+        "universe_names": 1502,
+        "unresolved": 7
+      },
+      "labeled_absence": "The 7 universe names without an issuer id stay unresolved. No issuer id is supplied, inferred, or backfilled.",
+      "exclusion_rule_verbatim": {
+        "spec_line": 33,
+        "text": "(e) DEGRADED PATH: when the owner cannot supply an issuer id, the accepted form is a labeled absence for that name. The name stays unresolved and is left out of issuer-level studies. A CIK row without an issuer id is that labeled absence. It is never backfilled from ticker similarity, a CIK, or an OpenFIGI row."
+      },
+      "unresolved_names": [
+        "BLFS",
+        "CENT",
+        "CENTA",
+        "CWEN-A",
+        "HLX",
+        "SKYD",
+        "TCBI"
+      ]
+    },
+    "G2": {
+      "gap": "dated alias and ticker-change history",
+      "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+      "owner_paths": [
+        "data/reference/vendor_aliases.parquet",
+        "data/reference/issuer_migrations.parquet",
+        "data/reference/security_migrations.parquet"
+      ],
+      "receipt_form": "DEGRADED_LABELED_ABSENCE",
+      "cutoff": "2026-10-15T13:32:43Z",
+      "counts": {
+        "alias_rows_dated_le_cutoff": 3,
+        "undated_alias_rows": 1492,
+        "prospective_from_undated_rows": 0
+      },
+      "labeled_absence": "The 1492 undated alias rows stay undated. No valid_from is supplied or backfilled; MMC's valid_to without valid_from is the same labeled absence.",
+      "exclusion_rule_verbatim": {
+        "spec_line": 47,
+        "text": "(e) DEGRADED PATH: an undated alias is a labeled absence of history. It may stay in the file as an undated row. It must not receive a fabricated `valid_from`. Prospective studies exclude it. A `valid_to` without a `valid_from`, as on MMC, is the same labeled absence."
+      },
+      "dated_symbols": [
+        "ECHO",
+        "MU",
+        "VMRK"
+      ]
+    },
+    "G3": {
+      "gap": "currency, fiscal-year-end, and accounting basis",
+      "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+      "owner_paths": [
+        "data/reference/security_master.parquet",
+        "data/reference/issuer_master.parquet",
+        "data/revisions/expectation_observations.parquet"
+      ],
+      "receipt_form": "DEGRADED_LABELED_ABSENCE",
+      "cutoff": "2026-10-15T13:32:43Z",
+      "counts": {
+        "spine_columns_present": [],
+        "observation_currency_nonnull": 0,
+        "observation_fiscal_year_nonnull": 0,
+        "observation_basis_nonnull": 0
+      },
+      "labeled_absence": "Currency, fiscal-year-end, and accounting basis stay absent on the spine and null on every observation row. Nothing is filled from a ticker, a sector, or a later filing.",
+      "exclusion_rule_verbatim": {
+        "spec_line": 61,
+        "text": "(e) DEGRADED PATH: when the provider cannot supply one of the three fields, the accepted form is a labeled absence of that field. A study that needs the missing field is excluded. The absence is never filled from a ticker, a sector, or a later filing."
+      }
+    },
+    "G4": {
+      "gap": "rights class",
+      "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+      "owner_paths": [
+        "collectors/equity_revisions.py"
+      ],
+      "receipt_form": "OWNER_REFUSAL_NO_CLASS",
+      "cutoff": "2026-10-15T13:32:43Z",
+      "counts": {
+        "literal": "UNKNOWN",
+        "line": 363
+      },
+      "refusal": {
+        "path": "collectors/equity_revisions.py",
+        "line": 363,
+        "statement": "No rights class is assigned. The literal UNKNOWN on collectors/equity_revisions.py line 363 stays a labeled absence of a rights decision. This refusal mints no rights class and no rights vocabulary; that vocabulary belongs to the shared-base owner (ASTRA ruling 2026-09-24, #7870).",
+        "same_line_marker": "R1-OWNER-REFUSAL"
+      },
+      "labeled_absence": "Stored rows stay UNKNOWN and are not rewritten. A successful response is not turned into a class.",
+      "exclusion_rule_verbatim": {
+        "spec_line": 75,
+        "text": "(e) DEGRADED PATH: UNKNOWN stays a labeled absence of a rights decision. Collection may continue. Any use that depends on a rights class stays excluded. A successful response is not turned into a class, and this file does not infer one."
+      }
+    },
+    "G5": {
+      "gap": "publication and source clocks",
+      "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+      "owner_paths": [
+        "data/revisions/expectation_observations.parquet",
+        "data/revisions/expectation_attempts.parquet",
+        "collectors/equity_revisions.py"
+      ],
+      "receipt_form": "CAPTURE_CLOCK_ONLY",
+      "cutoff": "2026-10-15T13:32:43Z",
+      "counts": {
+        "source_effective_at_nonnull": 0,
+        "source_published_at_nonnull": 0
+      },
+      "capture_clocks_at_measured_revision": {
+        "note": "Informational. These rows grow with every nightly collection and are not compared by the probe.",
+        "observation_rows": 647640,
+        "provider_observed_at_nonnull": 647640,
+        "system_observed_at_nonnull": 647640
+      },
+      "labeled_absence": "Both source clocks stay null. Capture clocks are kept and are never copied into the source-clock columns or treated as publication time.",
+      "exclusion_rule_verbatim": {
+        "spec_line": 89,
+        "text": "(e) DEGRADED PATH: yfinance exposes no source clocks, so G5's degraded form is \"capture clock only; event-time studies excluded\". The capture clocks may be kept. They are a labeled absence of event time. They are never copied into the source-clock columns and never treated as publication time."
+      }
+    }
+  },
+  "refreshes": {
+    "receipt": "research/alpha_intelligence/expectation_market_dynamics/R1_OWNER_RECEIPTS_2026-10-07.json",
+    "prior_cutoff": "2026-10-03T06:31:51Z",
+    "prior_measured_at_revision": "bb7847a33c5fcaa3d2963e3c6be18d3628493966",
+    "rule": "This is a later prospective owner receipt at a later cutoff. It never re-labels any row at or before 2026-10-03T06:31:51Z. The 2026-10-07 receipt stays the receipt for its own cutoff."
+  },
+  "cutoff_derivation": "Latest spine ingestion clock at the measured revision: data/reference/vendor_aliases.parquet ingested_at max 2026-10-15 13:32:43 UTC (security_master ingested_at max 2026-10-15 12:31:14 UTC). The cutoff is the clock of the last spine write that the first widened-builder nightlies produced, not a chosen date.",
+  "closed_upgrade_assessment": {
+    "G1": "NOT CLOSED. 1495 of 1502 names resolve; 7 do not: BLFS, CENT, CENTA, CWEN-A, HLX, SKYD, TCBI. CENT and CENTA carry issuer_state EVIDENCE_CONFLICT in security_master; the other five have no store alias row. Under the spec's (d) gate issuer_id_resolved must equal universe.names.",
+    "G2": "NOT CLOSED. 1492 store alias rows are undated. Store rows are undated by design under the ALIAS ruling (DEC:ITP-K3E-ALIAS-CLOCK-BOUNDED-IDENTITY-2026-10-07); 3 universe names have a dated row at or before the cutoff (ECHO, MU, VMRK). Under the spec's (d) gate undated_alias_rows must be 0.",
+    "G3": "NOT CLOSED. No currency, fiscal-year-end or basis column exists on the spine or the observations.",
+    "G4": "NOT CLOSED. No rights class is assigned; the owner refusal on line 363 stands.",
+    "G5": "NOT CLOSED. No source effective or published clock exists; capture clocks only."
+  },
+  "delta_since_prior_receipt": {
+    "G1.issuer_id_resolved": [
+      779,
+      1495
+    ],
+    "G1.universe_names": [
+      1503,
+      1502
+    ],
+    "G1.unresolved": [
+      724,
+      7
+    ],
+    "G2.alias_rows_dated_le_cutoff": [
+      2,
+      3
+    ],
+    "G2.undated_alias_rows": [
+      777,
+      1492
+    ],
+    "cause": "The widened security-master builder (#8626) admitted the S&P 400/600 constituents forward-only; the nightlies from 2026-10-11 wrote the new identity rows. Verified against the pre-widening blob: 0 ids removed, 723 ids added, zero value changes in existing rows."
+  },
+  "cohort_receipts": {
+    "note": "Quoted from the 2026-10-07 receipt at its own cutoff; not re-measured at the refreshed cutoff. The probe's cohorts section at the measured revision is the current capture-time measurement.",
+    "prior_cutoff": "2026-10-03T06:31:51Z",
+    "quoted": {
+      "note": "Quoted, never redefined. Vocabulary and lines are the owner's, read from the source file at the pinned commit. Counts at the cutoff are re-measured at measured_at_revision and equal the R1 completion spec's figures.",
+      "source": "research/alpha_intelligence/expectation_market_dynamics/SRC_A1_POST_REPAIR_ACCEPTANCE_2026-10-03.md",
+      "source_commit": "94fc98253dc467e57672474533d28308f5255f7c",
+      "quoted_lines": {
+        "52": "| Later unchanged session retains a new receipt without fabricating a revision | UVV natural unchanged witness, complete prior/new rows and linked receipts retained | PASS |",
+        "53": "| Changed values append and supersede exact prior rather than overwrite | V natural same-anchor changed-value witness, newest prior reference and complete field retention; current mutation test | PASS |",
+        "54": "| Partial/null/failure cannot erase prior good observations | Natural JBGS partial-after-good; new real-writer partial/null-after-good tests; incumbent error and HTTP tests | PASS; absent natural error variants remain explicit |",
+        "55": "| Fiscal rollover is not a revision and raw horizons remain distinct | Scheduled KBH anchor rollover; repeated UVV/V horizon sets; current discriminating rollover/horizon tests | PASS |",
+        "90": "| 3 \u2014 rollover becomes revision | Incumbent different-period-end/same-relative-horizon case remains original; same-anchor changed value supersedes; raw horizons stay distinct. |"
+      },
+      "spec_section": "research/alpha_intelligence/expectation_market_dynamics/R1_COMPLETION_SPEC_2026-10-06.md ## COHORT RECEIPTS",
+      "counts_effective_le_cutoff": {
+        "unchanged": 276724,
+        "same_anchor_changed_value": 47731,
+        "missing_after_earlier_good_value": 303,
+        "fiscal_rollover_not_a_revision": 2561,
+        "correction_state": {
+          "unchanged": 276724,
+          "original": 75630,
+          "missing": 71039,
+          "supersedes": 49807
+        }
+      },
+      "unmeasurable": [
+        "preservation_of_prior_good_bytes",
+        "currency_or_basis_change",
+        "event_time_order"
+      ]
+    }
+  },
+  "cohorts_at_measured_revision": {
+    "vocabulary": {
+      "unchanged": "natural unchanged witness",
+      "changed": "same-anchor changed-value",
+      "partial_null_failure": "partial-null-failure after good",
+      "rollover": "fiscal rollover is not a revision"
+    },
+    "attempts": {
+      "logic": "Attempt-status sequence only: a later attempt for the same ticker_compat whose status is partial, null, http_401, http_403, http_429, malformed, or error, after an earlier attempt with status success and observation_count > 0. Sort is ticker_compat, attempted_at, attempt_id. This is not the owner's partial-after-good witness. A ticker can be partial on every attempt and still keep an earlier good observation value. That witness is observations.missing_after_earlier_good_value.",
+      "full_file": {
+        "rows": 11790,
+        "status": {
+          "success": 11461,
+          "null": 187,
+          "partial": 104,
+          "error": 38
+        },
+        "observation_count_sum": 647640,
+        "after_good": {
+          "partial": 0,
+          "null": 0,
+          "http_401": 0,
+          "http_403": 0,
+          "http_429": 0,
+          "malformed": 0,
+          "error": 37,
+          "other_non_success": 0
+        }
+      },
+      "effective_le_cutoff": {
+        "rows": 11190,
+        "status": {
+          "success": 10874,
+          "null": 178,
+          "partial": 100,
+          "error": 38
+        },
+        "observation_count_sum": 614544,
+        "after_good": {
+          "partial": 0,
+          "null": 0,
+          "http_401": 0,
+          "http_403": 0,
+          "http_429": 0,
+          "malformed": 0,
+          "error": 37,
+          "other_non_success": 0
+        }
+      },
+      "preservation_of_prior_good_bytes": {
+        "status": "UNMEASURABLE",
+        "reason": "One current attempts file has no parent snapshot, so it cannot show whether a later partial, null, or failure left the prior good observation bytes unchanged."
+      }
+    },
+    "observations": {
+      "unchanged": {
+        "measurable": true,
+        "logic": "correction_state == 'unchanged'. The collector writes that label only when a prior good row exists on the same grain, the period ends are not a pair of different real anchors, and value, unit, currency, and basis match.",
+        "rows_full_file": 385026,
+        "rows_effective_le_cutoff": 367371
+      },
+      "same_anchor_changed_value": {
+        "measurable": true,
+        "logic": "correction_state == 'supersedes', supersedes_observation_id joins to a row in this file, both period_end values are non-null and equal, and value differs. A supersession whose anchor is null, or whose anchors differ, is counted separately and is not this cohort.",
+        "rows_full_file": 85475,
+        "rows_effective_le_cutoff": 75565,
+        "supersedes_rows": 87557,
+        "supersedes_null_or_different_anchor": 2082,
+        "supersedes_prior_missing": 0,
+        "supersedes_metadata_only_same_anchor": 0
+      },
+      "missing_after_earlier_good_value": {
+        "measurable": true,
+        "logic": "On one grain, ordered by system_observed_at then observation_id, a row with correction_state 'missing' whose same grain has at least one earlier row with a non-null value. The earlier row is still in this file. This is the observation-grain form of partial/null after a good value. It does not prove that a good row absent from this file was never deleted.",
+        "rows_full_file": 557,
+        "rows_effective_le_cutoff": 491
+      },
+      "fiscal_rollover_not_a_revision": {
+        "measurable": true,
+        "logic": "Keep rows with a non-null value. On one grain (provider, provider_record_class, ticker_compat, metric, horizon_label_raw, observation_type), ordered by system_observed_at then observation_id, compare each row with the previous non-null-value row. Both period_end values are non-null and differ. That is the collector's newest-prior-good-row anchor test. The owner's cohort is the later row whose correction_state is original, not supersedes. fiscal_year and fiscal_period are entirely null, so a fiscal-label rollover cannot be measured. This count is the period_end comparison only.",
+        "rows_full_file": 4043,
+        "rows_effective_le_cutoff": 3539,
+        "later_correction_state": {
+          "original": 4043
+        },
+        "rows_later_state_original": 4043,
+        "rows_later_state_supersedes": 0
+      },
+      "correction_state_full_file": {
+        "unchanged": 385026,
+        "missing": 97856,
+        "supersedes": 87557,
+        "original": 77201
+      },
+      "correction_state_effective_le_cutoff": {
+        "unchanged": 367371,
+        "missing": 92829,
+        "supersedes": 77647,
+        "original": 76697
+      },
+      "currency_or_basis_change": {
+        "status": "UNMEASURABLE",
+        "reason": "currency non-null rows are 0, basis non-null rows are 0, fiscal_year non-null rows are 0, and fiscal_period non-null rows are 0. A change in those fields cannot be observed. Zero is not a measurement of no change."
+      },
+      "event_time_order": {
+        "status": "UNMEASURABLE",
+        "reason": "source_effective_at and source_published_at are entirely null. provider_observed_at and system_observed_at are capture clocks. Event-time order is excluded. Capture-time cohorts above use system_observed_at."
+      }
+    },
+    "attempt_status_full_file": {
+      "success": 11461,
+      "null": 187,
+      "partial": 104,
+      "error": 38
+    }
+  }
+}

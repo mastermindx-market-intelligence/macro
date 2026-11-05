@@ -1,0 +1,49 @@
+{
+  "schema": "mastermind.press.exact_head_ci.v1",
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "observed_at": "2026-10-12T09:12:00Z",
+  "pr": 8786,
+  "head": "de63b3a93eb3715cc9f84a86d1ae034b822b9fd5",
+  "run_id": 38223150169,
+  "run_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38223150169",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-10-12T08:22:15Z",
+  "updated_at": "2026-10-12T09:06:28Z",
+  "successful_checks": [
+    "ci-plan",
+    "ci-authority",
+    "fence-pack",
+    "contract-delta",
+    "ci-pack-0",
+    "ci-pack-1",
+    "ci-pack-2",
+    "ci-pack-3",
+    "ci-pack-4",
+    "ci-pack-5",
+    "ci-pack-6",
+    "ci-pack-7",
+    "ci-pack-8",
+    "ci-pack-9",
+    "ci-pack-10",
+    "ci-pack-11",
+    "ci-gate",
+    "capability-broker",
+    "ci-authority/main",
+    "grader-manifest",
+    "self-mod-fence"
+  ],
+  "nonbinding_failure": "ci-authority/codex/merge-queue-pilot",
+  "verification_commands": [
+    "gh pr view 8786 --repo mastermindx-market-intelligence/macro --json number,state,headRefOid,mergeCommit,mergedAt,mergeStateStatus,labels,statusCheckRollup",
+    "gh run view 38223150169 --repo mastermindx-market-intelligence/macro --json databaseId,headSha,status,conclusion,createdAt,updatedAt"
+  ],
+  "release_at_observation": {
+    "state": "OPEN",
+    "merge_commit": null,
+    "installed": false,
+    "browser_accepted": false,
+    "label": "merge-on-green"
+  },
+  "publication_approved": false
+}

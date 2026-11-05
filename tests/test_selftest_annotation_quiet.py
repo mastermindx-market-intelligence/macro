@@ -174,3 +174,34 @@ def test_template_site_sync_real_refusal_still_publishes_the_annotation(tmp_path
         line.startswith("::error title=template-site-sync wrong-direction fix refused::")
         for line in buf.getvalue().splitlines()), (
         f"a real wrong-direction refusal no longer publishes its annotation:\n{buf.getvalue()}")
+
+
+@pytest.mark.parametrize("annotate", [True, False])
+@pytest.mark.parametrize("fix", [True, False])
+def test_template_site_sync_unavailable_emitter_preserves_gate_and_annotation_mode(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+    annotate: bool, fix: bool,
+) -> None:
+    """Current main's fail-closed emitter guard must also respect fixture output mode."""
+    import scripts.check_template_site_sync as sync
+
+    (tmp_path / "templates").mkdir()
+    (tmp_path / "site").mkdir()
+    (tmp_path / "templates" / "theme.js").write_text("const source = 1;")
+    live = tmp_path / "site" / "theme.js"
+    live.write_text("const retained = 1;")
+    original = live.read_bytes()
+    monkeypatch.setattr(sync, "_bake_theme", lambda _template: None)
+
+    assert sync.check(tmp_path, fix=fix, annotate=annotate) == ["theme.js"]
+    assert live.read_bytes() == original, "unavailable bake must never overwrite the site"
+    assert sync.check.unfixed == (["theme.js"] if fix else [])
+    out = capsys.readouterr().out
+    assert "Cannot verify site/theme.js" in out
+    commands = _workflow_commands(out)
+    if annotate:
+        assert any(line.startswith("::error title=theme emitter unavailable::")
+                   for line in commands), out
+    else:
+        assert not commands, out
+        assert "selftest: fixture error [theme emitter unavailable]" in out

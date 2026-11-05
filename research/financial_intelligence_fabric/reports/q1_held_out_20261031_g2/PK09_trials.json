@@ -1,0 +1,217 @@
+{
+  "accessions": [
+    {
+      "accession": "0000018230-23-000011",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "3531",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 5,
+        "not_evaluable": 1,
+        "typed_absence": 1
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "critical_audit_matters",
+        "going_concern_management_plan",
+        "icfr_change_in_period",
+        "remediation_span"
+      ]
+    },
+    {
+      "accession": "0000018230-23-000047",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3531",
+      "labels": 3,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-06-30",
+      "prediction_states": {
+        "emitted": 1,
+        "typed_absence": 2
+      },
+      "predictions": 3,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "auditor_firm",
+        "auditor_opinion_fs",
+        "critical_audit_matters",
+        "going_concern_management_plan",
+        "going_concern_substantial_doubt",
+        "icfr_management_conclusion",
+        "material_weakness_present",
+        "remediation_span"
+      ]
+    },
+    {
+      "accession": "0000018230-23-000056",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "3531",
+      "labels": 3,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-09-30",
+      "prediction_states": {
+        "emitted": 1,
+        "typed_absence": 2
+      },
+      "predictions": 3,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "auditor_firm",
+        "auditor_opinion_fs",
+        "critical_audit_matters",
+        "going_concern_management_plan",
+        "going_concern_substantial_doubt",
+        "icfr_management_conclusion",
+        "material_weakness_present",
+        "remediation_span"
+      ]
+    },
+    {
+      "accession": "0000070858-23-000092",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-K",
+      "issuer_sic": "6021",
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 4,
+        "not_evaluable": 1,
+        "typed_absence": 2
+      },
+      "predictions": 7,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "critical_audit_matters",
+        "going_concern_management_plan",
+        "icfr_change_in_period",
+        "remediation_span"
+      ]
+    },
+    {
+      "accession": "0000070858-23-000176",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "6021",
+      "labels": 3,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-06-30",
+      "prediction_states": {
+        "emitted": 1,
+        "typed_absence": 2
+      },
+      "predictions": 3,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "auditor_firm",
+        "auditor_opinion_fs",
+        "critical_audit_matters",
+        "going_concern_management_plan",
+        "going_concern_substantial_doubt",
+        "icfr_management_conclusion",
+        "material_weakness_present",
+        "remediation_span"
+      ]
+    },
+    {
+      "accession": "0000070858-23-000272",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000070858",
+      "detail": "",
+      "duplicate_prediction_targets": 0,
+      "form": "10-Q",
+      "issuer_sic": "6021",
+      "labels": 3,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-09-30",
+      "prediction_states": {
+        "emitted": 1,
+        "typed_absence": 2
+      },
+      "predictions": 3,
+      "sic_binding": "held_out_contract",
+      "sic_source": "sec_submissions",
+      "unmapped_pack_fields": [
+        "auditor_firm",
+        "auditor_opinion_fs",
+        "critical_audit_matters",
+        "going_concern_management_plan",
+        "going_concern_substantial_doubt",
+        "icfr_management_conclusion",
+        "material_weakness_present",
+        "remediation_span"
+      ]
+    }
+  ],
+  "exclusions": [],
+  "label_count": 26,
+  "labels_status": "labelled",
+  "pack_id": "PK09",
+  "sic_binding": {
+    "contract_id": "fif-held-out-v1",
+    "order": [
+      "held_out_contract",
+      "sec_submissions_witness"
+    ]
+  },
+  "trial_field_map": {
+    "PK09|0000018230-23-000011|extract|auditor_firm": "auditor_firm",
+    "PK09|0000018230-23-000011|extract|auditor_opinion_fs": "auditor_opinion_fs",
+    "PK09|0000018230-23-000011|extract|auditor_opinion_icfr": "auditor_opinion_icfr",
+    "PK09|0000018230-23-000011|extract|disclosure_controls_effective": "disclosure_controls_effective",
+    "PK09|0000018230-23-000011|extract|going_concern_substantial_doubt": "going_concern_substantial_doubt",
+    "PK09|0000018230-23-000011|extract|icfr_management_conclusion": "icfr_management_conclusion",
+    "PK09|0000018230-23-000011|extract|material_weakness_present": "material_weakness_present",
+    "PK09|0000018230-23-000047|extract|auditor_opinion_icfr": "auditor_opinion_icfr",
+    "PK09|0000018230-23-000047|extract|disclosure_controls_effective": "disclosure_controls_effective",
+    "PK09|0000018230-23-000047|extract|icfr_change_in_period": "icfr_change_in_period",
+    "PK09|0000018230-23-000056|extract|auditor_opinion_icfr": "auditor_opinion_icfr",
+    "PK09|0000018230-23-000056|extract|disclosure_controls_effective": "disclosure_controls_effective",
+    "PK09|0000018230-23-000056|extract|icfr_change_in_period": "icfr_change_in_period",
+    "PK09|0000070858-23-000092|extract|auditor_firm": "auditor_firm",
+    "PK09|0000070858-23-000092|extract|auditor_opinion_fs": "auditor_opinion_fs",
+    "PK09|0000070858-23-000092|extract|auditor_opinion_icfr": "auditor_opinion_icfr",
+    "PK09|0000070858-23-000092|extract|disclosure_controls_effective": "disclosure_controls_effective",
+    "PK09|0000070858-23-000092|extract|going_concern_substantial_doubt": "going_concern_substantial_doubt",
+    "PK09|0000070858-23-000092|extract|icfr_management_conclusion": "icfr_management_conclusion",
+    "PK09|0000070858-23-000092|extract|material_weakness_present": "material_weakness_present",
+    "PK09|0000070858-23-000176|extract|auditor_opinion_icfr": "auditor_opinion_icfr",
+    "PK09|0000070858-23-000176|extract|disclosure_controls_effective": "disclosure_controls_effective",
+    "PK09|0000070858-23-000176|extract|icfr_change_in_period": "icfr_change_in_period",
+    "PK09|0000070858-23-000272|extract|auditor_opinion_icfr": "auditor_opinion_icfr",
+    "PK09|0000070858-23-000272|extract|disclosure_controls_effective": "disclosure_controls_effective",
+    "PK09|0000070858-23-000272|extract|icfr_change_in_period": "icfr_change_in_period"
+  }
+}
