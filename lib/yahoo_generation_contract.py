@@ -454,13 +454,18 @@ def read_verified_yahoo_cohort(*, generations_root: Path, now: datetime,
         raise YahooGenerationContractError("absolute_private_root_required")
     snapshot = (snapshot_reader or read_selected_generation)(generations_root=root,
         domain=YAHOO_GENERATION_DOMAIN, members=YAHOO_GENERATION_MEMBERS)
+    return verify_yahoo_snapshot(snapshot, now=now)
+
+
+def verify_yahoo_snapshot(snapshot, *, now: datetime, require_current: bool = False) -> VerifiedYahooGeneration:
+    """One semantic decoder for selected and pinned retained captures."""
     if snapshot.domain != YAHOO_GENERATION_DOMAIN:
         raise YahooGenerationContractError("invalid_yahoo_domain")
     manifest = snapshot.manifest
     frames = validate_yahoo_bundle(member_bytes=snapshot.members,
         input_identity=manifest.get("input_identity"), published_at=snapshot.published_at,
         now=now, source_revision=manifest.get("source_revision"),
-        computed_at=manifest.get("computed_at"))
+        computed_at=manifest.get("computed_at"), require_current=require_current)
     source = manifest["input_identity"]["yahoo_cohort"]["source_session"]
     return VerifiedYahooGeneration(VerifiedYahooCohort(
         generation_id=snapshot.generation_id, source_session=source,

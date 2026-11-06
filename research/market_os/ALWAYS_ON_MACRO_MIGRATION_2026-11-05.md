@@ -347,3 +347,12 @@ runtime authority. It must not silently resume an old Yahoo/breadth provider wri
 Whole-program acceptance requires a reconciled registry/family denominator, truthful source clocks and coverage, independent collection/materialization/publication, bounded fault isolation, real browser journeys and durable proof for every admitted family. Accepted static/editorial exceptions must be explicit.
 
 Next on this carrier: complete the exact CI-closure repair on Macro #10780, then use each repository's established protected release path and verify installation. Continue the original action-writer carrier and the explicit-input/producer-transfer work. Terminal #1311 must reach the existing beta deployment owner at its eventual merged SHA; signed-in open-tab proof and the remaining native journeys are still required. Do not enable a five-minute copy of the current builder. After the independent Sector canary is production-proven, migrate each remaining family through its existing carrier and acceptance rules.
+
+
+## Private broad/member input milestone — 2026-11-06
+
+The source now contains a fixed19member private generation for the three broad groups, full extras archive, dated membership, optional reference closes and truthful acquisition evidence. Its captured Yahoo dependency is content-bound and keeps its original publication clock. The existing publisher's retained-byte verifier supports recovery when Yahoo advanced but breadth did not. New publication still requires the current completed source session.
+
+The actual temporary publication/read/basket-calculation path passed focused verification with checkout reads forbidden. Final contract49, affected consumer76, expanded254 and generic publisher68 tests passed; these counts overlap and are not additive. Exact receipts, limits, source provenance and independent baseline fixture hashes are in `BREADTH_MEMBER_GENERATION_CONTRACT_2026-11-06.md`. Runtime ownership, provider freshness, release and authenticated beta remain unproven.
+
+Next safe source slice: use genuine captured member fields to extract the existing close-index kernel for Sector cycles. The primary capture has close/high/low/volume, and extras have only close; no open or alternate close basis may be synthesized. Then finish the data-only handoff/board and full producer, alongside the existing updater/CI/Terminal release lanes.

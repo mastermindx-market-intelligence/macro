@@ -172,6 +172,18 @@ def merge_close_caches(
         d.index = pd.to_datetime(d.index)
         frames[grp] = d.sort_index()
 
+    return merge_captured_close_caches(frames, groups)
+
+
+BROAD_GROUPS = ("breadth", "smallcap_breadth", "midcap_breadth")
+
+
+def merge_captured_close_caches(frames, groups) -> tuple[pd.DataFrame, dict]:
+    """Run the incumbent whole-column merge on explicitly captured frames.
+
+    Input owners validate and bound their frames before this value-only helper.
+    Legacy acquisition remains above; selection, stitch, and receipts are shared.
+    """
     if not frames:
         return pd.DataFrame(), {"raw_tip": None, "tip": None, "all_null_rows": [],
                                 "dropped_all_null_tail_rows": [], "behind": {},

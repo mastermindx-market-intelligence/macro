@@ -2027,12 +2027,13 @@ class SelectedGenerationUnavailable(Exception):
 
 @dataclass(frozen=True)
 class SelectedGenerationSnapshot:
-    """One immutable, verified view of the currently selected generation.
+    """One detached verified generation, either selected or explicitly retained.
 
     ``members`` holds the VERIFIED bytes of the requested member names — the
     very bytes the verifier hashed — so a consumer never re-reads a member it
     has just been told is sound. ``manifest`` is the verified manifest of
-    the captured selection, not a re-read of it.
+    the captured generation, not a re-read of it. A retained read is not evidence
+    of current selection.
     """
 
     domain: str
@@ -2132,6 +2133,60 @@ def read_selected_generation(
             {name: captured_members[name] for name in wanted}
         ),
     )
+
+
+def read_retained_generation(
+    *, generations_root: Path, domain: str, generation_id: str,
+    content_id: str, members: Sequence[str],
+) -> SelectedGenerationSnapshot:
+    """Verify one pinned dependency without reading or changing current.json.
+
+    The incumbent retained verifier hashes the entire exact generation and
+    returns the same captured member bytes. There is no directory discovery,
+    retry, alternative-generation fallback, lock creation, or state mutation.
+    """
+    for error in (_generation_segment_error("domain", domain),
+                  _generation_id_error(generation_id), _sha256_error("content_id", content_id)):
+        if error:
+            raise SelectedGenerationUnavailable(error)
+    if (not _GENERATION_SAFE_SEGMENT.fullmatch(domain)
+            or not _GENERATION_SAFE_SEGMENT.fullmatch(generation_id)
+            or not _GENERATION_SHA256_RE.fullmatch(content_id)):
+        raise SelectedGenerationUnavailable("invalid retained identity")
+    wanted = list(members)
+    for name in wanted:
+        error = _artifact_name_error(name)
+        if error:
+            raise SelectedGenerationUnavailable(error)
+    collision = _artifact_collision_error(wanted)
+    if collision:
+        raise SelectedGenerationUnavailable(collision)
+    store = Path(generations_root)
+    if not store.is_absolute():
+        raise SelectedGenerationUnavailable("absolute generations root required")
+    try:
+        if any(path.is_symlink() for path in (store, *store.parents)) or not store.is_dir():
+            raise SelectedGenerationUnavailable("retained root unavailable")
+        root = store.resolve()
+        directory = root / domain / generation_id
+        if (directory.parent.is_symlink() or not directory.parent.is_dir()
+                or directory.is_symlink() or not directory.is_dir()
+                or root not in directory.resolve().parents):
+            raise SelectedGenerationUnavailable("retained generation unavailable")
+        manifest, error, captured = _verify_retained_generation_capture(directory,
+            domain=domain, expected_content_id=content_id, capture_names=wanted)
+    except OSError as exc:
+        raise SelectedGenerationUnavailable("retained generation cannot be verified") from exc
+    if error or manifest is None:
+        raise SelectedGenerationUnavailable("retained generation is not verifiable: " + (error or "unavailable"))
+    captured = captured or {}
+    if any(name not in captured for name in wanted):
+        raise SelectedGenerationUnavailable("retained generation member missing")
+    return SelectedGenerationSnapshot(domain=domain, generation_id=manifest["generation_id"],
+        content_id=manifest["content_id"], generation_dir=f"{domain}/{generation_id}",
+        published_at=manifest.get("published_at"),
+        manifest=MappingProxyType(json.loads(json.dumps(manifest))),
+        members=MappingProxyType({name: captured[name] for name in wanted}))
 
 
 class Orchestrator:
@@ -2675,15 +2730,46 @@ class Orchestrator:
             sources={name: Path(name) for name in YAHOO_GENERATION_MEMBERS},
             input_identity=encoded.input_identity, generation_id=generation_id,
             source_revision=source_revision, lane=lane)
+        return self._publish_private_members(captured, prepared_request,
+            expected_current_content_id=expected_current_content_id, generations_root=root)
+
+    def publish_breadth_member_inputs(
+        self, encoded, *, generation_id: str, source_revision: str,
+        expected_current_content_id: str | None, lane: str = "snapshot",
+    ) -> GenerationPublishResult:
+        """Publish one explicit broad/member cohort through the same owner."""
+        from lib.breadth_member_generation_contract import (
+            EncodedBreadthMemberInputs, BreadthMemberContractError, MEMBERS,
+            MAX_MEMBER_BYTES, MAX_BUNDLE_BYTES, prepare_breadth_member_generation_request,
+        )
+        if not isinstance(encoded, EncodedBreadthMemberInputs):
+            raise BreadthMemberContractError("encoded_inputs_required")
+        if not isinstance(encoded.members, Mapping) or set(encoded.members) != set(MEMBERS):
+            raise BreadthMemberContractError("invalid_breadth_member_set")
+        captured = dict(encoded.members)
+        if (any(type(raw) is not bytes or not 0 < len(raw) <= MAX_MEMBER_BYTES for raw in captured.values())
+                or sum(map(len, captured.values())) > MAX_BUNDLE_BYTES):
+            raise BreadthMemberContractError("invalid_breadth_member_bytes")
+        root = self._yahoo_private_root()
+        request = prepare_breadth_member_generation_request(
+            sources={name: Path(name) for name in MEMBERS}, input_identity=encoded.input_identity,
+            yahoo=encoded.yahoo, generation_id=generation_id, source_revision=source_revision, lane=lane)
+        return self._publish_private_members(captured, request,
+            expected_current_content_id=expected_current_content_id, generations_root=root)
+
+    def _publish_private_members(
+        self, captured: Mapping[str, bytes], request: GenerationRequest, *,
+        expected_current_content_id: str | None, generations_root: Path,
+    ) -> GenerationPublishResult:
+        """Ephemeral sources for the incumbent publisher; never another selection."""
+        from dataclasses import replace
         _private_dir(Path(self.state_dir))
-        # This ephemeral directory is only a producer source for the incumbent
-        # captured-byte publisher; it is never a selection or serving location.
-        with tempfile.TemporaryDirectory(prefix=".yahoo-input-", dir=self.state_dir) as temporary:
+        with tempfile.TemporaryDirectory(prefix=".private-input-", dir=self.state_dir) as temporary:
             stage = Path(temporary)
             sources = {}
             for name, raw in captured.items():
                 if _artifact_name_error(name):
-                    raise YahooGenerationContractError("invalid_yahoo_member_set")
+                    raise GenerationRejected("invalid private member name")
                 path = stage / name
                 _private_dir(path.parent)
                 fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -2692,12 +2778,11 @@ class Orchestrator:
                     output.flush()
                     os.fsync(output.fileno())
                 sources[name] = path
-            request = prepare_yahoo_generation_request(sources=sources,
-                input_identity=prepared_request.input_identity, generation_id=generation_id,
-                source_revision=source_revision, lane=lane)
-            return self.publish_generation(request,
+            staged = replace(request, artifacts=tuple(
+                replace(artifact, source=sources[artifact.name]) for artifact in request.artifacts))
+            return self.publish_generation(staged,
                 expected_current_content_id=expected_current_content_id,
-                generations_root=root)
+                generations_root=generations_root)
 
     def publish_generation(
         self,

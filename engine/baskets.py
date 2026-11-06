@@ -162,9 +162,12 @@ def _perf(lvl: pd.Series, bench: pd.Series, idx: pd.DatetimeIndex,
 
 def _proxy_returns_from_inputs(
     proxy, idx: pd.DatetimeIndex, proxy_frames: Mapping[str, pd.DataFrame | None],
+    *, require_all: bool = False,
 ) -> pd.Series | None:
     """Daily returns of a reference ETF, or an equal blend of several (e.g. ['XLP','XLU'])."""
     syms = proxy if isinstance(proxy, list) else [proxy]
+    if require_all and any(proxy_frames.get(s) is None or "close" not in proxy_frames[s] for s in syms):
+        return None
     legs = []
     for s in syms:
         pe = proxy_frames.get(s)
@@ -172,7 +175,7 @@ def _proxy_returns_from_inputs(
             legs.append(pe["close"].reindex(idx).ffill().pct_change())
     if not legs:
         return None
-    return pd.concat(legs, axis=1).mean(axis=1)
+    return pd.concat(legs, axis=1).mean(axis=1, skipna=not require_all)
 
 
 @dataclass(frozen=True)
@@ -184,6 +187,8 @@ class BasketInputs:
     extras: pd.DataFrame | None
     names_sectors: Mapping[str, tuple[str, str]]
     proxy_frames: Mapping[str, pd.DataFrame | None]
+    source_basis: Mapping[str, str] | None = None
+    require_complete_proxy_legs: bool = False
 
 
 def _proxy_returns(proxy, idx: pd.DatetimeIndex) -> pd.Series | None:
@@ -264,7 +269,8 @@ def _compute_baskets_captured(inputs: BasketInputs) -> tuple[dict | None, list[d
     # unproven adjustment vintage.
     extras = None if inputs.extras is None else inputs.extras.copy(deep=True)
     closes, price_resolution = resolve_thematic_close_panel(
-        closes, extras, _membership_tickers(mem))
+        closes, extras, _membership_tickers(mem),
+        source_basis=None if inputs.source_basis is None else dict(inputs.source_basis))
     rets = closes.pct_change(fill_method=None)
     idx = rets.index
     nm = dict(inputs.names_sectors)
@@ -337,7 +343,8 @@ def _compute_baskets_captured(inputs: BasketInputs) -> tuple[dict | None, list[d
         reference = None
         proxy = b.get("etf_proxy")
         if proxy:
-            pr = _proxy_returns_from_inputs(proxy, idx, inputs.proxy_frames)
+            pr = _proxy_returns_from_inputs(proxy, idx, inputs.proxy_frames,
+                                            require_all=inputs.require_complete_proxy_legs)
             if pr is not None:
                 ew_ret = lvl.pct_change()
                 pair = pd.concat([ew_ret, pr, spy_ret], axis=1).dropna()
