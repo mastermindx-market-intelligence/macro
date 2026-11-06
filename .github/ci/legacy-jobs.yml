@@ -34058,6 +34058,11 @@ jobs:
     gate: code
     timeout-minutes: 8
     runs-on: ubuntu-latest
+    # Additive explicit owner: selectors must not silently skip MR2 changes.
+    paths:
+      - "engine/market_tide_event_response.py"
+      - "scripts/market_tide_event_response.py"
+      - "tests/test_market_tide_event_response.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
