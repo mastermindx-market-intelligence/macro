@@ -1,0 +1,9 @@
+{
+  "why": "Trade headings now name prices and dollar flows; the golden kept the shared headings.",
+  "pairs": [
+    [">Trade prices<", ">Rate-side drivers<"],
+    [">贸易价格<", ">利率侧驱动<"],
+    [">Dollar flows<", ">Balance-sheet drivers<"],
+    [">美元流量<", ">资产负债表驱动<"]
+  ]
+}

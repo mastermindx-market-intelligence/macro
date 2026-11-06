@@ -174,6 +174,122 @@ def test_missing_newly_reachable_object_is_not_a_complete_inventory(tmp_path, li
         checked(root, candidate, baseline, base, limits)
 
 
+def accepted_historical_objects(root, *, count=1, size=64):
+    """Create accepted-but-deleted history in a synthetic local repository."""
+    directory = root / "retired-history"
+    directory.mkdir()
+    for number in range(count):
+        (directory / f"{number}.bin").write_bytes(str(number).encode() + b"x" * size)
+    git(root, "add", ".")
+    git(root, "commit", "-qm", "synthetic accepted historical objects")
+    historical = git(root, "rev-parse", "HEAD")
+    objects = {
+        "commit": historical,
+        "tree": git(root, "rev-parse", historical + ":retired-history"),
+        "blob": git(root, "rev-parse", historical + ":retired-history/0.bin"),
+    }
+    git(root, "rm", "-qr", "retired-history")
+    git(root, "commit", "-qm", "accepted tip no longer contains historical files")
+    return git(root, "rev-parse", "HEAD"), objects
+
+
+@pytest.mark.parametrize("boundary", ["candidate", "frozen", "inventory"])
+@pytest.mark.parametrize("kind", ["blob", "tree", "commit"])
+def test_missing_accepted_history_is_refused(boundary, kind, tmp_path, limits):
+    root, _, values, base = fixture_repo(tmp_path, limits)
+    baseline, historical = accepted_historical_objects(root)
+    candidate, _, snapshot = appended(root, values, base, limits)
+    tree = git(root, "rev-parse", candidate + "^{tree}")
+    assert git(root, "rev-parse", "--is-shallow-repository") == "false"
+    assert git(root, "merge-base", "--is-ancestor", baseline, candidate) == ""
+    assert historical[kind] not in git(
+        root, "rev-list", "--objects", "--no-object-names", candidate, "--not", baseline,
+    ).splitlines()
+    missing = root / ".git/objects" / historical[kind][:2] / historical[kind][2:]
+    missing.unlink()
+    before = physical_state(root)
+    index = (root / ".git/index").read_bytes()
+    refs = git(root, "show-ref")
+
+    with pytest.raises(p.SnapshotIntegrityError, match="INCOMPLETE|GIT_READ"):
+        if boundary == "candidate":
+            checked(root, candidate, baseline, snapshot, limits)
+        elif boundary == "frozen":
+            q.check_frozen_tree(
+                root, tree_oid=tree, parent_commit_oid=baseline,
+                accepted_baseline_oids=(baseline,),
+                binding=binding(baseline, snapshot), limits=limits,
+            )
+        else:
+            q.enumerate_introduced_blobs(
+                root, candidate_oid=candidate,
+                accepted_baseline_oids=(baseline,), limits=limits,
+            )
+
+    assert not missing.exists()
+    assert git(root, "rev-parse", "HEAD") == candidate
+    assert git(root, "show-ref") == refs
+    assert physical_state(root) == before and (root / ".git/index").read_bytes() == index
+
+
+def test_accepted_history_inventory_has_a_finite_capacity(tmp_path, limits):
+    limited = replace(limits, publication_objects=16)
+    root, _, values, base = fixture_repo(tmp_path, limited)
+    baseline, _ = accepted_historical_objects(root, count=24)
+    candidate, _, snapshot = appended(root, values, base, limited)
+    assert len(git(root, "rev-list", "--objects", "--no-object-names",
+                   candidate, "--not", baseline).splitlines()) <= limited.publication_objects
+    with pytest.raises(p.SnapshotIntegrityError, match="NONRETRYABLE_CAPACITY"):
+        checked(root, candidate, baseline, snapshot, limited)
+
+
+def test_complete_oversized_accepted_history_is_not_reclassified_as_introduced(tmp_path, limits):
+    limited = replace(limits, git_blob_bytes=2048)
+    root, _, values, base = fixture_repo(tmp_path, limited)
+    baseline, historical = accepted_historical_objects(root, size=4096)
+    candidate, _, snapshot = appended(root, values, base, limited)
+    result = checked(root, candidate, baseline, snapshot, limited)
+    assert result.status == "NATIVE_VERIFIED" and result.effect == "not_attempted"
+    introduced = q.enumerate_introduced_blobs(
+        root, candidate_oid=candidate, accepted_baseline_oids=(baseline,), limits=limited,
+    )
+    assert historical["blob"] not in {item.object_id for item in introduced}
+
+
+def test_every_supplied_accepted_baseline_requires_complete_history(tmp_path, limits):
+    root, baseline, values, base = fixture_repo(tmp_path, limits)
+    candidate, _, snapshot = appended(root, values, base, limits)
+    git(root, "checkout", "--detach", "-q", baseline)
+    other, historical = accepted_historical_objects(root)
+    missing = root / ".git/objects" / historical["blob"][:2] / historical["blob"][2:]
+    missing.unlink()
+    with pytest.raises(p.SnapshotIntegrityError, match="INCOMPLETE|GIT_READ"):
+        checked(root, candidate, baseline, snapshot, limits,
+                accepted_baseline_oids=(baseline, other))
+    assert not missing.exists()
+
+
+def test_complete_history_does_not_accept_unrelated_target_ancestry(tmp_path, limits):
+    root, baseline, values, base = fixture_repo(tmp_path, limits)
+    candidate, _, snapshot = appended(root, values, base, limits)
+    git(root, "checkout", "--detach", "-q", baseline)
+    other, _ = accepted_historical_objects(root)
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        checked(root, candidate, other, snapshot, limits)
+
+
+def test_conversion_refuses_a_missing_accepted_historical_blob(tmp_path, limits):
+    raw = b"original\noriginal\n"
+    root, _, old_oid = legacy_repo(tmp_path, raw)
+    baseline, historical = accepted_historical_objects(root)
+    candidate, snapshot = conversion_candidate(root, raw, limits)
+    missing = root / ".git/objects" / historical["blob"][:2] / historical["blob"][2:]
+    missing.unlink()
+    with pytest.raises(p.SnapshotIntegrityError, match="INCOMPLETE|GIT_READ"):
+        conversion_check(root, candidate, baseline, old_oid, snapshot, limits)
+    assert not missing.exists()
+
+
 def test_shallow_history_is_refused_without_fetching(tmp_path, limits, monkeypatch):
     root, baseline, _, base = fixture_repo(tmp_path, limits)
     (root / ".git/shallow").write_text(baseline + "\n")
@@ -217,8 +333,12 @@ def test_candidate_must_match_explicit_owner_binding(case, tmp_path, limits):
 
 
 def test_introduced_inventory_count_is_bounded_before_returning_success(tmp_path, limits):
-    limited = replace(limits, publication_objects=1)
+    limited = replace(limits, publication_objects=16)
     root, baseline, values, base = fixture_repo(tmp_path, limited)
+    assert len(git(root, "rev-list", "--objects", "--no-object-names",
+                   baseline).splitlines()) <= limited.publication_objects
+    for number in range(24):
+        (root / f"introduced-{number}.bin").write_bytes(str(number).encode())
     candidate, _, snapshot = appended(root, values, base, limited)
     with pytest.raises(p.SnapshotIntegrityError, match="NONRETRYABLE_CAPACITY"):
         checked(root, candidate, baseline, snapshot, limited)

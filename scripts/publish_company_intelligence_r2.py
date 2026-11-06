@@ -365,6 +365,7 @@ def publish_event_workspaces(
     expected_manifest_etag: str | None = None,
     s3: Any | None = None,
     bucket: str | None = None,
+    evidence: Any | None = None,
 ) -> int:
     """Publish the sibling ``event_workspaces/`` nest; never touch the v1 marker."""
     from engine.company_intelligence.event_workspace import (  # noqa: PLC0415
@@ -372,27 +373,34 @@ def publish_event_workspaces(
         WorkspaceError,
     )
 
+    candidate = evidence.begin(out_dir) if evidence is not None else None
+
+    def done(code: int, outcome: str) -> int:
+        if evidence is not None:
+            evidence.outcome(candidate, outcome)
+        return code
+
     client = s3 if s3 is not None else _client()
     if client is None:
         log.info("no R2 credentials — skip event workspace publish")
-        return 0
+        return done(0, "not_attempted_no_client")
     target_bucket = bucket or os.environ.get("R2_BUCKET", "")
     if not target_bucket:
         log.error("R2_BUCKET not set")
-        return 1
+        return done(1, "not_attempted_no_bucket")
     manifest = _read_workspace_nest_manifest(out_dir)
     if manifest is None:
         log.error("event workspace nest missing; sibling marker not promoted")
-        return 1
+        return done(1, "not_attempted_no_manifest")
     try:
         validate_workspace_manifest(manifest)
     except WorkspaceError as exc:
         log.error("refusing invalid event workspace generation: %s", exc)
-        return 1
+        return done(1, "manifest_rejected")
     remote_manifest, remote_etag = _remote_workspace_manifest_snapshot(client, target_bucket)
     if remote_manifest is not None and canonical_json_bytes(remote_manifest) == canonical_json_bytes(manifest):
         log.info("event workspace generation %s already promoted", manifest.get("generation_id"))
-        return 0
+        return done(0, "already_current")
     generation_id = str(manifest["generation_id"])
     nest = Path(out_dir) / "event_workspaces"
     errors = 0
@@ -439,9 +447,9 @@ def publish_event_workspaces(
             errors += 1
     if errors:
         log.error("event workspace payload publish incomplete; sibling marker not promoted")
-        return 1
+        return done(1, "payload_failure_partial_effects_possible")
     if dry_run:
-        return 0
+        return done(0, "dry_run")
     marker = nest / "manifest.json"
     marker_sha = bytes_sha256(marker)
     put_args: dict[str, Any] = {
@@ -461,10 +469,10 @@ def publish_event_workspaces(
     except Exception as exc:  # noqa: BLE001
         if _is_precondition_failed(exc):
             log.warning("event workspace marker promotion lost compare-and-swap for %s", generation_id)
-            return PUBLISH_CONFLICT
+            return done(PUBLISH_CONFLICT, "marker_conflict")
         log.error("event workspace marker promotion failed: %s", exc)
-        return 1
-    return 0
+        return done(1, "marker_put_failed_effect_unknown")
+    return done(0, "marker_put_acknowledged")
 
 
 def main(argv: list[str] | None = None) -> int:

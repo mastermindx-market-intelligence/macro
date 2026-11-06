@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-12T12:06:26Z",
+ "accession": "0001628280-26-017024",
+ "cik": "0001306965",
+ "doc_byte_length": 10268542,
+ "doc_sha256": "aad9da70733dd4bb4741408fd2cfabf02122cc91e8735614cba319bd9235f030",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-12",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "shel-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3067640,
+  "byte_start": 3067209,
+  "normalized": "Construction continued on the REFHYNE II 100 MW hydrogen electrolyser at Shell Energy and Chemicals Park Rheinland. In November 2025, Shell Energy Europe Limited signed two separate power purchase agreements (PPA) in Germany with Nordsee One GmbH and Solarkraftwerk Halenbeck-Rohlsdorf I/II GmbH. The agreements will secure a significant proportion of the renewable electricity needed to power the REFHYNE II hydrogen electrolyser.",
+  "normalized_sha256": "d678af8ebef424fce51ca57e3d265d7b19f876f304ab4273ae6ee6aea985e852",
+  "raw": "Construction continued on the REFHYNE II 100 MW hydrogen electrolyser at Shell Energy and Chemicals Park Rheinland. In November 2025, Shell Energy Europe Limited signed two separate power purchase agreements (PPA) in Germany with Nordsee One GmbH and Solarkraftwerk Halenbeck-Rohlsdorf I/II GmbH. The agreements will secure a significant proportion of the renewable electricity needed to power the REFHYNE II hydrogen electrolyser.",
+  "raw_sha256": "d678af8ebef424fce51ca57e3d265d7b19f876f304ab4273ae6ee6aea985e852"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1306965/000162828026017024/shel-20251231.htm",
+ "xbrl_contexts": []
+}

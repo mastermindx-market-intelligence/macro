@@ -1,0 +1,646 @@
+{
+  "schema": "fundamental_forensics.golden_filing_package/v1",
+  "entity_id": "ISS:US-XNAS-AAPL",
+  "cik": "0000320193",
+  "security_id": "SEC:US-XNAS-AAPL",
+  "listing_key": "US-XNAS-AAPL",
+  "legal_name": "Apple Inc.",
+  "accession": "0000320193-22-000070",
+  "form": "10-Q",
+  "primary_document": "aapl-20220625.htm",
+  "period_of_report": "2022-06-25",
+  "filing_date": "2022-07-29",
+  "source_accepted_at": "2022-07-28T22:06:56.000Z",
+  "fixture_recorded_at": "2026-10-31T15:41:44Z",
+  "acceptance_witness": {
+    "path": "sec_submissions_witness.json",
+    "source_url": "https://data.sec.gov/submissions/CIK0000320193.json",
+    "content_sha256": "1983541d2da79b0b88301d5cc47d4bfc32a460782c152d431317fc9c5701500b",
+    "byte_length": 364
+  },
+  "archive_index_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/index.json",
+  "index_sha256": "409f6047ab2ad7af141b7590918902dd9cf6dddec8b914db62c2b2d5ca2406c0",
+  "index_byte_length": 6418,
+  "index_http_last_modified": null,
+  "member_count": 66,
+  "retained_count": 6,
+  "statement_roles": {
+    "income_statement": {
+      "role_uri": "http://www.apple.com/role/CONDENSEDCONSOLIDATEDSTATEMENTSOFOPERATIONSUnaudited",
+      "title": "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+      "title_search": "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS"
+    },
+    "balance_sheet": {
+      "role_uri": "http://www.apple.com/role/CONDENSEDCONSOLIDATEDBALANCESHEETSUnaudited",
+      "title": "CONDENSED CONSOLIDATED BALANCE SHEETS (Unaudited)",
+      "title_search": "CONDENSED CONSOLIDATED BALANCE SHEETS"
+    },
+    "cash_flow": {
+      "role_uri": "http://www.apple.com/role/CONDENSEDCONSOLIDATEDSTATEMENTSOFCASHFLOWSUnaudited",
+      "title": "CONDENSED CONSOLIDATED STATEMENTS OF CASH FLOWS (Unaudited)",
+      "title_search": "CONDENSED CONSOLIDATED STATEMENTS OF CASH FLOWS"
+    }
+  },
+  "members": [
+    {
+      "name": "0000320193-22-000070-index-headers.html",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/0000320193-22-000070-index-headers.html"
+    },
+    {
+      "name": "0000320193-22-000070-index.html",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/0000320193-22-000070-index.html"
+    },
+    {
+      "name": "0000320193-22-000070.txt",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/0000320193-22-000070.txt"
+    },
+    {
+      "name": "0000320193-22-000070-xbrl.zip",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "200849",
+      "index_type": "compressed.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/0000320193-22-000070-xbrl.zip"
+    },
+    {
+      "name": "a10-qexhibit31106252022.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "10628",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/a10-qexhibit31106252022.htm"
+    },
+    {
+      "name": "a10-qexhibit31206252022.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "10645",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/a10-qexhibit31206252022.htm"
+    },
+    {
+      "name": "a10-qexhibit32106252022.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "8438",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/a10-qexhibit32106252022.htm"
+    },
+    {
+      "name": "aapl-20220625.htm",
+      "state": "stored",
+      "role": "primary",
+      "content_sha256": "6a439a1090b268e0188f80d283bb4e144161ee1bed8048c68cdb13286e4148a1",
+      "byte_length": 1295780,
+      "path": "members/aapl-20220625.htm",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/aapl-20220625.htm",
+      "http_last_modified": "Fri, 29 Jul 2022 10:03:03 GMT"
+    },
+    {
+      "name": "aapl-20220625.xsd",
+      "state": "stored",
+      "role": "schema",
+      "content_sha256": "d0ca4083290136c069624a8099c0fc18e111da532bb99960e17558e229e2b8c2",
+      "byte_length": 35163,
+      "path": "members/aapl-20220625.xsd",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/aapl-20220625.xsd",
+      "http_last_modified": "Fri, 29 Jul 2022 10:03:03 GMT"
+    },
+    {
+      "name": "aapl-20220625_cal.xml",
+      "state": "stored",
+      "role": "calculation",
+      "content_sha256": "ba81b5f5da1cb3aa8fa075efda0041e60faf7f11364b743db3ff947ed54d8186",
+      "byte_length": 85165,
+      "path": "members/aapl-20220625_cal.xml",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/aapl-20220625_cal.xml",
+      "http_last_modified": "Fri, 29 Jul 2022 10:03:03 GMT"
+    },
+    {
+      "name": "aapl-20220625_def.xml",
+      "state": "stored",
+      "role": "definition",
+      "content_sha256": "e548801e27af31c855e7c2554f6fe4414ddd93f2c0f11a0683c816964465cde2",
+      "byte_length": 157188,
+      "path": "members/aapl-20220625_def.xml",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/aapl-20220625_def.xml",
+      "http_last_modified": "Fri, 29 Jul 2022 10:03:03 GMT"
+    },
+    {
+      "name": "aapl-20220625_g1.jpg",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "10963",
+      "index_type": "image2.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/aapl-20220625_g1.jpg"
+    },
+    {
+      "name": "aapl-20220625_htm.xml",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "1203313",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/aapl-20220625_htm.xml"
+    },
+    {
+      "name": "aapl-20220625_lab.xml",
+      "state": "stored",
+      "role": "label",
+      "content_sha256": "cea6f4c4db77445a373fc6d43a58eb345726c798e3859e6caba99acda9a206ee",
+      "byte_length": 472026,
+      "path": "members/aapl-20220625_lab.xml",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/aapl-20220625_lab.xml",
+      "http_last_modified": "Fri, 29 Jul 2022 10:03:04 GMT"
+    },
+    {
+      "name": "aapl-20220625_pre.xml",
+      "state": "stored",
+      "role": "presentation",
+      "content_sha256": "3a84586fe7a8e6ecd69df5abbdb2e2282b8bf71bf1dbce8ba2f425ddb84f9978",
+      "byte_length": 287390,
+      "path": "members/aapl-20220625_pre.xml",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/aapl-20220625_pre.xml",
+      "http_last_modified": "Fri, 29 Jul 2022 10:03:04 GMT"
+    },
+    {
+      "name": "FilingSummary.xml",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "29320",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/FilingSummary.xml"
+    },
+    {
+      "name": "Financial_Report.xlsx",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "67096",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/Financial_Report.xlsx"
+    },
+    {
+      "name": "MetaLinks.json",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "536373",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/MetaLinks.json"
+    },
+    {
+      "name": "R1.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "81370",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R1.htm"
+    },
+    {
+      "name": "R10.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "142513",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R10.htm"
+    },
+    {
+      "name": "R11.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "28008",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R11.htm"
+    },
+    {
+      "name": "R12.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "19059",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R12.htm"
+    },
+    {
+      "name": "R13.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "9646",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R13.htm"
+    },
+    {
+      "name": "R14.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "24281",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R14.htm"
+    },
+    {
+      "name": "R15.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "18804",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R15.htm"
+    },
+    {
+      "name": "R16.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "55663",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R16.htm"
+    },
+    {
+      "name": "R17.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "10990",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R17.htm"
+    },
+    {
+      "name": "R18.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "23528",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R18.htm"
+    },
+    {
+      "name": "R19.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "26599",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R19.htm"
+    },
+    {
+      "name": "R2.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "77568",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R2.htm"
+    },
+    {
+      "name": "R20.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "139801",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R20.htm"
+    },
+    {
+      "name": "R21.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "31435",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R21.htm"
+    },
+    {
+      "name": "R22.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "13267",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R22.htm"
+    },
+    {
+      "name": "R23.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "25223",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R23.htm"
+    },
+    {
+      "name": "R24.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "17365",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R24.htm"
+    },
+    {
+      "name": "R25.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "55156",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R25.htm"
+    },
+    {
+      "name": "R26.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "36891",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R26.htm"
+    },
+    {
+      "name": "R27.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "21559",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R27.htm"
+    },
+    {
+      "name": "R28.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "4962",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R28.htm"
+    },
+    {
+      "name": "R29.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "16136",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R29.htm"
+    },
+    {
+      "name": "R3.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "44148",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R3.htm"
+    },
+    {
+      "name": "R30.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "93559",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R30.htm"
+    },
+    {
+      "name": "R31.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "11491",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R31.htm"
+    },
+    {
+      "name": "R32.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "24778",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R32.htm"
+    },
+    {
+      "name": "R33.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "11374",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R33.htm"
+    },
+    {
+      "name": "R34.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "10009",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R34.htm"
+    },
+    {
+      "name": "R35.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "11096",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R35.htm"
+    },
+    {
+      "name": "R36.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "9322",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R36.htm"
+    },
+    {
+      "name": "R37.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "12220",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R37.htm"
+    },
+    {
+      "name": "R38.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "14775",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R38.htm"
+    },
+    {
+      "name": "R39.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "15612",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R39.htm"
+    },
+    {
+      "name": "R4.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "120002",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R4.htm"
+    },
+    {
+      "name": "R40.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "10930",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R40.htm"
+    },
+    {
+      "name": "R41.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "28506",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R41.htm"
+    },
+    {
+      "name": "R42.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "12215",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R42.htm"
+    },
+    {
+      "name": "R43.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "7702",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R43.htm"
+    },
+    {
+      "name": "R44.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "9840",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R44.htm"
+    },
+    {
+      "name": "R45.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "24765",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R45.htm"
+    },
+    {
+      "name": "R46.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "18491",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R46.htm"
+    },
+    {
+      "name": "R5.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "10832",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R5.htm"
+    },
+    {
+      "name": "R6.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "55254",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R6.htm"
+    },
+    {
+      "name": "R7.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "94522",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R7.htm"
+    },
+    {
+      "name": "R8.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "26137",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R8.htm"
+    },
+    {
+      "name": "R9.htm",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "30405",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/R9.htm"
+    },
+    {
+      "name": "report.css",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "2767",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/report.css"
+    },
+    {
+      "name": "Show.js",
+      "state": "not_requested",
+      "role": "archive",
+      "declared_reason": "not required for XBRL statement reconstruction; held-out bytes are staged outside git under ~/lanes/stage/fif-heldout and reach git only as digests",
+      "index_size": "1085",
+      "index_type": "text.gif",
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000070/Show.js"
+    }
+  ]
+}

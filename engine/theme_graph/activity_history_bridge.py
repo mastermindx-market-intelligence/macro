@@ -177,6 +177,25 @@ def _ruling_refusal(path, code: str, detail: str) -> dict:
     return {"path": None if path is None else str(path), "code": code, "detail": detail}
 
 
+def _ruling_authority_kind_ok(ruling: dict) -> bool:
+    """A direct Chairman confirmation, or a Chairman-delegated decision that names its grant.
+
+    The delegated kind is honest provenance for a decision the Chairman handed to a seat:
+    it qualifies only with a delegation record naming the Chairman as grantor, the
+    verbatim delegating quote, the deciding seat and the decision record.
+    """
+    kind = ruling.get("evidence_kind")
+    if kind == "direct_chairman_source_rights_confirmation":
+        return True
+    if kind != "chairman_delegated_decision":
+        return False
+    delegation = ruling.get("delegation")
+    if not isinstance(delegation, dict) or delegation.get("granted_by") != "Chairman Chris":
+        return False
+    return all(isinstance(delegation.get(k), str) and delegation.get(k).strip()
+               for k in ("quote", "deciding_seat", "decision_record"))
+
+
 def _ruling_revision_failure(path: str, ruling: dict, proposed_row: dict, *,
                              allow_fixture: bool) -> dict | None:
     """The first failing check for one ruling file, in the frozen order; None qualifies."""
@@ -220,10 +239,11 @@ def _ruling_revision_failure(path: str, ruling: dict, proposed_row: dict, *,
                                "permitted_use differs from the original ruling's dict; "
                                "the revision must carry it verbatim")
     if (ruling.get("decision_owner") != "Chairman Chris"
-            or ruling.get("evidence_kind") != "direct_chairman_source_rights_confirmation"
-            or ruling.get("decision") != "covered"):
+            or ruling.get("decision") != "covered"
+            or not _ruling_authority_kind_ok(ruling)):
         return _ruling_refusal(path, "USE_RULING_AUTHORITY",
-                               "not a covered direct Chairman source-rights confirmation")
+                               "not a covered Chairman source-rights confirmation "
+                               "(direct, or delegated with a complete delegation record)")
     source = ruling.get("source") or {}
     edition = (evidence.get("source_evidence") or {}).get("edition") or {}
     if (source.get("sha256") != edition.get("source_sha256")
