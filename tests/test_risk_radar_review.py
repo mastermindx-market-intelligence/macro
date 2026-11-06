@@ -11,6 +11,7 @@ import json
 import numpy as np
 import pandas as pd
 
+from engine import risk_radar as rr
 from engine import risk_radar_review as rev
 from engine.risk_radar import _calib
 
@@ -473,3 +474,82 @@ def test_review_result_preserves_probability_gate_evidence(tmp_path, monkeypatch
     assert out["backtest"]["probability_gate"] == gate
     assert "Brier" in rev._A6_GATE_SPEC
     assert "authority partition" in rev._A6_GATE_SPEC
+
+
+
+def _integrity_signals(*, eligible_last=float("nan"), display_last=0.0):
+    idx = pd.bdate_range("2026-08-03", periods=32)
+    return pd.DataFrame(
+        {
+            "growth_defensives": 0.3,
+            "growth_cyc_def": 0.3,
+            "nh_contraction": [0.9] * 31 + [eligible_last],
+            "ai_breadth_divergence": [0.0] * 31 + [display_last],
+        },
+        index=idx,
+    )
+
+
+def test_current_reading_ineligible_only_preserves_arithmetic_but_is_unavailable():
+    out = rr.compute(sigs=_integrity_signals(), gate={"met": False})
+    row = next(s for s in out["scares"] if s["scare"] == "internals")
+
+    assert row["score"] == 0.0
+    assert row["band"] == "calm"
+    assert row["n_legs_resolved"] == 0
+    assert row["weight_coverage"] == 0.0
+
+    assert row.get("reading_state") == "UNAVAILABLE"
+    assert row.get("display_score") is None
+    assert row.get("display_band") is None
+    assert out["deescalation"]["receding_scare"] != "internals"
+    assert "internals" not in {
+        r["key"] for r in out["deescalation"].get("deescalated", [])
+    }
+
+
+def test_current_reading_real_zero_eligible_stays_available_and_calm():
+    out = rr.compute(
+        sigs=_integrity_signals(eligible_last=0.0, display_last=float("nan")),
+        gate={"met": False},
+    )
+    row = next(s for s in out["scares"] if s["scare"] == "internals")
+    assert row["score"] == 0.0
+    assert row["n_legs_resolved"] == 1
+    assert row.get("reading_state") == "AVAILABLE"
+    assert row.get("display_score") == 0.0
+    assert row.get("display_band") == "calm"
+
+
+def test_current_reading_missing_today_cannot_reuse_yesterday_for_recovery():
+    idx = pd.bdate_range("2026-08-03", periods=32)
+    subs = pd.DataFrame(
+        {
+            "growth": [80.0] * 20 + [60.0] * 11 + [float("nan")],
+            "credit": [30.0] * 32,
+        },
+        index=idx,
+    )
+    calib = {
+        "bands": {
+            "watch": 55.0,
+            "caution": 68.0,
+            "elevated": 78.0,
+            "risk_off": 88.0,
+        },
+        "legs": {},
+        "scares": {
+            "growth": {"tier": "A", "legs": []},
+            "credit": {"tier": "A", "legs": []},
+        },
+        "alert_from": "elevated",
+    }
+
+    traj = rr.trajectory(subs=subs, calib=calib, sigs=pd.DataFrame(index=idx))
+    drivers = (traj or {}).get("drivers") or {}
+    for field in ("faded", "warm"):
+        assert "growth" not in {x["key"] for x in drivers.get(field, [])}
+
+    deesc = rr._deescalation("growth", subs, traj, {"h21": 0.13})
+    assert deesc["receding_scare"] != "growth"
+    assert deesc["dominant_velocity"] is None

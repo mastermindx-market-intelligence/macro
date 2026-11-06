@@ -1,0 +1,38 @@
+{
+  "id": "usitc-2026-10-13-337-ta-1473",
+  "source_url": "https://www.usitc.gov/secretary/fed_reg_notices/337/337_1473_notice10132026sgl.pdf",
+  "discovery_url": "https://www.usitc.gov/intellectual_property.htm",
+  "pdf_sha256": "5fbe36883a69a418ff3cfd4bfe7cb0efbf63fb322d379e46344185daf6e0571e",
+  "sidecar_sha256": "fe21f6027db1ba98f674ed0f938c1d3bf0a7656a3b7736392f54f5c162ce7da5",
+  "pages": 2,
+  "publication_date": "2026-10-13",
+  "event_date": "2026-10-13",
+  "clock": "date only; no time invented",
+  "rights_scope": {
+    "basis_url": "https://www.copyright.gov/title17/92chap1.html#105",
+    "basis": "Official agency-authored Commission notice; parent visually inspected both pages and full text. No third-party artwork/report is included; signature identifies the government issuer. Government-work statutory basis retained from the immediately preceding USDA source review; transferred third-party rights are not assumed away.",
+    "agency_disclaimer_url": "https://www.usitc.gov/disclaimers.htm",
+    "disclaimer_sha256": "445ff990100d8fe998fd2de4fce8c82b4f7a90a30a66b39de6762788288303c6",
+    "disclaimer_limit": "No endorsement; linked third-party materials have separate rights. No reliance on off-site materials or private complaint exhibits.",
+    "parent_decision": "Qualified original notice and attributed factual summary for existing private canonical Research intake and its ordinary report/viewer consumer. Final Press article still requires source, receipt, editorial and release gates.",
+    "public_press_article_approval": false
+  },
+  "ticker_binding": {
+    "CAT": "Source explicitly names Caterpillar respondent; existing installed canonical CAT dossier and stockdata identify Caterpillar Inc. This is party identity, not proof of financial materiality."
+  },
+  "same_event_check": "Canonical2910-row census: exact four source keys absent; no matching investigation/notice/hash. Three older private reports only mention Caterpillar shorting, power generation or credit spreads; no337-TA-1473 match, so none duplicates this October13 determination.",
+  "canonical_admission": false,
+  "canonical_writes": 2,
+  "provider_calls": 0,
+  "press_staging_writes": 0,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10",
+  "canonical_fence_head": "8bca8e25f25b2e6445c81c88ccc8ca978c1d851f",
+  "inbox_package_accepted": true,
+  "canonical_catalog_admission": false,
+  "effect_state": "KNOWN_COMPLETE_TWO_CONDITIONAL_CREATES_WITH_EXACT_READBACKS",
+  "consumption_state": "PENDING_INCUMBENT_INGEST",
+  "receipt": "cat-submission-receipt.jsonl",
+  "no_replay": "Never reupload these two objects or mint an alias; consume the normal ingester and renderer."
+}

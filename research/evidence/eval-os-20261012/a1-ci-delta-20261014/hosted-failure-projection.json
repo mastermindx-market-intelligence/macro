@@ -1,0 +1,37 @@
+{
+  "observed_at": "2026-10-14T13:37:04.262984+00:00",
+  "run": 38568750084,
+  "job": 115868075914,
+  "source_head": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "original_receipt_sha256": "b73effda362a6c863657d841d9a504c7b3b8bd1ade73e3646fc884097edbc75e",
+  "annotation_messages": [
+    {
+      "level": "notice",
+      "message": "leadership-rotation-science: engine/rates_command_basis.py is already uncovered on this PR's base \u2014 pre-existing, not introduced by this PR; heal separately"
+    },
+    {
+      "level": "failure",
+      "message": "packing probe scripts/build_free_content.py: an ordinary code PR touching it now selects 135 jobs, over the ceiling 134 (base 134); newly selected: eval-os-a1. tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs reds on this after merge \u2014 narrow the selection (curate the entrant with `scope: exclusive` and exact `paths:` in .github/ci/legacy-jobs.yml, or drop the edge that pulled it in), or, if the wider selection is intended, re-base that ceiling in tests/test_ci_pack.py PACKING_PROBES with the measurement recorded in the test's docstring"
+    },
+    {
+      "level": "failure",
+      "message": "eval-os-a1: import closure now reaches engine/rates_command_basis.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/rates_command_basis.py (widening is always the safe direction)"
+    },
+    {
+      "level": "failure",
+      "message": "eval-os-a1: import closure now reaches engine/neuralweb/market_memory_retained_saved.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/neuralweb/market_memory_retained_saved.py (widening is always the safe direction)"
+    },
+    {
+      "level": "failure",
+      "message": "eval-os-a1: import closure now reaches engine/neuralweb/market_memory_retained_legacy_guard.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/neuralweb/market_memory_retained_legacy_guard.py (widening is always the safe direction)"
+    },
+    {
+      "level": "failure",
+      "message": "eval-os-a1: import closure now reaches engine/neuralweb/market_memory_retained_catalog.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/neuralweb/market_memory_retained_catalog.py (widening is always the safe direction)"
+    },
+    {
+      "level": "failure",
+      "message": "eval-os-a1: import closure now reaches engine/neuralweb/market_memory_brain_citations.py, which .github/ci/legacy-jobs.yml's declared `paths:` for eval-os-a1 does not cover \u2014 widen eval-os-a1's `paths:` to include engine/neuralweb/market_memory_brain_citations.py (widening is always the safe direction)"
+    }
+  ]
+}

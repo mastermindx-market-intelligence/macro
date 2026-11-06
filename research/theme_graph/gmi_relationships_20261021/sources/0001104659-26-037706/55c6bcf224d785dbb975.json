@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-03-31T20:06:52Z",
+ "accession": "0001104659-26-037706",
+ "cik": "0001951222",
+ "doc_byte_length": 5523011,
+ "doc_sha256": "0cce91aa4fda1161c07cc338f0e8a1391b21e40d6de6f3ae380609ef733002e7",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "laes-20251231x20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3239680,
+  "byte_start": 3237853,
+  "normalized": "International electronic security systems manufacturer — — 10",
+  "normalized_sha256": "48bdbc577f2efa9f025a128e424380b669371f3bb194a06a56e0a8b701378948",
+  "raw": "International electronic security systems manufacturer</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:2.31%;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;margin:0pt 0pt 0.05pt 0pt;\">&#160;</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:8.48%;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;text-align:right;margin:0pt 3pt 0.05pt 0pt;\"> &#8212;</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:3.09%;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;margin:0pt 0pt 0.05pt 0pt;\">&#160;</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:8.49%;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;text-align:right;margin:0pt 3pt 0.05pt 0pt;\"> &#8212;</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:2.31%;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;margin:0pt 0pt 0.05pt 0pt;\">&#160;</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:8.48%;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;text-align:right;margin:0pt 3pt 0.05pt 0pt;\"> <ix:nonFraction unitRef=\"Unit_Standard_pure_K4SUfXb-5Eik809CIGUJDA\" contextRef=\"Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_laes_InternationalElectronicSecuritySystemsManufacturerMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_eEWwNTO5X0KUusklqM0dPQ\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"Tc_ltLHVKwcoU-aIzyAaXxAfw_4_6\">10",
+  "raw_sha256": "55c6bcf224d785dbb975d4f1b3a58a27326cbef3842632a917aa905e28e789cd"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/laes-20251231x20f.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 302695,
+   "byte_start": 301706,
+   "context_ref": "Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_laes_InternationalElectronicSecuritySystemsManufacturerMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_eEWwNTO5X0KUusklqM0dPQ",
+   "raw": "<xbrli:context id=\"Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_laes_InternationalElectronicSecuritySystemsManufacturerMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_AccountsReceivableMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_eEWwNTO5X0KUusklqM0dPQ\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001951222</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">laes:InternationalElectronicSecuritySystemsManufacturerMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "2d82c9884706806cdd8571981e90c1c3aa65f1c21aaf7f714a2b3966a874d5f5"
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-08-18T11:12:07Z",
+ "accession": "0001408710-26-000028",
+ "cik": "0001408710",
+ "doc_byte_length": 2313986,
+ "doc_sha256": "4bb0e71c182bc0faf56896eca965b6f0fdfaabe886f82264fac889a8b00939c2",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-18",
+ "form": "10-K",
+ "period_of_report": "2026-06-26",
+ "primary_document": "fn-20260626.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2148567,
+  "byte_start": 2147102,
+  "normalized": "Amazon.com, Inc.10.5 %**",
+  "normalized_sha256": "4a1c22bc2bb87faef25533e3fcc9669e7db504e7501ca9ad44c60d32992e590f",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:1.5pt 1pt;text-align:left;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">Amazon.com, Inc.</span></td><td colspan=\"2\" style=\"background-color:#ffffff;padding:1.5pt 0 1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-404\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1503\">10.5</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:1.5pt 1pt 1.5pt 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">*</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:1.5pt 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">*</span></td></tr>",
+  "raw_sha256": "8b48c38a9468f1c61e20bf3f0c029359348ac524d6d1fc76a8fdfc136996a27a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1408710/000140871026000028/fn-20260626.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 181445,
+   "byte_start": 180781,
+   "context_ref": "c-404",
+   "raw": "<xbrli:context id=\"c-404\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001408710</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">fn:Amazon.comInc.Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-06-28</xbrli:startDate><xbrli:endDate>2026-06-26</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7557a877ca8bbf2c021cbeb7533eee80602a6169c5871d11e70baf46bb413eef"
+  }
+ ]
+}
