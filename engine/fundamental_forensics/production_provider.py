@@ -24,6 +24,7 @@ share classes.
 """
 from __future__ import annotations
 
+import json
 import threading
 from dataclasses import dataclass
 from pathlib import Path
@@ -42,6 +43,7 @@ from .query_service import (
     FinancialQueryDataset,
     FinancialQueryUnavailableError,
 )
+from .models import utc_text
 from .revision_service import FinancialPacketDataset
 from .statement_graph import GoldenFilingPackage
 
@@ -278,6 +280,58 @@ class ProductionFinancialStatementProvider(_ProductionProviderBase):
             delivery=generation.delivery(),
             statement_trees=trees,
         )
+
+    def catalog(self, entity_id: str) -> dict[str, Any]:
+        """The generation's statement filings, from the index role alone.
+
+        Every accession listed here is one ``resolve`` admits for the same
+        generation, so a client never asks for a filing the panel snapshot
+        names but the generation never admitted. Member bytes are never
+        read and the trees role is never touched.
+        """
+        generation = self._cached_generation(entity_id)
+        if generation is None:
+            raise FinancialQueryAdmissionError(400, "unknown entity")
+        try:
+            binding = generation.binding
+            index = json.loads(generation.role_payloads["statement_packages_index_json"])
+            filings = []
+            for item in index.get("accessions") or []:
+                # The index item carries the accession ``resolve`` matches on;
+                # the passthrough manifest may repeat it and must then agree.
+                manifest = item.get("manifest") if isinstance(item, dict) else None
+                if not isinstance(manifest, dict):
+                    raise FinancialQueryUnavailableError()
+                accession = item.get("accession")
+                if "accession" in manifest and manifest["accession"] != accession:
+                    raise FinancialQueryUnavailableError()
+                row = {
+                    key: manifest.get(key)
+                    for key in (
+                        "entity_id",
+                        "cik",
+                        "form",
+                        "period_of_report",
+                        "filing_date",
+                        "source_accepted_at",
+                    )
+                }
+                row["accession"] = accession
+                filings.append(row)
+            return {
+                "entity_id": binding.entity_id,
+                "cik": binding.cik,
+                "dataset_generation_id": generation.generation_id,
+                "admitted_at": utc_text(generation.admitted_at),
+                "delivery": generation.delivery(),
+                "filings": filings,
+            }
+        except FinancialQueryAdmissionError:
+            raise
+        except FinancialQueryUnavailableError:
+            raise
+        except Exception:  # noqa: BLE001
+            raise FinancialQueryUnavailableError() from None
 
 
 __all__ = [
