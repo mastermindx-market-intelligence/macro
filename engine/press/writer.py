@@ -394,7 +394,8 @@ def _vintage_tag(dated: Any, as_of: Any, date_role: Any = None) -> str:
 
 # W2: extract to chronicle injection helper
 def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
-                 prior_failures: list[str] | None = None) -> tuple[str, str]:
+                 prior_failures: list[str] | None = None,
+                 single_attempt: bool = False) -> tuple[str, str]:
     """Assemble (system_prompt, user_prompt) for one slot.
 
     Everything that decides what the model sees lives in this one function on
@@ -443,6 +444,8 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
         )
 
     story = slot.get("story") or {}
+    market_snapshot = (desk == "brief" and isinstance(story, dict)
+                       and story.get("kind") == "native_market_snapshot")
     primary = slot.get("primary_source") or {}
     approved_claim_ids = sorted({
         str(claim_id)
@@ -454,9 +457,10 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     # every evidence line as untrusted data at the final prompt boundary; the
     # shared sanitizer is intentionally narrower than rewriting the evidence.
     from engine.chronicle.earnings_calls import sanitize_untrusted_prose  # noqa: PLC0415
+    from engine.press.native_plan_scope import receipt_facts, required_dossier, scope_fragments  # noqa: PLC0415
 
     facts_lines: list[str] = []
-    for f in (slot.get("facts") or []):
+    for f in receipt_facts(slot):
         if not isinstance(f, dict):
             continue
         fact_text = sanitize_untrusted_prose(f.get("text"), max_len=2000)
@@ -505,13 +509,31 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
         + "\n" + _ENVELOPE
     )
 
+    if single_attempt:
+        system_prompt = system_prompt.replace(
+            "  A draft that breaks one is regenerated at most twice and then dropped.", "", 1)
+
+    if market_snapshot:
+        system_prompt = system_prompt.replace(
+            '- Say what happened, why it matters, and what to watch. Where the honest answer\n'
+            '  is "watch, do not chase", write that.',
+            '- Describe what the measurements show and which later evidence would change\n'
+            '  that assessment. Do not recommend an action to the reader.', 1)
+
+    # Match the incumbent validators' effective limits only for this opt-in
+    # story kind. Legacy/native-plan prompt bytes remain unchanged.
+    min_words = (int(slot.get('min_words') or 300) if market_snapshot else slot.get('min_words'))
+    max_words = (int(slot.get('max_words') or 900) if market_snapshot else slot.get('max_words'))
+    receipts = (int(slot.get('min_anchored_receipts') or v.get('min_anchored_receipts') or 0)
+                if market_snapshot else slot.get('min_anchored_receipts') or 0)
+
     parts: list[str] = []
     parts.append(f"RUN DATE: {slot.get('as_of')}")
     parts.append(f"BYLINE (use verbatim): {slot.get('byline')}")
     parts.append(f"FOOTER (use verbatim): {footer_text}")
-    parts.append(f"WORD BUDGET: {slot.get('min_words')}–{slot.get('max_words')} words "
+    parts.append(f"WORD BUDGET: {min_words}–{max_words} words "
                  f"in the body, byline and footer excluded.")
-    parts.append(f"MINIMUM RECEIPTS: {slot.get('min_anchored_receipts') or 0} distinct "
+    parts.append(f"MINIMUM RECEIPTS: {receipts} distinct "
                  f"numbers anchored to [first_party] SOURCE FACTS.")
     if approved_claim_ids:
         parts.append(
@@ -527,6 +549,59 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
             "rejects missing, unknown, or lexically unrelated attribution."
         )
     parts.append("")
+
+    native_disclosures = scope_fragments(slot)
+    native_records = None
+    if native_disclosures:
+        # Reuse the gate's bound clauses, clocks, quantities and dossier checks.
+        # No partial prompt is returned for an invalid native binding.
+        from engine.press.validators import _native_receipt_records  # noqa: PLC0415
+        native_records = _native_receipt_records(slot, cfg)
+        dossier = required_dossier(slot)
+        # Invocation cardinality is not a property of the desk. Remove the
+        # generic retry promise here without changing actual retry behavior.
+        system_prompt = system_prompt.replace(
+            "  A draft that breaks one is regenerated at most twice and then dropped.",
+            "", 1,
+        )
+        parts.append(
+            "NATIVE PLAN SCOPE: only the bound story lead and historical plan "
+            "can support receipts or anchored share. Unrelated context, dates, "
+            "aliases and repeated rounded values do not create extra receipts. "
+            "Keep each disclosure below as one contiguous run of visible words. "
+            "Case and whitespace are normalized; words must not be inserted, "
+            "removed or reordered inside it (including 'was'). Surrounding "
+            "original prose is allowed; do not hide or split the fragment:")
+        parts.extend(f"  - {fragment}" for fragment in native_disclosures)
+        parts.append(
+            "CONFIRMATION SCOPE: signal_tier and signal_provisional describe "
+            "the source's signal admission. confirmed_date is the T1 marker "
+            "buy-filter date, never a T2 confirmation date. A missing T1 date is "
+            "not evidence that a T2 event was unconfirmed. Missing tier or "
+            "provisional metadata stays unknown. Plan entry status and authority "
+            "remain separate. Signal admission does not prove an executed entry. "
+            "Describe only the declared simulated plan/window outcome, not a "
+            "failed market thesis or a fresh issuer event. These state labels "
+            "add no numeric receipts.")
+        parts.append(
+            "RECEIPT MATCHING: the final receipt count requires a whole clause "
+            "matching a BOUND RECEIPT CLAUSES key. Clauses end at sentence, "
+            "semicolon or colon boundaries; case, whitespace and edge . ; : "
+            "are normalized, not wording. Adding 'of' or 'was' changes a key. "
+            "This differs from the numeric sentence-level share test: a sentence "
+            "can earn share while earning no exact-clause receipt. Identity "
+            "values in the listing only identify distinct receipts; they are "
+            "not additional publishable figures or permission to add precision. "
+            "Use the visible source clause's numbers, units and precision. "
+            "Copying a clause grants no exemption from close-paraphrase, quote "
+            "or self-similarity checks; long copied clauses are not automatically "
+            "safe. Do not shorten clauses or stuff numbers into unsupported "
+            "explanation to evade any gate.")
+        parts.append(
+            "CONTINUATION: link the plan asset's exact existing dossier under "
+            "LINKING with a visible anchor label. Do not invent a dossier, "
+            "execution, achieved target, confirmation or issuer-event cause. "
+            "The plan is historical, not a new signal or trading instruction.")
 
     # SOURCE LAW (masterplan §0 W1 gate 2, amended at W1 review). Only an
     # EXTERNAL source gets the above-the-fold named+linked treatment; a
@@ -589,6 +664,15 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     )
     parts.append("SOURCE FACTS — the complete set of numbers you may use:")
     parts.extend(facts_lines or ["- (none supplied)"])
+    if native_records is not None:
+        # Clause keys remain source data inside the existing evidence fence.
+        parts.append("BOUND RECEIPT CLAUSES — clause to distinct receipt identity values:")
+        listing = json.dumps(native_records, ensure_ascii=False, sort_keys=True, indent=1)
+        # Escape fence markers inside JSON strings without changing their
+        # decoded source keys or the surrounding evidence boundary.
+        listing = listing.replace("[BEGIN UNTRUSTED EVIDENCE DATA", "\\u005bBEGIN UNTRUSTED EVIDENCE DATA")
+        listing = listing.replace("[END UNTRUSTED EVIDENCE DATA", "\\u005bEND UNTRUSTED EVIDENCE DATA")
+        parts.append(listing)
     if ctx_lines:
         parts.append("")
         parts.append("MARKET CONTEXT (background only — cite a number from here "
@@ -597,6 +681,41 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     if ctx_note:
         parts.append(f"  context coverage: {ctx_note}")
     parts.append("[END UNTRUSTED EVIDENCE DATA]")
+
+    if native_disclosures:
+        minimum = int(slot.get("min_anchored_receipts")
+                      or v.get("min_anchored_receipts") or 0)
+        parts.append(
+            "FINAL SELF-CHECK before returning JSON: "
+            f"body {int(slot.get('min_words') or 300)}–"
+            f"{int(slot.get('max_words') or 900)} words, excluding genuine byline/footer; "
+            f"at least {_pct_text(float(v.get('our_value_min') or .40))} of words "
+            "in sentences carrying a supported bound quantity; "
+            f"at least {minimum} distinct values earned by whole matching clauses; "
+            f"all {len(native_disclosures)} disclosures above contiguous and visible; "
+            f"an actual anchor to {dossier}. "
+            "Headings count as body words; dates and nonnumeric explanation do "
+            "not earn numeric share. Keep recorded, price-basis, confirmation "
+            "and close clocks distinct, with historical simulation/status limits. "
+            "Every explanation must remain supported by the bound facts. "
+            "No numerical padding, invented observation or copying exemption; "
+            "all unchanged paraphrase, quote and similarity gates still apply.")
+
+    if market_snapshot:
+        parts.append(
+            "FINAL MARKET SELF-CHECK before returning JSON: "
+            f"body {min_words}–{max_words} words, including headings and "
+            "excluding genuine byline/footer; "
+            f"at least {_pct_text(float(v.get('our_value_min') or .40))} of body words "
+            "in sentences carrying a numeric receipt anchored to [first_party] "
+            f"SOURCE FACTS; at least {receipts} distinct anchored receipts. "
+            "Nonnumeric explanation stays neutral. Use meaningful measurements; "
+            "do not pad evidence with scale ceilings, weights, windows, counts "
+            "or repeated values. Selected components are not exhaustive; "
+            "shared lineages are not independent observations. No unsupported "
+            "superlative, causality, return/flow or predictive claim, and no "
+            "action recommendation. All existing paraphrase and similarity "
+            "checks still apply.")
 
     if attempt and prior_failures:
         parts.append("")
@@ -681,6 +800,7 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
           attempt: int = 0, prior_failures: list[str] | None = None,
           single_provider_attempt: bool = False,
           admitted_token_cap: bool = False,
+          single_attempt: bool = False,
           private_admission_check: Callable[[], None] | None = None) -> dict:
     """Write one draft.  Returns {"ok", "draft"|None, "reason", "provider", ...}.
 
@@ -710,8 +830,17 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
     ):
         return _fail(state, "invalid_private_admission_call_shape", charge=False, record=False)
 
+    from engine.press.validators import native_plan_preflight  # noqa: PLC0415
+    readiness = native_plan_preflight(slot, cfg)
+    if not readiness['ok']:
+        return _fail(state, readiness['reason'], charge=False, record=False,
+                     native_plan_preflight=readiness)
+
+    if single_attempt and (not single_provider_attempt or attempt != 0):
+        return _fail(state, "invalid_single_attempt_mode", charge=False, record=False)
+    prompt_mode = {"single_attempt": True} if single_attempt else {}
     system_prompt, user_prompt = build_prompt(
-        slot, cfg, attempt=attempt, prior_failures=prior_failures)
+        slot, cfg, attempt=attempt, prior_failures=prior_failures, **prompt_mode)
     max_tokens = int(llm_cfg.get("max_tokens") or 4000)
     token_cap: dict[str, Any] | None = None
     if admitted_token_cap:

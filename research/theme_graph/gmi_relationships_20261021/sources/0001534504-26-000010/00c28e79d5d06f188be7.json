@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-12T12:06:47Z",
+ "accession": "0001534504-26-000010",
+ "cik": "0001534504",
+ "doc_byte_length": 3213354,
+ "doc_sha256": "9ca41153174466377e5ccce7f653ff81c747f3407bf7294c2777b1848f550dda",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "pbf-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1918906,
+  "byte_start": 1917775,
+  "normalized": "For the years ended December 31, 2025 and December 31, 2024, only one customer, Shell plc (“Shell”), accounted for 10% or more of the Company’s revenues (approximately 13% and 13%, respectively).",
+  "normalized_sha256": "42d2a289e4ed67b248a467380be5893c0ecf92b1f858b0eb7cde5d39833e26f4",
+  "raw": "For the years ended December&#160;31, 2025 and December&#160;31, 2024, only <ix:nonFraction unitRef=\"numberofcustomer\" contextRef=\"c-77\" decimals=\"0\" name=\"pbf:NumberOfCustomersToAccountForMoreThan10\" format=\"ixt-sec:numwordsen\" scale=\"0\" id=\"f-583\"><ix:nonFraction unitRef=\"numberofcustomer\" contextRef=\"c-78\" decimals=\"0\" name=\"pbf:NumberOfCustomersToAccountForMoreThan10\" format=\"ixt-sec:numwordsen\" scale=\"0\" id=\"f-584\">one</ix:nonFraction></ix:nonFraction> customer, Shell plc (&#8220;Shell&#8221;), accounted for <ix:nonNumeric contextRef=\"c-78\" name=\"us-gaap:ConcentrationRiskBenchmarkDescription\" id=\"f-585\"><ix:nonNumeric contextRef=\"c-77\" name=\"us-gaap:ConcentrationRiskBenchmarkDescription\" id=\"f-586\">10</ix:nonNumeric></ix:nonNumeric>% or more of the Company&#8217;s revenues (approximately <ix:nonFraction unitRef=\"number\" contextRef=\"c-79\" decimals=\"INF\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-587\">13</ix:nonFraction>% and <ix:nonFraction unitRef=\"number\" contextRef=\"c-80\" decimals=\"INF\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-588\">13</ix:nonFraction>%, respectively).  ",
+  "raw_sha256": "00c28e79d5d06f188be7c4cecde447ccbca2d60a919c1067f254bc79201af2b2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1534504/000153450426000010/pbf-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 37798,
+   "byte_start": 37133,
+   "context_ref": "c-79",
+   "raw": "<xbrli:context id=\"c-79\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001534504</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">pbf:RoyalDutchShellMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "f85c4a0a6b82451f6a67fc3c787a57407b210694fdfde864326e59092161d2f2"
+  },
+  {
+   "byte_end": 38463,
+   "byte_start": 37798,
+   "context_ref": "c-80",
+   "raw": "<xbrli:context id=\"c-80\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001534504</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">pbf:RoyalDutchShellMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "bc802c8f1623217dbf889745d94788c7f4653ef4f71fcb4eee6dfa453d25e0f3"
+  }
+ ]
+}
