@@ -82,7 +82,7 @@ import math
 import os
 import re
 import time
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Callable, Mapping
@@ -674,6 +674,8 @@ class _ApplicationFabricTransport:
     qualified: bool = False
     application_allowed: bool = False
     protocol: str = "openai_chat_v1"
+    native_recipe_digest: str | None = None
+    metadata_read: bool = False
 
 
 # Closed application implementations remain held until independently qualified
@@ -701,6 +703,7 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         protocol="native_application_v1",
         qualified=False,
         application_allowed=False,
+        metadata_read=True,
     ),
 }
 _APPLICATION_MODE_IDS = frozenset({"shared_fabric"})
@@ -727,6 +730,7 @@ class _ApplicationFabricMode:
     qualification: str
     qualification_ref: str | None
     qualified_until: float | None
+    admin_pool_view: bool = False
 
     @property
     def secret_ref(self) -> str:
@@ -747,8 +751,11 @@ def _application_fabric_mode(mode_id: str, root: Path) -> _ApplicationFabricMode
     raw = records.get(mode_id)
     if raw is None:
         _application_refuse("fabric_application_binding_missing")
-    if not isinstance(raw, dict) or set(raw) != _APPLICATION_RECORD_FIELDS:
+    if not isinstance(raw, dict) or set(raw) not in (_APPLICATION_RECORD_FIELDS,
+                                                   _APPLICATION_RECORD_FIELDS | {"admin_pool_view"}):
         _application_refuse("fabric_application_binding_invalid")
+    if type(raw.get("admin_pool_view", False)) is not bool:
+        _application_refuse("fabric_application_metadata_permission_invalid")
     transport_id = raw["transport_id"]
     if not isinstance(transport_id, str):
         _application_refuse("fabric_application_transport_invalid")
@@ -770,7 +777,17 @@ def _application_fabric_mode(mode_id: str, root: Path) -> _ApplicationFabricMode
         _application_refuse("fabric_application_qualification_invalid")
     return _ApplicationFabricMode(
         transport, raw["enabled"], raw["application_allowed"], qualification, ref, until,
+        raw.get("admin_pool_view", False),
     )
+
+
+def _application_timeout_cap(value):
+    """Validate a request budget before credentials; None keeps the protocol default."""
+    if value is None:
+        return None
+    if type(value) not in (int, float) or not 0 < value <= 900 or not math.isfinite(value):
+        _application_refuse("fabric_application_timeout_invalid")
+    return float(value)
 
 
 @dataclass(frozen=True)
@@ -789,6 +806,23 @@ class ApplicationFabricFactory:
     _profile: Any
     _provider_order: tuple[str, ...]
     _inspection_commitment: str | None = None
+    _timeout_cap: float | None = None
+
+    def _request_timeout(self, caller_cfg: Mapping[str, Any] | None = None):
+        """A caller may narrow the immutable startup budget, never widen it.
+
+        The existing client owns the absolute request deadline. This does not
+        add a timer or a whole-operation deadline; close and deliberate later
+        steps retain their separate bounds and uncertain effects stay held.
+        """
+        startup = _application_timeout_cap(self._timeout_cap)
+        if caller_cfg is not None and not isinstance(caller_cfg, Mapping):
+            _application_refuse("fabric_application_workload_invalid")
+        caller = _application_timeout_cap(
+            caller_cfg.get("client_timeout_s") if caller_cfg is not None else None)
+        if startup is None:
+            return caller
+        return startup if caller is None else min(startup, caller)
 
     def workload_configuration(self) -> dict:
         cfg = {"provider_order": list(self._provider_order)}
@@ -822,6 +856,7 @@ class ApplicationFabricFactory:
         with a credential-free result: inspect() publishes the identity,
         _bind_with_workload() spends it.
         """
+        self._request_timeout(caller_cfg)
         mode = _application_fabric_mode(self.mode_id, self.root)
         decision = self.workload_decision()
         if caller_cfg is not None:
@@ -853,6 +888,11 @@ class ApplicationFabricFactory:
         transport = mode.transport
         if transport.protocol not in {"openai_chat_v1", "native_application_v1"}:
             _application_refuse("fabric_application_protocol_invalid")
+        if transport.native_recipe_digest is not None and (
+                transport.protocol != "native_application_v1"
+                or not isinstance(transport.native_recipe_digest, str)
+                or re.fullmatch(r"[0-9a-f]{64}", transport.native_recipe_digest) is None):
+            _application_refuse("fabric_application_recipe_invalid")
         if not mode.enabled:
             _application_refuse("fabric_application_disabled")
         if transport.qualified is not True or mode.qualification != PROFILE_QUALIFIED_CANARY:
@@ -862,6 +902,10 @@ class ApplicationFabricFactory:
         if not mode.qualification_ref or mode.qualified_until is None or mode.qualified_until <= time.time():
             _application_refuse("fabric_application_qualification_expired")
 
+        self._capability(transport)
+        return mode, transport, decision
+
+    def _capability(self, transport):
         from engine.neuralweb import capability_broker
 
         # Explicit root bypasses the incumbent broker's process manifest cache.
@@ -870,7 +914,29 @@ class ApplicationFabricFactory:
             _application_refuse("fabric_application_capability_denied")
         if grant.get("ref_name") != transport.secret_ref:
             _application_refuse("fabric_application_credential_ref_mismatch")
-        return mode, transport, decision
+
+    def _metadata_identity(self):
+        """Separate explicit read permission; it cannot relax inference gates."""
+        mode = _application_fabric_mode(self.mode_id, self.root)
+        transport = mode.transport
+        if (self.lane != "admin-orchestrator" or mode.enabled is not True
+                or mode.admin_pool_view is not True or transport.metadata_read is not True
+                or transport.protocol != "native_application_v1"):
+            _application_refuse("fabric_application_metadata_not_permitted")
+        decision = self.workload_decision()
+        self._capability(transport)
+        return mode, transport, self._commit_inspection(self._inspection_identity(transport, decision))
+
+    def prepare_admin_pool_reader(self):
+        """Trusted startup only: resolve through the incumbent secret boundary once."""
+        from engine.fabric_inference_client import FabricPoolViewReader
+
+        mode, transport, identity = self._metadata_identity()
+        credential = _resolve_credential(mode, None)
+        if credential is None:
+            _application_refuse("fabric_application_unconfigured")
+        return _PreparedApplicationPoolReader(self, identity,
+            FabricPoolViewReader(base_url=transport.base_url, proxy_token=credential))
 
     @staticmethod
     def _inspection_identity(transport, decision) -> dict:
@@ -886,6 +952,8 @@ class ApplicationFabricFactory:
             "transport_identity": hashlib.sha256(json.dumps({
                 **{key: getattr(transport, key) for key in _APPLICATION_IDENTITY_FIELDS},
                 "protocol": transport.protocol,
+                **({"native_recipe_digest": transport.native_recipe_digest}
+                   if transport.native_recipe_digest is not None else {}),
             }, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest(),
         }
 
@@ -949,14 +1017,18 @@ class ApplicationFabricFactory:
             # Original identity is part of the trusted owner join. A caller
             # cannot omit/rewrite it and still touch the service credential.
             validate_native_operation_id(operation_id)
+        timeout = self._request_timeout(caller_cfg)
         credential = _resolve_credential(mode, None)
         if credential is None:
             _application_refuse("fabric_application_unconfigured")
 
         client = FabricInferenceClient(
             base_url=transport.base_url, proxy_token=credential, model=transport.model,
+            **({"timeout_s": timeout} if timeout is not None else {}),
             **({"protocol": NATIVE_PROTOCOL, "operation_id": operation_id,
-                "prior_admission_possible": prior_admission_possible} if native else {}),
+                "prior_admission_possible": prior_admission_possible,
+                **({"native_recipe_digest": transport.native_recipe_digest}
+                   if transport.native_recipe_digest is not None else {})} if native else {}),
         )
         return ({"client": client, "model": transport.model,
                  "provider": transport.provider_id, "cost_basis": transport.cost_basis,
@@ -964,6 +1036,39 @@ class ApplicationFabricFactory:
 
     def __call__(self) -> dict:
         return self._bind_with_workload()[0]
+
+
+@dataclass(frozen=True)
+class _PreparedApplicationPoolReader:
+    factory: ApplicationFabricFactory = field(repr=False)
+    identity: str = field(repr=False)
+    reader: Any = field(repr=False)
+
+    def read(self):
+        # Revocation/config drift is checked without re-opening credentials.
+        _, _, current = self.factory._metadata_identity()
+        if current != self.identity:
+            _application_refuse("fabric_application_identity_changed")
+        return self.reader.read()
+
+
+def describe_application_fabric_selection(mode_id, *, root):
+    """Local configuration evidence only; never readiness or admission proof."""
+    if mode_id is None:
+        return {"selected": False, "state": "legacy", "provider": None, "model": None, "blocker": None}
+    try:
+        mode = _application_fabric_mode(mode_id, Path(root))
+        transport = mode.transport
+        blocker = ("fabric_application_disabled" if not mode.enabled else
+            "fabric_application_unqualified" if not transport.qualified or mode.qualification != PROFILE_QUALIFIED_CANARY else
+            "fabric_application_not_permitted" if not transport.application_allowed or not mode.application_allowed else
+            "fabric_application_qualification_expired" if not mode.qualification_ref or mode.qualified_until is None
+                or mode.qualified_until <= time.time() else None)
+        return {"selected": True, "state": "held" if blocker else "configured",
+            "provider": transport.provider_id, "model": transport.model, "blocker": blocker}
+    except ApplicationFabricBindingError:
+        return {"selected": True, "state": "held", "provider": None, "model": None,
+            "blocker": "fabric_application_binding_unavailable"}
 
 
 def make_application_fabric_factory(
@@ -981,6 +1086,7 @@ def make_application_fabric_factory(
     return ApplicationFabricFactory(
         mode_id, lane, root, "workload_profile" in workload_cfg,
         workload_cfg.get("workload_profile"), tuple(order),
+        _timeout_cap=_application_timeout_cap(workload_cfg.get("client_timeout_s")),
     )
 
 

@@ -142,6 +142,7 @@ def _armed() -> bool:
 def _providers(acfg: dict) -> list:
     order = list(acfg.get("provider_order") or [])
     codex_model = str(acfg.get("codex_source_model", "gpt-5.6-terra"))
+    timeout = acfg.get("client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S)
     key = (
         str(acfg.get("usage_lane")), str(acfg.get("oauth_pool_lane")),
         ",".join(order), codex_model,
@@ -155,6 +156,10 @@ def _providers(acfg: dict) -> list:
          os.environ.get("MM_PROVIDER_WORKLOAD_PROFILE")),
         tuple((name in acfg, repr(acfg.get(name))) for name in
               ("workload_profile", "application_fabric_mode")),
+        # The factory snapshots this request budget. A cached recipe must not
+        # retain an older cap after config changes. Preserve None and malformed
+        # values distinctly so cache reuse cannot bypass owner validation.
+        (type(timeout).__name__, repr(timeout)),
     )
     with _PROVIDER_LOCK:
         if key in _PROVIDER_CACHE:
@@ -174,8 +179,7 @@ def _providers(acfg: dict) -> list:
                 "codex_reasoning_effort": acfg.get("codex_reasoning_effort", "medium"),
                 "client_max_retries": acfg.get(
                     "client_max_retries", DEFAULT_CLIENT_MAX_RETRIES),
-                "client_timeout_s": acfg.get(
-                    "client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S),
+                "client_timeout_s": timeout,
                 # An HTTP budget is not a process budget: `codex exec` is a
                 # subprocess and inherits this rung's own ceiling, not the
                 # client's (W2, 2026-08-08 — see engine/marketing/copywriter.py

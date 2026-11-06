@@ -23,7 +23,7 @@ import ssl
 import threading
 import time
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import SimpleNamespace
 from urllib.parse import urlsplit
 
@@ -667,15 +667,84 @@ class _Stream:
         return self.final
 
 
+@dataclass(frozen=True, repr=False)
+class FabricPoolViewReader:
+    """Startup-owned read capability; it cannot bind, infer, close or retry."""
+
+    base_url: str
+    proxy_token: str = field(repr=False)
+    timeout_s: float = 2.0
+
+    def __post_init__(self):
+        try:
+            url = urlsplit(self.base_url)
+            valid = (url.scheme in {"http", "https"} and url.hostname == "127.0.0.1"
+                and url.port is not None and 1 <= url.port <= 65535
+                and url.netloc == f"127.0.0.1:{url.port}" and url.path == "/v1"
+                and not url.query and not url.fragment)
+        except (ValueError, TypeError, AttributeError):
+            valid = False
+        if not valid:
+            _refuse("fabric_endpoint_invalid")
+        if (type(self.proxy_token) is not str or not 32 <= len(self.proxy_token) <= 4096
+                or not self.proxy_token.isascii() or any(not 33 <= ord(c) <= 126 for c in self.proxy_token)
+                or self.proxy_token.startswith(("v1.", "app1.", "app2."))):
+            _refuse("fabric_binding_invalid")
+        if type(self.timeout_s) not in (int, float) or not 0 < self.timeout_s <= 5 or not math.isfinite(self.timeout_s):
+            _refuse("fabric_timeout_invalid")
+
+    def read(self):
+        url = urlsplit(self.base_url)
+        deadline = time.monotonic() + self.timeout_s
+        connection = _NativeConnection("127.0.0.1", url.port, deadline=deadline, tls=url.scheme == "https")
+        response = None
+        try:
+            connection.connect()
+            connection.request("GET", "/application-pools/view", headers={
+                "Authorization": "Bearer " + self.proxy_token, "Accept": "application/json"})
+            connection.sock.settimeout(connection._remaining())
+            response = connection.getresponse()
+            if response.status != 200:
+                raise FabricInferenceError("fabric_admin_view_denied" if response.status in (401, 403)
+                    else "fabric_admin_view_unavailable", status_code=response.status)
+            lengths = response.headers.get_all("Content-Length") or []
+            if (len(lengths) != 1 or re.fullmatch(r"[0-9]{1,7}", lengths[0]) is None
+                    or not 1 <= int(lengths[0]) <= 256 * 1024
+                    or response.headers.get_all("Transfer-Encoding")
+                    or response.headers.get_all("Content-Type") != ["application/json"]
+                    or response.headers.get_all("Cache-Control") != ["no-store"]):
+                _refuse("fabric_admin_view_invalid")
+            body = response.read(int(lengths[0]) + 1)
+            connection._remaining()
+            if len(body) != int(lengths[0]):
+                _refuse("fabric_admin_view_invalid")
+            from engine.provider_capacity import validate_fabric_admin_pool_view
+            return validate_fabric_admin_pool_view(_load_json(body, unknown=False))
+        except FabricInferenceError as exc:
+            # Metadata has no provider effect or turn to mark uncertain.
+            raise FabricInferenceError(exc.code if exc.code in {
+                "fabric_admin_view_denied", "fabric_admin_view_unavailable", "fabric_admin_view_invalid"
+            } else "fabric_admin_view_invalid", status_code=exc.status_code) from None
+        except Exception:
+            raise FabricInferenceError("fabric_admin_view_unavailable") from None
+        finally:
+            if response is not None:
+                response.close()
+            connection.finish()
+
+
 class FabricInferenceClient:
     """A turn-scoped client for a separately qualified server-owned binding."""
 
     def __init__(self, *, base_url: str, proxy_token: str, model: str, timeout_s=None,
                  protocol=LEGACY_PROTOCOL, operation_id=None, close_timeout_s=5,
-                 prior_admission_possible=False):
+                 prior_admission_possible=False, native_recipe_digest=None):
         if protocol not in {LEGACY_PROTOCOL, NATIVE_PROTOCOL}:
             _refuse("fabric_protocol_invalid")
         native = protocol == NATIVE_PROTOCOL
+        if native_recipe_digest is not None and (not native or not isinstance(native_recipe_digest, str)
+                or re.fullmatch(r"[0-9a-f]{64}", native_recipe_digest) is None):
+            _refuse("fabric_recipe_invalid")
         if type(prior_admission_possible) is not bool or prior_admission_possible and not native:
             _refuse("fabric_binding_invalid")
         if native:
@@ -695,7 +764,7 @@ class FabricInferenceClient:
         if (not isinstance(proxy_token, str) or not (32 if native else 24) <= len(proxy_token) <= 4096
                 or not proxy_token.isascii() or any(ord(c) < 33 or ord(c) > 126 for c in proxy_token)):
             _refuse("fabric_binding_invalid")
-        if native and proxy_token.startswith(("v1.", "app1.")):
+        if native and proxy_token.startswith(("v1.", "app1.", "app2.")):
             _refuse("fabric_binding_invalid")
         if not _safe_id(model):
             _refuse("fabric_model_invalid")
@@ -711,6 +780,7 @@ class FabricInferenceClient:
         self.model, self._token = model, proxy_token
         self._url, self._timeout = url, float(timeout_s)
         self._native, self.operation_id = native, operation_id
+        self._native_recipe_digest = native_recipe_digest
         # Trusted restoration state comes from the existing caller/turn owner,
         # never from parsing an ID or probing during construction/inspection.
         self._prior_admission_possible = prior_admission_possible
@@ -814,6 +884,8 @@ class FabricInferenceClient:
                 "Accept": "text/event-stream" if streaming else "application/json"}
             if self._native:
                 headers["X-MM-Application-Turn-ID"] = self.operation_id
+                if self._native_recipe_digest is not None:
+                    headers["X-MM-Application-Recipe-Digest"] = self._native_recipe_digest
             exchange = self._exchange("/v1/chat/completions", body, headers,
                 timeout=self._timeout, admission=self._native)
             response = exchange.response

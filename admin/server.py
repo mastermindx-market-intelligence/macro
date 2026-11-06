@@ -889,6 +889,9 @@ class Handler(BaseHTTPRequestHandler):
             if settings.auth_enabled() and not self._authed():
                 return self._json({"error": "authentication required"}, 401)
 
+            if path == "/api/marketing/models" and q.get("force") == ["1"]:
+                _clear_response_cache()
+
             if _cacheable_api_get(path, q):
                 cache_key = f"{_server_cache_namespace(self.server)}:{self.path}"
                 if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
@@ -955,7 +958,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/marketing/floor":
                 return self._json(marketing_floor.floor())
             if path == "/api/marketing/models":
-                return self._json(marketing_floor.models())
+                return self._json(marketing_floor.models(
+                    fabric_pool_reader=getattr(self.server, "fabric_pool_reader", None),
+                    fabric_pool_reader_error=getattr(self.server, "fabric_pool_reader_error", "metadata_not_configured")))
             if path == "/api/marketing/lanes":
                 return self._json(marketing_floor.lanes())
             if path == "/api/marketing/overview":
@@ -2066,6 +2071,16 @@ def _build_server(host: str, port: int, *, fabric_selected=False,
     httpd = ThreadingHTTPServer((host, port), Handler)
     httpd.fabric_selected = fabric_selected
     httpd.fabric_provider_factory = fabric_provider_factory
+    httpd.fabric_pool_reader = None
+    httpd.fabric_pool_reader_error = "metadata_not_configured"
+    if host_selected and host_factory is not None:
+        try:
+            httpd.fabric_pool_reader = host_factory.prepare_admin_pool_reader()
+            httpd.fabric_pool_reader_error = None
+        except Exception:
+            # Configuration/permission failures leave the read-only desk usable.
+            # No retry, fallback, turn factory or request-time secret discovery.
+            httpd.fabric_pool_reader_error = "metadata_startup_unavailable"
     return httpd
 
 

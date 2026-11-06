@@ -31,6 +31,8 @@ tick. One firing per meeting, remembered in the statements ledger.
 """
 from __future__ import annotations
 
+from contextlib import ExitStack
+
 import logging
 import os
 import re
@@ -704,135 +706,170 @@ def write_copy(sheet: dict, *, cfg: dict | None = None) -> dict:
 
     Never raises.
     """
-    started = time.monotonic()
-    empty: dict = {"analysis": [], "hook": "", "relay": ""}
+    with ExitStack() as lifetime:
+        started = time.monotonic()
+        empty: dict = {"analysis": [], "hook": "", "relay": ""}
 
-    def _done(mode: str, parsed: dict, *, provider: str | None = None,
-              violations: dict | None = None) -> dict:
-        out = dict(parsed or empty)
-        out["mode"] = mode
-        out["provider"] = provider
-        out["violations"] = violations or {"analysis": [], "hook": [], "relay": []}
-        out["latency_ms"] = int((time.monotonic() - started) * 1000)
-        return out
+        def _done(mode: str, parsed: dict, *, provider: str | None = None,
+                  violations: dict | None = None) -> dict:
+            out = dict(parsed or empty)
+            out["mode"] = mode
+            out["provider"] = provider
+            out["violations"] = violations or {"analysis": [], "hook": [], "relay": []}
+            out["latency_ms"] = int((time.monotonic() - started) * 1000)
+            return out
 
-    llm_cfg = _llm_cfg(cfg)
-    env_on = os.environ.get(_ENV_FLAG, "").strip().lower() in _TRUTHY
-    if not bool(llm_cfg.get("enabled", False)) or not env_on:
-        return _done("off", empty)
+        llm_cfg = _llm_cfg(cfg)
+        env_on = os.environ.get(_ENV_FLAG, "").strip().lower() in _TRUTHY
+        if not bool(llm_cfg.get("enabled", False)) or not env_on:
+            return _done("off", empty)
 
-    try:
-        from engine import llm_auth  # noqa: PLC0415
+        try:
+            from engine import llm_auth  # noqa: PLC0415
 
-        provider_cfg = {
-            "provider_order": llm_cfg.get("provider_order")
-            or ["codex", "oauth", "anthropic", "deepseek"],
-            "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-sol"),
-            "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "medium"),
-            "oauth_token_env": llm_cfg.get("oauth_token_env", "CLAUDE_CODE_OAUTH_TOKEN"),
-            "deepseek_key_env": llm_cfg.get("deepseek_key_env", "DEEPSEEK_API_KEY"),
-            "oauth_pool_lane": llm_cfg.get("oauth_pool_lane", "marketing-fomc"),
-            "usage_lane": llm_cfg.get("usage_lane", "marketing-fomc"),
-            "client_timeout_s": llm_cfg.get("client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S),
-            "client_max_retries": llm_cfg.get("client_max_retries",
-                                              DEFAULT_CLIENT_MAX_RETRIES),
-        }
-        providers = llm_auth.build_providers(
-            provider_cfg,
-            opus_model=_resolve_model_id(),
-            deepseek_model=str(llm_cfg.get("deepseek_model", DEFAULT_DEEPSEEK_MODEL)),
-        )
-        if not providers:
-            # ARMED BUT MUTE. The config says the desk is on and the env agrees,
-            # yet no credential is visible — so the flagship analysis post will be
-            # skipped on a live FOMC day and only the template relay will ship.
-            # A bare print at line start: GitHub parses `::` only at column 0 and
-            # every logger here prefixes the line.
-            print("::warning title=fomc_desk_mute::The FOMC desk is ARMED "
-                  "(fomc_desk.llm.enabled + MARKETING_LLM_ENABLED) but no provider "
-                  "credential is visible. The flagship analysis post will be "
-                  "SKIPPED and only the deterministic relay will ship. Pass "
-                  "CLAUDE_CODE_OAUTH_TOKEN* / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY "
-                  "to this step.", flush=True)
+            provider_cfg = {
+                "provider_order": llm_cfg.get("provider_order")
+                or ["codex", "oauth", "anthropic", "deepseek"],
+                "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-sol"),
+                "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "medium"),
+                "oauth_token_env": llm_cfg.get("oauth_token_env", "CLAUDE_CODE_OAUTH_TOKEN"),
+                "deepseek_key_env": llm_cfg.get("deepseek_key_env", "DEEPSEEK_API_KEY"),
+                "oauth_pool_lane": llm_cfg.get("oauth_pool_lane", "marketing-fomc"),
+                "usage_lane": llm_cfg.get("usage_lane", "marketing-fomc"),
+                "client_timeout_s": llm_cfg.get("client_timeout_s", DEFAULT_CLIENT_TIMEOUT_S),
+                "client_max_retries": llm_cfg.get("client_max_retries",
+                                                  DEFAULT_CLIENT_MAX_RETRIES),
+            }
+            for field in (llm_auth.APPLICATION_MODE_CFG_KEY, "workload_profile"):
+                if field in llm_cfg:
+                    provider_cfg[field] = llm_cfg[field]
+            selected = llm_auth.application_mode_id(provider_cfg) is not None
+            if selected:
+                provider_cfg.setdefault("workload_profile", "site_batch")
+                provider_cfg["provider_order"] = ["fabric"]
+            providers = llm_auth.build_providers(
+                provider_cfg,
+                opus_model=None if selected else _resolve_model_id(),
+                deepseek_model=str(llm_cfg.get("deepseek_model", DEFAULT_DEEPSEEK_MODEL)),
+            )
+            if not providers:
+                if selected:
+                    print("::warning title=fomc_desk_mute::The FOMC desk selected Fabric "
+                          "but its application route is unavailable. The flagship analysis "
+                          "post will be SKIPPED and only the deterministic relay will ship.",
+                          flush=True)
+                    return _done("fallback_provider", empty)
+                # ARMED BUT MUTE. The config says the desk is on and the env agrees,
+                # yet no credential is visible — so the flagship analysis post will be
+                # skipped on a live FOMC day and only the template relay will ship.
+                # A bare print at line start: GitHub parses `::` only at column 0 and
+                # every logger here prefixes the line.
+                print("::warning title=fomc_desk_mute::The FOMC desk is ARMED "
+                      "(fomc_desk.llm.enabled + MARKETING_LLM_ENABLED) but no provider "
+                      "credential is visible. The flagship analysis post will be "
+                      "SKIPPED and only the deterministic relay will ship. Pass "
+                      "CLAUDE_CODE_OAUTH_TOKEN* / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY "
+                      "to this step.", flush=True)
+                return _done("fallback_provider", empty)
+
+            if llm_auth.is_fabric_selection(providers) != selected:
+                raise llm_auth.FabricProviderError("fabric_selection_changed")
+            providers = lifetime.enter_context(llm_auth.begin_operation(
+                providers, context="fomc_desk")).providers
+
+            try:
+                max_tokens = int(llm_cfg.get("max_tokens", DEFAULT_MAX_TOKENS))
+            except (TypeError, ValueError):
+                max_tokens = DEFAULT_MAX_TOKENS
+            system_prompt = build_system_prompt()
+            user_msg = build_user_message(sheet)
+
+            def _caller(messages: list[dict]):
+                def _do_call(client, model):
+                    resp = client.messages.create(
+                        model=model, max_tokens=max_tokens, system=system_prompt,
+                        messages=messages,
+                    )
+                    if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                                     or not resp.content
+                                     or any(getattr(part, "type", "") != "text" for part in resp.content)):
+                        raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                    if getattr(resp, "stop_reason", None) == "refusal":
+                        return None, "stop_refusal", resp
+                    text = "".join(b.text for b in resp.content
+                                   if getattr(b, "type", "") == "text")
+                    if selected and not text.strip():
+                        raise llm_auth.FabricProviderError("fabric_text_completion_required")
+                    return (text.strip() or None), None, resp
+                return _do_call
+
+            raw, reason, provider = llm_auth.make_call(
+                providers, _caller([{"role": "user", "content": user_msg}]),
+                context="fomc_desk")
+        except Exception as exc:  # noqa: BLE001 — the relay must still ship
+            log.warning("fomc_desk: provider path failed (%s: %s)",
+                        type(exc).__name__, exc)
+            return _done("fallback_provider", empty)
+
+        if not raw:
+            log.info("fomc_desk: no model copy (%s)", reason or "empty")
             return _done("fallback_provider", empty)
 
         try:
-            max_tokens = int(llm_cfg.get("max_tokens", DEFAULT_MAX_TOKENS))
-        except (TypeError, ValueError):
-            max_tokens = DEFAULT_MAX_TOKENS
-        system_prompt = build_system_prompt()
-        user_msg = build_user_message(sheet)
+            parsed = parse_sections(raw)
+            violations = validate_copy(parsed, sheet)
+        except Exception as exc:  # noqa: BLE001 — preserve the deterministic relay path
+            log.warning("fomc_desk: copy validation failed (%s)", type(exc).__name__)
+            return _done("fallback_validation", empty, provider=provider,
+                         violations={part: ["copy_validation_unavailable"]
+                                     for part in ("analysis", "hook", "relay")})
+        if not any(violations.values()):
+            return _done("llm", parsed, provider=provider, violations=violations)
 
-        def _caller(messages: list[dict]):
-            def _do_call(client, model):
-                resp = client.messages.create(
-                    model=model, max_tokens=max_tokens, system=system_prompt,
-                    messages=messages,
-                )
-                if getattr(resp, "stop_reason", None) == "refusal":
-                    return None, "stop_refusal", resp
-                text = "".join(b.text for b in resp.content
-                               if getattr(b, "type", "") == "text")
-                return (text.strip() or None), None, resp
-            return _do_call
+        # ── ONE REPAIR TURN ──────────────────────────────────────────────────────
+        # Strictly one. A model that fails the same NAMED law twice will not find it
+        # on the third pass, and this lane runs against a clock: the post is worth
+        # something within minutes of 14:00 ET and worth much less at 14:30.
+        flat = [v for group in violations.values() for v in group]
+        log.warning("fomc_desk: draft rejected: %s", "; ".join(flat[:8]))
+        try:
+            r_raw, _r_reason, r_provider = llm_auth.make_call(
+                providers,
+                _caller([
+                    {"role": "user", "content": user_msg},
+                    {"role": "assistant", "content": raw},
+                    {"role": "user", "content": build_repair_message(flat)},
+                ]),
+                context="fomc_desk_repair")
+        except Exception as exc:  # noqa: BLE001
+            log.warning("fomc_desk: repair turn failed (%s: %s)", type(exc).__name__, exc)
+            r_raw, r_provider = None, None
 
-        raw, reason, provider = llm_auth.make_call(
-            providers, _caller([{"role": "user", "content": user_msg}]),
-            context="fomc_desk")
-    except Exception as exc:  # noqa: BLE001 — the relay must still ship
-        log.warning("fomc_desk: provider path failed (%s: %s)",
-                    type(exc).__name__, exc)
-        return _done("fallback_provider", empty)
+        if r_raw:
+            try:
+                r_parsed = parse_sections(r_raw)
+                r_violations = validate_copy(r_parsed, sheet)
+            except Exception as exc:  # noqa: BLE001 — retain the validated first partial
+                log.warning("fomc_desk: repair validation failed (%s)", type(exc).__name__)
+            else:
+                if not any(r_violations.values()):
+                    return _done("llm_repair", r_parsed, provider=r_provider,
+                                 violations=r_violations)
+                # PARTIAL IS A REAL OUTCOME, not a failure. If the repair's relay is
+                # clean, that relay ships even though the analysis is not usable; the
+                # caller reads `violations` per output and decides per post.
+                if not all(r_violations.values()):
+                    return _done("partial", r_parsed, provider=r_provider,
+                                 violations=r_violations)
+                log.warning("fomc_desk: repair still rejected: %s",
+                            "; ".join(v for g in r_violations.values() for v in g)[:400])
+                return _done("fallback_validation", r_parsed, provider=r_provider,
+                             violations=r_violations)
 
-    if not raw:
-        log.info("fomc_desk: no model copy (%s)", reason or "empty")
-        return _done("fallback_provider", empty)
-
-    parsed = parse_sections(raw)
-    violations = validate_copy(parsed, sheet)
-    if not any(violations.values()):
-        return _done("llm", parsed, provider=provider, violations=violations)
-
-    # ── ONE REPAIR TURN ──────────────────────────────────────────────────────
-    # Strictly one. A model that fails the same NAMED law twice will not find it
-    # on the third pass, and this lane runs against a clock: the post is worth
-    # something within minutes of 14:00 ET and worth much less at 14:30.
-    flat = [v for group in violations.values() for v in group]
-    log.warning("fomc_desk: draft rejected: %s", "; ".join(flat[:8]))
-    try:
-        r_raw, _r_reason, r_provider = llm_auth.make_call(
-            providers,
-            _caller([
-                {"role": "user", "content": user_msg},
-                {"role": "assistant", "content": raw},
-                {"role": "user", "content": build_repair_message(flat)},
-            ]),
-            context="fomc_desk_repair")
-    except Exception as exc:  # noqa: BLE001
-        log.warning("fomc_desk: repair turn failed (%s: %s)", type(exc).__name__, exc)
-        r_raw, r_provider = None, None
-
-    if r_raw:
-        r_parsed = parse_sections(r_raw)
-        r_violations = validate_copy(r_parsed, sheet)
-        if not any(r_violations.values()):
-            return _done("llm_repair", r_parsed, provider=r_provider,
-                         violations=r_violations)
-        # PARTIAL IS A REAL OUTCOME, not a failure. If the repair's relay is
-        # clean, that relay ships even though the analysis is not usable; the
-        # caller reads `violations` per output and decides per post.
-        if not all(r_violations.values()):
-            return _done("partial", r_parsed, provider=r_provider,
-                         violations=r_violations)
-        log.warning("fomc_desk: repair still rejected: %s",
-                    "; ".join(v for g in r_violations.values() for v in g)[:400])
-        return _done("fallback_validation", r_parsed, provider=r_provider,
-                     violations=r_violations)
-
-    if not all(violations.values()):
-        return _done("partial", parsed, provider=provider, violations=violations)
-    return _done("fallback_validation", parsed, provider=provider,
-                 violations=violations)
+        if not all(violations.values()):
+            return _done("partial", parsed, provider=provider, violations=violations)
+        return _done("fallback_validation", parsed, provider=provider,
+                     violations=violations)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

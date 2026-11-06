@@ -27,6 +27,7 @@ EXPECTED = {
     "capability_id": "fabric_application_go",
     "protocol": client.NATIVE_PROTOCOL,
     "qualified": False, "application_allowed": False,
+    "native_recipe_digest": None, "metadata_read": True,
 }
 
 
@@ -59,6 +60,7 @@ def test_closed_recipe_remains_held_without_enrollment_or_experiential_change():
         "provider_id": "experiential", "model": "glm-5.3-uncensored", "cost_basis": "unknown",
         "cap_id": "fabric:experiential_proxy", "capability_id": "fabric_application_proxy",
         "qualified": False, "application_allowed": False, "protocol": client.LEGACY_PROTOCOL,
+        "native_recipe_digest": None, "metadata_read": False,
     }
     assert json.loads((ROOT / "config/provider_production_modes.v1.json").read_text())["application_fabric_modes"] == {}
     manifest = yaml.safe_load((ROOT / "config/capability_manifest.yml").read_text())

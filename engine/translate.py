@@ -173,7 +173,12 @@ def _translate_one_batch(client, texts: list[str], cfg: dict) -> list[str | None
     return out
 
 
-def translate_to_zh(texts: list[str], cfg: dict | None = None) -> list[str | None]:
+_FABRIC_UNSET = object()
+
+
+def translate_to_zh(texts: list[str], cfg: dict | None = None, *,
+                    fabric_operation_id=_FABRIC_UNSET,
+                    fabric_inspection=_FABRIC_UNSET) -> list[str | None]:
     """Translate a list of English strings to 简体中文, batched. Returns a list aligned to
     `texts`; each element is the translation or None (caller keeps the English original).
     A no-op (all None) when disabled / unkeyed / SDK-missing. Never raises."""
@@ -183,8 +188,20 @@ def translate_to_zh(texts: list[str], cfg: dict | None = None) -> list[str | Non
     if not cfg.get("enabled"):
         return [None] * len(texts)
     selected, mode_id = _fabric_selection(cfg)
+    supplied = fabric_operation_id is not _FABRIC_UNSET or fabric_inspection is not _FABRIC_UNSET
+    if supplied:
+        try:
+            if (not selected or mode_id is None or fabric_operation_id is _FABRIC_UNSET
+                    or fabric_inspection is _FABRIC_UNSET or type(fabric_inspection) is not dict):
+                raise ValueError("translation_original_invalid")
+            from engine.fabric_inference_client import validate_native_operation_id
+            validate_native_operation_id(fabric_operation_id)
+        except Exception:
+            return [None] * len(texts)
     if selected:
-        return _fabric_translate(texts, cfg, mode_id)
+        return _fabric_translate(texts, cfg, mode_id,
+            fabric_operation_id=fabric_operation_id if supplied else None,
+            fabric_inspection=fabric_inspection if supplied else None)
     client = _client(cfg)
     if client is None:
         return [None] * len(texts)
@@ -357,7 +374,8 @@ def _fabric_fill(provider: dict, cfg: dict, chunk: list[str]) -> list[str | None
     return out
 
 
-def _fabric_translate(texts: list[str], cfg: dict, mode_id: str | None) -> list[str | None]:
+def _fabric_translate(texts: list[str], cfg: dict, mode_id: str | None, *,
+                      fabric_operation_id=None, fabric_inspection=None) -> list[str | None]:
     """Translate one logical batch through the incumbent Fabric binding.
 
     The module's existing contract is preserved: a list aligned to ``texts``
@@ -370,10 +388,15 @@ def _fabric_translate(texts: list[str], cfg: dict, mode_id: str | None) -> list[
     factory = _fabric_factory(cfg, mode_id)
     if factory is None:
         return [None] * len(texts)
+    if fabric_inspection is not None:
+        try:
+            factory = factory.with_inspection(fabric_inspection)
+        except Exception:
+            return [None] * len(texts)
 
     from engine import llm_auth
 
-    request_id = _operation_id()
+    request_id = fabric_operation_id if fabric_operation_id is not None else _operation_id()
     provider = None
     operation = None
     try:

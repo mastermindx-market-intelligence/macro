@@ -244,8 +244,10 @@ def _enrich_eight_ks(rows: list[dict], efts: dict[str, dict]) -> list[dict]:
 # ---------------------------------------------------------------- storage
 
 def _events_path() -> Path:
-    p = config.data_dir() / GROUP / "events.parquet"
+    p = Path(config.data_dir()).resolve() / GROUP / "events.parquet"
     p.parent.mkdir(parents=True, exist_ok=True)
+    if p.parent.is_symlink():
+        raise ValueError("event_directory_invalid")
     return p
 
 
@@ -266,16 +268,57 @@ def _save_events(new_rows: list[dict]) -> pd.DataFrame:
     if not new.empty:
         new["first_seen"] = now
         new["built"] = now
-    old = _read_events()
-    if old is not None and not old.empty:
-        merged = pd.concat([old, new], ignore_index=True)
-    else:
-        merged = new
-    if merged.empty:
+    from engine import catalyst_tone as custody
+    path = _events_path()
+    with custody._cache_lock(path, path.parent.parent):
+        old = _read_events()
+        merged = pd.concat([old, new], ignore_index=True) if old is not None and not old.empty else new
+        if merged.empty:
+            return merged
+        merged = merged.drop_duplicates(subset=["id"], keep="first").reset_index(drop=True)
+        _commit_events(path, merged)
         return merged
-    merged = merged.drop_duplicates(subset=["id"], keep="first").reset_index(drop=True)
-    merged.to_parquet(_events_path(), index=False)
-    return merged
+
+
+def _commit_events(path, frame):
+    """Called under the existing event owner's lock; never replaces its identity."""
+    import os
+    import secrets
+    from engine import catalyst_tone as custody
+    temporary = path.with_name(path.name + ".tmp-" + secrets.token_hex(12))
+    try:
+        frame.to_parquet(temporary, index=False)
+        with temporary.open("rb") as source:
+            os.fsync(source.fileno())
+        os.replace(temporary, path)
+        custody._cache_sync_directory(path.parent)
+        observed = pd.read_parquet(path).astype(object)
+        expected = frame.reset_index(drop=True).astype(object)
+        observed = observed.where(observed.notna(), None)
+        expected = expected.where(expected.notna(), None)
+        pd.testing.assert_frame_equal(observed, expected, check_dtype=False, check_exact=True)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def _merge_event_updates(updates):
+    """Merge only named annotation columns into the freshly read event store."""
+    from engine import catalyst_tone as custody
+    path = _events_path()
+    with custody._cache_lock(path, path.parent.parent):
+        current = _read_events()
+        if current is None or current.empty:
+            return current if current is not None else pd.DataFrame()
+        for column, values in updates.items():
+            if column in {"id", "first_seen", "accession", "source_url", "cik"}:
+                raise ValueError("event_identity_immutable")
+            if column not in current:
+                current[column] = pd.NA
+            mask = current.id.isin(values)
+            current.loc[mask, column] = current.loc[mask, "id"].map(values)
+        _commit_events(path, current)
+        return current
 
 
 def _load_meta() -> dict:
@@ -446,7 +489,8 @@ def enrich_text(limit: int | None = None,
     if updates:
         df.loc[df.id.isin(updates), "text_category"] = df.loc[df.id.isin(updates), "id"].map(lambda i: updates[i][0])
         df.loc[df.id.isin(updates), "text_stage"] = df.loc[df.id.isin(updates), "id"].map(lambda i: updates[i][1])
-        df.to_parquet(_events_path(), index=False)
+        df = _merge_event_updates({"text_category": {k: v[0] for k, v in updates.items()},
+                                   "text_stage": {k: v[1] for k, v in updates.items()}})
     classified = sum(1 for v in updates.values() if v[0])
     log.info("special_situations text lane: %d filings read, %d classified", len(updates), classified)
     return df
@@ -484,7 +528,7 @@ def enrich_filers(limit: int | None = None) -> pd.DataFrame:
                 updates[rid] = val
     if updates:
         df.loc[df.id.isin(updates), "filer"] = df.loc[df.id.isin(updates), "id"].map(updates)
-        df.to_parquet(_events_path(), index=False)
+        df = _merge_event_updates({"filer": updates})
     found = sum(1 for v in updates.values() if v)
     log.info("special_situations filer lane: %d 13Ds read, %d reporting persons extracted",
              len(updates), found)
@@ -552,6 +596,47 @@ def _llm_ready(cfg: dict) -> bool:
     if os.environ.get("DISABLE_SPECIAL_SITUATIONS_LLM"):
         return False
     return bool(config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY")))
+
+
+def _llm_enabled(cfg):
+    import os
+    return bool(cfg.get("enabled") and cfg.get("llm_brief")
+                and not os.environ.get("DISABLE_SPECIAL_SITUATIONS_LLM"))
+
+
+def _fabric_situation(row, cfg, cache_dir, *, task):
+    from engine import catalyst_tone as custody
+    logical = {"task": "special-situations-" + task, "situation_id": str(row.id)}
+    path = custody._fabric_cache_path(cache_dir, logical)
+    from engine import llm_auth
+    try:
+        if not custody.os.path.lexists(path) and llm_auth.application_mode_id(cfg) is None:
+            return None
+    except Exception:
+        return {"result": None, "receipt": None, "error": "fabric_selection_refused"}
+    # A hold is checked inside the same cache owner before selection or bind.
+    text = _fetch_filing_text(str(row.cik), str(row.accession))
+    def validate(raw):
+        obj = _parse_llm_json(raw)
+        if not obj or not isinstance(obj.get("summary"), str) or not obj["summary"].strip():
+            raise ValueError("summary_invalid")
+        result = {"summary": obj["summary"].strip(), "terms": _terms_json(obj)}
+        if task == "summary":
+            result["filer"] = str(obj.get("filer") or "").strip()
+        else:
+            category = str(obj.get("category") or "").strip()
+            role = str(obj.get("role") or "").strip().lower()
+            confidence = str(obj.get("confidence") or "").strip().lower()
+            # Keep the caller's existing category vocabulary; this is annotation
+            # only and cannot bypass the downstream classification gate.
+            if category not in _LLM_CATEGORIES.split(", ") or role not in {"acquirer", "target", "seller", "issuer", "filer", "none"} or confidence not in {"high", "medium", "low"}:
+                raise ValueError("classification_invalid")
+            result.update(category=category, role=role, confidence=confidence)
+        return result
+    return custody._fabric_cached_document(path=path, root=config.ROOT, logical_source=logical,
+        cfg={**cfg, "max_tokens": 420}, lane="special-situations", system=SS_SUMMARY_SYSTEM if task == "summary" else SS_CLASSIFY_SYSTEM,
+        user=_llm_prompt(row, text, known_category=task == "summary"),
+        input_context={"source_sha256": custody.hashlib.sha256((text or "").encode()).hexdigest(), "task": task}, validate=validate)
 
 
 def _llm_client(cfg: dict):
@@ -630,13 +715,13 @@ def enrich_summaries(limit: int | None = None) -> pd.DataFrame:
     for col in ("summary", "llm_terms", "llm_filer"):
         if col not in df.columns:
             df[col] = pd.NA
-    if not _llm_ready(cfg):
+    if not _llm_enabled(cfg):
         log.info("special_situations summary lane: gated off (no key / disabled)")
         return df
 
     cache_dir = config.data_dir() / GROUP / "digest_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    client, model = _llm_client(cfg)
+    client = model = None
 
     # only situations our classifier accepts and that have no summary yet
     need = []
@@ -653,7 +738,27 @@ def enrich_summaries(limit: int | None = None) -> pd.DataFrame:
     summ: dict[str, str] = {}
     terms: dict[str, str] = {}
     filer: dict[str, str] = {}
+    provenance, served = {}, {}
     for r in need:
+        selected = _fabric_situation(r, cfg, cache_dir, task="summary")
+        if selected is not None:
+            if selected["receipt"] is not None:
+                provenance[r.id] = json.dumps(selected["receipt"], sort_keys=True)
+                served[r.id] = selected["receipt"].get("served_model")
+            cached = selected["result"]
+            if not cached or selected["error"]:
+                continue
+            if cached.get("summary"):
+                summ[r.id] = cached["summary"]
+            if cached.get("terms"):
+                terms[r.id] = cached["terms"]
+            if cached.get("filer"):
+                filer[r.id] = cached["filer"]
+            continue
+        if not _llm_ready(cfg):
+            continue
+        if client is None:
+            client, model = _llm_client(cfg)
         cpath = cache_dir / f"{r.id}.json"
         if cpath.exists():
             cached = json.loads(cpath.read_text())
@@ -676,8 +781,9 @@ def enrich_summaries(limit: int | None = None) -> pd.DataFrame:
     for col, upd in (("summary", summ), ("llm_terms", terms), ("llm_filer", filer)):
         if upd:
             df.loc[df.id.isin(upd), col] = df.loc[df.id.isin(upd), "id"].map(upd)
-    if summ or terms or filer:
-        df.to_parquet(_events_path(), index=False)
+    if summ or terms or filer or provenance:
+        df = _merge_event_updates({"summary": summ, "llm_terms": terms, "llm_filer": filer,
+            "llm_fabric_summary": provenance, "llm_summary_model": served})
     log.info("special_situations summary lane: wrote %d summaries, %d term-sets, %d filers",
              len(summ), len(terms), len(filer))
     return df
@@ -835,7 +941,8 @@ def enrich_extraction(limit: int | None = None) -> pd.DataFrame:
         mask = df.id.isin(updates)
         if mask.any():
             df.loc[mask, col] = df.loc[mask, "id"].map(lambda i: updates.get(i, {}).get(col, pd.NA))
-    df.to_parquet(_events_path(), index=False)
+    df = _merge_event_updates({col: {key: val.get(col, pd.NA) for key, val in updates.items()}
+                               for col in v1_cols})
     extracted = sum(1 for v in updates.values() if v.get("v1_brain_usable"))
     log.info("special_situations extraction lane: %d attempted, %d brain_usable",
              len(updates), extracted)
@@ -922,13 +1029,13 @@ def enrich_classify(limit: int | None = None) -> pd.DataFrame:
     for col in ("llm_category", "llm_role", "llm_confidence", "llm_terms", "summary"):
         if col not in df.columns:
             df[col] = pd.NA
-    if not _llm_ready(cfg):
+    if not _llm_enabled(cfg):
         log.info("special_situations classify lane: gated off (no key / disabled)")
         return df
 
     cache_dir = config.data_dir() / GROUP / "classify_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    client, model = _llm_client(cfg)
+    client = model = None
 
     # candidates: filings the deterministic classifier could not resolve (status=defer)
     # and which we have not already asked the LLM about.
@@ -948,9 +1055,26 @@ def enrich_classify(limit: int | None = None) -> pd.DataFrame:
     conf: dict[str, str] = {}
     summ: dict[str, str] = {}
     terms: dict[str, str] = {}
+    provenance, served = {}, {}
     for r in need:
+        selected = _fabric_situation(r, cfg, cache_dir, task="classify")
+        if selected is not None:
+            if selected["receipt"] is not None:
+                provenance[r.id] = json.dumps(selected["receipt"], sort_keys=True)
+                served[r.id] = selected["receipt"].get("served_model")
+            obj = selected["result"]
+            if not obj or selected["error"]:
+                continue
+        else:
+            if not _llm_ready(cfg):
+                continue
+            if client is None:
+                client, model = _llm_client(cfg)
+            obj = None
         cpath = cache_dir / f"{r.id}.json"
-        if cpath.exists():
+        if obj is not None:
+            pass  # Already validated selected result; never relabel native cache.
+        elif cpath.exists():
             obj = json.loads(cpath.read_text())
         else:
             text = _fetch_filing_text(str(r.cik), str(r.accession))
@@ -979,8 +1103,10 @@ def enrich_classify(limit: int | None = None) -> pd.DataFrame:
                      ("summary", summ), ("llm_terms", terms)):
         if upd:
             df.loc[df.id.isin(upd), col] = df.loc[df.id.isin(upd), "id"].map(upd)
-    if cat:
-        df.to_parquet(_events_path(), index=False)
+    if cat or provenance:
+        df = _merge_event_updates({"llm_category": cat, "llm_role": role, "llm_confidence": conf,
+            "summary": summ, "llm_terms": terms, "llm_fabric_classify": provenance,
+            "llm_classify_model": served})
     promoted = sum(1 for v in cat.values() if v and v != "None")
     log.info("special_situations classify lane: %d verified (%d real, %d cleared as None)",
              len(cat), promoted, len(cat) - promoted)
