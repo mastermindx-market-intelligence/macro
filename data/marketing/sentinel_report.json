@@ -1,149 +1,35 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-09-11T14:29:48Z",
-  "as_of": "2026-09-11",
+  "produced_at": "2026-11-06T13:42:26Z",
+  "as_of": "2026-11-06",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 18,
-    "passed": 17,
-    "quarantined": 1,
-    "quarantined_policy": 1,
+    "items": 14,
+    "passed": 12,
+    "quarantined": 2,
+    "quarantined_policy": 2,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
   "reasons_histogram": {
-    "near_dup": 1
+    "near_dup": 2
   },
   "quarantined": [
-    {
-      "id": "post-kelly-012",
-      "account": "kelly",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-meagan-013"
-      ]
-    }
-  ],
-  "passed": [
-    {
-      "id": "post-flagship-020",
-      "account": "flagship",
-      "slot": "D1-S20",
-      "type": "macro",
-      "cashtag": "",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-033",
-      "account": "flagship",
-      "slot": "D1-S33",
-      "type": "receipt",
-      "cashtag": "$MPT",
-      "headline": ""
-    },
-    {
-      "id": "post-conf-flagship-006",
-      "account": "flagship",
-      "slot": "CONF-06",
-      "type": "signal",
-      "cashtag": "$VTR",
-      "headline": "$VTR just lined up a pattern we track."
-    },
-    {
-      "id": "post-conf-flagship-007",
-      "account": "flagship",
-      "slot": "CONF-07",
-      "type": "signal",
-      "cashtag": "$CHTR",
-      "headline": "$CHTR just lined up a pattern we track."
-    },
-    {
-      "id": "post-theme-003",
-      "account": "flagship",
-      "slot": "D1-S2",
-      "type": "theme_list",
-      "cashtag": "$IPX",
-      "headline": "Commodities Metals selling off, -4.1% avg on Thursday"
-    },
     {
       "id": "post-meagan-013",
       "account": "meagan",
       "slot": "D1-S13",
       "type": "macro",
       "cashtag": "",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-015",
-      "account": "meagan",
-      "slot": "D1-S15",
-      "type": "chart",
-      "cashtag": "$ALGM",
-      "headline": ""
-    },
-    {
-      "id": "post-theme-004",
-      "account": "meagan",
-      "slot": "D1-S5",
-      "type": "theme_list",
-      "cashtag": "$WOLF",
-      "headline": "Semiconductors selling off, -2.0% avg on Thursday"
-    },
-    {
-      "id": "post-sophia-010",
-      "account": "sophia",
-      "slot": "D1-S10",
-      "type": "chart",
-      "cashtag": "$POST",
-      "headline": ""
-    },
-    {
-      "id": "post-sophia-012",
-      "account": "sophia",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": ""
-    },
-    {
-      "id": "post-sophia-026",
-      "account": "sophia",
-      "slot": "D1-S26",
-      "type": "receipt",
-      "cashtag": "$ASTE",
-      "headline": ""
-    },
-    {
-      "id": "post-sophia-043",
-      "account": "sophia",
-      "slot": "D1-S43",
-      "type": "chart",
-      "cashtag": "$WMB",
-      "headline": ""
-    },
-    {
-      "id": "post-mover-002",
-      "account": "sophia",
-      "slot": "D1-S16",
-      "type": "mover",
-      "cashtag": "$SIG",
-      "headline": "$SIG +24.0% on Thursday"
-    },
-    {
-      "id": "post-theme-005",
-      "account": "kelly",
-      "slot": "D1-S3",
-      "type": "theme_list",
-      "cashtag": "$SKIL",
-      "headline": "Education Technology selling off, -2.2% avg on Thursday"
+      "headline": "",
+      "class": "policy",
+      "reasons": [
+        "near_dup:post-founder-016"
+      ]
     },
     {
       "id": "post-cici-003",
@@ -151,29 +37,115 @@
       "slot": "D1-S3",
       "type": "macro",
       "cashtag": "",
+      "headline": "",
+      "class": "policy",
+      "reasons": [
+        "near_dup:post-founder-016"
+      ]
+    }
+  ],
+  "passed": [
+    {
+      "id": "post-flagship-014",
+      "account": "flagship",
+      "slot": "D1-S14",
+      "type": "chart",
+      "cashtag": "$XRAY",
       "headline": ""
     },
     {
-      "id": "post-cici-024",
-      "account": "cici",
-      "slot": "D1-S24",
+      "id": "post-flagship-034",
+      "account": "flagship",
+      "slot": "D1-S34",
       "type": "receipt",
-      "cashtag": "$PCG",
+      "cashtag": "$NB",
       "headline": ""
+    },
+    {
+      "id": "post-theme-003",
+      "account": "flagship",
+      "slot": "D1-S2",
+      "type": "theme_list",
+      "cashtag": "$CDLR",
+      "headline": "Energy Renewable selling off, -5.0% avg on Thursday"
+    },
+    {
+      "id": "post-founder-001",
+      "account": "founder",
+      "slot": "D1-S1",
+      "type": "chart",
+      "cashtag": "$OSK",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-016",
+      "account": "founder",
+      "slot": "D1-S16",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-theme-004",
+      "account": "meagan",
+      "slot": "D1-S5",
+      "type": "theme_list",
+      "cashtag": "$SNDK",
+      "headline": "Semiconductors selling off, -12.6% avg on Thursday"
+    },
+    {
+      "id": "post-sophia-023",
+      "account": "sophia",
+      "slot": "D1-S23",
+      "type": "chart",
+      "cashtag": "$MTG",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-032",
+      "account": "sophia",
+      "slot": "D1-S32",
+      "type": "chart",
+      "cashtag": "$MRP",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-042",
+      "account": "sophia",
+      "slot": "D1-S42",
+      "type": "chart",
+      "cashtag": "$UVV",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-050",
+      "account": "sophia",
+      "slot": "D1-S50",
+      "type": "chart",
+      "cashtag": "$NUE",
+      "headline": ""
+    },
+    {
+      "id": "post-theme-005",
+      "account": "kelly",
+      "slot": "D1-S3",
+      "type": "theme_list",
+      "cashtag": "$DDD",
+      "headline": "Hardware selling off, -8.9% avg on Thursday"
     },
     {
       "id": "post-theme-006",
       "account": "cici",
       "slot": "D1-S2",
       "type": "theme_list",
-      "cashtag": "$LEU",
-      "headline": "Energy Traditional selling off, -1.6% avg on Thursday"
+      "cashtag": "$LRCX",
+      "headline": "Artificial Intelligence selling off, -6.9% avg on Thursday"
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 116,
-      "hits": 1,
+      "pairs_checked": 66,
+      "hits": 2,
       "shared_media_hits": 0
     },
     "cadence": {
@@ -192,43 +164,44 @@
     "cherry_pick": {
       "status": "run",
       "loss_tickers_in_window": [
-        "ACM",
-        "AIN",
-        "ALHC",
-        "ASTE",
-        "ATEN",
-        "BL",
-        "BXMT",
-        "CAR",
-        "CARR",
-        "CAVA",
-        "CMS",
-        "COLL",
-        "EIX",
-        "HLT",
-        "HUBG",
-        "IART",
-        "MMS",
-        "MPT",
-        "PCG",
+        "AA",
+        "AKAM",
+        "AMSF",
+        "AOSL",
+        "AROC",
+        "BWXT",
+        "CENX",
+        "CMI",
+        "CVS",
+        "DAN",
+        "DY",
+        "ECG",
+        "EXK",
+        "HLIT",
+        "JBSS",
+        "LBRT",
+        "LSTR",
+        "MLI",
+        "MTZ",
+        "NB",
+        "NRG",
+        "NWSA",
+        "OI",
         "PL",
-        "PPG",
-        "PRVA",
-        "PSMT",
-        "RHP",
-        "ROL",
-        "TTD",
-        "UPS",
-        "UPWK",
-        "WH",
-        "WHR",
-        "WSO",
-        "XRAY"
+        "PLG",
+        "POWL",
+        "SGML",
+        "SHEN",
+        "SUPN",
+        "SXI",
+        "VRT",
+        "VTOL",
+        "WULF"
       ],
       "cherry_pick_detected": false
     },
     "stale_receipts": {
-      "age_days": 7,
+      "age_days": 1,
       "max": 7
     },
     "kill_switch": {
@@ -259,7 +232,7 @@
       "graduate_after_days": 21,
       "weeks_1_2_days": 5,
       "weeks_3_4_days": 10,
-      "as_of": "2026-09-11",
+      "as_of": "2026-11-06",
       "as_of_usable": true,
       "base": {
         "max_posts_per_account_per_day": null,
@@ -275,7 +248,7 @@
       "accounts": {
         "flagship": {
           "created": "2026-07-24",
-          "age_days": 49,
+          "age_days": 105,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -388,7 +361,7 @@
         },
         "founder": {
           "created": "2026-07-27",
-          "age_days": 46,
+          "age_days": 102,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -410,7 +383,7 @@
         },
         "meagan": {
           "created": "2026-07-28",
-          "age_days": 45,
+          "age_days": 101,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -432,7 +405,7 @@
         },
         "sophia": {
           "created": "2026-07-28",
-          "age_days": 45,
+          "age_days": 101,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -454,7 +427,7 @@
         },
         "kelly": {
           "created": "2026-07-28",
-          "age_days": 45,
+          "age_days": 101,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -476,7 +449,7 @@
         },
         "cici": {
           "created": "2026-07-28",
-          "age_days": 45,
+          "age_days": 101,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -498,7 +471,7 @@
         },
         "mastermind_news": {
           "created": "2026-08-02",
-          "age_days": 40,
+          "age_days": 96,
           "tier": "graduated",
           "enabled": true,
           "caps": {

@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_retained_edition_title_is_plain_text_with_exact_as_of __________
+
+    def test_retained_edition_title_is_plain_text_with_exact_as_of():
+        raw = (Path(__file__).parent / "fixtures/am_edition_title_snapshot_2e17ae66.json").read_bytes()
+        payload = json.loads(raw)
+        original = json.dumps(payload, sort_keys=True)
+        rendered = render_html(payload)
+        # HTML title is RCDATA: span syntax here is literal tab text, not bilingual DOM.
+        title = re.search(r"<title>(.*?)</title>", rendered, re.S)
+        assert title is not None
+        text = html.unescape(title.group(1))
+>       assert "<" not in text and ">" not in text
+E       assert ('<' not in '<span class...344477+00:00'
+E         
+E         '<' is contained here:
+E           <span class="l-en">Morning Edition</span><span class="l-zh">早间版</span> — 2026-11-03T04:38:17.344477+00:00
+E         ? +)
+
+tests/test_am_edition_tab_title.py:21: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_am_edition_tab_title.py::test_retained_edition_title_is_plain_text_with_exact_as_of
+1 failed in 2.16s

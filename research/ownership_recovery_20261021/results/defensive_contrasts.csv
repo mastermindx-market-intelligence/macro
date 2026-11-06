@@ -1,0 +1,4 @@
+contrast,point,lo,hi,arm_a_populated_halfyears,arm_b_populated_halfyears,joint_valid_draw_fraction,interval_available
+CORE5_joint_minus_neither,0.038821805612726884,0.0007504553986795049,0.07754824985180017,14,17,1.0,True
+PEERS13_joint_minus_neither,0.02104284140978118,-0.013236593585900371,0.06134388369647662,17,17,1.0,True
+core_minus_peer_ordinary_increment,-0.008138668345363058,-0.016710610752724356,-0.0007505780068797307,14,17,1.0,True
