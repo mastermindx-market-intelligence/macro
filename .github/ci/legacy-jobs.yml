@@ -34416,8 +34416,8 @@ jobs:
         run: python -m pytest tests/test_expectation_surface_nav.py -q
       - name: landing IA + nav front-door regroup + start-page voice and publish integrity
         run: python -m pytest tests/test_landing_navigation.py tests/test_oip_w1_nav_regroup.py tests/test_hub_welcome_persona.py tests/test_start_publish_integrity.py -q
-      - name: terminal entitlement copy + chat-allowance truth + full-screen portal contract
-        run: python -m pytest tests/test_terminal_indicator_pricing.py tests/test_plans_chat_quota_truth.py tests/test_terminal_overlay_contract.py tests/test_terminal_overlay_closed_state.py -q
+      - name: terminal entitlement copy + chat-allowance truth
+        run: python -m pytest tests/test_terminal_indicator_pricing.py tests/test_plans_chat_quota_truth.py -q
 
   unrun-builders-stores:
     # store/ops builders behind the nightly data lanes.
@@ -50150,6 +50150,13 @@ jobs:
       - "site/theme.js"
       - "tests/__init__.py"
       - "tests/test_bot_session_recovery_browser.py"
+      - "tests/test_terminal_overlay_contract.py"
+      - "tests/test_terminal_overlay_closed_state.py"
+      - "tests/test_terminal_overlay_safe_area_browser.py"
+      - "tests/js/terminal_overlay_readiness.test.cjs"
+      - "site/terminal_overlay.js"
+      - "templates/stocktable.js"
+      - "site/stocktable.js"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50157,11 +50164,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: install browser test dependencies
-        run: pip install pytest playwright
+        run: pip install pytest playwright rjsmin==1.2.5
       - name: install Chromium
         run: python -m playwright install --with-deps chromium
       - name: Bot recovery deadline, replay, cookie and cross-tab contracts
         run: MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bot_session_recovery_browser.py -q
+      - name: Terminal overlay lifecycle, closed state and real safe-area geometry
+        run: MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_terminal_overlay_contract.py tests/test_terminal_overlay_closed_state.py tests/test_terminal_overlay_safe_area_browser.py -q
 
   market-ontology-f09-petroleum-flow:
     if: ${{ false }}  # Executed by the required PR pack runner.

@@ -15,6 +15,7 @@
     toast: null,
     slow: null,
     newTab: null,
+    back: null,
     open: false,
     ready: false,
     booted: false,
@@ -25,6 +26,7 @@
     lastConfig: null,
     closeTimer: 0,
     readyTimer: 0,
+    focusTimer: 0,
     shellFallbackTimer: 0,
     frameLoadFallbackTimer: 0,
     toastTimer: 0,
@@ -39,6 +41,7 @@
     rootScrollBehavior: '',
     activeElement: null,
     returnFocus: null,
+    returnFocusVisible: false,
     bodyStyle: null,
     locked: [],
     historyArmed: false,
@@ -187,8 +190,8 @@
          root's `hidden`. `opacity:0` is the one hide a descendant can never
          escape — the compositor applies it to the whole subtree. Both are kept,
          and no child may own the closed state. */
-      '#mm-terminal-overlay{--mmto-x:50vw;--mmto-y:18vh;position:fixed;inset:0;z-index:2147483000;',
-        'visibility:hidden;opacity:0;pointer-events:none;isolation:isolate;overflow:hidden;background:#05070b;',
+      '#mm-terminal-overlay{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;',
+        'visibility:hidden;opacity:0;pointer-events:none;isolation:isolate;overflow:hidden;background:var(--bg);',
         'font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f7ff}',
       '#mm-terminal-overlay.is-open{visibility:visible;opacity:1;pointer-events:auto}',
       '#mm-terminal-overlay.is-closing{visibility:visible;opacity:1;pointer-events:none;background:transparent}',
@@ -198,7 +201,7 @@
         'opacity:0;transform:scale(1.04);transition:opacity .32s ease,transform .62s cubic-bezier(.16,1,.3,1)}',
       '#mm-terminal-overlay.is-open::before{opacity:1;transform:none}',
       '#mm-terminal-overlay.is-closing::before{opacity:0;transform:scale(1.025)}',
-      '.mmto-stage{position:absolute;inset:0;z-index:1;overflow:hidden;background:#07090e;',
+      '.mmto-stage{position:relative;flex:1 1 0;min-height:0;min-width:0;z-index:1;overflow:hidden;background:var(--bg);',
         'opacity:0;transform:translate3d(0,14px,0) scale(.978);transform-origin:var(--mmto-x) var(--mmto-y);',
         'transition:opacity .22s ease,transform .56s cubic-bezier(.16,1,.3,1),clip-path .62s cubic-bezier(.16,1,.3,1)}',
       '#mm-terminal-overlay.is-open .mmto-stage{opacity:1;transform:none}',
@@ -248,6 +251,16 @@
         'color:#dbe4f7;text-decoration:none;font:650 12px/1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;',
         'cursor:pointer;transition:background .16s ease,border-color .16s ease,transform .16s ease}',
       '.mmto-loader button:hover,.mmto-loader a:hover{background:rgba(38,50,76,.82);border-color:rgba(77,130,255,.55);transform:translateY(-1px)}',
+      /* The host return stays outside the loader/stage: iframe load fallback
+         cannot hide it or place a cross-origin document over it. Normal flow
+         reserves its actual height, including safe insets and wrapped text. */
+      '.mmto-back{position:relative;z-index:6;flex-shrink:0;align-self:flex-start;',
+        'margin:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 14px max(14px,env(safe-area-inset-left));',
+        'min-height:44px;max-width:calc(100% - max(14px,env(safe-area-inset-left)) - max(14px,env(safe-area-inset-right)));',
+        'padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-btn,10px);',
+        'background:var(--panel);color:var(--text);font:650 12px/1.4 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}',
+      '.mmto-back:hover{background:var(--panel2,var(--panel))}',
+      '.mmto-back:focus-visible{outline:2px solid var(--link);outline-offset:3px}',
       '.mmto-toast{position:absolute;z-index:5;top:max(14px,env(safe-area-inset-top));left:50%;',
         'display:flex;align-items:center;gap:9px;max-width:calc(100vw - 28px);padding:9px 13px 9px 10px;',
         'border:1px solid rgba(119,143,196,.3);border-radius:12px;background:rgba(10,14,23,.84);',
@@ -313,6 +326,7 @@
     root.setAttribute('aria-label', 'Mastermind Terminal');
     root.setAttribute('aria-hidden', 'true');
     root.innerHTML =
+      '<button type="button" class="mmto-back">' + bilingual('Back to Dashboard', '返回仪表盘') + '</button>' +
       '<div class="mmto-stage">' +
         '<div class="mmto-loader" role="status" aria-live="polite">' +
           '<div class="mmto-loader-inner">' +
@@ -327,7 +341,6 @@
             '<div class="mmto-loader-sub">' + bilingual('Opening your live market workspace…', '正在打开实时市场工作台…') + '</div>' +
             '<div class="mmto-progress" aria-hidden="true"></div>' +
             '<div class="mmto-slow">' +
-              '<button type="button" class="mmto-back">' + bilingual('Back to Dashboard', '返回仪表盘') + '</button>' +
               '<a class="mmto-newtab" href="https://app.mastermind-x.com/terminal" target="_blank" rel="noopener">' + bilingual('Open separately', '单独打开') + '</a>' +
             '</div>' +
           '</div>' +
@@ -346,7 +359,8 @@
     state.slow = root.querySelector('.mmto-slow');
     state.newTab = root.querySelector('.mmto-newtab');
 
-    root.querySelector('.mmto-back').addEventListener('click', requestClose);
+    state.back = root.querySelector('.mmto-back');
+    state.back.addEventListener('click', requestClose);
     return root;
   }
 
@@ -640,9 +654,15 @@
     if (!state.overlay) return;
     state.overlay.classList.remove('is-loading', 'is-slow');
     state.overlay.classList.add('is-ready');
-    if (state.open) {
-      setTimeout(function () {
-        try { state.frame.focus(); } catch (e) {}
+    // Only confirmed Terminal paint transfers keyboard focus into the child.
+    // A document/shell fallback may be a 503/auth/error page that cannot relay Esc.
+    if (state.open && data && data.type === 'terminal:visual-ready') {
+      var readyFrame = state.frame;
+      clearTimeout(state.focusTimer);
+      state.focusTimer = setTimeout(function () {
+        state.focusTimer = 0;
+        if (!state.open || state.frame !== readyFrame) return;
+        try { readyFrame.focus(); } catch (e) {}
       }, 180);
     }
   }
@@ -710,6 +730,8 @@
     }
 
     clearTimeout(state.closeTimer);
+    clearTimeout(state.focusTimer);
+    state.focusTimer = 0;
     var remount = shouldRemountFrame();
     // Every compact/mobile launch gets a genuinely new iframe element. This
     // also covers a rapid reopen before the closing animation completed.
@@ -731,6 +753,10 @@
 
     if (!state.open) {
       state.returnFocus = config.returnFocus || config.trigger || document.activeElement || null;
+      // Preserve keyboard-origin focus on compact devices without introducing
+      // pointer/touch focus scroll jumps. Sample before the host Back takes focus.
+      state.returnFocusVisible = false;
+      try { state.returnFocusVisible = !!(state.returnFocus && state.returnFocus.matches(':focus-visible')); } catch (e) {}
       state.open = true;
       root.setAttribute('aria-hidden', 'false');
       root.classList.remove('is-closing');
@@ -738,6 +764,7 @@
       root.classList.add('is-open');
       lockDashboard();
       armHistoryGuard();
+      try { state.back.focus({ preventScroll: true }); } catch (e) { try { state.back.focus(); } catch (ignore) {} }
     }
 
     showToast();
@@ -771,6 +798,8 @@
     var remount = shouldRemountFrame();
     state.open = false;
     clearTimeout(state.closeTimer);
+    clearTimeout(state.focusTimer);
+    state.focusTimer = 0;
     clearTimeout(state.toastTimer);
     clearTimeout(state.slowTimer);
     state.toast.classList.remove('show');
@@ -783,7 +812,7 @@
     if (remount) {
       state.overlay.classList.remove('is-closing');
       destroyFrame();
-      unlockDashboard({ restoreFocus: false });
+      unlockDashboard({ restoreFocus: state.returnFocusVisible });
       return;
     }
 

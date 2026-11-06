@@ -325,3 +325,8 @@ def test_actual_emitted_bundle_is_valid_javascript(tmp_path):
     emitted = site_assets.emit_theme_js(TEMPLATES / "theme.js")
     candidate = tmp_path / "theme.js"; candidate.write_text(emitted)
     subprocess.run(["node", "--check", str(candidate)], capture_output=True, text=True, check=True)
+
+
+def test_overlay_asset_is_published_by_the_builder() -> None:
+    """Keep the existing builder declaration check with builder integrity."""
+    assert '"terminal_overlay.js"' in (SCRIPTS / "build_site.py").read_text()
