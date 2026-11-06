@@ -132,8 +132,10 @@ def test_intentional_rewrite_is_two_steps_of_one_operation_and_final_text_is_com
     assert len(steps) == 2 and result["raw_text"] == steps[1]["text"] == reply()
     assert steps[0]["request_id"].endswith(":brain:0") and steps[1]["request_id"].endswith(":brain:1")
     assert len(state.native.rows("application_turns")) == 1
-    assert counts(state) == (2, 2, 1, 1)
-    assert run(state) == result and counts(state) == (2, 2, 1, 1)
+    assert counts(state) == (2, 2, 2, 1)
+    assert sum(row["input_tokens"] for row in state.costs) == entry["english"]["usage"]["input_tokens"]
+    assert sum(row["output_tokens"] for row in state.costs) == entry["english"]["usage"]["output_tokens"]
+    assert run(state) == result and counts(state) == (2, 2, 2, 1)
 
 
 def test_pending_original_wins_over_removed_selection_disabled_cfg_force_and_new_state(brief_auto, monkeypatch):
