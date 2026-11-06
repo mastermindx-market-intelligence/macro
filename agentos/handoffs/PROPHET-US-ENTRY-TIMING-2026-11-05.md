@@ -3,7 +3,7 @@ schema: agentos.handoff.v1
 workstream: WS:PROPHET-US-ENTRY-TIMING
 session: sol/web-bottom-pivot-delivery-20261105
 model: sol
-ended_because: context_budget
+ended_because: crashed
 mission: Complete early-pivot versus false-bounce intelligence without requiring long-MA recovery.
   Implementation is preserved; parent mission remains incomplete. This recovery seals the failed,
   materially heavy conversation for a fresh same-mode continuation on the original source carrier.
@@ -59,16 +59,11 @@ unresolved:
 - Market/group/intraday and public Terminal workflow remain unfinished.
 - Existing local data is stale/mixed-date and original ledger lacks issuance clocks.
 next_actions:
-- 'Fresh same-mode assigned continuation: read this checkpoint, reconcile original PR10785/head/workspace,
-  then repair the exact contract-delta and design-governance failures below. Do not restart the build.'
-- 'Keep the existing Studio Direct publisher and operation. Restore truthful import-closure coverage
-  and narrow overbroad CI selection without suppressing tests or raising ceilings to hide a regression.'
-- 'Replace the two new literal radii with canonical design tokens, run the relevant design/visual-evidence
-  guards, then qualify required exact-head CI and actual release rules on the same PR.'
-- Use existing authenticated product owner for natural producer-to-browser/AI proof after release; do
-  not replay denied private endpoint unauthenticated.
-- 'Extend market/group/intraday and scientific work by consuming existing #10212/#10213/#10227 holds and
-  completed October21 study, not duplicate detectors.'
+- 'Fresh same-mode continuation: preserve original operation, branch, workspace and publisher. Read the latest crash-recovery seal below; do not repeat the already-published CI/radius repairs.'
+- 'Reconcile the retained required-field fixture request macro10785-required-field-fix-20261106-c3 through its existing owner before any equivalent repair. No replay, substitute worker, or bypass of refusal/unknown effects.'
+- 'The remaining source defect is tests/test_agentos_schema.py::test_hard_rule_fires[required-field]: select the top-level key rather than old business prose, preserving the validator and historical nested key. Perform this only after the original request/admission boundary is legitimately resolved.'
+- 'Reconcile the newly observed PR10785 merge conflict against the actual current base on the original source carrier; preserve adjacent writers and exact-head evidence. No force push, replacement PR or direct merge.'
+- 'Then qualify exact-head CI and existing release controller; obtain authenticated natural-source-to-consumer proof. Continue BP4/BP5/BP7 with incumbent market/group/intraday, Terminal and science owners and existing holds.'
 do_not_redo:
 - 'Preserve original three Fabric runs: BP1 terminal consumed and repaired; BP2/BP3 admission-refused
   and never retried. No background children remain.'
@@ -151,3 +146,38 @@ Evidence: `research/evidence/bottom_pivot_delivery_20261105/release_repair.json`
 Live release inspection found PR10785 OPEN/Ready, no labels/auto-merge/reviews/hold comment, Macro/main unprotected and no effective native rules. Therefore no blanket formal approval is invented. Exact repaired-head hosted checks and the existing `merge-on-green` controller remain mandatory. Do not use native auto-merge or direct/admin merge. Latest observed mainae08e895362536af10c40093b6b010554cb9d4c3 changed a disjoint Prophet CI subsection; the original base comparison and repaired packing-probe evidence remain scoped, not integration acceptance.
 
 Next: publish this scoped repair through the original publisher; consume the full local guard and new exact-head hosted CI; repair any real delta; qualify and opt into the existing Macro controller once genuinely green. Continue authenticated natural-source proof and BP4/BP5/BP7 work in the same mission. Terminal currently has an existing rotation-pivot PR1281 and company/analysis writers: reconcile exact file overlap before opening a consumer lane; do not duplicate their work. Held Macro10212/10213/10227 remain held and unreleased; especially do not infer per-member fresh intraday quotes from the incumbent newest-timestamp aggregate.
+
+
+## Crash-recovery seal - published repair and remaining blockers
+
+Recorded at: 2026-11-06T06:53:16.513119+00:00. MISSION_COMPLETE: false. FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION. SESSION_HEALTH: ROTATION_REQUIRED. Intended resume surface: one fresh same-mode ChatGPT conversation assigned the existing operation, not another worker, branch or publication carrier.
+
+The predecessor response visibly ended with `Thinking failed` in an already materially heavy conversation. This Resume was bounded effect/source reconciliation and continuity preservation, not a restart of the build or a claim about the provider failure's cause. This section supersedes the earlier next-action frontier; it preserves the original mission, holds, accepted evidence and do-not-redo rules.
+
+### Confirmed surviving work
+
+- Original operation `bottom-pivot-delivery-20261105`; branch `sol/web-bottom-pivot-delivery-20261105`; workspace `/Volumes/Mastermind 2/agent-workspaces/macro/web/bottom-pivot-delivery-20261105`. Original Studio Direct publisher remains the sole source publication carrier.
+- Repair commit `9ed46d26baa42bebd237a3f8faff7740d3f45b9a` is already published. Original publisher readback showed local=remote, clean, APPLIED. Recovery source read again found exact same HEAD and clean worktree. No repair needs reconstruction.
+- That commit adds the missing pivot import declarations, curates 212 exact dependencies without removing tests or raising packing ceilings, adds selection regressions, replaces the two radius literals with canonical tokens, and commits canonical visual evidence. Its existing `release_repair.json` owns the 25-test and synthetic browser/design proof. Original 453-test evidence and unaffected feature code remain preserved.
+- Original foreground contract-delta process46185 was NOT rerun. Its retained log `.cache/bottom-pivot-resume-20261105/contract-delta-fixed.log` is 753 bytes, SHA256 `1b8b4141269b4e47f4ef8349c68afbb45b2deba8da624ccfb78225cf4949e1c3`. It reports zero introduced and zero inherited findings against base96633a798efd, wall504.2s. The original process exit-code receipt was not recovered; do not manufacture one.
+- Hosted run42151749533 at repair head9ed is terminal. `contract-delta` and eleven of twelve numbered packs, including design-containing pack3, passed. Pack10 and aggregate `ci-gate` failed. Inactive `ci-authority/codex/merge-queue-pilot` is not a main permission denial; `ci-authority/main` passed. These checks do not prove release or production acceptance.
+
+### Exact remaining failure and fresh compatibility gap
+
+Job127678478221 reports `tests/test_agentos_schema.py::test_hard_rule_fires[required-field]`: mutation anchor missing, with 605 passed and one failed. The fixture expects `next_action: Verify the 22:30Z bake (W1).`; the valid real workstream now uses a top-level folded `next_action: >-` scalar. The repair must target the unindented key in the copied fixture, preserve its scalar/body and the historical nested W1 key, and retain all negative assertions, production validator and real workstream bytes. Do not change the workstream back to stale prose to satisfy the test.
+
+Recovery read process73676 completed exit0; its log download initially failed only on terminal-escape output formatting. One same-carrier output-format correction in process76840 completed exit0 and returned the actual failure above. Raw job log:379261 bytes, SHA256 `bec2341797fe7c7e914c86b4a00d50e1e0965d40aa59b0a4b466372046f3db1b`. This was a read, not a CI rerun or test execution. No recovery process remains pending.
+
+Both GitHub connector and same-carrier API now report PR10785 OPEN/non-draft/unmerged at9ed, base`96633a798efda34d899e1b135487c89b596215fc`, `mergeable=false` / `mergeable_state=dirty`. Conflict paths have not been determined. Preserve this newer integration blocker; earlier conflict-free receipts or main observations are not current mergeability proof. No merge, label, queue entry, native auto-merge or release was attempted in this recovery.
+
+### Concurrent narrow repair request - preserve exact refusal
+
+Independent sweep root/session `01a1a7fb-3b89-756f-ba72-ccf9cfa7b034` recorded its one-file commission at PR10785 comment6676620018 and refusal reconciliation at comment6676662858. Request `macro10785-required-field-fix-20261106-c3` retained the original public source carrier and had controller PID31921. Its reported canonical status was REQUEST_REFUSED_BEFORE_LAUNCH, no proven worker START, no result, retry_authorized=false, dispatch_authorized=false, same_run_replay_allowed=false. The root/parent was not verified. Status-level execution_absence_proven=true and generic controller execution_absence_proven=false disagree; retain both, not an invented execution outcome. No specific thermal or permission cause was exposed.
+
+This recovery did NOT redispatch, amend, replace, implement the refused leaf through another route, consume a nonexistent artifact, or alter its runtime controls. The next assigned session must reconcile that exact retained request and actual admissibility through the existing owner. An unexplained prelaunch refusal is neither proven permission denial nor automatic fallback permission. Historical session identity alone is not a ghost owner gate, and a fresh chat grants no retry or admission. Original BP1 remains closed; BP2/BP3 remain refused and never retried.
+
+### Next executable frontier and proof limits
+
+Reconcile original source/writer and the retained fixture request first; then address the precise fixture and integration conflict only on an authorized, reconciled path. Preserve all unchanged feature/test/browser evidence. Qualify the repaired integrated candidate and normal existing release controller without self-merge or fabricated approval. Independent BP4/BP5/BP7 work remains part of the mission, not complete: market/group/intraday integration, existing Terminal rotation-pivot PR1281 overlap, authenticated production proof, and chronological/prospective science. Held Macro10212/10213/10227, disjoint9457, private endpoint401, stale/mixed-date data, first-issuance clocks, failed constructions and October21 reuse limits all remain.
+
+No release, deployment, authenticated natural-source acceptance, new predictive result or background execution is claimed. Protected procedure reused: Mastermind@5c3b2121bd75e30be1341a2f1048df9119cd8218, compatible skillpack1.0.1/bootstrap1. This checkpoint's containing commit is the next immutable recovery reference once original-publisher push and readback are verified.
