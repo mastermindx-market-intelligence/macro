@@ -139,6 +139,14 @@ from:
 
 The full token lists are in `zh_latin/`. A human native-ZH review is still owed.
 
+**The China order is re-stamped in the fixture (GAP-B M4).** The China fixture
+carried `rs_21d_rank` values from before the L6.5o stamper. `render_l6.py` now
+re-stamps the China sectors and baskets with `engine.sector_cycles._stamp_rs_ranks`
+and refuses if the result differs from the engine at HEAD. The count is in
+`CHECKS["cn_rs_21d_rank_restamped"]`, and each re-stamped entity carries a
+provenance note. This proves the order the current engine produces, not the
+production order: that arrives with the next natural nightly (GAP-D33-1).
+
 **The data is fixture data, not production.** No P0B receipt was written, and no
 live or r2.dev URL was loaded. Production and natural-update proof belong to P22.
 

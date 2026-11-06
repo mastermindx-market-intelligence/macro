@@ -16,7 +16,7 @@
       "matched": 1
     }
   ],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -71,10 +71,10 @@
       "selector": "[data-gen]",
       "x": 194,
       "y": 355,
-      "w": 127,
+      "w": 259,
       "h": 15,
       "visible": true,
-      "text": "Generation Up to date"
+      "text": "Generation History matches the current read"
     },
     "stale_guard": null,
     "chips": {
@@ -107,6 +107,10 @@
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -151,7 +155,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": null
+    "zh_latin": null,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -178,6 +183,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v2-sector-cycles__dark__en__1440__d-l3-10-chip-all.png",
-    "sha256": "f25a20af0a49a011f1a53198db6dc8d24c92d8782c314aeaece254cfe1cd5067"
+    "sha256": "d0986296a5de2e4776ae0f9dd94276b966bcf531b4981be08e1dea5d6a770da8"
   }
 }

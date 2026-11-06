@@ -4283,6 +4283,7 @@ def build_sector_pages(env: Environment, site: Path, generated: str,
             if _sa:
                 s["alpha_leaders"] = _sa.get("leaders")
         ec = etf["close"].dropna()
+        s["as_of"] = str(ec.index.max().date())  # header date: a stale page must read as stale
         # technical snapshot for the at-a-glance signal-chip strip (same shape the
         # stock analyzer reads from its JSON, so both pages render identical chips)
         from engine.technicals import snapshot as _snap

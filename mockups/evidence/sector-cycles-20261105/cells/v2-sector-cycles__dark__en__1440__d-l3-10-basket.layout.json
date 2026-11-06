@@ -12,12 +12,23 @@
   "js": true,
   "steps": [
     {
+      "click": "#sc-tabs .sc-tab[data-fam=\"baskets\"]",
+      "matched": 1
+    },
+    {
+      "click": "#sc-bask-toggle",
+      "matched": 1
+    },
+    {
       "click": ".sc-bchip[data-id]",
-      "matched": 11,
-      "error": "locator.click: Timeout 5000ms exceeded."
+      "matched": 49
+    },
+    {
+      "scroll": "#sc-baskets",
+      "matched": 1
     }
   ],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -44,7 +55,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 1440,
-  "scrollHeight": 2780,
+  "scrollHeight": 6973,
   "data_theme": "dark",
   "data_lang": "en",
   "html_lang": "en",
@@ -54,10 +65,10 @@
       "selector": "#sc-hero-title",
       "x": 79,
       "y": 500,
-      "w": 186,
+      "w": 203,
       "h": 22,
       "visible": true,
-      "text": "Sector rotation overlay"
+      "text": "Thematic basket rotation"
     },
     "asof": {
       "selector": "#sc-asof",
@@ -72,42 +83,54 @@
       "selector": "[data-gen]",
       "x": 194,
       "y": 355,
-      "w": 127,
+      "w": 259,
       "h": 15,
       "visible": true,
-      "text": "Generation Up to date"
+      "text": "Generation History matches the current read"
     },
     "stale_guard": null,
     "chips": {
       "selector": "#sc-chips",
-      "x": 79,
-      "y": 578,
-      "w": 1282,
-      "h": 43,
-      "visible": true,
-      "text": "✦ Select all visible Tech Comm Discretionary Financials Industrials Materials Energy Health Staples Utilities Real Estate"
+      "x": 0,
+      "y": 275,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "✦Select all visibleTechCommDiscretionaryFinancialsIndustrialsMaterialsEnergyHealthStaplesUtilitiesReal Estate"
     },
     "chart": {
       "selector": "#sc-chart",
       "x": 79,
-      "y": 621,
+      "y": 1187,
       "w": 1282,
       "h": 660,
       "visible": true,
-      "text": "WASHED-OUT MID-CYCLE EUPHORIC Low Mid High 2020 2022 2024 2026 TODAY"
+      "text": "WASHED-OUT MID-CYCLE EUPHORIC Low Mid High 2020 2022 2024 2026 TODAY COVID pandemic panic … Fed QE + WFH cloud de… Rate-shock de-rating,… Peak-inflation pivot … Hawkish Jackson Hole … ChatGPT ignites "
     },
     "inspector": {
       "selector": "#sc-detail",
       "x": 60,
-      "y": 1312,
+      "y": 1916,
       "w": 1320,
-      "h": 412,
+      "h": 1266,
       "visible": true,
-      "text": "SECTOR ROTATION · 2026-11-03 Every sector on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a sector "
+      "text": "Compare ← All baskets 📄 Open AI Infrastructure page ↗ AI Infrastructure Basket · 24 names · proxy SMH · below 200d Bottoming Stand aside ↓ Headwind WHERE IT STANDS 1/100 · washed-out LAST TROUGH Nov "
     },
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": {
+      "selector": ".sc-bchip.on",
+      "x": 85,
+      "y": 655,
+      "w": 143,
+      "h": 27,
+      "visible": true,
+      "text": "AI Infrastructure"
+    },
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -116,23 +139,36 @@
     "texts": []
   },
   "fixture_text": [],
-  "size_mult_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
   "stripe_audit": {
     "scope": "body",
     "flagged": []
   },
   "next_turn_labels": [
-    "▲ ref: Peak was proj. Sep ’25 — elapsed ↓ Headwind RS +3.5% #9",
-    "▼ Next ▼ Apr ’27 ↓ Headwind RS -6.6% #10",
-    "▲ ref: Peak was proj. Jul ’26 — elapsed ↔ Mixed RS +9.1% #5",
-    "▲ ref: Peak was proj. Aug ’25 — elapsed ↔ Mixed RS +10.3% #4",
-    "▼ ref: Trough was proj. Jun ’26 — elapsed ↔ Mixed RS +11.6% #3",
-    "▲ ref: Peak was proj. Aug ’25 — elapsed ↔ Mixed RS +9.1% #6",
-    "▲ ref: Peak was proj. Jun ’26 — elapsed ↑ Tailwind RS +9% #7",
-    "▲ ref: Peak was proj. May ’24 — elapsed ↑ Tailwind RS +12.7% #2",
-    "▲ Next ▲ Nov ’26 ↑ Tailwind RS +7.9% #8",
-    "▲ ref: Peak was proj. Oct ’25 — elapsed ↑ Tailwind RS +12.9% #1",
-    "▲ ref: Peak was proj. Oct ’26 — elapsed ↔ Mixed RS -9.8% #11"
+    "▼ Next ▼ Jan ’27 ↓ Headwind RS -29.5% #49",
+    "▼ ref: Trough was proj. Apr ’26 — elapsed ↓ Headwind RS -1.8% #25",
+    "▼ ref: Trough was proj. Jun ’26 — elapsed ↓ Headwind RS -9.3% #37",
+    "▼ Next ▼ Mar ’27 ↓ Headwind RS -24.7% #47",
+    "▼ ref: Trough was proj. Jun ’26 — elapsed ↓ Headwind RS -24% #46",
+    "▼ Next ▼ Apr ’27 ↓ Headwind RS -23.7% #45",
+    "▼ Next ▼ Nov ’26 ↓ Headwind RS -2.7% #26",
+    "▼ Next ▼ Apr ’27 ↓ Headwind RS -23.3% #44",
+    "▼ Next ▼ Apr ’27 ↓ Headwind RS -7% #34",
+    "▼ Next ▼ Dec ’26 ↓ Headwind RS -14.4% #39",
+    "▼ Next ▼ Feb ’27 ↓ Headwind RS -18.4% #41",
+    "▲ Next ▲ Nov ’27 ↓ Headwind RS -15.5% #40",
+    "▼ Next ▼ May ’27 ↓ Headwind RS -27.6% #48",
+    "▲ ref: Peak was proj. Oct ’25 — elapsed ↓ Headwind RS +3.3% #23",
+    "▲ Next ▲ Dec ’26 ↓ Headwind RS -14.2% #38",
+    "▲ ref: Peak was proj. Aug ’25 — elapsed ↔ Mixed RS +2.4% #24"
   ],
   "cycles_ctx": null,
   "assertions": {
@@ -144,7 +180,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": null
+    "zh_latin": null,
+    "expect_visible_any": true
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -171,6 +208,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v2-sector-cycles__dark__en__1440__d-l3-10-basket.png",
-    "sha256": "2dedb70edc74abfa8997d4aec8b6f0556d69604ecc05624102b8c9be50147b6f"
+    "sha256": "009ba2cf69e64610128f4bfa621047462afdbe14c6e914dfdebb281efd08a457"
   }
 }

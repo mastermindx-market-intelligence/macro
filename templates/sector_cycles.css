@@ -209,14 +209,24 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
 /* rows past the cap, revealed by the "See all N" control below the list (the
    button reuses .xc-more so the two see-more affordances on this panel match) */
 .sc-lead-row.sc-lead-hidden { display: none; }
+/* The collapsed "where they stand" map (cycle.css .xc-map-clamp) ends on the last whole chip
+   line instead of fading through a mask: the gradient left live chips in what read as disabled
+   ink. sector_cycles.js sets --xc-cut; the inline padding gives chip focus rings room inside
+   the clip without moving the chips. "See all N" stays the way to the rest. */
+.sc-page .xc-map-clamp { padding-inline: 4px; margin-inline: -4px; }
+.sc-page .xc-map-clamp:not(.xc-map-open) { max-height: var(--xc-cut, 220px); -webkit-mask-image: none; mask-image: none; }
 
 /* scorecard header: keep the (sometimes long) phase badge from overlapping the
    (sometimes 2-line) sector name — let the name column flex/shrink, tags stay top-right */
 .sc-page .cc-id { flex: 1 1 auto; min-width: 0; }
-.sc-page .cc-nm { overflow-wrap: anywhere; }
+.sc-page .cc-nm { overflow-wrap: break-word; }
 .cc-tags { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex: none; }
 .sc-page .cc-phase { font-size: 10px; }
 @media (max-width: 880px) { .sc-page .cyc-cards { grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); } }
+/* every card is header / sparkline / meta: a 3-row subgrid lines those bands up across
+   a grid row, so a 2-line sector name no longer drops its sparkline below its neighbours' */
+.sc-page .cyc-card { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; align-content: start; }
+.sc-page .cyc-cards + .sc-prov-text { margin-top: 18px; }
 
 /* Cards read by CYCLE PHASE, not by the (rainbow) per-ETF accent — only the small
    identity dot keeps the ETF colour, so the grid groups visually by where each
@@ -268,8 +278,10 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
 .cc-rot.cc-rot-major { color: var(--ink-warn, var(--warn)); background: color-mix(in srgb, var(--warn) 14%, transparent);
   border-color: color-mix(in srgb, var(--warn) 48%, var(--line)); }
 /* "aggregate not representative" — the sector's legs disagree hard (fragmentation flag). */
+/* It wraps to two short lines: a one-line chip (~185px) squeezed the sector name
+   in the header to ~73px, and "Technology" broke mid-word (SIC GAP-B M2). */
 .cc-frag { font-size: 10.5px; font-weight: 750; letter-spacing: .03em; padding: 2px 8px;
-  border-radius: 6px; line-height: 1.45; white-space: nowrap; color: var(--muted);
+  border-radius: 6px; line-height: 1.45; white-space: normal; max-width: 16ch; text-align: right; color: var(--muted);
   background: color-mix(in srgb, var(--muted) 10%, transparent);
   border: 1px dashed color-mix(in srgb, var(--muted) 45%, var(--line)); }
 
@@ -699,6 +711,8 @@ html[data-lang="zh"] .scf .scf-kv > div.l-en, html:not([data-lang="zh"]) .scf .s
 .scf .scf-grade [data-metric] .v { font:700 var(--fs-sm)/1.3 var(--font-mono,var(--font-ui)); font-variant-numeric:tabular-nums; color:var(--text); text-align:right; }
 .scf.scf-methods,
 .scf .scf-methods { margin-top:16px; }
+/* The default panel is a 12-column grid; the methods card spans all of it. */
+.sc-methods-slot { grid-column:1 / -1; min-width:0; }
 .scf .scf-method-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:12px; }
 .scf .scf-method { display:flex; flex-direction:column; gap:8px; padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-ctl); background:var(--panel2); min-width:0; }
 .scf .scf-method .scf-chip { align-self:flex-start; }

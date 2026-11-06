@@ -2491,6 +2491,13 @@
     _sf0(id, true); _turnSel = null; _syncAdd(); _paintRail();
     if (!fromHistory && !_quiet) { _writeHash(); if (id && byId[id]) _announce(nm(byId[id])); }
   };
+  // The methods card and the coverage line live in the default panel. boot()
+  // builds that panel without rendering it, so a fresh load mounts them here
+  // too; the slot check keeps a later render from adding a second card.
+  function _mountMethods(def) {
+    if (window.SC_FACE && window.SC_FACE.methods && !def.querySelector(".sc-methods-slot")) { var ms = window.SC_FACE.methods(META, _ctx()); if (ms) def.appendChild(el("div", "sc-methods-slot", ms)); }
+    _paintCoverage(def);
+  }
   var _rp0 = renderPanel;
   renderPanel = function (id) {
     _rp0(id);
@@ -2508,10 +2515,7 @@
         }
       } else {
         var def = document.getElementById("sc-panel-default");
-        if (def) {
-          if (window.SC_FACE && window.SC_FACE.methods && !def.querySelector(".sc-methods-slot")) { var ms = window.SC_FACE.methods(META, _ctx()); if (ms) def.appendChild(el("div", "sc-methods-slot", ms)); }
-          _paintCoverage(def);
-        }
+        if (def) _mountMethods(def);
       }
     } catch (e) {}
     _syncAdd(); _paintRail();
@@ -2548,6 +2552,64 @@
   };
   var _is0 = initSheet;
   initSheet = function () { _is0(); _labelChrome(); };
+  // The chip rail snaps (cycle.css: scroll-snap-type x proximity, each chip snaps to its start)
+  // but the sticky "Select all visible" pin has no snap point. When the rail overflowed, a
+  // fresh load re-snapped to the last chip position and Tech slid under the pin. The rail's
+  // scroll padding now begins after the pin, so Tech snaps to 0 and every snap lands clear.
+  var _pinRO = null;
+  function _padForPin() {
+    var wrap = document.getElementById("sc-chips"), pin = wrap && wrap.querySelector(".sc-chip-all");
+    if (_pinRO) { _pinRO.disconnect(); _pinRO = null; }
+    if (!wrap) return;
+    if (!pin) { wrap.style.scrollPaddingInlineStart = ""; return; }
+    var pad = function () { var cs = getComputedStyle(wrap); wrap.style.scrollPaddingInlineStart = ((parseFloat(cs.paddingLeft) || 0) + pin.offsetWidth + (parseFloat(cs.columnGap) || 0)) + "px"; };
+    pad();
+    if (window.ResizeObserver) { _pinRO = new window.ResizeObserver(pad); _pinRO.observe(pin); }
+  }
+  var _mc0 = mountChips;
+  mountChips = function () { _mc0(); try { _padForPin(); } catch (e) {} };
+  // cycle.css clamps a long "where they stand" map at 220px behind a gradient mask, and the
+  // mask faded the last visible chips into what read as disabled ink. The collapsed map now
+  // ends on the last whole chip line that fits (sector_cycles.css reads --xc-cut, no mask).
+  // A row whose first chip falls below the cut is held back with its heading.
+  var _cutRO = null;
+  function _cutClamp() {
+    var map = document.getElementById("sc-xc-map");
+    if (_cutRO) { _cutRO.disconnect(); _cutRO = null; }
+    if (!map || !map.classList.contains("xc-map-clamp")) return;
+    var cut = function () {
+      if (!map.offsetHeight) return;
+      var top = map.getBoundingClientRect().top, end = 0, rows = map.querySelectorAll(".xc-row");
+      for (var i = 0; i < rows.length; i++) {
+        var units = rows[i].querySelectorAll(".mini-chip, .xc-empty"), h = rows[i].querySelector(".xc-rh"), b = 0;
+        for (var j = 0; j < units.length; j++) { var u = units[j].getBoundingClientRect().bottom - top; if (u + 4 <= 220 && u > b) b = u; }
+        if (!b) continue;
+        if (h) b = Math.max(b, h.getBoundingClientRect().bottom - top);
+        if (b > end) end = b;
+      }
+      var v = end ? Math.ceil(end + 4) + "px" : "";
+      if (map.style.getPropertyValue("--xc-cut") !== v) map.style.setProperty("--xc-cut", v);
+    };
+    cut();
+    if (window.ResizeObserver) { _cutRO = new window.ResizeObserver(cut); _cutRO.observe(map); }
+  }
+  var _bdp0 = buildDefaultPanel;
+  buildDefaultPanel = function () { _bdp0(); try { _cutClamp(); } catch (e) {} };
+  // The card's position bar reads the legacy clock (now.pos); the dossier face reads the phase
+  // clock (now.pos_v2) under the same "Cycle position" chip, so one fund showed 37/100 here and
+  // 93/100 there. The card label now names its clock in the deck's words (cycles.clock_read).
+  function _clockLab() {
+    var labs = document.querySelectorAll(".cc-leg-lab");
+    for (var i = 0; i < labs.length; i++) {
+      if (labs[i].hasAttribute("data-clock")) continue;
+      var m = /(\d+)\/100$/.exec(labs[i].textContent);
+      if (!m) continue;
+      labs[i].setAttribute("data-clock", "read");
+      labs[i].textContent = L("Cycle position", "周期位置") + " · " + L("cycle read", "周期读数") + " " + m[1] + "/100";
+    }
+  }
+  var _mcd0 = mountCards;
+  mountCards = function () { _mcd0(); try { _clockLab(); } catch (e) {} };
   function _platInit() {
     if (!_seam()) return;
     var P = window.SC_PLATFORM, host = document.getElementById("sc-cyclemap") || document.querySelector(".sc-page") || document.body;
@@ -2563,6 +2625,8 @@
     if (ch) ["wheel", "pointerdown", "keydown"].forEach(function (n) { ch.addEventListener(n, function () { _lastUserAct = Date.now(); }, { passive: true }); });
     var rt = null; window.addEventListener("resize", function () { if (rt) return; rt = setTimeout(function () { rt = null; _paintRail(); }, 120); });
     _labelChrome(); _paintRail();
+    var def = document.getElementById("sc-panel-default");
+    if (def && !state.focus) { try { _mountMethods(def); } catch (e) {} }
   }
   var _boot0 = boot;
   boot = function () { _boot0(); try { _platInit(); } catch (e) {} };

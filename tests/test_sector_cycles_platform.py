@@ -317,6 +317,24 @@ def test_open_sheet_retires_the_assistant_launcher_on_mobile_only():
     assert "root.document.documentElement.classList.add('sc-plat')" in _text("sector_cycles_platform.js")
 
 
+def test_resting_sheet_leaves_the_focus_order():
+    # SIC GAP-B M1: at 390px the resting sheet sat below the viewport (translateY(100%)) but kept
+    # visibility visible, so its 23 controls stayed in the tab order and the accessibility tree.
+    # Hidden at rest; the hide waits out the .42s slide-out, the show is immediate. A drag keeps
+    # its open detent class until touchend, so it never needs a rule of its own here.
+    mob = _mobile_block(_text("sector_cycles_platform.css"))
+    rest = re.search(r"\.sc-plat \.cyc-detail \{ visibility: hidden; transition: ([^}]*)\}", mob)
+    assert rest, "resting sheet must be visibility: hidden"
+    assert "transform .42s" in rest.group(1) and "visibility 0s linear .42s" in rest.group(1)
+    shown = ".sc-plat .cyc-detail.sc-sheet-half, .sc-plat .cyc-detail.sc-sheet-full { visibility: visible; transition-delay: 0s; }"
+    assert shown in mob
+    assert mob.index(shown) < mob.index(".sc-plat .cyc-detail.sc-dragging { transition: none;")
+    js = _text("sector_cycles.js")
+    body = js[js.index("handle.addEventListener(\"touchstart\", function (e) {\n      dragging = true;"):]
+    body = body[:body.index("// Esc closes the sheet")]
+    assert "setDetent(" not in body[:body.index("touchend")], "a drag must not drop the open detent class"
+
+
 def test_sheet_close_is_a_one_line_labelled_pill():
     # D34: _labelChrome puts the word Close / 关闭 in the control; a fixed 40px circle overflowed
     # in EN and wrapped to two lines in ZH.
@@ -613,3 +631,197 @@ def test_card_rs_chip_colours_a_signed_value_not_a_rank(nw, cls, label):
 @needs_node
 def test_card_rs_chip_is_empty_without_a_value():
     assert _node(_rs_chip_src({"rs_rank": 4})) == ""
+
+
+# ------------------------------------------------------- SIC GAP-B #5 methods card
+
+def _mount_src():
+    fz = _freezone()
+    return ("var calls = 0, cov = 0, kids = [];\n"
+            "var META = {}; function _ctx() { return {}; }\n"
+            "function _paintCoverage(d) { cov += 1; }\n"
+            "function el(tag, cls, html) { return { tag: tag, cls: cls, html: html }; }\n"
+            "var window = { SC_FACE: { methods: function () { calls += 1; return '<section>m</section>'; } } };\n"
+            "var def = { appendChild: function (n) { kids.push(n); },"
+            " querySelector: function (q) { return q === '.sc-methods-slot' && kids.length ? kids[0] : null; } };\n"
+            + _extract_js_fn(fz, "_mountMethods") + "\n")
+
+
+@needs_node
+def test_methods_card_mounts_once_however_often_the_default_panel_renders():
+    """SIC GAP-B #5: boot() built the default panel without rendering it, so a
+    fresh load showed no methods card until a language flip. The card now
+    mounts from the platform init as well as from renderPanel; a second mount
+    adds nothing, and the coverage line is still offered each time."""
+    out = _node(_mount_src() + "_mountMethods(def); _mountMethods(def);"
+                " console.log(JSON.stringify([calls, kids.length, kids[0].cls, cov]));")
+    assert out == [1, 1, "sc-methods-slot", 2]
+
+
+def test_fresh_load_mounts_the_methods_card_and_it_spans_the_panel_grid():
+    """The default panel is a 12-column grid. A slot without a column span
+    took one 79px track at 1440 and stacked the four method cells into a
+    512px-tall sliver; it now spans every column."""
+    fz = _freezone()
+    init = _extract_js_fn(fz, "_platInit")
+    assert 'var def = document.getElementById("sc-panel-default");' in init
+    assert "if (def && !state.focus) { try { _mountMethods(def); } catch (e) {} }" in init
+    rp = fz[fz.index("  var _rp0 = renderPanel;"):fz.index("  var _av0 = applyVisibility;")]
+    assert "if (def) _mountMethods(def);" in rp
+    css = _text("sector_cycles.css")
+    assert ".sc-methods-slot { grid-column:1 / -1; min-width:0; }" in css
+
+
+def test_scorecard_name_never_breaks_inside_a_word():
+    """SIC GAP-B M2: the one-line "aggregate not representative" chip (~185px)
+    widened the card's tag column, left the sector name ~73px, and
+    `overflow-wrap: anywhere` split it ("Technolog/y"). The chip now wraps
+    to two short lines, and the name breaks only a word that cannot fit."""
+    css = _text("sector_cycles.css")
+    assert ".sc-page .cc-nm { overflow-wrap: break-word; }" in css
+    assert "overflow-wrap: anywhere" not in css
+    start = css.index(".cc-frag {")
+    rule = css[start:css.index("}", start)]
+    assert "white-space: normal; max-width: 16ch;" in rule
+    assert "nowrap" not in rule
+
+
+# ------------------------------------------------------- SIC GAP-B M5 chip-rail pin
+
+def _pin_src(pin_width):
+    fz = _freezone()
+    return ("var made = 0, live = 0, cb = null;\n"
+            "function RO(f) { made += 1; live += 1; cb = f; this.observe = function () {};"
+            " this.disconnect = function () { live -= 1; }; }\n"
+            "var window = { ResizeObserver: RO };\n"
+            "var pin = " + ("{ offsetWidth: " + json.dumps(pin_width) + " }" if pin_width is not None else "null") + ";\n"
+            "var wrap = { style: { scrollPaddingInlineStart: 'stale' },"
+            " querySelector: function (q) { return q === '.sc-chip-all' ? pin : null; } };\n"
+            "var document = { getElementById: function (id) { return id === 'sc-chips' ? wrap : null; } };\n"
+            "function getComputedStyle() { return { paddingLeft: '2px', columnGap: '7px' }; }\n"
+            "var _pinRO = null;\n"
+            + _extract_js_fn(fz, "_padForPin") + "\n")
+
+
+@needs_node
+def test_chip_rail_scroll_padding_starts_after_the_pinned_select_all():
+    """SIC GAP-B M5: on a 1440 EN load the rail sat at scrollLeft 25 and the
+    sticky "Select all visible" pin covered Tech's dot. Every chip snaps to its
+    start (cycle.css) and the pin had no snap point, so the browser re-snapped
+    to the last chip position. The rail's scroll padding is now its own left
+    padding plus the pin plus one gap; a remount re-measures with one live
+    observer, and a rail without the pin drops the padding."""
+    out = _node(_pin_src(135.73) + "_padForPin(); var first = wrap.style.scrollPaddingInlineStart;"
+                " pin.offsetWidth = 98; cb(); var resized = wrap.style.scrollPaddingInlineStart;"
+                " _padForPin(); console.log(JSON.stringify([first, resized, made, live]));")
+    assert out == ["144.73px", "107px", 2, 1]
+    assert _node(_pin_src(None) + "_padForPin(); console.log(JSON.stringify([wrap.style.scrollPaddingInlineStart, made]));") == ["", 0]
+
+
+def test_chip_rail_pin_padding_runs_on_every_chip_mount():
+    fz = _freezone()
+    assert "  var _mc0 = mountChips;\n  mountChips = function () { _mc0(); try { _padForPin(); } catch (e) {} };" in fz
+    assert fz.index("mountChips = function") < fz.index("  var _boot0 = boot;")
+
+
+
+# ------------------------------------------------------ SIC GAP-B M6 phase-map clamp
+
+def _clamp_src(clamped=True, height=260):
+    fz = _freezone()
+    return ("var made = 0, live = 0, cb = null, writes = 0;\n"
+            "function RO(f) { made += 1; live += 1; cb = f; this.observe = function () {};"
+            " this.disconnect = function () { live -= 1; }; }\n"
+            "var window = { ResizeObserver: RO };\n"
+            "function box(b) { return { getBoundingClientRect: function () { return { bottom: 100 + b }; } }; }\n"
+            "function row(h, units) { var hd = box(h), us = units.map(box);"
+            " return { querySelector: function (q) { return q === '.xc-rh' ? hd : null; },"
+            " querySelectorAll: function () { return us; } }; }\n"
+            # Row 1 wraps to two chip lines; row 2 fits four of five lines; row 3's
+            # heading fits but its first chip does not, so it is held back whole.
+            "var rows = [row(18, [44, 44, 72]), row(101, [127.5, 155, 183, 211.3, 239]),"
+            " row(210, [236]), row(150, [])];\n"
+            "var props = {};\n"
+            "var map = { offsetHeight: " + json.dumps(height) + ","
+            " classList: { contains: function (c) { return c === 'xc-map-clamp' && " + json.dumps(clamped) + "; } },"
+            " getBoundingClientRect: function () { return { top: 100 }; },"
+            " querySelectorAll: function (q) { return q === '.xc-row' ? rows : []; },"
+            " style: { getPropertyValue: function (k) { return props[k] || ''; },"
+            " setProperty: function (k, v) { writes += 1; if (v) props[k] = v; else delete props[k]; } } };\n"
+            "var document = { getElementById: function (id) { return id === 'sc-xc-map' ? map : null; } };\n"
+            "var _cutRO = null;\n"
+            + _extract_js_fn(fz, "_cutClamp") + "\n")
+
+
+@needs_node
+def test_phase_map_clamp_ends_on_the_last_whole_chip_line():
+    """SIC GAP-B M6: cycle.css clamps a long phase map at 220px behind a
+    gradient mask, and on the China and international pages the mask faded
+    live chips (入场良机 · 家电/传媒/石化; Australia) into what read as disabled
+    ink. The cut now lands 4px under the last chip line that fits, a heading
+    whose first chip does not fit is held back with it, and a re-measure that
+    finds the same cut writes nothing."""
+    out = _node(_clamp_src() + "_cutClamp(); var first = props['--xc-cut'], w1 = writes;"
+                " cb(); _cutClamp(); console.log(JSON.stringify([first, w1, writes, made, live]));")
+    assert out == ["216px", 1, 1, 2, 1]
+
+
+@needs_node
+def test_phase_map_clamp_skips_hidden_and_unclamped_maps():
+    hidden = _node(_clamp_src(height=0) + "_cutClamp(); console.log(JSON.stringify([writes, made]));")
+    assert hidden == [0, 1]
+    short = _node(_clamp_src(clamped=False) + "_cutClamp(); console.log(JSON.stringify([writes, made]));")
+    assert short == [0, 0]
+
+
+def test_phase_map_clamp_drops_the_mask_and_reads_the_cut():
+    css = _text("sector_cycles.css")
+    start = css.index(".sc-page .xc-map-clamp { padding-inline: 4px; margin-inline: -4px; }")
+    rule = css[start:css.index("\n", css.index(".sc-page .xc-map-clamp:not(.xc-map-open)"))]
+    assert "max-height: var(--xc-cut, 220px); -webkit-mask-image: none; mask-image: none;" in rule
+    for banned in ("border-left", "border-right", "linear-gradient", "opacity"):
+        assert banned not in rule, banned
+
+
+def test_phase_map_clamp_runs_on_every_panel_build():
+    fz = _freezone()
+    assert "  var _bdp0 = buildDefaultPanel;\n  buildDefaultPanel = function () { _bdp0(); try { _cutClamp(); } catch (e) {} };" in fz
+    assert fz.index("buildDefaultPanel = function") < fz.index("  var _boot0 = boot;")
+
+
+
+# ------------------------------------------------------ SIC GAP-B B1 card clock name
+
+def _clocklab_src(lang, texts):
+    fz = _freezone()
+    return ("var lang = " + json.dumps(lang) + ";\n"
+            "function curLang() { return lang; }\n"
+            "function L(en, zh) { return curLang() === 'zh' ? (zh || en) : en; }\n"
+            "function lab(t) { var a = {}; return { textContent: t,"
+            " hasAttribute: function (k) { return k in a; }, setAttribute: function (k, v) { a[k] = v; } }; }\n"
+            "var labs = " + json.dumps(texts) + ".map(lab);\n"
+            "var document = { querySelectorAll: function (q) { return q === '.cc-leg-lab' ? labs : []; } };\n"
+            + _extract_js_fn(fz, "_clockLab") + "\n")
+
+
+@needs_node
+def test_card_position_label_names_the_legacy_clock():
+    """SIC GAP-B B1: the production card read "Cycle position 37/100" from the
+    legacy now.pos while the dossier face read "93/100 · phase clock" from
+    now.pos_v2 under the same chip, so one fund carried two unnamed numbers. The
+    card now names its clock in the deck's words, and a second pass over the
+    same cards changes nothing."""
+    deck = json.loads((ROOT / "design_refs/sector-paper-20261021/copy_deck.json").read_text(encoding="utf-8"))
+    chip, read = deck["cycles"]["mode_osc_chip"], deck["cycles"]["clock_read"]
+    for lang, base in (("en", "Cycle position 37/100"), ("zh", "周期位置 37/100")):
+        out = _node(_clocklab_src(lang, [base, "no number"]) +
+                    "_clockLab(); var once = labs.map(function (l) { return l.textContent; });"
+                    " _clockLab(); console.log(JSON.stringify([once, labs.map(function (l) { return l.textContent; })]));")
+        want = chip[lang] + " · " + read[lang] + " 37/100"
+        assert out == [[want, "no number"], [want, "no number"]], (lang, out)
+
+
+def test_card_clock_label_runs_on_every_card_mount():
+    fz = _freezone()
+    assert "  var _mcd0 = mountCards;\n  mountCards = function () { _mcd0(); try { _clockLab(); } catch (e) {} };" in fz
+    assert fz.index("mountCards = function") < fz.index("  var _boot0 = boot;")

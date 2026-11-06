@@ -4,10 +4,11 @@
 // <out>/_variants/<variant>/ through the X-L6-Variant header.
 const D21 = [
   // Brief tape with quotes older than 5 days (renderTapeStrip desktop, renderSlimStrip 375) and a <=5d control.
-  {view: "v1", theme: "dark", lang: "en", width: 1440, tag: "d21-gt5d", variant: "pulse_gt5d", steps: [{scroll: "#ftr-tape-asof"}]},
-  {view: "v1", theme: "dark", lang: "en", width: 375, tag: "d21-gt5d", variant: "pulse_gt5d", steps: [{scroll: "#ftr-tape-asof"}]},
-  {view: "v1", theme: "light", lang: "zh", width: 375, tag: "d21-gt5d", variant: "pulse_gt5d", steps: [{scroll: "#ftr-tape-asof"}]},
-  {view: "v1", theme: "dark", lang: "en", width: 1440, tag: "d21-le5d", variant: "pulse_le5d", steps: [{scroll: "#ftr-tape-asof"}]},
+  // The tape lives in the Brief view; under #cycles that view is hidden, so the cell opens Brief first.
+  {view: "v1", theme: "dark", lang: "en", width: 1440, tag: "d21-gt5d", variant: "pulse_gt5d", steps: [{click: ".si-view-btn[data-view=\"overview\"]"}, {scroll: "#ftr-tape-strip"}], expectVisibleAny: ["tape_asof", "strip_asof"]},
+  {view: "v1", theme: "dark", lang: "en", width: 375, tag: "d21-gt5d", variant: "pulse_gt5d", steps: [{click: ".si-view-btn[data-view=\"overview\"]"}, {scroll: "#ftr-tape-strip"}], expectVisibleAny: ["tape_asof", "strip_asof"]},
+  {view: "v1", theme: "light", lang: "zh", width: 375, tag: "d21-gt5d", variant: "pulse_gt5d", steps: [{click: ".si-view-btn[data-view=\"overview\"]"}, {scroll: "#ftr-tape-strip"}], expectVisibleAny: ["tape_asof", "strip_asof"]},
+  {view: "v1", theme: "dark", lang: "en", width: 1440, tag: "d21-le5d", variant: "pulse_le5d", steps: [{click: ".si-view-btn[data-view=\"overview\"]"}, {scroll: "#ftr-tape-strip"}], expectVisibleAny: ["tape_asof", "strip_asof"]},
 ];
 const D30 = [
   // Unstamped payload: every face falls back to scStanceUnavailable.
@@ -25,9 +26,11 @@ const D30 = [
 ];
 const DL310 = [
   {view: "v2", theme: "dark", lang: "en", width: 1440, tag: "d-l3-10-chip-all", steps: [{click: "#sc-chips .sc-chip-all"}]},
-  {view: "v2", theme: "dark", lang: "en", width: 1440, tag: "d-l3-10-basket", steps: [{click: ".sc-bchip[data-id]"}]},
+  // The basket rail only mounts under the Thematic Baskets tab and its chips sit in a closed drawer.
+  {view: "v2", theme: "dark", lang: "en", width: 1440, tag: "d-l3-10-basket", steps: [{click: "#sc-tabs .sc-tab[data-fam=\"baskets\"]"}, {click: "#sc-bask-toggle", wait: 500}, {click: ".sc-bchip[data-id]"}, {scroll: "#sc-baskets"}], expectVisibleAny: ["basket_on"]},
   {view: "v2", theme: "light", lang: "en", width: 1440, tag: "d-l3-10-group", steps: [{click: "#sc-groups .cyc-gchip[data-k]"}]},
-  {view: "v3", theme: "dark", lang: "en", width: 1440, tag: "d-l3-10-members", steps: [{click: ".scd-members"}]},
+  // Members live in the Companies tab; #cycle opens the Cycle tab.
+  {view: "v3", theme: "dark", lang: "en", width: 1440, tag: "d-l3-10-members", steps: [{click: "#scd-t-companies"}, {scroll: ".scd-members"}], expectVisibleAny: ["members"]},
 ];
 const L4 = [
   // No-JS server HTML must carry <span id="sc-asof">YYYY-MM-DD</span> (US + China builders).
@@ -39,7 +42,7 @@ const L5 = [
   {view: "v3", theme: "dark", lang: "en", width: 375, tag: "l5"},
   {view: "v3", theme: "light", lang: "en", width: 375, tag: "l5"},
   // Companies "Not covered": no members and no holdings resolve for the ETF.
-  {view: "v3", theme: "dark", lang: "en", width: 1440, tag: "l5-unresolved", variant: "xlk_unresolved"},
-  {view: "v3", theme: "light", lang: "zh", width: 375, tag: "l5-unresolved", variant: "xlk_unresolved"},
+  {view: "v3", theme: "dark", lang: "en", width: 1440, tag: "l5-unresolved", variant: "xlk_unresolved", steps: [{click: "#scd-t-companies"}, {scroll: "#scd-p-companies"}], expectVisibleAny: ["companies_unavailable"]},
+  {view: "v3", theme: "light", lang: "zh", width: 375, tag: "l5-unresolved", variant: "xlk_unresolved", steps: [{click: "#scd-t-companies"}, {scroll: "#scd-p-companies"}], expectVisibleAny: ["companies_unavailable"]},
 ];
 module.exports = [...D21, ...D30, ...DL310, ...L4, ...L5];

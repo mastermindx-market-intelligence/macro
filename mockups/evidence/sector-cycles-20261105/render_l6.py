@@ -354,14 +354,28 @@ def main() -> int:
     same("sector_cycles_china_series_data.js", js_payload(P_SER, c_series, ensure_ascii=False), cn_ser_b)
     cn_lab, cn_counts = label_fixture(cn, FAMILY_KEYS)
     CHECKS["cn_labelled"] = cn_counts
+    # HEAD's China payload predates L6.5o (8ada88c9), which made the China producer stamp
+    # rs_21d_rank. Re-stamp each family with that producer's own stamper, as compute() does
+    # (sectors and baskets ranked apart), so the leadership list sorts on the lens it shows.
+    # The 63d rank it re-derives must equal HEAD's, or the fixture is refused.
+    from engine.sector_cycles import _stamp_rs_ranks
+    cn_restamp = {}
+    for fam in ("sectors", "baskets"):
+        recs = cn_lab.get(fam) or []
+        before = [(r.get("now") or {}).get("rs_rank") for r in recs]
+        _stamp_rs_ranks(recs)
+        if [r["now"].get("rs_rank") for r in recs] != before:
+            raise SystemExit(f"rs_rank re-derivation differs from HEAD: {fam}")
+        cn_restamp[fam] = sum(1 for r in recs if r["now"].get("rs_21d_rank") is not None)
+    CHECKS["cn_rs_21d_rank_restamped"] = cn_restamp
     cl_core, cl_series, _ = split_with_extras(cn_lab, cn_head_core)
     put("sector_cycles_china_data.js", js_payload(P_CORE, cl_core, ensure_ascii=False),
-        "HEAD:site/chinasectordata/sector_cycles.json", "label=FIXTURE; split_cycles_payload")
+        "HEAD:site/chinasectordata/sector_cycles.json", "label=FIXTURE; rs_21d_rank re-stamped (L6.5o stamper); split_cycles_payload")
     put("sector_cycles_china_series_data.js", js_payload(P_SER, cl_series, ensure_ascii=False),
         "HEAD:site/chinasectordata/sector_cycles.json", "label=FIXTURE; split_cycles_payload (series half)")
     put("chinasectordata/sector_cycles.json",
         json.dumps(cn_lab, separators=(",", ":"), ensure_ascii=False).encode("utf-8"),
-        "HEAD:site/chinasectordata/sector_cycles.json", "label=FIXTURE on every entity")
+        "HEAD:site/chinasectordata/sector_cycles.json", "label=FIXTURE on every entity; rs_21d_rank re-stamped (L6.5o stamper)")
     from scripts.build_china_sector_cycles import _basket_cycle_map
     head_map_b = blob("site/chinasectordata/sector_cycles_basket_map.json")
     same("chinasectordata/sector_cycles_basket_map.json",
@@ -509,6 +523,7 @@ def main() -> int:
     s = {"fund": fund, "name": SECTOR_NAMES.get(fund, fund), "mtf_json": json.dumps(res.get("mtf", {})), **res,
          "holdings": holdings, "members": members, "rate_infl": None, "dollar_ctx": None, "accumulation": None}
     ec = etf["close"].dropna()
+    s["as_of"] = str(ec.index.max().date())
     from engine.technicals import snapshot as _snap
     s["tech"] = _snap(ec)
     try:

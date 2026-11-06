@@ -66,6 +66,10 @@
   .urg-caution .entrytag, .urgpill.urg-caution { background:var(--warn); color:#1a1a1a; }
   .urg-exit .entrytag, .urgpill.urg-exit { background:var(--down); color:#fff; }
   .urg-avoid .entrytag, .urgpill.urg-avoid { background:color-mix(in srgb,var(--down) 30%,var(--panel)); color:var(--text); }
+  /* verdict box — even border on every edge. theme.css:1267 gives .verdict a 6px left
+     edge in the urgency hue; docs/DESIGN_DOCTRINE.md forbids an accent stripe on any edge.
+     The call stays labelled by its action word and tag. */
+  .verdict { border:1px solid var(--line); }
   /* glance-level two-timeframe synthesis sentence, sits right under the verdict */
   .synthesis { margin:8px 0 4px; padding:9px 13px; border-radius:9px; font-size:13.5px; line-height:1.5;
                background:var(--panel2); border:1px solid var(--line); }
@@ -85,6 +89,9 @@
            padding:14px 16px; margin-bottom:14px; }
   .topline { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
   .muted { color:var(--muted); }
+  .asof { font-size:12px; white-space:nowrap; }
+  .fail-note { margin:6px 0 0; padding:6px 10px; border-radius:8px; color:var(--text);
+           background:color-mix(in srgb, var(--warn) 14%, var(--panel2)); border:1px solid var(--line); font-size:13px; }
   .state { display:inline-block; padding:2px 11px; border-radius:12px; font-weight:700;
            font-size:12.5px; }
   .card { background:var(--panel2); border:1px solid var(--line); border-radius:10px;
@@ -106,6 +113,11 @@
   th,td { text-align:left; padding:4px 8px; border-bottom:1px solid var(--line); }
   th { color:var(--muted); font-weight:500; }
   .tv { margin-top:8px; overflow:hidden; }
+  /* third-party chart failure state — a neutral surface in the widget's 440px frame: no
+     direction or health ink, no edge stripe. The rest of the dossier stays. */
+  .tv-err { box-sizing:border-box; min-height:440px; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:24px; background:var(--panel2); border:1px solid var(--line); border-radius:8px; }
+  .tv-err .t { margin:0; font-weight:600; color:var(--text); }
+  .tv-err .s { margin:0; color:var(--muted); font-size:13px; max-width:52ch; }
   details summary { cursor:pointer; color:var(--ink-link, var(--link)); font-size:12.5px; margin-top:6px; }
   /* Sector dossier (L5): tablist + the panels the Cycles family feeds. Neutral surfaces,
      even borders, a full focus ring; selection is text + surface + border, never colour alone.
@@ -160,7 +172,8 @@
     <div class="topline">
       <h1>{{ td(s.name) }} <span class="muted">({{ s.fund }})</span></h1>
       <span class="state st-{{ s.ladder.state | replace(" ", "_") }}">{{ td(s.ladder.label) }}</span>
-      {% if s.ladder.eq_badge %}<span class="eqbadge eq-{{ s.ladder.eq_dir }}">{{ t('Entry','入场') }} {{ s.ladder.eq_badge }} <span class="eqg">{{ td(s.ladder.eq_grade) }}</span></span>{{ help(s.ladder.eq_tip, s.ladder.eq_tip_zh) }}{% endif %}
+      {% if s.ladder.eq_badge %}<span class="eqbadge eq-{{ s.ladder.eq_dir }}">{{ t('Entry','入场') }} {{ s.ladder.eq_badge }} <span class="eqg">{{ t(s.ladder.eq_grade, s.ladder.eq_grade_zh) }}</span></span>{{ help(s.ladder.eq_tip, s.ladder.eq_tip_zh) }}{% endif %}
+      {% if s.as_of %}<span class="asof muted">{{ t('Data as of','数据截至') }} {{ s.as_of }}</span>{% endif %}
       <span style="flex:1"></span>
       <span class="af-wrap">
         <button class="af-toggle" id="af-btn" type="button" aria-label="Toggle alert feed" aria-expanded="false" aria-controls="af-feed">🔔 <span>{{ t('Alerts','警报') }}</span>{% if alerts and alerts.n_recent %}<span class="af-badge">{{ alerts.n_recent }}</span>{% endif %} <span class="af-caret">▾</span></button>
@@ -244,7 +257,7 @@
       <div class="sigchip ctx">
         <span class="sc-k">Stoch</span>
         <span class="sc-v">{{ sv|round(0)|int if sv is not none else '—' }}</span>
-        <span class="sc-s">{{ t('Washout','超卖') }}</span>
+        <span class="sc-s">{% if sv is not none %}{{ t('Washout','超卖') if sv < 20 else (t('high','偏高') if sv > 80 else t('mid','中性')) }}{% endif %}</span>
       </div>
       {% set dd = s.cycle.dc_day %}{% set band = s.cycle.dc_band %}
       <div class="sigchip ctx">
@@ -296,9 +309,9 @@
         {{ help("The DAILY cycle is the short rhythm — equities tend to bottom every ~36-42 trading days. 'Day N' counts trading days since the last daily low. Past ~42 (overdue) means a fresh low could come any day.", "日线周期是短节奏 — 股市通常每约 36-42 个交易日筑底一次。“第 N 天”指自上次日线低点以来的交易日数。超过约 42 天（已逾期）意味着新低随时可能出现。") }}</div>
       {% if cp.weekly_line %}<div><b>🗓 {{ t(cp.weekly_line, cp.weekly_line_zh) }}</b> — {{ t(cp.weekly_phase, cp.weekly_phase_zh) }}
         {{ help("The WEEKLY (investor) cycle is the bigger rhythm — ~16-26 weeks, containing several daily cycles. It sets the tide the daily cycles swim in; early weeks = more upside room, late weeks = treat rallies cautiously.", "周线（投资者）周期是更大的节奏 — 约 16-26 周，包含数个日线周期。它决定了日线周期所处的大势；早期周次=上行空间更大，晚期周次=对反弹保持谨慎。") }}</div>{% endif %}
-      {% if cp.translation %}<div class="muted">{{ t(cp.translation, cp.translation_zh) }}</div>{% endif %}
+      {% if cp.translation %}<div class="muted">{{ t(cp.translation, cp.translation_zh) }}{% if s.cycle.failed_cycle %} {{ t('That describes the last completed cycle; the current one has since failed (below).', '以上描述的是上一个已完成的周期；当前周期其后已失败（见下）。') }}{% endif %}</div>{% endif %}
     </div>
-    {% if s.cycle.failed_cycle %}<p class="neg" style="margin:6px 0 0">⚠ {{ t('Failed cycle: price is below the low that started this cycle. How often the larger trend then rolls over has not been measured here.', '周期失败：价格已跌破启动本周期的低点。此后更大趋势掉头向下的频率，本站尚未测算。') }}</p>{% endif %}
+    {% if s.cycle.failed_cycle %}<p class="fail-note">⚠ {{ t('Failed cycle: price is below the low that started this cycle. How often the larger trend then rolls over has not been measured here.', '周期失败：价格已跌破启动本周期的低点。此后更大趋势掉头向下的频率，本站尚未测算。') }}</p>{% endif %}
     <details style="margin-top:8px"><summary>{{ t('full reasoning', '完整推理') }}</summary>
       <p class="muted" style="margin:6px 0">{{ t(s.ladder.why, s.ladder.why_zh) }} {{ t('Next:', '下一步：') }} {{ t(s.ladder.next, s.ladder.next_zh) }}</p>
     </details>
@@ -337,8 +350,9 @@
     <div class="tv">
       <div class="tradingview-widget-container">
         <div id="tv_main"></div>
-        <script src="https://s3.tradingview.com/tv.js"></script>
-        <script>new TradingView.widget({"container_id":"tv_main","symbol":"{{ s.fund }}","interval":"D","theme":(localStorage.getItem('theme')==='light'?'light':'dark'),"style":"1","height":440,"width":"100%","hide_side_toolbar":true,"allow_symbol_change":true,"studies":["RSI@tv-basicstudies","MACD@tv-basicstudies"]});</script>
+        <script>function tvUnavailable(){var h=document.getElementById('tv_main');if(!h||h.getAttribute('data-err'))return;h.setAttribute('data-err','1');h.innerHTML='<div class="tv-err" role="alert"><p class="t"><span class="l-en">Chart unavailable right now</span><span class="l-zh">图表暂不可用</span></p><p class="s"><span class="l-en">The third-party chart did not load. The cycle, momentum and evidence on this page are unaffected.</span><span class="l-zh">第三方图表未能加载。本页的周期、动量与证据不受影响。</span></p></div>';}</script>
+        <script src="https://s3.tradingview.com/tv.js" onerror="tvUnavailable()"></script>
+        <script>if (!window.TradingView) { tvUnavailable(); } else new TradingView.widget({"container_id":"tv_main","symbol":"{{ s.fund }}","interval":"D","theme":(localStorage.getItem('theme')==='light'?'light':'dark'),"style":"1","height":440,"width":"100%","hide_side_toolbar":true,"allow_symbol_change":true,"studies":["RSI@tv-basicstudies","MACD@tv-basicstudies"]});</script>
       </div>
     </div>
   </div>

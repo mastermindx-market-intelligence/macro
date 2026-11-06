@@ -12,11 +12,15 @@
   "js": true,
   "steps": [
     {
-      "scroll": "#ftr-tape-asof",
+      "click": ".si-view-btn[data-view=\"overview\"]",
+      "matched": 1
+    },
+    {
+      "scroll": "#ftr-tape-strip",
       "matched": 1
     }
   ],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -43,7 +47,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 1440,
-  "scrollHeight": 1877,
+  "scrollHeight": 2715,
   "data_theme": "dark",
   "data_lang": "en",
   "html_lang": "en",
@@ -51,17 +55,17 @@
   "boxes": {
     "heading": {
       "selector": "#sc-hero-title",
-      "x": 84,
-      "y": 538,
-      "w": 186,
-      "h": 22,
-      "visible": true,
-      "text": "Sector rotation overlay"
+      "x": 0,
+      "y": 1107,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Sector rotation overlay板块轮动叠加"
     },
     "asof": {
       "selector": "#sc-asof",
       "x": 0,
-      "y": 0,
+      "y": 1107,
       "w": 0,
       "h": 0,
       "visible": false,
@@ -69,59 +73,68 @@
     },
     "generation": {
       "selector": "#si-cycles-gen",
-      "x": 224,
-      "y": 407,
-      "w": 59,
-      "h": 15,
-      "visible": true,
-      "text": "Up to date"
-    },
-    "stale_guard": {
-      "selector": ".mr-chip-stale",
       "x": 0,
-      "y": 0,
+      "y": 1107,
       "w": 0,
       "h": 0,
       "visible": false,
-      "text": "Older evidence shown显示较早证据"
+      "text": "History matches the current read历史与当前读数一致"
+    },
+    "stale_guard": {
+      "selector": ".mr-chip-stale",
+      "x": 365,
+      "y": 1532,
+      "w": 138,
+      "h": 24,
+      "visible": true,
+      "text": "Older evidence shown"
     },
     "chips": {
       "selector": "#sc-chips",
-      "x": 84,
-      "y": 616,
-      "w": 1272,
-      "h": 43,
-      "visible": true,
-      "text": "✦ Select all visible Tech Comm Discretionary Financials Industrials Materials Energy Health Staples Utilities Real Estate"
+      "x": 0,
+      "y": 1107,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "✦Select all visibleTechCommDiscretionaryFinancialsIndustrialsMaterialsEnergyHealthStaplesUtilitiesReal Estate"
     },
     "chart": {
       "selector": "#sc-chart",
-      "x": 84,
-      "y": 659,
-      "w": 1272,
-      "h": 660,
-      "visible": true,
-      "text": "WASHED-OUT MID-CYCLE EUPHORIC Low Mid High 2020 2022 2024 2026 TODAY"
+      "x": 0,
+      "y": 1107,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "washed-outmid-cycleeuphoricLowMidHigh2020202220242026TODAY"
     },
     "inspector": {
       "selector": "#sc-detail",
-      "x": 65,
-      "y": 1350,
-      "w": 1310,
-      "h": 412,
-      "visible": true,
-      "text": "SECTOR ROTATION · 2026-11-03 Every sector on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a sector "
+      "x": 0,
+      "y": 1107,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Close Sector rotation · 2026-11-03Every sector on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a se"
     },
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": {
       "selector": "#ftr-tape-asof",
       "x": 0,
-      "y": 0,
+      "y": 1107,
       "w": 0,
       "h": 0,
       "visible": false,
       "text": "as of Oct 26, 07:38 PM UTC截至 Oct 26, 07:38 PM UTC Older evidence shown显示较早证据"
+    },
+    "strip_asof": {
+      "selector": "#ftr-strip-asof",
+      "x": 249,
+      "y": 1532,
+      "w": 254,
+      "h": 24,
+      "visible": true,
+      "text": "Oct 26, 07:38 PM UTC Older evidence shown"
     },
     "stance_unavailable": null
   },
@@ -161,7 +174,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": null
+    "zh_latin": null,
+    "expect_visible_any": true
   },
   "console_errors": [
     {
@@ -213,6 +227,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v1-central-cycles__dark__en__1440__d21-gt5d.png",
-    "sha256": "4a41dc7418c3bcfec85112416e1f2b3afab246aa206537a7a59b840e0d194036"
+    "sha256": "e20eb5a0a241f51b2544f354e4568d0a90e815ef3a968828fcb1f3cc32acd921"
   }
 }

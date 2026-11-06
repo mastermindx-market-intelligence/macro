@@ -10,8 +10,17 @@
   },
   "variant": "xlk_unresolved",
   "js": true,
-  "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "steps": [
+    {
+      "click": "#scd-t-companies",
+      "matched": 1
+    },
+    {
+      "scroll": "#scd-p-companies",
+      "matched": 1
+    }
+  ],
+  "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -38,7 +47,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 1440,
-  "scrollHeight": 2026,
+  "scrollHeight": 7849,
   "data_theme": "dark",
   "data_lang": "en",
   "html_lang": "en",
@@ -47,7 +56,7 @@
     "heading": {
       "selector": "h1",
       "x": 0,
-      "y": 0,
+      "y": 162,
       "w": 0,
       "h": 0,
       "visible": false,
@@ -62,21 +71,41 @@
     "compare_tray": null,
     "fixture_label": {
       "selector": "[data-fixture=\"true\"]",
-      "x": 232,
-      "y": 239,
-      "w": 62,
-      "h": 21,
-      "visible": true,
-      "text": "Fixture"
+      "x": 0,
+      "y": 162,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Fixture示例数据"
     },
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": {
+      "selector": ".scd-members",
+      "x": 120,
+      "y": 162,
+      "w": 1200,
+      "h": 697,
+      "visible": true,
+      "text": "MEMBERS Ticker Weight NVDANvidia Corp 15.0% AAPLApple Inc 14.8% MSFTMicrosoft Corp 11.4% AMDAdvanced Micro Devices 4.8% AVGOBroadcom Inc 4.8% MUMicron Technology Inc 4.1% INTCIntel Corp 2.7% PLTRPalan"
+    },
+    "companies_unavailable": {
+      "selector": "#scd-p-companies .scd-nc",
+      "x": 210,
+      "y": 819,
+      "w": 81,
+      "h": 17,
+      "visible": true,
+      "text": "Not covered"
+    },
     "stance_unavailable": null
   },
   "fixture_labels": {
     "count": 1,
-    "visible": 1,
+    "visible": 0,
     "texts": [
-      "Fixture"
+      "Fixture示例数据"
     ]
   },
   "fixture_text": [
@@ -87,7 +116,7 @@
     },
     {
       "el": "a.scd-tk",
-      "visible": false,
+      "visible": true,
       "text": "FIXTURE"
     }
   ],
@@ -112,10 +141,11 @@
     "console_errors_unexpected": 0,
     "size_mult_visible": false,
     "page_errors": 0,
-    "fixture_label_visible": true,
+    "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": null
+    "zh_latin": null,
+    "expect_visible_any": true
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -147,6 +177,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v3-xlk-cycle__dark__en__1440__l5-unresolved.png",
-    "sha256": "da242c6bcb10225f11bab7b7fa65afdadfecd315e584d9708e292df283efe03f"
+    "sha256": "0d1509fe3454f4c3646701135482e4191eede746fe0c4b0361dbba8622c1a854"
   }
 }

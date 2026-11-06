@@ -183,3 +183,92 @@ def test_subsector_chart_failure_notice_is_neutral():
     css = text[start:text.index("\n", start)]  # the notice rules end its line
     for banned in CHART_FAILURE_BANNED_INK:
         assert banned not in css, banned
+
+
+DOSSIER_CHART_FAILURE_REQUIRED = (
+    '<div class="tv-err" role="alert">',
+    '<span class="l-en">Chart unavailable right now</span><span class="l-zh">图表暂不可用</span>',
+    '<script src="https://s3.tradingview.com/tv.js" onerror="tvUnavailable()"></script>',
+    "<script>if (!window.TradingView) { tvUnavailable(); } else new TradingView.widget(",
+)
+
+
+def test_fund_dossier_chart_failure_is_a_typed_notice():
+    """SIC GAP-B #6: the fund dossier's chart is a third-party embed. When tv.js
+    never arrives (blocked, offline) the 440px frame was an empty box with no
+    reason. A failed load and a missing global both now reach one bilingual
+    notice; the notice is defined before the script that can fire it."""
+    text = DOSSIER.read_text(encoding="utf-8")
+    for s in DOSSIER_CHART_FAILURE_REQUIRED:
+        assert s in text, s
+    assert text.index("function tvUnavailable()") < text.index('onerror="tvUnavailable()"')
+
+
+def test_fund_dossier_chart_failure_notice_is_neutral():
+    text = DOSSIER.read_text(encoding="utf-8")
+    start = text.index("  .tv-err {")
+    css = text[start:text.index("  .tv-err .s", start)]
+    for banned in CHART_FAILURE_BANNED_INK:
+        assert banned not in css, banned
+
+
+def test_fund_dossier_header_names_its_data_date():
+    """SIC GAP-B #7: the dossier showed only the signal's trigger day, so a
+    stale page read as a live one. The header now carries the last close the
+    page was built from; the producer sets it beside the ETF close series."""
+    text = DOSSIER.read_text(encoding="utf-8")
+    assert "{% if s.as_of %}<span class=\"asof muted\">{{ t('Data as of','数据截至') }} {{ s.as_of }}</span>{% endif %}" in text
+    head = text[text.index('<div class="topline">'):text.index('<span style="flex:1"></span>')]
+    assert 'class="asof' in head
+    src = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")  # ci-trigger-closure: data — parse-only builder source, declared in sector-cycles-wave paths; imports not followed
+    assert '        ec = etf["close"].dropna()\n        s["as_of"] = str(ec.index.max().date())' in src
+
+
+def test_fund_dossier_stoch_label_follows_its_value():
+    """SIC GAP-B #20: the Stoch tile read 超卖 (Washout) at 49. The label now
+    follows the engine's daily StochRSI bands (engine/cycles.py: <20 oversold,
+    >80 overbought); a missing value carries no label."""
+    text = DOSSIER.read_text(encoding="utf-8")
+    assert "<span class=\"sc-s\">{{ t('Washout','超卖') }}</span>" not in text
+    assert "{% if sv is not none %}{{ t('Washout','超卖') if sv < 20 else (t('high','偏高') if sv > 80 else t('mid','中性')) }}{% endif %}" in text
+
+
+def test_fund_dossier_failed_cycle_note_takes_warning_ink():
+    """SIC GAP-B #21: the failed-cycle warning was drawn in market-direction
+    ink (.neg, green under ZH). It is a neutral note with a warning tint and an
+    even border, never a direction colour or an edge stripe."""
+    text = DOSSIER.read_text(encoding="utf-8")
+    assert "{% if s.cycle.failed_cycle %}<p class=\"fail-note\">" in text
+    assert "{% if s.cycle.failed_cycle %}<p class=\"neg\"" not in text
+    start = text.index("  .fail-note {")
+    css = text[start:text.index("}", start)]
+    assert "var(--warn)" in css
+    for banned in ("var(--up)", "var(--down)", "var(--ok)", "var(--act)", "border-left", "border-right", "border-top:", "border-bottom:"):
+        assert banned not in css, banned
+
+
+def test_fund_dossier_translation_names_the_completed_cycle_when_failed():
+    """SIC GAP-B #14: "strong cycles top late, a healthy-uptrend sign" sat next
+    to "Failed cycle". The engine copy describes the last completed cycle; on a
+    failed cycle the page says so in the same line."""
+    text = DOSSIER.read_text(encoding="utf-8")
+    line = next(l for l in text.splitlines() if "t(cp.translation, cp.translation_zh)" in l)
+    assert "{% if s.cycle.failed_cycle %}" in line
+    assert "That describes the last completed cycle; the current one has since failed (below)." in line
+    assert "以上描述的是上一个已完成的周期；当前周期其后已失败（见下）。" in line
+
+
+CHINA_CYCLES = ROOT / "templates" / "sector_cycles_china.html.j2"
+
+
+def test_china_cycles_provenance_names_no_internal_file():
+    """SIC GAP-B m2: the China cycles page's provenance note cited a repository
+    path and an internal phase name on the customer face, and its Chinese used
+    配置 for a setup. The note describes the testing in plain words and uses 形态."""
+    text = CHINA_CYCLES.read_text(encoding="utf-8")
+    start = text.index('<div class="sc-provenance" role="note">')
+    note = text[start:text.index("</div>", start)]
+    for banned in ("research/", ".md", "Phase-0", "PHASE0", "配置"):
+        assert banned not in note, banned
+    assert "当形态与今天相似时" in note
+    assert "Our own first-pass testing" in note

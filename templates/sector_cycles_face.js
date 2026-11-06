@@ -299,12 +299,11 @@ SC_FACE.hazardPass = function (cell, ek, key) { return !!cell && cell.p != null 
       drawer([[D('dossier.recon_label'), D('dossier.recon_body')], [code('rs_history'), mono(rows.length + ' · rs_history_rows_excluded_nonfinite ' + (rec.rs_history_rows_excluded_nonfinite || 0)) + ' ' + code('engine/sector_cycles.py:549 _leadership_history_counted')]], false));
   };
   SC_FACE.turnInspector = function (x, ctx, idx) {
-    var rec = recOf(x), tt = rec.turns_tail || [], ix = idx == null ? tt.length - 1 : idx, t = tt[ix], lab, conf;
+    var rec = recOf(x), tt = rec.turns_tail || [], ix = idx == null ? tt.length - 1 : idx, t = tt[ix], lab;
     if (!t) return sec('scf-turn', D('cycles.r4_leadership'), gap('turn-none'));
     lab = (idx == null || idx === tt.length - 1) ? BP(t.k === 'peak' ? 'last_peak' : 'last_trough') : gapLbl('turn-pivot-label', 'turns_tail[' + ix + '].k ' + t.k);
-    conf = typeof t.provisional === 'boolean' ? '<div class="l-en"><dt>' + gapLbl('turn-confirmation-label', 'turns_tail[' + ix + '].provisional') + '</dt><dd>' + mono(String(t.provisional)) + '</dd></div>' : '';
     return sec('scf-turn', D('cycles.r4_leadership'), '<dl class="scf-kv"><div><dt>' + lab + '</dt><dd>' + bi(esc(fmtMonEn(t.t)), esc(fmtMonZh(t.t))) + '</dd></div>' +
-      conf + '</dl>' + (conf ? '' : gapHid('turn-confirmation-label')) + gapHid('turn-confirmation') + gapHid('turn-method-label') + gapHid('turn-method') +
+      '</dl>' + gapHid('turn-confirmation-label') + gapHid('turn-confirmation') + gapHid('turn-method-label') + gapHid('turn-method') +
       drawer([[code('turns_tail[' + ix + ']'), mono('date ' + t.date + ' · i ' + t.i + ' · k ' + t.k + ' · px ' + t.px + ' · mag_pct ' + t.mag_pct + ' · major ' + t.major + ' · provisional ' + t.provisional + ' · osc ' + t.osc)],
               [code('epoch · basis'), mono(((rec.now.hazard || {}).epoch || 'null') + ' · ' + rec.basis)]], false));
   };

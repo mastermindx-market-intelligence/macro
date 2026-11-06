@@ -56,6 +56,10 @@ const ROLES = {
   compare_tray: [".sc-cmp"],
   fixture_label: ["[data-fixture=\"true\"]"],
   tape_asof: ["#ftr-tape-asof"],
+  strip_asof: ["#ftr-strip-asof"],
+  basket_on: [".sc-bchip.on"],
+  members: [".scd-members"],
+  companies_unavailable: ["#scd-p-companies .sc-state--unavailable", "#scd-p-companies .scd-nc"],
   stance_unavailable: [".cc-stance-na"],
 };
 
@@ -186,7 +190,7 @@ async function newCellContext(browser, c, interceptions) {
     }
     if (url.hostname === "s3.tradingview.com") {
       interceptions.push({kind: "stub-tradingview", url: `${url.origin}${url.pathname}`});
-      return route.fulfill({status: 200, contentType: "application/javascript; charset=utf-8", body: "window.TradingView={widget:function(){}};"});
+      return route.fulfill({status: 200, contentType: "application/javascript; charset=utf-8", body: TV_STUB});
     }
     interceptions.push({kind: "stub-204", url: `${url.origin}${url.pathname}`, type: req.resourceType()});
     return route.fulfill({status: 204, body: ""});
@@ -288,6 +292,13 @@ function discovery() {
   return {ids, tokens, attrs, texts, title: document.title};
 }
 
+// The dossier's third-party chart is stubbed offline. The stub draws a labelled fixture
+// frame in the widget's 440px slot, so a cell never shows an unexplained empty box and
+// never passes the frame off as product UI. The product's own failure notice (tv.js
+// missing) is pinned in tests/test_subsector_setup_zh.py.
+const TV_STUB = "window.TradingView={widget:function(o){var h=document.getElementById(o&&o.container_id);"
+  + "if(h)h.innerHTML='<div data-capture-fixture=\"tradingview-stub\" style=\"box-sizing:border-box;height:440px;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center;border:1px dashed currentColor;border-radius:8px;opacity:.6;font:12px/1.5 ui-monospace,Menlo,monospace\">CAPTURE FIXTURE \u00b7 third-party TradingView chart stubbed offline (not product UI)</div>';}};";
+
 async function captureCell(browser, pins, head, c, opts) {
   const name = cellName(c);
   const interceptions = [];
@@ -339,6 +350,9 @@ async function captureCell(browser, pins, head, c, opts) {
       theme_applied: c.js === false ? null : layout.data_theme === c.theme,
       lang_applied: c.js === false ? null : (layout.data_lang || "en") === c.lang,
       zh_latin: zh ? zh.count : null,
+      // A cell that names the roles it exists to show fails when none of them has a box:
+      // a scroll step can match an element inside a hidden view and still be a no-op.
+      expect_visible_any: c.expectVisibleAny ? c.expectVisibleAny.some((role) => Boolean(layout.boxes[role] && layout.boxes[role].visible)) : null,
     },
     console_errors: consoleErrors, console_errors_expected: consoleErrors.filter(expectedConsoleError).map(() => "premiumdata 401 (anonymous capture)"), page_errors: pageErrors, failed_requests: failed,
     interceptions, serve, zh_latin: zh,
@@ -416,7 +430,7 @@ async function main() {
       try {
         const r = await captureCell(browser, pins, head, c, {});
         const a = r.assertions;
-        console.log(`${r.cell} sw=${r.scrollWidth}/${r.viewport.width} ce=${a.console_errors}/${a.console_errors_unexpected} pe=${a.page_errors} fixture=${a.fixture_label_visible} ftxt=${r.fixture_text.filter((x) => x.visible).length} smult=${a.size_mult_visible} theme=${a.theme_applied} lang=${a.lang_applied} zh=${a.zh_latin} stripes=${r.stripe_audit.flagged.length} fb=${r.serve.head_fallback.length} miss=${r.serve.missing.length} ${Date.now() - t0}ms`);
+        console.log(`${r.cell} ev=${a.expect_visible_any} sw=${r.scrollWidth}/${r.viewport.width} ce=${a.console_errors}/${a.console_errors_unexpected} pe=${a.page_errors} fixture=${a.fixture_label_visible} ftxt=${r.fixture_text.filter((x) => x.visible).length} smult=${a.size_mult_visible} theme=${a.theme_applied} lang=${a.lang_applied} zh=${a.zh_latin} stripes=${r.stripe_audit.flagged.length} fb=${r.serve.head_fallback.length} miss=${r.serve.missing.length} ${Date.now() - t0}ms`);
       } catch (error) {
         console.log(`${cellName(c)} ERROR ${String(error.message).split("\n")[0]}`);
       }

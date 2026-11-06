@@ -105,7 +105,7 @@
    "wt_site": false
   }
  ],
- "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+ "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
  "reads": {
   "data/regime/ladder_calibration.json": {
    "bytes": 2443,
@@ -419,7 +419,7 @@
    "transform": "copy"
   },
   "sector_central.html": {
-   "sha256": "4f201986b13affceb7aa7d3ee0c556d8c83576d38b2db4d446b52989e1fd3851",
+   "sha256": "5de84d3940c1ecd51bdb38b4e52308cef527462684186cfd7d6bdb174adfb979",
    "source": "render",
    "transform": "jinja+inject_text+inject_shared_shell_text"
   },
@@ -429,17 +429,17 @@
    "transform": "re-serialised (self-checked)"
   },
   "sector_cycles.css": {
-   "sha256": "a92eca15e3b9b3152f09a0d696942d53eb4349b0628d03a1f2c189436adba700",
+   "sha256": "5de47946f11922dd2cfd3f1ca589d37e9475362bc236de1d6aba5e8e781ee84f",
    "source": "HEAD:templates/sector_cycles.css",
    "transform": "copy"
   },
   "sector_cycles.html": {
-   "sha256": "acf5d1682269b3d85a824deb8734065deab046ea895736e8f99a510181f75886",
+   "sha256": "a6453fdf7de758a6066bcba8800dfa6071f0d9113d67b029005a790bee5ebe4e",
    "source": "render",
    "transform": "jinja+inject_text+inject_shared_shell_text"
   },
   "sector_cycles.js": {
-   "sha256": "900a957193179020b5225abb9447c25185e1c3f5e5e968ff7645c5249c8fd910",
+   "sha256": "e326d6a7c656175385dfcd7c02551df28c612a64d681c5ae8e8267e9fd089122",
    "source": "HEAD:templates/sector_cycles.js",
    "transform": "copy"
   },
@@ -469,7 +469,7 @@
    "transform": "label=FIXTURE; split_cycles_payload (series half)"
   },
   "sector_cycles_compare.js": {
-   "sha256": "e59904cce282e3fe8c6a68c165f00712933438cc08c86395875e29f7b8b34dd0",
+   "sha256": "57979537a7d4fb45b96f652a99e4450897c5431566b10348f30c0b3348f39132",
    "source": "HEAD:templates/sector_cycles_compare.js",
    "transform": "copy"
   },
@@ -484,7 +484,7 @@
    "transform": "copy"
   },
   "sector_cycles_face.js": {
-   "sha256": "ad709b5371da72a61ce0ca0801dda36bf5a2e3f912a0d4834e26dd5f0d32b089",
+   "sha256": "312bf1092d0791ade42a3188d6c599e0f06f324fa3c438cf66889a07fa3cb099",
    "source": "HEAD:templates/sector_cycles_face.js",
    "transform": "copy"
   },
@@ -549,7 +549,7 @@
    "transform": "copy"
   },
   "si_workspace.js": {
-   "sha256": "ea8bcc830195a0a2231d6219f428a7d22b4f1dbbc65b7add16752593b2e39f44",
+   "sha256": "2098f084e4b249c669ce14ec0ff6ef75523f2571f4d5e86c77d3173d8facb5cb",
    "source": "HEAD:templates/si_workspace.js",
    "transform": "copy"
   },

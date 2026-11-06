@@ -351,7 +351,9 @@ def test_turn_inspector_labels_and_gaps():
     last, first, none = _run([["turnInspector", [r, ctx()]], ["turnInspector", [r, ctx(), 0]],
                               ["turnInspector", [empty, ctx()]]])
     assert "Last peak" in last and "Sep ’26" in last and 'data-deck-gap="turn-confirmation"' in last
-    assert 'data-deck-gap="turn-confirmation-label"' in last and ">turns_tail[2].provisional<" in last and ">true<" in last
+    # SIC GAP-B B2: the provisional flag lives in the provenance drawer, never a raw boolean row on the face.
+    assert '<span hidden data-deck-gap="turn-confirmation-label"></span>' in last and ">turns_tail[2].provisional<" not in last
+    assert "provisional true" in last and '<dd><span class="mono">true</span></dd>' not in last
     assert 'data-deck-gap="turn-pivot-label"' in first and ">turns_tail[0].k peak<" in first
     assert 'data-deck-gap="turn-none"' in none
 
@@ -375,13 +377,12 @@ def test_label_gaps_never_render_unavailable_beside_a_present_value():
     for gid, field, h in (("horizon-label", "by_horizon", ev),
                           ("conditional-hit-rate-label", "conditional_directional_hit_rate", ev),
                           ("turn-pivot-label", "turns_tail[0].k peak", first),
-                          ("turn-confirmation-label", "turns_tail[2].provisional", last),
                           ("trend-gate-label", "forward.trend_pass", tp),
                           ("trend-gate-label", "now.above200d", fb)):
         m = re.search(r'<span class="scf-gap-lbl" data-deck-gap="' + re.escape(gid) + r'">(.*?)</span></span>', h)
         assert m and '<span class="l-en"><code class="scf-code">' + esc(field) + "</code>" in m.group(0), (gid, h)
         assert '<span class="l-zh"></span>' in m.group(0)
-    for gid, h in (("turn-confirmation", last), ("turn-method-label", last), ("turn-method", last),
+    for gid, h in (("turn-confirmation-label", last), ("turn-confirmation", last), ("turn-method-label", last), ("turn-method", last),
                    ("entry-suitability-label", tp), ("entry-null", tp), ("evidence-date-label", tp)):
         assert '<span hidden data-deck-gap="' + gid + '"></span>' in h, gid
     assert 'data-row="entry"' not in tp and 'data-row="entry"' not in fb
