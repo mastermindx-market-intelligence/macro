@@ -15,6 +15,8 @@ owner: fable-ceo
 class: build
 blast_radius: reversible
 ambiguity: scoped
+decisions:
+  - "DEC:RESEARCH-VAULT-H00-EXTERNAL-BODY-AUTHORIZED"
 owns_paths:
   - agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md
   - agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-07.md
@@ -36,6 +38,11 @@ do_not_redo:
   - "The F3 empty-corpus recurrence guard is MERGED as #8551 (squash bde684c6, cherry-pick -x of Astra 93e9b38b, authorship preserved); never re-carry it."
   - "The stop-guard repairs are MERGED: #8503 (610889a4, a sync-only fast-forward of macro-main no longer files unsafe_branch) and #8564 (481d67119c85, a quarantined session may repair itself with EnterWorktree). Never re-fix either."
   - "Never set the research-ingest source-freshness outage ACK to quiet the PRODUCER_STALE red; that red IS the F4 Mac13,1 human gate."
+  - "F9 #8579, F15 #8589, F3-TYPING #8593, F10 part 1 #8592 (the carry of #8477) and F10 part 2 #8610 are MERGED; never re-implement or re-open #8477."
+  - "F12 rulings M1-M10, Q-L0-2, F12-Q-L4-1 and F12-Q-L4-2 are settled: the MCP schema is a 1:1 projection of F10 and there is no F10 part 3."
+  - "Never add pdftotext to the VPS or extract on the request path; production text comes from the F5-M stored derivative written by the incumbent research-ingest producer."
+  - "The September 24 producer/publication outage was accepted closed on October 11, including a second idempotent cycle (#8438 comment 6108699405). Do not reopen the historical storage/auth/SSL incident without a new causal regression."
+  - "H-00 is cleared by the Chairman's explicit current answer, recorded in DEC:RESEARCH-VAULT-H00-EXTERNAL-BODY-AUTHORIZED and #8438 comment 6136837584. Do not ask for that rights decision again."
 waves:
   - id: F1-F2
     title: Private-R2 isolation + read-only body-health census lane
@@ -51,9 +58,9 @@ waves:
     pr: 8472
     depends_on: [RIO-LINEAGE]
     next_action: >
-      MERGED 0ae4fa250956. PRODUCTION_PROOF is an EXACT_HUMAN_GATE: the operator clears the Mac13,1
-      storage wedge, re-authenticates only if the auth meta reads expired, and one natural report
-      proves SOURCE_FRESH through the incumbent path. Sessions never run the re-auth.
+      The October 11 producer/publication restoration and second-cycle proof were accepted
+      on #8438 comment 6108699405. Preserve that closure; a new causal failure is required
+      before reopening producer recovery. Historical counts are not the current cohort.
   - id: F5
     title: Exact full-text/segment contract
     status: done
@@ -71,30 +78,87 @@ waves:
     next_action: "MERGED e2be81444d4c; PRODUCTION_PROOF is the first consumer run (F10 #8477) that resolves subjects through engine/research_vault/subjects.py; record it on #8438 when observed."
   - id: F6-PUBCLOCK
     title: Validate the full publication timestamp before taking its date (accepted defect 6029030377)
-    status: in_progress
+    status: done
     pr: 8566
     depends_on: [F6]
-    next_action: "Seat-owned; must land before F10 #8477 activates a consumer. Armed merge-on-green; on merge, blob-verify engine/research_vault/subjects.py and tests/test_research_vault_subjects.py on origin/main."
   - id: F3-GUARD
     title: Empty-corpus recurrence guard (Astra 93e9b38b)
     status: done
     pr: 8551
   - id: F3
     title: Corpus repair - bounded in-run backfill of catalog rows missing from the corpus
-    status: in_progress
+    status: done
     pr: 8569
     depends_on: [F1-F2, F5, F3-GUARD]
     next_action: >
-      The in-run _backfill_missing_rows pass (cap 150 rows, 150 s budget, newest first, strict store,
-      never raises) runs after _reextract_bodies under not dry_run. On merge, PRODUCTION_PROOF is a
-      main research-ingest run whose summary shows backfill_rows > 0, the corpus count rising run over run
-      toward the 2,778-row catalog, and the excerpt guard no longer refusing. While the producer is stale
-      the job stays red on source-freshness only; that red is the F4 human gate, never ACKed.
+      The historical producer/publication outage is accepted closed in #8438 comment
+      6108699405. Retain original backfill/publication proof; separately qualify current
+      body/FTS agreement and full-document materialization rather than treating row counts
+      or excerpt publication as full-document retrieval proof.
+  - id: F3-TYPING
+    title: Typed re-extract outcomes with their own CI step
+    status: done
+    pr: 8593
+  - id: F9
+    title: Deep-read vault head
+    status: done
+    pr: 8579
+  - id: F15
+    title: Retrieval benchmark fixture (committed catalog/excerpt text only)
+    status: done
+    pr: 8589
+  - id: F10
+    title: Governed ResearchReadService (part 1 read port = carry of #8477; part 2 service + Brain/MCP shims)
+    status: done
+    pr: [8592, 8610]
+    depends_on: [F5, F6]
+    next_action: "Part 1 MERGED 7f440521 and live. Part 2 #8610 MERGED bd6f27c8 and deployed (checkout bd6f27c8163); library only until F11."
+  - id: F5-M
+    title: Stored canonical-text derivative written by the incumbent research-ingest producer
+    status: in_progress
+    depends_on: [F5, F10]
+    next_action: >
+      Orchestrator lane. On merge, one research-ingest dispatch after an in-flight preflight, then
+      track fulltext_inventory coverage to >= 95%. Never extract on the request path.
+  - id: F11
+    title: Shared read_runtime composition root (zero-arg build_read_service in production)
+    status: todo
+    depends_on: [F5-M]
+    next_action: >
+      Guarded dedicated-reader backend libraries may follow normal protected source
+      delivery under DEC:RESEARCH-VAULT-GUARDED-BACKEND-SOURCE-ORDERING. Ordinary
+      Brain F11 wiring and activation remain held until >=95% common-generation
+      coverage; preserve selected-reader/writer/auth and original-operation guards.
+  - id: F12
+    title: ChatGPT MCP read surface (Mastermind) - L1 contracts, L1.1 v1.1, L2 entitlement, L3 SDK app, L4 port adapter + runtime, L5 ops
+    status: in_progress
+    depends_on: [F10]
+    next_action: >
+      Mastermind #1279/#1280/#1281 are merged. Recover the retained unmerged L3 app and
+      migrate its fixtures to the current v1.1 contracts, then finish L4/L5 under the existing
+      namespace, grant, quote-limit and composition rules. Installation and actual client
+      consumption remain unproven. Rulings M1-M10, Q-L0-2, F12-Q-L4-1/2 remain applicable.
+  - id: F13-F14
+    title: Body exposure to ChatGPT / Deep Research canary and acceptance
+    status: todo
+    depends_on: [F12, F11]
+    next_action: >
+      H-00 is cleared by DEC:RESEARCH-VAULT-H00-EXTERNAL-BODY-AUTHORIZED. Complete the
+      existing source/runtime and client prerequisites, then prove actual authenticated
+      ChatGPT and Deep Research discovery, exact citations, correction and denial behavior.
 next_action: >
-  Read #8438 forward from counterpart edge 6029030377 (last seat edge 6029985312) before any act.
-  Carry #8566 (F6 pub-clock) and the F3 backfill PR to merged with blob verification, then watch the
-  next main research-ingest summary for backfill_rows and a rising corpus count (F3 PRODUCTION_PROOF).
-  F4 production proof is the operator's Mac13,1 act. F6 production proof arrives with Astra's F10 #8477.
+  Continue #8438 checkpoint comment 6199947153. Mastermind launcher repair #1546 is
+  protected merged; Macro producer #9486 and workflow #9476 retain their normal
+  release carriers. Compose full-body/cache/intelligence source in #9646 with the
+  hermetic Vault suite in the PR code gate. Retain actual failed resource probes;
+  measure the repaired source on M2, then install the exact protected source pair
+  and qualify known writers plus >=95% common generation before ordinary Brain F11
+  wiring/activation. The guarded backend source exception is recorded in
+  DEC:RESEARCH-VAULT-GUARDED-BACKEND-SOURCE-ORDERING; source delivery is not runtime admission.
+  Preserve original uncertain/refused operations and the pending Auth0/C4 human
+  authentication steps. Finish installed reader and actual ChatGPT/Deep Research
+  ingestion, read, citation reopen, correction and denial acceptance.
+
 ---
 
 # Research Vault AI Intelligence Fabric
@@ -104,5 +168,13 @@ holds the masterplan chapters, the 2026-10-04 Sol handoff and execution checkpoi
 record is the Agent OS pointer so that seat handoffs on main resolve to a workstream; the
 program narrative stays on the carrier.
 
-Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-07.md` (latest) and
+Seat continuity: `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-13.md` (latest) and
 `agentos/handoffs/RESEARCH-VAULT-AI-FABRIC-2026-10-05.md`.
+
+
+Historical canary record: the October 14 03:20 UTC continuation update records the
+fifth intelligence canary's semantic refusal, all three recovered original Fabric
+results with unresolved controller/lease state, and resumed M1 discovery without
+fresh publication proof. The current execution checkpoint above supersedes that dated activity record;
+neither source progress nor old producer counters satisfies the required
+current-generation 95 percent or live-client gates.

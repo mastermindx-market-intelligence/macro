@@ -1908,3 +1908,74 @@ def test_options_skew_emit_writes_compare_from_the_same_ledger(monkeypatch, tmp_
     assert compare["state"] == "ready"
     assert compare["context_only"] is True and compare["scored"] is False
 
+
+def test_options_compare_weekends_do_not_change_session_ranks_trails_or_asof():
+    hist, dates = _compare_history(n_names=1, n_sessions=35)
+    asof = dates[-1].date().isoformat()
+    weekend_dates = [
+        stamp for stamp in pd.date_range(
+            dates[0], dates[-1] + pd.Timedelta(days=7)
+        )
+        if stamp.weekday() >= 5
+    ]
+    weekends = pd.DataFrame([
+        {
+            **hist.iloc[-1].to_dict(),
+            "date": stamp.date().isoformat(),
+            "atm_call_iv": 9.0,
+            "skew": 9.0,
+        }
+        for stamp in weekend_dates
+    ])
+    mixed = pd.concat([hist, weekends], ignore_index=True)
+    clean = S.build_compare_payload(hist, as_of=asof, today=date(2026, 10, 6))
+
+    explicit = S.build_compare_payload(
+        mixed, as_of=asof, today=date(2026, 10, 6)
+    )
+    latest = S.build_compare_payload(mixed, today=date(2026, 10, 6))
+
+    assert clean["state"] == "ready"
+    assert clean["rows"][0]["history_n"] == 35
+    assert len(clean["rows"][0]["trail"]) == 5
+    for payload in (explicit, latest):
+        assert payload["as_of"] == asof
+        assert payload["rows"] == clean["rows"]
+        assert payload["fast_rule"] == clean["fast_rule"]
+        assert payload["source_stale_days"] == clean["source_stale_days"]
+
+
+def test_options_compare_weekends_cannot_satisfy_minimum_sessions():
+    hist, dates = _compare_history(n_names=1, n_sessions=16)
+    weekends = pd.DataFrame([
+        {**hist.iloc[-1].to_dict(), "date": stamp.date().isoformat()}
+        for stamp in pd.date_range(dates[0], dates[-1])
+        if stamp.weekday() >= 5
+    ])
+    mixed = pd.concat([hist, weekends], ignore_index=True)
+    assert len(hist) < 20 <= len(mixed)
+
+    payload = S.build_compare_payload(
+        mixed, as_of=dates[-1].date().isoformat()
+    )
+
+    assert payload["minimum_sessions"] == 20
+    assert payload["state"] == "unavailable"
+    assert payload["rows"] == []
+
+
+def test_options_compare_weekend_only_history_has_no_complete_session():
+    hist, _ = _compare_history(n_names=1, n_sessions=25)
+    hist["date"] = [
+        stamp.date().isoformat()
+        for stamp in pd.date_range("2026-05-02", periods=25, freq="W-SAT")
+    ]
+
+    latest = S.build_compare_payload(hist)
+    explicit = S.build_compare_payload(hist, as_of=hist["date"].iloc[-1])
+
+    assert latest["as_of"] is None
+    for payload in (latest, explicit):
+        assert payload["state"] == "unavailable"
+        assert payload["rows"] == []
+

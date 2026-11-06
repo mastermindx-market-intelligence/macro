@@ -41,7 +41,27 @@
   /* Nightly cross-name options comparison. One static read inside the existing
      Risk Detail dialog; intentionally no second timer, retry loop or score plane. */
   var COMPARE_URL = "options_compare.json";
+  var COMPARE_CSS_URL = "options_compare.css?v=d7fb6e2d";
   var compareLoaded = false, comparePending = false;
+
+  function loadOptionsCompareStyles() {
+    return new Promise(function (resolve) {
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = COMPARE_CSS_URL;
+      link.onload = function () { resolve(true); };
+      link.onerror = function () { resolve(false); };
+      document.head.appendChild(link);
+    });
+  }
+
+  function ocAgeDays(asOf) {
+    if (typeof asOf !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(asOf)) return null;
+    var stamp = Date.parse(asOf + "T00:00:00Z");
+    if (!Number.isFinite(stamp) || new Date(stamp).toISOString().slice(0, 10) !== asOf) return null;
+    var days = Math.floor((Date.now() - stamp) / 86400000);
+    return days >= 0 ? days : null;
+  }
 
   function ocEl(tag, cls, value) {
     var node = document.createElement(tag);
@@ -124,7 +144,7 @@
     shell.appendChild(intro);
 
     var meta = ocEl("div", "ocmp-meta");
-    var stale = Number(payload.source_stale_days);
+    var stale = ocAgeDays(payload.as_of);
     var staleEn = Number.isFinite(stale) && stale > 0 ? " · " + stale + "d old" : "";
     var staleZh = Number.isFinite(stale) && stale > 0 ? " · 已过去" + stale + "天" : "";
     ocPair(meta, "Delayed EOD · as of " + (payload.as_of || "—") + staleEn,
@@ -353,13 +373,16 @@
     if (compareLoaded || comparePending ||
         typeof document.querySelector !== "function") return;
     var body = document.querySelector("#dlg-risk .mx5-dlg-body");
-    if (!body || typeof fetch !== "function") return;
+    if (!body || !document.head || typeof fetch !== "function") return;
     comparePending = true;
-    fetch(COMPARE_URL, {cache:"no-store"})
-      .then(function (response) { return response.ok ? response.json() : null; })
-      .then(function (payload) {
+    Promise.all([
+      loadOptionsCompareStyles(),
+      fetch(COMPARE_URL, {cache:"no-store"})
+        .then(function (response) { return response.ok ? response.json() : null; })
+    ])
+      .then(function (results) {
         compareLoaded = true; comparePending = false;
-        renderOptionsCompare(payload, body);
+        if (results[0]) renderOptionsCompare(results[1], body);
       })
       .catch(function () { compareLoaded = true; comparePending = false; });
   }

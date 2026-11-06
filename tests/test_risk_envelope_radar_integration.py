@@ -461,7 +461,7 @@ def test_duration_context_does_not_mutate_envelope_or_replace_odds_evidence():
 def test_options_compare_extends_existing_risk_detail_without_a_second_poller():
     template_js = (ROOT / "templates" / "risk_envelope_live.js").read_text()
     site_js = (ROOT / "site" / "risk_envelope_live.js").read_text()
-    css = (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text()
+    css = (ROOT / "templates" / "options_compare.css").read_text()
 
     assert template_js == site_js
     assert 'var COMPARE_URL = "options_compare.json";' in template_js
@@ -492,17 +492,106 @@ def test_options_compare_generated_macro_assets_match_source_bytes():
     template_js = (ROOT / "templates" / "risk_envelope_live.js").read_bytes()
     site_js = (ROOT / "site" / "risk_envelope_live.js").read_bytes()
     macro = (ROOT / "site" / "macro.html").read_text()
+    compare_css = (ROOT / "templates" / "options_compare.css").read_bytes()
+    site_css = (ROOT / "site" / "options_compare.css").read_bytes()
     css_source = (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text()
 
     assert template_js == site_js
     js_key = hashlib.sha256(site_js).hexdigest()[:8]
     assert f'risk_envelope_live.js?v={js_key}' in macro
+    assert compare_css == site_css
+    compare_key = hashlib.sha256(site_css).hexdigest()[:8]
+    assert f'options_compare.css?v={compare_key}'.encode() in site_js
+    builder = (ROOT / "scripts" / "build_site.py").read_text()
+    assert '"risk_envelope_live.js", "options_compare.css"' in builder
 
-    # build_site's style extractor preserves the Jinja include's leading newline.
+    # The existing band's accepted source and asset stay intact. The new
+    # comparison styles are isolated so EW evidence is not silently rebound.
     expected_asset = ("\n" + css_source).encode()
     css_key = hashlib.sha256(expected_asset).hexdigest()[:8]
     css_asset = ROOT / "site" / "assets" / "css" / f"{css_key}.css"
     assert css_asset.exists()
     assert css_asset.read_bytes() == expected_asset
     assert f'assets/css/{css_key}.css?v={css_key}' in macro
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node required for shipped JS")
+@pytest.mark.parametrize("failure", ["none", "css", "data", "absent-body"])
+def test_options_compare_waits_for_styles_and_never_retries_failed_loads(failure):
+    harness = r"""
+const assert = require("assert");
+const fs = require("fs");
+const vm = require("vm");
+const source = fs.readFileSync(process.argv[1], "utf8");
+const failure = process.argv[2];
+const links = [];
+const body = {};
+let fetches = 0, renders = 0, timers = 0;
+const context = {
+  window: {},
+  Date: class extends Date { static now() { return Date.parse("2026-11-06T12:00:00Z"); } },
+  document: {
+    readyState: "complete",
+    getElementById: () => null,
+    querySelector: selector => failure !== "absent-body" && selector === "#dlg-risk .mx5-dlg-body" ? body : null,
+    createElement: tag => { assert.strictEqual(tag, "link"); return {}; },
+    head: {appendChild: link => { links.push(link); }},
+  },
+  fetch: url => {
+    assert.strictEqual(url, "options_compare.json");
+    fetches += 1;
+    return failure === "data" ? Promise.reject(new Error("unavailable")) :
+      Promise.resolve({ok: true, json: () => Promise.resolve({marker: "same-ledger"})});
+  },
+  setInterval: () => { timers += 1; },
+  __record: (payload, target) => {
+    assert.strictEqual(payload.marker, "same-ledger");
+    assert.strictEqual(target, body);
+    renders += 1;
+  },
+};
+const instrumented = source.replace(
+  /\}\)\(\);\s*$/,
+  'globalThis.__mount = mountOptionsCompare; globalThis.__age = ocAgeDays; ' +
+  'renderOptionsCompare = function(payload, target) { __record(payload, target); };})();'
+);
+assert.notStrictEqual(instrumented, source);
+vm.runInNewContext(instrumented, context);
+assert.strictEqual(context.__age("2026-09-30"), 37, "age is measured when read, not frozen at generation");
+assert.strictEqual(context.__age("2026-11-06"), 0);
+assert.strictEqual(context.__age("2026-11-07"), null);
+assert.strictEqual(context.__age("2026-02-30"), null);
+assert.strictEqual(context.__age(null), null);
+const flush = () => new Promise(resolve => setImmediate(resolve));
+(async () => {
+  context.__mount();
+  await flush();
+  if (failure === "absent-body") {
+    assert.strictEqual(fetches, 0);
+    assert.strictEqual(links.length, 0);
+    assert.strictEqual(renders, 0);
+    assert.strictEqual(timers, 1);
+    return;
+  }
+  assert.strictEqual(fetches, 1);
+  assert.strictEqual(links.length, 1);
+  assert.strictEqual(links[0].rel, "stylesheet");
+  assert.match(links[0].href, /^options_compare\.css\?v=[0-9a-f]{8}$/);
+  assert.strictEqual(renders, 0, "do not render before the stylesheet loads");
+  if (failure === "css") links[0].onerror();
+  else links[0].onload();
+  await flush();
+  context.__mount();
+  await flush();
+  assert.strictEqual(fetches, 1, "the existing one-shot read must not retry");
+  assert.strictEqual(links.length, 1, "the style request must not duplicate");
+  assert.strictEqual(renders, failure === "none" ? 1 : 0);
+  assert.strictEqual(timers, 1, "retain only the existing envelope poller");
+})().catch(error => { console.error(error); process.exitCode = 1; });
+"""
+    proc = subprocess.run(
+        ["node", "-e", harness, str(ROOT / "templates" / "risk_envelope_live.js"), failure],
+        capture_output=True, text=True, timeout=20,
+    )
+    assert proc.returncode == 0, proc.stderr
 

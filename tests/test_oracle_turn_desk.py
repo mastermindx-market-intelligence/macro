@@ -514,8 +514,39 @@ def test_template_smoke():
     stub_path = _REPO / "templates" / "subsector_rotation.html.j2"
     assert stub_path.exists(), "stub template not found"
     stub = stub_path.read_text()
-    assert 'location.replace("sector_central.html#si-movement")' in stub, (
-        "the redirect stub lost its target — the desk would be unreachable")
+    import re
+    import shutil
+    import subprocess
+
+    redirect_scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", stub, re.S)
+    assert len(redirect_scripts) == 1, "the stub must have one executable redirect"
+    node = shutil.which("node")
+    assert node, "Node is required to exercise the redirect's actual routing behavior"
+    probe = r"""
+const assert = require('node:assert/strict');
+const vm = require('node:vm');
+const source = require('node:fs').readFileSync(0, 'utf8');
+const target = 'sector_central.html#si-movement';
+for (const accepted of [null, true, false]) {
+  const shellCalls = [], nativeCalls = [];
+  const window = accepted === null ? {} : {
+    MMXSharedShell: {navigate(url, mode) {shellCalls.push([url, mode]); return accepted;}}
+  };
+  vm.runInNewContext(source, {
+    window, location: {replace(url) {nativeCalls.push(url);}}
+  }, {timeout: 1000});
+  assert.deepEqual(shellCalls, accepted === null ? [] : [[target, 'replace']]);
+  assert.deepEqual(nativeCalls, accepted === null ? [target] : [],
+    'a shell candidate owns routing even when it refuses a navigation');
+}
+"""
+    result = subprocess.run(
+        [node, "-e", probe], input=redirect_scripts[0], capture_output=True,
+        text=True, timeout=10,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert 'href="sector_central.html#si-movement"' in stub
+    assert 'content="0;url=sector_central.html#si-movement"' in stub
 
     template_path = _REPO / "templates" / "sector_central.html.j2"
     assert template_path.exists(), "merged template not found"

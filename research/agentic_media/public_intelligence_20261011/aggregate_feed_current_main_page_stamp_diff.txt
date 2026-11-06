@@ -1,0 +1,27 @@
+diff --git a/site/blog/index.html b/site/blog/index.html
+index 20bf2af1210e..a7831c2b14aa 100644
+--- a/site/blog/index.html
++++ b/site/blog/index.html
+@@ -299,3 +299,3 @@
+ <script src="../account.js?v=2f1dd80e" defer></script>
+-<script src="../theme.js?v=f29b7083" defer></script>
++<script src="../theme.js?v=17255989" defer></script>
+ 
+diff --git a/site/learn/index.html b/site/learn/index.html
+index 3a6ffa52a8e6..b1a652dc8790 100644
+--- a/site/learn/index.html
++++ b/site/learn/index.html
+@@ -385,3 +385,3 @@
+ <script src="../account.js?v=2f1dd80e" defer></script>
+-<script src="../theme.js?v=f29b7083" defer></script>
++<script src="../theme.js?v=17255989" defer></script>
+ 
+diff --git a/site/tools/calculators/position-size.html b/site/tools/calculators/position-size.html
+index 0424e82b68ad..31ff837d6461 100644
+--- a/site/tools/calculators/position-size.html
++++ b/site/tools/calculators/position-size.html
+@@ -479,3 +479,3 @@
+ <script src="../../account.js?v=2f1dd80e" defer></script>
+-<script src="../../theme.js?v=f29b7083" defer></script>
++<script src="../../theme.js?v=17255989" defer></script>
+ 

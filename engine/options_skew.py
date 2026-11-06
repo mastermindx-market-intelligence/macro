@@ -1574,8 +1574,12 @@ def build_compare_payload(
     work = hist.copy()
     work["date"] = work["date"].map(_iso_date)
     work["_underlying"] = work["underlying"].astype(str).str.upper().str.strip()
+    # Match the ledger owner: weekend rows are not sessions. Filter before
+    # selecting as_of or counting the history window, minimum and trail.
     work = work[
-        (work["date"].astype(str).str.len() == 10) & (work["_underlying"] != "")
+        (work["date"].astype(str).str.len() == 10)
+        & (work["_underlying"] != "")
+        & ~work["date"].map(_is_weekend_iso)
     ]
     if work.empty:
         return base

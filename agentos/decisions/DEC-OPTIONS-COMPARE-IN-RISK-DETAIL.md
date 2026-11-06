@@ -23,13 +23,15 @@ evidence:
   - agentos/decisions/DEC-RISK-ENVELOPE-IN-RADAR-NOT-DASHBOARD-PANEL.md
   - engine/options_skew.py
   - templates/risk_envelope_live.js
-  - templates/_risk_envelope_band.css.j2
+  - templates/options_compare.css
   - tests/test_options_skew.py
   - tests/test_risk_envelope_radar_integration.py
 affects:
   - templates/risk_envelope_live.js
   - site/risk_envelope_live.js
-  - templates/_risk_envelope_band.css.j2
+  - site/options_compare.css
+  - scripts/build_site.py
+  - templates/options_compare.css
   - engine/options_skew.py
   - scripts/build_options_skew.py
 confidence: high
@@ -42,3 +44,9 @@ The comparison remains display-only. "Fast" means unusually large five-session
 movement inside the two-axis options-pricing map; it does not mean bullish,
 bearish, actionable, validated, or promoted. The axes use the canonical skew
 ledger's own-history observations and inherit its source/session limitations.
+
+Integration repair, 2026-11-06: comparison-only styles use the existing paired
+asset copy path and load once with the comparison data. The accepted early-warning
+band CSS, dashboard template and visual receipt inputs remain byte-identical.
+Weekends do not count toward the comparison's session minimum, ranks or trails;
+the browser measures displayed age from the as-of date at read time.

@@ -404,15 +404,8 @@ def china_regime_timeline(hist: pd.DataFrame) -> dict:
 
 def _lifespan_rows(quad: pd.Series) -> list[dict]:
     """Per-quad base rates (count, median length, two most-common next quads)."""
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(quad)
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
-                     "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
-    return rows
+    from engine.playbook import finished_lifespan_rows
+    return finished_lifespan_rows(quad)
 
 
 def _health_rows() -> list[dict]:
@@ -694,7 +687,7 @@ def _build_sector_pages(env) -> int:
 
 def _build_history(env, latest: dict, generated: str) -> None:
     import math
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
+    from engine.playbook import finished_lifespan_rows, transition_stats
     hist = store.read("china_regime", "regime_history")
     if hist is None or "quad" not in hist.columns:
         log.warning("china history: no regime_history; skipping history page")
@@ -703,12 +696,7 @@ def _build_history(env, latest: dict, generated: str) -> None:
     mdf = store.read("china", mi)
     px = mdf["close"] if mdf is not None else pd.Series(dtype=float)
     trans = transition_stats(hist["quad"])
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
-                     "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
+    rows = finished_lifespan_rows(hist["quad"])
 
     # CN-SYS W8 — phase history block (display-only; degrade silently if artifacts absent)
     phase_strip: list[dict] = []
