@@ -23,11 +23,16 @@ def profile_config(mode="runtime"):
 
 
 def frame(value=100.0):
+    from lib.yahoo_runtime_profile import MIN_SECTOR_HISTORY_SESSIONS
+    count = MIN_SECTOR_HISTORY_SESSIONS
+    from lib import market_session
+    dates = pd.bdate_range(end="2026-11-04", periods=count + 150)
+    dates = dates[[market_session.is_session_date("US", d.date()) for d in dates]][-count:]
+    values = value + np.linspace(0, 2, count)
     return pd.DataFrame(
-        {"close": [value, value + 1, value + 2],
-         "close_price": [value + 10, value + 11, value + 12],
-         "volume": [1000, 1100, 1200]},
-        index=pd.date_range("2026-11-02", periods=3),
+        {"close": values, "close_price": values + 10,
+         "volume": np.repeat(1000, count)},
+        index=dates,
     )
 
 

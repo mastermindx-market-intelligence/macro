@@ -3,7 +3,7 @@
   "root_id": "macro-always-on-shared-shell-20261105-c3",
   "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T05:58:11.718252+00:00",
+  "recorded_at": "2026-11-06T06:13:48.494493+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -771,7 +771,39 @@
       "commit": "379a75f9849a4f8644643441a1ddd56eea48bd1e",
       "patch_sha256": "5be57d21fb3ebf2d3302a5328a35ed00b0731cab54ebb2753175967227e4501e",
       "accepted": false,
-      "ruling": "Provider terminal error does not erase the recovered immutable artifact, but worker prose is not acceptance. Parent reviews actual source/proof before any integration."
+      "ruling": "Provider terminal error does not erase the recovered immutable artifact, but worker prose is not acceptance. Parent reviews actual source/proof before any integration.",
+      "parent_source_checkpoint": {
+        "base_sha": "d9236cdb6a8c64e4543cf93d2f537b7b11400812",
+        "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+        "contract": "research/market_os/SECTOR_YAHOO_COHORT_ACQUISITION_2026-11-06.md",
+        "proof": {
+          "command": "python -m pytest -q tests/test_yahoo_cycle_acquisition.py tests/test_yahoo_runtime_profile.py tests/test_store_guard.py tests/test_store_holiday_retention.py tests/test_yahoo_availability_capture.py tests/test_yahoo_universe_backfill.py tests/test_yahoo_freshness.py tests/test_collector_freshness_disclosure.py",
+          "passed": 291,
+          "skipped": 1,
+          "warnings": 14,
+          "exit_code": 0,
+          "log": "/tmp/mmx-cohort-parent-qualified-20261106.log",
+          "log_sha256": "025ae0732da02339a134449454d29348b3a33daa8ab29baa403438125bd09619",
+          "baseline_fixture": "tests/fixtures/base_store_d923.py",
+          "baseline_fixture_sha256": "1e98ed09c81a5f5d050d1bfa1834c39ac0a80a24fcad1c708cd97d1604f6401c",
+          "scope": "Controlled-provider acquisition and actual-base legacy merge/guard parity; no live-provider availability or runtime ownership proof."
+        },
+        "parent_corrections": [
+          "Single canonical14 authority; exact explicit prior mapping with None absence; malformed priors refused before provider.",
+          "Explicit configuration construction, detached primitive request policy, same retry/backoff across initial/recovery requests and receipt; no runtime WTI state mutation.",
+          "Same genuine dual-basis extractor, flat-response batch identity fence, original fresh-span retention, pure incumbent merge with explicit runtime overwrite and preserved legacy default.",
+          "One verified completed US target using existing 14:00/17:00 owner; both bases and all14 exact tips; one bounded max recovery, actual depth/archive qualification, never splice incompatible prior prefix.",
+          "Shared minimum1000 trading-session history validator in acquisition and verified binding; prior nonsession rows refused; historical fallback not relabeled published verified coverage.",
+          "Strict positive-price comparison uses true denominator; legacy numerical floor and wrapper behavior preserved by actual-base comparisons."
+        ],
+        "remaining": [
+          "store and engine snapshot binding before paths/caches",
+          "legacy fetch/write/retry exclusions",
+          "private coherent input publication/R2 and durable transfer/drain fences",
+          "broad/member/board producer assembly",
+          "protected CI/release and source-to-screen beta acceptance"
+        ]
+      }
     },
     "copy": {
       "run_id": "macro-always-on-20261106-c3-ci-copy-01",

@@ -20,6 +20,7 @@ SECTOR_CLOSE_TICKERS = (
 PROFILE_SCHEMA = "yahoo.sector_runtime_profile.v1"
 COHORT = "sector_close_14.v1"
 SNAPSHOT_SCHEMA = "yahoo.close_cohort.v1"
+MIN_SECTOR_HISTORY_SESSIONS = 1000
 
 
 class YahooRuntimeProfileError(ValueError):
@@ -150,11 +151,64 @@ _BOUND_SNAPSHOT: ContextVar[YahooSnapshot | None] = ContextVar(
 )
 
 
-def _capture(cohort: VerifiedYahooCohort) -> YahooSnapshot:
-    # pandas is needed only for a real binding, not profile/caller admission.
+def capture_sector_history(
+    frame: Any, *, source_session: str | None = None,
+    minimum_sessions: int = MIN_SECTOR_HISTORY_SESSIONS,
+) -> Any:
+    """Validate and detach one history; shared by acquisition and verified binding.
+
+    This checks observed history, not provider completeness or publication identity.
+    Acquisition supplies the completed target; the publisher-bound facade supplies
+    its verified source session. Prior inputs may be shorter and require recovery.
+    """
     import numpy as np
     import pandas as pd
 
+    if (type(minimum_sessions) is not int or minimum_sessions < 1
+            or not isinstance(frame, pd.DataFrame) or frame.empty
+            or not isinstance(frame.index, pd.DatetimeIndex)
+            or frame.index.hasnans or frame.index.has_duplicates
+            or not frame.index.is_monotonic_increasing
+            or frame.index.tz is not None
+            or not frame.index.equals(frame.index.normalize())
+            or not {"close", "close_price"}.issubset(frame.columns)
+            or frame.columns.has_duplicates):
+        raise YahooRuntimeBindingError("YAHOO_RUNTIME_FRAME_INVALID")
+    if source_session is not None:
+        try:
+            session = date.fromisoformat(source_session)
+        except (TypeError, ValueError) as exc:
+            raise YahooRuntimeBindingError("YAHOO_RUNTIME_SESSION_INVALID") from exc
+        if session.isoformat() != source_session or frame.index[-1].date() != session:
+            raise YahooRuntimeBindingError("YAHOO_RUNTIME_SESSION_INVALID")
+    bases = frame[["close", "close_price"]]
+    if any(not pd.api.types.is_numeric_dtype(bases[c])
+           or pd.api.types.is_bool_dtype(bases[c])
+           or pd.api.types.is_complex_dtype(bases[c]) for c in bases):
+        raise YahooRuntimeBindingError("YAHOO_RUNTIME_PRICE_BASIS_INVALID")
+    try:
+        values = bases.to_numpy(dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise YahooRuntimeBindingError("YAHOO_RUNTIME_PRICE_BASIS_INVALID") from exc
+    if not np.isfinite(values).all() or not (values > 0).all():
+        raise YahooRuntimeBindingError("YAHOO_RUNTIME_PRICE_BASIS_INVALID")
+    # Count actual scheduled US sessions, not arbitrary positive daily rows.
+    # Historical years use this owner's existing calendar fallback; admission of
+    # the current target separately requires published annual verification.
+    from lib import market_session
+    try:
+        valid_sessions = all(market_session.is_session_date("US", stamp.date())
+                             for stamp in frame.index)
+    except Exception as exc:
+        raise YahooRuntimeBindingError("YAHOO_RUNTIME_CALENDAR_UNAVAILABLE") from exc
+    if not valid_sessions:
+        raise YahooRuntimeBindingError("YAHOO_RUNTIME_HISTORY_SESSION_INVALID")
+    if len(frame) < minimum_sessions:
+        raise YahooRuntimeBindingError("YAHOO_RUNTIME_HISTORY_INSUFFICIENT")
+    return frame.copy(deep=True)
+
+
+def _capture(cohort: VerifiedYahooCohort) -> YahooSnapshot:
     if not isinstance(cohort, VerifiedYahooCohort):
         raise YahooRuntimeBindingError("YAHOO_RUNTIME_SNAPSHOT_INVALID")
     try:
@@ -168,27 +222,11 @@ def _capture(cohort: VerifiedYahooCohort) -> YahooSnapshot:
             or cohort.cohort != COHORT or not isinstance(cohort.frames, Mapping)
             or set(cohort.frames) != set(SECTOR_CLOSE_TICKERS)):
         raise YahooRuntimeBindingError("YAHOO_RUNTIME_SNAPSHOT_INVALID")
-    captured = {}
-    for symbol in SECTOR_CLOSE_TICKERS:
-        frame = cohort.frames[symbol]
-        if (not isinstance(frame, pd.DataFrame) or frame.empty
-                or not isinstance(frame.index, pd.DatetimeIndex)
-                or frame.index.hasnans or frame.index.has_duplicates
-                or not frame.index.is_monotonic_increasing
-                or frame.index.tz is not None
-                or not frame.index.equals(frame.index.normalize())
-                or frame.index[-1].date() != session
-                or not {"close", "close_price"}.issubset(frame.columns)
-                or frame.columns.has_duplicates):
-            raise YahooRuntimeBindingError("YAHOO_RUNTIME_FRAME_INVALID")
-        bases = frame[["close", "close_price"]]
-        if any(not pd.api.types.is_numeric_dtype(bases[c])
-               or pd.api.types.is_bool_dtype(bases[c]) for c in bases):
-            raise YahooRuntimeBindingError("YAHOO_RUNTIME_PRICE_BASIS_INVALID")
-        values = bases.to_numpy(dtype=float)
-        if not np.isfinite(values).all() or not (values > 0).all():
-            raise YahooRuntimeBindingError("YAHOO_RUNTIME_PRICE_BASIS_INVALID")
-        captured[symbol] = frame.copy(deep=True)
+    captured = {
+        symbol: capture_sector_history(cohort.frames[symbol],
+                                       source_session=cohort.source_session)
+        for symbol in SECTOR_CLOSE_TICKERS
+    }
     return YahooSnapshot(
         cohort.generation_id, cohort.source_session, cohort.schema,
         cohort.cohort, captured,
