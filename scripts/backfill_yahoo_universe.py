@@ -45,9 +45,11 @@ period='max' re-pull of the same name returns tip 1.0 with zero anomalies. So th
 anomaly was an artifact of the collector's WINDOWED upsert leaving pre-window rows
 on a stale basis, not a property of the security or the vendor. The refresh phase
 therefore mirrors the canonical Yahoo collector: probe a short overlap window,
-run lib.store.basis_shifted, and only when that guard detects a re-adjustment (or
-no overlap) perform a full period='max' heal. A failed heal leaves the old archive
-untouched; a short window is never spliced across a known basis shift.
+run lib.store.basis_comparison, and only when that guard PROVES a re-adjustment
+(or no overlap) perform a full period='max' heal. A comparison that could not be
+made at all is UNKNOWN, not proven stable, and takes the same full heal: a short
+window is never spliced across a known basis shift nor across an unverifiable
+one. A failed heal leaves the old archive untouched.
 
 NEVER A DEATH CLAIM
 -------------------
@@ -693,6 +695,7 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
         "refresh_cap": 0, "refresh_cadence_d": 0.0, "refresh_ran": False,
         "refresh_probe_period": REFRESH_PROBE_PERIOD,
         "refresh_basis_shifted": 0, "refresh_rebased": 0,
+        "refresh_basis_unknown": 0,
         "refresh_rebase_failed": 0,
         "census": census,
     }
@@ -803,32 +806,60 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
             # A short adjusted-history probe is safe to splice only when its overlap
             # is still on the same adjustment basis as the durable archive. This is
             # the exact guard used by collectors.yahoo.YahooAdapter._rebase_shifted.
+            #
+            # "Not shifted" is NOT enough here. The guard can also answer
+            # "unknown": the comparison could not be MADE at all (the archive read
+            # failed, the comparison column was missing or empty, the compared
+            # values were unusable). An unknown basis is not a VERIFIED stable
+            # overlap, so it escalates to the same full period='max' heal a known
+            # shift gets. Splicing on an unknown basis is how a rebased 22-row
+            # probe ends up inside a 300-row stale-basis archive with no
+            # period='max' anywhere in the run.
+            #
+            # This is the STRICT reading of the comparator, and it is opt-in here
+            # because this is the one caller that may splice a short probe onto
+            # the durable archive: the overlap must be FULLY usable. One unusable
+            # row — a non-finite close on either side, which the schema gate
+            # does not reject — would otherwise be skipped by the comparison's
+            # missing-value handling, and the probe would be spliced onto an
+            # archive whose basis was never proven. The legacy boolean guard
+            # keeps its own default for the collectors that call it.
             if phase == "refresh" and accepted:
                 tol = float(adapter.cfg.get("upsert_basis_tol", 1e-3))
-                shifted = [
-                    ticker for ticker, frame in accepted.items()
-                    if store.basis_shifted("yahoo", ticker, frame, tol=tol)
-                ]
-                report["refresh_basis_shifted"] += len(shifted)
-                if shifted:
-                    shifted_symbols = {t: symbols[t] for t in shifted}
+                escalate: dict[str, str] = {}
+                for ticker, frame in accepted.items():
+                    verdict = store.basis_comparison("yahoo", ticker, frame, tol=tol,
+                                                     strict=True)
+                    if verdict == store.BASIS_SHIFTED:
+                        report["refresh_basis_shifted"] += 1
+                        escalate[ticker] = "shifted"
+                    elif verdict == store.BASIS_UNKNOWN:
+                        report["refresh_basis_unknown"] += 1
+                        escalate[ticker] = "unknown"
+                if escalate:
+                    log.info("refresh: %d name(s) need a full-history basis heal "
+                             "(%d shifted, %d unknown): %s", len(escalate),
+                             report["refresh_basis_shifted"],
+                             report["refresh_basis_unknown"],
+                             sorted(escalate)[:12])
+                    heal_symbols = {t: symbols[t] for t in escalate}
                     try:
                         full_df = download_batch(
-                            sorted(set(shifted_symbols.values())), "max")
+                            sorted(set(heal_symbols.values())), "max")
                     except Exception as e:  # noqa: BLE001 — old bytes remain authoritative
                         report["batch_errors"] += 1
-                        report["refresh_rebase_failed"] += len(shifted)
+                        report["refresh_rebase_failed"] += len(escalate)
                         log.warning(
                             "refresh: full-history basis heal failed for %d name(s) "
                             "(%s) — keeping existing archives untouched",
-                            len(shifted), e,
+                            len(escalate), e,
                         )
-                        for ticker in shifted:
+                        for ticker in escalate:
                             accepted.pop(ticker, None)
                     else:
-                        for ticker in shifted:
+                        for ticker in escalate:
                             full_sub = (None if full_df is None else
-                                        slice_symbol(full_df, shifted_symbols[ticker]))
+                                        slice_symbol(full_df, heal_symbols[ticker]))
                             if full_sub is None:
                                 report["no_data"] += 1
                                 report["refresh_rebase_failed"] += 1

@@ -1,0 +1,28 @@
+{
+  "schema": "tiingo.attended_disposition_window_actual_terminal_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T02:21:10.038004+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 91793,
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "core_sha256": "3094d258d52260a4e14802ec4c8108299b3b4c289c766133d19ae23bbae30916",
+  "controller_sha256": "d2f20d8ba2fd0e356815a3073832cc7cdb6a67334ae17a5c7134334fa1e1a27a",
+  "original_log_sha256": "a5caa9bd8a0a4b488706c6da5965a50ad176bdd5bb7480436d0e2ff9f0b85bb1",
+  "completed_prefixes": [
+    "01",
+    "02"
+  ],
+  "qualification_sha256": {
+    "eod-wave15-unadmitted-continuation01-prefix01-qualified.json": "834f6fe3da44986c92edf79517f0ed9a2365ff266f4b80eefc76cfb0adca6385",
+    "eod-wave15-unadmitted-continuation01-prefix02-qualified.json": "6aa4e418b7ddf87c4b3870ef077705980780e9be1885a1d6bb393426da5647b2"
+  },
+  "coverage_sha256": {
+    "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation01-prefix01-delta.json": "2936ee27ae60635424b257e84b21546dc3485c55b04bdf815bcdd653744ccea8",
+    "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation01-prefix02-delta.json": "8dd1e9b1f55ea5a34dcc9a9c2c5f839797b29382578c7061df8465c1d827df80"
+  },
+  "all_listed_qualifier_and_coverage_returns_consumed": true,
+  "raw_capture_original_tool": 33372,
+  "raw_capture_terminal_return_consumed": true,
+  "all_615_successful_responses_dispositioned": true,
+  "raw_capture_complete_claimed": false
+}

@@ -32,6 +32,21 @@ Pins (all network-free — the download layer is stubbed):
 8. Refreshes probe a short overlap window, preserve deep history when the basis is
    stable, and escalate to period='max' on a true basis shift or no-overlap. A
    failed full-history heal leaves the prior archive byte-identical.
+9. An adjustment-basis comparison that could not be MADE is UNKNOWN, not proven
+   stable: it escalates to the same full-history heal, never to a short splice,
+   and the legacy boolean guard keeps its documented default for other callers.
+10. An adjustment-basis comparison that produced an UNUSABLE row — a non-finite
+    close on either side, which the schema gate does not reject — cannot
+    certify a stable overlap either: the answer is UNKNOWN, the refresh
+    escalates to the full-history heal, a failed or invalid heal leaves the
+    prior parquet byte-identical, and the legacy boolean guard keeps its
+    documented default.
+11. The strict comparison decides on the ORIGINAL common-date evidence: a
+    stored row that is missing (NaN) or non-finite (+/-inf) on a common date
+    is evidence that could not be compared, so it is UNKNOWN rather than a
+    stable basis certified from the usable remainder — and an infinite stored
+    value is unusable evidence, not a proven shift. The legacy boolean keeps
+    its dropna() rule and its documented answers.
 
 Run: TZ=UTC .venv/bin/python -m pytest tests/test_yahoo_universe_backfill.py -q
 """
@@ -1147,3 +1162,464 @@ def test_refresh_all_transport_failure_counts_the_request_not_current_data(tree,
     assert report["refresh_attempted"] == 2 and report["refresh_unattempted"] == 0
     assert report["refreshed"] == report["refresh_current_returned"] == 0
     assert report["attempted"] == 0, "legacy processed-row counter retains its meaning"
+
+
+# ---------------------------------------------------------------------------
+# 9. adjustment-basis comparison: UNKNOWN is not STABLE
+# ---------------------------------------------------------------------------
+def _flaky_first_store_read(monkeypatch):
+    """Fail ONLY the first archive read; every later read succeeds.
+
+    That is the exact shape the defect needs: the guard's read fails, the
+    upsert's own read afterwards succeeds, so a short probe reaches the durable
+    archive with nothing having ever compared it."""
+    real_read = store.read
+    reads = {"n": 0}
+
+    def flaky_read(group, name):
+        reads["n"] += 1
+        if reads["n"] == 1:
+            raise OSError("transient archive read failure")
+        return real_read(group, name)
+
+    monkeypatch.setattr(store, "read", flaky_read)
+    return reads
+
+
+def test_refresh_all_unknown_basis_comparison_never_splices_a_short_probe(
+        tree, monkeypatch):
+    """An UNVERIFIABLE basis is not a verified stable overlap.
+
+    The adjustment-basis guard can answer "not shifted" for two very different
+    reasons: the comparison RAN and found the same basis, or the comparison
+    could not be MADE at all. Only the first may authorize splicing a short
+    probe into the durable archive. Here the archive read fails once inside the
+    guard and succeeds again inside the upsert, so a rebased 22-row probe would
+    land inside a 300-row stale-basis archive without period='max' — a
+    mixed-basis series that reads as one. The refresh must treat the
+    unverifiable comparison as needing the full-history heal.
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    old_raw = _bars(300)
+    rebased_raw = _bars(301, div_steps=(300,))
+    store.upsert("yahoo", "AAA", yahoo_mod.extract_store_frame(old_raw, "AAA"))
+    path = tree / "data" / "yahoo" / "AAA.parquet"
+    stale_first = float(pd.read_parquet(path)["close"].iloc[0])
+    rebased_first = float(
+        yahoo_mod.extract_store_frame(rebased_raw, "AAA")["close"].iloc[0])
+
+    calls = []
+    def download(symbols, period):
+        calls.append((sorted(symbols), period))
+        frame = (rebased_raw.iloc[-22:] if period == bf.REFRESH_PROBE_PERIOD
+                 else rebased_raw)
+        return _yf_response({"AAA": frame})
+    monkeypatch.setattr(bf, "download_batch", download)
+    monkeypatch.setattr(bf.time, "sleep", lambda *_a, **_k: None)
+    _flaky_first_store_read(monkeypatch)
+
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+    after = pd.read_parquet(path)
+
+    # THE DEFECT: a rebased probe spliced onto a stale archive leaves the
+    # pre-rebase rows un-rebased — one series carrying two adjustment bases.
+    assert float(after["close"].iloc[0]) == pytest.approx(rebased_first, rel=1e-9), (
+        "every stored row must sit on the basis of the response that was "
+        f"written (stale first close {stale_first!r}, rebased {rebased_first!r})")
+    assert len(after) == 301, "the full-history heal owns every date it returned"
+    assert calls == [(["AAA"], bf.REFRESH_PROBE_PERIOD), (["AAA"], "max")]
+    assert report["refresh_basis_unknown"] == 1
+    assert report["refresh_basis_shifted"] == 0
+    assert report["refresh_rebased"] == 1
+    assert report["refresh_rebase_failed"] == 0
+    assert report["refreshed"] == 1
+
+
+def test_refresh_all_unknown_basis_with_failed_heal_keeps_the_archive_and_claims_nothing(
+        tree, monkeypatch):
+    """An unverifiable basis plus a failed required heal is a deferred refresh.
+
+    The prior parquet stays byte-identical, the name is not marked refreshed,
+    and no provider-currentness is claimed for a name nothing was written for.
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    old_raw = _bars(300)
+    rebased_raw = _bars(301, div_steps=(300,))
+    store.upsert("yahoo", "AAA", yahoo_mod.extract_store_frame(old_raw, "AAA"))
+    path = tree / "data" / "yahoo" / "AAA.parquet"
+    before = path.read_bytes()
+
+    calls = []
+    def download(symbols, period):
+        calls.append((sorted(symbols), period))
+        if period == "max":
+            raise ConnectionError("full-history heal unavailable")
+        return _yf_response({"AAA": rebased_raw.iloc[-22:]})
+    monkeypatch.setattr(bf, "download_batch", download)
+    monkeypatch.setattr(bf.time, "sleep", lambda *_a, **_k: None)
+    _flaky_first_store_read(monkeypatch)
+
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+
+    assert calls == [(["AAA"], bf.REFRESH_PROBE_PERIOD), (["AAA"], "max")]
+    assert report["refresh_basis_unknown"] == 1
+    assert report["refresh_rebased"] == 0
+    assert report["refresh_rebase_failed"] == 1
+    assert report["refreshed"] == 0
+    assert path.read_bytes() == before
+    state = bf.load_state()
+    assert not (state.get("done", {}).get("AAA", {}).get("refreshed"))
+    # A name nothing was written for may claim no provider-currentness either.
+    assert report["refresh_current_returned"] == 0
+    assert report["refresh_noncurrent_returned"] == 0
+
+
+def test_basis_guard_separates_an_unusable_comparison_from_a_verified_stable_one(
+        tree, monkeypatch):
+    """The guard's source contract: an unusable comparison is UNKNOWN.
+
+    "Not proven different" is not "proven the same". The tri-state guard has to
+    say so out loud, because the refresh path may only splice a short probe
+    onto a comparison that actually RAN. The legacy boolean default is
+    unchanged for the other callers: an unusable comparison is still "not
+    shifted" there.
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    old_raw = _bars(300)
+    rebased_raw = _bars(301, div_steps=(300,))
+    old_frame = yahoo_mod.extract_store_frame(old_raw, "AAA")
+    store.upsert("yahoo", "AAA", old_frame)
+    stable_probe = yahoo_mod.extract_store_frame(old_raw.iloc[-22:], "AAA")
+    rebased_probe = yahoo_mod.extract_store_frame(rebased_raw.iloc[-22:], "AAA")
+
+    # The legacy boolean contract, unchanged for every existing caller.
+    assert store.basis_shifted("yahoo", "AAA", stable_probe) is False
+    assert store.basis_shifted("yahoo", "AAA", rebased_probe) is True
+
+    # The tri-state contract the refresh path depends on.
+    assert store.basis_comparison("yahoo", "AAA", stable_probe) == store.BASIS_STABLE
+    assert store.basis_comparison("yahoo", "AAA", rebased_probe) == store.BASIS_SHIFTED
+
+    # (a) the comparison column is missing from the stored archive
+    store.upsert("yahoo", "NOCOL", old_frame.drop(columns=["close"]))
+    assert store.basis_comparison("yahoo", "NOCOL", stable_probe) == store.BASIS_UNKNOWN
+    assert store.basis_shifted("yahoo", "NOCOL", stable_probe) is False
+
+    # (b) the stored comparison values are all unusable
+    store.upsert("yahoo", "NAN", old_frame.assign(close=np.nan))
+    assert store.basis_comparison("yahoo", "NAN", stable_probe) == store.BASIS_UNKNOWN
+    assert store.basis_shifted("yahoo", "NAN", stable_probe) is False
+
+    # (c) the incoming comparison values are not numbers
+    unusable = stable_probe.copy()
+    unusable["close"] = "not-a-number"
+    assert store.basis_comparison("yahoo", "AAA", unusable) == store.BASIS_UNKNOWN
+    assert store.basis_shifted("yahoo", "AAA", unusable) is False
+
+    # (d) the stored archive cannot be read at all
+    real_read = store.read
+    def broken_read(group, name):
+        raise OSError("transient archive read failure")
+    monkeypatch.setattr(store, "read", broken_read)
+    assert store.basis_comparison("yahoo", "AAA", stable_probe) == store.BASIS_UNKNOWN
+    assert store.basis_shifted("yahoo", "AAA", stable_probe) is False
+    monkeypatch.setattr(store, "read", real_read)
+
+
+# ---------------------------------------------------------------------------
+# 10. adjustment-basis comparison: a MIXED usable/unusable overlap
+# ---------------------------------------------------------------------------
+def _basis_frame(close_values, start: str = "2024-01-01") -> pd.DataFrame:
+    """A store-shaped frame (the schema lib/store writes) carrying exactly the
+    given close values, so a comparison can be posed against a chosen value."""
+    n = len(close_values)
+    idx = pd.bdate_range(start, periods=n, name="Date")
+    close = np.asarray(close_values, dtype="float64")
+    return pd.DataFrame({
+        "close_price": close,
+        "close": close,
+        "volume": np.arange(1000.0, 1000.0 + n),
+    }, index=idx)
+
+
+#: (case id, stored close, incoming close). Both rows of each overlap sit on
+#: the same dates, so BOTH rows are compared and one of them cannot be.
+_MIXED_NONFINITE_OVERLAPS = (
+    ("new-inf", (100.0, 100.0), (100.0, float("inf"))),
+    ("old-and-new-inf", (100.0, float("inf")), (100.0, float("inf"))),
+)
+
+
+@pytest.mark.parametrize(
+    "stored_close,incoming_close",
+    [(stored, incoming) for _case, stored, incoming in _MIXED_NONFINITE_OVERLAPS],
+    ids=[case for case, _s, _i in _MIXED_NONFINITE_OVERLAPS],
+)
+def test_basis_comparison_never_certifies_stable_over_a_mixed_nonfinite_overlap(
+        tree, monkeypatch, stored_close, incoming_close):
+    """One unusable row makes the whole overlap unverifiable.
+
+    The counterexample: old close [100, 100] against new close [100, +inf]. The
+    relative differences are [0, NaN] — an infinite new value divides an
+    infinite numerator — and a maximum that skips missing values reads 0, so
+    the comparison used to certify a VERIFIED stable overlap on a row it could
+    not compare at all. The same happens when the STORED value is infinite too:
+    |inf - inf| is undefined, so that row compares as NaN and is skipped.
+
+    An archive that cannot prove its whole overlap is on one basis cannot be
+    spliced onto, so the answer is UNKNOWN — never "stable".
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    store.upsert("yahoo", "AAA", _basis_frame(stored_close))
+    incoming = _basis_frame(incoming_close)
+
+    assert store.basis_comparison("yahoo", "AAA", incoming) == store.BASIS_UNKNOWN, (
+        "an overlap with an unusable row is not a verified stable overlap")
+
+    # The legacy boolean is NOT moved by this: an unusable comparison is still
+    # "not shifted" for every existing caller.
+    assert store.basis_shifted("yahoo", "AAA", incoming) is False
+
+
+def test_refresh_all_nonfinite_overlap_escalates_and_a_failed_heal_keeps_the_archive(
+        tree, monkeypatch):
+    """An unusable comparison row must not authorise a splice.
+
+    The probe's overlap carries one infinite close. The schema gate rejects a
+    NaN or a non-positive close but NOT an infinity, so that row reaches the
+    basis comparison exactly as a vendor response would — and the comparison
+    cannot be made on it. The refresh must escalate to the full-history heal;
+    when that heal FAILS the prior parquet stays byte-identical, the name is
+    not marked refreshed, and no provider-currentness is claimed for a name
+    nothing was written for.
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    old_raw = _bars(300)
+    store.upsert("yahoo", "AAA", yahoo_mod.extract_store_frame(old_raw, "AAA"))
+    path = tree / "data" / "yahoo" / "AAA.parquet"
+    before = path.read_bytes()
+
+    probe_raw = _bars(301)
+    probe_raw.loc[probe_raw.index[-5], "Adj Close"] = float("inf")
+
+    calls = []
+    def download(symbols, period):
+        calls.append((sorted(symbols), period))
+        if period == "max":
+            raise ConnectionError("full-history heal unavailable")
+        return _yf_response({"AAA": probe_raw.iloc[-22:]})
+    monkeypatch.setattr(bf, "download_batch", download)
+    monkeypatch.setattr(bf.time, "sleep", lambda *_a, **_k: None)
+
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+
+    assert calls == [(["AAA"], bf.REFRESH_PROBE_PERIOD), (["AAA"], "max")], (
+        "an overlap with an unusable row must not certify a stable basis: the "
+        "refresh has to escalate to the full-history heal")
+    assert report["refresh_basis_unknown"] == 1
+    assert report["refresh_basis_shifted"] == 0
+    assert report["refresh_rebased"] == 0
+    assert report["refresh_rebase_failed"] == 1
+    assert report["refreshed"] == 0
+    assert path.read_bytes() == before
+    state = bf.load_state()
+    assert not (state.get("done", {}).get("AAA", {}).get("refreshed"))
+    assert report["refresh_current_returned"] == 0
+    assert report["refresh_noncurrent_returned"] == 0
+
+
+def test_refresh_all_nonfinite_overlap_keeps_the_archive_when_the_heal_is_invalid(
+        tree, monkeypatch):
+    """A required heal that returns an unusable frame is a deferred refresh too.
+
+    The escalation is required, so the full-history heal is attempted; when the
+    response it gets back cannot be written (a one-bar stub), the prior parquet
+    stays byte-identical, the name is not marked refreshed, and no
+    provider-currentness is claimed for it.
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    old_raw = _bars(300)
+    store.upsert("yahoo", "AAA", yahoo_mod.extract_store_frame(old_raw, "AAA"))
+    path = tree / "data" / "yahoo" / "AAA.parquet"
+    before = path.read_bytes()
+
+    probe_raw = _bars(301)
+    probe_raw.loc[probe_raw.index[-5], "Adj Close"] = float("inf")
+
+    calls = []
+    def download(symbols, period):
+        calls.append((sorted(symbols), period))
+        if period == "max":
+            return _yf_response({"AAA": probe_raw.iloc[-1:]})   # a one-bar stub
+        return _yf_response({"AAA": probe_raw.iloc[-22:]})
+    monkeypatch.setattr(bf, "download_batch", download)
+    monkeypatch.setattr(bf.time, "sleep", lambda *_a, **_k: None)
+
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+
+    assert calls == [(["AAA"], bf.REFRESH_PROBE_PERIOD), (["AAA"], "max")], (
+        "an overlap with an unusable row must not certify a stable basis: the "
+        "refresh has to escalate to the full-history heal")
+    assert report["refresh_basis_unknown"] == 1
+    assert report["refresh_rebased"] == 0
+    assert report["refresh_rebase_failed"] == 1
+    assert report["refreshed"] == 0
+    assert path.read_bytes() == before
+    assert report["refresh_current_returned"] == 0
+    assert report["refresh_noncurrent_returned"] == 0
+
+
+def test_refresh_all_stable_finite_overlap_still_avoids_the_full_history_heal(
+        tree, monkeypatch):
+    """A fully usable stable overlap must NOT pay for period='max'.
+
+    The strict reading of the comparison must not over-tighten: an overlap
+    whose every row is a usable number and compares equal is exactly the case
+    the short probe exists for, and it must stay a single request.
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    old_raw = _bars(300)
+    store.upsert("yahoo", "AAA", yahoo_mod.extract_store_frame(old_raw, "AAA"))
+
+    calls = []
+    def download(symbols, period):
+        calls.append((sorted(symbols), period))
+        return _yf_response({"AAA": _bars(301).iloc[-22:]})
+    monkeypatch.setattr(bf, "download_batch", download)
+    monkeypatch.setattr(bf.time, "sleep", lambda *_a, **_k: None)
+
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, refresh_all=True)
+
+    assert calls == [(["AAA"], bf.REFRESH_PROBE_PERIOD)], (
+        "a fully usable stable overlap must not trigger the full-history heal")
+    assert report["refresh_basis_shifted"] == 0
+    assert report["refresh_basis_unknown"] == 0
+    assert report["refresh_rebased"] == report["refresh_rebase_failed"] == 0
+    assert report["refreshed"] == 1
+
+
+def test_legacy_basis_shifted_default_is_unchanged_for_the_affected_behaviours(
+        tree, monkeypatch):
+    """The legacy boolean guard keeps every documented default.
+
+    The strict reading belongs to the tri-state comparator only. ~10 other
+    collectors call this boolean, and its answers must not move: an unusable
+    comparison is still "not shifted" there, and an infinite stored value
+    against a finite new one is still a shift. These are the receiver's own
+    answers, pinned here so that a future tightening of the shared comparator
+    is caught instead of silently inherited.
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    stable = _basis_frame((100.0, 100.0))
+    shifted = _basis_frame((90.0, 90.0))
+    new_inf = _basis_frame((100.0, float("inf")))
+    old_inf = _basis_frame((float("inf"), 100.0))
+    both_inf = _basis_frame((float("inf"), float("inf")))
+    all_nan = _basis_frame((float("nan"), float("nan")))
+
+    store.upsert("yahoo", "STABLE", stable)
+    store.upsert("yahoo", "SHIFTED", stable)
+    store.upsert("yahoo", "NEWINF", stable)
+    store.upsert("yahoo", "OLDINF", old_inf)
+    store.upsert("yahoo", "BOTHINF", both_inf)
+    store.upsert("yahoo", "NAN", all_nan)
+    store.upsert("yahoo", "NOCOL", stable.drop(columns=["close"]))
+
+    # A verified stable overlap is not a shift.
+    assert store.basis_shifted("yahoo", "STABLE", stable) is False
+    # A proven shift is a shift.
+    assert store.basis_shifted("yahoo", "SHIFTED", shifted) is True
+    # An infinite STORED value against a finite new one is still a shift.
+    assert store.basis_shifted("yahoo", "OLDINF", stable) is True
+    # An unusable comparison is still "not shifted" for the legacy callers.
+    assert store.basis_shifted("yahoo", "NEWINF", new_inf) is False
+    assert store.basis_shifted("yahoo", "BOTHINF", both_inf) is False
+    assert store.basis_shifted("yahoo", "NAN", stable) is False
+    assert store.basis_shifted("yahoo", "NOCOL", stable) is False
+
+    # An unreadable archive is still "not shifted", and never raises.
+    real_read = store.read
+    def broken_read(group, name):
+        raise OSError("transient archive read failure")
+    monkeypatch.setattr(store, "read", broken_read)
+    assert store.basis_shifted("yahoo", "STABLE", stable) is False
+    monkeypatch.setattr(store, "read", real_read)
+
+
+# ---------------------------------------------------------------------------
+# 11. adjustment-basis comparison: the ORIGINAL common-date evidence decides
+# ---------------------------------------------------------------------------
+def test_basis_comparison_never_certifies_stable_from_the_remainder_of_a_dropped_row(
+        tree, monkeypatch):
+    """A stored row that could not be compared must not be dropped BEFORE the
+    comparison.
+
+    The counterexample: stored close [100, NaN] against incoming close
+    [100, 200] on the same two dates. The missing stored row was dropped
+    before the dates were intersected, so only the comparable remainder
+    survived and the overlap was certified STABLE — a verified basis built on
+    evidence for a date that was never compared at all. The strict comparison
+    keeps the original common-date evidence and answers UNKNOWN instead.
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    store.upsert("yahoo", "AAA", _basis_frame((100.0, float("nan"))))
+    incoming = _basis_frame((100.0, 200.0))
+
+    assert store.basis_comparison("yahoo", "AAA", incoming) == store.BASIS_UNKNOWN, (
+        "an overlap with an unusable stored row is not a verified stable overlap")
+
+    # The legacy boolean is NOT moved by this: it keeps the dropna() rule, so
+    # the comparable remainder still answers "not shifted".
+    assert store.basis_shifted("yahoo", "AAA", incoming) is False
+
+
+def test_basis_comparison_calls_an_unusable_stored_infinity_unknown_in_strict_mode(
+        tree, monkeypatch):
+    """An infinite stored value cannot be compared, so strict mode is UNKNOWN.
+
+    The counterexample: stored close [100, +inf] against incoming close
+    [100, 100]. The relative difference of the infinite row is infinite —
+    decisive-looking evidence — but it is a statement about a value that cannot
+    be compared at all, so the strict comparison answers UNKNOWN and never
+    certifies a basis across evidence that is not usable.
+    """
+    _write_ledger(tree, [])
+    _write_hub(tree)
+    _no_maintained(monkeypatch)
+
+    store.upsert("yahoo", "AAA", _basis_frame((100.0, float("inf"))))
+    incoming = _basis_frame((100.0, 100.0))
+
+    assert store.basis_comparison("yahoo", "AAA", incoming) == store.BASIS_UNKNOWN, (
+        "an infinite stored value is unusable evidence, not a proven shift")
+
+    # The legacy boolean keeps its documented answer for the same evidence:
+    # an infinite stored value against a finite new one is still a shift.
+    assert store.basis_shifted("yahoo", "AAA", incoming) is True

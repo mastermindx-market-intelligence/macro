@@ -1,0 +1,90 @@
+{
+  "observed_at": "2026-10-15T13:19:30.448722+00:00",
+  "run": 38738100398,
+  "attempt": 1,
+  "head": "3f34040de3a5e9cce0f7798185835e6dda360a7a",
+  "tested": "7010debbe3c395f4e5929900d61deecaa49a5a79",
+  "base": "9c37ad0a3ecb9f90f1d1163c31719a5c7da821ab",
+  "plan_sha256": "89f5ee79cd1a78e9f6c3bfbe2938014b6f615baa238778b92d7fdcfb85288dbc",
+  "artifacts": [
+    {
+      "id": 11975532831,
+      "name": "ci-semantic-pack-38738100398-6",
+      "zip_sha256": "155245009e626006bd767c5db03eac2cede693a93c26e11a8968cc635984d013",
+      "bytes": 3169
+    },
+    {
+      "id": 11975662611,
+      "name": "ci-semantic-pack-38738100398-9",
+      "zip_sha256": "e918005bb185a410cde0ceb5b587872b173c498e97614d7ef5d9827403f30976",
+      "bytes": 3981
+    }
+  ],
+  "jobs_passed": 26,
+  "semantic_command_steps_passed": 59,
+  "critical_jobs": [
+    {
+      "logical_job_id": "international-workspace-browser",
+      "pack_index": 6,
+      "job_exec_sha256": "11c1c92cb9780468281833fdb611f587a63965c8062716c4babc2a8c23d23bc3",
+      "infrastructure": {
+        "outcome": "passed"
+      },
+      "steps": [
+        {
+          "proof_id": "install browser test dependencies",
+          "step_spec_sha256": "508913a3cefdcb59c3c1947c3e4022cb1a36ebd7720d8742bd7b6a542e2f93aa",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        },
+        {
+          "proof_id": "Actual International builder and template contracts",
+          "step_spec_sha256": "e46afb6572758f70ed462e6f6cf0f582bcc36f7237e4ad956b5327e35ddf15b6",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        },
+        {
+          "proof_id": "Actual DOM controller and page entry in Chromium",
+          "step_spec_sha256": "ffe15e55c5f0caf1abc8e0830ce3ecf3fdbe65146095020c43c8c1930386e671",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        },
+        {
+          "proof_id": "Generic table sort/filter in Chromium (templates/tablesort.js)",
+          "step_spec_sha256": "741fda588c631d3cc550c64373506d721173ce495c64f72efa93a0d0274a05bb",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        }
+      ]
+    },
+    {
+      "logical_job_id": "eval-os-a1",
+      "pack_index": 9,
+      "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+      "infrastructure": {
+        "outcome": "passed"
+      },
+      "steps": [
+        {
+          "proof_id": "require Node for actual renderer contracts",
+          "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        },
+        {
+          "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+          "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb",
+          "outcome": "passed",
+          "failure_signature": null,
+          "classification": "passed"
+        }
+      ]
+    }
+  ],
+  "claim_limit": "Original two partial pack artifacts only. Other fragments are unobserved here, not newly failed. Command steps are not unit-test counts or zero-skip proof. Terminal CI gate and final artifact remain required."
+}

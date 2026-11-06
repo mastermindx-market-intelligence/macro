@@ -1,0 +1,5 @@
+# pytest summary (clean run)
+17 passed
+returncode=0
+n_pass=17 n_fail=0 n_skip=0
+failing_tests=[]
