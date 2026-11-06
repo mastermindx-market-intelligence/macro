@@ -1,0 +1,1604 @@
+{
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "policy": "research_qualified_atomic_v1",
+  "source_mode": "system_observed_replay",
+  "source_input_sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334",
+  "script_sha256": "377dde6af13c890d5b694769408ceaea2515e2a0b4018998128eeb86e150d559",
+  "checks": [
+    {
+      "name": "current_v3_exact_24_and_order",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "current_qualified_intel_retains_four",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "input_permutation_invariant",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "unqualified_missing_row_has_no_coverage_effect",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "qualified_missing_falls_back_atomically",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "all_measured_zero_remains_intelligence",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "zero_cap_releases_zero",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "empty_population_is_explicit",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "duplicate_candidate_refused",
+      "passed": true,
+      "details": {
+        "reason": "duplicate_candidate_identity"
+      }
+    },
+    {
+      "name": "string_qualification_refused",
+      "passed": true,
+      "details": {
+        "reason": "qualification_not_boolean"
+      }
+    },
+    {
+      "name": "bad_intel_boolean",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "bad_intel_numeric_string",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "bad_intel_negative",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "bad_intel_above_range",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "bad_intel_nan",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "bad_intel_infinity",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "known_source_values_accepted",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "zero_source_value_preserved",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "post_cutoff_ingestion_cannot_change_selected_inputs",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "late_correction_keeps_prior_version",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "known_correction_selects_new_version",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "correction_changes_selected_input_digest",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "out_of_order_arrival_does_not_restore_old_revision",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "identical_source_version_coalesced",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "conflicting_source_version_refused",
+      "passed": true,
+      "details": {
+        "reason": "conflicting_source_version"
+      }
+    },
+    {
+      "name": "future_conflicting_copy_does_not_change_prior_inputs",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "known_retraction_does_not_resurrect_old_revision",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "future_retraction_keeps_prior_version",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "known_invalid_payload_does_not_resurrect_old_revision",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "future_invalid_payload_keeps_prior_version",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "known_expired_correction_does_not_resurrect_old_revision",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "future_expired_correction_keeps_prior_version",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "known_unknown_status_does_not_resurrect_old_revision",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "future_unknown_status_keeps_prior_version",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "known_missing_blob_correction_does_not_resurrect_old_revision",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "future_missing_blob_correction_keeps_prior_version",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "known_wrong_session_correction_does_not_resurrect_old_revision",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "future_wrong_session_correction_keeps_prior_version",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source_missing_first_seen",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source_date_only_publication",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source_future_publication",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source_future_effective",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source_wrong_session",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source_explicit_expiry",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source_boolean_value",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source_missing_blob",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "older_periodic_fact_not_expired_by_arbitrary_age",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "source_specific_previous_session_is_valid",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "one_global_session_would_wrongly_reject_delayed_source",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "same_instant_timezone_equivalent",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "normalize_after_cutoff_blocks_future_reference_rows",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "available_reference_addition_can_change_incumbent_percentiles",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "reference_population_change_changes_digest",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "native_midrank_ties_equal",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "multiple_source_observations_require_qualified_aggregation",
+      "passed": true,
+      "details": {
+        "reason": "normalization_requires_aggregated_unique_ticker_features"
+      }
+    },
+    {
+      "name": "native_analyst_current_year_dependency_present",
+      "passed": true,
+      "details": null
+    }
+  ],
+  "check_count": 56,
+  "current_populations": {
+    "all_scored": {
+      "n": 1601,
+      "valid": 1597,
+      "missing": [
+        "600606.SS",
+        "000069.SZ",
+        "600038.SS",
+        "603899.SS"
+      ]
+    },
+    "raw_eligible": {
+      "n": 180,
+      "valid": 179,
+      "missing": [
+        "603899.SS"
+      ]
+    },
+    "signal_buyable": {
+      "n": 164,
+      "valid": 164,
+      "missing": []
+    },
+    "qualified_pre_cap": {
+      "n": 125,
+      "valid": 125
+    }
+  },
+  "current_v3_control": {
+    "policy": "research_qualified_atomic_v1",
+    "coverage_scope": "qualified_pre_cap",
+    "mode": "v3_atomic_fallback",
+    "qualified_n": 125,
+    "invalid": [
+      {
+        "ticker": "002460.SZ",
+        "reason": "intel_unavailable"
+      }
+    ],
+    "ordered": [
+      "002460.SZ",
+      "603799.SS",
+      "000973.SZ",
+      "605499.SS",
+      "688472.SS",
+      "002340.SZ",
+      "688223.SS",
+      "002001.SZ",
+      "301219.SZ",
+      "002405.SZ",
+      "000858.SZ",
+      "688353.SS",
+      "300014.SZ",
+      "600623.SS",
+      "600633.SS",
+      "002294.SZ",
+      "002847.SZ",
+      "600273.SS",
+      "688050.SS",
+      "600426.SS",
+      "603279.SS",
+      "600509.SS",
+      "600299.SS",
+      "002004.SZ",
+      "002557.SZ",
+      "601880.SS",
+      "000719.SZ",
+      "600276.SS",
+      "601898.SS",
+      "601216.SS",
+      "300075.SZ",
+      "600282.SS",
+      "600406.SS",
+      "600585.SS",
+      "300036.SZ",
+      "300768.SZ",
+      "300772.SZ",
+      "600268.SS",
+      "600741.SS",
+      "601800.SS",
+      "601225.SS",
+      "600718.SS",
+      "600085.SS",
+      "601390.SS",
+      "603927.SS",
+      "601607.SS",
+      "002043.SZ",
+      "600050.SS",
+      "300896.SZ",
+      "000786.SZ",
+      "000035.SZ",
+      "000959.SZ",
+      "600595.SS",
+      "601877.SS",
+      "002233.SZ",
+      "600000.SS",
+      "002572.SZ",
+      "600866.SS",
+      "600269.SS",
+      "001391.SZ",
+      "300182.SZ",
+      "002032.SZ",
+      "300284.SZ",
+      "300294.SZ",
+      "002507.SZ",
+      "002270.SZ",
+      "000902.SZ",
+      "601818.SS",
+      "600521.SS",
+      "002063.SZ",
+      "600517.SS",
+      "300122.SZ",
+      "603919.SS",
+      "603883.SS",
+      "603027.SS",
+      "002911.SZ",
+      "600597.SS",
+      "601965.SS",
+      "603100.SS",
+      "601857.SS",
+      "600329.SS",
+      "002372.SZ",
+      "600827.SS",
+      "000860.SZ",
+      "600315.SS",
+      "002091.SZ",
+      "600871.SS",
+      "002608.SZ",
+      "600787.SS",
+      "001286.SZ",
+      "603866.SS",
+      "688213.SS",
+      "601006.SS",
+      "002007.SZ",
+      "688099.SS",
+      "600657.SS",
+      "000932.SZ",
+      "600803.SS",
+      "601228.SS",
+      "603127.SS",
+      "600757.SS",
+      "002332.SZ",
+      "002128.SZ",
+      "300070.SZ",
+      "601018.SS",
+      "600025.SS",
+      "600037.SS",
+      "600064.SS",
+      "600717.SS",
+      "003816.SZ",
+      "600219.SS",
+      "601598.SS",
+      "601858.SS",
+      "601326.SS",
+      "600546.SS",
+      "600028.SS",
+      "600196.SS",
+      "600938.SS",
+      "002226.SZ",
+      "601766.SS",
+      "601808.SS",
+      "600057.SS",
+      "000927.SZ",
+      "601577.SS",
+      "600017.SS"
+    ],
+    "selected": [
+      "002460.SZ",
+      "603799.SS",
+      "000973.SZ",
+      "605499.SS",
+      "688472.SS",
+      "002340.SZ",
+      "688223.SS",
+      "002001.SZ",
+      "301219.SZ",
+      "002405.SZ",
+      "000858.SZ",
+      "300014.SZ",
+      "600633.SS",
+      "002294.SZ",
+      "002847.SZ",
+      "688050.SS",
+      "603279.SS",
+      "600509.SS",
+      "002557.SZ",
+      "601880.SS",
+      "000719.SZ",
+      "600276.SS",
+      "601898.SS",
+      "300075.SZ"
+    ],
+    "excluded_by_caps": [
+      {
+        "ticker": "688353.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "600623.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "600273.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "600426.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "600299.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "002004.SZ",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "601216.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "600282.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600406.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600585.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300036.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300768.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300772.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600268.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600741.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601800.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601225.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600718.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600085.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601390.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603927.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601607.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002043.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600050.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300896.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000786.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000035.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000959.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600595.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601877.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002233.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600000.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002572.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600866.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600269.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "001391.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300182.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002032.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300284.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300294.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002507.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002270.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000902.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601818.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600521.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002063.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600517.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300122.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603919.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603883.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603027.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002911.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600597.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601965.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603100.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601857.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600329.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002372.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600827.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000860.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600315.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002091.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600871.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002608.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600787.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "001286.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603866.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "688213.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601006.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002007.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "688099.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600657.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000932.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600803.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601228.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603127.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600757.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002332.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002128.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300070.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601018.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600025.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600037.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600064.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600717.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "003816.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600219.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601598.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601858.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601326.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600546.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600028.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600196.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600938.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002226.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601766.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601808.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600057.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000927.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601577.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600017.SS",
+        "reason": "featured_cap"
+      }
+    ],
+    "sector_counts": {
+      "Basic Materials": 4,
+      "Consumer Defensive": 4,
+      "Technology": 4,
+      "Industrials": 4,
+      "Healthcare": 4,
+      "Communication Services": 2,
+      "Utilities": 1,
+      "Energy": 1
+    }
+  },
+  "current_qualified_intelligence": {
+    "policy": "research_qualified_atomic_v1",
+    "coverage_scope": "qualified_pre_cap",
+    "mode": "intelligence_atomic",
+    "qualified_n": 125,
+    "invalid": [],
+    "ordered": [
+      "600315.SS",
+      "002270.SZ",
+      "605499.SS",
+      "600517.SS",
+      "301219.SZ",
+      "001391.SZ",
+      "603919.SS",
+      "688353.SS",
+      "300182.SZ",
+      "002226.SZ",
+      "601858.SS",
+      "000035.SZ",
+      "600741.SS",
+      "300036.SZ",
+      "603866.SS",
+      "600037.SS",
+      "600827.SS",
+      "600595.SS",
+      "000973.SZ",
+      "002043.SZ",
+      "300075.SZ",
+      "002405.SZ",
+      "600866.SS",
+      "600085.SS",
+      "600718.SS",
+      "603799.SS",
+      "601877.SS",
+      "600597.SS",
+      "601766.SS",
+      "600871.SS",
+      "300768.SZ",
+      "002340.SZ",
+      "002460.SZ",
+      "688213.SS",
+      "300284.SZ",
+      "600787.SS",
+      "601965.SS",
+      "603927.SS",
+      "002572.SZ",
+      "300014.SZ",
+      "000858.SZ",
+      "002294.SZ",
+      "002091.SZ",
+      "000959.SZ",
+      "002004.SZ",
+      "600546.SS",
+      "002063.SZ",
+      "603883.SS",
+      "688099.SS",
+      "688050.SS",
+      "688472.SS",
+      "000860.SZ",
+      "600521.SS",
+      "000902.SZ",
+      "600273.SS",
+      "002507.SZ",
+      "000786.SZ",
+      "002372.SZ",
+      "600025.SS",
+      "600269.SS",
+      "601808.SS",
+      "002233.SZ",
+      "601225.SS",
+      "000719.SZ",
+      "002911.SZ",
+      "600299.SS",
+      "600406.SS",
+      "601006.SS",
+      "300294.SZ",
+      "600276.SS",
+      "600623.SS",
+      "600757.SS",
+      "600050.SS",
+      "603127.SS",
+      "002557.SZ",
+      "002007.SZ",
+      "688223.SS",
+      "002001.SZ",
+      "600633.SS",
+      "002847.SZ",
+      "600426.SS",
+      "603279.SS",
+      "600509.SS",
+      "601880.SS",
+      "601898.SS",
+      "601216.SS",
+      "600282.SS",
+      "600585.SS",
+      "300772.SZ",
+      "600268.SS",
+      "601800.SS",
+      "601390.SS",
+      "601607.SS",
+      "300896.SZ",
+      "600000.SS",
+      "002032.SZ",
+      "601818.SS",
+      "300122.SZ",
+      "603027.SS",
+      "603100.SS",
+      "601857.SS",
+      "600329.SS",
+      "002608.SZ",
+      "001286.SZ",
+      "600657.SS",
+      "000932.SZ",
+      "600803.SS",
+      "601228.SS",
+      "002332.SZ",
+      "002128.SZ",
+      "300070.SZ",
+      "601018.SS",
+      "600064.SS",
+      "600717.SS",
+      "003816.SZ",
+      "600219.SS",
+      "601598.SS",
+      "601326.SS",
+      "600028.SS",
+      "600196.SS",
+      "600938.SS",
+      "600057.SS",
+      "000927.SZ",
+      "601577.SS",
+      "600017.SS"
+    ],
+    "selected": [
+      "600315.SS",
+      "002270.SZ",
+      "605499.SS",
+      "600517.SS",
+      "301219.SZ",
+      "001391.SZ",
+      "603919.SS",
+      "688353.SS",
+      "300182.SZ",
+      "002226.SZ",
+      "601858.SS",
+      "000035.SZ",
+      "600741.SS",
+      "300036.SZ",
+      "603866.SS",
+      "600037.SS",
+      "600827.SS",
+      "600595.SS",
+      "300075.SZ",
+      "002405.SZ",
+      "600866.SS",
+      "600085.SS",
+      "600871.SS",
+      "601965.SS"
+    ],
+    "excluded_by_caps": [
+      {
+        "ticker": "000973.SZ",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "002043.SZ",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "600718.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "603799.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "601877.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "600597.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "601766.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "300768.SZ",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "002340.SZ",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "002460.SZ",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "688213.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "300284.SZ",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "600787.SS",
+        "reason": "sector_cap"
+      },
+      {
+        "ticker": "603927.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002572.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300014.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000858.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002294.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002091.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000959.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002004.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600546.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002063.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603883.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "688099.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "688050.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "688472.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000860.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600521.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000902.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600273.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002507.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000786.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002372.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600025.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600269.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601808.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002233.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601225.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000719.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002911.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600299.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600406.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601006.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300294.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600276.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600623.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600757.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600050.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603127.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002557.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002007.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "688223.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002001.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600633.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002847.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600426.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603279.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600509.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601880.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601898.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601216.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600282.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600585.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300772.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600268.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601800.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601390.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601607.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300896.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600000.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002032.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601818.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300122.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603027.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "603100.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601857.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600329.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002608.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "001286.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600657.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000932.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600803.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601228.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002332.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "002128.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "300070.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601018.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600064.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600717.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "003816.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600219.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601598.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601326.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600028.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600196.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600938.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600057.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "000927.SZ",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "601577.SS",
+        "reason": "featured_cap"
+      },
+      {
+        "ticker": "600017.SS",
+        "reason": "featured_cap"
+      }
+    ],
+    "sector_counts": {
+      "Consumer Defensive": 4,
+      "Industrials": 4,
+      "Basic Materials": 4,
+      "Technology": 4,
+      "Communication Services": 2,
+      "Consumer Cyclical": 3,
+      "Healthcare": 2,
+      "Energy": 1
+    }
+  },
+  "native_numeric_boundary_witnesses": [
+    {
+      "case": "boolean",
+      "native_direct_measurement_predicate": true,
+      "prototype_mode": "v3_atomic_fallback"
+    },
+    {
+      "case": "numeric_string",
+      "native_direct_measurement_predicate": true,
+      "prototype_mode": "v3_atomic_fallback"
+    },
+    {
+      "case": "negative",
+      "native_direct_measurement_predicate": true,
+      "prototype_mode": "v3_atomic_fallback"
+    },
+    {
+      "case": "above_range",
+      "native_direct_measurement_predicate": true,
+      "prototype_mode": "v3_atomic_fallback"
+    },
+    {
+      "case": "nan",
+      "native_direct_measurement_predicate": false,
+      "prototype_mode": "v3_atomic_fallback"
+    },
+    {
+      "case": "infinity",
+      "native_direct_measurement_predicate": false,
+      "prototype_mode": "v3_atomic_fallback"
+    }
+  ],
+  "normalization_witness": {
+    "base": {
+      "600000.SS": 0.0,
+      "000001.SZ": 1.0
+    },
+    "future_row_excluded": {
+      "600000.SS": 0.0,
+      "000001.SZ": 1.0
+    },
+    "available_new_row": {
+      "600111.SS": 0.0,
+      "600000.SS": 0.5,
+      "000001.SZ": 1.0
+    }
+  },
+  "version_witness": {
+    "before_revision": [
+      {
+        "ticker": "000001.SZ",
+        "family": "test_valuation",
+        "observation_key": "2026-10-09",
+        "source_record_id": "000001.SZ/valuation/2026-10-09",
+        "revision": 0,
+        "value": 3.0,
+        "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_at": "2026-10-09T07:00:00Z",
+        "first_seen_at": "2026-10-09T07:01:00Z",
+        "effective_from": "2026-10-09T07:00:00Z",
+        "cadence": "session",
+        "observation_session": "2026-10-09",
+        "status": "active"
+      },
+      {
+        "ticker": "600000.SS",
+        "family": "test_valuation",
+        "observation_key": "2026-10-09",
+        "source_record_id": "600000.SS/valuation/2026-10-09",
+        "revision": 0,
+        "value": 1.0,
+        "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_at": "2026-10-09T07:00:00Z",
+        "first_seen_at": "2026-10-09T07:01:00Z",
+        "effective_from": "2026-10-09T07:00:00Z",
+        "cadence": "session",
+        "observation_session": "2026-10-09",
+        "status": "active"
+      }
+    ],
+    "after_revision": [
+      {
+        "ticker": "000001.SZ",
+        "family": "test_valuation",
+        "observation_key": "2026-10-09",
+        "source_record_id": "000001.SZ/valuation/2026-10-09",
+        "revision": 0,
+        "value": 3.0,
+        "source_blob_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "published_at": "2026-10-09T07:00:00Z",
+        "first_seen_at": "2026-10-09T07:01:00Z",
+        "effective_from": "2026-10-09T07:00:00Z",
+        "cadence": "session",
+        "observation_session": "2026-10-09",
+        "status": "active"
+      },
+      {
+        "ticker": "600000.SS",
+        "family": "test_valuation",
+        "observation_key": "2026-10-09",
+        "source_record_id": "600000.SS/valuation/2026-10-09",
+        "revision": 1,
+        "value": 10.0,
+        "source_blob_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "published_at": "2026-10-09T08:30:00Z",
+        "first_seen_at": "2026-10-09T09:00:00Z",
+        "effective_from": "2026-10-09T07:00:00Z",
+        "cadence": "session",
+        "observation_session": "2026-10-09",
+        "status": "active"
+      }
+    ]
+  },
+  "limits": [
+    "Strict numeric contract is a proposal; native attachment clamps values and upstream actual data must be checked before changing compatibility.",
+    "Prototype consumes a previously qualified population; production must derive it with the existing shared safeguards before caps.",
+    "Source-time tests use synthetic independently labeled facts. Actual historical publication and first-seen fields are not invented.",
+    "Selection orders explicit upstream revisions, then validates the latest known payload. Unknown availability still prevents historical qualification; no complete upstream history is asserted.",
+    "This source digest is an input-fingerprint example to attach to existing generation ownership, not a new production identity store.",
+    "No return, alpha, execution, deployed behavior or operational source completeness claim."
+  ]
+}

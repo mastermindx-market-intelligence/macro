@@ -1,0 +1,2725 @@
+{
+  "all_frozen_edge_and_maximum_matching_checks": 232,
+  "all_sector_factorized_count_checks": 232,
+  "analysis_sha256": "6e742491568f313945c77f2e9d47e1591967e804e16484768fc4e13fd6faf606",
+  "enumerated_assignment_total": 109344,
+  "exhaustively_enumerated_graphs": [
+    {
+      "assignment_n": 810,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-18",
+      "conditional_observed_mean_pp": -0.8363659061160119,
+      "conditional_observed_variance_pp2": 2.21830216013617,
+      "inclusion_counts": {
+        "001267.SZ": 162,
+        "002048.SZ": 540,
+        "002472.SZ": 540,
+        "002913.SZ": 120,
+        "300001.SZ": 162,
+        "300065.SZ": 105,
+        "300316.SZ": 105,
+        "300322.SZ": 120,
+        "300353.SZ": 120,
+        "300687.SZ": 195,
+        "300762.SZ": 105,
+        "300953.SZ": 162,
+        "301421.SZ": 195,
+        "301510.SZ": 120,
+        "600673.SS": 105,
+        "601100.SS": 162,
+        "601689.SS": 540,
+        "603067.SS": 810,
+        "688018.SS": 105,
+        "688083.SS": 120,
+        "688469.SS": 105,
+        "688676.SS": 162
+      },
+      "observed_assignment_n": 810
+    },
+    {
+      "assignment_n": 980,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-19",
+      "conditional_observed_mean_pp": 0.1626084078473174,
+      "conditional_observed_variance_pp2": 1.1834593209127149,
+      "inclusion_counts": {
+        "002240.SZ": 770,
+        "002258.SZ": 280,
+        "002429.SZ": 196,
+        "002706.SZ": 140,
+        "300395.SZ": 770,
+        "300751.SZ": 196,
+        "300913.SZ": 140,
+        "301421.SZ": 196,
+        "301487.SZ": 140,
+        "301592.SZ": 140,
+        "301662.SZ": 140,
+        "600141.SS": 560,
+        "600660.SS": 490,
+        "601018.SS": 140,
+        "603260.SS": 280,
+        "603306.SS": 490,
+        "603876.SS": 280,
+        "688018.SS": 196,
+        "688097.SS": 140,
+        "688205.SS": 196
+      },
+      "observed_assignment_n": 980
+    },
+    {
+      "assignment_n": 1008,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-20",
+      "conditional_observed_mean_pp": -1.4082999046458133,
+      "conditional_observed_variance_pp2": 10.634431326558524,
+      "inclusion_counts": {
+        "002222.SZ": 294,
+        "002240.SZ": 504,
+        "002338.SZ": 552,
+        "300131.SZ": 594,
+        "300395.SZ": 504,
+        "301421.SZ": 618,
+        "301631.SZ": 378,
+        "600019.SS": 336,
+        "601137.SS": 336,
+        "688018.SS": 660,
+        "688025.SS": 468,
+        "688205.SS": 468,
+        "688690.SS": 336
+      },
+      "observed_assignment_n": 1008
+    },
+    {
+      "assignment_n": 192,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-24",
+      "conditional_observed_mean_pp": -6.37196194053529,
+      "conditional_observed_variance_pp2": 0.5077667718242296,
+      "inclusion_counts": {
+        "002192.SZ": 192,
+        "002241.SZ": 48,
+        "003031.SZ": 84,
+        "300131.SZ": 120,
+        "688025.SS": 84,
+        "688388.SS": 192,
+        "688392.SS": 96,
+        "688449.SS": 120,
+        "688536.SS": 120,
+        "688559.SS": 96
+      },
+      "observed_assignment_n": 192
+    },
+    {
+      "assignment_n": 190,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-25",
+      "conditional_observed_mean_pp": -1.1452282446615085,
+      "conditional_observed_variance_pp2": 1.9886545816715582,
+      "inclusion_counts": {
+        "002351.SZ": 95,
+        "003031.SZ": 120,
+        "300602.SZ": 110,
+        "301196.SZ": 38,
+        "301626.SZ": 38,
+        "601117.SS": 38,
+        "601868.SS": 38,
+        "688025.SS": 120,
+        "688388.SS": 190,
+        "688449.SS": 90,
+        "688536.SS": 130,
+        "688559.SS": 38,
+        "688591.SS": 95
+      },
+      "observed_assignment_n": 190
+    },
+    {
+      "assignment_n": 25000,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-28",
+      "conditional_observed_mean_pp": -0.9066571502097744,
+      "conditional_observed_variance_pp2": 15.426338076771263,
+      "inclusion_counts": {
+        "000422.SZ": 4000,
+        "000932.SZ": 4000,
+        "002129.SZ": 9000,
+        "002171.SZ": 9000,
+        "002430.SZ": 2500,
+        "002456.SZ": 9000,
+        "002601.SZ": 4000,
+        "002654.SZ": 9000,
+        "002815.SZ": 5000,
+        "002928.SZ": 2500,
+        "300327.SZ": 6250,
+        "301389.SZ": 9000,
+        "600029.SS": 2500,
+        "600039.SS": 2500,
+        "600057.SS": 2500,
+        "600060.SS": 6250,
+        "600377.SS": 2500,
+        "601038.SS": 2500,
+        "601333.SS": 2500,
+        "601390.SS": 2500,
+        "601618.SS": 2500,
+        "601958.SS": 7000,
+        "603225.SS": 4000,
+        "603260.SS": 9000,
+        "603979.SS": 9000,
+        "688052.SS": 9000,
+        "688182.SS": 6250,
+        "688686.SS": 6250
+      },
+      "observed_assignment_n": 25000
+    },
+    {
+      "assignment_n": 2700,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-31",
+      "conditional_observed_mean_pp": -0.35795822325923543,
+      "conditional_observed_variance_pp2": 5.347050122974967,
+      "inclusion_counts": {
+        "000962.SZ": 900,
+        "002389.SZ": 1800,
+        "002541.SZ": 1800,
+        "002600.SZ": 450,
+        "002635.SZ": 972,
+        "300047.SZ": 540,
+        "300170.SZ": 450,
+        "300657.SZ": 450,
+        "300782.SZ": 450,
+        "300850.SZ": 1800,
+        "600141.SS": 900,
+        "600549.SS": 900,
+        "600877.SS": 972,
+        "601360.SS": 450,
+        "603171.SS": 972,
+        "688182.SS": 972,
+        "688262.SS": 972,
+        "688372.SS": 450
+      },
+      "observed_assignment_n": 2700
+    },
+    {
+      "assignment_n": 78120,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-01",
+      "conditional_observed_mean_pp": -0.26709466155885586,
+      "conditional_observed_variance_pp2": 7.764906856132725,
+      "inclusion_counts": {
+        "000099.SZ": 15624,
+        "000810.SZ": 8310,
+        "002315.SZ": 8310,
+        "002541.SZ": 15624,
+        "002654.SZ": 30390,
+        "002936.SZ": 13020,
+        "002939.SZ": 13020,
+        "300047.SZ": 8310,
+        "300170.SZ": 24240,
+        "300303.SZ": 18420,
+        "300327.SZ": 8310,
+        "300496.SZ": 30390,
+        "300525.SZ": 8310,
+        "300638.SZ": 18420,
+        "300657.SZ": 30390,
+        "300672.SZ": 14190,
+        "300850.SZ": 15624,
+        "301297.SZ": 30390,
+        "600033.SS": 15624,
+        "600862.SS": 15624,
+        "600877.SS": 8310,
+        "601108.SS": 13020,
+        "601162.SS": 13020,
+        "601360.SS": 30390,
+        "601878.SS": 13020,
+        "601901.SS": 13020,
+        "603171.SS": 27090,
+        "688182.SS": 8310
+      },
+      "observed_assignment_n": 78120
+    },
+    {
+      "assignment_n": 308,
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "conditional_observed_mean_pp": -1.4625087317468444,
+      "conditional_observed_variance_pp2": 0.16027384569603065,
+      "inclusion_counts": {
+        "001227.SZ": 170,
+        "002099.SZ": 308,
+        "300251.SZ": 308,
+        "601059.SS": 170,
+        "601108.SS": 100,
+        "601136.SS": 170,
+        "601162.SS": 100,
+        "601456.SS": 170,
+        "601878.SS": 188,
+        "601881.SS": 164
+      },
+      "observed_assignment_n": 138
+    },
+    {
+      "assignment_n": 36,
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "conditional_observed_mean_pp": 2.8385735710646185,
+      "conditional_observed_variance_pp2": 0.7450676792550208,
+      "inclusion_counts": {
+        "002025.SZ": 24,
+        "002126.SZ": 24,
+        "002249.SZ": 12,
+        "002920.SZ": 24,
+        "300638.SZ": 30,
+        "300657.SZ": 24,
+        "603063.SS": 36,
+        "688208.SS": 12,
+        "688262.SS": 30
+      },
+      "observed_assignment_n": 36
+    }
+  ],
+  "interpretation": "Independent computational oracle for graph construction, full matching, exact expectations and unresolved-label mass. It does not certify historical source vintages or small-sample inference.",
+  "result_sha256": "6ae06242803a2a7cc59079ebc862f1a5373e01eb77f8606c1bbcb7bf2d1899f8",
+  "script_sha256": "4ea1ad8fcdc3b72000d5a7758d14f5cd9bc9ea3d67a28c7260a490115c7c5466",
+  "sector_factorization": [
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-18",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Consumer Cyclical": 3,
+        "Industrials": 5,
+        "Technology": 54
+      },
+      "full_assignment_count": 810,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-08-18",
+      "component_assignment_counts": {
+        "Basic Materials": 5,
+        "Consumer Cyclical": 12,
+        "Industrials": 16,
+        "Technology": 306
+      },
+      "full_assignment_count": 293760,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-18",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Consumer Cyclical": 3,
+        "Industrials": 5,
+        "Technology": 54
+      },
+      "full_assignment_count": 810,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-08-18",
+      "component_assignment_counts": {
+        "Basic Materials": 5,
+        "Consumer Cyclical": 12,
+        "Industrials": 16,
+        "Technology": 306
+      },
+      "full_assignment_count": 293760,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-19",
+      "component_assignment_counts": {
+        "Basic Materials": 14,
+        "Consumer Cyclical": 2,
+        "Industrials": 7,
+        "Technology": 5
+      },
+      "full_assignment_count": 980,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-08-19",
+      "component_assignment_counts": {
+        "Basic Materials": 720,
+        "Consumer Cyclical": 6,
+        "Industrials": 10,
+        "Technology": 11
+      },
+      "full_assignment_count": 475200,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-19",
+      "component_assignment_counts": {
+        "Basic Materials": 14,
+        "Consumer Cyclical": 2,
+        "Industrials": 7,
+        "Technology": 5
+      },
+      "full_assignment_count": 980,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-08-19",
+      "component_assignment_counts": {
+        "Basic Materials": 720,
+        "Consumer Cyclical": 6,
+        "Industrials": 10,
+        "Technology": 11
+      },
+      "full_assignment_count": 475200,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Technology": 168
+      },
+      "full_assignment_count": 1008,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 56,
+        "Technology": 7920
+      },
+      "full_assignment_count": 443520,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Technology": 168
+      },
+      "full_assignment_count": 1008,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 56,
+        "Technology": 7920
+      },
+      "full_assignment_count": 443520,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Technology": 13
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 24,
+        "Technology": 120
+      },
+      "full_assignment_count": 2880,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-08-20",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 3,
+        "Financial Services": 1,
+        "Healthcare": 0,
+        "Industrials": 1,
+        "Technology": 5
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-20",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 20,
+        "Financial Services": 5,
+        "Healthcare": 0,
+        "Industrials": 3,
+        "Technology": 8
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Consumer Cyclical": 2,
+        "Financial Services": 0,
+        "Technology": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Consumer Cyclical": 20,
+        "Financial Services": 12,
+        "Technology": 8
+      },
+      "full_assignment_count": 11520,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Consumer Cyclical": 2,
+        "Industrials": 1,
+        "Technology": 17
+      },
+      "full_assignment_count": 68,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-20",
+      "component_assignment_counts": {
+        "Basic Materials": 20,
+        "Consumer Cyclical": 6,
+        "Industrials": 3,
+        "Technology": 42
+      },
+      "full_assignment_count": 15120,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-08-20",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 4,
+        "Financial Services": 2,
+        "Technology": 3,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-20",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 24,
+        "Financial Services": 5,
+        "Technology": 8,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-08-20",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 3,
+        "Financial Services": 1,
+        "Healthcare": 0,
+        "Industrials": 1,
+        "Technology": 5
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-20",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 20,
+        "Financial Services": 5,
+        "Healthcare": 0,
+        "Industrials": 3,
+        "Technology": 8
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-21",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Industrials": 0,
+        "Technology": 192
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-08-21",
+      "component_assignment_counts": {
+        "Basic Materials": 4,
+        "Industrials": 42,
+        "Technology": 336
+      },
+      "full_assignment_count": 56448,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-21",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Industrials": 0,
+        "Technology": 192
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-08-21",
+      "component_assignment_counts": {
+        "Basic Materials": 4,
+        "Industrials": 42,
+        "Technology": 336
+      },
+      "full_assignment_count": 56448,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-08-21",
+      "component_assignment_counts": {
+        "Healthcare": 0,
+        "Industrials": 0,
+        "Technology": 80
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-08-21",
+      "component_assignment_counts": {
+        "Healthcare": 1,
+        "Industrials": 12,
+        "Technology": 120
+      },
+      "full_assignment_count": 1440,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-08-21",
+      "component_assignment_counts": {
+        "Industrials": 0,
+        "Technology": 56
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-21",
+      "component_assignment_counts": {
+        "Industrials": 6,
+        "Technology": 120
+      },
+      "full_assignment_count": 720,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-08-21",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Financial Services": 0,
+        "Healthcare": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-21",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Financial Services": 0,
+        "Healthcare": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-08-21",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 1,
+        "Industrials": 0,
+        "Technology": 80
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-21",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Industrials": 12,
+        "Technology": 120
+      },
+      "full_assignment_count": 2880,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-08-21",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Financial Services": 1,
+        "Healthcare": 0,
+        "Industrials": 3,
+        "Technology": 18
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-21",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Financial Services": 4,
+        "Healthcare": 1,
+        "Industrials": 5,
+        "Technology": 42
+      },
+      "full_assignment_count": 1680,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-08-21",
+      "component_assignment_counts": {
+        "Industrials": 0,
+        "Technology": 56
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-21",
+      "component_assignment_counts": {
+        "Industrials": 6,
+        "Technology": 120
+      },
+      "full_assignment_count": 720,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-24",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Industrials": 2,
+        "Technology": 48
+      },
+      "full_assignment_count": 192,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-08-24",
+      "component_assignment_counts": {
+        "Basic Materials": 30,
+        "Industrials": 7,
+        "Technology": 120
+      },
+      "full_assignment_count": 25200,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-24",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Industrials": 2,
+        "Technology": 48
+      },
+      "full_assignment_count": 192,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-08-24",
+      "component_assignment_counts": {
+        "Basic Materials": 30,
+        "Industrials": 7,
+        "Technology": 120
+      },
+      "full_assignment_count": 25200,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-08-24",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Industrials": 0,
+        "Technology": 10
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-08-24",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Industrials": 3,
+        "Technology": 24
+      },
+      "full_assignment_count": 144,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-08-24",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Financial Services": 0,
+        "Industrials": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-24",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Financial Services": 0,
+        "Industrials": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-08-24",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Consumer Cyclical": 0,
+        "Financial Services": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-24",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Consumer Cyclical": 2,
+        "Financial Services": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-08-24",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Industrials": 0,
+        "Technology": 15
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-24",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Industrials": 2,
+        "Technology": 30
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-08-24",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Energy": 0,
+        "Financial Services": 1,
+        "Technology": 11
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-24",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Energy": 0,
+        "Financial Services": 20,
+        "Technology": 30
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-08-24",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Financial Services": 0,
+        "Industrials": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-24",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Financial Services": 0,
+        "Industrials": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-25",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Industrials": 5,
+        "Technology": 38
+      },
+      "full_assignment_count": 190,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-08-25",
+      "component_assignment_counts": {
+        "Basic Materials": 5,
+        "Industrials": 12,
+        "Technology": 1680
+      },
+      "full_assignment_count": 100800,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-25",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Industrials": 5,
+        "Technology": 38
+      },
+      "full_assignment_count": 190,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-08-25",
+      "component_assignment_counts": {
+        "Basic Materials": 5,
+        "Industrials": 12,
+        "Technology": 1680
+      },
+      "full_assignment_count": 100800,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-08-25",
+      "component_assignment_counts": {
+        "Financial Services": 1,
+        "Industrials": 3,
+        "Technology": 19
+      },
+      "full_assignment_count": 57,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-08-25",
+      "component_assignment_counts": {
+        "Financial Services": 8,
+        "Industrials": 7,
+        "Technology": 840
+      },
+      "full_assignment_count": 47040,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Financial Services": 2,
+        "Industrials": 2,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 4,
+        "Financial Services": 42,
+        "Industrials": 7,
+        "Technology": 72
+      },
+      "full_assignment_count": 84672,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Financial Services": 4,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 6,
+        "Financial Services": 120,
+        "Technology": 10
+      },
+      "full_assignment_count": 7200,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Financial Services": 1,
+        "Industrials": 3,
+        "Technology": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 6,
+        "Financial Services": 8,
+        "Industrials": 7,
+        "Technology": 72
+      },
+      "full_assignment_count": 24192,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 1,
+        "Industrials": 8,
+        "Technology": 11
+      },
+      "full_assignment_count": 88,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 4,
+        "Industrials": 30,
+        "Technology": 336
+      },
+      "full_assignment_count": 40320,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Financial Services": 2,
+        "Industrials": 2,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-25",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 4,
+        "Financial Services": 42,
+        "Industrials": 7,
+        "Technology": 72
+      },
+      "full_assignment_count": 84672,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 25,
+        "Industrials": 10,
+        "Technology": 100
+      },
+      "full_assignment_count": 25000,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 182,
+        "Industrials": 16,
+        "Technology": 4896
+      },
+      "full_assignment_count": 14257152,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 25,
+        "Industrials": 10,
+        "Technology": 100
+      },
+      "full_assignment_count": 25000,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 182,
+        "Industrials": 16,
+        "Technology": 4896
+      },
+      "full_assignment_count": 14257152,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 74,
+        "Industrials": 5,
+        "Technology": 5
+      },
+      "full_assignment_count": 1850,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 720,
+        "Industrials": 9,
+        "Technology": 72
+      },
+      "full_assignment_count": 466560,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 126,
+        "Financial Services": 4,
+        "Industrials": 7
+      },
+      "full_assignment_count": 3528,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 720,
+        "Financial Services": 8,
+        "Industrials": 56
+      },
+      "full_assignment_count": 322560,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 182,
+        "Industrials": 3,
+        "Technology": 9
+      },
+      "full_assignment_count": 4914,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 720,
+        "Industrials": 9,
+        "Technology": 72
+      },
+      "full_assignment_count": 466560,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 7,
+        "Energy": 0,
+        "Industrials": 5,
+        "Technology": 12
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 12,
+        "Energy": 0,
+        "Industrials": 9,
+        "Technology": 336
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Industrials": 3,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 3024,
+        "Industrials": 9,
+        "Technology": 10
+      },
+      "full_assignment_count": 272160,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 126,
+        "Financial Services": 4,
+        "Industrials": 7
+      },
+      "full_assignment_count": 3528,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-08-28",
+      "component_assignment_counts": {
+        "Basic Materials": 720,
+        "Financial Services": 8,
+        "Industrials": 56
+      },
+      "full_assignment_count": 322560,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-08-31",
+      "component_assignment_counts": {
+        "Basic Materials": 3,
+        "Industrials": 6,
+        "Technology": 150
+      },
+      "full_assignment_count": 2700,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-08-31",
+      "component_assignment_counts": {
+        "Basic Materials": 9,
+        "Industrials": 90,
+        "Technology": 7980
+      },
+      "full_assignment_count": 6463800,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-08-31",
+      "component_assignment_counts": {
+        "Basic Materials": 3,
+        "Industrials": 6,
+        "Technology": 150
+      },
+      "full_assignment_count": 2700,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-08-31",
+      "component_assignment_counts": {
+        "Basic Materials": 9,
+        "Industrials": 90,
+        "Technology": 7980
+      },
+      "full_assignment_count": 6463800,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-01",
+      "component_assignment_counts": {
+        "Financial Services": 6,
+        "Industrials": 5,
+        "Technology": 2604
+      },
+      "full_assignment_count": 78120,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-01",
+      "component_assignment_counts": {
+        "Financial Services": 17,
+        "Industrials": 10,
+        "Technology": 116280
+      },
+      "full_assignment_count": 19767600,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-01",
+      "component_assignment_counts": {
+        "Financial Services": 6,
+        "Industrials": 5,
+        "Technology": 2604
+      },
+      "full_assignment_count": 78120,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-01",
+      "component_assignment_counts": {
+        "Financial Services": 17,
+        "Industrials": 10,
+        "Technology": 116280
+      },
+      "full_assignment_count": 19767600,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-09-01",
+      "component_assignment_counts": {
+        "Financial Services": 6,
+        "Industrials": 0,
+        "Technology": 4
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-09-01",
+      "component_assignment_counts": {
+        "Financial Services": 16,
+        "Industrials": 4,
+        "Technology": 120
+      },
+      "full_assignment_count": 7680,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "component_assignment_counts": {
+        "Communication Services": 1,
+        "Financial Services": 308,
+        "Healthcare": 1
+      },
+      "full_assignment_count": 308,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-01",
+      "component_assignment_counts": {
+        "Communication Services": 1,
+        "Financial Services": 17160,
+        "Healthcare": 1
+      },
+      "full_assignment_count": 17160,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-09-01",
+      "component_assignment_counts": {
+        "Consumer Defensive": 0,
+        "Financial Services": 168,
+        "Healthcare": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-09-01",
+      "component_assignment_counts": {
+        "Consumer Defensive": 0,
+        "Financial Services": 17160,
+        "Healthcare": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-09-01",
+      "component_assignment_counts": {
+        "Communication Services": 1,
+        "Consumer Cyclical": 2,
+        "Energy": 0,
+        "Industrials": 0,
+        "Technology": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-01",
+      "component_assignment_counts": {
+        "Communication Services": 1,
+        "Consumer Cyclical": 3,
+        "Energy": 0,
+        "Industrials": 4,
+        "Technology": 42
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-09-01",
+      "component_assignment_counts": {
+        "Communication Services": 1,
+        "Consumer Cyclical": 0,
+        "Consumer Defensive": 0,
+        "Financial Services": 0,
+        "Industrials": 1,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 1
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-01",
+      "component_assignment_counts": {
+        "Communication Services": 1,
+        "Consumer Cyclical": 3,
+        "Consumer Defensive": 0,
+        "Financial Services": 16,
+        "Industrials": 4,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 1
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-09-01",
+      "component_assignment_counts": {
+        "Communication Services": 1,
+        "Financial Services": 308,
+        "Healthcare": 1
+      },
+      "full_assignment_count": 308,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-01",
+      "component_assignment_counts": {
+        "Communication Services": 1,
+        "Financial Services": 17160,
+        "Healthcare": 1
+      },
+      "full_assignment_count": 17160,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 6,
+        "Industrials": 1,
+        "Technology": 6
+      },
+      "full_assignment_count": 36,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 20,
+        "Industrials": 8,
+        "Technology": 336
+      },
+      "full_assignment_count": 53760,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 6,
+        "Industrials": 1,
+        "Technology": 6
+      },
+      "full_assignment_count": 36,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 20,
+        "Industrials": 8,
+        "Technology": 336
+      },
+      "full_assignment_count": 53760,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 6,
+        "Financial Services": 2,
+        "Industrials": 0,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 20,
+        "Financial Services": 5,
+        "Industrials": 1,
+        "Technology": 12
+      },
+      "full_assignment_count": 1200,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Financial Services": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 24,
+        "Financial Services": 6
+      },
+      "full_assignment_count": 144,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-09-03",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Financial Services": 0,
+        "Technology": 4
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-09-03",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Financial Services": 6,
+        "Technology": 12
+      },
+      "full_assignment_count": 144,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 6,
+        "Industrials": 0,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 20,
+        "Industrials": 0,
+        "Technology": 12
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 4,
+        "Financial Services": 4,
+        "Technology": 2
+      },
+      "full_assignment_count": 32,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 24,
+        "Financial Services": 12,
+        "Technology": 5
+      },
+      "full_assignment_count": 1440,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Financial Services": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-03",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 24,
+        "Financial Services": 6
+      },
+      "full_assignment_count": 144,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Financial Services": 0,
+        "Industrials": 1,
+        "Technology": 10
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 5,
+        "Financial Services": 2,
+        "Industrials": 10,
+        "Technology": 336
+      },
+      "full_assignment_count": 33600,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Financial Services": 0,
+        "Industrials": 1,
+        "Technology": 10
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 5,
+        "Financial Services": 2,
+        "Industrials": 10,
+        "Technology": 336
+      },
+      "full_assignment_count": 33600,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Financial Services": 0,
+        "Industrials": 0,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 4,
+        "Financial Services": 2,
+        "Industrials": 7,
+        "Technology": 120
+      },
+      "full_assignment_count": 6720,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Consumer Defensive": 0,
+        "Healthcare": 0,
+        "Industrials": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Consumer Defensive": 2,
+        "Healthcare": 1,
+        "Industrials": 7
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-09-07",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Communication Services": 2,
+        "Consumer Defensive": 1,
+        "Healthcare": 0,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-09-07",
+      "component_assignment_counts": {
+        "Basic Materials": 3,
+        "Communication Services": 3,
+        "Consumer Defensive": 2,
+        "Healthcare": 0,
+        "Technology": 8
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-09-07",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Consumer Cyclical": 1,
+        "Industrials": 0,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-07",
+      "component_assignment_counts": {
+        "Basic Materials": 3,
+        "Consumer Cyclical": 6,
+        "Industrials": 7,
+        "Technology": 42
+      },
+      "full_assignment_count": 5292,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-09-07",
+      "component_assignment_counts": {
+        "Communication Services": 0,
+        "Consumer Cyclical": 1,
+        "Consumer Defensive": 1,
+        "Industrials": 10
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-07",
+      "component_assignment_counts": {
+        "Communication Services": 2,
+        "Consumer Cyclical": 4,
+        "Consumer Defensive": 2,
+        "Industrials": 30
+      },
+      "full_assignment_count": 480,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Consumer Defensive": 0,
+        "Healthcare": 0,
+        "Industrials": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-07",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Consumer Defensive": 2,
+        "Healthcare": 1,
+        "Industrials": 7
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-08",
+      "component_assignment_counts": {
+        "Basic Materials": 3,
+        "Financial Services": 0,
+        "Industrials": 4,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-08",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Financial Services": 2,
+        "Industrials": 42,
+        "Technology": 5
+      },
+      "full_assignment_count": 2520,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-08",
+      "component_assignment_counts": {
+        "Basic Materials": 3,
+        "Financial Services": 0,
+        "Industrials": 4,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-08",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Financial Services": 2,
+        "Industrials": 42,
+        "Technology": 5
+      },
+      "full_assignment_count": 2520,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-09-08",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Financial Services": 0,
+        "Industrials": 2,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-09-08",
+      "component_assignment_counts": {
+        "Basic Materials": 3,
+        "Financial Services": 2,
+        "Industrials": 20,
+        "Technology": 4
+      },
+      "full_assignment_count": 480,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-08",
+      "component_assignment_counts": {
+        "Communication Services": 2,
+        "Financial Services": 0,
+        "Industrials": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-08",
+      "component_assignment_counts": {
+        "Communication Services": 4,
+        "Financial Services": 2,
+        "Industrials": 24
+      },
+      "full_assignment_count": 192,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-09-08",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Communication Services": 0,
+        "Consumer Defensive": 0,
+        "Healthcare": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-09-08",
+      "component_assignment_counts": {
+        "Basic Materials": 3,
+        "Communication Services": 0,
+        "Consumer Defensive": 1,
+        "Healthcare": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-09-08",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Healthcare": 0,
+        "Industrials": 0,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-08",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Healthcare": 1,
+        "Industrials": 24,
+        "Technology": 4
+      },
+      "full_assignment_count": 192,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-09-08",
+      "component_assignment_counts": {
+        "Communication Services": 0,
+        "Consumer Cyclical": 0,
+        "Consumer Defensive": 0,
+        "Industrials": 2,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-08",
+      "component_assignment_counts": {
+        "Communication Services": 6,
+        "Consumer Cyclical": 2,
+        "Consumer Defensive": 1,
+        "Industrials": 6,
+        "Utilities": 1
+      },
+      "full_assignment_count": 72,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-09-08",
+      "component_assignment_counts": {
+        "Communication Services": 2,
+        "Financial Services": 0,
+        "Industrials": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-08",
+      "component_assignment_counts": {
+        "Communication Services": 4,
+        "Financial Services": 2,
+        "Industrials": 24
+      },
+      "full_assignment_count": 192,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Consumer Defensive": 0,
+        "Industrials": 10,
+        "Technology": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 8,
+        "Consumer Defensive": 1,
+        "Industrials": 504,
+        "Technology": 4
+      },
+      "full_assignment_count": 16128,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Consumer Defensive": 0,
+        "Industrials": 10,
+        "Technology": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 8,
+        "Consumer Defensive": 1,
+        "Industrials": 504,
+        "Technology": 4
+      },
+      "full_assignment_count": 16128,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 4,
+        "Consumer Defensive": 0,
+        "Industrials": 2,
+        "Technology": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 5,
+        "Consumer Defensive": 0,
+        "Industrials": 120,
+        "Technology": 4
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-09",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 1,
+        "Healthcare": 0,
+        "Industrials": 3,
+        "Real Estate": 0,
+        "Technology": 1,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 1
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-09",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Healthcare": 2,
+        "Industrials": 8,
+        "Real Estate": 0,
+        "Technology": 4,
+        "Utilities": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 1
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Healthcare": 0,
+        "Industrials": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Healthcare": 0,
+        "Industrials": 8
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 4,
+        "Industrials": 0,
+        "Technology": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 5,
+        "Industrials": 120,
+        "Technology": 4
+      },
+      "full_assignment_count": 2400,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Consumer Cyclical": 0,
+        "Industrials": 3,
+        "Technology": 0,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-09",
+      "component_assignment_counts": {
+        "Basic Materials": 12,
+        "Consumer Cyclical": 2,
+        "Industrials": 8,
+        "Technology": 4,
+        "Utilities": 1
+      },
+      "full_assignment_count": 768,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-09-09",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 1,
+        "Healthcare": 0,
+        "Industrials": 3,
+        "Real Estate": 0,
+        "Technology": 1,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 1
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-09",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 2,
+        "Healthcare": 2,
+        "Industrials": 8,
+        "Real Estate": 0,
+        "Technology": 4,
+        "Utilities": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 1
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-10",
+      "component_assignment_counts": {
+        "Basic Materials": 4,
+        "Communication Services": 0,
+        "Industrials": 0,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-10",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Communication Services": 0,
+        "Industrials": 6,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-10",
+      "component_assignment_counts": {
+        "Basic Materials": 4,
+        "Communication Services": 0,
+        "Industrials": 0,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-10",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Communication Services": 0,
+        "Industrials": 6,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-11",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Communication Services": 0,
+        "Industrials": 0,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-11",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Communication Services": 0,
+        "Industrials": 0,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-11",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Communication Services": 0,
+        "Industrials": 0,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-11",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Communication Services": 0,
+        "Industrials": 0,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-14",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Industrials": 1,
+        "Technology": 1,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-14",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 1,
+        "Industrials": 6,
+        "Technology": 4,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-14",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 0,
+        "Industrials": 1,
+        "Technology": 1,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-14",
+      "component_assignment_counts": {
+        "Consumer Cyclical": 1,
+        "Industrials": 6,
+        "Technology": 4,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-16",
+      "component_assignment_counts": {
+        "Financial Services": 0,
+        "Real Estate": 0,
+        "Technology": 0,
+        "Utilities": 5
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-16",
+      "component_assignment_counts": {
+        "Financial Services": 0,
+        "Real Estate": 1,
+        "Technology": 0,
+        "Utilities": 12
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-16",
+      "component_assignment_counts": {
+        "Financial Services": 0,
+        "Real Estate": 0,
+        "Technology": 0,
+        "Utilities": 5
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-16",
+      "component_assignment_counts": {
+        "Financial Services": 0,
+        "Real Estate": 1,
+        "Technology": 0,
+        "Utilities": 12
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_adv_0.5_to_2/2026-09-16",
+      "component_assignment_counts": {
+        "Financial Services": 0,
+        "Industrials": 2,
+        "Real Estate": 0,
+        "Technology": 0,
+        "Utilities": 5
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/score_top6/sector_only_sensitivity/2026-09-16",
+      "component_assignment_counts": {
+        "Financial Services": 0,
+        "Industrials": 3,
+        "Real Estate": 0,
+        "Technology": 1,
+        "Utilities": 12
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_adv_0.5_to_2/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Industrials": 0,
+        "Technology": 0,
+        "Utilities": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intel_top6/sector_only_sensitivity/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Industrials": 0,
+        "Technology": 1,
+        "Utilities": 5
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_adv_0.5_to_2/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Healthcare": 0,
+        "Industrials": 0,
+        "Utilities": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/momentum_top6/sector_only_sensitivity/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Healthcare": 0,
+        "Industrials": 2,
+        "Utilities": 5
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_adv_0.5_to_2/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Industrials": 2,
+        "Real Estate": 0,
+        "Technology": 0,
+        "Utilities": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/reversal_top6/sector_only_sensitivity/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Industrials": 3,
+        "Real Estate": 0,
+        "Technology": 0,
+        "Utilities": 5
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_adv_0.5_to_2/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Industrials": 2,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/quality_top6/sector_only_sensitivity/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Industrials": 3,
+        "Utilities": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_adv_0.5_to_2/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Industrials": 0,
+        "Technology": 0,
+        "Utilities": 3
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "accepted_common_features/intended_intel_top6/sector_only_sensitivity/2026-09-16",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Industrials": 0,
+        "Technology": 1,
+        "Utilities": 5
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-21",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Technology": 22
+      },
+      "full_assignment_count": 22,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-21",
+      "component_assignment_counts": {
+        "Basic Materials": 12,
+        "Technology": 73440
+      },
+      "full_assignment_count": 881280,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-21",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Technology": 22
+      },
+      "full_assignment_count": 22,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-21",
+      "component_assignment_counts": {
+        "Basic Materials": 12,
+        "Technology": 73440
+      },
+      "full_assignment_count": 881280,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-22",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Industrials": 0,
+        "Technology": 334
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-22",
+      "component_assignment_counts": {
+        "Basic Materials": 4,
+        "Industrials": 5,
+        "Technology": 755160
+      },
+      "full_assignment_count": 15103200,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-22",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Industrials": 0,
+        "Technology": 334
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-22",
+      "component_assignment_counts": {
+        "Basic Materials": 4,
+        "Industrials": 5,
+        "Technology": 755160
+      },
+      "full_assignment_count": 15103200,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-23",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Technology": 648
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-23",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Technology": 175560
+      },
+      "full_assignment_count": 351120,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-23",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Technology": 648
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-23",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Technology": 175560
+      },
+      "full_assignment_count": 351120,
+      "largest_sector_slot_n": 4
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-24",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Healthcare": 11,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-24",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Healthcare": 56,
+        "Technology": 20
+      },
+      "full_assignment_count": 6720,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-24",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Healthcare": 11,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-24",
+      "component_assignment_counts": {
+        "Basic Materials": 6,
+        "Healthcare": 56,
+        "Technology": 20
+      },
+      "full_assignment_count": 6720,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-29",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Consumer Cyclical": 1,
+        "Healthcare": 6,
+        "Industrials": 2,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-29",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Consumer Cyclical": 1,
+        "Healthcare": 9,
+        "Industrials": 4,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-29",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Consumer Cyclical": 1,
+        "Healthcare": 6,
+        "Industrials": 2,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-29",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Consumer Cyclical": 1,
+        "Healthcare": 9,
+        "Industrials": 4,
+        "Technology": 0
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-09-30",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Consumer Defensive": 0,
+        "Healthcare": 7,
+        "Industrials": 5,
+        "Technology": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-09-30",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Consumer Defensive": 3,
+        "Healthcare": 14,
+        "Industrials": 110,
+        "Technology": 3
+      },
+      "full_assignment_count": 27720,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-09-30",
+      "component_assignment_counts": {
+        "Basic Materials": 1,
+        "Consumer Defensive": 0,
+        "Healthcare": 7,
+        "Industrials": 5,
+        "Technology": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-09-30",
+      "component_assignment_counts": {
+        "Basic Materials": 2,
+        "Consumer Defensive": 3,
+        "Healthcare": 14,
+        "Industrials": 110,
+        "Technology": 3
+      },
+      "full_assignment_count": 27720,
+      "largest_sector_slot_n": 2
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-10-08",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Healthcare": 3,
+        "Industrials": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-10-08",
+      "component_assignment_counts": {
+        "Basic Materials": 210,
+        "Healthcare": 42,
+        "Industrials": 16
+      },
+      "full_assignment_count": 141120,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-10-08",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Healthcare": 3,
+        "Industrials": 1
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-10-08",
+      "component_assignment_counts": {
+        "Basic Materials": 210,
+        "Healthcare": 42,
+        "Industrials": 16
+      },
+      "full_assignment_count": 141120,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_adv_0.5_to_2/2026-10-09",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Consumer Defensive": 0,
+        "Industrials": 5,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/featured_top6/sector_only_sensitivity/2026-10-09",
+      "component_assignment_counts": {
+        "Basic Materials": 4896,
+        "Consumer Defensive": 10,
+        "Industrials": 30,
+        "Technology": 12
+      },
+      "full_assignment_count": 17625600,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_adv_0.5_to_2/2026-10-09",
+      "component_assignment_counts": {
+        "Basic Materials": 0,
+        "Consumer Defensive": 0,
+        "Industrials": 5,
+        "Technology": 2
+      },
+      "full_assignment_count": 0,
+      "largest_sector_slot_n": 3
+    },
+    {
+      "case_id": "broad_qualified/score_top6/sector_only_sensitivity/2026-10-09",
+      "component_assignment_counts": {
+        "Basic Materials": 4896,
+        "Consumer Defensive": 10,
+        "Industrials": 30,
+        "Technology": 12
+      },
+      "full_assignment_count": 17625600,
+      "largest_sector_slot_n": 3
+    }
+  ],
+  "status": "PASS"
+}

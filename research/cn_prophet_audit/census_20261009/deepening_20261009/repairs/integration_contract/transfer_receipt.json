@@ -1,0 +1,96 @@
+{
+  "archive_bytes": 57078,
+  "archive_sha256": "3c1d3f9f36f243ae82cd7b36945b70c7ab97042957e1f6c9249c7c577f2ae24b",
+  "files": {
+    "execution.log": {
+      "bytes": 2237,
+      "sha256": "6056547d9202e47e01b3f7265df999e884745330ec79eb39660559eb8b4fe013"
+    },
+    "integration_fixture.json": {
+      "bytes": 34633,
+      "sha256": "c9dfccae6b07b9c045a49de17b8f1318f1ac0577c116099389a960bcf00efcc7"
+    },
+    "integration_results.json": {
+      "bytes": 64069,
+      "sha256": "d877f157bcfc8c8c74359dd3cdff1bf253724bfc6538cb7058f7385504b2f455"
+    },
+    "native_driver_control/close.json": {
+      "bytes": 6199,
+      "sha256": "363da8ac7958dbb9c456b6a432f759d435dfee1c17f36c57c28a1d9fcd4585de"
+    },
+    "native_driver_control/cn_board_confirmation.json": {
+      "bytes": 3509,
+      "sha256": "825bc4d83059d2e80df49ee1fbf57704a51e882363bd1da898817d5044ae29c2"
+    },
+    "native_driver_control/corrupt.parquet": {
+      "bytes": 7426,
+      "sha256": "da267baf665d359f4577b098e581620551b11551070d9111916509151a928719"
+    },
+    "native_driver_control/events.json": {
+      "bytes": 912,
+      "sha256": "3da35af33a2474700de371f405b59486a391048ae5d0e2a508d50f13469001bd"
+    },
+    "native_driver_control/forward.parquet": {
+      "bytes": 7415,
+      "sha256": "27eca1ed6767c3d94eb67a48fd7cd008230de46863d39753bd193bdeb6410d8c"
+    },
+    "native_probe_debug.json": {
+      "bytes": 4058,
+      "sha256": "677150882d8958e11913bfc1c1616d2074485c7854218c55049c673ac62654ec"
+    },
+    "parquet_cases/conflicting_daily_keys_forward.parquet": {
+      "bytes": 28000,
+      "sha256": "0ca741952b057ddd9f66873e3afc09e0350cff79c7eaa6d6e7ce14c2353c23bc"
+    },
+    "parquet_cases/conflicting_daily_keys_reverse.parquet": {
+      "bytes": 27999,
+      "sha256": "193ea32d5cb4e3673d6cf0994b1ec4ef3452d3f67ef60122f1bf4110443b1104"
+    },
+    "parquet_cases/exact_duplicate_daily_key.parquet": {
+      "bytes": 27993,
+      "sha256": "c6a79c17e1d71fe6fdf559c96cdd1697a0185de69b725215bd7efeb04ff58d11"
+    },
+    "parquet_cases/legacy_compatibility.parquet": {
+      "bytes": 28039,
+      "sha256": "6e3557d0073a5a22d21d23f9f0384d2753b6e9cdd478618eb1dda0904359a671"
+    },
+    "parquet_cases/native_empty.parquet": {
+      "bytes": 27992,
+      "sha256": "5fe4575776d110f78d9698f039cbcdd4a3f1901ef0a07156cbedb0f35d199660"
+    },
+    "parquet_cases/readable_empty_unknown_table.parquet": {
+      "bytes": 1076,
+      "sha256": "f7a70a148c097942befc0925c522ff0e385ae02ceafe9150d13c0a1581f428e8"
+    },
+    "parquet_cases/readable_unknown_row_schema.parquet": {
+      "bytes": 27980,
+      "sha256": "98fc6578ba4c45ff8f5d7946cb3865be15ced0d487bd2cac808103a3006efa49"
+    },
+    "parquet_cases/readable_unrelated_table.parquet": {
+      "bytes": 1178,
+      "sha256": "6982eac8cad08e855f9e00ad7b1f3881158fbce7256b356deff88e5f649b7853"
+    },
+    "parquet_receipts.json": {
+      "bytes": 4934,
+      "sha256": "922d97c50a56aafc7a2d86a2363f78b87b86c70c456882861b8dee7062596bb7"
+    },
+    "repair_cases.json": {
+      "bytes": 231639,
+      "sha256": "ab57d30829ce31da920b90061c3190a58d42aba731bf1b044c2382f7da1e6601"
+    },
+    "synthetic_forward.parquet": {
+      "bytes": 27992,
+      "sha256": "5fe4575776d110f78d9698f039cbcdd4a3f1901ef0a07156cbedb0f35d199660"
+    },
+    "synthetic_settlement_board.json.gz": {
+      "bytes": 700097,
+      "sha256": "18bc127682095a27642556b7082c28ea33038b1f83898335cb55847760240c45"
+    },
+    "unreadable_ledger_guard.parquet": {
+      "bytes": 37,
+      "sha256": "9a170269a539970d5dcafa39b976ee7034c8263bdbb21f069997911430ac485a"
+    }
+  },
+  "omitted_duplicate": "native_driver_control/standouts.json equals decompressed synthetic_settlement_board.json.gz",
+  "unchanged_compressed_canonical_verified_from_previous_transfer": true
+}

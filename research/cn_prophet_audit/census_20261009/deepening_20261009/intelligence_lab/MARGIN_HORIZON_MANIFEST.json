@@ -1,0 +1,47 @@
+{
+  "schema": "research.margin_horizon_manifest.v1",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "files": [
+    {
+      "path": "MARGIN_HORIZON_TRACE.md",
+      "bytes": 6248,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e"
+    },
+    {
+      "path": "pinned_margin_collector.py",
+      "bytes": 12249,
+      "sha256": "55fb01d20519069aec85f23328a5507c95d86cec2d2fd6dbb3e14eb059b0cdd6"
+    },
+    {
+      "path": "margin_horizon_probe.py",
+      "bytes": 8000,
+      "sha256": "1ad0ed0e5bd71011fff7b0f7fe5c54a75d9276528798c2b3ee8df0b4cbeb9fc4"
+    },
+    {
+      "path": "margin_horizon_results.json",
+      "bytes": 17656,
+      "sha256": "b64f137631c288b9bf85fa4adbf7f3cd4c013fccd2ab316aa83affa8c3bd923d"
+    },
+    {
+      "path": "MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 469,
+      "sha256": "936149532bc1ad92cdf2e58386e2528b443fce3e8e0b6f1babae698808704a02"
+    },
+    {
+      "path": "margin_horizon_development/MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 596,
+      "sha256": "78b3bb8ced8d25b629dd871094e1a0a6e34d7a5b83acea514ea6c851e5488e13"
+    },
+    {
+      "path": "margin_horizon_development/margin_horizon_probe.py",
+      "bytes": 6752,
+      "sha256": "bd3875d2cf30fb997b0b04ebbcc72d021d74366977c386526ca77bfc9835c665"
+    },
+    {
+      "path": "margin_horizon_development/margin_horizon_results.json",
+      "bytes": 15844,
+      "sha256": "75e4780df5326f729657c868c3aebc970d408211a38b421a4da43273e3a0f90d"
+    }
+  ],
+  "scope": "Final eight-scenario native source/actual data census plus retained initial slice-only development evidence."
+}

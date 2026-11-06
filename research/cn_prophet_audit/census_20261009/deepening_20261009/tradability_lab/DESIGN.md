@@ -1,0 +1,16 @@
+# CN pack tradability seam: isolated research design
+
+Recorded 2026-10-10 UTC before the full metadata census and discriminating experiments. Source pin: `3d90aad6d83152dfeeaf8345bc995826ac9d3139`. Writes are confined to this `tradability_lab/` directory. Original research, completed labs/reviews, production code, caches and latches remain unchanged. No collector, vendor call, live gate grid or publication is run.
+
+## Questions and fixed scope
+
+1. Trace the exact native `scripts/build_cn_live_pack.py` caller, `cn_pack.filter_universe`, the nightly `stock_tradability_ok` predicate and its metadata loaders. Identify schema, units, provenance, current coverage and missing/stale behavior. Reuse the existing nightly owner and screen formulas; do not create a new universe or metadata policy.
+2. Reconstruct the full native universe and existing metadata inputs from immutable Git objects. Use read-only in-memory parquet adapters for the existing native functions. Record source and data hashes, source dates and per-name coverage. Compute metadata/eligibility counts only, with no return labels or feature threshold optimization.
+3. Capture the actual native caller's keyword arguments and stop the unmodified native build at the pre-gate frontier to inspect which names reach probing. Use a small fixture of actual names and close-series tails; the integration lab already exercised the genuine three-name gate/probe. Select structural witnesses deterministically: the three prior integration names, then the first sorted actual name in each supported ST, market-cap, ADV, stale-series or missing-input category. Retain absent categories explicitly rather than inventing current cases.
+4. Exercise the native predicate and owner loader branches with labeled synthetic missing/stale inputs, exact threshold boundaries and the native drop-reason versus Boolean-map distinction. Verify how empty/partial maps and injected series behave. These tests describe existing behavior and a proposed caller argument; they do not authorize different missing-data or stale-data rules.
+5. Distinguish the nightly 15-calendar-day stale-series exclusion from the pack's native session-lag guard. Do not claim a formal suspension feed exists unless the source/data demonstrate one. Source freshness statements must follow executed code, not comments alone.
+6. Independently reproduce the weight laboratory using its exact design, input, native functions and receipt in an owned temporary directory. Check current normalized priors and label every future-card, wrong-target and malformed-evidence case synthetic. No actual board, return or execution effect is inferred.
+
+## Acceptance and limits
+
+The deliverable must state the minimum compatible caller/owner change, exact required metadata fields and units, observed coverage/missingness, tested failure behavior and residual integration premises. The offline frontier test establishes filtering and supplied arguments, not full-universe gate parity or natural production execution. Current caches do not establish historical first-seen availability. Any stale/missing-input policy that differs from the existing nightly owner remains a separate owner decision, rather than a silently introduced stricter universe.

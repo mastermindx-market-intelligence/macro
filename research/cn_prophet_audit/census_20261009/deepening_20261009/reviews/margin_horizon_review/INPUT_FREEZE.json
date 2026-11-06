@@ -1,0 +1,15 @@
+{
+  "schema": "margin_horizon_review_input_freeze_v1",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "final_manifest_sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+  "payload_files": 8,
+  "probe_sha256": "1ad0ed0e5bd71011fff7b0f7fe5c54a75d9276528798c2b3ee8df0b4cbeb9fc4",
+  "results_sha256": "b64f137631c288b9bf85fa4adbf7f3cd4c013fccd2ab316aa83affa8c3bd923d",
+  "final_memo_sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+  "pre_review_memo_custody_correction": {
+    "initial_manifest_sha256": "42602c5fef7c15985fc3ea87c035418d71f9423a839cff1e2e0d24c1b353f2a5",
+    "initial_memo_sha256": "bc413fac07df7eadcf4a923dbb4f140fdd23d6d068ba563c0e6715f21238d65a",
+    "change": "Only prose source-text custody sentence corrected. Seven other payload identities unchanged. Initial identities are retained here; their bytes were not separately frozen before the principal correction.",
+    "exact_extras_consumer_retained": "pinned_china_extras.py"
+  }
+}

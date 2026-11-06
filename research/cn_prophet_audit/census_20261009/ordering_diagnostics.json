@@ -1,0 +1,609 @@
+{
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "input_sha256": {
+    "site/factordata/china_standouts.json": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+    "data/china_prophet_rank/candidates.parquet": "18e6f74f5fe07dceb6b1fe6862fb723c0b60867afa0e5efbd8aa52e3bf7951d0",
+    "engine/china_board_rank.py": "504478d0a54919f6b471eace9e395294afdb91b00d0987d34cdf5b6201621e39"
+  },
+  "as_of": "2026-10-09",
+  "claim_boundary": "Observed routing and same-day selection sensitivity only; no realized-return, alpha, PIT replay, deployment or recommendation claim.",
+  "population_sources": "All-scored coverage and unavailable records use the candidate ledger; shortlist sensitivity uses the public artifact. Same-date value differences are retained below, not treated as one proven publication vintage.",
+  "public_candidate_same_date_coherence": {
+    "public_rows": 180,
+    "missing_in_candidate_snapshot": [],
+    "lane_disagreements": [],
+    "v3_score_disagreements": [],
+    "intel_score_disagreements": [
+      {
+        "ticker": "000973.SZ",
+        "public": 29.8,
+        "candidate": 29.88
+      },
+      {
+        "ticker": "002557.SZ",
+        "public": 0.6,
+        "candidate": 0.68
+      },
+      {
+        "ticker": "603659.SS",
+        "public": 45.5,
+        "candidate": 45.59
+      },
+      {
+        "ticker": "300768.SZ",
+        "public": 22.69,
+        "candidate": 22.77
+      },
+      {
+        "ticker": "601225.SS",
+        "public": 8.46,
+        "candidate": 8.66
+      },
+      {
+        "ticker": "601607.SS",
+        "public": 0.0,
+        "candidate": 0.41
+      },
+      {
+        "ticker": "002043.SZ",
+        "public": 29.08,
+        "candidate": 29.16
+      },
+      {
+        "ticker": "600050.SS",
+        "public": 1.62,
+        "candidate": 1.7
+      },
+      {
+        "ticker": "603707.SS",
+        "public": 18.15,
+        "candidate": 18.23
+      },
+      {
+        "ticker": "000959.SZ",
+        "public": 16.7,
+        "candidate": 16.78
+      },
+      {
+        "ticker": "600595.SS",
+        "public": 29.99,
+        "candidate": 30.08
+      },
+      {
+        "ticker": "600269.SS",
+        "public": 10.99,
+        "candidate": 11.07
+      },
+      {
+        "ticker": "300182.SZ",
+        "public": 44.72,
+        "candidate": 44.79
+      },
+      {
+        "ticker": "300294.SZ",
+        "public": 3.98,
+        "candidate": 4.35
+      },
+      {
+        "ticker": "600521.SS",
+        "public": 12.67,
+        "candidate": 12.73
+      },
+      {
+        "ticker": "603919.SS",
+        "public": 45.8,
+        "candidate": 45.89
+      },
+      {
+        "ticker": "600827.SS",
+        "public": 33.3,
+        "candidate": 33.71
+      },
+      {
+        "ticker": "300601.SZ",
+        "public": 5.74,
+        "candidate": 5.81
+      },
+      {
+        "ticker": "603866.SS",
+        "public": 35.24,
+        "candidate": 35.32
+      },
+      {
+        "ticker": "002007.SZ",
+        "public": 0.51,
+        "candidate": 0.58
+      },
+      {
+        "ticker": "688099.SS",
+        "public": 14.66,
+        "candidate": 14.72
+      },
+      {
+        "ticker": "002027.SZ",
+        "public": 21.98,
+        "candidate": 22.05
+      },
+      {
+        "ticker": "603127.SS",
+        "public": 1.34,
+        "candidate": 1.37
+      },
+      {
+        "ticker": "600757.SS",
+        "public": 1.94,
+        "candidate": 2.01
+      },
+      {
+        "ticker": "600037.SS",
+        "public": 34.16,
+        "candidate": 34.29
+      },
+      {
+        "ticker": "601858.SS",
+        "public": 43.31,
+        "candidate": 43.39
+      },
+      {
+        "ticker": "601766.SS",
+        "public": 25.41,
+        "candidate": 25.85
+      },
+      {
+        "ticker": "600478.SS",
+        "public": 34.92,
+        "candidate": 35.0
+      },
+      {
+        "ticker": "300409.SZ",
+        "public": 50.97,
+        "candidate": 51.14
+      },
+      {
+        "ticker": "688779.SS",
+        "public": 21.45,
+        "candidate": 21.52
+      },
+      {
+        "ticker": "600011.SS",
+        "public": 7.07,
+        "candidate": 7.48
+      },
+      {
+        "ticker": "600686.SS",
+        "public": 12.83,
+        "candidate": 12.91
+      },
+      {
+        "ticker": "000503.SZ",
+        "public": 41.37,
+        "candidate": 41.42
+      },
+      {
+        "ticker": "300750.SZ",
+        "public": 66.87,
+        "candidate": 69.6
+      },
+      {
+        "ticker": "600629.SS",
+        "public": 24.23,
+        "candidate": 24.3
+      },
+      {
+        "ticker": "600015.SS",
+        "public": 4.4,
+        "candidate": 4.55
+      },
+      {
+        "ticker": "600256.SS",
+        "public": 1.81,
+        "candidate": 1.9
+      }
+    ]
+  },
+  "controls": {
+    "exact_v3_featured_24_and_order_reproduced": true,
+    "measured_zero_keeps_intelligence_mode": true,
+    "unbuyable_missing_row_reverses_existing_pair_order": true,
+    "malformed_record_controls": {
+      "none": "fallback_v3",
+      "nan": "fallback_v3",
+      "text": "fallback_v3"
+    },
+    "all_pre_cap_qualified_have_measured_intel": true
+  },
+  "coverage": {
+    "all_scored": {
+      "n_rows": 1601,
+      "n_measured": 1597,
+      "n_unavailable": 4,
+      "n_fallback_v3": 4,
+      "measured_rate_pct": 99.8,
+      "complete": false,
+      "intel_coverage_complete": false
+    },
+    "raw_eligible": {
+      "n_rows": 180,
+      "n_measured": 179,
+      "n_unavailable": 1,
+      "n_fallback_v3": 1,
+      "measured_rate_pct": 99.4,
+      "complete": false,
+      "intel_coverage_complete": false
+    },
+    "buyable": {
+      "n_rows": 164,
+      "n_measured": 164,
+      "n_unavailable": 0,
+      "n_fallback_v3": 0,
+      "measured_rate_pct": 100.0,
+      "complete": true,
+      "intel_coverage_complete": true
+    }
+  },
+  "unavailable_current_records": [
+    {
+      "ticker": "600606.SS",
+      "lane": "not_raw_eligible",
+      "score_rank": 662.0,
+      "prophet_score": 36.66,
+      "raw_eligible": false,
+      "buyable": false,
+      "entry_status": "wait_pullback",
+      "intel_unavailable_reason": "no_edge_evidence"
+    },
+    {
+      "ticker": "000069.SZ",
+      "lane": "not_raw_eligible",
+      "score_rank": 1036.0,
+      "prophet_score": 29.99,
+      "raw_eligible": false,
+      "buyable": false,
+      "entry_status": "await_confluence",
+      "intel_unavailable_reason": "no_edge_evidence"
+    },
+    {
+      "ticker": "600038.SS",
+      "lane": "not_raw_eligible",
+      "score_rank": 1088.0,
+      "prophet_score": 29.18,
+      "raw_eligible": false,
+      "buyable": false,
+      "entry_status": "watch",
+      "intel_unavailable_reason": "no_edge_evidence"
+    },
+    {
+      "ticker": "603899.SS",
+      "lane": "forming",
+      "score_rank": 1399.0,
+      "prophet_score": 23.81,
+      "raw_eligible": true,
+      "buyable": false,
+      "entry_status": "extended",
+      "intel_unavailable_reason": "no_edge_evidence"
+    }
+  ],
+  "frozen_pre_cap_qualified_n": 125,
+  "same_qualification_intel_counterfactual": {
+    "mode": {
+      "requested_order_basis": "intel_interest_then_v3_score",
+      "effective_order_basis": "intel_interest_then_v3_score",
+      "order_mode": "intelligence_complete",
+      "fallback_reason": null,
+      "intel_order_active": true,
+      "intel_coverage_complete": true,
+      "n_rows": 125,
+      "n_measured": 125,
+      "n_unavailable": 0,
+      "n_fallback_v3": 0,
+      "measured_rate_pct": 100.0
+    },
+    "featured_n": 24,
+    "overlap_at_24": 4,
+    "overlap_fraction": 0.16666666666666666,
+    "jaccard": 0.09090909090909091,
+    "replaced_fraction": 0.8333333333333334,
+    "entrants": [
+      {
+        "ticker": "600315.SS",
+        "sector": "Consumer Defensive",
+        "prophet_score": 60.57,
+        "intel_interest_score": 60.69
+      },
+      {
+        "ticker": "002270.SZ",
+        "sector": "Industrials",
+        "prophet_score": 63.75,
+        "intel_interest_score": 52.21
+      },
+      {
+        "ticker": "600517.SS",
+        "sector": "Industrials",
+        "prophet_score": 62.78,
+        "intel_interest_score": 51.28
+      },
+      {
+        "ticker": "001391.SZ",
+        "sector": "Industrials",
+        "prophet_score": 64.71,
+        "intel_interest_score": 48.8
+      },
+      {
+        "ticker": "603919.SS",
+        "sector": "Consumer Defensive",
+        "prophet_score": 62.75,
+        "intel_interest_score": 45.8
+      },
+      {
+        "ticker": "688353.SS",
+        "sector": "Basic Materials",
+        "prophet_score": 77.76,
+        "intel_interest_score": 45.28
+      },
+      {
+        "ticker": "300182.SZ",
+        "sector": "Technology",
+        "prophet_score": 64.61,
+        "intel_interest_score": 44.72
+      },
+      {
+        "ticker": "002226.SZ",
+        "sector": "Basic Materials",
+        "prophet_score": 51.94,
+        "intel_interest_score": 44.66
+      },
+      {
+        "ticker": "601858.SS",
+        "sector": "Communication Services",
+        "prophet_score": 56.26,
+        "intel_interest_score": 43.31
+      },
+      {
+        "ticker": "000035.SZ",
+        "sector": "Industrials",
+        "prophet_score": 65.49,
+        "intel_interest_score": 41.05
+      },
+      {
+        "ticker": "600741.SS",
+        "sector": "Consumer Cyclical",
+        "prophet_score": 67.99,
+        "intel_interest_score": 38.71
+      },
+      {
+        "ticker": "300036.SZ",
+        "sector": "Technology",
+        "prophet_score": 68.75,
+        "intel_interest_score": 38.67
+      },
+      {
+        "ticker": "603866.SS",
+        "sector": "Consumer Defensive",
+        "prophet_score": 59.87,
+        "intel_interest_score": 35.24
+      },
+      {
+        "ticker": "600037.SS",
+        "sector": "Communication Services",
+        "prophet_score": 57.05,
+        "intel_interest_score": 34.16
+      },
+      {
+        "ticker": "600827.SS",
+        "sector": "Consumer Cyclical",
+        "prophet_score": 60.77,
+        "intel_interest_score": 33.3
+      },
+      {
+        "ticker": "600595.SS",
+        "sector": "Basic Materials",
+        "prophet_score": 65.05,
+        "intel_interest_score": 29.99
+      },
+      {
+        "ticker": "600866.SS",
+        "sector": "Healthcare",
+        "prophet_score": 64.75,
+        "intel_interest_score": 27.72
+      },
+      {
+        "ticker": "600085.SS",
+        "sector": "Healthcare",
+        "prophet_score": 67.7,
+        "intel_interest_score": 27.48
+      },
+      {
+        "ticker": "600871.SS",
+        "sector": "Energy",
+        "prophet_score": 60.42,
+        "intel_interest_score": 23.9
+      },
+      {
+        "ticker": "601965.SS",
+        "sector": "Consumer Cyclical",
+        "prophet_score": 61.7,
+        "intel_interest_score": 20.78
+      }
+    ],
+    "displaced": [
+      {
+        "ticker": "002460.SZ",
+        "sector": "Basic Materials",
+        "prophet_score": 90.0,
+        "intel_interest_score": 22.43
+      },
+      {
+        "ticker": "603799.SS",
+        "sector": "Basic Materials",
+        "prophet_score": 88.0,
+        "intel_interest_score": 26.59
+      },
+      {
+        "ticker": "000973.SZ",
+        "sector": "Basic Materials",
+        "prophet_score": 87.06,
+        "intel_interest_score": 29.8
+      },
+      {
+        "ticker": "688472.SS",
+        "sector": "Technology",
+        "prophet_score": 84.0,
+        "intel_interest_score": 14.42
+      },
+      {
+        "ticker": "002340.SZ",
+        "sector": "Industrials",
+        "prophet_score": 83.78,
+        "intel_interest_score": 22.5
+      },
+      {
+        "ticker": "688223.SS",
+        "sector": "Technology",
+        "prophet_score": 82.0,
+        "intel_interest_score": 0.0
+      },
+      {
+        "ticker": "002001.SZ",
+        "sector": "Healthcare",
+        "prophet_score": 80.24,
+        "intel_interest_score": 0.0
+      },
+      {
+        "ticker": "000858.SZ",
+        "sector": "Consumer Defensive",
+        "prophet_score": 77.86,
+        "intel_interest_score": 17.66
+      },
+      {
+        "ticker": "300014.SZ",
+        "sector": "Industrials",
+        "prophet_score": 77.42,
+        "intel_interest_score": 18.28
+      },
+      {
+        "ticker": "600633.SS",
+        "sector": "Communication Services",
+        "prophet_score": 75.17,
+        "intel_interest_score": 0.0
+      },
+      {
+        "ticker": "002294.SZ",
+        "sector": "Healthcare",
+        "prophet_score": 74.75,
+        "intel_interest_score": 17.33
+      },
+      {
+        "ticker": "002847.SZ",
+        "sector": "Consumer Defensive",
+        "prophet_score": 74.75,
+        "intel_interest_score": 0.0
+      },
+      {
+        "ticker": "688050.SS",
+        "sector": "Healthcare",
+        "prophet_score": 72.95,
+        "intel_interest_score": 14.48
+      },
+      {
+        "ticker": "603279.SS",
+        "sector": "Industrials",
+        "prophet_score": 72.75,
+        "intel_interest_score": 0.0
+      },
+      {
+        "ticker": "600509.SS",
+        "sector": "Utilities",
+        "prophet_score": 72.3,
+        "intel_interest_score": 0.0
+      },
+      {
+        "ticker": "002557.SZ",
+        "sector": "Consumer Defensive",
+        "prophet_score": 71.06,
+        "intel_interest_score": 0.6
+      },
+      {
+        "ticker": "601880.SS",
+        "sector": "Industrials",
+        "prophet_score": 70.79,
+        "intel_interest_score": 0.0
+      },
+      {
+        "ticker": "000719.SZ",
+        "sector": "Communication Services",
+        "prophet_score": 70.74,
+        "intel_interest_score": 7.89
+      },
+      {
+        "ticker": "600276.SS",
+        "sector": "Healthcare",
+        "prophet_score": 70.7,
+        "intel_interest_score": 2.27
+      },
+      {
+        "ticker": "601898.SS",
+        "sector": "Energy",
+        "prophet_score": 70.27,
+        "intel_interest_score": 0.0
+      }
+    ],
+    "published_sector_counts": {
+      "Basic Materials": 4,
+      "Consumer Defensive": 4,
+      "Technology": 4,
+      "Industrials": 4,
+      "Healthcare": 4,
+      "Communication Services": 2,
+      "Utilities": 1,
+      "Energy": 1
+    },
+    "counterfactual_sector_counts": {
+      "Consumer Defensive": 4,
+      "Industrials": 4,
+      "Basic Materials": 4,
+      "Technology": 4,
+      "Communication Services": 2,
+      "Consumer Cyclical": 3,
+      "Healthcare": 2,
+      "Energy": 1
+    }
+  },
+  "structural_ablations_no_outcome_claim": {
+    "signal": {
+      "overlap_with_published_24": 23,
+      "displaced_count": 1
+    },
+    "entry": {
+      "overlap_with_published_24": 21,
+      "displaced_count": 3
+    },
+    "runway": {
+      "overlap_with_published_24": 20,
+      "displaced_count": 4
+    },
+    "bottom_quality": {
+      "overlap_with_published_24": 23,
+      "displaced_count": 1
+    },
+    "reversal_member": {
+      "overlap_with_published_24": 20,
+      "displaced_count": 4
+    },
+    "theme_timing": {
+      "overlap_with_published_24": 18,
+      "displaced_count": 6
+    }
+  },
+  "v3_without_sector_cap_no_outcome_claim": {
+    "overlap_with_published_24": 18,
+    "sector_counts": {
+      "Basic Materials": 10,
+      "Consumer Defensive": 3,
+      "Technology": 3,
+      "Industrials": 3,
+      "Healthcare": 3,
+      "Communication Services": 1,
+      "Utilities": 1
+    }
+  }
+}

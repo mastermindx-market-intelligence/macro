@@ -1,0 +1,27 @@
+{
+  "challenged_contract_sha256": "ad90cf372a95ae7ca05691681d95ea9a18e784a1379066e19e15fa05b0ef6b7d",
+  "files": [
+    {
+      "bytes": 4801,
+      "path": "EVIDENCE.json",
+      "sha256": "4c32c60a2b19f4fd3773ab683b68b49d6c72d45bba38656c52b49a7fbd8d8004"
+    },
+    {
+      "bytes": 2412,
+      "path": "REVIEW.md",
+      "sha256": "a3be8b7f6a13d1eaac637daaffd6e21ce65f7df49bedc8c45caa338ed23dd392"
+    },
+    {
+      "bytes": 17329,
+      "path": "challenged_contract.py",
+      "sha256": "ad90cf372a95ae7ca05691681d95ea9a18e784a1379066e19e15fa05b0ef6b7d"
+    },
+    {
+      "bytes": 4988,
+      "path": "probe.py",
+      "sha256": "7190b80f2f11d8ed28fbc576749338aa9799500e998b75c60f042c0f41f5242f"
+    }
+  ],
+  "schema": "vintage_preseal_interface_challenge_v1",
+  "status": "TWO_BOUNDARY_GAPS_CONFIRMED"
+}

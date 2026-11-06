@@ -1,0 +1,21 @@
+{
+  "files": {
+    "WEIGHT_DESIGN.md": {
+      "bytes": 1494,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c"
+    },
+    "weight_contract_audit.py": {
+      "bytes": 8090,
+      "sha256": "9741f0e9e449271fb60bb67f2db3b21d7cb6e2766a247247e942b8910c22fba8"
+    },
+    "weight_input.json": {
+      "bytes": 63669,
+      "sha256": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd"
+    },
+    "weight_results.json": {
+      "bytes": 8432,
+      "sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884"
+    }
+  },
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+}

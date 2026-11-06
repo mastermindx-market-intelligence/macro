@@ -1,0 +1,257 @@
+{
+  "checks": [
+    {
+      "name": "study_pin",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_executed_code:contract_prototype.py",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_executed_code:pinned_quote_adapter.py",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_executed_code:repair_checks.py",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_executed_code:run_lab.py",
+      "status": "PASS"
+    },
+    {
+      "name": "pinned_source:engine/prophet_live/cn_clock.py",
+      "status": "PASS"
+    },
+    {
+      "name": "pinned_source:engine/prophet_live/cn_reconcile.py",
+      "status": "PASS"
+    },
+    {
+      "name": "pinned_source:engine/prophet_live/cn_states.py",
+      "status": "PASS"
+    },
+    {
+      "name": "pinned_source:engine/prophet_live/interval.py",
+      "status": "PASS"
+    },
+    {
+      "name": "pinned_source:engine/prophet_live/live_states.py",
+      "status": "PASS"
+    },
+    {
+      "name": "pinned_source:engine/prophet_live/r2io.py",
+      "status": "PASS"
+    },
+    {
+      "name": "pinned_source:lib/cn_calendar.py",
+      "status": "PASS"
+    },
+    {
+      "name": "pinned_source:lib/exchange_holidays.py",
+      "status": "PASS"
+    },
+    {
+      "name": "pinned_source:scripts/reconcile_cn_live.py",
+      "status": "PASS"
+    },
+    {
+      "name": "quote_contract_identity",
+      "status": "PASS"
+    },
+    {
+      "name": "compressed_canonical_identity",
+      "status": "PASS"
+    },
+    {
+      "name": "canonical_bytes_identity",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_retained_ledger_reproduces",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_retained_receipt_reproduces",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_replay_idempotent",
+      "status": "PASS"
+    },
+    {
+      "name": "vanished_daily_key_refuses",
+      "status": "PASS"
+    },
+    {
+      "name": "all_transition_objects_vanished_refuses",
+      "status": "PASS"
+    },
+    {
+      "name": "conflicting_daily_keys_forward",
+      "status": "PASS"
+    },
+    {
+      "name": "conflicting_daily_keys_reverse",
+      "status": "PASS"
+    },
+    {
+      "name": "exact_duplicate_daily_key",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown_existing_schema",
+      "status": "PASS"
+    },
+    {
+      "name": "missing_existing_daily_key",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid_existing_daily_key",
+      "status": "PASS"
+    },
+    {
+      "name": "existing_huge_integer_price",
+      "status": "PASS"
+    },
+    {
+      "name": "target_session_unbound_row_refused",
+      "status": "PASS"
+    },
+    {
+      "name": "equal_time_close_membership_conflict_nonce_order_0",
+      "status": "PASS"
+    },
+    {
+      "name": "equal_time_close_membership_conflict_nonce_order_1",
+      "status": "PASS"
+    },
+    {
+      "name": "equal_economics_close_coalesces",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_first_px",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_cross_px",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_first_ts",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_first_quote_ts",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_quote_payload_sha256",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_quote_contract_id",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_first_quote_record_sha256",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_price_adjustment",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_cross_basis_close",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_cross_basis_adjustment",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_from_state",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_first_passes",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_frozen_score_rank",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered_first_observation_source_board_definition",
+      "status": "PASS"
+    },
+    {
+      "name": "later_authentic_repeat",
+      "status": "PASS"
+    },
+    {
+      "name": "native_fractional_event_time",
+      "status": "PASS"
+    },
+    {
+      "name": "backdated_event_before_source_receipt_refuses",
+      "status": "PASS"
+    },
+    {
+      "name": "backdated_event_before_pack_build_refuses",
+      "status": "PASS"
+    },
+    {
+      "name": "same_event_time_conflicting_price_refuses",
+      "status": "PASS"
+    },
+    {
+      "name": "same_event_time_distinct_source_receipt_refuses",
+      "status": "PASS"
+    },
+    {
+      "name": "retained_parquet:conflicting_daily_keys_forward",
+      "status": "PASS"
+    },
+    {
+      "name": "retained_parquet:conflicting_daily_keys_reverse",
+      "status": "PASS"
+    },
+    {
+      "name": "retained_parquet:exact_duplicate_daily_key",
+      "status": "PASS"
+    },
+    {
+      "name": "retained_parquet:readable_unrelated_table",
+      "status": "PASS"
+    },
+    {
+      "name": "retained_parquet:readable_unknown_row_schema",
+      "status": "PASS"
+    },
+    {
+      "name": "retained_parquet:readable_empty_unknown_table",
+      "status": "PASS"
+    }
+  ],
+  "counts": {
+    "checks": 59
+  },
+  "inputs": {
+    "contract_prototype.py": "3518cc9f408534cccbe60419b8de8d7143ad42f406c7d9ee262068ef1c5fe2e0",
+    "integration_fixture.json": "c9dfccae6b07b9c045a49de17b8f1318f1ac0577c116099389a960bcf00efcc7",
+    "integration_results.json": "d877f157bcfc8c8c74359dd3cdff1bf253724bfc6538cb7058f7385504b2f455",
+    "native_source_bundle.json": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+    "parquet_receipts.json": "922d97c50a56aafc7a2d86a2363f78b87b86c70c456882861b8dee7062596bb7",
+    "repair_cases.json": "ab57d30829ce31da920b90061c3190a58d42aba731bf1b044c2382f7da1e6601",
+    "verify_contract.py": "267bd1e22b62263314e0d4e64fb6efa2506f26cb5a27f588a407dfdfd8732933"
+  },
+  "parquet_execution": "not requested; retained host receipt and file identities verified",
+  "python": "3.12.14",
+  "schema": "cn-integration-retained-replay/v1",
+  "status": "PASS",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+}

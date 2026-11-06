@@ -1,0 +1,55 @@
+{
+  "schema": "cn-integration-execution-receipt/v1",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "pid": 19958,
+  "exit_code": 0,
+  "runtime_seconds": 18.14,
+  "executed_at_utc": "2026-10-09T23:54:12.499300+00:00",
+  "command": "python3 /tmp/mmx-cn-integration-lab-20261009-og849byq/run_lab.py --repo /Users/chriswong/Documents/Cluade/macro-main --source-root /tmp/mmx-cn-integration-lab-20261009-og849byq/source --out /tmp/mmx-cn-integration-lab-20261009-og849byq/results",
+  "host_tool_receipt": "[Reading 2 new lines (total: 2 lines)]\n\n{\"status\": \"PASS\", \"counts\": {\"prototype_checks\": 31, \"hostile_checks\": 32}, \"real_probe\": {\"tickers\": [\"002460.SZ\", \"603799.SS\", \"300750.SZ\"], \"gate_calls\": 60, \"edges_checked\": 6}, \"spool_objects\": 4, \"ledger_rows\": 4, \"outputs\": {\"native_probe_debug.json\": {\"bytes\": 4058, \"sha256\": \"2293be85b8d1e29e9d56c741af7ff4dc6bd02ac9d2ab367f9fa2d3375367a4cd\"}, \"unreadable_ledger_guard.parquet\": {\"bytes\": 37, \"sha256\": \"9a170269a539970d5dcafa39b976ee7034c8263bdbb21f069997911430ac485a\"}, \"synthetic_forward.parquet\": {\"bytes\": 23696, \"sha256\": \"1acd93e4934ecf0ad50849e279c38a4c3b6ece0a795f33941b6a006cedea1351\"}, \"integration_results.json\": {\"bytes\": 43009, \"sha256\": \"58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128\"}, \"execution.log\": {\"bytes\": 2207, \"sha256\": \"0659ce9eb91d9d2a41f1d08ca704e01c4953e5b62f482a44b75689c0921e7469\"}, \"integration_fixture.json\": {\"bytes\": 27278, \"sha256\": \"fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545\"}}}\n\n✅ Process completed with exit code 0 (runtime: 18.14s)",
+  "summary": {
+    "status": "PASS",
+    "counts": {
+      "prototype_checks": 31,
+      "hostile_checks": 32
+    },
+    "real_probe": {
+      "tickers": [
+        "002460.SZ",
+        "603799.SS",
+        "300750.SZ"
+      ],
+      "gate_calls": 60,
+      "edges_checked": 6
+    },
+    "spool_objects": 4,
+    "ledger_rows": 4,
+    "outputs": {
+      "native_probe_debug.json": {
+        "bytes": 4058,
+        "sha256": "2293be85b8d1e29e9d56c741af7ff4dc6bd02ac9d2ab367f9fa2d3375367a4cd"
+      },
+      "unreadable_ledger_guard.parquet": {
+        "bytes": 37,
+        "sha256": "9a170269a539970d5dcafa39b976ee7034c8263bdbb21f069997911430ac485a"
+      },
+      "synthetic_forward.parquet": {
+        "bytes": 23696,
+        "sha256": "1acd93e4934ecf0ad50849e279c38a4c3b6ece0a795f33941b6a006cedea1351"
+      },
+      "integration_results.json": {
+        "bytes": 43009,
+        "sha256": "58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128"
+      },
+      "execution.log": {
+        "bytes": 2207,
+        "sha256": "0659ce9eb91d9d2a41f1d08ca704e01c4953e5b62f482a44b75689c0921e7469"
+      },
+      "integration_fixture.json": {
+        "bytes": 27278,
+        "sha256": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545"
+      }
+    }
+  },
+  "retention": "The two JSON outputs and log are retained in this package. The actual parquet and deliberately corrupt control files remain disposable laboratory outputs; ledger rows are retained losslessly in integration_fixture.json."
+}

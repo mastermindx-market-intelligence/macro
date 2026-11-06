@@ -1,0 +1,1181 @@
+{
+  "schema": "cn_tradability_native_seam_lab_v1",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "input_sha256": "8106d35c0caccfdc000f50652cf5a673605cd2d6e11882ccb28741e85490f7a3",
+  "script_sha256": "30099f3140e8bdaa9f727b75a61fa3ff46fb0c35983389472f60ea928417eca7",
+  "check_count": 77,
+  "all_passed": true,
+  "checks": [
+    {
+      "name": "exact_corrected_input",
+      "passed": true,
+      "kind": "identity",
+      "details": {
+        "sha256": "8106d35c0caccfdc000f50652cf5a673605cd2d6e11882ccb28741e85490f7a3"
+      }
+    },
+    {
+      "name": "source_pin",
+      "passed": true,
+      "kind": "identity",
+      "details": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+    },
+    {
+      "name": "corrected_date_helper_and_stock_set_preflight",
+      "passed": true,
+      "kind": "identity",
+      "details": null
+    },
+    {
+      "name": "corrected_host_census_exit_zero",
+      "passed": true,
+      "kind": "identity",
+      "details": "✅ Process completed with exit code 0 (runtime: 11.70s)"
+    },
+    {
+      "name": "full_source_bytes_scripts/build_cn_live_pack.py",
+      "passed": true,
+      "kind": "identity",
+      "details": "8ff726b8da1e9fd9309a18caa0aa048bdcb2508bd90107175fddd9092007680a"
+    },
+    {
+      "name": "full_source_bytes_engine/prophet_live/cn_pack.py",
+      "passed": true,
+      "kind": "identity",
+      "details": "c692f4b473203cbcebce680ef99919a357a386a3ddf162953a72ee2c8f54df4b"
+    },
+    {
+      "name": "full_source_bytes_engine/china_liquidity.py",
+      "passed": true,
+      "kind": "identity",
+      "details": "7c7ab97a21f4d495a7d2be9dbd3f55531e6552594517ef16c13bed9531275971"
+    },
+    {
+      "name": "full_source_bytes_engine/tushare_freshness.py",
+      "passed": true,
+      "kind": "identity",
+      "details": "226760d1f0ff904d2b7a6e5587902ab7f8d67479d532892bfcb897ca4a7139ef"
+    },
+    {
+      "name": "full_source_bytes_lib/market_session.py",
+      "passed": true,
+      "kind": "identity",
+      "details": "adc56cf8af267ba9eeaaa8a4297846786637746b00498a34f52b4d59350baa1e"
+    },
+    {
+      "name": "full_source_bytes_lib/cn_calendar.py",
+      "passed": true,
+      "kind": "identity",
+      "details": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c"
+    },
+    {
+      "name": "full_source_bytes_lib/exchange_holidays.py",
+      "passed": true,
+      "kind": "identity",
+      "details": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e"
+    },
+    {
+      "name": "native_last_session_local_dependency_preflight",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": null
+    },
+    {
+      "name": "all_1716_native_predicate_argument_replays",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "n": 1716,
+        "mismatches": [],
+        "counts": {
+          "pass": 1638,
+          "adv": 77,
+          "st": 1
+        }
+      }
+    },
+    {
+      "name": "actual_unknown_cap_passes_incumbent_rule",
+      "passed": true,
+      "kind": "actual",
+      "details": [
+        {
+          "ticker": "300773.SZ",
+          "native_predicate_arguments": {
+            "st_flag": false,
+            "name_zh": "拉卡拉",
+            "mktcap": null,
+            "adv_yi": 5.0597
+          }
+        }
+      ]
+    },
+    {
+      "name": "actual_older_adv_sources_are_visible",
+      "passed": true,
+      "kind": "actual",
+      "details": [
+        {
+          "ticker": "300773.SZ",
+          "last_close": "2026-10-08",
+          "last_deep_close": "2026-09-30",
+          "pack_session_lag": 1,
+          "native_predicate_arguments": {
+            "st_flag": false,
+            "name_zh": "拉卡拉",
+            "mktcap": null,
+            "adv_yi": 5.0597
+          }
+        },
+        {
+          "ticker": "601059.SS",
+          "last_close": "2026-10-08",
+          "last_deep_close": "2026-09-14",
+          "pack_session_lag": 1,
+          "native_predicate_arguments": {
+            "st_flag": false,
+            "name_zh": "信达证券",
+            "mktcap": 504.6,
+            "adv_yi": 1.8062
+          }
+        },
+        {
+          "ticker": "601198.SS",
+          "last_close": "2026-10-08",
+          "last_deep_close": "2026-09-14",
+          "pack_session_lag": 1,
+          "native_predicate_arguments": {
+            "st_flag": false,
+            "name_zh": "东兴证券",
+            "mktcap": 422.2,
+            "adv_yi": 3.6556
+          }
+        }
+      ]
+    },
+    {
+      "name": "actual_no_price_stale_or_mcap_rejection_witness",
+      "passed": true,
+      "kind": "actual",
+      "details": "Synthetic boundaries below are not current suspension/cap failures."
+    },
+    {
+      "name": "predicate_known_st_flag",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": true,
+          "name_zh": "普通公司",
+          "mktcap": 60.0,
+          "adv_yi": 1.0
+        },
+        "reason": "st"
+      }
+    },
+    {
+      "name": "predicate_st_name_fallback",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": "ST公司",
+          "mktcap": 60.0,
+          "adv_yi": 1.0
+        },
+        "reason": "st"
+      }
+    },
+    {
+      "name": "predicate_star_st_name",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": "*ST公司",
+          "mktcap": 60.0,
+          "adv_yi": 1.0
+        },
+        "reason": "st"
+      }
+    },
+    {
+      "name": "predicate_retired_name",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": "公司退",
+          "mktcap": 60.0,
+          "adv_yi": 1.0
+        },
+        "reason": "st"
+      }
+    },
+    {
+      "name": "predicate_cap_below_30_yi",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": "普通公司",
+          "mktcap": 29.999,
+          "adv_yi": 1.0
+        },
+        "reason": "mcap"
+      }
+    },
+    {
+      "name": "predicate_cap_placeholder_30_passes",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": "普通公司",
+          "mktcap": 30.0,
+          "adv_yi": 1.0
+        },
+        "reason": null
+      }
+    },
+    {
+      "name": "predicate_unknown_cap_passes",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": "普通公司",
+          "mktcap": null,
+          "adv_yi": 1.0
+        },
+        "reason": null
+      }
+    },
+    {
+      "name": "predicate_adv_below_half_yi",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": "普通公司",
+          "mktcap": 60.0,
+          "adv_yi": 0.4999
+        },
+        "reason": "adv"
+      }
+    },
+    {
+      "name": "predicate_adv_at_half_yi_passes",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": "普通公司",
+          "mktcap": 60.0,
+          "adv_yi": 0.5
+        },
+        "reason": null
+      }
+    },
+    {
+      "name": "predicate_unknown_adv_passes",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": "普通公司",
+          "mktcap": 60.0,
+          "adv_yi": null
+        },
+        "reason": null
+      }
+    },
+    {
+      "name": "predicate_all_unknown_metadata_passes",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": false,
+          "name_zh": null,
+          "mktcap": null,
+          "adv_yi": null
+        },
+        "reason": null
+      }
+    },
+    {
+      "name": "predicate_reason_precedence_st_before_cap_adv",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "arguments": {
+          "st_flag": true,
+          "name_zh": "普通公司",
+          "mktcap": 10,
+          "adv_yi": 0.1
+        },
+        "reason": "st"
+      }
+    },
+    {
+      "name": "actual_native_main_omits_tradable_argument",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "captured_keyword_names": [
+          "cfg",
+          "limit",
+          "now",
+          "root"
+        ],
+        "series_argument_supplied": false,
+        "publish": false,
+        "out": null
+      }
+    },
+    {
+      "name": "actual_six_name_frontier_unfiltered",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "tickers": [
+          "000028.SZ",
+          "002460.SZ",
+          "300750.SZ",
+          "300773.SZ",
+          "600079.SS",
+          "603799.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {},
+        "line": 115
+      }
+    },
+    {
+      "name": "complete_boolean_map_reuses_native_screen",
+      "passed": true,
+      "kind": "proposed_caller_argument",
+      "details": {
+        "tickers": [
+          "002460.SZ",
+          "300750.SZ",
+          "300773.SZ",
+          "603799.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {},
+        "line": 115
+      }
+    },
+    {
+      "name": "raw_reason_map_inverts_filter",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "tickers": [
+          "000028.SZ",
+          "600079.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {},
+        "line": 115
+      }
+    },
+    {
+      "name": "empty_map_is_unfiltered",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "tickers": [
+          "000028.SZ",
+          "002460.SZ",
+          "300750.SZ",
+          "300773.SZ",
+          "600079.SS",
+          "603799.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {},
+        "line": 115
+      }
+    },
+    {
+      "name": "partial_map_missing_keys_pass",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "tickers": [
+          "000028.SZ",
+          "002460.SZ",
+          "300750.SZ",
+          "300773.SZ",
+          "603799.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {},
+        "line": 115
+      }
+    },
+    {
+      "name": "series_injection_bypasses_tradable",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": "The explicit test-universe branch bypasses the map; production main supplies no series."
+    },
+    {
+      "name": "native_stock_filter_context_boundaries",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic_context_tickers": [
+          "000300.SS",
+          "510300.SS",
+          "430001.BJ"
+        ],
+        "stock_fixture_n": 6
+      }
+    },
+    {
+      "name": "series_injection_bypasses_universe_filter",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": null
+    },
+    {
+      "name": "native_price_cleaning_excludes_unusable_series",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "tickers": [
+          "000028.SZ",
+          "002460.SZ",
+          "300750.SZ",
+          "300773.SZ",
+          "600079.SS",
+          "603799.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {
+          "no_series": 2
+        },
+        "line": 115
+      }
+    },
+    {
+      "name": "no_gate_latch_or_probe_called",
+      "passed": true,
+      "kind": "safety",
+      "details": {
+        "gate_calls": 0,
+        "frontier_line": 115
+      }
+    },
+    {
+      "name": "st_loader_accepts_old_name_row_without_age_guard",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "source_date": "2025-01-02",
+        "observed_map": {
+          "600000.SS": true
+        }
+      }
+    },
+    {
+      "name": "st_loader_future_row_can_replace_current_flag",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "reference_for_test": "2026-10-09",
+        "native_api_cutoff": null,
+        "observed_map": {
+          "600000.SS": false
+        }
+      }
+    },
+    {
+      "name": "missing_st_source_is_empty_map",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": null
+    },
+    {
+      "name": "unreadable_st_source_is_empty_map",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": null
+    },
+    {
+      "name": "missing_st_source_keeps_name_fallback",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": null
+    },
+    {
+      "name": "owner_cap_overlay_fills_placeholder_and_preserves_real_member",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "600000.SS": 47.0,
+        "600001.SS": 60.0
+      }
+    },
+    {
+      "name": "owner_placeholder_drops_to_unknown_without_overlay",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "600001.SS": 60.0
+      }
+    },
+    {
+      "name": "relative_freshness_one_session_lag",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "chosen": "tushare"
+      }
+    },
+    {
+      "name": "relative_freshness_two_session_holiday_lag",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "chosen": "free"
+      }
+    },
+    {
+      "name": "relative_freshness_ancient_source_without_free",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "chosen": "tushare"
+      }
+    },
+    {
+      "name": "relative_freshness_undatable_source_without_free",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "chosen": "tushare"
+      }
+    },
+    {
+      "name": "relative_freshness_undatable_source_with_free",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "chosen": "free"
+      }
+    },
+    {
+      "name": "relative_freshness_future_source_with_free",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "chosen": "tushare"
+      }
+    },
+    {
+      "name": "relative_freshness_missing_source_with_free",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "chosen": "free"
+      }
+    },
+    {
+      "name": "actual_native_liquidity_tail_000028.SZ",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "profile": {
+          "adv_yi": 0.3827,
+          "turn_ratio": 0.769
+        },
+        "tail_rows": 70,
+        "source_through": "2026-10-09"
+      }
+    },
+    {
+      "name": "actual_native_liquidity_tail_002460.SZ",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "profile": {
+          "adv_yi": 11.3436,
+          "turn_ratio": 0.949
+        },
+        "tail_rows": 70,
+        "source_through": "2026-10-09"
+      }
+    },
+    {
+      "name": "actual_native_liquidity_tail_300750.SZ",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "profile": {
+          "adv_yi": 101.9891,
+          "turn_ratio": 1.187
+        },
+        "tail_rows": 70,
+        "source_through": "2026-10-09"
+      }
+    },
+    {
+      "name": "actual_native_liquidity_tail_300773.SZ",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "profile": {
+          "adv_yi": 5.0597,
+          "turn_ratio": 0.495
+        },
+        "tail_rows": 70,
+        "source_through": "2026-09-30"
+      }
+    },
+    {
+      "name": "actual_native_liquidity_tail_600079.SS",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "profile": {
+          "adv_yi": 1.1683,
+          "turn_ratio": 1.279
+        },
+        "tail_rows": 70,
+        "source_through": "2026-10-09"
+      }
+    },
+    {
+      "name": "actual_native_liquidity_tail_603799.SS",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "profile": {
+          "adv_yi": 12.6134,
+          "turn_ratio": 0.723
+        },
+        "tail_rows": 70,
+        "source_through": "2026-10-09"
+      }
+    },
+    {
+      "name": "native_adv_accepts_old_source_without_absolute_age_check",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "synthetic": true,
+        "source_last": "2024-03-10",
+        "decision_cutoff_argument": null
+      }
+    },
+    {
+      "name": "native_adv_uses_available_nonempty_tail_without_min_20",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": null
+    },
+    {
+      "name": "missing_liquidity_omits_map_key",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": null
+    },
+    {
+      "name": "missing_volume_omits_liquidity",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": null
+    },
+    {
+      "name": "native_pack_resolves_three_session_guard",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": 3
+    },
+    {
+      "name": "separate_native_stale_rules_2026-09-23",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "last": "2026-09-23",
+        "panel": "2026-10-09",
+        "calendar_days": 16,
+        "nightly_reason": "stale",
+        "pack_session_lag": 6,
+        "pack_stale": true,
+        "synthetic": true
+      }
+    },
+    {
+      "name": "separate_native_stale_rules_2026-09-24",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "last": "2026-09-24",
+        "panel": "2026-10-09",
+        "calendar_days": 15,
+        "nightly_reason": null,
+        "pack_session_lag": 5,
+        "pack_stale": true,
+        "synthetic": true
+      }
+    },
+    {
+      "name": "separate_native_stale_rules_2026-09-30",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "last": "2026-09-30",
+        "panel": "2026-10-09",
+        "calendar_days": 9,
+        "nightly_reason": null,
+        "pack_session_lag": 2,
+        "pack_stale": false,
+        "synthetic": true
+      }
+    },
+    {
+      "name": "separate_native_stale_rules_2026-10-08",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "last": "2026-10-08",
+        "panel": "2026-10-09",
+        "calendar_days": 1,
+        "nightly_reason": null,
+        "pack_session_lag": 1,
+        "pack_stale": false,
+        "synthetic": true
+      }
+    },
+    {
+      "name": "separate_native_stale_rules_2026-10-09",
+      "passed": true,
+      "kind": "native_boundary",
+      "details": {
+        "last": "2026-10-09",
+        "panel": "2026-10-09",
+        "calendar_days": 0,
+        "nightly_reason": null,
+        "pack_session_lag": 0,
+        "pack_stale": false,
+        "synthetic": true
+      }
+    },
+    {
+      "name": "current_breadth_absent_pin_and_host",
+      "passed": true,
+      "kind": "actual",
+      "details": {
+        "versioned_constituents_n": 82,
+        "constituents_not_in_current_stock_set": [
+          "000069.SZ",
+          "000799.SZ",
+          "002459.SZ",
+          "002624.SZ",
+          "600038.SS",
+          "600606.SS",
+          "603899.SS"
+        ],
+        "host_unversioned_cache_exists": false,
+        "unversioned_cache_content_read": false
+      }
+    },
+    {
+      "name": "weight_original_terminal_exit_zero",
+      "passed": true,
+      "kind": "weight",
+      "details": {
+        "exit_code": 0,
+        "stdout": "{\"checks\": 12, \"all_passed\": true, \"current_action\": \"none: normalized priors retained\", \"scenarios\": 7}",
+        "stderr": ""
+      }
+    },
+    {
+      "name": "weight_original_receipt_byte_identical",
+      "passed": true,
+      "kind": "weight",
+      "details": {
+        "sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884"
+      }
+    },
+    {
+      "name": "weight_current_baseline_independently_normalized",
+      "passed": true,
+      "kind": "weight",
+      "details": {
+        "raw_sum": 0.7,
+        "signed_coefficients": {
+          "value": 0.3429,
+          "margin": 0.2857,
+          "flow": 0.2571,
+          "comment": 0.2143,
+          "lhb": -0.1429,
+          "block": -0.0714,
+          "analyst": 0.1143
+        }
+      }
+    },
+    {
+      "name": "weight_actual_card_all_three_mapped_families_unproven",
+      "passed": true,
+      "kind": "weight",
+      "details": null
+    },
+    {
+      "name": "weight_actual_and_synthetic_cases_labeled",
+      "passed": true,
+      "kind": "weight",
+      "details": null
+    },
+    {
+      "name": "weight_date_only_change_is_ignored",
+      "passed": true,
+      "kind": "weight",
+      "details": {
+        "synthetic": true,
+        "before": {
+          "value": 0.439,
+          "margin": 0.2439,
+          "flow": 0.2195,
+          "comment": 0.1829,
+          "lhb": -0.122,
+          "block": -0.061,
+          "analyst": 0.0976
+        },
+        "after": {
+          "value": 0.439,
+          "margin": 0.2439,
+          "flow": 0.2195,
+          "comment": 0.1829,
+          "lhb": -0.122,
+          "block": -0.061,
+          "analyst": 0.0976
+        },
+        "meaning": "The native reader accepts both dates. This does not show that the timestamp causes the weight change."
+      }
+    },
+    {
+      "name": "weight_margin_consumer_uses_per_issuer_chg_pct",
+      "passed": true,
+      "kind": "weight",
+      "details": {
+        "consumer_function": "def _margin_score(block: dict) -> tuple[float | None, bool]:\n    chg = block.get(\"chg_pct\")\n    if chg is None:\n        return None, False\n    return _clip(float(chg) / 20.0), float(chg) > _CROWD_CHG",
+        "qualification": "The 20.0 denominator is scaling, not proof of a 20-session measurement window."
+      }
+    }
+  ],
+  "observations": {
+    "actual_close_vs_adv_source_dates": [
+      {
+        "ticker": "300773.SZ",
+        "last_close": "2026-10-08",
+        "last_deep_close": "2026-09-30",
+        "pack_session_lag": 1,
+        "native_predicate_arguments": {
+          "st_flag": false,
+          "name_zh": "拉卡拉",
+          "mktcap": null,
+          "adv_yi": 5.0597
+        }
+      },
+      {
+        "ticker": "601059.SS",
+        "last_close": "2026-10-08",
+        "last_deep_close": "2026-09-14",
+        "pack_session_lag": 1,
+        "native_predicate_arguments": {
+          "st_flag": false,
+          "name_zh": "信达证券",
+          "mktcap": 504.6,
+          "adv_yi": 1.8062
+        }
+      },
+      {
+        "ticker": "601198.SS",
+        "last_close": "2026-10-08",
+        "last_deep_close": "2026-09-14",
+        "pack_session_lag": 1,
+        "native_predicate_arguments": {
+          "st_flag": false,
+          "name_zh": "东兴证券",
+          "mktcap": 422.2,
+          "adv_yi": 3.6556
+        }
+      }
+    ],
+    "native_frontiers": {
+      "no_map": {
+        "tickers": [
+          "000028.SZ",
+          "002460.SZ",
+          "300750.SZ",
+          "300773.SZ",
+          "600079.SS",
+          "603799.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {},
+        "line": 115
+      },
+      "complete_boolean_map": {
+        "tickers": [
+          "002460.SZ",
+          "300750.SZ",
+          "300773.SZ",
+          "603799.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {},
+        "line": 115
+      },
+      "raw_reason_map": {
+        "tickers": [
+          "000028.SZ",
+          "600079.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {},
+        "line": 115
+      },
+      "partial_map": {
+        "tickers": [
+          "000028.SZ",
+          "002460.SZ",
+          "300750.SZ",
+          "300773.SZ",
+          "603799.SS"
+        ],
+        "tip": "2026-10-09",
+        "skipped": {},
+        "line": 115
+      }
+    },
+    "relative_freshness": [
+      {
+        "case": "one_session_lag",
+        "chosen": "tushare"
+      },
+      {
+        "case": "two_session_holiday_lag",
+        "chosen": "free"
+      },
+      {
+        "case": "ancient_source_without_free",
+        "chosen": "tushare"
+      },
+      {
+        "case": "undatable_source_without_free",
+        "chosen": "tushare"
+      },
+      {
+        "case": "undatable_source_with_free",
+        "chosen": "free"
+      },
+      {
+        "case": "future_source_with_free",
+        "chosen": "tushare"
+      },
+      {
+        "case": "missing_source_with_free",
+        "chosen": "free"
+      }
+    ],
+    "nightly_calendar_days_vs_pack_sessions": [
+      {
+        "last": "2026-09-23",
+        "panel": "2026-10-09",
+        "calendar_days": 16,
+        "nightly_reason": "stale",
+        "pack_session_lag": 6,
+        "pack_stale": true,
+        "synthetic": true
+      },
+      {
+        "last": "2026-09-24",
+        "panel": "2026-10-09",
+        "calendar_days": 15,
+        "nightly_reason": null,
+        "pack_session_lag": 5,
+        "pack_stale": true,
+        "synthetic": true
+      },
+      {
+        "last": "2026-09-30",
+        "panel": "2026-10-09",
+        "calendar_days": 9,
+        "nightly_reason": null,
+        "pack_session_lag": 2,
+        "pack_stale": false,
+        "synthetic": true
+      },
+      {
+        "last": "2026-10-08",
+        "panel": "2026-10-09",
+        "calendar_days": 1,
+        "nightly_reason": null,
+        "pack_session_lag": 1,
+        "pack_stale": false,
+        "synthetic": true
+      },
+      {
+        "last": "2026-10-09",
+        "panel": "2026-10-09",
+        "calendar_days": 0,
+        "nightly_reason": null,
+        "pack_session_lag": 0,
+        "pack_stale": false,
+        "synthetic": true
+      }
+    ],
+    "current_metadata_summary": {
+      "universe_n": 1739,
+      "stock_n": 1716,
+      "nonstock_n": 23,
+      "panel_asof": "2026-10-09",
+      "native_last_session_preflight": "2026-10-09",
+      "nightly_pack_stock_set_equal_on_current_input": true,
+      "predicate_reason_counts": {
+        "pass": 1638,
+        "adv": 77,
+        "st": 1
+      },
+      "nightly_quality_reason_counts": {
+        "pass": 1638,
+        "adv": 77,
+        "st": 1
+      },
+      "full_native_screen_counters": {
+        "st": 1,
+        "mcap": 0,
+        "adv": 77,
+        "stale": 0,
+        "non_stock": 23
+      },
+      "st_source_missing_n": 0,
+      "name_zh_missing_n": 0,
+      "real_mktcap_missing_n": 1,
+      "adv_missing_n": 0,
+      "pack_max_lag_sessions": 3,
+      "pack_native_stale_n": 0,
+      "fixture_categories": {
+        "st": "600079.SS",
+        "mcap": null,
+        "adv": "000028.SZ",
+        "nightly_stale": null,
+        "pack_stale": null,
+        "missing_st": null,
+        "missing_mcap": "300773.SZ",
+        "missing_adv": null
+      },
+      "fixture_n": 6
+    },
+    "breadth_limit": {
+      "versioned_constituents_n": 82,
+      "constituents_not_in_current_stock_set": [
+        "000069.SZ",
+        "000799.SZ",
+        "002459.SZ",
+        "002624.SZ",
+        "600038.SS",
+        "600606.SS",
+        "603899.SS"
+      ],
+      "host_unversioned_cache_exists": false,
+      "unversioned_cache_content_read": false
+    },
+    "actual_st_source_dates": {
+      "20261009": 1716
+    },
+    "weight_assessment": {
+      "producer_check_count": 12,
+      "producer_scenarios": 7,
+      "reviewed_result_sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884",
+      "actual_generated_utc": "2026-10-09T16:15:18.750930+00:00",
+      "actual_current_weight_action": "none: normalized signed priors retained",
+      "current_coefficients": {
+        "value": 0.3429,
+        "margin": 0.2857,
+        "flow": 0.2571,
+        "comment": 0.2143,
+        "lhb": -0.1429,
+        "block": -0.0714,
+        "analyst": 0.1143
+      },
+      "synthetic_only": [
+        "future_scorecard",
+        "dense_unproven_wrong_sign",
+        "whole_market_margin_verdict",
+        "nan_ic",
+        "infinite_ic",
+        "truthy_false_verdict_strings"
+      ],
+      "acceptance": "Accept the bounded reader witnesses and unchanged-current-prior conclusion. No actual board or return effect is demonstrated.",
+      "feature_target_limit": "A whole-market margin/CSI300 timer verdict is not empirical qualification of the per-issuer chg_pct consumer. Feature horizon authenticity must come from its existing source owner, not division by 20.0."
+    }
+  },
+  "interpretation": "Successful checks reproduce current behavior, including gaps; they do not certify the unmodified caller as repaired.",
+  "minimum_compatible_change": [
+    "Expose/reuse a read-only metadata loader at the existing nightly owner; preserve its source precedence, fields, units and unknown-value behavior.",
+    "For the complete native stock universe, derive strict Boolean values using stock_tradability_ok(ticker, st_flag=..., name_zh=..., mktcap=..., adv_yi=...) is None.",
+    "Pass that complete map at the existing CN pack caller; validate exact key coverage before invoking the native build. Do not use only published-board membership.",
+    "Preserve the pack's native three-session stale guard and the nightly owner's separate 15-calendar-day screen. These are not official suspension status.",
+    "Track source receipts/dates and resolve cutoff/absolute freshness with the existing source/vintage owner; do not invent expiry or a new screen in this caller fix."
+  ],
+  "limits": [
+    "Current census uses frozen versioned data. The breadth cache is absent in both the Git pin and observed host, so seven additional configured constituents have no cache-backed rows in this replay.",
+    "No current official suspension source/status, historical first-seen availability or natural full-universe gate/probe/publication is established.",
+    "Synthetic old/future/missing metadata tests describe native acceptance behavior, not detected current board corruption.",
+    "The actual six-name frontier is stopped before gate construction. No latch, signal gate or probe executes.",
+    "Local boundary replay uses pandas 2.2.3; the full native metadata census used pandas 3.0.5.",
+    "The weight scenarios do not measure actual rank, board, return or execution effects."
+  ],
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "pandas": "2.2.3"
+  },
+  "safety": {
+    "production_edits": 0,
+    "collector_calls": 0,
+    "vendor_calls": 0,
+    "cache_writes": 0,
+    "latch_calls": 0,
+    "gate_calls": 0,
+    "publication_calls": 0
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "vintage_repair_acceptance_input_freeze_v1",
+  "candidate_manifest_sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+  "candidate_payload_files": 11,
+  "read_only_external_inputs": {
+    "reviews/vintage_review/VINTAGE_INDEPENDENT_REVIEW.md": {
+      "bytes": 12489,
+      "sha256": "e7ad8ac0a3aeec15183c542ce8d7f7ba691b19404730e552e28df99f7bc8160b"
+    },
+    "reviews/vintage_review/vintage_review_results.json": {
+      "bytes": 19970,
+      "sha256": "a9d9a47f2e7524237e1a1b6a42717ea7705c57f6597c44cd11f3d11a2efa5c01"
+    },
+    "reviews/vintage_review/VINTAGE_REVIEW_MANIFEST.json": {
+      "bytes": 2236,
+      "sha256": "be408edcd861d6cbe3d82adc7108638eedd3a80bc83720291cb34860d6cb946c"
+    },
+    "reviews/vintage_repair_interface_review/REVIEW.md": {
+      "bytes": 2412,
+      "sha256": "a3be8b7f6a13d1eaac637daaffd6e21ce65f7df49bedc8c45caa338ed23dd392"
+    },
+    "reviews/vintage_repair_interface_review/EVIDENCE.json": {
+      "bytes": 4801,
+      "sha256": "4c32c60a2b19f4fd3773ab683b68b49d6c72d45bba38656c52b49a7fbd8d8004"
+    },
+    "reviews/vintage_repair_interface_review/MANIFEST.json": {
+      "bytes": 810,
+      "sha256": "9a98ec2d3be3137892913a4f722a369b6b7c931625b8acc8d52ca6b3d2973797"
+    },
+    "vintage_lab/entry_comparison_rows.json": {
+      "bytes": 1431429,
+      "sha256": "25160d291bec91cb7ba6fe77ac1e69ed5043f89f507dd369d4b32d0314c2e30c"
+    },
+    "vintage_lab/historical_witness_rows.json": {
+      "bytes": 1398096,
+      "sha256": "aaf1d164616d2cd459774360cc8893d9ae181a56caeaa77b2f2aa05a827805fd"
+    },
+    "reviews/vintage_review/pinned_china_prices.py": {
+      "bytes": 6386,
+      "sha256": "fddb468e6cb2c6a1bf86235c337d6ad3b52cb34b0702510f3352c91b3e9a3b5a"
+    }
+  },
+  "prior_package_manifests": {
+    "reviews/vintage_review/VINTAGE_REVIEW_MANIFEST.json": "be408edcd861d6cbe3d82adc7108638eedd3a80bc83720291cb34860d6cb946c",
+    "reviews/vintage_repair_interface_review/MANIFEST.json": "9a98ec2d3be3137892913a4f722a369b6b7c931625b8acc8d52ca6b3d2973797"
+  }
+}

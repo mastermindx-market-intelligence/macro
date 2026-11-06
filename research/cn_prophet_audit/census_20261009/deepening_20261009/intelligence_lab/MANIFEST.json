@@ -1,0 +1,113 @@
+{
+  "schema": "research.cn_intelligence_lab_manifest.v1",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "accepted_contract_sha256": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014",
+  "files": [
+    {
+      "path": "DESIGN.md",
+      "bytes": 6738,
+      "sha256": "db0f29ab816fa933f18272b8aae2869361a41730c6d315cf0b03189178c72c58"
+    },
+    {
+      "path": "INTELLIGENCE_DECISIONS.md",
+      "bytes": 12505,
+      "sha256": "cddde2c2207bb8417112e4632c478a4f7f0b2777a5749399b9cc6b52fb3f9f07"
+    },
+    {
+      "path": "MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 469,
+      "sha256": "936149532bc1ad92cdf2e58386e2528b443fce3e8e0b6f1babae698808704a02"
+    },
+    {
+      "path": "MARGIN_HORIZON_MANIFEST.json",
+      "bytes": 1622,
+      "sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada"
+    },
+    {
+      "path": "MARGIN_HORIZON_TRACE.md",
+      "bytes": 6248,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e"
+    },
+    {
+      "path": "WEIGHT_DESIGN.md",
+      "bytes": 1494,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c"
+    },
+    {
+      "path": "analyst_duplicate_probe.py",
+      "bytes": 6025,
+      "sha256": "c449e0a7510b4b0dce40f400066ddeb826340e06a00f358267710f6e634c6633"
+    },
+    {
+      "path": "analyst_duplicates.json",
+      "bytes": 399233,
+      "sha256": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b"
+    },
+    {
+      "path": "contract_lab.py",
+      "bytes": 23128,
+      "sha256": "f2f5aeeb27b87809123148a642b9d6b848290a82033b7118614288432c8af014"
+    },
+    {
+      "path": "margin_horizon_development/MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 596,
+      "sha256": "78b3bb8ced8d25b629dd871094e1a0a6e34d7a5b83acea514ea6c851e5488e13"
+    },
+    {
+      "path": "margin_horizon_development/margin_horizon_probe.py",
+      "bytes": 6752,
+      "sha256": "bd3875d2cf30fb997b0b04ebbcc72d021d74366977c386526ca77bfc9835c665"
+    },
+    {
+      "path": "margin_horizon_development/margin_horizon_results.json",
+      "bytes": 15844,
+      "sha256": "75e4780df5326f729657c868c3aebc970d408211a38b421a4da43273e3a0f90d"
+    },
+    {
+      "path": "margin_horizon_probe.py",
+      "bytes": 8000,
+      "sha256": "1ad0ed0e5bd71011fff7b0f7fe5c54a75d9276528798c2b3ee8df0b4cbeb9fc4"
+    },
+    {
+      "path": "margin_horizon_results.json",
+      "bytes": 17656,
+      "sha256": "b64f137631c288b9bf85fa4adbf7f3cd4c013fccd2ab316aa83affa8c3bd923d"
+    },
+    {
+      "path": "pinned_margin_collector.py",
+      "bytes": 12249,
+      "sha256": "55fb01d20519069aec85f23328a5507c95d86cec2d2fd6dbb3e14eb059b0cdd6"
+    },
+    {
+      "path": "results.json",
+      "bytes": 35284,
+      "sha256": "97f51b947a3be417e132b08ebaa98b3f0546c1a629a459cc98fb32e6b0d6fb97"
+    },
+    {
+      "path": "source_input.json",
+      "bytes": 40757,
+      "sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334"
+    },
+    {
+      "path": "source_probe.py",
+      "bytes": 5555,
+      "sha256": "3e50aaba63a0b61811aae88f49ae03c8c39446b9096d7f0e2c438f7ba39f102a"
+    },
+    {
+      "path": "weight_contract_audit.py",
+      "bytes": 8090,
+      "sha256": "9741f0e9e449271fb60bb67f2db3b21d7cb6e2766a247247e942b8910c22fba8"
+    },
+    {
+      "path": "weight_input.json",
+      "bytes": 63669,
+      "sha256": "30cb9996bf6a39ae1323f20e705ad6e0d685a5a074ea1571dd7304ae57bd85dd"
+    },
+    {
+      "path": "weight_results.json",
+      "bytes": 8432,
+      "sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884"
+    }
+  ],
+  "scope": "Accepted intelligence helper, fixed input/current-data probes, native weight audit, exact margin addendum and preserved development evidence. Independent reviews are separate packages."
+}

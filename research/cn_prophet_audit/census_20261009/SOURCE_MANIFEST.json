@@ -1,0 +1,99 @@
+{
+  "evidence_tier": "read-only descriptive research; no alpha promotion",
+  "outputs": {
+    "HISTORICAL_EVALUATION.md": {
+      "bytes": 24363,
+      "sha256": "49096c1197adb12bc29e526497700aa87073852ab3aee73d6e9efdc4fec668c0"
+    },
+    "autopsy.py": {
+      "bytes": 28850,
+      "sha256": "5a09a5112b3920201001d7fceefefcd336716154c696269fa6d680043a05e6a6"
+    },
+    "extend_audit.py": {
+      "bytes": 10750,
+      "sha256": "3838a50f85067e6a1a3ff990ec70c7f7a0f997699fb123a1406a3efc28f11408"
+    },
+    "historical_evidence.json": {
+      "bytes": 531920,
+      "sha256": "8b651cf4df19736f66a3cf184c5a47478ffe0bf2fc62a24bb5452c01b836e54d"
+    },
+    "last_cap_qualified_rows.json": {
+      "bytes": 70338,
+      "sha256": "78f1a1658bc6a0960c8e0479394ced5a63d20d76e6afd1b5d4677e461be30381"
+    },
+    "selected_case_records.json": {
+      "bytes": 23160,
+      "sha256": "06098fa27fd395e3c9e6bc084337e1c4f14cbea90a27ee9f553a6324b297b12d"
+    },
+    "v4_review_rows.json": {
+      "bytes": 375297,
+      "sha256": "626aacda09bdef9ba6cd8bb01a3688e445228b48ce63d5496defb07ce0482830"
+    },
+    "verify_diagnostic.py": {
+      "bytes": 1722,
+      "sha256": "4334791ad7d7e3944511d707e78227ec43163ff445e43ae413b80cd2bc3f2ba9"
+    }
+  },
+  "price_hash_manifest_sha256": "12f0d5d4795622e3342393a0f0394086419f7513b951d28d8866a6e30f2f6eb6",
+  "procedure_pin_supplied_by_parent": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "remote_output_directory": "/tmp/mmx-cn-prophet-historical-20261009/results",
+  "source_blobs": {
+    "data/china/510300.SS.parquet": {
+      "bytes": 78070,
+      "sha256": "d6c8132ae7a552eeb9c9e0e63addc78672d6151d7e871c3ca1cdd2686d8e22bc"
+    },
+    "data/china/510500.SS.parquet": {
+      "sha256": "9634029dcf3092ac847a79552bac6f198da02c880c7d8539bddb1bda2ab93024"
+    },
+    "data/china_hub/radar_ic.json": {
+      "sha256": "4827efe9a445542339622863d5583a192c049504fa463674ae0a17512184f3a4"
+    },
+    "data/china_prophet_rank/candidates.parquet": {
+      "bytes": 5474933,
+      "sha256": "18e6f74f5fe07dceb6b1fe6862fb723c0b60867afa0e5efbd8aa52e3bf7951d0"
+    },
+    "data/china_radar/ledger.parquet": {
+      "sha256": "ce98e5f4a1f6044201c6f78dedff359436bf1ff460368e585c0621ae20a0be88"
+    },
+    "data/china_search/members.parquet": {
+      "bytes": 127105,
+      "sha256": "90184eee322fb90b799a3dbddaf78a4f60affdb168ba7c9b2285aa4e5abe9e66"
+    },
+    "data/china_standout_track/board.parquet": {
+      "bytes": 216225,
+      "sha256": "4473390da36cd5e80dd5a6dce6fafddc303adaf9cd534b2b4b5aebb9065a4448"
+    },
+    "data/china_standout_track/entry_latch.parquet": {
+      "bytes": 28010,
+      "sha256": "0c25c4b21f71ddfa67c355908cec50b7275aee9e85b42d613dea39aa031605db"
+    },
+    "data/cn_prophet_audit/forward_log.parquet": {
+      "bytes": 25283,
+      "sha256": "0c0d8a9adca338392067e370117f158ba5ca5a82277b12a3faf6b33f1c0878a5"
+    },
+    "data/cn_prophet_audit/latest.json": {
+      "bytes": 2687301,
+      "sha256": "6a061cd1c3b6eaa7e1cafeec46d6cc97b0d89c97d9803f3221bc6f883a0878cc"
+    },
+    "data/cn_prophet_live/forward.parquet": {
+      "bytes": 1044,
+      "sha256": "dc10888de4a801526aaa277b7439d76a41d2db44691ac5c0d7f323db56b85e8f"
+    },
+    "engine/china_standout_track.py": {
+      "bytes": 98545,
+      "sha256": "5f7f5096a56c9e1ca2e9c4eae5f03311d2baafd395b58b8645cc68851fde43aa"
+    },
+    "engine/track_scoring.py": {
+      "bytes": 21549,
+      "sha256": "d4cb0e80d809c2cae9869e3fe846c99e54c3511fbaba4db4935b280d281a73fc"
+    },
+    "research/china_alpha/w5/w5a_rederive_stats.json": {
+      "sha256": "c74d2ae00a0031d7bae44b93ca3e3768e1fe576f9777ad29c0ca78c06f6be86f"
+    },
+    "research/cn_prophet_audit/rank_feature_battery_results.json": {
+      "sha256": "84501e496c19a0674937e9a0c6ddc3a83091f044aa3620439af916e140e29a25"
+    }
+  },
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "verification": "Pure arithmetic invariants passed; independent reviewer recomputed V4 289-row reconciliation and11-date/66-pick arms."
+}

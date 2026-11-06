@@ -1,0 +1,7 @@
+# Absolute request deadline repair
+
+The independent review of display candidate `595b83e907eabfb9e0df4ba3df4a2c3aad0f606c993ac345e4fccfd47d2176bc` found two forms of one deadline race: after wall time advances beyond 30 seconds while timer callbacks are delayed, late response headers or a late JSON body can paint and clear the overdue timer. The original display lab and independent failure evidence remain unchanged.
+
+This separate repair retains an absolute deadline for each existing request. Before consuming headers and before consuming the parsed body, require both the current request identity and wall time strictly before that deadline. If the current request has expired, abort when supported, invalidate its identity, clear fetching state and remove the optional live chip. An obsolete request must never clear a newer request's state. The timeout callback continues to bound transports; it is not the only admission check.
+
+Acceptance: preserve all 28 existing producer controls; reproduce both new failures on the previous candidate; reject both on this repair without running the delayed timer first; retain the independent review's full bounded controls. The existing 120-second poll, 15-minute artifact age, bilingual vocabulary and server-rendered card order remain. The 30-second request deadline and 60-second future artifact allowance remain proposed settings for existing-owner ratification. No production source, browser or API is accessed.

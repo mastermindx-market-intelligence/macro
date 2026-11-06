@@ -1,0 +1,105 @@
+{
+  "files": {
+    "VINTAGE_FINDINGS.md": {
+      "bytes": 19521,
+      "git_blob": "6216c8a3bc3f8e4ee675ab244dfe96b72434961e",
+      "sha256": "5b0fd84b01371502ddfdd758a93083d6ce95d8e37e7d76d4281cc68477766f15"
+    },
+    "action_title_leads.json": {
+      "bytes": 17936,
+      "git_blob": "48d0848384622544cb2ed0c9d33d2567550280a2",
+      "sha256": "0c09899c63768695767386adf813049171814092722c2a117237b9bb82413f8b"
+    },
+    "benchmark_retention_checks.json": {
+      "bytes": 3877,
+      "git_blob": "46536cf7e7b98cfbfe44dfe8e3d9ef2b5bb1d11a",
+      "sha256": "d8520a68e6fded2c3d1c87a10cecd782cb08bf078a4147867a6eade9946dc7d4"
+    },
+    "benchmark_retention_probe.py": {
+      "bytes": 6581,
+      "git_blob": "c635cf536b77a13b89b9a2601d7e1aaee46acc1d",
+      "sha256": "0aefc7ab01204b08af88d6807993647f80dcf2d906e5e8e34d7904be1c9e845c"
+    },
+    "benchmark_versions.json": {
+      "bytes": 7520,
+      "git_blob": "1c782b020096f69ebab4ce63b888b30fd589b43f",
+      "sha256": "c25ca986f0b509893b7950d0c337801c0775121b0bb3f3e8c9ac5d7c408e43c6"
+    },
+    "collect_vintage_evidence.py": {
+      "bytes": 18131,
+      "git_blob": "617c6002005593108ec071977a57f79dc8d1a1a5",
+      "sha256": "6e1a1d138f2a8101b5500ac815046b254c593954bf82344b6698b60c84bd237d"
+    },
+    "entry_comparison_rows.json": {
+      "bytes": 1431429,
+      "git_blob": "f84b50fba004235823dff6ae73fde4ae343267b8",
+      "sha256": "25160d291bec91cb7ba6fe77ac1e69ed5043f89f507dd369d4b32d0314c2e30c"
+    },
+    "fill_vintage_contract.py": {
+      "bytes": 6882,
+      "git_blob": "94b46c08dcfcaf37977598afac9d8f12ec53ee61",
+      "sha256": "522d81a9d9d647d9a5b1658c5864dc00aea315e871eb91a51060a77869986fbc"
+    },
+    "historical_shape_cases.json": {
+      "bytes": 93957,
+      "git_blob": "ae48b8237b14fd632f66496c2964a5ef129fb60c",
+      "sha256": "7f90be3d0289490ab494c5cf45bf582f9cf916af81f2e300d82dad9c9dd61e32"
+    },
+    "historical_witness_rows.json": {
+      "bytes": 1398096,
+      "git_blob": "9afb1ae98c15aa29a9c5fff432b201ebe4821465",
+      "sha256": "aaf1d164616d2cd459774360cc8893d9ae181a56caeaa77b2f2aa05a827805fd"
+    },
+    "output_manifest.json": {
+      "bytes": 833,
+      "git_blob": "2ea188304b038db0d42d4d966e57a92ae3c541d8",
+      "sha256": "a94df796ef4abb655a802276feff0586810a532bf09a8fe1bce3fc66e2501bb3"
+    },
+    "probe_supporting_sources.py": {
+      "bytes": 6816,
+      "git_blob": "ca8425e4fe7caeba0803c52559430072edb7d5df",
+      "sha256": "fc91e93f70b9126ef406b3985ba6e7c5ff13cceacdbdd2f9edcb71074d8051d9"
+    },
+    "supporting_sources.json": {
+      "bytes": 16710,
+      "git_blob": "6d7ec4c60d579f0123f358c33d87d5490940def8",
+      "sha256": "2026d9ef086ecdea845211d4a220187a1ac810ad99beb7cdad028e1171b87efb"
+    },
+    "verify_vintage_contract.py": {
+      "bytes": 8451,
+      "git_blob": "9b3cb8662523d39f213be0cdd3940a9f22d73e2c",
+      "sha256": "2b07fa2faf58531b653f56a0a086bc35258eff0f90456239a946e136b2cb4450"
+    },
+    "vintage_contract_checks.json": {
+      "bytes": 5629,
+      "git_blob": "b99d9c946933316b67f2e5ebd5ac44111e6a8957",
+      "sha256": "6d1c2e671527006b4bb243525f40676d8de0d99196ea2f7867f405475d1d67f0"
+    },
+    "vintage_inputs.json": {
+      "bytes": 770285,
+      "git_blob": "68f4e73aba2097178c73a82d2cb68d9e75435c86",
+      "sha256": "e064dcbc17e0081aab26cb079e41f940c2f387fca8c47bf6ff9302043954eac5"
+    },
+    "vintage_results.json": {
+      "bytes": 24924,
+      "git_blob": "fc83fa4f5d4dbdf515537e373c334981f349e1af",
+      "sha256": "0c702ad83845c50c2418ee8c22a522a3701147e1c4d1d62c52cda6b5747c79d3"
+    }
+  },
+  "scope": "read-only W0/W1 research and pure prototypes; no production source modifications",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "verification": {
+    "benchmark_retention_checks": 9,
+    "benchmark_retention_host_exit": 0,
+    "benchmark_retention_runtime_seconds": 0.69,
+    "census_host_exit": 0,
+    "census_host_runtime_seconds": 23.06,
+    "collector_output_identity_readback": "PASS",
+    "contract_falsifiers": 18,
+    "json_decode": "PASS",
+    "markdown_links": "PASS",
+    "python_ast": "PASS",
+    "supporting_probe_host_exit": 0,
+    "supporting_probe_runtime_seconds": 1.79
+  }
+}

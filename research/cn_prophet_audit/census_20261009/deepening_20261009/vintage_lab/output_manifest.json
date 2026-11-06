@@ -1,0 +1,26 @@
+{
+  "benchmark_versions.json": {
+    "bytes": 7520,
+    "sha256": "c25ca986f0b509893b7950d0c337801c0775121b0bb3f3e8c9ac5d7c408e43c6"
+  },
+  "entry_comparison_rows.json": {
+    "bytes": 1431429,
+    "sha256": "25160d291bec91cb7ba6fe77ac1e69ed5043f89f507dd369d4b32d0314c2e30c"
+  },
+  "historical_shape_cases.json": {
+    "bytes": 93957,
+    "sha256": "7f90be3d0289490ab494c5cf45bf582f9cf916af81f2e300d82dad9c9dd61e32"
+  },
+  "historical_witness_rows.json": {
+    "bytes": 1398096,
+    "sha256": "aaf1d164616d2cd459774360cc8893d9ae181a56caeaa77b2f2aa05a827805fd"
+  },
+  "vintage_inputs.json": {
+    "bytes": 770285,
+    "sha256": "e064dcbc17e0081aab26cb079e41f940c2f387fca8c47bf6ff9302043954eac5"
+  },
+  "vintage_results.json": {
+    "bytes": 24924,
+    "sha256": "0c702ad83845c50c2418ee8c22a522a3701147e1c4d1d62c52cda6b5747c79d3"
+  }
+}

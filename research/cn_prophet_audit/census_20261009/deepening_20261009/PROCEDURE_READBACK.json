@@ -1,0 +1,45 @@
+{
+  "schema": "research.procedure_readback.v1",
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "publication_branch": "master",
+  "protected_branch_observed": true,
+  "pin": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "tree": "2517e74d7778fa801222b61cc2d226f055a1d48e",
+  "skillpack_version": "1.0.1",
+  "minimum_bootstrap_major": 1,
+  "compatibility": "compatible",
+  "files": [
+    {
+      "path": "docs/sol_skills/INDEX.md",
+      "git_blob": "38a18571229e487f525b1c9780f7993220a5da93",
+      "bytes": 18529
+    },
+    {
+      "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+      "git_blob": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+      "bytes": 50001
+    },
+    {
+      "path": "docs/sol_skills/CLOSEOUT.md",
+      "git_blob": "4a9ec3782da001322604e977dbe91b9cf371f0b9",
+      "bytes": 10129
+    },
+    {
+      "path": "docs/sol_skills/RECONCILE_STATE.md",
+      "git_blob": "1373b72a13fb4a084b0331eb2bcf2d4a680d9738",
+      "bytes": 12482
+    },
+    {
+      "path": "docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md",
+      "git_blob": "d01f7efc2648a061628a6c72e05eccd5559cda8e",
+      "bytes": 33919
+    },
+    {
+      "path": "plugins/mastermind-sol/references/authority-boundaries.md",
+      "git_blob": "2b08786341924c6402d1c541e61ec33f13f949e9",
+      "bytes": 1189
+    }
+  ],
+  "method": "Protected branch and immutable files re-read during material closeout. Plugin relative authority reference was not exposed by skills reader; its owning-repository path was resolved in a complete protected tree and read at the same commit.",
+  "scope": "Procedure only; grants no production, runtime, deployment, people-message or rank-promotion authority."
+}

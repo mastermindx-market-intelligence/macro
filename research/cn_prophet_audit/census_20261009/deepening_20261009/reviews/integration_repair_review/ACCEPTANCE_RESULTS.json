@@ -1,0 +1,1304 @@
+{
+  "candidate_inputs_sha256": {
+    "contract_prototype.py": "3518cc9f408534cccbe60419b8de8d7143ad42f406c7d9ee262068ef1c5fe2e0",
+    "pinned_quote_adapter.py": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074"
+  },
+  "candidate_manifest_files": {
+    "DESIGN.md": "16cb68ed065001b8154968ac087c3aea10fb30b1cbbbbde22a3f77950762343a",
+    "MANIFEST.json": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309",
+    "REPAIR_DECISIONS.md": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+    "baseline_identities.json": "42a5933d388f55ba7f44e65765ff4afb0878c54dbab3b7a22321acf0c0861851",
+    "baseline_preservation.json": "d7d37e9b7cf68ed078c0a8355ff931af781a4aba4ae2c66ab6b9493f8133a97f",
+    "contract_prototype.py": "3518cc9f408534cccbe60419b8de8d7143ad42f406c7d9ee262068ef1c5fe2e0",
+    "execution.log": "6056547d9202e47e01b3f7265df999e884745330ec79eb39660559eb8b4fe013",
+    "execution_receipt.json": "4506e3e3e1a8dc9edec46fe41c449c00cc0e88b6bdd45e35d8f3edfb9d097de3",
+    "integration_fixture.json": "c9dfccae6b07b9c045a49de17b8f1318f1ac0577c116099389a960bcf00efcc7",
+    "integration_results.json": "d877f157bcfc8c8c74359dd3cdff1bf253724bfc6538cb7058f7385504b2f455",
+    "local_verification.json": "faeac84ed1db69fdf7b11a735d48b1b138e556b0c5fccab31218803820684a31",
+    "native_driver_control/close.json": "363da8ac7958dbb9c456b6a432f759d435dfee1c17f36c57c28a1d9fcd4585de",
+    "native_driver_control/cn_board_confirmation.json": "825bc4d83059d2e80df49ee1fbf57704a51e882363bd1da898817d5044ae29c2",
+    "native_driver_control/corrupt.parquet": "da267baf665d359f4577b098e581620551b11551070d9111916509151a928719",
+    "native_driver_control/events.json": "3da35af33a2474700de371f405b59486a391048ae5d0e2a508d50f13469001bd",
+    "native_driver_control/forward.parquet": "27eca1ed6767c3d94eb67a48fd7cd008230de46863d39753bd193bdeb6410d8c",
+    "native_probe_debug.json": "677150882d8958e11913bfc1c1616d2074485c7854218c55049c673ac62654ec",
+    "native_source_bundle.json": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+    "parquet_cases/conflicting_daily_keys_forward.parquet": "0ca741952b057ddd9f66873e3afc09e0350cff79c7eaa6d6e7ce14c2353c23bc",
+    "parquet_cases/conflicting_daily_keys_reverse.parquet": "193ea32d5cb4e3673d6cf0994b1ec4ef3452d3f67ef60122f1bf4110443b1104",
+    "parquet_cases/exact_duplicate_daily_key.parquet": "c6a79c17e1d71fe6fdf559c96cdd1697a0185de69b725215bd7efeb04ff58d11",
+    "parquet_cases/legacy_compatibility.parquet": "6e3557d0073a5a22d21d23f9f0384d2753b6e9cdd478618eb1dda0904359a671",
+    "parquet_cases/native_empty.parquet": "5fe4575776d110f78d9698f039cbcdd4a3f1901ef0a07156cbedb0f35d199660",
+    "parquet_cases/readable_empty_unknown_table.parquet": "f7a70a148c097942befc0925c522ff0e385ae02ceafe9150d13c0a1581f428e8",
+    "parquet_cases/readable_unknown_row_schema.parquet": "98fc6578ba4c45ff8f5d7946cb3865be15ced0d487bd2cac808103a3006efa49",
+    "parquet_cases/readable_unrelated_table.parquet": "6982eac8cad08e855f9e00ad7b1f3881158fbce7256b356deff88e5f649b7853",
+    "parquet_receipts.json": "922d97c50a56aafc7a2d86a2363f78b87b86c70c456882861b8dee7062596bb7",
+    "pinned_quote_adapter.py": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074",
+    "repair_cases.json": "ab57d30829ce31da920b90061c3190a58d42aba731bf1b044c2382f7da1e6601",
+    "repair_checks.py": "66be097d9f5b77936738dc989ef7f7d280e7bad3d3c3fe17ada0bddc2340aaa7",
+    "run_lab.py": "e723e036eacc47b096b508933ac6200d731c3474f2effb64a67eb20efdeb78d5",
+    "synthetic_forward.parquet": "5fe4575776d110f78d9698f039cbcdd4a3f1901ef0a07156cbedb0f35d199660",
+    "synthetic_settlement_board.json.gz": "18bc127682095a27642556b7082c28ea33038b1f83898335cb55847760240c45",
+    "transfer_receipt.json": "4ffa01a0985ee8b55b98449812ed2cda928bdf2cc4f29a9da5715b359f88797d",
+    "unreadable_ledger_guard.parquet": "9a170269a539970d5dcafa39b976ee7034c8263bdbb21f069997911430ac485a",
+    "verify_contract.py": "267bd1e22b62263314e0d4e64fb6efa2506f26cb5a27f588a407dfdfd8732933"
+  },
+  "checks": [
+    {
+      "details": null,
+      "name": "all_original_lab_and_review_payloads_verified",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "pinned_quote_adapter_hash",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "pinned_quote_adapter_git_object",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "independent_native_passes",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "independent_native_daily_rows",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "archived_prior_generation_survives_current_rollover",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "settlement_gate_verdict_authority",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "canonical_membership_authority",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "canonical_exact_byte_binding",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "synthetic_source_qualification_is_explicit",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "complete_replay_idempotence",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "fractional_native_instant_is_preserved",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "fractional_source_receipt_is_admitted_at_its_actual_event_time",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "future_quote_source_receipt"
+      },
+      "name": "fifty_millisecond_backdate_still_refuses",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "spool_regression"
+      },
+      "name": "F1_first_transition_object",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "spool_regression"
+      },
+      "name": "F1_every_transition_object",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "new_empty_session_with_valid_close_is_supported",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "spool_regression"
+      },
+      "name": "F1_partial_id_regression",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F2_both_inert_nonce_order_variants_found",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "conflicting_equal_time_close_evidence"
+      },
+      "name": "F2_conflicting_close_after",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "conflicting_equal_time_close_evidence"
+      },
+      "name": "F2_conflicting_close_before",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "equivalent_close_evidence_preserves_rows_and_membership",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "equivalent_close_evidence_retains_both_object_identities",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F3_unqualified_declaration_None",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F3_unqualified_declaration_split_and_dividend_adjusted",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F3_unqualified_declaration_unadjusted_vendor_print",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "caller_qualification_boolean_has_no_authority",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "quote_price_must_equal_replayed_payload",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "exact_source_bytes_remain_distinct",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "source_text_cannot_change_under_existing_byte_hash",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "event_quote_source_disagreement"
+      },
+      "name": "F3_rehashed_event_price_still_binds_source",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "duplicate_existing_daily_key"
+      },
+      "name": "F4_conflict_last",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "duplicate_existing_daily_key"
+      },
+      "name": "F4_conflict_first",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "duplicate_existing_daily_key"
+      },
+      "name": "F4_exact_duplicate",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "invalid_frozen_score"
+      },
+      "name": "F5_standalone_score_-1",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "invalid_frozen_score"
+      },
+      "name": "F5_standalone_score_100.01",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F5_valid_boundary_score_0",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F5_valid_boundary_score_100",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F6_huge_integer_numeric_predicate_is_total",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "F6_bad_quote_does_not_abort_valid_peers",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "invalid_quote_payload_price"
+      },
+      "name": "huge_provider_payload_takes_typed_refusal",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_first_px",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_first_quote_ts",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_quote_payload_sha256",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_first_quote_record_sha256",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_source_board_definition",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_cross_basis_close",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_first_quote_age_min",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_immutable_from_state",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "existing_first_observation_conflict"
+      },
+      "name": "F7_rehash_cannot_authorize_first_price_rewrite",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "older_legacy_native_row_is_carried_unchanged",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "legacy_unbound_row"
+      },
+      "name": "target_session_unbound_history_requires_migration",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "repeat_is_a_native_later_transition",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "native_repeat_updates_last_and_count_preserves_first",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "equal_time_conflict_uses_two_authentic_native_events",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "ambiguous_equal_time_events"
+      },
+      "name": "equal_time_first_event_conflict_refuses",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "exact_event_id_replay_deduplicates_before_time_conflict",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "future_quote_source_receipt"
+      },
+      "name": "event_time_authority_R-C1",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "future_pack_build"
+      },
+      "name": "event_time_authority_R-C2",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "parquet_independent_helper_identity",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "parquet_independent_support_and_native_identities",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "parquet_exact_candidate_and_fixture",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "parquet_required_native_cases_pass",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "parquet_positive_compatibility_and_precision",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/conflicting_duplicate_first.before.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/conflicting_duplicate_first.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/conflicting_duplicate_last.before.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/conflicting_duplicate_last.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/exact_duplicate.before.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/exact_duplicate.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/fractional_event_time.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/later_repeat.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/legacy_roundtrip.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/positive_roundtrip.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/readable_unknown_schema.before.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "retained_parquet_bytes_parquet_cases/readable_unknown_schema.parquet",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "original_lab_and_review_unchanged_after_acceptance",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "candidate_unchanged_during_execution_contract_prototype.py",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "candidate_unchanged_during_execution_pinned_quote_adapter.py",
+      "status": "PASS"
+    },
+    {
+      "details": null,
+      "name": "exact_candidate_manifest_unchanged_after_execution",
+      "status": "PASS"
+    }
+  ],
+  "effects": {
+    "completed_labs_changed": false,
+    "network_disabled": true,
+    "production_writes": false,
+    "vendor_calls": false
+  },
+  "evidence": {
+    "F1": [
+      {
+        "omitted_keys": [
+          "live_flow/cn_prophet_live_events/2026-10-12/020000-7b6d5d284d0138e6e75d55f935f98bb09c2cfe086f9a7b113bec047ad34ffc32.json"
+        ],
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "spool_regression"
+        },
+        "variant": "first_transition_object"
+      },
+      {
+        "omitted_keys": [
+          "live_flow/cn_prophet_live_events/2026-10-12/020000-7b6d5d284d0138e6e75d55f935f98bb09c2cfe086f9a7b113bec047ad34ffc32.json",
+          "live_flow/cn_prophet_live_events/2026-10-12/020500-8218a7d79eceddfb99585259317fa0487b457bf9bf77a67732035897ac334cf4.json"
+        ],
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "spool_regression"
+        },
+        "variant": "every_transition_object"
+      }
+    ],
+    "F2": {
+      "conflicting_variants": [
+        {
+          "alternative_economics_sha256": "a99ac9eb7349ea90fb978f1718d8db78d8f40847f8b49861e434172c93991965",
+          "alternative_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-e9c84c7e6552c4e1db1604a6446b2de8b18f5ee08adbe5ed0dbf33cbbe3df69b.json",
+          "fixed_economics_sha256": "48b784d464935f0b2271e2c92cb752816d7628027eb71b582b51c8f43c531386",
+          "fixed_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-4ea7d6e901c88078dc60df5597c4e1ebce1197bf0d04f384672603b45a5ffde4.json",
+          "nonce": 0,
+          "relative_order": "after",
+          "result": {
+            "exception_class": "Refused",
+            "outcome": "exception",
+            "reason": "conflicting_equal_time_close_evidence"
+          }
+        },
+        {
+          "alternative_economics_sha256": "a99ac9eb7349ea90fb978f1718d8db78d8f40847f8b49861e434172c93991965",
+          "alternative_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-06113f75c74d4d8233d3dd849154ec98f179c08ea4aeec1df975b8894ddae0d9.json",
+          "fixed_economics_sha256": "48b784d464935f0b2271e2c92cb752816d7628027eb71b582b51c8f43c531386",
+          "fixed_key": "live_flow/cn_prophet_live_events/2026-10-12/070600-4ea7d6e901c88078dc60df5597c4e1ebce1197bf0d04f384672603b45a5ffde4.json",
+          "nonce": 2,
+          "relative_order": "before",
+          "result": {
+            "exception_class": "Refused",
+            "outcome": "exception",
+            "reason": "conflicting_equal_time_close_evidence"
+          }
+        }
+      ],
+      "equivalent_observation_receipt": {
+        "authority": "latest observation time; equivalent economics coalesced; conflicting ties refused",
+        "built_at": "2026-10-12T07:06:00+00:00",
+        "economics_sha256": "48b784d464935f0b2271e2c92cb752816d7628027eb71b582b51c8f43c531386",
+        "object_keys": [
+          "live_flow/cn_prophet_live_events/2026-10-12/070600-4ea7d6e901c88078dc60df5597c4e1ebce1197bf0d04f384672603b45a5ffde4.json",
+          "live_flow/cn_prophet_live_events/2026-10-12/070600-80a8a026a43182f026fb59ded49c4c1fda2e13bad5ace7d33fa733753ec65284.json"
+        ]
+      }
+    },
+    "F3": {
+      "byte_variant_payload_hashes": [
+        "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+        "8f1a712e366975194dc95e1da31503bea17320fe2cdfd95f9344758df944553c"
+      ],
+      "common_native_record_sha256": "f5b650d86d11086ce373a9cb2f05935d6792c84531d8726af9a2059f1126b202",
+      "contract": {
+        "adapter_function": "parse_yahoo_spark",
+        "adapter_git_blob": "f7ad6ebc550811708a20aaf259b30dd1df0a3699",
+        "adapter_path": "engine/live_quotes.py",
+        "adapter_source_sha256": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074",
+        "origin": "SYNTHETIC_RESEARCH_ONLY",
+        "payload_codec": "Retained original UTF-8 source text, hashed before JSON parsing",
+        "previous_close_field": "spark.result[].response[0].meta.previousClose",
+        "price_adjustment": "unadjusted_research_fixture",
+        "price_field": "spark.result[].response[0].meta.regularMarketPrice",
+        "price_unit": "CNY per share in an explicitly synthetic unadjusted scenario",
+        "provider_shape": "Yahoo v7 spark response; synthetic observations",
+        "schema": "cn_prophet_live.synthetic_quote_contract/research-v1",
+        "scope": "Defines the synthetic scenario's units; does not certify natural Yahoo or Tencent adjustment semantics.",
+        "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+        "timestamp_field": "spark.result[].response[0].meta.regularMarketTime"
+      },
+      "unqualified_inputs": [
+        {
+          "events": 0,
+          "input_adjustment": null,
+          "quote_rejections": {
+            "002460.SZ": "quote_basis_evidence_unavailable",
+            "300750.SZ": "quote_basis_evidence_unavailable",
+            "603799.SS": "quote_basis_evidence_unavailable"
+          }
+        },
+        {
+          "events": 0,
+          "input_adjustment": "split_and_dividend_adjusted",
+          "quote_rejections": {
+            "002460.SZ": "quote_basis_evidence_unavailable",
+            "300750.SZ": "quote_basis_evidence_unavailable",
+            "603799.SS": "quote_basis_evidence_unavailable"
+          }
+        },
+        {
+          "events": 0,
+          "input_adjustment": "unadjusted_vendor_print",
+          "quote_rejections": {
+            "002460.SZ": "quote_basis_evidence_unavailable",
+            "300750.SZ": "quote_basis_evidence_unavailable",
+            "603799.SS": "quote_basis_evidence_unavailable"
+          }
+        }
+      ]
+    },
+    "F7": [
+      {
+        "field": "first_px",
+        "proposed_value": 47.1029,
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "first_quote_ts",
+        "proposed_value": "2026-10-12T02:00:01+00:00",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "quote_payload_sha256",
+        "proposed_value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "first_quote_record_sha256",
+        "proposed_value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "source_board_definition",
+        "proposed_value": "forged-definition",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "cross_basis_close",
+        "proposed_value": 46.47,
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "first_quote_age_min",
+        "proposed_value": 1.0,
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      },
+      {
+        "field": "from_state",
+        "proposed_value": "forged-state",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "existing_first_observation_conflict"
+        }
+      }
+    ],
+    "compatibility": {
+      "legacy_row": {
+        "close_same_day": null,
+        "confirmed": null,
+        "cross_px": 10.0,
+        "date": "2026-10-09",
+        "first_px": 10.0,
+        "first_ts": "2026-10-09T02:00:00Z",
+        "independent_legacy_note": "pre-existing native history",
+        "kind": "forming",
+        "last_px": 10.1,
+        "last_ts": "2026-10-09T02:05:00Z",
+        "next_close_fill": null,
+        "occurrences": 2,
+        "schema": "cn_prophet_live.forward/v1",
+        "ticker": "002460.SZ"
+      },
+      "native_repeat_event": {
+        "entered": "board",
+        "event_id": "40212be6b98bd78ca9f4f51971bce240872e2345f3582360e9d59ede78bdd75b",
+        "from": "dark",
+        "kind": "forming",
+        "passes": 1,
+        "price": 46.1029,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_age_min": 0.0,
+        "quote_source": "yahoo",
+        "quote_ts": "2026-10-12T02:10:00+00:00",
+        "session_phase": "morning",
+        "source_evidence": {
+          "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "origin": "SYNTHETIC_RESEARCH_ONLY",
+          "payload_sha256": "4609d5fe8d16a8aa17efe3feae9bd1fdf175ab7228b43ff35cd847d32c5d2be1",
+          "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.1029,\"regularMarketTime\":1791771000}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791771000}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791771000}}],\"symbol\":\"603799.SS\"}]}}",
+          "quote_record_sha256": "ddedd8e6ce745742cc30faffa949284554bb8fa5cee8bac052b757650a70bd10",
+          "recorded_at": "2026-10-12T02:10:00+00:00",
+          "schema": "cn_prophet_live.quote_source/research-v1"
+        },
+        "ticker": "002460.SZ",
+        "ts": "2026-10-12T02:10:00.000000+00:00"
+      },
+      "repeat_row": {
+        "close_same_day": null,
+        "confirmation_basis": "same_session_pack_center_buyable",
+        "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+        "confirmed": true,
+        "cross_basis_adjustment": "split_and_dividend_adjusted",
+        "cross_basis_close": 45.47,
+        "cross_px": 46.1029,
+        "date": "2026-10-12",
+        "entered": "board",
+        "event_ids": [
+          "40212be6b98bd78ca9f4f51971bce240872e2345f3582360e9d59ede78bdd75b",
+          "4ebed180ce84be7dd34388c5cc45e59da8d62d286bc2c18b40ca645d9c55393b"
+        ],
+        "first_event_id": "4ebed180ce84be7dd34388c5cc45e59da8d62d286bc2c18b40ca645d9c55393b",
+        "first_observation_sha256": "40dfdf09a6be723a54d1d193e7cd27dc4962a070101d480e6043302d23de26ff",
+        "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "first_passes": 1,
+        "first_px": 46.1029,
+        "first_quote_age_min": 0.0,
+        "first_quote_record_sha256": "f5b650d86d11086ce373a9cb2f05935d6792c84531d8726af9a2059f1126b202",
+        "first_quote_ts": "2026-10-12T02:00:00+00:00",
+        "first_ts": "2026-10-12T02:00:00.000000+00:00",
+        "from_state": null,
+        "frozen_lane": "featured",
+        "frozen_rank": 1,
+        "frozen_score": 90.0,
+        "frozen_score_rank": 1,
+        "ingest_contract": "cn_prophet_live.evidence/research-v2",
+        "kind": "forming",
+        "last_px": 46.1029,
+        "last_ts": "2026-10-12T02:10:00.000000+00:00",
+        "next_close_fill": null,
+        "occurrences": 2,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+        "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+        "schema": "cn_prophet_live.forward/v1",
+        "session_phase": "morning",
+        "source_board_asof": "2026-10-09",
+        "source_board_definition": "cn_prophet_v4",
+        "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+        "ticker": "002460.SZ",
+        "via": null
+      }
+    },
+    "equal_time_first_event": {
+      "alternative_key": "live_flow/cn_prophet_live_events/2026-10-12/020000-604848a0835777c7cb7372e62c5067d31b3ac2178c35226c6ac40e9c49f3bede.json",
+      "alternative_native_event": {
+        "entered": "board",
+        "event_id": "d2c4c005250cf37280d504f5d98587dfc27fed966af2ef7abddd6af35b407ad3",
+        "from": null,
+        "kind": "forming",
+        "passes": 1,
+        "price": 46.103,
+        "price_adjustment": "unadjusted_research_fixture",
+        "quote_age_min": 0.0,
+        "quote_source": "yahoo",
+        "quote_ts": "2026-10-12T02:00:00+00:00",
+        "session_phase": "morning",
+        "source_evidence": {
+          "contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "origin": "SYNTHETIC_RESEARCH_ONLY",
+          "payload_sha256": "78dd30c31318b042eeaf530d2ac1670cd92871745dd9a3f18e58070451273903",
+          "payload_utf8": "{\"spark\":{\"result\":[{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":45.47,\"regularMarketPrice\":46.103,\"regularMarketTime\":1791770400}}],\"symbol\":\"002460.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":297.75,\"regularMarketPrice\":349.1875,\"regularMarketTime\":1791770400}}],\"symbol\":\"300750.SZ\"},{\"response\":[{\"meta\":{\"currency\":\"CNY\",\"previousClose\":35.6,\"regularMarketPrice\":36.0955,\"regularMarketTime\":1791770400}}],\"symbol\":\"603799.SS\"}]}}",
+          "quote_record_sha256": "27632782e4f23ee5ac9d7d07993e640f6f6a812b155ee30157c847f1fb9f4ec8",
+          "recorded_at": "2026-10-12T02:00:00+00:00",
+          "schema": "cn_prophet_live.quote_source/research-v1"
+        },
+        "ticker": "002460.SZ",
+        "ts": "2026-10-12T02:00:00.000000+00:00"
+      },
+      "result": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "ambiguous_equal_time_events"
+      }
+    },
+    "event_time_authorities": [
+      {
+        "event_ts": "2026-10-12T02:00:00Z",
+        "id": "R-C1",
+        "pack_built_at": "2026-10-09T12:00:00Z",
+        "pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "future_quote_source_receipt"
+        },
+        "source_recorded_at": "2026-10-12T02:01:00+00:00"
+      },
+      {
+        "event_ts": "2026-10-12T02:00:00Z",
+        "id": "R-C2",
+        "pack_built_at": "2026-10-12T02:01:00Z",
+        "pack_id": "1b70edfd8031d2e358dbcc11da8987a16b70d5052e5f2ba25331df6488898249",
+        "result": {
+          "exception_class": "Refused",
+          "outcome": "exception",
+          "reason": "future_pack_build"
+        },
+        "source_recorded_at": "2026-10-12T02:00:00+00:00"
+      }
+    ],
+    "fractional_clock": {
+      "fifty_millisecond_backdate": {
+        "exception_class": "Refused",
+        "outcome": "exception",
+        "reason": "future_quote_source_receipt"
+      },
+      "native_event_timestamps": [
+        "2026-10-12T02:00:00.250000+00:00",
+        "2026-10-12T02:00:00.250000+00:00",
+        "2026-10-12T02:00:00.250000+00:00"
+      ],
+      "returned_first_timestamps": [
+        "2026-10-12T02:00:00.250000+00:00",
+        "2026-10-12T02:00:00.250000+00:00",
+        "2026-10-12T02:00:00.250000+00:00"
+      ],
+      "supplied_evaluation_at": "2026-10-12T02:00:00.250000+00:00"
+    },
+    "positive_three_join": {
+      "native_event_counts": [
+        3,
+        1,
+        0,
+        0
+      ],
+      "receipt": {
+        "archived_packs": [
+          "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09"
+        ],
+        "canonical_board_sha256": "8fd54b13930d7b9ed48d8b39f68db6729029773de62ea153061545adbf8afe13",
+        "close_and_fill_labels": "unresolved; this lab does not manufacture price-basis-aligned fills",
+        "close_board_available": true,
+        "distinct_events": 4,
+        "receipt": {
+          "adjusted": [],
+          "as_of": "2026-10-12",
+          "built_at": "2026-10-12T12:00:00Z",
+          "confirmed": [
+            "002460.SZ",
+            "300750.SZ"
+          ],
+          "detail": {
+            "added": [],
+            "basis": "close_board lanes vs china_standouts buy/more_actionable/forming",
+            "lane_moves": {},
+            "n_added": 0
+          },
+          "dropped": [
+            "603799.SS"
+          ],
+          "n_adjusted": 0,
+          "n_confirmed": 2,
+          "n_dropped": 1,
+          "n_total": 3,
+          "schema": "cn_board_confirmation/v1"
+        },
+        "row_count": 4,
+        "selected_close_evidence": {
+          "authority": "latest observation time; equivalent economics coalesced; conflicting ties refused",
+          "built_at": "2026-10-12T07:06:00+00:00",
+          "economics_sha256": "48b784d464935f0b2271e2c92cb752816d7628027eb71b582b51c8f43c531386",
+          "object_keys": [
+            "live_flow/cn_prophet_live_events/2026-10-12/070600-4ea7d6e901c88078dc60df5597c4e1ebce1197bf0d04f384672603b45a5ffde4.json"
+          ]
+        },
+        "spool_objects": 4
+      },
+      "rows": [
+        {
+          "close_same_day": null,
+          "confirmation_basis": "same_session_pack_center_buyable",
+          "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+          "confirmed": true,
+          "cross_basis_adjustment": "split_and_dividend_adjusted",
+          "cross_basis_close": 45.47,
+          "cross_px": 46.1029,
+          "date": "2026-10-12",
+          "entered": "board",
+          "event_ids": [
+            "4ebed180ce84be7dd34388c5cc45e59da8d62d286bc2c18b40ca645d9c55393b"
+          ],
+          "first_event_id": "4ebed180ce84be7dd34388c5cc45e59da8d62d286bc2c18b40ca645d9c55393b",
+          "first_observation_sha256": "40dfdf09a6be723a54d1d193e7cd27dc4962a070101d480e6043302d23de26ff",
+          "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "first_passes": 1,
+          "first_px": 46.1029,
+          "first_quote_age_min": 0.0,
+          "first_quote_record_sha256": "f5b650d86d11086ce373a9cb2f05935d6792c84531d8726af9a2059f1126b202",
+          "first_quote_ts": "2026-10-12T02:00:00+00:00",
+          "first_ts": "2026-10-12T02:00:00.000000+00:00",
+          "from_state": null,
+          "frozen_lane": "featured",
+          "frozen_rank": 1,
+          "frozen_score": 90.0,
+          "frozen_score_rank": 1,
+          "ingest_contract": "cn_prophet_live.evidence/research-v2",
+          "kind": "forming",
+          "last_px": 46.1029,
+          "last_ts": "2026-10-12T02:00:00.000000+00:00",
+          "next_close_fill": null,
+          "occurrences": 1,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+          "schema": "cn_prophet_live.forward/v1",
+          "session_phase": "morning",
+          "source_board_asof": "2026-10-09",
+          "source_board_definition": "cn_prophet_v4",
+          "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+          "ticker": "002460.SZ",
+          "via": null
+        },
+        {
+          "close_same_day": null,
+          "confirmation_basis": "same_session_pack_center_buyable",
+          "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+          "confirmed": true,
+          "cross_basis_adjustment": "split_and_dividend_adjusted",
+          "cross_basis_close": 297.75,
+          "cross_px": 349.1875,
+          "date": "2026-10-12",
+          "entered": "cross",
+          "event_ids": [
+            "02388419157a04a1464da5a8ba7c94ef92ebf08dcc0d0cdf8d1b58ccccf3e391"
+          ],
+          "first_event_id": "02388419157a04a1464da5a8ba7c94ef92ebf08dcc0d0cdf8d1b58ccccf3e391",
+          "first_observation_sha256": "62b60ff924c2271618806f6511c62c4a9e625fc2786b8b0a7e45514c71e92c20",
+          "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "first_passes": 1,
+          "first_px": 349.1875,
+          "first_quote_age_min": 0.0,
+          "first_quote_record_sha256": "ccc6f43c7c0297f70c715a4c57ee15ca6b72228164ae04ac1530ed6446340531",
+          "first_quote_ts": "2026-10-12T02:00:00+00:00",
+          "first_ts": "2026-10-12T02:00:00.000000+00:00",
+          "from_state": null,
+          "frozen_lane": "forming",
+          "frozen_rank": 162,
+          "frozen_score": 54.0,
+          "frozen_score_rank": 162,
+          "ingest_contract": "cn_prophet_live.evidence/research-v2",
+          "kind": "crossing_unconfirmed",
+          "last_px": 349.1875,
+          "last_ts": "2026-10-12T02:00:00.000000+00:00",
+          "next_close_fill": null,
+          "occurrences": 1,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+          "schema": "cn_prophet_live.forward/v1",
+          "session_phase": "morning",
+          "source_board_asof": "2026-10-09",
+          "source_board_definition": "cn_prophet_v4",
+          "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+          "ticker": "300750.SZ",
+          "via": null
+        },
+        {
+          "close_same_day": null,
+          "confirmation_basis": "same_session_pack_center_buyable",
+          "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+          "confirmed": true,
+          "cross_basis_adjustment": "split_and_dividend_adjusted",
+          "cross_basis_close": 297.75,
+          "cross_px": 349.1875,
+          "date": "2026-10-12",
+          "entered": "cross",
+          "event_ids": [
+            "00ab55bc94434a2e96c0b43ef5970a932614ac299162d91caef2c494e590fb4e"
+          ],
+          "first_event_id": "00ab55bc94434a2e96c0b43ef5970a932614ac299162d91caef2c494e590fb4e",
+          "first_observation_sha256": "b903a2591e5350c03b502e2c0d44a8bf36aba3d78c1958bfa41a07de0bdd2e9e",
+          "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "first_passes": 2,
+          "first_px": 349.1875,
+          "first_quote_age_min": 0.0,
+          "first_quote_record_sha256": "b2d70cb18b4e0a7601af0ee58ee6771f12e0731c39222c822230be6a1ab0b064",
+          "first_quote_ts": "2026-10-12T02:05:00+00:00",
+          "first_ts": "2026-10-12T02:05:00.000000+00:00",
+          "from_state": "near",
+          "frozen_lane": "forming",
+          "frozen_rank": 162,
+          "frozen_score": 54.0,
+          "frozen_score_rank": 162,
+          "ingest_contract": "cn_prophet_live.evidence/research-v2",
+          "kind": "forming",
+          "last_px": 349.1875,
+          "last_ts": "2026-10-12T02:05:00.000000+00:00",
+          "next_close_fill": null,
+          "occurrences": 1,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "quote_payload_sha256": "91dc1e3c148af21a23a808a64336698e0390700211f082567d51e9afcfa38079",
+          "schema": "cn_prophet_live.forward/v1",
+          "session_phase": "morning",
+          "source_board_asof": "2026-10-09",
+          "source_board_definition": "cn_prophet_v4",
+          "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+          "ticker": "300750.SZ",
+          "via": null
+        },
+        {
+          "close_same_day": null,
+          "confirmation_basis": "same_session_pack_center_buyable",
+          "confirmation_pack_id": "eb7e7b3746342c6e1b3d33141c8cf6625db65cfb0e3dfe80d87ef1f3d23aa99c",
+          "confirmed": false,
+          "cross_basis_adjustment": "split_and_dividend_adjusted",
+          "cross_basis_close": 35.6,
+          "cross_px": 36.0955,
+          "date": "2026-10-12",
+          "entered": "board",
+          "event_ids": [
+            "7dbe0922a7ae1c7780ef4e47b1fc91974d190b637d1b227e62b9f20ec0c4b762"
+          ],
+          "first_event_id": "7dbe0922a7ae1c7780ef4e47b1fc91974d190b637d1b227e62b9f20ec0c4b762",
+          "first_observation_sha256": "3e23409029b9e9d48cf09713b663ec2e1f8bdf18dc1d5188f6b3ebd0ee2a1ef7",
+          "first_pack_id": "eee82b1d250b81d708d17a32974d007b1ae852472e534711bed7ed333bc09d09",
+          "first_passes": 1,
+          "first_px": 36.0955,
+          "first_quote_age_min": 0.0,
+          "first_quote_record_sha256": "ff2f6633da7c39ed7889b7b48784f0d12cb7a140931aa6fd2bfea548ff165d3b",
+          "first_quote_ts": "2026-10-12T02:00:00+00:00",
+          "first_ts": "2026-10-12T02:00:00.000000+00:00",
+          "from_state": null,
+          "frozen_lane": "featured",
+          "frozen_rank": 2,
+          "frozen_score": 88.0,
+          "frozen_score_rank": 2,
+          "ingest_contract": "cn_prophet_live.evidence/research-v2",
+          "kind": "forming",
+          "last_px": 36.0955,
+          "last_ts": "2026-10-12T02:00:00.000000+00:00",
+          "next_close_fill": null,
+          "occurrences": 1,
+          "price_adjustment": "unadjusted_research_fixture",
+          "quote_contract_id": "20655f9bf77cc80aee629dd41258c8cdd6514e87154e0562ae31b60dc0a046b5",
+          "quote_payload_sha256": "c69aa7f57ae8999b17620cc06f740428905c1ab6929d419da013daa4475e27a0",
+          "schema": "cn_prophet_live.forward/v1",
+          "session_phase": "morning",
+          "source_board_asof": "2026-10-09",
+          "source_board_definition": "cn_prophet_v4",
+          "source_board_sha256": "b4dfdb31c07be7610dde7178d6fe665094b85208730e41642214be7219552f72",
+          "ticker": "603799.SS",
+          "via": null
+        }
+      ]
+    }
+  },
+  "fixture_generator_sha256": "5ebfc4ced080cc672170503c799115960c76c22387292e18c410ba6f741fa1ef",
+  "independent_fixture_sha256": "b3c137cb844aa54d82445af738ee2f2ed63f370d65ee5e192df43c2509ee79b6",
+  "limits": [
+    "Independent review-owned synthetic bytes and scenarios execute actual pinned parser/state/reconciliation bodies.",
+    "The producer runner is not imported; its manifest is verified as the exact reviewed package.",
+    "No historical natural occurrence, genuine provider adjustment declaration, market execution or fill is certified.",
+    "Native Parquet execution uses only a review-owned isolated temporary directory.",
+    "Scheduled production operation, real source custody and persistent storage guarantees remain implementation gates."
+  ],
+  "native_bundle_sha256": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+  "native_parquet_execution": {
+    "candidate_inputs_sha256": {
+      "contract_prototype.py": "3518cc9f408534cccbe60419b8de8d7143ad42f406c7d9ee262068ef1c5fe2e0",
+      "pinned_quote_adapter.py": "bd8bfd85bf4ff1279d564220b7f3f8b8b4e5f7263323252ae6489ed5163d1074"
+    },
+    "effects": {
+      "network_disabled": true,
+      "production_writes": false,
+      "source_inputs_changed": false,
+      "vendor_calls": false
+    },
+    "execution": {
+      "filesystem_scope": "unique independent review temporary directory",
+      "machine": "arm64",
+      "native_writer": "scripts/reconcile_cn_live.py::_write_parquet",
+      "pandas": "3.0.5",
+      "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+      "system": "Darwin"
+    },
+    "fixture_sha256": "b3c137cb844aa54d82445af738ee2f2ed63f370d65ee5e192df43c2509ee79b6",
+    "fractional_event_time_preserved": true,
+    "helper_sha256": "a421be4b48e5dd159b80a8d4ed613c55a45a8df03b36074745781519e74cc4dc",
+    "later_repeat_first_observation_preserved": true,
+    "legacy_row_preserved_without_provenance": true,
+    "native_bundle_sha256": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+    "native_positive_write_count": 5,
+    "native_source_sha256": {
+      "engine/prophet_live/cn_clock.py": "3460435acfee8d7cd08b76c0e5502b97784844afe75aa554d64648ecaf679eb3",
+      "engine/prophet_live/cn_reconcile.py": "585f41ce22c5d36d4f1cc6d7f60b182edf146f15c0c5d6db1f507320a08391cb",
+      "engine/prophet_live/cn_states.py": "4a6f64dada3aaa47dfd3c14e881c2b0d353d6b3b5addbd090b5166ba01b51880",
+      "engine/prophet_live/interval.py": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3",
+      "engine/prophet_live/live_states.py": "a2cdc109d2416c893d95c4a3a6e8d0dedf7883d65e5878803e4af6d43227c012",
+      "engine/prophet_live/r2io.py": "71edb3e4f605f02e6e92c380c58f12a7b343eefa3ec86c3383980a27b5df6271",
+      "lib/cn_calendar.py": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c",
+      "lib/exchange_holidays.py": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e",
+      "scripts/reconcile_cn_live.py": "aaf1e7e9f892cbd71a6c8fe7faf80659bc9aca588cf841d2cc27aeb20346c7b6"
+    },
+    "native_writes": [
+      {
+        "path": "parquet_cases/positive_roundtrip.parquet",
+        "rows": 4
+      },
+      {
+        "path": "parquet_cases/positive_roundtrip.parquet",
+        "rows": 4
+      },
+      {
+        "path": "parquet_cases/legacy_roundtrip.parquet",
+        "rows": 5
+      },
+      {
+        "path": "parquet_cases/later_repeat.parquet",
+        "rows": 4
+      },
+      {
+        "path": "parquet_cases/fractional_event_time.parquet",
+        "rows": 3
+      }
+    ],
+    "positive_roundtrip_rows": 4,
+    "refused_file_cases": [
+      {
+        "after_sha256": "316ce6878ef71d2ed8670fc1c5f38967177ac96746ec434c1f53258df996196a",
+        "before_sha256": "316ce6878ef71d2ed8670fc1c5f38967177ac96746ec434c1f53258df996196a",
+        "case": "conflicting_duplicate_last",
+        "readable_input_rows": 5,
+        "refusal": "duplicate_existing_daily_key",
+        "writer_calls": 0
+      },
+      {
+        "after_sha256": "f4a4f30a69aa1d079aa7fb9222b29c6a6d8f0decf4b60be08f1845e76fa0d285",
+        "before_sha256": "f4a4f30a69aa1d079aa7fb9222b29c6a6d8f0decf4b60be08f1845e76fa0d285",
+        "case": "conflicting_duplicate_first",
+        "readable_input_rows": 5,
+        "refusal": "duplicate_existing_daily_key",
+        "writer_calls": 0
+      },
+      {
+        "after_sha256": "2f21f28f39a6633d70f6065216f71c9d95521ea1a5b6d59946bcd67d8030e52c",
+        "before_sha256": "2f21f28f39a6633d70f6065216f71c9d95521ea1a5b6d59946bcd67d8030e52c",
+        "case": "exact_duplicate",
+        "readable_input_rows": 5,
+        "refusal": "duplicate_existing_daily_key",
+        "writer_calls": 0
+      },
+      {
+        "after_sha256": "dc2b597e4706e8e23861c15536ebf47fc4e7d4325fb0bdbc17a6d5633d66cc48",
+        "before_sha256": "dc2b597e4706e8e23861c15536ebf47fc4e7d4325fb0bdbc17a6d5633d66cc48",
+        "case": "readable_unknown_schema",
+        "readable_input_rows": 1,
+        "refusal": "invalid_existing_ledger_schema",
+        "writer_calls": 0
+      }
+    ],
+    "retained_files_sha256": {
+      "parquet_cases/conflicting_duplicate_first.before.parquet": "f4a4f30a69aa1d079aa7fb9222b29c6a6d8f0decf4b60be08f1845e76fa0d285",
+      "parquet_cases/conflicting_duplicate_first.parquet": "f4a4f30a69aa1d079aa7fb9222b29c6a6d8f0decf4b60be08f1845e76fa0d285",
+      "parquet_cases/conflicting_duplicate_last.before.parquet": "316ce6878ef71d2ed8670fc1c5f38967177ac96746ec434c1f53258df996196a",
+      "parquet_cases/conflicting_duplicate_last.parquet": "316ce6878ef71d2ed8670fc1c5f38967177ac96746ec434c1f53258df996196a",
+      "parquet_cases/exact_duplicate.before.parquet": "2f21f28f39a6633d70f6065216f71c9d95521ea1a5b6d59946bcd67d8030e52c",
+      "parquet_cases/exact_duplicate.parquet": "2f21f28f39a6633d70f6065216f71c9d95521ea1a5b6d59946bcd67d8030e52c",
+      "parquet_cases/fractional_event_time.parquet": "352685e57ace4626ffae2358028b9446a0d90c1ef68be0e866f3f79e2eb53934",
+      "parquet_cases/later_repeat.parquet": "816465dd89f0a13a16ce990b6f9eb0745274017d94e0fd022911c9c4559a63ff",
+      "parquet_cases/legacy_roundtrip.parquet": "d4bc4a92c35f25c12207c28dc8276d37debfaf1f13340dd17ce2e78c83b3b825",
+      "parquet_cases/positive_roundtrip.parquet": "655d03219a18c83a50217aee25a0f4da52de2a8de668ae37d88e16af30692d75",
+      "parquet_cases/readable_unknown_schema.before.parquet": "dc2b597e4706e8e23861c15536ebf47fc4e7d4325fb0bdbc17a6d5633d66cc48",
+      "parquet_cases/readable_unknown_schema.parquet": "dc2b597e4706e8e23861c15536ebf47fc4e7d4325fb0bdbc17a6d5633d66cc48"
+    },
+    "schema": "independent_cn_integration_native_parquet_acceptance/v1",
+    "status": "PASS",
+    "support_sha256": "43737a5bb58f9977603eeabb6a14658ad2fb21831b9b4a5a679b6f49eb241283"
+  },
+  "native_parquet_receipt_sha256": "e998f198656dfde1a424d718efdd836973c5ce7a084fff78cf05a66dc45fed3f",
+  "native_source_sha256": {
+    "engine/prophet_live/cn_clock.py": "3460435acfee8d7cd08b76c0e5502b97784844afe75aa554d64648ecaf679eb3",
+    "engine/prophet_live/cn_reconcile.py": "585f41ce22c5d36d4f1cc6d7f60b182edf146f15c0c5d6db1f507320a08391cb",
+    "engine/prophet_live/cn_states.py": "4a6f64dada3aaa47dfd3c14e881c2b0d353d6b3b5addbd090b5166ba01b51880",
+    "engine/prophet_live/interval.py": "d8e53f26b90ae5a80c3b1e37f9813e3e1005263ed011dbaa03905643b754bfe3",
+    "engine/prophet_live/live_states.py": "a2cdc109d2416c893d95c4a3a6e8d0dedf7883d65e5878803e4af6d43227c012",
+    "engine/prophet_live/r2io.py": "71edb3e4f605f02e6e92c380c58f12a7b343eefa3ec86c3383980a27b5df6271",
+    "lib/cn_calendar.py": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c",
+    "lib/exchange_holidays.py": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e",
+    "scripts/reconcile_cn_live.py": "aaf1e7e9f892cbd71a6c8fe7faf80659bc9aca588cf841d2cc27aeb20346c7b6"
+  },
+  "passed_checks": 80,
+  "protected_originals_sha256": {
+    "integration_lab": {
+      "INTEGRATION_DECISIONS.md": "4fd3eccc06dd6d85ffb69b37a15e6ff8c5a7c17cabdcb9e4f9877865a57bcdf0",
+      "INTEGRATION_MANIFEST.json": "d755a012d80469c241a554252e61bee88e604eb445ce7ca03ec1e2eecfdbc8b6",
+      "contract_prototype.py": "df11434734c550715df92596f70cd0a0da1b0e042865c5737c6aa5adc6ecebd0",
+      "execution.log": "0659ce9eb91d9d2a41f1d08ca704e01c4953e5b62f482a44b75689c0921e7469",
+      "execution_receipt.json": "98f31902f3fb9dbbab125ffa570c9bba57133d0e33f15140fc83da69f9f07ff8",
+      "integration_fixture.json": "fe7e1123269eac895eb324cbe3510ec3de9cfbfce10c44518c593d550d34a545",
+      "integration_results.json": "58ab978836c10cc9f6cc6b508e7f93c8aaa68f448e56a39137acb0caace69128",
+      "run_lab.py": "534ec458f607c9c90bb312c629829d100892ae38bd2dc6973548e0cd70acc458"
+    },
+    "integration_review": {
+      "MANIFEST.json": "78fcfa3c271d214c751a40220dc92e44cec67409eb49fbe7421b9c22a32698b6",
+      "REVIEW.md": "25fc1ad2aa322e3ef707a1abc690794e6afc5112d8d20043bdf86c52e68187ef",
+      "REVIEW_RESULTS.json": "f5503340395f1fd857b00ffb45441b2d5947d65e85248db98047237bb554bf4c",
+      "native_source_bundle.json": "2c139c0fef2c83296374069aed3338ccc28802bbf535d75054176384ec9ec829",
+      "parquet_cases/duplicate_daily_keys.before.parquet": "e27b40119ca438c71d81fe89e5cd2cf5f87451cb454b7febc9dbe6435d33ebbd",
+      "parquet_cases/duplicate_daily_keys.parquet": "1acd93e4934ecf0ad50849e279c38a4c3b6ece0a795f33941b6a006cedea1351",
+      "parquet_counterexample.py": "8e04205511a6b0c180bd6dd6a6f96ba7d6b8a24914881583d0c5dd25545f0827",
+      "parquet_review_receipt.json": "a70ad278ac1abddd6f27841da68fe50830b1219940f1fc0ccc9ef6075df6d0a9",
+      "review_integration.py": "d858c3fec1adeef77ac1835ec8a4241d3c61221038618c32ae289caf7a068699"
+    }
+  },
+  "review_script_sha256": "0ecd335fb6dfab9905f0a9e6589fc5615dedfda26f053f318afc5cacbe68b444",
+  "review_support_sha256": "43737a5bb58f9977603eeabb6a14658ad2fb21831b9b4a5a679b6f49eb241283",
+  "reviewed_candidate_manifest_sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309",
+  "schema": "independent_integration_repair_acceptance/v1",
+  "status": "ACCEPTED_AS_BOUNDED_OFFLINE_RESEARCH_CONTRACT",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139"
+}

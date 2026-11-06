@@ -1,0 +1,23 @@
+{
+  "schema": "corrected_readonly_extraction_receipt_v1",
+  "pid": 36328,
+  "terminal_exit_0": true,
+  "terminal_tail": "✅ Process completed with exit code 0 (runtime: 11.70s)",
+  "source_receipt": {
+    "status": "OUTPUT_PAGED",
+    "receipt_id": "5e699ff9-d63a-4758-bc67-255e536e2ad0",
+    "read_tool": "studio_output_page",
+    "next_offset": 0,
+    "source_tool": "read_process_output",
+    "source_bytes": 1495251,
+    "sha256": "5bf3e4bbbe05ee3d4f542fda912d64b1ce08dbcbc8951ebdb7d6fc0879dc242a",
+    "backend_is_error": null,
+    "retention": "existing_backend_owner_bounded_memory",
+    "preview": {
+      "head": "[Reading 3 new lines (total: 3 lines)]\n\n{\"schema\":\"cn_tradability_pinned_input_census_v1\",\"source_sha\":\"3d90aad6d83152dfeeaf8345bc995826ac9d3139\",\"native_source\":{\"scripts/build_china_library.py\":{\"bytes\":294925,\"sha256\":\"a11bc1b9a9eed75a191f70b208610965f6",
+      "tail": "fficial suspension feed or execution outcome is established.\"],\"safety\":{\"source_files_modified\":0,\"data_files_modified\":0,\"host_files_written\":0,\"latch_calls\":0,\"collector_calls\":0,\"vendor_calls\":0}}\n\n✅ Process completed with exit code 0 (runtime: 11.70s)"
+    },
+    "notice": "Output projection only, not an execution verdict. Retained pages expose result content without re-executing the original action; previews omit content. Receipt may expire with owner closure or eviction."
+  },
+  "transport_note": "All retained pages were concatenated; literal inserted CR/LF bytes within the compact JSON object were removed before parsing. Source JSON newlines are escaped."
+}

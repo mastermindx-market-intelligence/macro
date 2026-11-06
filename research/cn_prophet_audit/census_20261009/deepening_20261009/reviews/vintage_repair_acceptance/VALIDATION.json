@@ -1,0 +1,42 @@
+{
+  "schema": "vintage_repair_independent_terminal_validation_v1",
+  "command": "python -B accept_vintage.py",
+  "exit_code": 0,
+  "terminal_tool_chunk": "9d69b8",
+  "passed": 86,
+  "failed": 0,
+  "producer_checks": 104,
+  "original_variants_closed": 13,
+  "early_interface_findings_closed": 2,
+  "producer_results_and_fixtures_byte_identical": true,
+  "present_witness_shapes_unchanged": 1332,
+  "actual_uniform_scales_positively_qualified": 226,
+  "retained_entry_session_equalities": 1948,
+  "prior_packages_verified_unchanged": [
+    {
+      "manifest": "repairs/vintage_contract/MANIFEST.json",
+      "sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+      "payload_files_verified": 11
+    },
+    {
+      "manifest": "reviews/vintage_review/VINTAGE_REVIEW_MANIFEST.json",
+      "sha256": "be408edcd861d6cbe3d82adc7108638eedd3a80bc83720291cb34860d6cb946c",
+      "payload_files_verified": 9
+    },
+    {
+      "manifest": "reviews/vintage_repair_interface_review/MANIFEST.json",
+      "sha256": "9a98ec2d3be3137892913a4f722a369b6b7c931625b8acc8d52ca6b3d2973797",
+      "payload_files_verified": 4
+    },
+    {
+      "manifest": "vintage_lab/VINTAGE_MANIFEST.json",
+      "sha256": "7ffe548de43b85e2d1f4fc3ab8b06710ffd09c902bbe251ac6a5f517869ba9b3",
+      "payload_files_verified": 17
+    },
+    {
+      "manifest": "tradability_lab/MANIFEST.json",
+      "sha256": "2cb1b5f7cfae2332ada90e1ea1abe1c05c3f055853b751002b3ac7ddaa70dff5",
+      "payload_files_verified": 21
+    }
+  ]
+}

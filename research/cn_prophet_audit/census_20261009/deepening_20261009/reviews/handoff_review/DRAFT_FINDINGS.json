@@ -1,0 +1,109 @@
+{
+  "evidence_sha256": {
+    "intelligence_lab/MARGIN_HORIZON_TRACE.md": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+    "matched_controls/DECISION_MEMO.md": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+    "matched_controls/DESIGN.md": "d8a40683dd0727d72df7d520a98ee587cf07ea28045901bbc109e0845b2052ef",
+    "repairs/integration_contract/REPAIR_DECISIONS.md": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+    "repairs/integration_contract/contract_prototype.py": "3518cc9f408534cccbe60419b8de8d7143ad42f406c7d9ee262068ef1c5fe2e0",
+    "repairs/vintage_contract/verify.py": "99c4f37a099a138d4887c403dea20cb20111810e135ed9f309bd540793258a72",
+    "reviews/integration_repair_review/REVIEW.md": "770c43696b8426ac8f20801bf970d7eb1a4ae8e582a6c47d822af783cc82ce46",
+    "reviews/integration_repair_review/review_support.py": "43737a5bb58f9977603eeabb6a14658ad2fb21831b9b4a5a679b6f49eb241283",
+    "reviews/matched_controls_review/REVIEW.md": "44c9137a52b295e0beae98463e0c2a99e7aa49221d0b49ea3c67bde95d3bad0f",
+    "reviews/vintage_repair_acceptance/accept_vintage.py": "78b558dd988c55d79349a136647aa59257b74f7872c79ae7c061a6761e00eefe",
+    "tradability_lab/DECISION_MEMO.md": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f"
+  },
+  "experiments_rerun": false,
+  "findings": [
+    {
+      "custody_note": "Earlier wording was read before the first on-disk review snapshot. No unavailable whole-file hash is asserted for that earlier version.",
+      "earlier_observed_text": "Distinct events at the same second cannot be chronologically ordered by hash; refuse ambiguity.",
+      "evidence": [
+        "reviews/integration_repair_review/REVIEW.md",
+        "repairs/integration_contract/REPAIR_DECISIONS.md"
+      ],
+      "id": "H1",
+      "required": "Refuse ambiguity only at the same exact retained event timestamp; genuinely ordered fractional instants remain ordered.",
+      "status": "RESOLVED_BEFORE_FINAL_DRAFT_FREEZE",
+      "topic": "Full retained event precision"
+    },
+    {
+      "earlier_concern": "The consumer divisor alone does not establish the horizon.",
+      "evidence": [
+        "intelligence_lab/MARGIN_HORIZON_TRACE.md",
+        "tradability_lab/DECISION_MEMO.md"
+      ],
+      "id": "H2",
+      "required": "Use the independently accepted producer date-pair trace, distinguish source-index positions from verified historical calendar/availability, and preserve /20.0 as scaling.",
+      "status": "NEW_SOURCE_ADDENDUM_REQUIRES_FINAL_ACCEPTANCE_LINK",
+      "topic": "Margin horizon premise"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "evidence": [
+        "reviews/matched_controls_review/REVIEW.md"
+      ],
+      "id": "H3",
+      "observed": "The report's [−43.9798, +50.1379] pp envelope describes hypothetical completions under explicit assumptions",
+      "required": "Name this the precision-difference envelope. It is not a finite excess-return bound or an identified strict-policy full-cohort estimate.",
+      "section": "4",
+      "status": "DOCUMENT_AMENDMENT_REQUESTED",
+      "topic": "Strict matching envelope metric"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "evidence": [
+        "matched_controls/DESIGN.md",
+        "reviews/matched_controls_review/REVIEW.md"
+      ],
+      "id": "H4",
+      "observed": "Sweeping a hypothetical missing return from −20% to +20%",
+      "required": "Name the missing control excess return as −20 to +20 percentage points.",
+      "section": "4",
+      "status": "DOCUMENT_AMENDMENT_REQUESTED",
+      "topic": "Missing-control scenario units"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "evidence": [
+        "matched_controls/DESIGN.md",
+        "matched_controls/DECISION_MEMO.md"
+      ],
+      "id": "H5",
+      "observed": "Unequal support and post hoc relaxation",
+      "required": "Describe the declared retrospective sensitivity on already-examined historical data. The ADV relaxation was specified before these new calculations, so do not imply it was selected after seeing their result.",
+      "section": "4",
+      "status": "DOCUMENT_AMENDMENT_REQUESTED",
+      "topic": "Sector-only sensitivity status"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "evidence": [
+        "repairs/vintage_contract/verify.py",
+        "reviews/vintage_repair_acceptance/accept_vintage.py",
+        "reviews/integration_repair_review/review_support.py"
+      ],
+      "id": "H6",
+      "observed": "copy the reviewed package to a new temporary directory if preserving its manifest",
+      "required": "Preserve the retained study/dependency tree for scripts resolving external inputs by relative path. Do not imply every package is standalone.",
+      "section": "Reproduce the bounded contracts",
+      "status": "DOCUMENT_AMENDMENT_REQUESTED",
+      "topic": "Replay relative dependencies"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "evidence": [
+        "repairs/integration_contract/REPAIR_DECISIONS.md",
+        "repairs/integration_contract/contract_prototype.py"
+      ],
+      "id": "H7",
+      "required": "Keep native configured quote delay/age rules and explicitly obtain owner ratification for any adopted research future-quote allowance (60 seconds in the candidate). Do not silently install fixture timing parameters. Strict source-receipt-before-event and pack-before-event remain unchanged.",
+      "section": "P2",
+      "status": "DOCUMENT_QUALIFICATION_REQUESTED",
+      "topic": "Quote clock policy owner"
+    }
+  ],
+  "review_type": "Bounded claim-to-evidence documentation review, not new behavioral testing",
+  "reviewed_document_input_sha256": "a996428509f6e7189277b8ea89a0b63a3c9d2e7f0176532cf642f4e7b6c5bc63",
+  "schema": "cross_component_document_draft_findings/v1",
+  "unchanged_behavioral_candidates": true
+}

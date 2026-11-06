@@ -1,0 +1,9 @@
+{
+  "schema": "research.display_repair_execution.v1",
+  "environment": "ChatGPT isolated scratch, Node VM and synthetic DOM/fetch/timers",
+  "commands": [
+    {"command": "python -B build_candidate.py", "exit_code": 0, "stdout": "89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49"},
+    {"command": "node verify.mjs", "exit_code": 0, "tool_wall_time_seconds": 0.037734447, "stdout": {"status": "PASS", "tests": 30, "native_failure_cases": 12, "candidate_sha256": "89a9ca53f61db675128ffc31220d278e0f0b29cf7149c4f03888f829690eda49"}}
+  ],
+  "scope": "No production source, browser, API, vendor or deployment operations. Output is confined to this research directory."
+}

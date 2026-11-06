@@ -1,0 +1,128 @@
+{
+  "schema": "margin_horizon_independent_review_manifest_v1",
+  "status": "ACCEPTED_BOUNDED_ADDENDUM",
+  "source_sha": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "candidate_manifest_sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+  "independent_checks": 39,
+  "original_scenarios_reproduced": 8,
+  "aggregate_pairs_reconciled": 62,
+  "raw_parquet_census_repeated": false,
+  "files": [
+    {
+      "path": "CROSSCHECK_INPUTS.json",
+      "bytes": 1959,
+      "sha256": "9d04dab0fddb2e5404476e2456bda817562d5c87e8e70c39c2758db3ecfd152e",
+      "git_blob_sha1": "512d8c509f78e4e6328e99bcd4aac5ec93f0a71e"
+    },
+    {
+      "path": "HARNESS_NOTE.md",
+      "bytes": 1541,
+      "sha256": "0f8c7eac23d0edb0e1499782b273f633b1021a6ceea2deae7e7544e959f807ba",
+      "git_blob_sha1": "243f419ae50e4901c5b990eae933e2588eb39c18"
+    },
+    {
+      "path": "INPUT_FREEZE.json",
+      "bytes": 1022,
+      "sha256": "11068f4c1f4d37f00d14d18a8d4e292b224427af78175278b91d43b688bbe42c",
+      "git_blob_sha1": "398ca1173c3b7458ced0453036340dac549a2332"
+    },
+    {
+      "path": "REVIEW.md",
+      "bytes": 8389,
+      "sha256": "cd6ef610fee232c492c1ca09087480e5b3d1dea42aa4c5dfe5260bcbbdc2e66d",
+      "git_blob_sha1": "e42b337cf90fdc9f835429ae0931d01f0cce0d5e"
+    },
+    {
+      "path": "REVIEW_DESIGN.md",
+      "bytes": 2909,
+      "sha256": "82a1e0222bb6c3a802a981b04493b30821f9193ad9d1f018e4bcd29765a5618f",
+      "git_blob_sha1": "6e41fe8dfb0b80667badc5f3bd4c7bd8d1b4f44b"
+    },
+    {
+      "path": "REVIEW_RESULTS.json",
+      "bytes": 28933,
+      "sha256": "cd57b3a0ca05d5b7b88c47207eedeeabd85cba43259651240d1257b6a4a25e8b",
+      "git_blob_sha1": "662b3b14b93ec9ed247394afe00a872308c90eb7"
+    },
+    {
+      "path": "VALIDATION.json",
+      "bytes": 2771,
+      "sha256": "dc3abb04872dd1ee57eca68b22ab4df18d691cb289e26587906934566b9354a5",
+      "git_blob_sha1": "db4a6d704a4aabafb37a7ecd89fc7157a9011b46"
+    },
+    {
+      "path": "pinned_china_extras.py",
+      "bytes": 22092,
+      "sha256": "136ad143dc88aec330085f00f61e1900b5e0f643870a549a22801861163057f1",
+      "git_blob_sha1": "11219d650fc06f685b5effbd14f809b97cdcad74"
+    },
+    {
+      "path": "review_margin_horizon.py",
+      "bytes": 21264,
+      "sha256": "113e7ba89c7b3bfb855f77f64c949215582dfe84d0e7b206f9ee465010a2c9cb",
+      "git_blob_sha1": "587a8e99dc7bd0efd61e33425ce14946f0aad364"
+    },
+    {
+      "path": "reviewed_addendum/MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 469,
+      "sha256": "936149532bc1ad92cdf2e58386e2528b443fce3e8e0b6f1babae698808704a02",
+      "git_blob_sha1": "3e0fa871ed3541a5b0e784c1bad8d7348e7b0b94"
+    },
+    {
+      "path": "reviewed_addendum/MARGIN_HORIZON_MANIFEST.json",
+      "bytes": 1622,
+      "sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+      "git_blob_sha1": "7cc9ac43b5a0fd7358d4b1cf3d0e079fedf8ae4c"
+    },
+    {
+      "path": "reviewed_addendum/MARGIN_HORIZON_TRACE.md",
+      "bytes": 6248,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+      "git_blob_sha1": "927ee33230596f09379f64aaf672bcc3acc38f7c"
+    },
+    {
+      "path": "reviewed_addendum/margin_horizon_development/MARGIN_EXECUTION_RECEIPT.json",
+      "bytes": 596,
+      "sha256": "78b3bb8ced8d25b629dd871094e1a0a6e34d7a5b83acea514ea6c851e5488e13",
+      "git_blob_sha1": "68b3fa6c44c98db5a9531d91d48e190cb8487915"
+    },
+    {
+      "path": "reviewed_addendum/margin_horizon_development/margin_horizon_probe.py",
+      "bytes": 6752,
+      "sha256": "bd3875d2cf30fb997b0b04ebbcc72d021d74366977c386526ca77bfc9835c665",
+      "git_blob_sha1": "0592add235d596cd5c0fcdabd962c8201bc95423"
+    },
+    {
+      "path": "reviewed_addendum/margin_horizon_development/margin_horizon_results.json",
+      "bytes": 15844,
+      "sha256": "75e4780df5326f729657c868c3aebc970d408211a38b421a4da43273e3a0f90d",
+      "git_blob_sha1": "d4175489edd3ca6c9474dea1e76200434b28b180"
+    },
+    {
+      "path": "reviewed_addendum/margin_horizon_probe.py",
+      "bytes": 8000,
+      "sha256": "1ad0ed0e5bd71011fff7b0f7fe5c54a75d9276528798c2b3ee8df0b4cbeb9fc4",
+      "git_blob_sha1": "b4b59799b2c55a015485ee70c461085a67efb344"
+    },
+    {
+      "path": "reviewed_addendum/margin_horizon_results.json",
+      "bytes": 17656,
+      "sha256": "b64f137631c288b9bf85fa4adbf7f3cd4c013fccd2ab316aa83affa8c3bd923d",
+      "git_blob_sha1": "7d6c22832df2d9dae93910f7e270a3b30603c271"
+    },
+    {
+      "path": "reviewed_addendum/pinned_margin_collector.py",
+      "bytes": 12249,
+      "sha256": "55fb01d20519069aec85f23328a5507c95d86cec2d2fd6dbb3e14eb059b0cdd6",
+      "git_blob_sha1": "0d5fc5fbe92a61a4327a59359f3b40fc6a9df801"
+    },
+    {
+      "path": "verify_manifest.py",
+      "bytes": 3586,
+      "sha256": "4bc736504af45971c7aca6e23407088ac3ec2cb788fb83aef73dd489d70aa02d",
+      "git_blob_sha1": "b272d11bf783f3c2eb9df66edec7099477a9d100"
+    }
+  ],
+  "total_payload_bytes": 163902,
+  "self_excluded": true
+}

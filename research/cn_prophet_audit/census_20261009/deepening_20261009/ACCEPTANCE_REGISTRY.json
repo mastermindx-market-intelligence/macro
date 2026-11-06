@@ -1,0 +1,82 @@
+{
+  "schema": "research.cn_prophet_acceptance_registry.v1",
+  "study_pin": "3d90aad6d83152dfeeaf8345bc995826ac9d3139",
+  "scope": "Exact accepted research candidates, empirical inputs and independent acceptance packages, including final handoff review. This registry does not assert production readiness.",
+  "packages": [
+    {
+      "scope": "integration_candidate",
+      "path": "repairs/integration_contract/MANIFEST.json",
+      "sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309"
+    },
+    {
+      "scope": "integration_independent_acceptance",
+      "path": "reviews/integration_repair_review/MANIFEST.json",
+      "sha256": "6ab208f6c9a5e9506d053c66a4c67344ab35d5ccb387bc81d5598c9925a3a0ce"
+    },
+    {
+      "scope": "vintage_candidate",
+      "path": "repairs/vintage_contract/MANIFEST.json",
+      "sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5"
+    },
+    {
+      "scope": "vintage_independent_acceptance",
+      "path": "reviews/vintage_repair_acceptance/MANIFEST.json",
+      "sha256": "8fa6b5fdcc7cea12842d8513e07c05088df15f0f0c2c0b1bf014e98e9381256e"
+    },
+    {
+      "scope": "intelligence_complete_lab",
+      "path": "intelligence_lab/MANIFEST.json",
+      "sha256": "3478201d07a7f5f3b04dd2e42e601461373ffc3b7059213305804b5296ad6893"
+    },
+    {
+      "scope": "intelligence_independent_acceptance",
+      "path": "reviews/intelligence_contract_review/acceptance_f2f5aeeb/MANIFEST.json",
+      "sha256": "922d370c6dfa6fc98b79bfdca11c55f72dc7da90c47c570aab66631b5a346a36"
+    },
+    {
+      "scope": "display_candidate",
+      "path": "repairs/display_contract/MANIFEST.json",
+      "sha256": "c7448f6c4a873a2d4f6cba2e21e153583800d249bc758587186b9416642b5fd7"
+    },
+    {
+      "scope": "display_independent_acceptance",
+      "path": "reviews/display_repair_review/MANIFEST.json",
+      "sha256": "ba9bb36b7b40680da82a5be996b763a135746f48f43a5a4468586b626c2c0073"
+    },
+    {
+      "scope": "matched_controls",
+      "path": "matched_controls/MANIFEST.json",
+      "sha256": "3d1330cdaf37342e7a185997640e97526c8decdb24c53d3f9650d450250725d5"
+    },
+    {
+      "scope": "matched_controls_independent_review",
+      "path": "reviews/matched_controls_review/MANIFEST.json",
+      "sha256": "17536023379200b2965964693da5ea2d9f863a4218ec82888a69ff6ecd2052a1"
+    },
+    {
+      "scope": "original_vintage_empirical",
+      "path": "vintage_lab/VINTAGE_MANIFEST.json",
+      "sha256": "7ffe548de43b85e2d1f4fc3ab8b06710ffd09c902bbe251ac6a5f517869ba9b3"
+    },
+    {
+      "scope": "tradability_and_independent_weight",
+      "path": "tradability_lab/MANIFEST.json",
+      "sha256": "2cb1b5f7cfae2332ada90e1ea1abe1c05c3f055853b751002b3ac7ddaa70dff5"
+    },
+    {
+      "scope": "margin_horizon_addendum",
+      "path": "intelligence_lab/MARGIN_HORIZON_MANIFEST.json",
+      "sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada"
+    },
+    {
+      "scope": "margin_horizon_independent_review",
+      "path": "reviews/margin_horizon_review/MANIFEST.json",
+      "sha256": "649aa9045bcbf29e043acf39a815fead80fdb3cee2c3afda865f458ebfd7dccf"
+    },
+    {
+      "scope": "final_handoff_independent_review",
+      "path": "reviews/handoff_review/MANIFEST.json",
+      "sha256": "a4c1c2e03c9084c60676d1db51aa9c6eb6537f50747a7d8f2ac6f53713cf2f96"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "bytes": 19717,
+      "sha256": "54d5212f3c8a2ecfa79b5b4deeec6b8167772ad448509bdcc5493110eec075ec",
+      "snapshot_path": "reviewed_documents/RESEARCH_DECISIONS.md",
+      "source_path": "RESEARCH_DECISIONS.md"
+    },
+    {
+      "bytes": 35049,
+      "sha256": "b39de0cc227e46d61af028ec3e5ceb3e8595d852c6ec08d0c468fbd960e1124b",
+      "snapshot_path": "reviewed_documents/IMPLEMENTATION_HANDOFF.md",
+      "source_path": "IMPLEMENTATION_HANDOFF.md"
+    },
+    {
+      "bytes": 11350,
+      "sha256": "591f79c79deed95d7b0f7f646774c7838661f85ca43e72a47b2a69c3732e05d0",
+      "snapshot_path": "reviewed_documents/EVIDENCE_INDEX.md",
+      "source_path": "EVIDENCE_INDEX.md"
+    },
+    {
+      "bytes": 9857,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "snapshot_path": "reviewed_documents/INTERFACE_JOIN_MAP.md",
+      "source_path": "INTERFACE_JOIN_MAP.md"
+    }
+  ],
+  "schema": "cross_component_handoff_exact_documents/v1"
+}

@@ -1,0 +1,428 @@
+{
+  "documents_input_sha256": "a996428509f6e7189277b8ea89a0b63a3c9d2e7f0176532cf642f4e7b6c5bc63",
+  "links": [
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "b39de0cc227e46d61af028ec3e5ceb3e8595d852c6ec08d0c468fbd960e1124b",
+      "target": "IMPLEMENTATION_HANDOFF.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "target": "INTERFACE_JOIN_MAP.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+      "target": "repairs/integration_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "770c43696b8426ac8f20801bf970d7eb1a4ae8e582a6c47d822af783cc82ce46",
+      "target": "reviews/integration_repair_review/REVIEW.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "5b0fd84b01371502ddfdd758a93083d6ce95d8e37e7d76d4281cc68477766f15",
+      "target": "vintage_lab/VINTAGE_FINDINGS.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "aa41300d26642ae1f045bc05de0da74d0ca697ccc87b1fb0fd9d90757ea85eed",
+      "target": "reviews/vintage_repair_acceptance/ACCEPTANCE.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+      "target": "matched_controls/DECISION_MEMO.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "44c9137a52b295e0beae98463e0c2a99e7aa49221d0b49ea3c67bde95d3bad0f",
+      "target": "reviews/matched_controls_review/REVIEW.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "cddde2c2207bb8417112e4632c478a4f7f0b2777a5749399b9cc6b52fb3f9f07",
+      "target": "intelligence_lab/INTELLIGENCE_DECISIONS.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "54ee1d1751e72726aa73bcbb94c1746e03ed0a4077632d8ada1a9ef72c87796c",
+      "target": "reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "target": "tradability_lab/DECISION_MEMO.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+      "target": "intelligence_lab/MARGIN_HORIZON_TRACE.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "target": "tradability_lab/DECISION_MEMO.md"
+    },
+    {
+      "document": "RESEARCH_DECISIONS.md",
+      "exists": true,
+      "sha256": "16fdb0b4b541d30f31c3ec12e14b2528ba8ae43608e7f359b2cd3f38500a7a79",
+      "target": "repairs/display_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "54d5212f3c8a2ecfa79b5b4deeec6b8167772ad448509bdcc5493110eec075ec",
+      "target": "RESEARCH_DECISIONS.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "591f79c79deed95d7b0f7f646774c7838661f85ca43e72a47b2a69c3732e05d0",
+      "target": "EVIDENCE_INDEX.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "target": "INTERFACE_JOIN_MAP.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "b6c9a044fcbe7422b539b1267ae3b82bbd68faae047cfd107f34e4f7ff46dec3",
+      "target": "../REPORT.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "968a4c4307645aa51c02f2179088d560ddb71eca9139157d352c7475f10ba5e3",
+      "target": "../IMPLEMENTATION_HANDOFF.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "56f698938fe29b0683f65a51a780e6644bc1c8d66d5469a1c1a83d8fe7c1abc4",
+      "target": "CURRENT_SOURCE_RECONCILIATION.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "acbf9537ca282188495be3204b367ac83cc173a658ea344078ad2d002b056196",
+      "target": "repairs/vintage_contract/DECISIONS.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "aa41300d26642ae1f045bc05de0da74d0ca697ccc87b1fb0fd9d90757ea85eed",
+      "target": "reviews/vintage_repair_acceptance/ACCEPTANCE.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "target": "tradability_lab/DECISION_MEMO.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+      "target": "repairs/integration_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+      "target": "repairs/integration_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "770c43696b8426ac8f20801bf970d7eb1a4ae8e582a6c47d822af783cc82ce46",
+      "target": "reviews/integration_repair_review/REVIEW.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "16fdb0b4b541d30f31c3ec12e14b2528ba8ae43608e7f359b2cd3f38500a7a79",
+      "target": "repairs/display_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "c0970efd6ac1fc1019a463831340b1fdd4213113c5e7158e01ebb5b86df2dca6",
+      "target": "reviews/display_repair_review/ACCEPTANCE.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "cddde2c2207bb8417112e4632c478a4f7f0b2777a5749399b9cc6b52fb3f9f07",
+      "target": "intelligence_lab/INTELLIGENCE_DECISIONS.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "54ee1d1751e72726aa73bcbb94c1746e03ed0a4077632d8ada1a9ef72c87796c",
+      "target": "reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+      "target": "intelligence_lab/MARGIN_HORIZON_TRACE.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+      "target": "matched_controls/DECISION_MEMO.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "44c9137a52b295e0beae98463e0c2a99e7aa49221d0b49ea3c67bde95d3bad0f",
+      "target": "reviews/matched_controls_review/REVIEW.md"
+    },
+    {
+      "document": "IMPLEMENTATION_HANDOFF.md",
+      "exists": true,
+      "sha256": "b6c9a044fcbe7422b539b1267ae3b82bbd68faae047cfd107f34e4f7ff46dec3",
+      "target": "../REPORT.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "54d5212f3c8a2ecfa79b5b4deeec6b8167772ad448509bdcc5493110eec075ec",
+      "target": "RESEARCH_DECISIONS.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "b39de0cc227e46d61af028ec3e5ceb3e8595d852c6ec08d0c468fbd960e1124b",
+      "target": "IMPLEMENTATION_HANDOFF.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "943973764b0a76e87113d3980cb6d2bfe3834f92c1d315441698e35d0d509654",
+      "target": "INTERFACE_JOIN_MAP.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "efd7126dad427f43f9d61d1a5738b02b149d48d92529bc7943275ad77ca862b2",
+      "target": "RESEARCH_STATUS.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "b421f5b172296f563569f251a55857cec89931b62a53fe52091fc836fad16d97",
+      "target": "repairs/integration_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "371fd67d4ea85307e460772f8aa353609d176ff779f07811a0a42f8ea36c0309",
+      "target": "repairs/integration_contract/MANIFEST.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "770c43696b8426ac8f20801bf970d7eb1a4ae8e582a6c47d822af783cc82ce46",
+      "target": "reviews/integration_repair_review/REVIEW.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "acbf9537ca282188495be3204b367ac83cc173a658ea344078ad2d002b056196",
+      "target": "repairs/vintage_contract/DECISIONS.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "2ec4ad61150efa1ad01b10137ed3d1a0070ba6412770edc2f4e79a098945eec5",
+      "target": "repairs/vintage_contract/MANIFEST.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "aa41300d26642ae1f045bc05de0da74d0ca697ccc87b1fb0fd9d90757ea85eed",
+      "target": "reviews/vintage_repair_acceptance/ACCEPTANCE.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "cddde2c2207bb8417112e4632c478a4f7f0b2777a5749399b9cc6b52fb3f9f07",
+      "target": "intelligence_lab/INTELLIGENCE_DECISIONS.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "97f51b947a3be417e132b08ebaa98b3f0546c1a629a459cc98fb32e6b0d6fb97",
+      "target": "intelligence_lab/results.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "54ee1d1751e72726aa73bcbb94c1746e03ed0a4077632d8ada1a9ef72c87796c",
+      "target": "reviews/intelligence_contract_review/acceptance_f2f5aeeb/ACCEPTANCE.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "16fdb0b4b541d30f31c3ec12e14b2528ba8ae43608e7f359b2cd3f38500a7a79",
+      "target": "repairs/display_contract/REPAIR_DECISIONS.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "c7448f6c4a873a2d4f6cba2e21e153583800d249bc758587186b9416642b5fd7",
+      "target": "repairs/display_contract/MANIFEST.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "c0970efd6ac1fc1019a463831340b1fdd4213113c5e7158e01ebb5b86df2dca6",
+      "target": "reviews/display_repair_review/ACCEPTANCE.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "15786976c52307dd0b083a1b2549634c0730024f95b73faa4371c4706b65904d",
+      "target": "matched_controls/DECISION_MEMO.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "6ae06242803a2a7cc59079ebc862f1a5373e01eb77f8606c1bbcb7bf2d1899f8",
+      "target": "matched_controls/MATCHED_CONTROLS_RESULTS.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "3d1330cdaf37342e7a185997640e97526c8decdb24c53d3f9650d450250725d5",
+      "target": "matched_controls/MANIFEST.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "44c9137a52b295e0beae98463e0c2a99e7aa49221d0b49ea3c67bde95d3bad0f",
+      "target": "reviews/matched_controls_review/REVIEW.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "5b0fd84b01371502ddfdd758a93083d6ce95d8e37e7d76d4281cc68477766f15",
+      "target": "vintage_lab/VINTAGE_FINDINGS.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "0c702ad83845c50c2418ee8c22a522a3701147e1c4d1d62c52cda6b5747c79d3",
+      "target": "vintage_lab/vintage_results.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "7ffe548de43b85e2d1f4fc3ab8b06710ffd09c902bbe251ac6a5f517869ba9b3",
+      "target": "vintage_lab/VINTAGE_MANIFEST.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "e7ad8ac0a3aeec15183c542ce8d7f7ba691b19404730e552e28df99f7bc8160b",
+      "target": "reviews/vintage_review/VINTAGE_INDEPENDENT_REVIEW.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "target": "tradability_lab/DECISION_MEMO.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "44da98edcea79e6531df34719f934d42270e961a09ebe1925d677c1420978053",
+      "target": "tradability_lab/results.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "2cb1b5f7cfae2332ada90e1ea1abe1c05c3f055853b751002b3ac7ddaa70dff5",
+      "target": "tradability_lab/MANIFEST.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "a031323d82e99833ffdd5b35140ee6f686e65ca077a038cfaca57e280de00334",
+      "target": "intelligence_lab/source_input.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "6f03613836e17e0ec1016d5f244e998b29cc63bd6834dee7bc1f4c1648137c4b",
+      "target": "intelligence_lab/analyst_duplicates.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "f9c168b5baa3aacf262c0cf49ef69d5ce11a052f991627b79cacf82ab69d360c",
+      "target": "intelligence_lab/WEIGHT_DESIGN.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "82d56837591e19e3af9c1958084aec769ea319dd6c1ee8ded2b7ada1018bb884",
+      "target": "intelligence_lab/weight_results.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "64c0b5ec1fa6dd4122a4dc2ed2c6fadfcc3fbb691320eca375a7a239c0e4774f",
+      "target": "tradability_lab/DECISION_MEMO.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "9b82fc4f8afd604658c63a1ba5e128a297ccd96f5209ca28dcea9bfe8ac7562e",
+      "target": "intelligence_lab/MARGIN_HORIZON_TRACE.md"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "b64f137631c288b9bf85fa4adbf7f3cd4c013fccd2ab316aa83affa8c3bd923d",
+      "target": "intelligence_lab/margin_horizon_results.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "d21ce925119d58094c3248a399374ddd43a4292332588eb92e06046ccb7e8ada",
+      "target": "intelligence_lab/MARGIN_HORIZON_MANIFEST.json"
+    },
+    {
+      "document": "EVIDENCE_INDEX.md",
+      "exists": true,
+      "sha256": "56f698938fe29b0683f65a51a780e6644bc1c8d66d5469a1c1a83d8fe7c1abc4",
+      "target": "CURRENT_SOURCE_RECONCILIATION.md"
+    }
+  ],
+  "schema": "handoff_document_reference_check/v1",
+  "scope": "Static link resolution and content identity only; no experiments or remote status checks",
+  "unresolved": []
+}
