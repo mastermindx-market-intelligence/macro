@@ -26910,6 +26910,7 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - engine/rate_futures_repricing.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
@@ -35898,6 +35899,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - collectors/rate_futures.py
+      - engine/rate_futures_repricing.py
       - "scripts/metabolism_journal.py"
       - "engine/earnings_transcript_intake.py"
       - "engine/provider_capacity.py"
@@ -37404,6 +37407,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/rate_futures_repricing.py
       - "scripts/metabolism_journal.py"
       - "engine/earnings_transcript_intake.py"
       - "engine/provider_capacity.py"
@@ -39169,7 +39173,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5 'claude-agent-sdk>=0.2'
       - name: Fabric adapter and real shared-gateway Brain composition
         run: |
           set -euo pipefail
@@ -39208,6 +39212,74 @@ jobs:
             tests/test_fabric_gateway_composition.py tests/test_orchestrator_fabric_composition.py tests/test_fabric_application_binding.py \
             tests/test_fabric_shared_default.py tests/test_master_brain_fabric_composition.py \
             tests/test_news_narrators_fabric_composition.py tests/test_ask_fabric_composition.py tests/test_fabric_cached_brain_callbacks.py tests/test_fabric_application_inspection.py tests/test_fabric_translation_composition.py -q
+      - name: Five service identities through actual paired Mastermind owners
+        run: |
+          set -euo pipefail
+          fabric_identity_fixture_root="$(mktemp -d)"
+          trap 'rm -rf "$fabric_identity_fixture_root"' EXIT
+          # The current five-service pair is isolated from the original 1fc/f7 modules.
+          # Verify the closed native and actual Brain/tool import closure before use.
+          python - "$fabric_identity_fixture_root" <<'PY'
+          from pathlib import Path
+          import hashlib
+          import subprocess
+          import sys
+          
+          root = Path(sys.argv[1])
+          pins = {
+              "bot/__init__.py": "7cd08f9dbb5a7534f997a1394062b4d72774d7a0",
+              "brain/__init__.py": "8f957bc85f3f20f0fd1d8f97d27ba56f69f5d026",
+              "brain/advisor.py": "ff60235a41762bc2882098dcba46a70c8a44f2f0",
+              "brain/bot_mcp.py": "fdfc70151735731837090bc4452829c836e97f56",
+              "brain/cli_bridge.py": "92c2c2e488e3ebb8c0a52428b09b711c7fa3fbd1",
+              "brain/fabric_chat.py": "c262018620a657ccf6cd09759c7ca4a834ff24c2",
+              "brain/fabric_inference.py": "5c44230101e0212c17c5d6d4a30d023acf7150e7",
+              "brain/provider_failure.py": "3fdf1782c4b94ff6b3cf1e4e222cbe5bff347c4a",
+              "brain/thinking_log.py": "43ea1d2f6000b50eb6a648b8a83e73e6c143c2ae",
+              "common/__init__.py": "4eda2ac4ab080fa537738fd4a714de3ce3503c1f",
+              "common/redaction.py": "5fcb5604ab5a1c13e70c55fea3cdffa564821375",
+              "control_plane/__init__.py": "2bcf2a4135db7c52a584b6fb98a15b7c9fea9959",
+              "control_plane/locks.py": "e207d7da64ea2a1bb591b65c3229962b11945993",
+              "portfolio/__init__.py": "8f957bc85f3f20f0fd1d8f97d27ba56f69f5d026",
+              "portfolio/registry.py": "f5eb632d8f2d8dfcdbe11abb19076f9d746b38fe",
+              "ops/native_fabric/quota_continuity/candidate/commission_deadline.py": "fade630ed75c1b93334a5711a6df7a554fbd24ee",
+              "ops/native_fabric/quota_continuity/candidate/go_shim.py": "aaf6eeae023c3125772396cc961ec15f083796fc",
+              "ops/native_fabric/quota_continuity/candidate/lease_broker.py": "ba22a6fce4164730b0c2aaa8d0bd50f856118a74",
+              "ops/native_fabric/quota_continuity/candidate/go_lease_gateway.py": "c69a973104026be2bb18e8f1e696899f26ad737d",
+              "ops/native_fabric/quota_continuity/candidate/go_lease_capability.py": "38856700331b3fb3a7706a5745e23fb7b3d18cf0",
+              "ops/native_fabric/quota_continuity/candidate/provider_outcome.py": "981f35a01183e83fdb9f0b8a4175b290cdeb85f8",
+              "ops/native_fabric/quota_continuity/candidate/quota_circuit.py": "1583a6ba773e56dbc3f295b65ffc08dea2d31d48",
+              "ops/native_fabric/quota_continuity/source/model_tier.py": "96093c2747d2dda69b3f2255cb84e656355c87ea",
+              "ops/native_fabric/quota_continuity/source/pool_status.py": "02922043357d63b4bcfa3791899df27a5c42be12",
+              "ops/native_fabric/quota_continuity/tests/_offline_boundary.py": "e511ab65fe1cd30bf4d2addac6700ca43c3468da",
+              "ops/native_fabric/quota_continuity/tests/test_go_application_handler_composition.py": "13ebd6bcee5167926807d7ccdc63bcabed0cf1b1",
+              "ops/native_fabric/quota_continuity/tests/test_application_turn_admission.py": "8487163bb0904f8b95f0a9b326efa1622cd0ad0e"
+          }
+          commit = "b8c5961efda118a204a826fe40966c3d7cd1200c"
+          base = "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/"
+          def git_blob(raw):
+              return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+          for relative, expected in pins.items():
+              result = subprocess.run(
+                  ["curl", "--fail", "--silent", "--show-error", "--proto", "=https",
+                   "--tlsv1.2", "--max-time", "45", "--max-filesize", "2097152",
+                   base + commit + "/" + relative],
+                  check=True, capture_output=True, timeout=50)
+              if git_blob(result.stdout) != expected:
+                  raise SystemExit("paired fixture blob mismatch: " + relative)
+              target = root / relative
+              target.parent.mkdir(parents=True, exist_ok=True)
+              with target.open("xb") as stream:
+                  stream.write(result.stdout)
+          target = b"macro_src"
+          if git_blob(target) != "67c7d1aa15e255af2e662d8b4b385faf9714f06a":
+              raise SystemExit("paired fixture symlink mismatch")
+          (root / "vendor").mkdir()
+          (root / "vendor/macro").symlink_to(target.decode())
+          print("Verified 27 paired source blobs and original vendor symlink.")
+          PY
+          MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_identity_fixture_root" python -m pytest \
+            tests/test_fabric_service_identity.py tests/test_fabric_service_identity_composition.py -q
       - name: Fabric HTTP Admin composition with sealed realm metadata
         run: |
           set -euo pipefail
