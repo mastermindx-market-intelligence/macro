@@ -330,7 +330,9 @@ def _file_specs(
         return 0, len(specs), []
 
     try:
-        from engine.signal_foundry.spec import stamp_gates_hash  # noqa: PLC0415
+        from engine.signal_foundry.spec import (  # noqa: PLC0415
+            CONSTRUCTION_HASH_VERSION, stamp_gates_hash,
+        )
     except ImportError:
         stamp_gates_hash = None  # type: ignore[assignment]
 
@@ -392,10 +394,14 @@ def _file_specs(
             spec = dict(spec, registered_at=datetime.now(timezone.utc).date().isoformat())
 
         # FIX 14 — code-computed construction_hash on EVERY row; overwrite LLM-supplied value
+        spec = dict(spec)
+        spec.pop("construction_hash_version", None)
+        spec.pop("identity_error", None)
         if _construction_hash_fn is not None:
             try:
                 computed_hash = _construction_hash_fn(spec)
-                spec = dict(spec, construction_hash=computed_hash)
+                spec = dict(spec, construction_hash=computed_hash,
+                            construction_hash_version=CONSTRUCTION_HASH_VERSION)
             except Exception as exc:  # noqa: BLE001
                 log.warning("codex_signal_lane: construction_hash failed for %s (%s)", sid, exc)
                 spec = dict(spec)
@@ -496,6 +502,7 @@ def _file_specs(
             n_admitted += 1
         else:
             row = {
+                **(spec if "construction_hash" in spec else {"identity_error": "construction_identity_unavailable"}),
                 "id": sid,
                 "name": spec.get("name", ""),
                 "status": "screen_rejected",
