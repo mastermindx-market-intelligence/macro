@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 521262,
+  "byte_start": 520734,
+  "normalized": "Under the terms of our present agreement with Microsoft, Microsoft receives a royalty-free, perpetual, irrevocable license (including sublicense rights) to our worldwide portfolio of patents. This license permits Microsoft to make, use, and sell hardware, software, and services, excluding specified products, covered by our patents. We will not receive any further revenues or royalties",
+  "normalized_sha256": "89d274ad5fd55b5f88f7ac9ce6d72f83ca6a00fb5878717eca22ca1215bc4e0c",
+  "raw": "Under the terms of our present agreement with Microsoft, Microsoft receives a royalty-free, perpetual, irrevocable license (including sublicense rights) to our worldwide portfolio of patents. This license permits Microsoft to make, use, and sell hardware, software, and services, excluding specified products, covered by our patents. We will not receive any further revenues or royalties</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "7514c98e5f892241b43fdf539725edf64e7592d722a3a6b707e0429d110eb4c3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

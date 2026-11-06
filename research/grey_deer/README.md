@@ -49,6 +49,15 @@ AgentOS records: `agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md`, eight
 
 The wave matrix is a mechanical index under 3. The GD-1 packet governs GD-1 research conduct under 2–3.
 
+## Current next action (2026-10-31, Fable CEO early-warning completion)
+
+The Chairman's 2026-10-31 packet is adopted as an amendment to the EW-P0–EW-P5 task tree
+on Draft #10219; read [ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md](ew_completion_20261031/ADOPTION_RECORD_2026-10-31.md)
+(decisions D1–D6, refreshed invalidators, wave plan) and the Agent OS handoff
+`agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-31-FABLE-EW-CEO.md`. In flight: EW-P1.T2
+QLedger carve-out parity for the engine and collect-tail commit paths (GH001 since 2026-10-21) and
+EW-P2.T1 successor of #10104 (dormant). No forecast, hazard narrative or sizing is claimed.
+
 ## Current next action (2026-10-17, Meta-CEO continuation)
 
 Read [the existing continuation §0A](GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md),

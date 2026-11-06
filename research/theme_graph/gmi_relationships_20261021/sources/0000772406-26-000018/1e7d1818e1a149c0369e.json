@@ -1,0 +1,45 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 869574,
+  "byte_start": 868068,
+  "normalized": "For fiscal years 2026, 2025 and 2024, our ten largest end customers represented approximately 96 percent, 96 percent and 95 percent of our net sales, respectively. For fiscal years 2026, 2025, and 2024, we had one end customer, Apple Inc., who purchased through multiple contract manufacturers and represented approximately 91 percent, 89 percent, and 87 percent, of the Company’s total net sales, respectively. No other customer or distributor represented more than 10 percent of net sales in fiscal years 2026, 2025, or 2024.",
+  "normalized_sha256": "14f432bfdf1981be38ddf4da0a48a017591b93cd29593d6671203b9a472f8bb2",
+  "raw": "  For fiscal years 2026, 2025 and 2024, our ten largest end customers represented approximately <ix:nonFraction unitRef=\"number\" contextRef=\"c-66\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" format=\"ixt:num-dot-decimal\" scale=\"-2\" id=\"f-439\">96</ix:nonFraction> percent, <ix:nonFraction unitRef=\"number\" contextRef=\"c-67\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" format=\"ixt:num-dot-decimal\" scale=\"-2\" id=\"f-440\">96</ix:nonFraction> percent and <ix:nonFraction unitRef=\"number\" contextRef=\"c-68\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" format=\"ixt:num-dot-decimal\" scale=\"-2\" id=\"f-441\">95</ix:nonFraction> percent of our net sales, respectively.  For fiscal years 2026, 2025, and 2024, we had one end customer, Apple Inc., who purchased through multiple contract manufacturers and represented approximately <ix:nonFraction unitRef=\"number\" contextRef=\"c-69\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-442\">91</ix:nonFraction> percent, <ix:nonFraction unitRef=\"number\" contextRef=\"c-70\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-443\">89</ix:nonFraction> percent, and <ix:nonFraction unitRef=\"number\" contextRef=\"c-71\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-444\">87</ix:nonFraction> percent, of the Company&#8217;s total net sales, respectively.  No other customer or distributor represented more than 10 percent of net sales in fiscal years 2026, 2025, or 2024.",
+  "raw_sha256": "1e7d1818e1a149c0369e86ccfda3938c569a04fba82f870bd307b9c4ac36879c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 32560,
+   "byte_start": 31901,
+   "context_ref": "c-69",
+   "raw": "<xbrli:context id=\"c-69\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000772406</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">crus:AppleIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-03-30</xbrli:startDate><xbrli:endDate>2026-03-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "9334d4a13f762d11f6db70c79ca9d3e4c2d6421e2b768cfaee6c29ea09e5a6f8"
+  },
+  {
+   "byte_end": 33219,
+   "byte_start": 32560,
+   "context_ref": "c-70",
+   "raw": "<xbrli:context id=\"c-70\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000772406</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">crus:AppleIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-03-31</xbrli:startDate><xbrli:endDate>2025-03-29</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "e189bb16b58e5483db612692b31dbd6c05d43d964026733b7f3bbf54454cf6ff"
+  },
+  {
+   "byte_end": 33878,
+   "byte_start": 33219,
+   "context_ref": "c-71",
+   "raw": "<xbrli:context id=\"c-71\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000772406</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">crus:AppleIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-03-26</xbrli:startDate><xbrli:endDate>2024-03-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "ad90caf2c49eb82c58ab67a080cda884c0eba3c8284c2ae1e9654183f7543a70"
+  }
+ ]
+}

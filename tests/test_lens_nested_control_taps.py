@@ -281,3 +281,16 @@ def test_hub_reuses_the_single_existing_terminal_click_controller(name, src):
     assert "MDXTerminalOverlay" not in region
     assert "openTerminal(" not in region
     assert src.count(jsmin("openTerminal(target.ticker, a, target.url)")) == 1
+
+
+# P12.T2.S4 — exact canonical string-tier consumer contract.
+def test_intl_tooltip_canonical_lens_locale_focus_escape_and_description():
+    js = (ROOT / "templates/theme.js").read_text()
+    start = js.index("/* ---- LENS —")
+    region = js[start:]
+    assert "var SEL = '[data-tip-en], .lens-q, .lens-term'" in region
+    assert "zh: t.getAttribute('data-tip-zh') || en" in region
+    assert "document.addEventListener('focusin'" in region and "show(t);" in region
+    assert "t.setAttribute('aria-describedby', 'lensPop')" in region
+    assert "e.key === 'Escape' && isOpen()" in region
+    assert "mkSpan('l-en', c.en)" in region and "mkSpan('l-zh', c.zh)" in region

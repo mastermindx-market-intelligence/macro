@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-29T01:39:19Z",
+ "accession": "0001437749-26-031414",
+ "cik": "0001334933",
+ "doc_byte_length": 5612639,
+ "doc_sha256": "ee6141c9e996561acc71f6e400ab462b98008008a489c0903bdd8d5f4ff28bed",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-29",
+ "form": "10-K",
+ "period_of_report": "2026-07-31",
+ "primary_document": "uec20260731_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 314189,
+  "byte_start": 313608,
+  "normalized": "Additional candidate locations are being evaluated for location-dependent operating costs, excluding incentives and site-independent investment costs, risks associated for each location, and to ensure alignment with federal priorities to restore domestic uranium conversion capacity and strengthen America’s nuclear fuel supply chain. Concurrently, work led by Fluor is advancing into a new phase with a significant expansion of engineering and technical resources, including increased and accelerated staffing, supporting facility design, siting, licensing and development.",
+  "normalized_sha256": "ee4659577aa88fdd584c975065f529af61a08ae2b6bf572b416be238dab8c35f",
+  "raw": " Additional candidate locations are being evaluated for location-dependent operating costs, excluding incentives and site-independent investment costs, risks associated for each location, and to ensure alignment with federal priorities to restore domestic uranium conversion capacity and strengthen America&#8217;s nuclear fuel supply chain. Concurrently, work led by Fluor is advancing into a new phase with a significant expansion of engineering and technical resources, including increased and accelerated staffing, supporting facility design, siting, licensing and development.",
+  "raw_sha256": "47e193a6877a3cd2a82397ca1b9b613065d0c455c76249cdee76b850ad107b21"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1334933/000143774926031414/uec20260731_10k.htm",
+ "xbrl_contexts": []
+}

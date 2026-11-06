@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T20:42:18Z",
+ "accession": "0001104659-26-032133",
+ "cik": "0001456346",
+ "doc_byte_length": 4756365,
+ "doc_sha256": "87ebb619af5e6fc7f1cd5fa3c351004ae63195a47b0f964c32558e4c9e803b26",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fnv-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 215763,
+  "byte_start": 215205,
+  "normalized": "Subsequent to year-end, on January 26, 2026, Franco-Nevada agreed to acquire, through a wholly-owned Canadian subsidiary, a $100 million gold stream (the “Casa Berardi Stream”) from Orezone Gold Corporation (“Orezone”). The stream transaction will support Orezone’s acquisition of Hecla Mining Company’s (“Hecla”) producing Casa Berardi gold mine and other Quebec assets, including the Heva-Hosco gold project.",
+  "normalized_sha256": "cd08631b20eaede946b7233c9c4293844dc94da88465562cda43eca91a43b361",
+  "raw": "Subsequent to year-end, on January 26, 2026, Franco-Nevada agreed to acquire, through a wholly-owned Canadian subsidiary, a $100 million gold stream (the &#8220;<b style=\"font-weight:bold;\">Casa Berardi Stream</b>&#8221;) from Orezone Gold Corporation (&#8220;<b style=\"font-weight:bold;\">Orezone</b>&#8221;). The stream transaction will support Orezone&#8217;s acquisition of Hecla Mining Company&#8217;s (&#8220;<b style=\"font-weight:bold;\">Hecla</b>&#8221;) producing Casa Berardi gold mine and other Quebec assets, including the Heva-Hosco gold project. ",
+  "raw_sha256": "e7aa43e13a4a57e4b6f6c73e1548452e6b731253b9ad1e51926a8ff34c8f2385"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1456346/000110465926032133/fnv-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

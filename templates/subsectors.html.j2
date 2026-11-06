@@ -443,6 +443,15 @@
       '将每个子行业视作独立篮子，按入场<b>时机</b>评分。下方读数以结论优先：轮动情况、哪些子行业刚转为<b>可买</b>、哪些已<b>偏晚或转弱</b>，以及在顺风子行业中触发的个股。择时图——<b>行动前请确认</b>。') }}</p>
   </div>
 
+  {% with lock_renderer='subsectors.js', lock_fill='sc-app',
+    lock_hide='.sc-tabs,#sc-app,#sc-asof',
+    lock_en="Members get each sub-industry's timing score, "
+    ~ "which groups just turned buyable, which are late "
+    ~ "or fading, and the stocks firing inside them.",
+    lock_zh='会员可查看每个子行业的时机评分、哪些刚转为可买、哪些已偏晚或转弱，以及其中触发的个股。' %}
+  {% include "_cycle_locked_slot.html.j2" %}
+  {% endwith %}
+
   <div class="sc-tabs" role="tablist">
     <div class="sc-tab on" data-tab="subsectors" role="tab">{{ t('S&amp;P 500', '标普500') }} <span class="n" id="tabn-sub"></span></div>
     <div class="sc-tab" data-tab="nasdaq" role="tab">{{ t('Nasdaq-100', '纳斯达克100') }} <span class="n" id="tabn-ndx"></span></div>

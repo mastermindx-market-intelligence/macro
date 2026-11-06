@@ -100,7 +100,9 @@ def test_document_denial_is_self_contained_bilingual_html(monkeypatch):
         "_store_entitlement",
         lambda uid: ({"tier": "free", "status": "none", "features": []}, True),
     )
-    r = _check("/committee.html", "document")
+    # /committee.html, used here until 2026-10-21, is now in the deny set and answers 404.
+    assert paywall.classify_path("/allocation.html") == "premium"
+    r = _check("/allocation.html", "document")
     assert r.status_code == 403
     assert "Insider members" in r.text
     assert "会员" in r.text

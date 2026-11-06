@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-13T21:03:51Z",
+ "accession": "0001437749-26-004100",
+ "cik": "0000855658",
+ "doc_byte_length": 2133659,
+ "doc_sha256": "17e693d25bd745e0cfc4d5358b65e259eda6606b391713706f638a627adf5477",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-13",
+ "form": "10-K",
+ "period_of_report": "2026-01-03",
+ "primary_document": "lscc20260103_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 364859,
+  "byte_start": 364299,
+  "normalized": "We operate a primarily outsourced manufacturing business model that principally utilizes contract manufacturers, such as third-party wafer foundries. We rely on foundries in Japan, Korea and Taiwan to supply and fabricate silicon wafers for our semiconductor products, including Taiwan Semiconductor Manufacturing, Samsung Semiconductor, United Microelectronics Corporation, and Seiko Epson. We rely on our OSATs in Malaysia, Taiwan and Japan to support the packaging and test of our products, including Advanced Semiconductor Engineering and Amkor Technology.",
+  "normalized_sha256": "4b87ccb7af34f2966afff954c32d4a736c66bd534912aa904c96ba0a0c9a1e97",
+  "raw": "We operate a primarily outsourced manufacturing business model that principally utilizes contract manufacturers, such as third-party wafer foundries. We rely on foundries in Japan, Korea and Taiwan to supply and fabricate silicon wafers for our semiconductor products, including Taiwan Semiconductor Manufacturing, Samsung Semiconductor, United Microelectronics Corporation, and Seiko Epson. We rely on our OSATs in Malaysia, Taiwan and Japan to support the packaging and test of our products, including Advanced Semiconductor Engineering and Amkor Technology.",
+  "raw_sha256": "4b87ccb7af34f2966afff954c32d4a736c66bd534912aa904c96ba0a0c9a1e97"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/855658/000143774926004100/lscc20260103_10k.htm",
+ "xbrl_contexts": []
+}

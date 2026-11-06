@@ -6,14 +6,29 @@ import json
 import os
 from pathlib import Path
 
+import pytest
+
 import app.integrated_answer as integrated_answer
 from engine.company_theme_exposure.contracts import company_filename
 from engine.company_theme_exposure.views import build_bundle, write_generation
 from engine.fundamental_forensics import query_service
 from tests.test_company_theme_exposure import _company_tree, _crosswalk, _membership, _state
-from tests.test_integrated_answer_v0 import REF_KEYS, TOP_LEVEL_KEYS, _client, _leg_by_id, _page, _patch_all_seams
+from tests.test_integrated_answer_v0 import (
+    REF_KEYS,
+    TOP_LEVEL_KEYS,
+    _client,
+    _leg_by_id,
+    _page,
+    _patch_all_seams,
+    pin_capital_structure_leg,
+)
 
 NOW = "2026-10-11T12:00:00Z"
+
+
+@pytest.fixture(autouse=True)
+def _pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    pin_capital_structure_leg(monkeypatch)
 
 
 def _write_cte_generation(tmp_path, *, theme_state=None):
@@ -144,7 +159,7 @@ def test_fresh_transport_does_not_rescue_stale_bytes(monkeypatch, tmp_path) -> N
     assert cte_entry["receipt"]["contract_watermark"]["watermark"] == integrated_answer._normalize_clock("2026-02-02")
 
 
-def test_each_of_six_refs_carries_receipt_or_null_reason(monkeypatch, tmp_path) -> None:
+def test_each_surfaced_ref_carries_receipt_or_null_reason(monkeypatch, tmp_path) -> None:
     real_financial = integrated_answer._leg_financial_facts
     _patch_all_seams(monkeypatch)
     monkeypatch.setattr(integrated_answer, "_leg_financial_facts", real_financial)
@@ -200,6 +215,14 @@ def test_each_of_six_refs_carries_receipt_or_null_reason(monkeypatch, tmp_path) 
         "consumer_version",
     }
     for entry in entries:
+        if entry["leg"] == "capital_structure":
+            # The capital-structure leg is pinned absent in this module, so its
+            # receipt entry is honestly NO_REF rather than a fabricated ref.
+            assert entry["status"] == "NO_REF"
+            assert entry["receipt"] is None
+            assert entry["null_reasons"] == {}
+            assert entry["ref_content_hash"] is None
+            continue
         assert entry["status"] == "RECORDED"
         receipt = entry["receipt"]
         assert set(receipt) == receipt_keys

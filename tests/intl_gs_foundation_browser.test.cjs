@@ -13,7 +13,28 @@ const root = path.resolve(__dirname, '..');
 function fixtureHtml(stub) {
   const args = [path.join(__dirname, 'intl_gs_fixture_site.py'), '--print-html'];
   if (stub) args.push('--stub-coverage');
+  // 32 MiB (was 16): the page grows past 16 MiB once more than one view
+  // family attaches (dossier+dislocations on main print 16,477,487 bytes;
+  // W2A's scanner+coverage on top print 19,541,611) — a world-state size, not
+  // an invariant. Matches tests/intl_gs_scanner_browser.test.cjs.
   return execFileSync(process.env.INTL_TEST_PYTHON || 'python3', args,
+    {cwd: root, env: {...process.env, PYTHONPATH: root}, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024});
+}
+
+// DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT: the TRUE
+// no-payload world for the negative branch — the same fixture CLI with every
+// BUILDERS entry pointed at an absent module, so all seven views are not_built
+// and the page carries no surveillance payload at all.
+function noPayloadHtml() {
+  const program = [
+    'import runpy, sys',
+    `sys.path.insert(0, ${JSON.stringify(root)})`,
+    'import lib.intl_surveillance_mount as _mount',
+    '_mount.BUILDERS = {view: "lib.intl_gs_absent_" + view for view in _mount.GS_VIEWS}',
+    'sys.argv = ["intl_gs_fixture_site.py", "--print-html"]',
+    `runpy.run_path(${JSON.stringify(path.join(__dirname, 'intl_gs_fixture_site.py'))}, run_name="__main__")`,
+  ].join('\n');
+  return execFileSync(process.env.INTL_TEST_PYTHON || 'python3', ['-c', program],
     {cwd: root, env: {...process.env, PYTHONPATH: root}, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024});
 }
 
@@ -40,11 +61,12 @@ function serveRoute(route, pathname) {
     body: fs.readFileSync(file)});
 }
 
-async function withRoutedPage(fn, {query = '', stub = true, page = 'intl', trackFailures = false} = {}) {
+async function withRoutedPage(fn, {query = '', stub = true, page = 'intl', trackFailures = false, noPayload = false} = {}) {
   const browser = await chromium.launch({headless: true,
     ...(process.env.PLAYWRIGHT_CHROMIUM_CHANNEL ? {channel: process.env.PLAYWRIGHT_CHROMIUM_CHANNEL} : {})});
   try {
-    const html = page === 'states' ? statesHtml() : fixtureHtml(stub);
+    const html = page === 'states' ? statesHtml()
+      : (noPayload ? noPayloadHtml() : fixtureHtml(stub));
     const failures = {console: [], responses: []};
     const context = await browser.newContext({viewport: {width: 1440, height: 900}});
     const web = await context.newPage();
@@ -74,8 +96,8 @@ async function withRoutedPage(fn, {query = '', stub = true, page = 'intl', track
   }
 }
 
-async function withPage(fn, {query = '', stub = true} = {}) {
-  await withRoutedPage((web) => fn(web), {query, stub});
+async function withPage(fn, {query = '', stub = true, noPayload = false} = {}) {
+  await withRoutedPage((web) => fn(web), {query, stub, noPayload});
 }
 
 // Resolved token probe: reads the rgb() form the engine would paint for a
@@ -107,6 +129,9 @@ async function declaredRule(page, needle) {
 }
 
 test('production page shows seven disabled surveillance tabs', async () => {
+  // DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT. Negative
+  // branch — TRUE no-payload world (every builder module absent): all seven
+  // surveillance tabs stay disabled, the W2F assertion unchanged.
   await withPage(async page => {
     const states = await page.evaluate(() => Object.fromEntries(
       Array.from(document.querySelectorAll('.intl-workspace__view-nav button[data-im-action="set_view"]'))
@@ -114,6 +139,22 @@ test('production page shows seven disabled surveillance tabs', async () => {
     for (const view of ['scanner', 'dislocations', 'transmission', 'dossier', 'scenario', 'replay', 'coverage']) {
       assert.ok(view in states, `missing tab ${view}`);
       assert.equal(states[view], true, `${view} must be disabled without a builder`);
+    }
+    for (const view of ['overview']) assert.equal(states[view], false, `${view} must stay enabled`);
+  }, {stub: false, noPayload: true});
+  // Generic branch — honest-state invariant: a tab is enabled iff its builder
+  // produced a panel on this page (dossier at W2B; W2A's views later, unedited).
+  await withPage(async page => {
+    const states = await page.evaluate(() => Object.fromEntries(
+      Array.from(document.querySelectorAll('.intl-workspace__view-nav button[data-im-action="set_view"]'))
+        .map(button => [button.getAttribute('data-im-view'), button.disabled])));
+    const panelViews = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('section[data-gs-panel][data-im-panel][data-view]'))
+        .map(node => node.getAttribute('data-view')));
+    for (const view of ['scanner', 'dislocations', 'transmission', 'dossier', 'scenario', 'replay', 'coverage']) {
+      assert.ok(view in states, `missing tab ${view}`);
+      assert.equal(states[view], !panelViews.includes(view),
+        `${view} must be enabled iff its builder produced a panel`);
     }
     for (const view of ['overview']) assert.equal(states[view], false, `${view} must stay enabled`);
   }, {stub: false});
@@ -143,6 +184,10 @@ test('coverage tab is enabled, clickable, shows its panel and empties issues', a
 });
 
 test('?view=scanner without a panel behaves like an unsupported view', async () => {
+  // DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT: the
+  // negative branch runs in the TRUE no-payload world (every builder module
+  // absent), where ?view=scanner behaves exactly like a legacy unsupported
+  // view — the W2F assertion unchanged.
   await withPage(async page => {
     const issues = await page.locator('[data-im-issues]');
     await issues.waitFor({state: 'visible'});
@@ -155,7 +200,26 @@ test('?view=scanner without a panel behaves like an unsupported view', async () 
     assert.equal(visible, 0, 'no panel may be shown for an unbuilt view');
     const scanner = page.locator('.intl-workspace__view-nav button[data-im-view="scanner"]');
     assert.equal(await scanner.isDisabled(), true, 'scanner button stays disabled');
-  }, {query: '?view=scanner'});
+    // The toolbar <fieldset> starts disabled, which alone would satisfy
+    // isDisabled(); the button's OWN server-rendered attribute must carry the
+    // no-panel state (honesty mutant: a mount that marks a view available
+    // with no panel must redden this, fieldset aside).
+    assert.notEqual(await scanner.getAttribute('disabled'), null,
+      'the scanner button itself renders disabled in the no-payload world');
+  }, {query: '?view=scanner', stub: false, noPayload: true});
+  // Invariant branch — a tab is enabled iff its builder produced a panel:
+  // this branch ships the scanner builder, so the real page must enable the
+  // scanner tab and show its panel.
+  await withPage(async page => {
+    const scanner = page.locator('.intl-workspace__view-nav button[data-im-view="scanner"]');
+    assert.equal(await scanner.isDisabled(), false,
+      'scanner tab is enabled because its builder produced a panel');
+    assert.equal(await scanner.getAttribute('disabled'), null,
+      'no disabled attribute on the scanner tab once its panel exists');
+    await page.locator('[data-im-panel][data-view="scanner"]').first().waitFor({state: 'visible'});
+    assert.equal(await page.locator('[data-im-unavailable]').isHidden(), true,
+      'no unavailable banner once the scanner panel exists');
+  }, {query: '?view=scanner', stub: false});
 });
 
 test('legacy views still switch while the surveillance seam exists', async () => {
@@ -186,10 +250,18 @@ test('legacy views still switch while the surveillance seam exists', async () =>
 
 // ---------------------------------------------------------------- X6 market seam
 
+// X6 market seam — DEC:INTL-GS-FOUNDATION-TESTS-ENCODE-WORLD-STATE-NOT-INVARIANT:
+// every locator is scoped to the coverage stub's own market section (the fixture
+// stub carries no data-gs-panel on its market seam; section[aria-labelledby] is
+// its unique per-panel anchor), so a second view supplying its own
+// [data-gs-market-scope] / [data-gs-market-row] surfaces (W2B's dossier, W2A's
+// views later) can never match these locators.
+const X6_SEAM = 'section[aria-labelledby="intl-gs-market-selection"]';
+
 test('X6a: ?view=coverage&market=JP selects JP and scopes to JP only', async () => {
   await withPage(async page => {
-    const jp = page.locator('[data-gs-market-scope] > [data-gs-market="JP"]');
-    const kr = page.locator('[data-gs-market-scope] > [data-gs-market="KR"]');
+    const jp = page.locator(`${X6_SEAM} [data-gs-market="JP"]`);
+    const kr = page.locator(`${X6_SEAM} [data-gs-market="KR"]`);
     await page.locator('[data-im-panel][data-view="coverage"]').waitFor({state: 'visible'});
     await jp.waitFor({state: 'visible'});
     assert.equal(await kr.isHidden(), true, 'KR must stay hidden while JP is selected');
@@ -204,10 +276,10 @@ test('X6b: market=zz and unknown ids are ignored with empty issues', async () =>
       await page.locator('[data-im-panel][data-view="coverage"]').waitFor({state: 'visible'});
       assert.equal(await page.locator('[data-im-issues]').textContent(), '',
         `issues must stay empty for market=${bad}`);
-      const visible = await page.evaluate(() =>
-        Array.from(document.querySelectorAll('[data-gs-market-scope] > [data-gs-market]'))
+      const visible = await page.evaluate((seam) =>
+        Array.from(document.querySelectorAll(`${seam} [data-gs-market-scope] > [data-gs-market]`))
           .filter(node => !node.hidden)
-          .map(node => node.getAttribute('data-gs-market')));
+          .map(node => node.getAttribute('data-gs-market')), X6_SEAM);
       assert.deepEqual(visible, ['JP'], `the default market shows for market=${bad}`);
       const marketParam = await page.evaluate(() => new URLSearchParams(location.search).get('market'));
       assert.ok(marketParam === '' || marketParam === null,
@@ -221,22 +293,22 @@ test('X6c: a market select link switches view and updates the URL', async () => 
     await page.waitForTimeout(150);
     assert.equal(await page.locator('[data-im-panel][data-view="coverage"]').isHidden(), true,
       'start on overview with the coverage panel hidden');
-    await page.click('a[data-gs-select-market="KR"][data-gs-open="coverage"]');
+    await page.click(`${X6_SEAM} a[data-gs-select-market="KR"][data-gs-open="coverage"]`);
     await page.locator('[data-im-panel][data-view="coverage"]').waitFor({state: 'visible'});
     const params = new URLSearchParams(await page.evaluate(() => location.search));
     assert.equal(params.get('view'), 'coverage');
     assert.equal(params.get('market'), 'KR');
-    const visible = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('[data-gs-market-scope] > [data-gs-market]'))
+    const visible = await page.evaluate((seam) =>
+      Array.from(document.querySelectorAll(`${seam} [data-gs-market-scope] > [data-gs-market]`))
         .filter(node => !node.hidden)
-        .map(node => node.getAttribute('data-gs-market')));
+        .map(node => node.getAttribute('data-gs-market')), X6_SEAM);
     assert.deepEqual(visible, ['KR']);
   });
 });
 
 test('X6d: back and forward restore both view and market', async () => {
   await withPage(async page => {
-    await page.click('a[data-gs-select-market="KR"][data-gs-open="coverage"]');
+    await page.click(`${X6_SEAM} a[data-gs-select-market="KR"][data-gs-open="coverage"]`);
     await page.locator('[data-im-panel][data-view="coverage"]').waitFor({state: 'visible'});
     await page.click('.intl-workspace__view-nav button[data-im-view="overview"]');
     await page.waitForTimeout(150);
@@ -244,9 +316,9 @@ test('X6d: back and forward restore both view and market', async () => {
     await page.locator('[data-im-panel][data-view="coverage"]').waitFor({state: 'visible'});
     assert.equal(await page.evaluate(() => new URLSearchParams(location.search).get('market')), 'KR',
       'back must restore the selected market');
-    const marks = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('[data-gs-market-row][data-gs-selected]'))
-        .map(node => node.getAttribute('data-gs-market-row')));
+    const marks = await page.evaluate((seam) =>
+      Array.from(document.querySelectorAll(`${seam} [data-gs-market-row][data-gs-selected]`))
+        .map(node => node.getAttribute('data-gs-market-row')), X6_SEAM);
     assert.deepEqual(marks, ['KR'], 'back must restore the selected-market marking');
     await page.goForward();
     await page.waitForTimeout(150);
@@ -259,31 +331,31 @@ test('X6d: back and forward restore both view and market', async () => {
 test('X6e: selected market rows carry the 1.5px --info ring and aria-current', async () => {
   await withPage(async page => {
     await page.locator('[data-im-panel][data-view="coverage"]').waitFor({state: 'visible'});
-    const initial = await page.evaluate(() => ({
-      marked: Array.from(document.querySelectorAll('[data-gs-market-row][data-gs-selected]'))
+    const initial = await page.evaluate((seam) => ({
+      marked: Array.from(document.querySelectorAll(`${seam} [data-gs-market-row][data-gs-selected]`))
         .map(node => node.getAttribute('data-gs-market-row')),
-      current: Array.from(document.querySelectorAll('a[data-gs-select-market][aria-current="true"]'))
+      current: Array.from(document.querySelectorAll(`${seam} a[data-gs-select-market][aria-current="true"]`))
         .map(node => node.getAttribute('data-gs-select-market')),
-    }));
+    }), X6_SEAM);
     assert.deepEqual(initial.marked, ['JP']);
     assert.deepEqual(initial.current, ['JP']);
-    const ring = await page.evaluate(() => {
-      const row = document.querySelector('[data-gs-market-row="JP"]');
+    const ring = await page.evaluate((seam) => {
+      const row = document.querySelector(`${seam} [data-gs-market-row="JP"]`);
       const style = getComputedStyle(row);
       return {width: style.outlineWidth, color: style.outlineColor, offset: style.outlineOffset, style: style.outlineStyle};
-    });
+    }, X6_SEAM);
     assert.match(await declaredRule(page, 'data-gs-market-row'), /outline:\s*1\.5px solid var\(--info\)/);
     assert.match(await declaredRule(page, 'data-gs-market-row'), /outline-offset:\s*-1\.5px/);
     assert.equal(ring.style, 'solid', 'the selected row paints a solid outline');
     assert.equal(ring.color, await tokenColor(page, '--info'), 'ring colour must be --info');
-    await page.click('a[data-gs-select-market="KR"]');
+    await page.click(`${X6_SEAM} a[data-gs-select-market="KR"]`);
     await page.waitForTimeout(150);
-    const moved = await page.evaluate(() => ({
-      marked: Array.from(document.querySelectorAll('[data-gs-market-row][data-gs-selected]'))
+    const moved = await page.evaluate((seam) => ({
+      marked: Array.from(document.querySelectorAll(`${seam} [data-gs-market-row][data-gs-selected]`))
         .map(node => node.getAttribute('data-gs-market-row')),
-      current: Array.from(document.querySelectorAll('a[data-gs-select-market][aria-current="true"]'))
+      current: Array.from(document.querySelectorAll(`${seam} a[data-gs-select-market][aria-current="true"]`))
         .map(node => node.getAttribute('data-gs-select-market')),
-    }));
+    }), X6_SEAM);
     assert.deepEqual(moved.marked, ['KR']);
     assert.deepEqual(moved.current, ['KR']);
   }, {query: '?view=coverage&market=JP'});

@@ -268,12 +268,12 @@ def test_y1b_board_passes_curve_accounting_through_verbatim(tmp_path):
 
 def test_y1b_board_key_order_and_stance_input_unchanged(tmp_path):
     result = ric.build_board(root=tmp_path)
-    # C0 lane addition (2026-10-14): `board_generation` + `inflation_lenses`
-    # land beside curve_accounting per RIC-W7 §2.11e — see DEVIATIONS entry
-    # in /tmp/ric-c0/RETURN.md for the FROZEN-key-order update rationale.
+    # Preserve the C0 suffix order from RIC-W7 §2.11e. RD2 appends the
+    # display-only policy_path_repricing field after the existing C0 fields;
+    # the constituent view must remain outside the compose_stance input.
     assert list(result) == _BASE_BOARD_KEYS + [
         "curve_accounting", "curve_accounting_export",
-        "board_generation", "inflation_lenses",
+        "board_generation", "inflation_lenses", "policy_path_repricing",
     ]
 
     # Wrap compose_stance so we can read what compose_stance actually saw.
@@ -303,6 +303,7 @@ def test_y1b_board_key_order_and_stance_input_unchanged(tmp_path):
     spy_input = seen["input"]
     assert "curve_accounting" not in spy_input
     assert "curve_accounting_export" not in spy_input
+    assert "policy_path_repricing" not in spy_input
 
 
 # --- T10 ------------------------------------------------------------------------
