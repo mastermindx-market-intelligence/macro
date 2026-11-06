@@ -692,3 +692,57 @@ class TestLoaderIsolationAndCli:
         assert w3.sessions_path(tmp_path).read_bytes() == sess
         assert out.lstrip().startswith("{")
         assert "leader" not in out.lower()
+
+
+class TestIntegralMetadata:
+    """A truncated count or horizon cannot qualify a frozen H=10 read."""
+
+    @pytest.mark.parametrize("field,bad_value", [
+        ("n_pending_outcome", 0.5),
+        ("n_pending_outcome", -0.5),
+        ("n_pending_outcome", float("inf")),
+        ("n_paired", 4.5),
+        ("n_v3_buy_rows", 4.5),
+        ("n_paired", float("-inf")),
+        ("n_v3_buy_rows", float("inf")),
+    ])
+    def test_malformed_count_cannot_unlock_the_twentieth_session(
+            self, tmp_path, monkeypatch, field, bad_value):
+        _write_floor(tmp_path, n=19)
+        stamp = "2026-09-20"
+        cands, grades = _aligned_names(stamp)
+        _write_stamp(tmp_path, stamp, cands, grades,
+                     session_overrides={field: bad_value})
+        _forbid_pre_floor(monkeypatch)
+        _forbid_writers(monkeypatch)
+        payload = read_w3_guardrail(tmp_path)
+        assert payload["status"] == "FLOOR_UNMET"
+        assert payload["accrual"]["n_selected_sessions"] == 19
+        _assert_no_stats(payload)
+
+    def test_fractional_horizon_refuses_even_with_consistent_fingerprints(
+            self, tmp_path, monkeypatch):
+        stamps = _write_floor(tmp_path, n=20)
+        path = w3._part_path("paired", stamps[0], tmp_path)
+        altered = pd.read_parquet(path).copy()
+        altered["horizon"] = 10.5
+        rows = altered.to_dict(orient="records")
+        for row in rows:
+            row["identity_fingerprint"] = w3.fingerprint(row, w3.PAIRED_IDENTITY)
+        pd.DataFrame(rows).to_parquet(path, index=False)
+
+        # Match both owner fingerprints so refusal must enforce exact H=10,
+        # rather than relying on an unrelated digest mismatch.
+        fingerprints = w3.observation_fingerprints(tmp_path, stamps[0])
+        lines = w3.sessions_path(tmp_path).read_text(encoding="utf-8").splitlines()
+        session = json.loads(lines[0])
+        session.update(fingerprints)
+        lines[0] = json.dumps(session, sort_keys=True)
+        w3.sessions_path(tmp_path).write_text(
+            "\n".join(lines) + "\n", encoding="utf-8")
+        _forbid_global_loaders(monkeypatch)
+        _forbid_writers(monkeypatch)
+        payload = read_w3_guardrail(tmp_path)
+        assert payload["status"] == "REFUSED"
+        assert "horizon" in payload["refusal"]
+        _assert_no_stats(payload)

@@ -1,0 +1,39 @@
+[
+  {
+    "name": "en-dark-1440",
+    "bodyClass": "page-commod",
+    "htmlClass": "soft-contrast",
+    "htmlLang": "en",
+    "overflow": false,
+    "rect": {
+      "height": 597.9000244140625,
+      "width": 1140,
+      "x": 150,
+      "y": 0.03750000149011612
+    },
+    "text": "Critical-minerals supply\n\nAnnual physical-supply context, not a live shortage indicator or a position recommendation.\n\nUSGS edition 2026 · Published 2026-02-06\n\nCobalt\n\nCongo (Kinshasa) mined about 74% of the world's cobalt in 2025, and the US imported about 79 percent of what it used.\n\nObservation period: 2025\n\nLithium\n\nAustralia mined about 32% of the world's lithium in 2025, and the US imported more than 50 percent of what it used.\n\nObservation period: 2025\n\nGallium\n\nChina produced about 100% of the world's gallium in 2025, and the US imported about 100 percent of what it used.\n\nObservation period: 2025\n\nRare earths\n\nChina mined about 69% of the world's rare earths in 2025, and the US imported about 67 percent of what it used.\n\nObservation period: 2025\n\nSource and timing\n\nUSGS Mineral Commodity Summaries data release\n\nThis product read was generated at 2026-10-19T18:30:51Z. Generation time does not change the observation period or publication date.",
+    "viewport": [
+      1440,
+      900
+    ]
+  },
+  {
+    "name": "en-light-1440",
+    "bodyClass": "page-commod",
+    "devicePixelRatio": 1.25,
+    "htmlClass": "soft-contrast",
+    "htmlLang": "en",
+    "overflow": false,
+    "rect": {
+      "height": 747.3750305175781,
+      "width": 1425,
+      "x": 187.5,
+      "y": 3174.0468215942383
+    },
+    "text": "Critical-minerals supply\n\nAnnual physical-supply context, not a live shortage indicator or a position recommendation.\n\nUSGS edition 2026 · Published 2026-02-06\n\nCobalt\n\nCongo (Kinshasa) mined about 74% of the world's cobalt in 2025, and the US imported about 79 percent of what it used.\n\nObservation period: 2025\n\nLithium\n\nAustralia mined about 32% of the world's lithium in 2025, and the US imported more than 50 percent of what it used.\n\nObservation period: 2025\n\nGallium\n\nChina produced about 100% of the world's gallium in 2025, and the US imported about 100 percent of what it used.\n\nObservation period: 2025\n\nRare earths\n\nChina mined about 69% of the world's rare earths in 2025, and the US imported about 67 percent of what it used.\n\nObservation period: 2025\n\nSource and timing\n\nUSGS Mineral Commodity Summaries data release\n\nThis product read was generated at 2026-10-19T18:30:51Z. Generation time does not change the observation period or publication date.",
+    "viewport": [
+      1440,
+      900
+    ]
+  }
+]

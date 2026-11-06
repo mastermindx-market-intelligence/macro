@@ -81,8 +81,13 @@ def _as_int(value: Any) -> int | None:
     if value is None or isinstance(value, bool):
         return None
     try:
-        return int(value)
-    except (TypeError, ValueError):
+        parsed = int(value)
+        # Counts and the frozen horizon must be exact integers. Coercion must
+        # not turn a fractional pending count into zero or H=10.5 into H=10.
+        if not isinstance(value, str) and value != parsed:
+            return None
+        return parsed
+    except (TypeError, ValueError, OverflowError):
         return None
 
 
