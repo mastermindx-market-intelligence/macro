@@ -4370,6 +4370,8 @@ def test_us_board_q1_retirement_reconciles_every_delete_outcome(tmp_path, mode, 
     original_commit = _git_output(bare, "rev-parse", ref)
     old_main = _git_output(bare, "rev-parse", "main")
     publisher = _clone_of(bare, tmp_path / "published-lane")
+    _git_output(publisher, "config", "user.name", "custody-fixture")
+    _git_output(publisher, "config", "user.email", "fixture@example.invalid")
     (publisher / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
     _git_output(publisher, "add", "data/us_board_ledger/snapshots.jsonl")
     _git_output(publisher, "commit", "-q", "-m", "publish exact held bytes")
