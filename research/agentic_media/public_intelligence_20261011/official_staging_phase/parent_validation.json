@@ -1,0 +1,30 @@
+{
+  "observed_at": "2026-10-14T01:47:30.045059+00:00",
+  "worker": "mmx-press-official-staging-20261013-001",
+  "worker_stdout_sha256": "692ac43ab56ef5b27bb2a44b18fbcfe7b8cd11c4c796598ea8a6322ded905e2e",
+  "worker_patch_sha256": "f15d30c3270b44a550d39a3b28da518144b9a650cc8b5ae36612a2bee776b3a2",
+  "worker_return_accepted": false,
+  "independent_review": "mmx-press-private-ingress-review-20261014-001",
+  "review_state": "launched; result pending",
+  "tests": {
+    "parent_red": "9 failed, 27 passed in 25.09s",
+    "parent_staging_green": "120 passed in 27.67s",
+    "context_limit_red": "2 failed, 54 passed in 13.02s",
+    "integrated_affected": "618 passed in 76.04s"
+  },
+  "source_hashes": {
+    "scripts/stage_official_feed_press.py": "c1e6078e25d08345f86152dab7aff8e0b2ebe6cc49fe15eb2c1bcff4a0e42145",
+    "scripts/run_press.py": "c8a32f67bb0510d8337044996a9fc4c245a11f92a66a7d792863db48ff9d77d8",
+    "engine/press/writer.py": "0528fc0724c2727372df43e1ee064f84f159de6f54f7381371e6f13dbe13bb09",
+    "engine/press/validators.py": "fdbae60b9bec3635db2a7732e9a2519a4a600d4f0e9e83ee65e962d11786cc46",
+    "engine/press/official_feed_candidate.py": "f01f28bb20896c59b69ed95339875192d1e724a25078742119d2930e5f0d72f2",
+    "tests/test_press_official_staging.py": "104c43cd2796c2a7ff111010126e116d1d7af2564cf7023155fd123b17fc9f98",
+    "tests/test_press_writer.py": "0a928aad51ed433666e0e461dd67c63e4b1191ebe1ffeb07835e234c07e3ef72",
+    ".github/ci/legacy-jobs.yml": "8a58fe008fb847b704aea60ea85618937d3cdb3037ea3c83629c9202f958fd3a"
+  },
+  "real_provider_calls": 0,
+  "new_current_event_stage": false,
+  "publication": false,
+  "installation": false,
+  "contract_delta": "Latest attempt refused during base read-tree materialization after 300 seconds, before any findings; historical scan is not current proof."
+}

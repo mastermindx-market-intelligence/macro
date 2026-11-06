@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-03-31T20:06:52Z",
+ "accession": "0001104659-26-037706",
+ "cik": "0001951222",
+ "doc_byte_length": 5523011,
+ "doc_sha256": "0cce91aa4fda1161c07cc338f0e8a1391b21e40d6de6f3ae380609ef733002e7",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "laes-20251231x20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3213975,
+  "byte_start": 3211938,
+  "normalized": "Multinational electronics contract manufacturing company ​ ​ ​ 2% 4",
+  "normalized_sha256": "0fc99fad96898cee44689312d0a5281fb55e2e1f6dd701ce37933be6f20daad1",
+  "raw": "Multinational electronics contract manufacturing company</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:2.31%;background:#cceeff;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;margin:0pt 0pt 0.05pt 0pt;\">&#160;&#160;&#8203;&#160;&#8203;&#160;&#8203;</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:6.86%;background:#cceeff;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;text-align:right;margin:0pt 3pt 0.05pt 0pt;\"> <ix:nonFraction unitRef=\"Unit_Standard_pure_K4SUfXb-5Eik809CIGUJDA\" contextRef=\"Duration_1_1_2025_To_12_31_2025_srt_MajorCustomersAxis_laes_MultinationalElectronicsContractManufacturingCompanyMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_q-uSrUytrkGN79bEB8_goQ\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"Tc_omGZmvwrsU6f1n5DTn9x8w_3_2\">2</ix:nonFraction></p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:3.09%;background:#cceeff;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;margin:0pt 0pt 0.05pt 0pt;\">%&#160;&#160;</p></td><td style=\"vertical-align:bottom;white-space:nowrap;width:6.85%;background:#cceeff;margin:0pt;padding:0pt;\"><p style=\"font-family:'Times New Roman','Times','serif';font-size:10pt;text-align:right;margin:0pt 3pt 0.05pt 0pt;\"> <ix:nonFraction unitRef=\"Unit_Standard_pure_K4SUfXb-5Eik809CIGUJDA\" contextRef=\"Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_laes_MultinationalElectronicsContractManufacturingCompanyMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_1t3_GwAtX0-dTLPjVcaNcg\" decimals=\"2\" format=\"ixt:num-dot-decimal\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"Tc_X20nlvSYl0euBgQuHV3mnQ_3_4\">4",
+  "raw_sha256": "1af6975dd8e5bd25315dbf46ad946a8f5ebfd3521bd7552bee71b7b48679cf8c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/laes-20251231x20f.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 200340,
+   "byte_start": 199353,
+   "context_ref": "Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_laes_MultinationalElectronicsContractManufacturingCompanyMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_1t3_GwAtX0-dTLPjVcaNcg",
+   "raw": "<xbrli:context id=\"Duration_1_1_2024_To_12_31_2024_srt_MajorCustomersAxis_laes_MultinationalElectronicsContractManufacturingCompanyMember_us-gaap_ConcentrationRiskByBenchmarkAxis_us-gaap_SalesRevenueNetMember_us-gaap_ConcentrationRiskByTypeAxis_us-gaap_CustomerConcentrationRiskMember_1t3_GwAtX0-dTLPjVcaNcg\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001951222</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">laes:MultinationalElectronicsContractManufacturingCompanyMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "fcb92a247338c9db91a6bb93ca01b9e263802c9dfac3540f4476b81f374463b3"
+  }
+ ]
+}

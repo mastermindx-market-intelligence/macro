@@ -445,7 +445,7 @@ def _read_json(path: Path) -> Any:
         raise SnapshotRefused("SOURCE_FAILED", f"{path.name} is not valid JSON: {exc}") from exc
 
 
-def read_workspace(data_root: Path, page: SuitePage) -> tuple[dict, dict]:
+def read_workspace(data_root: Path, page: SuitePage, *, read_json=None) -> tuple[dict, dict]:
     """Load + validate one workspace artifact. Raises :class:`SnapshotRefused`.
 
     Order matters: the manifest is read FIRST (it is written LAST by the
@@ -454,8 +454,9 @@ def read_workspace(data_root: Path, page: SuitePage) -> tuple[dict, dict]:
     that trusted either half alone could render one generation under another
     generation's header.
     """
+    reader = read_json if read_json is not None else _read_json
     manifest_path = data_root / "workspaces" / "manifest.json"
-    manifest, _ = _read_json(manifest_path)
+    manifest, _ = reader(manifest_path)
     if not isinstance(manifest, Mapping):
         raise SnapshotRefused("SOURCE_FAILED", "manifest.json is not a JSON object")
 
@@ -477,7 +478,7 @@ def read_workspace(data_root: Path, page: SuitePage) -> tuple[dict, dict]:
         raise SnapshotRefused("SOURCE_FAILED", f"manifest path for {key!r} is not a safe relative path")
 
     body_path = data_root / relative
-    snapshot, byte_size = _read_json(body_path)
+    snapshot, byte_size = reader(body_path)
 
     try:
         contract.validate(snapshot)
@@ -643,6 +644,7 @@ COPY_IDS = frozenset({
 P3_PRIMER_OPEN = frozenset({"overview", "money", "policy"})
 _STALE_NOTE_TITLES = frozenset({
     "Required source not current",
+    "Required source late, within tolerance",
     "Optional legs degraded",
 })
 _DISAGREE_NOTE_TITLES = frozenset({"Contradictory signals"})
@@ -1419,6 +1421,10 @@ def _fragment_context(value: Any) -> Any:
 def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
                     out_dir: Path) -> list[Path]:
     """Emit `site/macro/fragments/<id>.html` — the inner HTML of `[data-mc-figure]`."""
+    # macro-api imports this module but never writes fragments. A module-level import
+    # would put lib/pages.py in its load-time closure.
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
+
     dest = Path(out_dir) / "macro" / "fragments"
     dest.mkdir(parents=True, exist_ok=True)
     tmpl = env.get_template("_macro_command_fragment.html.j2")
@@ -1434,7 +1440,7 @@ def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
         path = dest / f"{section['id']}.html"
         temp = _temp_sibling(path)
         try:
-            temp.write_text(html, encoding="utf-8")
+            write_unshimmed_html(temp, html, encoding="utf-8")
             os.replace(temp, path)
         finally:
             temp.unlink(missing_ok=True)
