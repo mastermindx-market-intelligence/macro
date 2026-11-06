@@ -64,7 +64,7 @@ def _gate(
 
 
 def _loaded(label: str) -> SimpleNamespace:
-    return SimpleNamespace(mode="semantic", evidence={"fixture": label})
+    return SimpleNamespace(mode="semantic", evidence={"fixture": label, "role": "pr_head", "subject_head_sha": HEAD, "base_sha": BASE})
 
 
 def _pull() -> dict:
@@ -90,6 +90,9 @@ class _Fresh:
     def stale_for(self, _pull, _runs):
         self.stale_calls += 1
         return self._stale
+
+    def exact_proof_base(self, _pull, _runs):
+        return BASE, ""
 
 
 def test_pack_red_is_transport_only_when_semantic_gate_is_clear(monkeypatch):
@@ -471,17 +474,17 @@ def test_legacy_red_without_concrete_gate_run_does_not_fetch_artifact(monkeypatc
     assert verdict == "blocked" and "ci-pack-2 (failure)" in names
 
 
-def test_green_sweeper_head_performs_zero_semantic_artifact_calls(monkeypatch):
+def test_green_stale_head_reuses_one_original_before_genuine_reproof(monkeypatch):
     runs = [
         _check("ci-pack-5", "success"),
         _check("ci-gate", "success", details=True),
         _check("fence-pack", "success"),
     ]
     fresh = _Fresh(stale=(True, "newer main requires ordinary reproof"))
+    calls = []
     monkeypatch.setattr(
-        MOG,
-        "semantic_evidence_for_head",
-        lambda *_a, **_k: pytest.fail("green sweeper head downloaded semantic evidence"),
+        MOG, "semantic_evidence_for_head",
+        lambda *a, **k: calls.append((a, k)) or _loaded("same original base"),
     )
     monkeypatch.setattr(MOG, "reprove", lambda *_a, **_k: "rebased")
     assert MOG.sweep_pull(
@@ -494,6 +497,8 @@ def test_green_sweeper_head_performs_zero_semantic_artifact_calls(monkeypatch):
     ) == "rebased"
     assert fresh.stale_calls == 1
 
+
+    assert len(calls) == 1
 
 def test_concrete_historical_run_with_no_v1_uses_exact_legacy_block(monkeypatch):
     runs = [
@@ -1562,3 +1567,255 @@ def test_late_older_completion_cannot_replace_newer_published_generation(monkeyp
     result=MOG.publish_admitted_subject_checks('acme/widgets','read','checks',ref,
         expected_run_id=99,expected_run_attempt=1,protected_controller_sha='4'*40)
     assert result['disposition']=='held' and result['published']==()
+
+
+@pytest.mark.parametrize("sealed_base,expected", [("d" * 40, "freshness-deferred"), (BASE, "rebased")])
+def test_original_execution_base_conflict_never_refreshes(monkeypatch, sealed_base, expected):
+    """Network's included definition vs Foundation's genuinely incoming one."""
+    runs = [_check("ci-pack-5", "failure"), _check("ci-gate", "success", details=True), _check("fence-pack", "success")]
+    fresh = _Fresh(stale=(True, "incoming check definition"))
+    evidence = _loaded("actual original")
+    evidence.evidence["base_sha"] = sealed_base
+    monkeypatch.setattr(MOG, "head_check_runs", lambda *_a: runs)
+    monkeypatch.setattr(MOG, "_semantic_gate", lambda _loaded: _gate(clear=True))
+    monkeypatch.setattr(MOG.semantic_proof, "format_semantic_unit", lambda u: "unit")
+    writes = []
+    monkeypatch.setattr(MOG, "reprove", lambda *a, **k: writes.append("refresh") or "rebased")
+    monkeypatch.setattr(MOG, "_request", lambda *a, **k: pytest.fail("no real read or write authorized"))
+    assert MOG.sweep_pull("acme/widgets", _pull(), "read", "write", fresh, semantic_evidence=evidence) == expected
+    assert writes == ([] if sealed_base != BASE else ["refresh"])
+
+
+@pytest.mark.parametrize("bad", ["subject", "role", "base", "mode", "missing"])
+def test_original_execution_base_bad_identity_refuses_without_effect(monkeypatch, bad):
+    runs = [_check("ci-gate", "success", details=True), _check("fence-pack", "success")]
+    evidence = _loaded("candidate")
+    if bad == "subject": evidence.evidence["subject_head_sha"] = "f" * 40
+    if bad == "role": evidence.evidence["role"] = "main"
+    if bad == "base": evidence.evidence["base_sha"] = "not-a-sha"
+    if bad == "missing": evidence.evidence.pop("base_sha")
+    if bad == "mode": evidence.mode = "unqualified"
+    monkeypatch.setattr(MOG, "_semantic_gate", lambda _loaded: _gate(clear=bad != "unclear"))
+    answer = MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", _Fresh(), (True, "stale"), semantic_evidence=evidence)
+    assert answer[0] is None
+
+
+def test_original_execution_base_green_stale_loads_same_original_once(monkeypatch):
+    runs = [_check("ci-gate", "success", details=True), _check("fence-pack", "success")]
+    calls = []
+    evidence = _loaded("candidate")
+    evidence.evidence["base_sha"] = "d" * 40
+    monkeypatch.setattr(MOG, "semantic_evidence_for_head", lambda *a, **k: calls.append((a, k)) or evidence)
+    monkeypatch.setattr(MOG, "_semantic_gate", lambda _loaded: _gate(clear=True))
+    answer = MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", _Fresh(), (True, "stale"))
+    assert answer[0] is None
+    assert len(calls) == 1
+    assert calls[0][0][:3] == ("acme/widgets", HEAD, "read")
+    assert calls[0][1]["check_runs"] is runs
+
+
+def test_original_execution_base_reuses_loaded_original_without_reread(monkeypatch):
+    runs = [_check("ci-gate", "success", details=True)]
+    monkeypatch.setattr(MOG, "semantic_evidence_for_head", lambda *a, **k: pytest.fail("duplicate original read"))
+    monkeypatch.setattr(MOG, "_semantic_gate", lambda _loaded: _gate(clear=True))
+    expected = (True, "genuine new definition")
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", _Fresh(), expected, semantic_evidence=_loaded("candidate")) == expected
+
+
+@pytest.mark.parametrize("verdict", [(False, "current"), (None, "unknown")])
+def test_original_execution_base_current_or_unknown_never_adds_reads(monkeypatch, verdict):
+    monkeypatch.setattr(MOG, "semantic_evidence_for_head", lambda *a, **k: pytest.fail("unnecessary original read"))
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), [_check("ci-gate", "success", details=True)], "read", _Fresh(), verdict) == verdict
+
+
+def test_original_execution_base_native_admitted_path_unchanged(monkeypatch):
+    monkeypatch.setattr(MOG, "has_admitted_subject_checks", lambda runs: True)
+    monkeypatch.setattr(MOG, "semantic_evidence_for_head", lambda *a, **k: pytest.fail("native identity downgrade"))
+    expected = (True, "actual admitted base stale")
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), [_check("ci-gate", "success", details=True)], "read", _Fresh(), expected) == expected
+
+
+def test_original_execution_base_legacy_path_unchanged(monkeypatch):
+    monkeypatch.setattr(MOG, "semantic_evidence_for_head", lambda *a, **k: SimpleNamespace(mode="legacy", evidence=None))
+    expected = (True, "legacy stale")
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), [_check("ci-gate", "success", details=True)], "read", _Fresh(), expected) == expected
+
+
+@pytest.mark.parametrize("quota", [False, True])
+def test_original_execution_base_read_failure_never_retries_or_writes(monkeypatch, quota):
+    calls = []
+    def refuse(*a, **k):
+        calls.append(1)
+        if quota: raise MOG.RateLimited("quota", retry_after=7)
+        raise RuntimeError("SENTINEL_PROVIDER_DATA")
+    monkeypatch.setattr(MOG, "semantic_evidence_for_head", refuse)
+    args = ("acme/widgets", _pull(), [_check("ci-gate", "success", details=True)], "read", _Fresh(), (True, "stale"))
+    if quota:
+        with pytest.raises(MOG.RateLimited) as exc: MOG._reconcile_original_proof_base(*args)
+        assert exc.value.retry_after == 7
+    else:
+        answer = MOG._reconcile_original_proof_base(*args)
+        assert answer[0] is None and "SENTINEL" not in answer[1]
+    assert calls == [1]
+
+
+@pytest.mark.parametrize("candidate_head,sealed_base,advertised_base,expected_stale", [
+    ("cb0300f8ecfe8c72bce2605483b324aada651d79", "8d55f6dc49e85ce577949b090562741da84039e5", "9531f6b11780a95ab53a084435c7a19357214bb5", None),
+    ("3d6ce1d556dbe692cb6afaab2338281dcf4389e0", "9531f6b11780a95ab53a084435c7a19357214bb5", "9531f6b11780a95ab53a084435c7a19357214bb5", True),
+])
+def test_original_execution_base_actual_opposite_identities(monkeypatch, candidate_head, sealed_base, advertised_base, expected_stale):
+    pull = dict(_pull(), head={"sha": candidate_head})
+    loaded = SimpleNamespace(mode="semantic", evidence={"role": "pr_head", "subject_head_sha": candidate_head, "base_sha": sealed_base, "authority_changed": True})
+    fresh = _Fresh(stale=(True, "8d55 changed selected definition"))
+    fresh.exact_proof_base = lambda *_: (advertised_base, "")
+    monkeypatch.setattr(MOG, "_semantic_gate", lambda *_: pytest.fail("identity guard must not reinterpret candidate-era classifications"))
+    answer = MOG._reconcile_original_proof_base("acme/widgets", pull, [_check("ci-gate", "success", details=True)], "read", fresh, (True, "8d55 changed selected definition"), semantic_evidence=loaded)
+    assert answer[0] is expected_stale
+
+
+def _manifest_identity_case(monkeypatch, *, later=False, mixed_source=False):
+    covered = "d" * 40
+    commits = ([{"sha": "e" * 40, "message": "later definition"}] if later else []) + [{"sha": covered, "message": "covered definition"}, {"sha": BASE, "message": "old"}]
+    fresh = MOG.ProofFreshness("acme/widgets", "read", [{"workflow": "ci.yml", "patterns": [".github/ci/legacy-jobs.yml", "engine/**"]}, {"workflow": "fences.yml", "patterns": None}], commits)
+    fresh._commit_files[covered] = ([".github/ci/legacy-jobs.yml"] + ([".github/workflows/fences.yml"] if mixed_source else []), False)
+    if later: fresh._commit_files["e" * 40] = ([".github/ci/legacy-jobs.yml"], False)
+    fresh._pr_files[9] = ["engine/product.py"]
+    job = b"jobs: {self-mod-fence: {steps: [{name: live, run: echo guard}]}}"
+    import hashlib
+    oid = hashlib.sha1(b"blob " + str(len(job)).encode() + b"\0" + job).hexdigest()
+    fresh._proof_input_entry = lambda commit, path: ("blob", "100644", oid if path == ".github/ci/legacy-jobs.yml" else MOG.FENCE_MANIFEST_READER_CONTRACT[path])
+    fresh._blob = lambda blob: job
+    runs = [_check("ci-pack-5", "success", details=True), _check("ci-gate", "success", details=True), _check("fence-pack", "success")]
+    for i, check in enumerate(runs): check.update(head_sha=HEAD, id=i+1)
+    loaded = _loaded("verified original")
+    loaded.evidence.update(base_sha=covered, workflow_run_id="77", tested_tree_sha=TREE)
+    monkeypatch.setattr(MOG, "_semantic_gate", lambda *_: _gate(clear=True))
+    monkeypatch.setattr(MOG, "_request", lambda *a, **k: pytest.fail("no new API or branchwrite"))
+    return fresh, runs, loaded
+
+
+def test_manifest_original_semantic_base_positive_preserves_current_head_fences(monkeypatch):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    old = fresh.stale_for(_pull(), runs)
+    assert old[0] is True
+    answer = MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh, old, semantic_evidence=loaded)
+    assert answer[0] is False
+    assert "manifest definition input" in answer[1]
+    # No fence execution base was manufactured or normalized.
+    assert fresh.exact_proof_base(_pull(), runs)[0] == BASE
+    assert runs[-1]["pull_requests"][0]["base"]["sha"] == BASE
+
+
+@pytest.mark.parametrize("kind", ["missing-fence", "mixed", "wrong-head", "foreign-app", "foreign-ci", "wrong-run", "malformed", "missing-associations", "unowned", "other-owner", "base-outside-window"])
+def test_manifest_original_identity_missing_mixed_or_inapplicable_refuses(monkeypatch, kind):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    if kind == "missing-fence": runs.pop()
+    if kind == "mixed": runs[-1]["pull_requests"][0]["base"]["sha"] = "d" * 40
+    if kind == "wrong-head": runs[-1]["head_sha"] = "f" * 40
+    if kind == "foreign-app": runs[-1]["app"]["slug"] = "untrusted"
+    if kind == "foreign-ci": runs[1]["details_url"] = "https://github.com/other/repo/actions/runs/77/job/9"
+    if kind == "wrong-run": loaded.evidence["workflow_run_id"] = "78"
+    if kind == "malformed": runs[-1]["pull_requests"][0]["base"]["sha"] = "bad"
+    if kind == "missing-associations": runs[-1]["pull_requests"] = []
+    if kind == "unowned": fresh.gates[0]["patterns"] = ["engine/**"]
+    if kind == "other-owner": fresh.gates.append({"workflow": "other.yml", "patterns": [".github/ci/**"]})
+    if kind == "base-outside-window": loaded.evidence["base_sha"] = "f" * 40
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh, (True, "definition"), semantic_evidence=loaded)[0] is None
+
+
+@pytest.mark.parametrize("later,mixed_source", [(True, False), (False, True)])
+def test_manifest_original_coverage_never_skips_newer_or_fence_definitions(monkeypatch, later, mixed_source):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch, later=later, mixed_source=mixed_source)
+    answer = MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh, (True, "definition"), semantic_evidence=loaded)
+    assert answer[0] is True
+    assert "check definitions" in answer[1]
+
+
+@pytest.mark.parametrize("change", ["job", "reader", "renderer", "producer", "head-job", "missing", "digest"])
+def test_manifest_original_fence_input_projection_never_waives_changed_controls(monkeypatch, change):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    original_entry = fresh._proof_input_entry
+    if change in {"reader", "renderer", "producer"}:
+        path = {"reader": "tests/test_self_mod_fence.py", "renderer": "scripts/run_ci_pack.py", "producer": ".github/workflows/fences.yml"}[change]
+        fresh._proof_input_entry = lambda commit, rel: ("blob", "100644", "2" * 40) if commit == "d" * 40 and rel == path else original_entry(commit, rel)
+    else:
+        original_blob = fresh._blob
+        import hashlib
+        bad = b"jobs: {self-mod-fence: {steps: [{name: live, run: echo CHANGED}]}}" if change != "missing" else b"jobs: {}"
+        digest = hashlib.sha1(b"blob " + str(len(bad)).encode() + b"\0" + bad).hexdigest()
+        frame = HEAD if change == "head-job" else "d" * 40
+        fresh._proof_input_entry = lambda commit, rel: ("blob", "100644", digest if change != "digest" else "f" * 40) if commit == frame and rel == ".github/ci/legacy-jobs.yml" else original_entry(commit, rel)
+        fresh._blob = lambda oid: bad if oid in {digest, "f" * 40} else original_blob(oid)
+    answer = MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh, (True, "definition"), semantic_evidence=loaded)
+    assert answer[0] is None
+
+
+@pytest.mark.parametrize("quota", [False, True])
+def test_manifest_original_source_read_refusal_keeps_one_original_and_no_effect(monkeypatch, quota):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    calls = []
+    def refuse(*a):
+        calls.append(1)
+        if quota: raise MOG.RateLimited("original quota", retry_after=5)
+        raise RuntimeError("SENTINEL_PRIVATE_PROVIDER_BODY")
+    fresh._proof_input_entry = refuse
+    args = ("acme/widgets", _pull(), runs, "read", fresh, (True, "definition"))
+    if quota:
+        with pytest.raises(MOG.RateLimited): MOG._reconcile_original_proof_base(*args, semantic_evidence=loaded)
+    else:
+        result = MOG._reconcile_original_proof_base(*args, semantic_evidence=loaded)
+        assert result[0] is None and "SENTINEL" not in result[1]
+    assert calls == [1]
+
+
+def test_manifest_original_rejects_cross_repository_projection(monkeypatch):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    fresh.repo = "other/repo"
+    fresh._proof_input_entry = lambda *a: pytest.fail("cross-repository input read")
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh, (True, "definition"), semantic_evidence=loaded)[0] is None
+
+
+def test_manifest_original_rejects_mixed_ci_original_runs(monkeypatch):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    runs[0]["details_url"] = "https://github.com/acme/widgets/actions/runs/88/job/9"
+    fresh._proof_input_entry = lambda *a: pytest.fail("mixed original input read")
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh, (True, "definition"), semantic_evidence=loaded)[0] is None
+
+
+def test_manifest_original_projection_cache_is_immutable_blob_scoped(monkeypatch):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    original = fresh._blob
+    calls = []
+    fresh._blob = lambda oid: calls.append(oid) or original(oid)
+    answer = MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh, (True, "definition"), semantic_evidence=loaded)
+    assert answer[0] is False
+    assert len(calls) == 1  # Same original immutable blob in all three frames.
+    assert len(fresh._fence_manifest_jobs) == 1
+
+
+def test_manifest_original_malformed_yaml_refuses_without_new_effect(monkeypatch):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    import hashlib
+    raw = b"jobs: [unterminated"
+    oid = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+    original = fresh._proof_input_entry
+    fresh._proof_input_entry = lambda commit, path: ("blob", "100644", oid) if path == ".github/ci/legacy-jobs.yml" else original(commit, path)
+    fresh._blob = lambda _oid: raw
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh, (True, "definition"), semantic_evidence=loaded)[0] is None
+
+
+@pytest.mark.parametrize("path", ["tests/test_self_mod_fence.py", "scripts/ci_scope_dependencies.py", "scripts/audit_unrun_tests.py", "scripts/workflow_run_source.py", "scripts/__init__.py", "tests/__init__.py"])
+def test_manifest_original_equal_but_unknown_reader_contract_refuses(monkeypatch, path):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    original = fresh._proof_input_entry
+    # Equal across all three frames still is not the qualified reader contract.
+    fresh._proof_input_entry = lambda commit, rel: ("blob", "100644", "2" * 40) if rel == path else original(commit, rel)
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh, (True, "definition"), semantic_evidence=loaded)[0] is None
+
+
+@pytest.mark.parametrize("kind,mode", [("blob", "120000"), ("tree", "040000"), ("blob", "160000")])
+def test_original_projection_rejects_nonregular_proof_input(monkeypatch, kind, mode):
+    fresh = MOG.ProofFreshness("acme/widgets", "read", [], [])
+    fresh._commit_tree_sha = lambda commit: "1" * 40
+    fresh._root_tree = lambda tree: {"input": (kind, mode, "2" * 40)}
+    with pytest.raises(ValueError): fresh._proof_input_entry("3" * 40, "input")

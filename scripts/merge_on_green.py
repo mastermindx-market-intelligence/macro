@@ -240,6 +240,7 @@ budget deferred DID run, correctly, so that exits 0.
 from __future__ import annotations
 
 import base64
+import hashlib
 import datetime as dt
 import io
 import json
@@ -2484,6 +2485,144 @@ def _commit_identity(payload: Any) -> tuple[str, str, tuple[str, ...]] | None:
     return sha, tree_sha, tuple(parent_shas)
 
 
+# Frozen input-reader contract for the bounded legacy-manifest optimization.
+# Unknown versions defer; these are not new required-check/release source pins.
+FENCE_MANIFEST_READER_CONTRACT = {
+    'tests/test_self_mod_fence.py': '126d2ccb403b3c28c48e7f2ed2113b01e3af04e1',
+    'scripts/check_self_mod_fence.py': 'b8968ba17dd0ade03820113aa5b7f23bb318aecf',
+    'scripts/run_ci_pack.py': '3cbed58986d571e40af59eb03464e9419e8055a5',
+    '.github/workflows/fences.yml': 'e997b23a40d5767ccb7eea203af64754e769ae5c',
+    'tests/test_fence_checkout_contract.py': '6a38496b36c1d08793c2f725d785e887c5261a9e',
+    'tests/conftest.py': 'b2d40ef0eebddcfa3b4292a0d1cd296563222cdc',
+    'scripts/ci_authority_paths.py': '1403e7dce4cbc83178f3dc515fe2404b84655a94',
+    'scripts/ci_semantic_proof.py': 'df7e5007413584d8593bfeb69dd9b479daa99147',
+    'scripts/ci_scope_dependencies.py': '4c4779479f5bb41741fe7a5db114dfe304350a8a',
+    'scripts/audit_unrun_tests.py': '9ae74b91a276733b2b1a310cb652a847ad5f7dc0',
+    'scripts/workflow_run_source.py': 'b55fe2447f6a50dc6f6d160537961e77145078cb',
+    'scripts/__init__.py': 'dafbbd0c3a49c56a2635c0d3d8918302d10689a6',
+    'tests/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
+    'tests/test_ci_canary_workflows.py': '672aed321ca9dc3617372468b280073db14ec2c6',
+    'tests/test_ship_loop_hold_wrapper.py': '1dc6c1a5d980c0b5590aa63b5ddd08dcd1dcd35d',
+    'scripts/ship_loop_hold_wrapper.py': '650fffa773105b0a7cd212326e93f74c6507bbb5',
+    '.claude/hooks/ship_loop_guard.py': '9ec39a302354a96d0bec910b0aa71a24b590ebed',
+}
+
+
+def _semantic_manifest_input_is_current(
+    repo: str, pull: dict[str, Any], runs: list[dict[str, Any]],
+    freshness: "ProofFreshness", evidence: dict[str, Any],
+) -> bool:
+    """Use only the incumbent CI ownership, never a universal fence base.
+
+    Unfiltered fences remain affirmative current-head controls. A path belongs
+    to a freshness surface only through ownership_matches/load_pr_gates; fence
+    success is not promoted into an execution-base attestation here.
+    """
+    if not isinstance(freshness, ProofFreshness) or freshness.repo != repo:
+        return False
+    owners = {gate.get("workflow") for gate in freshness.gates
+              if ownership_matches(".github/ci/legacy-jobs.yml", gate.get("patterns"))}
+    if owners != {"ci.yml"}:
+        return False
+    positions = {str(c.get("sha") or ""): i for i, c in enumerate(freshness.commits)}
+    if evidence["base_sha"] not in positions:
+        return False
+    head = str((pull.get("head") or {}).get("sha") or "")
+    number = str(pull.get("number") or "")
+    if not _is_full_sha(head) or not re.fullmatch(r"[1-9][0-9]*", number):
+        return False
+    anchors = proof_anchor_runs(runs)
+    gate = anchors.get(REQUIRED_CI_GATE)
+    if gate is None:
+        return False
+    linked = re.fullmatch(re.escape(f"https://github.com/{repo}/actions/runs/") + r"([1-9][0-9]*)(?:/job/[1-9][0-9]*)?/?", str(gate.get("details_url") or ""))
+    if linked is None or linked.group(1) != str(evidence.get("workflow_run_id") or ""):
+        return False
+    fence_names = ({REQUIRED_FENCE_ANCHOR} if REQUIRED_FENCE_ANCHOR in anchors
+                   and anchors[REQUIRED_FENCE_ANCHOR].get("conclusion") != "skipped"
+                   else set(REQUIRED_FORK_FENCE_ANCHORS))
+    required = fence_names | {REQUIRED_CI_GATE}
+    if not required <= anchors.keys():
+        return False
+    bases = set()
+    for name, check in anchors.items():
+        if check.get("head_sha") != head or check.get("status") != "completed":
+            return False
+        if name in REQUIRED_CI_ANCHORS:
+            ci_link = re.fullmatch(re.escape(f"https://github.com/{repo}/actions/runs/") + r"([1-9][0-9]*)(?:/job/[1-9][0-9]*)?/?", str(check.get("details_url") or ""))
+            if ci_link is None or ci_link.group(1) != linked.group(1):
+                return False
+        if name in required and check.get("conclusion") != "success":
+            return False
+        associations = check.get("pull_requests")
+        if not isinstance(associations, list):
+            return False
+        matched = {str((a.get("base") or {}).get("sha") or "")
+                   for a in associations if isinstance(a, dict) and str(a.get("number") or "") == number
+                   and str((a.get("head") or {}).get("sha") or "") == head}
+        if len(matched) != 1 or not all(re.fullmatch(r"[0-9a-f]{40}", b) for b in matched):
+            return False
+        bases.update(matched)
+    # A mixed/unknown independent anchor never becomes authority by borrowing CI.
+    if len(bases) != 1:
+        return False
+    old = next(iter(bases))
+    return (old in positions and positions[evidence["base_sha"]] <= positions[old]
+            and freshness._fence_manifest_inputs_unchanged(old, evidence["base_sha"], head))
+
+
+def _reconcile_original_proof_base(
+    repo: str, pull: dict[str, Any], runs: list[dict[str, Any]], token: str,
+    freshness: "ProofFreshness", verdict: tuple[bool | None, str],
+    *, semantic_evidence: Any | None = None,
+) -> tuple[bool | None, str]:
+    """A contradictory original proof identity defers; it never refreshes.
+
+    Check associations are lazy PR snapshots, not immutable execution parents.
+    The existing semantic loader authenticates its sealed CI base/subject/merge.
+    That CI fact cannot advance independent fence anchors. Until those anchors
+    have an existing qualified execution binding, refuse the disagreement rather
+    than treating a read inconsistency as permission for a branch write/new CI.
+    Already-bound admitted proofs and genuinely legacy originals stay unchanged.
+    """
+    if (verdict[0] is not True or has_admitted_subject_checks(runs)
+            or not _head_can_advertise_semantic_evidence(runs)):
+        return verdict
+    try:
+        loaded = semantic_evidence
+        if loaded is None:
+            loaded = semantic_evidence_for_head(
+                repo, str((pull.get("head") or {}).get("sha") or ""), token,
+                check_runs=runs,
+                expected_base_sha=_semantic_pr_base_sha(
+                    runs, str((pull.get("head") or {}).get("sha") or ""), pull.get("number")),
+            )
+        if getattr(loaded, "mode", "") == "legacy":
+            return verdict
+        evidence = getattr(loaded, "evidence", None)
+        if (getattr(loaded, "mode", "") != "semantic" or not isinstance(evidence, dict)
+                or evidence.get("role") != "pr_head"
+                or evidence.get("subject_head_sha") != str((pull.get("head") or {}).get("sha") or "")
+                or not re.fullmatch(r"[0-9a-f]{40}", str(evidence.get("base_sha") or ""))):
+            return None, "original CI identity cannot establish exact proof freshness"
+        advertised, _problem = freshness.exact_proof_base(pull, runs)
+        if advertised != evidence["base_sha"]:
+            gate = _semantic_gate(loaded) if isinstance(freshness, ProofFreshness) else None
+            if (gate is not None and gate.clear
+                    and _semantic_manifest_input_is_current(repo, pull, runs, freshness, evidence)):
+                answer = freshness.stale_for(pull, runs, semantic_ci_base=evidence["base_sha"])
+                return answer[0], "authenticated CI covers its manifest definition input; " + answer[1]
+            return None, (
+                "original CI execution base contradicts advertised check associations; "
+                "independent anchor execution bindings remain required"
+            )
+    except RateLimited:
+        raise
+    except (semantic_proof.SemanticProofError, RuntimeError, ValueError, TypeError, AttributeError):
+        return None, "original CI identity is unreadable; no branch update is authorized"
+    return verdict
+
+
 class ProofFreshness:
     """Per-sweep answer to: has main moved under this pull request's proof?
 
@@ -2532,6 +2671,7 @@ class ProofFreshness:
         self._root_trees: dict[str, dict[str, tuple[str, str, str]]] = {}
         self._recursive_trees: dict[str, dict[str, tuple[str, str, str]]] = {}
         self._blobs: dict[str, bytes] = {}
+        self._fence_manifest_jobs: dict[str, dict[str, Any]] = {}
         self._pr_files: dict[Any, list[str] | None] = {}
         # Exact checked head -> newest main commit already contained by that head.
         # This is a compatibility fallback for older/external check records that do
@@ -3261,8 +3401,60 @@ class ProofFreshness:
                 surface.update(ownership_matches(name, gate["patterns"]))
         return surface
 
+    def _proof_input_entry(self, commit: str, path: str) -> tuple[str, str, str]:
+        tree = self._commit_tree_sha(commit)
+        parts = path.split("/")
+        for i, part in enumerate(parts):
+            entry = self._root_tree(tree).get(part)
+            if not entry or not _is_full_sha(entry[2]):
+                raise ValueError("original proof input identity unavailable")
+            if i == len(parts) - 1:
+                if entry[0] != "blob" or entry[1] not in {"100644", "100755"}:
+                    raise ValueError("original proof input is not a regular source blob")
+                return entry
+            if entry[0] != "tree" or entry[1] != "040000":
+                raise ValueError("original proof input ancestry is not a source tree")
+            tree = entry[2]
+        raise ValueError("original proof input path unavailable")
+
+    def _fence_manifest_inputs_unchanged(self, advertised: str, sealed: str, head: str) -> bool:
+        """Preserve the existing fence reader and its whole self-mod-fence job.
+
+        test_self_mod_fence._fence_step_run selects jobs/self-mod-fence. Keep
+        its reader, renderer and producer source identical across all three
+        immutable frames before using that input projection. This does not
+        claim a new fence execution base or interpret arbitrary job log text.
+        """
+        frames = (advertised, sealed, head)
+        for path, expected_blob in FENCE_MANIFEST_READER_CONTRACT.items():
+            entries = [self._proof_input_entry(commit, path) for commit in frames]
+            if len(set(entries)) != 1 or entries[0][2] != expected_blob:
+                return False
+        import yaml
+        jobs = []
+        for commit in frames:
+            entry = self._proof_input_entry(commit, ".github/ci/legacy-jobs.yml")
+            if entry[2] in self._fence_manifest_jobs:
+                jobs.append(self._fence_manifest_jobs[entry[2]])
+                continue
+            raw = self._blob(entry[2])
+            if (len(raw) > SEMANTIC_ARTIFACT_MAX_BYTES
+                    or hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() != entry[2]):
+                return False
+            try:
+                document = yaml.safe_load(raw)
+            except yaml.YAMLError:
+                return False
+            job = (document.get("jobs") or {}).get("self-mod-fence") if isinstance(document, dict) else None
+            if not isinstance(job, dict) or not isinstance(job.get("steps"), list) or not job["steps"]:
+                return False
+            self._fence_manifest_jobs[entry[2]] = job
+            jobs.append(job)
+        return jobs[0] == jobs[1] == jobs[2]
+
     def stale_for(
-        self, pull: dict[str, Any], runs: list[dict[str, Any]]
+        self, pull: dict[str, Any], runs: list[dict[str, Any]], *,
+        semantic_ci_base: str | None = None,
     ) -> tuple[bool | None, str]:
         """Freshness verdict for one clean head.
 
@@ -3336,6 +3528,16 @@ class ProofFreshness:
                 )
             if is_skip_ci_noise(message, files):
                 continue  # data/site/hot-tape tick, not an edit
+            if semantic_ci_base is not None:
+                positions = {str(c.get("sha") or ""): i for i, c in enumerate(self.commits)}
+                if (semantic_ci_base in positions and commit["sha"] in positions
+                        and positions[commit["sha"]] >= positions[semantic_ci_base]):
+                    # Only this canonical semantic-CI definition input is covered.
+                    # Every other file (including fence definitions/source and any
+                    # newer manifest edit) retains the original classification.
+                    files = [name for name in files if name != ".github/ci/legacy-jobs.yml"]
+                    if not files:
+                        continue
             product_commits += 1
             if product_commits > MAIN_COMMIT_FILE_CAP:
                 return True, (
@@ -9574,6 +9776,7 @@ def sweep_pull(
         if anchor_verdict != "clean":
             verdict, names = anchor_verdict, anchor_names
 
+    loaded = semantic_evidence
     semantic_mode = False
     semantic_gate = None
     semantic_refusal = ""
@@ -9806,6 +10009,10 @@ def sweep_pull(
         stale, reason = freshness.stale_for(pull, runs)
     except Exception as exc:  # a broken read must never become permission to merge
         stale, reason = None, f"the tested-surface check itself failed ({exc})"
+    stale, reason = _reconcile_original_proof_base(
+        repo, pull, runs, read_token, freshness, (stale, reason),
+        semantic_evidence=loaded,
+    )
     if stale is None:
         _annotate(
             "warning",
