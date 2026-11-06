@@ -1,0 +1,2 @@
+sweep	sweep merge-on-green pull requests	2026-10-11T21:38:01.0569878Z ##[notice]PR #8786: checks are clean but the proof is stale — main touched app/**, engine/**, research/**, tests/** since the proof was computed — inside this pull request's tested surface. Merging main into the head; its fresh checks decide on a later sweep.
+sweep	sweep merge-on-green pull requests	2026-10-11T21:38:03.3970690Z ##[notice]PR #8786: checks were clean but the base had moved — merged main into the head. Its fresh checks decide the merge on a later sweep.

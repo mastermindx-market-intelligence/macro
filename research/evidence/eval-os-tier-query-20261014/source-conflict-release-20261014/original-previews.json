@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-14T12:55:20.490118+00:00",
+  "observed_main": "ead7f222ae7a2a9aab2dffee501f22012c88f2da",
+  "previews": {
+    "a1_source_fix": {
+      "source": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+      "rc": 0,
+      "tree": "d1e0ec9d0d3297dabb66e90feaa4396bd3f89b50",
+      "conflicts": []
+    },
+    "followon": {
+      "source": "f57326ca8d9521dbaa0cf99f060cca97f873dc48",
+      "rc": 1,
+      "tree": "084c03608d5e31d1cd2ac5ce850cde54fd568d83",
+      "conflicts": [
+        "CONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml"
+      ],
+      "conflicting_jobs": [
+        "flow-surface",
+        "fif-kernel-guards",
+        "biocatalyst-serving",
+        "biocatalyst-history",
+        "crypto-assistant-context",
+        "unrun-government-revenue-candidate-projection",
+        "unrun-government-revenue-grader",
+        "research-price-panel",
+        "ticker-news-qbus"
+      ]
+    }
+  }
+}
