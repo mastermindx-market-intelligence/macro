@@ -1,0 +1,17 @@
+{
+  "schema": "news.edition-visual-review.v1",
+  "news_sha256": "9b33e1ea6ec878c22689645b0a49d97595ff71a3663d70bdbeebbdae94f7a65b",
+  "observed_at": "2026-11-06T01:24:16.310460+00:00",
+  "screenshots_inspected": [
+    "edition-desktop-dark-en-20261106.png",
+    "edition-mobile-light-zh-20261106.png",
+    "edition-mobile-reader-light-zh-20261106.png"
+  ],
+  "findings": [
+    "Desktop coverage/feed/reader columns remain legible and aligned; unauthenticated live-workspace message is shown before selecting an edition report.",
+    "Mobile Chinese light feed fits the viewport with usable search/filter and Workspace controls.",
+    "Selecting a stored report opens the mobile reader with translated headline, indexed-time attribution, source link, save action and related reporting; absent summary is disclosed."
+  ],
+  "passed": true,
+  "limits": "Static cached edition; no authenticated production or live source-health proof."
+}

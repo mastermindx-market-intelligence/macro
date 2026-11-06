@@ -1,0 +1,11 @@
+{
+  "schema": "news.canonical-target-stop.v1",
+  "reason": "Canonical News output completed and passed structure/provenance/assets/fixed-point acceptance; remaining unrelated full-site generation omitted under Chairman's completion waiver",
+  "build_pid": 35178,
+  "owned_pids_signalled": [
+    35178
+  ],
+  "news_sha256": "9b33e1ea6ec878c22689645b0a49d97595ff71a3663d70bdbeebbdae94f7a65b",
+  "source_commit": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+  "automatic_sentinel_note": "Calendar and Impact are HTML dialogs, not JSON script blocks; manual observed-output acceptance is authoritative for this target"
+}

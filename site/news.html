@@ -33,9 +33,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>News Intelligence · Mastermind</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
+<link rel="stylesheet" href="theme.css">
 <style>
-
   /* ---------- shared Research-Reports chrome ---------- */
   * { box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font:14px/1.6 -apple-system,"Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px 18px 60px; }
@@ -461,10 +460,7 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
   .nd-detail .nd-section p{font-size:16px;line-height:1.75}
   .nd-detail-actions .nd-btn{min-height:44px}
 }
-
 </style>
-<link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 
 
 
@@ -493,9 +489,9 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
-
+    
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
       <svg class="brand-glyph" width="29" height="29" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
@@ -520,24 +516,24 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
       </svg>
       <span class="brand-word">MASTERMINDX</span>
     </a>
-
+    
     <div class="nav-dd">
       <a class="nav-link" href="macro.html"><span class="menu-icon menu-icon-flag menu-icon-us" aria-hidden="true"></span><span class="l-en">United States</span><span class="l-zh">美国</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="macro.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">Regime · growth · inflation · nowcast</span><span class="l-zh">市况 · 增长 · 通胀 · 实时测算</span></span></a>
         <a href="us_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · sectors · flows</span><span class="l-zh">Prophet · 板块 · 资金</span></span></a>
-
+        
         <a href="intraday_flow.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Intraday Flow Tracker</span><span class="l-zh">盘中资金流追踪</span><span class="d"><span class="l-en">Live session board — volume, tape and stance lanes · ≈15-min delayed</span><span class="l-zh">盘中实时看板 — 量能、盘面与操作分级 · 约延迟15分钟</span></span></a>
         <a href="stage_analysis.html"><span class="submenu-icon submenu-icon-stage" aria-hidden="true"></span><span class="l-en">Stage Analysis</span><span class="l-zh">阶段分析</span><span class="d"><span class="l-en">Stage 1-4 cycle · fresh breakouts · earnings tone</span><span class="l-zh">阶段1-4周期 · 新突破 · 财报语气</span></span></a>
-
+        
         <a href="winner_health.html"><span class="submenu-icon submenu-icon-leader" aria-hidden="true"></span><span class="l-en">Winner Health</span><span class="l-zh">持仓健康度</span><span class="d"><span class="l-en">Big gains near their highs · how the move is aging · what similar past runs did</span><span class="l-zh">涨幅可观且仍在高位 · 行情老化到什么程度 · 相似历史行情走过的路</span></span></a>
-
+        
         <a href="sector_central.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Sectors, themes & rotation in one read · lanes · cycle map · graded</span><span class="l-zh">板块·主题·轮动一页读 · 操作清单 · 周期图谱 · 自评分</span></span></a>
         <a href="sector_central.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now S&P 500 subsectors · T1-T4 tiers · two-way confirmed stocks · basket charts</span><span class="l-zh">S&P 500 现可入场子行业 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="strategies.html"><span class="submenu-icon submenu-icon-strategy" aria-hidden="true"></span><span class="l-en">Strategies</span><span class="l-zh">策略</span><span class="d"><span class="l-en">Tactical strategy scorecards</span><span class="l-zh">战术策略记分卡</span></span></a>
         <a href="news.html"><span class="submenu-icon submenu-icon-news" aria-hidden="true"></span><span class="l-en">News Feed</span><span class="l-zh">新闻流</span><span class="d"><span class="l-en">Macro headlines · catalysts · sentiment</span><span class="l-zh">宏观头条 · 日程 · 情绪</span></span></a>
         <a href="alerts.html"><span class="submenu-icon submenu-icon-alert" aria-hidden="true"></span><span class="l-en">Alert Center</span><span class="l-zh">警报中心</span><span class="d"><span class="l-en">Ranked & triaged alerts</span><span class="l-zh">分级分诊的警报</span></span></a>
-
+        
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="options.html"><span class="nav-sub-text"><span class="submenu-icon submenu-icon-options" aria-hidden="true"></span><span class="l-en">Options & Market Structure</span><span class="l-zh">期权与市场结构</span><span class="d"><span class="l-en">Workspace · dark pool · index regime</span><span class="l-zh">工作台 · 暗池 · 指数结构</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -554,7 +550,7 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
       <div class="nav-dd-menu" role="menu">
         <a href="china.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">A-share regime · sectors · flows</span><span class="l-zh">A股周期 · 板块 · 资金</span></span></a>
         <a href="china_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · alpha · setups</span><span class="l-zh">Prophet · 超额收益 · 买点</span></span></a>
-
+        
         <a href="sector_central_china.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Gated board · cycle map · whole-market rotation · theme baskets — one page</span><span class="l-zh">门控研判 · 周期图谱 · 全市场轮动 · 主题篮子 — 一页尽览</span></span></a>
         <a href="sector_central_china.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now 同花顺 concepts · T1-T4 tiers · two-way confirmed A-shares · basket charts</span><span class="l-zh">同花顺现可入场概念 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="china_heatmap.html"><span class="submenu-icon submenu-icon-heatmap" aria-hidden="true"></span><span class="l-en">Market Heatmap</span><span class="l-zh">市场热力图</span><span class="d"><span class="l-en">Every A-share · sector treemap · market-cap</span><span class="l-zh">全部A股 · 板块树图 · 按市值</span></span></a>
@@ -601,7 +597,7 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
       <a class="nav-link" href="intl.html"><span class="menu-icon menu-icon-intl" aria-hidden="true"></span><span class="l-en">International</span><span class="l-zh">国际</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="intl.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">JP · KR · TW · UK · EU compared</span><span class="l-zh">日 · 韩 · 台 · 英 · 欧 对比</span></span></a>
-
+        
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="japan.html"><span class="nav-sub-text"><span aria-hidden="true">🌐</span> <span class="l-en">Country Dashboards</span><span class="l-zh">国家看板</span><span class="d"><span class="l-en">Japan · Korea · Euro Area · UK · India</span><span class="l-zh">日本 · 韩国 · 欧元区 · 英国 · 印度</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -632,7 +628,7 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
         <a href="bonds.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Bonds</span><span class="l-zh">债券</span><span class="d"><span class="l-en">Curve · credit · duration compass</span><span class="l-zh">曲线 · 信用 · 久期罗盘</span></span></a>
       </div>
     </div>
-
+    
     <div class="nav-dd nav-mega-dd">
       <a class="nav-link" href="intelligence_hub.html"><span class="menu-icon menu-icon-research" aria-hidden="true"></span><span class="l-en">Research</span><span class="l-zh">研究</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu nav-mega mega-menu" role="menu">
@@ -641,9 +637,9 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
             <h2 class="section-label nav-mega-h"><span class="l-en">Core Research</span><span class="l-zh">核心研究</span></h2>
             <div class="item-grid nav-mega-item-grid">
               <a class="mega-item nm-feat" href="intelligence_hub.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 12 24 3l18 9v23l-18 10L6 35Z"/><path d="m24 9 12 7v15l-12 7-12-7V16Z"/><circle class="soft-fill" cx="24" cy="24" r="4"/><path class="accent" d="M24 20V9M28 24h8M24 28v10M20 24h-8M21 21l-6-5M27 21l6-5M21 27l-6 5M27 27l6 5"/><circle cx="24" cy="9" r="1.5"/><circle cx="36" cy="24" r="1.5"/><circle cx="24" cy="38" r="1.5"/><circle cx="12" cy="24" r="1.5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Intelligence Hub</span><span class="l-zh">情报中心</span></span><span class="item-desc d"><span class="l-en">Your complete market command center</span><span class="l-zh">你的完整市场指挥中心</span></span></span></a>
-
+              
               <a class="mega-item nm-feat" href="watchlist.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M25 7a17 17 0 0 1 16 16"/><circle cx="21" cy="26" r="14"/><circle class="ghost" cx="21" cy="26" r="6"/><path class="accent" d="M21 12a14 14 0 0 1 12.1 7L21 26Z"/><path d="M21 12v14l12.1-7"/><circle class="soft-fill" cx="21" cy="26" r="3.2"/><path class="accent" d="M39 41v-9M44 41v-15"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Portfolio</span><span class="l-zh">Mastermind 组合</span></span><span class="item-desc d"><span class="l-en">Your holdings with tonight’s signals</span><span class="l-zh">你的持仓与今晚信号</span></span></span></a>
-
+              
               <a class="mega-item nm-feat" href="https://bot.mastermind-x.com" target="_blank" rel="noopener"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M17 11V6M24 11V6M31 11V6M17 37v5M24 37v5M31 37v5M11 17H6M11 24H6M11 31H6M37 17h5M37 24h5M37 31h5"/><rect x="11" y="11" width="26" height="26" rx="5"/><path class="accent" d="m15 29 4-4 3.5 2.5 3.5-5.5"/><circle class="soft-fill" cx="26" cy="22" r="2.4"/><path class="ghost" d="m28 20.5 6-5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Bot</span><span class="l-zh">Mastermind 交易机器人</span><span class="nm-tier">PRO</span></span><span class="item-desc d"><span class="l-en">The AI’s own paper account — every trade explained</span><span class="l-zh">AI 自己的模拟账户，每笔交易都附理由</span></span></span></a>
               <a class="mega-item nm-feat" href="reports.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M13 7h22l6 6v28H13z"/><path d="M9 4h22l6 6v28H9z"/><path d="M31 4v7h6"/><path class="accent" d="M15 29h16M15 33h12M15 16h16"/><path d="m15 25 4-4 4 2 6-7 3 3"/><circle class="soft-fill" cx="29" cy="16" r="2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Reports</span><span class="l-zh">研究报告</span></span><span class="item-desc d"><span class="l-en">Deep dives and market calls</span><span class="l-zh">深度研究与市场判断</span></span></span></a>
               <a class="mega-item nm-feat" href="research_vault.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="m7 14 17-9 17 9v23l-17 8-17-8Z"/><path d="m10 16 14-7 14 7v19l-14 7-14-7Z"/><path d="M10 16l14 7 14-7M24 23v19"/><circle class="soft-fill" cx="24" cy="27" r="6"/><path class="accent" d="M24 24v6M21 27h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Vault</span><span class="l-zh">研报库</span></span><span class="item-desc d"><span class="l-en">Search every published research note</span><span class="l-zh">搜索所有已发布研究</span></span></span></a>
@@ -652,7 +648,7 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
               <a class="mega-item nm-feat" href="neural_web.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 24h36M24 6v36"/><circle class="soft-fill" cx="24" cy="24" r="5"/><circle cx="11" cy="12" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="9" cy="34" r="3"/><circle cx="39" cy="34" r="3"/><path class="accent" d="M20 21 13 14M28 21l7-7M20 27l-8 5M28 27l8 5M14 12h20M11 15l-2 16M37 15l2 16M12 34h24"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Neural Web</span><span class="l-zh">智脑</span></span><span class="item-desc d"><span class="l-en">See how every signal votes</span><span class="l-zh">查看每个信号如何投票</span></span></span></a>
               <a class="mega-item nm-feat" href="market_memory.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 10h32v28H8z"/><path d="M7 8h14c5 0 8 3 8 8v24c0-5-3-8-8-8H7zM41 8H27v32c0-5 3-8 8-8h6z"/><path class="accent" d="M13 16h9M13 21h7M33 15h4M33 20h4"/><circle class="soft-fill" cx="27" cy="29" r="4"/><path d="M24 29h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></span><span class="item-desc d"><span class="l-en">Put today beside comparable episodes</span><span class="l-zh">将今天与可比历史片段并排</span></span></span></a>
               <a class="mega-item nm-feat" href="reference.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h28v26H10z"/><path d="M7 12h28a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3Z"/><path class="accent" d="M16 12V8h12v4"/><path d="M11 22h18M11 28h13"/><circle class="soft-fill" cx="33" cy="28" r="3"/><path class="accent" d="M11 34h9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span></span><span class="item-desc d"><span class="l-en">Look up any indicator or term</span><span class="l-zh">查询任意指标与术语</span></span></span></a>
-
+              
               <a class="mega-item nm-feat" href="am_edition.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 32h36M9 26h30"/><path class="accent" d="M24 22V8M24 8l-7 7M24 8l7 7"/><circle class="soft-fill" cx="24" cy="28" r="6"/><path d="M14 32v3M34 32v3M9 35v3M39 35v3"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span></span><span class="item-desc d"><span class="l-en">Tape, session clock, regime and watch — before the open</span><span class="l-zh">开盘前 — 盘面、交易时段、周期与观察</span></span></span></a>
             </div>
           </section>
@@ -662,6 +658,7 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
               <a class="mega-item nav-mega-item" href="foresight.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M4 24h40M24 4v40"/><path d="M7 25s7-11 17-11 17 11 17 11-7 11-17 11S7 25 7 25Z"/><circle class="soft-fill" cx="24" cy="25" r="5"/><path class="accent" d="M31 12 38 5M34 16h9M13 14 8 9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Foresight</span><span class="l-zh">前瞻</span></span><span class="item-desc d"><span class="l-en">Themes before markets price them</span><span class="l-zh">市场定价前的主题</span></span></span></a>
               <a class="mega-item nav-mega-item" href="state_of_themes.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 11h30v23H8z"/><rect x="6" y="8" width="30" height="23" rx="2"/><rect x="12" y="15" width="30" height="23" rx="2"/><path class="accent" d="m17 31 5-6 5 3 8-9M31 19h4v4"/><circle class="soft-fill" cx="22" cy="25" r="2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Theme Tracker</span><span class="l-zh">主题追踪</span></span><span class="item-desc d"><span class="l-en">What’s strengthening and fading now</span><span class="l-zh">正在增强与减弱的主题</span></span></span></a>
               <a class="mega-item nav-mega-item" href="theme_tree.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M24 4v8M16 12h16M18 26h12M14 38h20"/><circle class="soft-fill" cx="24" cy="14" r="3"/><circle cx="14" cy="22" r="2.4"/><circle cx="34" cy="22" r="2.4"/><circle cx="10" cy="32" r="2.4"/><circle cx="38" cy="32" r="2.4"/><path class="accent" d="M22 17l-8 5M26 17l8 5M12 28l-2 4M36 28l2 4"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Theme Map</span><span class="l-zh">主题地图</span></span><span class="item-desc d"><span class="l-en">Every theme we track, category to micro-theme</span><span class="l-zh">所有追踪主题：从大类到细分</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="gmi.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 40h32M8 8v32"/><rect x="12" y="12" width="10" height="7" rx="1.5"/><rect x="26" y="12" width="10" height="7" rx="1.5"/><rect x="19" y="24" width="10" height="7" rx="1.5"/><path d="M17 19v5M31 19v5M24 24v-1"/><circle class="soft-fill" cx="24" cy="36" r="3"/><path class="accent" d="M24 31v2M14 36h7M27 36h7"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">GMI Explorer</span><span class="l-zh">GMI 主题浏览</span></span><span class="item-desc d"><span class="l-en">What each company does, theme to micro-theme, with sources</span><span class="l-zh">每家公司做什么：主题到细分，附来源</span></span></span></a>
               <a class="mega-item nav-mega-item" href="radar.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 39h36M9 7v32"/><path d="M10 32c7-1 10-6 15-8s8-1 13-10"/><path class="accent" d="M10 18c7 1 10 6 15 8s9 2 13 10"/><circle class="soft-fill" cx="25" cy="24" r="2.5"/><path d="M36 12h4v4M36 36h4v-4"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Divergence Radar</span><span class="l-zh">背离雷达</span></span><span class="item-desc d"><span class="l-en">Where price and reality split</span><span class="l-zh">价格与现实的分歧</span></span></span></a>
               <a class="mega-item nav-mega-item" href="stock_seasonality.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h32v28H10z"/><rect x="6" y="11" width="32" height="28" rx="3"/><path d="M6 19h32M15 7v8M29 7v8"/><path class="accent" d="m12 32 5-6 5 3 6-9 4 5"/><circle class="soft-fill" cx="28" cy="20" r="2.4"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Stock Seasonality</span><span class="l-zh">个股季节性</span></span><span class="item-desc d"><span class="l-en">Which calendar windows actually repeat</span><span class="l-zh">哪些日历窗口真的会重演</span></span></span></a>
               <a class="mega-item nav-mega-item" href="confluence_screener.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="6" y="8" width="36" height="28" rx="3"/><path class="ghost" d="M11 13h26v18H11z"/><path class="accent" d="m12 27 6-7 5 4 7-9 6 4"/><circle class="soft-fill" cx="30" cy="15" r="2.4"/><path d="M18 41h12M24 36v5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Signal Board</span><span class="l-zh">信号看板</span></span><span class="item-desc d"><span class="l-en">Today’s strongest confirmed setups</span><span class="l-zh">今日最强确认信号</span></span></span></a>
@@ -699,6 +696,7 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
               <a class="nav-mega-item" href="sector_cycles_china.html"><span class="nm-ic research-icon research-icon-sector-cycles" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">China Sector Cycles</span><span class="l-zh">中国行业周期</span></span><span class="d"><span class="l-en">Read China sector rotation</span><span class="l-zh">查看中国行业轮动</span></span></span></a>
               <a class="nav-mega-item" href="cycle.html"><span class="nm-ic research-icon research-icon-cycle-intelligence" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">Cycle Intelligence</span><span class="l-zh">周期情报</span></span><span class="d"><span class="l-en">Understand the full cycle</span><span class="l-zh">理解完整经济周期</span></span></span></a>
               <a class="nav-mega-item" href="macro_context.html"><span class="nm-ic research-icon research-icon-macro-weather" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">Macro Weather</span><span class="l-zh">宏观气象</span></span><span class="d"><span class="l-en">Read today’s macro regime</span><span class="l-zh">读取当前宏观环境</span></span></span></a>
+              <a class="nav-mega-item" href="expectation_surface.html"><span class="nm-ic research-icon research-icon-expectation-surface" aria-hidden="true"></span><span class="nm-tx"><span class="nm-t"><span class="l-en">Expectation Surface</span><span class="l-zh">预期曲面</span></span><span class="d"><span class="l-en">How consensus estimates moved</span><span class="l-zh">一致预期如何变动</span></span></span></a>
             </div>
           </div>
           <a class="rail-link nav-rail-item" href="intelligence_hub.html"><span><span class="l-en">Browse all research</span><span class="l-zh">浏览全部研究</span></span><span class="rail-arrow nav-drill-arrow" aria-hidden="true">→</span></a>
@@ -710,11 +708,11 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
       </div>
     </div>
   </div>
-
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+  
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -723,7 +721,7 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
     <div class="nav-sugg"></div>
   </div>
   <div class="nav-ctrls">
-
+    
     <a class="ai-brief-link terminal-link" href="https://app.mastermind-x.com" target="_blank" rel="noopener"><span class="product-icon product-icon-terminal" aria-hidden="true"></span><span class="l-en">Terminal</span><span class="l-zh">终端</span></a>
     <button class="theme-switch" aria-label="Toggle dark / light mode">
       <span class="ic sun">☀️</span><span class="ic moon">🌙</span><span class="knob"></span>
@@ -735,6 +733,8 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
     </div>
   </div>
 </nav>
+
+
 
 
 <main class="news-desk" id="newsDesk" data-density="compact">
@@ -756,25 +756,25 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
         <div class="nd-categories">
           <button type="button" class="nd-category" data-category="all" aria-pressed="true"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18"/>
 </svg><span class="l-en">All coverage</span><span class="l-zh">全部报道</span></button>
-
+        
           <button type="button" class="nd-category" data-category="markets" aria-pressed="false"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h16M7 14l4-4 4 2 5-7"/>
 </svg><span class="l-en">Markets</span><span class="l-zh">市场</span></button>
-
+        
           <button type="button" class="nd-category" data-category="economy" aria-pressed="false"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h16M7 14l4-4 4 2 5-7"/>
 </svg><span class="l-en">Economy</span><span class="l-zh">经济</span></button>
-
+        
           <button type="button" class="nd-category" data-category="central_banks" aria-pressed="false"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 8 9-5 9 5H3m2 3v7m7-7v7m7-7v7M3 21h18"/>
 </svg><span class="l-en">Central banks</span><span class="l-zh">央行</span></button>
-
+        
           <button type="button" class="nd-category" data-category="companies" aria-pressed="false"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V3h14v18M9 7h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1M3 21h18"/>
 </svg><span class="l-en">Companies</span><span class="l-zh">公司</span></button>
-
+        
           <button type="button" class="nd-category" data-category="geopolitics" aria-pressed="false"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18"/>
 </svg><span class="l-en">Geopolitics</span><span class="l-zh">地缘政治</span></button>
-
+        
           <button type="button" class="nd-category" data-category="energy" aria-pressed="false"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-8 12h6l-1 8 9-13h-7z"/>
 </svg><span class="l-en">Energy & materials</span><span class="l-zh">能源与原料</span></button>
-
+        
           <button type="button" class="nd-category" data-category="technology" aria-pressed="false"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4m6-4v4m-6 12v4m6-4v4M2 9h4m-4 6h4m12-6h4m-4 6h4"/>
 </svg><span class="l-en">Technology</span><span class="l-zh">科技</span></button>
         </div>
@@ -837,67 +837,67 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
       </div>
       <div class="nd-feed-scroll" id="ndFeedPanel" role="tabpanel" aria-labelledby="ndTabLatest" tabindex="0">
         <ol class="nd-feed" id="ndFeed">
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMiwwFBVV95cUxPNjB0SmpGMldtSUxlMXY3eWtUX0pBeTluNVRXUVRmVjJqOUxMUG9QcDBsZFBLcU1aRzRLaEh5N2VOTkRJZDh0RENUMFZqd1JITGFpOWo0UWtQejJkQ2RKMS10S1N5X09jZVNzX0c4dkMzVDlONDJHMlREZXBTNGtDVXFQM2NHNElrLWlnNUEtN2c4RHJuUHJjWEUwaGVBQ0NqYURxVHBrbzhhaDV6WjBxeEZqcEhEbFc3UVc5SmtDdU5mOGM?oc=5" target="_blank" rel="noopener noreferrer">India&#39;s HDFC Bank Q2 profit rises 4.7%; deputy MD Bharucha to step down</a><div class="nd-row-meta">Reuters</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/10/17/berkshire-rally-to-highest-since-buffett-announcement.html" target="_blank" rel="noopener noreferrer">Berkshire shares buck market sell-off, rally to highest since Buffett said he would step down as CEO</a><div class="nd-row-meta">cnbc.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/10/17/bending-spoons-wants-to-revive-software-castoffs-berkshire-investing.html" target="_blank" rel="noopener noreferrer">Software’s new consolidator gets big vote of confidence from Berkshire</a><div class="nd-row-meta">cnbc.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/10/17/dead-money-for-a-decade-hedge-fund-approach-that-may-trump-bonds.html" target="_blank" rel="noopener noreferrer">&#39;Dead money’ for a decade: Why this hedge fund approach may deliver an advantage over bonds</a><div class="nd-row-meta">cnbc.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.bloomberg.com/news/articles/2026-10-17/coreweave-woes-risk-shutting-down-ai-junk-market-credit-weekly" target="_blank" rel="noopener noreferrer">CoreWeave Woes Risk Shutting Down AI Junk Market: Credit Weekly</a><div class="nd-row-meta">bloomberg.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/10/17/timberland-investing-returns-risk.html" target="_blank" rel="noopener noreferrer">Investors are buying up vast tracts of timberland across U.S. in one of market&#39;s longest-term bets</a><div class="nd-row-meta">cnbc.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.bloomberg.com/news/videos/2026-10-17/can-the-fed-fight-inflation-without-hurting-farmers-video" target="_blank" rel="noopener noreferrer">Can the Fed Fight Inflation Without Hurting Farmers?</a><div class="nd-row-meta">bloomberg.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.bloomberg.com/news/articles/2026-10-17/oil-trader-yaoyao-liu-who-made-billions-for-vitol-is-leaving" target="_blank" rel="noopener noreferrer">Oil Trader Yaoyao Liu Who Made Billions for Vitol Is Leaving</a><div class="nd-row-meta">bloomberg.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMixAFBVV95cUxQRW4tSGppV2U0ZWtvaXBsQmlyaDVVLVFCSmJNMWdmMHpod0FWd25kUXRNQzFvZXJPTmhoQUNvMlFrQzI3NjBQVG9McWFPRHdUODhMbVItOGg4S0N3ZmJ4R2psZVd1aWFZM2M0aEY4R3VaYnFZWUxhOFZiRXAxTnc5UG9hMm1ERGpKbURkX3BWYzQ5UWl3THBFTDhWUWR0SVhUSWJsekpMZjM4OUZRQl9BVmY2djVKRENDSldCSUpOWmdvbHVK?oc=5" target="_blank" rel="noopener noreferrer">Investors temper Anthropic IPO valuation expectations over revenue growth slowdown, sources say</a><div class="nd-row-meta">Reuters</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.marketwatch.com/story/fed-interest-rate-decision-this-month-is-a-closer-call-than-markets-think-f96ccf95?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer">Fed interest-rate decision this month is a closer call than markets think</a><div class="nd-row-meta">marketwatch.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMixwFBVV95cUxNbXNKelJOV3BhOFlRUmVnYWwyV0FXSkNpa0VNS2g0ek01V1BhaUNxX3FBclJXUUNKRENoU2d5cHNNazZIMWZ2TXB4aVZIcHNXaWNFbDkxYXpvdlhwakgxekdDd0ZWRDlJMW9zeE9FU3kwcWRPMjJFVmVfNnJ3OGNxV3JaSU5xTHVVQnRTaEdfUGpzVVY0a216eGlrZFBsYmxSQThnSlM5alJvd3hKMU1vY2N0dDFUNGdoTTdBd25kUllEMG45RFhZ?oc=5" target="_blank" rel="noopener noreferrer">IMF members call for more support amid war shocks, &#39;advanced intelligence&#39; risks</a><div class="nd-row-meta">Reuters</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMivgFBVV95cUxPRWlKeXYxOVAxQU1rRzNoVldQdEFOYkF0YlpINXNvb3hwdkhjcmNTZmoyUVlsclZjellwalhIelQtMnhSc1U2TGJzOWNrZDB4NFl6T29fQzY0UnBnS0steEcyUnByMnpLUjhfQXBCQ1YwZUxyTFNXZm14TVNoVkR5RkN4Ym1QSDYxZ2xxelA2YTNyWWdlT29oUjBEay02T0YxeGNVRGZoQktjTURxTWFramYwVmZyR2lCQUNVcTFB?oc=5" target="_blank" rel="noopener noreferrer">India&#39;s Axis Bank quarterly profit rises 37.6%, but misses estimates on higher costs</a><div class="nd-row-meta">Reuters</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-16</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMiqwFBVV95cUxQOUlmUW5qNmk5TEh5ZWRtckw4Z2dwMkpiSXdOMWlMN2lZeTd1Q040VFhPaGFYLTBkNXQtWEE2dVdiNUlfT0xYWWdmdjVvWDc2bEFfNTVQMnA4LWVYbjRIMU83dXA1MHFVcnZhYW5YazNhV2RIYlNGR0JseFdPZVpMMEJVTXRxVldNUTNLT3Uzb1dLdXl1NU80bHhUYXR6RnZ4SmllbDJRTnZPejA?oc=5" target="_blank" rel="noopener noreferrer">S&amp;P 500 Steady as Warsh Boosts Expectations of Rate Hold</a><div class="nd-row-meta">Bloomberg.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMiyAFBVV95cUxOUnZSNzJZS2NlWi1Hckg0djB1aGQ3bEkzVTB4ejBTQWRoQ0JTOWJBa1U4Z1EyWFZSa0ZmSDlIcmx5MFEwQmhCeFE2MEs4ZEdMSThwczNORG03QTY4MU9xR3pXWmRtNmdMc3BRZ0F4U1FudlhIdXpwVHVQUXUxMU44NHhhRVZyTmNDVk1MLXBsOHBIV2Q3VU9oTE1sa2JET0c5b3p5ZUJHeTBrQlJKaTRnS284ZGVhUUlwekJKalp5dmsyRmdzU25QRQ?oc=5" target="_blank" rel="noopener noreferrer">S&amp;P 500, Nasdaq, Leaders Break Support; What To Do Now</a><div class="nd-row-meta">Investor&#39;s Business Daily</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMinwFBVV95cUxPczNOYmhWWkxnTEZnZzNVVXp5N1VmdFJjSThQaUh4cmJXMDk1cHZxaW5IcjJMSVQ1U01RMmN6TzF1NzNZM2F2ekx2SV8xX1FPaXJoRVNrMlVHTHhpZ3RIU1d1alp6aEoteWZxRnp5ZEw3R2F6MGRGQXhMUHRyc1YxZ2RDZlhCcTlJOUk4cHF4a0tVWlhRSnQ2elB0WE4yMDA?oc=5" target="_blank" rel="noopener noreferrer">Decart&#39;s suitor, Big Yellow Group&#39;s challengers, and a $100B fund</a><div class="nd-row-meta">Axios</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.axios.com/2026/10/17/elon-musk-doge-walter-isaacson-podcast" target="_blank" rel="noopener noreferrer">Exclusive: Musk tells Isaacson &#34;AI and robots&#34; will need to fix deficit</a><div class="nd-row-meta">axios.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.marketwatch.com/story/it-was-another-great-week-for-the-average-stock-as-market-leadership-shifts-away-from-tech-8e8516da?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer">It was another great week for the average stock as market leadership shifts away from tech</a><div class="nd-row-meta">marketwatch.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMixgFBVV95cUxNLXJEWG8wOXg3aG1nZ1hFNGpoMFljMFdnUTFIOGY3QUk5YUlMeHUtMnBrY2NRWGIyLXdjcU1halJjd3U4MWNDN1pzUmZ4UGVSNVVXUkdzNmNha2RWcUZkMU1iSloxVWJhaDJORm81dDVzTFNsZWFsMVVqcllmOS1iR3RKeW9wSzNpNEprTTduNUJLVE0wZF9IZV93MlBIMEhUektZMWV3NTVDSEpndkV3UmFiY0ViNnFDcjFJWUFyNEszQl81UWc?oc=5" target="_blank" rel="noopener noreferrer">NASDAQ Index, SP500, Dow Jones Forecasts – NASDAQ Retreats As CoreWeave Dives 14%</a><div class="nd-row-meta">FXEmpire</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-16</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/10/16/tesla-spacex-merger-odds-rise-on-kalshi.html" target="_blank" rel="noopener noreferrer">Prediction market odds on Tesla-SpaceX merger are above 50% for early 2027</a><div class="nd-row-meta">CNBC - Stock Blog</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://seekingalpha.com/news/4654044-sa-asks-how-important-is-the-new-roadster-to-teslas-future?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer">SA Asks: How important is the new Roadster to Tesla&#39;s future?</a><div class="nd-row-meta">Seeking Alpha - Market Currents</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-18</span></div><div class="nd-row-body"><a class="nd-title" href="https://seekingalpha.com/news/4654046-new-england-faces-record-high-heating-oil-costs-this-winter?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer">New England faces record-high heating oil costs this winter</a><div class="nd-row-meta">Seeking Alpha - Market Currents</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-16</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/10/15/tesla-roadster-reveal-what-to-know-about-the-delayed-ev.html" target="_blank" rel="noopener noreferrer">Tesla unveils long-delayed Roadster developed with SpaceX, fueling merger speculation</a><div class="nd-row-meta">CNBC - Tech</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-15</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/10/15/coreweave-credit-default-swaps-hit-distress-levels-as-investors-sour-on-ai-debt.html" target="_blank" rel="noopener noreferrer">CoreWeave credit default swaps hit distress levels as investors sour on AI debt</a><div class="nd-row-meta">CNBC - Investing</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://seekingalpha.com/news/4654043-bulls-vs-bears-coreweave-canary-ai-coalmine?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer">Bulls vs. Bears: Is CoreWeave the canary in AI coalmine?</a><div class="nd-row-meta">Seeking Alpha - Market Currents</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-18</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.fool.com/investing/2026/10/18/will-hersheys-halloween-week-earnings-trick-or-tre/?source=iedfolrf0000001" target="_blank" rel="noopener noreferrer">Will Hershey Halloween Week Earnings Trick or Treat Investors ? </a><div class="nd-row-meta">fool.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://seekingalpha.com/news/4654042-musk-says-should-have-focused-ai-little-sooner?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer">Elon Musk says he should have “focused on AI a little sooner:” Axios</a><div class="nd-row-meta">Seeking Alpha - Market Currents</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://knpr.org/npr/2026-10-17/zelenskyy-urges-support-for-new-us-sanctions-on-russia-after-trump-puts-them-on-hold" target="_blank" rel="noopener noreferrer">Zelenskyy urges support for new US sanctions on Russia after Trump puts them on hold</a><div class="nd-row-meta">knpr.org</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-15</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/investingclub/2026/10/15/bny-stock-pops-on-strong-earnings-showing-exactly-why-we-like-this-bank-in-this-market.html" target="_blank" rel="noopener noreferrer">BNY stock pops on strong earnings — showing exactly why we like this bank in this market</a><div class="nd-row-meta">CNBC - Markets</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-18</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.fool.com/investing/2026/10/17/fed-chair-jerome-powell-6-word-warning-echoes-loud-should-rightly-terrify-wall-street/" target="_blank" rel="noopener noreferrer">Former Fed Chair Jerome Powell 6 - Word Warning Echoes Louder Than Ever -- and It Should Rightly Terrify Wall Street</a><div class="nd-row-meta">fool.com</div></div></li>
-
-          <li class="nd-row"><div class="nd-row-time"><span>2026-10-17</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.marketwatch.com/story/i-earn-110-000-a-year-i-lost-my-home-in-the-great-recession-im-renting-in-my-50s-why-is-that-judged-as-failure-d1371d67?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer">‘Some people did everything right’: I lost my home in the Great Recession. I rent in my 50s. Why is that judged as failure?</a><div class="nd-row-meta">MarketWatch - Top Stories</div></div></li>
-
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/11/05/rheinmetall-stock-outlook-sales-germany.html" target="_blank" rel="noopener noreferrer">Rheinmetall shares plunge 17% after outlook cut as military contracts stall</a><div class="nd-row-meta">cnbc.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.bloomberg.com/news/videos/2026-11-05/rheinmetall-cuts-2026-sales-guidance-shares-plunge-video" target="_blank" rel="noopener noreferrer">Rheinmetall Cuts 2026 Sales Guidance, Shares Plunge</a><div class="nd-row-meta">bloomberg.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMiqwFBVV95cUxNbzRkcVBPNWdGd05mYXRDNXRxOFJtbDZoQzk3N1l4Q19ScC1oeWFJWmlKYlNHRzBwRTFQREZsanB1TjUwSkZodTh5U1N2aktDOTU3cEVBMk1Ubllodk9NVXlCNkc3cGZYbUFwNk13LW5hU084YWlqdWZyX0NvdTBSZWlwZHNWdVJOMGstbkVpVDVoLXd6UFFPTS1za2gyVUFtVjZBTTRraDZBbU0?oc=5" target="_blank" rel="noopener noreferrer">Sony Q2 profit jumps on &#39;Spider-Man&#39; and PlayStation boost</a><div class="nd-row-meta">Reuters</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/11/04/snap-q3-earnings-report-2026.html" target="_blank" rel="noopener noreferrer">Snap shares fall over 10% on third-quarter revenue miss</a><div class="nd-row-meta">cnbc.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.bloomberg.com/news/articles/2026-11-05/european-stocks-hit-fresh-record-as-ai-unwind-boosts-region" target="_blank" rel="noopener noreferrer">European Stocks Hit Fresh Record as AI Unwind Boosts Region</a><div class="nd-row-meta">bloomberg.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.bloomberg.com/news/videos/2026-11-05/insight-with-haslinda-amin-11-5-2026-video" target="_blank" rel="noopener noreferrer">China Stocks Surge As Blue Wave Sinks Korea&#39;s Heavyweights</a><div class="nd-row-meta">bloomberg.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.bloomberg.com/news/videos/2026-11-05/yardeni-yields-attractive-at-5-nasdaq-to-outperform-video" target="_blank" rel="noopener noreferrer">Yardeni: Yields Attractive at 5%; Nasdaq to Outperform</a><div class="nd-row-meta">bloomberg.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMiwwFBVV95cUxOUC1heWwydGNUd0wzYWtNUXViUFMta2hyYVhFMm1pSV9oSi1lUGxxVEw1alpQYm02MUh1bU40U2VkNWNOYTZVS1BHUGRhN3Y0Z1FZODNaM2NtT0NLWW1abmxRQ0w4LVhkUzVHTHBnQmhYOVBRODhCRXpMMmpndVBsdm0tVG45NXd1c0h5YTlwSjU2bTJvNGEtdWxNT0NOTWNXa0lXN3NFakZTeUN3cWl2Mks4V3hhcWRrb18tU0NuTjJHRjQ?oc=5" target="_blank" rel="noopener noreferrer">China&#39;s November diesel exports to ease amid thin domestic stocks, sources say</a><div class="nd-row-meta">Reuters</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMirwFBVV95cUxQdHllX1NRUnhtUFNpX3FES2xxMF93ZVJTdkhEelhpSXR6RmViQ2ZLc3Z1TXpKRjBNMjdrbWZZYmlSVGdWd2MxSUdsaHdCTmUzckE1M09ScmVsLWhuTThTa190TVlFMWpwbC1jcTlobmxjMG9SOVV0N3hHQUl3dDUzdmR2ZFhjQkFFRVRtOEhSdzVJazQ0aF9mdnhtY0h5ZDBVQUhOc0hkS3pJejN6Ui1F?oc=5" target="_blank" rel="noopener noreferrer">China&#39;s cleantech stocks jump as investors bet on US policy shift</a><div class="nd-row-meta">Reuters</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/11/05/rheinmetall-stock-outlook-sales-germany.html" target="_blank" rel="noopener noreferrer">Rheinmetall shares plunge 17% after outlook cut as military contracts stall</a><div class="nd-row-meta">CNBC - Stock Blog</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMiqAFBVV95cUxPbUpNUkI0ZHREekVoS1Nyd3ZaRjhhS3Q0aldCbUVjRkdld0FYcGVwRHVlZHNaNE9IZmlWY3ZpR3FWNTB4dzBweHUyeXE4WDBVWFJZSERqQjRwNnllUlFnUnhvTmdIRjhPMXpzRUtuNHBFWklBU0FDNUJUM3pnZU9sWmE5eWJxbHdmVEgyaHB4RXdSYjQ5VFM5R0lhZWZIN01PN2JDYWF3djI?oc=5" target="_blank" rel="noopener noreferrer">Kenya&#39;s Safaricom posts higher first-half profit as Ethiopia losses halve</a><div class="nd-row-meta">Reuters</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/11/05/semiconductor-china-korea-talents-rivalry.html" target="_blank" rel="noopener noreferrer">Inside the chip talent war: Trade secrets and rising Chinese rivals</a><div class="nd-row-meta">cnbc.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/11/04/trump-federal-reserve-lisa-cook-hearing.html" target="_blank" rel="noopener noreferrer">White House panel delays hearing on Fed&#39;s Lisa Cook to Dec. 14</a><div class="nd-row-meta">cnbc.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://seekingalpha.com/news/4666308-canadian-natural-resources-reports-higher-q3-profit-maintains-2026-production-outlook?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer">Canadian Natural Resources reports higher Q3 profit, maintains 2026 production outlook</a><div class="nd-row-meta">Seeking Alpha - Market Currents</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMi4AFBVV95cUxNQmliVFRWX3pISnI2UzBXQlE0bUhCVExKXzhqZkNWTXY0emxpN2RHYWpqTklDR0x2Mk4talloWE5vSmtZcE9VTlUzVmFhS3ZYZUlpN2psY2lOWGNRV1huaUx5VWtpa29lVGt1ZWFiWU12VzIxamE4cHItM3E4SVAxb2QyZE4wTm8xV0k1RGZDdmhVU0VaLTVsQk9Sd3dnczlpa1JRV2dScVNwOGZpOENqdWRuZi15XzRYaWEyNFFndmFZRHJpNWZYazdMb05PdjJuMEJINS1PRlhESl82VGJFUQ?oc=5" target="_blank" rel="noopener noreferrer">Dow Jones Futures Rise, Techs Fall; Apple, Microsoft, Amazon Flash Buy Signals In Postelection Rally</a><div class="nd-row-meta">Investor&#39;s Business Daily</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-04</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMiiwFBVV95cUxPZFI3cG5nLUlPNk9RSEQ5U1JlMTJiYlBSNnotOWR6a1NuWTR0eEFITjdHb0dXeEtSSHR3MlhqaGVIUjU0em9RdTYtTldsWWxNQmVkQU5WOW1TR3hrMFBBUmRDZVkxaUxZLUxJdkUtM3JqdXM2bUtGbUFZZDFvZ20zekFqbnBaZWtJWENZ?oc=5" target="_blank" rel="noopener noreferrer">Why Stanley Black &amp; Decker Is Today’s Top S&amp;P 500 Stock</a><div class="nd-row-meta">Barron&#39;s</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.marketwatch.com/story/dow-scores-its-best-day-in-18-months-in-a-broad-relief-rally-after-democrats-sweep-to-power-in-congress-d7348fc0?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer">Dow scores its best day in 18 months in a broad relief rally after Democrats sweep to power in Congress</a><div class="nd-row-meta">marketwatch.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.marketwatch.com/story/most-investors-are-blind-to-the-possibility-of-a-market-crash-here-is-the-five-part-strategy-to-survive-one-a1762911?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer">Most investors are blind to the possibility of a market crash. Here is the five-part strategy to survive one.</a><div class="nd-row-meta">marketwatch.com</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMibEFVX3lxTE9qczRQVi13NXByT0JZME1tMXlGZ21Bb3Jqb3lRRTFUSXJVMVVJNXg4aDdEUHpSYmRLT2lVU1hEMXN2aVVzeTNld242eGN2c3JrMlJidjBsTTNIUmxidVZ1Rk5wS0RXb2lWajVVeg?oc=5" target="_blank" rel="noopener noreferrer">Asian Markets Rise as South Korea Kospi Slides on Chip Selloff</a><div class="nd-row-meta">Demokratis.co.id</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5pYktNc1JSTUdXaEhqUkxvZ3o2REUyeHV1SGh0am95NTg0dVFsSHBfc1FDZDZocXhFd292a1padWFaTGJYSTd0WXh4RjhNTGw4ZXdXWjFUcURfTVRZaE5VU0lxUEl2a3A5cDBUdFo0NE4zTldsWmd6b1MxV0ZmYVE?oc=5" target="_blank" rel="noopener noreferrer">Exclusive: Meta buys AI startup, joins race to own coding in show of outsized ambition</a><div class="nd-row-meta">Axios</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://seekingalpha.com/news/4666305-power-integrations-targets-doubling-sam-by-2031-as-it-guides-q4-revenue-to-118m-126m?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer">Power Integrations targets doubling SAM by 2031 as it guides Q4 revenue to $118M-$126M</a><div class="nd-row-meta">Seeking Alpha - Market Currents</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-03</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/11/03/ferrari-race-earnings-q3-2026.html" target="_blank" rel="noopener noreferrer">Ferrari raises 2026 guidance after Q3 earnings beat</a><div class="nd-row-meta">CNBC - Markets</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-04</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/11/04/qualcomm-qcom-earnings-report-q4-2026.html" target="_blank" rel="noopener noreferrer">Qualcomm stock drops 7% on weak earnings forecast as memory shortage weighs on smartphone sales</a><div class="nd-row-meta">CNBC - Tech</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-04</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.cnbc.com/2026/11/05/energy-leaders-investment-outlook.html" target="_blank" rel="noopener noreferrer">A &#39;demand decade&#39; ahead for energy? BP, Baker Hughes CEOs weigh the investment outlook</a><div class="nd-row-meta">CNBC - Stock Blog</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.marketwatch.com/story/as-vistra-and-other-energy-stocks-slide-some-analysts-warn-of-an-excessive-knee-jerk-reaction-aece0737?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer">As Vistra and other energy stocks slide, some analysts warn of an ‘excessive knee-jerk’ reaction</a><div class="nd-row-meta">MarketWatch - Top Stories</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://seekingalpha.com/news/4666309-wall-streets-fear-gauge-gets-the-jitters-out-as-midterm-dust-settles?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer">Wall Street’s fear gauge gets the jitters out as midterm dust settles</a><div class="nd-row-meta">Seeking Alpha - Market Currents</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://seekingalpha.com/news/4666306-micron-suspends-work-on-45b-taiwan-plant-amid-labor-dispute-bloomberg?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener noreferrer">Micron suspends work on $4.5B Taiwan plant amid labor dispute: Bloomberg</a><div class="nd-row-meta">Seeking Alpha - Market Currents</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-11-05</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.marketwatch.com/story/qualcomms-stock-falls-as-twin-forces-pressure-sales-fa161159?mod=mw_rss_topstories" target="_blank" rel="noopener noreferrer">Qualcomm’s stock falls as twin forces pressure sales</a><div class="nd-row-meta">MarketWatch - Top Stories</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-10-28</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm" target="_blank" rel="noopener noreferrer">Federal Reserve issues FOMC statement</a><div class="nd-row-meta">Federal Reserve - Monetary Policy</div></div></li>
+          
+          <li class="nd-row"><div class="nd-row-time"><span>2026-10-31</span></div><div class="nd-row-body"><a class="nd-title" href="https://www.npr.org/2026/10/31/nx-s1-6008072/oil-company-profits-gasoline-diesel-prices" target="_blank" rel="noopener noreferrer">Oil company earnings skyrocket — again</a><div class="nd-row-meta">NPR - Business</div></div></li>
+          
         </ol>
         <div id="ndEmpty" class="nd-empty" hidden><h3 id="ndEmptyTitle"></h3><p id="ndEmptyWhy" class="mx-empty-why"></p><button type="button" class="nd-btn" id="ndEmptyReset"><span class="l-en">Reset filters</span><span class="l-zh">重置筛选</span></button></div>
         <button type="button" class="nd-btn nd-load-more" id="ndMore" hidden><span class="l-en">Load more stories</span><span class="l-zh">载入更多报道</span></button>
@@ -1016,365 +1016,349 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
 
 <section class="nx-consequence" id="nxConsequence" aria-label="Event consequences">
     <h2 class="nx-sec-hd"><span class="l-en">Event consequences</span><span class="l-zh">事件影响</span></h2>
-
-    <p class="nx-sub"><span class="l-en">Events from 12 Oct to 19 Oct 2026</span><span class="l-zh">2026年10月12日至10月19日的事件</span> <button type="button" class="lens-q" aria-label="This week by event type — Research notes (2/111): 111 events, 2 name a stock; Economic data (0/3): 3 events, none name a single stock; Earnings reports (0/0): no events this week; Earnings calls (6/46): 46 events, 46 name a stock; Macro backdrop shifts (0/2): 2 events, none name a single stock; Risk radar shifts (0/0): no events this week. Cards show only events that name a stock." data-tip-en="This week by event type — Research notes (2/111): 111 events, 2 name a stock; Economic data (0/3): 3 events, none name a single stock; Earnings reports (0/0): no events this week; Earnings calls (6/46): 46 events, 46 name a stock; Macro backdrop shifts (0/2): 2 events, none name a single stock; Risk radar shifts (0/0): no events this week. Cards show only events that name a stock." data-tip-zh="本周按事件类型——研究纪要（2/111）：111个事件，2个点名个股；经济数据（0/3）：3个事件，均未点名个股；业绩公告（0/0）：本周无事件；业绩电话会（6/46）：46个事件，46个点名个股；宏观环境转向（0/2）：2个事件，均未点名个股；风险雷达变化（0/0）：本周无事件。卡片仅展示点名的个股事件。">?</button></p>
-
-
+    
+    <p class="nx-sub"><span class="l-en">Events from 27 Oct to 3 Nov 2026</span><span class="l-zh">2026年10月27日至11月3日的事件</span> <button type="button" class="lens-q" aria-label="This week by event type — Research notes (0/0): no events this week; Economic data (0/0): no events this week; Earnings reports (1/1): 1 event, 1 name a stock; Earnings calls (7/707): 707 events, 707 name a stock; Macro backdrop shifts (0/1): 1 event, none name a single stock; Risk radar shifts (0/0): no events this week. Cards show only events that name a stock." data-tip-en="This week by event type — Research notes (0/0): no events this week; Economic data (0/0): no events this week; Earnings reports (1/1): 1 event, 1 name a stock; Earnings calls (7/707): 707 events, 707 name a stock; Macro backdrop shifts (0/1): 1 event, none name a single stock; Risk radar shifts (0/0): no events this week. Cards show only events that name a stock." data-tip-zh="本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件；业绩公告（1/1）：1个事件，1个点名个股；业绩电话会（7/707）：707个事件，707个点名个股；宏观环境转向（0/1）：1个事件，均未点名个股；风险雷达变化（0/0）：本周无事件。卡片仅展示点名的个股事件。">?</button></p>
+    
+    
     <p class="nx-sub"><span class="l-en">Recent market events and the names they touch — shown only when an event maps to a named exposure.</span><span class="l-zh">近期市场事件及其涉及的标的——仅在事件对应到明确标的时显示。</span></p>
-
+    
     <p class="nx-sub"><span class="l-en">Named exposures only — no sizing, not a forecast.</span><span class="l-zh">仅列出相关标的——不做幅度推算，非预测。</span></p>
-
-
+    
+    
     <div class="nx-rel-grid">
-
+      
       <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">Research note on CNDT</span><span class="l-zh">关于CNDT的研究纪要</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">LVWR earnings call — confident tone</span><span class="l-zh">LVWR业绩电话会——基调有信心</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">19 Oct 2026</span><span class="l-zh">2026年10月19日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">3 Nov 2026</span><span class="l-zh">2026年11月3日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#CNDT">CNDT</a>
-
+            <a class="nx-tk" href="stock.html#LVWR">LVWR</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div>
-
+      
       <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">WAFD earnings call — cautious tone</span><span class="l-zh">WAFD业绩电话会——基调谨慎</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">LYB earnings call — mixed tone</span><span class="l-zh">LYB业绩电话会——基调中性</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#WAFD">WAFD</a>
-
+            <a class="nx-tk" href="stock.html#LYB">LYB</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div>
-
+      
       <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">CNS earnings call — confident tone</span><span class="l-zh">CNS业绩电话会——基调有信心</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">SXT earnings call — confident tone</span><span class="l-zh">SXT业绩电话会——基调有信心</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#CNS">CNS</a>
-
+            <a class="nx-tk" href="stock.html#SXT">SXT</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div>
-
+      
       <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">CFG earnings call — confident tone</span><span class="l-zh">CFG业绩电话会——基调有信心</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">FBIZ earnings call — confident tone</span><span class="l-zh">FBIZ业绩电话会——基调有信心</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#CFG">CFG</a>
-
+            <a class="nx-tk" href="stock.html#FBIZ">FBIZ</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div>
-
+      
       <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">SFNC earnings call — cautious tone</span><span class="l-zh">SFNC业绩电话会——基调谨慎</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">BVN earnings call — mixed tone</span><span class="l-zh">BVN业绩电话会——基调中性</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#SFNC">SFNC</a>
-
+            <a class="nx-tk" href="stock.html#BVN">BVN</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div>
-
+      
       <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">RF earnings call — confident tone</span><span class="l-zh">RF业绩电话会——基调有信心</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">BAFN earnings call — reassuring tone</span><span class="l-zh">BAFN业绩电话会——基调安抚市场</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#RF">RF</a>
-
+            <a class="nx-tk" href="stock.html#BAFN">BAFN</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div>
-
+      
       <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">LADR earnings call — confident tone</span><span class="l-zh">LADR业绩电话会——基调有信心</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">STRT earnings call — guarded tone</span><span class="l-zh">STRT业绩电话会——基调偏谨慎</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#LADR">LADR</a>
-
+            <a class="nx-tk" href="stock.html#STRT">STRT</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div>
-
+      
       <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">Research note on CAT</span><span class="l-zh">关于CAT的研究纪要</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">EPAC reported earnings</span><span class="l-zh">EPAC公布业绩</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">13 Oct 2026</span><span class="l-zh">2026年10月13日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">28 Oct 2026</span><span class="l-zh">2026年10月28日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#CAT">CAT</a>
-
+            <a class="nx-tk" href="stock.html#EPAC">EPAC</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div>
-
+      
     </div>
-
-
+    
+    
     <h3 class="nx-sec-hd"><span class="l-en">Browse by event type</span><span class="l-zh">按事件类型查看</span></h3>
-
+    
     <details class="nx-depth nx-family">
       <summary class="nx-depth-summary">
         <span><span class="l-en">Research notes</span><span class="l-zh">研究纪要</span></span>
-        <span class="nx-depth-meta">2 <span class="l-en">records</span><span class="l-zh">条记录</span></span>
+        <span class="nx-depth-meta">0 <span class="l-en">records</span><span class="l-zh">条记录</span></span>
       </summary>
       <div class="nx-depth-body">
-
-        <p class="nx-sub"><span class="l-en">Showing 2 of 2 records</span><span class="l-zh">显示2条中的2条</span></p>
-        <div class="nx-rel-grid">
-          <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">Research note on CNDT</span><span class="l-zh">关于CNDT的研究纪要</span></span>
+        
+        <div class="nx-empty">
+          <p class="nx-empty-lead">
+            
+            <span class="l-en">No recorded events of this type in this window.</span><span class="l-zh">该时段没有此类已记录事件。</span>
+            
+          </p>
         </div>
-
-        <div class="nx-meta">
-
-            <span class="num"><span class="l-en">19 Oct 2026</span><span class="l-zh">2026年10月19日</span></span><span class="sep">·</span>
-
-
-            <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#CNDT">CNDT</a>
-
-        </div>
-
-
-
-      </div><div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">Research note on CAT</span><span class="l-zh">关于CAT的研究纪要</span></span>
-        </div>
-
-        <div class="nx-meta">
-
-            <span class="num"><span class="l-en">13 Oct 2026</span><span class="l-zh">2026年10月13日</span></span><span class="sep">·</span>
-
-
-            <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#CAT">CAT</a>
-
-        </div>
-
-
-
-      </div>
-        </div>
-
+        
       </div>
     </details>
-
+    
     <details class="nx-depth nx-family">
       <summary class="nx-depth-summary">
         <span><span class="l-en">Economic data</span><span class="l-zh">经济数据</span></span>
         <span class="nx-depth-meta">0 <span class="l-en">records</span><span class="l-zh">条记录</span></span>
       </summary>
       <div class="nx-depth-body">
-
+        
         <div class="nx-empty">
           <p class="nx-empty-lead">
-
-            <span class="l-en">Recorded events do not name a market exposure.</span><span class="l-zh">已记录事件未点名市场敞口。</span>
-
+            
+            <span class="l-en">No recorded events of this type in this window.</span><span class="l-zh">该时段没有此类已记录事件。</span>
+            
           </p>
         </div>
-
+        
       </div>
     </details>
-
+    
     <details class="nx-depth nx-family">
       <summary class="nx-depth-summary">
         <span><span class="l-en">Earnings reports</span><span class="l-zh">业绩公告</span></span>
-        <span class="nx-depth-meta">0 <span class="l-en">records</span><span class="l-zh">条记录</span></span>
+        <span class="nx-depth-meta">1 <span class="l-en">records</span><span class="l-zh">条记录</span></span>
       </summary>
       <div class="nx-depth-body">
-
-        <div class="nx-empty">
-          <p class="nx-empty-lead">
-
-            <span class="l-en">No recorded events of this type in this window.</span><span class="l-zh">该时段没有此类已记录事件。</span>
-
-          </p>
+        
+        <p class="nx-sub"><span class="l-en">Showing 1 of 1 records</span><span class="l-zh">显示1条中的1条</span></p>
+        <div class="nx-rel-grid">
+          <div class="nx-rel">
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">EPAC reported earnings</span><span class="l-zh">EPAC公布业绩</span></span>
         </div>
-
+        
+        <div class="nx-meta">
+          
+            <span class="num"><span class="l-en">28 Oct 2026</span><span class="l-zh">2026年10月28日</span></span><span class="sep">·</span>
+          
+          
+            <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
+            <a class="nx-tk" href="stock.html#EPAC">EPAC</a>
+          
+        </div>
+        
+        
+        
+      </div>
+        </div>
+        
       </div>
     </details>
-
+    
     <details class="nx-depth nx-family">
       <summary class="nx-depth-summary">
         <span><span class="l-en">Earnings calls</span><span class="l-zh">业绩电话会</span></span>
-        <span class="nx-depth-meta">46 <span class="l-en">records</span><span class="l-zh">条记录</span></span>
+        <span class="nx-depth-meta">707 <span class="l-en">records</span><span class="l-zh">条记录</span></span>
       </summary>
       <div class="nx-depth-body">
-
-        <p class="nx-sub"><span class="l-en">Showing 4 of 46 records</span><span class="l-zh">显示46条中的4条</span></p>
+        
+        <p class="nx-sub"><span class="l-en">Showing 4 of 707 records</span><span class="l-zh">显示707条中的4条</span></p>
         <div class="nx-rel-grid">
           <div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">WAFD earnings call — cautious tone</span><span class="l-zh">WAFD业绩电话会——基调谨慎</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">LVWR earnings call — confident tone</span><span class="l-zh">LVWR业绩电话会——基调有信心</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">3 Nov 2026</span><span class="l-zh">2026年11月3日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#WAFD">WAFD</a>
-
+            <a class="nx-tk" href="stock.html#LVWR">LVWR</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div><div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">CNS earnings call — confident tone</span><span class="l-zh">CNS业绩电话会——基调有信心</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">LYB earnings call — mixed tone</span><span class="l-zh">LYB业绩电话会——基调中性</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#CNS">CNS</a>
-
+            <a class="nx-tk" href="stock.html#LYB">LYB</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div><div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">CFG earnings call — confident tone</span><span class="l-zh">CFG业绩电话会——基调有信心</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">SXT earnings call — confident tone</span><span class="l-zh">SXT业绩电话会——基调有信心</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#CFG">CFG</a>
-
+            <a class="nx-tk" href="stock.html#SXT">SXT</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div><div class="nx-rel">
-        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">SFNC earnings call — cautious tone</span><span class="l-zh">SFNC业绩电话会——基调谨慎</span></span>
+        <div class="nx-rel-top"><span class="nx-rel-name"><span class="l-en">FBIZ earnings call — confident tone</span><span class="l-zh">FBIZ业绩电话会——基调有信心</span></span>
         </div>
-
+        
         <div class="nx-meta">
-
-            <span class="num"><span class="l-en">16 Oct 2026</span><span class="l-zh">2026年10月16日</span></span><span class="sep">·</span>
-
-
+          
+            <span class="num"><span class="l-en">30 Oct 2026</span><span class="l-zh">2026年10月30日</span></span><span class="sep">·</span>
+          
+          
             <span><span class="l-en">Named</span><span class="l-zh">点名</span></span>
-            <a class="nx-tk" href="stock.html#SFNC">SFNC</a>
-
+            <a class="nx-tk" href="stock.html#FBIZ">FBIZ</a>
+          
         </div>
-
-
-
+        
+        
+        
       </div>
         </div>
-
+        
       </div>
     </details>
-
+    
     <details class="nx-depth nx-family">
       <summary class="nx-depth-summary">
         <span><span class="l-en">Macro backdrop shifts</span><span class="l-zh">宏观环境转向</span></span>
         <span class="nx-depth-meta">0 <span class="l-en">records</span><span class="l-zh">条记录</span></span>
       </summary>
       <div class="nx-depth-body">
-
+        
         <div class="nx-empty">
           <p class="nx-empty-lead">
-
+            
             <span class="l-en">Recorded events do not name a market exposure.</span><span class="l-zh">已记录事件未点名市场敞口。</span>
-
+            
           </p>
         </div>
-
+        
       </div>
     </details>
-
+    
     <details class="nx-depth nx-family">
       <summary class="nx-depth-summary">
         <span><span class="l-en">Risk radar shifts</span><span class="l-zh">风险雷达变化</span></span>
         <span class="nx-depth-meta">0 <span class="l-en">records</span><span class="l-zh">条记录</span></span>
       </summary>
       <div class="nx-depth-body">
-
+        
         <div class="nx-empty">
           <p class="nx-empty-lead">
-
+            
             <span class="l-en">No recorded events of this type in this window.</span><span class="l-zh">该时段没有此类已记录事件。</span>
-
+            
           </p>
         </div>
-
+        
       </div>
     </details>
-
-
+    
+    
 </section>
 
 
@@ -1387,11 +1371,24 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
 <dialog class="nd-dialog" id="ndCalendar" aria-labelledby="ndCalendarTitle"><div class="nd-dialog-header"><h2 id="ndCalendarTitle"><span class="l-en">Economic calendar</span><span class="l-zh">经济日历</span></h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close calendar" data-label-zh="关闭日历"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>
 </svg></button></div><div class="nd-dialog-body">
 <h3><span class="l-en">Calendar ahead</span><span class="l-zh">未来日程</span></h3>
-<div class="nd-calendar-row"><span>2026-10-22<br>08:30 ET</span><strong><span class="l-en">Initial jobless claims</span><span class="l-zh">初请失业金</span></strong></div><div class="nd-calendar-row"><span>2026-10-28<br>14:00 ET</span><strong><span class="l-en">FOMC rate decision</span><span class="l-zh">美联储议息会议</span></strong></div><div class="nd-calendar-row"><span>2026-10-29<br>08:30 ET</span><strong><span class="l-en">GDP (BEA estimate)</span><span class="l-zh">GDP 数据</span></strong></div><div class="nd-calendar-row"><span>2026-10-29<br>08:30 ET</span><strong><span class="l-en">PCE / personal income (BEA)</span><span class="l-zh">PCE 物价指数</span></strong></div><div class="nd-calendar-row"><span>2026-10-29<br>08:30 ET</span><strong><span class="l-en">Initial jobless claims</span><span class="l-zh">初请失业金</span></strong></div>
+<div class="nd-calendar-row"><span>2026-11-05<br>08:30 ET</span><strong><span class="l-en">Initial jobless claims</span><span class="l-zh">初请失业金</span></strong></div><div class="nd-calendar-row"><span>2026-11-06<br>08:30 ET</span><strong><span class="l-en">Jobs report (nonfarm payrolls)</span><span class="l-zh">非农就业报告</span></strong></div><div class="nd-calendar-row"><span>2026-11-10<br>08:30 ET</span><strong><span class="l-en">CPI (consumer prices)</span><span class="l-zh">消费者物价指数（CPI）</span></strong></div><div class="nd-calendar-row"><span>2026-11-12<br>08:30 ET</span><strong><span class="l-en">Initial jobless claims</span><span class="l-zh">初请失业金</span></strong></div><div class="nd-calendar-row"><span>2026-11-13<br>08:30 ET</span><strong><span class="l-en">PPI (producer prices)</span><span class="l-zh">生产者物价指数（PPI）</span></strong></div><div class="nd-calendar-row"><span>2026-11-19<br>08:30 ET</span><strong><span class="l-en">Initial jobless claims</span><span class="l-zh">初请失业金</span></strong></div>
 
 
 
-<h3><span class="l-en">Latest releases</span><span class="l-zh">最新公布</span></h3><article class="nd-release"><h4><span class="l-en">CPI (Consumer Price Index)</span><span class="l-zh">CPI (Consumer Price Index)</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">CPI (Consumer Price Index): +0.6%; vs +0.4% revised prior; well outside the 3y trend; inflation hotter.</span><span class="l-zh">CPI (Consumer Price Index): +0.6%; vs +0.4% revised prior; well outside the 3y trend; inflation hotter.</span></p></article><article class="nd-release"><h4><span class="l-en">PPI (Producer Price Index)</span><span class="l-zh">PPI (Producer Price Index)</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">PPI (Producer Price Index): +1.3%; vs +0.5% revised prior; well outside the 3y trend; inflation hotter.</span><span class="l-zh">PPI (Producer Price Index): +1.3%; vs +0.5% revised prior; well outside the 3y trend; inflation hotter.</span></p></article><article class="nd-release"><h4><span class="l-en">Nonfarm Payrolls</span><span class="l-zh">Nonfarm Payrolls</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">Nonfarm Payrolls: +29k; vs +133k revised prior; outside the 3y trend; labor weaker.</span><span class="l-zh">Nonfarm Payrolls: +29k; vs +133k revised prior; outside the 3y trend; labor weaker.</span></p></article><article class="nd-release"><h4><span class="l-en">Unemployment Rate</span><span class="l-zh">Unemployment Rate</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">Unemployment Rate: 4.2%; vs 4.1% revised prior; in line with the 3y trend; labor deteriorating.</span><span class="l-zh">Unemployment Rate: 4.2%; vs 4.1% revised prior; in line with the 3y trend; labor deteriorating.</span></p></article><article class="nd-release"><h4><span class="l-en">Retail Sales</span><span class="l-zh">Retail Sales</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">Retail Sales: +0.8%; vs +1.3% revised prior; outside the 3y trend; growth weaker.</span><span class="l-zh">Retail Sales: +0.8%; vs +1.3% revised prior; outside the 3y trend; growth weaker.</span></p></article><article class="nd-release"><h4><span class="l-en">Trade Balance</span><span class="l-zh">Trade Balance</span></h4><p class="nd-note">Aug 2026</p><p><span class="l-en">Trade Balance: $-105,572.0bn; vs $-92,826.0bn revised prior; well outside the 3y trend.</span><span class="l-zh">Trade Balance: $-105,572.0bn; vs $-92,826.0bn revised prior; well outside the 3y trend.</span></p></article><article class="nd-release"><h4><span class="l-en">Initial Jobless Claims</span><span class="l-zh">Initial Jobless Claims</span></h4><p class="nd-note">wk of Oct 10</p><p><span class="l-en">Initial Jobless Claims: 199,000; vs 198,000 revised prior; well outside the 3y trend; labor deteriorating.</span><span class="l-zh">Initial Jobless Claims: 199,000; vs 198,000 revised prior; well outside the 3y trend; labor deteriorating.</span></p></article><article class="nd-release"><h4><span class="l-en">Business Inventories</span><span class="l-zh">Business Inventories</span></h4><p class="nd-note">Aug 2026</p><p><span class="l-en">Business Inventories: +0.4%; vs +0.9% revised prior; outside the 3y trend.</span><span class="l-zh">Business Inventories: +0.4%; vs +0.9% revised prior; outside the 3y trend.</span></p></article><article class="nd-release"><h4><span class="l-en">Real GDP (Quarterly, SAAR)</span><span class="l-zh">Real GDP (Quarterly, SAAR)</span></h4><p class="nd-note">Q2 2026</p><p><span class="l-en">Real GDP (Quarterly, SAAR): 2.2%; vs 2.5% revised prior; in line with the 3y trend; growth weaker.</span><span class="l-zh">Real GDP (Quarterly, SAAR): 2.2%; vs 2.5% revised prior; in line with the 3y trend; growth weaker.</span></p></article><article class="nd-release"><h4><span class="l-en">PCE Price Index</span><span class="l-zh">PCE Price Index</span></h4><p class="nd-note">Aug 2026</p><p><span class="l-en">PCE Price Index: +0.3%; vs +0.1% revised prior; outside the 3y trend; inflation hotter.</span><span class="l-zh">PCE Price Index: +0.3%; vs +0.1% revised prior; outside the 3y trend; inflation hotter.</span></p></article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h3><span class="l-en">Latest releases</span><span class="l-zh">最新公布</span></h3><article class="nd-release"><h4><span class="l-en">CPI (Consumer Price Index)</span><span class="l-zh">CPI (Consumer Price Index)</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">CPI (Consumer Price Index): +0.6%; vs +0.4% revised prior; well outside the 3y trend; inflation hotter.</span><span class="l-zh">CPI (Consumer Price Index): +0.6%; vs +0.4% revised prior; well outside the 3y trend; inflation hotter.</span></p></article><article class="nd-release"><h4><span class="l-en">PPI (Producer Price Index)</span><span class="l-zh">PPI (Producer Price Index)</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">PPI (Producer Price Index): +1.3%; vs +0.5% revised prior; well outside the 3y trend; inflation hotter.</span><span class="l-zh">PPI (Producer Price Index): +1.3%; vs +0.5% revised prior; well outside the 3y trend; inflation hotter.</span></p></article><article class="nd-release"><h4><span class="l-en">Nonfarm Payrolls</span><span class="l-zh">Nonfarm Payrolls</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">Nonfarm Payrolls: +29k; vs +133k revised prior; outside the 3y trend; labor weaker.</span><span class="l-zh">Nonfarm Payrolls: +29k; vs +133k revised prior; outside the 3y trend; labor weaker.</span></p></article><article class="nd-release"><h4><span class="l-en">Unemployment Rate</span><span class="l-zh">Unemployment Rate</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">Unemployment Rate: 4.2%; vs 4.1% revised prior; in line with the 3y trend; labor deteriorating.</span><span class="l-zh">Unemployment Rate: 4.2%; vs 4.1% revised prior; in line with the 3y trend; labor deteriorating.</span></p></article><article class="nd-release"><h4><span class="l-en">Retail Sales</span><span class="l-zh">Retail Sales</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">Retail Sales: +0.8%; vs +1.3% revised prior; outside the 3y trend; growth weaker.</span><span class="l-zh">Retail Sales: +0.8%; vs +1.3% revised prior; outside the 3y trend; growth weaker.</span></p></article><article class="nd-release"><h4><span class="l-en">Trade Balance</span><span class="l-zh">Trade Balance</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">Trade Balance: $-105,047.0bn; vs $-105,737.0bn revised prior; well outside the 3y trend.</span><span class="l-zh">Trade Balance: $-105,047.0bn; vs $-105,737.0bn revised prior; well outside the 3y trend.</span></p></article><article class="nd-release"><h4><span class="l-en">Initial Jobless Claims</span><span class="l-zh">Initial Jobless Claims</span></h4><p class="nd-note">wk of Oct 24</p><p><span class="l-en">Initial Jobless Claims: 194,000; vs 195,000 revised prior; well outside the 3y trend; labor improving.</span><span class="l-zh">Initial Jobless Claims: 194,000; vs 195,000 revised prior; well outside the 3y trend; labor improving.</span></p></article><article class="nd-release"><h4><span class="l-en">Real GDP (Quarterly, SAAR)</span><span class="l-zh">Real GDP (Quarterly, SAAR)</span></h4><p class="nd-note">Q3 2026</p><p><span class="l-en">Real GDP (Quarterly, SAAR): 3.4%; vs 2.2% revised prior; outside the 3y trend; growth stronger.</span><span class="l-zh">Real GDP (Quarterly, SAAR): 3.4%; vs 2.2% revised prior; outside the 3y trend; growth stronger.</span></p></article><article class="nd-release"><h4><span class="l-en">PCE Price Index</span><span class="l-zh">PCE Price Index</span></h4><p class="nd-note">Sep 2026</p><p><span class="l-en">PCE Price Index: +0.5%; vs +0.3% revised prior; well outside the 3y trend; inflation hotter.</span><span class="l-zh">PCE Price Index: +0.5%; vs +0.3% revised prior; well outside the 3y trend; inflation hotter.</span></p></article>
 <p class="nd-note"><span class="l-en">Calendar and release details reflect the latest built edition. Times labelled ET follow US Eastern time.</span><span class="l-zh">日程与公布详情反映最近生成的版本，ET表示美国东部时间。</span></p>
 </div></dialog>
 <dialog class="nd-dialog" id="ndWorkspace" aria-labelledby="ndWorkspaceTitle"><div class="nd-dialog-header"><h2 id="ndWorkspaceTitle"><span class="l-en">Your workspace</span><span class="l-zh">你的工作台</span></h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close workspace" data-label-zh="关闭工作台"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>
@@ -1430,19 +1427,19 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
 </svg></button></div>
 </dialog>
 
-<script type="application/json" id="ndSeed">{"stories": [{"centrality": "incidental", "domain": "reuters.com", "event": {"confidence": "high", "direction": "mixed", "event_type": "earnings_result", "matched": "\\bq[1-4]\\s+(?:earnings|results?|profit|revenue|eps)\\b", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [4.7], "usd": null, "usd_all": []}}, "lane": "companies", "quality": 96, "rank_score": 61.51, "seendate": "2026-10-17T11:20:04+00:00", "sentiment": null, "source": "Reuters", "source_tier": "tier1", "summary": "", "tickers": ["Q"], "tier": 1, "title": "India\u0027s HDFC Bank Q2 profit rises 4.7%; deputy MD Bharucha to step down", "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPNjB0SmpGMldtSUxlMXY3eWtUX0pBeTluNVRXUVRmVjJqOUxMUG9QcDBsZFBLcU1aRzRLaEh5N2VOTkRJZDh0RENUMFZqd1JITGFpOWo0UWtQejJkQ2RKMS10S1N5X09jZVNzX0c4dkMzVDlONDJHMlREZXBTNGtDVXFQM2NHNElrLWlnNUEtN2c4RHJuUHJjWEUwaGVBQ0NqYURxVHBrbzhhaDV6WjBxeEZqcEhEbFc3UVc5SmtDdU5mOGM?oc=5"}, {"centrality": "incidental", "domain": "cnbc.com", "event": {"confidence": "high", "direction": "mixed", "event_type": "management_change", "matched": "\\b(?:resign[s]?|step[s]?\\s+down|depart[s]?|exit[s]?)\\s+as\\s+(?:ceo|cfo|coo|cto|c", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "lane": "companies", "quality": 97, "rank_score": 58.57, "seendate": "2026-10-17T12:46:21+00:00", "sentiment": null, "source": "cnbc.com", "source_tier": "tier1", "summary": "Berkshire Hathaway shares are at their highest level since Warren Buffett told shareholders at the May 2025 annual meeting he planned to step down as CEO at the end of that year.", "tickers": [], "tier": 1, "title": "Berkshire shares buck market sell-off, rally to highest since Buffett said he would step down as CEO", "url": "https://www.cnbc.com/2026/10/17/berkshire-rally-to-highest-since-buffett-announcement.html"}, {"centrality": "incidental", "domain": "cnbc.com", "event": null, "lane": "markets", "novelty_z": null, "quality": 100, "rank_score": 55.73, "seendate": "2026-10-17T15:11:30+00:00", "sentiment": null, "source": "cnbc.com", "source_tier": "tier1", "summary": "Less than four months into life as a public company, Bending Spoons got a big vote of confidence this week from Berkshire Hathaway.", "tickers": [], "tier": 1, "title": "Software\u2019s new consolidator gets big vote of confidence from Berkshire", "url": "https://www.cnbc.com/2026/10/17/bending-spoons-wants-to-revive-software-castoffs-berkshire-investing.html"}, {"centrality": "incidental", "domain": "cnbc.com", "event": null, "lane": "markets", "quality": 99, "rank_score": 55.07, "seendate": "2026-10-17T15:00:01+00:00", "sentiment": null, "source": "cnbc.com", "source_tier": "tier1", "summary": "Investors may want to rethink their bond allocation and opt for managed futures exposure.", "tickers": [], "tier": 1, "title": "\u0027Dead money\u2019 for a decade: Why this hedge fund approach may deliver an advantage over bonds", "url": "https://www.cnbc.com/2026/10/17/dead-money-for-a-decade-hedge-fund-approach-that-may-trump-bonds.html"}, {"centrality": "incidental", "domain": "bloomberg.com", "event": null, "lane": "markets", "quality": 99, "rank_score": 54.76, "seendate": "2026-10-17T14:27:13+00:00", "sentiment": null, "source": "bloomberg.com", "source_tier": "tier1", "summary": "Junk bond buyers are increasingly freezing out tech startups looking for financing, as CoreWeave Inc.\u2019s pain raises bigger questions about how artificial intelligence companies will fund themselves.", "tickers": [], "tier": 1, "title": "CoreWeave Woes Risk Shutting Down AI Junk Market: Credit Weekly", "url": "https://www.bloomberg.com/news/articles/2026-10-17/coreweave-woes-risk-shutting-down-ai-junk-market-credit-weekly"}, {"centrality": "incidental", "domain": "cnbc.com", "event": null, "lane": "markets", "quality": 98, "rank_score": 53.84, "seendate": "2026-10-17T13:47:59+00:00", "sentiment": null, "source": "cnbc.com", "source_tier": "tier1", "summary": "Timberland managers buying for pension funds and other institutional investors can wait decades for returns, but the market can also be a profit trap.", "tickers": [], "tier": 1, "title": "Investors are buying up vast tracts of timberland across U.S. in one of market\u0027s longest-term bets", "url": "https://www.cnbc.com/2026/10/17/timberland-investing-returns-risk.html"}, {"centrality": "incidental", "domain": "bloomberg.com", "event": null, "lane": "markets", "quality": 94, "rank_score": 51.78, "seendate": "2026-10-17T14:03:13+00:00", "sentiment": null, "source": "bloomberg.com", "source_tier": "tier1", "summary": "Chicago Fed President Austan Goolsbee traveled to rural Illinois to hear directly from farmers facing lower crop prices and rising costs for fuel, fertilizer and other inputs. Those conversations offer the Fed a ground-level view of inflation pressures that may emerge before they are fully reflected in national data. (Source: Bloomberg)", "tickers": [], "tier": 1, "title": "Can the Fed Fight Inflation Without Hurting Farmers?", "url": "https://www.bloomberg.com/news/videos/2026-10-17/can-the-fed-fight-inflation-without-hurting-farmers-video"}, {"centrality": "incidental", "domain": "bloomberg.com", "event": null, "lane": "markets", "quality": 95, "rank_score": 50.52, "seendate": "2026-10-17T10:31:20+00:00", "sentiment": null, "source": "bloomberg.com", "source_tier": "tier1", "summary": "Yaoyao Liu, whose trading in oil derivatives made billions of dollars for Vitol Group over a career marked by dramatic highs and lows, is leaving the commodities trading giant.", "tickers": [], "tier": 1, "title": "Oil Trader Yaoyao Liu Who Made Billions for Vitol Is Leaving", "url": "https://www.bloomberg.com/news/articles/2026-10-17/oil-trader-yaoyao-liu-who-made-billions-for-vitol-is-leaving"}, {"centrality": "incidental", "domain": "reuters.com", "event": null, "lane": "markets", "quality": 95, "rank_score": 50.35, "seendate": "2026-10-17T10:10:22+00:00", "sentiment": null, "source": "Reuters", "source_tier": "tier1", "summary": "", "tickers": [], "tier": 1, "title": "Investors temper Anthropic IPO valuation expectations over revenue growth slowdown, sources say", "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQRW4tSGppV2U0ZWtvaXBsQmlyaDVVLVFCSmJNMWdmMHpod0FWd25kUXRNQzFvZXJPTmhoQUNvMlFrQzI3NjBQVG9McWFPRHdUODhMbVItOGg4S0N3ZmJ4R2psZVd1aWFZM2M0aEY4R3VaYnFZWUxhOFZiRXAxTnc5UG9hMm1ERGpKbURkX3BWYzQ5UWl3THBFTDhWUWR0SVhUSWJsekpMZjM4OUZRQl9BVmY2djVKRENDSldCSUpOWmdvbHVK?oc=5"}, {"centrality": "incidental", "domain": "marketwatch.com", "event": {"confidence": "medium", "direction": "informational", "event_type": "macro_release", "matched": "\\b(?:rate\\s+(?:hike|cut|pause|skip|hold))\\b", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "lane": "companies", "quality": 78, "rank_score": 48.35, "seendate": "2026-10-17T11:00:00+00:00", "sentiment": null, "source": "marketwatch.com", "source_tier": "quality", "summary": "Here are some of the arguments against a Fed rate hike \u2014 and why some economists disagree with them.", "tickers": [], "tier": 2, "title": "Fed interest-rate decision this month is a closer call than markets think", "url": "https://www.marketwatch.com/story/fed-interest-rate-decision-this-month-is-a-closer-call-than-markets-think-f96ccf95?mod=mw_rss_topstories"}, {"centrality": "incidental", "domain": "reuters.com", "event": null, "lane": "companies", "quality": 91, "rank_score": 48.34, "seendate": "2026-10-17T06:19:00+00:00", "sentiment": null, "source": "Reuters", "source_tier": "tier1", "summary": "", "tickers": ["INTC"], "tier": 1, "title": "IMF members call for more support amid war shocks, \u0027advanced intelligence\u0027 risks", "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNbXNKelJOV3BhOFlRUmVnYWwyV0FXSkNpa0VNS2g0ek01V1BhaUNxX3FBclJXUUNKRENoU2d5cHNNazZIMWZ2TXB4aVZIcHNXaWNFbDkxYXpvdlhwakgxekdDd0ZWRDlJMW9zeE9FU3kwcWRPMjJFVmVfNnJ3OGNxV3JaSU5xTHVVQnRTaEdfUGpzVVY0a216eGlrZFBsYmxSQThnSlM5alJvd3hKMU1vY2N0dDFUNGdoTTdBd25kUllEMG45RFhZ?oc=5"}, {"centrality": "incidental", "domain": "reuters.com", "event": null, "lane": "markets", "quality": 93, "rank_score": 48.31, "seendate": "2026-10-17T08:03:43+00:00", "sentiment": null, "source": "Reuters", "source_tier": "tier1", "summary": "", "tickers": [], "tier": 1, "title": "India\u0027s Axis Bank quarterly profit rises 37.6%, but misses estimates on higher costs", "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPRWlKeXYxOVAxQU1rRzNoVldQdEFOYkF0YlpINXNvb3hwdkhjcmNTZmoyUVlsclZjellwalhIelQtMnhSc1U2TGJzOWNrZDB4NFl6T29fQzY0UnBnS0steEcyUnByMnpLUjhfQXBCQ1YwZUxyTFNXZm14TVNoVkR5RkN4Ym1QSDYxZ2xxelA2YTNyWWdlT29oUjBEay02T0YxeGNVRGZoQktjTURxTWFramYwVmZyR2lCQUNVcTFB?oc=5"}, {"centrality": "incidental", "domain": "bloomberg.com", "event": {"confidence": "high", "direction": "informational", "event_type": "macro_release", "matched": "\\b(?:rate\\s+(?:hike|cut|pause|skip|hold))\\b", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "lane": "companies", "quality": 83, "rank_score": 48.28, "seendate": "2026-10-16T20:37:27+00:00", "sentiment": null, "source": "Bloomberg.com", "source_tier": "tier1", "summary": "", "tickers": ["P", "S"], "tier": 1, "title": "S\u0026P 500 Steady as Warsh Boosts Expectations of Rate Hold", "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQOUlmUW5qNmk5TEh5ZWRtckw4Z2dwMkpiSXdOMWlMN2lZeTd1Q040VFhPaGFYLTBkNXQtWEE2dVdiNUlfT0xYWWdmdjVvWDc2bEFfNTVQMnA4LWVYbjRIMU83dXA1MHFVcnZhYW5YazNhV2RIYlNGR0JseFdPZVpMMEJVTXRxVldNUTNLT3Uzb1dLdXl1NU80bHhUYXR6RnZ4SmllbDJRTnZPejA?oc=5"}, {"centrality": "incidental", "domain": "investors.com", "event": null, "lane": "companies", "quality": 79, "rank_score": 46.68, "seendate": "2026-10-17T12:25:00+00:00", "sentiment": null, "source": "Investor\u0027s Business Daily", "source_tier": "quality", "summary": "", "tickers": ["P", "S"], "tier": 2, "title": "S\u0026P 500, Nasdaq, Leaders Break Support; What To Do Now", "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOUnZSNzJZS2NlWi1Hckg0djB1aGQ3bEkzVTB4ejBTQWRoQ0JTOWJBa1U4Z1EyWFZSa0ZmSDlIcmx5MFEwQmhCeFE2MEs4ZEdMSThwczNORG03QTY4MU9xR3pXWmRtNmdMc3BRZ0F4U1FudlhIdXpwVHVQUXUxMU44NHhhRVZyTmNDVk1MLXBsOHBIV2Q3VU9oTE1sa2JET0c5b3p5ZUJHeTBrQlJKaTRnS284ZGVhUUlwekJKalp5dmsyRmdzU25QRQ?oc=5"}, {"centrality": "incidental", "domain": "axios.com", "event": null, "lane": "companies", "quality": 79, "rank_score": 44.47, "seendate": "2026-10-17T11:48:40+00:00", "sentiment": null, "source": "Axios", "source_tier": "quality", "summary": "", "tickers": ["B"], "tier": 2, "title": "Decart\u0027s suitor, Big Yellow Group\u0027s challengers, and a $100B fund", "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPczNOYmhWWkxnTEZnZzNVVXp5N1VmdFJjSThQaUh4cmJXMDk1cHZxaW5IcjJMSVQ1U01RMmN6TzF1NzNZM2F2ekx2SV8xX1FPaXJoRVNrMlVHTHhpZ3RIU1d1alp6aEoteWZxRnp5ZEw3R2F6MGRGQXhMUHRyc1YxZ2RDZlhCcTlJOUk4cHF4a0tVWlhRSnQ2elB0WE4yMDA?oc=5"}, {"centrality": "incidental", "domain": "axios.com", "event": null, "lane": "markets", "quality": 79, "rank_score": 42.79, "seendate": "2026-10-17T12:23:16+00:00", "sentiment": null, "source": "axios.com", "source_tier": "quality", "summary": "Elon Musk tells biographer Walter Isaacson in a new podcast interview that the fizzled DOGE experiment, which the SpaceX and Tesla CEO once headed, proved there\u0027s \"no way we were gonna solve the deficit from within the government.\" \"The only way we\u0027re going to solve the national debt is with AI and robots,\" Musk tells the author for a new podcast series, \" The Builders with Walter Isaacson ,\" premiering Tuesday. \"We\u0027re not gonna solve it by trying to save our way there.\" Why it matters: Musk\u0027s comments to Isaacson \u2014 author of the definitive 2023 biography, \" Elon Musk \" \u2014 admit that DOGE was a flop, but point to the chance that some future administration will take a new stab at the problem using ever-more-capable AI. Zoom in: Musk said the appetite to cut spending \"is not there at the presidency, the House, the Senate or the judiciary. Basically, no one in authority in the government whatsoever \u2014 with maybe a few rare exceptions [like the] Rand Pauls of the world \u2014 actually wants to reduce spending.\" \"Maybe if the president made that his primary goal, we could do that,\" Musk added. \"If you try to solve the deficit and stop wasteful spending, you make a lot of enemies. President Trump likes to be liked. He doesn\u0027t like people calling him, being upset about ... some funding being stopped.\" Musk admits he \"kinda got carried away, basically\" and that he wound up being \"gone for too long\" from his companies. \"What I should have done,\" he added, \"was be more in the background ... and probably only had it last for a month or two\" rather than the four months he was formally in the White House. \"I should have gone back and focused on AI a little sooner than I did.\" When Isaacson asked Musk if his time in the West Wing had been too seductive, in a way, Musk replied: \"It was, a little bit. I mean, it was kinda cool \u0027cause ... I\u0027m just there in the Oval Office while all these, like, big momentous decisions are being made.\" Asked about the time he brandished a chainsaw onstage at the Conservative Political Action Conference (CPAC) a month into Trump\u0027s second term, Musk said: \"That was a weird weekend.\" Pressed to elaborate, Musk said: \"Let\u0027s let sleeping dogs lie or whatever.\" The big picture: Isaacson warned this week that Steve Jobs and the other great creators of the personal computer age would be cautious about autonomous AI agents not tightly connected to human control. Isaacson includes his warning in the new preface to an updated edition, published this week, of his sweeping 2014 history of the digital age, \" The Innovators : How a Group of Hackers, Geniuses, and Geeks Created the Digital Revolution.\" Behind the scenes: Isaacson tells me he launched \"The Builders\" because he wanted to press the builders of this new AI age on these dangers and hear in their own voices what motivates them. \"Musk is an amazing engineer who is pushing us forward with Starship, Starlink, Neuralink, and autonomous EVs,\" Isaacson said. \"But as I describe in my biography, I think he is too prone to darkness and conspiracies when it comes to politics and people. His complexities come through in the interview, as I hope they do in the biography.\" What\u0027s next: Isaacson\u0027s podcast series, created by media company Kaleidoscope , includes conversations with Peter Thiel, Alex Karp, Fei-Fei Li, and Dario and Daniela Amodei. A series preview says the tech legends \"open up about their ambitions, what frightens them, how they think about humanity, and what drives them to build so big and so fast. The conversations are intimate, charming, and sometimes chilling.\" Listen to a trailer for \"The Builders.\"", "tickers": [], "tier": 2, "title": "Exclusive: Musk tells Isaacson \"AI and robots\" will need to fix deficit", "url": "https://www.axios.com/2026/10/17/elon-musk-doge-walter-isaacson-podcast"}, {"centrality": "incidental", "domain": "marketwatch.com", "event": null, "lane": "markets", "quality": 79, "rank_score": 42.42, "seendate": "2026-10-17T11:30:00+00:00", "sentiment": null, "source": "marketwatch.com", "source_tier": "quality", "summary": "The S\u0026P 500\u2019s tech sector just had its worst week in a year and a half, while an equal-weighted version of the index cemented a second-straight weekly advance.", "tickers": [], "tier": 2, "title": "It was another great week for the average stock as market leadership shifts away from tech", "url": "https://www.marketwatch.com/story/it-was-another-great-week-for-the-average-stock-as-market-leadership-shifts-away-from-tech-8e8516da?mod=mw_rss_topstories"}, {"centrality": "incidental", "domain": "fxempire.com", "event": null, "lane": "markets", "quality": 72, "rank_score": 35.51, "seendate": "2026-10-17T02:20:00+00:00", "sentiment": null, "source": "FXEmpire", "source_tier": "quality", "summary": "", "tickers": [], "tier": 2, "title": "NASDAQ Index, SP500, Dow Jones Forecasts \u2013 NASDAQ Retreats As CoreWeave Dives 14%", "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNLXJEWG8wOXg3aG1nZ1hFNGpoMFljMFdnUTFIOGY3QUk5YUlMeHUtMnBrY2NRWGIyLXdjcU1halJjd3U4MWNDN1pzUmZ4UGVSNVVXUkdzNmNha2RWcUZkMU1iSloxVWJhaDJORm81dDVzTFNsZWFsMVVqcllmOS1iR3RKeW9wSzNpNEprTTduNUJLVE0wZF9IZV93MlBIMEhUektZMWV3NTVDSEpndkV3UmFiY0ViNnFDcjFJWUFyNEszQl81UWc?oc=5"}, {"_id": "aa8831fe69b0f30a", "centrality": "incidental", "channels": ["deals"], "domain": "cnbc.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "high", "importance_reasons": ["stock-focused news source", "tier-1 macro term", "stock catalyst theme"], "importance_score": 74, "intelligence_score": 91, "lane": "companies", "novelty_z": -1.664, "rank_score": 33.33, "related_tickers": [{"reason": "tesla", "ticker": "TSLA"}], "seendate": "2026-10-16T17:02:40+00:00", "source": "news_rss", "source_lang": "en", "source_name": "CNBC - Stock Blog", "source_tier": "stock_wire", "theme": "deals", "ticker_reasons": {"TSLA": "tesla"}, "tickers": ["TSLA"], "title": "Prediction market odds on Tesla-SpaceX merger are above 50% for early 2027", "title_zh": "\u9884\u6d4b\u5e02\u573a\u663e\u793a\u7279\u65af\u62c9\u4e0eSpaceX\u57282027\u5e74\u521d\u5408\u5e76\u7684\u6982\u7387\u8d85\u8fc750%", "url": "https://www.cnbc.com/2026/10/16/tesla-spacex-merger-odds-rise-on-kalshi.html"}, {"_id": "4be4f38d92176ccd", "centrality": "incidental", "channels": ["stocks"], "domain": "seekingalpha.com", "event": null, "importance": "medium", "importance_reasons": ["stock-focused news source", "stock catalyst theme"], "importance_score": 60, "intelligence_score": 79, "lane": "companies", "novelty_z": -1.664, "rank_score": 33.2, "related_tickers": [{"reason": "tesla", "ticker": "TSLA"}], "seendate": "2026-10-17T18:52:10+00:00", "source": "news_rss", "source_lang": "en", "source_name": "Seeking Alpha - Market Currents", "source_tier": "stock_wire", "theme": "stocks", "ticker_reasons": {"TSLA": "tesla"}, "tickers": ["TSLA"], "title": "SA Asks: How important is the new Roadster to Tesla\u0027s future?", "url": "https://seekingalpha.com/news/4654044-sa-asks-how-important-is-the-new-roadster-to-teslas-future?utm_source=feed_news_all\u0026utm_medium=referral\u0026feed_item_type=news"}, {"_id": "4d28237aa36780e1", "centrality": "incidental", "channels": ["energy"], "domain": "seekingalpha.com", "event": null, "importance": "medium", "importance_reasons": ["stock-focused news source", "stock catalyst theme"], "importance_score": 60, "intelligence_score": 81, "lane": "companies", "novelty_z": null, "rank_score": 33.12, "related_tickers": [{"reason": "oil", "ticker": "USO"}], "seendate": "2026-10-18T00:45:38+00:00", "source": "news_rss", "source_lang": "en", "source_name": "Seeking Alpha - Market Currents", "source_tier": "stock_wire", "theme": "stocks", "ticker_reasons": {"USO": "oil"}, "tickers": ["USO"], "title": "New England faces record-high heating oil costs this winter", "url": "https://seekingalpha.com/news/4654046-new-england-faces-record-high-heating-oil-costs-this-winter?utm_source=feed_news_all\u0026utm_medium=referral\u0026feed_item_type=news"}, {"_id": "091aa12a4707ee5c", "centrality": "incidental", "channels": ["deals"], "domain": "cnbc.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "high", "importance_reasons": ["stock-focused news source", "tier-1 macro term", "stock catalyst theme"], "importance_score": 74, "intelligence_score": 91, "lane": "companies", "novelty_z": -1.664, "rank_score": 33.11, "related_tickers": [{"reason": "tesla", "ticker": "TSLA"}], "seendate": "2026-10-16T15:52:41+00:00", "source": "news_rss", "source_lang": "en", "source_name": "CNBC - Tech", "source_tier": "stock_wire", "theme": "deals", "ticker_reasons": {"TSLA": "tesla"}, "tickers": ["TSLA"], "title": "Tesla unveils long-delayed Roadster developed with SpaceX, fueling merger speculation", "title_zh": "\u7279\u65af\u62c9\u53d1\u5e03\u4e0eSpaceX\u8054\u5408\u5f00\u53d1\u7684\u957f\u671f\u5ef6\u8fdfRoadster\uff0c\u52a0\u5267\u5408\u5e76\u731c\u6d4b", "url": "https://www.cnbc.com/2026/10/15/tesla-roadster-reveal-what-to-know-about-the-delayed-ev.html"}, {"_id": "ff0289d1749b40a6", "centrality": "incidental", "channels": ["credit"], "domain": "cnbc.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "high", "importance_reasons": ["stock-focused news source", "tier-1 macro term", "market-sensitive term", "stock catalyst theme"], "importance_score": 81, "intelligence_score": 98, "lane": "companies", "novelty_z": -1.017, "rank_score": 31.57, "related_tickers": [{"reason": "ai", "ticker": "QQQ"}], "seendate": "2026-10-15T21:33:24+00:00", "source": "news_rss", "source_lang": "en", "source_name": "CNBC - Investing", "source_tier": "stock_wire", "theme": "stocks", "ticker_reasons": {"QQQ": "ai"}, "tickers": ["QQQ"], "title": "CoreWeave credit default swaps hit distress levels as investors sour on AI debt", "title_zh": "CoreWeave \u4fe1\u7528\u8fdd\u7ea6\u6389\u671f\u5347\u81f3\u56f0\u5883\u6c34\u5e73\uff0c\u6295\u8d44\u8005\u5bf9 AI \u503a\u52a1\u7684\u4fe1\u5fc3\u6076\u5316", "url": "https://www.cnbc.com/2026/10/15/coreweave-credit-default-swaps-hit-distress-levels-as-investors-sour-on-ai-debt.html"}, {"_id": "753ae1b13eccf06b", "centrality": "incidental", "channels": ["stocks"], "domain": "seekingalpha.com", "event": null, "importance": "medium", "importance_reasons": ["stock-focused news source", "stock catalyst theme"], "importance_score": 60, "intelligence_score": 79, "lane": "companies", "novelty_z": -1.017, "rank_score": 31.14, "related_tickers": [{"reason": "ai", "ticker": "QQQ"}], "seendate": "2026-10-17T17:54:27+00:00", "source": "news_rss", "source_lang": "en", "source_name": "Seeking Alpha - Market Currents", "source_tier": "stock_wire", "theme": "stocks", "ticker_reasons": {"QQQ": "ai"}, "tickers": ["QQQ"], "title": "Bulls vs. Bears: Is CoreWeave the canary in AI coalmine?", "url": "https://seekingalpha.com/news/4654043-bulls-vs-bears-coreweave-canary-ai-coalmine?utm_source=feed_news_all\u0026utm_medium=referral\u0026feed_item_type=news"}, {"_id": "86c179ce05a6b61d", "centrality": "primary", "channels": ["earnings"], "domain": "fool.com", "event": null, "importance": "medium", "importance_reasons": ["quality source", "tier-1 macro term", "stock catalyst theme"], "importance_score": 56, "intelligence_score": 73, "lane": "companies", "novelty_z": null, "rank_score": 30.95, "related_tickers": [], "seendate": "2026-10-18T06:45:00+00:00", "source": "gdelt", "source_lang": "en", "source_name": "fool.com", "source_tier": "quality", "theme": "earnings", "ticker_reasons": {}, "tickers": [], "title": "Will Hershey Halloween Week Earnings Trick or Treat Investors ? ", "url": "https://www.fool.com/investing/2026/10/18/will-hersheys-halloween-week-earnings-trick-or-tre/?source=iedfolrf0000001"}, {"_id": "8095703594d9063d", "centrality": "incidental", "channels": ["stocks"], "domain": "seekingalpha.com", "event": null, "importance": "medium", "importance_reasons": ["stock-focused news source", "stock catalyst theme"], "importance_score": 60, "intelligence_score": 79, "lane": "companies", "novelty_z": -1.017, "rank_score": 30.91, "related_tickers": [{"reason": "ai", "ticker": "QQQ"}], "seendate": "2026-10-17T17:03:16+00:00", "source": "news_rss", "source_lang": "en", "source_name": "Seeking Alpha - Market Currents", "source_tier": "stock_wire", "theme": "stocks", "ticker_reasons": {"QQQ": "ai"}, "tickers": ["QQQ"], "title": "Elon Musk says he should have \u201cfocused on AI a little sooner:\u201d Axios", "url": "https://seekingalpha.com/news/4654042-musk-says-should-have-focused-ai-little-sooner?utm_source=feed_news_all\u0026utm_medium=referral\u0026feed_item_type=news"}, {"_id": "c0958fa673dabd3d", "centrality": "incidental", "channels": ["fiscal_trade"], "domain": "knpr.org", "event": {"confidence": "high", "direction": "mixed", "event_type": "policy_trade_control", "matched": "\\b(?:tariff[s]?|trade\\s+war|trade\\s+deal|trade\\s+agreement|sanction[s]?|export\\s", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "importance": "medium", "importance_reasons": ["tier-1 news source", "tier-1 macro term"], "importance_score": 48, "intelligence_score": 53, "lane": "macro", "novelty_z": -1.078, "rank_score": 30.53, "related_tickers": [], "seendate": "2026-10-17T18:00:00+00:00", "source": "gdelt", "source_lang": "en", "source_name": "knpr.org", "source_tier": "tier1", "theme": "fiscal", "ticker_reasons": {}, "tickers": [], "title": "Zelenskyy urges support for new US sanctions on Russia after Trump puts them on hold", "url": "https://knpr.org/npr/2026-10-17/zelenskyy-urges-support-for-new-us-sanctions-on-russia-after-trump-puts-them-on-hold"}, {"_id": "370a4e9fc2200e76", "centrality": "primary", "channels": ["credit", "earnings"], "domain": "cnbc.com", "event": null, "importance": "medium", "importance_reasons": ["tier-1 news source", "tier-1 macro term", "market-sensitive term", "stock catalyst theme"], "importance_score": 71, "intelligence_score": 92, "lane": "companies", "novelty_z": -0.792, "rank_score": 27.48, "related_tickers": [{"reason": "bank", "ticker": "XLF"}], "seendate": "2026-10-15T18:16:41+00:00", "source": "news_rss", "source_lang": "en", "source_name": "CNBC - Markets", "source_tier": "tier1", "theme": "earnings", "ticker_reasons": {"XLF": "bank"}, "tickers": ["XLF"], "title": "BNY stock pops on strong earnings \u2014 showing exactly why we like this bank in this market", "title_zh": "BNY \u80a1\u4ef7\u56e0\u5f3a\u52b2\u4e1a\u7ee9\u5927\u6da8\u2014\u2014\u6070\u597d\u8bf4\u660e\u6211\u4eec\u4e3a\u4f55\u5728\u5f53\u524d\u5e02\u573a\u770b\u597d\u8fd9\u5bb6\u94f6\u884c", "url": "https://www.cnbc.com/investingclub/2026/10/15/bny-stock-pops-on-strong-earnings-showing-exactly-why-we-like-this-bank-in-this-market.html"}, {"_id": "2e8aeb7dcf0e5628", "centrality": "incidental", "channels": ["rates"], "domain": "fool.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "medium", "importance_reasons": ["quality source", "tier-1 macro term", "dashboard core theme"], "importance_score": 48, "intelligence_score": 57, "lane": "fed", "novelty_z": -0.507, "rank_score": 26.68, "related_tickers": [{"reason": "wall street", "ticker": "SPY"}], "seendate": "2026-10-18T00:00:00+00:00", "source": "gdelt", "source_lang": "en", "source_name": "fool.com", "source_tier": "quality", "theme": "monetary", "ticker_reasons": {"SPY": "wall street"}, "tickers": ["SPY"], "title": "Former Fed Chair Jerome Powell 6 - Word Warning Echoes Louder Than Ever -- and It Should Rightly Terrify Wall Street", "url": "https://www.fool.com/investing/2026/10/17/fed-chair-jerome-powell-6-word-warning-echoes-loud-should-rightly-terrify-wall-street/"}, {"_id": "29bc6dfb298c4734", "centrality": "incidental", "channels": ["growth"], "domain": "marketwatch.com", "event": null, "importance": "medium", "importance_reasons": ["tier-1 news source", "tier-1 macro term"], "importance_score": 48, "intelligence_score": 53, "lane": "macro", "novelty_z": -0.722, "rank_score": 23.29, "related_tickers": [], "seendate": "2026-10-17T16:47:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "MarketWatch - Top Stories", "source_tier": "tier1", "theme": "growth", "ticker_reasons": {}, "tickers": [], "title": "\u2018Some people did everything right\u2019: I lost my home in the Great Recession. I rent in my 50s. Why is that judged as failure?", "title_zh": "\u201c\u6709\u4e9b\u4eba\u505a\u5bf9\u4e86\u4e00\u5207\u201d\uff1a\u6211\u5728\u5927\u8870\u9000\u4e2d\u5931\u53bb\u4e86\u623f\u5b50\uff0c50 \u591a\u5c81\u4ecd\u5728\u79df\u623f\u3002\u4e3a\u4ec0\u4e48\u8fd9\u88ab\u5224\u5b9a\u4e3a\u5931\u8d25\uff1f", "url": "https://www.marketwatch.com/story/i-earn-110-000-a-year-i-lost-my-home-in-the-great-recession-im-renting-in-my-50s-why-is-that-judged-as-failure-d1371d67?mod=mw_rss_topstories"}, {"_id": "96b712caae72055d", "centrality": "incidental", "channels": ["stocks"], "domain": "npr.org", "event": {"confidence": "high", "direction": "bearish", "event_type": "litigation", "matched": "\\b(?:sue[s]?|sues|lawsuit[s]?|files?\\s+suit|legal\\s+action|litigation)\\b", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "importance": "medium", "importance_reasons": ["tier-1 news source", "market-sensitive term", "stock catalyst theme"], "importance_score": 57, "intelligence_score": 68, "lane": "companies", "novelty_z": null, "rank_score": 22.75, "related_tickers": [], "seendate": "2026-10-14T09:00:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "NPR - Business", "source_tier": "tier1", "theme": "stocks", "ticker_reasons": {}, "tickers": [], "title": "The skincare scheme that led to consumer complaints, lawsuits and a federal investigation", "title_zh": "\u5bfc\u81f4\u6d88\u8d39\u8005\u6295\u8bc9\u3001\u8bc9\u8bbc\u548c\u8054\u90a6\u8c03\u67e5\u7684\u62a4\u80a4\u9a97\u5c40", "url": "https://www.npr.org/2026/10/14/nx-s1-5550974/skincare-scheme-mazal-group-investigation"}, {"_id": "53c6a2cc4bae9560", "centrality": "incidental", "channels": [], "domain": "fortune.com", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 47, "lane": "macro", "novelty_z": -0.507, "rank_score": 20.8, "related_tickers": [{"reason": "wall street", "ticker": "SPY"}, {"reason": "ai", "ticker": "QQQ"}], "seendate": "2026-10-17T21:30:00+00:00", "source": "gdelt", "source_lang": "en", "source_name": "fortune.com", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {"QQQ": "ai", "SPY": "wall street"}, "tickers": ["SPY", "QQQ"], "title": "AI boom or bust : Wall Street debates if the latest warnings are another head fake or the real thing", "url": "https://fortune.com/2026/10/17/ai-boom-vs-bust-bubble-warning-hyperscaler-spending-debt-coreweave-nvidia/"}, {"_id": "cb84801b877f86cc", "centrality": "incidental", "channels": [], "domain": "marketwatch.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 43, "lane": "macro", "novelty_z": -2.127, "rank_score": 20.32, "related_tickers": [{"reason": "apple", "ticker": "AAPL"}], "seendate": "2026-10-17T18:40:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "MarketWatch - Top Stories", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {"AAPL": "apple"}, "tickers": ["AAPL"], "title": "Is Apple\u2019s foldable iPhone Duo worth $2,000? See how it stacks up against other foldable phones.", "url": "https://www.marketwatch.com/story/is-apples-foldable-iphone-duo-worth-2-000-see-how-it-stacks-up-against-other-foldable-phones-c9066b13?mod=mw_rss_topstories"}, {"_id": "cdc526c9d783ae53", "centrality": "primary", "channels": ["inflation"], "domain": "npr.org", "event": null, "importance": "medium", "importance_reasons": ["tier-1 news source", "tier-1 macro term", "dashboard core theme"], "importance_score": 56, "intelligence_score": 59, "lane": "macro", "novelty_z": -0.5, "rank_score": 19.97, "related_tickers": [], "seendate": "2026-10-15T08:46:33+00:00", "source": "news_rss", "source_lang": "en", "source_name": "NPR - Economy", "source_tier": "tier1", "theme": "inflation", "ticker_reasons": {}, "tickers": [], "title": "Despite bad inflation report, Trump says economy is doing fine", "title_zh": "\u5c3d\u7ba1\u901a\u80c0\u62a5\u544a\u8868\u73b0\u7cdf\u7cd5\uff0c\u7279\u6717\u666e\u79f0\u7ecf\u6d4e\u8868\u73b0\u826f\u597d", "url": "https://www.npr.org/2026/10/15/nx-s1-6001707/despite-bad-inflation-report-trump-says-economy-is-doing-fine"}, {"_id": "5c8881736d5b68ce", "centrality": "primary", "channels": ["rates", "inflation"], "domain": "npr.org", "event": null, "importance": "medium", "importance_reasons": ["tier-1 news source", "tier-1 macro term", "dashboard core theme"], "importance_score": 56, "intelligence_score": 61, "lane": "macro", "novelty_z": -0.5, "rank_score": 19.29, "related_tickers": [], "seendate": "2026-10-14T20:27:56+00:00", "source": "news_rss", "source_lang": "en", "source_name": "NPR - Economy", "source_tier": "tier1", "theme": "inflation", "ticker_reasons": {}, "tickers": [], "title": "The Chicago Fed President answers questions on inflation numbers", "title_zh": "\u829d\u52a0\u54e5\u8054\u50a8\u4e3b\u5e2d\u56de\u7b54\u901a\u80c0\u6570\u636e\u76f8\u5173\u95ee\u9898", "url": "https://www.npr.org/2026/10/14/nx-s1-6000584/the-chicago-fed-president-answers-questions-on-inflation-numbers"}, {"_id": "c500cd10d61db81e", "centrality": "incidental", "channels": ["consumer"], "domain": "bea.gov", "event": null, "importance": "low", "importance_reasons": ["first-party macro release", "market-sensitive term", "dashboard core theme"], "importance_score": 47, "intelligence_score": 47, "lane": "macro", "novelty_z": -0.5, "rank_score": 19.21, "related_tickers": [], "seendate": "", "source": "official", "source_lang": "en", "source_name": "BEA - Current Releases", "source_tier": "official", "theme": "inflation", "ticker_reasons": {}, "tickers": [], "title": "Real Personal Consumption Expenditures by State and Real Personal Income by State, 2024", "title_zh": "2024\u5e74\u5404\u5dde\u5b9e\u9645\u4e2a\u4eba\u6d88\u8d39\u652f\u51fa\u4e0e\u5b9e\u9645\u4e2a\u4eba\u6536\u5165", "url": "https://www.bea.gov/news/2026/real-personal-consumption-expenditures-state-and-real-personal-income-state-2024"}, {"_id": "cbda6dccdeae2cf5", "centrality": "primary", "channels": ["inflation"], "domain": "npr.org", "event": null, "importance": "medium", "importance_reasons": ["tier-1 news source", "tier-1 macro term", "dashboard core theme"], "importance_score": 56, "intelligence_score": 57, "lane": "macro", "novelty_z": -0.5, "rank_score": 18.99, "related_tickers": [], "seendate": "2026-10-14T13:33:44+00:00", "source": "news_rss", "source_lang": "en", "source_name": "NPR - Business", "source_tier": "tier1", "theme": "inflation", "ticker_reasons": {}, "tickers": [], "title": "Inflation sizzled in September \u2014 and Social Security benefits will get a boost", "title_zh": "9\u6708\u901a\u80c0\u706b\u70ed\u2014\u2014\u793e\u5b89\u91d1\u798f\u5229\u5c06\u83b7\u63d0\u5347", "url": "https://www.npr.org/2026/10/14/nx-s1-6000593/inflation-consumer-prices-cpi-social-security-benefits"}, {"_id": "bd1518b8b92e9605", "centrality": "incidental", "channels": ["monetary"], "domain": "federalreserve.gov", "event": null, "importance": "medium", "importance_reasons": ["first-party macro release", "tier-1 macro term", "market-sensitive term", "dashboard core theme"], "importance_score": 61, "intelligence_score": 61, "lane": "fed", "novelty_z": -1.143, "rank_score": 18.91, "related_tickers": [], "seendate": "2026-10-09T14:00:00+00:00", "source": "official", "source_lang": "en", "source_name": "Federal Reserve - All Press", "source_tier": "official", "theme": "monetary", "ticker_reasons": {}, "tickers": [], "title": "Federal Reserve Board releases results of the 2025 Survey of Consumer Finances, which provides the public and policymakers with detailed insights into the economic condition of American families", "title_zh": "\u7f8e\u8054\u50a8\u7406\u4e8b\u4f1a\u53d1\u5e032025\u5e74\u6d88\u8d39\u8005\u8d22\u52a1\u8c03\u67e5\u7ed3\u679c\uff0c\u4e3a\u516c\u4f17\u548c\u653f\u7b56\u5236\u5b9a\u8005\u63d0\u4f9b\u7f8e\u56fd\u5bb6\u5ead\u7ecf\u6d4e\u72b6\u51b5\u7684\u8be6\u7ec6\u6d1e\u5bdf", "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20261009a.htm"}, {"_id": "b7d13dbb4935615a", "centrality": "incidental", "channels": [], "domain": "cbsnews.com", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 41, "lane": "macro", "novelty_z": null, "rank_score": 18.1, "related_tickers": [], "seendate": "2026-10-18T03:00:00+00:00", "source": "gdelt", "source_lang": "en", "source_name": "cbsnews.com", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {}, "tickers": [], "title": "7 highlights from JD Vance CBS News town hall : Iran , immigration , corruption and 2028 plans", "url": "https://www.cbsnews.com/news/jd-vance-cbs-town-hall-highlights-michigan/"}, {"_id": "40394818106c1922", "centrality": "incidental", "channels": ["credit"], "domain": "federalreserve.gov", "event": null, "importance": "medium", "importance_reasons": ["first-party macro release", "tier-1 macro term", "dashboard core theme"], "importance_score": 54, "intelligence_score": 58, "lane": "fed", "novelty_z": -0.792, "rank_score": 17.75, "related_tickers": [{"reason": "bank", "ticker": "XLF"}], "seendate": "2026-10-05T20:30:00+00:00", "source": "official", "source_lang": "en", "source_name": "Federal Reserve - All Press", "source_tier": "official", "theme": "monetary", "ticker_reasons": {"XLF": "bank"}, "tickers": ["XLF"], "title": "Federal Reserve Board announces approval of application by Isabella Bank Corporation", "title_zh": "\u7f8e\u8054\u50a8\u7406\u4e8b\u4f1a\u5ba3\u5e03\u6279\u51c6Isabella Bank Corporation\u7684\u7533\u8bf7", "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm"}, {"_id": "087718b6506a2663", "centrality": "incidental", "channels": ["rates", "housing"], "domain": "marketwatch.com", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 47, "lane": "macro", "novelty_z": -0.333, "rank_score": 17.67, "related_tickers": [{"reason": "mortgage", "ticker": "XHB"}], "seendate": "2026-10-17T13:00:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "MarketWatch - Top Stories", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {"XHB": "mortgage"}, "tickers": ["XHB"], "title": "Meet the home buyers totally unfazed by 7% mortgage rates", "title_zh": "\u8ba4\u8bc6\u90a3\u4e9b\u5b8c\u5168\u4e0d\u4e3a7%\u623f\u8d37\u5229\u7387\u6240\u52a8\u7684\u8d2d\u623f\u8005", "url": "https://www.marketwatch.com/story/meet-the-home-buyers-totally-unfazed-by-7-mortgage-rates-7a9b1cc7?mod=mw_rss_topstories"}, {"_id": "5bd45be7bd8f06e0", "centrality": "incidental", "channels": [], "domain": "marketwatch.com", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 39, "lane": "macro", "novelty_z": null, "rank_score": 17.09, "related_tickers": [], "seendate": "2026-10-17T20:53:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "MarketWatch - Top Stories", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {}, "tickers": [], "title": "Can a $55,000 robot load the dishwasher? Inside my afternoon with two humanoid housekeepers.", "url": "https://www.marketwatch.com/story/can-a-55-000-plus-robot-load-the-dishwasher-inside-my-afternoon-with-two-humanoid-housekeepers-0a9569ab?mod=mw_rss_topstories"}, {"_id": "7874486ea62fa4a3", "centrality": "incidental", "channels": [], "domain": "cbsnews.com", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 39, "lane": "macro", "novelty_z": null, "rank_score": 16.63, "related_tickers": [], "seendate": "2026-10-17T17:45:00+00:00", "source": "gdelt", "source_lang": "en", "source_name": "cbsnews.com", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {}, "tickers": [], "title": "Ukraine still unable to intercept Russian drones due to Starlink restrictions , Zelenskyy says", "url": "http://www.cbsnews.com/news/ukraine-trump-zelenskyy-starlink-russia-war-drones/"}, {"_id": "c24514079931406b", "centrality": "incidental", "channels": ["credit", "consumer"], "domain": "economist.com", "event": null, "importance": "medium", "importance_reasons": ["tier-1 news source", "market-sensitive term"], "importance_score": 48, "intelligence_score": 53, "lane": "macro", "novelty_z": -0.722, "rank_score": 16.44, "related_tickers": [], "seendate": "2026-10-14T17:52:55+00:00", "source": "news_rss", "source_lang": "en", "source_name": "The Economist - Finance \u0026 Economics", "source_tier": "tier1", "theme": "growth", "ticker_reasons": {}, "tickers": [], "title": "Another warning sign for China\u2019s economy: falling consumer credit", "title_zh": "\u4e2d\u56fd\u7ecf\u6d4e\u7684\u53c8\u4e00\u4e2a\u8b66\u544a\u4fe1\u53f7\uff1a\u6d88\u8d39\u4fe1\u8d37\u4e0b\u964d", "url": "https://www.economist.com/finance-and-economics/2026/10/14/another-warning-sign-for-chinas-economy-falling-consumer-credit"}, {"_id": "a1af5464cb870f36", "centrality": "incidental", "channels": ["equities", "deals"], "domain": "sec.gov", "event": null, "importance": "low", "importance_reasons": ["SEC context", "market-sensitive term", "stock catalyst theme"], "importance_score": 47, "intelligence_score": 62, "lane": "companies", "novelty_z": null, "rank_score": 15.97, "related_tickers": [], "seendate": "2026-10-14T14:30:47+00:00", "source": "official", "source_lang": "en", "source_name": "SEC - Press Releases", "source_tier": "official", "theme": "deals", "ticker_reasons": {}, "tickers": [], "title": "SEC Small Business Advisory Committee to Discuss IPO Modernization and Regulation Crowdfunding", "title_zh": "SEC\u5c0f\u4f01\u4e1a\u54a8\u8be2\u59d4\u5458\u4f1a\u5c06\u8ba8\u8bbaIPO\u73b0\u4ee3\u5316\u548c\u4f17\u7b79\u76d1\u7ba1", "url": "https://www.sec.gov/newsroom/press-releases/2026-105-sec-small-business-advisory-committee-discuss-ipo-modernization-regulation-crowdfunding"}, {"_id": "9c0634166d51238b", "centrality": "incidental", "channels": ["fiscal_trade"], "domain": "bea.gov", "event": null, "importance": "low", "importance_reasons": ["first-party macro release", "market-sensitive term"], "importance_score": 39, "intelligence_score": 39, "lane": "macro", "novelty_z": -0.722, "rank_score": 15.94, "related_tickers": [], "seendate": "", "source": "official", "source_lang": "en", "source_name": "BEA - Current Releases", "source_tier": "official", "theme": "growth", "ticker_reasons": {}, "tickers": [], "title": "Budget and Performance", "title_zh": "\u9884\u7b97\u4e0e\u7ee9\u6548", "url": "https://www.bea.gov/about/budget-and-performance"}, {"_id": "23dc9b86da06eea4", "centrality": "incidental", "channels": ["credit"], "domain": "economist.com", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 41, "lane": "macro", "novelty_z": -0.792, "rank_score": 15.5, "related_tickers": [{"reason": "bank", "ticker": "XLF"}], "seendate": "2026-10-16T17:58:53+00:00", "source": "news_rss", "source_lang": "en", "source_name": "The Economist - Finance \u0026 Economics", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {"XLF": "bank"}, "tickers": ["XLF"], "title": "It\u2019s not just Commerzbank: Italians are eating up German business", "title_zh": "\u4e0d\u53ea\u662fCommerzbank\uff1a\u610f\u5927\u5229\u4eba\u6b63\u5728\u5927\u91cf\u6536\u8d2d\u5fb7\u56fd\u4f01\u4e1a", "url": "https://www.economist.com/finance-and-economics/2026/10/16/its-not-just-commerzbank-italians-are-eating-up-german-business"}, {"_id": "6a5702caeb7839e7", "centrality": "incidental", "channels": ["credit"], "domain": "economist.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 41, "lane": "macro", "novelty_z": -0.792, "rank_score": 13.43, "related_tickers": [{"reason": "bank", "ticker": "XLF"}], "seendate": "2026-10-15T09:34:30+00:00", "source": "news_rss", "source_lang": "en", "source_name": "The Economist - Finance \u0026 Economics", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {"XLF": "bank"}, "tickers": ["XLF"], "title": "How Ukraine\u2019s biggest bank is run in a war zone", "title_zh": "\u4e4c\u514b\u5170\u6700\u5927\u94f6\u884c\u5982\u4f55\u5728\u6218\u533a\u8fd0\u8425", "url": "https://www.economist.com/finance-and-economics/2026/10/15/how-ukraines-biggest-bank-is-run-in-a-war-zone"}], "updated_at": "2026-10-18T08:02:06.876364+00:00"}</script>
+<script type="application/json" id="ndSeed">{"stories": [{"centrality": "incidental", "domain": "cnbc.com", "event": {"confidence": "high", "direction": "bearish", "event_type": "guidance_cut", "matched": "\\b(?:guidance|outlook|forecast|revenue\\s+forecast|annual\\s+forecast)\\b[^.]{0,60}", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [17.0], "usd": null, "usd_all": []}}, "lane": "companies", "novelty_z": null, "quality": 99, "rank_score": 64.84, "seendate": "2026-11-05T09:06:40+00:00", "sentiment": null, "source": "cnbc.com", "source_tier": "tier1", "summary": "Rheinmetall cut its 2026 outlook for the second time in three months, citing delays to German military projects and artillery ammunition deliveries.", "tickers": [], "tier": 1, "title": "Rheinmetall shares plunge 17% after outlook cut as military contracts stall", "url": "https://www.cnbc.com/2026/11/05/rheinmetall-stock-outlook-sales-germany.html"}, {"centrality": "incidental", "domain": "bloomberg.com", "event": {"confidence": "high", "direction": "bearish", "event_type": "guidance_cut", "matched": "\\b(?:cut[s]?|lower[s]?|reduce[s]?|trim[s]?|slash[es]*|pare[s]?)\\b[^.]{0,50}\\b(?:", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "lane": "companies", "quality": 99, "rank_score": 64.72, "seendate": "2026-11-05T08:55:19+00:00", "sentiment": null, "source": "bloomberg.com", "source_tier": "tier1", "summary": "German defense firm Rheinmetall cut its 2026 sales target for the second time, citing delays with the Boxer armored vehicle program that would push orders into next year. Bloomberg\u0027s Benedikt Kammel has the details. (Source: Bloomberg)", "tickers": [], "tier": 1, "title": "Rheinmetall Cuts 2026 Sales Guidance, Shares Plunge", "url": "https://www.bloomberg.com/news/videos/2026-11-05/rheinmetall-cuts-2026-sales-guidance-shares-plunge-video"}, {"centrality": "incidental", "domain": "reuters.com", "event": {"confidence": "high", "direction": "mixed", "event_type": "earnings_result", "matched": "\\bq[1-4]\\s+(?:earnings|results?|profit|revenue|eps)\\b", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "lane": "companies", "quality": 97, "rank_score": 62.63, "seendate": "2026-11-05T06:37:00+00:00", "sentiment": null, "source": "Reuters", "source_tier": "tier1", "summary": "", "tickers": ["Q"], "tier": 1, "title": "Sony Q2 profit jumps on \u0027Spider-Man\u0027 and PlayStation boost", "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNbzRkcVBPNWdGd05mYXRDNXRxOFJtbDZoQzk3N1l4Q19ScC1oeWFJWmlKYlNHRzBwRTFQREZsanB1TjUwSkZodTh5U1N2aktDOTU3cEVBMk1Ubllodk9NVXlCNkc3cGZYbUFwNk13LW5hU084YWlqdWZyX0NvdTBSZWlwZHNWdVJOMGstbkVpVDVoLXd6UFFPTS1za2gyVUFtVjZBTTRraDZBbU0?oc=5"}, {"centrality": "incidental", "domain": "cnbc.com", "event": {"confidence": "high", "direction": "mixed", "event_type": "earnings_result", "matched": "\\b(?:earnings|revenue)\\s+(?:beat|miss)\\b", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [10.0], "usd": null, "usd_all": []}}, "lane": "companies", "quality": 91, "rank_score": 54.06, "seendate": "2026-11-05T00:14:47+00:00", "sentiment": null, "source": "cnbc.com", "source_tier": "tier1", "summary": "Snap misses on revenue and daily active users in third-quarter earnings reported Wednesday.", "tickers": [], "tier": 1, "title": "Snap shares fall over 10% on third-quarter revenue miss", "url": "https://www.cnbc.com/2026/11/04/snap-q3-earnings-report-2026.html"}, {"centrality": "incidental", "domain": "bloomberg.com", "event": null, "lane": "markets", "quality": 98, "rank_score": 53.85, "seendate": "2026-11-05T08:09:35+00:00", "sentiment": null, "source": "bloomberg.com", "source_tier": "tier1", "summary": "European stocks surpassed their previous closing record as the region extended an outperformance driven by a rotation out of the artificial intelligence trade and a strong earnings season.", "tickers": [], "tier": 1, "title": "European Stocks Hit Fresh Record as AI Unwind Boosts Region", "url": "https://www.bloomberg.com/news/articles/2026-11-05/european-stocks-hit-fresh-record-as-ai-unwind-boosts-region"}, {"centrality": "incidental", "domain": "bloomberg.com", "event": null, "lane": "markets", "quality": 98, "rank_score": 53.52, "seendate": "2026-11-05T07:32:55+00:00", "sentiment": null, "source": "bloomberg.com", "source_tier": "tier1", "summary": "\"Insight with Haslinda Amin\" is a daily news program featuring in-depth, high-profile interviews and analysis to give viewers the complete picture on the stories that matter. The show features prominent leaders spanning the worlds of business, finance, politics and culture. (Source: Bloomberg)", "tickers": [], "tier": 1, "title": "China Stocks Surge As Blue Wave Sinks Korea\u0027s Heavyweights", "url": "https://www.bloomberg.com/news/videos/2026-11-05/insight-with-haslinda-amin-11-5-2026-video"}, {"centrality": "incidental", "domain": "bloomberg.com", "event": null, "lane": "markets", "quality": 97, "rank_score": 52.83, "seendate": "2026-11-05T07:16:56+00:00", "sentiment": null, "source": "bloomberg.com", "source_tier": "tier1", "summary": "Yardeni Research President, Ed Yardeni, says US 10-year Treasury yields look \u201cvery attractive\u201d at around the 5% level with inflation expected to cool. On Bloomberg\u0027s Insight with Haslinda Amin, he also told us why the Nasdaq 100 is his preferred asset for the next 24 months. (Source: Bloomberg)", "tickers": [], "tier": 1, "title": "Yardeni: Yields Attractive at 5%; Nasdaq to Outperform", "url": "https://www.bloomberg.com/news/videos/2026-11-05/yardeni-yields-attractive-at-5-nasdaq-to-outperform-video"}, {"centrality": "incidental", "domain": "reuters.com", "event": null, "lane": "markets", "quality": 96, "rank_score": 51.85, "seendate": "2026-11-05T06:26:00+00:00", "sentiment": null, "source": "Reuters", "source_tier": "tier1", "summary": "", "tickers": [], "tier": 1, "title": "China\u0027s November diesel exports to ease amid thin domestic stocks, sources say", "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOUC1heWwydGNUd0wzYWtNUXViUFMta2hyYVhFMm1pSV9oSi1lUGxxVEw1alpQYm02MUh1bU40U2VkNWNOYTZVS1BHUGRhN3Y0Z1FZODNaM2NtT0NLWW1abmxRQ0w4LVhkUzVHTHBnQmhYOVBRODhCRXpMMmpndVBsdm0tVG45NXd1c0h5YTlwSjU2bTJvNGEtdWxNT0NOTWNXa0lXN3NFakZTeUN3cWl2Mks4V3hhcWRrb18tU0NuTjJHRjQ?oc=5"}, {"centrality": "incidental", "domain": "reuters.com", "event": null, "lane": "markets", "quality": 96, "rank_score": 51.54, "seendate": "2026-11-05T05:50:00+00:00", "sentiment": null, "source": "Reuters", "source_tier": "tier1", "summary": "", "tickers": [], "tier": 1, "title": "China\u0027s cleantech stocks jump as investors bet on US policy shift", "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQdHllX1NRUnhtUFNpX3FES2xxMF93ZVJTdkhEelhpSXR6RmViQ2ZLc3Z1TXpKRjBNMjdrbWZZYmlSVGdWd2MxSUdsaHdCTmUzckE1M09ScmVsLWhuTThTa190TVlFMWpwbC1jcTlobmxjMG9SOVV0N3hHQUl3dDUzdmR2ZFhjQkFFRVRtOEhSdzVJazQ0aF9mdnhtY0h5ZDBVQUhOc0hkS3pJejN6Ui1F?oc=5"}, {"_id": "6bf4eb8ea7115262", "centrality": "incidental", "channels": ["guidance"], "domain": "cnbc.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": {"confidence": "high", "direction": "bearish", "event_type": "guidance_cut", "matched": "\\b(?:guidance|outlook|forecast|revenue\\s+forecast|annual\\s+forecast)\\b[^.]{0,60}", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [17.0], "usd": null, "usd_all": []}}, "importance": "high", "importance_reasons": ["stock-focused news source", "tier-1 macro term", "market-sensitive term", "stock catalyst theme"], "importance_score": 81, "intelligence_score": 100, "lane": "companies", "novelty_z": -0.567, "rank_score": 51.15, "related_tickers": [{"reason": "meta", "ticker": "META"}], "seendate": "2026-11-05T09:06:40+00:00", "source": "news_rss", "source_lang": "en", "source_name": "CNBC - Stock Blog", "source_tier": "stock_wire", "theme": "guidance", "ticker_reasons": {"META": "meta"}, "tickers": ["META"], "title": "Rheinmetall shares plunge 17% after outlook cut as military contracts stall", "title_zh": "\u83b1\u8335\u91d1\u5c5e\u4e0b\u8c03\u4e1a\u7ee9\u6307\u5f15\u540e\u80a1\u4ef7\u66b4\u8dcc17%\uff0c\u56e0\u519b\u4e8b\u5408\u540c\u505c\u6ede", "url": "https://www.cnbc.com/2026/11/05/rheinmetall-stock-outlook-sales-germany.html"}, {"centrality": "incidental", "domain": "reuters.com", "event": null, "lane": "markets", "quality": 95, "rank_score": 50.7, "seendate": "2026-11-05T05:14:00+00:00", "sentiment": null, "source": "Reuters", "source_tier": "tier1", "summary": "", "tickers": [], "tier": 1, "title": "Kenya\u0027s Safaricom posts higher first-half profit as Ethiopia losses halve", "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPbUpNUkI0ZHREekVoS1Nyd3ZaRjhhS3Q0aldCbUVjRkdld0FYcGVwRHVlZHNaNE9IZmlWY3ZpR3FWNTB4dzBweHUyeXE4WDBVWFJZSERqQjRwNnllUlFnUnhvTmdIRjhPMXpzRUtuNHBFWklBU0FDNUJUM3pnZU9sWmE5eWJxbHdmVEgyaHB4RXdSYjQ5VFM5R0lhZWZIN01PN2JDYWF3djI?oc=5"}, {"centrality": "incidental", "domain": "cnbc.com", "event": null, "lane": "markets", "quality": 94, "rank_score": 49.52, "seendate": "2026-11-05T03:53:18+00:00", "sentiment": null, "source": "cnbc.com", "source_tier": "tier1", "summary": "Growing competition for semiconductor talent is fueling a battle over trade secrets as Chinese chipmakers gain ground.", "tickers": [], "tier": 1, "title": "Inside the chip talent war: Trade secrets and rising Chinese rivals", "url": "https://www.cnbc.com/2026/11/05/semiconductor-china-korea-talents-rivalry.html"}, {"centrality": "incidental", "domain": "cnbc.com", "event": null, "lane": "markets", "quality": 91, "rank_score": 46.74, "seendate": "2026-11-05T01:11:26+00:00", "sentiment": null, "source": "cnbc.com", "source_tier": "tier1", "summary": "President Donald Trump first tried to fire Lisa Cook in August 2025, but the Supreme Court in June blocked him from doing so, for now.", "tickers": [], "tier": 1, "title": "White House panel delays hearing on Fed\u0027s Lisa Cook to Dec. 14", "url": "https://www.cnbc.com/2026/11/04/trump-federal-reserve-lisa-cook-hearing.html"}, {"_id": "8d6e93eb8813bcdb", "centrality": "incidental", "channels": ["earnings", "guidance"], "domain": "seekingalpha.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": {"confidence": "high", "direction": "mixed", "event_type": "earnings_result", "matched": "\\bq[1-4]\\s+(?:earnings|results?|profit|revenue|eps)\\b", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "importance": "high", "importance_reasons": ["stock-focused news source", "tier-1 macro term", "market-sensitive term", "stock catalyst theme"], "importance_score": 81, "intelligence_score": 100, "lane": "companies", "novelty_z": null, "rank_score": 46.46, "related_tickers": [], "seendate": "2026-11-05T09:18:22+00:00", "source": "news_rss", "source_lang": "en", "source_name": "Seeking Alpha - Market Currents", "source_tier": "stock_wire", "theme": "earnings", "ticker_reasons": {}, "tickers": [], "title": "Canadian Natural Resources reports higher Q3 profit, maintains 2026 production outlook", "title_zh": "Canadian Natural Resources\u62a5\u544a\u7b2c\u4e09\u5b63\u5ea6\u5229\u6da6\u4e0a\u5347\uff0c\u7ef4\u63012026\u5e74\u4ea7\u91cf\u5c55\u671b", "url": "https://seekingalpha.com/news/4666308-canadian-natural-resources-reports-higher-q3-profit-maintains-2026-production-outlook?utm_source=feed_news_all\u0026utm_medium=referral\u0026feed_item_type=news"}, {"centrality": "incidental", "domain": "investors.com", "event": null, "lane": "companies", "quality": 77, "rank_score": 46.29, "seendate": "2026-11-05T04:04:00+00:00", "sentiment": null, "source": "Investor\u0027s Business Daily", "source_tier": "quality", "summary": "", "tickers": ["AAPL", "AMZN", "MSFT"], "tier": 2, "title": "Dow Jones Futures Rise, Techs Fall; Apple, Microsoft, Amazon Flash Buy Signals In Postelection Rally", "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxNQmliVFRWX3pISnI2UzBXQlE0bUhCVExKXzhqZkNWTXY0emxpN2RHYWpqTklDR0x2Mk4talloWE5vSmtZcE9VTlUzVmFhS3ZYZUlpN2psY2lOWGNRV1huaUx5VWtpa29lVGt1ZWFiWU12VzIxamE4cHItM3E4SVAxb2QyZE4wTm8xV0k1RGZDdmhVU0VaLTVsQk9Sd3dnczlpa1JRV2dScVNwOGZpOENqdWRuZi15XzRYaWEyNFFndmFZRHJpNWZYazdMb05PdjJuMEJINS1PRlhESl82VGJFUQ?oc=5"}, {"centrality": "incidental", "domain": "barrons.com", "event": null, "lane": "companies", "quality": 87, "rank_score": 46.14, "seendate": "2026-11-04T19:57:00+00:00", "sentiment": null, "source": "Barron\u0027s", "source_tier": "tier1", "summary": "", "tickers": ["P", "S"], "tier": 1, "title": "Why Stanley Black \u0026 Decker Is Today\u2019s Top S\u0026P 500 Stock", "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPZFI3cG5nLUlPNk9RSEQ5U1JlMTJiYlBSNnotOWR6a1NuWTR0eEFITjdHb0dXeEtSSHR3MlhqaGVIUjU0em9RdTYtTldsWWxNQmVkQU5WOW1TR3hrMFBBUmRDZVkxaUxZLUxJdkUtM3JqdXM2bUtGbUFZZDFvZ20zekFqbnBaZWtJWENZ?oc=5"}, {"centrality": "incidental", "domain": "marketwatch.com", "event": null, "lane": "markets", "quality": 81, "rank_score": 44.54, "seendate": "2026-11-05T08:13:00+00:00", "sentiment": null, "source": "marketwatch.com", "source_tier": "quality", "summary": "Stocks surged, oil prices plunged and bond yields fell Wednesday on optimism around a quicker end to the Iran war now that Democrats have clinched control of Congress.", "tickers": [], "tier": 2, "title": "Dow scores its best day in 18 months in a broad relief rally after Democrats sweep to power in Congress", "url": "https://www.marketwatch.com/story/dow-scores-its-best-day-in-18-months-in-a-broad-relief-rally-after-democrats-sweep-to-power-in-congress-d7348fc0?mod=mw_rss_topstories"}, {"centrality": "incidental", "domain": "marketwatch.com", "event": null, "lane": "markets", "quality": 80, "rank_score": 43.56, "seendate": "2026-11-05T07:15:00+00:00", "sentiment": null, "source": "marketwatch.com", "source_tier": "quality", "summary": "Wall Street veteran Jared Dillian says the biggest problem is many investors these days have not lived through a major downturn. He\u2019s got a portfolio that offers protection.", "tickers": [], "tier": 2, "title": "Most investors are blind to the possibility of a market crash. Here is the five-part strategy to survive one.", "url": "https://www.marketwatch.com/story/most-investors-are-blind-to-the-possibility-of-a-market-crash-here-is-the-five-part-strategy-to-survive-one-a1762911?mod=mw_rss_topstories"}, {"centrality": "incidental", "domain": "demokratis.co.id", "event": null, "lane": "markets", "quality": 77, "rank_score": 40.62, "seendate": "2026-11-05T04:01:51+00:00", "sentiment": null, "source": "Demokratis.co.id", "source_tier": "quality", "summary": "", "tickers": [], "tier": 2, "title": "Asian Markets Rise as South Korea Kospi Slides on Chip Selloff", "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9qczRQVi13NXByT0JZME1tMXlGZ21Bb3Jqb3lRRTFUSXJVMVVJNXg4aDdEUHpSYmRLT2lVU1hEMXN2aVVzeTNld242eGN2c3JrMlJidjBsTTNIUmxidVZ1Rk5wS0RXb2lWajVVeg?oc=5"}, {"centrality": "incidental", "domain": "axios.com", "event": null, "lane": "markets", "quality": 77, "rank_score": 40.45, "seendate": "2026-11-05T03:34:49+00:00", "sentiment": null, "source": "Axios", "source_tier": "quality", "summary": "", "tickers": [], "tier": 2, "title": "Exclusive: Meta buys AI startup, joins race to own coding in show of outsized ambition", "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5pYktNc1JSTUdXaEhqUkxvZ3o2REUyeHV1SGh0am95NTg0dVFsSHBfc1FDZDZocXhFd292a1padWFaTGJYSTd0WXh4RjhNTGw4ZXdXWjFUcURfTVRZaE5VU0lxUEl2a3A5cDBUdFo0NE4zTldsWmd6b1MxV0ZmYVE?oc=5"}, {"_id": "d43a598b24b1684f", "centrality": "incidental", "channels": ["earnings"], "domain": "seekingalpha.com", "event": {"confidence": "high", "direction": "mixed", "event_type": "earnings_result", "matched": "\\bq[1-4]\\s+(?:earnings|results?|profit|revenue|eps)\\b", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": 118000000.0, "usd_all": [118000000.0, 126000000.0]}}, "importance": "medium", "importance_reasons": ["stock-focused news source", "market-sensitive term", "stock catalyst theme"], "importance_score": 67, "intelligence_score": 82, "lane": "companies", "novelty_z": null, "rank_score": 39.62, "related_tickers": [], "seendate": "2026-11-05T09:05:30+00:00", "source": "news_rss", "source_lang": "en", "source_name": "Seeking Alpha - Market Currents", "source_tier": "stock_wire", "theme": "earnings", "ticker_reasons": {}, "tickers": [], "title": "Power Integrations targets doubling SAM by 2031 as it guides Q4 revenue to $118M-$126M", "title_zh": "Power Integrations\u76ee\u68072031\u5e74\u5c06SAM\u7ffb\u500d\uff0c\u5e76\u6307\u5f15\u7b2c\u56db\u5b63\u5ea6\u8425\u65361.18\u4ebf\u81f31.26\u4ebf\u7f8e\u5143", "url": "https://seekingalpha.com/news/4666305-power-integrations-targets-doubling-sam-by-2031-as-it-guides-q4-revenue-to-118m-126m?utm_source=feed_news_all\u0026utm_medium=referral\u0026feed_item_type=news"}, {"_id": "6def86ebf15bdca6", "centrality": "primary", "channels": ["earnings", "guidance"], "domain": "cnbc.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": {"confidence": "high", "direction": "bullish", "event_type": "guidance_raise", "matched": "\\b(?:raise[s]?|boost[s]?|lift[s]?|increas[es]+|hike[s]?|up(?:grade)?s?\\s+)\\b[^.]", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "importance": "high", "importance_reasons": ["tier-1 news source", "tier-1 macro term", "stock catalyst theme"], "importance_score": 78, "intelligence_score": 95, "lane": "companies", "novelty_z": null, "rank_score": 36.46, "related_tickers": [], "seendate": "2026-11-03T21:11:34+00:00", "source": "news_rss", "source_lang": "en", "source_name": "CNBC - Markets", "source_tier": "tier1", "theme": "earnings", "ticker_reasons": {}, "tickers": [], "title": "Ferrari raises 2026 guidance after Q3 earnings beat", "title_zh": "\u6cd5\u62c9\u5229\u5728\u7b2c\u4e09\u5b63\u5ea6\u76c8\u5229\u8d85\u9884\u671f\u540e\u4e0a\u8c032026\u5e74\u6307\u5f15", "url": "https://www.cnbc.com/2026/11/03/ferrari-race-earnings-q3-2026.html"}, {"_id": "ba8e631581cdf0d6", "centrality": "primary", "channels": ["earnings", "guidance"], "domain": "cnbc.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "high", "importance_reasons": ["stock-focused news source", "tier-1 macro term", "market-sensitive term", "stock catalyst theme"], "importance_score": 81, "intelligence_score": 98, "lane": "companies", "novelty_z": null, "rank_score": 36.29, "related_tickers": [], "seendate": "2026-11-04T23:38:11+00:00", "source": "news_rss", "source_lang": "en", "source_name": "CNBC - Tech", "source_tier": "stock_wire", "theme": "earnings", "ticker_reasons": {}, "tickers": [], "title": "Qualcomm stock drops 7% on weak earnings forecast as memory shortage weighs on smartphone sales", "title_zh": "\u9ad8\u901a\u76c8\u5229\u9884\u6d4b\u75b2\u5f31\u81f4\u80a1\u4ef7\u4e0b\u8dcc7%\uff0c\u56e0\u5b58\u50a8\u77ed\u7f3a\u62d6\u7d2f\u667a\u80fd\u624b\u673a\u9500\u552e", "url": "https://www.cnbc.com/2026/11/04/qualcomm-qcom-earnings-report-q4-2026.html"}, {"_id": "ee3d9269c766cd18", "centrality": "incidental", "channels": ["guidance", "energy"], "domain": "cnbc.com", "event": null, "importance": "high", "importance_reasons": ["stock-focused news source", "tier-1 macro term", "stock catalyst theme"], "importance_score": 74, "intelligence_score": 99, "lane": "companies", "novelty_z": null, "rank_score": 36.28, "related_tickers": [{"reason": "energy", "ticker": "USO"}, {"reason": "energy", "ticker": "XLE"}], "seendate": "2026-11-04T23:23:03+00:00", "source": "news_rss", "source_lang": "en", "source_name": "CNBC - Stock Blog", "source_tier": "stock_wire", "theme": "guidance", "ticker_reasons": {"USO": "energy", "XLE": "energy"}, "tickers": ["USO", "XLE"], "title": "A \u0027demand decade\u0027 ahead for energy? BP, Baker Hughes CEOs weigh the investment outlook", "title_zh": "\u80fd\u6e90\u884c\u4e1a\u5c06\u8fce\u6765\u201c\u9700\u6c42\u5341\u5e74\u201d\uff1fBP\u548c\u8d1d\u514b\u4f11\u65afCEO\u63a2\u8ba8\u6295\u8d44\u524d\u666f", "url": "https://www.cnbc.com/2026/11/05/energy-leaders-investment-outlook.html"}, {"_id": "955bfb4eba7dc079", "centrality": "primary", "channels": ["analyst", "energy"], "domain": "marketwatch.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "medium", "importance_reasons": ["tier-1 news source", "market-sensitive term", "stock catalyst theme"], "importance_score": 64, "intelligence_score": 89, "lane": "companies", "novelty_z": null, "rank_score": 32.1, "related_tickers": [{"reason": "energy", "ticker": "USO"}, {"reason": "energy", "ticker": "XLE"}], "seendate": "2026-11-05T00:38:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "MarketWatch - Top Stories", "source_tier": "tier1", "theme": "analyst", "ticker_reasons": {"USO": "energy", "XLE": "energy"}, "tickers": ["USO", "XLE"], "title": "As Vistra and other energy stocks slide, some analysts warn of an \u2018excessive knee-jerk\u2019 reaction", "title_zh": "Vistra\u7b49\u80fd\u6e90\u80a1\u4e0b\u6ed1\u4e4b\u9645\uff0c\u90e8\u5206\u5206\u6790\u5e08\u8b66\u544a\u201c\u8fc7\u5ea6\u6761\u4ef6\u53cd\u5c04\u201d\u5f0f\u53cd\u5e94", "url": "https://www.marketwatch.com/story/as-vistra-and-other-energy-stocks-slide-some-analysts-warn-of-an-excessive-knee-jerk-reaction-aece0737?mod=mw_rss_topstories"}, {"_id": "d0206eb9a70297e6", "centrality": "incidental", "channels": ["stocks"], "domain": "seekingalpha.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "medium", "importance_reasons": ["stock-focused news source", "stock catalyst theme"], "importance_score": 60, "intelligence_score": 79, "lane": "companies", "novelty_z": -0.513, "rank_score": 30.81, "related_tickers": [{"reason": "wall street", "ticker": "SPY"}], "seendate": "2026-11-05T09:42:09+00:00", "source": "news_rss", "source_lang": "en", "source_name": "Seeking Alpha - Market Currents", "source_tier": "stock_wire", "theme": "stocks", "ticker_reasons": {"SPY": "wall street"}, "tickers": ["SPY"], "title": "Wall Street\u2019s fear gauge gets the jitters out as midterm dust settles", "title_zh": "\u4e2d\u671f\u9009\u4e3e\u5c18\u57c3\u843d\u5b9a\uff0c\u534e\u5c14\u8857\u6050\u614c\u6307\u6807\u6062\u590d\u5e73\u9759", "url": "https://seekingalpha.com/news/4666309-wall-streets-fear-gauge-gets-the-jitters-out-as-midterm-dust-settles?utm_source=feed_news_all\u0026utm_medium=referral\u0026feed_item_type=news"}, {"_id": "4bc752964861fb63", "centrality": "incidental", "channels": ["labor"], "domain": "seekingalpha.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "medium", "importance_reasons": ["stock-focused news source", "stock catalyst theme"], "importance_score": 60, "intelligence_score": 79, "lane": "companies", "novelty_z": -0.586, "rank_score": 30.78, "related_tickers": [{"reason": "micron", "ticker": "MU"}], "seendate": "2026-11-05T09:36:33+00:00", "source": "news_rss", "source_lang": "en", "source_name": "Seeking Alpha - Market Currents", "source_tier": "stock_wire", "theme": "stocks", "ticker_reasons": {"MU": "micron"}, "tickers": ["MU"], "title": "Micron suspends work on $4.5B Taiwan plant amid labor dispute: Bloomberg", "title_zh": "\u5f6d\u535a\uff1a\u7f8e\u5149\u56e0\u52b3\u8d44\u7ea0\u7eb7\u6682\u505c45\u4ebf\u7f8e\u5143\u53f0\u6e7e\u5de5\u5382\u5efa\u8bbe", "url": "https://seekingalpha.com/news/4666306-micron-suspends-work-on-45b-taiwan-plant-amid-labor-dispute-bloomberg?utm_source=feed_news_all\u0026utm_medium=referral\u0026feed_item_type=news"}, {"_id": "77ce0ecf5ea7bb94", "centrality": "incidental", "channels": ["single_stock"], "domain": "marketwatch.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "medium", "importance_reasons": ["tier-1 news source", "market-sensitive term", "stock catalyst theme"], "importance_score": 57, "intelligence_score": 72, "lane": "companies", "novelty_z": null, "rank_score": 25.81, "related_tickers": [], "seendate": "2026-11-05T01:06:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "MarketWatch - Top Stories", "source_tier": "tier1", "theme": "stocks", "ticker_reasons": {}, "tickers": [], "title": "Qualcomm\u2019s stock falls as twin forces pressure sales", "title_zh": "\u9ad8\u901a\u80a1\u4ef7\u4e0b\u8dcc\uff0c\u4e24\u5927\u56e0\u7d20\u65bd\u538b\u9500\u552e", "url": "https://www.marketwatch.com/story/qualcomms-stock-falls-as-twin-forces-pressure-sales-fa161159?mod=mw_rss_topstories"}, {"_id": "cb0cab2d8989d040", "centrality": "incidental", "channels": ["rates"], "domain": "federalreserve.gov", "event": {"confidence": "high", "direction": "informational", "event_type": "macro_release", "matched": "\\bfomc\\s+(?:minutes?|statement|meeting|decision|raises?|cuts?|holds?|keeps?)\\b", "numbers": {"count": null, "eps": null, "guidance_range": null, "percentages": [], "usd": null, "usd_all": []}}, "importance": "medium", "importance_reasons": ["first-party macro release", "tier-1 macro term", "dashboard core theme"], "importance_score": 68, "intelligence_score": 68, "lane": "fed", "novelty_z": -1.08, "rank_score": 25.0, "related_tickers": [], "seendate": "2026-10-28T18:00:00+00:00", "source": "official", "source_lang": "en", "source_name": "Federal Reserve - Monetary Policy", "source_tier": "official", "theme": "monetary", "ticker_reasons": {}, "tickers": [], "title": "Federal Reserve issues FOMC statement", "title_zh": "\u7f8e\u8054\u50a8\u53d1\u5e03FOMC\u58f0\u660e", "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"}, {"_id": "2017e08df56f5244", "centrality": "primary", "channels": ["earnings", "energy"], "domain": "npr.org", "event": null, "importance": "medium", "importance_reasons": ["tier-1 news source", "tier-1 macro term", "stock catalyst theme"], "importance_score": 64, "intelligence_score": 83, "lane": "companies", "novelty_z": null, "rank_score": 21.55, "related_tickers": [{"reason": "oil", "ticker": "USO"}], "seendate": "2026-10-31T09:00:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "NPR - Business", "source_tier": "tier1", "theme": "earnings", "ticker_reasons": {"USO": "oil"}, "tickers": ["USO"], "title": "Oil company earnings skyrocket \u2014 again", "title_zh": "\u77f3\u6cb9\u516c\u53f8\u5229\u6da6\u518d\u5ea6\u98d9\u5347", "url": "https://www.npr.org/2026/10/31/nx-s1-6008072/oil-company-profits-gasoline-diesel-prices"}, {"_id": "2325a451562742b5", "centrality": "incidental", "channels": [], "domain": "marketwatch.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "low", "importance_reasons": ["tier-1 news source", "market-sensitive term"], "importance_score": 41, "intelligence_score": 50, "lane": "macro", "novelty_z": -0.513, "rank_score": 20.18, "related_tickers": [{"reason": "s\u0026p", "ticker": "SPY"}], "seendate": "2026-11-05T01:05:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "MarketWatch - Top Stories", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {"SPY": "s\u0026p"}, "tickers": ["SPY"], "title": "This year\u2019s worst-performing S\u0026P 500 stock is finally seeing some major relief", "title_zh": "\u4eca\u5e74\u8868\u73b0\u6700\u5dee\u7684\u6807\u666e500\u6210\u5206\u80a1\u7ec8\u4e8e\u8fce\u6765\u660e\u663e\u5598\u606f", "url": "https://www.marketwatch.com/story/this-years-worst-performing-s-p-500-stock-is-finally-seeing-some-major-relief-fff3fa85?mod=mw_rss_topstories"}, {"_id": "4d1d73120d9cc705", "centrality": "incidental", "channels": [], "domain": "marketwatch.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "low", "importance_reasons": ["tier-1 news source", "market-sensitive term"], "importance_score": 41, "intelligence_score": 48, "lane": "macro", "novelty_z": -0.697, "rank_score": 20.17, "related_tickers": [{"reason": "ai", "ticker": "QQQ"}], "seendate": "2026-11-05T01:03:00+00:00", "source": "news_rss", "source_lang": "en", "source_name": "MarketWatch - Top Stories", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {"QQQ": "ai"}, "tickers": ["QQQ"], "title": "Figma\u2019s stock dips as investors worry that AI momentum is coming at a high price", "title_zh": "Figma\u80a1\u4ef7\u4e0b\u632b\uff0c\u6295\u8d44\u8005\u62c5\u5fe7AI\u52bf\u5934\u4ee3\u4ef7\u9ad8\u6602", "url": "https://www.marketwatch.com/story/figmas-stock-falls-as-investors-worry-that-ai-momentum-is-coming-at-a-high-price-1aa2134d?mod=mw_rss_topstories"}, {"_id": "c500cd10d61db81e", "centrality": "incidental", "channels": ["consumer"], "domain": "bea.gov", "event": null, "importance": "low", "importance_reasons": ["first-party macro release", "market-sensitive term", "dashboard core theme"], "importance_score": 47, "intelligence_score": 47, "lane": "macro", "novelty_z": -0.618, "rank_score": 19.21, "related_tickers": [], "seendate": "", "source": "official", "source_lang": "en", "source_name": "BEA - Current Releases", "source_tier": "official", "theme": "inflation", "ticker_reasons": {}, "tickers": [], "title": "Real Personal Consumption Expenditures by State and Real Personal Income by State, 2024", "title_zh": "2024\u5e74\u5404\u5dde\u5b9e\u9645\u4e2a\u4eba\u6d88\u8d39\u652f\u51fa\u4e0e\u5b9e\u9645\u4e2a\u4eba\u6536\u5165", "url": "https://www.bea.gov/news/2026/real-personal-consumption-expenditures-state-and-real-personal-income-state-2024"}, {"_id": "6573880718e3028d", "centrality": "incidental", "channels": ["credit"], "domain": "federalreserve.gov", "event": null, "importance": "medium", "importance_reasons": ["first-party macro release", "tier-1 macro term", "dashboard core theme"], "importance_score": 54, "intelligence_score": 58, "lane": "fed", "novelty_z": -0.605, "rank_score": 18.0, "related_tickers": [{"reason": "bank", "ticker": "XLF"}], "seendate": "2026-10-29T20:30:00+00:00", "source": "official", "source_lang": "en", "source_name": "Federal Reserve - All Press", "source_tier": "official", "theme": "monetary", "ticker_reasons": {"XLF": "bank"}, "tickers": ["XLF"], "title": "Federal Reserve Board announces approval of application by The Bank of Nova Scotia", "title_zh": "\u7f8e\u8054\u50a8\u7406\u4e8b\u4f1a\u5ba3\u5e03\u6279\u51c6\u52a0\u62ff\u5927\u4e30\u4e1a\u94f6\u884c\u7684\u7533\u8bf7", "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261029a.htm"}, {"_id": "90c5243c8ff932dc", "centrality": "incidental", "channels": [], "domain": "economist.com", "echo": {"n_desks": 1, "n_sources": 1}, "event": null, "importance": "low", "importance_reasons": ["tier-1 news source", "market-sensitive term"], "importance_score": 41, "intelligence_score": 48, "lane": "macro", "novelty_z": -0.697, "rank_score": 17.09, "related_tickers": [{"reason": "ai", "ticker": "QQQ"}], "seendate": "2026-11-03T20:48:59+00:00", "source": "news_rss", "source_lang": "en", "source_name": "The Economist - Finance \u0026 Economics", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {"QQQ": "ai"}, "tickers": ["QQQ"], "title": "China\u2019s AI stock-market struggles are a warning", "title_zh": "\u4e2d\u56fdAI\u80a1\u5e02\u56f0\u5883\u662f\u4e00\u8bb0\u8b66\u544a", "url": "https://www.economist.com/finance-and-economics/2026/11/03/chinas-ai-stock-market-struggles-are-a-warning"}, {"_id": "9c0634166d51238b", "centrality": "incidental", "channels": ["fiscal_trade"], "domain": "bea.gov", "event": null, "importance": "low", "importance_reasons": ["first-party macro release", "market-sensitive term"], "importance_score": 39, "intelligence_score": 39, "lane": "macro", "novelty_z": -0.638, "rank_score": 15.94, "related_tickers": [], "seendate": "", "source": "official", "source_lang": "en", "source_name": "BEA - Current Releases", "source_tier": "official", "theme": "growth", "ticker_reasons": {}, "tickers": [], "title": "Budget and Performance", "title_zh": "\u9884\u7b97\u4e0e\u7ee9\u6548", "url": "https://www.bea.gov/about/budget-and-performance"}, {"_id": "af97f52274ecadc5", "centrality": "incidental", "channels": [], "domain": "economist.com", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 37, "lane": "macro", "novelty_z": null, "rank_score": 15.03, "related_tickers": [], "seendate": "2026-11-04T21:48:18+00:00", "source": "news_rss", "source_lang": "en", "source_name": "The Economist - Finance \u0026 Economics", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {}, "tickers": [], "title": "What markets make of the midterms", "title_zh": "\u5e02\u573a\u5982\u4f55\u770b\u5f85\u4e2d\u671f\u9009\u4e3e", "url": "https://www.economist.com/finance-and-economics/2026/11/04/what-markets-make-of-the-midterms"}, {"_id": "c81a877f1e711a67", "centrality": "incidental", "channels": ["growth"], "domain": "apps.bea.gov", "event": null, "importance": "low", "importance_reasons": ["first-party macro release", "tier-1 macro term"], "importance_score": 46, "intelligence_score": 46, "lane": "macro", "novelty_z": -0.638, "rank_score": 14.35, "related_tickers": [], "seendate": "2026-10-29T12:30:00+00:00", "source": "official", "source_lang": "en", "source_name": "BEA - News Releases", "source_tier": "official", "theme": "growth", "ticker_reasons": {}, "tickers": [], "title": "GDP (Advance Estimate), 3rd Quarter 2026", "title_zh": "GDP\uff08\u521d\u503c\u4f30\u8ba1\uff09\uff0c2026\u5e74\u7b2c\u4e09\u5b63\u5ea6", "url": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"}, {"_id": "c72e4b5cf418dfce", "centrality": "incidental", "channels": ["housing"], "domain": "census.gov", "event": null, "importance": "low", "importance_reasons": ["first-party macro release", "market-sensitive term"], "importance_score": 39, "intelligence_score": 43, "lane": "macro", "novelty_z": -0.186, "rank_score": 13.21, "related_tickers": [{"reason": "housing", "ticker": "XHB"}], "seendate": "2026-10-28T14:00:00+00:00", "source": "official", "source_lang": "en", "source_name": "Census - Economic Indicators", "source_tier": "official", "theme": "growth", "ticker_reasons": {"XHB": "housing"}, "tickers": ["XHB"], "title": "Housing Vacancies and Homeownership", "title_zh": "\u4f4f\u623f\u7a7a\u7f6e\u7387\u4e0e\u81ea\u6709\u7387", "url": "https://www.census.gov/housing/hvs/"}, {"_id": "4d3b943022b53a74", "centrality": "incidental", "channels": ["growth"], "domain": "npr.org", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 37, "lane": "macro", "novelty_z": -0.638, "rank_score": 13.14, "related_tickers": [], "seendate": "2026-11-03T22:33:33+00:00", "source": "news_rss", "source_lang": "en", "source_name": "NPR - Business", "source_tier": "tier1", "theme": "growth", "ticker_reasons": {}, "tickers": [], "title": "Legendary photographer on getting that perfect election night picture", "title_zh": "\u4f20\u5947\u6444\u5f71\u5e08\u8c08\u5982\u4f55\u62cd\u51fa\u5b8c\u7f8e\u7684\u9009\u4e3e\u4e4b\u591c\u7167\u7247", "url": "https://www.npr.org/2026/11/03/nx-s1-6005523/legendary-photographer-on-getting-that-perfect-election-night-picture"}, {"_id": "b6eb2e8836a511ab", "centrality": "incidental", "channels": ["growth"], "domain": "npr.org", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 37, "lane": "macro", "novelty_z": -0.638, "rank_score": 13.07, "related_tickers": [], "seendate": "2026-11-03T21:30:20+00:00", "source": "news_rss", "source_lang": "en", "source_name": "NPR - Business", "source_tier": "tier1", "theme": "growth", "ticker_reasons": {}, "tickers": [], "title": "A Binance engineer thought he was interviewing for a job. Then the hackers pounced", "title_zh": "\u4e00\u540dBinance\u5de5\u7a0b\u5e08\u4ee5\u4e3a\u81ea\u5df1\u5728\u9762\u8bd5\u5de5\u4f5c\uff0c\u968f\u540e\u9ed1\u5ba2\u7a81\u88ad", "url": "https://www.npr.org/2026/11/03/nx-s1-6027799/binance-crypto-exchange-cyber-heist"}, {"_id": "96c3a75c0edae959", "centrality": "incidental", "channels": [], "domain": "economist.com", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 37, "lane": "macro", "novelty_z": null, "rank_score": 12.93, "related_tickers": [], "seendate": "2026-11-03T19:06:57+00:00", "source": "news_rss", "source_lang": "en", "source_name": "The Economist - Finance \u0026 Economics", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {}, "tickers": [], "title": "America\u2019s renters are in serious trouble", "title_zh": "\u7f8e\u56fd\u79df\u6237\u6df1\u9677\u56f0\u5883", "url": "https://www.economist.com/finance-and-economics/2026/11/03/americas-renters-are-in-serious-trouble"}, {"_id": "1a51f10fa481edc4", "centrality": "incidental", "channels": ["growth"], "domain": "npr.org", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 39, "lane": "macro", "novelty_z": -0.513, "rank_score": 12.27, "related_tickers": [{"reason": "wall street", "ticker": "SPY"}], "seendate": "2026-11-01T08:20:19+00:00", "source": "news_rss", "source_lang": "en", "source_name": "NPR - Business", "source_tier": "tier1", "theme": "growth", "ticker_reasons": {"SPY": "wall street"}, "tickers": ["SPY"], "title": "\u0027Grasping at straws\u0027: Judge dismisses Trump suit against Wall Street Journal over Epstein letter", "title_zh": "\u201c\u6293\u6551\u547d\u7a3b\u8349\u201d\uff1a\u6cd5\u5b98\u9a73\u56de\u7279\u6717\u666e\u56e0\u7231\u6cfc\u65af\u5766\u4fe1\u4ef6\u8d77\u8bc9\u300a\u534e\u5c14\u8857\u65e5\u62a5\u300b", "url": "https://www.npr.org/2026/11/01/nx-s1-6025342/judge-dismisses-trump-suit-against-wall-street-journal-epstein-letter"}, {"_id": "48e5722032037b8d", "centrality": "incidental", "channels": [], "domain": "economist.com", "event": null, "importance": "low", "importance_reasons": ["tier-1 news source"], "importance_score": 34, "intelligence_score": 35, "lane": "macro", "novelty_z": null, "rank_score": 11.23, "related_tickers": [], "seendate": "2026-11-01T16:08:43+00:00", "source": "news_rss", "source_lang": "en", "source_name": "The Economist - Finance \u0026 Economics", "source_tier": "tier1", "theme": "macro", "ticker_reasons": {}, "tickers": [], "title": "Intensive parenting is no longer the preserve of the rich", "title_zh": "\u5bc6\u96c6\u578b\u80b2\u513f\u4e0d\u518d\u662f\u5bcc\u4eba\u7684\u4e13\u5229", "url": "https://www.economist.com/finance-and-economics/2026/11/01/intensive-parenting-is-no-longer-the-preserve-of-the-rich"}], "updated_at": "2026-11-06T01:05:02.543339+00:00"}</script>
 
 
 <footer class="rfoot">
   <span class="l-en">Research Reports are read-only analysis for informational purposes only — not investment advice. Figures are point-in-time and may change.</span><span class="l-zh">研究报告仅为信息性分析，不构成投资建议。数据为特定时点快照，可能调整。</span>
-
-
+  
+  
   <div><a class="rf-x" href="https://x.com/mastermindx001" target="_blank" rel="noopener"
      data-tip-en="The evidence desk on X — charts, state changes and receipts from the engines that build these pages."
      data-tip-zh="X 上的证据台——图表、状态变化与依据，来自构建这些页面的引擎。">
     <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" aria-hidden="true"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.22-6.82-5.97 6.82H1.66l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.11l11.97 15.64Z"/></svg>
     <span class="l-en">Follow @mastermindx001</span><span class="l-zh">关注 @mastermindx001</span></a></div>
-
+  
 </footer>
 <script>/* Browser-local research preferences over the existing authorized News snapshot.
  * Pure projection only: no requests, timers, source ownership or story-body cache.
@@ -2430,8 +2427,7 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
     return {accept:accept,getState:function(){return {filters:filters,pending:pending,mode:mode,selected:selected};}};
   }
   return {normalize:normalize,combine:combine,tokens:tokens,matchesTerms:matchesTerms,filterRows:filterRows,difference:difference,age:age,validSnapshot:validSnapshot,safeURL:safeURL,defaults:DEFAULT_FILTERS,mount:mount};
-});
-</script><script>/* Company news consumes the incumbent paid, source-rights-gated qbus API.
+});</script><script>/* Company news consumes the incumbent paid, source-rights-gated qbus API.
  * Stream events invalidate an authoritative snapshot; they are never treated as
  * a second story store. Licensed reporting exists only in this open workspace.
  */
@@ -2676,6 +2672,6 @@ html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-sc
   }
   return {ticker:ticker,safeURL:safeURL,validSnapshot:validSnapshot,streamParser:streamParser,mount:mount};
 });</script>
-<script src="theme.js?v=3c193891" defer></script>
+<script src="theme.js"></script>
 </body>
 </html>

@@ -1,0 +1,123 @@
+{
+  "schema": "news.integration-publication.v1",
+  "operation_id": "news-cockpit-rebuild-20261018-astra-01",
+  "source_commit": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+  "publisher": {
+    "schema": "mastermind.studio_git_publish_status.v1",
+    "operation_id": "news-cockpit-rebuild-20261018-astra-01",
+    "branch": "sol/web-news-cockpit-rebuild-20261018-astra-01",
+    "local_head_sha": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+    "remote_head_sha": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+    "clean": false,
+    "publication_state": "APPLIED",
+    "ready_to_push": false
+  },
+  "github": {
+    "head_sha": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+    "draft": true,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "merge_commit_sha": "4b68ab1e3d02bf46671378693210550d019b33d7"
+  },
+  "publication_disposition": "Original push's uncertain response reconciled APPLIED by original publisher status and independent GitHub head readback; no replay after EFFECT_UNKNOWN",
+  "publisher_action_ref": "cbeea5abad8a23926eff25f98ee6605747d33c87f51821d3f920fc5b09de43e0",
+  "precheck_disposition": "Two earlier attempts returned NOT_APPLIED before push. A bounded read-only diagnostic through the installed original owner proved readiness; no policy/config edits. Exact root cause of prior generic refusals remains unproven.",
+  "hosted_ci": {
+    "run_id": 42139937993,
+    "observation_only": true,
+    "jobs": [
+      {
+        "id": 127637449481,
+        "name": "ci-plan",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 127637449727,
+        "name": "contract-delta",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 127638555944,
+        "name": "ci-pack-0",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638555967,
+        "name": "ci-pack-1",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638555979,
+        "name": "ci-pack-3",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638555984,
+        "name": "ci-pack-7",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638555988,
+        "name": "ci-pack-9",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638556008,
+        "name": "ci-pack-4",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638556009,
+        "name": "ci-pack-6",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638556016,
+        "name": "ci-pack-5",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638556036,
+        "name": "ci-pack-11",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638556042,
+        "name": "ci-pack-10",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638556044,
+        "name": "ci-pack-8",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 127638556231,
+        "name": "ci-pack-2",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 127638557515,
+        "name": "trusted-ci",
+        "status": "completed",
+        "conclusion": "skipped"
+      }
+    ]
+  },
+  "recorded_at": "2026-11-06T01:24:16.309678+00:00"
+}

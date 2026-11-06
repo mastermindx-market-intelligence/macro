@@ -1,0 +1,153 @@
+{
+  "schema": "news.publisher-readonly-diagnostic.v1",
+  "operation": "news-cockpit-rebuild-20261018-astra-01",
+  "original_installed_code": true,
+  "original_config": true,
+  "configuration_writes": 0,
+  "publication_attempts": 0,
+  "started_at": "2026-11-06T00:48:28.697Z",
+  "status": {
+    "schema": "mastermind.studio_git_publish_status.v1",
+    "operation_id": "news-cockpit-rebuild-20261018-astra-01",
+    "branch": "sol/web-news-cockpit-rebuild-20261018-astra-01",
+    "local_head_sha": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+    "remote_head_sha": "eabea011188707542abd839d96eb0f4ef22f7b38",
+    "clean": true,
+    "publication_state": "DIFFERENT_REMOTE_HEAD",
+    "ready_to_push": true
+  },
+  "timings": [
+    {
+      "command": "mmx-workspace",
+      "verb": "status",
+      "repository": "mastermind",
+      "timeout_ms": 45000,
+      "elapsed_ms": 1686,
+      "outcome": "error",
+      "code": 2,
+      "signal": null,
+      "killed": false,
+      "stderr_bytes": 188
+    },
+    {
+      "command": "mmx-workspace",
+      "verb": "status",
+      "repository": "macro",
+      "timeout_ms": 45000,
+      "elapsed_ms": 7429,
+      "outcome": "returned"
+    },
+    {
+      "command": "mmx-workspace",
+      "verb": "status",
+      "repository": "terminal",
+      "timeout_ms": 45000,
+      "elapsed_ms": 1829,
+      "outcome": "error",
+      "code": 2,
+      "signal": null,
+      "killed": false,
+      "stderr_bytes": 186
+    },
+    {
+      "command": "mmx-workspace",
+      "verb": "status",
+      "repository": "macro",
+      "timeout_ms": 45000,
+      "elapsed_ms": 6558,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "rev-parse",
+      "timeout_ms": 45000,
+      "elapsed_ms": 42,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "rev-parse",
+      "timeout_ms": 45000,
+      "elapsed_ms": 43,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "symbolic-ref",
+      "timeout_ms": 45000,
+      "elapsed_ms": 51,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "remote",
+      "timeout_ms": 45000,
+      "elapsed_ms": 51,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "diff-files",
+      "timeout_ms": 45000,
+      "elapsed_ms": 198,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "diff-index",
+      "timeout_ms": 45000,
+      "elapsed_ms": 1114,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "ls-files",
+      "timeout_ms": 45000,
+      "elapsed_ms": 1205,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "remote",
+      "timeout_ms": 45000,
+      "elapsed_ms": 40,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "-c",
+      "timeout_ms": 45000,
+      "elapsed_ms": 41,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "-c",
+      "timeout_ms": 45000,
+      "elapsed_ms": 39,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "-c",
+      "timeout_ms": 45000,
+      "elapsed_ms": 39,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "-c",
+      "timeout_ms": 45000,
+      "elapsed_ms": 40,
+      "outcome": "returned"
+    },
+    {
+      "command": "git",
+      "verb": "-c",
+      "timeout_ms": 45000,
+      "elapsed_ms": 989,
+      "outcome": "returned"
+    }
+  ],
+  "finished_at": "2026-11-06T00:48:48.601Z"
+}

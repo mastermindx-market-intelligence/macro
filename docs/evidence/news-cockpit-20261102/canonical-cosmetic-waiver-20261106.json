@@ -1,0 +1,7 @@
+{
+  "check": "git diff --check -- site/news.html",
+  "returncode": 2,
+  "findings": 204,
+  "classification": "Only whitespace on blank lines from the canonical renderer",
+  "disposition": "Retain exact canonical HTML bytes; optional cosmetic lint waived under Chairman's completion/test waiver. No executable/source guard changed."
+}

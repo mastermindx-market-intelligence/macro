@@ -1,0 +1,122 @@
+{
+  "news_sha256": "9b33e1ea6ec878c22689645b0a49d97595ff71a3663d70bdbeebbdae94f7a65b",
+  "source_commit": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+  "recorded_at": "2026-11-06T01:24:16.313655+00:00",
+  "retained_files": [
+    {
+      "path": "docs/evidence/news-cockpit-20261102/browser-edition-20261106.json",
+      "bytes": 2032,
+      "sha256": "113540f75b578a27947ded2e781c3b2f762dc519b80902d304c84d647d9600f5"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/canonical-cosmetic-waiver-20261106.json",
+      "bytes": 334,
+      "sha256": "42f0b27363330adffff06b55eef4e023c259c1803f4b3a34c4e693b251b3c648"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/canonical-edition-20261106.json",
+      "bytes": 4676,
+      "sha256": "f23b01c84bfcdae24fc429d6f5c3e75780650a9fcadd15077b6eff428436ec86"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/canonical-page-tests-20261106.json",
+      "bytes": 465,
+      "sha256": "27f18dc97e0264ad8796a347aece7960511c4fbd35c58a798313e208e74d57bb"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/canonical-page-tests-20261106.log.gz",
+      "bytes": 486,
+      "sha256": "1ac03dd2012a3641889b3b563d7b678287b62ec3bf90217ee624ad4b3fac0b4a"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/canonical-render-20261106.json",
+      "bytes": 2704,
+      "sha256": "f1ca7e832c25357fa0d11000ed216d92d4e9b22059042bf0b779cf3a72ad50cb"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/canonical-render-20261106.log.gz",
+      "bytes": 5755,
+      "sha256": "2bb11cf9911f96a619a7d474701901dc3a3a69c64ed351f14da708f84ecc9199"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/canonical-render-initial-20261106.json",
+      "bytes": 1986,
+      "sha256": "a4191a515407e5464acf80e586c83612fad478d205c4a671a0eecf2dda4cd1f6"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/canonical-render-initial-20261106.log.gz",
+      "bytes": 3515,
+      "sha256": "175cda1ef0d3cd79ea151e6690b4d83f0e87285437607ab0f2dc86c122e9c067"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/canonical-render-stop-20261106.json",
+      "bytes": 616,
+      "sha256": "f4fc7a089364b7a7ecb79d4b8c3c26a38583c38c3eb2671d549008871a2186e6"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/ci-copy-repair-20261106.json",
+      "bytes": 2861,
+      "sha256": "47f1cc8259179c6e195191aecbe710db2ac69d22a4d7a54db8647f54de6c112f"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/ci-copy-repair-20261106.log.gz",
+      "bytes": 503,
+      "sha256": "39b1ad76531bbe80f49927bf28b8f00d20aa86b167432361f4a64956d1598b24"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/ci-regression-baseline-20261106.json",
+      "bytes": 2914,
+      "sha256": "66d9e0ff8d095ffdf587170713d347ef69381f9f9fe6c52da0ae61f1d509c46a"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/ci-regression-baseline-20261106.log.gz",
+      "bytes": 2185,
+      "sha256": "ae78ffb2d5c31ff66de8457445bce60748c786236c74b75a85094b8a85192921"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/edition-desktop-dark-en-20261106.png",
+      "bytes": 270487,
+      "sha256": "d456a156cbbbf60c72f3261daa56eaaccee8b8acbcfc11da459e037dc589d519"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/edition-mobile-light-zh-20261106.png",
+      "bytes": 128269,
+      "sha256": "4402f7593aae060f6fe75f97536a5c524890ae2d7b90233adebb679f7b29fd50"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/edition-mobile-reader-light-zh-20261106.png",
+      "bytes": 63039,
+      "sha256": "3c9780833904d2149d1908df60d9e2ef77f0a087fabdb7e5d43c6bcdeda39c0c"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/edition-visual-review-20261106.json",
+      "bytes": 934,
+      "sha256": "51167d5856f6e40e0cb3cb8894a7d0fbe8ebef4cb92915e5f3b62f9899ae62dc"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/integration-candidate-20261106.json",
+      "bytes": 3405,
+      "sha256": "ba82e117a3d236ffce333b4104438b1d9adf4dc139ce907e9d63b17be70dcc8d"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/integration-focused-20261106.json",
+      "bytes": 914,
+      "sha256": "3ad19433a974aebf5251b705072789b8f20bb409d9edd07fe1a47e831d7a791b"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/integration-focused-20261106.log.gz",
+      "bytes": 618,
+      "sha256": "21ceb9e58b017846c1c39f17be0a7e25da2bf48c713f0e1712b8a1645471a91d"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/integration-publication-20261106.json",
+      "bytes": 3537,
+      "sha256": "de203bd91836a0a3cfc31fbdc2cfb6f89ea63b05f51b51e1d764d87b4cae17c9"
+    },
+    {
+      "path": "docs/evidence/news-cockpit-20261102/publisher-readonly-diagnostic-20261106.json",
+      "bytes": 3503,
+      "sha256": "eb66a19ac4f84d80f431e17937737a4718711c8c4ef70ce2be3f081270254d24"
+    }
+  ]
+}
