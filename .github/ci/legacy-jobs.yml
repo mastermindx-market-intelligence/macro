@@ -26080,6 +26080,60 @@ jobs:
       - name: pick lab liquidity gate regression tests
         run: python -m pytest tests/test_pick_lab_liquidity.py tests/test_pick_lab_core.py tests/test_pick_lab_hk_runner.py tests/test_pick_lab_hk_render.py -q
 
+  pick-lab-navigation:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # D03 T47: actual Jinja markup + rendered inline navigation in Node.
+    # Keep the incumbent Pick Lab jobs unchanged. This explicit scope retains
+    # concrete imports, package-init effects, includes and the local JS harness;
+    # only opaque unrelated traversal/subprocess fallbacks are omitted.
+    # Browser geometry/theme/motion evidence is a separate actual-page proof.
+    paths:
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/indicators.py"
+      - "engine/pick_lab/__init__.py"
+      - "engine/pick_lab/candidates.py"
+      - "engine/pick_lab/registry.py"
+      - "engine/pick_lab/render.py"
+      - "engine/pick_lab/signals_1d.py"
+      - "engine/pick_lab/snapshot.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/store.py"
+      - "site/flowleaders/leaders.json"
+      - "site/leaderradar/radar.json"
+      - "templates/_all_tools_menu.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/us_stocks_lab.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/js/pick_lab_navigation_harness.cjs"
+      - "tests/test_pick_lab_navigation.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: Pick Lab navigation markup and inline state
+        run: node --version && python -m pytest tests/test_pick_lab_navigation.py -q
+
   pick-lab-cn-render:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
     gate: code
