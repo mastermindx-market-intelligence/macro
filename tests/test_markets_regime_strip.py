@@ -848,4 +848,3 @@ def test_builder_stamps_final_assets_after_copy_and_price_refresh(tmp_path, monk
     meta, markets = _market_assignments(asset.decode())
     assert meta["asOf"] == "2026-06-25"
     assert markets[0]["now"]["asOf"] == ("2026-11-05" if refresh_prices else "2026-06-25")
-

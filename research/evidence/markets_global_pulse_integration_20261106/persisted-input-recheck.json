@@ -1,0 +1,51 @@
+{
+  "schema": "c4.markets.persisted-input-recheck.v1",
+  "base": "1d7068eb12b810c5aa9b0439468fdccaa5a512c6",
+  "hydration_exit_code": 0,
+  "hydration_runtime_seconds": 98.45,
+  "hydration_log_sha256": "3371430cd9db274673d915a50dc14a3c5bf1e19c80eb9f295233d817fdd3744b",
+  "hydration_log_tail": "worktree-sparse: materialized data\n",
+  "inputs": {
+    "us": {
+      "path": "data/market_state/latest.json",
+      "blob": "81a188e43cbcae868ac20552fa5d455231e17206",
+      "sha256": "f594629df2308baf9ea05b5d50afa6ee51dcc22681d84b6fb4d8c3b449f18eec",
+      "asof": "2026-11-05",
+      "verdict": "RISK_OFF"
+    },
+    "hk": {
+      "path": "data/hk_market_state/latest.json",
+      "blob": "c45c44061bfb3ab9c6305f74630c03e99a0e28c8",
+      "sha256": "495baa1fc14b2c5752139d9fccf3640be64fd92ec4098e3c0d247ee636f997e6",
+      "asof": "2026-11-04",
+      "verdict": "RISK_OFF"
+    },
+    "cn": {
+      "path": "data/china_market_state/latest.json",
+      "blob": "6893472f14336611fd7b3b51084b827fe45ee144",
+      "sha256": "029f9c89003cac39f1aa6ea85f5911a2e61f00aeefa83d23aa2df75ee0ff3af9",
+      "asof": "2026-11-04",
+      "verdict": "RISK_OFF"
+    }
+  },
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_markets_regime_strip.py::test_live_tree_copy_follows_persisted_verdict",
+    "-q",
+    "-rs",
+    "--basetemp",
+    "/tmp/macro-pr7594-c4-20261106/persisted-recheck",
+    "--cache-clear",
+    "-o",
+    "cache_dir=/tmp/macro-pr7594-c4-20261106/pytest-cache"
+  ],
+  "test_exit_code": 0,
+  "test_runtime_seconds": 4.06,
+  "test_log_sha256": "b40307e8f303809355413848a6a81c33b612281ff8e50f28e7426da7a0593d34",
+  "test_log_tail": ".                                                                        [100%]\n1 passed in 2.44s\n",
+  "source_unchanged": true,
+  "unstaged_paths": [],
+  "untracked_unignored": []
+}

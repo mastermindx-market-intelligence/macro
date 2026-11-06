@@ -674,4 +674,3 @@ def test_pulse_is_covered_by_existing_membership_lock():
     src = TEMPLATE.read_text(encoding="utf-8")
     assert "lock_hide='.global-regime-pulse,.cyc-stage" in src
     assert "lock_renderer='markets_app.js'" in src
-
