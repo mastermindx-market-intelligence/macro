@@ -5472,8 +5472,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("scripts/build_free_content.py", 138, 5_934),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_675),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5481,6 +5481,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Sanctions geography F02-X1 (#6834, 2026-11-06): original natural CI
+    42242789442 / contract-delta job127977105527 measured candidate aa0023fd
+    against exact tested base 4b2a019bf313. Decoded log SHA256
+    959565a0a441193661340103a8a5d4f17cb17319338158638702a42fef89db96:
+
+        templates/index.html          137 jobs, 5,912 -> 5,912 weight
+        scripts/build_free_content.py 137 jobs, 5,927 -> 5,934 weight
+        engine/prophet/plan_book.py    131 jobs, 5,668 -> 5,675 weight
+
+    All remain ten packs; no newly selected jobs. The existing cn-standout-audit
+    job gains one pytest command naming the three sanctions source/build/UI
+    suites, exactly seven estimator units. Its existing CN checks and the
+    bounded presentation dependency closure remain enrolled. Fund only the
+    two measured weight excesses, without padding or selector changes. The
+    index weight, all selected-job ceilings, pack ceiling, runtime limits,
+    semantic evidence requirements and assertions remain unchanged. These
+    are planning estimates, not measured execution times.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
