@@ -10948,10 +10948,15 @@ jobs:
           node-version: "20"
       - name: install render test dependencies
         run: pip install pytest pandas numpy pyyaml jinja2 pyarrow
+      # F11: run 42133634168 spent 491.8s of this job's 900s budget installing
+      # OS dependencies; slow mirror downloads dominated, while Chromium took 7.3s.
+      # Runner image 20261101.360.1 already had all Chromium link libraries.
+      # Keep the pinned browser and every assertion; this suite passes with no CJK
+      # fonts. A missing library on a future runner fails at browser launch.
       - name: install browser test dependencies
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       # F10 (intl-GS CI budget, DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
       # the unrestricted post-checkout base fetch cost ~4 minutes on hosted runners
       # (PR full-suite runs of 2026-10-31; every subtest green, job cut at the pack
