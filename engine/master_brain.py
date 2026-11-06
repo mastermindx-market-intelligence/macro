@@ -1976,6 +1976,8 @@ def _call_model(system: str, user: str, cfg: dict,
             cfg, application_mode, None, _application_operation_id())
         if route is None:
             return None, route_refusal
+        if route["inspection"].get("schema") == "mastermind.fabric_application_inspection.v2":
+            return None, "application_fabric_durable_owner_required"
         from engine import llm_auth
         try:
             return _call_application_fabric(system, user, cfg, route, served=served)
@@ -2272,6 +2274,23 @@ def _mb_auto_payload(operation, step, index):
     return transport._load_json(raw, unknown=False)
 
 
+def _mb_auto_close_settled(operation):
+    close = operation["close"]
+    if close is None or close["effect_unknown"]:
+        return False
+    if close["disposition"] == "closed":
+        return close["closed"] and close["attempted"]
+    # A correlated refusal says this close was refused; it does not release
+    # an already admitted turn. Only positive local no-admission evidence can
+    # settle a failed operation without a native close receipt.
+    return (close["disposition"] in ("not_bound", "local_only")
+            and not close["closed"] and not close["attempted"]
+            and operation["route_identity"] is None
+            and all(step["state"] == "failed" and step["effect_unknown"] is False
+                    and step["application_observation"] is None
+                    for step in operation["steps"]))
+
+
 def _mb_auto_validate_operation(operation, maximum_steps):
     from engine import fabric_inference_client as transport
     fields = {"operation_id", "inspection", "max_tokens", "steps", "route_identity",
@@ -2368,8 +2387,7 @@ def _mb_auto_validate_operation(operation, maximum_steps):
                 or usage["usage_state"] == "unknown" and any(usage[key] is not None for key in totals)):
             raise ValueError("brief_auto_usage_receipt_invalid")
     if operation["state"] in ("complete", "failed"):
-        if (pending or uncertain or not operation["steps"] or close is None
-                or close["effect_unknown"] or close["disposition"] in ("pending", "effect_unknown")):
+        if (pending or uncertain or not operation["steps"] or not _mb_auto_close_settled(operation)):
             raise ValueError("brief_auto_settlement_invalid")
         if operation["state"] == "complete" and (
                 close["disposition"] != "closed" or usage is None
@@ -2831,8 +2849,7 @@ class _BriefAutoContext:
         entry = _mb_auto_clone(self.entry)
         op = self.operation(entry)
         op["close"], op["usage"] = _mb_auto_clone(close), _mb_auto_clone(usage)
-        held = (first_error is not None or close["effect_unknown"]
-                or close["disposition"] in ("pending", "effect_unknown")
+        held = (first_error is not None or not _mb_auto_close_settled(op)
                 or any(step["state"] == "intent" or step["effect_unknown"] for step in op["steps"]))
         op["state"] = ("held" if held else "complete" if op["steps"]
                        and all(step["state"] == "observed" for step in op["steps"])
@@ -3204,9 +3221,10 @@ def _mb_legacy_snapshot(root, lens):
         return _brief_cache._cache_hash(state)
 
 
-def _mb_legacy_publish(brief, root, lens, persist, snapshot):
+def _mb_legacy_publish(brief, root, lens, persist, snapshot, cfg, selection):
     with _brief_cache._cache_lock(_mb_auto_path(root, lens), root):
-        if _brief_cache._cache_hash(_mb_auto_load(root, lens)) != snapshot:
+        if (_brief_cache._cache_hash(_mb_auto_load(root, lens)) != snapshot
+                or _application_selection(cfg) != selection):
             return False
         if persist:
             try:
@@ -4152,6 +4170,7 @@ def _run_once(persist: bool = True, root: Path | None = None, force: bool = Fals
         root = _mb_auto_root(root)
         snapshot = _mb_legacy_snapshot(root, lens)
         selected, mode, refusal = _application_selection(cfg)
+        selection = (selected, mode, refusal)
         auto_route = None
         if selected:
             if refusal:
@@ -4204,8 +4223,11 @@ def _run_once(persist: bool = True, root: Path | None = None, force: bool = Fals
             brief["key_facts"] = _key_facts_for(lens, state)
         except Exception:  # noqa: BLE001 — additive, never fatal
             brief["key_facts"] = []
+        if (_application_selection(cfg) != selection
+                or _mb_legacy_snapshot(root, lens) != snapshot):
+            return _mb_auto_held(lens=lens, reason="application_fabric_publication_superseded")
         _translate_brief(brief, cfg, lens)    # attach brief['zh'] for the 中文 toggle
-        if not _mb_legacy_publish(brief, root, lens, persist, snapshot):
+        if not _mb_legacy_publish(brief, root, lens, persist, snapshot, cfg, selection):
             return _mb_auto_held(lens=lens, reason="application_fabric_publication_superseded")
         return brief
     except Exception as e:  # noqa: BLE001 — additive, never fatal

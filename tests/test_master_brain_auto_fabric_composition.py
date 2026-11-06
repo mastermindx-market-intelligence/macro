@@ -20,6 +20,7 @@ from tests.test_fabric_service_auto_composition import auto_native, auto_service
 from tests.test_fabric_workload_auto_composition import auto_workloads  # noqa: F401
 
 STATE = {"macro": {"date": "2026-11-06", "quad": "Q1"}}
+_REAL_CALL_MODEL = mb._call_model
 
 
 def reply(summary="Growth remains steady.", thesis=True):
@@ -322,7 +323,7 @@ def test_legacy_run_started_before_auto_cannot_overwrite_completed_auto_publicat
     assert bytes_after(state) == before and counts(state) == (1, 1, 1, 1)
 
 
-@pytest.mark.parametrize("field", ["request_digest", "routed_digest", "model", "operation", "translation_layout", "publication"])
+@pytest.mark.parametrize("field", ["request_digest", "routed_digest", "model", "operation", "translation_layout", "publication", "close_refused"])
 def test_corrupt_warm_receipt_refuses_before_any_new_binding(brief_auto, field):
     state = brief_auto
     assert run(state).get("degraded_reason") is None
@@ -340,6 +341,9 @@ def test_corrupt_warm_receipt_refuses_before_any_new_binding(brief_auto, field):
         entry["operation_id"] = entry["english"]["operation_id"] = "master_brain:" + "a" * 32
     elif field == "translation_layout":
         entry["translations"]["layout"] = [["summary", None]]
+    elif field == "close_refused":
+        entry["english"]["state"] = "failed"
+        entry["english"]["close"] = {"disposition": "refused", "closed": False, "effect_unknown": False, "attempted": True}
     else:
         entry["publication"]["data"]["payload"] = "{}"
         entry["publication"]["data"]["digest"] = hashlib.sha256(b"{}").hexdigest()
@@ -380,3 +384,86 @@ def test_explicit_native_step_limit_is_not_repaired_by_a_new_english_operation(b
     before = counts(state)
     again = run(state)
     assert again.get("degraded_reason") and counts(state) == before
+
+
+@pytest.mark.parametrize("phase", ["english", "translation"])
+def test_correlated_close_refusal_keeps_admitted_original_held(brief_auto, monkeypatch, phase):
+    state = brief_auto
+    state.cfg.update(translate_zh=True, zh_batch_size=2)
+    if phase == "translation":
+        assert synthesize(state).get("degraded_reason") is None
+        state.native.response = _fixed.packet(json.dumps(["增长平稳。", "市场复杂。"]))
+    # The actual B handler sends its correlated HTTP409 envelope and the actual
+    # client decodes "refused". The lease deliberately remains admitted.
+    with patch.object(state.native.gateway, "close_application_turn",
+                      return_value={"disposition": "refused"}):
+        result = run(state)
+    entry = saved(state)["entries"][0]
+    op = entry["english"] if phase == "english" else entry["translations"]["batches"][0]["operation"]
+    assert op["close"] == {"disposition": "refused", "closed": False, "effect_unknown": False, "attempted": True}
+    assert op["state"] == entry["state"] == "held"
+    assert result["degraded_reason"] == "application_fabric_original_held"
+    assert entry["publication"] is None
+    assert any(row["state"] != "released" for row in state.native.rows("leases"))
+    before = counts(state)
+    monkeypatch.delenv(auth.APPLICATION_MODE_ENV)
+    assert run(state)["degraded_reason"] == "application_fabric_original_held"
+    assert counts(state) == before
+
+
+def test_auto_activated_during_gather_cannot_start_anonymous_translation(brief_auto, monkeypatch):
+    state = brief_auto
+    state.cfg.update(translate_zh=True, zh_batch_size=2)
+    monkeypatch.delenv(auth.APPLICATION_MODE_ENV)
+    monkeypatch.setattr(owner, "__file__", str(state.root / "engine/provider_production_modes.py"))
+    monkeypatch.setattr(mb, "_call_model", _REAL_CALL_MODEL)
+    def gather(root):
+        monkeypatch.setenv(auth.APPLICATION_MODE_ENV, "shared_fabric")
+        return copy.deepcopy(state.input)
+    monkeypatch.setitem(mb.LENSES["macro"], "state_fn", gather)
+    result = run(state)
+    assert result["degraded_reason"] == "application_fabric_publication_superseded"
+    entry = saved(state)["entries"][0]
+    assert entry["english"]["state"] == "complete" and entry["translations"] is None
+    assert entry["publication"] is None and counts(state) == (1, 1, 1, 1)
+    state.native.response = _fixed.packet(json.dumps(["增长平稳。", "市场复杂。"]))
+    final = run(state)
+    assert final.get("degraded_reason") is None and final["zh"], final
+    assert saved(state)["entries"][0]["operation_id"] == entry["operation_id"]
+    assert counts(state) == (3, 3, 3, 3)
+
+
+@pytest.mark.parametrize("activation", ["after_english", "during_translation"])
+def test_late_auto_selection_refuses_contextless_legacy_continuation(brief_auto, monkeypatch, activation):
+    state = brief_auto
+    state.cfg.update(translate_zh=True, zh_batch_size=2)
+    monkeypatch.delenv(auth.APPLICATION_MODE_ENV)
+    # Make the private legacy helper's default root the same qualified owner;
+    # an unavailable/mis-rooted factory would not test the anonymous AUTO gate.
+    monkeypatch.setattr(owner, "__file__", str(state.root / "engine/provider_production_modes.py"))
+    def legacy(system, user, cfg, served=None):
+        if str(cfg.get("usage_stage") or "").endswith("-zh"):
+            return _REAL_CALL_MODEL(system, user, cfg, served)
+        if activation == "after_english":
+            monkeypatch.setenv(auth.APPLICATION_MODE_ENV, "shared_fabric")
+        return reply(), None
+    monkeypatch.setattr(mb, "_call_model", legacy)
+    if activation == "during_translation":
+        translate = mb._translate_brief
+        def late_translate(brief, cfg, lens):
+            monkeypatch.setenv(auth.APPLICATION_MODE_ENV, "shared_fabric")
+            return translate(brief, cfg, lens)
+        monkeypatch.setattr(mb, "_translate_brief", late_translate)
+    result = run(state)
+    assert result["degraded_reason"] == "application_fabric_publication_superseded"
+    assert counts(state) == (0, 0, 0, 0)
+    assert not (state.root / "data/regime/master_brief.json").exists()
+    assert not (state.root / "data/master_brain/theses.jsonl").exists()
+
+
+def test_contextless_model_helper_refuses_qualified_auto_before_binding(brief_auto, monkeypatch):
+    state = brief_auto
+    monkeypatch.setattr(owner, "__file__", str(state.root / "engine/provider_production_modes.py"))
+    result = _REAL_CALL_MODEL("Summarize.", "Synthetic context.", state.cfg)
+    assert result == (None, "application_fabric_durable_owner_required")
+    assert counts(state) == (0, 0, 0, 0)
