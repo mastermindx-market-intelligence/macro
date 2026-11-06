@@ -1,0 +1,161 @@
+{
+  "document_type": "planned_accounting_pack_acceptance",
+  "packs": [
+    {
+      "id": "PK01",
+      "name": "Debt, liquidity, covenants and maturities",
+      "boundary": "Amounts, maturity schedule, covenant wording and source dates; consume Capital Structure state rather than recomputing it.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK02",
+      "name": "Stock compensation and dilution",
+      "boundary": "Awards/expense/vesting and share-basis reconciliation; no new portfolio sizing or capital authority.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK03",
+      "name": "Segments and geographic/product dimensions",
+      "boundary": "Dimensional maps, eliminations and reporting-definition changes; no theme or relationship graph.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK04",
+      "name": "Revenue recognition and contract balances",
+      "boundary": "Recognized revenue, deferrals and contract assets/liabilities distinguished; period-compatible movement.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK05",
+      "name": "Tax and uncertain tax positions",
+      "boundary": "Effective-rate/one-off/deferred-tax basis, disclosed uncertain positions, no legal conclusion.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK06",
+      "name": "Leases and off-balance commitments",
+      "boundary": "Lease types, terms and commitments at their stated scope; avoid double counting.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK07",
+      "name": "M&A, goodwill, intangibles and impairments",
+      "boundary": "Acquisition-date scope, purchase accounting and impairment evidence; no unsupported causal return thesis.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK08",
+      "name": "Legal contingencies",
+      "boundary": "Allegations, disclosed ranges and procedural status separated; not probability of liability.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK09",
+      "name": "Controls, auditor and going concern",
+      "boundary": "Explicit issuer/auditor wording, remediation and period; no fabricated fraud verdict.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK10",
+      "name": "Proxy compensation and governance",
+      "boundary": "Compensation/performance periods and definitions, source-backed proxy observations; no voting procedures.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK11",
+      "name": "Financial-institution credit/capital/liquidity",
+      "boundary": "Bank-specific denominators and disclosed regulatory definitions, accounting-context only.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    },
+    {
+      "id": "PK12",
+      "name": "Biotech cash/R&D/financing disclosures",
+      "boundary": "Accounting disclosures and explicit static assumptions; no trial success, catalyst forecast or Grey Deer Risk model.",
+      "requires": [
+        "schema",
+        "source-qualified golden set",
+        "independent domain review",
+        "held-out quality test",
+        "typed absences",
+        "production source trace"
+      ]
+    }
+  ]
+}
