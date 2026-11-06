@@ -1,0 +1,38 @@
+# Daily bounded maintenance of the /opt/macro Git object store (2026-10-19
+# root-disk incident). The script is the replacement for auto-gc, which stays
+# disabled (gc.auto=0) so the 3-minute pull never repacks on its own. It
+# refuses with a non-zero exit (failed unit, visible in `systemctl --failed`)
+# when free space for the worst-case repack output is missing, and exits 75
+# (success, logged as deferred) when the updater lock or memory is busy.
+#
+# Installed and self-armed by update.sh. The script runs from its installed
+# copy, not from the work tree that macro-update rewrites in place.
+#
+# The droplet is shared with macro-api and Terminal production builds: idle
+# I/O class, lowest CPU weight, and a memory cap so a repack can never push
+# the API into the OOM killer. RuntimeMaxSec bounds a wedged run so it cannot
+# overlap the next night.
+[Unit]
+Description=Mastermind bounded Git store maintenance for /opt/macro
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/macro-git-store-maintenance
+SuccessExitStatus=75
+TimeoutStartSec=6h
+RuntimeMaxSec=6h
+Nice=19
+IOSchedulingClass=idle
+CPUWeight=10
+CPUQuota=80%
+MemoryHigh=640M
+MemoryMax=900M
+IOWeight=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

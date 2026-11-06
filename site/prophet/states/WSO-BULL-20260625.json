@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WSO-BULL-20260625",
-  "asof": "2026-10-30",
+  "asof": "2026-11-06",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 8.0,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 0.0,
-    "progress": 29.8,
+    "progress": 0.0,
     "pace": 0.0,
-    "retention": 71.3,
-    "overlay": 53.0
+    "retention": 0.0,
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": -0.501,
-    "dist_to_t1_r": 1.001,
-    "dist_to_t2_r": 2.501,
-    "horizon_pct_used": 155.6,
-    "p1": 0.3326,
-    "p2": 0.1663,
+    "dist_to_stop_r": -1.034,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 171.1,
+    "p1": -0.0228,
+    "p2": -0.0114,
     "p3": null,
-    "move_r": 0.499,
+    "move_r": -0.034,
     "mfe_r": 0.7,
     "mae_r": -1.336
   },
@@ -45,16 +45,8 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 70,
-  "tau": 1.5556,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 77,
+  "tau": 1.7111,
   "closed": true,
   "outcome": "INVALIDATED"
 }

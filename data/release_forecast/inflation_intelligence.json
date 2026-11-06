@@ -1908,13 +1908,13 @@
             "evidence_time_unknown"
           ],
           "model_id": null,
-          "obs_id": "819eaa0d91a7c738",
+          "obs_id": "f1949cd82fa1da3f",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2026-08-31",
-          "reference_start": "2026-08-01",
+          "reference_end": "2026-09-30",
+          "reference_start": "2026-09-01",
           "rights": "public_official",
           "seasonal_treatment": "sa",
           "source": "fred:PCEPILFE",
@@ -1924,13 +1924,13 @@
           "target_epoch": null,
           "tenor": null,
           "unit": "pct_mom",
-          "value": 0.247439,
+          "value": 0.316502,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2026-08-31",
-          "start": "2026-08-01"
+          "end": "2026-09-30",
+          "start": "2026-09-01"
         },
         "scope": "core",
         "series_id": "PCEPILFE",
@@ -1938,7 +1938,7 @@
         "source_class": "official_measurement",
         "transform": "pct_mom",
         "unit": "pct_mom",
-        "value": 0.247439,
+        "value": 0.316502,
         "value_state": "present"
       },
       "official_pce_core_yoy": {
@@ -1974,13 +1974,13 @@
             "evidence_time_unknown"
           ],
           "model_id": null,
-          "obs_id": "f1cf7ec6a7a6d6c5",
+          "obs_id": "079ec5cb5b054b02",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2026-08-31",
-          "reference_start": "2025-09-01",
+          "reference_end": "2026-09-30",
+          "reference_start": "2025-10-01",
           "rights": "public_official",
           "seasonal_treatment": "sa",
           "source": "fred:PCEPILFE",
@@ -1990,13 +1990,13 @@
           "target_epoch": null,
           "tenor": null,
           "unit": "pct_yoy",
-          "value": 3.007596,
+          "value": 3.12116,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2026-08-31",
-          "start": "2025-09-01"
+          "end": "2026-09-30",
+          "start": "2025-10-01"
         },
         "scope": "core",
         "series_id": "PCEPILFE",
@@ -2004,7 +2004,7 @@
         "source_class": "official_measurement",
         "transform": "pct_yoy",
         "unit": "pct_yoy",
-        "value": 3.007596,
+        "value": 3.12116,
         "value_state": "present"
       },
       "official_pce_headline_mom": {
@@ -2038,13 +2038,13 @@
             "evidence_time_unknown"
           ],
           "model_id": null,
-          "obs_id": "86c8655d0393a55b",
+          "obs_id": "9e07e03e56708d5a",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2026-08-31",
-          "reference_start": "2026-08-01",
+          "reference_end": "2026-09-30",
+          "reference_start": "2026-09-01",
           "rights": "public_official",
           "seasonal_treatment": "sa",
           "source": "fred:PCEPI",
@@ -2054,13 +2054,13 @@
           "target_epoch": null,
           "tenor": null,
           "unit": "pct_mom",
-          "value": 0.31028,
+          "value": 0.49084,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2026-08-31",
-          "start": "2026-08-01"
+          "end": "2026-09-30",
+          "start": "2026-09-01"
         },
         "scope": "headline",
         "series_id": "PCEPI",
@@ -2068,7 +2068,7 @@
         "source_class": "official_measurement",
         "transform": "pct_mom",
         "unit": "pct_mom",
-        "value": 0.31028,
+        "value": 0.49084,
         "value_state": "present"
       },
       "official_pce_headline_yoy": {
@@ -2104,13 +2104,13 @@
             "evidence_time_unknown"
           ],
           "model_id": null,
-          "obs_id": "a3ed5cdb0b2865bc",
+          "obs_id": "ba1a1eb6b621006a",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2026-08-31",
-          "reference_start": "2025-09-01",
+          "reference_end": "2026-09-30",
+          "reference_start": "2025-10-01",
           "rights": "public_official",
           "seasonal_treatment": "sa",
           "source": "fred:PCEPI",
@@ -2120,13 +2120,13 @@
           "target_epoch": null,
           "tenor": null,
           "unit": "pct_yoy",
-          "value": 3.419032,
+          "value": 3.648874,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2026-08-31",
-          "start": "2025-09-01"
+          "end": "2026-09-30",
+          "start": "2025-10-01"
         },
         "scope": "headline",
         "series_id": "PCEPI",
@@ -2134,7 +2134,7 @@
         "source_class": "official_measurement",
         "transform": "pct_yoy",
         "unit": "pct_yoy",
-        "value": 3.419032,
+        "value": 3.648874,
         "value_state": "present"
       },
       "radar_expectation_read_cpi_core_next_mom": {
@@ -2229,13 +2229,13 @@
             "evidence_time_unknown"
           ],
           "model_id": null,
-          "obs_id": "5684ab12cd00a555",
+          "obs_id": "debbcb84d70074ea",
           "observation_precision": "unknown",
           "observation_time": null,
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2027-08-01",
-          "reference_start": "2026-08-01",
+          "reference_end": "2027-09-01",
+          "reference_start": "2026-09-01",
           "rights": "unknown",
           "seasonal_treatment": "n/a",
           "source": "fred:MICH",
@@ -2245,13 +2245,13 @@
           "target_epoch": null,
           "tenor": "1y",
           "unit": "pct_ann_rate",
-          "value": 4.0,
+          "value": 4.6,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2027-08-01",
-          "start": "2026-08-01"
+          "end": "2027-09-01",
+          "start": "2026-09-01"
         },
         "scope": "household",
         "series_id": "MICH",
@@ -2259,7 +2259,7 @@
         "source_class": "household_survey",
         "transform": "pct_ann_rate",
         "unit": "pct_ann_rate",
-        "value": 4.0,
+        "value": 4.6,
         "value_state": "present"
       }
     },
