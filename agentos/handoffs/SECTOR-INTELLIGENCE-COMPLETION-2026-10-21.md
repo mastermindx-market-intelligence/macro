@@ -1,0 +1,217 @@
+---
+workstream: "WS:SECTOR-INTELLIGENCE-COMPLETION"
+session: "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0 (SSD worktree sector-intelligence-macro-7646-82cb8b)"
+model: fable
+ended_because: ci_handoff
+mission: >
+  Chairman commission 2026-10-21: continue macro #7646 using the Sector Intelligence and Cycles
+  completion masterplan and the 134-row capability matrix; preserve the committed Macro candidate
+  4fd82658; complete backend, the editable Paper design, both Macro surfaces and real
+  production/natural-update proof; use Opus suborchestrators for domain judgment and the
+  Subagent Fabric for bounded labour; never close at a document, screenshot, test, merge or
+  deployment milestone.
+state_before: >
+  Candidate 4fd82658fc4a9cc6259f5acff015e2a9f1cfaa51 sat committed and clean on the local-only
+  Studio branch sol/web-sector-central-macro-paper-pivot-20261020-sol-001 with the managed
+  publisher NOT_APPLIED and no matching PR; Terminal #1055 was closed unmerged; origin/main was
+  e5dd30c6344e4b62a0beba054ac4da97e00bab36. Paper page p-Y-0 held 26 current boards and no
+  dedicated Cycles workspace. No orchestration or Fabric lane for this commission existed.
+changed:
+  - path: research/sector_completion_20261021/
+    what: >
+      Vendored the launch brief, the masterplan and the capability matrix (committed inside merge
+      3d8d14ac) and added CONTINUATION_HANDOFF_2026-10-21.md, the running human checkpoint.
+  - path: "(git) merge 3d8d14acdc8de99fa2c17316aa22de6177364dbc"
+    what: >
+      --no-ff merge of candidate 4fd82658 onto main e5dd30c6 on the session branch, pushed, and
+      opened as draft PR #9917 (base main). The packing test was funded by +6/+6 so the vendored
+      research files fit the repository ceiling exactly.
+  - path: agentos/workstreams/WS-SECTOR-INTELLIGENCE-COMPLETION.md
+    what: New workstream record with waves P01-P03 … P21-P23 and the custody landmines.
+  - path: "(outside the repo) session scratchpad launch kit"
+    what: >
+      launch_lane.sh / pull_lane.sh / lane_status.sh / lanes.tsv, the common build rules, the
+      SIC-MAP census packet, the ORCH-DATA and ORCH-PAPER briefs and LANE_MECHANICS.md. These are
+      session tools, not source; their contents are summarised in the continuation handoff.
+verified:
+  - claim: "Merge 3d8d14ac has exactly the parents main e5dd30c6 and candidate 4fd82658"
+    command: "git log -1 --format=%P 3d8d14acdc8de99fa2c17316aa22de6177364dbc"
+    result: "e5dd30c6344e4b62a0beba054ac4da97e00bab36 4fd82658fc4a9cc6259f5acff015e2a9f1cfaa51"
+  - claim: "PR #9917 is a draft against main whose head is the merge commit"
+    command: "gh pr view 9917 --repo mastermindx-market-intelligence/macro --json isDraft,baseRefName,headRefOid"
+    result: "isDraft true, baseRefName main, headRefOid 3d8d14acdc8de99fa2c17316aa22de6177364dbc (observed 2026-10-21 02:5xZ)"
+  - claim: "Non-site test suites pass on the merged tree in the sparse worktree"
+    command: "python3 -m pytest -q -p no:cacheprovider tests/test_sector_central.py tests/test_sector_cycles.py tests/test_us_sector_rotation_wiring.py tests/test_sector_pulse.py tests/test_leadership_rotation_contract.py tests/test_rotation_evidence_modes.py tests/test_ci_pack.py"
+    result: "397 passed; the only 9 failures need site/ artifacts absent from the sparse profile (hosted CI owns them)"
+  - claim: "All three Fabric donors hold the integration base"
+    command: "for h in mmx-ubuntu0 mmx-ubuntu1 mmx-ubuntu2; do ssh $h git -C '~/lanes/repos/macro' cat-file -t 3d8d14acdc8de99fa2c17316aa22de6177364dbc; done"
+    result: "commit / commit / commit"
+  - claim: "The SIC-MAP census lane was launched on ubuntu0 without an admission refusal"
+    command: "grep -E 'LAUNCH_ATTEMPT|refus|ADMISSION' <scratchpad>/lanes/sic-map-20261021-r1.launch"
+    result: "LAUNCH_ATTEMPT attempt=1 at 2026-10-21T03:02Z; no refusal line; rc file pending at 03:06Z"
+  - claim: "Both Opus orchestrators were admitted by the routing guard"
+    command: "Agent(subagent_type=orchestrator, model=opus) with ROUTE: orchestration + WHY OPUS + MISSION/WHY/SCOPE/OUT OF SCOPE/NOT DONE UNLESS/RETURN sections"
+    result: "two async agents launched 2026-10-21 03:0xZ (ORCH-DATA, ORCH-PAPER); earlier spawns without the labelled sections were rejected"
+  - claim: "Eight ORCH-DATA-accepted D-wave refs are merged --no-ff into the PR branch in chain order and the B06-affected + reconciled-pin suites pass on the merged tree"
+    command: "git log --oneline --first-parent f6dfc6b1..HEAD; python3 -m pytest -q -p no:cacheprovider tests/test_cycle_rhythm_disclosure.py tests/test_sector_cycles.py tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_cycle_forward_log_fence.py tests/test_sector_central_publication.py tests/test_sector_central.py tests/test_sector_completion_ownership_map.py tests/test_sector_metric_definitions.py tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py"
+    result: "chain a4427c8a (B02) f5ddee72 (B03) a8949aaf (B05 r1) d836833c (B07) 75d35a24 (B01+B04) 05a0222f (B10+B11) 04ef5d0e (B09) ce9f7a2d (reconciliation) d3f08a76 (B06); 143 passed, 2 skipped (2026-10-21 05:0xZ)"
+  - claim: "The ci-pack exclusive-curation and import-closure probes pass on the D-wave head after the cycle_rhythm closure/ceiling fund"
+    command: "python3 -m pytest tests/test_ci_pack.py -q -p no:cacheprovider -k 'exclusive_curation or closure'"
+    result: "8 passed, 2 skipped (2026-10-21 05:1xZ; before the fund: 11 scopes missing engine/cycle_rhythm.py and ceilings +7/+1/+1)"
+unverified:
+  - claim: "Hosted CI on PR #9917 is green apart from the standing merge-queue-pilot X"
+    what_would_verify: "mcp ccd_pr get_status for #9917 at head 3d8d14ac, or gh pr checks 9917 at a real integration boundary (no short-cycle polling)"
+  - claim: "The SIC-MAP lane produced commits on lane/sic-map-20261021-r1"
+    what_would_verify: "<scratchpad>/lane_status.sh sic-map-20261021-r1 mmx-ubuntu0 showing rc=0 and a lane_head beyond 3d8d14ac, then pull_lane.sh and inspect the diff"
+  - claim: "ORCH-DATA and ORCH-PAPER delivered accepted refs / Paper nodes"
+    what_would_verify: "their return files ORCH_DATA_RETURN.md and ORCH_PAPER_RETURN.md in the scratchpad orch/ directory, each claim re-checked against git diff, pytest on the donor and get_node_info on the recorded node ids"
+unresolved:
+  - "ci-authority/codex/merge-queue-pilot shows a failing check on every PR (standing X); the merge path must use the real required checks, not this one."
+  - "The applicable Full RIG scope and an independent receipt for the before/after design are not obtained; the Oct 18 design packet stays unadmitted; the RIG-RECEIPT gap lives on heatmap #7193's branch."
+  - "Production and natural-update portions of J15 are PENDING by design until P21–P23."
+next_actions:
+  - "Consume ORCH-DATA's sic-d-B05-20261021-r2 repair (RB05 MAJOR: non-business-day forward_log rows counted as sessions, cycle_phase_age.py:154-169) and sic-d-B12-20261021-r1; merge accepted refs on top of d3f08a76 as the single branch writer; re-run the ci-pack closure + ceiling probe after each new engine module; push."
+  - "Consume RB12 / RB04 / B13 / RB13 verdicts; repair lanes only on FAIL; PASS_WITH_NOTES minors are recorded in ORCH_DATA_NOTES, not re-opened."
+  - "Consume the ORCH-PAPER Rotation / Dossier / Research R3 boards (ledger node ids + screenshots); freeze I02/I03/I04/I08; record the P09 design admission; launch I05R/I06R/I07R/I09A on the pushed head only."
+  - "P10–P13: prove one complete investigation on the rendered site; then P14–P18; then the Opus READ_ONLY auditor before P19."
+  - "Release through the normal merge path (--match-head-commit; HOLD is a merge barrier), then production and next natural nightly update proof; close only with every gate's evidence."
+do_not_redo:
+  - "P01–P03: merge 3d8d14ac, PR #9917 and the packing-test funding are accepted; never recommit or rebuild an identical candidate."
+  - "Never re-spawn ORCH-DATA or ORCH-PAPER; message the running agents instead. Never relaunch a used Fabric run id (sic-map-20261021-r1 is used)."
+  - "Never revive Terminal #1055 or re-publish through the Studio managed publisher."
+  - "D-wave refs B02/B03/B07/B0104/B1011/B09/B06 are ACCEPTED and merged (chain above); never re-review or re-merge them. B05 r1 (a8949aaf) stays in the chain as a known defect until the r2 ref merges on top — never rewrite history to remove it."
+danger_areas:
+  - "sol/web-sector-central-macro-paper-pivot-20261020-sol-001 and its Studio workspace: read-only forever."
+  - "Donor lane trees are sparse cone checkouts: a lane that writes under site/ or data/ without sparse-adding silently produces nothing."
+  - "remote_sub.sh blocks until the lane finishes; launching it in the foreground stalls the orchestrator for the lane's lifetime."
+  - "The routing guard rejects any orchestration commission lacking the exact MISSION/WHY/SCOPE/OUT OF SCOPE/NOT DONE UNLESS/RETURN labels."
+  - "Visual law: no coloured left edge or accent stripe on any container; only the two canonical header families."
+prs: [9917]
+decisions:
+  - DEC:SOL-HOLD-IS-A-MERGE-BARRIER
+---
+
+# Handoff — Sector Intelligence + Cycles completion, 2026-10-21
+
+The session is still live when this record is written; it is an as-you-go checkpoint so a
+stranger can continue if the context is cleared. The three durable executions (ORCH-DATA,
+ORCH-PAPER, lane sic-map-20261021-r1) were running at 03:1xZ. Their results are consumed from
+their return files and the donor branch, never assumed.
+
+## Checkpoint 2 — D-wave integration boundary (2026-10-21 05:1xZ)
+
+ORCH-DATA accepted eight backend refs (B02, B03, B05 r1, B07, B01+B04, B10+B11, B09, B06) and the
+seat merged them `--no-ff` in chain order on top of the SIC-RCV head `f6dfc6b1`. Cross-packet
+conflicts were integration-only and resolved forward in one reconciliation commit (`ce9f7a2d`):
+the tier-gate run line is restored byte-exact beside a new D-wave step; the B01+B04 ownership and
+metric pins now cite B02's generation guard and B03's honest `breadth_pct = None`; B10+B11's
+`none_native` correction disclosure is exempted from the correction-key scan; the correction regex
+no longer matches B07's `n_correct_directional`; eleven curated exclusive scopes were widened for
+the new engine modules and the three packing ceilings were funded. B06 added `engine/cycle_rhythm.py`,
+which needed a second closure/ceiling fund.
+
+RB05 returned FAIL (MAJOR): `engine/cycle_phase_age.py` counts non-business-day forward-log rows as
+sessions (16 pre-#7211 weekend rows; a weekend triple counts 3 for 1). ORCH-DATA launched the repair
+lane `sic-d-B05-20261021-r2` on base `a038b3f3`; its accepted ref lands on top of the chain. B12 runs
+on the same base. PR #9917 stays a draft.
+
+ORCH-PAPER has boards #0–#13 on R3 page `p-24-0` (components, eight Cycles boards, three Watches
+boards, Brief desktop + mobile); Rotation, Dossier and Research R3 boards are next. No node id in
+any record was typed by the seat; all come from the orchestrator's ledger.
+
+## Checkpoint 3 — I-wave integration boundary (2026-10-21 08:5xZ)
+
+ORCH-DATA completed its programme (B05 r2, B12, B12 r2, B13 and B04 r3 accepted and merged; RB12b and RB13
+consumed; it is not re-spawned). ORCH-PAPER returned PLATFORM_FAILURE r2 against a file-wide Paper size warning;
+the seat recorded decision (c): items 2/4/5 and eight axis cells are `PAPER_CAPACITY_LIMITED` and their acceptance
+moves to rendered-product browser proof under the Full RIG. R3 page `p-24-0` holds 22 original boards plus
+`6W1R-0`; no node id in any record was typed by the seat.
+
+The four integration lanes landed on the PR branch with their reviews consumed: I09A2 (RI09b), I05R2 (RI05b),
+I06R (RI06) and I07R2 (RI07b) all PASS_WITH_NOTES, every MINOR fixed in a seat commit. The tier-gate run line now
+registers five suites and is byte-pinned in both contract suites; I06R and I07R run as their own steps. The
+exclusive-curation closure was funded by the integrated measurement (+10 on all three probes), and the five
+plain-copy site pairs ship in `72e4cca3`. PR #9917 remote head is `72e4cca36d9c`, still a draft; it reports a
+conflict against current `main` that the seat resolves next by merging `main` into the branch (never a rebase).
+
+Next: RIG re-freeze and the two independent reviewers (GLM product-regression lane; Opus READ_ONLY visual-taste
+auditor), the P10–P18 journeys on the rendered product, then undraft → CI → merge → P19–P23 natural-update proof.
+
+## Checkpoint 4 — P19 disposed, P20 repaired (2026-11-02 11:0xZ)
+
+Since checkpoint 3: main merged into #9917 (ec1f1ea6), RIG rounds 7–9 ended APPROVE_WITH_CONDITIONS at frozen 4161d404
+(approval.yml; SIC-APR-01..05 bind the production proof), the PR left draft. P19: three READ_ONLY verifiers returned
+(research/sector_completion_20261021/p19/, sha256 in its README): Sector Central rows largely CONFIRMED (A 42/46, B 39/46);
+**Verifier C's blocker — the in-shell Sector Cycles workspace does not exist on HEAD** (C/U rows 0 CONFIRMED, J04 BLOCKED;
+P15/P17 unmet). P20 repaired the material failures only: subsectors.js basket denominator (SC-066, test-pinned), trackBox
+'Measured/已实测' for SIC-APR-04 (test-pinned), four dark sector-paper suites wired into the unscoped reference-integrity job
+(the contract-delta red on ci run 41426752895), packing ceilings funded +9 to the measured 5,906/5,919/5,660. Ledger:
+proposal.yml `p19_p20_dispositions_20261102`; acceptance note §E records the split disposition.
+
+Next: fresh READ_ONLY review of the P20 source diff → binding CI green → squash-merge #9917 as a PARTIAL release (Sector
+Central half + CI wiring; never the programme's completion) → commission the Cycles build wave (SIC-I03/I09B, C19 badge
+qualification, U07 port, typed states, light/ZH/1440/390 cells) → P22 production + natural-update proof on both served
+surfaces → P23 separate acceptances and the 134-row `*_to_record` fill.
+
+## Checkpoint 5 — P20 CI repairs landed on the branch, main 838a69c0 merged (2026-11-02 13:2xZ)
+
+Since checkpoint 4: the six pack reds on ci run 41426752895 (head ec1f1ea6) are answered on the branch. 442713973f2a:
+tests/test_sector_central.py `_status` reconciled with the SIC-D-B02 settled-session gate (56 passed), P0B receipts re-minted
+for the candidate's stocktable.js with the manifest rebound (closure gate rc=0; 143 passed), dashboard availability dispatch
+feature-detected for the Prophet node harnesses (237 passed). 8d1fe9324402: research screener page re-stamped
+(watchstore.js?v=f43cba98; H4.7 bake test passes), research-entry textarea literals replaced by house tokens
+(design ratchet enforce-added: 0 blocking on the whole template diff). The seventh red — ci-pack-6 gmi-explorer — was an
+inherited main red; main fixed it in #10541/#10556 and b6b4743f534d merges main 838a69c08deb into the branch
+(one conflict, the P0B manifest, resolved to the merged receipts' digests). The pushed branch head is recorded on PR #9917.
+
+Next: fresh READ_ONLY Opus review of the P20 diff (commission in flight) → binding CI green on the new merge ref →
+squash-merge #9917 as a PARTIAL release → Cycles build wave → P22/P23.
+
+## Checkpoint 6 — P20 review returned, MAJOR repaired (2026-11-02 12:2xZ)
+
+Reviewer D (fresh READ_ONLY Opus, task a886a3e5798d5d3fe) returned ACCEPT-WITH-NOTES on the P20 diff: receipt
+`research/sector_completion_20261021/p19/verifier_D_P20_source_review.md` (sha256 `980f84be…326e04`), ledger entry
+`P20-REVIEWER-D-RECEIPT` in the RIG proposal. Its one MAJOR — the `templates/subsectors.js` R3A-66 repair had added three lines
+and shifted four frozen state-matrix citations — is repaired line-count-neutral in the same commit (582 lines; `:309/:496/:506/:508`
+carry the cited content again; pinned strings kept; `tests/test_subsector_confluence.py` + `tests/test_sector_paper_state_matrix.py`
+21 passed / 3 skipped). R3A-75 is now located (reviewer pointer), R3A-47/52 confirmed, R3A-86 confirmed-partial. CI at the previous
+head b46a47f34f38 read 7 passing / 13 pending / 1 failing (merge-queue-pilot, standing non-binding) before this push.
+
+Next: binding CI green on the new head -> PR-body addendum (partial-release scope + review receipt) -> squash-merge #9917 as a
+PARTIAL release (`--match-head-commit`, no auto-merge, HOLD label = barrier) -> land check -> Cycles build-wave commission from
+main -> P22 production + natural-update proof -> P23 separate acceptances.
+
+
+2026-11-02 13:34Z (P21 CI repair): ci run 41443578532 on head 83e2d038 turned three binding jobs red — contract-delta
+(job 125271753276), ci-pack-6 (125273606585), ci-pack-11 (125273606718). Main b6c20fa09b31 was merged into the branch first
+(f89df17f43b2, clean auto-merge, no conflicts), then one repair commit 202498e76063 lands all four fixes: the two packing
+ceilings funded to the measured 5,921 / 5,662 (main-side manifest growth of two planning units each; ledger entry in
+tests/test_ci_pack.py); the reference-integrity venv gains numpy + pandas through the install string thirteen sibling jobs
+share (engine/cycle_ontology.py imports both at module scope); tests/test_sector_completion_capability_map.py splits site/
+and data/ tokens by git so build outputs are skipped with a reason in an unbuilt checkout and still asserted in a built one;
+and the 100 `templates/sector_cycles.js:N` citations in copy_deck.{json,md} / state_matrix.{csv,md} plus the deck test's
+own fixtures are re-pointed after main #10534 (+47 @:118, +48 @:941, +41 @:1168) by text identity — citation maintenance,
+no deck extension. Local: tests/test_ci_pack.py 238 passed; design-reference guards + R3 fixture 96 passed; capability map
+138 passed; legacy-jobs.yml yaml ok (378 jobs). Next: one CI read on the new head -> squash-merge #9917 as the PARTIAL
+release (`--match-head-commit`, no auto-merge, HOLD label = barrier) -> land check -> Cycles phase 2 from main.
+
+2026-11-02 15:5xZ (seat 1a26b044, P21 CI repair round 2 on #9917): run 41454243058 at head 1dd732b0 was red
+on three packs, each classified by legacy job + test id. ci-pack-6 (unrun-scoring-engine, B01/B04 citation
+guards) = own drift after the main merge -> B01 re-installed from the own-base mapping with two malformed
+ranges repaired by construct (166445643fa2). ci-pack-11 (reference-integrity, Sector Paper design-reference
+guards) = main-side drift: the CI merge ref carried main 82d89579 (#10533 inserted +8 lines in
+sector_cycles.html.j2, +1 sector_central.html.j2, +2 build_sector_central.py, +9 country_cycles.html.j2;
+#10401 moved build_rotation_events.py +14) which the ±3-line citation window cannot absorb -> main 64dc8a16
+merged (e49b2a38, no conflicts) and 208 citations across copy_deck/state_matrix/cycles_ia/B01 re-pointed by
+text identity (c8b048dd; 197 guard tests pass). ci-pack-10 (design-governance, visual evidence required for a
+material UI change) = three genuinely unowned material paths of this PR -> three real
+scripts/capture_page_evidence.py 1.4.0 packs from a local build of the head in the #9917 render worktree
+(data as built, session 2026-10-30, anonymous only, production readback owed at P22):
+mockups/evidence/sector-research-entry (research_vault.html.j2 island, textarea hover+focus applied,
+24/24), sector-prophet-context (_sector_prophet_context.html.j2 on us_stocks.html?si_sector=XLK, 8/8) and
+sector-central-paper-pivot (_sector_central_paper.css.j2 + sector_central.html.j2, workflow-link
+hover+focus applied, 24/24); check_ui_visual_evidence.py rc=0 locally on the merge-base diff. Next: push
+-> one CI read -> squash-merge #9917 as the PARTIAL release (`--match-head-commit`, no auto-merge, HOLD
+label = barrier) -> land check -> Cycles phase 2 from main.
+
+2026-11-02 16:5xZ (seat 1a26b044, P21 CI repair round 3 on #9917): run 41473988248 (merge of 85e440aabebc into main d8d958df8c1d) was red on contract-delta and ci-pack-10, both main-side contracts that landed on 2026-11-01/02 and bind this branch's own changes. contract-delta: 3 introduced / 0 inherited — main's new curated `ew-p4-descriptive-ui` job reaches this branch's `engine/hazard_parity.py` (via scripts/build_sector_central.py -> engine/sector_cycles.py), which loads scripts/build_hazard_panel.py and scripts/fit_cycle_hazard.py by literal path (and the panel script names research/cycle_masterplan/W41_PANEL_CENSUS.md); widened that job's `paths:` (commit 06034232; local `_head_findings()` closure {} and the curated-closure guard tests pass). ci-pack-10: legacy job ew-p4-descriptive-ui, `test_receipt_shots_depict_the_source_under_test` — the EW-P5 FU2 receipt (main 20a05db0) binds git blobs of templates/dashboard.html.j2, sector_central.html.j2 and si_workspace.js, all three changed by this branch; re-ran the unchanged probe on this tree (67/68 shots byte-identical, one anti-aliasing-only delta), rebuilt `pr_source_equivalence` from the immutable tree at the capture revision, recorded the recapture in research/grey_deer/evidence/EW_P4_DESCRIPTIVE_UI_2026-10-31.md; local suite 162 passed / 2 skipped (site/ rows skip on the sparse tree). No pack ran red for this programme's own tests. Next: push -> one CI read -> squash-merge #9917 as the PARTIAL release -> land check -> Cycles phase 2 from main.

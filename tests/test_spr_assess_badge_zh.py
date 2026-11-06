@@ -85,3 +85,58 @@ def test_only_codes_the_page_actually_shows_are_asserted():
     hits = [ln for ln in Path(__file__).read_text(encoding="utf-8").splitlines()
             if "assert" in ln and any(word in ln for word in forbidden)]
     assert hits == []
+
+
+def _hero_h2():
+    for ln in TEMPLATE.splitlines():
+        if "<h2>" in ln and "United States SPR" in ln:
+            return ln
+    raise AssertionError("hero h2 missing")
+
+
+def _live_if():
+    a = TEMPLATE.index("{% if c.live %}")
+    b = TEMPLATE.index("{% endif %}", a)
+    return TEMPLATE[a:b + len("{% endif %}")]
+
+
+def test_spr_template_text_drops_live_wording():
+    assert "t('live'" not in TEMPLATE
+    assert "(EIA, live)" not in TEMPLATE
+    assert "Report (live)" not in TEMPLATE
+    assert "实时" not in TEMPLATE
+
+
+def test_hero_h2_dates_the_eia_weekly_figure():
+    src = _hero_h2()
+    tfn = lambda en, zh="": "%s|%s" % (en, zh)
+    env = Environment(autoescape=True)
+    out = env.from_string(src).render(as_of="Oct 23, 2026", t=tfn)
+    assert "as of" in out
+    assert "截至" in out
+    assert "Oct 23, 2026" in out
+    assert "live" not in out
+    assert "实时" not in out
+    out2 = env.from_string(src).render(as_of="Sep 04, 2026", t=tfn)
+    assert "Sep 04, 2026" in out2
+
+
+def test_us_row_badge_says_weekly():
+    src = _live_if()
+    tfn = lambda en, zh="": "%s|%s" % (en, zh)
+    env = Environment(autoescape=True)
+    on = env.from_string(src).render(c={"live": True}, t=tfn)
+    assert "weekly" in on
+    assert "每周" in on
+    assert "live" not in on
+    assert "实时" not in on
+    off = env.from_string(src).render(c={"live": False}, t=tfn)
+    assert "weekly" not in off
+    assert "每周" not in off
+
+
+def test_import_cover_label_names_52_week_mean():
+    i = TEMPLATE.index("SPR ÷")
+    label = TEMPLATE[i:i + 90]
+    assert "52-week" in label
+    assert "52周" in label

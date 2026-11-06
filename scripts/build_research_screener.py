@@ -67,9 +67,14 @@ def _load_stockdata(root: Path) -> tuple[list[dict], list[dict], dict[str, str],
         if isinstance(vs, dict):
             blob = vs.get("v1") if isinstance(vs.get("v1"), dict) else vs
         if isinstance(blob, dict) and blob.get("schema") == "valuation_scenario.v1":
-            if ticker and not blob.get("ticker"):
-                blob = {**blob, "ticker": ticker}
-            postures.append(blob)
+            # Both payloads come from this listing's stock record. Reject an
+            # explicit identity conflict instead of relabeling the valuation.
+            if (
+                listing_key
+                and blob.get("listing_key") in (None, "", listing_key)
+                and (not ticker or blob.get("ticker") in (None, "", ticker))
+            ):
+                postures.append({**blob, "listing_key": listing_key, "ticker": ticker or blob.get("ticker")})
         market_at = None
         as_of_block = ss.get("as_of")
         if isinstance(as_of_block, dict):

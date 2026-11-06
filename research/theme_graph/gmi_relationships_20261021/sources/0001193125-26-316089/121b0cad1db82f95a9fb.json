@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4606574,
+  "byte_start": 4606248,
+  "normalized": "As a result of this decision, Samsung was required to remit the assessed withholding taxes to the Korean tax authorities by the end of December 2025. In accordance with its indemnification obligation under the license agreement, Immersion reimbursed Samsung in December 2025 for the full amount of the withholding taxes paid.",
+  "normalized_sha256": "1747f4a8b899513f73082930f07e3e31466c9a4b3aa78d089017b390e7110073",
+  "raw": " As a result of this decision, Samsung was required to remit the assessed withholding taxes to the Korean tax authorities by the end of December 2025. In accordance with its indemnification obligation under the license agreement, Immersion reimbursed Samsung in December 2025 for the full amount of the withholding taxes paid.",
+  "raw_sha256": "121b0cad1db82f95a9fbd067dfefbe2c1e63f9b323a7ae4ab93f2dbdd851117f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

@@ -112,3 +112,41 @@ Cross-cutting:
 - **No scope creep**: PR is scoped to chart-engine internal math; no product surface, no Prophet surface, no dashboard surface, no theme surface, no copy surface, no i18n surface.
 
 The PR is a clean, well-scoped, well-evidenced half-B chart-smoothness round. No follow-up audit actions required.
+
+## Historical supplemental checker receipt — 2026-09-20
+
+Source: [Macro PR #7552, immutable original audit](https://github.com/mastermindx-market-intelligence/macro/blob/293943f0a9f5885d9dd6a6c02e7a4869756a5bf3/orch/audits/mastermind-terminal_PR-685.mm.md), blob `4517097e43d93521daee18f66aee31e4116dcb9c`. The full original report remains available at that source.
+
+The audit above was retained by merged Macro #7564 (`00d042d55875a70abf002ddc964cadd408e7c58f`). This separate September 20 report concerns the same Terminal #685 squash merge `9b6d4a7e2a94776e6980e3c7a4a722a094431800` (original PR head `4fd7bf2abb6ab364c2338be1145c16015c8f045e`) and base `098e4fcb48a91a5fac14255c07541b7f5665daee`, and reports a different checker environment. Its invocation, output and verdict are reproduced below as historical reported evidence; they do not replace the above audit's missing-TypeScript observation or establish a new execution result.
+
+The original report's typed-array parity argument is not browser or pixel acceptance. Its implementation benchmark remains scoped to the recorded implementation measurement, without a new production or end-user performance claim. The source report also raised a conditional caller-compatibility caveat about its `any`-to-`unknown` edits; no new incompatibility is established here, and the quoted parity example does not prove every downstream case.
+
+Tool: `terminal/scripts/check_plain_language.mjs --mode enforce-added --since 098e4fc --json` against the merge head (run via a shallow clone of the terminal repo at `9b6d4a7` with `typescript@5.6.3` linked locally; the script needs a populated `node_modules` to import the TypeScript API used for AST-based user-visible-position detection — `npm install typescript@5.6.3 --no-save` in the clone satisfies it).
+
+Per the audit-block convention:
+
+```json
+{ "version": 1, "mode": "enforce-added", "base": "098e4fc", "baseResolved": true,
+  "vocabulary": { "declaredTerms": 83, "overlaySource": "terminal/lib/plainLabels.ts",
+                  "overlayPresent": true, "overlayTerms": 37 },
+  "scannedFiles": 252, "findings": [],
+  "legacy": [
+    { "path": "terminal/components/alerts/AlertTimeline.tsx", "line": 45,
+      "rule": "raw_slug_interpolation", "token": "verdict", "blocking": false },
+    { "path": "terminal/components/alerts/WatchingList.tsx", "line": 38,
+      "rule": "raw_slug_interpolation", "token": "verdict", "blocking": false },
+    { "path": "terminal/components/fin/ForecastPage.tsx", "line": 647,
+      "rule": "raw_slug_interpolation", "token": "type", "blocking": false },
+    { "path": "terminal/components/gexdesk/ExposureMatrix.tsx", "line": 488,
+      "rule": "raw_slug_interpolation", "token": "state", "blocking": false },
+    { "path": "terminal/components/settings/SectionAccount.tsx", "line": 542,
+      "rule": "raw_slug_interpolation", "token": "kind", "blocking": false },
+    { "path": "terminal/lib/visualIntelligenceCopy.ts", "line": 64,
+      "rule": "raw_state_enum", "token": "DELAYED_15M", "blocking": false,
+      "waived": true,
+      "waiverReason": "transport basis is compared here, never rendered; the returned key selects localized copy." }
+  ],
+  "counts": { "blocking": 0, "legacyReported": 6, "waived": 0 }, "nulls": [] }
+```
+
+**Verdict: PASS — 0 blocking, no new copy, no new findings introduced. The 6 legacy findings are the same set the previous audits (#658 / #670 / #669) reported: identical paths, lines, tokens, and waiver status.**

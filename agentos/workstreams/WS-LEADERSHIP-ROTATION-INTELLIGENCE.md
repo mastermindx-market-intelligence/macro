@@ -76,6 +76,10 @@ waves:
     depends_on: [LR-W5]
     next_action: Author a dated PREREG V3 (own blob pin; never edit V1/V2/V2.1) re-registering the statistics, re-run T12/T13 size+power under it, and only on SIZED+POWERED issue a P1 read. T25 is a human act.
 next_action: >
+  2026-10-31: the dormant observation-continuity slice (#10104, orphaned Sol carrier) is carried forward
+  as EW-P2 of the Grey Deer Early-Warning Completion program (WS:GREY-DEER-RISK-INTELLIGENCE waves EW-P0..EW-P5,
+  seat 00dea969) on a successor branch from main with recording default-off; LR-W6 is unchanged.
+
   Masterplan T-graph closed (T26 recorded: MEASURED_PRODUCT_COMPLETE = COMPLETE on main baseline
   38627611213; SCIENTIFIC_DISPOSITION_COMPLETE; PREDICTIVE_CAPABILITY_QUALIFIED = NO;
   ORIGINAL_PROGRAMME_COMPLETE = NOT COMPLETE; repair #9380 → c55b54dab056). Follow-on LR-W6: author

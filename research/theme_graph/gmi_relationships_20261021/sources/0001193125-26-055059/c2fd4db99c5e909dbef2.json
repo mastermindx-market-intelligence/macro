@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-17T22:10:38Z",
+ "accession": "0001193125-26-055059",
+ "cik": "0000719413",
+ "doc_byte_length": 12089154,
+ "doc_sha256": "495bb316c203777e00bce2632939e85561a15bf94a75f8acdfc0d609726d7930",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-17",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "hl-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 9828563,
+  "byte_start": 9827241,
+  "normalized": "Customer B - Greens Creek, Keno Hill 23.4",
+  "normalized_sha256": "80b64ba42d7413cc888e7bb5e260f0ed4bcc6974d4fbeea26f6032c20a6c21d4",
+  "raw": "Customer B - Greens Creek, Keno Hill</span></p></td>\n         <td style=\"padding-top:0.01in;white-space:pre-wrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"white-space:pre-wrap;font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n         <td style=\"padding-top:0.01in;white-space:nowrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:left;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:left;\"><span style=\"font-kerning:none;min-width:fit-content;\">&#160;</span></p></td>\n         <td style=\"padding-top:0.01in;white-space:pre-wrap;padding-left:0in;vertical-align:bottom;padding-bottom:0in;padding-right:0.01in;text-align:center;\"><p style=\"font-size:10pt;margin-top:0;font-family:Times New Roman;margin-bottom:0;text-align:right;\"><span style=\"color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_fe829063-c347-4380-bd86-46160cd9cabb\" contextRef=\"C_ffb65039-013a-4481-be1c-73da7c7d16a0\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"3\" format=\"ixt:num-dot-decimal\">23.4",
+  "raw_sha256": "c2fd4db99c5e909dbef2252c9cee33a6cd6abd5f9dd52a5e995b9c587ccdf4ef"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/719413/000119312526055059/hl-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 172383,
+   "byte_start": 171675,
+   "context_ref": "C_ffb65039-013a-4481-be1c-73da7c7d16a0",
+   "raw": "<xbrli:context id=\"C_ffb65039-013a-4481-be1c-73da7c7d16a0\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000719413</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">hl:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "ee361b10d228093d2bb9ebe1395bcd9e76fc5cf0a6ea6a2d6a393478105386a1"
+  }
+ ]
+}

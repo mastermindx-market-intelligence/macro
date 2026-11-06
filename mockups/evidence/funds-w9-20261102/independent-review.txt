@@ -1,0 +1,50 @@
+I'll review the supplied diff against the Funds contract and the current call chain only, without changing source or acquiring a worktree. First I need the contract text and the existing fund-intelligence, template, and build paths those claims depend on.The diff is attached; next I’ll locate the protected Macro snapshot and the accepted Funds contract so the review stays on that source and the stated call chain.**FAIL.** The retained Berkshire filing is marked unavailable on the real read path. The 74 tests never build that path.
+
+## Finding
+
+`_snapshot_filing_provenance` rejects the receipt index this repository already stores.
+
+Patched `engine/fund_intelligence.py`, in the new helper (hunk starting at new line 545; the check is the `supplied_index != index_url` branch, calculated lines 576–579):
+
+```python
+index_url = f"{base}{accession}-index.html"
+supplied_index = one("source_index_url")
+if supplied_index and supplied_index != index_url:
+    raise ValueError("filing index mismatch")
+```
+
+Any mismatch becomes `{"status": "unavailable"}` (calculated lines 592–593). `source_url` is dropped with it.
+
+The existing chain stamps a different same-filing URL before that helper runs.
+
+- `collectors/edgar_13f.py:41` sets `ARCHIVES` to `https://www.sec.gov/Archives/edgar/data`.
+- `collectors/edgar_13f.py:252-253` writes `source_index_url` as `{ARCHIVES}/{cik}/{accession-without-dashes}/index.json`.
+- `_finalize` (`collectors/edgar_13f.py:373-398`) stores `fund_cik`, `accession`, `form`, and `source_url` on every row, and does not store `source_index_url`.
+- `engine/smart_money.py:682-686` copies `source_index_url` onto the frame when that column is missing.
+- `engine/smart_money.py:708-716` keeps only `form == "13F-HR"` receipts for that slug and period.
+- `engine/smart_money.py:728-733` runs that enrichment inside `_read_all` before grouping.
+
+For the retained identity the two strings are:
+
+- Derived: `https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/0001193125-26-352200-index.html`
+- Receipt: `https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/index.json`
+
+They are not equal. `56757.xml` does sit under that same accession directory, so the source check would pass. The index check fires first.
+
+Causal reproduction, no live fetch: take the test frame (`fund_cik=1067983`, accession `0001193125-26-352200`, form `13F-HR`, `source_url=.../56757.xml`) and set `source_index_url` to the receipt URL above. `_snapshot_filing_provenance` returns `{status: unavailable}`. Through real `_read_all`, `_book_meta` then publishes that status, the dossier takes the unavailable branch, and `site/funddata/<slug>.json` omits the filing URLs.
+
+`test_retained_fund_filing_survives_resolution_and_book_meta` stubs `_read_all` and omits `source_index_url`. The parametrized case only uses a foreign `.../OTHER/...` index. Neither runs `_apply_receipt_metadata`.
+
+Required correction: treat the collector’s `index.json` in that exact accession directory as the same filing, or compare directory identity rather than full-string equality with `{accession}-index.html`. Keep rejecting a different CIK, accession, form, host, query, fragment, or path. Add one regression whose frame has been through `_apply_receipt_metadata` with this `index.json` and still resolves available for `56757.xml`.
+
+## Checks that hold on the patched source
+
+Identity handling otherwise fail-closes. Missing, NaN, blank, `nan`/`None`/`NaT`, non-unique, non-numeric CIK, bad accession, `13F-HR/A`, `javascript:`, evil host, `..`, `%2e%2e`, and a different accession directory all raise into `{status: unavailable}`. CIK and accession are interpolated only after `fullmatch`. There is no fallback to the config CIK or a guessed ticker.
+
+Attrs are attached to the post-`resolve_tickers` frame (`g.attrs["filing"]`) after `groupby`, so the slim aggregate does not strip them. `fund_book`, `sector_series`, `diff_snapshots`, and `window_dressing_flag` read or copy that cached object and do not rebind it. `_book_meta` reads `sdf.attrs` after column reads and shallow-copies the dict. Both `fund_book` and `_book_meta` use `hist[-1]` after the same `target_period` filter. Dossier render uses `fund_intel_latest`. Amendments stay under `amendments/` because `_read_all` globs only the fund directory. `available_date`, `since_excess`, position counts, book value, and conviction inputs are unchanged.
+
+`build_smart_money.py:1971` uses `autoescape=True`. `BM` and `FILING` default to `{}`. Missing filing renders the unavailable sentence. Manager, CIK, form, and accession are outside `t()` and escaped. `t()` itself is `|safe`, and the new copy is static literal text. `report_base.html.j2:1-2` emits both `.l-en` and `.l-zh`. The stock anchor reuses `fund-link` and `stock.html#...` from `templates/smart_money.html.j2:1791` and `:1847`, at site root beside `fund_<slug>.html`. Empty tickers are not linked. `| urlencode` does not change ordinary tickers such as `BRK.B`. The four container rules lose the `--info` side border and keep an even `var(--line)` border.
+
+## Scope
+
+Reviewed the attached diff against commit `90e0644f9f08ab37115dfffedce2ba7939b0835d`. Blobs for the nine touched and called files match that commit. The GitHub comment `6589273748` was not fetched. Tests were not re-run. The Berkshire parquet was not opened. No browser fixture was run. This is not runtime or publication acceptance. The rendered anchor is the derived `-index.html`; `source_url` is stored on `filing` and is not the href. That matches the new dossier test. `period_end` and `filing_date` are not identity inputs. Displayed dates stay the file stem and `filing_date.iloc[0]`. With a receipt present, an accession that disagrees with that period’s receipt still fail-closes because the index strings differ.

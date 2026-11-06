@@ -837,3 +837,27 @@ def test_no_second_banner_host_is_introduced():
     at = tpl.index('id="cyc-regime-flip"')
     tag = tpl[tpl.rindex("<div", 0, at):at]
     assert "stale-banner" not in tag and "cyc-howline" in tag
+
+
+def _cyc_sub_halves() -> tuple[str, str]:
+    """EN and ZH source of the cycle subtitle. Later jinja notes stay out."""
+    tpl = TPL.read_text(encoding="utf-8")
+    sub = tpl[tpl.index('class="cyc-sub"'):]
+    en = sub[sub.index('class="l-en"'):sub.index('class="l-zh"')]
+    zh = sub[sub.index('class="l-zh"'):sub.index("</p>")]
+    return en, zh
+
+
+def test_cycle_subtitle_drops_live_tape():
+    en, _zh = _cyc_sub_halves()
+    assert "live backing tape" not in en
+
+
+def test_cycle_subtitle_zh_says_dated():
+    _en, zh = _cyc_sub_halves()
+    assert "带日期的底层数据" in zh
+
+
+def test_cycle_subtitle_en_says_dated():
+    en, _zh = _cyc_sub_halves()
+    assert "from the dated backing tape" in en

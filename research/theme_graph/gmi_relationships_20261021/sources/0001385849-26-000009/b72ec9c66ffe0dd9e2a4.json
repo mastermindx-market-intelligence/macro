@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T22:17:22Z",
+ "accession": "0001385849-26-000009",
+ "cik": "0001385849",
+ "doc_byte_length": 5180951,
+ "doc_sha256": "9f8794f87fa023ffd6797e4488a399d462a4bb6cc0680e8a359045134314db15",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "efr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 562148,
+  "byte_start": 561640,
+  "normalized": "The monazite feedstock for the Company’s REE production is expected to be procured through Company-owned mines like the Vara Mada Project and Bahia Project, as well as the Company’s joint venture interest in the Donald Project, along with other potential acquisitions, joint ventures, open market offtake (like the Company’s current arrangement with The Chemours Company), and/or other collaborations, in each case upon successful completion of development of the projects and transactions.",
+  "normalized_sha256": "0b1bf20f5989842a27a15b9f95b4b8d47976b48aeeae2a1bc03cc1c4e1f7f884",
+  "raw": "The monazite feedstock for the Company&#8217;s REE production is expected to be procured through Company-owned mines like the Vara Mada Project and Bahia Project, as well as the Company&#8217;s joint venture interest in the Donald Project, along with other potential acquisitions, joint ventures, open market offtake (like the Company&#8217;s current arrangement with The Chemours Company), and/or other collaborations, in each case upon successful completion of development of the projects and transactions.",
+  "raw_sha256": "b72ec9c66ffe0dd9e2a4af01f6a9cd50154374079dc6ad75490b98039df156bc"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1385849/000138584926000009/efr-20251231.htm",
+ "xbrl_contexts": []
+}

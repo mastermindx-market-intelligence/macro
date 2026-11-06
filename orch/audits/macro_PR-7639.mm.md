@@ -4,7 +4,7 @@ repo: mastermindx-market-intelligence/macro
 title: "[MO-A heal] design-governance deepen: bounded --shallow-since rung when full-history fetches fail"
 merged_at: "2026-09-21T17:40:44Z"
 merge_commit: "3d7f0da7aec1355156936efef560c9997f62ec27"
-head_sha: "3d7f0da7aec1355156936efef560c9997f62ec27"
+head_sha: "32a8d665c8bce781fd52bbd794ad8601e9f61464"
 branch: "claude/mo-a-heal-ci-fetch-shallow-rung"
 class: half-B (CI heal — pure Python, no template/CSS/JS, 2 files, +77/-15)
 audited_at: "2026-09-22"
@@ -14,6 +14,33 @@ prior_art: "orch(audit): record macro PR #7577 plain-language/theme/validated-cl
 
 # macro PR #7639 — plain-language / theme / validated-claims audit
 
+## Historical records reconciliation — 2026-11-06
+
+The fetch-ladder implementation in [Macro #7639](https://github.com/mastermindx-market-intelligence/macro/pull/7639) is already merged and DO_NOT_REDO. Native GitHub confirms source head `32a8d665c8bce781fd52bbd794ad8601e9f61464` and squash merge `3d7f0da7aec1355156936efef560c9997f62ec27` at 2026-09-21T17:40:44Z. They are different identities; the old report's head fields are corrected accordingly.
+
+Original #7656 variant: [a2e5583473919249857d69d0e10a323eede17ec3](https://github.com/mastermindx-market-intelligence/macro/blob/a2e5583473919249857d69d0e10a323eede17ec3/orch/audits/macro_PR-7639.mm.md), blob `dc90037970c336339ed0dc55c48287fa975a27d4`. Accepted main variant: [1d7068eb12b810c5aa9b0439468fdccaa5a512c6](https://github.com/mastermindx-market-intelligence/macro/blob/1d7068eb12b810c5aa9b0439468fdccaa5a512c6/orch/audits/macro_PR-7639.mm.md), blob `6d01970c992bd7d8dc88f40a97b80ce4f8788106`. The accepted narrative is retained with seven narrow identity/test-description corrections and this qualification.
+
+### Useful union and limits
+
+Both reports describe one existing fetch ladder: all-branches full history, main-only full history, then main-only `--shallow-since=30 days ago` when the prior rung raises. The final subprocess retains `check=True`, so failure still raises. The exact source patch omits the explicit `--tags` request on the final rung; that argv fact is narrower than a universal assertion that no tag can ever be present.
+
+The original variant's tag-reading and older-merge-base cautions are retained. The 30-day window and historical “checks need only hours-to-days” rationale are assumptions about the original check set, not a guarantee for every future branch or consumer. A future changed consumer should be assessed by the existing fetch/check owner. No separate window-monitoring script, fourth retry plane or new ongoing task is commissioned.
+
+The original suggestion to make `git ls-remote` the next fetch rung is not an accepted repair: listing advertised refs does not itself supply the objects/history required by a diff. It remains a rejected continuation proposal, not a current defect or authorized implementation.
+
+Exact original test blob `2b31d2ca8115b8f73ef0f2c80ba7b4ccf90ca127` contains four test functions. The PR adds one shallow-window case and renames/strengthens the prior all-rungs-fail case, changing three functions to four. The shallow-window case checks argv, three calls and two line-start warnings; the failure case checks exception propagation and three calls. It is incorrect to count both as new tests or attribute warning checks to the failure case.
+
+### Historical evidence qualification
+
+Checker blob `86be3a08347f2300d85644e303e3c653fa1ac88b` is byte-identical at the original #7639 and #7614 source heads. It scans templates, site HTML/JS, Prophet JSON, engine display-copy fields and selected published registry fields. The original variant's template-only description is inaccurate; the two CI Python paths are outside those configured display-copy inputs. This does not constitute a new whole-estate checker execution.
+
+The original four-test / 218 validate-only / zero introduced-contract reports, historical 38-MISS and design-system counts, CI exclusions, and the proposed server-side failure diagnosis remain attributed. The original command logs were not re-executed or independently reclassified here. Historical checker and nonbinding-check treatment does not authorize skipping a current required gate. The old scope/census descriptions are dated audit context, not today's repository census.
+
+This is a records reconciliation, not a fresh CI-infrastructure implementation, production proof or claim that every future fetch is reliable.
+
+---
+
+
 ## PR metadata
 
 | field | value |
@@ -22,7 +49,7 @@ prior_art: "orch(audit): record macro PR #7577 plain-language/theme/validated-cl
 | Title | `[MO-A heal] design-governance deepen: bounded --shallow-since rung when full-history fetches fail` |
 | Merged | 2026-09-21T17:40:44Z |
 | Merge commit | `3d7f0da7aec1355156936efef560c9997f62ec27` (squash-merge into `main`) |
-| Author/head SHA | `3d7f0da7aec1355156936efef560c9997f62ec27` |
+| Final source head | `32a8d665c8bce781fd52bbd794ad8601e9f61464` |
 | Files | `scripts/run_ci_pack.py` (+45/-14), `tests/test_run_ci_pack_fetch_fallback.py` (+32/-1) |
 | Lines | +77 / -15 |
 | Type | CI pipeline resilience — third rung added to the existing `_prepare_provided_actions` fetch-deepening ladder |
@@ -43,7 +70,7 @@ prior_art: "orch(audit): record macro PR #7577 plain-language/theme/validated-cl
 **Scope of textual surface.** The diff touches only:
 
 - `scripts/run_ci_pack.py` — adds a third rung to the `_prepare_provided_actions` fetch ladder: when rung 2 (`refs/heads/main` full deepen) raises `subprocess.CalledProcessError`, catch it, emit `::warning title=run-ci-pack::main-only deepen failed; retrying refs/heads/main with --shallow-since=30 days`, and run a narrower fetch (`--shallow-since=30 days ago`, no `--tags`). The structural comment in the source explains the rung in plain prose.
-- `tests/test_run_ci_pack_fetch_fallback.py` — adds two new pytest functions (`test_deepen_falls_back_to_shallow_window_when_main_deepen_fails`, `test_deepen_raises_when_every_rung_fails`), renames `test_deepen_raises_when_even_main_fallback_fails` → `..._every_rung_fails` (the rename is the right semantic: that test now covers ALL THREE rungs failing, not just rung 2). Existing `test_deepen_single_fetch_when_healthy` is unchanged.
+- `tests/test_run_ci_pack_fetch_fallback.py` — adds one new pytest function (`test_deepen_falls_back_to_shallow_window_when_main_deepen_fails`) and renames `test_deepen_raises_when_even_main_fallback_fails` → `..._every_rung_fails` (the rename is the right semantic: that test now covers ALL THREE rungs failing, not just rung 2). Existing `test_deepen_single_fetch_when_healthy` is unchanged.
 
 **No glance-tier text is added.** No template (`.j2`), no static page (`.html`), no manifest, no JS payload, no command copy (`scripts/check_macro_command_copy.py` has no contract on this PR). The only added prose is:
 
@@ -54,7 +81,7 @@ prior_art: "orch(audit): record macro PR #7577 plain-language/theme/validated-cl
 
 **Banned-glance vocabulary scan** (the design-doctrine prohibition list from `DESIGN_DOCTRINE` glance-tier — "validated", "edge confirmed", "trading thesis", "we recommend", "refuted", "证伪", "thesis", "disproven", and the falsifier-front-facing cluster): zero hits in either diff (verified by `grep -nE 'validated|confirmed|recommend|threfuted|证伪|disproven' scripts/run_ci_pack.py tests/test_run_ci_pack_fetch_fallback.py` against the PR's two files → 0 lines). The single occurrence of "fails" in the test names ("test_deepen_raises_when_every_rung_fails") is the standard pytest idiom and is not a refutation-vocabulary violation.
 
-**`::warning` hygiene** — per the GH-annotation-line-start contract (`.claude/hooks/gh_quota_guard.py`, `scripts/check_gh_annotation_line_start.py`, `tests/test_gh_annotation_line_start.py`): the new `::warning` is emitted by direct `print("::warning title=run-ci-pack::...", flush=True)` — no logger prefix in the path, and `flush=True` is carried (stdout is block-buffered when piped in CI). Both new test functions assert `warning_lines` and `all(line.startswith("::warning") for line in warning_lines)`. The full code path that emits the annotation is captured in `test_deepen_falls_back_to_shallow_window_when_main_deepen_fails` — net positive on an audit dimension most heals skip.
+**`::warning` hygiene** — per the GH-annotation-line-start contract (`.claude/hooks/gh_quota_guard.py`, `scripts/check_gh_annotation_line_start.py`, `tests/test_gh_annotation_line_start.py`): the new `::warning` is emitted by direct `print("::warning title=run-ci-pack::...", flush=True)` — no logger prefix in the path, and `flush=True` is carried (stdout is block-buffered when piped in CI). The new shallow-window test asserts two warning lines and their `::warning` prefix. The renamed all-rungs-fail test asserts the raised exception and exactly three calls; it does not make a warning-line assertion. The full code path that emits the annotation is captured in `test_deepen_falls_back_to_shallow_window_when_main_deepen_fails` — net positive on an audit dimension most heals skip.
 
 ## Theme findings
 
@@ -86,12 +113,12 @@ prior_art: "orch(audit): record macro PR #7577 plain-language/theme/validated-cl
 
 ## Overall verdict
 
-**PASS** — PR #7639 is a well-scoped, test-anchored, prose-restrained, budget-observant half-B CI heal. No user-facing surface is touched. Theme and validated-claims gates both have nothing to grade here, and the source-side evidence is the absence of any banned vocabulary plus the strict-reuse posture (the new rung composes the existing ladder rather than carving a parallel one). The new `::warning` is line-start-clean and `flush`-bearing; the two new test functions pin both the happy shallow-window path AND the all-rungs-raise invariant so a future regression cannot silently green-light an unpackable pack.
+**PASS** — PR #7639 is a well-scoped, test-anchored, prose-restrained, budget-observant half-B CI heal. No user-facing surface is touched. Theme and validated-claims gates both have nothing to grade here, and the source-side evidence is the absence of any banned vocabulary plus the strict-reuse posture (the new rung composes the existing ladder rather than carving a parallel one). The new `::warning` is line-start-clean and `flush`-bearing; the new shallow-window test and strengthened existing failure test pin the recovery path and all-rungs-raise invariant so a future regression cannot silently green-light an unpackable pack.
 
 **Findings:**
 
 1. `scripts/run_ci_pack.py` adds a third `_prepare_provided_actions` rung that catches the rung-2 `CalledProcessError`, emits a `::warning` with `title=run-ci-pack`, and re-fetches `refs/heads/main` with `--shallow-since=30 days ago` and no `--tags`. The catch is scoped — only rung-2 failure raises to rung 3 — and rung 3 still raises on its own failure (no silent green).
-2. `tests/test_run_ci_pack_fetch_fallback.py` extends from 2 to 4 functions: `test_deepen_falls_back_to_shallow_window_when_main_deepen_fails` (new, asserts `--shallow-since=30 days ago` lands on `calls[2]`, `--tags` is absent, two `::warning` lines were emitted, every warning line `startswith("::warning")`) and `test_deepen_raises_when_every_rung_fails` (renamed from the rung-2-only `_when_even_main_fallback_fails`, asserts `len(calls) == 3`). Existing healthy and rung-2-only tests are preserved.
+2. `tests/test_run_ci_pack_fetch_fallback.py` extends from 3 to 4 functions: `test_deepen_falls_back_to_shallow_window_when_main_deepen_fails` (new, asserts `--shallow-since=30 days ago` lands on `calls[2]`, `--tags` is absent, two `::warning` lines were emitted, every warning line `startswith("::warning")`) and `test_deepen_raises_when_every_rung_fails` (renamed from the rung-2-only `_when_even_main_fallback_fails`, asserts `len(calls) == 3`). Existing healthy and rung-2-only tests are preserved.
 3. PR body, branch name (`claude/mo-a-heal-ci-fetch-shallow-rung`), labels (`merge-on-green` + `main-red-repair`), and follow-up citation (#7637) are internally consistent with the standing MO-A CI-resilience program and the half-B heal convention.
 4. No template / CSS / JS / asset surface; no EN-ZH string surface; no `validated:*` key surface; no promotion pathway; no scoring handover.
 5. Two non-binding CI fails at merge (`Vercel · Deployment rate limited`, `ci-authority/codex/merge-queue-pilot` "Workers Builds: macro" X) are the known-spurious pair excluded per standing fleet law — neither pin a code defect this PR owns.
@@ -100,4 +127,4 @@ prior_art: "orch(audit): record macro PR #7577 plain-language/theme/validated-cl
 
 ## One-line judgment
 
-`PASS — half-B CI heal, no UI/theme/i18n surface; rung-3 ladder composes rung-2 of the same ladder, both new tests pin happy and failure paths with `flush`-clean `::warning` annotations; zero new validated/decorative content; zero `DNR:*` collisions; standing spurious-CI ignores do not shift the verdict.`
+`PASS — half-B CI heal, no UI/theme/i18n surface; rung-3 ladder composes rung-2 of the same ladder, the new recovery test and strengthened failure test pin their respective paths; the recovery test checks line-start warnings; zero new validated/decorative content; zero `DNR:*` collisions; standing spurious-CI ignores do not shift the verdict.`

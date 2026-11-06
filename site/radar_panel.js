@@ -1322,6 +1322,8 @@
     var settledOk = scored > 0 && ov.hits != null && ov.misses != null;
     var verdict = ic.verdict || {};
     var status = verdict.status || "insufficient";
+    var receiptStatusEn = status === "null" ? "no significant lead or lag" : status;
+    var receiptStatusZh = status === "null" ? "未显示显著领先或落后" : status;
     var bh = ic.by_horizon || {};
     var h21 = bh["21"] || {};
     var ep21 = h21.episodes || {};
@@ -1376,11 +1378,21 @@
         "评分对照的基准：本时段内，我们跟踪的对象中仅 " + pct + "% 在随后一个月跑赢大盘。只有超过这条线才算有效，而非超过五五开。") + "</p>";
     }
 
+    // Retain whole percentages unless they erase a difference in the producer's
+    // three-decimal rates. This is display precision, not a significance test.
+    function ratePair(a, b) {
+      var left = Math.round(a * 100), right = b != null ? Math.round(b * 100) : null;
+      if (b != null && a !== b && left === right) {
+        return [(a * 100).toFixed(1), (b * 100).toFixed(1)];
+      }
+      return [left, right];
+    }
+
     // Claims vs already-priced split — the cohorts are different products.
     var splitLine = "";
     if (nEp >= 30 && epClaims.dir_accuracy != null) {
-      var ca = Math.round(epClaims.dir_accuracy * 100);
-      var cb = epClaims.base_dart != null ? Math.round(epClaims.base_dart * 100) : null;
+      var claimsPair = ratePair(epClaims.dir_accuracy, epClaims.base_dart);
+      var ca = claimsPair[0], cb = claimsPair[1];
       var da = diag.dir_accuracy != null ? Math.round(diag.dir_accuracy * 100) : null;
       splitLine = '<p class="rx-h-split">' + bi(
         "Split honestly: the radar's actual calls — the divergence reads — were right " + ca + "% of the time" + (cb != null ? " against a " + cb + "% bar" : "") + ". Panels marked “already priced” are context, not calls" + (da != null ? " — and that cohort kept only " + da + "% direction, which is why it now ranks near the bottom of the board, not the top" : "") + ".",
@@ -1392,10 +1404,10 @@
     // is graded elsewhere, at the horizon with a valid HAC.
     var horizonLine = "";
     if (hpC.n >= 30 && hpC.dir_accuracy != null && hpC.base_dart != null) {
-      var pa = Math.round(hpC.dir_accuracy * 100);
-      var pb = Math.round(hpC.base_dart * 100);
-      var cmpEn = pa < pb ? "below it" : (pa > pb ? "above it" : "level with it");
-      var cmpZh = pa < pb ? "低于基准" : (pa > pb ? "高于基准" : "与基准持平");
+      var promisePair = ratePair(hpC.dir_accuracy, hpC.base_dart);
+      var pa = promisePair[0], pb = promisePair[1];
+      var cmpEn = hpC.dir_accuracy < hpC.base_dart ? "below it" : (hpC.dir_accuracy > hpC.base_dart ? "above it" : "level with it");
+      var cmpZh = hpC.dir_accuracy < hpC.base_dart ? "低于基准" : (hpC.dir_accuracy > hpC.base_dart ? "高于基准" : "与基准持平");
       var epTail = hpEp.n_matured != null
         ? " from " + (hpEp.n_matured || 0).toLocaleString() + " matured episodes" : "";
       var epTailZh = hpEp.n_matured != null
@@ -1488,7 +1500,7 @@
       (hacC.t_hac != null ? "t=" + hacC.t_hac.toFixed(2) + " over " + (hacC.n || 0) + " daily cross-sections"
                           : "not yet valid (needs ≥ horizon-length run of daily cross-sections)") +
       ". Verdict gate: ≥" + (((verdict.gates || {}).min_claim_episodes) || 60) + " matured claim episodes AND |t| ≥ " +
-      (((verdict.gates || {}).t_sig) || 2) + " on a non-degenerate window — status: " + status + ". " +
+      (((verdict.gates || {}).t_sig) || 2) + " on a non-degenerate window — status: " + receiptStatusEn + ". " +
       "The seeded ~3-month theses (" + open + " open) grade separately at their own deadlines. " +
       recentEn +
       (eras.length ? "Scoring construction changed " + eras[eras.length - 1].date + " (era " + eras[eras.length - 1].era + ") — cross-era pooling carries both constructions. " : "") +
@@ -1505,7 +1517,7 @@
       (hacC.t_hac != null ? "t=" + hacC.t_hac.toFixed(2) + "，基于 " + (hacC.n || 0) + " 个每日横截面"
                           : "尚未有效（需累积不少于窗口长度的每日横截面）") +
       "。判定门槛：已到期判断片段 ≥" + (((verdict.gates || {}).min_claim_episodes) || 60) + " 且非退化窗口上 |t| ≥ " +
-      (((verdict.gates || {}).t_sig) || 2) + " —— 当前状态：" + status + "。" +
+      (((verdict.gates || {}).t_sig) || 2) + " —— 当前状态：" + receiptStatusZh + "。" +
       "约 3 个月期的观察论点（" + open + " 条进行中）按各自截止日另行评分。" +
       recentZh +
       (eras.length ? "评分构造已于 " + eras[eras.length - 1].date + " 调整（第 " + eras[eras.length - 1].era + " 代）—— 跨代合并统计含两种构造。" : "") +
@@ -1532,15 +1544,19 @@
     "</section>";
   }
 
-  // ── Open checks: what would break each of today's reads ────────────────────
-  // Each day's radar logs a handful of theses, and every one carries a pre-set
-  // mechanical check plus the fixed date it settles on. This prints that check
-  // in words — the theme, its proxy, the condition, the date — and never the
-  // engine's own thesis prose, its lean enum, or the raw kind/op, so a reader
-  // sees what would break each of today's reads before anything settles.
-  // Themes can share one proxy; when they do their checks settle together, and
-  // the section says so once in a note rather than letting the rows imply more
-  // independent tests than there are.
+  // ── Open checks: what would break each logged read ─────────────────────────
+  // The radar's dated record logs a handful of theses. This prints each one's
+  // check in words — the theme, its proxy, the condition, the date — and never
+  // the engine's own thesis prose, its lean enum, or the raw kind/op.
+  //
+  // The copy follows the grader (engine/desk_scorer.py). A rel_return check is
+  // read once: the last close on or before the log date against the last close
+  // on or before check_by. Nothing between those two closes counts, and horizon_d
+  // is not read, so the window is not a fixed number of sessions. A row with no
+  // rel_return check, or no check_by, is never graded, so it gets no date and no
+  // claim. Themes can share one proxy, so the section says once that those checks
+  // read the same price. A shared ticker says nothing about their dates or
+  // conditions.
   //
   // Artifact values (as_of, vs, subject) reach the page through bi()/esc(), so
   // they are escaped exactly once here: bi() escapes its own arguments.
@@ -1559,12 +1575,10 @@
     if (!rows.length) return "";
 
     var asOf = (radar.as_of == null || radar.as_of === "") ? "" : String(radar.as_of);
-    var leadEn = asOf ? "On " + asOf + " the radar logged " : "Today the radar logged ";
-    var leadZh = asOf ? asOf + " 雷达记录了 " : "今日雷达记录了 ";
-    var tailEn = " theses. Each is checked on a fixed date against the condition shown; " +
-      "it holds if that condition has not triggered by then — a low bar, not proof.";
-    var tailZh = " 条论点。每条在固定日期按所示条件核对；届时条件未触发即视为成立 —— " +
-      "门槛很低，并非证明。";
+    var leadEn = asOf ? "The radar record dated " + asOf + " holds " : "The radar record holds ";
+    var leadZh = asOf ? "日期为 " + asOf + " 的雷达记录包含 " : "雷达记录包含 ";
+    var total = rows.length;
+    var graded = 0;
     var rowHTML = [];
     var seen = {}, order = [], count = {};
 
@@ -1582,34 +1596,38 @@
       var vs = c.vs || "SPY";
       var x = okT ? String(+(Math.abs(t) * 100).toFixed(1)) : "";
       var mo = okN ? Math.round(n / 21) : 0;
+      var cb = r.check_by;
+      var hasDate = typeof cb === "string" && /^[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(cb);
+      var isGraded = c.kind === "rel_return" && hasDate;
       var moEn = mo >= 1 ? " (about " + mo + (mo === 1 ? " month)" : " months)") : "";
       var moZh = mo >= 1 ? "（约 " + mo + " 个月）" : "";
       var condEn, condZh;
-      if (c.kind === "rel_return" && okN && c.op === "<" && okT && t < 0) {
-        condEn = "breaks if it trails " + vs + " by more than " + x + "% over " + n +
-          " sessions" + moEn;
-        condZh = "若 " + n + " 个交易日" + moZh + "内落后 " + vs + " 超过 " + x + "%，则不成立";
-      } else if (c.kind === "rel_return" && okN && c.op === ">" && okT && t > 0) {
-        condEn = "breaks if it beats " + vs + " by more than " + x + "% over " + n +
-          " sessions" + moEn;
-        condZh = "若 " + n + " 个交易日" + moZh + "内跑赢 " + vs + " 超过 " + x + "%，则不成立";
-      } else if (c.kind === "rel_return" && okN) {
-        condEn = "graded on its return against " + vs + " over " + n + " sessions";
-        condZh = "按 " + n + " 个交易日内相对 " + vs + " 的收益评分";
+      if (isGraded && c.op === "<" && okT && t < 0) {
+        condEn = "breaks if it trails " + vs + " by more than " + x +
+          "% from its log date to its check date" + moEn;
+        condZh = "若从记录日到核对日" + moZh + "累计落后 " + vs + " 超过 " + x + "%，则不成立";
+      } else if (isGraded && c.op === ">" && okT && t > 0) {
+        condEn = "breaks if it beats " + vs + " by more than " + x +
+          "% from its log date to its check date" + moEn;
+        condZh = "若从记录日到核对日" + moZh + "累计跑赢 " + vs + " 超过 " + x + "%，则不成立";
+      } else if (isGraded) {
+        condEn = "graded on its return against " + vs + " from its log date to its check date" +
+          moEn;
+        condZh = "按从记录日到核对日" + moZh + "相对 " + vs + " 的累计收益评分";
       } else {
         condEn = "no machine check — logged, not graded";
         condZh = "无机械核对 —— 仅记录，不评分";
       }
       var when = "";
-      var cb = r.check_by;
-      if (typeof cb === "string" && /^[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(cb)) {
+      if (isGraded) {
+        graded += 1;
         when = '<span class="rx-ck-when">' + bi("check by ", "核对日 ") +
           esc(cb.slice(0, 10)) + "</span>";
       }
       rowHTML.push('<div class="rx-ck-row">' + theme + tickerLink(r.subject_ticker) +
         '<span class="rx-ck-cond">' + bi(condEn, condZh) + "</span>" + when + "</div>");
       var tk = String(r.subject_ticker || "").trim().toUpperCase();
-      if (tk) {
+      if (tk && isGraded) {
         if (!seen[tk]) { seen[tk] = true; order.push(tk); count[tk] = 0; }
         count[tk] += 1;
       }
@@ -1620,10 +1638,27 @@
       var k = order[i];
       if (count[k] < 2) continue;
       noteHTML += '<p class="rx-ck-note">' + bi(
-        k + " stands in for " + count[k] + " of these themes, so those checks will " +
-          "settle together — read them as one test, not " + count[k] + ".",
-        k + " 同时代表其中 " + count[k] + " 个主题，这些核对将一同结算 —— 应视为一次检验，" +
-          "而非 " + count[k] + " 次。") + "</p>";
+        k + " stands in for " + count[k] + " of these themes, so those checks read the " +
+          "same price — not " + count[k] + " independent tests.",
+        k + " 同时代表其中 " + count[k] + " 个主题，这些核对依据同一价格 —— 并非 " +
+          count[k] + " 次相互独立的检验。") + "</p>";
+    }
+
+    var nounEn = total === 1 ? " thesis. " : " theses. ";
+    var holdEn = "against the condition shown; it holds if that condition is not met on that " +
+      "date — a low bar, not proof.";
+    var holdZh = "按所示条件核对；当日条件未满足即视为成立 —— 门槛很低，并非证明。";
+    var tailEn, tailZh;
+    if (graded === 0) {
+      tailEn = "No machine check applies: logged, not graded.";
+      tailZh = "无机械核对：仅记录，不评分。";
+    } else if (graded === total) {
+      tailEn = (total === 1 ? "It is" : "Each is") + " checked on a fixed date " + holdEn;
+      tailZh = "每条在固定日期" + holdZh;
+    } else {
+      tailEn = graded + " of them " + (graded === 1 ? "is" : "are") +
+        " checked on a fixed date " + holdEn + " The rest are logged, not graded.";
+      tailZh = "其中 " + graded + " 条在固定日期" + holdZh + "其余仅记录，不评分。";
     }
 
     return '<section class="rx-checks" id="rx-checks">' +
@@ -1631,10 +1666,11 @@
         '<span class="rx-h-eyebrow">' + bi("WHAT WOULD BREAK EACH READ", "每条解读的否定条件") +
         "</span>" +
         '<h2 class="rx-h-title">' +
-          bi("Today's theses, and the check that settles each", "今日论点及各自的核对条件") +
+          bi("Logged theses and their checks", "已记录的论点及其核对条件") +
         "</h2>" +
       "</div>" +
-      '<p class="rx-h-para">' + bi(leadEn + rows.length + tailEn, leadZh + rows.length + tailZh) +
+      '<p class="rx-h-para">' +
+        bi(leadEn + total + nounEn + tailEn, leadZh + total + " 条论点。" + tailZh) +
         "</p>" +
       '<div class="rx-ck-rows">' + rowHTML.join("") + "</div>" +
       noteHTML +
@@ -2044,7 +2080,7 @@
       ".rx-receipt{font-size:12px;color:var(--muted)}",
       ".rx-receipt summary{cursor:pointer;color:var(--link);font-weight:600}",
       ".rx-receipt p{margin:8px 0 0;line-height:1.55}",
-      /* ── OPEN CHECKS: what would break each of today's reads ── */
+      /* ── OPEN CHECKS: what would break each logged read ── */
       ".rx-checks{margin-top:18px;padding:18px 20px 14px;border-radius:14px;" +
         "border:1px solid var(--line);background:var(--panel)}",
       ".rx-checks .rx-h-eyebrow{color:var(--muted)}",

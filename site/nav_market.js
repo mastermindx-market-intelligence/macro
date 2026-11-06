@@ -134,6 +134,7 @@
   MOCKUP_ICON_PATHS.fund_flows = '<path d="m8 14 16-8 16 8-16 8Z"/><path d="m8 22 16 8 16-8M8 30l16 8 16-8"/><path class="accent" d="M14 18v12c0 5 4 9 10 9s10-4 10-9V18"/><path class="ghost" d="M24 22v15"/>';
   MOCKUP_ICON_PATHS.macro_weather = '<circle class="soft-fill" cx="31" cy="14" r="7"/><path class="accent" d="M31 3v4M31 21v4M20 14h4M38 14h4M23 6l3 3M36 19l3 3"/><path d="M11 34c-4 0-6-3-6-6s2-6 6-6c2-6 11-7 15-2 5-1 9 2 9 7 0 4-3 7-8 7Z"/><path d="m13 42 5-5 4 3 6-5 6 2"/>';
   MOCKUP_ICON_PATHS.earnings_wire = '<path class="ghost" d="M8 7h25l7 7v27H8z"/><path d="M6 5h25l7 7v27H6zM31 5v8h7"/><path class="accent" d="M12 29h5l3-7 5 12 4-9 3 4h3"/><path d="M12 16h14M12 20h9"/><circle class="soft-fill" cx="34" cy="29" r="3"/>';
+  MOCKUP_ICON_PATHS.expectation_surface = '<path class="ghost" d="M6 40h36M8 8v32"/><path d="M10 31c8-1 14-6 26-8"/><path d="M10 15c8 1 14 6 26 8"/><path class="accent" d="M10 23h22"/><circle class="soft-fill" cx="36" cy="23" r="4"/><path d="M36 15v4M36 27v4M30 23h2M40 23h2"/>';
 
   var MOCKUP_TONE_BY_ICON = {
     stocks: 'cyan', sectors: 'violet', rotation: 'violet', alerts: 'cyan',
@@ -162,6 +163,7 @@
     'etfs.html': ['fund_flows', 'cyan'],
     'cycle.html': ['cycle', ''],
     'macro_context.html': ['macro_weather', 'cyan'],
+    'expectation_surface.html': ['expectation_surface', 'violet'],
     'markets.html': ['global', ''],
     'country_cycles.html': ['country', 'cyan'],
     'sector_cycles.html': ['sectors', 'violet'],

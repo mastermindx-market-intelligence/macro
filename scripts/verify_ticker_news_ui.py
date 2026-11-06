@@ -22,7 +22,7 @@ def row(story, title, *, low=False, count=1, comparison="not_compared"):
     return {
         "sequence": 10+story, "source": "benzinga", "publisher": "Benzinga",
         "source_item_id": str(story), "story_id": "story-"+str(story),
-        "source_count": count, "item_count": count, "title": title,
+        "source_count": count, "publisher_count": count, "item_count": count, "title": title,
         "url": "https://example.test/report/"+str(story),
         "teaser": "Preview fixture: reporting stays readable with room for context, source attribution and the underlying reports.",
         "published_at": "2026-10-20T10:00:00Z", "updated_at": None,
@@ -88,7 +88,7 @@ async def verify(destination: Path):
                     members[1].update(source="massive:reuters.com",publisher="Reuters",source_item_id="wire-1",
                                       title="Reuters reports acquisition consideration of $8.2 billion",
                                       published_at="2026-10-20T09:55:00Z",received_at="2026-10-20T09:55:01Z")
-                    await request.fulfill(json={"schema":"ticker_news.story.v1","story_id":story,"source_count":2,"item_count":2,"members":members})
+                    await request.fulfill(json={"schema":"ticker_news.story.v1","story_id":story,"source_count":2,"publisher_count":2,"item_count":2,"members":members})
                 else:
                     state["snapshot_count"]+=1
                     packet=deepcopy(state["packet"])
@@ -116,6 +116,9 @@ async def verify(destination: Path):
         await page.get_by_text("Reuters reports acquisition consideration of $8.2 billion",exact=True).wait_for()
         assert await page.locator(".tn-member").count()==2
         checks.append("keyboard expansion retrieves both publisher reports from shared story API")
+        assert "2 reports · 2 publishers" in await page.locator(".tn-group summary").first.inner_text()
+        assert "after merging" not in await page.locator(".tn-group summary").first.inner_text()
+        checks.append("group summary counts reports and publishers without a merge note when origins equal publishers")
         assert await page.locator(".tn-comparison").inner_text()=="Reports differ"
         assert await page.locator(".tn-comparison-note").inner_text()=="Reports in this group use different wording or figures. Compare the sources below."
         assert (await page.locator(".tn-member").nth(1).locator("small").inner_text()).startswith("Reuters")
@@ -152,11 +155,14 @@ async def verify(destination: Path):
         await page.screenshot(path=str(destination/"restricted.png"),full_page=True)
         state["status"]=200
         state["packet"]["rows"][0]["title"]='<img src=x onerror="window.fixtureXSS=true"> Safe plain headline'
+        state["packet"]["rows"][0]["source_count"]=1  # two publishers, one identical headline
         await page.evaluate("location.hash='NVDA'")
         await page.get_by_text(state["packet"]["rows"][0]["title"],exact=True).wait_for()
         assert await page.locator(".tn-rows img").count()==0
         assert not await page.evaluate("Boolean(window.fixtureXSS)")
         checks.append("provider text renders as text without script or image execution")
+        assert "2 篇报道 · 2 个来源 · 合并相同标题后 1 个" in await page.locator(".tn-group summary").first.inner_text()
+        checks.append("syndicated identical headlines disclose the merged origin count beside the publisher count")
         await page.close()
         # A separate fresh fixture covers a group beyond the comparison budget.
         state["packet"]["rows"]=[row(6,"Comparison-limited reporting fixture",count=33,comparison="comparison_limited")]

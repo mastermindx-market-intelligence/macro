@@ -1,0 +1,165 @@
+{
+  "accessions": [
+    {
+      "accession": "0000320193-24-000123",
+      "applicability_reason": "issuer_class_unknown",
+      "applicability_state": "not_evaluable",
+      "cik": "0000320193",
+      "detail": "",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 4,
+      "outcome": "ADMITTED",
+      "period_of_report": "2024-09-28",
+      "prediction_states": {
+        "not_evaluable": 4
+      },
+      "predictions": 4,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_recognized",
+        "revenue_disaggregated",
+        "revenue_policy_text_block",
+        "rpo_percentage_next_12m",
+        "rpo_timing",
+        "rpo_total"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000030",
+      "applicability_reason": "issuer_class_unknown",
+      "applicability_state": "not_evaluable",
+      "cik": "0001640147",
+      "detail": "",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 8,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-01-31",
+      "prediction_states": {
+        "not_evaluable": 8
+      },
+      "predictions": 8,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_opening",
+        "revenue_disaggregated"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000199",
+      "applicability_reason": "issuer_class_unknown",
+      "applicability_state": "not_evaluable",
+      "cik": "0001640147",
+      "detail": "",
+      "form": "10-Q",
+      "issuer_sic": null,
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-07-31",
+      "prediction_states": {
+        "not_evaluable": 6
+      },
+      "predictions": 6,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_recognized",
+        "revenue_disaggregated",
+        "revenue_policy_text_block"
+      ]
+    },
+    {
+      "accession": "0001640147-23-000260",
+      "applicability_reason": "issuer_class_unknown",
+      "applicability_state": "not_evaluable",
+      "cik": "0001640147",
+      "detail": "",
+      "form": "10-Q",
+      "issuer_sic": null,
+      "labels": 6,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-10-31",
+      "prediction_states": {
+        "not_evaluable": 6
+      },
+      "predictions": 6,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_recognized",
+        "revenue_disaggregated",
+        "revenue_policy_text_block"
+      ]
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "applicability_reason": "issuer_class_unknown",
+      "applicability_state": "not_evaluable",
+      "cik": "0001652044",
+      "detail": "",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 4,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "not_evaluable": 4
+      },
+      "predictions": 4,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "contract_liability_noncurrent",
+        "contract_liability_rollforward_additions",
+        "contract_liability_rollforward_closing",
+        "contract_liability_rollforward_opening",
+        "contract_liability_rollforward_recognized",
+        "revenue_policy_text_block",
+        "rpo_percentage_next_12m",
+        "rpo_timing"
+      ]
+    }
+  ],
+  "exclusions": [],
+  "label_count": 28,
+  "labels_status": "labelled",
+  "pack_id": "PK04",
+  "trial_field_map": {
+    "PK04|0000320193-24-000123|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0000320193-24-000123|extract|contract_liability_noncurrent": "contract_liability_noncurrent",
+    "PK04|0000320193-24-000123|extract|contract_liability_rollforward_opening": "contract_liability_rollforward_opening",
+    "PK04|0000320193-24-000123|extract|revenue": "revenue",
+    "PK04|0001640147-23-000030|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0001640147-23-000030|extract|contract_liability_noncurrent": "contract_liability_noncurrent",
+    "PK04|0001640147-23-000030|extract|contract_liability_rollforward_recognized": "contract_liability_rollforward_recognized",
+    "PK04|0001640147-23-000030|extract|revenue": "revenue",
+    "PK04|0001640147-23-000030|extract|revenue_policy_text_block": "revenue_policy_text_block",
+    "PK04|0001640147-23-000030|extract|rpo_percentage_next_12m": "rpo_percentage_next_12m",
+    "PK04|0001640147-23-000030|extract|rpo_timing": "rpo_timing",
+    "PK04|0001640147-23-000030|extract|rpo_total": "rpo_total",
+    "PK04|0001640147-23-000199|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0001640147-23-000199|extract|contract_liability_noncurrent": "contract_liability_noncurrent",
+    "PK04|0001640147-23-000199|extract|revenue": "revenue",
+    "PK04|0001640147-23-000199|extract|rpo_percentage_next_12m": "rpo_percentage_next_12m",
+    "PK04|0001640147-23-000199|extract|rpo_timing": "rpo_timing",
+    "PK04|0001640147-23-000199|extract|rpo_total": "rpo_total",
+    "PK04|0001640147-23-000260|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0001640147-23-000260|extract|contract_liability_noncurrent": "contract_liability_noncurrent",
+    "PK04|0001640147-23-000260|extract|revenue": "revenue",
+    "PK04|0001640147-23-000260|extract|rpo_percentage_next_12m": "rpo_percentage_next_12m",
+    "PK04|0001640147-23-000260|extract|rpo_timing": "rpo_timing",
+    "PK04|0001640147-23-000260|extract|rpo_total": "rpo_total",
+    "PK04|0001652044-23-000016|extract|contract_liability_current": "contract_liability_current",
+    "PK04|0001652044-23-000016|extract|revenue": "revenue",
+    "PK04|0001652044-23-000016|extract|revenue_disaggregated": "revenue_disaggregated",
+    "PK04|0001652044-23-000016|extract|rpo_total": "rpo_total"
+  }
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2798770,
+  "byte_start": 2798154,
+  "normalized": "Pursuant to the Shenghe Offtake Agreement, and subject to certain exclusions, Shenghe was obligated to purchase on a “take or pay” basis the rare earth concentrate produced by the Company as the exclusive distributor in China, with certain exceptions for the Company’s direct sales globally. In addition, at the discretion of the Company, Shenghe was required to purchase on a “take or pay” basis certain non-concentrate rare earth products, although the Company may have sold all non-concentrate rare earth products in its sole discretion to customers or end users in any jurisdiction.",
+  "normalized_sha256": "5bc4895001d897d14096c063a58b552b12c2b23bbcda39f88c7cf96732ebb56e",
+  "raw": "Pursuant to the Shenghe Offtake Agreement, and subject to certain exclusions, Shenghe was obligated to purchase on a &#8220;take or pay&#8221; basis the rare earth concentrate produced by the Company as the exclusive distributor in China, with certain exceptions for the Company&#8217;s direct sales globally. In addition, at the discretion of the Company, Shenghe was required to purchase on a &#8220;take or pay&#8221; basis certain non-concentrate rare earth products, although the Company may have sold all non-concentrate rare earth products in its sole discretion to customers or end users in any jurisdiction.",
+  "raw_sha256": "89c3b85b9359665d1f36648b5e8cecc67297e682db6d565684fdaff8e5b5464f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

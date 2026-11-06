@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:02:34Z",
+ "accession": "0001104659-26-020468",
+ "cik": "0001086600",
+ "doc_byte_length": 8502637,
+ "doc_sha256": "83144fc00e1339bc0af49e49cadda22e4a3b26f3085e6dff3c5da52eddf82081",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "arlp-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 759688,
+  "byte_start": 759325,
+  "normalized": "Our customer base includes several large domestic electric utilities. In 2025, we derived more than 10% of our total revenue from each of Louisville Gas and Electric Company and American Electric Power Company Inc. We did not derive 10% or more of our revenues from any other single customer. For more information about these customers, please read “Item 8.",
+  "normalized_sha256": "96b075982513cc409c8c14a6610236889c530b719e3dd00ee53edf37ad782044",
+  "raw": "Our customer base includes several large domestic electric utilities. In 2025, we derived more than 10% of our total revenue from each of Louisville Gas and Electric Company and American Electric Power Company Inc. We did not derive 10% or more of our revenues from any other single customer. For more information about these customers, please read &#8220;Item 8.",
+  "raw_sha256": "7c62b40c892613d5928b4ae6061f63b6961beee68eb83605cff58cb8d935308d"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1086600/000110465926020468/arlp-20251231x10k.htm",
+ "xbrl_contexts": []
+}

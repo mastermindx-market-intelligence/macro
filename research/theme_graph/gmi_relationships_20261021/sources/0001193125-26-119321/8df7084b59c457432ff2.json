@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T18:15:26Z",
+ "accession": "0001193125-26-119321",
+ "cik": "0001280263",
+ "doc_byte_length": 4117571,
+ "doc_sha256": "deeacde656e445319dba455f66696bc4ccbee30ed2c9ef92dc4a9695c8f83852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "amba-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 944957,
+  "byte_start": 944126,
+  "normalized": "We derive substantially all of our revenue from the sale of low power AI-based processing and video and image processing SoC solutions to IoT OEMs, IoT ODMs, automotive OEMs or Tier-1 automotive suppliers, either directly or through our distributors. A substantial portion of our revenue from sales was made indirectly through one of our distributors, WT Microelectronics Co., Ltd., formerly Wintech Microelectronics Co., Ltd., or WT, which serves as our non-exclusive sales representative and fulfillment partner in Asia other than Japan, and to one ODM, Chicony Electronics Co., Ltd., or Chicony, which manufactures devices incorporating our solutions on behalf of multiple end-customers.",
+  "normalized_sha256": "c8e277435233f75f8f2d81fb1d932ed6d47d81138998019087412bb4c93933ac",
+  "raw": "We derive substantially all of our revenue from the sale of low power AI-based processing and video and image processing SoC solutions to IoT OEMs, IoT ODMs, automotive OEMs or Tier-1 automotive suppliers, either directly or through our distributors. A substantial portion of our revenue from sales was made indirectly through one of our distributors, WT Microelectronics Co., Ltd., formerly Wintech Microelectronics Co., Ltd., or WT, which serves as our non-exclusive sales representative and fulfillment partner in Asia other than Japan, and to one ODM, Chicony Electronics Co., Ltd., or Chicony, which manufactures devices incorporating our solutions on behalf of multiple end-customers.</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "8df7084b59c457432ff2dd6934ff9adb8146d7e5f663f43d6be09b5fdc82d001"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1280263/000119312526119321/amba-20260131.htm",
+ "xbrl_contexts": []
+}

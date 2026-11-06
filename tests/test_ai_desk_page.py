@@ -456,3 +456,49 @@ def test_w35b_regime_row_without_hits_counts_zero():
     assert "Goldilocks 51 (0 held)" in html, html
     assert "理想增长 51（0 成立）" in html, html
     assert "null" not in html and "undefined" not in html, html
+
+
+# --------------------------------------------------------------------------- #
+# W38-B11: a by-kind cell prints that kind's directional accuracy beside the
+# holding count. The big .v figure stays the holding rate. A missing
+# dir_accuracy leaves the cell exactly as the holding line. 0 is a real figure.
+# --------------------------------------------------------------------------- #
+def _w38_kind_cells(html, mark):
+    return [c for c in re.findall(r'<div class="tr-cell">.*?</div></div>', html)
+            if mark in c]
+
+
+@_w19d_needs_node
+def test_w38b11_by_kind_prints_directional_when_present():
+    html = _w19d_html("trackBadge(%s)" % json.dumps(_W19D_TRACK), _W19D_BADGE)
+    rel = _w38_kind_cells(html, "58/59")
+    assert len(rel) == 1, rel
+    assert '<div class="v">98%</div>' in rel[0], rel[0]
+    assert 'class="l-en">directional 66%<' in rel[0], rel[0]
+    assert 'class="l-zh">方向正确率 66%<' in rel[0], rel[0]
+
+
+@_w19d_needs_node
+def test_w38b11_by_kind_prints_zero_directional():
+    fx = _w19d_fx()
+    fx["by_kind"]["rel_return"]["dir_accuracy"] = 0
+    html = _w19d_html("trackBadge(%s)" % json.dumps(fx), _W19D_BADGE)
+    rel = _w38_kind_cells(html, "58/59")
+    assert len(rel) == 1, rel
+    assert '<div class="v">98%</div>' in rel[0], rel[0]
+    assert 'class="l-en">directional 0%<' in rel[0], rel[0]
+    assert 'class="l-zh">方向正确率 0%<' in rel[0], rel[0]
+
+
+@_w19d_needs_node
+def test_w38b11_by_kind_omits_directional_when_absent():
+    fx = _w19d_fx()
+    fx["by_kind"]["rel_return"].pop("dir_accuracy")
+    fx["by_kind"]["level"].pop("dir_accuracy")
+    html = _w19d_html("trackBadge(%s)" % json.dumps(fx), _W19D_BADGE)
+    for mark in ("58/59", "0/4"):
+        cells = _w38_kind_cells(html, mark)
+        assert len(cells) == 1, (mark, html)
+        assert "directional" not in cells[0], cells[0]
+        assert "方向正确率" not in cells[0], cells[0]
+        assert cells[0].rstrip().endswith(mark + ")</div></div>"), cells[0]

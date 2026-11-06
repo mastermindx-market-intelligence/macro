@@ -269,9 +269,9 @@ def test_enumerate_empty_input_returns_empty_list() -> None:
     assert sources.enumerate_episodes([{"ticker": "AAPL"}]) == []
 
 
-# prereg §10 A2: the submissions-JSON acceptanceDateTime carries a "Z" suffix but is
-# Eastern wall-clock time read as UTC, so it runs |ET offset| ahead of true UTC.
-# Pins from non-universe filings (MSFT); the header <ACCEPTANCE-DATETIME> agrees.
+# prereg §10 A2: the registered correction U = J - |ET offset|, with DST hours
+# unresolvable.  It still binds every clock J before A5's E (2026-11-16T00:00Z); A5
+# withdraws its premise (the JSON clock is true UTC) for J >= E -- see the A5 block.
 
 
 def test_edgar_json_clock_edt_and_est_pins() -> None:
@@ -298,6 +298,76 @@ def test_enumerate_corrects_the_json_clock_to_true_utc() -> None:
     (episode,) = sources.enumerate_episodes(rows)
     assert episode["t_rel"] == "2026-10-29T16:05:00Z"  # EDT: 4h behind the raw value
     assert episode["status"] == "ELIGIBLE"
+
+
+# prereg §10 A5: the submissions-JSON clock is true UTC (checked against the SGML
+# header <ACCEPTANCE-DATETIME> on non-universe filers).  From E = 2026-11-16T00:00Z it
+# is t_rel as given; an earlier J keeps A2.
+
+
+def test_a5_effective_instant_is_registered() -> None:
+    assert sources.A5_EFFECTIVE == datetime(2026, 11, 16, 0, 0, tzinfo=UTC)
+
+
+def test_edgar_json_clock_a5_pins() -> None:
+    fix = sources._edgar_json_acceptance_utc
+    # one second before E: A2 still applies (EST, 5h)
+    assert fix("2026-11-15T23:59:59Z") == datetime(2026, 11, 15, 18, 59, 59, tzinfo=UTC)
+    assert fix("2026-11-16T00:00:00Z") == datetime(2026, 11, 16, 0, 0, tzinfo=UTC)
+    assert fix("2026-12-08T21:05:00.000Z") == datetime(2026, 12, 8, 21, 5, tzinfo=UTC)
+
+
+def test_edgar_json_clock_a5_dst_hours_resolve() -> None:
+    # Both are unresolvable under A2 (the NY offsets at J and J - o disagree); a true
+    # UTC clock has no DST case.
+    fix = sources._edgar_json_acceptance_utc
+    assert fix("2027-11-07T06:30:00Z") == datetime(2027, 11, 7, 6, 30, tzinfo=UTC)
+    assert fix("2027-03-14T07:30:00Z") == datetime(2027, 3, 14, 7, 30, tzinfo=UTC)
+
+
+def test_edgar_json_clock_a5_offsets_are_honoured() -> None:
+    fix = sources._edgar_json_acceptance_utc
+    assert fix("2026-12-08T16:05:00-05:00") == datetime(2026, 12, 8, 21, 5, tzinfo=UTC)
+    # E is compared as an instant, not as local text: 20:30 EST on 11-15 is
+    # 01:30Z on 11-16, at or after E, so it is returned as given.
+    assert fix("2026-11-15T20:30:00-05:00") == datetime(2026, 11, 16, 1, 30, tzinfo=UTC)
+
+
+def test_enumerate_after_a5_reads_the_clock_as_given() -> None:
+    # 21:05Z is 16:05 EST, after a regular close, so C(e) is that day's close.
+    day = date(2026, 12, 8)
+    assert is_session(day) and early_close("US", day) is None
+    rows = [_eightk("DHI", "0000000000-26-000144",
+                    "2026-12-08T21:05:00.000Z", "2026-12-08")]
+    (episode,) = sources.enumerate_episodes(rows)
+    assert episode["t_rel"] == "2026-12-08T21:05:00Z"
+    assert _dt(episode["cutoff"]) == _close_utc(day)
+    assert episode["status"] == "ELIGIBLE"
+
+
+def test_enumerate_at_exactly_e_reads_the_clock_as_given() -> None:
+    # J == E is 19:00 EST on Sunday 11-15.  A5 returns it as given (A2 would read
+    # 19:00Z, 14:00 EST); C(e) is Friday 11-13's close either way (§2).
+    day = date(2026, 11, 13)
+    assert is_session(day) and early_close("US", day) is None
+    assert not is_session(date(2026, 11, 14)) and not is_session(date(2026, 11, 15))
+    rows = [_eightk("DHI", "0000000000-26-000146",
+                    "2026-11-16T00:00:00.000Z", "2026-11-13")]
+    (episode,) = sources.enumerate_episodes(rows)
+    assert episode["t_rel"] == "2026-11-16T00:00:00Z"
+    assert _dt(episode["cutoff"]) == _close_utc(day)
+
+
+def test_enumerate_before_a5_keeps_the_a2_shift() -> None:
+    # The same after-close clock before E: A2 reads 16:05Z (11:05 EST, inside the
+    # session), so C(e) is the previous session's close (prereg §10 A5 "Reason").
+    day, prev = date(2026, 11, 13), date(2026, 11, 12)
+    assert is_session(day) and is_session(prev) and early_close("US", prev) is None
+    rows = [_eightk("DHI", "0000000000-26-000145",
+                    "2026-11-13T21:05:00.000Z", "2026-11-13")]
+    (episode,) = sources.enumerate_episodes(rows)
+    assert episode["t_rel"] == "2026-11-13T16:05:00Z"
+    assert _dt(episode["cutoff"]) == _close_utc(prev)
 
 
 def test_enumerate_unresolvable_clock_alone_mints_no_episode() -> None:
@@ -908,8 +978,8 @@ def test_s_from_revisions_unparseable_generated_at_unrecoverable() -> None:
 
 
 def test_s_from_revisions_q_precutoff_via_corrected_source_clock() -> None:
-    # prereg §10 A2: the submissions-JSON clock runs late by the NY offset; the
-    # corrected source clock lands exactly at C -> a pre-cutoff disclosure.
+    # prereg §10 A2 (a clock before A5's E): the registered correction lands the
+    # source clock exactly at C -> a pre-cutoff disclosure.
     qm1 = [_rev("gen-1", generated_at="2026-10-19T18:00:00Z")]
     q = [_rev("gen-q", sha="q" * 64,
               source_available_at="2026-10-21T00:00:00Z")]  # -> 2026-10-20T20:00:00Z
@@ -950,6 +1020,29 @@ def test_s_from_revisions_q_uncorrectable_clock_unresolved() -> None:
     assert s["pit_unrecoverable"] is True
     assert s["reason"] == "q_release_time_unresolved"
     assert s["q_minus_1_resolved"] is True  # q_minus_1_resolved unchanged
+
+
+def test_s_from_revisions_q_source_clock_after_a5_read_as_given() -> None:
+    # prereg §10 A5 applies value by value to the q revision's source clock.
+    cut = _close_utc(date(2026, 12, 8))  # 21:00Z (EST)
+    qm1 = [_rev("gen-1", generated_at="2026-12-07T18:00:00Z")]
+    at_c = [_rev("gen-q", sha="q" * 64, source_available_at="2026-12-08T21:00:00Z")]
+    s = sources.s_from_revisions(qm1, at_c, cut)
+    assert s["q_release_before_cutoff"] is True
+    # A2 would read 16:05Z <= C; A5 reads 21:05Z > C
+    after = [_rev("gen-q", sha="q" * 64, source_available_at="2026-12-08T21:05:00Z")]
+    s = sources.s_from_revisions(qm1, after, cut)
+    assert s["q_release_before_cutoff"] is False
+    assert s["pit_unrecoverable"] is False and s["reason"] is None
+
+
+def test_s_from_revisions_q_dst_hour_after_a5_resolves() -> None:
+    cut = _close_utc(date(2026, 12, 8))
+    qm1 = [_rev("gen-1", generated_at="2026-12-07T18:00:00Z")]
+    q = [_rev("gen-q", sha="q" * 64, source_available_at="2027-11-07T06:30:00Z")]
+    s = sources.s_from_revisions(qm1, q, cut)
+    assert s["q_release_before_cutoff"] is False
+    assert s["pit_unrecoverable"] is False and s["reason"] is None
 
 
 def test_s_from_revisions_copies_nothing_from_q_revisions() -> None:
