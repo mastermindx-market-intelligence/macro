@@ -11,7 +11,7 @@ claim: >
   no-check-in timeout and rebooted into FileVault preboot. The same host later
   could not start Desktop Commander because its state rewrite returned ENOSPC.
 falsifier: >
-  Compare against the retained census/refusal implementation at
+  Compare against the retained census/refusal implementation in storage_guard.py:48 at
   /Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/storage_guard.py:48
   pinned by its recorded SHA-256 below.
   Reproduce a lane through the accepted B-kit on a Mini whose canonical
@@ -34,7 +34,7 @@ so_what: >
 kind: landmine
 verified_at: 2026-10-04
 verified_by: >
-  Retained implementation: /Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/storage_guard.py:48,
+  Retained implementation storage_guard.py:48 at /Users/chriswong/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/storage_guard.py:48,
   SHA-256 917ab90f5656a9ce6c5cf0ff11175f9b062ff5725d0fdac7e3ae71625c448cdd,
   read and hash-matched on 2026-11-05. The incident and canary observations
   that follow remain the original 2026-10-04 evidence.
