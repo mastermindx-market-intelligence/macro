@@ -4406,6 +4406,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "public-site-figma-baseline-contracts",
     # Installer simulations own their concrete source/read closure without
     # adding weight to unrelated ordinary-code packing probes.
     "earnings-worker-systemd",
