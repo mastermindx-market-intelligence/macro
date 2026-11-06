@@ -78,6 +78,68 @@ def test_chain_spy_greeks_on_covered_date():
     assert df["implied_vol"].notna().any()
 
 
+def test_chain_clock_only_greek_vintages_do_not_multiply_legacy_book(monkeypatch):
+    """Raw clocks survive storage; projecting them out must not double positions."""
+    from engine import thetadata_store as ts
+
+    key = {"root": "SPXW", "expiration": pd.Timestamp("2026-10-09"),
+           "strike": 6500.0, "right": "C", "date": pd.Timestamp("2026-10-08")}
+    greek = dict(key, delta=0.5, implied_vol=0.2, underlying_price=6500.0,
+                 timestamp="2026-10-08T15:45:00.123",
+                 underlying_timestamp="2026-10-08T15:44:59.987")
+    raw_greeks = pd.DataFrame([
+        greek,
+        dict(greek, underlying_timestamp="2026-10-08T15:45:00.001"),
+        dict(greek, timestamp="2026-10-08T15:45:01.001"),
+    ])
+    tiers = {"eod": pd.DataFrame([dict(key, close=12.5, volume=100)]),
+             "oi": pd.DataFrame([dict(key, open_interest=200)]),
+             "greeks": raw_greeks}
+    monkeypatch.setattr(ts, "_load_parquets", lambda tier, *args: tiers[tier])
+
+    frame = ts.chain("2026-10-08", "SPXW")
+    assert len(frame) == 1
+    assert frame["open_interest"].sum() == 200
+    assert frame.loc[0, "delta"] == 0.5
+    assert frame.loc[0, "volume"] == 100
+    assert len(raw_greeks) == 3  # this consumer cannot erase source vintages
+
+
+@pytest.mark.parametrize("raw_first", [False, True])
+def test_greek_clock_roundtrip_preserves_raw_and_legacy_views(tmp_path, raw_first):
+    """Actual collector -> existing daily writer -> store, including cache order."""
+    from datetime import date
+    from collectors.thetadata import _normalize_greeks_df
+    from engine import thetadata_store as ts
+    from scripts.topup_thetadata_day import _merge_day
+
+    row = {"symbol": "SPXW", "expiration": "2026-10-09", "strike": 6500,
+           "right": "CALL", "timestamp": "2026-10-08T15:45:00.123",
+           "underlying_timestamp": "2026-10-08T15:44:59.987",
+           "delta": 0.5, "implied_vol": 0.2, "underlying_price": 6500}
+    frame = _normalize_greeks_df(pd.DataFrame([
+        row,
+        dict(row, underlying_timestamp="2026-10-08T15:45:00.001"),
+        dict(row, delta=0.6),  # a different economic row must not be erased
+    ]))
+    _merge_day(tmp_path, "greeks", "SPXW", date(2026, 10, 8), frame)
+    ts.clear_parquet_cache()
+    views = {}
+    for raw in [raw_first, not raw_first]:
+        views[raw] = ts._load_parquets(
+            "greeks", "SPXW", [2026], tmp_path, retain_source_clocks=raw,
+        )
+    assert len(views[True]) == 3
+    assert views[True]["underlying_timestamp"].tolist() == frame["underlying_timestamp"].tolist()
+    assert views[True]["timestamp"].tolist() == frame["timestamp"].tolist()
+    assert len(views[False]) == 2
+    assert set(views[False]["delta"]) == {0.5, 0.6}
+    assert not {"timestamp", "underlying_timestamp"} & set(views[False].columns)
+    # Ordinary consumers get that same legacy projection, even after a raw read.
+    pd.testing.assert_frame_equal(ts._load_parquets("greeks", "SPXW", [2026], tmp_path), views[False])
+    ts.clear_parquet_cache()
+
+
 def test_chain_missing_root_returns_empty():
     from engine.thetadata_store import chain
     df = chain("2019-01-02", "MSFT", store=_store())

@@ -164,3 +164,33 @@ This draft uses the S0 frozen vocabulary only. Exception phrases in use are
 `UNRESOLVED`, `NOT ADMITTED`, and `is not admission`. A01 does not change a
 status, budget, split, horizon, null, or retirement rule of the frozen
 register.
+
+## 9. Register errata
+
+One erratum, **A01-E1**.
+
+The summary sentence at `S0_PROTOCOL_REGISTER.md:129` (P01; P03) states counts
+that no longer match the Status column of the same frozen register.
+
+**register blob:** `5cea5c88335133e7684200b694f0d170ca4ae5b2`
+
+**cited line:** `S0_PROTOCOL_REGISTER.md:129` (P01)
+
+**status rows:** L115–L127
+
+| class | stated at line 129 | derived from the Status column | protocols |
+|---|---|---|---|
+| RETIRED-CONTAMINATED | 0 | 3 | P01, P03, P04 |
+| REGISTERED-GATED | 4 | 2 | P05, P06 |
+| NOT SUPPORTED — BRIDGE REQUIRED | 6 | 5 | P02, P09, P10, P11, P12 |
+| NOT SUPPORTED — PROCUREMENT-GATED | 2 | 2 | P07, P08 |
+| DIAGNOSTIC | 1 | 1 | P13 |
+
+The mismatch is consistent with the three Status cells (P01, P03, P04) having
+been changed to RETIRED-CONTAMINATED and line 129 left stating the prior
+counts.
+
+A01 reads the Status column (rows L115–L127) as the register's statement.
+This erratum changes no status, budget, split, horizon, null or retirement
+rule. The register is not edited. Correcting line 129 is an OWNER FOLLOW-ON
+for the register owner under the register's own amendment rule.

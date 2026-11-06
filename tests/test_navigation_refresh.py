@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from rjsmin import jsmin
 from pathlib import Path
 
 
@@ -186,6 +187,7 @@ def test_global_cycles_uses_accessible_in_panel_drill() -> None:
 def test_settings_close_is_not_overridden_by_gear_focus() -> None:
     """Returning focus to the gear must preserve a deliberate popover close."""
     for source in (THEME_JS, SITE_THEME_JS):
+        source = jsmin(source, keep_bang_comments=True)
         assert (
             '.nav-settings:focus-within '
             '.nav-settings-btn[aria-expanded="true"] + .settings-pop'
@@ -198,11 +200,11 @@ def test_settings_close_is_not_overridden_by_gear_focus() -> None:
         )[0]
         # Pointer focus occurs before click, so one explicit pointer-intent flag
         # keeps click as the sole toggle while Tab focus still opens directly.
-        assert "var _gearPointerDown = false;" in source
+        assert jsmin("var _gearPointerDown = false;") in source
         assert "gear.addEventListener('pointerdown'" in source
-        assert "_gearPointerDown = false;" in source
-        assert "if (isOpen() || wrap.contains(e.relatedTarget)) return;" in focusin
-        assert "if (e.target === gear && _gearPointerDown) return;" in focusin
+        assert jsmin("_gearPointerDown = false;") in source
+        assert jsmin("if (isOpen() || wrap.contains(e.relatedTarget)) return;") in focusin
+        assert jsmin("if (e.target === gear && _gearPointerDown) return;") in focusin
         assert "open();" in focusin
         assert "wrap.classList.add('settings-dismissed');" in source
         assert "wrap.classList.remove('settings-dismissed');" in source
@@ -299,13 +301,14 @@ def test_start_hub_uses_canonical_product_navigation_and_demotes_clock() -> None
     source = (ROOT / "scripts" / "build_vector.py").read_text(encoding="utf-8")
     assert 'get_template("_site_nav.html.j2")' in source
     assert "+ _hub_product_nav_html()" in source
-    assert "'<div class=\"hub-live-meta\">" in source
+    assert "'<div class=\"hub-snapshot-meta\">" in source
     assert "'<div class=\"hub-top\">'" not in source
 
     rendered = (ROOT / "site" / "start.html").read_text(encoding="utf-8")
     assert 'class="site-nav"' in rendered
     assert 'body class="hub-page"' in rendered
-    assert 'class="hub-live-meta"' in rendered
+    assert 'class="hub-snapshot-meta"' in rendered
+    assert 'class="hub-clock-wrap"' in rendered
     assert 'class="hub-top"' not in rendered
 
 
@@ -394,22 +397,23 @@ def test_mobile_ticker_input_does_not_trigger_ios_focus_zoom() -> None:
 
 def test_search_preserves_chinese_ime_spaces_and_localizes_results() -> None:
     for source in (THEME_JS, SITE_THEME_JS):
+        source = jsmin(source, keep_bang_comments=True)
         for marker in (
             'maxlength="80"',
             "compositionstart",
             "compositionend",
             "e.isComposing",
-            "e.keyCode === 229",
+            jsmin("e.keyCode === 229"),
             "normalizeSearch",
             "nameChinese",
-            "x.z || x.zh || x.cn || x.name_zh",
+            jsmin("x.z || x.zh || x.cn || x.name_zh"),
             "股票搜索结果",
             "没有匹配的股票代码或公司。",
             "displayName(x)",
-            "document.addEventListener('langchange', applySearchLocale)",
+            jsmin("document.addEventListener('langchange', applySearchLocale)"),
         ):
-            assert marker in source
-        assert "input.value = input.value.toUpperCase().replace" not in source
+            assert jsmin(marker) in source
+        assert jsmin("input.value = input.value.toUpperCase().replace") not in source
 
     ticker_input_rule = REFRESH_CSS.split(
         ".ticker-search .ticker-input {", 1
@@ -526,11 +530,12 @@ def test_ticker_search_visibility_never_blocks_keyboard_focus_on_open() -> None:
 def test_ticker_search_escape_restores_keyboard_focus() -> None:
     """Escape/close returns keyboard users to the control that opened search."""
     for source in (THEME_JS, SITE_THEME_JS):
-        assert "function closeSearch(restoreFocus)" in source
-        assert "if (restoreFocus)" in source
-        assert "trigger.focus({ preventScroll: true })" in source
-        assert "closeButton.addEventListener('click', function () { closeSearch(true); });" in source
-        escape = source.split("} else if (e.key === 'Escape') {", 1)[1].split("}", 1)[0]
+        source = jsmin(source, keep_bang_comments=True)
+        assert jsmin("function closeSearch(restoreFocus)") in source
+        assert jsmin("if (restoreFocus)") in source
+        assert jsmin("trigger.focus({ preventScroll: true })") in source
+        assert jsmin("closeButton.addEventListener('click', function () { closeSearch(true); });") in source
+        escape = source.split(jsmin("} else if (e.key === 'Escape') {"), 1)[1].split("}", 1)[0]
         assert "e.preventDefault();" in escape
         assert "closeSearch(true);" in escape
 
@@ -563,6 +568,7 @@ def test_logo_token_is_runtime_only() -> None:
 def test_mobile_shared_chrome_controls_keep_touch_floor() -> None:
     """Primary mobile chrome controls must not regress below the 40px touch floor."""
     for source in (THEME_JS, SITE_THEME_JS):
+        source = jsmin(source, keep_bang_comments=True)
         assert (
             ".nav-toggle{display:inline-flex;align-items:center;justify-content:center;"
             "width:42px;height:40px"
@@ -582,7 +588,7 @@ def test_mobile_shared_chrome_controls_keep_touch_floor() -> None:
         assert ".settings-acct-in .sa-signout{min-height:40px;touch-action:manipulation}" in source
         assert ".settings-acct-in .sr-main{flex:1;min-width:0;min-height:40px;display:flex;" in source
         assert ".settings-acct-in .sr-main[role=\"button\"]:focus-visible{outline:2px solid" in source
-        assert "if (t.getAttribute('role') !== 'switch') t.setAttribute('role', 'switch');" in source
+        assert jsmin("if (t.getAttribute('role') !== 'switch') t.setAttribute('role', 'switch');") in source
         assert source.count("touch-action:manipulation") >= 9
 
     mobile = REFRESH_CSS.split("@media (max-width: 560px)", 1)[1].split(

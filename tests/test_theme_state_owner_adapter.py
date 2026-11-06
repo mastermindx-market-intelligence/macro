@@ -950,3 +950,246 @@ def test_qualification_cannot_change_capture_dependencies(world, monkeypatch, ch
     with pytest.raises(ValueError, match="changed"):
         adapter.capture_owner_bundle(world[0], effective_at=EFFECTIVE,
                                      known_at=None, owner_readers=MutatingReader())
+
+
+THS = "ltheme:ths:900001"
+
+
+def _bind_ths_through_graph(world, peers, *, valid_to=None, direction="INCOMING", strip=(THS,),
+                            basket_nodes=None, extra_nodes=()):
+    """Make subjects carry no source_meta basket (the actual build_ths_plane shape)
+    and express the THS concept only through owner graph edges.
+
+    ``build_ths_plane`` only mints an expression between two nodes that exist, so
+    every ``basket:`` peer gets a live basket node unless ``basket_nodes`` maps it
+    to field overrides (``None`` omits that node entirely)."""
+    graph = world[0] / "data/theme_graph"
+    nodes = pd.read_parquet(graph / "nodes.parquet")
+    for node in strip:
+        local_id = node.rsplit(":", 1)[1]
+        nodes.loc[nodes["node_id"] == node, "source_meta"] = json.dumps(
+            {"source_family": node.split(":")[1], "source_local_id": local_id, "grain": "fixture"})
+    overrides = basket_nodes or {}
+    added = []
+    for node_id in dict.fromkeys(n for pair in peers for n in pair if n.startswith("basket:")):
+        if node_id in overrides and overrides[node_id] is None:
+            continue
+        added.append({"node_id": node_id, "kind": "basket", "name_en": node_id, **(overrides.get(node_id) or {})})
+    for node_id in extra_nodes:
+        added.append({"node_id": node_id, "kind": "local_theme", "name_en": node_id, "name_zh": "本地",
+                      "source_meta": json.dumps({"source_family": node_id.split(":")[1],
+                                                 "source_local_id": node_id.rsplit(":", 1)[1], "grain": "fixture"})})
+    for row in added:
+        for key, value in {"status": "ACTIVE", "birth_date": "2026-10-01", "computed_at": "2026-10-01T00:00:00Z",
+                           "engine_version": store.ENGINE_VERSION}.items():
+            row.setdefault(key, value)
+    nodes = pd.concat([nodes, pd.DataFrame(added, columns=list(store.NODE_COLUMNS))], ignore_index=True)
+    nodes.to_parquet(graph / "nodes.parquet", index=False)
+    edges = pd.read_parquet(graph / "edges.parquet").to_dict("records")
+    for i, (peer, target) in enumerate(peers):
+        src, dst = (peer, target) if direction == "INCOMING" else (target, peer)
+        edges.append({"edge_id": f"fixture-basket-expression-{i}", "type": "EXPRESSES", "src": src, "dst": dst,
+                      "valid_from": "2026-10-01", "valid_to": valid_to, "belief_time": "2026-10-01",
+                      "evidence_time": "2026-10-01", "computed_at": "2026-10-01T00:00:00Z",
+                      "source_class": "vendor_concept_map", "evidence_refs": "[]"})
+    pd.DataFrame(edges, columns=list(store.EDGE_COLUMNS)).to_parquet(graph / "edges.parquet", index=False)
+
+
+def _membership_read(bundle, node):
+    return bundle.snapshot()["subjects"][node]["native_reads"]["membership"]
+
+
+def test_ths_concept_binds_the_one_basket_its_owner_graph_says_expresses_it(world):
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900001", THS)])
+    bundle = capture(world)
+    raw = bundle.snapshot()["subjects"][THS]
+    assert raw["basket"] == {"basket_id": "thsc900001", "suite": "baskets_china_ths"}
+    assert raw["native_reads"]["membership"]["value"]["members"] == ["600001.SS"]
+    result = adapter.compose_from_owner_bundle(bundle, generated_at=EMITTED)
+    assert result["native_observations"][THS]["membership_owner_read"]["fact"]["members"] == ["600001.SS"]
+    subject = next(s for s in result["state"]["subjects"] if s["node_id"] == THS)
+    # A bound native read is not qualification: no receipt, no eligibility upgrade.
+    assert subject["eligibility"]["status"] == "NOT_QUALIFIED"
+    assert subject["owner_receipts"]["membership"] is None
+
+
+@pytest.mark.parametrize("peers,code", [
+    ([], "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"),
+    ([("basket:baskets_china_ths:thsc900001", THS), ("basket:baskets_china_ths:thsc900002", THS)],
+     "EXACT_LOCAL_BASKET_BINDING_AMBIGUOUS"),
+    # Another suite's basket is not this vendor concept's basket.
+    ([("basket:baskets:power_grid", THS)], "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"),
+])
+def test_ths_concept_without_exactly_one_expressing_basket_binds_nothing(world, peers, code):
+    _bind_ths_through_graph(world, peers)
+    bundle = capture(world)
+    read = _membership_read(bundle, THS)
+    assert bundle.snapshot()["subjects"][THS]["basket"] is None
+    assert read == {"availability": "UNAVAILABLE", "null_reason": code, "value": None}
+
+
+def test_expired_basket_expression_edge_binds_nothing(world):
+    # The EXPRESSES edge closed (valid_to) at the capture date, so it no longer binds.
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900001", THS)], valid_to="2026-10-02")
+    assert _membership_read(capture(world), THS)["null_reason"] == "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"
+
+
+def test_outgoing_basket_expression_is_not_a_basket_identity(world):
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900001", THS)], direction="OUTGOING")
+    assert _membership_read(capture(world), THS)["null_reason"] == "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"
+
+
+def test_finviz_subtheme_is_never_bound_from_a_graph_edge(world):
+    # finviz carries no source-local basket identity; an edge must not invent one.
+    node = "ltheme:finviz:housing"
+    _bind_ths_through_graph(world, [("basket:baskets:housing", node)], strip=(node,))
+    bundle = capture(world)
+    assert bundle.snapshot()["subjects"][node]["basket"] is None
+    assert _membership_read(bundle, node)["null_reason"] == "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"
+
+
+def test_source_meta_basket_still_takes_precedence_over_graph_expression(world):
+    # The fixture's THS node keeps its explicit source_meta binding; a conflicting
+    # graph edge does not replace it.
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900002", THS)], strip=())
+    assert capture(world).snapshot()["subjects"][THS]["basket"] == {"basket_id": "thsc900001", "suite": "baskets_china_ths"}
+
+
+def test_graph_derived_basket_is_rederived_from_the_captured_ontology_read(world):
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900001", THS)])
+    snapshot = capture(world).snapshot()
+    adapter._validate_bundle_derivations(copy.deepcopy(snapshot))
+    forged = copy.deepcopy(snapshot)
+    relations = forged["subjects"][THS]["native_reads"]["ontology"]["value"]["relations"]
+    forged["subjects"][THS]["native_reads"]["ontology"]["value"]["relations"] = [
+        r for r in relations if r["peer_node_id"] != "basket:baskets_china_ths:thsc900001"]
+    with pytest.raises(ValueError, match="derived subject scope differs"):
+        adapter._validate_bundle_derivations(forged)
+
+
+BASKET = "basket:baskets_china_ths:thsc900001"
+BOUND = {"basket_id": "thsc900001", "suite": "baskets_china_ths"}
+
+
+def test_two_live_edges_for_one_expressing_pair_are_one_basket(world):
+    # build_ths_plane can mint the same expression more than once; edge_id
+    # multiplicity is not a second basket.
+    _bind_ths_through_graph(world, [(BASKET, THS), (BASKET, THS)])
+    bundle = capture(world)
+    assert bundle.snapshot()["subjects"][THS]["basket"] == BOUND
+    read = _membership_read(bundle, THS)
+    assert read["availability"] == "AVAILABLE" and read["value"]["members"] == ["600001.SS"]
+
+
+@pytest.mark.parametrize("override", [
+    None,                                   # the peer basket node does not exist
+    {"status": "retired"},
+    {"status": "RETIRED"},
+    {"status": "merged"},
+    {"merged_into": "basket:baskets_china_ths:thsc900009"},
+])
+def test_expression_to_an_absent_retired_or_merged_basket_binds_nothing(world, override):
+    _bind_ths_through_graph(world, [(BASKET, THS)], basket_nodes={BASKET: override})
+    bundle = capture(world)
+    assert bundle.snapshot()["subjects"][THS]["basket"] is None
+    assert _membership_read(bundle, THS) == {
+        "availability": "UNAVAILABLE", "null_reason": "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE", "value": None}
+
+
+def test_basket_expressing_two_vendor_concepts_binds_neither(world):
+    # The binding must be unique from both ends: one basket expressing two THS
+    # concepts is not either concept's exact basket.
+    other = "ltheme:ths:900002"
+    _bind_ths_through_graph(world, [(BASKET, THS), (BASKET, other)], extra_nodes=(other,))
+    bundle = capture(world)
+    assert bundle.snapshot()["subjects"][THS]["basket"] is None
+    assert _membership_read(bundle, THS) == {
+        "availability": "UNAVAILABLE", "null_reason": "EXACT_LOCAL_BASKET_BINDING_AMBIGUOUS", "value": None}
+
+
+def test_successful_graph_binding_carries_no_null_reason(world):
+    _bind_ths_through_graph(world, [(BASKET, THS)])
+    bundle = capture(world)
+    read = _membership_read(bundle, THS)
+    assert read["availability"] == "AVAILABLE"
+    assert read.get("null_reason") is None
+    # The binder's own contract: a bound basket never travels with a null reason.
+    # (The capture path ignores the reason whenever a basket binds, so only a
+    # direct call can see it.)
+    reads = bundle.snapshot()["subjects"][THS]["native_reads"]
+    basket, why = adapter._expressed_basket("ths", THS, reads["ontology"], reads.get("basket_ontology"))
+    assert basket is not None and why is None
+
+
+@pytest.mark.parametrize("forge", ["drop_reverse_relation", "drop_basket_read", "retire_basket"])
+def test_graph_derived_basket_is_rederived_from_the_captured_basket_read(world, forge):
+    _bind_ths_through_graph(world, [(BASKET, THS)])
+    snapshot = capture(world).snapshot()
+    reads = snapshot["subjects"][THS]["native_reads"]
+    assert reads["basket_ontology"]["value"]["node_id"] == BASKET
+    adapter._validate_bundle_derivations(copy.deepcopy(snapshot))
+    forged = copy.deepcopy(snapshot)
+    forged_reads = forged["subjects"][THS]["native_reads"]
+    if forge == "drop_reverse_relation":
+        value = forged_reads["basket_ontology"]["value"]
+        value["relations"] = [r for r in value["relations"] if r["peer_node_id"] != THS]
+    elif forge == "drop_basket_read":
+        del forged_reads["basket_ontology"]
+    else:
+        forged_reads["basket_ontology"]["value"]["subject"]["status"] = "retired"
+    with pytest.raises(ValueError, match="derived subject scope differs"):
+        adapter._validate_bundle_derivations(forged)
+
+
+_CN_DOC = {"region": "cn", "as_of": "2026-10-02", "narratives": [
+    {"signature": "controlled-cn", "n": 7, "legs": {"tighten": .6, "cohesion": .3, "momentum": .1, "novelty": 1., "size": .6},
+     "recommended": [{"ticker": t} for t in ["600001.SS", "600002.SS", "600003.SS", "600004.SS", "600005.SS"]]}]}
+
+
+class _CNNarrativeReader(QualifiedFixtureReader):
+    """Qualifies the THS concept's narrative under the CN owner scope only."""
+    def read_state_qualification(self, **kwargs):
+        result = super().read_state_qualification(**kwargs)
+        if result is not None and kwargs["node_id"] == THS:
+            receipt = result["source_receipts"].pop("narrative_emergence")
+            receipt["payload"] = copy.deepcopy(_CN_DOC)
+            receipt["sha256"] = theme_state.canonical_sha256(_CN_DOC)
+            result["source_receipts"]["narrative_emergence_cn"] = receipt
+        return result
+
+
+def test_graph_bound_ths_concept_selects_the_cn_narrative_scope(world):
+    # Finding 4: a graph-derived baskets_china_ths binding moves the subject from the
+    # global narrative source to the CN one, and only the CN leg carries the overlap.
+    _bind_ths_through_graph(world, [(BASKET, THS)])
+    write(world[0] / "site/chinabasketdata/narrative_emergence.json", _CN_DOC)
+    bundle = capture(world, owner_readers=_CNNarrativeReader(world[0]))
+    assert bundle.snapshot()["subjects"][THS]["basket"] == BOUND
+    result = adapter.compose_from_owner_bundle(bundle, generated_at=EMITTED)
+    observation = result["native_observations"][THS]["forming_narrative_recommended_ticker_overlap"]
+    assert observation["availability"] == "POSITIVE"
+    assert observation["fact"]["matched_tickers"] == ["600001.SS"]
+    dispositions = result["source_dispositions"][THS]
+    assert dispositions["narrative_emergence_cn"]["status"] == "ADAPTED_RECOMMENDED_SUBSET"
+    assert dispositions["narrative_emergence"]["status"] != "ADAPTED_RECOMMENDED_SUBSET"
+    production = adapter.compose_production_from_owner_bundle(bundle, generated_at=EMITTED)
+    legs = next(s for s in production["state"]["subjects"] if s["node_id"] == THS)["legs"]
+    assert legs["narrative_emergence_cn"]["overlap_observation"]["value"]["matched_tickers"] == ["600001.SS"]
+    assert legs["narrative_emergence"]["overlap_observation"] is None
+    assert production["publication_allowed"] is False
+
+
+def test_unbound_ths_concept_keeps_no_overlap_on_either_narrative_scope(world):
+    _bind_ths_through_graph(world, [])
+    write(world[0] / "site/chinabasketdata/narrative_emergence.json", _CN_DOC)
+    bundle = capture(world, owner_readers=_CNNarrativeReader(world[0]))
+    assert bundle.snapshot()["subjects"][THS]["basket"] is None
+    result = adapter.compose_from_owner_bundle(bundle, generated_at=EMITTED)
+    observation = result["native_observations"][THS]["forming_narrative_recommended_ticker_overlap"]
+    assert observation["availability"] == "UNAVAILABLE" and observation["fact"] is None
+    assert all(d["status"] != "ADAPTED_RECOMMENDED_SUBSET" for name, d in result["source_dispositions"][THS].items()
+               if name.startswith("narrative_emergence"))
+    production = adapter.compose_production_from_owner_bundle(bundle, generated_at=EMITTED)
+    legs = next(s for s in production["state"]["subjects"] if s["node_id"] == THS)["legs"]
+    assert legs["narrative_emergence_cn"]["overlap_observation"] is None
+    assert legs["narrative_emergence"]["overlap_observation"] is None

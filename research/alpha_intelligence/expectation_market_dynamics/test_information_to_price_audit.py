@@ -630,5 +630,98 @@ class R1OwnerReceiptTests(unittest.TestCase):
         self.assertEqual(set(r1.REQUIRED_OWNER_PATHS), keys)
 
 
+class R1RefreshReceiptTests(unittest.TestCase):
+    """The 2026-10-17 refreshed degraded receipt and the probe's override helpers."""
+
+    RECEIPT = Path(__file__).with_name("R1_OWNER_RECEIPTS_2026-10-17.json")
+
+    @classmethod
+    def receipt(cls):
+        return json.loads(cls.RECEIPT.read_text(encoding="utf-8"))
+
+    def test_r1_schema_and_later_cutoff(self):
+        rec = self.receipt()
+        self.assertEqual(rec["schema_version"], r1.OWNER_RECEIPTS_SCHEMA)
+        self.assertRegex(rec["cutoff"], r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+        self.assertGreater(rec["cutoff"], r1.CUTOFF)
+        self.assertEqual(rec["refreshes"]["prior_cutoff"], r1.CUTOFF)
+        self.assertEqual(rec["universe"]["matched"], True)
+        self.assertRegex(rec["universe"]["sha256"], r"^[0-9a-f]{64}$")
+        self.assertNotEqual(rec["universe"]["sha256"], r1.EXPECTED_UNIVERSE_SHA256)
+
+    def test_r2_every_gap_keeps_its_form_and_stable_keys(self):
+        rec = self.receipt()
+        self.assertEqual(set(rec["gaps"]), set(r1.EXPECTED_RECEIPT_FORM))
+        for gap, entry in rec["gaps"].items():
+            self.assertEqual(entry["receipt_form"], r1.EXPECTED_RECEIPT_FORM[gap], gap)
+            self.assertEqual(entry["cutoff"], rec["cutoff"], gap)
+            self.assertEqual(set(entry["counts"]), set(r1.STABLE_COUNT_KEYS[gap]), gap)
+            self.assertEqual(entry["owner_ws"], "ALPHA-INTELLIGENCE-INTEGRATION")
+        self.assertNotIn("CLOSED", {e["receipt_form"] for e in rec["gaps"].values()})
+
+    def test_r3_g1_counts_are_internally_consistent(self):
+        g1 = self.receipt()["gaps"]["G1"]
+        counts = g1["counts"]
+        self.assertEqual(
+            counts["unresolved"], counts["universe_names"] - counts["issuer_id_resolved"]
+        )
+        self.assertEqual(len(g1["unresolved_names"]), counts["unresolved"])
+        self.assertEqual(g1["unresolved_names"], sorted(g1["unresolved_names"]))
+
+    def test_r4_refusal_line_matches_counts(self):
+        g4 = self.receipt()["gaps"]["G4"]
+        self.assertEqual(g4["refusal"]["line"], g4["counts"]["line"])
+        self.assertEqual(g4["counts"]["literal"], "UNKNOWN")
+        self.assertEqual(g4["refusal"]["same_line_marker"], "R1-OWNER-REFUSAL")
+
+    def test_r5_set_cutoff_validates_and_rebinds(self):
+        saved = (r1.CUTOFF, r1.CUTOFF_DATE, r1.CUTOFF_TS)
+        try:
+            with self.assertRaises(ValueError):
+                r1.set_cutoff("2026-10-15")
+            with self.assertRaises(ValueError):
+                r1.set_cutoff("2026-10-15T13:32:43+00:00")
+            r1.set_cutoff("2026-10-15T13:32:43Z")
+            self.assertEqual(r1.CUTOFF, "2026-10-15T13:32:43Z")
+            self.assertEqual(str(r1.CUTOFF_DATE), "2026-10-15")
+        finally:
+            r1.CUTOFF, r1.CUTOFF_DATE, r1.CUTOFF_TS = saved
+        self.assertEqual(r1.CUTOFF, "2026-10-03T06:31:51Z")
+
+    def test_r6_set_expected_universe_sha256_rejects_non_digest(self):
+        saved = r1.EXPECTED_UNIVERSE_SHA256
+        try:
+            with self.assertRaises(ValueError):
+                r1.set_expected_universe_sha256("DAE001F6")
+            with self.assertRaises(ValueError):
+                r1.set_expected_universe_sha256("g" * 64)
+            r1.set_expected_universe_sha256("0" * 64)
+            self.assertEqual(r1.EXPECTED_UNIVERSE_SHA256, "0" * 64)
+        finally:
+            r1.EXPECTED_UNIVERSE_SHA256 = saved
+
+    def test_r7_as_text_null_handling(self):
+        self.assertIsNone(r1.as_text(None))
+        self.assertIsNone(r1.as_text(float("nan")))
+        self.assertEqual(r1.as_text(363), "363")
+        self.assertEqual(r1.as_text("occ_root"), "occ_root")
+
+    def test_r8_refresh_receipt_evaluates_degraded_accepted(self):
+        rec = self.receipt()
+        raw = {
+            gap: {"status": "OPEN", "value": dict(entry["counts"])}
+            for gap, entry in rec["gaps"].items()
+        }
+        hits = R1OwnerReceiptTests.HITS
+        ws_fm = R1OwnerReceiptTests.ws()
+        saved = (r1.CUTOFF, r1.CUTOFF_DATE, r1.CUTOFF_TS)
+        try:
+            r1.set_cutoff(rec["cutoff"])
+            statuses = R1OwnerReceiptTests.evaluate_all(raw, rec["gaps"], ws_fm, hits)
+        finally:
+            r1.CUTOFF, r1.CUTOFF_DATE, r1.CUTOFF_TS = saved
+        self.assertEqual(set(statuses.values()), {"DEGRADED_ACCEPTED"})
+
+
 if __name__ == "__main__":
     unittest.main()
