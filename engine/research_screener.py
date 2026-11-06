@@ -12,6 +12,7 @@ the existing WatchStore.portfolio.list mechanism, not this module.
 """
 from __future__ import annotations
 
+import math
 import re
 from datetime import date, timedelta
 from typing import Any, Mapping
@@ -207,23 +208,24 @@ def _catalyst_for(state: Mapping[str, Any], as_of: date | None) -> dict[str, Any
     }
 
 
-def _assumptions_text(assumptions: Mapping[str, Any] | None) -> dict[str, str]:
-    assumptions = assumptions or {}
-    growth = assumptions.get("sales_growth_pct")
-    margin = assumptions.get("margin_delta_pp")
-    multiple = assumptions.get("earnings_multiple")
+def _finite_value(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
     try:
-        growth_n = float(growth)
-    except (TypeError, ValueError):
-        growth_n = 0.0
-    try:
-        margin_n = float(margin)
-    except (TypeError, ValueError):
-        margin_n = 0.0
-    try:
-        multiple_n = float(multiple)
-    except (TypeError, ValueError):
-        multiple_n = 0.0
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _assumptions_text(assumptions: Mapping[str, Any] | None) -> dict[str, str] | None:
+    if not isinstance(assumptions, Mapping):
+        return None
+    growth_n = _finite_value(assumptions.get("sales_growth_pct"))
+    margin_n = _finite_value(assumptions.get("margin_delta_pp"))
+    multiple_n = _finite_value(assumptions.get("earnings_multiple"))
+    if growth_n is None or margin_n is None or multiple_n is None:
+        return None
     if abs(growth_n) < 1e-9:
         growth_en = "Sales unchanged"
         growth_zh = "销售收入不变"
@@ -250,12 +252,8 @@ def _assumptions_text(assumptions: Mapping[str, Any] | None) -> dict[str, str]:
 
 
 def _valuation_for(
-    state: Mapping[str, Any],
-    postures_by_ticker: Mapping[str, Mapping[str, Any]],
+    blob: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    ticker = str(state.get("ticker_display") or "")
-    listing_key = str(state.get("listing_key") or "")
-    blob = postures_by_ticker.get(ticker) or postures_by_ticker.get(listing_key)
     if not isinstance(blob, Mapping):
         return None
     schema = blob.get("schema")
@@ -267,20 +265,13 @@ def _valuation_for(
         if isinstance(item, Mapping) and item.get("key") == "base":
             base = item
             break
-    if not isinstance(base, Mapping) or not base.get("computable"):
+    if not isinstance(base, Mapping) or base.get("computable") is not True:
         return None
-    per_share = base.get("per_share")
-    try:
-        per_share_n = float(per_share) if per_share is not None else None
-    except (TypeError, ValueError):
-        per_share_n = None
-    price_block = blob.get("price") if isinstance(blob.get("price"), Mapping) else None
-    price = price_block.get("value") if price_block else None
-    try:
-        price_n = float(price) if price is not None else None
-    except (TypeError, ValueError):
-        price_n = None
-    if per_share_n is None or price_n is None:
+    per_share_n = _finite_value(base.get("per_share"))
+    price_block = blob.get("price")
+    price_n = _finite_value(price_block.get("value")) if isinstance(price_block, Mapping) else None
+    assumptions = _assumptions_text(base.get("assumptions"))
+    if per_share_n is None or price_n is None or assumptions is None:
         return None
     if price_n < per_share_n:
         label = _bilingual(VAL_INEXPENSIVE_EN, VAL_INEXPENSIVE_ZH)
@@ -288,10 +279,9 @@ def _valuation_for(
         label = _bilingual(VAL_EXPENSIVE_EN, VAL_EXPENSIVE_ZH)
     else:
         label = _bilingual(VAL_INLINE_EN, VAL_INLINE_ZH)
-    assumptions = base.get("assumptions") if isinstance(base.get("assumptions"), Mapping) else {}
     return {
         "label": label,
-        "assumptions_text": _assumptions_text(assumptions),
+        "assumptions_text": assumptions,
         "owner": _bilingual(VAL_OWNER_EN, VAL_OWNER_ZH),
     }
 
@@ -386,25 +376,49 @@ def _why_glance(
     return _bilingual(WHY_IDENTITY_EN, WHY_IDENTITY_ZH)
 
 
-def _index_postures(rows: list[Mapping[str, Any]] | Mapping[str, Mapping[str, Any]] | None) -> dict[str, Mapping[str, Any]]:
-    out: dict[str, Mapping[str, Any]] = {}
-    if rows is None:
-        return out
-    if isinstance(rows, Mapping):
-        for key, blob in rows.items():
-            if isinstance(blob, Mapping):
-                out[str(key)] = blob
-        return out
-    for blob in rows:
+def _index_postures(
+    rows: list[Mapping[str, Any]] | Mapping[str, Mapping[str, Any]] | None,
+    states: list[Mapping[str, Any]],
+) -> dict[str, Mapping[str, Any] | None]:
+    """Bind listing-level evidence first. A ticker alone must resolve uniquely."""
+    tickers_by_listing: dict[str, set[str]] = {}
+    listings_by_ticker: dict[str, set[str]] = {}
+    for state in states:
+        listing = str(state["listing_key"])
+        tickers = tickers_by_listing.setdefault(listing, set())
+        if ticker := str(state.get("ticker_display") or ""):
+            tickers.add(ticker)
+            listings_by_ticker.setdefault(ticker, set()).add(listing)
+
+    exact: dict[str, Mapping[str, Any] | None] = {}
+    fallback: dict[str, Mapping[str, Any] | None] = {}
+    items = rows.items() if isinstance(rows, Mapping) else ((None, row) for row in (rows or []))
+    for key, blob in items:
         if not isinstance(blob, Mapping):
             continue
+        listing = str(blob.get("listing_key") or "")
         ticker = str(blob.get("ticker") or "")
-        listing_key = str(blob.get("listing_key") or "")
-        if ticker:
-            out[ticker] = blob
-        if listing_key:
-            out[listing_key] = blob
-    return out
+        if key is not None:
+            # The mapping API accepts either namespace. A single token can
+            # name one listing and also be a different listing's ticker.
+            candidates = listings_by_ticker.get(key, set()) | ({key} if key in tickers_by_listing else set())
+        elif listing:
+            candidates = {listing} if listing in tickers_by_listing else set()
+        else:
+            candidates = listings_by_ticker.get(ticker, set())
+
+        matches = [
+            candidate for candidate in candidates
+            if (not listing or candidate == listing)
+            and (not ticker or not tickers_by_listing[candidate] or ticker in tickers_by_listing[candidate])
+        ]
+        if len(matches) != 1 or len(tickers_by_listing[matches[0]]) > 1:
+            continue
+        bound_listing = matches[0]
+        target = exact if listing or key == bound_listing else fallback
+        # Conflicting evidence at the same specificity cannot select a posture.
+        target[bound_listing] = blob if bound_listing not in target or target[bound_listing] == blob else None
+    return fallback | exact
 
 
 def sort_rows(rows: list[dict[str, Any]], order: str = DEFAULT_ORDER) -> list[dict[str, Any]]:
@@ -449,8 +463,7 @@ def compile_research_screener(
         Optional listing_key-or-ticker → display name map.
     """
     as_of_date = _iso_date(as_of)
-    postures = _index_postures(valuation_postures)
-    rows: list[dict[str, Any]] = []
+    states: list[Mapping[str, Any]] = []
     for raw in security_states or []:
         if not isinstance(raw, Mapping):
             continue
@@ -460,12 +473,16 @@ def compile_research_screener(
         schema = state.get("schema")
         if schema not in (None, "security_state.v1"):
             continue
-        listing_key = str(state.get("listing_key") or "")
-        if not listing_key:
-            continue
+        if state.get("listing_key"):
+            states.append(state)
+
+    postures = _index_postures(valuation_postures, states)
+    rows: list[dict[str, Any]] = []
+    for state in states:
+        listing_key = str(state["listing_key"])
         ticker = str(state.get("ticker_display") or "")
         catalyst = _catalyst_for(state, as_of_date)
-        valuation = _valuation_for(state, postures)
+        valuation = _valuation_for(postures.get(listing_key))
         rows.append({
             "listing_key": listing_key,
             "name": _name_of(state, names),

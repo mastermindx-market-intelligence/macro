@@ -2,8 +2,8 @@
   "schema": "mastermind.options_catalyst_links/v1",
   "spec_version": "v1",
   "session_date": "2026-10-30",
-  "asof": "2026-11-05",
-  "generated_utc": "2026-11-05T13:29:21Z",
+  "asof": "2026-11-06",
+  "generated_utc": "2026-11-06T12:59:20Z",
   "horizon_days": 63,
   "source": {
     "events": "r2:live_flow/events/2026-10-30.jsonl",
@@ -14,7 +14,7 @@
   "counts": {
     "events": 2711,
     "dropped_malformed": 0,
-    "known_symbols": 256,
+    "known_symbols": 257,
     "candidates_earnings": 6,
     "candidates_macro": 1,
     "by_state": {
@@ -41,8 +41,8 @@
   ],
   "links_path": "2026-10-30.jsonl",
   "macro_calendar": {
-    "asof": "2026-11-05",
-    "horizon_end": "2027-01-07",
+    "asof": "2026-11-06",
+    "horizon_end": "2027-01-08",
     "source": "engine.event_calendar",
     "fomc": [
       {
