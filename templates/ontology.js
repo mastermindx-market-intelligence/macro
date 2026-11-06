@@ -37,6 +37,10 @@
   var activeRequest = null;
   var portfolioReading = null;
   var scenarioReading = null;
+  // Explicit inspector selection belongs to this reading, independently of
+  // Brain's transient open/close context. No selection means use the suggestion.
+  var continuationSnapshot = null;
+  var continuationStep = null;
   var canonicalOwner = null;
   try { canonicalOwner = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user(); }
   catch (e) { canonicalOwner = null; }
@@ -48,6 +52,8 @@
     activeRequest = null;
     portfolioReading = null;
     scenarioReading = null;
+    continuationSnapshot = null;
+    continuationStep = null;
     var theme = document.getElementById("ox-theme");
     if (theme) theme.dispatchEvent(new CustomEvent("ontology-source-changed"));
     var scenario = document.getElementById("ox-scenario");
@@ -203,6 +209,7 @@
     returnFocusRef = trigger;
     returnScrollX = window.scrollX || window.pageXOffset || 0;
     returnScrollY = window.scrollY || window.pageYOffset || 0;
+    selectContinuationStep(snapshot, leg && leg.node_id);
     replaceFocusHash(leg.node_id);
   }
 
@@ -719,6 +726,17 @@
       && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }
 
+  function selectContinuationStep(snapshot, nodeId) {
+    if (!snapshot || snapshot !== continuationSnapshot || !snapshot.path.legs.some(function (leg) {
+      return leg.node_id === nodeId;
+    })) return false;
+    continuationStep = nodeId;
+    root.querySelectorAll("[data-transmission-continuation]").forEach(function (link) {
+      link.href = continuationHref(snapshot);
+    });
+    return true;
+  }
+
   /* The action actually performs the thing its label promises: it opens the
      step-by-step section, brings the named step into view and moves focus onto
      it, so a keyboard or screen-reader user lands where a sighted user is
@@ -726,7 +744,8 @@
      the anchor survives a re-render and can be linked to directly. */
   function focusLeg(nodeId) {
     var target = document.getElementById("ox-leg-" + nodeId);
-    if (!target) return false;
+    if (!target || !root.contains(target)) return false;
+    if (!selectContinuationStep(continuationSnapshot, nodeId)) return false;
     if (selectedPathRef && selectedPathRef.node_id !== nodeId) {
       selectedPathRef = null;
       returnFocusRef = null;
@@ -802,9 +821,10 @@
      indication of which path / step / revision they came from). The
      transmission surface may or may not consume these today; that is the
      surface's job, not this page's — the link carries the context regardless.
-     `focus` names the step the page last focused — the one its next_action
-     pointed at (unobserved leg, downstream-of-contradiction leg, or
-     first-blocking leg), NOT the first blocking leg whenever there is one
+     `focus` names the step the reader explicitly selected, including a valid
+     incoming hash. Before selection it falls back to next_action's target
+     (unobserved leg, downstream-of-contradiction leg, or first-blocking leg),
+     NOT the first blocking leg whenever there is one
      (which can be a different step than what the next-action control just
      opened). `from` is the chain identifier (`source.chain`), which uniquely
      names this chain on the overview — `path.sequence[0]` is the chain's
@@ -847,7 +867,9 @@
     var from = (chain != null && chain !== "") ? String(chain) : "";
     var focus = "";
     var action = snapshot && snapshot.next_action;
-    if (action && action.target) {
+    if (snapshot === continuationSnapshot && continuationStep) {
+      focus = continuationStep;
+    } else if (action && action.target) {
       focus = String(action.target);
     } else if (snapshot && snapshot.first_blocking_leg
                && snapshot.first_blocking_leg.node_id) {
@@ -864,6 +886,7 @@
   function transmissionLink(snapshot) {
     var p = el("p", "ox-more");
     var a = el("a");
+    a.setAttribute("data-transmission-continuation", "");
     a.href = continuationHref(snapshot);
     a.appendChild(say("See this path among all the owners publish",
       "在所有者发布的全部路径中查看本条"));
@@ -922,6 +945,7 @@
     }
 
     var link = el("a", "ox-action");
+    link.setAttribute("data-transmission-continuation", "");
     link.href = continuationHref(snapshot);
     link.appendChild(bi(action.label));
     box.appendChild(link);
@@ -1737,6 +1761,8 @@
 
 
   function render(snapshot) {
+    continuationSnapshot = snapshot;
+    continuationStep = null;
     root.textContent = "";
 
     var hero = el("header", "ox-hero ox-hero--answer");

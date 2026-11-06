@@ -1222,6 +1222,119 @@ def test_native_transmission_return_keeps_selected_path_revision_and_step(browse
         ctx.close()
 
 
+@pytest.mark.parametrize('chain', [SLUG, 'dollar_spike_em_multinational'])
+@pytest.mark.parametrize('handler', ['focus_leg', 'open_transmission'])
+def test_selected_step_survives_transmission_and_brain_return(browser, tmp_path, chain, handler):
+    """The reader's selection, not the suggested/default step, makes the round trip."""
+    from urllib.parse import parse_qs, urlparse
+    confirmed = (False, False, True, True) if handler == 'focus_leg' else (True,) * 4
+    snapshot = compose_snapshot(build_root(tmp_path, slug=chain,
+        state_doc=chain_state(chain, confirmed=confirmed)), chain=chain,
+        now=datetime(2026, 1, 4, tzinfo=UTC))
+    assert snapshot['next_action']['handler'] == handler
+    query = '' if chain == SLUG else '?chain=' + chain
+    ctx, page = _open(browser, snapshot, width=1440, height=900, query=query)
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    try:
+        link = page.locator('a[href^="transmission.html"]')
+        assert link.count() == 1
+        assert parse_qs(urlparse(link.get_attribute('href')).query).get('focus') == (
+            ['n3'] if handler == 'focus_leg' else None)
+        page.locator('[data-select-step="n2"]').click()
+        page.locator('#ox-leg-n2 .ox-brain-action').click()
+        assert page.evaluate('window.MM_BRAIN_CFG.onClose()') is True
+        expected = {'from': [chain], 'focus': ['n2'], 'rev': [str(snapshot['source']['rev'])]}
+        assert parse_qs(urlparse(link.get_attribute('href')).query) == expected
+
+        # Execute the actual Transmission return script, then click its Back
+        # link into a fresh copy of the real Explorer client. All data and
+        # transport remain local synthetic fixtures.
+        source = (ROOT / 'templates/transmission.html.j2').read_text()
+        script = source[source.index('id="tx-from"'):].split('<script>', 1)[1].split('</script>', 1)[0]
+        page.route('http://ontology.test/transmission.html*', lambda route: route.fulfill(
+            status=200, content_type='text/html', body='<p id="tx-from" hidden>'
+            '<a id="tx-from-back">Back</a></p><script>' + script + '</script>'))
+        link.click()
+        page.wait_for_url('**/transmission.html?**')
+        assert parse_qs(urlparse(page.url).query) == expected
+        fresh_shell = SHELL + '<script>window.fetch=async()=>({ok:true,status:200,json:async()=>(' \
+            + json.dumps(snapshot) + ')});</script><script src="/ontology.js"></script>'
+        page.route('http://ontology.test/ontology.html*', lambda route: route.fulfill(
+            status=200, content_type='text/html', body=fresh_shell))
+        page.route('http://ontology.test/ontology.js', lambda route: route.fulfill(
+            status=200, content_type='text/javascript', path=str(ONTOLOGY_JS)))
+        page.locator('#tx-from-back').click()
+        page.wait_for_load_state('load')
+        assert not errors
+        assert page.locator('#ox-leg-n2').count() == 1, page.locator('body').inner_text()
+        page.wait_for_function('document.activeElement.id === "ox-leg-n2"')
+        returned = urlparse(page.url)
+        assert returned.fragment == 'ox-leg-n2'
+        assert parse_qs(returned.query) == ({'chain': [chain], 'rev': expected['rev']}
+            if chain != SLUG else {'rev': expected['rev']})
+        assert page.locator('[data-select-step="n2"]').get_attribute('aria-pressed') == 'true'
+        assert parse_qs(urlparse(page.locator('a[href^="transmission.html"]').get_attribute('href')).query) == expected
+        assert page.evaluate('[localStorage.length, sessionStorage.length]') == [0, 0]
+        assert not errors
+    finally:
+        ctx.close()
+
+
+@pytest.mark.parametrize('fragment,expected', [('n2', 'n2'), ('missing', 'n3'), ('%E0%A4%A', 'n3')])
+def test_continuation_respects_valid_incoming_step_and_safe_fallback(browser, synthetic_snapshot, fragment, expected):
+    from urllib.parse import parse_qs, urlparse
+    ctx, page = _open(browser, synthetic_snapshot, width=390, height=844,
+        query='?rev=older#ox-leg-' + fragment)
+    try:
+        href = page.locator('a[href^="transmission.html"]').get_attribute('href')
+        assert parse_qs(urlparse(href).query) == {'from': [SLUG], 'focus': [expected],
+            'rev': [str(synthetic_snapshot['source']['rev'])]}
+        assert page.locator('.ox-revised').is_visible()
+        assert page.evaluate('window.__fetchCount') == 1
+    finally:
+        ctx.close()
+
+
+def test_direct_brain_selection_updates_continuation_without_moving_return(browser, synthetic_snapshot):
+    from urllib.parse import parse_qs, urlparse
+    ctx, page = _open(browser, synthetic_snapshot, width=1440, height=900)
+    try:
+        assert synthetic_snapshot['next_action']['target'] == 'n3'
+        trigger = page.locator('#ox-leg-n1 .ox-brain-action')
+        assert trigger.is_visible()
+        trigger.click()
+        assert page.evaluate('window.MM_BRAIN_CFG.getOntologySelection().node_id') == 'n1'
+        assert page.evaluate('window.MM_BRAIN_CFG.onClose()') is True
+        assert trigger.evaluate('(button) => button === document.activeElement')
+        href = page.locator('a[href^="transmission.html"]').get_attribute('href')
+        assert parse_qs(urlparse(href).query)['focus'] == ['n1']
+    finally:
+        ctx.close()
+
+
+def test_continuation_drops_selection_absent_from_new_reading(browser, synthetic_snapshot):
+    import copy
+    from urllib.parse import parse_qs, urlparse
+    revised = copy.deepcopy(synthetic_snapshot)
+    revised['path']['legs'] = [leg for leg in revised['path']['legs'] if leg['node_id'] != 'n2']
+    revised['source']['rev'] += 1
+    ctx, page = _open(browser, synthetic_snapshot, width=1440, height=900,
+        responses=[{'status': 200, 'body': synthetic_snapshot}, {'status': 200, 'body': revised}])
+    try:
+        page.locator('[data-select-step="n2"]').click()
+        page.evaluate("window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));"
+            "window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));")
+        page.wait_for_selector('a[href^="transmission.html"]')
+        assert page.locator('#ox-leg-n2').count() == 0
+        href = page.locator('a[href^="transmission.html"]').get_attribute('href')
+        assert parse_qs(urlparse(href).query) == {'from': [SLUG], 'focus': ['n3'],
+            'rev': [str(revised['source']['rev'])]}
+        assert page.evaluate('window.__fetchCount') == 2
+    finally:
+        ctx.close()
+
+
 
 @pytest.mark.parametrize('theme',['dark','light'])
 @pytest.mark.parametrize('language',['en','zh'])
