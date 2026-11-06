@@ -724,7 +724,7 @@
     return params;
   }
 
-  function loadCatalog(intent, sessionNavigation) {
+  function loadCatalog(intent, sessionNavigation, focusCapture) {
     intent = intent || { mode: state.mode };
     state.intent = Object.assign({}, intent, { mode: intent.mode || state.mode });
     var slot = beginIntent();
@@ -782,7 +782,7 @@
       if (wanted) {
         var entry = findEntry(wanted);
         if (!entry) return renderTypedUnavailable('missing_exact_capture', 'context_not_in_disclosed_catalog');
-        selectEntry(entry, intent);
+        selectEntry(entry, intent, !!sessionNavigation || focusCapture);
         return;
       }
       renderCatalogPrompt();
@@ -857,7 +857,7 @@
   }
 
   /* Explicit capture selection: the only path that ever opens a capture. */
-  function selectEntry(entry, intentExtras) {
+  function selectEntry(entry, intentExtras, focusCapture) {
     state.selected = entry;
     state.sourceCase = null;
     state.committed = null;
@@ -879,8 +879,8 @@
     state.intent = intent;
     writeUrlIntent(publishableIntent(intent));
     renderCatalogDependentControls();
-    if (state.mode === 'saved') return runSaved(intent);
-    return runCompare(intent);
+    if (state.mode === 'saved') return runSaved(intent, focusCapture);
+    return runCompare(intent, focusCapture);
   }
 
   function defaultMethodId(mode) {
@@ -929,7 +929,7 @@
 
   /* Saved output mode: exact operational PIT playback only. No retained
    * analysis, no legacy recomputed substitution, ever. */
-  function runSaved(intent) {
+  function runSaved(intent, focusCapture) {
     var intentSlot = beginIntent();
     renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
@@ -949,6 +949,8 @@
       }
       state.committed = { kind: 'saved', intent: intent, data: playback };
       renderCommitted();
+      // The selected row remains in the DOM when result buttons are replaced.
+      if (focusCapture) ui.captureSelect.focus({ preventScroll: false });
     }).catch(function (error) {
       if (commitGate(intentSlot, state)) return;
       renderRequestFailure(error, { retry: function () { runSaved(intent); } });
@@ -958,7 +960,7 @@
   /* Historical/current modes: exact retained comparison through the
    * registered method only. The analysis cutoff is chosen explicitly;
    * the server refuses unsupported cutoffs and the UI never shifts one. */
-  function runCompare(intent) {
+  function runCompare(intent, focusCapture) {
     var intentSlot = beginIntent();
     renderLoading();
     ui.resultBody.innerHTML = skeletonMarkup();
@@ -990,6 +992,7 @@
         state.sourceCase = { contextId: state.sourceContext, data: compare.sourceCards[state.sourceContext] };
       }
       renderCommitted();
+      if (focusCapture) ui.captureSelect.focus({ preventScroll: false });
     }).catch(function (error) {
       if (commitGate(intentSlot, state)) return;
       renderRequestFailure(error, { retry: function () { runCompare(intent); } });
@@ -1782,14 +1785,14 @@
     if ((intent.gen && state.catalog.generation.generationId !== intent.gen)
         || (intent.genSha && state.catalog.generation.generationSha256 !== intent.genSha)
         || (intent.context && !state.catalog.entries.some(function (entry) { return entry.contextId === intent.context && entry.catalogOffset === String(intent.catalogOffset || '0'); }))) {
-      return loadCatalog(intent);
+      return loadCatalog(intent, null, opts.focusCapture);
     }
     var mismatch = deepLinkMismatch(intent, state.catalog);
     if (mismatch) { beginIntent(); return renderTypedUnavailable('deep_link_mismatch', mismatch); }
     if (intent.context) {
       var entry = findEntry(intent.context);
       if (!entry) return renderTypedUnavailable('missing_exact_capture', 'context_not_in_disclosed_catalog');
-      selectEntry(entry, intent);
+      selectEntry(entry, intent, opts.focusCapture);
       return;
     }
     if (opts.persist !== false) writeUrlIntent(publishableIntent(currentIntent()));
@@ -1917,7 +1920,7 @@
     if (Object.keys(intent).length === 0 && state.selected) {
       return; /* incumbent-only navigation; retained intent unchanged */
     }
-    applyIntent(intent, { persist: false });
+    applyIntent(intent, { persist: false, focusCapture: true });
   }
 
   function boot() {
