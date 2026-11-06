@@ -20,7 +20,7 @@
       "matched": 1
     }
   ],
-  "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -136,6 +136,9 @@
       "visible": true,
       "text": "Oct 26, 07:38 PM UTC Older evidence shown"
     },
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -144,7 +147,15 @@
     "texts": []
   },
   "fixture_text": [],
-  "size_mult_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
   "stripe_audit": {
     "scope": "body",
     "flagged": []

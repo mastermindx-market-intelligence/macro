@@ -11,7 +11,7 @@
   "variant": null,
   "js": true,
   "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -94,6 +94,10 @@
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -135,7 +139,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": null
+    "zh_latin": null,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -145,7 +150,7 @@
   "serve": {
     "counts": {
       "head-fallback": 16,
-      "out": 24
+      "out": 23
     },
     "head_fallback": [
       "/account.js",
@@ -167,6 +172,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v5-intl-country-cycles__light__en__390__d30-intl.png",
-    "sha256": "e7ebf61b57107974ff8dd87578f9c6ec63f98194246e7d148d4ed7d5a4075fe2"
+    "sha256": "551009822e542823d81ab042fcc755b05c6c493bfc9afe92457af2fda47513f3"
   }
 }

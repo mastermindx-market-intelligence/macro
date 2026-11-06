@@ -11,7 +11,7 @@
   "variant": null,
   "js": false,
   "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -55,7 +55,7 @@
     },
     "asof": {
       "selector": "#sc-asof",
-      "x": 1013,
+      "x": 881,
       "y": 351,
       "w": 78,
       "h": 15,
@@ -64,12 +64,12 @@
     },
     "generation": {
       "selector": "[data-gen]",
-      "x": 1101,
+      "x": 969,
       "y": 351,
-      "w": 127,
+      "w": 259,
       "h": 15,
       "visible": true,
-      "text": "Generation Up to date"
+      "text": "Generation History matches the current read"
     },
     "stale_guard": null,
     "chips": {
@@ -102,6 +102,10 @@
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -126,7 +130,8 @@
     "fixture_label_visible": false,
     "theme_applied": null,
     "lang_applied": null,
-    "zh_latin": null
+    "zh_latin": null,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -176,6 +181,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v2-sector-cycles__dark__en__1440__l4-nojs.png",
-    "sha256": "f7e2305a65676f615ee9fc496c19f8a175d9e0ca446f69d5156f02ff35759be2"
+    "sha256": "06dfbf5ae1a1c030e541d40f826c48b03af6c346819d64b126e05a18f345db21"
   }
 }

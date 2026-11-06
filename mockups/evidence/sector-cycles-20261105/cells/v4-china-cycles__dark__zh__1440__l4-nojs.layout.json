@@ -11,7 +11,7 @@
   "variant": null,
   "js": false,
   "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -94,6 +94,10 @@
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -118,7 +122,8 @@
     "fixture_label_visible": false,
     "theme_applied": null,
     "lang_applied": null,
-    "zh_latin": 11
+    "zh_latin": 4,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -167,12 +172,12 @@
   },
   "zh_latin": {
     "scope": "document",
-    "count": 11,
+    "count": 4,
     "rc": 1,
-    "line": "zh-latin=11 A CHINA GS PATHWAY PHASE0 Phase-0 SECTOR X Y md research skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR"
+    "line": "zh-latin=4 A GS X Y skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR"
   },
   "png": {
     "file": "cells/v4-china-cycles__dark__zh__1440__l4-nojs.png",
-    "sha256": "10b69a218b109332efe92eed5908e489b911b8e241ae32dbd293e41cbf8ccfc4"
+    "sha256": "25da2a3d6dc9b60454ca3c5bc541946f357cad751104ef6c0a78094e8758b861"
   }
 }

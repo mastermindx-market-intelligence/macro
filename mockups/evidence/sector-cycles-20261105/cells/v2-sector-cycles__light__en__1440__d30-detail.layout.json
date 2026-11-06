@@ -19,7 +19,7 @@
       "matched": 1
     }
   ],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -46,7 +46,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 1440,
-  "scrollHeight": 3632,
+  "scrollHeight": 3699,
   "data_theme": "light",
   "data_lang": "en",
   "html_lang": "en",
@@ -74,10 +74,10 @@
       "selector": "[data-gen]",
       "x": 194,
       "y": 355,
-      "w": 127,
+      "w": 259,
       "h": 15,
       "visible": true,
-      "text": "Generation Up to date"
+      "text": "Generation History matches the current read"
     },
     "stale_guard": null,
     "chips": {
@@ -110,6 +110,10 @@
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -118,7 +122,15 @@
     "texts": []
   },
   "fixture_text": [],
-  "size_mult_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
   "stripe_audit": {
     "scope": "body",
     "flagged": []
@@ -146,7 +158,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": null
+    "zh_latin": null,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -173,6 +186,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v2-sector-cycles__light__en__1440__d30-detail.png",
-    "sha256": "5548110d2a011cd095e98354187110dd1e4aa3dc458f104c782090bd8e959a21"
+    "sha256": "326044de5a3550bb15c191bdab030bdfc41dd8a9c5a33791188da6fa9a366499"
   }
 }

@@ -11,7 +11,7 @@
   "variant": null,
   "js": true,
   "steps": [],
-  "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -38,7 +38,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 375,
-  "scrollHeight": 2396,
+  "scrollHeight": 2353,
   "data_theme": "dark",
   "data_lang": "en",
   "html_lang": "en",
@@ -92,6 +92,11 @@
     ]
   },
   "fixture_text": [
+    {
+      "el": "div.",
+      "visible": false,
+      "text": "CAPTURE FIXTURE · third-party TradingView chart stubbed offline (not product UI)"
+    },
     {
       "el": "span.l-zh",
       "visible": false,
@@ -154,6 +159,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v3-xlk-cycle__dark__en__375__l5.png",
-    "sha256": "d4ee453b68b1520698b44ee2daec2e24a052185e97c6a91a1dd100a0f510c25a"
+    "sha256": "035c8f2d3b73305fd1c67a7bdf476146d4574c0904262b3d59f098770a3ee216"
   }
 }

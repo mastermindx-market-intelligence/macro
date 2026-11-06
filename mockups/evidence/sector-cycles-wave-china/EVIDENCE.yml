@@ -1,4 +1,5 @@
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - templates/sector_central_china.html.j2
+  - templates/_china_act_now_board.html.j2
 manifest: mockups/evidence/sector-cycles-wave-china/manifest.json

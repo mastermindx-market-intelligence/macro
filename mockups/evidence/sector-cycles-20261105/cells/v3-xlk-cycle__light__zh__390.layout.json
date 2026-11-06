@@ -11,7 +11,7 @@
   "variant": null,
   "js": true,
   "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -38,7 +38,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 390,
-  "scrollHeight": 2216,
+  "scrollHeight": 2188,
   "data_theme": "light",
   "data_lang": "zh",
   "html_lang": "zh-CN",
@@ -70,6 +70,18 @@
       "text": "示例数据"
     },
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": {
+      "selector": ".scd-members",
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Members成分 Ticker代码Weight权重 NVDANvidia Corp 15.0% AAPLApple Inc 14.8% MSFTMicrosoft Corp 11.4% AMDAdvanced Micro Devices 4.8% AVGOBroadcom Inc 4.8% MUMicron Technology Inc 4.1% INTCIntel Corp 2.7% PLTR"
+    },
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -80,6 +92,11 @@
     ]
   },
   "fixture_text": [
+    {
+      "el": "div.",
+      "visible": false,
+      "text": "CAPTURE FIXTURE · third-party TradingView chart stubbed offline (not product UI)"
+    },
     {
       "el": "span.l-zh",
       "visible": true,
@@ -110,7 +127,8 @@
     "fixture_label_visible": true,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": 3
+    "zh_latin": 3,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -146,6 +164,6 @@
   },
   "png": {
     "file": "cells/v3-xlk-cycle__light__zh__390.png",
-    "sha256": "46bc7da862e7b06ee8944dd4ea073dbd85fcfd8b6fe262ff642d3029ff96e2ef"
+    "sha256": "323748fa9f0947a6fe6e5c4699392f83db1e7f906606d726e2dc366005a9c91b"
   }
 }

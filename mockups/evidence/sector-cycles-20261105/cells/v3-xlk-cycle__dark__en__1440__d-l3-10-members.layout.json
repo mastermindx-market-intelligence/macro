@@ -20,7 +20,7 @@
       "matched": 1
     }
   ],
-  "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -102,6 +102,11 @@
   },
   "fixture_text": [
     {
+      "el": "div.",
+      "visible": false,
+      "text": "CAPTURE FIXTURE · third-party TradingView chart stubbed offline (not product UI)"
+    },
+    {
       "el": "span.l-zh",
       "visible": false,
       "text": "示例数据"
@@ -163,6 +168,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v3-xlk-cycle__dark__en__1440__d-l3-10-members.png",
-    "sha256": "350be58af9e309b6a0bf194d6d70aae2bb5d300245ef8feb398d2a79f5cbd0c8"
+    "sha256": "b0e88b882eb02c00005be3baf31a4772adb61fae5d579abe18b607b1d2144eb1"
   }
 }

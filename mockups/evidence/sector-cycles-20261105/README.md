@@ -72,13 +72,47 @@ Pins are copied exactly from `scripts/verify_stock_dashboard_mobile_layout.cjs`.
 
 ## Source currency
 
-- Every cell records `head` = `cf604b9d4af34b5746bac572a0fc2d5b7d62a467`.
-- Between cf604b9d and the branch HEAD that carries this pack, only two files
-  changed: `templates/sector_central_china.html.j2` and
-  `tests/test_china_si_workspace_shell.py`. Neither one is rendered by v1–v5, so
-  the cells are source-equivalent at that HEAD.
-- The China central change has its own pack, `../sector-cycles-wave-china/`,
-  rendered at 3fdb12f6.
+- Every cell records `head` = `b601c02749a34fd83877393d59ee88e6045207cd` (L6.17d).
+- Two source commits sit between that head and the commit that carries this pack.
+  Neither changes what these cells render:
+  - L6.17e (da07a5e0) changes no template. It only brings `site/sector_cycles.css`
+    and `site/sector_cycles.js` back to their template bytes, which are the bytes
+    these renders already served from their own copies.
+  - L6.18 (48182b7f) changes only the China central page template
+    (`sector_central_china.html.j2`) and its shell test. No page in this pack
+    includes that template.
+  - L6.19 (88870da0) changes only the fund-page dossier. In `sector_cycles_face.js`
+    it edits `rsTrail`, which only `sector_dossier.js` calls; the central page calls
+    `hazardPass`, `methods`, `prov` and `turnInspector`. The three CSS rules it adds
+    to `sector_cycles.css` are scoped to `.scf-rs-key`, `.scf-rs-k` and
+    `.scf-rs-sw`, which only `rsTrail` emits. Its other files are
+    `sector_dossier.js`, `sector.html.j2` and two tests.
+
+  So the cells still match the source at the branch HEAD.
+- The pack was first captured at cf604b9d (L6.4). It was recaptured whole after
+  the visual-review repairs L6.16–L6.17d. No cell from the earlier capture remains.
+- The China central change has its own pack, `../sector-cycles-wave-china/`. The
+  China central page loads `sector_cycles.css` and `sector_cycles.js`, and L6.18
+  changes its view rail, so that pack was recaptured at 48182b7f (L6.18).
+
+## Repairs this recapture carries
+
+- **L6.16:** the face position chip and the inspector date localise. The kv rows
+  re-scope by language.
+- **L6.17:** clock labels, the resting sheet, the chip rail, the phase-map cut, the
+  China order and the fund dossier.
+- **L6.17b (M4):** the China rank check in the evidence render now allows ties from
+  rounding. When two baskets round to the same `rs_21d` value, the order is a tie.
+  The render keeps HEAD's order for those two (`cn_rs_rank_rounded_tie_swaps_kept_head`:
+  baskets 2). It never re-sorts them by unrounded values the page cannot show.
+- **L6.17c (M1/M1b):** at 390px the resting sheet is `visibility: hidden`. Its active
+  panel inherits that state instead of re-asserting `visible`. At rest the sheet has
+  0 focusable controls, the half detent has 17, and a close returns to 0.
+- **L6.17d:** at 390px the full-screen button moves to the y-axis gutter, the
+  first-hint pill clears the top label, and the hero card flattens into the stage
+  (the chart widens from 286px to 324px). The button, hint and chart labels were
+  measured pairwise disjoint in ZH 7y, EN 7y, 1y, full-screen enter and exit, and the
+  Themes basket family.
 
 ## Manifest scope
 
@@ -154,6 +188,7 @@ live or r2.dev URL was loaded. Production and natural-update proof belong to P22
 
 - **Extra viewport (DEV-L6-8):** the 375×812 viewport and the 23 delta cells extend the
   28-cell matrix.
-- **Render commit (DEV-L6-9):** the cells were rendered at cf604b9d, not at the branch HEAD.
-  They are source-equivalent for v1–v5 (see "Source currency").
+- **Render commit (DEV-L6-9):** the first capture was rendered at cf604b9d, not at the
+  branch HEAD. It is superseded: the recapture is rendered at b601c027, the source HEAD
+  under the evidence commit (see "Source currency").
 - **Manifest scope (DEV-L6-10):** the manifest covers `cells/` and `zh_latin/` only.

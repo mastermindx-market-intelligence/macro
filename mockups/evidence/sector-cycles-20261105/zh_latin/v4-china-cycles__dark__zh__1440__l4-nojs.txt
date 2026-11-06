@@ -1,3 +1,3 @@
 scope: document
 rc: 1
-zh-latin=11 A CHINA GS PATHWAY PHASE0 Phase-0 SECTOR X Y md research skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR
+zh-latin=4 A GS X Y skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR

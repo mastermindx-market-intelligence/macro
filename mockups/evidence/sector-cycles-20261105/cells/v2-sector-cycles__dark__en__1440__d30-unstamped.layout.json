@@ -11,7 +11,7 @@
   "variant": "unstamped",
   "js": true,
   "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -38,7 +38,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 1440,
-  "scrollHeight": 2780,
+  "scrollHeight": 3066,
   "data_theme": "dark",
   "data_lang": "en",
   "html_lang": "en",
@@ -66,10 +66,10 @@
       "selector": "[data-gen]",
       "x": 194,
       "y": 355,
-      "w": 127,
+      "w": 259,
       "h": 15,
       "visible": true,
-      "text": "Generation Up to date"
+      "text": "Generation History matches the current read"
     },
     "stale_guard": null,
     "chips": {
@@ -95,17 +95,21 @@
       "x": 60,
       "y": 1312,
       "w": 1320,
-      "h": 412,
+      "h": 631,
       "visible": true,
       "text": "SECTOR ROTATION · 2026-11-03 Every sector on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a sector "
     },
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": {
       "selector": ".cc-stance-na",
       "x": 933,
-      "y": 2430,
+      "y": 2683,
       "w": 98,
       "h": 17,
       "visible": true,
@@ -118,7 +122,15 @@
     "texts": []
   },
   "fixture_text": [],
-  "size_mult_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
   "stripe_audit": {
     "scope": "body",
     "flagged": []
@@ -146,7 +158,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": null
+    "zh_latin": null,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -156,8 +169,8 @@
   "serve": {
     "counts": {
       "out": 34,
-      "variant:unstamped": 1,
-      "head-fallback": 8
+      "head-fallback": 8,
+      "variant:unstamped": 1
     },
     "head_fallback": [
       "/account.js",
@@ -174,6 +187,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v2-sector-cycles__dark__en__1440__d30-unstamped.png",
-    "sha256": "2d53a920596545720d81bc31b914b0756077d8bdf45ba107e8cc60ecfd7a7047"
+    "sha256": "24f7acc2de8d2b895798203233b804aceefc0e0ac5a6b89fb044e3d8841c216e"
   }
 }

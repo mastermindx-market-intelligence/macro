@@ -5,6 +5,18 @@
    "baskets": 22,
    "sectors": 31
   },
+  "cn_rs_21d_rank_restamped": {
+   "baskets": 22,
+   "sectors": 31
+  },
+  "cn_rs_21d_rounded_tie_values": {
+   "baskets": 0,
+   "sectors": 0
+  },
+  "cn_rs_rank_rounded_tie_swaps_kept_head": {
+   "baskets": 2,
+   "sectors": 0
+  },
   "font_pin": {
    "files": 6,
    "schema": "mastermind.p0b_font_pin.v1",
@@ -105,7 +117,7 @@
    "wt_site": false
   }
  ],
- "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
+ "head": "b601c02749a34fd83877393d59ee88e6045207cd",
  "reads": {
   "data/regime/ladder_calibration.json": {
    "bytes": 2443,
@@ -294,7 +306,7 @@
    "transform": "sectors[xlk].now: removed ['doctrine_ink', 'doctrine_stance', 'doctrine_stance_en', 'doctrine_stance_zh']"
   },
   "_variants/xlk_unresolved/sectors/XLK.html": {
-   "sha256": "682611e3b7780d3d73d2f173ee9d991873d1c136f517e64690112030d8f87364",
+   "sha256": "4002d361251995e34e916601aad8ea3ffdb34f83abbb0690bd95431dd0c7e301",
    "source": "render",
    "transform": "members + one FIXTURE unresolved"
   },
@@ -319,9 +331,9 @@
    "transform": "copy"
   },
   "chinasectordata/sector_cycles.json": {
-   "sha256": "3de3b1eb9c4f347bf2857ada44dc2fd968e490e92a7f1a5c27f99233b35c0ec0",
+   "sha256": "cd06aa5d186623f19823fc56d219461000ab65cad816cbfb1b273656a1de12d9",
    "source": "HEAD:site/chinasectordata/sector_cycles.json",
-   "transform": "label=FIXTURE on every entity"
+   "transform": "label=FIXTURE on every entity; rs_21d_rank re-stamped (L6.5o stamper)"
   },
   "chinasectordata/sector_cycles_basket_map.json": {
    "sha256": "923ddeef0208ef6d0d1d6c9d026cadaa42e177533bf0553978e1abbbc70b7125",
@@ -429,7 +441,7 @@
    "transform": "re-serialised (self-checked)"
   },
   "sector_cycles.css": {
-   "sha256": "5de47946f11922dd2cfd3f1ca589d37e9475362bc236de1d6aba5e8e781ee84f",
+   "sha256": "303854db7998c3ffa97843267b6897eb2f08dd1a1d8ef265d34f869cbcbe9d9f",
    "source": "HEAD:templates/sector_cycles.css",
    "transform": "copy"
   },
@@ -439,19 +451,19 @@
    "transform": "jinja+inject_text+inject_shared_shell_text"
   },
   "sector_cycles.js": {
-   "sha256": "e326d6a7c656175385dfcd7c02551df28c612a64d681c5ae8e8267e9fd089122",
+   "sha256": "08d46a5fc23be69e7221b6c43443ceab03b7e5d61dedeed18dd5803ae3b4caa5",
    "source": "HEAD:templates/sector_cycles.js",
    "transform": "copy"
   },
   "sector_cycles_china.html": {
-   "sha256": "615c7a9d910870797b919b1c3052533b530ecc9ea9c5b4b5b26d865ced2267f6",
+   "sha256": "c847f623b742afa426e66b4096e19f6ce2326a24bac4204b6ff4291403b8ba1b",
    "source": "render",
    "transform": "jinja+inject_text+inject_shared_shell_text"
   },
   "sector_cycles_china_data.js": {
-   "sha256": "5fce9f6052dfb93b46d35ce152c6c289099c149e3a28873ad0a2b8198e1ed43b",
+   "sha256": "eb4b152c299d3ed16aa5b74b76917830630fc317e36e97b71d379ae3cf351eb2",
    "source": "HEAD:site/chinasectordata/sector_cycles.json",
-   "transform": "label=FIXTURE; split_cycles_payload"
+   "transform": "label=FIXTURE; rs_21d_rank re-stamped (L6.5o stamper); split_cycles_payload"
   },
   "sector_cycles_china_dna_data.js": {
    "sha256": "ea6c6a47867de183d5ec9946570f3511ebf6ac0bd2393441ff17c27f45a20374",
@@ -484,7 +496,7 @@
    "transform": "copy"
   },
   "sector_cycles_face.js": {
-   "sha256": "312bf1092d0791ade42a3188d6c599e0f06f324fa3c438cf66889a07fa3cb099",
+   "sha256": "9105f8f2ad86827caa025a7f7d66e077c9ab232248e83dc78618fc68c6d36e02",
    "source": "HEAD:templates/sector_cycles_face.js",
    "transform": "copy"
   },
@@ -494,7 +506,7 @@
    "transform": "copy"
   },
   "sector_cycles_platform.css": {
-   "sha256": "a99d22e57e234ce0b79156fa8861e32334609774aaf450a4b699ebd622e2e146",
+   "sha256": "52cf7fae7a49c4d06a4ef6e09ae3e435a8e90a53d14cd88474a4c8f079a0d967",
    "source": "HEAD:templates/sector_cycles_platform.css",
    "transform": "copy"
   },
@@ -534,7 +546,7 @@
    "transform": "label=FIXTURE on every entity"
   },
   "sectors/XLK.html": {
-   "sha256": "ba952e66e894a49b3fec027fd66f35d0f557dfdc9d421bbe73c6688c07a9028b",
+   "sha256": "4d7379021d24f06fa2c3f2015db60f604501d37347fb1a4ba26975269eb0a1eb",
    "source": "render",
    "transform": "jinja+inject_text+inject_shared_shell_text"
   },

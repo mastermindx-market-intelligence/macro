@@ -15,7 +15,7 @@
       "hash": "xlk"
     }
   ],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -42,7 +42,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 390,
-  "scrollHeight": 4590,
+  "scrollHeight": 4588,
   "data_theme": "light",
   "data_lang": "zh",
   "html_lang": "zh-CN",
@@ -50,9 +50,9 @@
   "boxes": {
     "heading": {
       "selector": "#sc-hero-title",
-      "x": 33,
-      "y": 668,
-      "w": 324,
+      "x": 14,
+      "y": 653,
+      "w": 362,
       "h": 22,
       "visible": true,
       "text": "板块轮动叠加"
@@ -70,26 +70,26 @@
       "selector": "[data-gen]",
       "x": 134,
       "y": 454,
-      "w": 99,
+      "w": 159,
       "h": 17,
       "visible": true,
-      "text": "生成状态 已是最新"
+      "text": "生成状态 历史与当前读数一致"
     },
     "stale_guard": null,
     "chips": {
       "selector": "#sc-chips",
-      "x": 33,
-      "y": 885,
-      "w": 324,
+      "x": 14,
+      "y": 870,
+      "w": 362,
       "h": 56,
       "visible": true,
       "text": "☰ 板块 5 ▾"
     },
     "chart": {
       "selector": "#sc-chart",
-      "x": 33,
-      "y": 941,
-      "w": 324,
+      "x": 14,
+      "y": 926,
+      "w": 362,
       "h": 440,
       "visible": true,
       "text": "超卖 中段 狂热 低 中 高 2020 2022 2024 2026 当前 新冠疫情全球清仓式抛售 疫情数字化浪潮驱动的飙升 利率冲击下的久期重定价 超卖后的反弹 加息周期的熊市腿 通胀见顶预期下的反弹 杰克逊霍尔鹰派重置 生成式AI牛市 日元套息交易的瞬间真空 软着陆下的AI复苏 DeepSeek叠加关税冲击 关税暂停下的AI飙升 鹰派下的估值重置 油价消退下的AI急涨"
@@ -106,6 +106,10 @@
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -114,7 +118,15 @@
     "texts": []
   },
   "fixture_text": [],
-  "size_mult_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
   "stripe_audit": {
     "scope": "body",
     "flagged": []
@@ -142,7 +154,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": 24
+    "zh_latin": 24,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -174,6 +187,6 @@
   },
   "png": {
     "file": "cells/v2-sector-cycles__light__zh__390__d30-detail.png",
-    "sha256": "57001d286029d9363410325d2afb5e7067110a1e888a3098b7abcbf854a75328"
+    "sha256": "cf1c5dd2045eb7d9b2d7b93525148c5118c419015733f3d3b09c0ddb5c50206d"
   }
 }

@@ -11,7 +11,7 @@
   "variant": null,
   "js": true,
   "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -38,7 +38,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 390,
-  "scrollHeight": 1416,
+  "scrollHeight": 1396,
   "data_theme": "dark",
   "data_lang": "zh",
   "html_lang": "zh-CN",
@@ -46,9 +46,9 @@
   "boxes": {
     "heading": {
       "selector": "#sc-hero-title",
-      "x": 52,
-      "y": 562,
-      "w": 286,
+      "x": 33,
+      "y": 547,
+      "w": 324,
       "h": 22,
       "visible": true,
       "text": "板块轮动叠加"
@@ -66,10 +66,10 @@
       "selector": "#si-cycles-gen",
       "x": 174,
       "y": 414,
-      "w": 48,
+      "w": 108,
       "h": 17,
       "visible": true,
-      "text": "已是最新"
+      "text": "历史与当前读数一致"
     },
     "stale_guard": {
       "selector": ".mr-chip-stale",
@@ -82,18 +82,18 @@
     },
     "chips": {
       "selector": "#sc-chips",
-      "x": 52,
-      "y": 779,
-      "w": 286,
+      "x": 33,
+      "y": 764,
+      "w": 324,
       "h": 56,
       "visible": true,
       "text": "☰ 板块 5 ▾"
     },
     "chart": {
       "selector": "#sc-chart",
-      "x": 52,
-      "y": 835,
-      "w": 286,
+      "x": 33,
+      "y": 820,
+      "w": 324,
       "h": 440,
       "visible": true,
       "text": "超卖 中段 狂热 低 中 高 2020 2022 2024 2026 当前"
@@ -104,8 +104,8 @@
       "y": 844,
       "w": 390,
       "h": 776,
-      "visible": true,
-      "text": "关闭 板块轮动 · 2026-11-03 所有板块放在同一个刻度上——靠上说明这波已经走了很久，靠下说明跌得比较透。切到价格看实际走势，点某个板块可以看它的拐点。 各板块所处位置 上行中 健康上行 金融 原材料 能源 医疗 必需 回落中 下行中 科技 入场良机 已筑底 · 转强 非必需 公用 房地产 筑底中 超卖 通讯 工业 领涨 · 对比标普(21日 · 63日) 1 医疗保健 63d +14."
+      "visible": false,
+      "text": "关闭 板块轮动 · 2026-11-03所有板块放在同一个刻度上——靠上说明这波已经走了很久，靠下说明跌得比较透。切到价格看实际走势，点某个板块可以看它的拐点。各板块所处位置上行中健康上行金融原材料能源医疗必需回落中下行中科技入场良机已筑底 · 转强非必需公用房地产筑底中超卖通讯工业领涨 · 对比标普(21日 · 63日)1医疗保健63d +14.5%+12.9%2必需消费63d +6.8%+12"
     },
     "compare_tray": null,
     "fixture_label": null,
@@ -118,6 +118,18 @@
       "visible": false,
       "text": "as of Jul 27, 07:38 PM UTC截至 Jul 27, 07:38 PM UTC Older evidence shown显示较早证据"
     },
+    "strip_asof": {
+      "selector": "#ftr-strip-asof",
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Jul 27, 07:38 PM UTCJul 27, 07:38 PM UTC Older evidence shown显示较早证据"
+    },
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -126,7 +138,15 @@
     "texts": []
   },
   "fixture_text": [],
-  "size_mult_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
   "stripe_audit": {
     "scope": "body",
     "flagged": []
@@ -156,7 +176,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": 217
+    "zh_latin": 217,
+    "expect_visible_any": null
   },
   "console_errors": [
     {
@@ -212,6 +233,6 @@
   },
   "png": {
     "file": "cells/v1-central-cycles__dark__zh__390.png",
-    "sha256": "95fb9ba25b1408ebd9e769a92778ad997232ded6c0610b4475d22bd46e3b5a97"
+    "sha256": "7c81b9ae56782a82c4c53986625985a5ebcfd06d11d860f26f8619b7b665a678"
   }
 }

@@ -16,7 +16,7 @@
       "matched": 1
     }
   ],
-  "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -43,7 +43,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 1440,
-  "scrollHeight": 3294,
+  "scrollHeight": 3066,
   "data_theme": "dark",
   "data_lang": "en",
   "html_lang": "en",
@@ -100,7 +100,7 @@
       "x": 60,
       "y": 1312,
       "w": 1320,
-      "h": 926,
+      "h": 631,
       "visible": true,
       "text": "SECTOR ROTATION · 2026-11-03 Every sector on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a sector "
     },
@@ -183,6 +183,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v2-sector-cycles__dark__en__1440__d-l3-10-chip-all.png",
-    "sha256": "d0986296a5de2e4776ae0f9dd94276b966bcf531b4981be08e1dea5d6a770da8"
+    "sha256": "81b325df904a209c892973ed953ddf16c351a0f4b32c4eabf0ff3a3abc2ae19d"
   }
 }

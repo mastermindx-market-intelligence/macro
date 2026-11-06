@@ -11,7 +11,7 @@
   "variant": null,
   "js": true,
   "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -38,7 +38,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 1440,
-  "scrollHeight": 4172,
+  "scrollHeight": 4516,
   "data_theme": "dark",
   "data_lang": "zh",
   "html_lang": "zh-CN",
@@ -87,13 +87,17 @@
       "x": 60,
       "y": 1346,
       "w": 1320,
-      "h": 470,
+      "h": 787,
       "visible": true,
       "text": "板块轮动 · 2026-11-04 所有板块放在同一个刻度上——靠上说明这波已经走了很久，靠下说明跌得比较透。切到价格看实际走势，点某个板块可以看它的拐点。 各板块所处位置 上行中 健康上行 食饮 交运 银行 美护 回落中 下行中 农业 煤炭 入场良机 已筑底 · 转强 家电 传媒 石化 筑底中 超卖 化工 钢铁 有色 电子 纺服 轻工 医药 公用 地产 零售 服务 综合 建材 建筑 电新 军工 "
     },
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -102,28 +106,36 @@
     "texts": []
   },
   "fixture_text": [],
-  "size_mult_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
   "stripe_audit": {
     "scope": "body",
     "flagged": []
   },
   "next_turn_labels": [
-    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -19.4% #—",
-    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -27.7% #—",
-    "▼ 下次▼ 2026年11月 ↓ 逆风 RS -5.4% #—",
-    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS -5.1% #—",
-    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -8.8% #—",
-    "▼ 参考：底部原预计 2026年7月 — 已过 ↓ 逆风 RS -5.5% #—",
-    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS -10.1% #—",
-    "▼ 参考：底部原预计 2026年5月 — 已过 ↓ 逆风 RS -0.9% #—",
-    "▼ 参考：底部原预计 2026年6月 — 已过 ↓ 逆风 RS -0.8% #—",
-    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -11.2% #—",
-    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -6.1% #—",
-    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS -1.4% #—",
-    "▼ 参考：底部原预计 2026年9月 — 已过 ↓ 逆风 RS -3.1% #—",
-    "▲ 参考：顶部原预计 2024年7月 — 已过 ↓ 逆风 RS +2.5% #—",
-    "▼ 参考：底部原预计 2026年9月 — 已过 ↓ 逆风 RS +0.5% #—",
-    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS +4% #—"
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -19.4% #30",
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -27.7% #31",
+    "▼ 下次▼ 2026年11月 ↓ 逆风 RS -5.4% #23",
+    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS -5.1% #21",
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -8.8% #27",
+    "▼ 参考：底部原预计 2026年7月 — 已过 ↓ 逆风 RS -5.5% #24",
+    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS -10.1% #28",
+    "▼ 参考：底部原预计 2026年5月 — 已过 ↓ 逆风 RS -0.9% #16",
+    "▼ 参考：底部原预计 2026年6月 — 已过 ↓ 逆风 RS -0.8% #15",
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -11.2% #29",
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -6.1% #25",
+    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS -1.4% #18",
+    "▼ 参考：底部原预计 2026年9月 — 已过 ↓ 逆风 RS -3.1% #20",
+    "▲ 参考：顶部原预计 2024年7月 — 已过 ↓ 逆风 RS +2.5% #9",
+    "▼ 参考：底部原预计 2026年9月 — 已过 ↓ 逆风 RS +0.5% #13",
+    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS +4% #7"
   ],
   "cycles_ctx": null,
   "assertions": {
@@ -135,7 +147,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": 14
+    "zh_latin": 7,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -161,12 +174,12 @@
   },
   "zh_latin": {
     "scope": "document",
-    "count": 14,
+    "count": 7,
     "rc": 1,
-    "line": "zh-latin=14 A CHINA GS PATHWAY PHASE0 Phase-0 RS SECTOR X Y d md research sectors skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR"
+    "line": "zh-latin=7 A GS RS X Y d sectors skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR"
   },
   "png": {
     "file": "cells/v4-china-cycles__dark__zh__1440.png",
-    "sha256": "591c116dd1c4089b137f3dc5311ebbc8fb558451944f5ec68588667ebc76b791"
+    "sha256": "ab610f90473b99c0a5fb63fd16e738a461b68b8cf378b4063ab3f52698c292a2"
   }
 }

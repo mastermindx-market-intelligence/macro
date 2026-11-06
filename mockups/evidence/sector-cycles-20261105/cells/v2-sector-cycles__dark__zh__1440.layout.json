@@ -11,7 +11,7 @@
   "variant": null,
   "js": true,
   "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -38,7 +38,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 1440,
-  "scrollHeight": 2686,
+  "scrollHeight": 2923,
   "data_theme": "dark",
   "data_lang": "zh",
   "html_lang": "zh-CN",
@@ -66,10 +66,10 @@
       "selector": "[data-gen]",
       "x": 881,
       "y": 262,
-      "w": 99,
+      "w": 159,
       "h": 17,
       "visible": true,
-      "text": "生成状态 已是最新"
+      "text": "生成状态 历史与当前读数一致"
     },
     "stale_guard": null,
     "chips": {
@@ -95,13 +95,17 @@
       "x": 60,
       "y": 1228,
       "w": 1320,
-      "h": 409,
+      "h": 628,
       "visible": true,
       "text": "板块轮动 · 2026-11-03 所有板块放在同一个刻度上——靠上说明这波已经走了很久，靠下说明跌得比较透。切到价格看实际走势，点某个板块可以看它的拐点。 各板块所处位置 上行中 健康上行 金融 原材料 能源 医疗 必需 回落中 下行中 科技 入场良机 已筑底 · 转强 非必需 公用 房地产 筑底中 超卖 通讯 工业 领涨 · 对比标普(21日 · 63日) 1 医疗保健 63d +14.5% "
     },
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -110,7 +114,15 @@
     "texts": []
   },
   "fixture_text": [],
-  "size_mult_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
   "stripe_audit": {
     "scope": "body",
     "flagged": []
@@ -138,7 +150,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": 6
+    "zh_latin": 6,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -170,6 +183,6 @@
   },
   "png": {
     "file": "cells/v2-sector-cycles__dark__zh__1440.png",
-    "sha256": "3775bd2557be85afa4582ff2dd120565f17d42212826a6a77bd0f8ac41bb752c"
+    "sha256": "578e5b2c1c1ff2b9828b7f69d7625bfc77be45036d01248bc3398bff47c315de"
   }
 }

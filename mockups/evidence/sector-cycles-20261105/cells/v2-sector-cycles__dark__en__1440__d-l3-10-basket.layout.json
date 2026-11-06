@@ -28,7 +28,7 @@
       "matched": 1
     }
   ],
-  "head": "5a5b094e56c9424751891e0fddee9ec7002f9671",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -55,7 +55,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 1440,
-  "scrollHeight": 6973,
+  "scrollHeight": 7000,
   "data_theme": "dark",
   "data_lang": "en",
   "html_lang": "en",
@@ -208,6 +208,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v2-sector-cycles__dark__en__1440__d-l3-10-basket.png",
-    "sha256": "009ba2cf69e64610128f4bfa621047462afdbe14c6e914dfdebb281efd08a457"
+    "sha256": "ebb80259005b0de80578e0bde0021447dbc1d85b73d85b479d7a37338591da58"
   }
 }

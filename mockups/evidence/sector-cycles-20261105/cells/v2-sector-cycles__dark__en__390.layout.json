@@ -11,7 +11,7 @@
   "variant": null,
   "js": true,
   "steps": [],
-  "head": "cf604b9d4af34b5746bac572a0fc2d5b7d62a467",
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
   "pins": {
     "chromium": "149.0.7827.55",
     "playwright": "1.61.1",
@@ -38,7 +38,7 @@
   "http_status": 200,
   "notes": [],
   "scrollWidth": 390,
-  "scrollHeight": 4682,
+  "scrollHeight": 4774,
   "data_theme": "dark",
   "data_lang": "en",
   "html_lang": "en",
@@ -46,9 +46,9 @@
   "boxes": {
     "heading": {
       "selector": "#sc-hero-title",
-      "x": 33,
-      "y": 757,
-      "w": 324,
+      "x": 14,
+      "y": 760,
+      "w": 362,
       "h": 22,
       "visible": true,
       "text": "Sector rotation overlay"
@@ -64,28 +64,28 @@
     },
     "generation": {
       "selector": "[data-gen]",
-      "x": 148,
+      "x": 28,
       "y": 477,
-      "w": 127,
-      "h": 15,
+      "w": 230,
+      "h": 34,
       "visible": true,
-      "text": "Generation Up to date"
+      "text": "Generation History matches the current read"
     },
     "stale_guard": null,
     "chips": {
       "selector": "#sc-chips",
-      "x": 33,
-      "y": 974,
-      "w": 324,
+      "x": 14,
+      "y": 978,
+      "w": 362,
       "h": 56,
       "visible": true,
       "text": "☰ Series 5 ▾"
     },
     "chart": {
       "selector": "#sc-chart",
-      "x": 33,
-      "y": 1030,
-      "w": 324,
+      "x": 14,
+      "y": 1034,
+      "w": 362,
       "h": 440,
       "visible": true,
       "text": "WASHED-OUT MID-CYCLE EUPHORIC Low Mid High 2020 2022 2024 2026 TODAY"
@@ -96,12 +96,16 @@
       "y": 844,
       "w": 390,
       "h": 777,
-      "visible": true,
-      "text": "Close SECTOR ROTATION · 2026-11-03 Every sector on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a s"
+      "visible": false,
+      "text": "Close Sector rotation · 2026-11-03Every sector on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a se"
     },
     "compare_tray": null,
     "fixture_label": null,
     "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
     "stance_unavailable": null
   },
   "fixture_labels": {
@@ -110,7 +114,15 @@
     "texts": []
   },
   "fixture_text": [],
-  "size_mult_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
   "stripe_audit": {
     "scope": "body",
     "flagged": []
@@ -138,7 +150,8 @@
     "fixture_label_visible": false,
     "theme_applied": true,
     "lang_applied": true,
-    "zh_latin": null
+    "zh_latin": null,
+    "expect_visible_any": null
   },
   "console_errors": [],
   "console_errors_expected": [],
@@ -165,6 +178,6 @@
   "zh_latin": null,
   "png": {
     "file": "cells/v2-sector-cycles__dark__en__390.png",
-    "sha256": "75099d5dd48a03a53110087196a21e998e35237b015be598b7e85e69bd54d7be"
+    "sha256": "56f82cc84f4be6d504fe4620abeaa2f5e67d0ed6f4c32e04ebde7889467e6c92"
   }
 }
