@@ -14,8 +14,12 @@ from engine.research_intelligence.benchmark import (
     score_raw_output,
     score_rio,
 )
-from engine.research_intelligence.extractor import _identity
+from engine.research_intelligence.extractor import _identity, build_prompt
 from engine.research_intelligence.schema import SCHEMA
+from engine.research_intelligence.selection import (
+    SELECTOR_VERSION,
+    build_selection_catalog,
+)
 from scripts.research_intelligence_benchmark import _write_json
 
 
@@ -33,6 +37,7 @@ DOCUMENT = {
     "title": "AMD server demand",
     "published_at": "2026-09-18T12:00:00Z",
 }
+_HORIZONS = {0: "current", 1: "December quarter", 2: "October", 3: "future"}
 
 
 def _case() -> dict:
@@ -94,6 +99,114 @@ def _case() -> dict:
                 ],
             },
         },
+    }
+
+
+def _catalog() -> tuple[dict, dict]:
+    """The exact body-bound W1 selection catalog this fixture must answer."""
+    identity = _identity(DOCUMENT, BODY)
+    catalog = build_selection_catalog(identity, BODY)
+    texts = [unit["text"] for unit in catalog["units"]]
+    # Every gold quote must be an admitted catalog unit, otherwise the current
+    # W1 protocol could never produce the gold claim and the case would be
+    # unscoreable rather than wrong.
+    assert texts == [Q0, Q1, Q2, Q3]
+    return identity, catalog
+
+
+def _analysis(
+    *,
+    thesis_summary: str = (
+        "The note argues stronger cloud demand supports the AMD server outlook."
+    ),
+    mechanism: list[str] | None = None,
+    direction: str = "bullish",
+    forecasts: list[dict] | None = None,
+    catalysts: list[dict] | None = None,
+    falsifiers: list[dict] | None = None,
+) -> dict:
+    return {
+        "thesis": {
+            "summary": thesis_summary,
+            "direction": direction,
+            "mechanism": (
+                ["cloud ordering raises server demand"]
+                if mechanism is None
+                else mechanism
+            ),
+            "conviction": "moderate",
+            "support_claim_indices": [0],
+        },
+        "assumptions": [],
+        "forecasts": (
+            [
+                {
+                    "statement": "Supply is expected to normalize by the December quarter.",
+                    "horizon": "December quarter",
+                    "confidence": "",
+                    "support_claim_indices": [1],
+                }
+            ]
+            if forecasts is None
+            else forecasts
+        ),
+        "catalysts": (
+            [
+                {
+                    "statement": "The October product launch is a catalyst.",
+                    "support_claim_indices": [2],
+                }
+            ]
+            if catalysts is None
+            else catalysts
+        ),
+        "falsifiers": (
+            [
+                {
+                    "statement": "Falling cloud orders would weaken the thesis.",
+                    "support_claim_indices": [3],
+                }
+            ]
+            if falsifiers is None
+            else falsifiers
+        ),
+        "counterarguments": [],
+        "implications": [],
+        "belief_delta": {"statement": "", "support_claim_indices": []},
+        "consensus_relation": {"statement": "", "support_claim_indices": []},
+        "uncertainties": [],
+    }
+
+
+def _payload(
+    *,
+    units: tuple[int, ...] = (0, 1, 2, 3),
+    numbers: dict[int, list[str]] | None = None,
+    entities: dict[int, list[str]] | None = None,
+    analysis: dict | None = None,
+) -> dict:
+    """A compliant answer to the CURRENT W1 prompt: selections plus analysis."""
+    identity, catalog = _catalog()
+    numbers = {0: ["35%"]} if numbers is None else numbers
+    entities = {0: ["AMD"], 3: ["AMD"]} if entities is None else entities
+    selections = []
+    for index in units:
+        unit = catalog["units"][index]
+        selections.append(
+            {
+                "evidence_id": unit["evidence_id"],
+                "numbers": list(numbers.get(index, [])),
+                "entities": list(entities.get(index, [])),
+                "horizon": _HORIZONS.get(index, ""),
+                "explicit": True,
+            }
+        )
+    return {
+        "selector": SELECTOR_VERSION,
+        "document": identity,
+        "catalog_sha256": catalog["catalog_sha256"],
+        "selections": selections,
+        "analysis": _analysis() if analysis is None else analysis,
     }
 
 
@@ -194,11 +307,24 @@ def test_request_is_exact_w1_prompt_and_marked_private():
     assert len(request["gold_contract_sha256"]) == 64
 
 
+def test_request_carries_the_current_w1_selector_prompt_verbatim():
+    request = build_benchmark_request(_case(), BODY)
+    system, user = build_prompt(DOCUMENT, BODY)
+    assert request["system_prompt"] == system
+    assert request["user_prompt"] == user
+    assert request["prompt_sha256"] == hashlib.sha256(
+        (system + "\n" + user).encode("utf-8")
+    ).hexdigest()
+    # The prepared request is the current W1 contract, not a replayed one.
+    assert SELECTOR_VERSION in request["system_prompt"]
+    assert "EVIDENCE CATALOG" in request["user_prompt"]
+
+
 def test_perfect_grounded_output_scores_all_available_dimensions():
     result = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-a",
     )
     assert result["state"] == "ok"
@@ -217,11 +343,26 @@ def test_perfect_grounded_output_scores_all_available_dimensions():
     assert len(result["gold_contract_sha256"]) == 64
 
 
+def test_rio_shaped_answer_is_not_a_valid_current_w1_answer():
+    # The current W1 contract makes the system assemble claim text, so a raw
+    # RIO is not a compliant answer. It earns zero credit rather than being
+    # silently scored on a different protocol.
+    result = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="rio-shaped-model",
+    )
+    assert result["state"] == "invalid_output"
+    assert result["overall_score"] == 0.0
+    assert result["counts"]["matched_claims"] == 0
+
+
 def test_missing_claim_reduces_recall_and_category_score():
     result = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio(include_falsifier=False)),
+        json.dumps(_payload(units=(0, 1, 2), analysis=_analysis(falsifiers=[]))),
         candidate_label="model-b",
     )
     assert result["state"] == "ok"
@@ -234,7 +375,7 @@ def test_invalid_output_fails_closed_and_receipt_contains_no_source_text():
     result = score_raw_output(
         _case(),
         BODY,
-        "not json and not a grounded RIO",
+        "not json and not a grounded W1 answer",
         candidate_label="broken-model",
     )
     serialized = json.dumps(result)
@@ -255,7 +396,7 @@ def test_source_hash_mismatch_is_rejected():
     case = _case()
     case["source_content_sha256"] = "0" * 64
     try:
-        score_raw_output(case, BODY, json.dumps(_rio()), candidate_label="model-a")
+        score_raw_output(case, BODY, json.dumps(_payload()), candidate_label="model-a")
     except ValueError as exc:
         assert "source hash" in str(exc)
     else:
@@ -289,11 +430,21 @@ def test_direct_rio_scoring_rechecks_source_grounding():
         raise AssertionError("direct RIO scoring must not trust fabricated evidence")
 
 
+def test_direct_rio_scoring_reports_real_grounding_counts():
+    result = score_rio(_case(), BODY, _rio())
+    assert result["counts"]["emitted_claims"] == 4
+    assert result["counts"]["grounded_claims"] == 4
+    assert result["counts"]["emitted_numbers"] == 1
+    assert result["counts"]["grounded_numbers"] == 1
+    assert result["counts"]["emitted_entities"] == 2
+    assert result["counts"]["evidence_grounded_entities"] == 2
+
+
 def test_aggregate_ranks_by_mean_score_without_source_text():
     good = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="strong-model",
     )
     weak = score_raw_output(
@@ -314,7 +465,7 @@ def test_aggregate_refuses_unequal_case_coverage():
     first = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-a",
     )
     other_case = _case()
@@ -322,7 +473,7 @@ def test_aggregate_refuses_unequal_case_coverage():
     second = score_raw_output(
         other_case,
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-b",
     )
     try:
@@ -337,13 +488,13 @@ def test_aggregate_refuses_tampered_scores():
     first = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-a",
     )
     second = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-b",
     )
     second["overall_score"] = 0.123
@@ -368,7 +519,7 @@ def test_aggregate_refuses_different_gold_contract_for_same_source_and_prompt():
     first = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-a",
     )
     changed_gold = _case()
@@ -376,7 +527,7 @@ def test_aggregate_refuses_different_gold_contract_for_same_source_and_prompt():
     second = score_raw_output(
         changed_gold,
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-b",
     )
     assert first["source_content_sha256"] == second["source_content_sha256"]
@@ -394,13 +545,13 @@ def test_aggregate_refuses_metric_tampering_even_when_overall_is_recomputed():
     first = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-a",
     )
     second = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-b",
     )
     second["metrics"]["claim_recall"] = 0.5
@@ -435,18 +586,35 @@ def test_invalid_output_cannot_retain_matched_credit():
 
 
 def test_semantic_anchor_recall_rejects_generic_text_with_correct_support():
-    rio = _rio()
-    rio["analysis"]["thesis"]["summary"] = "The note presents a constructive server outlook."
-    rio["analysis"]["thesis"]["mechanism"] = ["fundamental conditions support the thesis"]
-    rio["analysis"]["forecasts"][0]["statement"] = "Conditions may improve later."
-    rio["analysis"]["forecasts"][0]["horizon"] = ""
-    rio["analysis"]["catalysts"][0]["statement"] = "A future event could matter."
-    rio["analysis"]["falsifiers"][0]["statement"] = "The thesis could fail under adverse conditions."
+    analysis = _analysis(
+        thesis_summary="The note presents a constructive server outlook.",
+        mechanism=["fundamental conditions support the thesis"],
+        forecasts=[
+            {
+                "statement": "Conditions may improve later.",
+                "horizon": "",
+                "confidence": "",
+                "support_claim_indices": [1],
+            }
+        ],
+        catalysts=[
+            {
+                "statement": "A future event could matter.",
+                "support_claim_indices": [2],
+            }
+        ],
+        falsifiers=[
+            {
+                "statement": "The thesis could fail under adverse conditions.",
+                "support_claim_indices": [3],
+            }
+        ],
+    )
 
     result = score_raw_output(
         _case(),
         BODY,
-        json.dumps(rio),
+        json.dumps(_payload(analysis=analysis)),
         candidate_label="generic-supported-model",
     )
     assert result["state"] == "ok"
@@ -478,7 +646,7 @@ def test_aggregate_explicitly_grants_no_model_promotion_authority():
     good = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-a",
     )
     aggregate = aggregate_results([good])
@@ -504,25 +672,26 @@ def test_one_output_row_cannot_satisfy_two_gold_analysis_expectations():
         ],
     }
 
-    rio = _rio()
-    rio["analysis"]["forecasts"] = [
-        {
-            "statement": (
-                "Supply should normalize by December and the October launch "
-                "is the next catalyst."
-            ),
-            "horizon": "December and October",
-            "confidence": "moderate",
-            "support_claim_indices": [1, 2],
-        }
-    ]
-    rio["analysis"]["catalysts"] = []
-    rio["analysis"]["falsifiers"] = []
+    analysis = _analysis(
+        forecasts=[
+            {
+                "statement": (
+                    "Supply should normalize by December and the October launch "
+                    "is the next catalyst."
+                ),
+                "horizon": "December and October",
+                "confidence": "moderate",
+                "support_claim_indices": [1, 2],
+            }
+        ],
+        catalysts=[],
+        falsifiers=[],
+    )
 
     result = score_raw_output(
         case,
         BODY,
-        json.dumps(rio),
+        json.dumps(_payload(analysis=analysis)),
         candidate_label="one-row-for-two-expectations",
     )
     assert result["state"] == "ok"
@@ -534,36 +703,30 @@ def test_one_output_row_cannot_satisfy_two_gold_analysis_expectations():
     assert result["metrics"]["analysis_semantic_recall"] == 0.5
 
 
-def test_grounding_precision_penalizes_salvaged_hallucinated_material():
-    rio = _rio()
-    fabricated = "NVIDIA demand rose 99% because an invented customer doubled orders."
-    rio["claims"][0]["entities"].append("NVIDIA")
-    rio["claims"].append(
-        {
-            "statement": fabricated,
-            "evidence": [{"quote_span": fabricated}],
-            "numbers": ["99%"],
-            "entities": ["NVIDIA"],
-            "horizon": "current",
-            "explicit": True,
-        }
-    )
-
+def test_grounding_precision_penalizes_ungrounded_model_annotations():
+    # The current W1 contract forbids the model from writing claim text, so
+    # the surviving fabrication surface is the model's own number/entity
+    # annotations on a selected source slice.
     result = score_raw_output(
         _case(),
         BODY,
-        json.dumps(rio),
+        json.dumps(
+            _payload(
+                numbers={0: ["35%", "99%"]},
+                entities={0: ["AMD", "NVIDIA"], 3: ["AMD"]},
+            )
+        ),
         candidate_label="salvageable-but-noisy-model",
     )
     assert result["state"] == "ok"
     assert result["metrics"]["claim_recall"] == 1.0
     assert result["metrics"]["analysis_semantic_recall"] == 1.0
     assert result["metrics"]["grounding_precision"] < 1.0
-    assert result["counts"]["emitted_claims"] == 5
+    assert result["counts"]["emitted_claims"] == 4
     assert result["counts"]["grounded_claims"] == 4
     assert result["counts"]["emitted_numbers"] == 2
     assert result["counts"]["grounded_numbers"] == 1
-    assert result["counts"]["emitted_entities"] == 4
+    assert result["counts"]["emitted_entities"] == 3
     assert result["counts"]["evidence_grounded_entities"] == 2
 
 
@@ -591,13 +754,13 @@ def test_run_economics_are_aggregated_but_do_not_change_quality_score():
     baseline = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-a",
     )
     observed = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-b",
         observation=_observation(),
     )
@@ -626,7 +789,7 @@ def test_run_observation_rejects_cost_value_without_cost_basis():
         score_raw_output(
             _case(),
             BODY,
-            json.dumps(_rio()),
+            json.dumps(_payload()),
             candidate_label="model-a",
             observation=observation,
         )
@@ -640,7 +803,7 @@ def test_subscription_cost_basis_is_kept_distinct_from_marginal_api_cost():
     result = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="subscription-model",
         observation=_observation(
             effective_cost_microusd=9000,
@@ -654,19 +817,26 @@ def test_subscription_cost_basis_is_kept_distinct_from_marginal_api_cost():
 
 
 def test_semantic_precision_penalizes_extra_unmatched_analysis_rows():
-    rio = _rio()
-    rio["analysis"]["forecasts"].append(
-        {
-            "statement": "General conditions could matter later.",
-            "horizon": "future",
-            "confidence": "low",
-            "support_claim_indices": [1],
-        }
+    analysis = _analysis(
+        forecasts=[
+            {
+                "statement": "Supply is expected to normalize by the December quarter.",
+                "horizon": "December quarter",
+                "confidence": "",
+                "support_claim_indices": [1],
+            },
+            {
+                "statement": "General conditions could matter later.",
+                "horizon": "future",
+                "confidence": "low",
+                "support_claim_indices": [1],
+            },
+        ]
     )
     result = score_raw_output(
         _case(),
         BODY,
-        json.dumps(rio),
+        json.dumps(_payload(analysis=analysis)),
         candidate_label="verbose-model",
     )
     assert result["state"] == "ok"
@@ -682,13 +852,13 @@ def test_aggregate_refuses_cross_generation_receipt():
     first = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-a",
     )
     second = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-b",
     )
     second["benchmark_contract_sha256"] = "0" * 64
@@ -704,7 +874,7 @@ def test_aggregate_exposes_frozen_benchmark_generation():
     result = score_raw_output(
         _case(),
         BODY,
-        json.dumps(_rio()),
+        json.dumps(_payload()),
         candidate_label="model-a",
     )
     aggregate = aggregate_results([result])

@@ -1,0 +1,20 @@
+{
+  "scope": "local source preview with explicit local identity fixture; not production entitlement proof",
+  "download_path": "/Users/chriswong/Downloads/government-revenue-saved-cut-grw2-120d87bf4021f8d3610168df.json",
+  "sha256": "cc20f0022f0dfd8a98c011fe865efad7b777230a6ebc33aa4fb41ba7c5b7d656",
+  "bytes": 90123,
+  "records": 10,
+  "membership_order_and_selected_match_browser": true,
+  "known_at": "2026-10-15T01:51:37.472913+00:00",
+  "query": {
+    "filters": {
+      "mode": "changes",
+      "truth": "defense",
+      "q": "",
+      "agency": "",
+      "ticker": "LMT"
+    },
+    "result_scope": "original visible governed workspace cut"
+  },
+  "download_event": "CUA event wait timed out; original browser click succeeded; same-effect local file and UI readback reconciled, no duplicate click"
+}

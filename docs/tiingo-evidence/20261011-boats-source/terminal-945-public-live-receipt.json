@@ -1,0 +1,28 @@
+{
+  "observed_at_utc": "2026-10-11T21:43:18.176647+00:00",
+  "target_sha": "d0973ef6e7521f775801401a345792fc7c4cb3e2",
+  "terminal": {
+    "status": 200,
+    "cache_control": "private, must-revalidate, no-cache, no-store, max-age=0",
+    "data_dpl_ids": [
+      "d0973ef6e7521f775801401a345792fc7c4cb3e2"
+    ],
+    "application_error": false
+  },
+  "ext_api": {
+    "status": 200,
+    "cache_control": "no-store",
+    "symbols": {
+      "AMD": {
+        "is_null": true,
+        "source": null,
+        "basis": null
+      },
+      "AAPL": {
+        "is_null": true,
+        "source": null,
+        "basis": null
+      }
+    }
+  }
+}

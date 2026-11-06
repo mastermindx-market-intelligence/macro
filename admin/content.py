@@ -1,8 +1,10 @@
 """Content inventory, offline broken-link check, and a live-site uptime probe."""
 from __future__ import annotations
 
+import hashlib
 import re
 import time
+from pathlib import Path
 
 from . import config_store
 from .paths import ROOT, SITE
@@ -64,34 +66,79 @@ def _ci_built(target) -> bool:
 # lets the UI say "scanned N of M" honestly when the cap ever does bite.
 
 # A full scan reads+parses ~3k pages (~17s) and blocks the single-threaded server, but the
-# result only changes when the site/ tree does. Cache it, keyed on a cheap tree signature
-# (html-file count + newest mtime) — statting files is far cheaper than reading every one,
-# so a repeat panel load returns instantly instead of re-running the crawl.
-_link_cache: dict = {}  # (max_pages, count, max_mtime) -> result dict
+# result changes with the local page tree, symlink topology, and the root template files
+# used by ``_ci_built``. Cache it behind a dependency-complete stat fingerprint. This
+# remains far cheaper than re-reading every page while preventing warm-cache verdicts
+# from surviving a link-containment or CI-built-classification change.
+_link_cache: dict = {}  # (max_pages, count, metadata_digest) -> result dict
 
 
 def _tree_sig(max_pages: int):
-    """Cheap cache key: (max_pages, html-file count, newest mtime) over site/. Stat-only —
-    no file reads — so any add/remove/edit of a page flips the key and forces a rescan."""
+    """Stat-only fingerprint of every local input that can change ``link_check``.
+
+    Page metadata catches edits/replacements/additions/removals. Symlink records include
+    the link target itself because containment depends on where a path resolves, even when
+    every HTML file is byte-identical. Root template metadata covers ``_ci_built``: adding
+    or removing ``templates/<stem>.html(.j2)`` changes a missing link's classification.
+    Paths are sorted so traversal order cannot churn the cache.
+    """
+    digest = hashlib.sha256()
     count = 0
-    newest = 0.0
-    for p in SITE.rglob("*.html"):
+
+    def _add(kind: str, rel: str, stat, target: str = "", state: str = "") -> None:
+        fields = (
+            kind, rel, target, state, str(stat.st_size),
+            str(stat.st_mtime_ns), str(stat.st_ctime_ns),
+        )
+        digest.update("\0".join(fields).encode("utf-8", errors="surrogateescape"))
+        digest.update(b"\0\0")
+
+    for page in sorted(SITE.rglob("*.html"), key=lambda item: item.as_posix()):
         try:
-            m = p.stat().st_mtime
-        except OSError:
+            stat = page.stat()
+            rel = page.relative_to(SITE).as_posix()
+        except (OSError, ValueError):
             continue
         count += 1
-        if m > newest:
-            newest = m
-    return (max_pages, count, newest)
+        _add("page", rel, stat)
+
+    # ``rglob('*.html')`` does not follow directory symlinks, which is exactly what
+    # the scan wants, but a link traversing such a directory still resolves through it.
+    # Fingerprint every symlink entry separately so retargeting cannot reuse a cached
+    # healthy result. ``lstat`` records the link, never the destination.
+    for item in sorted(SITE.rglob("*"), key=lambda entry: entry.as_posix()):
+        try:
+            if not item.is_symlink():
+                continue
+            rel = item.relative_to(SITE).as_posix()
+            _add("symlink", rel, item.lstat(), item.readlink().as_posix())
+        except (OSError, RuntimeError, ValueError):
+            continue
+
+    # _ci_built deliberately checks only root-level templates by target basename.
+    # Track those exact inputs; no template body read is needed.
+    if _TEMPLATES.is_dir():
+        templates = list(_TEMPLATES.glob("*.html")) + list(_TEMPLATES.glob("*.html.j2"))
+        for template in sorted(templates, key=lambda item: item.name):
+            try:
+                target = template.readlink().as_posix() if template.is_symlink() else ""
+                # _ci_built() uses Path.exists(), so a template symlink whose literal
+                # target is unchanged can still change classification when that
+                # destination appears or disappears.
+                state = "exists" if template.exists() else "missing"
+                _add("template", template.name, template.lstat(), target, state)
+            except (OSError, RuntimeError):
+                continue
+
+    return (max_pages, count, digest.digest())
 
 
 def link_check(max_pages: int = 10000) -> dict:
     """Cached wrapper around the offline nav-integrity scan (see `_link_check`).
 
     The scan reads+parses the whole local tree (~17s); here we return a memoized result
-    whenever the site/ tree signature (page count + newest mtime) is unchanged, so repeat
-    panel loads are near-instant instead of re-running the crawl on the single-threaded
+    whenever the complete local dependency signature is unchanged, so repeat panel loads
+    are near-instant instead of re-running the crawl on the single-threaded
     server. Returns the identical dict `_link_check` produces.
     """
     if not SITE.is_dir():
@@ -104,6 +151,22 @@ def link_check(max_pages: int = 10000) -> dict:
     _link_cache.clear()  # only the current tree state is ever relevant; bound the dict
     _link_cache[key] = result
     return result
+
+
+def _site_link_target(page: Path, link: str, site_root: Path) -> Path | None:
+    """Resolve one local HTML link without ever consulting outside ``site/``.
+
+    A leading slash is same-origin site-root syntax, not a host-filesystem absolute path.
+    Relative traversal and symlinks that escape the resolved site root are refused.
+    """
+    relative = link.lstrip("/") if link.startswith("/") else link
+    base = site_root if link.startswith("/") else page.parent
+    try:
+        target = (base / relative).resolve()
+        target.relative_to(site_root)
+    except (OSError, RuntimeError, ValueError):
+        return None
+    return target
 
 
 def _link_check(max_pages: int = 10000) -> dict:
@@ -122,6 +185,7 @@ def _link_check(max_pages: int = 10000) -> dict:
     if not SITE.is_dir():
         return {"total_pages": 0, "checked_pages": 0, "truncated": False,
                 "broken": [], "count": 0, "ci_built": [], "ci_built_count": 0}
+    site_root = SITE.resolve()
     all_pages = sorted(SITE.rglob("*.html"))
     total = len(all_pages)
     truncated = total > max_pages
@@ -144,11 +208,11 @@ def _link_check(max_pages: int = 10000) -> dict:
             seen.add(link)
             if not link.lower().endswith(".html"):
                 continue                      # only page-to-page nav integrity
-            target = (p.parent / link).resolve()
-            if target.exists():
+            target = _site_link_target(p, link, site_root)
+            if target is not None and target.exists():
                 continue
             row = {"page": str(p.relative_to(SITE)), "link": link}
-            (ci_built if _ci_built(target) else broken).append(row)
+            (ci_built if target is not None and _ci_built(target) else broken).append(row)
     return {
         "total_pages": total,
         "checked_pages": checked,

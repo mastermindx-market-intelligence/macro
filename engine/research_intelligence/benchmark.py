@@ -3,6 +3,11 @@
 This is an evaluation harness, not a model router or source store. Real source
 bodies and gold annotations stay in private operator inputs. Results retain only
 hashes, counts, and scores so licensed text is not copied into benchmark receipts.
+
+The scored protocol is the CURRENT W1 contract: the candidate answers the exact
+W1 prompt, so its raw output is the W1 selection payload, and the payload is
+re-bound to the exact source body and re-grounded here. An already-grounded
+object is never trusted.
 """
 from __future__ import annotations
 
@@ -17,18 +22,20 @@ from engine.qual_extraction import citation_normalize, quote_span_verified
 
 from .extractor import _identity, _parse_json, build_prompt, parse_model_output
 from .schema import validate_rio
+from .selection import parse_selector_output
 
 CASE_SCHEMA = "mastermind.research_intelligence.benchmark_case.v1"
 RESULT_SCHEMA = "mastermind.research_intelligence.benchmark_result.v1"
 AGGREGATE_SCHEMA = "mastermind.research_intelligence.benchmark_aggregate.v1"
 REQUEST_SCHEMA = "mastermind.research_intelligence.benchmark_request.v1"
 OBSERVATION_SCHEMA = "mastermind.research_intelligence.benchmark_observation.v1"
-BENCHMARK_VERSION = "mastermind.research_intelligence.grounded_extraction_benchmark.v2"
+BENCHMARK_VERSION = "mastermind.research_intelligence.grounded_extraction_benchmark.v3"
 _BENCHMARK_CONTRACT_TEXT = (
-    "private-gold exact-source RIO evaluation; W1 re-grounding; key-claim/numeric/entity recall; "
-    "raw-to-grounded precision; thesis support/direction; private semantic concept anchors; "
-    "one-to-one maximum insight matching; semantic recall+precision; equal-weight applicable "
-    "quality metrics; run economics non-scoring; no model-promotion authority"
+    "private-gold exact-source RIO evaluation; current-W1 selector-contract re-grounding; "
+    "key-claim/numeric/entity recall; raw-to-grounded precision; thesis support/direction; "
+    "private semantic concept anchors; one-to-one maximum insight matching; "
+    "semantic recall+precision; equal-weight applicable quality metrics; "
+    "run economics non-scoring; no model-promotion authority"
 )
 BENCHMARK_CONTRACT_SHA256 = hashlib.sha256(
     (BENCHMARK_VERSION + "\n" + _BENCHMARK_CONTRACT_TEXT).encode("utf-8")
@@ -84,6 +91,20 @@ _COUNT_KEYS = (
     "direction_expected",
     "direction_correct",
 )
+# Every receipt is bound to these four identities; a candidate comparison is
+# only meaningful when all of them agree across candidates for the same case.
+_BINDING_FIELDS = (
+    "source_content_sha256",
+    "prompt_sha256",
+    "gold_contract_sha256",
+    "benchmark_contract_sha256",
+)
+_BINDING_LABELS = {
+    "source_content_sha256": "source binding",
+    "prompt_sha256": "prompt binding",
+    "gold_contract_sha256": "gold contract",
+    "benchmark_contract_sha256": "scoring contract",
+}
 
 
 def _sha256_text(value: str) -> str:
@@ -813,13 +834,23 @@ def score_rio(case: Any, source_body: str, rio: Any) -> dict[str, Any]:
         separators=(",", ":"),
         allow_nan=False,
     )
+    normalized = validate_rio(
+        _parse_json(raw),
+        expected_document_id=checked["document"]["id"],
+        expected_document=checked["document"],
+        require_grounded_claims=False,
+    )
     obj = parse_model_output(
         raw,
         expected_document_id=checked["document"]["id"],
         expected_document=checked["document"],
         source_body=source_body,
     )
-    return _score_grounded(checked, obj)
+    return _score_grounded(
+        checked,
+        obj,
+        grounding_counts=_grounding_counts(normalized, obj),
+    )
 
 
 def score_raw_output(
@@ -830,7 +861,7 @@ def score_raw_output(
     candidate_label: str,
     observation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Re-ground raw model text through W1, then emit a text-free benchmark receipt."""
+    """Re-ground the raw W1 answer, then emit a text-free benchmark receipt."""
     checked = validate_case(case, source_body)
     label = str(candidate_label or "").strip()
     if not label or len(label) > 240:
@@ -851,15 +882,24 @@ def score_raw_output(
         "observation": checked_observation,
     }
     try:
-        raw_obj = _parse_json(str(raw_output or ""))
-        normalized_raw = validate_rio(
-            raw_obj,
-            expected_document_id=checked["document"]["id"],
-            expected_document=checked["document"],
-            require_grounded_claims=False,
-        )
-        rio = parse_model_output(
+        # The current W1 contract makes the candidate SELECT body-bound
+        # evidence units and lets the system assemble the claim text, so the
+        # candidate's raw answer is that selection payload. It is re-bound to
+        # the exact source body here and then re-grounded through W1; an
+        # already-grounded object is never trusted.
+        assembled = parse_selector_output(
             str(raw_output or ""),
+            checked["document"],
+            source_body,
+        )["rio"]
+        rio = parse_model_output(
+            json.dumps(
+                assembled,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            ),
             expected_document_id=checked["document"]["id"],
             expected_document=checked["document"],
             source_body=source_body,
@@ -867,7 +907,7 @@ def score_raw_output(
         scored = _score_grounded(
             checked,
             rio,
-            grounding_counts=_grounding_counts(normalized_raw, rio),
+            grounding_counts=_grounding_counts(assembled, rio),
         )
     except (TypeError, ValueError, json.JSONDecodeError) as exc:
         score_counts = _score_counts(checked)
@@ -1068,7 +1108,7 @@ def _aggregate_observations(items: list[dict[str, Any]]) -> dict[str, Any]:
 def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     """Aggregate only directly comparable, text-free case receipts by candidate."""
     groups: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
-    bindings: dict[str, tuple[str, str, str, str]] = {}
+    bindings: dict[str, dict[str, str]] = {}
     metric_shapes: dict[str, tuple[bool, ...]] = {}
     expected_shapes: dict[str, tuple[int, int, int, int, int, int, int, int]] = {}
 
@@ -1080,17 +1120,16 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
             raise ValueError("duplicate benchmark case for candidate")
         groups[label][case_id] = item
 
-        binding = (
-            item["source_content_sha256"],
-            item["prompt_sha256"],
-            item["gold_contract_sha256"],
-            item["benchmark_contract_sha256"],
-        )
+        binding = {
+            field: item[field] for field in _BINDING_FIELDS
+        }
         prior_binding = bindings.setdefault(case_id, binding)
         if prior_binding != binding:
-            raise ValueError(
-                "benchmark source, prompt, gold, or scoring contract differs across candidates"
-            )
+            for field in _BINDING_FIELDS:
+                if prior_binding[field] != binding[field]:
+                    raise ValueError(
+                        f"benchmark {_BINDING_LABELS[field]} differs across candidates"
+                    )
 
         shape = tuple(item["metrics"][key] is None for key in _METRIC_KEYS)
         prior_shape = metric_shapes.setdefault(case_id, shape)
@@ -1130,10 +1169,10 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     binding_payload = [
         [
             case_id,
-            bindings[case_id][0],
-            bindings[case_id][1],
-            bindings[case_id][2],
-            bindings[case_id][3],
+            bindings[case_id]["source_content_sha256"],
+            bindings[case_id]["prompt_sha256"],
+            bindings[case_id]["gold_contract_sha256"],
+            bindings[case_id]["benchmark_contract_sha256"],
         ]
         for case_id in case_ids
     ]

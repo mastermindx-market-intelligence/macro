@@ -1,8 +1,9 @@
 """Operator CLI for the private Research Intelligence model benchmark.
 
-No provider call is made here. Prepare emits the exact W1 prompt for an
-operator-authorized model surface; score re-grounds the returned text through
-W1 and emits only hashes/counts/scores; aggregate compares those safe receipts.
+No provider call is made here. Prepare emits the exact current W1 prompt for an
+operator-authorized model surface; score re-grounds the returned W1 answer
+against the exact source body and emits only hashes/counts/scores; aggregate
+compares those safe receipts.
 """
 from __future__ import annotations
 

@@ -34,6 +34,7 @@ from __future__ import annotations
 import html
 import json
 import logging
+import os
 import re
 import xml.etree.ElementTree as ET
 from collections import Counter
@@ -246,8 +247,18 @@ def _cfg() -> dict:
 
 
 def enabled() -> bool:
-    """Master switch for the Eastmoney flash fetch + LLM brief. The policy-tone leg
-    is keyless (reads the stored series) and surfaces regardless."""
+    """Master switch for live headline fetches on data-owning lanes.
+
+    Site-only rerenders still surface the stored policy-tone leg, but they must
+    never reach Eastmoney/RSS/GDELT/official-page network sources.  Their output
+    is intentionally a truthful tone-only degradation until the nightly refresh
+    advances the committed headline caches.
+    """
+    if (
+        os.environ.get("RENDER_NO_DRIP") == "1"
+        or os.environ.get("CHINA_FAST_RENDER") == "1"
+    ):
+        return False
     return bool(_cfg().get("enabled", False))
 
 
