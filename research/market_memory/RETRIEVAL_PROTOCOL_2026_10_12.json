@@ -1,0 +1,194 @@
+{
+  "document_type": "market_memory.research_protocol_design.v1",
+  "source_pin": "ea7ce73068b9408a019dcbf43f9e2634ba1953ea",
+  "registration_status": "design_frozen_corpus_registration_pending",
+  "no_holdout_access": "this draft has not read heldout labels or scored current cases",
+  "research_questions": {
+    "H1": "Does qualified retrieval find more relevant decision-time historical evidence than recency?",
+    "H2": "Does memory-supported synthesis improve supported evidence/contradiction/omission quality without unsupported critical claims?",
+    "H3": "Optional future separately registered forecast study; disabled in this protocol",
+    "H4": "Can pinned exact retrieval reproduce and meet declared cost/latency requirements?"
+  },
+  "corpus_gate": "C0 chooses actual qualified sources/subjects/clock precision/rights; W2C opportunity denominator includes failed/abstained/not-observed; fit-eligible rows independent of outcome success. No promised sample size or population coverage.",
+  "freeze_before_labels": [
+    "task prompts",
+    "query contexts and temporal cutoffs",
+    "answerability labels and decision-time evidence annotation guide",
+    "source/feature/usage admission rules",
+    "chronological train/tune/test cutoffs",
+    "episode/subject clustering and purge/embargo intervals",
+    "baseline versions",
+    "distance/missingness/weights/normalizer procedure",
+    "blind randomization seed",
+    "reviewer independence/disagreement resolution",
+    "numeric quality margins",
+    "trial budget",
+    "data maturity and insufficient-evidence disposition"
+  ],
+  "conditions": [
+    "no_memory_same_query_context",
+    "recency_same_eligible_corpus_and_k_budget",
+    "registered_exact_state_distance",
+    "challenger_only_if_separately_registered"
+  ],
+  "trial_budget": {
+    "initial_methods": 1,
+    "tuning": "one declared tuning partition; no test outcome access",
+    "additional_challenger": "new trial/version, budget and untouched holdout required; retain failed/contaminated trials"
+  },
+  "splits": "chronological by decision cutoff; all shared economic episode/source-revision siblings remain same split. Block by predeclared session intervals, plus leave-subject/event holdout when genuine multiple qualified subjects exist. Boundary rows whose full feature/registered label intervals cross the split are purged; embargo is registered before labels.",
+  "blindness": "reviewers rate condition-randomized source/evidence packets without method/provider identity or later outcome lens. Preserve necessary decision-time context. Any anonymization affecting financial question is documented and identical across conditions; current LLM pretraining contamination remains disclosed.",
+  "primary_unit": "query task nested within economic episode; paired methods on same task; cluster paired effects by predeclared economic episode/session block. Never count revisions/fires/neighbors as independent episodes.",
+  "primary_metrics": {
+    "retrieval": "decision-relevant evidence coverage at fixed k, judged against permitted decision-time source set; report relevance precision and omissions separately",
+    "support": "supported material claims / all material claims; critical unsupported-claim count; contradiction recall and decision-relevant omission count",
+    "abstention": "answerable answered correctly, answerable abstained, unanswerable abstained, unanswerable asserted; all remain denominator",
+    "utility": "blind analyst utility and time-to-evidence as secondary after correctness gate"
+  },
+  "proposed_decision_margins": {
+    "critical_unsupported_claims": "any observed critical unsupported claim blocks positive supported-usefulness disposition until bounded repair and fresh untouched evaluation; do not remove failed task",
+    "material_support_precision_floor": 0.95,
+    "retrieval_relevance_minimum_absolute_paired_gain_vs_recency": 0.1,
+    "positive_gain_confidence_rule": "95% cluster-aware confidence interval lower bound above zero AND point gain >=0.10; only if enough genuine independent clusters for estimator",
+    "support_noninferiority": "lower 95% clustered bound on support-precision difference >= -0.02; gate may still be insufficient if sample cannot support interval",
+    "critical_definition": "claim could materially change research interpretation, violates source/time/rights or asserts unsupported efficacy/trade action; annotate guide before scoring"
+  },
+  "uncertainty": "publish raw paired counts/economic episode counts, cluster definition, missingness, disagreement and intervals. Effective N remains not_estimated unless a justified accepted estimator exists. Too few independent clusters, empty qualified corpus or immature evidence returns INSUFFICIENT_EVIDENCE, never PASS/NO_GO by manufactured power.",
+  "dispositions": [
+    "ACCEPT_SUPPORTED_RESEARCH_USEFULNESS",
+    "NO_GO_FOR_REGISTERED_METHOD",
+    "INSUFFICIENT_EVIDENCE",
+    "PROTOCOL_VIOLATION_HOLD",
+    "SOURCE_OR_RIGHTS_HOLD"
+  ],
+  "prospective": "existing admitted evaluation/source owners record issued/abstained/failed opportunities and original hypotheses/versions; preserve mature/pending/censored states. No timer-only claim, restarted August window, retroactive issuance or LLM historical-ignorance claim.",
+  "performance_proposals_from_masterplan": {
+    "exact_cached_context_p95_seconds": 1,
+    "reference_retrieval_p95_seconds": 2,
+    "concurrent_readers": 10,
+    "initial_viewport_seconds": 3,
+    "network_rtt_ms": 500,
+    "network_mbps": 1.6,
+    "required_declarations": [
+      "real_vs_synthetic_corpus",
+      "hardware",
+      "corpus_size",
+      "bytes",
+      "cache_state",
+      "window",
+      "storage_fit_refresh_serving_synthesis_review_costs"
+    ],
+    "not_yet_measured": true
+  },
+  "mandatory_full_program": "all three consumers plus entitled three-mode user path, cross-domain revisions/second subject, source rights/recovery and explicit pending obligations remain separate acceptance rows; no prediction gain requirement manufactured to close observation product.",
+  "protocol_id": "market-memory-retrieval-evidence-e0-20261012",
+  "design_frozen_at": "2026-10-13T04:59:35.168289Z",
+  "program_operation": "market-memory-full-capability-20260827-sol-001",
+  "parent_carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/6528",
+  "design_authority": {
+    "basis": "Chairman-assigned end-to-end program; bounded principal scientific adjudication",
+    "native_root": "01a1333c-a475-7052-95a8-72c623fb12e1",
+    "scope": "Fix the proposed method and decision margins before task annotation or later-outcome access. This does not grant source usage, training, promotion, runtime admission or efficacy."
+  },
+  "fixed_comparison_baseline": {
+    "method_id": "macro_house_state_fixed_range_distance.v1",
+    "parameter_origin": "fixed_by_declared_source_domain_and_prelabel_design",
+    "fit_status": "not_performed",
+    "source_feature": "macro.regime_state",
+    "source_basis": "retained house macro output state; not constituent-source truth",
+    "coordinates": [
+      {
+        "id": "growth_score",
+        "kind": "numeric",
+        "unit": "dimensionless_house_regime_score",
+        "minimum": -1,
+        "maximum": 1,
+        "fixed_divisor": 2,
+        "weight": "0.2"
+      },
+      {
+        "id": "inflation_score",
+        "kind": "numeric",
+        "unit": "dimensionless_house_regime_score",
+        "minimum": -1,
+        "maximum": 1,
+        "fixed_divisor": 2,
+        "weight": "0.2"
+      },
+      {
+        "id": "quad",
+        "kind": "categorical",
+        "distance": "exact_match_zero_otherwise_one",
+        "weight": "0.2",
+        "vocabulary": [
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4"
+        ]
+      },
+      {
+        "id": "liquidity_overlay",
+        "kind": "categorical",
+        "distance": "exact_match_zero_otherwise_one",
+        "weight": "0.2",
+        "vocabulary": [
+          "expanding",
+          "neutral",
+          "contracting"
+        ]
+      },
+      {
+        "id": "cycle_tag",
+        "kind": "categorical",
+        "distance": "exact_match_zero_otherwise_one",
+        "weight": "0.2",
+        "vocabulary": [
+          "early",
+          "mid",
+          "late"
+        ]
+      }
+    ],
+    "formula": "d=(abs(gq-gc)/2 + abs(iq-ic)/2 + I(quadq!=quadc) + I(liquidityq!=liquidityc) + I(cycleq!=cyclec))/5; each of five fixed terms has weight 0.2.",
+    "missingness": "All five coordinates required. Unknown, missing, nonfinite, out-of-domain or incomparable coordinates return an explicit comparison gap; do not drop dimensions, zero-fill, refit or change denominator per candidate.",
+    "numeric_convention": "owner_binary64_exact_decimal_to_q18_half_even.v1; preserve original binary64 hex and exact Decimal provenance, q18 half-even coordinate conversion independent of ambient Decimal context; deterministic registered Decimal arithmetic and final q18 half-even distance rounding required before evaluation.",
+    "rights": "Existing owner must allow the actual comparison purpose before private reading; absence of a training prohibition is not comparison permission. Recheck disclosure rights before response/cache.",
+    "fit_obligation": "Retained training_eligible=false remains false. Fixed scales are not fitted parameters or a fabricated training cohort. P2 training-only fitting is a separate interface and must refuse ineligible inputs.",
+    "no_claims": [
+      "predictive utility",
+      "effective sample size",
+      "forecast eligibility",
+      "source constituent authentication",
+      "historical method availability"
+    ],
+    "tie_break": "distance_q18 ascending, then stable context_id ascending; source-revision siblings remain the same economic episode for exclusions and splits."
+  },
+  "required_before_evaluation_admission": [
+    "exact owner source/rights/usage profile and policy version",
+    "outcome-blind expected opportunity census and population membership digest",
+    "exact query context set and temporal cutoffs",
+    "chronological train/tune/test membership hashes and boundary-purge/embargo intervals",
+    "decision-time evidence annotation and answerability guide hash",
+    "predeclared episode/session cluster assignment",
+    "independent reviewer assignment and disagreement-resolution rule",
+    "blind randomization seed and condition allocation hash",
+    "executable method and each baseline source digest",
+    "task question list and source evidence set hash",
+    "fit artifact admission if any fitted challenger is introduced",
+    "explicit approval that all preregistration fields are complete before annotation or label reads"
+  ],
+  "evaluation_not_run": true,
+  "operational_admission": false,
+  "historical_clock_claim": "Design creation occurred at design_frozen_at. Any retrospective application is historical hypothetical analysis, never an original issued system output.",
+  "evidence_provenance": {
+    "accepted_draft_sha256": "f0d15013470061c0107631f4ec5804b801047a7703fe9733e5f2a209a99cc237",
+    "fixed_comparison_ruling_sha256": "44fa073f5e9a93d31585e4a25ea5f089a9c5d24129c2bd26b1a340e46aed475e",
+    "source_contract": "engine/neuralweb/market_memory_projection.py::_project_state and TrustedFileAsKnownAtReader.read_pinned_capture_projections at source_pin"
+  },
+  "pre_admission_review_correction": {
+    "reason": "Independent scientific review found the draft protocol had squared (L2) numeric terms and different method/unit identifiers while the already accepted fixed baseline specified absolute (L1) terms. Corrected to the accepted method; no method change or label access.",
+    "superseded_draft_sha256": "b65e95b5f0d4a7e0be00fe9a8bd11ef3bddcbca0e1afc5cdbb40844293d06671",
+    "evaluation_was_not_admitted": true
+  }
+}

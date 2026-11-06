@@ -1,0 +1,11 @@
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -7571,6 +7571,8 @@
+     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
+     scope: exclusive
+     paths:
++      - "collectors/yahoo.py"
++      - "lib/stooq.py"
+       - lib/symbol_directory_receipts.py
+       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+       - engine/intl_performance_charts.py

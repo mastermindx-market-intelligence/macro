@@ -615,6 +615,7 @@ _USD_STANCE: dict[str, tuple[str, str]] = {
 }
 
 _DEFAULT_STANCE = ("Watch", "观察")
+_PENDING_STATE = ("Read being updated", "读数更新中")
 
 
 def _bil(en: str, zh: str) -> dict[str, str]:
@@ -636,17 +637,27 @@ def compose_hero(tx: dict, dx: dict | None) -> dict:
         rates_block = (state.get("rates") or {}) if isinstance(state, dict) else {}
         infl_block  = (state.get("inflation") or {}) if isinstance(state, dict) else {}
 
-        r_reg = rates_block.get("regime") or "neutral"
-        r_dir = rates_block.get("direction") or "stable"
-        i_reg = infl_block.get("regime") or "at target"
-        i_dir = infl_block.get("direction") or "steady"
+        r_reg = rates_block.get("regime")
+        r_dir = rates_block.get("direction")
+        i_reg = infl_block.get("regime")
+        i_dir = infl_block.get("direction")
         usd_dir = dx.get("usd_dir")
+
+        # A channel has a state only when its owner published both words. A
+        # missing word is never replaced by a default reading: the channel says
+        # the read is being updated and drops out of the sentence.
+        rates_known = r_reg is not None and r_dir is not None
+        infl_known = i_reg is not None and i_dir is not None
 
         rk = (r_reg, r_dir)
         ik = (i_reg, i_dir)
 
-        r_state_en, r_state_zh = _RATES_STATE.get(rk, (f"{r_reg}, {r_dir}", f"{r_reg}, {r_dir}"))
-        r_stance_en, r_stance_zh = _RATES_STANCE.get(rk, _DEFAULT_STANCE)
+        if rates_known:
+            r_state_en, r_state_zh = _RATES_STATE.get(rk, (f"{r_reg}, {r_dir}", f"{r_reg}, {r_dir}"))
+            r_stance_en, r_stance_zh = _RATES_STANCE.get(rk, _DEFAULT_STANCE)
+        else:
+            r_state_en, r_state_zh = _PENDING_STATE
+            r_stance_en, r_stance_zh = "—", "—"
 
         # TURN-WATCH overrides (state.rates.turn_watch, engine-computed): the (regime,
         # direction) grid alone certifies a turn last — the 63d direction key stays
@@ -660,29 +671,40 @@ def compose_hero(tx: dict, dx: dict | None) -> dict:
         elif tw == "extreme_watch":
             r_stance_en, r_stance_zh = "At a 5-yr extreme — watching for a turn", "处于5年极值 — 关注拐点"
 
-        i_state_en, i_state_zh = _INFL_STATE.get(ik, (f"{i_reg}, {i_dir}", f"{i_reg}, {i_dir}"))
-        i_stance_en, i_stance_zh = _INFL_STANCE.get(ik, _DEFAULT_STANCE)
+        rates_in_line = rates_known or tw == "rolldown_forming"
 
-        # One-sentence verdict (≤ ~20 words). When the dollar read is absent
-        # (stale/missing forex artifact), the sentence simply omits the dollar —
-        # a missing read is never presented as a real "flat" stance.
+        if infl_known:
+            i_state_en, i_state_zh = _INFL_STATE.get(ik, (f"{i_reg}, {i_dir}", f"{i_reg}, {i_dir}"))
+            i_stance_en, i_stance_zh = _INFL_STANCE.get(ik, _DEFAULT_STANCE)
+        else:
+            i_state_en, i_state_zh = _PENDING_STATE
+            i_stance_en, i_stance_zh = "—", "—"
+
+        # One-sentence verdict. A channel with no read is left out of the
+        # sentence — never presented as a real stance.
+        parts_en: list[str] = []
+        parts_zh: list[str] = []
+        if rates_in_line:
+            parts_en.append(f"rates are {r_state_en.lower()}")
+            parts_zh.append(f"利率{r_state_zh}")
+        if infl_known:
+            parts_en.append(f"inflation is {i_state_en.lower()}")
+            parts_zh.append(f"通胀{i_state_zh}")
         if usd_dir:
             usd_state = _USD_STATE.get(usd_dir, {"en": "Unknown", "zh": "未知"})
             usd_stance_en, usd_stance_zh = _USD_STANCE.get(usd_dir, _DEFAULT_STANCE)
-            line_en = (
-                f"Rates are {r_state_en.lower()}, "
-                f"inflation is {i_state_en.lower()}, "
-                f"and the dollar is {usd_state['en'].lower()}."
-            )
-            line_zh = f"利率{r_state_zh}，通胀{i_state_zh}，美元{usd_state['zh']}。"
+            parts_en.append(f"the dollar is {usd_state['en'].lower()}")
+            parts_zh.append(f"美元{usd_state['zh']}")
         else:
             usd_state = {"en": "No read", "zh": "暂无读数"}
             usd_stance_en, usd_stance_zh = "—", "—"
-            line_en = (
-                f"Rates are {r_state_en.lower()}, "
-                f"and inflation is {i_state_en.lower()}."
-            )
-            line_zh = f"利率{r_state_zh}，通胀{i_state_zh}。"
+
+        if not parts_en:
+            line_en, line_zh = "The read is being updated.", "读数更新中。"
+        else:
+            body_en = parts_en[0] if len(parts_en) == 1 else ", ".join(parts_en[:-1]) + ", and " + parts_en[-1]
+            line_en = body_en[0].upper() + body_en[1:] + "."
+            line_zh = "，".join(parts_zh) + "。"
 
         return {
             "line":      _bil(line_en, line_zh),

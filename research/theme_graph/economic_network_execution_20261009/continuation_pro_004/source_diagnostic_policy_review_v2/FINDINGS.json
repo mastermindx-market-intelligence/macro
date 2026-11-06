@@ -1,0 +1,133 @@
+{
+  "P1_count": 0,
+  "admission": "NOT_ADMITTED",
+  "authority": {
+    "history": false,
+    "prediction": false,
+    "rank": false,
+    "rights": false,
+    "size": false,
+    "source": false,
+    "trade": false
+  },
+  "created_at_utc": "2026-10-09T12:04:22.347770+00:00",
+  "external_prerequisite": {
+    "actual_complete_lawful_42_pool_frame_still_required_after_interface": true,
+    "classification": "DECLARED_UNBOUND_TRUST_INTERFACE_NOT_NEW_MATHEMATICAL_DEFECT",
+    "current_value": null,
+    "id": "U01",
+    "missing_authority_state": "SOURCE_AUTHORITY_UNVERIFIED",
+    "missing_rights_state": "SOURCE_RIGHTS_UNVERIFIED",
+    "not_equivalent_to_proved_no_license": true,
+    "policy_pointer": "/authority_boundary/trust_interface_selected_here",
+    "real_source_history_or_selection_allowed_without_interface": false,
+    "required": "Principal identifies an existing trusted owner-review/admission receipt reader and authenticates actual receipt origin and applicability to exact source/derived bytes, D/K, perimeter, issuer/class/event identities, coverage, derivation and intended use; authentic origin alone does not prove truth.",
+    "self_attesting_flags_or_hashes_sufficient": false
+  },
+  "first_kernel_boundary": {
+    "candidate_count_meaning": "supplied records, not established eligible-population cardinality",
+    "legitimate_scope": "STRUCTURAL_ONLY receipt coherence/typed deficiency reporting and explicitly artificial arithmetic/selection fixtures after principal scope and numeric-law binding.",
+    "may_create_canonical_identity_or_owner_receipt": false,
+    "may_infer_entitlement_or_history_from_coherent_receipt": false,
+    "real_selected_cohort": null,
+    "synthetic_results_may_authenticate_external_facts": false,
+    "untrusted_real_input_status": "NOT_READY"
+  },
+  "limits": {
+    "D_conditioned_earlier_year_sample_not_survivorship_free": true,
+    "actual_INT_flow": null,
+    "eligible_population_count": null,
+    "full_frame_cost_broader_than_120_no_population_estimate": true,
+    "kernel_implementation_or_native_tests_performed": false,
+    "native_app_store_Git_source_acquisition_provider_effects": false,
+    "new_external_primary_source_retrieval": false,
+    "no_input_edits": true,
+    "policy_adoption_or_sidecar_verified": false,
+    "primary_activity_not_segment_role": true,
+    "reused_source_register_byte_exact": true,
+    "unavailable_cases_not_replaced": true
+  },
+  "observed_checks": {
+    "actual_18_cell_INT_population_checked": false,
+    "author_checks": 12,
+    "author_replay_byte_exact": true,
+    "author_replay_exit_code": 0,
+    "author_toy_permutations": 720,
+    "equal_invariant_pointers": 35,
+    "exact_changed_pointers": 37,
+    "feasible": 424,
+    "independent_artificial_matrices": 729,
+    "independent_checks_exit_code": 0,
+    "infeasible": 305,
+    "manifest_bindings_match": true,
+    "matrix_input_orders": 2,
+    "prior_files_rehashed_match": 36,
+    "v2_bytes": 183753,
+    "v2_files": 10
+  },
+  "open_P2_count": 1,
+  "open_findings": [
+    {
+      "consequence": "Literal positive-input validation refuses a legitimate negative retirement; erasing its sign can move a cap across a fixed size boundary.",
+      "counterexample": {
+        "base_shares": "100000000",
+        "correct_cap": "1800000000",
+        "crosses_absolute_2b_boundary": true,
+        "example_is_synthetic": true,
+        "negative_action_is_not_a_negative_price_or_cap_factor": true,
+        "price": "20",
+        "signed_retirement": "-10000000",
+        "wrong_abs_delta_cap": "2200000000"
+      },
+      "id": "R3",
+      "locations": [
+        "RECOMMENDED_SELECTION_POLICY.json:357 /capitalization/numeric_rule",
+        "RECOMMENDED_SELECTION_POLICY.json:397 /capitalization/assertion_resolution/component_keys/CORPORATE_ACTION_DELTA",
+        "SELECTION_POLICY_ADJUDICATION_MEMO.md section6.1"
+      ],
+      "minimal_correction": "Separately bind strictly positive multiplicative cap components and finite signed additive action deltas with explicit zero semantics; preserve event identity, units and order. Final cap/shares must satisfy the adopted positivity rule. No absolute value, imputation or display-rounding decision.",
+      "principal_intended_disposition": "A separate adoption sidecar with a normative numeric_rule replacement and later narrow independent delta check.",
+      "principal_message_acknowledged": true,
+      "quota_date_seed_change_required": false,
+      "required_before": "Numeric input schema freeze; separately hashed principal clarification or corrected version is sufficient, with a narrow regression.",
+      "severity": "P2",
+      "sidecar_read_or_corrective_closure_observed": false,
+      "title": "Generic positive-input domain conflicts with signed additive corporate-action quantities"
+    }
+  ],
+  "prior_review_verdict_preserved": "REQUEST_CHANGES_TWO_P2_INPUT_CONTRACT_GAPS",
+  "resolved_findings": [
+    {
+      "actual_historical_receipt_verified": false,
+      "id": "R1",
+      "locations": [
+        "/historical_frame/perimeter_closure",
+        "/historical_frame/permitted_methods",
+        "/historical_frame/reconciliation",
+        "/historical_frame/readiness"
+      ],
+      "reason": "Historical venue/segment closure plus exact complete D snapshot or reversible anchored reconstruction is now required before affected quantiles. Surviving-row validity is explicitly insufficient.",
+      "verdict": "RESOLVED_IN_SOURCE_CONTRACT"
+    },
+    {
+      "actual_component_assertion_verified": false,
+      "id": "R2",
+      "locations": [
+        "/capitalization/assertion_resolution",
+        "/capitalization/prices/historical_adjustment",
+        "/cutoff_policy/revisions"
+      ],
+      "reason": "Economic fact keys, point/state ordering, active competing assertions, evidence-scoped supersession and unit/action dependency closure are explicit. Later publication or convenient size does not select an assertion.",
+      "verdict": "RESOLVED_IN_SOURCE_CONTRACT"
+    }
+  ],
+  "resolved_prior_P2_count": 2,
+  "reviewer": "/root/native_adoption_frontier",
+  "schema": "research.gmi.wp02.independent_corrective_method_findings/v2",
+  "source_memo_sha256": "4d322ba08f488c6b4b71f22899416b4cb412f951dc893c4145f43796126fea29",
+  "source_package_manifest_sha256": "c1788fdb703bee9e519c8f162af39be79fccd97b453d4b36746352fb2068d042",
+  "source_policy_sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522",
+  "status": "FROZEN_INDEPENDENT_REVIEW",
+  "unqualified_source_PASS": false,
+  "verdict": "R1_R2_RESOLVED_ONE_P2_NUMERIC_DOMAIN_CLARIFICATION_PENDING"
+}

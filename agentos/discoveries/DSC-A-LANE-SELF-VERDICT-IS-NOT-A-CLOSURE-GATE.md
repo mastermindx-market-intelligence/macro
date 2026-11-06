@@ -3,10 +3,10 @@ key: A-LANE-SELF-VERDICT-IS-NOT-A-CLOSURE-GATE
 claim: >
   An external fabric lane's own review verdict is uninformative in BOTH directions and
   must never close a task. Measured on two consecutive rounds of one artifact: round 1
-  self-reported `PASS 0 blockers / 0 major / 1 minor` and carried SIX blockers; the
-  round-2 repair, commissioned with all six reproduced inline, self-reported `PASS
-  0/0/0` and carried a seventh. The lane is not lying - it re-runs the suite it was
-  given, and every one of the seven defects was invisible to that suite, because a
+  self-reported `PASS 0 blockers / 0 major / 1 minor` and carried FIVE blockers and
+  two majors; the round-2 repair, commissioned with all seven reproduced inline,
+  self-reported `PASS 0/0/0` and carried a SIXTH blocker. The lane is not lying - it re-runs the suite it was
+  given, and every one of the eight defects was invisible to that suite, because a
   suite written by the same lane tests the branch the author was thinking about. A
   verdict is therefore evidence that the tests pass, which is the one thing nobody
   needed a reviewer to establish.
@@ -68,7 +68,7 @@ expensive defects live.
 Both round-1 and round-2 verdicts on T04 were wrong in the same way and in opposite
 directions of confidence. That matters for how a seat spends its budget: the instinct
 after a clean round-2 report is to accept and move on, and that instinct is exactly what
-the measurement refutes. The seventh blocker was found by probing a keyword default
+the measurement refutes. The sixth blocker was found by probing a keyword default
 nobody had ruled on.
 
 **The instrument that actually worked** was mutation against the current module text,

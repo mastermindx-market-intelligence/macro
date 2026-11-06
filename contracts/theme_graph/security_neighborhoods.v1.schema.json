@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/security_neighborhoods.v1.schema.json",
+  "title": "Exact published identity references to GMI neighborhoods",
+  "description": "Read-only navigation through the existing identity owner, not an as-known-at identity resolver, merged membership set or new identity store.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "authority_ceiling", "query", "asof", "knowledge_cutoff", "identity_basis", "identity_owner", "historical_identity_claim", "knowledge_cutoff_applies_to", "bindings", "counts", "availability", "limitations"],
+  "properties": {
+    "schema": {"const": "gmi.theme_security_neighborhoods/v1"},
+    "authority_ceiling": {"const": "research_internal_only"},
+    "query": {"type": "object", "additionalProperties": false, "required": ["kind", "id"],
+      "properties": {"kind": {"enum": ["security", "issuer"]}, "id": {"type": "string", "minLength": 5, "maxLength": 512}}},
+    "asof": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"},
+    "knowledge_cutoff": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"},
+    "identity_basis": {"const": "LATEST_PUBLISHED_OWNER_REFERENCE"},
+    "identity_owner": {"const": "gmi.identity_resolution/v1"},
+    "historical_identity_claim": {"const": false},
+    "knowledge_cutoff_applies_to": {"const": "GRAPH_NEIGHBORHOODS_ONLY"},
+    "bindings": {"type": "array", "items": {"$ref": "#/$defs/binding"}},
+    "counts": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/counts"}]},
+    "availability": {"type": "object", "additionalProperties": false, "required": ["state", "reason"],
+      "properties": {"state": {"enum": ["OK", "PARTIAL_GRAPH_VISIBILITY", "GRAPH_SUBJECTS_UNAVAILABLE", "NO_GRAPH_BINDING", "IDENTITY_OWNER_UNAVAILABLE"]}, "reason": {"type": ["string", "null"]}}},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "$defs": {
+    "binding": {"type": "object", "additionalProperties": false, "required": ["node_id", "resolution", "neighborhood"],
+      "properties": {"node_id": {"type": "string", "pattern": "^co:"}, "resolution": {"$ref": "identity_resolution.v1.schema.json"}, "neighborhood": {"$ref": "ontology_neighborhood.v1.schema.json"}}},
+    "counts": {"type": "object", "additionalProperties": false, "required": ["matched_nodes", "available_nodes", "unavailable_nodes"],
+      "properties": {"matched_nodes": {"type": "integer", "minimum": 1}, "available_nodes": {"type": "integer", "minimum": 0}, "unavailable_nodes": {"type": "integer", "minimum": 0}}}
+  },
+  "allOf": [{
+    "if": {"properties": {"availability": {"properties": {"state": {"enum": ["NO_GRAPH_BINDING", "IDENTITY_OWNER_UNAVAILABLE"]}}}}},
+    "then": {"properties": {"counts": {"type": "null"}, "bindings": {"maxItems": 0}}},
+    "else": {"properties": {"counts": {"type": "object"}, "bindings": {"minItems": 1}}}
+  }]
+}

@@ -1,0 +1,161 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-19T09:22:35.646289+00:00",
+  "tool": {
+    "name": "capture-k1-synthetic.py",
+    "module_sha256": "004a1c4c84a08bc3a4f991b66508ab68d2dd86e8d088f9ef840044b587b7c249"
+  },
+  "honesty": {
+    "scope": "Synthetic native TXI rows composed with real K1 validation and page source. Fixture auth and all reads intercepted. Not production, market evidence, or source-body access."
+  },
+  "source_sha256": {
+    "templates/ontology.js": "bd1470ac6e9911d781dffc6bfb9d015b393367e1d8559ded1ef271c9dd0654d2",
+    "templates/ontology.css": "20856d14b647b4f72502bd96c099b57e713fac9fb6c68921ff627a4f632d46b8",
+    "engine/ontology_explorer.py": "64202c9a8f76578266e5a7ebd6a9fbe3a2199ae040883c1978ebda3e7fcc066c"
+  },
+  "pages": [
+    {
+      "page_id": "ontology.html",
+      "route": "/ontology.html",
+      "states": [
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "synthetic_fixture",
+          "force_state": null,
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "k1-1440-dark-en.png",
+          "sha256": "53e5bce3404179fcc2b4998a29437fd28b52a5c6f7069a0b88af2101e56c0e5a",
+          "bytes": 187796,
+          "width": 1080,
+          "height": 736
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "synthetic_fixture",
+          "force_state": null,
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "k1-1440-dark-zh.png",
+          "sha256": "57a86ccad3697d19aaf86eb95631e5084cf00b0041f14581bf82767dc7a263f1",
+          "bytes": 203563,
+          "width": 1080,
+          "height": 747
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "light",
+          "access": "synthetic_fixture",
+          "force_state": null,
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "k1-1440-light-en.png",
+          "sha256": "90aeb3d12c08c151f38d460915a4f7c2a894e8f5d4af41a623b3d32b2b72ea6f",
+          "bytes": 180063,
+          "width": 1080,
+          "height": 736
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "light",
+          "access": "synthetic_fixture",
+          "force_state": null,
+          "viewport_width": 1440,
+          "viewport_height": 1000,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "k1-1440-light-zh.png",
+          "sha256": "acb5839dbdeed0318b0aa3d0b4b3e75b02c93999e73ee3459230334ff30f0381",
+          "bytes": 197117,
+          "width": 1080,
+          "height": 747
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "dark",
+          "access": "synthetic_fixture",
+          "force_state": null,
+          "viewport_width": 390,
+          "viewport_height": 1000,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "k1-390-dark-en.png",
+          "sha256": "aa79ca620a4af4a181f54cd25d930e6484a661b108b68b1340a43e1b3986d554",
+          "bytes": 235909,
+          "width": 350,
+          "height": 1196
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "synthetic_fixture",
+          "force_state": null,
+          "viewport_width": 390,
+          "viewport_height": 1000,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "k1-390-dark-zh.png",
+          "sha256": "7ffffc087d98ac0deefdf2da75c35a90e8fb55f84ab894e8d2e16a885f1ac3e8",
+          "bytes": 237550,
+          "width": 350,
+          "height": 1102
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "light",
+          "access": "synthetic_fixture",
+          "force_state": null,
+          "viewport_width": 390,
+          "viewport_height": 1000,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "k1-390-light-en.png",
+          "sha256": "452e2420f27a8430f0d731f9574296cc268d80e53344fdb8bbfd80f6c563d2db",
+          "bytes": 226564,
+          "width": 350,
+          "height": 1196
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "light",
+          "access": "synthetic_fixture",
+          "force_state": null,
+          "viewport_width": 390,
+          "viewport_height": 1000,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "k1-390-light-zh.png",
+          "sha256": "77358d4030b2bdd8c53b328e896357c95dcf75a76a60cdb0b654638bd5a88ed2",
+          "bytes": 228836,
+          "width": 350,
+          "height": 1102
+        }
+      ],
+      "gaps": []
+    }
+  ]
+}

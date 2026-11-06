@@ -63,6 +63,10 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from html import unescape as _html_unescape
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from scripts.sparse_guard import refuse_if_vacuous, trees_for  # noqa: E402
+
 # <script ...attrs...>body</script>, non-greedy body, case-insensitive tag.
 _SCRIPT_RE = re.compile(r"<script(?P<attrs>[^>]*)>(?P<body>.*?)</script>", re.DOTALL | re.IGNORECASE)
 _TYPE_RE = re.compile(r"""type\s*=\s*["']?\s*([^"'\s>]+)""", re.IGNORECASE)
@@ -399,6 +403,13 @@ def main(argv: list[str] | None = None) -> int:
         return _selftest()
 
     dirs = argv or ["site"]
+    # The guard's REACH: every file the three finders below can read. An empty offender list is
+    # indistinguishable from an empty work set, so state the count rather than implying it.
+    checked = _walk_files(dirs, (".html", ".j2"))
+    refusal = refuse_if_vacuous(len(checked), trees_for(*dirs), "check-inline-js-vacuous")
+    if refusal:
+        print(f"check_inline_js: REFUSED — {refusal}", file=sys.stderr)
+        return 1
     bad: list[tuple[str, int, str]] = []
     for d in dirs:
         bad.extend(find_bad_scripts(d))
@@ -416,7 +427,8 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 1
-    print(f"check_inline_js: OK — inline scripts and on*= handlers under {', '.join(dirs)} parse cleanly.")
+    print(f"check_inline_js: OK — checked {len(checked)} file(s) under "
+          f"{', '.join(dirs)}; inline scripts and on*= handlers parse cleanly.")
     return 0
 
 

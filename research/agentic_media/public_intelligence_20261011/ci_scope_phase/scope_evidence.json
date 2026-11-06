@@ -1,0 +1,224 @@
+{
+  "base": "73669c7df21485fa3299df0a982ff10c5e25c87c",
+  "jobs": {
+    "leadership-rotation-contract": {
+      "closure": [
+        "collectors/base.py",
+        "collectors/fred.py",
+        "config/sector_legs.json",
+        "engine/__init__.py",
+        "engine/basket_index.py",
+        "engine/canon.py",
+        "engine/conditions.py",
+        "engine/cycle_ontology.py",
+        "engine/cycles.py",
+        "engine/hazard_score.py",
+        "engine/indicators.py",
+        "engine/inputs.py",
+        "engine/leadership_receipt.py",
+        "engine/leadership_rotation_context.py",
+        "engine/oracle/__init__.py",
+        "engine/oracle/ratio_lens.py",
+        "engine/pit.py",
+        "engine/pit_lag_recorder.py",
+        "engine/rotation_corr.py",
+        "engine/rotation_events.py",
+        "engine/rotation_flows.py",
+        "engine/rotation_universe.py",
+        "engine/rotation_velocity.py",
+        "engine/sector_cycles.py",
+        "engine/sector_legs.py",
+        "engine/session_anchor.py",
+        "engine/technicals.py",
+        "engine/vol_forecast.py",
+        "engine/vol_regime.py",
+        "engine/yield_momentum.py",
+        "lib/__init__.py",
+        "lib/cn_calendar.py",
+        "lib/config.py",
+        "lib/exchange_holidays.py",
+        "lib/hk_calendar.py",
+        "lib/market_observations.py",
+        "lib/market_session.py",
+        "lib/nyse_calendar.py",
+        "lib/store.py",
+        "lib/tsx_calendar.py",
+        "lib/us_cash_calendar.py",
+        "tests/test_leadership_rotation_contract.py"
+      ],
+      "fallback": [
+        "collectors/**/*.parquet",
+        "collectors/**/*.parquet/**",
+        "data/**/*.parquet",
+        "data/**/*.parquet/**",
+        "engine/**"
+      ],
+      "definition": {
+        "if": "${{ false }}",
+        "gate": "code",
+        "timeout-minutes": 10,
+        "paths": [
+          "engine/leadership_rotation_context.py",
+          "engine/leadership_receipt.py",
+          "engine/oracle/ratio_lens.py",
+          "engine/rotation_events.py",
+          "engine/sector_cycles.py",
+          "lib/nyse_calendar.py",
+          "tests/test_leadership_rotation_contract.py"
+        ],
+        "runs-on": "ubuntu-latest",
+        "steps": [
+          {
+            "uses": "actions/checkout@v4"
+          },
+          {
+            "uses": "actions/setup-python@v5",
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "install minimal deps",
+            "run": "pip install pytest pandas numpy pyarrow pyyaml scipy requests"
+          },
+          {
+            "name": "leadership rotation measured-product contract",
+            "run": "TZ=UTC python -m pytest tests/test_leadership_rotation_contract.py -q -p no:cacheprovider"
+          }
+        ]
+      }
+    },
+    "lr-rotation-evidence-modes": {
+      "closure": [
+        "collectors/base.py",
+        "collectors/fred.py",
+        "collectors/holdings.py",
+        "config/sector_legs.json",
+        "engine/__init__.py",
+        "engine/alerts.py",
+        "engine/axes.py",
+        "engine/base_effect.py",
+        "engine/basket_index.py",
+        "engine/canon.py",
+        "engine/conditions.py",
+        "engine/cycle_forward_log.py",
+        "engine/cycle_ontology.py",
+        "engine/cycles.py",
+        "engine/election_cycle.py",
+        "engine/etf_board.py",
+        "engine/etf_pulse.py",
+        "engine/falsifier_tripwires.py",
+        "engine/hazard_score.py",
+        "engine/holdings_signals.py",
+        "engine/i18n.py",
+        "engine/indicators.py",
+        "engine/inputs.py",
+        "engine/mtf_monitor.py",
+        "engine/neuralweb/read.py",
+        "engine/oracle/__init__.py",
+        "engine/oracle/ratio_lens.py",
+        "engine/oracle/washout_counterread.py",
+        "engine/pit.py",
+        "engine/pit_lag_recorder.py",
+        "engine/regime.py",
+        "engine/regime_one.py",
+        "engine/risk_radar.py",
+        "engine/risk_radar_backtest.py",
+        "engine/risk_state.py",
+        "engine/rotation_corr.py",
+        "engine/rotation_events.py",
+        "engine/rotation_flows.py",
+        "engine/rotation_universe.py",
+        "engine/rotation_velocity.py",
+        "engine/sector_cycles.py",
+        "engine/sector_legs.py",
+        "engine/session_anchor.py",
+        "engine/technicals.py",
+        "engine/vol_forecast.py",
+        "engine/vol_regime.py",
+        "engine/yield_momentum.py",
+        "lib/__init__.py",
+        "lib/cn_calendar.py",
+        "lib/config.py",
+        "lib/exchange_holidays.py",
+        "lib/hk_calendar.py",
+        "lib/market_observations.py",
+        "lib/market_session.py",
+        "lib/nyse_calendar.py",
+        "lib/pages.py",
+        "lib/store.py",
+        "lib/tsx_calendar.py",
+        "lib/us_cash_calendar.py",
+        "scripts/__init__.py",
+        "scripts/_cycles_payload.py",
+        "scripts/_narrative_epoch.py",
+        "scripts/_narrative_ttl.py",
+        "scripts/build_sector_cycles.py",
+        "scripts/validate_regime_fwd.py",
+        "tests/test_rotation_events.py",
+        "tests/test_rotation_evidence_modes.py",
+        "tests/test_sector_cycles.py"
+      ],
+      "fallback": [
+        "collectors/**/*.parquet",
+        "collectors/**/*.parquet/**",
+        "config/**/*.parquet",
+        "config/**/*.parquet/**",
+        "content/**/*.parquet",
+        "content/**/*.parquet/**",
+        "contracts/**/*.parquet",
+        "contracts/**/*.parquet/**",
+        "data/**",
+        "data/**/*.parquet",
+        "data/**/*.parquet/**",
+        "docs/**/*.parquet",
+        "docs/**/*.parquet/**",
+        "engine/**/*.parquet",
+        "engine/**/*.parquet/**",
+        "ops/**/*.parquet",
+        "ops/**/*.parquet/**",
+        "research/**/*.parquet",
+        "research/**/*.parquet/**",
+        "site/**",
+        "site/**/*.html",
+        "site/**/*.html/**",
+        "site/**/*.parquet",
+        "site/**/*.parquet/**",
+        "templates/**",
+        "templates/**/*.html",
+        "templates/**/*.html/**",
+        "templates/**/*.parquet",
+        "templates/**/*.parquet/**"
+      ],
+      "definition": {
+        "if": "${{ false }}",
+        "gate": "code",
+        "runs-on": "ubuntu-latest",
+        "steps": [
+          {
+            "uses": "actions/checkout@v4"
+          },
+          {
+            "uses": "actions/setup-python@v5",
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "install deps",
+            "run": "pip install pytest pandas numpy scipy pyyaml pyarrow jinja2"
+          },
+          {
+            "name": "LR-T06 rotation evidence-mode fences",
+            "run": "python -m pytest tests/test_rotation_evidence_modes.py -q"
+          }
+        ]
+      }
+    }
+  },
+  "manifest_before_sha256": "c30cd4219f15171f916bfe869d4c5b5938ce6b12b046571bb94b4acf38e5140f",
+  "manifest_after_sha256": "80055d08d7b168c0950ee5160897d546f9d8c7a614e6abaa1b34071767063bed",
+  "all_other_jobs_unchanged": true,
+  "commands_dependencies_assertions_unchanged": true,
+  "phase": "initial42/68 static-only proposal; superseded by review_repairs.json final67/93 declarations"
+}

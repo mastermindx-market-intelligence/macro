@@ -241,8 +241,14 @@ waves:
       worker-broker lifecycle through one private authenticated remote transport while keeping one
       canonical Executive Runtime on the control host. Prove stable Attempt-bound operation identity,
       effect-unknown reconciliation, local-only provider credentials and zero remote queue/scheduler.
+  - id: M2-SRC0
+    title: Protected inactive same-store physical-resource source (September 2026)
+    status: done
+    next_action: >
+      SOURCE_PROTECTED_DO_NOT_REPEAT. Mastermind https://github.com/mastermindx-market-intelligence/Mastermind/pull/510 merged as f9e46a72d6102b0e94c897590fc58bac89eb4ea6 on 2026-09-06; terminal source-release receipt https://github.com/mastermindx-market-intelligence/Macro/issues/6732#issuecomment-5561892827 completes only the inactive same-store source component. Normal schema 4, candidate DDL outside migrations, closed entrypoints, null/unarmed budgets and N=0 qualified peaks are September 6/7 source-cut facts, not a November runtime or capacity census. Current ECF ownership and the currently selected later handoff govern continuation. Retain the distinct historical routes agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-04-CLAUDE-ADAPTER-STATUS.md and agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-05-FAIRNESS-CONTRACT-ACCEPTED.md: OCR/HF/PF, Runtime implementation/migration and production proof retain their separate owners; reconcile any original operation on its own carrier and do not duplicate or replay held/uncertain effects. Neither this done source wave nor its archived receipts authorizes activation, a host/provider action or a Linear write.
 decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
+  - DEC:FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS
   - DEC:AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION
   - DEC:LAUNCHER-RELOCATION-IS-A-CAPABILITY-GRANT
 discoveries:
@@ -250,7 +256,12 @@ discoveries:
   - DSC:VISIBLE-TURN-PROJECTION-IS-THE-EXISTING-READ-SEAM
   - DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY
 artifacts:
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-07-M2-SOURCE-RECONCILIATION.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-04-CLAUDE-ADAPTER-STATUS.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-05-FAIRNESS-CONTRACT-ACCEPTED.md
   - agentos/decisions/DEC-EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT.md
+  - agentos/decisions/DEC-FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-29.md
   - agentos/discoveries/DSC-PF1-CLAUDE-WORK-LEG-BOUNDARY.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md
   - agentos/decisions/DEC-AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION.md
@@ -271,6 +282,7 @@ artifacts:
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-08-25-CF1-ACCEPTED.md
   - docs/superpowers/plans/2026-08-25-mas-126-cf1-reconciliation.md
 landmines:
+  - "M2-SRC0 records Mastermind https://github.com/mastermindx-market-intelligence/Mastermind/pull/510 source protection on 2026-09-06 only. Schema-4/null-budget/N=0 statements are dated source-cut evidence, not current installed Runtime, broker, host, provider, policy or capacity truth. The 2026-11-05 records qualification grants no activation, replay or projection write."
   - "Macro `shared-ai-provider-control` already owns provider availability, auth pools, cooling and quota state; do not create ProviderAccount/QuotaHorizon truth tables in Executive OS."
   - "Current native Claude realm identity and Macro claude_code_oauth_N capability IDs are not equivalent by ordinal/name/config path/plan type. Family A failed closed because no supported rotation-safe secret-free enrollment equality witness currently exists. Do not resurrect ordinal binding."
   - "A compatible-provider alias is never native Anthropic capacity (Sol rejection class E11). The file control_plane/claude_subscription_worker.py, the descriptor id `claude-compatible-subscription` and PR titles saying 'Claude subscription worker' all name the Claude Code HARNESS, whose providers are exactly glm/alibaba/minimax. `compatible` is load-bearing; read config/subscription_provider_profiles.v1.json before believing any file name."
@@ -331,6 +343,36 @@ do_not_redo:
   - "Do NOT re-verify packet05 #699 with the unprotected candidate verifier, and do not treat REMOTE_PROOF_CHANGED as source divergence or as permission to rerun (Sol ruling, root ts 1789597068.473939). The single authorized invocation is SPENT. A fresh evidence-only remote-complete grant becomes possible only AFTER #707 is independently accepted and protected."
   - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
+  CORRECTION 2026-09-29T12:40Z (native parent frontier #703/5868465578; Fable closer retraction #600/5890603792):
+  the "Chairman checks Codex credits / spend controls in the admin console" control named below is RETRACTED.
+  The canary's closed terms [credits, workspace] are lossy labels (inert_untrusted_workspace is a constant
+  probe-boundary label in provider_inference_canary.py / provider_readiness.py), and the admin read
+  receiver-01a0e296/PROVIDER_ADMIN_READ_20260929.json (sha d070567b…, 12:30–12:36Z, no mutation) shows the
+  MastermindX Business workspace with Codex weekly allowance 99% remaining, credits 0, auto-reload off — no
+  billing cause is established and no purchase/reset/setting change should be made. The remaining non-secret
+  human input is an administrator attestation of which workspace seat the installed device-auth credential is
+  enrolled as (no receipt returns an account/workspace UUID by design); Product owns that reconciliation, then
+  its credential lifecycle (disarm/quiesce -> reviewed service-account enrollment or company-device
+  reauthorization with replace-existing -> exactly one new readiness request). Expiry 2026-09-30T06:00:25Z
+  stands. Protected Mastermind master is 860f5d65 (#1069); sole C1 source is Draft #1070 (parent-owned).
+
+  HEADLESS-DELIVERY CLOSER 2026-09-29 (Fable successor session 7712b0f4, account Claude8, continuing
+  Fable 3f381a7c on operation agent-fabric-end-to-end-fable-integration-20260913-sol-001; parent
+  Mastermind #600, dialogue #703): protected Mastermind master is 939f1d00 (#1067) and the installed
+  Executive release is c7407c6c77ef82cc6590401e80cc8f1868dc9085 (#1063, installed 2026-09-29T10:35Z,
+  Control pid 33988, all three autonomy/operator-harness flags false, worker.codex service missing).
+  Provider readiness v2 is FAILED, not expired: identity probe PASS (device-auth, plan
+  self_serve_business_prolite, binding company-workspace-admin-attested) and inference canary
+  canary-2b17d25f6393 exit 1 provider_turn_failed with closed terms [credits, workspace] at 09:50:33Z;
+  credential and readiness expire 2026-09-30T06:00:25Z, before the 2026-10-01 travel. The root
+  exec-os-web-ceo-01a0e296-r1 is NOT_DISPATCHED. EXACT_HUMAN_GATE: the Chairman as workspace
+  administrator resolves Codex credits / included usage / spend controls on the attested ChatGPT
+  Business workspace; then Product runs ONE canary on the exact codex 0.147.0 pair, publishes the
+  Gate-B receipt, arms via autonomy_control.py, and the native parent submits r1 — never while
+  unarmed and never on split flags (DEC:FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS). Read
+  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-29.md before acting. Everything below is the
+  state this record inherited and is historical where it conflicts.
+
   VPS economical-provider track (seat Claude6 5fae71cf, Fable; Sol root
   C0BSBM78V1N/1789324397.992989, ruled at edges 1789694411.329219 + 1789694989.668909): TWO verticals
   sit DRAFT and HELD and may not be readied, merged or auto-merged without an explicit Sol acceptance

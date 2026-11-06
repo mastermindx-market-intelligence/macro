@@ -255,18 +255,9 @@ def evaluate_check(check: dict | None, asof: str, check_by: str, root: Path) -> 
 # ---------------------------------------------------------------------------
 
 def _read_jsonl(p: Path) -> list[dict]:
-    if not p.exists():
-        return []
-    out: list[dict] = []
-    for line in p.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            out.append(json.loads(line))
-        except Exception:  # noqa: BLE001
-            continue
-    return out
+    from engine.qledger_store import read_legacy_rows
+
+    return read_legacy_rows(p)
 
 
 def _load_evaluated_ids(p: Path) -> set[str]:

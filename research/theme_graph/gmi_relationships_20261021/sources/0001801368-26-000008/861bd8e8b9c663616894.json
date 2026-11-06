@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2518106,
+  "byte_start": 2516499,
+  "normalized": "Rare earth concentrate revenue was primarily generated from sales to Shenghe under the applicable offtake agreements (see Note 21, “Related-Party Transactions” for additional information). The sales price of rare earth concentrate sold to Shenghe under the applicable agreements was based on a preliminary market price (net of taxes, tariffs, and certain other agreed charges) per MT and estimated exchange rate between the Chinese yuan and the U.S. dollar, with an adjustment for the ultimate market price of the product realized by Shenghe upon sales to their customers, including the impact of changes in the exchange rate between the Chinese yuan and the U.S. dollar.",
+  "normalized_sha256": "f0a23681c29e93f26a14b233980d4d11d6c035f790f15a65c9c33e08c04a90c0",
+  "raw": "Rare earth concentrate revenue was primarily generated from sales to Shenghe under the applicable offtake agreements (see </span><span style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\"><a style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"#i876fda1395634b2193065cf7a0446f66_238\">Note </a></span><span style=\"color:#0000ee;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\">21</span><span style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\"><a style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"#i876fda1395634b2193065cf7a0446f66_238\">, &#8220;Related-Party Transactions&#8221;</a></span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> for additional information). The sales price of rare earth concentrate sold to Shenghe under the applicable agreements was based on a preliminary market price (net of taxes, tariffs, and certain other agreed charges) per MT and estimated exchange rate between the Chinese yuan and the U.S. dollar, with an adjustment for the ultimate market price of the product realized by Shenghe upon sales to their customers, including the impact of changes in the exchange rate between the Chinese yuan and the U.S. dollar.",
+  "raw_sha256": "861bd8e8b9c663616894858010b5e873ab0d2162fc5b6406538ba7ee40aa2e79"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

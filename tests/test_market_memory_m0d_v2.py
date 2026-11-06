@@ -1336,7 +1336,7 @@ def test_h7_stable_in_window_results_persisted(tmp_path: Path) -> None:
     }
 
     def fake_fetcher(path: str, params: Any) -> dict[str, Any]:
-        return {"status": "OK", "results": [dict(bar_in_window)]}
+        return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [dict(bar_in_window)]}
 
     times = [
         window_open + timedelta(seconds=5),
@@ -1529,20 +1529,20 @@ def test_d1_native_cli_preserves_causal_receipt(
         if case == "transport":
             raise RuntimeError(f"Authorization: Bearer {_D1_SECRET}")
         if case == "no_bar":
-            return {"status": "OK", "results": []}
+            return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": []}
         if case == "malformed_envelope":
             return [_D1_SECRET]
         if case == "malformed_results":
-            return {"status": "OK", "results": {"body": _D1_SECRET}}
+            return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": {"body": _D1_SECRET}}
         if case == "malformed_bar":
-            return {"status": "OK", "results": [{"body": _D1_SECRET}]}
+            return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [{"body": _D1_SECRET}]}
         bar = {
             "T": "SPY", "o": 588, "h": 592, "l": 587,
             "c": 591 if case == "unstable" and calls[0] > 1 else 590,
             "v": 10000000, "n": 150000,
             "t": int(datetime(2026, 8, 21, tzinfo=timezone.utc).timestamp() * 1000),
         }
-        return {"status": "OK", "results": [bar], "request_id": _D1_SECRET}
+        return {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [bar], "request_id": _D1_SECRET}
 
     monkeypatch.setattr(ingest, "datetime", Clock)
     monkeypatch.setattr(ingest, "time_module", SimpleNamespace(sleep=sleep))
@@ -2430,3 +2430,512 @@ def test_m0d_suite_is_wired_into_market_memory_contract_lane() -> None:
         "app/deploy/market-memory-spy-rest-prereqs.sh",
     ):
         assert f'      - "{path}"' in workflow
+
+
+# Authenticated owner binding: hermetic source/technical/experience fixtures only.
+# These fixtures are not owner qualification or natural-time issuance evidence.
+
+def _binding_source(tmp_path, *, close=590.25, bar_change=None, include_lookback=True, session=date(2026, 8, 21)):
+    from engine.neuralweb import market_memory_sources_spy as spy
+    from lib import nyse_calendar
+    opened, closed = spy.seal_window_for_session(session)
+    bar = _make_spy_bar(close)
+    bar.update(T="SPY", t=int(datetime.combine(session, time(), tzinfo=timezone.utc).timestamp() * 1000))
+    if bar_change:
+        bar.update(bar_change)
+    digest = spy._results_digest([bar])
+    observations = [spy.SealObservation(opened + timedelta(seconds=s), "valid_bar", digest) for s in (0, 120, 240)]
+    seal = spy.evaluate_seal_predicate(observations, session=session, seal_open=opened, seal_close=closed)
+    prior = nyse_calendar.sessions_between(session - timedelta(days=50), session - timedelta(days=1))[-20:]
+    lookback = [{"session": s.isoformat(), "close": 500.0} for s in reversed(prior)]
+    source = tmp_path / "state" / "sources-spy-rest-v1"
+    stored = spy.intake_spy_rest_bar(
+        source, session=session, seal_state=seal, results=[bar], lookback_closes=lookback if include_lookback else None,
+        sealed_at=closed.isoformat().replace("+00:00", "Z"),
+        observed_at=(closed + timedelta(seconds=20)).isoformat().replace("+00:00", "Z"),
+    )
+    return source, stored, session
+
+
+def _binding_reseal_receipt(source, stored, mutate):
+    """Hostile self-consistent envelope: checks must reject semantics, not stale IDs."""
+    from engine.neuralweb import market_memory_sources_spy as spy
+    from engine.neuralweb import market_memory_source_kernel as kernel
+    from engine.neuralweb import market_memory as mm
+    receipt = copy.deepcopy(stored.receipt)
+    mutate(receipt)
+    receipt["receipt_id"] = kernel._content_id("mmsrc_", receipt, field="receipt_id")
+    for path in (kernel._receipt_path(source, receipt["receipt_id"]), kernel._capture_path(source, receipt["capture_id"])):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(kernel._canonical_bytes(receipt))
+    state = kernel._load_store_state(source, family=spy.SPY_FAMILY, authority=dict(mm.AUTHORITY))
+    generation = copy.deepcopy(state.generation)
+    generation["receipts"] = [kernel._entry(receipt)]
+    generation["generation_id"] = kernel._content_id("mmsgen_", generation, field="generation_id")
+    body = kernel._canonical_bytes(generation)
+    path = kernel._generation_path(source, generation["generation_id"])
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(body)
+    kernel._head_path(source).write_bytes(kernel._canonical_bytes(kernel._new_head(generation, body, spy.SPY_FAMILY)))
+
+
+def _binding_capture(source, session):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    root = source.parent / "technicals-v2"
+    result = tech.capture_technicals_v2(source_root=source, store_root=root, session=session, clock=lambda: _utc(2026, 8, 22, 4, 7))
+    return root, result
+
+
+def _binding_experience(source, tech_root, session):
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+    root = source.parent / "experience-v2"
+    exp._write_install_marker(root, "2026-08-20T10:00:00Z")
+    return exp.accrue_spy_experience_v2(
+        source_root=source, technicals_v2_root=tech_root, experience_root=root,
+        repository_root=ROOT, session=session, clock=lambda: _utc(2026, 8, 22, 4, 32),
+    )
+
+
+def test_binding_valid_owner_bytes_project_and_accrue(tmp_path):
+    from engine.neuralweb import market_memory_sources_spy as spy
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, stored, session = _binding_source(tmp_path)
+    selected = spy.read_verified_spy_rest_bar(source, session=session)
+    root, result = _binding_capture(source, session)
+    capture = tech.read_latest_capture_for_session(root, session=session)
+    assert result.source_generation_id == selected["source_generation_id"] == stored.generation_id
+    assert capture["feature_object"]["regular_session_close_authenticated"] is True
+    assert capture["feature_object"]["price_basis"] == "massive_rest_day_aggs_unadjusted_rth_price_fullday_activity"
+    assert all(v is False for k, v in stored.receipt["authority"].items() if k.startswith("may_"))
+    assert stored.receipt["quality"]["training_eligible"] is False
+    assert stored.receipt["quality"]["promotion_eligible"] is False
+    admitted = _binding_experience(source, root, session)
+    assert admitted["status"] == "admitted"
+    assert admitted["feature"]["regular_session_close_authenticated"] is True
+    assert admitted["feature"]["price_basis"] == capture["feature_object"]["price_basis"]
+    assert admitted["feature"]["price_raw_close_ratio_20_sessions"] == 590.25 / 500
+
+
+def test_binding_artifact_byte_substitution_refused_by_both_consumers(tmp_path):
+    from engine.neuralweb import market_memory_source_kernel as kernel
+    from scripts import capture_market_memory_technicals_v2 as tech
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+    source, stored, session = _binding_source(tmp_path)
+    path = kernel._object_path(source, stored.receipt["artifact_sha256"])
+    forged = json.loads(path.read_bytes())
+    forged["results"][0]["c"] = 700.0
+    path.write_bytes(kernel._canonical_bytes(forged))
+    for reader, error in ((tech._read_sealed_bar_for_session, tech.TechnicalsV2SourceError), (exp._read_sealed_bar, exp.ExperienceV2SourceError)):
+        with pytest.raises(error):
+            reader(source, session=session)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("quality.opportunity_eligible", 1), ("quality.opportunity_eligible", "true"),
+    ("quality.training_eligible", 0), ("quality.promotion_eligible", True),
+    ("authority.may_rank", 0), ("authority.may_trade", True),
+    ("source_system", "generic_daily_csv"), ("seal_predicate", "unqualified.v1"),
+    ("clocks.session", "2026-08-20"), ("clocks.seal_window_open", "2026-08-22T03:00:00Z"),
+    ("clocks.seal_window_close", "2026-08-22T04:04:00Z"),
+    ("clocks.seal_sealed_at", "2026-08-22T04:04:59Z"),
+    ("clocks.observed_at", "2026-08-22T04:04:00Z"),
+    ("availability_evidence.available_at", "2026-08-22T04:04:00Z"),
+    ("capture_id", "mmscapture_" + "1" * 64),
+    ("revision_id", "mmsrevision_" + "1" * 64),
+    ("vintage_id", "mmsvintage_" + "1" * 64),
+    ("object_key", "generic/unqualified.json"),
+])
+def test_binding_self_consistent_receipt_semantics_refused(tmp_path, field, value):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, stored, session = _binding_source(tmp_path)
+    def mutate(receipt):
+        keys = field.split(".")
+        target = receipt
+        for key in keys[:-1]:
+            target = target[key]
+        target[keys[-1]] = value
+    _binding_reseal_receipt(source, stored, mutate)
+    with pytest.raises(tech.TechnicalsV2SourceError):
+        tech._read_sealed_bar_for_session(source, session=session)
+
+
+@pytest.mark.parametrize("case", ["missing", "short", "wrong_digest", "invalid_digest", "changed_digest", "outside_window", "duplicate_clock", "unknown_status", "error_digest"])
+def test_binding_seal_transcript_must_prove_exact_bytes(tmp_path, case):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, stored, session = _binding_source(tmp_path)
+    def mutate(r):
+        rows = r["seal_transcript"]
+        if case == "missing": r["seal_transcript"] = None
+        elif case == "short": rows.pop()
+        elif case == "wrong_digest":
+            for row in rows: row["digest"] = "f" * 64
+        elif case == "invalid_digest":
+            for row in rows: row["digest"] = None
+        elif case == "changed_digest": rows[1]["digest"] = "f" * 64
+        elif case == "outside_window": rows[0]["observed_at"] = "2026-08-22T03:59:59Z"
+        elif case == "duplicate_clock": rows[1]["observed_at"] = rows[0]["observed_at"]
+        elif case == "unknown_status": rows[1]["status"] = "admitted"
+        elif case == "error_digest": rows[1]["status"] = "transport_error"
+    _binding_reseal_receipt(source, stored, mutate)
+    with pytest.raises(tech.TechnicalsV2SourceError):
+        tech._read_sealed_bar_for_session(source, session=session)
+
+
+@pytest.mark.parametrize("change", [{"T": "QQQ"}, {"t": 0}, {"c": True}])
+def test_binding_source_specific_bar_validation(tmp_path, change):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, stored, session = _binding_source(tmp_path, bar_change=change)
+    with pytest.raises(tech.TechnicalsV2SourceError):
+        tech._read_sealed_bar_for_session(source, session=session)
+
+
+def test_binding_ambiguous_correction_refused(tmp_path):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, _, session = _binding_source(tmp_path)
+    _binding_source(tmp_path, close=591.0)
+    with pytest.raises(tech.TechnicalsV2SourceError, match="ambiguous"):
+        tech._read_sealed_bar_for_session(source, session=session)
+
+
+def test_binding_projection_uses_original_selection_generation(tmp_path, monkeypatch):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, stored, session = _binding_source(tmp_path)
+    original = tech._read_sealed_bar_for_session
+    def select_then_advance(root, *, session):
+        selected = original(root, session=session)
+        _binding_source(tmp_path, close=591.0)
+        return selected
+    monkeypatch.setattr(tech, "_read_sealed_bar_for_session", select_then_advance)
+    root, result = _binding_capture(source, session)
+    assert result.source_generation_id == stored.generation_id
+    assert tech.read_latest_capture_for_session(root, session=session)["source_generation_id"] == stored.generation_id
+
+
+@pytest.mark.parametrize("field,value", [
+    ("source_generation_id", "mmsgen_" + "f" * 64),
+    ("session", "2026-08-20"),
+    ("feature_object.profile", "generic.daily.v1"),
+    ("feature_object.session", "2026-08-20"),
+    ("feature_object.ticker", "QQQ"),
+    ("feature_object.regular_session_close_authenticated", 1),
+    ("feature_object.regular_session_close_authenticated", False),
+    ("feature_object.price_basis", "unadjusted_daily_aggregate_sealed_rest_bar"),
+    ("feature_object.state.end_close", 700.0),
+    ("feature_object.state.price.raw_close_ratio_20_sessions", 2.0),
+    ("captured_at", "2026-08-22T04:04:00Z"),
+    ("captured_at", "2026-08-22T04:33:00Z"),
+])
+def test_binding_self_consistent_technical_capture_refused(tmp_path, field, value):
+    from engine.neuralweb import market_memory_sources_spy as spy
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, _, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+    capture = tech.read_latest_capture_for_session(root, session=session)
+    keys = field.split(".")
+    target = capture
+    for key in keys[:-1]: target = target[key]
+    target[keys[-1]] = value
+    capture["capture_id"] = tech._content_id("mmtechv2cap_", capture, field="capture_id")
+    with pytest.raises(tech.TechnicalsV2SourceError):
+        tech.validate_capture_source_binding(capture, spy.read_verified_spy_rest_bar(source, session=session), session=session, as_of=_utc(2026, 8, 22, 4, 32))
+
+
+def test_binding_technical_bytes_and_generation_hash_checked(tmp_path):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, _, session = _binding_source(tmp_path)
+    root, result = _binding_capture(source, session)
+    path = tech._capture_path_v2(root, result.capture_id)
+    original = path.read_bytes()
+    capture = json.loads(original)
+    capture["feature_object"]["state"]["end_close"] = 700.0
+    path.write_bytes(tech._canonical_bytes(capture))
+    with pytest.raises(tech.TechnicalsV2StoreError): tech.read_latest_capture_for_session(root, session=session)
+    path.write_bytes(original)
+    head_path = tech._store_head_path(root)
+    head = json.loads(head_path.read_bytes())
+    head["generation_sha256"] = "f" * 64
+    head_path.write_bytes(tech._canonical_bytes(head))
+    with pytest.raises(tech.TechnicalsV2StoreError): tech.read_latest_capture_for_session(root, session=session)
+
+
+def test_binding_historical_false_capture_never_rewritten(tmp_path):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, _, session = _binding_source(tmp_path)
+    root, result = _binding_capture(source, session)
+    path = tech._capture_path_v2(root, result.capture_id)
+    capture = json.loads(path.read_bytes())
+    capture["feature_object"]["regular_session_close_authenticated"] = False
+    original = tech._canonical_bytes(capture)
+    path.write_bytes(original)
+    with pytest.raises(tech.TechnicalsV2StoreError): _binding_capture(source, session)
+    assert path.read_bytes() == original
+
+
+def test_binding_incomplete_lookback_abstains_without_authentication_upgrade(tmp_path):
+    source, _, session = _binding_source(tmp_path, include_lookback=False)
+    root, _ = _binding_capture(source, session)
+    result = _binding_experience(source, root, session)
+    assert result["status"] == "abstained"
+    record = json.loads((source.parent / "experience-v2" / "records" / f"{session}.json").read_bytes())
+    assert record["reason"] == "lookback_incomplete"
+    assert "feature" not in record
+
+
+@pytest.mark.parametrize("field,value", [("schema", "generic.daily.v1"), ("source_id", "generic:SPY"), ("adjusted", True), ("session", "2026-08-20"), ("ticker", "QQQ")])
+def test_binding_generic_artifact_with_consistent_owner_hashes_refused(tmp_path, field, value):
+    from engine.neuralweb import market_memory_source_kernel as kernel
+    from engine.neuralweb import market_memory_sources_spy as spy
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, stored, session = _binding_source(tmp_path)
+    artifact = copy.deepcopy(stored.artifact)
+    artifact[field] = value
+    body = kernel._canonical_bytes(artifact)
+    digest = hashlib.sha256(body).hexdigest()
+    path = kernel._object_path(source, digest)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(body)
+    def mutate(receipt):
+        capture_core = {"schema": spy.SOURCE_CAPTURE_SCHEMA, "source_id": spy.SOURCE_ID,
+                        "session": session.isoformat(), "artifact_sha256": digest,
+                        "seal_predicate": "rest_daily_bar_stability.v1"}
+        capture_id = "mmscapture_" + hashlib.sha256(kernel._canonical_bytes(capture_core)).hexdigest()
+        replacement = spy._build_spy_rest_receipt(
+            store_id=receipt["store_id"], capture_id=capture_id, artifact=artifact,
+            artifact_sha256=digest, session=session, seal_sealed_at=receipt["clocks"]["seal_sealed_at"],
+            observed_at=receipt["clocks"]["observed_at"], transcript=receipt["seal_transcript"],
+        )
+        receipt.clear()
+        receipt.update(replacement)
+    _binding_reseal_receipt(source, stored, mutate)
+    with pytest.raises(tech.TechnicalsV2SourceError): tech._read_sealed_bar_for_session(source, session=session)
+
+
+@pytest.mark.parametrize("case", ["lineage", "metadata", "ratio", "future"])
+def test_binding_experience_refuses_forged_technical_generation(tmp_path, case):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+    source, _, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+    capture = tech.read_latest_capture_for_session(root, session=session)
+    if case == "lineage": capture["source_generation_id"] = "mmsgen_" + "f" * 64
+    elif case == "metadata": capture["feature_object"]["regular_session_close_authenticated"] = 1
+    elif case == "ratio": capture["feature_object"]["state"]["price"]["raw_close_ratio_20_sessions"] = 2.0
+    elif case == "future": capture["captured_at"] = "2026-08-22T04:33:00Z"
+    capture["capture_id"] = tech._content_id("mmtechv2cap_", capture, field="capture_id")
+    path = tech._capture_path_v2(root, capture["capture_id"])
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(tech._canonical_bytes(capture))
+    generation = tech.read_technicals_v2_head(root)
+    generation["captures"] = [{"capture_id": capture["capture_id"], "session": session.isoformat()}]
+    generation["generation_id"] = tech._content_id("mmtechv2gen_", generation, field="generation_id")
+    body = tech._canonical_bytes(generation)
+    path = tech._generation_path_v2(root, generation["generation_id"])
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(body)
+    head = {"schema": tech.HEAD_SCHEMA_V2, "store_id": generation["store_id"],
+            "generation_id": generation["generation_id"], "generation_sha256": hashlib.sha256(body).hexdigest()}
+    tech._store_head_path(root).write_bytes(tech._canonical_bytes(head))
+    with pytest.raises(exp.ExperienceV2SourceError): _binding_experience(source, root, session)
+    assert not (source.parent / "experience-v2" / "records" / f"{session}.json").exists()
+
+
+def test_binding_invalid_manifest_without_head_cannot_publish(tmp_path):
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, _, session = _binding_source(tmp_path)
+    root = source.parent / "technicals-v2"
+    root.mkdir()
+    manifest = tech._new_store_manifest_v2()
+    manifest["profile"] = "generic.daily.v1"
+    manifest["store_id"] = tech._content_id("mmtechv2store_", manifest, field="store_id")
+    tech._store_manifest_path_v2(root).write_bytes(tech._canonical_bytes(manifest))
+    with pytest.raises(tech.TechnicalsV2StoreError): _binding_capture(source, session)
+    assert not tech._store_head_path(root).exists()
+
+
+def test_binding_valid_capture_idempotency_preserves_bytes(tmp_path):
+    source, _, session = _binding_source(tmp_path)
+    root, first = _binding_capture(source, session)
+    before = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*.json")}
+    _, second = _binding_capture(source, session)
+    after = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*.json")}
+    assert second.created is False
+    assert first.capture_id == second.capture_id
+    assert before == after
+
+
+@pytest.mark.parametrize("append_kind", ["unrelated_session", "later_correction"])
+@pytest.mark.parametrize("consumer", ["projector", "experience"])
+def test_binding_original_capture_survives_source_append(tmp_path, append_kind, consumer):
+    from engine.neuralweb import market_memory_sources_spy as spy
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, stored, session = _binding_source(tmp_path)
+    root, initial = _binding_capture(source, session)
+    before = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*.json")}
+    _, later, _ = _binding_source(
+        tmp_path, close=591.0,
+        session=session if append_kind == "later_correction" else date(2026, 8, 20),
+    )
+    assert later.generation_id != stored.generation_id
+    if consumer == "projector":
+        _, repeated = _binding_capture(source, session)
+        assert repeated.created is False
+        assert repeated.capture_id == initial.capture_id
+        assert repeated.source_generation_id == stored.generation_id
+        assert repeated.close_ratio_20 == 590.25 / 500
+    else:
+        result = _binding_experience(source, root, session)
+        assert result["status"] == "admitted"
+        assert result["feature"]["price_raw_close_ratio_20_sessions"] == 590.25 / 500
+        record = json.loads((source.parent / "experience-v2" / "records" / f"{session}.json").read_bytes())
+        assert record["source_generation_id"] == stored.generation_id
+        assert record["technical_capture_id"] == initial.capture_id
+    assert before == {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*.json")}
+    if append_kind == "later_correction":
+        # An existing pin is stable; an unpinned ambiguous selection is not.
+        with pytest.raises(spy.SourceStoreError, match="ambiguous"):
+            spy.read_verified_spy_rest_bar(source, session=session)
+
+
+@pytest.mark.parametrize("tamper", ["artifact_bytes", "receipt_bytes", "detached_pin"])
+def test_binding_original_lineage_still_refuses_tampering(tmp_path, tamper):
+    from engine.neuralweb import market_memory_source_kernel as kernel
+    from engine.neuralweb import market_memory_sources_spy as spy
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+    from scripts import capture_market_memory_technicals_v2 as tech
+    source, stored, session = _binding_source(tmp_path)
+    root, _ = _binding_capture(source, session)
+    _, later, _ = _binding_source(tmp_path, close=591.0, session=date(2026, 8, 20))
+    if tamper == "artifact_bytes":
+        path = kernel._object_path(source, stored.receipt["artifact_sha256"])
+        artifact = json.loads(path.read_bytes())
+        artifact["results"][0]["c"] = 700.0
+        path.write_bytes(kernel._canonical_bytes(artifact))
+    elif tamper == "receipt_bytes":
+        path = kernel._receipt_path(source, stored.receipt["receipt_id"])
+        receipt = json.loads(path.read_bytes())
+        receipt["quality"]["opportunity_eligible"] = 1
+        path.write_bytes(kernel._canonical_bytes(receipt))
+    else:
+        # A content-consistent new HEAD with no ancestry to the selected pin
+        # cannot authenticate the capture's original published generation.
+        path = kernel._generation_path(source, later.generation_id)
+        gen = json.loads(path.read_bytes())
+        gen["previous_generation_id"] = None
+        gen["generation_id"] = kernel._content_id("mmsgen_", gen, field="generation_id")
+        body = kernel._canonical_bytes(gen)
+        new_path = kernel._generation_path(source, gen["generation_id"])
+        new_path.parent.mkdir(parents=True, exist_ok=True)
+        new_path.write_bytes(body)
+        kernel._head_path(source).write_bytes(kernel._canonical_bytes(kernel._new_head(gen, body, spy.SPY_FAMILY)))
+    reason = {
+        "artifact_bytes": "receipt does not bind artifact bytes",
+        "receipt_bytes": "source receipt copies disagree",
+        "detached_pin": "source generation is not published in current ancestry",
+    }[tamper]
+    with pytest.raises(exp.ExperienceV2SourceError, match=reason):
+        _binding_experience(source, root, session)
+    with pytest.raises(tech.TechnicalsV2SourceError, match=reason):
+        _binding_capture(source, session)
+    assert not (source.parent / "experience-v2" / "records" / f"{session}.json").exists()
+
+
+# Regression for the documented custom-bars response envelope.
+_ENVELOPE_SESSION = date(2026, 10, 9)
+_ENVELOPE_OPEN = datetime(2026, 10, 10, 4, tzinfo=timezone.utc)
+_ENVELOPE_BAR = {"o": 588, "h": 592, "l": 587, "c": 590, "v": 85000000,
+       "n": 600000, "t": 1791518400000, "vw": 589.5}
+
+@pytest.fixture
+def mm_envelope_modules():
+    from engine.neuralweb import market_memory_sources_spy as spy
+    from scripts import ingest_market_memory_sources_spy as owner
+    return spy, owner
+
+
+def _collect_envelope_fixture(owner, payload):
+    now = [_ENVELOPE_OPEN]
+    def sleep(seconds):
+        now[0] += timedelta(seconds=seconds)
+    return owner._collect_seal_observations(
+        _ENVELOPE_SESSION, seal_open=_ENVELOPE_OPEN, seal_close=_ENVELOPE_OPEN + timedelta(minutes=5),
+        fetcher=lambda path, params: copy.deepcopy(payload),
+        clock=lambda: now[0], sleeper=sleep,
+    )
+
+
+def test_documented_response_keeps_exact_results_digest_and_legacy_strictness(mm_envelope_modules):
+    spy, owner = mm_envelope_modules
+    payload = {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [_ENVELOPE_BAR]}
+    before = copy.deepcopy(payload)
+    status, results = owner._fetch_spy_daily_bar(_ENVELOPE_SESSION, lambda path, params: payload)
+    assert status == "ok_results"
+    assert results == [_ENVELOPE_BAR] and payload == before
+    assert "T" not in results[0] and "ticker" not in results[0]
+    assert spy._results_digest(results) == spy._results_digest([_ENVELOPE_BAR])
+    assert spy._validate_single_bar(_ENVELOPE_BAR, session_date=_ENVELOPE_SESSION)[0] is False
+    assert spy._validate_single_bar({**_ENVELOPE_BAR, "T": "SPY"}, session_date=_ENVELOPE_SESSION)[0] is True
+    assert spy._validate_single_bar(_ENVELOPE_BAR, session_date=_ENVELOPE_SESSION, response_ticker="SPY")[0] is True
+
+
+@pytest.mark.parametrize("ticker", [None, "AAPL", ["SPY"], "", 0])
+def test_missing_or_wrong_envelope_identity_cannot_enter_seal(mm_envelope_modules, ticker):
+    spy, owner = mm_envelope_modules
+    payload = {"status": "OK", "adjusted": False, "results": [_ENVELOPE_BAR]}
+    if ticker is not None:
+        payload["ticker"] = ticker
+    assert owner._fetch_spy_daily_bar(_ENVELOPE_SESSION, lambda path, params: payload) == ("malformed", [])
+    observations, cache = _collect_envelope_fixture(owner, payload)
+    assert cache == {} and all(o.status == "malformed" for o in observations)
+    assert not spy.evaluate_seal_predicate(observations, session=_ENVELOPE_SESSION, seal_open=_ENVELOPE_OPEN, seal_close=_ENVELOPE_OPEN + timedelta(minutes=5)).opportunity_eligible
+
+
+@pytest.mark.parametrize("fields", [{"T": "AAPL"}, {"ticker": "AAPL"}, {"T": "SPY", "ticker": "AAPL"}, {"T": None}])
+def test_explicit_row_conflict_is_rejected(mm_envelope_modules, fields):
+    spy, owner = mm_envelope_modules
+    row = {**_ENVELOPE_BAR, **fields}
+    assert not spy._validate_single_bar(row, session_date=_ENVELOPE_SESSION, response_ticker="SPY")[0]
+    observations, cache = _collect_envelope_fixture(owner, {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [row]})
+    assert not cache and all(o.reason == "malformed_bar" for o in observations)
+
+
+@pytest.mark.parametrize("results,status", [([], "no_bar"), ([_ENVELOPE_BAR, _ENVELOPE_BAR], "malformed"), ({}, "malformed")])
+def test_missing_multiple_and_nonarray_results_cannot_seal(mm_envelope_modules, results, status):
+    spy, owner = mm_envelope_modules
+    observations, cache = _collect_envelope_fixture(owner, {"status": "OK", "ticker": "SPY", "adjusted": False, "results": results})
+    assert not cache and all(o.status == status for o in observations)
+    assert not spy.evaluate_seal_predicate(observations, session=_ENVELOPE_SESSION, seal_open=_ENVELOPE_OPEN, seal_close=_ENVELOPE_OPEN + timedelta(minutes=5)).opportunity_eligible
+
+
+@pytest.mark.parametrize("fields", [{"c": float("nan")}, {"t": True}, {"t": 0}, {"n": None}])
+def test_existing_numeric_and_session_guards_stay_closed(mm_envelope_modules, fields):
+    spy, owner = mm_envelope_modules
+    row = {**_ENVELOPE_BAR, **fields}
+    assert not spy._validate_single_bar(row, session_date=_ENVELOPE_SESSION, response_ticker="SPY")[0]
+
+
+def test_stable_cached_seal_and_artifact_keep_exact_results(mm_envelope_modules):
+    spy, owner = mm_envelope_modules
+    payload = {"status": "OK", "ticker": "SPY", "adjusted": False, "results": [_ENVELOPE_BAR]}
+    observations, cache = _collect_envelope_fixture(owner, payload)
+    seal = spy.evaluate_seal_predicate(observations, session=_ENVELOPE_SESSION, seal_open=_ENVELOPE_OPEN, seal_close=_ENVELOPE_OPEN + timedelta(minutes=5))
+    assert seal.opportunity_eligible and seal.bar_digest == spy._results_digest([_ENVELOPE_BAR])
+    assert all(o.status == "valid_bar" for o in observations)
+    artifact = spy._build_spy_rest_artifact(cache[seal.bar_digest], session=_ENVELOPE_SESSION)
+    assert artifact["ticker"] == "SPY" and artifact["results"] == [_ENVELOPE_BAR]
+    assert spy._validate_spy_rest_artifact(artifact, session=_ENVELOPE_SESSION) == artifact
+    assert "T" not in artifact["results"][0]
+    later = spy._build_spy_rest_artifact([{**_ENVELOPE_BAR, "c": 590.5}], session=_ENVELOPE_SESSION)
+    assert artifact["results"] == [_ENVELOPE_BAR]
+    assert later["results"] != artifact["results"]
+    assert spy._results_digest(later["results"]) != seal.bar_digest
+
+
+@pytest.mark.parametrize("adjusted", [None, True, "false", 0, [], {}])
+def test_missing_or_nonfalse_adjustment_cannot_enter_seal(mm_envelope_modules, adjusted):
+    spy, owner = mm_envelope_modules
+    payload = {"status": "OK", "ticker": "SPY", "results": [_ENVELOPE_BAR]}
+    if adjusted is not None:
+        payload["adjusted"] = adjusted
+    assert owner._fetch_spy_daily_bar(_ENVELOPE_SESSION, lambda path, params: payload) == ("malformed", [])
+    observations, cache = _collect_envelope_fixture(owner, payload)
+    assert cache == {} and all(o.status == "malformed" for o in observations)

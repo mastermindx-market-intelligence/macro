@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-20T05:26:25.564478+00:00",
+  "head": "e2d10f933587f58be8716505529a37f8839901f7",
+  "main": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+  "fetch": {
+    "argv": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "origin",
+      "3667000ca153496d8ff69e8864b159ac1e7b9de0"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "From https://github.com/mastermindx-market-intelligence/macro\n * branch                        3667000ca153496d8ff69e8864b159ac1e7b9de0 -> FETCH_HEAD\n"
+  },
+  "merge_preview": {
+    "argv": [
+      "git",
+      "merge-tree",
+      "--write-tree",
+      "--name-only",
+      "e2d10f933587f58be8716505529a37f8839901f7",
+      "3667000ca153496d8ff69e8864b159ac1e7b9de0"
+    ],
+    "exit": 0,
+    "stdout": "6ad9264603a56c0a1ebd5be9b200b8d61162fde6\n",
+    "stderr": ""
+  },
+  "source_mutation": false
+}

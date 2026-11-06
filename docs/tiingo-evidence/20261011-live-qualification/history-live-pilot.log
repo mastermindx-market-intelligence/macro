@@ -1,0 +1,26 @@
+{
+  "attempted": 4,
+  "ok": 1,
+  "new": 1,
+  "failed": 3,
+  "row_hints": 10976,
+  "bytes": 2498479,
+  "errors": [
+    {
+      "source": "fund-statements",
+      "symbol": "AMD",
+      "reason": "Tiingo HTTP 400; source not admitted"
+    },
+    {
+      "source": "fund-statements",
+      "symbol": "AMD",
+      "reason": "Tiingo HTTP 400; source not admitted"
+    },
+    {
+      "source": "fund-daily",
+      "symbol": "AMD",
+      "reason": "Tiingo HTTP 400; source not admitted"
+    }
+  ],
+  "elapsed_seconds": 28.238
+}

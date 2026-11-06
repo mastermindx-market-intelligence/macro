@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2025-11-20T13:50:16Z",
+ "accession": "0000056978-25-000081",
+ "cik": "0000056978",
+ "doc_byte_length": 2327220,
+ "doc_sha256": "2bafd596eda0935fd2c1594aa5b8d795e40413f6d01f50baa983d88c5badf158",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-20",
+ "form": "10-K",
+ "period_of_report": "2025-10-04",
+ "primary_document": "klic-20251004.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2126139,
+  "byte_start": 2124924,
+  "normalized": "Forehope Group*15.7 %",
+  "normalized_sha256": "d544fb9b85a6f2814633ab49556c6878119bed0996a734baf81b3ba435d40f85",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">Forehope Group</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">*</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-246\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1381\">15.7</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"display:none\"/><td colspan=\"3\" style=\"display:none\"/></tr>",
+  "raw_sha256": "a8401dc6230a0be1fd6086592f2b70251134c8570e57c8b143bd9a7b06aa3af6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/56978/000005697825000081/klic-20251004.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 104551,
+   "byte_start": 103883,
+   "context_ref": "c-246",
+   "raw": "<xbrli:context id=\"c-246\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000056978</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">klic:ForehopeGroupMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-10-01</xbrli:startDate><xbrli:endDate>2024-09-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7bcc1a5b472ea71a1c50830be507c80a62513526ea9c3bde6eb0c26bae1178fb"
+  }
+ ]
+}

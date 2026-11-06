@@ -144,10 +144,10 @@ _NULL_COPY: dict[str, dict[str, str]] = {
         "label_zh": "本契约条款所需的财务输入目前不可用。",
         "en": (
             "The covenant term was extracted, but the financial inputs "
-            "(net debt, EBITDA, interest) are not in this build."
+            "needed to compare the company with this threshold are not in this build."
         ),
         "zh": (
-            "契约条款已提取，但本版本未提供相关财务输入（净债务、EBITDA、利息）。"
+            "契约条款已提取，但本版本未提供将公司状况与该门槛比较所需的财务输入。"
         ),
     },
     "ratio_undefined": {
@@ -309,6 +309,28 @@ def _resolve_issuer(
         if isinstance(smid, str):
             return _normalize_cik(cik_by_source_manifest_id.get(smid))
     return None
+
+
+def _native_contract_view(obs: Mapping[str, Any]) -> dict[str, Any]:
+    """Adapt the native transcription contract; never invent a ratio schedule.
+
+    Validation and source lineage belong to the ledger reader. Native terms
+    carry literal filing text, not the agreement-defined financial inputs
+    required by the existing room calculation.
+    """
+    if obs.get("schema") != "capital_structure.covenant_term_observation.v1":
+        return dict(obs)
+    filing, document = obs["filing"], obs["document"]
+    return {**obs, "state": obs["state"]["disposition"],
+            "term_name": obs["term"]["name"],
+            "accession": filing["accession"], "form": filing["form"],
+            "filing_date": filing["filing_date"],
+            "source_manifest_id": document["source_manifest_id"],
+            "source_url": document["canonical_url"],
+            "value": {"limit_raw": None, "steps": [],
+                      "filing_term_raw": obs["reported"]["raw"],
+                      "headline_ratio_text": obs["reported"]["raw"],
+                      "section_label": obs["clause"]["section_label_raw"]}}
 
 
 def _direct_observations(observations: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -600,6 +622,7 @@ def _term_payload(
     excerpt: str | None,
     source_url: str | None,
     filing_date: str | None,
+    filing_term_raw: str | None = None,
 ) -> dict[str, Any]:
     """Spec R1 / R6 — single term row: limit, reported figure, room left,
     next step, filing type, accession, filing date, source URL. refusal
@@ -607,6 +630,7 @@ def _term_payload(
     reason to a missing key."""
     return {
         "term_name": term_name,
+        "filing_term_raw": filing_term_raw,
         "limit_kind": limit_kind,
         "limit_raw": limit_raw,
         "reported": {
@@ -701,6 +725,7 @@ def _compute_term(
         excerpt=_receipt_excerpt(raw),
         source_url=_receipt_source_url(obs),
         filing_date=_receipt_filing_date(obs),
+        filing_term_raw=raw.get("filing_term_raw") if isinstance(raw, Mapping) else None,
     )
 
     # 1) metric_absent — no statement row at all (or outage set stmt to None).
@@ -903,6 +928,8 @@ def _receipt_form(obs: Mapping[str, Any]) -> str | None:
 
 
 def _receipt_filing_date(obs: Mapping[str, Any]) -> str | None:
+    if obs.get("schema") == "capital_structure.covenant_term_observation.v1":
+        return obs.get("filing_date")
     point = obs.get("point_in_time") or {}
     if not isinstance(point, Mapping):
         return None
@@ -1039,6 +1066,7 @@ def compute_headroom(
         # producer module); the runtime check is best-effort.
         pass
 
+    observations = [_native_contract_view(obs) for obs in observations if isinstance(obs, Mapping)]
     direct_obs = _direct_observations(observations)
     ambiguous_obs = _ambiguous_observations(observations)
 

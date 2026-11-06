@@ -16,6 +16,7 @@ from scripts import initialize_market_memory_w1a as w1a_initializer
 from tests.test_market_memory_pit import (
     CAPTURED_AT,
     _api_client,
+    _admit_test_site_principal,
     _assert_private,
     _fixed_clock,
     _packet,
@@ -134,6 +135,21 @@ def test_api_catalog_serves_trusted_capture_with_empty_initialized_w1a(
 ) -> None:
     candidate = _trusted_candidate(monkeypatch, tmp_path)
     stored = _capture_trusted(candidate)
+    # Current source authority is now required in addition to the site principal.
+    import json
+    from engine.neuralweb import market_memory_retained_use as use
+    source_root = Path(__file__).resolve().parents[1]
+    for relative in (use.REGISTRATION, use.AUTHORITY_RECORD):
+        destination = tmp_path / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes((source_root / relative).read_bytes())
+    record_path = tmp_path / use.REGISTRATION
+    record = json.loads(record_path.read_text())
+    record.update(store_id=trusted.TrustedFileAsKnownAtReader(candidate.public).observe_generation_head().store_id,
+                  allowed_subject_ids=[stored.packet["subject"]["subject_id"]])
+    record_path.write_text(json.dumps(record))
+    monkeypatch.setattr(api, "_repo_root", lambda: tmp_path)
+
     w1a_root = tmp_path / "public"
     # Reproduce the production ordering: trusted-v1 already exists while the
     # top-level W1A root is still only a directory with a child profile.

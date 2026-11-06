@@ -1,0 +1,26 @@
+{
+  "url": "https://www.adr.com/drprofile/05523R107",
+  "representation": "reviewed_browser_extract",
+  "observed_at": "2026-10-13T07:54:08.066798+00:00",
+  "method": "Chrome DOM Program Details read after directory BAE link",
+  "facts": {
+    "issuer_as_printed": "BAE",
+    "cusip": "05523R107",
+    "dr_symbol": "BAESY",
+    "dr_isin": "US05523R1077",
+    "depositary": "JPM",
+    "dr_venue": "OTC",
+    "sponsorship_as_printed": "S",
+    "ordinary_shares_per_adr": 4,
+    "underlying_symbol": "BA/",
+    "underlying_isin": "GB0002634946",
+    "underlying_venue": "London",
+    "country": "United Kingdom"
+  },
+  "limits": {
+    "publication_at": null,
+    "historical_interval": null,
+    "source_body_reuse": "unknown",
+    "prices_not_consumed": true
+  }
+}

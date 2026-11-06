@@ -1,0 +1,35 @@
+# Opus red-team of PR #7905 — round 6 (content head d5a9a9357a48 / branch head 873eeef6f3ea, 2026-09-24 ~14:20Z)
+
+READ_ONLY Opus reviewer bounded to rulings R27–R42 (`SEAT_RULING_T1_PR_R5_2026-09-24.md`). Recorded verbatim by the seat from the reviewer's report; the reviewer's 78 throwaway probes are frozen unchanged as the fifth suite (`tests/test_pg_economic_observations_probes_r5.py`).
+
+---
+
+# Opus R6 red-team of PR #7905 @d5a9a9357a48 (rulings R27-R42) — READ_ONLY
+
+VERDICT: REJECT. Blocking: R37 (blocker), R35, R36, R42 (major). Partial: R27, R38, R39, R40, R34. Discharged: R26, R28, R29, R30, R31, R33, R41 (nit).
+
+Five committed suites in the clean venv, seat checkout: 43 + 20 + 21 + 33 + 39 = 156 passed, 0 failed.
+Frozen diffs (`git diff <freeze> d5a9a9357a48 --stat -- <file>`): probes.py@7804e24a EMPTY; probes_r2.py@1970ea2b20 EMPTY; probes_r3.py@fb50fdead4 EMPTY; probes_r4.py@b371c84fc269 EMPTY. `git log --format=%an` on each = `Sol CEO` only (one commit each).
+R26 grep over pg_profile.py + economic_observations.py: no output, exit 1 (empty).
+R6 probes: scratchpad/opus_r6_probes/test_r6_probes.py — 78 tests (incl. 2x20 parametrized R39), 19 FAILED / 59 passed.
+
+| Ruling | Verdict | Evidence |
+|---|---|---|
+| R27 | PARTIAL (major) | Extractor refuses rows under non-matching headings (r42e extractor half passes). The validator never checks the governing heading: `replay_table_layout` (pg_profile.py:211-241) checks only that the cell is in *some* table whose context is not out of scope. A forged Total P&G row under "Supplemental Synthetic Data" validates (r42e). |
+| R28 | DISCHARGED | One locator, used by both sides (pg_profile.py:634, economic_observations.py:109). The colspan defect below is shared, so the two sides agree. |
+| R29 | DISCHARGED | Dash convention = `visible_text` over parser blocks (pg_profile.py:294-310); all frozen r29 probes pass. |
+| R30 | DISCHARGED | r30a/b/c pass. |
+| R31 | DISCHARGED | Unchanged (pg_profile.py:29-32). |
+| R32 | PARTIAL (minor) | Covered by the R40 row. |
+| R33 | DISCHARGED | r39a: a forged combined absence is refused for all 20 metrics on the split fixture. |
+| R34 | PARTIAL (minor) | ef3ebca4 says the regex readings are deleted (R36), but the validator's bounded-text branch still reads a raw 240-character source slice (economic_observations.py:103-107). d5a9a935 says no fixture literal names a month-day, ordinal or year. The fixture still hardcodes `REPORT_DATE`/`ACCEPTANCE` (earnings_economic_fixtures.py:20-21), `asof=date(2026, 7, 29)`, `observed_at` and the ordinal map (:45). |
+| R35 | NOT DISCHARGED (major) | (1) `period_context` (pg_profile.py:313-340) only recognises a closed vocabulary. "Nine Months Ended March 31, 2026" and "Quarter Ended March 31, 2026" both classify as None, so the table takes the heading context. Year-to-date drivers bind as Q3 (r35k), and March-quarter drivers bind as the June quarter (r35l). (2) The validator's bounded-text path (economic_observations.py:103-107) does not replay through the parser or the heading context. A forged reconciliation paragraph validates when it sits under a foreign-quarter heading (r35f) or inside `<div hidden>` (r35g). (3) The extractor and validator disagree on the extractor's own output. Byte offsets are used as character indices at :104, so a legitimate reconciliation paragraph after multibyte text is refused ("replayed basis differs", r35h). A reconciliation paragraph over 240 characters is emitted by `_text_fact` (pg_profile.py:750, no length cap) and then refused at economic_observations.py:261 (r35i). Passed: r35a–e, r35j (document_period_verdict and block/span parity on CRLF, entities and multibyte text). |
+| R36 | PARTIAL (major) | Tables use the one parse. The validator's bounded-text branch is a second, raw-string reading (see R35). The cell locator accepts any byte span inside the cell's *markup* span (pg_profile.py:224). A forged value of 4.0 read from `<!-- 4.0% -->` inside a cell whose visible text is 1.0% validates (r42f). Nit: `parse_release_blocks` hardcodes form "8-K" (:144), while `build_event_workspace` binds with the filing's form (event_workspace_build.py:184). Parity therefore depends on the registry having no rule for that form. Not probed. |
+| R37 | NOT DISCHARGED (blocker) | `_column_headers` stacks band cells by position (pg_profile.py:175-182), and the parser does not expand colspan. (a) A "Volume" header spanning two columns shifts Price onto the organic-volume column: Price = 2.0 is bound and validated (r37h). (b) Year headers with colspan=2 over "$" + amount cells bind the *current* $3.07 as prior-year diluted EPS (r37i). This is the ordinary EDGAR layout. `_band_context` classifies each cell alone (:192), so a period label split across two band rows is invisible: "Fiscal Year" over "2026" binds (r37e); "Three Months Ended" over "March 31, 2026" binds (r37f). A three-row EPS band ("Three Months Ended" / "March 31, 2026" / "2026") under the Q4 heading binds the March-quarter EPS 2.11 as June-quarter diluted EPS, because the bare "2026" cell is a current form (r37g). Passed: blank/dash rows before the first literal row, a year-like band row, and a band naming both the quarter and twelve months (r37a–d). |
+| R38 | PARTIAL (major) | `visible_text` is correct, but the validator's bounded-text path still reads hidden content (r35g). |
+| R39 | PARTIAL (major) | Forged combined absences: all 20 refused on the split fixture; on the combined fixture only the 3 permitted metrics are accepted (r39a/b, 40/40 pass). The pair disagrees when there are two combined drivers tables. The extractor mints the combined subject when `any(...)` table is combined (pg_profile.py:603). The validator requires `len(tables) == 1` (:497), so it refuses the extractor's own output (r39d). r39c passes. |
+| R40 | PARTIAL (minor) | Prior-period words are matched as substrings (pg_profile.py:660, :705). "As previously announced, Total P&G volume increased 4%" (r40c) and "Consistent with our priorities, …" (r40d) suppress a real conflict. "Volume increased 4% for Total P&G" is missed (r40e, regex at :654-657). "4 percent" is missed (r40i). Passed: qualifier before or after the verb, multi-sentence paragraphs, an out-of-scope sentence inside an in-scope paragraph, unit volume (r40a/b/f/g/h). |
+| R41 | DISCHARGED (nit) | The `_html` period forms derive from `fiscal_period`. Nits: the filing clock and `FISCAL_SCOPE` do not follow `fiscal_period` (earnings_economic_fixtures.py:20-22, asof in `pg_workspace_case`). The Q1–Q3 build-and-bind check was not run (see GAPS). |
+| R42 | NOT DISCHARGED (major) | Extractor side holds (r42a/b/c pass). The validator enforces neither uniqueness nor governance (economic_observations.py:109-121 → pg_profile.py:211-241). A forged present row into one of two addressable tables validates, although the extractor emitted an absence (r42d). The same holds under a non-matching heading (r42e). |
+
+Failing probes (19): r35f, r35g, r35h, r35i, r35k, r35l, r37e, r37f, r37g, r37h, r37i, r42d, r42e, r42f, r39d, r40c, r40d, r40e, r40i.

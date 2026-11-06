@@ -360,7 +360,7 @@ documented per house law — never silent.
   `"S-GEXR-H".split("-")[0] == "S"`, matching SKEW cells instead of GEXR (printed 1 instead
   of 6). Now counted over each study's own p-value keys against the global BH dict.
 - Post-publication-decay commentary now (a) reads the GLOBAL verdicts, and (b) applies the
-  era-amendment auto-death rule only to genuinely pre-2016 eras (DOI Era1 2012-15). For
+  era-amendment auto-death rule only to genuinely pre-2016 eras (DOI Era0 2012-15). For
   greeks-window studies (eras start 2017), early-only concentration prints a decay WARNING
   with review flag — not auto-death.
 

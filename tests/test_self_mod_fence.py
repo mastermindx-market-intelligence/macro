@@ -14,6 +14,7 @@ from __future__ import annotations
 import errno
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -384,13 +385,20 @@ def _run_live_check(
     head_ref: str,
     base_ref: str = "main",
     extra_env: dict[str, str] | None = None,
+    command: str | None = None,
 ) -> subprocess.CompletedProcess:
-    """Render the manifest step exactly as ci-pack does, then run it."""
-    command = render_command(
-        str(_fence_step_run(".github/ci/legacy-jobs.yml", LIVE_CHECK_STEP)["run"]),
-        base_ref=base_ref,
-        head_ref=head_ref,
-    )
+    """Render the manifest step exactly as ci-pack does, then run it.
+
+    ``command`` replaces the manifest step with another shell body under the
+    same environment and interpreter flags — used only to replay a RETIRED
+    step shape as a positive control.
+    """
+    if command is None:
+        command = render_command(
+            str(_fence_step_run(".github/ci/legacy-jobs.yml", LIVE_CHECK_STEP)["run"]),
+            base_ref=base_ref,
+            head_ref=head_ref,
+        )
     env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
     # Pack jobs export the planner's list — as a FILE handle since 2026-08-14,
     # inline before that. These tests seed their own git history; inheriting the
@@ -1176,4 +1184,206 @@ def test_bounded_checkout_ancestry_failure_remains_fail_closed(
     assert (
         "could not establish exact PR ancestry inside the bounded checkout"
         in result.stderr
+    )
+
+
+# ── 9. The PACKED copy's commit-message population (run 36360866211, PR #8006) ──
+#
+# #6223 moved both fences.yml copies of this live check onto file handles and
+# left the third copy on argv: the legacy-jobs.yml step every ci-pack runs. On
+# 2026-09-28 run 36360866211 (job 108742915933) died there with exit 126,
+# "Argument list too long", before Python started. run_ci_pack had deepened the
+# tested merge to depth 32 to reach a merge base, and origin/main..HEAD then
+# walked ~117 commits (~372 KB of squash-merge PR bodies) into ONE argv string.
+# Run by hand on the PR's real ~12 KB of messages the fence printed PASS: the red
+# was a transport failure, never a fence verdict.
+#
+# These tests drive the REAL packed step (rendered by the production renderer,
+# run under the pack's bash flags) over a REAL git range whose messages exceed
+# this host's single-argument exec ceiling, and require the fence's own verdict.
+
+_LINUX_MAX_ARG_STRLEN_4K_PAGES = 131_072
+_RANGE_COMMITS = 24
+_RANGE_IMMUTABLE_EDIT = ".github/ci/legacy-jobs.yml"
+
+# The tail this change retired, in its exact shape: one unquoted expansion
+# carries the changed-file population, one quoted expansion carries every
+# commit message in the range as a single argv string.
+_RETIRED_PACKED_TAIL = """\
+BRANCH="${CI_HEAD_REF:-${GITHUB_HEAD_REF:-}}"
+FILES=$(git diff --name-only origin/main...HEAD 2>/dev/null || echo "")
+TRAILERS=$(git log --format="%B" origin/main..HEAD 2>/dev/null || echo "")
+python3 scripts/check_self_mod_fence.py \\
+  --branch "$BRANCH" \\
+  --files $FILES \\
+  --trailers "$TRAILERS"
+"""
+
+
+def _single_argument_exec_ceiling() -> int:
+    """Bytes past which ONE argv string cannot reach execve on this host.
+
+    Linux caps each string at MAX_ARG_STRLEN = 32 pages (131,072 bytes on
+    4 KiB pages) independently of ARG_MAX: the production argument was ~372 KB,
+    far under Linux's usual 2 MiB ARG_MAX, and still died. Darwin has no
+    per-string cap, only ARG_MAX over argv and envp together.
+    """
+    if sys.platform.startswith("linux"):
+        return 32 * os.sysconf("SC_PAGE_SIZE")
+    return os.sysconf("SC_ARG_MAX")
+
+
+def _build_oversized_range(root: Path, *, loop_line: bool) -> Path:
+    """A branch whose origin/main..HEAD messages exceed the exec ceiling 3x.
+
+    Many PR-body-sized commits, like the production range. The discriminating
+    line ends the OLDEST commit, which is the last text `git log` prints, so a
+    transport that truncates, keeps a prefix, or reads only the newest commit
+    cannot reproduce the verdict.
+    """
+    work = _seed_repo(root)
+    _git("checkout", "-b", "oversized-range", cwd=work)
+    target = work / _RANGE_IMMUTABLE_EDIT
+    target.parent.mkdir(parents=True, exist_ok=True)
+    per_commit_lines = 3 * _single_argument_exec_ceiling() // _RANGE_COMMITS // 110 + 1
+    message = root / "message.txt"
+    for index in range(_RANGE_COMMITS):
+        body = f"range commit {index}\n\n" + "".join(
+            f"- receipt {index}.{line}: {'x' * 90}\n" for line in range(per_commit_lines)
+        )
+        if index == 0 and loop_line:
+            body += "\nLoop-Authored: packed-range-regression\n"
+        message.write_text(body, encoding="utf-8")
+        if index == 0:
+            target.write_text("jobs: {}\n")
+            _git("add", "-A", cwd=work)
+            _git("commit", "-q", "--cleanup=verbatim", "-F", str(message), cwd=work)
+        else:
+            _git(
+                "commit", "-q", "--allow-empty", "--cleanup=verbatim",
+                "-F", str(message), cwd=work,
+            )
+    return work
+
+
+@pytest.fixture(scope="module")
+def oversized_commit_ranges(tmp_path_factory):
+    ceiling = _single_argument_exec_ceiling()
+    ranges: dict[str, object] = {}
+    for name, loop_line in (("human", False), ("loop", True)):
+        work = _build_oversized_range(
+            tmp_path_factory.mktemp(f"packed-range-{name}"), loop_line=loop_line
+        )
+        messages = subprocess.run(
+            ["git", "log", "--format=%B", "origin/main..HEAD"],
+            cwd=work, check=True, capture_output=True,
+        ).stdout.decode("utf-8")
+        size = len(messages.encode("utf-8"))
+        # The commission's floor AND this host's real ceiling: under either, the
+        # retired transport would launch and these tests would prove nothing.
+        assert size > _LINUX_MAX_ARG_STRLEN_4K_PAGES, (name, size)
+        assert size > ceiling, (name, size, ceiling)
+        ranges[name] = {"work": work, "messages": messages}
+    planner = tmp_path_factory.mktemp("packed-range-planner") / "changed-files.json"
+    planner.write_text(json.dumps([_RANGE_IMMUTABLE_EDIT]), encoding="utf-8")
+    ranges["planner_file"] = planner
+    return ranges
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="execve caps are POSIX")
+def test_retired_packed_tail_dies_before_python_on_the_oversized_range(
+    oversized_commit_ranges,
+):
+    """Positive control: the fixture really kills the shape this change retired.
+
+    Without it, a fixture that shrank under the host ceiling would let the
+    repaired-step tests below pass vacuously. The retired tail must fail the way
+    run 36360866211 did — bash exit 126 before the fence prints any verdict.
+    """
+    result = _run_live_check(
+        oversized_commit_ranges["loop"]["work"],
+        event="pull_request",
+        head_ref="claude/human-looking",
+        command=_RETIRED_PACKED_TAIL,
+    )
+    assert result.returncode == 126, (result.returncode, result.stderr[-2000:])
+    assert "Argument list too long" in result.stderr
+    assert "PASS" not in result.stdout
+    assert "BLOCKED" not in result.stderr
+
+
+@pytest.mark.parametrize("transport", ["planner-file", "git-fallback"])
+@pytest.mark.parametrize(
+    "history,head_ref",
+    [
+        # Human-looking branch; the ONLY loop evidence is the last line of the range.
+        ("loop", "claude/human-looking"),
+        # Human PR touching an immutable path: the fence's normal PASS.
+        ("human", "claude/human-looking"),
+        # Loop namespace: the immutable path must survive the file handle.
+        ("human", "metabolism/loop-branch"),
+    ],
+)
+def test_packed_live_check_classifies_an_oversized_commit_range(
+    tmp_path,
+    oversized_commit_ranges,
+    transport,
+    history,
+    head_ref,
+):
+    """The repaired packed step launches and returns the fence's own verdict.
+
+    ``planner-file`` is the production shape (ci-pack exports the planner's
+    handle, which is where run 36360866211 died); ``git-fallback`` is the
+    unset-planner arm. Both share the commit-message tail.
+    """
+    entry = oversized_commit_ranges[history]
+    expected_rc, expected_message = check(
+        branch=head_ref,
+        changed_files=[_RANGE_IMMUTABLE_EDIT],
+        trailers_text=entry["messages"],
+    )
+    runner_temp = tmp_path / "runner-temp"
+    runner_temp.mkdir()
+    extra_env = {"RUNNER_TEMP": str(runner_temp)}
+    if transport == "planner-file":
+        extra_env["CI_CHANGED_FILES_FILE"] = str(oversized_commit_ranges["planner_file"])
+
+    result = _run_live_check(
+        entry["work"],
+        event="pull_request",
+        head_ref=head_ref,
+        extra_env=extra_env,
+    )
+
+    assert "Argument list too long" not in result.stderr
+    assert result.returncode == expected_rc, (
+        "the packed step must launch the fence and return its verdict on a range "
+        f"past the exec ceiling\nstdout: {result.stdout}\nstderr: {result.stderr[-4000:]}"
+    )
+    assert expected_message in result.stdout + result.stderr
+    assert list(runner_temp.iterdir()) == [], "the step must remove its input handles"
+
+
+def test_packed_live_check_passes_both_populations_only_by_handle():
+    """Pin the absence that closes run 36360866211 in the packed copy.
+
+    A launch test only catches a restored argv while its fixture outgrows the
+    host ceiling, so pin the source itself — the same discipline
+    tests/test_fence_checkout_contract.py applies to both fences.yml copies.
+    Shell variables may still hold a list (bash never execs an assignment);
+    what may not happen is a population expanding into a process argv.
+    """
+    body = str(_fence_step_run(".github/ci/legacy-jobs.yml", LIVE_CHECK_STEP)["run"])
+    assert '--files-file "$FILES_FILE"' in body
+    assert '--trailers-file "$TRAILERS_FILE"' in body
+    # Both arms (planner list and git fallback) write the canonical JSON handle.
+    assert body.count('--write-files-file-from-nul "$FILES_FILE"') == 2
+    assert "git diff --name-only -z" in body
+    assert '> "$TRAILERS_FILE"' in body
+    assert "TRAILERS=$(" not in body
+    inline = re.findall(r"--(?:files|trailers)(?=[\s=])", body)
+    assert not inline, (
+        f"legacy-jobs.yml restored an inline population flag {inline}: every "
+        "changed path and commit message must reach the fence through a file handle"
     )

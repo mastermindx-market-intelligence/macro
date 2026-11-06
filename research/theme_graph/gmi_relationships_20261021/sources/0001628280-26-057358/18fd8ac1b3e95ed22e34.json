@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-17T20:03:17Z",
+ "accession": "0001628280-26-057358",
+ "cik": "0001633978",
+ "doc_byte_length": 3332187,
+ "doc_sha256": "8fa710d6ca512bf191fee2211e129bb55d49be90caeddd3801c7203750db47ed",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-06-27",
+ "primary_document": "lite-20260627.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 469310,
+  "byte_start": 468599,
+  "normalized": "In August 2020, the Bureau of Industry and Security of the U.S. Department of Commerce (“BIS”) issued final rules that further restricted access by Huawei Technologies Co. Ltd. and certain of its affiliates (collectively, “Huawei”) to U.S. technology, software and equipment produced domestically and abroad. The final rules prevent us from selling certain products subject to the Export Administration Regulations (“EAR”) to identified Huawei entities without a license issued by BIS. Based on internal review conducted in 2023, we determined that our products may be “subject to the EAR” and consequently restricted for export, reexport, and transfer to Huawei.",
+  "normalized_sha256": "938f1c9a48f46629751ba7e6efe6b67b697f228fb0fe40ef3fd07ab9930fa547",
+  "raw": "In August 2020, the Bureau of Industry and Security of the U.S. Department of Commerce (&#8220;BIS&#8221;) issued final rules that further restricted access by Huawei Technologies Co. Ltd. and certain of its affiliates (collectively, &#8220;Huawei&#8221;) to U.S. technology, software and equipment produced domestically and abroad. The final rules prevent us from selling certain products subject to the Export Administration Regulations (&#8220;EAR&#8221;) to identified Huawei entities without a license issued by BIS. Based on internal review conducted in 2023, we determined that our products may be &#8220;subject to the EAR&#8221; and consequently restricted for export, reexport, and transfer to Huawei.",
+  "raw_sha256": "18fd8ac1b3e95ed22e348f72470600b81bc65c73bc20c88465147b8971ed96e2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1633978/000162828026057358/lite-20260627.htm",
+ "xbrl_contexts": []
+}

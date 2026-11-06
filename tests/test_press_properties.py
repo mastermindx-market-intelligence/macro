@@ -1046,7 +1046,9 @@ def test_update_sh_publishes_both_property_trees_atomically():
                 f'"$APP_DIR/{dst}/"') in script, f"missing/altered rsync for {src}"
 
     # Inside the REPO_UPDATED block, next to the site.served publish it mirrors.
-    site_rsync = script.index('rsync -a --delete --min-size=1 "$APP_DIR/site/"')
+    # That publish excludes the OHLC generations it does not own (#10073).
+    site_rsync = script.index(
+        'rsync -a --delete --min-size=1 --exclude=/ohlc "$APP_DIR/site/" "$APP_DIR/site.served/"')
     news_rsync = script.index('"$APP_DIR/properties/news/"')
     reconcile = script.index("# Do not exit just because Git is current.")
     assert site_rsync < news_rsync < reconcile
@@ -1068,7 +1070,11 @@ def test_the_workflow_rebuilds_the_properties_after_emitting():
     they are rebuilt after the ledger moved — not before it."""
     steps = _emit_steps()
     runs = [str(s.get("run") or "") for s in steps]
-    emit_at = next(i for i, r in enumerate(runs) if "run_press --emit" in r)
+    # The step that moves the ledger: promoting the reviewed bundle since #9650,
+    # which replaced the direct `run_press --emit`.
+    emit_at = next((i for i, r in enumerate(runs)
+                    if "run_press --promote-reviewed-bundle" in r or "run_press --emit" in r), None)
+    assert emit_at is not None, "the emit job has no step that moves the ledger"
     build_at = next(i for i, r in enumerate(runs) if "scripts.build_press_properties" in r)
     check_at = next(i for i, r in enumerate(runs) if "build_free_content --check" in r)
     assert emit_at < build_at < check_at
@@ -1183,7 +1189,9 @@ def test_the_property_suite_can_be_triggered_by_the_changes_it_guards():
 
 def _stage_passing(root: Path, slug: str = "routed-note") -> None:
     slot = F.slot()
-    draft = dict(F.draft_from_slot(slot), slug=slug)
+    # Emit now revalidates copy: reduce neutral filler so this routing fixture
+    # meets the real anchoring-density floor rather than forging a pass.
+    draft = dict(F.draft_from_slot(slot, extra_filler=-3), slug=slug)
     (root / "data" / "press" / "staging").mkdir(parents=True, exist_ok=True)
     (root / "data" / "press" / "staging" / "x.json").write_text(json.dumps({
         "id": "press-brief-x", "desk": "brief", "publication": "mastermind_news",

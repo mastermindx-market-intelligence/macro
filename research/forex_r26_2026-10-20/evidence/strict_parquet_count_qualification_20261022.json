@@ -1,0 +1,130 @@
+{
+  "schema": "forex.strict_parquet_count_qualification.v1",
+  "at": "2026-10-22T13:29:42.076850+00:00",
+  "parent_head": "2743fb06245d18edcbeb3f00be08b24164a348e3",
+  "source_sha256": {
+    "lib/dataos/tiingo_reader.py": "ca812d4ce475b8e528778e3012bd9159fcc93ecaf84d90a3e3d598d1bb412910",
+    "lib/dataos/tiingo_forex.py": "74467f7a31d4304fbfd74184a4218eadd1a2a319d6c1bd12bab78b47f64803db",
+    "scripts/tiingo_materialize.py": "cebf7e92a57e756dfeb87a7ca84f58fc8cbbf1100aaa1219d4aed41689df9e90",
+    "tests/test_tiingo_forex_source.py": "f357f1c3ef00bb7035185a8ecd28985649c33b24715a0e013306789f301753ad"
+  },
+  "red_run": {
+    "schema": "forex.strict_row_cap_regression_intent.v1",
+    "at": "2026-10-22T13:23:54.776733+00:00",
+    "parent_head": "2743fb06245d18edcbeb3f00be08b24164a348e3",
+    "source_sha256": {
+      "lib/dataos/tiingo_reader.py": "12068d55526d8f5b44358b367a4fa23071e4f4158ebaea21359004e65bc1de29",
+      "lib/dataos/tiingo_forex.py": "d767d080cfb77fa2cc4bdcfb5eb63035ba3d16353d5647643a43d06331cd1610",
+      "scripts/tiingo_materialize.py": "cebf7e92a57e756dfeb87a7ca84f58fc8cbbf1100aaa1219d4aed41689df9e90"
+    },
+    "tests_before_sha256": "fe5032e52db430757c35bcb863ef8d8a5a623b64e2cce48579a778f2fd311fc6",
+    "tests_after_sha256": "f357f1c3ef00bb7035185a8ecd28985649c33b24715a0e013306789f301753ad",
+    "source_patch_sha256": "2c9db7a55e32ee69b896ec22367fc215e4cf14b8cec34fb12327d3fc1f4c66c8",
+    "tests_append_sha256": "ac10de60e1214f203b5027ba0c73b61980a7332a20d21e3d44207c888b218a18",
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+      "-m",
+      "pytest",
+      "tests/test_tiingo_forex_source.py",
+      "-q",
+      "-k",
+      "strict_parquet_counts or census_strict_row_count",
+      "--disable-warnings",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "source_change_applied": false,
+    "real_archive_or_provider_used": false,
+    "expected_source_defect": true,
+    "completed_at_utc": "2026-10-22T13:23:59.617524+00:00",
+    "pytest_exit_code": 1,
+    "seconds": 4.627,
+    "production_unchanged": true,
+    "test_sha256": "f357f1c3ef00bb7035185a8ecd28985649c33b24715a0e013306789f301753ad",
+    "log_sha256": "5f3663db8f1e4b6be0a54f30bf073b68ed59de45476a5fa0d82520df495381a0",
+    "tracked_paths_changed": [
+      "tests/test_tiingo_forex_source.py"
+    ],
+    "failed": 24,
+    "passed": 3,
+    "deselected": 206,
+    "pytest_seconds": 3.61
+  },
+  "repaired_run": {
+    "schema": "forex.strict_row_cap_repair_intent.v1",
+    "at": "2026-10-22T13:24:42.485531+00:00",
+    "parent_head": "2743fb06245d18edcbeb3f00be08b24164a348e3",
+    "source_before_sha256": {
+      "lib/dataos/tiingo_reader.py": "12068d55526d8f5b44358b367a4fa23071e4f4158ebaea21359004e65bc1de29",
+      "lib/dataos/tiingo_forex.py": "d767d080cfb77fa2cc4bdcfb5eb63035ba3d16353d5647643a43d06331cd1610",
+      "scripts/tiingo_materialize.py": "cebf7e92a57e756dfeb87a7ca84f58fc8cbbf1100aaa1219d4aed41689df9e90"
+    },
+    "source_patch_sha256": "2c9db7a55e32ee69b896ec22367fc215e4cf14b8cec34fb12327d3fc1f4c66c8",
+    "red_regression_log_sha256": "5f3663db8f1e4b6be0a54f30bf073b68ed59de45476a5fa0d82520df495381a0",
+    "effect_state": "SOURCE_APPLIED",
+    "real_archive_or_provider_used": false,
+    "completed_at_utc": "2026-10-22T13:24:54.201160+00:00",
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+      "-m",
+      "pytest",
+      "tests/test_tiingo_forex_source.py",
+      "tests/test_tiingo_reader.py",
+      "tests/test_tiingo_views.py",
+      "tests/test_tiingo_ingestion_integrity.py",
+      "-q",
+      "--disable-warnings",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "pytest_exit_code": 0,
+    "seconds": 10.77,
+    "passed": 355,
+    "pytest_seconds": 10.08,
+    "source_sha256": {
+      "lib/dataos/tiingo_reader.py": "ca812d4ce475b8e528778e3012bd9159fcc93ecaf84d90a3e3d598d1bb412910",
+      "lib/dataos/tiingo_forex.py": "74467f7a31d4304fbfd74184a4218eadd1a2a319d6c1bd12bab78b47f64803db",
+      "scripts/tiingo_materialize.py": "cebf7e92a57e756dfeb87a7ca84f58fc8cbbf1100aaa1219d4aed41689df9e90",
+      "tests/test_tiingo_forex_source.py": "f357f1c3ef00bb7035185a8ecd28985649c33b24715a0e013306789f301753ad"
+    },
+    "source_unchanged_during_tests": true,
+    "production_imports_unchanged": true,
+    "pure_assessor_prefix_sha256": "ab5153b812d57a1d672bd4062595b14e68e002e68ad6b13f5e7b45f4bef8b656",
+    "pure_assessor_prefix_unchanged": true,
+    "legacy_branch_compatibility_test_retained": true,
+    "log_sha256": "57e3bfa1bc6ca4232de3b9398b82a067c8bf2a667c50b2f71d87adcf51ba2bd5",
+    "tracked_paths_changed": [
+      "lib/dataos/tiingo_forex.py",
+      "lib/dataos/tiingo_reader.py",
+      "tests/test_tiingo_forex_source.py"
+    ],
+    "decoded_parquet_memory_or_rss_bound_claimed": false
+  },
+  "new_regression_cases": 27,
+  "legacy_reader_branch_preserved": true,
+  "pure_assessor_prefix_unchanged": true,
+  "production_imports_unchanged": true,
+  "prior_census_qualification": "observed_census_qualification_20261022.json",
+  "prior_actual_readback": "observed_census_readback_20261022.json",
+  "real_archive_reacquired": false,
+  "provider_or_capture_used": false,
+  "decoded_parquet_memory_or_rss_bound_claimed": false,
+  "review_acceptance": false,
+  "monitoring_admitted": false,
+  "eligible_observations": [],
+  "licensing_product_use": "COMPLETE by Chairman special-license attestation",
+  "ci_parent": {
+    "run_id": 39779646696,
+    "head": "2743fb06245d18edcbeb3f00be08b24164a348e3",
+    "tested_merge": "5751eac9f44eefe100cbdd1740d573bb9a396269",
+    "tested_base": "0aef5e4256d97227d4baf1cbf4b8aab33f79c46f",
+    "conclusion": "failure",
+    "passed_packs": 11,
+    "failed_job": 119828540353,
+    "cause": "unrun-brain-gateway existing ten-minute budget expired during Ubuntu browser-dependency installation; candidate final112 browser checks unexecuted",
+    "base_control_browser_passed": 112,
+    "candidate_browser_pass_claimed": false,
+    "fences_run": 39779646240,
+    "fences_conclusion": "success"
+  }
+}

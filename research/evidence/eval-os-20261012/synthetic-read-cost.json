@@ -1,0 +1,42 @@
+{
+  "scope": "synthetic selected legacy provider/readiness; no actual production corpus/protected outcomes; no capacity guarantee",
+  "results": [
+    {
+      "synthetic_claim_rows": 0,
+      "input_bytes": 0,
+      "warm_median_seconds": 0.0006556874998295825,
+      "samples_seconds": [
+        7.274950625000201,
+        0.0006294159998105897,
+        0.0009958750001715089,
+        0.0006819589998485753,
+        0.0005999999998493877
+      ]
+    },
+    {
+      "synthetic_claim_rows": 100,
+      "input_bytes": 26190,
+      "warm_median_seconds": 0.0018354789999648347,
+      "samples_seconds": [
+        0.0266721250000046,
+        0.0018758750002234592,
+        0.0018405420000817685,
+        0.0018304159998479008,
+        0.0017924579997270484
+      ]
+    },
+    {
+      "synthetic_claim_rows": 1000,
+      "input_bytes": 262890,
+      "warm_median_seconds": 0.014802708000161147,
+      "samples_seconds": [
+        0.14420658400013053,
+        0.014280416000019613,
+        0.01493554100034089,
+        0.018957624999984546,
+        0.014669874999981403
+      ]
+    }
+  ],
+  "method": "5 provider reads per fixture, first includes warmup; filesystem metadata generation only, no per-request full-content hash"
+}

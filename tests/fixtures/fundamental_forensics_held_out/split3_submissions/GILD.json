@@ -1,0 +1,40 @@
+{
+  "cik": "0000882095",
+  "filings_10k": [
+    {
+      "accessionNumber": "0000882095-22-000007",
+      "filingDate": "2022-02-23",
+      "form": "10-K",
+      "primaryDocument": "gild-20211231.htm",
+      "reportDate": "2021-12-31"
+    },
+    {
+      "accessionNumber": "0000882095-23-000007",
+      "filingDate": "2023-02-22",
+      "form": "10-K",
+      "primaryDocument": "gild-20221231.htm",
+      "reportDate": "2022-12-31"
+    },
+    {
+      "accessionNumber": "0000882095-24-000007",
+      "filingDate": "2024-02-23",
+      "form": "10-K",
+      "primaryDocument": "gild-20231231.htm",
+      "reportDate": "2023-12-31"
+    }
+  ],
+  "fiscalYearEnd": "1231",
+  "name": "GILEAD SCIENCES, INC.",
+  "response_sha256": {
+    "https://data.sec.gov/submissions/CIK0000882095.json": "233e0c8e8b97b3090772c767ee8e65470910c7a8ebad4db94203b98803678157"
+  },
+  "retrieved_at": "2026-11-01T20:23:03Z",
+  "sic": "2836",
+  "sicDescription": "Biological Products, (No Diagnostic Substances)",
+  "source_urls": [
+    "https://data.sec.gov/submissions/CIK0000882095.json"
+  ],
+  "tickers": [
+    "GILD"
+  ]
+}

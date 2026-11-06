@@ -240,6 +240,48 @@ def test_a_seeded_suite_outside_tests_reads_skip_only_when_its_lane_is_thin(
     assert rows and all(r["status"] == "OK" for r in rows)
 
 
+def test_a_suite_with_no_working_copy_is_read_through_git(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """discover_suites() finds suites the checkout omits by reading them from git.
+
+    contract-delta's CI checkout leaves out site/ and data/ and runs this census
+    on every PR, so the census has to read a suite's bytes the same way. Reading
+    the missing file raised FileNotFoundError. Once one such suite reached main,
+    every PR's contract-delta would red (found by the Opus review of this change).
+    """
+    rel = "data/packet/test_seeded_guard.py"  # never written: no working copy
+    source = (
+        "import pytest\n\n\n"
+        "def test_needs_pandas():\n"
+        '    pytest.importorskip("pandas")\n'
+    )
+    read: list[tuple[str, Path | None]] = []
+
+    def from_git(name: str, root: Path | None = None) -> str | None:
+        read.append((name, root))
+        return source if name == rel else None
+
+    monkeypatch.setattr(GUARD, "ROOT", tmp_path)
+    monkeypatch.setattr(GUARD, "discover_suites", lambda: [rel])
+    monkeypatch.setattr(GUARD, "suite_source", from_git)
+    thin = _fixture_jobs(("thin", f"pytest {rel}", "pip install pytest pyyaml"))
+    rows = [r for r in GUARD.census(thin) if r["test"] == rel]
+    assert read == [(rel, tmp_path)]
+    assert [(r["gate"], r["status"]) for r in rows] == [("pandas", "SKIP-ONLY")]
+
+
+def test_an_unreadable_discovered_suite_refuses_rather_than_reading_clean(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    rel = "data/gone/test_seeded_guard.py"
+    monkeypatch.setattr(GUARD, "ROOT", tmp_path)
+    monkeypatch.setattr(GUARD, "discover_suites", lambda: [rel])
+    monkeypatch.setattr(GUARD, "suite_source", lambda name, root=None: None)
+    with pytest.raises(RuntimeError, match=rel):
+        GUARD.census([])
+
+
 def test_a_test_shaped_cli_instrument_is_never_censused() -> None:
     """Widening by FILENAME would have added three permanent false work items."""
     discovered = set(GUARD.discover_suites())

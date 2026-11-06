@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-21T20:10:55Z",
+ "accession": "0001104659-26-046005",
+ "cik": "0001090012",
+ "doc_byte_length": 3120110,
+ "doc_sha256": "05778a18a84a9082c66313a437f437b7ba304db84db4df05ddc82706ff52eb47",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-21",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "tmb-20251231x10ka.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 124281,
+  "byte_start": 123841,
+  "normalized": "This information was previously omitted from the Original Filing in reliance on General Instruction G(3) to Form 10-K, which permits the information in Part III to be incorporated in the Form 10-K by reference from the definitive proxy statement if such statement is filed no later than 120 days after the end of the fiscal year covered by the Form 10-K. We are filing this Amendment to include Part III information in the Original Filing.",
+  "normalized_sha256": "122edb623f67252c89c35982957e967d0e4ba28d150bdb62c816b5a992e04d3d",
+  "raw": " This information was previously omitted from the Original Filing in reliance on General Instruction G(3) to Form 10-K, which permits the information in Part III to be incorporated in the Form 10-K by reference from the definitive proxy statement if such statement is filed no later than 120 days after the end of the fiscal year covered by the Form 10-K. We are filing this Amendment to include Part III information in the Original Filing.",
+  "raw_sha256": "e622c050c9089eec83beeff07db576ebe9626d5e681cd77b36a8ea785e11e7a0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1090012/000110465926046005/tmb-20251231x10ka.htm",
+ "xbrl_contexts": []
+}

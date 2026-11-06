@@ -1,0 +1,78 @@
+{
+  "benchmark_id": "mag7_narration_2026-08-03",
+  "frozen": true,
+  "source": "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-08-03",
+    "session_label": "date only",
+    "adjudication_date": "2026-08-03",
+    "historical_source_availability": "unverified",
+    "dependence_group": "mag7-july-2026",
+    "source": {
+      "path": "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md",
+      "sha256": "206dbc603edcd71604e20591f4fa3ca55894dde89edbe14758ce3191f656852f"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-08-03",
+        "source_lines": [
+          72,
+          72
+        ],
+        "text": "| Global admission bar | `gate_go: false` (macro-caution) across us_standouts, prophet index, and the MSFT plan all window | Systemic name-agnostic tightening on top of per-name gates |",
+        "sha256": "bc920c2fe8a5d646de8ac570e6a90436dba4ee1e485fab95086b092ff05f62df"
+      },
+      {
+        "event_date": "2026-08-03",
+        "source_lines": [
+          75,
+          77
+        ],
+        "text": "| `mag7_regime` headline | `rolling_over` 07-24→07-30 (six sessions), `cooling` on 07-31; never `turning_up`/`running_*` | `_compute_trend_state` requires cap-weighted `r10 ≥ +2%`; AAPL+NVDA dilution kept `cw.r10` ≈ +1.0% at peak week |\n| `mag7_regime` generals block | **Caught it**: `now=[MSFT], joining=[GOOGL, AMZN], coverage 0.605`; MSFT `contrib10` 0.6052 | The per-member attribution lens sees dispersion — but it is a subordinate field of an artifact no template renders |\n| `_mag7_panel.html.j2` | Dark — computed + published nightly (`site/stockdata/mag7_regime.json`), included by no template | Include stripped 2026-07-23 with the leadership board (the panel itself was not killed by the ruling — it fell with the page section) |",
+        "sha256": "b06534353fccab37eb504732a5c092fd4fd2b9d5cc654951999b05eb8ba01aa8"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        126,
+        139
+      ],
+      "text": "## §4. What does NOT change (fences honored)\n\n- No directional Mag-7 call returns to any surface. The strip built in §6 carries\n  realized moves + own-history percentile receipts + a watch stance — no direction, no\n  forecast, no rank. (DNR §2: \"Mag-7 as plain data display … stays lawful\"; \"operator\n  conviction may seed a display-tier watch item\".)\n- Board/plan **membership** is untouched (DNR:KILL-PROPHET-POP-MERGE byte-identical fence; no\n  Top-setups data-lane merge into the graded board).\n- MWR S1/S3 constructions are NOT tuned to July (that would be fitting the miss —\n  exactly the §0 chart-memory trap MWR itself documents). A shallow-flush arm, if ever\n  wanted, enters as a NEW phase-1 candidate with multiplicity accounting.\n- The residual-alpha pick engine is not \"fixed\" into chasing mega-caps.\n- `trend_state` vocabulary/thresholds unchanged (ledger continuity); the event lens is\n  additive fields.",
+      "sha256": "6492b156c9a86f8e60b1570b774f14bed63e5cfbe7017f138a1d4b0119be093e"
+    }
+  },
+  "question_en": "Based on the observations reported in the supplied August 3 adjudication, where did detection, aggregation and narration differ, and what display change is supported without changing authority?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-08-03 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-08-03] | Global admission bar | `gate_go: false` (macro-caution) across us_standouts, prophet index, and the MSFT plan all window | Systemic name-agnostic tightening on top of per-name gates |\n[2026-08-03] | `mag7_regime` headline | `rolling_over` 07-24→07-30 (six sessions), `cooling` on 07-31; never `turning_up`/`running_*` | `_compute_trend_state` requires cap-weighted `r10 ≥ +2%`; AAPL+NVDA dilution kept `cw.r10` ≈ +1.0% at peak week |\n| `mag7_regime` generals block | **Caught it**: `now=[MSFT], joining=[GOOGL, AMZN], coverage 0.605`; MSFT `contrib10` 0.6052 | The per-member attribution lens sees dispersion — but it is a subordinate field of an artifact no template renders |\n| `_mag7_panel.html.j2` | Dark — computed + published nightly (`site/stockdata/mag7_regime.json`), included by no template | Include stripped 2026-07-23 with the leadership board (the panel itself was not killed by the ruling — it fell with the page section) |",
+  "expected_properties": [
+    {
+      "tag": "detection_vs_narration",
+      "check": "Separate headline aggregation from per-member detection and absent rendering; do not call the dark panel proof of no detection."
+    },
+    {
+      "tag": "scope_and_population",
+      "check": "Explain how a weak aggregate can coexist with constructive members; do not substitute a different population or grant membership."
+    },
+    {
+      "tag": "display_vs_authority",
+      "check": "Permit conditional, display-only member context and realized observations without reviving directional calls or ranking; gate_go false remains a constraint."
+    },
+    {
+      "tag": "no_posthoc_tuning",
+      "check": "Keep MWR constructions, population membership and trend-state vocabulary and thresholds unchanged; do not tune a new gate to this episode."
+    },
+    {
+      "tag": "source_limits",
+      "check": "Treat subordinate fields as observations reported in the August 3 text; do not invent their original generation timestamp or prove historical service availability."
+    }
+  ],
+  "known_failure_modes": [
+    "Promote operator conviction, context or an anecdote into a directional execution grant.",
+    "Use subsequent outcomes or silently assume historical source availability.",
+    "Treat related Mag-7 cases as independent empirical observations."
+  ],
+  "gold_standard_sentence": "The supplied record shows per-member detection that the aggregate headline and absent panel did not narrate; display-only member context can address that gap while direction, ranking, membership and existing gates remain unchanged.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

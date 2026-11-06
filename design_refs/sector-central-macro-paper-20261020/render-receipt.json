@@ -1,0 +1,21 @@
+{
+  "scope": "Actual Macro template; checked-out snapshot; review render only",
+  "canonical_url": "https://www.mastermind-x.com/sector_central.html",
+  "basket_as_of": "2026-10-14",
+  "sector_as_of": "2026-10-16",
+  "source_generation_as_of": "2026-10-14",
+  "render_sha256": "7a1b170f459c96df943dcd0095a671d3b370ad51b3b7062ba1e8431f27e1d29a",
+  "render_bytes": 581154,
+  "input_sha256": {
+    "basketdata/baskets.json": "a4da3640b89638e6a4872c6333380bdf0a838cd62e77b0b95f1bfff29bd850ee",
+    "basketdata/action_board.json": "2f1941c24f694a7add3f372123306aa88d0e410718e8843f9a2f1b31168a88c7",
+    "basketdata/si_handoff.json": "d0067240ea42c25787fd5b9ae6f6a54795f90bd599514b060ad8139e43bcc4d9",
+    "sectordata/sector_central.json": "47574f76c5795e46f982e3d48fe8a9fc0350f97a5bb986d6013ae96624ff3aad",
+    "premiumdata/sector_central.json": "99e7c26484ac03463ff6dac2a4e3b858e430053d0bb64e0707f0ac3dc9efb375"
+  },
+  "inputs_unchanged": true,
+  "sector_central_compute_called": false,
+  "grader_called": false,
+  "premium_payload_written": false,
+  "production_published": false
+}

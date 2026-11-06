@@ -1,0 +1,41 @@
+{
+  "source_before": "1e5992d1376943d5b7b899d5382241e6eb8efc76",
+  "integrated_main": "be8a29c43973a2140056275a08769020b209ff68",
+  "reason": "Six actual generated-file/receipt conflicts suppressed normal PR CI; main also changed20 dependencies of accepted V13 proof",
+  "conflicts_resolved": [
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+    "site/government_revenue.html",
+    "site/research_screener.html",
+    "site/theme.js"
+  ],
+  "generated_semantics": "Existing canonical builders. Only shared assistant cache-key substitution and corresponding theme.js references differ from accepted Defense asset bytes. Canonical GovRev generation unchanged.",
+  "p0b": {
+    "p0b_primary": 96,
+    "p0b_degraded": 32,
+    "screenshot_count": 16,
+    "screenshots_unchanged": true,
+    "actual_inputs_verified": true,
+    "old_extension_sha256": "75037fe35058a4f699413e3587a882d38abfb3507ed3afb04268f214d64fb963",
+    "new_extension_sha256": "716e0fd82ecf715651e1dc9236ce3ee43d97a571dcb6450f0d0d8596998affad",
+    "reason": "Existing builder updates MM_BRAIN_VER to current shared bundle; no excluded-product source edits",
+    "claims": {
+      "browser_fixture": "reproducible",
+      "canonical_build": "unavailable",
+      "production": "none",
+      "source_contract": "browser_fixture"
+    }
+  },
+  "next": "Fresh complete candidate proof and exact-head protected gates on existing PR9066. No merge, CAS, publication or production acceptance claimed.",
+  "p0b_tests": {
+    "passed": 136,
+    "warnings": 14,
+    "seconds": 113.92,
+    "exit": 0
+  },
+  "same_diff_closure": {
+    "passed": true,
+    "base": "be8a29c43973a2140056275a08769020b209ff68"
+  }
+}
