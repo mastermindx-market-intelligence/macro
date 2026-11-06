@@ -1575,6 +1575,21 @@ def test_fif_kernel_siblings_share_one_closure_and_partition_the_suite_once(
     siblings = [by_id[job_id] for job_id in sorted(FIF_KERNEL_SIBLINGS)]
     closures = {tuple(job.paths) for job in siblings}
     assert len(closures) == 1, "sibling closures diverged"
+    # S6: all three curated-exclusive siblings must select changes in imported
+    # ancestor packages, not just the downstream .py modules. These paths were
+    # missing on the first hosted CI and the ancestor-init census rejected it.
+    required_ancestor_inits = {
+        "collectors/biocatalyst/__init__.py",
+        "engine/biocatalyst/__init__.py",
+        "engine/codex_lane/__init__.py",
+        "engine/context_index/__init__.py",
+        "engine/earnings_release/__init__.py",
+        "engine/intelligence_workspace/adapters/__init__.py",
+        "engine/oracle/__init__.py",
+        "engine/seasonality/__init__.py",
+    }
+    for job in siblings:
+        assert required_ancestor_inits <= set(job.paths), job.job_id
     assert all(job.exclusive and job.gate == "code" for job in siblings)
     step_name = "FIF kernel suites (class A, hermetic)"
     slices = []
