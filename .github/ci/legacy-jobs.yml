@@ -7355,6 +7355,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_site_access_boundary.py"
+      - "tests/test_public_html_gate_timeout.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7364,7 +7365,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
-        run: python -m pytest tests/test_site_access_boundary.py -q
+        run: python -m pytest tests/test_site_access_boundary.py tests/test_public_html_gate_timeout.py -q
 
   sector-cycles-page:
     if: ${{ false }}
