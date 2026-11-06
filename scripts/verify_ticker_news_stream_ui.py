@@ -29,7 +29,7 @@ def snapshot_row(sequence, story, title, *, low=False, count=1):
     return {
         "sequence": sequence, "source": "benzinga", "publisher": "Benzinga",
         "source_item_id": str(story), "story_id": "story-" + str(story),
-        "source_count": count, "item_count": count, "title": title,
+        "source_count": count, "publisher_count": count, "item_count": count, "title": title,
         "url": "https://example.test/report/" + str(story),
         "teaser": "Preview fixture: reporting stays readable with room for context, source attribution and the underlying reports.",
         "published_at": "2026-10-20T10:00:00Z", "updated_at": None,
@@ -53,7 +53,7 @@ def change_row(sequence, story, title, *, kind="upsert", observed="2026-10-20T11
                teaser="Live fixture projection of the current eligible representative.",
                quality={"score": 88, "low_value": False, "reason": None})
     if kind == "remove":
-        row.update(title="", url="", teaser="", source_count=None, item_count=None,
+        row.update(title="", url="", teaser="", source_count=None, publisher_count=None, item_count=None,
                    published_at=None, updated_at=None, received_at=None,
                    quality=None, projection_sequence=None)
     return row
@@ -81,7 +81,7 @@ def story_detail(story_id):
     second.update(source="massive:reuters.com", publisher="Reuters",
                   source_item_id="wire-1", title="Second publisher's report on the same event")
     return {"schema": "ticker_news.story.v1", "story_id": story_id,
-            "source_count": 2, "item_count": 2, "members": [member, second]}
+            "source_count": 2, "publisher_count": 2, "item_count": 2, "members": [member, second]}
 
 
 def default_rows():

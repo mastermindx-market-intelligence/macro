@@ -121,7 +121,7 @@ import logging
 import os
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timezone
 from pathlib import Path
 from typing import Any
 
@@ -201,6 +201,13 @@ def settled_envelope_path(root: Path | None = None) -> Path:
     return (root or _REPO_ROOT) / "data" / "risk_envelope" / "latest.json"
 
 
+def settled_public_path(root: Path | None = None) -> Path:
+    """The PUBLIC settled copy (scripts/build_risk_envelope.py writes it beside the
+    durable data/risk_envelope/latest.json). EW-P5 S01/S02/S12: a same-session
+    settle counts only when this copy is paired with the durable one."""
+    return (root or _REPO_ROOT) / "site" / "riskdata" / "risk_envelope.json"
+
+
 def out_path(root: Path | None = None) -> Path:
     return (root or _REPO_ROOT) / "site" / "live" / "risk_envelope.json"
 
@@ -261,6 +268,55 @@ def _normalize_event_time(raw: Any, now: datetime) -> str | None:
         return _iso_z(dt)
     except (ValueError, OverflowError):
         return None  # malformed offset must not abort the source projection
+
+
+# EW-P5 S02/S12: the settled revisions that may settle a session. A label alone
+# never settles it (see _settled_qualification).
+_SETTLED_REVISIONS = frozenset({"settled", "corrected"})
+# The regular NYSE close. A settled copy produced before 16:00 America/New_York on
+# its own source session was produced while that session was still open. On a half
+# day this keeps the live overlay a little longer, never shorter.
+_SETTLE_CLOSE_ET = time(16, 0)
+
+
+def _settled_qualification(settled: dict[str, Any], public: dict[str, Any] | None,
+                           session: str | None) -> dict[str, Any]:
+    """Whether the durable settled copy may settle the live session it names.
+
+    Consulted only when the live session L equals the settled session S. ALL must
+    hold, checked in this order; the first failure is the published reason:
+      1. `revision` is "settled" or "corrected";
+      2. `produced_at` parses, is tz-aware and is at or after 16:00
+         America/New_York on the date `session`;
+      3. the public copy exists and carries the same `source_session` and
+         `bundle_id` as the durable copy.
+    No wall clock is read here: `produced_at` is the settled builder's own stamp.
+    """
+    rev = settled.get("revision")
+    if rev not in _SETTLED_REVISIONS:
+        return {"qualified": False, "reason": f"revision {rev!r} is not settled or corrected"}
+    raw = settled.get("produced_at")
+    produced: datetime | None
+    try:
+        produced = datetime.fromisoformat(str(raw)) if raw else None
+    except (TypeError, ValueError):
+        produced = None
+    if produced is None or produced.tzinfo is None:
+        return {"qualified": False, "reason": "produced_at is missing, unparseable or naive"}
+    try:
+        close = datetime.combine(date.fromisoformat(str(session)), _SETTLE_CLOSE_ET,
+                                 tzinfo=nyse_calendar.ET)
+    except (TypeError, ValueError):
+        return {"qualified": False, "reason": "source_session is not an ISO date"}
+    if produced < close:
+        return {"qualified": False,
+                "reason": "produced_at is before 16:00 America/New_York on the source session"}
+    if not public:
+        return {"qualified": False, "reason": "public settled copy is missing"}
+    if public.get("source_session") != session or public.get("bundle_id") != settled.get("bundle_id"):
+        return {"qualified": False,
+                "reason": "public settled copy does not match the durable source_session and bundle_id"}
+    return {"qualified": True}
 
 
 def _live_session(built_dt: datetime | None) -> str | None:
@@ -694,14 +750,24 @@ def build(root: Path | None = None, now: datetime | None = None,
     )
     candidate_stage = envelope["hazard_summary"]["stage"]
 
+    # EW-P5 S02/S12: at L == S the durable copy settles the session only when it is
+    # qualified (settled/corrected revision, produced at or after the close, paired
+    # public copy). An unqualified same-session file never suppresses the overlay.
+    settled_qualification: dict[str, Any] | None = None
+    if not future_refused and L is not None and S is not None and L == S:
+        settled_qualification = _settled_qualification(
+            settled, _read_json(settled_public_path(root)), S)
+
     if future_refused:
         precedence = "settled"
     elif L is None or S is None:
         precedence = "settled"
     elif L > S:
         precedence = "live"
+    elif L == S and not (settled_qualification or {}).get("qualified"):
+        precedence = "live"  # unqualified same-session settle: the overlay stays live
     else:
-        precedence = "settled"  # L == S (just settled) or L < S (older than settled)
+        precedence = "settled"  # qualified L == S (just settled) or L < S (older than settled)
 
     wrapper_live_active = bool(fresh["usable"] and precedence == "live")
 
@@ -717,7 +783,7 @@ def build(root: Path | None = None, now: datetime | None = None,
         stale_reason = "stale (older than stale_after_min)"
     elif L is not None and S is not None and L < S:
         stale_reason = "older than settled"
-    elif L is not None and S is not None and L == S:
+    elif L is not None and S is not None and L == S and precedence == "settled":
         stale_reason = "session already settled"
     else:
         stale_reason = "not live"
@@ -746,6 +812,8 @@ def build(root: Path | None = None, now: datetime | None = None,
         "stale_after_min": stale_after_min,
         "precedence": precedence,
         "overlays": {"settled_bundle_id": B, "settled_source_session": S},
+        # EW-P5 S02/S12: null unless L == S; then whether the settled copy qualified.
+        "settled_qualification": settled_qualification,
         "live_transition": live_transition,
         "clocks": {
             # SOURCE EVENT CLOCK (GD-3R1): the real source-market quote clock —
