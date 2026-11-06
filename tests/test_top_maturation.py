@@ -911,6 +911,27 @@ def test_running_hot_fires_only_when_the_caller_asks_for_it():
         assert banned not in hot["tip_en"], f"{banned!r} leaked into a Tier-2 hover"
 
 
+@pytest.mark.parametrize("tier", ["r63", "atrz"])
+def test_hot_only_firing_is_watch_in_widened_tier(tier):
+    """W2b counts a hot-only warning in the widened cohort, not primary."""
+    thr = _thresholds()
+    thr["thresholds"]["running_hot_p90"] = 70.0
+    _, fired, _ = tm._fire_legs(
+        _feats(B2_rsi14=88.0), _detail(), thr, None, hot=True)
+    assert fired == [tm.HOT_LEG], "fixture must isolate the single new leg"
+    assert tm.classify(fired, tier=tier) == "extended_watch"
+    assert tm.classify(fired) == "extended_healthy", "frozen primary cannot count hot"
+
+
+@pytest.mark.parametrize("tier", ["r63", "atrz"])
+def test_widened_tier_hot_counts_once_without_changing_terminal_rule(tier):
+    """Hot is one counting leg; age is context, breaking needs structure."""
+    assert tm.classify([tm.HOT_LEG, "episode_age"], tier=tier) == "extended_watch"
+    assert tm.classify([tm.HOT_LEG, "rs_decel", "vol_asymmetry"], tier=tier) == "thinning"
+    assert tm.classify([tm.HOT_LEG, "rs_decel", "vol_asymmetry"]) == "extended_watch"
+    assert tm.classify([tm.HOT_LEG, "below_50d", "drawdown_from_high"], tier=tier) == "breaking"
+
+
 def test_every_leg_declares_whether_it_was_cut_from_a_library_or_is_a_fixed_rule():
     """The surface appends a different provenance sentence to each class, and the
     promise is only worth anything if the split comes from one table."""
@@ -950,6 +971,33 @@ def test_v2_payload_is_three_ordered_tiers_and_no_cross_tier_total(tmp_path, qui
     assert ctx["tiers"][0]["readable"] is True
     assert all(t["readable"] is False for t in ctx["tiers"][1:])
     assert all(t["extended_n"] == 0 for t in ctx["tiers"][1:])
+
+
+def test_widened_builder_uses_tier_counting_state(tmp_path, monkeypatch, quiet_lane):
+    """The real tier path must not discard a widened cohort's hot warning."""
+    root = _store(tmp_path / "data")
+    library = (root / "top_anatomy" / "library.parquet").read_bytes()
+    for tier in ("r63", "atrz"):
+        thr = _thresholds()
+        thr["ext_variant"] = tier
+        thr["thresholds"]["running_hot_p90"] = 70.0
+        (root / "top_anatomy" / f"thresholds_{tier}.json").write_text(json.dumps(thr))
+        (root / "top_anatomy" / f"library_{tier}.parquet").write_bytes(library)
+
+    real_fire = tm._fire_legs
+
+    def hot_only_for_widened(features, detail, thresholds, ages, *, hot=False):
+        if hot:
+            return [], [tm.HOT_LEG], None
+        return real_fire(features, detail, thresholds, ages, hot=False)
+
+    monkeypatch.setattr(tm, "_fire_legs", hot_only_for_widened)
+    ctx, _ = tm.build_context(root, out_root=root, repo_root=None,
+                              trailing=420, log=lambda m: None)
+    for tier in ctx["tiers"][1:]:
+        assert tier["readable"], tier["key"]
+        assert tier["states"]["extended_watch"], tier["key"]
+        assert not tier["states"]["extended_healthy"], tier["key"]
 
 
 def test_the_membership_window_is_the_same_21_sessions_on_every_tier():
