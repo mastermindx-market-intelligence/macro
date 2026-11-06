@@ -267,7 +267,7 @@
       } catch(error) {
         if(accessStatus){renderAccess();return;}
         if(error.status===401||error.status===403){denyAccess(error.status);return;}
-        text('history-status',tr('History is unavailable or belongs to a different publication. The dated summary above is retained. Retry after the publication settles.','历史数据暂不可用或版本不同。上方保留已验证日期的摘要，可在发布完成后重试。'));
+        text('history-status',tr('History is unavailable or belongs to a different publication. The dated summary above is retained. Retry after the publication settles.','历史数据暂不可用或版本不同。上方保留标注日期的摘要，可在发布完成后重试。'));
         get('history-retry').hidden=false;
       } finally {historyLoading=false;}
     }

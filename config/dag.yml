@@ -1593,6 +1593,13 @@ lanes:
           list: that anchor keys on the manifest's Last-Modified and would red the job on
           every legitimate refuse-to-run night, while the builder's content-date freshness
           gate already catches a stale R2 copy the following night.
+      - id: build_darkflow_index
+        module: scripts.build_darkflow_index
+        args: [--record-observation]
+        note: >
+          Existing nightly invocation from committed local inputs; records first-observed
+          evidence only in this lane and retains the prior publication when inputs are
+          unavailable. Adds no collector, scheduler, forecast validation, or trade authority.
       - id: collect_release_target_vintages
         module: scripts.collect_release_target_vintages
         note: >
@@ -3040,6 +3047,12 @@ lanes:
         note: Policy-Shock W2-F — ARMED/QUIET lever card; non-fatal; site artifact only (PS-R7)
       - id: build_site
         module: scripts.build_site
+      - id: build_darkpool_desk_render_only
+        module: scripts.build_darkpool_desk
+        args: [--render-only]
+        note: >
+          Existing page-only render from committed Dark Pool and Dark Flow publication
+          inputs, after build_site; does not advance first-observed history or collect data.
       - id: build_ontology_explorer
         module: scripts.build_ontology_explorer
         note: >

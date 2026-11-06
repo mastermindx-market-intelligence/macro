@@ -802,14 +802,14 @@ jobs:
           # config news_translation.render_lanes is true (default off) — the RENDER_NO_DRIP=1
           # sentinel gates the call in code, so with the flag off this lane makes zero LLM calls.
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        # Composite scopes ("macro+china" from the pick step's union) run each region's
+        # branch sequentially; hub/central are guarded to run at most once per job.
+        # marker for the library-rebuild guard (same as daily): only libraries whose
+        # dashboard didn't build them fresh this run get rebuilt by the safety net.
         run: |
           set +e
           SCOPE="${{ steps.pick.outputs.scope }}"; SCOPE="${SCOPE:-all}"
           echo "::notice::render scope = $SCOPE"
-          # Composite scopes ("macro+china" from the pick step's union) run each region's
-          # branch sequentially; hub/central are guarded to run at most once per job.
-          # marker for the library-rebuild guard (same as daily): only libraries whose
-          # dashboard didn't build them fresh this run get rebuilt by the safety net.
           touch "$RUNNER_TEMP/render_libs_marker"
 
           run_py() {   # resilient serial builder (spine, page-renderers, narrow scopes)

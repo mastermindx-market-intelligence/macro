@@ -37,16 +37,16 @@ def render(output: Path, source: Path) -> dict:
         fragment = env.get_template('_darkflow_panel.html.j2').render(df_compact=compact)
         html = ('<!doctype html><html lang="en" data-lang="en" data-theme="dark"><head>'
                 '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-                '<title>Dark Flow anonymous component verification</title><style>' + (ROOT/'templates/darkflow.css').read_text() + '</style>'
-                '<style>body{margin:0;padding:16px;background:#0f1115}main{max-width:1360px;margin:auto}'
+                '<title>Dark Flow anonymous component verification</title><style>' + (ROOT/'templates/theme.css').read_text() + '</style><style>' + (ROOT/'templates/darkflow.css').read_text() + '</style>'
+                '<style>body{margin:0;padding:16px;background:var(--bg)}main{max-width:1360px;margin:auto}'
                 '.l-zh{display:none}html[data-lang="zh"] .l-en{display:none}'
                 'html[data-lang="zh"] .l-zh{display:inline}'
-                'html[data-theme="light"] body{background:#f7f8fa}</style>'
+                '</style>'
                 '<script data-externalize>' + (ROOT/'templates/darkflow.js').read_text() + '</script></head><body><main>' + fragment + '</main></body></html>')
         (output / name).write_text(html)
     from scripts.externalize_css import externalize
     externalize(output)
-    for name in ['darkflow.js', 'darkflow.css']:
+    for name in ['theme.css', 'darkflow.js', 'darkflow.css']:
         inputs['templates/' + name] = hashlib.sha256((ROOT / 'templates' / name).read_bytes()).hexdigest()
     vol = subprocess.check_output(['git', 'show', 'HEAD:site/basketdata/vol_weather.json'], cwd=ROOT)
     (output / 'basketdata').mkdir(exist_ok=True)
@@ -65,7 +65,7 @@ def check(output: Path) -> dict:
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     origin = f'http://127.0.0.1:{server.server_port}'
-    checks, errors, shots = [], [], []
+    checks, errors, shots, styles = [], [], [], []
     payload = json.loads((output / 'darkflow_latest.json').read_text())
     expected = f"{payload['display']['reading']['value']:.2f}"
     def record(name, condition):
@@ -75,32 +75,45 @@ def check(output: Path) -> dict:
     try:
         with sync_playwright() as runtime:
             browser = runtime.chromium.launch(headless=True)
-            for width in [390, 1440]:
+            for variant, width in [(v, w) for v in ['component', 'compact'] for w in [390, 1440]]:
                 for theme in ['dark', 'light']:
                     for lang in ['en', 'zh']:
                         context = browser.new_context(viewport={'width':width, 'height':900})
                         context.route('**/*', lambda route: route.continue_() if route.request.url.startswith(origin) else route.abort())
                         page = context.new_page()
                         page.on('pageerror', lambda error: errors.append(str(error)))
-                        page.goto(origin + '/darkflow-component.html')
+                        page.goto(origin + '/darkflow-' + variant + '.html')
                         page.locator('[data-df="value"]').filter(has_text=expected).wait_for()
+                        if variant == 'compact':
+                            page.locator('[data-df="explore"] > summary').click()
                         page.evaluate('([theme,lang])=>{document.documentElement.dataset.theme=theme;document.documentElement.dataset.lang=lang}', [theme,lang])
                         page.locator('[data-df="history-chart"] svg').wait_for()
                         page.locator('[data-df="volatility"] > div').first.wait_for()
-                        record(f'{width}-{theme}-{lang}: no page overflow', page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
-                        record(f'{width}-{theme}-{lang}: correct dated ratio', page.locator('[data-df="asof"]').inner_text()==payload['display']['asof'])
+                        record(f'{variant}-{width}-{theme}-{lang}: no page overflow', page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+                        record(f'{variant}-{width}-{theme}-{lang}: correct dated ratio', page.locator('[data-df="asof"]').inner_text()==payload['display']['asof'])
                         page.locator('[data-df="sector"]').select_option('Information Technology')
                         page.locator('[data-df="range"]').select_option('63')
                         chart = page.locator('[data-df="history-chart"] svg')
                         before = chart.get_attribute('aria-label')
                         chart.focus(); page.keyboard.press('ArrowLeft')
-                        record(f'{width}-{theme}-{lang}: keyboard chart inspection', chart.get_attribute('aria-label')!=before)
+                        record(f'{variant}-{width}-{theme}-{lang}: keyboard chart inspection', chart.get_attribute('aria-label')!=before)
                         page.locator('.df-names > summary').click()
                         page.locator('[data-df="search"]').fill('NVDA')
-                        record(f'{width}-{theme}-{lang}: constituent drilldown', page.locator('[data-df="names"] a').first.get_attribute('href')=='stock.html?t=NVDA')
-                        record(f'{width}-{theme}-{lang}: independent volatility dates', payload['display']['asof'] in page.locator('[data-df="volatility-status"]').inner_text())
+                        record(f'{variant}-{width}-{theme}-{lang}: constituent drilldown', page.locator('[data-df="names"] a').first.get_attribute('href')=='stock.html?t=NVDA')
+                        record(f'{variant}-{width}-{theme}-{lang}: independent volatility dates', payload['display']['asof'] in page.locator('[data-df="volatility-status"]').inner_text())
                         page.locator('[data-df="sector"]').select_option('__market__')
-                        name=f'darkflow-{width}-{theme}-{lang}.png'
+                        metrics = page.locator('#dark-flow').evaluate("""panel => ({
+                            background: getComputedStyle(panel).backgroundColor,
+                            bodyBackground: getComputedStyle(document.body).backgroundColor,
+                            uiFont: getComputedStyle(panel).fontFamily,
+                            valueFont: getComputedStyle(panel.querySelector('[data-df="value"]')).fontFamily,
+                            divider: getComputedStyle(panel.querySelector('td')).borderBottomColor
+                        })""")
+                        record(f'{variant}-{width}-{theme}-{lang}: shared theme resolves',
+                               metrics['background'] == metrics['bodyBackground']
+                               and metrics['background'] != 'rgba(0, 0, 0, 0)')
+                        styles.append({'variant':variant, 'width':width, 'theme':theme, 'lang':lang, **metrics})
+                        name=f'darkflow-{variant}-{width}-{theme}-{lang}.png'
                         page.locator('#dark-flow').screenshot(path=str(output/name), animations='disabled')
                         shots.append(name)
                         context.close()
@@ -205,7 +218,8 @@ def check(output: Path) -> dict:
             browser.close()
         record('no component JavaScript exceptions',not errors)
         return {'state':'PASS','checks':checks,'page_errors':errors,'screenshots':shots,
-                'source_backed_visuals':True,'synthetic_fault_checks':True,'production_acceptance':False}
+                'source_backed_visuals':True,'synthetic_fault_checks':True,'production_acceptance':False,
+                'shared_theme_probes':styles}
     finally:
         server.shutdown();server.server_close();thread.join(timeout=2)
 

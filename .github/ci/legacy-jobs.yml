@@ -52092,6 +52092,7 @@ jobs:
       - "templates/_seo_head.html.j2"
       - "templates/_site_nav.html.j2"
       - "templates/darkflow.*"
+      - "templates/theme.css"
       - "templates/darkflow.css"
       - "templates/darkflow.js"
       - "templates/darkpool.html.j2"

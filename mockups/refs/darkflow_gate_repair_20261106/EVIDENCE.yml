@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/darkflow.css
+manifest: mockups/refs/darkflow_gate_repair_20261106/manifest.json
