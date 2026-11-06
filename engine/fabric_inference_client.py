@@ -590,13 +590,13 @@ def _auto_request_digest(payload):
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _auto_route(value, inspection, original):
+def _auto_route_metadata(value, inspection, maximum):
     fields = {"schema", "requested_model", "route_scope", "route_scope_digest", "selection_digest",
               "request_digest", "routed_request_digest", "pool", "selected_model", "mode", "protocol",
               "driver", "profile", "source", "recipe_digest", "output_contract"}
     if (type(value) is not dict or set(value) != fields
             or value["schema"] != "mastermind.fabric_application_route.v1"
-            or value["requested_model"] is not None or original.get("model") is not None
+            or value["requested_model"] is not None
             or value["route_scope"] != inspection["route_scope"]
             or value["route_scope_digest"] != inspection["route_scope_digest"]
             or value["pool"] not in inspection["route_scope"]["pools"]
@@ -604,7 +604,7 @@ def _auto_route(value, inspection, original):
                        ("selected_model", "mode", "driver", "profile", "source"))
             or type(value["protocol"]) is not str
             or value["protocol"] not in {"chat", "responses", "harness"}
-            or value["output_contract"] != {"mode": "hard_maximum", "max_tokens": original["max_tokens"]}):
+            or value["output_contract"] != {"mode": "hard_maximum", "max_tokens": maximum}):
         _refuse("fabric_auto_route_invalid", unknown=True)
     for key in ("selection_digest", "request_digest", "routed_request_digest"):
         if type(value[key]) is not str or re.fullmatch(r"[0-9a-f]{64}", value[key]) is None:
@@ -616,10 +616,64 @@ def _auto_route(value, inspection, original):
             or value["pool"] == "bailian" and value["protocol"] != "responses"
             or value["pool"] not in {"go", "bailian"} and value["protocol"] != "harness"):
         _refuse("fabric_auto_route_invalid", unknown=True)
+    return json.loads(_canonical_auto(value))
+
+
+def _auto_route(value, inspection, original):
+    if original.get("model") is not None:
+        _refuse("fabric_auto_route_invalid", unknown=True)
+    value = _auto_route_metadata(value, inspection, original["max_tokens"])
     if (value["request_digest"] != _auto_request_digest(original)
             or value["routed_request_digest"] != _auto_request_digest(
                 dict(original, model=value["selected_model"]))):
         _refuse("fabric_auto_request_commitment_invalid", unknown=True)
+    return value
+
+
+def auto_route_identity(route):
+    """Pure frozen turn identity from an already validated route."""
+    value = {key: item for key, item in route.items()
+             if key not in {"request_digest", "routed_request_digest", "output_contract"}}
+    value["output_limit_mode"] = route["output_contract"]["mode"]
+    return json.loads(_canonical_auto(value))
+
+
+def validate_auto_observation(value, inspection, *, operation_id, request_id,
+                              request_digest, routed_request_digest, max_tokens,
+                              expected_route=None, require_success=False):
+    """Validate an existing caller receipt without selection, admission or I/O.
+
+    The caller retains commitments computed from the original translated
+    request, beside the immutable transport observation, in its existing
+    durable operation owner. Re-reading this evidence cannot send a request.
+    """
+    inspection = validate_auto_inspection(inspection)
+    validate_native_operation_id(operation_id)
+    validate_native_operation_id(request_id)
+    fields = {"schema", "disposition", "effect_unknown", "turn_id", "request_id",
+              "routing", "serving_model", "usage"}
+    if (type(value) is not dict or set(value) != fields
+            or value["schema"] != "mastermind.fabric_application_observation.v2"
+            or value["turn_id"] != operation_id or value["request_id"] != request_id
+            or type(value["disposition"]) is not str
+            or value["disposition"] not in {"terminal", "effect_unknown"}
+            or type(value["effect_unknown"]) is not bool
+            or value["effect_unknown"] != (value["disposition"] == "effect_unknown")
+            or type(max_tokens) is not int or not 1 <= max_tokens <= 32768
+            or type(require_success) is not bool
+            or (value["serving_model"] is not None and not _safe_id(value["serving_model"]))
+            or type(value["usage"]) is not dict
+            or set(value["usage"]) != {"input_tokens", "output_tokens"}
+            or any(item is not None and (type(item) is not int or not 0 <= item <= MAX_NATIVE_TOKENS)
+                   for item in value["usage"].values())):
+        _refuse("fabric_auto_observation_invalid")
+    route = _auto_route_metadata(value["routing"], inspection, max_tokens)
+    if (route["request_digest"] != request_digest
+            or route["routed_request_digest"] != routed_request_digest
+            or expected_route is not None and auto_route_identity(route) != expected_route
+            or require_success and (value["disposition"] != "terminal"
+                or value["effect_unknown"] or value["serving_model"] != route["selected_model"])):
+        _refuse("fabric_auto_observation_invalid")
     return json.loads(_canonical_auto(value))
 
 
