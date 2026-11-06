@@ -1,0 +1,761 @@
+# HIERARCHY_BLOCK_V1 - house hierarchy vocabulary for the config/theme_crosswalk.yml `hierarchy:` block
+# Status: DRAFT for seat ratification. Decision: DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK (spec PR #8585 section 3). Display-only navigation vocabulary.
+# Sources: research/theme_graph/hierarchy_content/C1_CATEGORIES_AND_COMPUTE_ENERGY.md@861d469f199a0245b6f51ef39b85ab742d684594
+# Sources: research/theme_graph/hierarchy_content/C2_SECURITY_INDUSTRIAL_HEALTH.md@d5cc33620cd0bab4c10d35949afdd09d0bff66bb
+# Sources: research/theme_graph/hierarchy_content/C3_MATERIALS_HEALTH_SOLAR.md@92015bb6a51c23130a8e0b7a63fe0620ff85d72e
+# asserted_on: WC4_MERGE_DATE is a placeholder; the W-C4 crosswalk PR replaces every occurrence with its merge date (YYYY-MM-DD, >= 2026-10-07).
+# Counts: categories=10 micro_themes=69 parents=94 (category->theme=21, theme->micro=73)
+# Micros per theme: ai_semiconductors=5, memory_storage=3, semicap_equipment=4, data_center_power=3, nuclear_power=3, grid_electrification=3, cybersecurity=4, defense_aerospace=7, robotics_automation=6, glp1_obesity=5, fintech_payments=0, space_satellite=6, rare_earth_critical_min=4, copper_steel_electrify=4, ag_fertilizer=3, medical_devices=4, diagnostics_lifesci=5, solar=4
+# Themes with no category parent: none
+# Excluded basket category: US Sectors (EW) - equal-weight sector-index baskets are the sector axis, not semantic-theme navigation.
+# Dropped: (none)
+hierarchy:
+  categories:
+    - id: "technology_software"
+      name_en: "Technology & software"
+      name_zh: "科技与软件"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: AI & Technology | Artificial Intelligence | Software."
+    - id: "semiconductors_hardware"
+      name_en: "Semiconductors & hardware"
+      name_zh: "半导体与硬件"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: Semiconductors | Semiconductors & Hardware."
+    - id: "energy_power"
+      name_en: "Energy & power"
+      name_zh: "能源与电力"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: Energy & Power."
+    - id: "materials_mining"
+      name_en: "Materials & mining"
+      name_zh: "材料与矿业"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: Materials & Mining."
+    - id: "industrials_defense"
+      name_en: "Industrials & defense"
+      name_zh: "工业与国防"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: Industrials | Industrials & Defense."
+    - id: "healthcare_lifesciences"
+      name_en: "Healthcare & life sciences"
+      name_zh: "医疗与生命科学"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: Healthcare."
+    - id: "financial_services"
+      name_en: "Financial services"
+      name_zh: "金融服务"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: Financials."
+    - id: "consumer_cyclical"
+      name_en: "Consumer cyclical"
+      name_zh: "可选消费"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: Consumer Cyclical."
+    - id: "consumer_defensive"
+      name_en: "Consumer defensive"
+      name_zh: "必需消费"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: Consumer Defensive."
+    - id: "crypto_digital_assets"
+      name_en: "Crypto & digital assets"
+      name_zh: "加密与数字资产"
+      asserted_on: WC4_MERGE_DATE
+      note: "basket categories: Crypto & Digital Assets."
+  micro_themes:
+    - id: "hbm_packaging"
+      name_en: "HBM & advanced packaging"
+      name_zh: "HBM 与先进封装"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "vertical:theme_research_registry:hbm_packaging"
+      note: "Federated vertical slice; HBM stacking is distinct from generic accelerator silicon."
+    - id: "sic_gan_specialty"
+      name_en: "SiC / GaN specialty devices"
+      name_zh: "SiC / GaN 特种器件"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "vertical:theme_research_registry:sic_gan_specialty"
+      note: "Federated vertical slice; no additional house line names SiC/GaN on origin/main."
+    - id: "gpu_merchant_accelerators"
+      name_en: "GPUs & merchant accelerators"
+      name_zh: "GPU 与通用加速芯片"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:ai_semiconductors"
+      note: "Merchant GPU and off-the-shelf accelerator silicon, distinct from custom ASIC programs."
+    - id: "ai_interconnect_silicon"
+      name_en: "AI cluster interconnect silicon"
+      name_zh: "AI 集群互联芯片"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Mechanism distinguishes interconnect from compute and packaging."
+    - id: "custom_asic_silicon"
+      name_en: "Custom ASIC accelerators"
+      name_zh: "定制 ASIC 加速芯片"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:ai_semiconductors"
+      note: "Custom ASIC compute programs, distinct from merchant GPU and merchant accelerator silicon."
+    - id: "conventional_dram"
+      name_en: "Conventional DRAM (non-HBM)"
+      name_zh: "常规 DRAM（非 HBM）"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Commodity DRAM product path separate from HBM-dominant AI memory framing."
+    - id: "nand_enterprise_storage"
+      name_en: "NAND & enterprise storage"
+      name_zh: "NAND 与企业级存储"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:memory_storage"
+      note: "Basket thesis explicitly names NAND and enterprise storage."
+    - id: "lithography_tools"
+      name_en: "Lithography tools"
+      name_zh: "光刻设备"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Lithography exposure as a fab tool class, sibling to etch/deposition and metrology."
+    - id: "etch_deposition_equipment"
+      name_en: "Etch & deposition equipment"
+      name_zh: "刻蚀与沉积设备"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Etch/deposition named as core WFE process steps."
+    - id: "process_metrology_inspection"
+      name_en: "Process metrology & inspection"
+      name_zh: "工艺量测与检测"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:semicap_equipment"
+      note: "Basket theme highlights metrology subsystem suppliers."
+    - id: "wafer_fab_subsystems"
+      name_en: "Wafer-fab subsystems & components"
+      name_zh: "晶圆厂设备子系统与零部件"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:semicap_equipment"
+      note: "Basket theme names subsystem suppliers as a layer distinct from process tools."
+    - id: "liquid_cooling_thermal"
+      name_en: "Liquid cooling & thermal management"
+      name_zh: "液冷与热管理"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Thermal segment mandatory for high-density AI racks."
+    - id: "hv_transformers_switchgear"
+      name_en: "HV transformers & switchgear"
+      name_zh: "高压变压器与开关设备"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Shared power-delivery bottleneck across campus and grid buildout (M3)."
+    - id: "ups_power_conversion"
+      name_en: "UPS & power conversion"
+      name_zh: "UPS 与电力转换"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Distinct from switchgear: on-site conversion and UPS integration."
+    - id: "reactor_technology"
+      name_en: "Reactor technology"
+      name_zh: "反应堆技术"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md"
+      note: "REG-PACKET slice key for reactor designers."
+    - id: "nuclear_components"
+      name_en: "Nuclear components"
+      name_zh: "核电部件"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md"
+      note: "REG-PACKET slice for plant components supply chain."
+    - id: "fuel_cycle"
+      name_en: "Fuel cycle"
+      name_zh: "核燃料循环"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md"
+      note: "REG-PACKET slice for mining through enrichment."
+    - id: "grid_distribution_automation"
+      name_en: "Grid distribution automation"
+      name_zh: "电网配电自动化"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Distribution automation named separately from bulk transmission hardware."
+    - id: "transmission_hvdc_cabling"
+      name_en: "Transmission & HVDC cabling"
+      name_zh: "输电与 HVDC 电缆"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "HVDC and specialized cable segment with long lead times."
+    - id: "endpoint_security"
+      name_en: "Endpoint security"
+      name_zh: "终端安全"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:cybersecurity"
+      note: "Device-level protection, where behavioral and AI-native detection is replacing signature tools."
+    - id: "network_security"
+      name_en: "Network security"
+      name_zh: "网络边界安全"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:cybersecurity"
+      note: "Perimeter and traffic-level protection distinct from device and identity controls."
+    - id: "identity_access_management"
+      name_en: "Identity and access management"
+      name_zh: "身份与访问管理"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:cybersecurity"
+      note: "Credential and identity attack surface distinct from endpoint malware detection."
+    - id: "cloud_security"
+      name_en: "Cloud security"
+      name_zh: "云安全"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:cybersecurity"
+      note: "Protection for cloud workloads and the attack surface that cloud migration opens."
+    - id: "missiles_munitions_effects"
+      name_en: "Missiles, munitions and effects"
+      name_zh: "导弹、弹药与毁伤效应"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:research/defense_intelligence/D0R_DEFENSE_EQUITY_DRIVER_TAXONOMY.md"
+      note: "Expendable replenishment and production economics separate from platform primes."
+    - id: "missile_propulsion_supply"
+      name_en: "Missile and munition propulsion supply"
+      name_zh: "导弹与弹药推进系统供给"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Propulsion bottlenecks constrain guided-munition output rates."
+    - id: "defense_sensors_electronics_c2"
+      name_en: "Defense sensors, electronics and C2"
+      name_zh: "国防传感器、电子与指控"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Radar, electronic warfare, C2 and mission electronics layer under platform modernization."
+    - id: "autonomous_systems_counter_uas"
+      name_en: "Autonomy, drones and counter-UAS"
+      name_zh: "自主系统、无人机与反无人机"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:research/defense_intelligence/D0R_DEFENSE_EQUITY_DRIVER_TAXONOMY.md"
+      note: "Unmanned and autonomous capability segment distinct from legacy platform primes."
+    - id: "naval_shipbuilding"
+      name_en: "Naval and nuclear shipbuilding"
+      name_zh: "海军与核动力舰船建造"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:research/defense_intelligence/D0R_DEFENSE_EQUITY_DRIVER_TAXONOMY.md"
+      note: "Hull delivery and nuclear-yard throughput economics distinct from munitions and electronics."
+    - id: "aerospace_components_aftermarket"
+      name_en: "Aerospace components and aftermarket"
+      name_zh: "航空航天零部件与售后市场"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:research/defense_intelligence/D0R_DEFENSE_EQUITY_DRIVER_TAXONOMY.md"
+      note: "Parts, materials and aftermarket-service layer across aircraft programs, distinct from munitions propulsion."
+    - id: "military_space_communications"
+      name_en: "Military space and satellite communications"
+      name_zh: "军用太空与卫星通信"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:space_economy"
+      note: "Resilient military satcom shared between defense programs and the commercial space build-out."
+    - id: "machine_vision"
+      name_en: "Machine vision"
+      name_zh: "机器视觉"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:robotics_automation"
+      note: "Perception layer that lets robots handle unstructured tasks, separate from motion hardware."
+    - id: "industrial_motion_controls"
+      name_en: "Industrial controls and motion control"
+      name_zh: "工业控制与运动控制"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:robotics_automation"
+      note: "Control and motion software layer that earns recurring revenue atop automation hardware."
+    - id: "collaborative_robot_arms"
+      name_en: "Collaborative robot arms"
+      name_zh: "协作机械臂"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Cobot form factor for high-mix manufacturing distinct from fixed automation."
+    - id: "industrial_robot_arms"
+      name_en: "Industrial robot arms"
+      name_zh: "工业机械臂"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Fixed high-volume hard-automation robots, distinct from collaborative arms for high-mix work."
+    - id: "precision_actuators_servo_motors"
+      name_en: "Precision actuators and servo motors"
+      name_zh: "精密执行器与伺服电机"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Component bottleneck layer distinct from finished robot systems."
+    - id: "surgical_robotics_systems"
+      name_en: "Surgical robotics systems"
+      name_zh: "手术机器人系统"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:robotics_automation"
+      note: "Hospital surgical robotics spans the automation thesis and the medical-device platform cycle."
+    - id: "glp1_incretin_therapies"
+      name_en: "GLP-1 incretin therapies"
+      name_zh: "GLP-1肠促胰岛素疗法"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:obesity_glp1"
+      note: "Core incretin drug class named in the house obesity basket theme line."
+    - id: "oral_glp1_formulations"
+      name_en: "Oral GLP-1 formulations"
+      name_zh: "口服GLP-1制剂"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:obesity_glp1"
+      note: "Oral delivery modality distinct from injectable incretin platforms."
+    - id: "glp1_api_manufacturing"
+      name_en: "GLP-1 API manufacturing"
+      name_zh: "GLP-1原料药生产"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Drug-substance capacity with multi-year lead times, upstream of fill-finish and devices."
+    - id: "cardiorenal_metabolic_indications"
+      name_en: "Cardiorenal and metabolic indications"
+      name_zh: "心肾与代谢适应症"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Adjacent indication expansion beyond weight loss alone."
+    - id: "fill_finish_delivery_devices"
+      name_en: "Fill-finish and drug-delivery devices"
+      name_zh: "灌装封装与给药装置"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Manufacturing bottleneck segment for scaling GLP-1 supply."
+    - id: "launch_services"
+      name_en: "Launch services"
+      name_zh: "发射服务"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:space_economy"
+      note: "Orbit-access layer whose reusable-vehicle cost curve sets constellation economics."
+    - id: "satellite_broadband_services"
+      name_en: "Satellite broadband services"
+      name_zh: "卫星宽带服务"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:space_economy"
+      note: "Subscriber connectivity revenue from satcom where fibre is uneconomic."
+    - id: "direct_to_device_connectivity"
+      name_en: "Direct-to-device satellite connectivity"
+      name_zh: "手机直连卫星通信"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:space_economy"
+      note: "Handset-integrated satellite links that extend the market beyond dedicated terminals."
+    - id: "earth_observation"
+      name_en: "Earth observation"
+      name_zh: "对地观测"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:space_economy"
+      note: "Imaging and sensing data from orbit, distinct from communications services."
+    - id: "satellite_ground_terminals"
+      name_en: "Satellite ground terminals and equipment"
+      name_zh: "卫星地面终端与设备"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Ground segment hardware demand tied to constellation subscriber growth."
+    - id: "rare_earth_separation_refining"
+      name_en: "Rare-earth separation & refining"
+      name_zh: "稀土分离与冶炼"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Midstream separation and smelting between mined ore and finished magnet alloys, distinct from mining and from NdFeB fabrication."
+    - id: "ndfeb_permanent_magnets"
+      name_en: "NdFeB permanent magnets"
+      name_zh: "钕铁硼永磁材料"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Downstream magnet segment distinct from upstream ore and refining in house trade and thesis text."
+    - id: "critical_mineral_mining_development"
+      name_en: "Critical-mineral mining and development"
+      name_zh: "关键矿产开采与开发"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "basket:baskets:critical_minerals"
+      note: "Basket thesis names the producer/developer segment policy treats as the direct beneficiary layer."
+    - id: "gallium_germanium_supply_chain"
+      name_en: "Gallium and germanium supply chain"
+      name_zh: "镓与锗供应链"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Export-control metals named alongside magnets as a distinct policy-sensitive supply segment."
+    - id: "copper_mining"
+      name_en: "Copper mining"
+      name_zh: "铜矿开采"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Mine and concentrate supply stage, distinct from cathode refining and from wire or cable fabrication."
+    - id: "refined_copper"
+      name_en: "Refined copper (cathode)"
+      name_zh: "精炼铜（阴极铜）"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/trade_flow_codes.yml"
+      note: "Smelting and refining to cathode feedstock, distinct from mining and from wire or cable fabrication."
+    - id: "structural_steel_electrification"
+      name_en: "Structural steel for electrification build-out"
+      name_zh: "电气化建设用结构钢"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/trade_flow_codes.yml"
+      note: "Steel plate demand tied to grid and EV infrastructure, not copper mining."
+    - id: "copper_wire_cable"
+      name_en: "Copper wire and cable"
+      name_zh: "铜线电缆"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Building and industrial copper wire, cable and busbar fabrication; high-voltage transmission cable systems belong under grid_electrification:transmission_hvdc_cabling (lane C1)."
+    - id: "nitrogen_fertilizer_production"
+      name_en: "Nitrogen fertilizer production"
+      name_zh: "氮肥生产"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Haber-Bosch nitrogen segment named separately from potash/phosphate in pathways."
+    - id: "potash_phosphate_nutrients"
+      name_en: "Potash and phosphate nutrients"
+      name_zh: "钾肥与磷肥"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Pathways names potash and phosphate nutrient producers apart from nitrogen-only fertilizer."
+    - id: "precision_agriculture_platforms"
+      name_en: "Precision agriculture platforms"
+      name_zh: "精准农业平台"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Agronomic data platforms named as downstream of input-cost pressure, not fertilizer molecules."
+    - id: "medical_imaging"
+      name_en: "Medical imaging systems"
+      name_zh: "医学影像系统"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Imaging modality capital equipment; AI-assisted reads are a current technology driver, not the segment definition."
+    - id: "remote_patient_monitoring"
+      name_en: "Remote patient monitoring"
+      name_zh: "远程患者监测"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Continuous monitoring segment named in mechanism and winner-class vocabulary."
+    - id: "surgical_implants_instruments"
+      name_en: "Surgical implants and instruments"
+      name_zh: "外科植入物与器械"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "Implant and instrument manufacturers named without adopting the robotics platform lane."
+    - id: "liquid_biopsy_assays"
+      name_en: "Liquid biopsy assays"
+      name_zh: "液体活检检测"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Blood-based early detection named as its own clinical category in thesis text."
+    - id: "genomic_sequencing"
+      name_en: "Genomic sequencing (NGS)"
+      name_zh: "基因测序（NGS）"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Sequencing instruments and their consumable revenue model; distinct from general lab instruments."
+    - id: "proteomics_discovery_platforms"
+      name_en: "Proteomics discovery platforms"
+      name_zh: "蛋白质组学发现平台"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Proteomics named as a multi-omics pillar beside sequencing and liquid biopsy."
+    - id: "life_science_lab_instruments"
+      name_en: "Life-science laboratory instruments"
+      name_zh: "生命科学实验室仪器"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/trade_flow_codes.yml"
+      note: "General R&D lab capital equipment; dedicated sequencers belong under genomic_sequencing."
+    - id: "diagnostic_reagents_kits"
+      name_en: "Diagnostic reagents and kits"
+      name_zh: "诊断试剂与试剂盒"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/trade_flow_codes.yml"
+      note: "Reagent kit trade line separates recurring assay volume from capital instruments."
+    - id: "pv_cell_module_manufacturing"
+      name_en: "Photovoltaic cell and module manufacturing"
+      name_zh: "光伏电池与组件制造"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Domestic cell and module manufacturing named separately from upstream silicon and downstream BOS."
+    - id: "polysilicon_solar_feedstock"
+      name_en: "Polysilicon solar feedstock"
+      name_zh: "光伏级多晶硅原料"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/trade_flow_codes.yml"
+      note: "Upstream polysilicon segment named before cells and modules in trade rationale."
+    - id: "solar_inverters"
+      name_en: "Solar inverters"
+      name_zh: "光伏逆变器"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_pathways.yml"
+      note: "DC-to-AC power conversion for PV arrays, distinct from trackers or balance-of-system hardware and from grid interconnection transformers (lane C1)."
+    - id: "solar_trackers_bos"
+      name_en: "Solar trackers & balance-of-system"
+      name_zh: "光伏跟踪支架与系统配套"
+      asserted_on: WC4_MERGE_DATE
+      nominated_from: "research:config/theme_thesis_registry.yml"
+      note: "Mechanical trackers and non-inverter BOS hardware; inverters are solar_inverters."
+  parents:
+    - parent: "technology_software"
+      child: "ai_semiconductors"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "technology_software"
+      child: "data_center_power"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "technology_software"
+      child: "cybersecurity"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "semiconductors_hardware"
+      child: "ai_semiconductors"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "semiconductors_hardware"
+      child: "memory_storage"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "semiconductors_hardware"
+      child: "semicap_equipment"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "energy_power"
+      child: "data_center_power"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "energy_power"
+      child: "nuclear_power"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "energy_power"
+      child: "grid_electrification"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "energy_power"
+      child: "solar"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "materials_mining"
+      child: "rare_earth_critical_min"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "materials_mining"
+      child: "copper_steel_electrify"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "materials_mining"
+      child: "ag_fertilizer"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "industrials_defense"
+      child: "defense_aerospace"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "industrials_defense"
+      child: "robotics_automation"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "industrials_defense"
+      child: "space_satellite"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "industrials_defense"
+      child: "copper_steel_electrify"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "healthcare_lifesciences"
+      child: "glp1_obesity"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "healthcare_lifesciences"
+      child: "medical_devices"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "healthcare_lifesciences"
+      child: "diagnostics_lifesci"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "financial_services"
+      child: "fintech_payments"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "ai_semiconductors"
+      child: "hbm_packaging"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "memory_storage"
+      child: "hbm_packaging"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "ai_semiconductors"
+      child: "sic_gan_specialty"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "ai_semiconductors"
+      child: "gpu_merchant_accelerators"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "ai_semiconductors"
+      child: "ai_interconnect_silicon"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "ai_semiconductors"
+      child: "custom_asic_silicon"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "memory_storage"
+      child: "conventional_dram"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "memory_storage"
+      child: "nand_enterprise_storage"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "semicap_equipment"
+      child: "lithography_tools"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "semicap_equipment"
+      child: "etch_deposition_equipment"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "semicap_equipment"
+      child: "process_metrology_inspection"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "semicap_equipment"
+      child: "wafer_fab_subsystems"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "data_center_power"
+      child: "liquid_cooling_thermal"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "data_center_power"
+      child: "hv_transformers_switchgear"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "grid_electrification"
+      child: "hv_transformers_switchgear"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "data_center_power"
+      child: "ups_power_conversion"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "nuclear_power"
+      child: "reactor_technology"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "nuclear_power"
+      child: "nuclear_components"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "nuclear_power"
+      child: "fuel_cycle"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "grid_electrification"
+      child: "grid_distribution_automation"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "grid_electrification"
+      child: "transmission_hvdc_cabling"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "cybersecurity"
+      child: "endpoint_security"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "cybersecurity"
+      child: "network_security"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "cybersecurity"
+      child: "identity_access_management"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "cybersecurity"
+      child: "cloud_security"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "defense_aerospace"
+      child: "missiles_munitions_effects"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "defense_aerospace"
+      child: "missile_propulsion_supply"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "defense_aerospace"
+      child: "defense_sensors_electronics_c2"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "defense_aerospace"
+      child: "autonomous_systems_counter_uas"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "defense_aerospace"
+      child: "naval_shipbuilding"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "defense_aerospace"
+      child: "aerospace_components_aftermarket"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "defense_aerospace"
+      child: "military_space_communications"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "space_satellite"
+      child: "military_space_communications"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "robotics_automation"
+      child: "machine_vision"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "robotics_automation"
+      child: "industrial_motion_controls"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "robotics_automation"
+      child: "collaborative_robot_arms"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "robotics_automation"
+      child: "industrial_robot_arms"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "robotics_automation"
+      child: "precision_actuators_servo_motors"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "robotics_automation"
+      child: "surgical_robotics_systems"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "medical_devices"
+      child: "surgical_robotics_systems"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "glp1_obesity"
+      child: "glp1_incretin_therapies"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "glp1_obesity"
+      child: "oral_glp1_formulations"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "glp1_obesity"
+      child: "glp1_api_manufacturing"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "glp1_obesity"
+      child: "cardiorenal_metabolic_indications"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "glp1_obesity"
+      child: "fill_finish_delivery_devices"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "space_satellite"
+      child: "launch_services"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "space_satellite"
+      child: "satellite_broadband_services"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "space_satellite"
+      child: "direct_to_device_connectivity"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "space_satellite"
+      child: "earth_observation"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "space_satellite"
+      child: "satellite_ground_terminals"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "rare_earth_critical_min"
+      child: "rare_earth_separation_refining"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "rare_earth_critical_min"
+      child: "ndfeb_permanent_magnets"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "rare_earth_critical_min"
+      child: "critical_mineral_mining_development"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "rare_earth_critical_min"
+      child: "gallium_germanium_supply_chain"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "copper_steel_electrify"
+      child: "copper_mining"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "copper_steel_electrify"
+      child: "refined_copper"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "copper_steel_electrify"
+      child: "structural_steel_electrification"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "copper_steel_electrify"
+      child: "copper_wire_cable"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "ag_fertilizer"
+      child: "nitrogen_fertilizer_production"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "ag_fertilizer"
+      child: "potash_phosphate_nutrients"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "ag_fertilizer"
+      child: "precision_agriculture_platforms"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "medical_devices"
+      child: "medical_imaging"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "medical_devices"
+      child: "remote_patient_monitoring"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "medical_devices"
+      child: "surgical_implants_instruments"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "diagnostics_lifesci"
+      child: "liquid_biopsy_assays"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "diagnostics_lifesci"
+      child: "genomic_sequencing"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "diagnostics_lifesci"
+      child: "proteomics_discovery_platforms"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "diagnostics_lifesci"
+      child: "life_science_lab_instruments"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "diagnostics_lifesci"
+      child: "diagnostic_reagents_kits"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "solar"
+      child: "pv_cell_module_manufacturing"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "solar"
+      child: "polysilicon_solar_feedstock"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "solar"
+      child: "solar_inverters"
+      asserted_on: WC4_MERGE_DATE
+    - parent: "solar"
+      child: "solar_trackers_bos"
+      asserted_on: WC4_MERGE_DATE

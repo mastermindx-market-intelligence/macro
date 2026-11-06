@@ -1,0 +1,102 @@
+{
+  "status": "RECORDED_INPUT_PRODUCER_CONSUMER_PASS",
+  "not_production": true,
+  "not_independent_review": true,
+  "not_historical_investability": true,
+  "source": "978a5209eb0710d87a2d750982ae907c735fdf27",
+  "harness_sha256": "7497a35b00041144c685b64967eba0cbeec73f04fb2f8986951b8d59eda0973d",
+  "snapshots": [
+    {
+      "session": "2026-09-23",
+      "file": "real_producer_proof_2026-09-23.json",
+      "sha256": "cf0366fdede8157c70bddc7726e266b8ce6ba9c7e4e6c5704ce620ff94003854",
+      "run_log_sha256": "b7ff60bf0e863787cf08768f56b6b11b1dab3cdaf080fbf1642efa3ac79a2a4b",
+      "input_commit": "bf93a8dbd5f245444ef7b4286d1b5f4bd1aa356f",
+      "results": {
+        "cn_semis": {
+          "computed": {
+            "score": 50,
+            "label": "emerging",
+            "reco": "enter"
+          },
+          "recorded": {
+            "score": 50,
+            "label": "emerging",
+            "reco": "enter"
+          },
+          "old_lane": "wait_pullback",
+          "new_lane": "buy_now",
+          "new_route": "theme_enter"
+        },
+        "cn_ai_compute": {
+          "computed": {
+            "score": 55,
+            "label": "emerging",
+            "reco": "enter"
+          },
+          "recorded": {
+            "score": 55,
+            "label": "emerging",
+            "reco": "enter"
+          },
+          "old_lane": "wait_pullback",
+          "new_lane": "buy_now",
+          "new_route": "theme_enter"
+        }
+      }
+    },
+    {
+      "session": "2026-09-24",
+      "file": "real_producer_proof_2026-09-24.json",
+      "sha256": "fb087ad951f3bcb9fdb3c5276757b40470f38005664e30d93472ae1f19cecf80",
+      "run_log_sha256": "234f556cfe3160a4c7509af15f8e9794d5f9ee0f699c910f999b174e51d58b69",
+      "input_commit": "4f2d6fdeb0ad2a8df1dc55a604297da4e8d61070",
+      "results": {
+        "cn_semis": {
+          "computed": {
+            "score": 46,
+            "label": "deteriorating",
+            "reco": "avoid"
+          },
+          "recorded": {
+            "score": 46,
+            "label": "deteriorating",
+            "reco": "avoid"
+          },
+          "old_lane": "reduce_avoid",
+          "new_lane": "reduce_avoid",
+          "new_route": null
+        },
+        "cn_ai_compute": {
+          "computed": {
+            "score": 42,
+            "label": "deteriorating",
+            "reco": "avoid"
+          },
+          "recorded": {
+            "score": 42,
+            "label": "deteriorating",
+            "reco": "avoid"
+          },
+          "old_lane": "reduce_avoid",
+          "new_lane": "reduce_avoid",
+          "new_route": null
+        }
+      }
+    }
+  ],
+  "decisive_assertions": [
+    "actual producer returned; no synthetic result or stale fallback",
+    "all 22 themes have native MTF",
+    "280 exact native constituent OHLCV files per snapshot",
+    "Sep23 Semis and AI Compute label/reco match recorded EMERGING/ENTER",
+    "Sep23 older consumer wait_pullback, new consumer buy_now/theme_enter",
+    "Sep24 both consumers reduce_avoid/AVOID",
+    "input and current source bytes unchanged; no network attempts",
+    "stock_entry_permission is never true"
+  ],
+  "rejected_preflights": [
+    "real_producer_preflight_unqualified.json",
+    "real_producer_close_only_unqualified.json"
+  ]
+}

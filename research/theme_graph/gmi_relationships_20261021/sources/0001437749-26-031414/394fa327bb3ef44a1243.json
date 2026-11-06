@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-29T01:39:19Z",
+ "accession": "0001437749-26-031414",
+ "cik": "0001334933",
+ "doc_byte_length": 5612639,
+ "doc_sha256": "ee6141c9e996561acc71f6e400ab462b98008008a489c0903bdd8d5f4ff28bed",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-29",
+ "form": "10-K",
+ "period_of_report": "2026-07-31",
+ "primary_document": "uec20260731_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 395346,
+  "byte_start": 394835,
+  "normalized": "Currently, the uranium we purchase is or will be stored at the licensed uranium conversion facilities at ConverDyn, located in Metropolis, Illinois, a joint partnership between Solstice Advanced Materials Inc. and General Atomics, and at the facilities owned by Cameco Corporation (“Cameco”), located in Ontario, Canada. There can be no assurance that storage arrangements that have been negotiated will be extended indefinitely, forcing actions or costs not currently contemplated.",
+  "normalized_sha256": "2816ac89f31ab8438928fb0f6e6533977bdd9f39280d8013eaae7288263d63fe",
+  "raw": "Currently, the uranium we purchase&#160;is or will be stored at the licensed uranium conversion facilities at ConverDyn, located in Metropolis, Illinois, a joint partnership between Solstice Advanced Materials Inc. and General Atomics, and at the facilities owned by Cameco Corporation (&#8220;<b>Cameco</b>&#8221;), located in Ontario, Canada.&#160;There can be no assurance that storage arrangements that have been negotiated will be extended indefinitely, forcing actions or costs not currently contemplated.",
+  "raw_sha256": "394fa327bb3ef44a1243aa67a5779430c1a49cdb6fcc4ef1794bda2b40cdd57e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1334933/000143774926031414/uec20260731_10k.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-20T19:28:07.310464+00:00",
+  "reason": "Bounded review: previous frontier must copy oldraw, not newly extended current metadata. Also accept actual Node test reporter pass marker when binding existing log counts. No importer/config binding executed.",
+  "importer_before_sha256": "700d5fdc209988e288bef181c6c338262d8c057ffa5cb6c93b50c9e993eba8a8",
+  "importer_after_sha256": "aa74ad49ae0b6d42e0e0300455ca15394d99acb0fd3919380c050478a16a18f4",
+  "config_binder_sha256": "ff5977892ff4d88815a583dfc2b5c7eff547d30e0104f2aa484e682143dd0bec"
+}

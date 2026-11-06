@@ -105,7 +105,6 @@ html[data-theme="light"] .help-card:hover,html[data-theme="light"] .help-card:fo
 .help-log li::before{content:"";position:absolute;left:-26px;top:6px;width:7px;height:7px;background:var(--panel2);box-shadow:0 0 0 1px var(--line)}
 .help-log li:first-child::before{background:var(--link);box-shadow:0 0 0 1px var(--link)}
 .help-log time{display:block;margin:0 0 4px;color:var(--muted);font:600 var(--fs-label)/1 var(--font-mono);letter-spacing:.09em;font-variant-numeric:tabular-nums}
-.help-log .help-pr{margin-left:8px;color:var(--muted);font:600 var(--fs-micro)/1 var(--font-mono);letter-spacing:.06em}
 .help-log p{margin:0;font-size:14.5px;line-height:1.5}
 
 .help-plans{display:grid;gap:0;margin:0 0 22px;padding:0;list-style:none}
@@ -169,6 +168,9 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
     <span class="help-kicker">{{ t('Resources', '资源') }}</span>
     <h1>{{ t('Help', '帮助') }}</h1>
     <p class="help-owners">{{ t('Market Reference', '市场参考') }} · {{ t('Methodology', '方法论') }} · {{ t('Support', '支持') }} · {{ t('Account', '账户') }}</p>
+    {# A Help build is not evidence that any market-data source refreshed. Relative
+       age is evaluated at visit time; without JS the fallback stays honest. #}
+    <p class="help-empty" id="help-refresh" data-refresh-state="unknown" data-build-stamp="{{ refresh.stamp_utc if refresh is defined and refresh.stamp_utc else '' }}">{{ t('The age of this Help page is unavailable in this browser. Data pages show their own update times.', '当前浏览器无法确定本帮助页的时效。数据页面会分别显示各自的更新时间。') }}</p>
   </header>
 
 {% if entries %}
@@ -244,7 +246,7 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
     <ul class="help-log">
 {% for e in changelog.entries %}
       <li id="change-{{ e.id }}">
-        <time datetime="{{ e.date }}">{{ e.date }}<span class="help-pr">#{{ e.pr }}</span></time>
+        <time datetime="{{ e.date }}">{{ e.date }}</time>
         <p>{{ t(e.en, e.zh) }}</p>
       </li>
 {% endfor %}
@@ -272,6 +274,7 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
 
 {% include "_public_footer.html.j2" %}
 <script src="theme.js"></script>
+<script src="help_refresh.js" defer></script>
 {% include "_public_chrome_js.html.j2" %}
 <script>
 (function(){

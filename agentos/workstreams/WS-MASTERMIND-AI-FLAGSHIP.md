@@ -23,7 +23,7 @@ waves:
     next_action: Complete whole-architecture review and current record validation; public-research correction alone has a scoped PASS.
   - id: R0
     title: Answer legitimate supplied-assumption financial analysis
-    status: awaiting_release_proof
+    status: in_progress
     pr: 7152
     next_action: >
       Keep ba9e7654190934d3f7c8b997eb2b21bd3a077094 and its release hold.
@@ -50,7 +50,7 @@ waves:
       provider canary or Brain registration.
   - id: R2
     title: Deliver an earnings-to-financial-bridge thesis investigation
-    status: awaiting_review
+    status: in_progress
     pr: 7217
     depends_on: [R0]
     next_action: >
@@ -67,7 +67,7 @@ waves:
       while the existing review request is unconsumed.
   - id: L0
     title: Reduce Fast tool-selection latency and make usage accounting truthful
-    status: awaiting_review_ci
+    status: in_progress
     pr: 7406
     next_action: >
       PR7406 exact head f6b55d71d66bf35f873d38ea8de11555b6b981c3 is the
@@ -111,38 +111,38 @@ waves:
 discoveries:
   - DSC:BRAIN-FINANCIAL-SCENARIO-REFUSAL
 landmines:
-  - R0's observed refusal occurred on the normal deep route, not the quote shortcut; five tool rounds need not mean five individual calls.
-  - Historical FIN-SCOPE-P2 HTTP524 is effect-unknown and must not be blindly replayed.
-  - The bridge's inputs remain unverified supplied assumptions; execution does not verify source, period, units, currency or accounting basis.
-  - Arithmetic attribution is order-dependent, not causal evidence; simplified scenario cash is not reported or audited free cash flow.
-  - A copied ambient Decimal context could produce Infinity for ordinary inputs; the local repair explicitly isolates every context setting.
-  - PR7365 is published and held; exact repaired semantic head is ef008862f60f72f712a7d1e0a47a01313a81c123 and remains BUILT_NOT_PROVEN.
-  - First exact-head review returned REQUEST_CHANGES on a465efa7; blocker repairs changed owned semantics, so only the second ef008862 review can accept the current head.
-  - The old Source Continuity REMOTE_CENSUS_INCOMPLETE sizing diagnosis is superseded: protected Source Continuity at Mastermind ac6180d0... supports400 open PRs and a fresh Macro search returned370. This does NOT itself mint a receipt: the original R0 Studio worktree is offline, so local dirt/equality remain unproven, and a current technical writer-gate invocation was tool-safety blocked before execution. Do not substitute a fresh worktree or alternate carrier.
-  - Current-source public-research qualification must recheck vendor support; a successful request or imported search-shaped history is not executed search.
-  - PR7403 was a later duplicate R1 prototype, closed at head 82d3d9c68ab33c40588a9d74afec2c0ae341dc05 after fresh Agent OS reconciliation. Its independent-review placement child on agent-dispatch root 1789814421.390679 received terminal SOL CLOSED / STOP before any PICKUP_ACK/START. Its corrected advisory comment 5741145446 is evidence only; #7374 retains source custody.
-  - The previously inspected native launcher relocates some workers past blanket project shell denial; do not invoke that path to bypass permission.
-  - Current turn usage reports only the final model response instead of cumulative multi-round usage; do not compare total cost from done.usage until repaired.
-  - The existing question classifier is advisory only and has ordering gaps; do not filter tool visibility from its current seeds without test-first profile fixes.
-  - Higher-priority prompt rules currently force no-hedging/universal STANCE/direct calls while lower Analyst Protocol requires two competing explanations; do not add more doctrine text before removing this precedence conflict.
-  - Synthetic conformance, graph plumbing, model agreement and green tests are not live intelligence or trading authority.
+  - "R0's observed refusal occurred on the normal deep route, not the quote shortcut; five tool rounds need not mean five individual calls."
+  - "Historical FIN-SCOPE-P2 HTTP524 is effect-unknown and must not be blindly replayed."
+  - "The bridge's inputs remain unverified supplied assumptions; execution does not verify source, period, units, currency or accounting basis."
+  - "Arithmetic attribution is order-dependent, not causal evidence; simplified scenario cash is not reported or audited free cash flow."
+  - "A copied ambient Decimal context could produce Infinity for ordinary inputs; the local repair explicitly isolates every context setting."
+  - "PR7365 is published and held; exact repaired semantic head is ef008862f60f72f712a7d1e0a47a01313a81c123 and remains BUILT_NOT_PROVEN."
+  - "First exact-head review returned REQUEST_CHANGES on a465efa7; blocker repairs changed owned semantics, so only the second ef008862 review can accept the current head."
+  - "The old Source Continuity REMOTE_CENSUS_INCOMPLETE sizing diagnosis is superseded: protected Source Continuity at Mastermind ac6180d0... supports400 open PRs and a fresh Macro search returned370. This does NOT itself mint a receipt: the original R0 Studio worktree is offline, so local dirt/equality remain unproven, and a current technical writer-gate invocation was tool-safety blocked before execution. Do not substitute a fresh worktree or alternate carrier."
+  - "Current-source public-research qualification must recheck vendor support; a successful request or imported search-shaped history is not executed search."
+  - "PR7403 was a later duplicate R1 prototype, closed at head 82d3d9c68ab33c40588a9d74afec2c0ae341dc05 after fresh Agent OS reconciliation. Its independent-review placement child on agent-dispatch root 1789814421.390679 received terminal SOL CLOSED / STOP before any PICKUP_ACK/START. Its corrected advisory comment 5741145446 is evidence only; #7374 retains source custody."
+  - "The previously inspected native launcher relocates some workers past blanket project shell denial; do not invoke that path to bypass permission."
+  - "Current turn usage reports only the final model response instead of cumulative multi-round usage; do not compare total cost from done.usage until repaired."
+  - "The existing question classifier is advisory only and has ordering gaps; do not filter tool visibility from its current seeds without test-first profile fixes."
+  - "Higher-priority prompt rules currently force no-hedging/universal STANCE/direct calls while lower Analyst Protocol requires two competing explanations; do not add more doctrine text before removing this precedence conflict."
+  - "Synthetic conformance, graph plumbing, model agreement and green tests are not live intelligence or trading authority."
 do_not_redo:
-  - Do not create another Brain, identity, source, queue, memory, transcript, auth, retry, publication or control plane.
-  - Do not replace the retained R0 carrier or copy its patch into the bridge candidate.
-  - Do not recreate separate unregistered test suites or alter CI policy; R0 and bridge tests remain in existing registered suites.
-  - Do not create another branch/PR for the bridge; PR7365 and its retained source writer are canonical. Publication is no longer blocked.
-  - Do not reopen, merge or cherry-pick closed duplicate PR7403 as an R1 implementation carrier. Its test-first findings may inform #7374 only through bounded advisory/review evidence; they grant no source custody or independent-review credit.
-  - Do not rerun historical blocked browser actions or effect-unknown probes through another actor, account, device or tool.
-  - Do not force-clean the failed contract-check temporary worktree; its cleanup is unverified and must be reconciled by its owner.
-  - Do not treat full Fabric completion as a prerequisite for independently qualified work, or use an unqualified launcher as a shortcut.
-  - Preserve published-only Research and private-data egress limits; active research must not silently change a bounded corpus contract.
-  - Wave order is prioritization, not universal serial gates; owned-data analysis does not require public-search credentials.
+  - "Do not create another Brain, identity, source, queue, memory, transcript, auth, retry, publication or control plane."
+  - "Do not replace the retained R0 carrier or copy its patch into the bridge candidate."
+  - "Do not recreate separate unregistered test suites or alter CI policy; R0 and bridge tests remain in existing registered suites."
+  - "Do not create another branch/PR for the bridge; PR7365 and its retained source writer are canonical. Publication is no longer blocked."
+  - "Do not reopen, merge or cherry-pick closed duplicate PR7403 as an R1 implementation carrier. Its test-first findings may inform #7374 only through bounded advisory/review evidence; they grant no source custody or independent-review credit."
+  - "Do not rerun historical blocked browser actions or effect-unknown probes through another actor, account, device or tool."
+  - "Do not force-clean the failed contract-check temporary worktree; its cleanup is unverified and must be reconciled by its owner."
+  - "Do not treat full Fabric completion as a prerequisite for independently qualified work, or use an unqualified launcher as a shortcut."
+  - "Preserve published-only Research and private-data egress limits; active research must not silently change a bounded corpus contract."
+  - "Wave order is prioritization, not universal serial gates; owned-data analysis does not require public-search credentials."
 artifacts:
-  - research/mastermind_ai_flagship/ANALYTICAL_REASONING_CONTRACT_2026-09-19.md
-  - research/mastermind_ai_flagship/FAST_HARNESS_LATENCY_AND_TOOL_VISIBILITY_2026-09-19.md
-  - research/mastermind_ai_flagship/PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md
-  - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
-  - research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json
+  - "research/mastermind_ai_flagship/ANALYTICAL_REASONING_CONTRACT_2026-09-19.md"
+  - "research/mastermind_ai_flagship/FAST_HARNESS_LATENCY_AND_TOOL_VISIBILITY_2026-09-19.md"
+  - "research/mastermind_ai_flagship/PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md"
+  - "research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md"
+  - "research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json"
 next_action: >
   Consume the existing PR7396 review placement when it receives a lawful receiver;
   do not poll or spawn a duplicate reviewer meanwhile. PR7374 must return its
@@ -154,6 +154,33 @@ next_action: >
   and writer-gate are still unresolved. Shared gateway prompt/schema/usage edits remain
   held behind current source custody. Real served-model/browser proof remains mandatory.
 ---
+
+## 2026-10-18 canonical record composition for the existing AI × Terminal continuation
+
+Original Macro PR8014 carries this same workstream key and repository path solely
+as the direct knowledge-record dependency of its preserved CMX handoff. The source
+is original parent PR7151, commit `8f82f28675f0bed1bab6522f9602a5099ac6161e`,
+workstream blob `65b8d1634e034eca42dd8aeb8f846d13de3a4319`. Its cited discovery
+is carried unchanged from blob `1253af2e321da21cbc5e26ba67435a16d24a11da`.
+This is the existing operation `MMX-AI-TERMINAL-ENV-BUILD-20260924-SOL-001`;
+no replacement parent, program, source carrier or approval is created.
+
+The source snapshot's R0 `awaiting_release_proof`, R2 `awaiting_review`, and L0
+`awaiting_review_ci` values are represented as the current schema's `in_progress`.
+Ambiguous colon-bearing list entries are quoted as YAML strings, preserving their
+literal content. Their full next actions and historical conditions are preserved.
+These values are
+not a new census of unrelated waves, current workers, review or release status.
+The historical body following this section is preserved verbatim.
+
+PR7151 remains Draft/HOLD. Its architecture review, record validation, hosted
+checks and release ruling are not supplied by this composition. Its unrelated
+children retain their own custody and unresolved conditions. The existing scoped
+AI × Terminal review waiver does not approve those children or the parent design
+package. This record repair grants no runtime capability or deployment admission.
+Reconcile future changes through this original record lineage; neither branch may
+blindly overwrite subsequent changes from the other.
+
 
 ## 2026-09-19 current frontier — composition, provider guard and continuity invalidator
 

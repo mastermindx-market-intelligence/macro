@@ -75,7 +75,7 @@ What **is** single-issuer is the ORCL **watch chip** only: templates/bonds.html.
 **A fourth credit-labelled surface — missed by §1's producer table — also already ships.**
 §1's market_drivers.py row is accurate for that module alone (its own `credit_stress` family
 reaches no credit-labelled template), but a *different* module renders a *different*,
-explicitly credit-labelled leg: templates/dashboard.html.j2:14029 —
+explicitly credit-labelled leg: templates/dashboard.html.j2:14062 —
 `'E4_credit_stress':       {'en':'Credit stress','zh':'信用压力'},` — and its bilingual scare-tip
 blurb at templates/dashboard.html.j2:101-102 (EN `'Credit stress — high-yield spreads (OAS)
 widening fast…'`, ZH `'信用压力——高收益利差（OAS）快速走阔、垃圾债跑输国债…'`).
@@ -129,6 +129,10 @@ not omitted. This packet scopes nothing.
 **MO-DELTA-008 and MO-DELTA-013 are NOT closed by this packet. Their acceptance tests (an aggregate HY/IG panel; a dedicated HY/IG dashboard page) are undischarged. Status: read pass done, build child now scopable.**
 
 MO-PAID-004: binding trace discharged, vendor-rights record **not** discharged (§3).
+
+## §8 Drift log (records only)
+
+- 2026-09-19 re-pin: the E4_credit_stress label moved templates/dashboard.html.j2:14029 → :14062 under nightly renders; content unchanged (seat 026851bd, W5-E-M read pass).
 
 ## §7 What this pass could not verify (printed nulls, plain words)
 
