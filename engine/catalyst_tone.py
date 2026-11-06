@@ -515,8 +515,10 @@ def _cache_auto_validate(row, original=None):
     elif usage is not None and any(usage["completed_" + key] != 0
                                   for key in ("input_tokens", "output_tokens")):
         raise ValueError("fabric_cache_usage_invalid")
-    if row["result"] is not None and row["state"] == "terminal" and receipt["close"] != {
-            "disposition": "closed", "closed": True, "effect_unknown": False, "attempted": True}:
+    if (row["state"] == "terminal"
+            and (document is not None or receipt["close"]["attempted"] or row["result"] is not None)
+            and receipt["close"] != {"disposition": "closed", "closed": True,
+                                    "effect_unknown": False, "attempted": True}):
         raise ValueError("fabric_cache_close_invalid")
 
 
@@ -765,8 +767,11 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
                     max_tokens=bound, require_success=result is not None)
                 route_identity = transport.auto_route_identity(application_observation["routing"])
                 actual_provider = application_observation["routing"]["pool"]
-            if result is not None and (application_observation is None or close != {
-                    "disposition": "closed", "closed": True, "effect_unknown": False, "attempted": True}):
+            if (result is not None and application_observation is None
+                    or (application_observation is not None or result is not None
+                        or isinstance(close, dict) and close.get("attempted") is True)
+                    and close != {"disposition": "closed", "closed": True,
+                                  "effect_unknown": False, "attempted": True}):
                 unknown = True
             if not isinstance(close, dict):
                 close = {"disposition": "effect_unknown", "closed": False,
