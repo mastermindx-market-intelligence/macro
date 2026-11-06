@@ -168,6 +168,9 @@ def test_snapshot_falls_back_when_history_absent(monkeypatch):
     from engine import market_gamma
 
     def fake_read(group, name):
+        if (group, name) == ("cboe", "gex_SPX"):
+            return pd.DataFrame({"gamma_regime": ["short"]},
+                                index=pd.to_datetime(["2026-06-13"]))
         if group == "cboe":
             return _cboe_gex()
         return None  # index_gex_history absent
@@ -176,6 +179,7 @@ def test_snapshot_falls_back_when_history_absent(monkeypatch):
     mg = market_gamma.snapshot()
     assert mg is not None
     assert mg["regime"] == "short" and mg["flip"] == 8100
+    assert mg["regime_basis"] == "engine_direct_sign"
     assert mg["context"] is None
 
 
@@ -197,6 +201,9 @@ def test_snapshot_attaches_context_when_history_present(monkeypatch):
                               "2026-06-11", "2026-06-12", "2026-06-15"]))
 
     def fake_read(group, name):
+        if (group, name) == ("cboe", "gex_SPX"):
+            return pd.DataFrame({"gamma_regime": ["short"]},
+                                index=pd.to_datetime(["2026-06-13"]))
         if group == "cboe":
             return _cboe_gex(net_gex_bn=17.7, svf=-8.71)  # current: short
         if group == "index_gex_history":
@@ -205,6 +212,7 @@ def test_snapshot_attaches_context_when_history_present(monkeypatch):
 
     monkeypatch.setattr(market_gamma.store, "read", fake_read)
     mg = market_gamma.snapshot()
+    assert mg["regime_basis"] == "engine_direct_sign"
     ctx = mg["context"]
     assert ctx is not None and ctx["reconstructed"] is True
     assert ctx["n_days"] == 6

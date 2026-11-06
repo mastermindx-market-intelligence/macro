@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-14T13:01:13Z",
+ "accession": "0001493152-26-042497",
+ "cik": "0001576873",
+ "doc_byte_length": 1740695,
+ "doc_sha256": "297d7cfba2665b0a4864053552aad945501e6632f5d3124f2d04e5a86a3ba313",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-14",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "form10-k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1664982,
+  "byte_start": 1664882,
+  "normalized": "Banked Water Purchase Agreement among American Battery Technology Company and H2O NV Investments LLC",
+  "normalized_sha256": "b07080c227afc305dfb76f510ea88df2ce1a4f9c7c718cd1b10a9376698218de",
+  "raw": "Banked Water Purchase Agreement among American Battery Technology Company and H2O NV Investments LLC",
+  "raw_sha256": "b07080c227afc305dfb76f510ea88df2ce1a4f9c7c718cd1b10a9376698218de"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1576873/000149315226042497/form10-k.htm",
+ "xbrl_contexts": []
+}

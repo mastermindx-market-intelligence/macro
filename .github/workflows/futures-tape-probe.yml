@@ -44,8 +44,8 @@ jobs:
 
       - name: Capacity receipt
         env:
-          MMX_FUTURES_TAPE_ROOT: ${{ inputs.root }}
-        run: python -m scripts.futures_tape_ingest storage --reserve-gib 100
+          MMX_FUTURES_TAPE_ROOT: ${{ inputs.root || '/Volumes/Mastermind/futures_tape' }}
+        run: python -m scripts.futures_tape_ingest storage --reserve-gib 100 --require-mounted-volume
 
       - name: Massive Futures entitlement receipt
         env:
@@ -59,7 +59,7 @@ jobs:
           python -m scripts.probe_massive_futures
 
       - name: LSE ES.F catalog receipt
-        if: ${{ inputs.probe_lse }}
+        if: ${{ github.event_name == 'push' || inputs.probe_lse }}
         env:
           LSE_API_KEY: ${{ secrets.LSE_API_KEY }}
         run: |

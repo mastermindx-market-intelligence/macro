@@ -17,12 +17,15 @@ from lib.dataos.futures_tape import (
     PartitionState,
     SourceRole,
     audit_manifests,
+    capacity,
     derived_bar_path,
     normalized_day_path,
+    manifest_path,
     raw_export_path,
     require_capacity,
     sha256_file,
     storage_root,
+    verify_manifest,
     write_manifest_atomic,
 )
 from scripts import futures_tape_ingest as fti
@@ -418,3 +421,214 @@ def test_audit_missing_root_is_fail_closed(tmp_path: Path) -> None:
     missing = tmp_path / "missing"
     problems = audit_manifests(missing)
     assert problems and "does not exist" in problems[0]
+
+
+def _receipted_test_bytes(root: Path, relative: str, content: bytes) -> Path:
+    target = root / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(content)
+    write_manifest_atomic(target, PartitionManifest(
+        source="lse",
+        source_role=SourceRole.VENDOR_CONTINUOUS.value,
+        source_symbol="ES.F",
+        state=PartitionState.FINAL.value,
+        relative_path=target.relative_to(root).as_posix(),
+        row_count=1,
+        byte_count=len(content),
+        sha256=sha256_file(target),
+        retrieved_at_utc="2026-10-05T00:00:00Z",
+    ))
+    return target
+
+
+@pytest.mark.parametrize("sidecar_kind", ["copy", "symlink"])
+def test_resume_rejects_another_partitions_valid_receipt(tmp_path: Path, sidecar_kind) -> None:
+    other = _receipted_test_bytes(tmp_path, "raw/other.parquet", b"verified")
+    target = tmp_path / "raw" / "target.parquet"
+    target.write_bytes(b"unverified")
+    receipt = manifest_path(target)
+    if sidecar_kind == "copy":
+        receipt.write_bytes(manifest_path(other).read_bytes())
+    else:
+        receipt.symlink_to(manifest_path(other))
+
+    assert fti._valid_receipted(tmp_path, other) is True
+    assert fti._valid_receipted(tmp_path, target) is False
+    assert any("adjacent" in problem for problem in verify_manifest(tmp_path, receipt))
+    assert target.read_bytes() == b"unverified"
+
+
+@pytest.mark.parametrize("escaped_part", ["data", "receipt"])
+def test_receipt_verification_rejects_outside_root_symlinks(
+    monkeypatch, tmp_path: Path, escaped_part
+) -> None:
+    root = tmp_path / "tape"
+    root.mkdir()
+    target = _receipted_test_bytes(root, "raw/target.parquet", b"verified")
+    if escaped_part == "data":
+        outside = tmp_path / "outside.parquet"
+        outside.write_bytes(b"verified")
+        target.unlink()
+        target.symlink_to(outside)
+    else:
+        outside = tmp_path / "outside.manifest.json"
+        outside.write_text("must not be read")
+        manifest_path(target).unlink()
+        manifest_path(target).symlink_to(outside)
+
+    def no_hash(_path):
+        pytest.fail("an escaped receipt or data path must be rejected before hashing")
+
+    monkeypatch.setattr("lib.dataos.futures_tape.sha256_file", no_hash)
+    assert any("escapes" in problem for problem in verify_manifest(root, manifest_path(target)))
+    assert fti._valid_receipted(root, target) is False
+
+
+def test_receipts_allow_a_contained_storage_root_symlink(tmp_path: Path) -> None:
+    root = tmp_path / "actual"
+    root.mkdir()
+    _receipted_test_bytes(root, "raw/target.parquet", b"verified")
+    alias = tmp_path / "alias"
+    alias.symlink_to(root, target_is_directory=True)
+    target = alias / "raw" / "target.parquet"
+
+    assert verify_manifest(alias, manifest_path(target)) == []
+    assert fti._valid_receipted(alias, target) is True
+
+
+@pytest.mark.parametrize("relative", [
+    "raw/source=lse/symbol=ES.F/window=a_b/export.parquet",
+    "normalized/ticks/source=lse/instrument=LSE_ES.F/date=2026-01-01/part-000.parquet",
+    "derived/bars/instrument=LSE_ES.F/freq=1min/date=2026-01-01/part-000.parquet",
+])
+def test_audit_rejects_finalized_data_without_its_receipt(tmp_path: Path, relative) -> None:
+    target = tmp_path / relative
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"unreceipted")
+
+    problems = audit_manifests(tmp_path)
+    assert any(str(target) in problem and "missing" in problem for problem in problems)
+    assert target.read_bytes() == b"unreceipted"
+
+
+def test_audit_exposes_interruption_between_data_and_receipt(
+    monkeypatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("MMX_FUTURES_TAPE_ROOT", str(tmp_path))
+    target = raw_export_path(tmp_path, "lse", "ES.F", "2026-01-01", "2026-01-02")
+
+    def interrupted(*_args, **_kwargs):
+        raise RuntimeError("interrupted before receipt")
+
+    monkeypatch.setattr(fti, "write_manifest_atomic", interrupted)
+    with pytest.raises(RuntimeError, match="interrupted"):
+        fti._write_dataframe_export(
+            pd.DataFrame({"timestamp": ["2026-01-01T00:00:00Z"], "price": [100.0]}),
+            target,
+            source="lse",
+            source_role=SourceRole.VENDOR_CONTINUOUS,
+            source_symbol="ES.F",
+            state=PartitionState.FINAL,
+        )
+
+    assert target.is_file() and not manifest_path(target).exists()
+    assert any("missing" in problem for problem in audit_manifests(tmp_path))
+
+
+def test_partial_file_is_not_claimed_as_finalized_data(tmp_path: Path) -> None:
+    partial = tmp_path / "export.parquet.partial"
+    partial.write_bytes(b"incomplete")
+
+    assert audit_manifests(tmp_path) == []
+    assert partial.read_bytes() == b"incomplete"
+
+
+def test_encoded_source_and_instrument_round_trip_through_bars(
+    monkeypatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("MMX_FUTURES_TAPE_ROOT", str(tmp_path))
+    symbol, identity = "ES/F", "LSE:ES.F"
+    raw = raw_export_path(tmp_path, "lse", symbol, "2026-01-01", "2026-01-02")
+    fti._write_dataframe_export(
+        pd.DataFrame({
+            "timestamp": ["2026-01-01T09:30:00Z", "2026-01-01T09:30:30Z"],
+            "price": [100.0, 101.0],
+            "volume": [1.0, 2.0],
+        }),
+        raw,
+        source="lse",
+        source_role=SourceRole.VENDOR_CONTINUOUS,
+        source_symbol=symbol,
+        state=PartitionState.FINAL,
+        request_start="2026-01-01",
+        request_end="2026-01-02",
+    )
+    normalize = type("Args", (), {
+        "root": str(tmp_path), "symbol": symbol, "identity": identity, "force": False,
+    })()
+    derive = type("Args", (), {
+        "root": str(tmp_path), "instrument": identity, "freq": "1min", "force": False,
+    })()
+
+    assert fti.cmd_normalize_lse(normalize) == 0
+    assert normalized_day_path(tmp_path, "lse", identity, "2026-01-01").is_file()
+    assert fti.cmd_derive_bars(derive) == 0
+    target = derived_bar_path(tmp_path, identity, "1min", "2026-01-01")
+    bars = pd.read_parquet(target)
+    assert bars[["open", "high", "low", "close", "volume"]].to_dict("records") == [
+        {"open": 100.0, "high": 101.0, "low": 100.0, "close": 101.0, "volume": 3.0}
+    ]
+    assert audit_manifests(tmp_path) == []
+
+
+def test_production_capacity_refuses_system_root_fallback(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(Path, "is_mount", lambda path: path == Path(path.anchor))
+
+    def no_measure(_path):
+        pytest.fail("an absent data volume must not be measured as the system root")
+
+    monkeypatch.setattr("lib.dataos.futures_tape.shutil.disk_usage", no_measure)
+    with pytest.raises(FuturesTapeError, match="not mounted"):
+        capacity(tmp_path / "missing" / "tape", require_mounted_volume=True)
+
+
+def test_production_capacity_measures_the_contained_mount(
+    monkeypatch, tmp_path: Path, capsys
+) -> None:
+    mount = tmp_path / "mounted"
+    mount.mkdir()
+    root = mount / "future" / "tape"
+    monkeypatch.setattr(Path, "is_mount", lambda path: path == mount or path == Path(path.anchor))
+    measured = []
+
+    def measure(path):
+        measured.append(path)
+        return (200 * 1024 ** 3, 50 * 1024 ** 3, 150 * 1024 ** 3)
+
+    monkeypatch.setattr("lib.dataos.futures_tape.shutil.disk_usage", measure)
+    args = fti._build_parser().parse_args([
+        "--root", str(root), "storage", "--reserve-gib", "100", "--require-mounted-volume",
+    ])
+
+    assert fti.cmd_storage(args) == 0
+    receipt = json.loads(capsys.readouterr().out)
+    assert receipt["root"] == str(root)
+    assert receipt["mounted_volume_verified"] is True
+    assert receipt["bulk_ready"] is True
+    assert measured == [mount]
+
+
+def test_production_capacity_rejects_root_symlink_escape(monkeypatch, tmp_path: Path) -> None:
+    mount, outside = tmp_path / "mounted", tmp_path / "outside"
+    mount.mkdir()
+    outside.mkdir()
+    (mount / "escape").symlink_to(outside, target_is_directory=True)
+    monkeypatch.setattr(Path, "is_mount", lambda path: path == mount or path == Path(path.anchor))
+
+    def no_measure(_path):
+        pytest.fail("a root redirected off its configured volume must not be measured")
+
+    monkeypatch.setattr("lib.dataos.futures_tape.shutil.disk_usage", no_measure)
+    with pytest.raises(FuturesTapeError, match="escapes"):
+        capacity(mount / "escape" / "tape", require_mounted_volume=True)
+

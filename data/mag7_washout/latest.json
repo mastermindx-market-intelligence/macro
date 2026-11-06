@@ -1,32 +1,32 @@
 {
  "schema": "mag7_washout.v1",
- "as_of": "2026-10-02",
+ "as_of": "2026-11-05",
  "state": "idle",
  "basket": {
-  "stoch2w_k": 93.8,
-  "stoch2w_d": 85.2,
+  "stoch2w_k": 40.7,
+  "stoch2w_d": 71.0,
   "rsi_macd_1w": {
-   "line": 1.44,
-   "sig": 0.27
+   "line": -0.44,
+   "sig": 0.54
   },
   "rsi_macd_3d": {
-   "line": 2.36,
-   "sig": 1.4
+   "line": -0.67,
+   "sig": 1.08
   }
  },
  "members_washed": 1,
  "members": {
-  "AAPL": 70.1,
-  "MSFT": 95.1,
-  "NVDA": 65.6,
-  "AMZN": 59.5,
-  "GOOGL": 14.4,
-  "META": 83.1,
-  "TSLA": 48.0
+  "AAPL": 62.4,
+  "MSFT": 95.6,
+  "NVDA": 24.5,
+  "AMZN": 21.1,
+  "GOOGL": 5.6,
+  "META": 47.7,
+  "TSLA": 51.4
  },
  "armed": false,
  "triggers_today": [],
- "regime": "flat",
+ "regime": "hike_accel",
  "gate_actionable": null,
  "veto": null,
  "note": "MWR Amendment 2 (2026-07-24): conditional-live behind the accelerating-tightening veto; §4 kill-switch binding (2 consecutive FAILs or −25% adverse → auto-demote)"

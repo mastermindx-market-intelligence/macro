@@ -39,6 +39,7 @@ from lib.dataos.futures_tape import (  # noqa: E402
     normalized_day_path,
     raw_export_path,
     require_capacity,
+    safe_component,
     sha256_file,
     storage_root,
     utc_now,
@@ -83,9 +84,11 @@ def _catalog_row(client: Any, symbol: str) -> dict:
 
 def cmd_storage(args: argparse.Namespace) -> int:
     root = storage_root(args.root)
-    c = capacity(root)
+    require_mount = bool(getattr(args, "require_mounted_volume", False))
+    c = capacity(root, require_mounted_volume=require_mount)
     print(json.dumps({
-        "root": str(root),
+        "root": c.path,
+        "mounted_volume_verified": require_mount,
         "total_gib": round(c.total_bytes / 1024 ** 3, 2),
         "used_gib": round(c.used_bytes / 1024 ** 3, 2),
         "free_gib": round(c.free_gib, 2),
@@ -451,7 +454,7 @@ def cmd_normalize_lse(args: argparse.Namespace) -> int:
     pd = _pandas()
     root = storage_root(args.root)
     os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
-    source_dir = root / "raw" / "source=lse" / f"symbol={args.symbol}"
+    source_dir = root / "raw" / "source=lse" / f"symbol={safe_component(args.symbol)}"
     paths = sorted(source_dir.glob("window=*/export.parquet"))
     if not paths:
         raise SystemExit(f"no raw LSE exports found under {source_dir}")
@@ -509,7 +512,7 @@ def cmd_derive_bars(args: argparse.Namespace) -> int:
     pd = _pandas()
     root = storage_root(args.root)
     os.environ["MMX_FUTURES_TAPE_ROOT"] = str(root)
-    src = root / "normalized" / "ticks" / "source=lse" / f"instrument={args.instrument}"
+    src = root / "normalized" / "ticks" / "source=lse" / f"instrument={safe_component(args.instrument)}"
     paths = sorted(src.glob("date=*/part-000.parquet"))
     if not paths:
         raise SystemExit(f"no normalized ticks found under {src}")
@@ -565,6 +568,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("storage")
     p.add_argument("--reserve-gib", type=float, default=DEFAULT_RESERVE_GIB)
+    p.add_argument("--require-mounted-volume", action="store_true",
+                   help="refuse a production capacity receipt without a contained mounted volume")
     p.set_defaults(func=cmd_storage)
 
     p = sub.add_parser("probe-lse")

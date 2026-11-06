@@ -89,8 +89,8 @@ do_not_redo:
   - "Do not buy new storage or a new futures plan before measured capacity/entitlement receipts."
 next_action: >
   Consume exact-head CI and independent review for PR #8451, then merge if all release
-  gates pass. Consume the path-triggered read-only futures-tape-probe run that starts when this
-  implementation lands on protected main; it measures external-volume capacity and the
+  gates pass. Consume the path-triggered futures-tape-probe run that starts when this
+  implementation lands on protected main (and subsequent matching pushes); it verifies mounted-volume capacity and the
   existing Massive Futures entitlement. LSE remains an honest skip until LSE_API_KEY is
   configured out of band.
   Bulk backfill remains held until those exact source/rights/identity receipts exist.
@@ -107,3 +107,8 @@ The plane is a Data OS substrate. Market Ontology / existing futures identity ow
 retain contract, venue, session, timezone and roll truth. Macro/Event Intelligence,
 Temporal Grain, Prophet, Entry Radar and Market Microstructure are consumers. TrialLedger
 / Evaluation OS retain outcome authority. Executive OS remains runtime/admission owner.
+
+The diagnostic workflow performs authenticated source GETs and maintains the existing
+runner venv; it writes no market-data partitions. Mounted-volume containment is
+required for its capacity receipt. Dataset and consumer promotion remain gated by
+the source-bearing F0 receipts, independent of source-code/CI completion.

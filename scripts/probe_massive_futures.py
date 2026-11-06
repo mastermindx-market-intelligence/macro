@@ -13,9 +13,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
+from pathlib import Path
 from typing import Any
 
-from scripts.massive_entitlement_probe import (
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from scripts.massive_entitlement_probe import (  # noqa: E402
     RestProber,
     _base_url,
     _ev_results,

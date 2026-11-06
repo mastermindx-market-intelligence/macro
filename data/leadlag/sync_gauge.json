@@ -3579,13 +3579,24 @@
       },
       {
         "date": "2026-10-31",
-        "sync": 0.2038,
-        "n": 22,
+        "sync": 0.2412,
+        "n": 110,
         "frac": {
-          "trough": 0.591,
-          "advance": 0.045,
-          "peak": 0.364,
-          "decline": 0.0
+          "trough": 0.6,
+          "advance": 0.091,
+          "peak": 0.3,
+          "decline": 0.009
+        }
+      },
+      {
+        "date": "2026-11-30",
+        "sync": 0.2269,
+        "n": 33,
+        "frac": {
+          "trough": 0.182,
+          "advance": 0.455,
+          "peak": 0.273,
+          "decline": 0.091
         }
       }
     ],
@@ -7519,13 +7530,24 @@
       },
       {
         "date": "2026-10-31",
-        "sync": 0.395,
+        "sync": 0.407,
+        "n": 288,
+        "frac": {
+          "trough": 0.542,
+          "advance": 0.295,
+          "peak": 0.122,
+          "decline": 0.042
+        }
+      },
+      {
+        "date": "2026-11-30",
+        "sync": 0.4709,
         "n": 72,
         "frac": {
-          "trough": 0.486,
-          "advance": 0.347,
-          "peak": 0.125,
-          "decline": 0.042
+          "trough": 0.681,
+          "advance": 0.139,
+          "peak": 0.153,
+          "decline": 0.028
         }
       }
     ],
@@ -10865,17 +10887,28 @@
       },
       {
         "date": "2026-10-31",
-        "sync": 0.8088,
-        "n": 31,
+        "sync": 0.5902,
+        "n": 186,
         "frac": {
-          "trough": 0.806,
-          "advance": 0.065,
-          "peak": 0.0,
-          "decline": 0.129
+          "trough": 0.581,
+          "advance": 0.349,
+          "peak": 0.038,
+          "decline": 0.032
+        }
+      },
+      {
+        "date": "2026-11-30",
+        "sync": 0.6198,
+        "n": 93,
+        "frac": {
+          "trough": 0.742,
+          "advance": 0.194,
+          "peak": 0.032,
+          "decline": 0.032
         }
       }
     ]
   },
   "definition": "sync = 1 \u2212 circ_var(2\u03c0\u00b7pos/100); mean resultant length of phase angles",
-  "updated_at": "2026-10-03T07:00:33Z"
+  "updated_at": "2026-11-06T10:00:19Z"
 }

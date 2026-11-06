@@ -78,9 +78,23 @@ class StorageCapacity:
         return self.free_bytes / (1024 ** 3)
 
 
-def capacity(path: str | Path) -> StorageCapacity:
+def capacity(
+    path: str | Path, *, require_mounted_volume: bool = False
+) -> StorageCapacity:
     p = Path(path).expanduser()
-    # disk_usage requires an existing ancestor; walk upward for a not-yet-created root.
+    if require_mounted_volume:
+        if not p.is_absolute():
+            raise FuturesTapeError("production tape root must be absolute")
+        # Identify the configured mount before resolving descendants, so a
+        # symlink cannot silently redirect the receipt onto another filesystem.
+        mount = next((parent for parent in (p, *p.parents) if parent.is_mount()), None)
+        if mount is None or mount == Path(mount.anchor):
+            raise FuturesTapeError("configured tape volume is not mounted")
+        resolved_mount = mount.resolve()
+        p = p.resolve()
+        if resolved_mount == Path(resolved_mount.anchor) or not p.is_relative_to(resolved_mount):
+            raise FuturesTapeError("tape root escapes its configured mounted volume")
+    # disk_usage requires an existing ancestor; a verified mount bounds this walk.
     probe = p
     while not probe.exists() and probe != probe.parent:
         probe = probe.parent
@@ -228,12 +242,24 @@ def write_manifest_atomic(data_path: str | Path, manifest: PartitionManifest) ->
 def verify_manifest(root: str | Path, manifest_file: str | Path) -> list[str]:
     """Return violations; never mutates the store."""
     mf = Path(manifest_file)
+    suffix = ".manifest.json"
+    if not mf.name.endswith(suffix):
+        return [f"{mf}: invalid manifest filename"]
     try:
+        root_path = Path(root).resolve()
+        # Derive adjacency from the supplied filename, not its symlink target.
+        adjacent = Path(str(mf)[:-len(suffix)]).resolve()
+        if not mf.resolve().is_relative_to(root_path) or not adjacent.is_relative_to(root_path):
+            return [f"{mf}: receipt or adjacent data escapes the tape root"]
         manifest = PartitionManifest.from_json(mf.read_text(encoding="utf-8"))
+        data = (Path(root) / manifest.relative_path).resolve()
+        if not data.is_relative_to(root_path):
+            return [f"{mf}: manifest data escapes the tape root"]
+        if data != adjacent:
+            return [f"{mf}: manifest is not bound to its adjacent data file"]
     except Exception as exc:
         return [f"{mf}: unreadable manifest: {exc}"]
 
-    data = Path(root) / manifest.relative_path
     problems: list[str] = []
     if not data.is_file():
         return [f"{mf}: missing data file {data}"]
@@ -253,6 +279,11 @@ def audit_manifests(root: str | Path) -> list[str]:
     out: list[str] = []
     for mf in sorted(p.rglob("*.manifest.json")):
         out.extend(verify_manifest(p, mf))
+    # Data is renamed before its receipt is written. Surface that interruption
+    # without deleting bytes or treating .parquet.partial files as finalized.
+    for data in sorted(p.rglob("*.parquet")):
+        if data.is_file() and not manifest_path(data).is_file():
+            out.append(f"{data}: finalized data is missing its adjacent manifest")
     return out
 
 

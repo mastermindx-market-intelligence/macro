@@ -140,13 +140,22 @@ returned.
 
 ### `.github/workflows/futures-tape-probe.yml`
 
-Read-only self-hosted probe lane. It runs once automatically when this futures-tape
-implementation lands on protected main (path-filtered push trigger) and remains manually
-dispatchable for later source requalification. It records external-volume capacity,
-attempts the Massive Futures entitlement probe with the already-governed Massive/Polygon
-secret binding, and attempts the LSE catalog probe only when an `LSE_API_KEY` has been
-configured out of band. It has `contents: read`, writes no market data, creates no
-secret/account, and is diagnostic only rather than a new scheduler.
+Self-hosted diagnostic lane. It runs on matching protected-main pushes, including
+the implementation's arrival and later changes to the named paths, and remains manually
+dispatchable for source requalification. Pushes use the existing
+`/Volumes/Mastermind/futures_tape` default. The capacity command requires a positively
+mounted volume and contained resolved root before measuring its filesystem with the
+100 GiB reserve. That proves a mounted filesystem; physical SSD identity remains a
+host-evidence obligation.
+
+The lane then attempts the Massive Futures entitlement GETs using the existing
+Massive/Polygon bindings and attempts LSE catalog/usage GETs when its key exists.
+Push events enable that optional LSE step; manual dispatch still honors
+`probe_lse: false`. Missing keys retain the explicit skip. The workflow writes no
+market-data partitions and creates no secret/account, but it does create/update the
+runner's existing cached Python environment and install dependencies. GitHub
+`contents: read` does not make those host effects read-only. No bulk backfill runs
+in this workflow.
 
 ## 5. On-disk contract
 
@@ -296,6 +305,9 @@ Compact consumer artifacts may publish remotely; raw tape stays private.
 ### Operational
 
 - rerun skips valid partitions unless `--force`;
+- after correcting a finalized upstream partition with `--force`, explicitly rebuild
+  affected normalization and derived bars with `--force`; downstream finals are not
+  automatically invalidated;
 - no key appears in Git, receipts or stdout;
 - source failures fail the affected lane closed;
 - the health plane detects a stopped expected accrual once F5 is armed.

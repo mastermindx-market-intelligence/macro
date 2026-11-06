@@ -31,9 +31,9 @@ changed:
       RestProber/key/scrubbing owner; it writes no competing capability manifest.
   - path: .github/workflows/futures-tape-probe.yml
     what: >
-      Added a read-only self-hosted diagnostic lane, automatically path-triggered once on protected-main merge, for external-volume capacity,
+      Added a self-hosted diagnostic lane, triggered by matching protected-main pushes and manual dispatch, for mounted-volume capacity,
       the existing Massive Futures entitlement, and an optional LSE ES.F catalog probe
-      when LSE_API_KEY is configured out of band. It has no data-write or secret-creation path.
+      when LSE_API_KEY is configured out of band. It writes no market-data partitions or secrets, but creates/updates the existing runner venv and installs dependencies.
   - path: config/dataset_registry.yml
     what: >
       Registered raw LSE tape, normalized LSE ticks and derived bars as PROPOSED Data OS
@@ -126,3 +126,20 @@ danger_areas:
   - Session-aware 4H/8H/12H bars must not be inferred from naive wall-clock resampling.
   - A trade tape does not prove continuous order-book state or OFI.
 ---
+
+## Source recovery — 2026-11-06
+
+The original branch is being reconciled with accepted main. The repair binds every
+receipt to its adjacent contained data file, aligns reader component encoding with
+the existing writers, and makes audit report finalized data without a sidecar.
+The production capacity command refuses an absent mount or redirected root instead
+of measuring the checkout/system volume. Generic local test roots remain supported.
+
+Both no-network suites are enrolled in the existing code-gated Data OS acceptance
+job. The foundation's minimal dependency environment remains unchanged. The source
+probe's repository-root import pin and workflow push defaults are corrected.
+
+Existing final partitions still require explicit downstream `--force` rebuilds after
+an upstream correction. No new lineage store or automatic invalidation is claimed.
+These source repairs do not establish live entitlement, LSE rights/roll semantics,
+a first acquired partition, or F0–F5 completion. The original gates above remain.
