@@ -158,3 +158,46 @@ change and passes after deriving contract identity from `America/New_York`; UTC 
 clocks remain unchanged. Current selected suite: 147 passed, 301 warnings. This is
 same-author repair, not independent review or production proof. Any reviewer must bind
 to the later exact head containing this repair rather than `d74c156...`.
+
+
+## Independent SR3 contract-identity blocker repaired; rereview still required
+
+Fresh protected procedure for this repair continuation:
+Mastermind 819abc8c23609cdded2b33f6e1bfc7854bd5c847,
+Skillpack mastermind.sol_skillpack.v1 1.0.1 / bootstrap major 1.
+
+Independent review comment 5824269359 on exact pre-repair head
+dbf8d03ed4f2a29ea349bb37a23b9048f18bc2db reproduced a release blocker:
+quarterly SR3 contract generation could begin at the next civil IMM month and omit
+the still-live current reference-quarter contract during April/May, July/August and
+analogous dates. This made an internally consistent two-file generation token
+insufficient to prove a complete live SR3 strip.
+
+Same-carrier repair preserves the incumbent collector and existing
+engine.rate_futures_repricing.reference_period owner. Quarterly generation now starts
+with the named SR3 contract whose third-Wednesday reference interval contains the
+New York as-of date, then enumerates subsequent quarterlies. Monthly ZQ behavior is
+unchanged. UTC capture clocks remain separate from the New York contract-calendar
+date.
+
+Boundary regressions cover Mar17/18, Apr, May, Jun16/17, Jul, Aug, Sep15/16. A real
+collector -> shared adapter/store -> RIC test at an April cut proves the first
+requested contract is SR3H26 and the retained companion contains 2026-03 with
+reference period 2026-03-18 through 2026-06-17. RIC truthfully remains family
+status=partial because m1 is unbracketed; m3/m6/m12 are available. Strict JSON and
+authority=false are retained.
+
+Selected exact-source suite after repair:
+158 passed, 301 warnings across test_rates_command.py, test_fed_path.py and
+test_yield_momentum.py. Agent OS validation: zero errors. No vendor request,
+production-store mutation, model trial, held-sibling change, forecast promotion,
+merge or deployment occurred.
+
+Evidence:
+research/RATES_POLICY_CONSTITUENTS_SR3_REPAIR_2026-09-24.json
+
+This is author repair responding to the independent finding, NOT independent
+acceptance. Keep PR7923 Draft/HOLD-FOR-SOL. The exact repaired published head requires
+fresh independent source/financial-semantics rereview before release. PR7940 remains
+dependency-held behind this source carrier; do not release it first. Natural
+production proof remains separate after acceptance/release.
