@@ -33251,6 +33251,9 @@ jobs:
   darkflow-index:
     if: ${{ false }}
     gate: code
+    scope: exclusive
+    # Curated to this consumer and its actual dependencies; shared config imports
+    # must not fan this job into unrelated landing/free-content packing probes.
     # One existing CI-pack job owns deterministic arithmetic and the real shared
     # component. No production writes, network market-data fetch or signal test.
     timeout-minutes: 10
@@ -33265,6 +33268,10 @@ jobs:
       - "lib/massive_ticker.py"
       - "scripts/build_darkflow_index.py"
       - "scripts/backfill_finra_short_volume.py"
+      - "scripts/externalize_css.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "config/site_access.yml"
       - "tests/test_darkflow*.py"
       - "tests/darkflow_browser.py"
       - "templates/_darkflow_panel.html.j2"
@@ -33280,7 +33287,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: install bounded component dependencies
-        run: pip install pytest pandas numpy pyarrow pyyaml requests jinja2 playwright
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jinja2 playwright rjsmin==1.2.5
       - name: Dark Flow arithmetic, source snapshots, calendars and first-observation fences
         run: python -m pytest tests/test_darkflow_index.py tests/test_darkflow_publish.py -q
       - name: install component browser

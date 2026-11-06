@@ -37,15 +37,16 @@ def render(output: Path, source: Path) -> dict:
         fragment = env.get_template('_darkflow_panel.html.j2').render(df_compact=compact)
         html = ('<!doctype html><html lang="en" data-lang="en" data-theme="dark"><head>'
                 '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-                '<title>Dark Flow anonymous component verification</title><link rel="stylesheet" href="darkflow.css">'
+                '<title>Dark Flow anonymous component verification</title><style>' + (ROOT/'templates/darkflow.css').read_text() + '</style>'
                 '<style>body{margin:0;padding:16px;background:#0f1115}main{max-width:1360px;margin:auto}'
                 '.l-zh{display:none}html[data-lang="zh"] .l-en{display:none}'
                 'html[data-lang="zh"] .l-zh{display:inline}'
                 'html[data-theme="light"] body{background:#f7f8fa}</style>'
-                '<script defer src="darkflow.js"></script></head><body><main>' + fragment + '</main></body></html>')
+                '<script data-externalize>' + (ROOT/'templates/darkflow.js').read_text() + '</script></head><body><main>' + fragment + '</main></body></html>')
         (output / name).write_text(html)
+    from scripts.externalize_css import externalize
+    externalize(output)
     for name in ['darkflow.js', 'darkflow.css']:
-        shutil.copy2(ROOT / 'templates' / name, output / name)
         inputs['templates/' + name] = hashlib.sha256((ROOT / 'templates' / name).read_bytes()).hexdigest()
     vol = subprocess.check_output(['git', 'show', 'HEAD:site/basketdata/vol_weather.json'], cwd=ROOT)
     (output / 'basketdata').mkdir(exist_ok=True)
@@ -116,22 +117,33 @@ def check(output: Path) -> dict:
             record('compact: expanded history loads',any('darkflow_history' in u for u in requests))
             context.close()
             # Synthetic fault checks, not market observations or screenshot evidence.
-            for case in ['http_failure','generation_mismatch','future_clock','authority_escalation','string_number','observed_zero']:
+            for case in ['http_failure','auth_required','plan_required','history_denied','generation_mismatch','future_clock','authority_escalation','string_number','observed_zero']:
                 context=browser.new_context(viewport={'width':390,'height':844});page=context.new_page()
                 changed=copy.deepcopy(payload)
                 if case=='future_clock': changed['known_at']='2099-01-01T00:00:00Z'
                 if case=='authority_escalation': changed['trade_authority']=True
                 if case=='string_number': changed['display']['reading']['value']='42'
                 if case=='observed_zero': changed['display']['reading']['value']=0
-                if case=='http_failure':
-                    context.route('**/darkflow_latest.json',lambda route:route.fulfill(status=503,body='unavailable'))
+                if case in ['http_failure','auth_required','plan_required']:
+                    status={'http_failure':503,'auth_required':401,'plan_required':403}[case]
+                    context.route('**/darkflow_latest.json',lambda route:route.fulfill(status=status,body='unavailable'))
                 else:
                     context.route('**/darkflow_latest.json',lambda route:route.fulfill(status=200,content_type='application/json',body=json.dumps(changed)))
+                if case=='history_denied':
+                    context.route('**/darkflow_history.json',lambda route:route.fulfill(status=401,body='sign in'))
                 if case=='generation_mismatch':
                     h=json.loads((output/'darkflow_history.json').read_text());h['generation']='0'*64
                     context.route('**/darkflow_history.json',lambda route:route.fulfill(status=200,content_type='application/json',body=json.dumps(h)))
                 page.goto(origin+'/darkflow-component.html')
-                if case=='observed_zero':
+                if case in ['auth_required','plan_required','history_denied']:
+                    page.locator('[data-df="access"]').wait_for(state='visible')
+                    record(case+': no protected values shown',page.locator('[data-df="body"]').is_hidden())
+                    record(case+': no unchanged retry',page.locator('[data-df="retry"]').is_hidden())
+                    href=page.locator('[data-df="access"]').get_attribute('href')
+                    record(case+': canonical local access destination',href=='/plans.html' if case=='plan_required' else href.startswith('/index.html?signin=1&ret=%2F'))
+                    page.evaluate("document.documentElement.dataset.lang='zh'")
+                    record(case+': bilingual access state',page.locator('[data-df="access"]').inner_text() in ['登录','查看方案'])
+                elif case=='observed_zero':
                     page.locator('[data-df="value"]').filter(has_text='0.00').wait_for()
                     record(case+': zero not missing',page.locator('[data-df="body"]').is_visible())
                 elif case=='generation_mismatch':

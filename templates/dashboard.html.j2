@@ -2334,8 +2334,9 @@
 </style>
 {% endif %}
 {% if mode != 'stocks' %}
-<link rel="stylesheet" href="darkflow.css">
-<script defer src="darkflow.js"></script>
+<style id="darkflow-presentation">{% include "darkflow.css" %}</style>
+{# Pure behavior only. Existing post-render owner emits public content-hashed assets. #}
+<script data-externalize>{% include "darkflow.js" %}</script>
 {% endif %}
 </head>
 <body class="{{ 'page-stocks' if mode == 'stocks' else 'page-macro mx4-grid' }}">

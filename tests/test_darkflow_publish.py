@@ -265,6 +265,41 @@ def test_existing_desk_render_only_does_not_advance_context_or_ledger(data, tmp_
     monkeypatch.setattr(options_universe, 'gex_symbols', lambda: {'A', 'B'})
     assert desk.main(render_only=True) == 0
     html = (tmp_path / 'site/darkpool.html').read_text()
-    assert 'id="dark-flow"' in html and 'darkflow.js' in html
+    assert 'id="dark-flow"' in html and '<script data-externalize>' in html
+    assert 'No market reading has been inferred' in html or 'No reading has been inferred' in html
     assert not (data / 'darkpool/ledger').exists()
     assert not (data / 'darkpool/context/latest.json').exists()
+
+
+def test_public_shell_uses_existing_presentation_prefixes_without_public_data(tmp_path, monkeypatch):
+    import re
+    import yaml
+    from jinja2 import Environment, FileSystemLoader
+    from scripts.externalize_css import externalize
+    from lib import config
+    root = Path(__file__).resolve().parents[1]
+    env = Environment(loader=FileSystemLoader(root / 'templates'))
+    fragment = env.get_template('_darkflow_panel.html.j2').render(df_compact=True)
+    html = ('<!doctype html><html><head><style>' + (root / 'templates/darkflow.css').read_text()
+            + '</style><script data-externalize>' + (root / 'templates/darkflow.js').read_text()
+            + '</script></head><body>' + fragment + '</body></html>')
+    site = tmp_path / 'site'
+    site.mkdir()
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    (site / 'macro.html').write_text(html)
+    assert externalize(site) == 1
+    result = (site / 'macro.html').read_text()
+    scripts = re.findall(r'<script[^>]*src="([^"]+)"', result)
+    styles = re.findall(r'<link[^>]*href="([^"]+)"', result)
+    assert any(path.startswith('assets/js/') for path in scripts)
+    assert any(path.startswith('assets/css/') for path in styles)
+    assert 'src="darkflow.js"' not in result and 'href="darkflow.css"' not in result
+    policy = yaml.safe_load((root / 'config/site_access.yml').read_text())['public']
+    assert '/assets/js/' in policy['prefixes'] and '/assets/css/' in policy['prefixes']
+    for payload in ['/darkflow_latest.json', '/darkflow_history.json']:
+        assert payload not in policy['exact']
+        assert not any(payload.startswith(prefix) for prefix in policy['prefixes'])
+    # Public code has endpoints, never the current market observation serialized.
+    emitted = next((site / 'assets/js').glob('*.js')).read_text()
+    assert 'fetchJSON' in emitted and 'denyAccess' in emitted
+    assert 'provider_parity_verified":false' not in emitted

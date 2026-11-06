@@ -46,8 +46,8 @@
     const controller = new AbortController();
     const deadline = setTimeout(() => controller.abort(), 15000);
     try {
-      const response = await fetch(url, {signal: controller.signal, credentials: 'same-origin', cache: 'no-cache'});
-      if (!response.ok) throw new Error('http-' + response.status);
+      const response = await fetch(url, {signal: controller.signal, credentials: 'same-origin', cache: 'no-store'});
+      if (!response.ok) { const error=new Error('http-'+response.status); error.status=response.status; throw error; }
       if (Number(response.headers.get('Content-Length')) > limit) throw new Error('oversize');
       const body = await response.text();
       if (body.length > limit) throw new Error('oversize');
@@ -113,7 +113,30 @@
     const get = name => root.querySelector('[data-df="' + name + '"]');
     const text = (name, value) => { const n = get(name); if (n) n.textContent = value; };
     let data = null, history = null, loading = false, historyLoading = false, started = false;
-    let selected = '__market__', volatility = null, volatilityLoading = false;
+    let selected = '__market__', volatility = null, volatilityLoading = false, accessStatus = null;
+    function renderAccess() {
+      if (!accessStatus) return;
+      root.dataset.state=accessStatus===401?'sign_in_required':'access_required';
+      text('status',accessStatus===401
+        ? tr('Sign in to view dated Dark Flow readings and sector detail. No reading has been inferred.', '登录后查看标明日期的场外交易读数与行业明细。未推断任何读数。')
+        : tr('Your account does not currently have access to this data. Review the available plans.', '当前账户尚无此数据的访问权限。请查看可用订阅方案。'));
+      const link=get('access');
+      link.textContent=accessStatus===401?tr('Sign in','登录'):tr('View plans','查看方案');
+      // Existing same-origin onboarding route; the return destination is local,
+      // derived from this page, never from a server error body or user input.
+      link.href=accessStatus===401
+        ? '/index.html?signin=1&ret='+encodeURIComponent(location.pathname+location.search+'#dark-flow')
+        : '/plans.html';
+      link.hidden=false; get('body').hidden=true; get('retry').hidden=true;
+    }
+    function denyAccess(status) {
+      accessStatus=status; data=null; history=null; volatility=null;
+      text('sources',''); text('coverage',''); text('observed-read','');
+      // Clear previously authorized values if a refresh reports lost access.
+      ['value','change1','change5','percentile','breadth','spy','average','velocity','acceleration'].forEach(key=>text(key,'—'));
+      ['spark','history-chart','names','sectors','drivers','volatility','attribution'].forEach(key=>get(key).replaceChildren());
+      renderAccess();
+    }
     function renderVolatility() {
       const host = get('volatility'); host.replaceChildren();
       if (!volatility) return;
@@ -138,14 +161,15 @@
         + tr('. Different dates must not be read as same-session confirmation.', '。不同日期不应视为同一交易日的共同确认。'));
     }
     async function loadVolatility() {
-      if (!data || volatility || volatilityLoading) return;
+      if (!data || accessStatus || volatility || volatilityLoading) return;
       volatilityLoading = true; get('volatility-retry').hidden = true;
       text('volatility-status', tr('Loading the existing volatility context…', '正在读取现有波动率背景…'));
       try {
         const incoming = await fetchJSON(new URL('basketdata/vol_weather.json', location.href).href, 60000);
         if (!incoming || !Array.isArray(incoming.chips) || incoming.chips.length > 30) throw new Error('vol-schema');
-        volatility = incoming; renderVolatility();
+        if(accessStatus)return; volatility = incoming; renderVolatility();
       } catch (error) {
+        if(error.status===401||error.status===403){denyAccess(error.status);return;}
         text('volatility-status', tr('Volatility context is unavailable. Dark Flow is unaffected.', '波动率背景暂不可用，不影响场外交易读数。'));
         get('volatility-retry').hidden = false;
       } finally { volatilityLoading = false; }
@@ -227,22 +251,24 @@
       if(!names.length)host.append(el('p',tr('No covered constituent matches.', '无匹配且具有完整观测的成分股。'),'df-muted'));
     }
     async function loadHistory() {
-      if(!data || history || historyLoading)return;
+      if(!data || accessStatus || history || historyLoading)return;
       historyLoading=true;get('history-retry').hidden=true;
       text('history-status',tr('Loading historical observations…','正在读取历史观测…'));
       try {
         const url=new URL('darkflow_history.json',new URL(root.dataset.source,location.href));
         const incoming=await fetchJSON(url.href,600000);
+        if(accessStatus||!data)return;
         if(incoming.schema!=='darkflow_index.v1'||incoming.generation!==data.generation
           || !Array.isArray(incoming.history)||!Array.isArray(incoming.names))throw new Error('generation');
         history=incoming;drawHistory();renderNames();
       } catch(error) {
+        if(error.status===401||error.status===403){denyAccess(error.status);return;}
         text('history-status',tr('History is unavailable or belongs to a different publication. The dated summary above is retained. Retry after the publication settles.','历史数据暂不可用或版本不同。上方保留已验证日期的摘要，可在发布完成后重试。'));
         get('history-retry').hidden=false;
       } finally {historyLoading=false;}
     }
     async function load() {
-      if(loading)return;loading=true;started=true;get('retry').hidden=true;
+      if(loading||accessStatus)return;loading=true;started=true;get('retry').hidden=true;get('access').hidden=true;
       text('status',tr('Reading the latest source-backed observation…','正在读取最新有来源的观测…'));
       try {
         const incoming=validate(await fetchJSON(new URL(root.dataset.source,location.href).href,120000));
@@ -250,6 +276,7 @@
         data=incoming;render();
         if(get('explore').open)await Promise.all([loadHistory(),loadVolatility()]);
       } catch(error) {
+        if(error.status===401||error.status===403){denyAccess(error.status);return;}
         root.dataset.state='error';
         text('status',data?tr('Update unavailable. The previously loaded, explicitly dated observation remains below.','更新暂不可用。下方保留此前读取且标明日期的观测。'):tr('Observation unavailable. No market reading has been inferred. Use Retry to check again.','观测暂不可用，未推断市场读数。可点击重新读取。'));
         get('retry').hidden=false;
@@ -261,7 +288,7 @@
     get('explore').addEventListener('toggle',()=>{if(get('explore').open){loadHistory();loadVolatility();}});
     get('sector').addEventListener('change',()=>{selected=get('sector').value;drawHistory();if(data)sectorTable(data.display.sectors);});
     get('range').addEventListener('change',drawHistory);get('search').addEventListener('input',renderNames);
-    const observer=new MutationObserver(()=>{if(data)render();});
+    const observer=new MutationObserver(()=>{if(accessStatus)renderAccess();else if(data)render();});
     observer.observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']});
     if('ResizeObserver' in window) {
       let previousWidth=0;

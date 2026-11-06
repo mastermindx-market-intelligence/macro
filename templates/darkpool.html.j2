@@ -238,8 +238,9 @@
 @media(max-width:820px){.filters-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.presets-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
-<link rel="stylesheet" href="darkflow.css">
-<script defer src="darkflow.js"></script>
+<style id="darkflow-presentation">{% include "darkflow.css" %}</style>
+{# Pure behavior only. Existing post-render owner emits public content-hashed assets. #}
+<script data-externalize>{% include "darkflow.js" %}</script>
 </head>
 <body>
 {% set nav_search_placeholder_en = 'Search any stock - US, China, HK, Canada and more...' %}

@@ -163,7 +163,18 @@ belongs only to the Paper reference, not the web application.
 component. English/Chinese, light/dark, keyboard chart inspection, sector/range
 selection, constituent lookup, dated source errors and generation-mismatch retry
 are part of its acceptance contract. Compact mode fetches neither history nor
-volatility until expanded. No chart library, external script or background poller.
+volatility until expanded. No chart library, third-party script or background poller.
+
+The shared CSS/JS is included as pure presentation and passed through the existing
+inline-asset externalizer, which publishes content-hashed files under the already
+approved `/assets/css/` and `/assets/js/` prefixes. Unknown standalone asset names
+are default-deny on the actual production shell; adding an unregistered flat
+`darkflow.js` URL would silently break the public page. The new JSON remains
+protected, and neither the access allowlist nor Caddy is changed. Fetches use
+same-origin credentials and `no-store`. A 401/403 clears retained readings and
+shows an explicit existing sign-in/plans destination instead of encouraging an
+unchanged retry. The canonical asset-emitter and protected-payload boundaries are
+tested separately from successful local data display.
 
 `tests/darkflow_browser.py` uses the real component with source-backed inputs,
 then separately exercises typed synthetic faults. Its screenshots are component
