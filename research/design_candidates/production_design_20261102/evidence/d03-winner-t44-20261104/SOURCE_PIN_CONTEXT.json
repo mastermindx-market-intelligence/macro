@@ -1,0 +1,8 @@
+{
+  "retained_pin": "cb8fa9132770b1967d585e323dd72b145c580601",
+  "observed_protected_master": "7aefe3fa3917faecf9b074a3033d37f6a4e7838a",
+  "compare_commits": 1,
+  "compare_files": 174,
+  "applicable_law_changes": [],
+  "decision": "Reuse compatible qualified pin; intervening merge changes no applicable owner."
+}

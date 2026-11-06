@@ -1,0 +1,11 @@
+{"phase": "producer-start", "case": "readable"}
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-winner-t44-proof-20261104-c2-05a1d4b6b06d54cc/research/design_candidates/production_design_20261102/evidence/d03-winner-t42-20261104/verify_producer.py", line 327, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-winner-t44-proof-20261104-c2-05a1d4b6b06d54cc/research/design_candidates/production_design_20261102/evidence/d03-winner-t42-20261104/verify_producer.py", line 230, in main
+    require(r63["AAA"][0] == "extended_watch", "AAA r63 expectation")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-winner-t44-proof-20261104-c2-05a1d4b6b06d54cc/research/design_candidates/production_design_20261102/evidence/d03-winner-t42-20261104/verify_producer.py", line 40, in require
+    raise AssertionError(message)
+AssertionError: AAA r63 expectation

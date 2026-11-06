@@ -1,0 +1,352 @@
+{
+  "kind": "D03 T44 evidence-only inventory",
+  "source_baseline": "ffda5424b75bbbb26e33a4d328043bbfb480e6ff",
+  "source_pin": "cb8fa9132770b1967d585e323dd72b145c580601",
+  "source_hashes": {
+    "scripts/build_winner_health_page.py": "be6fb99b48d9de9a432d063557e93574ad8336837abd7571006e5e4978d7bd3e",
+    "templates/winner_health.html.j2": "545454c3650de638e82fec0b06582ad994adb3efe385a3baf293531577f3997f",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "engine/top_maturation.py": "86497282e630d55dcc6ac32e0d5b8439cc032a3ccb6a8216603f8b9ade7bf095"
+  },
+  "matrix_report_sha256": "c218a779f45c2dd1e72119ac50c5a4a23b1a6e3bc404a8342d802c1b1f4cc3b5",
+  "executed_driver_sha256": "6b113dc8ec1c00c733a5ea5d577ac4df98f23c9a9104cbae327c75fdc43967ea",
+  "final_driver_sha256": "a6857b4c6c4bd2552f4b7340e9c6cf56be127db59dda9e4e522f215f2763461e",
+  "final_driver_delta": "source-binding preflight only; matrix not rerun",
+  "content_passed": 50,
+  "complete_passed": 8,
+  "blocked": 42,
+  "first_tap_failures": 33,
+  "receipt_occlusions": 30,
+  "acceptance": "NOT_ACCEPTED",
+  "files": [
+    {
+      "path": "COMMISSION.json",
+      "bytes": 1460,
+      "sha256": "a09fb681cb753f03e0e4dfd8512883413ea854c70cd932e34799c4841733712f"
+    },
+    {
+      "path": "CONTINUATION.md",
+      "bytes": 4330,
+      "sha256": "39071a3c0f6f2a16160623f46756793427d4f54d5b458f5aad095748c7297bff"
+    },
+    {
+      "path": "HTML_ARCHIVES.json",
+      "bytes": 2023,
+      "sha256": "bc006fb15d6d6c178fb22843a9a831e7389f4147feae1a9216abe64c367be997"
+    },
+    {
+      "path": "MATRIX.md",
+      "bytes": 2778,
+      "sha256": "5e06f22680e66064b1bbb8b7abd8417908bacdb53ec80989667afb0b9bed8410"
+    },
+    {
+      "path": "README.md",
+      "bytes": 10311,
+      "sha256": "9a288987c5c546061c58ba0737db2a1c78b6e77231ef4830028d96c395db72cd"
+    },
+    {
+      "path": "SHARED_OWNER_RECEIPT.json",
+      "bytes": 1248,
+      "sha256": "47206fdf2086f7a87bc6cf7865eec28e312c11d6b83b30a9e5ec805fd0ed7adf"
+    },
+    {
+      "path": "SOURCE_PIN_CONTEXT.json",
+      "bytes": 316,
+      "sha256": "abf23c137d47efb9f9ed5440e9e328481d9a1738fd6b936d6ffcb9f9fa4eb3af"
+    },
+    {
+      "path": "browser-execution.txt",
+      "bytes": 3878,
+      "sha256": "0fb3998f101b19b6691327c4cee71c7976751e4d8a16cd7fc9c406f7c2ed15a6"
+    },
+    {
+      "path": "browser-proof.json",
+      "bytes": 501260,
+      "sha256": "c218a779f45c2dd1e72119ac50c5a4a23b1a6e3bc404a8342d802c1b1f4cc3b5"
+    },
+    {
+      "path": "diagnostics/diagnose_touch.py",
+      "bytes": 4081,
+      "sha256": "655bfcdd36b4c863e671e62bf7d3461530fc3142e6efd2da65a85f9d558597df"
+    },
+    {
+      "path": "diagnostics/diagnose_touch_executed.py",
+      "bytes": 4056,
+      "sha256": "c4d456707de4091f388a3e59309a1b032ba6aeccab4e3e0f70832abf53581908"
+    },
+    {
+      "path": "diagnostics/mobile-keyboard.png",
+      "bytes": 92606,
+      "sha256": "e5c7682f6390e7e1a51a049849e326547c0cac3e0bfbcdddf8dbc2b488e782a2"
+    },
+    {
+      "path": "diagnostics/pilot/browser-proof.json",
+      "bytes": 14760,
+      "sha256": "abd7a616e8524dc7ee04e4cc3c01b03311ffbe8104c84430e485c816d9ca437f"
+    },
+    {
+      "path": "diagnostics/pilot/execution.txt",
+      "bytes": 768,
+      "sha256": "3e24588e5253fdfdc5b0c49636881532059711fe9650bb64a9fa3276ecfe02c1"
+    },
+    {
+      "path": "diagnostics/pilot/fixtures/n11-d.json",
+      "bytes": 3058,
+      "sha256": "8877e9ea96d9fbfd2ef9002d03bb8d102d8d836bee8bd56c7e38062b1b2057ba"
+    },
+    {
+      "path": "diagnostics/pilot/fixtures/n11-w.json",
+      "bytes": 3058,
+      "sha256": "5b7f8b3b93b7e0fad0efb24a79ec89658158463d3b54adecd24b099c30d8269c"
+    },
+    {
+      "path": "diagnostics/pilot/fixtures/n12-d.json",
+      "bytes": 3058,
+      "sha256": "cbaca814bd7bd2a0226305f41f1c66ef42c96efe0e2f2f0a8de4e9b440035c63"
+    },
+    {
+      "path": "diagnostics/pilot/fixtures/n12-w.json",
+      "bytes": 3058,
+      "sha256": "2d6475f8de2609df0cb206901b970c888122d93b5a4b4ca0943a22b0a631e79b"
+    },
+    {
+      "path": "diagnostics/pilot/rendered/n11-d.html.gz",
+      "bytes": 25240,
+      "sha256": "26f088a44c1f0d360c7e640c2d622e7d8f85553e676b5120d71c88df8eddf409"
+    },
+    {
+      "path": "diagnostics/pilot/rendered/n11-w.html.gz",
+      "bytes": 25129,
+      "sha256": "814a84f4ba9bbb2c6a0be21a418de3ac905fa31724e3b831e3b02f2cf79b4ff6"
+    },
+    {
+      "path": "diagnostics/pilot/rendered/n12-d.html.gz",
+      "bytes": 25538,
+      "sha256": "c5804645eb1a1a8959c49428132088eadadc986590ce56a3d53e873eb5518b60"
+    },
+    {
+      "path": "diagnostics/pilot/rendered/n12-w.html.gz",
+      "bytes": 25486,
+      "sha256": "b2846afeba131230e1cb5d673524cdb83a70d0ee465e7a1e46b66463f3c28b18"
+    },
+    {
+      "path": "diagnostics/pilot/screenshots/n11-w-320-light-en-FAIL.png",
+      "bytes": 154346,
+      "sha256": "04fe566ea92b18357798ea69900b4d9aa9fa0eac53ead0ac6e145fa7eb6e6efb"
+    },
+    {
+      "path": "diagnostics/pilot/screenshots/n12-d-1440-dark-zh-card.png",
+      "bytes": 66535,
+      "sha256": "139b6a76ad29447e37e8a77c4c7a3c8354035fb603533c03d8c2c316d1d97211"
+    },
+    {
+      "path": "diagnostics/pilot/screenshots/n12-d-1440-dark-zh.png",
+      "bytes": 356897,
+      "sha256": "a08e5129a6e697cce0156f9d93a37ff27355a656bb3d95217904d00223331959"
+    },
+    {
+      "path": "diagnostics/pilot/verify_browser_initial.py",
+      "bytes": 20177,
+      "sha256": "7a09a07a081a157c2e3fa06f32124573c7730e3a17cb22858e13cfbee71a8917"
+    },
+    {
+      "path": "diagnostics/touch-events.json",
+      "bytes": 17074,
+      "sha256": "82f37e3e3d2c34dad61745fe703f8d432d59eb08554305b7f5676fdb49b56b71"
+    },
+    {
+      "path": "diagnostics/touch-execution.txt",
+      "bytes": 10653,
+      "sha256": "13b45f52be16337e1e4a33d1d0eac54146200a125985664a802a791399675b8e"
+    },
+    {
+      "path": "diagnostics/touch-first.png",
+      "bytes": 154395,
+      "sha256": "3d31e59eb401c6852a294742a9ea79758e57425e7fd430f7bd6e88c1b5b1658d"
+    },
+    {
+      "path": "diagnostics/touch-second.png",
+      "bytes": 174347,
+      "sha256": "940a1dc0982a24103e1ff8beffe1f5b55920723747b690d29a4808fc8e653728"
+    },
+    {
+      "path": "diagnostics/verify_browser_matrix_executed.py",
+      "bytes": 23466,
+      "sha256": "6b113dc8ec1c00c733a5ea5d577ac4df98f23c9a9104cbae327c75fdc43967ea"
+    },
+    {
+      "path": "fixtures/n11-d.json",
+      "bytes": 3058,
+      "sha256": "8877e9ea96d9fbfd2ef9002d03bb8d102d8d836bee8bd56c7e38062b1b2057ba"
+    },
+    {
+      "path": "fixtures/n11-w.json",
+      "bytes": 3058,
+      "sha256": "5b7f8b3b93b7e0fad0efb24a79ec89658158463d3b54adecd24b099c30d8269c"
+    },
+    {
+      "path": "fixtures/n12-d.json",
+      "bytes": 3058,
+      "sha256": "cbaca814bd7bd2a0226305f41f1c66ef42c96efe0e2f2f0a8de4e9b440035c63"
+    },
+    {
+      "path": "fixtures/n12-w.json",
+      "bytes": 3058,
+      "sha256": "2d6475f8de2609df0cb206901b970c888122d93b5a4b4ca0943a22b0a631e79b"
+    },
+    {
+      "path": "rendered/n11-d.html.gz",
+      "bytes": 25240,
+      "sha256": "26f088a44c1f0d360c7e640c2d622e7d8f85553e676b5120d71c88df8eddf409"
+    },
+    {
+      "path": "rendered/n11-w.html.gz",
+      "bytes": 25129,
+      "sha256": "814a84f4ba9bbb2c6a0be21a418de3ac905fa31724e3b831e3b02f2cf79b4ff6"
+    },
+    {
+      "path": "rendered/n12-d.html.gz",
+      "bytes": 25538,
+      "sha256": "c5804645eb1a1a8959c49428132088eadadc986590ce56a3d53e873eb5518b60"
+    },
+    {
+      "path": "rendered/n12-w.html.gz",
+      "bytes": 25486,
+      "sha256": "b2846afeba131230e1cb5d673524cdb83a70d0ee465e7a1e46b66463f3c28b18"
+    },
+    {
+      "path": "screenshots/n11-d-1440-dark-zh-card.png",
+      "bytes": 49636,
+      "sha256": "39f7e2efd49bb8d03c485a3ce6928d24ed9ee64cf3cf13f0e0ca894467625438"
+    },
+    {
+      "path": "screenshots/n11-d-1440-dark-zh.png",
+      "bytes": 338825,
+      "sha256": "38a095a0b38077592159286a38330a395a9b996ae10f138adf8735dca3771d36"
+    },
+    {
+      "path": "screenshots/n11-d-320-light-en-card.png",
+      "bytes": 43491,
+      "sha256": "728fd09dc1dfa0fbdfa36fbe0e80f21006930676961fc1df2482c4d5fba398a6"
+    },
+    {
+      "path": "screenshots/n11-d-320-light-en.png",
+      "bytes": 91909,
+      "sha256": "dd62f961a9392822f793100c4ac95d8e51fcd9dcc9040dc47fea0cd3fda270ea"
+    },
+    {
+      "path": "screenshots/n11-d-390-dark-en-card.png",
+      "bytes": 39816,
+      "sha256": "3fafc703ed117b105389364d35b6cbd9b8c86dafdc09966325099981cc7b48ba"
+    },
+    {
+      "path": "screenshots/n11-d-390-dark-en.png",
+      "bytes": 96468,
+      "sha256": "9e8793f45abab05bfe8723badd61796d3b5580eb17d24748d22f8d6863c259c8"
+    },
+    {
+      "path": "screenshots/n11-w-1440-dark-zh-card.png",
+      "bytes": 40465,
+      "sha256": "f379c173afb232fa9ff1ed54fb9a3954c7586d2b55490d29d807bb916bd715d0"
+    },
+    {
+      "path": "screenshots/n11-w-1440-dark-zh.png",
+      "bytes": 328356,
+      "sha256": "e15246e5ff187b4249aa24eba28c71935409d954142befe678d6b1a0f7f8f986"
+    },
+    {
+      "path": "screenshots/n11-w-320-light-en-card.png",
+      "bytes": 36070,
+      "sha256": "93092af4a13f9f45b67b71b1919ef617dd3c3843af0867e9ea622fc1baf400f4"
+    },
+    {
+      "path": "screenshots/n11-w-320-light-en-reduce-card.png",
+      "bytes": 35661,
+      "sha256": "892c99aa41db16dcac1c9ca8234c627d2763e9a6da9ec0ecb2d70bcff32dabd1"
+    },
+    {
+      "path": "screenshots/n11-w-320-light-en-reduce.png",
+      "bytes": 85452,
+      "sha256": "5ca25def942db59f7ad587678cf7cff16d100751074bd6377cbf0244bc2cc49b"
+    },
+    {
+      "path": "screenshots/n11-w-320-light-en.png",
+      "bytes": 85740,
+      "sha256": "83a9aced64ee771d374f0cfb6a3e5f3bf299c7048f8b45d2ef1628f93b228804"
+    },
+    {
+      "path": "screenshots/n12-d-1440-dark-zh-card.png",
+      "bytes": 66676,
+      "sha256": "08a0033164af720c36096e090f60ef0aac874a59bda304188a6e9a0d4a98835e"
+    },
+    {
+      "path": "screenshots/n12-d-1440-dark-zh-reduce-card.png",
+      "bytes": 66421,
+      "sha256": "cc38aefad83d4ef1ac855d813411d1311a528ebbff5b3b6f11f9c5a794db73e3"
+    },
+    {
+      "path": "screenshots/n12-d-1440-dark-zh-reduce.png",
+      "bytes": 354626,
+      "sha256": "8497d8d9e191a864d4149bcc175e604125893f9bf86fbfd5f29063cdf345c726"
+    },
+    {
+      "path": "screenshots/n12-d-1440-dark-zh.png",
+      "bytes": 354789,
+      "sha256": "bd95632f8349aee09fabdefd366de92933f4faf30686041b1720a694dcf23fdb"
+    },
+    {
+      "path": "screenshots/n12-d-320-light-en-card.png",
+      "bytes": 64458,
+      "sha256": "e06eff6cec6067b3d8ad26b25703a1b25d60aaee037a46dd5d4a06e82fbb3788"
+    },
+    {
+      "path": "screenshots/n12-d-320-light-en.png",
+      "bytes": 103506,
+      "sha256": "33c39e820882489a1ae02ff01b7c3a94733e193c840d40fecf6c8f6f6ea3f051"
+    },
+    {
+      "path": "screenshots/n12-w-1440-dark-zh-card.png",
+      "bytes": 62557,
+      "sha256": "239f96c6a3c5bdf79dbe7c104dce051af94deae6850ef1dcd2b70cc8e2b94264"
+    },
+    {
+      "path": "screenshots/n12-w-1440-dark-zh.png",
+      "bytes": 350347,
+      "sha256": "9bb89ed8b312d787b62c84de40706f1e2ae3e4f935c4327381d7c72f350426ba"
+    },
+    {
+      "path": "screenshots/n12-w-320-light-en-card.png",
+      "bytes": 59936,
+      "sha256": "42c995f4b69a878884c53126a0dc8cf8843f16ae6634c91cf0187398693c1afc"
+    },
+    {
+      "path": "screenshots/n12-w-320-light-en.png",
+      "bytes": 101398,
+      "sha256": "4efdfc02681eeb2841f1d09a1e8697aa5f4a7989a8964e327b0a80b785e184dd"
+    },
+    {
+      "path": "screenshots/n12-w-390-dark-en-card.png",
+      "bytes": 55896,
+      "sha256": "489f2fefbcf8e062e6668ecb418e6f85520dd018c787dcc15d9e0f98ef7c5851"
+    },
+    {
+      "path": "screenshots/n12-w-390-dark-en.png",
+      "bytes": 102995,
+      "sha256": "ff0e2ff4f448cf5df8a5c1d8df55cc276eeff803e0ec1d550f470fe561bb0d7c"
+    },
+    {
+      "path": "source-preflight.txt",
+      "bytes": 953,
+      "sha256": "01d2649b3440b4b13bdd80957556c6caa769b54def08078a359bdfd9e47d5703"
+    },
+    {
+      "path": "verify_browser.py",
+      "bytes": 23961,
+      "sha256": "a6857b4c6c4bd2552f4b7340e9c6cf56be127db59dda9e4e522f215f2763461e"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{"phase": "producer-start", "case": "readable"}
+{"phase": "producer-pass", "case": "readable", "seconds": 2.778, "tiers": {"primary": 4, "r63": 3, "atrz": 5}, "primary_off_band": 1}
+{"phase": "producer-start", "case": "primary-unreadable"}
+{"phase": "producer-pass", "case": "primary-unreadable", "seconds": 1.386, "tiers": {"primary": 3, "r63": 3, "atrz": 5}, "primary_off_band": 0}
+{"phase": "complete", "status": "SCOPED_PRODUCER_AND_BUILDER_PROOF", "report": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-winner-t44-proof-20261104-c2-05a1d4b6b06d54cc/research/design_candidates/production_design_20261102/evidence/d03-winner-t42-20261104/producer-proof.json", "report_sha256": "fa71291797702a436ff399a17ed09a590845e0ce2f98234b691762d2dd713377"}

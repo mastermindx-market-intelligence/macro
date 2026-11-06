@@ -1,0 +1,34 @@
+{
+  "touch": {
+    "pr": 6860,
+    "head": "03b21b1a9e0f1b5b517a9a92545bc02824411ced",
+    "branch": "claude/lens-sheet-tap-phantom-click",
+    "state": "open",
+    "source_paths": [
+      "templates/theme.js",
+      "site/theme.js",
+      "tests/test_lens_nested_control_taps.py",
+      "site/unsubscribe.html"
+    ],
+    "continuity": "https://github.com/mastermindx-market-intelligence/macro/pull/6860#issuecomment-5622945903"
+  },
+  "mobile_overlay": {
+    "pr": 8754,
+    "head": "6037e03596ddc8300e7afd12b241889bf55dc210",
+    "draft": true,
+    "branch": "sol/manual-paper-waves-01a1101f-release-r2",
+    "rule": "html.lens-lock #mmb-root, html.lens-lock #mmb-boot { visibility: hidden !important; }",
+    "hold": "NO_PUSH_NO_CI, original local derivative/integrator only",
+    "hold_source": "https://github.com/mastermindx-market-intelligence/macro/pull/8754#issuecomment-6539662070",
+    "limits": "Mobile sheet only; no desktop floating-card acceptance inferred"
+  },
+  "overlap": {
+    "pr": 7590,
+    "head": "8bb010a76d187eae1d0c57a62a5392c4cf8e5079",
+    "paths": [
+      "templates/theme.js",
+      "site/theme.js"
+    ]
+  },
+  "action": "No product source or original shared carrier modified; retained as T44 consumer evidence."
+}

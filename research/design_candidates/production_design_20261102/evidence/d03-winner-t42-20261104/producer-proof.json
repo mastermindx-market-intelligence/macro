@@ -1,0 +1,217 @@
+{
+  "task": "D03 T42",
+  "status": "SCOPED_PRODUCER_AND_BUILDER_PROOF",
+  "created_at": "2026-11-04T11:09:57.857400+00:00",
+  "baseline": "ffda5424b75bbbb26e33a4d328043bbfb480e6ff",
+  "checkout_head": "07195602c69a8aea3c176f4696bbd9a3e4814139",
+  "source_hashes": {
+    "engine/top_maturation.py": "86497282e630d55dcc6ac32e0d5b8439cc032a3ccb6a8216603f8b9ade7bf095",
+    "tests/test_top_maturation.py": "4cbaebdd734f37e48826e54eee87f7baa14a615b9d5acb4b2ebd8caafddf2efb",
+    "scripts/build_top_maturation.py": "21308abcff39c61cbb8b1c760342d9af37b164886f218b0329d01a93b468b3d6",
+    "scripts/build_winner_health_page.py": "be6fb99b48d9de9a432d063557e93574ad8336837abd7571006e5e4978d7bd3e",
+    "templates/winner_health.html.j2": "545454c3650de638e82fec0b06582ad994adb3efe385a3baf293531577f3997f",
+    "engine/top_anatomy.py": "13e91ea1b082a0de883fbbb9282bf0ab76acbfb30c16bee98684879414ed2d3e",
+    "engine/session_anchor.py": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "templates/_lens.html.j2": "1d6bbb2ff780b60a2fcd0397e7c94305e1a7f996ae76c517c4562385ccdc19ea",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+  },
+  "source_after": {
+    "engine/top_maturation.py": "86497282e630d55dcc6ac32e0d5b8439cc032a3ccb6a8216603f8b9ade7bf095",
+    "tests/test_top_maturation.py": "4cbaebdd734f37e48826e54eee87f7baa14a615b9d5acb4b2ebd8caafddf2efb",
+    "scripts/build_top_maturation.py": "21308abcff39c61cbb8b1c760342d9af37b164886f218b0329d01a93b468b3d6",
+    "scripts/build_winner_health_page.py": "be6fb99b48d9de9a432d063557e93574ad8336837abd7571006e5e4978d7bd3e",
+    "templates/winner_health.html.j2": "545454c3650de638e82fec0b06582ad994adb3efe385a3baf293531577f3997f",
+    "engine/top_anatomy.py": "13e91ea1b082a0de883fbbb9282bf0ab76acbfb30c16bee98684879414ed2d3e",
+    "engine/session_anchor.py": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "templates/_lens.html.j2": "1d6bbb2ff780b60a2fcd0397e7c94305e1a7f996ae76c517c4562385ccdc19ea",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+  },
+  "versions": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5"
+  },
+  "synthetic_only": true,
+  "product_source_unchanged": true,
+  "producer_runs": 2,
+  "membership_window_sessions": 21,
+  "default_trailing_sessions": 760,
+  "trace": {
+    "method": "read-only sys.settrace observation; no algorithm stubs/wrappers",
+    "lines": {
+      "1545": "readability_gate",
+      "1552": "unreadable_off_band_exit",
+      "1561": "classification_call",
+      "1562": "classified",
+      "1565": "nonbreaking_off_band_exit",
+      "1566": "breaking_off_band_retained",
+      "1573": "analogue_call"
+    },
+    "producer_sha256": "86497282e630d55dcc6ac32e0d5b8439cc032a3ccb6a8216603f8b9ade7bf095"
+  },
+  "isolation": [
+    "All tape, metadata, libraries, cache, context and rendered writes use a temporary root.",
+    "Only name translation and reference-session inputs are deterministic fixtures.",
+    "COLLECT_LANE and US_LANE are absent for these synthetic runs; restored afterwards.",
+    "Socket connections forbidden for producer and builder; no live collector or endpoint.",
+    "Real masks, features, readability, classification, membership, sorting and analogues execute.",
+    "Consumer artifacts use exact existing diagnostics projection; publisher/ledger CLI not run.",
+    "Builder explicit fixture mode bypasses historical artifact freshness admission by design.",
+    "repo_root=None: no fabricated stock destinations; consumer ticker labels remain plain text."
+  ],
+  "cases": {
+    "readable": {
+      "status": "PASS",
+      "producer_seconds": 2.778,
+      "tiers": {
+        "primary": {
+          "count": 4,
+          "states": {
+            "extended_healthy": [
+              "AAA",
+              "BBB"
+            ],
+            "extended_watch": [],
+            "thinning": [
+              "CCC"
+            ],
+            "breaking": [
+              "DBRK"
+            ],
+            "no_read": []
+          },
+          "off_band": 1
+        },
+        "r63": {
+          "count": 3,
+          "states": {
+            "extended_healthy": [],
+            "extended_watch": [
+              "AAA",
+              "BBB"
+            ],
+            "thinning": [],
+            "breaking": [
+              "DBRK"
+            ],
+            "no_read": []
+          },
+          "off_band": 1
+        },
+        "atrz": {
+          "count": 5,
+          "states": {
+            "extended_healthy": [
+              "AAA",
+              "BBB"
+            ],
+            "extended_watch": [
+              "DFLT"
+            ],
+            "thinning": [
+              "CCC"
+            ],
+            "breaking": [
+              "DBRK"
+            ],
+            "no_read": []
+          },
+          "off_band": 1
+        }
+      },
+      "independent_count_sum": 12,
+      "unique_names_for_evidence_only": 5,
+      "ledger_tickers": [
+        "AAA",
+        "BBB",
+        "CCC",
+        "DBRK"
+      ],
+      "source_rows_modified": false,
+      "trace_events": 55,
+      "producer_context_sha256": "bcfdfe4ad4a298e60055f67e2a6d8bbce93aec3a72f9b352d945a7ea5812c380",
+      "diagnostics_sha256": "2a321b1b0d8b9d853d1901453667fbbdbc932266d6f64ee5329ce242945f8c28",
+      "consumer_artifact_sha256": "9481a6ce021823e4330d2f37262fc8868cfd2d7ddcd66f3053535287e599b6f8",
+      "rendered_html_sha256": "18091b0abc8e79a3b61e57dc3aa5b832f82fe1a810e47a06d698ed2e5c0ee093"
+    },
+    "primary-unreadable": {
+      "status": "PASS",
+      "producer_seconds": 1.386,
+      "tiers": {
+        "primary": {
+          "count": 3,
+          "states": {
+            "extended_healthy": [],
+            "extended_watch": [],
+            "thinning": [],
+            "breaking": [],
+            "no_read": [
+              "AAA",
+              "BBB",
+              "CCC"
+            ]
+          },
+          "off_band": 0
+        },
+        "r63": {
+          "count": 3,
+          "states": {
+            "extended_healthy": [],
+            "extended_watch": [
+              "AAA",
+              "BBB"
+            ],
+            "thinning": [],
+            "breaking": [
+              "DBRK"
+            ],
+            "no_read": []
+          },
+          "off_band": 1
+        },
+        "atrz": {
+          "count": 5,
+          "states": {
+            "extended_healthy": [
+              "AAA",
+              "BBB"
+            ],
+            "extended_watch": [
+              "DFLT"
+            ],
+            "thinning": [
+              "CCC"
+            ],
+            "breaking": [
+              "DBRK"
+            ],
+            "no_read": []
+          },
+          "off_band": 1
+        }
+      },
+      "independent_count_sum": 11,
+      "unique_names_for_evidence_only": 5,
+      "ledger_tickers": [],
+      "source_rows_modified": false,
+      "trace_events": 41,
+      "producer_context_sha256": "a351362c87ea7708c6623bf7873bc1ff27b2f04d63a774acee947d84027c3879",
+      "diagnostics_sha256": "9b9e7ce5c032b261e6facac3ea469a621e1a4cc0dd1b93bcba6602cd1140d284",
+      "consumer_artifact_sha256": "e92a13402b85d0ddb70cadf2bc2973727b33d094a55d77811bfbafc1f4c841ed",
+      "rendered_html_sha256": "d373a2c434b4ade0278810fdd55833946766229e30903a6b4efc4c492bee68b1"
+    }
+  },
+  "limits": [
+    "This proves the four scoped cohort/membership cases, not market outcomes or trading authority.",
+    "No W07 composition, T43 freshness, T44 analogue disclosure, shared LENS repair or final acceptance.",
+    "Browser validation is separate and must consume these retained exact rendered bytes."
+  ]
+}

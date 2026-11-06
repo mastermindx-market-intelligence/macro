@@ -1,0 +1,1739 @@
+{
+  "task": "D03 T42",
+  "created_at": "2026-11-04T11:12:37.013717+00:00",
+  "baseline": "ffda5424b75bbbb26e33a4d328043bbfb480e6ff",
+  "checkout_head": "07195602c69a8aea3c176f4696bbd9a3e4814139",
+  "producer_report_sha256": "fa71291797702a436ff399a17ed09a590845e0ce2f98234b691762d2dd713377",
+  "browser": "Chromium 151.0.7922.34",
+  "total": 16,
+  "passed": 16,
+  "failed": 0,
+  "source_unchanged": true,
+  "source_hashes": {
+    "engine/top_maturation.py": "86497282e630d55dcc6ac32e0d5b8439cc032a3ccb6a8216603f8b9ade7bf095",
+    "tests/test_top_maturation.py": "4cbaebdd734f37e48826e54eee87f7baa14a615b9d5acb4b2ebd8caafddf2efb",
+    "scripts/build_top_maturation.py": "21308abcff39c61cbb8b1c760342d9af37b164886f218b0329d01a93b468b3d6",
+    "scripts/build_winner_health_page.py": "be6fb99b48d9de9a432d063557e93574ad8336837abd7571006e5e4978d7bd3e",
+    "templates/winner_health.html.j2": "545454c3650de638e82fec0b06582ad994adb3efe385a3baf293531577f3997f",
+    "engine/top_anatomy.py": "13e91ea1b082a0de883fbbb9282bf0ab76acbfb30c16bee98684879414ed2d3e",
+    "engine/session_anchor.py": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "templates/_lens.html.j2": "1d6bbb2ff780b60a2fcd0397e7c94305e1a7f996ae76c517c4562385ccdc19ea",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+  },
+  "rendered_hashes": {
+    "readable": "18091b0abc8e79a3b61e57dc3aa5b832f82fe1a810e47a06d698ed2e5c0ee093",
+    "primary-unreadable": "d373a2c434b4ade0278810fdd55833946766229e30903a6b4efc4c492bee68b1"
+  },
+  "served_asset_hashes": {
+    "templates/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "templates/shared_shell_bridge.js": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "templates/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "templates/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "templates/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "templates/product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "templates/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "templates/account.js": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+    "templates/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "templates/nav_market.js": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587",
+    "templates/terminal_overlay.js": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf",
+    "templates/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "templates/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "templates/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+  },
+  "stubbed_unrelated_json": [],
+  "live_config": {
+    "live_enabled": false,
+    "sha256": "203b1cbdd4d038675784b15d3e529a0dc5000f661e1ed2447e28dbfa3689f7ed"
+  },
+  "missing_resources": [],
+  "external_requests": [],
+  "cases": [
+    {
+      "case": "readable-320-light-en",
+      "producer_case": "readable",
+      "width": 320,
+      "theme": "light",
+      "lang": "en",
+      "status": "PASS",
+      "hero": "Three kinds of winner, each read against its own history. A name can be in more than one, so these counts do not add up to a total. A name is listed when it cleared one of the three bars in the last 21 sessions; one that no longer clears its bar today is listed only as Character changed. ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 4,
+          "shelf_text": "Big six-month gains 4 names Up 50% or more over six months. 2 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "Fast three-month runs 3 names Up 35% or more over the last three months. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "Far above trend 5 names At least six of its own typical daily moves above its 200-day average price. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "touchscreen tap"
+        }
+      ],
+      "geometry": {
+        "viewport": 320,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total. Tonight: 32 US names screened, read 2026-09-04. A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.",
+      "javascript_errors": []
+    },
+    {
+      "case": "readable-320-light-zh",
+      "producer_case": "readable",
+      "width": 320,
+      "theme": "light",
+      "lang": "zh",
+      "status": "PASS",
+      "hero": "三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 个股只要在最近 21 个交易日内达到过三道门槛之一就会列出；今天已不再达到门槛的，只会列在「走势已变」。 ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 4,
+          "shelf_text": "半年大涨 4 只 半年内上涨 50% 或以上。 其中 2 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "三个月急涨 3 只 近三个月上涨 35% 或以上。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "远高于自身均线 5 只 股价高出自身 200 日均价的幅度，至少相当于它自己 6 个交易日的正常波动。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "touchscreen tap"
+        }
+      ],
+      "geometry": {
+        "viewport": 320,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。今晚：筛查 32 只美股，判读日期 2026-09-04。刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。",
+      "javascript_errors": []
+    },
+    {
+      "case": "readable-320-dark-en",
+      "producer_case": "readable",
+      "width": 320,
+      "theme": "dark",
+      "lang": "en",
+      "status": "PASS",
+      "hero": "Three kinds of winner, each read against its own history. A name can be in more than one, so these counts do not add up to a total. A name is listed when it cleared one of the three bars in the last 21 sessions; one that no longer clears its bar today is listed only as Character changed. ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 4,
+          "shelf_text": "Big six-month gains 4 names Up 50% or more over six months. 2 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "Fast three-month runs 3 names Up 35% or more over the last three months. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "Far above trend 5 names At least six of its own typical daily moves above its 200-day average price. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "touchscreen tap"
+        }
+      ],
+      "geometry": {
+        "viewport": 320,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total. Tonight: 32 US names screened, read 2026-09-04. A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.",
+      "javascript_errors": []
+    },
+    {
+      "case": "readable-320-dark-zh",
+      "producer_case": "readable",
+      "width": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "status": "PASS",
+      "hero": "三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 个股只要在最近 21 个交易日内达到过三道门槛之一就会列出；今天已不再达到门槛的，只会列在「走势已变」。 ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 4,
+          "shelf_text": "半年大涨 4 只 半年内上涨 50% 或以上。 其中 2 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "三个月急涨 3 只 近三个月上涨 35% 或以上。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "远高于自身均线 5 只 股价高出自身 200 日均价的幅度，至少相当于它自己 6 个交易日的正常波动。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "touchscreen tap"
+        }
+      ],
+      "geometry": {
+        "viewport": 320,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。今晚：筛查 32 只美股，判读日期 2026-09-04。刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。",
+      "javascript_errors": []
+    },
+    {
+      "case": "readable-1440-light-en",
+      "producer_case": "readable",
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "status": "PASS",
+      "hero": "Three kinds of winner, each read against its own history. A name can be in more than one, so these counts do not add up to a total. A name is listed when it cleared one of the three bars in the last 21 sessions; one that no longer clears its bar today is listed only as Character changed. ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 4,
+          "shelf_text": "Big six-month gains 4 names Up 50% or more over six months. 2 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "Fast three-month runs 3 names Up 35% or more over the last three months. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "Far above trend 5 names At least six of its own typical daily moves above its 200-day average price. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "mouse click"
+        }
+      ],
+      "geometry": {
+        "viewport": 1440,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total. Tonight: 32 US names screened, read 2026-09-04. A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.",
+      "javascript_errors": []
+    },
+    {
+      "case": "readable-1440-light-zh",
+      "producer_case": "readable",
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "status": "PASS",
+      "hero": "三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 个股只要在最近 21 个交易日内达到过三道门槛之一就会列出；今天已不再达到门槛的，只会列在「走势已变」。 ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 4,
+          "shelf_text": "半年大涨 4 只 半年内上涨 50% 或以上。 其中 2 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "三个月急涨 3 只 近三个月上涨 35% 或以上。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "远高于自身均线 5 只 股价高出自身 200 日均价的幅度，至少相当于它自己 6 个交易日的正常波动。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "mouse click"
+        }
+      ],
+      "geometry": {
+        "viewport": 1440,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。今晚：筛查 32 只美股，判读日期 2026-09-04。刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。",
+      "javascript_errors": []
+    },
+    {
+      "case": "readable-1440-dark-en",
+      "producer_case": "readable",
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "status": "PASS",
+      "hero": "Three kinds of winner, each read against its own history. A name can be in more than one, so these counts do not add up to a total. A name is listed when it cleared one of the three bars in the last 21 sessions; one that no longer clears its bar today is listed only as Character changed. ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 4,
+          "shelf_text": "Big six-month gains 4 names Up 50% or more over six months. 2 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "Fast three-month runs 3 names Up 35% or more over the last three months. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "Far above trend 5 names At least six of its own typical daily moves above its 200-day average price. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "mouse click"
+        }
+      ],
+      "geometry": {
+        "viewport": 1440,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total. Tonight: 32 US names screened, read 2026-09-04. A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.",
+      "javascript_errors": []
+    },
+    {
+      "case": "readable-1440-dark-zh",
+      "producer_case": "readable",
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "status": "PASS",
+      "hero": "三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 个股只要在最近 21 个交易日内达到过三道门槛之一就会列出；今天已不再达到门槛的，只会列在「走势已变」。 ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 4,
+          "shelf_text": "半年大涨 4 只 半年内上涨 50% 或以上。 其中 2 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "三个月急涨 3 只 近三个月上涨 35% 或以上。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "远高于自身均线 5 只 股价高出自身 200 日均价的幅度，至少相当于它自己 6 个交易日的正常波动。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "mouse click"
+        }
+      ],
+      "geometry": {
+        "viewport": 1440,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。今晚：筛查 32 只美股，判读日期 2026-09-04。刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。",
+      "javascript_errors": []
+    },
+    {
+      "case": "primary-unreadable-320-light-en",
+      "producer_case": "primary-unreadable",
+      "width": 320,
+      "theme": "light",
+      "lang": "en",
+      "status": "PASS",
+      "hero": "Three kinds of winner, each read against its own history. A name can be in more than one, so these counts do not add up to a total. A name is listed when it cleared one of the three bars in the last 21 sessions; one that no longer clears its bar today is listed only as Character changed. ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 3,
+          "shelf_text": "Big six-month gains 3 names Up 50% or more over six months. none aging tonight",
+          "states": {
+            "no_read": {
+              "heading": "Not enough to compare",
+              "tickers": [
+                "AAA",
+                "BBB",
+                "CCC"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "Fast three-month runs 3 names Up 35% or more over the last three months. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "Far above trend 5 names At least six of its own typical daily moves above its 200-day average price. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "touchscreen tap"
+        }
+      ],
+      "geometry": {
+        "viewport": 320,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total. Tonight: 32 US names screened, read 2026-09-04. A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.",
+      "javascript_errors": []
+    },
+    {
+      "case": "primary-unreadable-320-light-zh",
+      "producer_case": "primary-unreadable",
+      "width": 320,
+      "theme": "light",
+      "lang": "zh",
+      "status": "PASS",
+      "hero": "三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 个股只要在最近 21 个交易日内达到过三道门槛之一就会列出；今天已不再达到门槛的，只会列在「走势已变」。 ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 3,
+          "shelf_text": "半年大涨 3 只 半年内上涨 50% 或以上。 今晚没有在老化的",
+          "states": {
+            "no_read": {
+              "heading": "无可比样本",
+              "tickers": [
+                "AAA",
+                "BBB",
+                "CCC"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "三个月急涨 3 只 近三个月上涨 35% 或以上。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "远高于自身均线 5 只 股价高出自身 200 日均价的幅度，至少相当于它自己 6 个交易日的正常波动。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "touchscreen tap"
+        }
+      ],
+      "geometry": {
+        "viewport": 320,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。今晚：筛查 32 只美股，判读日期 2026-09-04。刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。",
+      "javascript_errors": []
+    },
+    {
+      "case": "primary-unreadable-320-dark-en",
+      "producer_case": "primary-unreadable",
+      "width": 320,
+      "theme": "dark",
+      "lang": "en",
+      "status": "PASS",
+      "hero": "Three kinds of winner, each read against its own history. A name can be in more than one, so these counts do not add up to a total. A name is listed when it cleared one of the three bars in the last 21 sessions; one that no longer clears its bar today is listed only as Character changed. ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 3,
+          "shelf_text": "Big six-month gains 3 names Up 50% or more over six months. none aging tonight",
+          "states": {
+            "no_read": {
+              "heading": "Not enough to compare",
+              "tickers": [
+                "AAA",
+                "BBB",
+                "CCC"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "Fast three-month runs 3 names Up 35% or more over the last three months. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "Far above trend 5 names At least six of its own typical daily moves above its 200-day average price. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "touchscreen tap"
+        }
+      ],
+      "geometry": {
+        "viewport": 320,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total. Tonight: 32 US names screened, read 2026-09-04. A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.",
+      "javascript_errors": []
+    },
+    {
+      "case": "primary-unreadable-320-dark-zh",
+      "producer_case": "primary-unreadable",
+      "width": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "status": "PASS",
+      "hero": "三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 个股只要在最近 21 个交易日内达到过三道门槛之一就会列出；今天已不再达到门槛的，只会列在「走势已变」。 ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 3,
+          "shelf_text": "半年大涨 3 只 半年内上涨 50% 或以上。 今晚没有在老化的",
+          "states": {
+            "no_read": {
+              "heading": "无可比样本",
+              "tickers": [
+                "AAA",
+                "BBB",
+                "CCC"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "三个月急涨 3 只 近三个月上涨 35% 或以上。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "远高于自身均线 5 只 股价高出自身 200 日均价的幅度，至少相当于它自己 6 个交易日的正常波动。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "touchscreen tap"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "touchscreen tap"
+        }
+      ],
+      "geometry": {
+        "viewport": 320,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。今晚：筛查 32 只美股，判读日期 2026-09-04。刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。",
+      "javascript_errors": []
+    },
+    {
+      "case": "primary-unreadable-1440-light-en",
+      "producer_case": "primary-unreadable",
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "status": "PASS",
+      "hero": "Three kinds of winner, each read against its own history. A name can be in more than one, so these counts do not add up to a total. A name is listed when it cleared one of the three bars in the last 21 sessions; one that no longer clears its bar today is listed only as Character changed. ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 3,
+          "shelf_text": "Big six-month gains 3 names Up 50% or more over six months. none aging tonight",
+          "states": {
+            "no_read": {
+              "heading": "Not enough to compare",
+              "tickers": [
+                "AAA",
+                "BBB",
+                "CCC"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "Fast three-month runs 3 names Up 35% or more over the last three months. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "Far above trend 5 names At least six of its own typical daily moves above its 200-day average price. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "mouse click"
+        }
+      ],
+      "geometry": {
+        "viewport": 1440,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total. Tonight: 32 US names screened, read 2026-09-04. A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.",
+      "javascript_errors": []
+    },
+    {
+      "case": "primary-unreadable-1440-light-zh",
+      "producer_case": "primary-unreadable",
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "status": "PASS",
+      "hero": "三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 个股只要在最近 21 个交易日内达到过三道门槛之一就会列出；今天已不再达到门槛的，只会列在「走势已变」。 ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 3,
+          "shelf_text": "半年大涨 3 只 半年内上涨 50% 或以上。 今晚没有在老化的",
+          "states": {
+            "no_read": {
+              "heading": "无可比样本",
+              "tickers": [
+                "AAA",
+                "BBB",
+                "CCC"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "三个月急涨 3 只 近三个月上涨 35% 或以上。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "远高于自身均线 5 只 股价高出自身 200 日均价的幅度，至少相当于它自己 6 个交易日的正常波动。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "mouse click"
+        }
+      ],
+      "geometry": {
+        "viewport": 1440,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。今晚：筛查 32 只美股，判读日期 2026-09-04。刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。",
+      "javascript_errors": []
+    },
+    {
+      "case": "primary-unreadable-1440-dark-en",
+      "producer_case": "primary-unreadable",
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "status": "PASS",
+      "hero": "Three kinds of winner, each read against its own history. A name can be in more than one, so these counts do not add up to a total. A name is listed when it cleared one of the three bars in the last 21 sessions; one that no longer clears its bar today is listed only as Character changed. ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 3,
+          "shelf_text": "Big six-month gains 3 names Up 50% or more over six months. none aging tonight",
+          "states": {
+            "no_read": {
+              "heading": "Not enough to compare",
+              "tickers": [
+                "AAA",
+                "BBB",
+                "CCC"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "Fast three-month runs 3 names Up 35% or more over the last three months. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "Far above trend 5 names At least six of its own typical daily moves above its 200-day average price. 3 of them aging · 1 no longer clear the bar today",
+          "states": {
+            "extended_healthy": {
+              "heading": "Still running",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "Showing wear",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "Thinning out",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "Character changed",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "mouse click"
+        }
+      ],
+      "geometry": {
+        "viewport": 1440,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total. Tonight: 32 US names screened, read 2026-09-04. A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.",
+      "javascript_errors": []
+    },
+    {
+      "case": "primary-unreadable-1440-dark-zh",
+      "producer_case": "primary-unreadable",
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "status": "PASS",
+      "hero": "三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 个股只要在最近 21 个交易日内达到过三道门槛之一就会列出；今天已不再达到门槛的，只会列在「走势已变」。 ?",
+      "cohorts": {
+        "primary": {
+          "shelf_count": 3,
+          "shelf_text": "半年大涨 3 只 半年内上涨 50% 或以上。 今晚没有在老化的",
+          "states": {
+            "no_read": {
+              "heading": "无可比样本",
+              "tickers": [
+                "AAA",
+                "BBB",
+                "CCC"
+              ]
+            }
+          }
+        },
+        "r63": {
+          "shelf_count": 3,
+          "shelf_text": "三个月急涨 3 只 近三个月上涨 35% 或以上。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        },
+        "atrz": {
+          "shelf_count": 5,
+          "shelf_text": "远高于自身均线 5 只 股价高出自身 200 日均价的幅度，至少相当于它自己 6 个交易日的正常波动。 其中 3 只在老化 · 其中 1 只今天已不再达到门槛",
+          "states": {
+            "extended_healthy": {
+              "heading": "仍在延续",
+              "tickers": [
+                "AAA",
+                "BBB"
+              ]
+            },
+            "extended_watch": {
+              "heading": "势头转弱",
+              "tickers": [
+                "DFLT"
+              ]
+            },
+            "thinning": {
+              "heading": "买盘转薄",
+              "tickers": [
+                "CCC"
+              ]
+            },
+            "breaking": {
+              "heading": "走势已变",
+              "tickers": [
+                "DBRK"
+              ]
+            }
+          }
+        }
+      },
+      "shelf_navigation": [
+        {
+          "tier": "primary",
+          "hash": "#t-six-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "r63",
+          "hash": "#t-three-month",
+          "input": "mouse click"
+        },
+        {
+          "tier": "atrz",
+          "hash": "#t-above-trend",
+          "input": "mouse click"
+        }
+      ],
+      "geometry": {
+        "viewport": 1440,
+        "overflow": 0,
+        "blocks_outside_horizontal_viewport": []
+      },
+      "smallprint": "仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。今晚：筛查 32 只美股，判读日期 2026-09-04。刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。",
+      "javascript_errors": []
+    }
+  ],
+  "limits": [
+    "Actual producer outputs and actual builder bytes; synthetic fixtures with explicit freshness bypass.",
+    "Sixteen focused cohort-consumer cases; does not repeat W07 availability or T44 record-card matrix.",
+    "Shelf anchors exercised by native browser touch/mouse; no LENS opening or shared-overlay repair claim.",
+    "Plain ticker labels are intentional because synthetic fixture has no published stock destinations.",
+    "Initial hot-only classifier observation remains preserved and separate; no global engine acceptance.",
+    "Not physical Safari, authentication, production data, deployment, W07 composition or user acceptance."
+  ]
+}

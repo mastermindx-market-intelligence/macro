@@ -1,0 +1,770 @@
+[
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "primary",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 7,
+    "total": 9
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "primary",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 7,
+    "total": 9,
+    "fired": []
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "primary",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 7,
+    "total": 9,
+    "state": "extended_healthy",
+    "fired": []
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "primary",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 7,
+    "total": 9,
+    "state": "extended_healthy",
+    "fired": []
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "primary",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 7,
+    "total": 9
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "primary",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 7,
+    "total": 9,
+    "fired": []
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "primary",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 7,
+    "total": 9,
+    "state": "extended_healthy",
+    "fired": []
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "primary",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 7,
+    "total": 9,
+    "state": "extended_healthy",
+    "fired": []
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "primary",
+    "ticker": "CCC",
+    "segment": "CCC",
+    "off_band": false,
+    "evaluated": 9,
+    "total": 9
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "primary",
+    "ticker": "CCC",
+    "segment": "CCC",
+    "off_band": false,
+    "evaluated": 9,
+    "total": 9,
+    "fired": [
+      "rs_peak_lag",
+      "updown_volume",
+      "dip_unreclaimed",
+      "below_50d"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "primary",
+    "ticker": "CCC",
+    "segment": "CCC",
+    "off_band": false,
+    "evaluated": 9,
+    "total": 9,
+    "state": "thinning",
+    "fired": [
+      "rs_peak_lag",
+      "updown_volume",
+      "dip_unreclaimed",
+      "below_50d"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "primary",
+    "ticker": "CCC",
+    "segment": "CCC",
+    "off_band": false,
+    "evaluated": 9,
+    "total": 9,
+    "state": "thinning",
+    "fired": [
+      "rs_peak_lag",
+      "updown_volume",
+      "dip_unreclaimed",
+      "below_50d"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "primary",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 9,
+    "total": 9
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "primary",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 9,
+    "total": 9,
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "primary",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 9,
+    "total": 9,
+    "state": "breaking",
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1566,
+    "stage": "breaking_off_band_retained",
+    "tier": "primary",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 9,
+    "total": 9,
+    "state": "breaking",
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "primary",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 9,
+    "total": 9,
+    "state": "breaking",
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "primary",
+    "ticker": "DFLT",
+    "segment": "DFLT",
+    "off_band": true,
+    "evaluated": 7,
+    "total": 9
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "primary",
+    "ticker": "DFLT",
+    "segment": "DFLT",
+    "off_band": true,
+    "evaluated": 7,
+    "total": 9,
+    "fired": [
+      "rs_peak_lag"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "primary",
+    "ticker": "DFLT",
+    "segment": "DFLT",
+    "off_band": true,
+    "evaluated": 7,
+    "total": 9,
+    "state": "extended_watch",
+    "fired": [
+      "rs_peak_lag"
+    ]
+  },
+  {
+    "line": 1565,
+    "stage": "nonbreaking_off_band_exit",
+    "tier": "primary",
+    "ticker": "DFLT",
+    "segment": "DFLT",
+    "off_band": true,
+    "evaluated": 7,
+    "total": 9,
+    "state": "extended_watch",
+    "fired": [
+      "rs_peak_lag"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "r63",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "r63",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "fired": [
+      "running_hot",
+      "late_verticality"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "r63",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_watch",
+    "fired": [
+      "running_hot",
+      "late_verticality"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "r63",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_watch",
+    "fired": [
+      "running_hot",
+      "late_verticality"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "r63",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "r63",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "fired": [
+      "running_hot",
+      "late_verticality"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "r63",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_watch",
+    "fired": [
+      "running_hot",
+      "late_verticality"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "r63",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_watch",
+    "fired": [
+      "running_hot",
+      "late_verticality"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "r63",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "r63",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10,
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "r63",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10,
+    "state": "breaking",
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1566,
+    "stage": "breaking_off_band_retained",
+    "tier": "r63",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10,
+    "state": "breaking",
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "r63",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10,
+    "state": "breaking",
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "atrz",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "atrz",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "fired": [
+      "running_hot"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "atrz",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_healthy",
+    "fired": [
+      "running_hot"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "atrz",
+    "ticker": "AAA",
+    "segment": "AAA",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_healthy",
+    "fired": [
+      "running_hot"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "atrz",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "atrz",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "fired": [
+      "running_hot"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "atrz",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_healthy",
+    "fired": [
+      "running_hot"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "atrz",
+    "ticker": "BBB",
+    "segment": "BBB",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_healthy",
+    "fired": [
+      "running_hot"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "atrz",
+    "ticker": "CCC",
+    "segment": "CCC",
+    "off_band": false,
+    "evaluated": 10,
+    "total": 10
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "atrz",
+    "ticker": "CCC",
+    "segment": "CCC",
+    "off_band": false,
+    "evaluated": 10,
+    "total": 10,
+    "fired": [
+      "rs_peak_lag",
+      "updown_volume",
+      "dip_unreclaimed",
+      "below_50d"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "atrz",
+    "ticker": "CCC",
+    "segment": "CCC",
+    "off_band": false,
+    "evaluated": 10,
+    "total": 10,
+    "state": "thinning",
+    "fired": [
+      "rs_peak_lag",
+      "updown_volume",
+      "dip_unreclaimed",
+      "below_50d"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "atrz",
+    "ticker": "CCC",
+    "segment": "CCC",
+    "off_band": false,
+    "evaluated": 10,
+    "total": 10,
+    "state": "thinning",
+    "fired": [
+      "rs_peak_lag",
+      "updown_volume",
+      "dip_unreclaimed",
+      "below_50d"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "atrz",
+    "ticker": "DFLT",
+    "segment": "DFLT",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "atrz",
+    "ticker": "DFLT",
+    "segment": "DFLT",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "fired": [
+      "running_hot",
+      "rs_peak_lag"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "atrz",
+    "ticker": "DFLT",
+    "segment": "DFLT",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_watch",
+    "fired": [
+      "running_hot",
+      "rs_peak_lag"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "atrz",
+    "ticker": "DFLT",
+    "segment": "DFLT",
+    "off_band": false,
+    "evaluated": 8,
+    "total": 10,
+    "state": "extended_watch",
+    "fired": [
+      "running_hot",
+      "rs_peak_lag"
+    ]
+  },
+  {
+    "line": 1545,
+    "stage": "readability_gate",
+    "tier": "atrz",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10
+  },
+  {
+    "line": 1561,
+    "stage": "classification_call",
+    "tier": "atrz",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10,
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1562,
+    "stage": "classified",
+    "tier": "atrz",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10,
+    "state": "breaking",
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1566,
+    "stage": "breaking_off_band_retained",
+    "tier": "atrz",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10,
+    "state": "breaking",
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  },
+  {
+    "line": 1573,
+    "stage": "analogue_call",
+    "tier": "atrz",
+    "ticker": "DBRK",
+    "segment": "DBRK",
+    "off_band": true,
+    "evaluated": 10,
+    "total": 10,
+    "state": "breaking",
+    "fired": [
+      "rs_decel",
+      "effort_result",
+      "updown_volume",
+      "below_50d",
+      "drawdown_from_high"
+    ]
+  }
+]
