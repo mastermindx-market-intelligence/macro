@@ -6,7 +6,10 @@ objective: >
   curated ontology/probation, measurement eligibility, one ThemeState authority and
   read-only U.S./China selection-cohort context. Development done = D2C/D2D/D2E/W3B/W3C
   are production-proven and downstream F04 can consume the canonical readers without a
-  duplicate theme/state/graph truth plane.
+  duplicate theme/state/graph truth plane. The 2026-10-16 Meta-CEO commission also
+  requires a maintained, source-backed map of business activity, qualified exposure,
+  economic relationships and actual Terminal explanations across an explicit universe.
+  Original development acceptance alone does not complete that expanded mission.
 status: active
 program: gmi-theme-graph
 repos: [macro]
@@ -18,10 +21,23 @@ owns_paths:
   - engine/theme_graph/
   - data/theme_graph/
   - config/theme_sources.yml
+  - engine/classification_axes/
+  - contracts/classification_axes/
 decisions:
+  - DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19
+  - DEC:GMI-INVESTABLE-ECONOMY-RECOVERY-ACCEPTANCE
   - DEC:GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING
+  - DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68
   - DEC:GMI-F04-BOUNDED-CHILD-ROUTING-2026-08-28
+  - DEC:GMI-THEME-FABRIC-C0-CONVERGENCE
+  - DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK
+  - DEC:GMI-TAXONOMY-UPGRADE-V2
+  - DEC:GMI-SUB-THEME-POPULATION-KEEP-ADD
 artifacts:
+  - research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
+  - research/theme_graph/coverage_20261019/COVERAGE_REPORT.md
+  - research/theme_graph/diagnostic_20261019/STRATA_DESIGN.md
+  - contracts/theme_graph/activity_membership_history.v1.schema.json
   - research/theme_graph/THEME_GRAPH_END_TO_END_COMPLETION_FREEZE_2026-08-27.md
   - research/theme_graph/CEO_W3_CONTINUATION_DIRECTIVE_2026-08-14.md
   - research/prophet_v4/V4_D2_ONTOLOGY_AND_PROBATION_HANDOFF.md
@@ -32,9 +48,19 @@ artifacts:
   - research/theme_graph/D2E_PRE_ACCEPTANCE_CENSUS_2026-10-05.md
 discoveries:
   - DSC:A-STACKED-PR-ON-A-NON-MAIN-BASE-GETS-NO-PULL-REQUEST-CI
+  - DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT
   - DSC:GMI-D1-SEAMS-IMPORT-WAVE-C-RIGHTS-USE
   - DSC:GMI-D2C-AND-D2D-CARRIERS-CONFLICT-IN-LEGACY-JOBS-YML
   - DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION
+  - DSC:LEGACY-THEMATIC-COMPOSE-AGES-FIXTURES-ON-THE-WALL-CLOCK
+  - DSC:W3C-COHORT-CAPTURE-IS-REFUSED-BY-THE-RIGHTS-GATE-BY-DESIGN
+  - DSC:GMI-THEME-GRAPH-SUPPLY-EDGE-TYPES-HAVE-ZERO-ROWS
+  - DSC:GMI-MACRO-SENSITIVITY-AXIS-READS-GITIGNORED-STOCKDATA
+  - DSC:GMI-THEME-GRAPH-STORE-NON-STRICT-READ-MASKS-CORRUPTION
+  - DSC:GMI-CROSSWALK-ROW-DELETION-NEVER-CLOSES-PARENT-OF
+  - DSC:GMI-THEME-GRAPH-SUITES-RUN-ONLY-IN-THE-DATA-HEALTH-LANE
+  - DSC:GMI-NEURAL-WEB-THEME-STATE-REGISTRY-UNCHANGED-THROUGH-STEP-7
+  - DSC:GMI-PRINCIPAL-ACTIVITY-COVERAGE-IS-ZERO-ON-2026-10-19
 waves:
   - id: W0
     title: Graph scaffolding
@@ -76,48 +102,54 @@ waves:
   - id: D2E
     title: "Rights / coverage / D2 acceptance — gmi-theme-accept-d2e-20260827-sol-001"
     status: in_progress
-    pr: 8488
+    pr: 8540
     depends_on: [D2C, D2D]
     next_action: >
-      D2C and D2D are MERGED (0b1fe8873054, 79b566f5c0cc), so acceptance is live as a
-      seat-commissioned lane in three phases: P1 acceptance against current main; P2
-      reconciliation of the D2B3 natural-proof clause against the 2026-10-07 nightly receipt
-      (daily.yml crons 30 22 and 30 23 UTC); P3 an independent read-only review. Acceptance
-      closes only on P2 natural evidence; the merged census #8488 (192a46de8be8) and green PRs
-      are inputs, not acceptance. Gate #2 (rights class) is closed by #8509 (wave G2); gate #5
-      (ontology-action authority) is #8507 (wave G5).
+      Original #8540 selected-generation P2 and independent P3 are accepted and merged.
+      Principal receipt 6103645886 accepts P2 for original workflow 37874656026/attempt 1
+      and graph publication 48cf3140; incorporation 6120586132 is committed at e77e8430
+      and #8540 merged October 12. The old P2 NOT_ASSESSED / P3 null next_action is stale:
+      DO_NOT_REDO original selected-generation acceptance or refused publisher-log retrieval.
+      Retain P1 and the specific historical GEN3 N4/N5 limitations. Scope does not confer
+      blanket eligibility on later graph subjects or current-use purposes. Current-generation
+      native identity, membership, rights and eligibility remain W3B dependencies; keep this
+      broad rights/coverage wave open until those original production obligations are met.
+      See the 2026-10-16 recovery record for evidence links and the separate acceptance boundaries.
   - id: W3B
     title: "Sole local + canonical ThemeState — gmi-theme-state-w3b-20260827-sol-001"
     status: in_progress
     depends_on: [D2E]
     next_action: >
-      Substrate landed without a third producer: #8455 (731a23fb64b9) recovered the sealed
-      state owner and the accepted-generation reader. In flight: #8539 (gate #8 G1, DRAFT)
-      makes the existing LEGACY publish also write the validated graph theme_state/v1 shadow
-      through generation.write_atomic inside generation.family_lock, because the production
-      nightly never calls publish_generation
-      (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION). Legacy
-      neuralweb.theme_state.v1 and CTE consumers stay compatible during migration (gate #8
-      ruling). W3B is accepted only after D2E acceptance and a nightly receipt showing the
-      shadow state written.
+      Retain accepted #8455/#8539 state-owner source and merged #8783 selection-clock repair.
+      Original D2E selected-generation P2/P3 is already accepted; no replacement P3 is owed.
+      Natural shadow writes are observed through October 16, but they do not prove qualified
+      production state or W3B release. At census 9629927bfc7a4dad13b89590e86cd1b9be33573a,
+      shadow blob 4b35213b43547906a34a0477d354eed081e722ae has 663 UNAVAILABLE subjects,
+      all NOT_QUALIFIED/D2E_UNSEALED with missing identity, membership and current-use rights.
+      The builder supplies no owner_readers; eligibility and qualified rights remain explicitly
+      unsealed in incumbent production contracts. Bind authentic current-generation owner
+      receipts and same-run effective-checkout/publication proof through those owners, then
+      obtain the existing W3B acceptance. Preserve LEGACY default and GRAPH_SHADOW_STATE
+      atomic generation/lock path, lag-one/PIT qualifications and historical receipts.
+      No third producer, truth store or blanket flag promotion.
   - id: W3C
     title: "Selection Cohort Intelligence — gmi-theme-cohort-w3c-20260827-sol-001"
     status: in_progress
     depends_on: [W3B]
     next_action: >
-      Seams landed: #8417 (ef1f7db98cff, CTE state successor and W3C finalized-cohort
-      readers), #8486 (072475fe21c2, selection-clock qualified_reads), #8524 (f255148cf9c7,
-      gate #8 lane A read-only US/CN selection-cohort product projection), #8538
-      (accd1db56f8d, gate #8 phase 2, qualified_reads wired into the US W3C read through a
-      3-key adapter). In flight: #8539 (G1 shadow write), a reads-owner repair from the Wave G
-      pass-1 audit (M1: a typed OWNER_UNAVAILABLE row instead of a raise; M2:
-      instant-precision PIT visibility, so a fact computed after known_at stays invisible) and
-      the Terminal US projection (gate #8 lane B on ubuntu1, per gate #6). Then a Wave G
-      pass-2 read-only integrator audit over the landed tree, and production proof on the
-      first nightly after the last landing. Invariant: source order and reasons preserved and
-      the six authority flags in engine/theme_graph/selection_cohort.py stay False
-      (authority_ceiling research_internal_only); no candidate insertion, ranking, readiness,
-      sizing or board mutation.
+      The incumbent Option A typed fail-closed projection remains the lawful unavailable
+      outcome until an applicable capture-rights ruling and qualified producer proof.
+      Historical US/CN source 36dc212939fc9926af5f529e12f8fd3eae04a05a has common blob
+      533ad2e21f2154d49efda7196504dc64e88511b8: SOURCE_UNAVAILABLE:CAPTURE_RIGHTS_UNAVAILABLE,
+      null generation and six false authority flags. October 8 anonymous Macro/Terminal 401
+      observations prove authentication boundaries only, not served parity or signed-in proof.
+      Terminal #868 has accepted exact-head source review/required CI at e199c9e5357427a2da4722e5ef3e2da326a6d0bd,
+      but later OpenAI integration rejection 6075735969 is reaffirmed by 6103693287:
+      EFFECT_NONE, hold retained, no retry through another tool/account/worker/branch/direct merge.
+      Preserve the fix and obtain legitimate clearance of that specific effect before integration.
+      After native qualification, prove authorized same-generation source, publication, API and
+      actual EN/ZH human/machine parity for both U.S. and China with refusal reasons intact.
+      No available CN card, capture enrollment, zero-measurement claim or board mutation is inferred.
   - id: W-A
     title: "ThemeState owner adapter + CTE-v3 lineage on the state carrier (#8455)"
     status: done
@@ -172,6 +204,25 @@ waves:
       exact head); both census paths blob-verified on origin/main. DO_NOT_REDO.
       The v2/cohort Terminal consumer is a Sol/Chairman product decision,
       not a lane to spawn; re-census only if the Terminal pin or the C0 writer moves.
+  - id: W-G3
+    title: "F04 consumability census and the store_meta provenance fix (#8552)"
+    status: done
+    pr: 8552
+    next_action: >
+      A read-only census (grok pool, run-1791323013, checked head 04514a2c51a0) asked whether
+      F04 can consume the canonical readers with no duplicate theme, state or graph truth
+      plane. It found no duplicate writer, a consistent Neural Web registry, and that the
+      shadow ThemeState is not an authority. B1 was confirmed as a latent gate #2 blocker:
+      engine/market_ontology/exposure_map.py copied the whole data/theme_graph/_meta.json into
+      provenance.store_meta, so internal-only finviz/ths structure would leave in any F04
+      emission (no production emitter exists today). M1 was refuted: the strict store reader
+      raise is deliberate and typed at the publication seam, so F04 consumes selection cohorts
+      only through read_finalized_cohort and consume_*_source, never raw qualified_reads. m1
+      was confirmed: config/synapse.yml omitted scripts/correct_gmi_identity_lineage.py as a
+      known extra writer. #8552 (authored commit 950de975eb01, a ubuntu1 cursor composer-2.5 lane) fixes
+      B1 with an allowlist projection (_STORE_META_PUBLIC_KEYS, _public_store_meta) and m1;
+      MERGED 2026-10-07T01:31:36Z as squash 02ad6fee4cc5 at exact head 7d2cf2a9b180 (950de975eb01 plus three update-branch merges of main; ci-gate SUCCESS; blob ok=4; tree-verified: _STORE_META_PUBLIC_KEYS and _public_store_meta in origin/main engine/market_ontology/exposure_map.py, known_extra_writers in config/synapse.yml). The fix is latent until an F04 emitter exists, so it has no production
+      proof to read. DO_NOT_REDO the census.
   - id: G2
     title: "Chairman gate #2: finviz_themes and ths_concepts retained internal_only (#8509)"
     status: done
@@ -217,12 +268,107 @@ waves:
       served/browser/privacy proof and real admission then follow on an Energy carrier. Working
       checkpoint (section 9):
       agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md.
+  - id: TF-CONVERGENCE
+    title: "Theme Fabric research, source convergence and C0 records"
+    status: in_progress
+    pr: [8646, 8650, 8631, 8651, 8629, 8653, 8635]
+    next_action: >
+      Research #8646, breadth #8650, C8 #8631, M1 #8651 and C4 #8629 are merged with accepted
+      source receipts. Witness #8653 accepted head ebd4382fdafdfecf55029305baddfa95b60f863a merged as
+      c44aae5f131a59571ad0afcd7197e3d8696bc2b9 after binding CI and post-merge source conservation proof.
+      The original #8540 selected-generation P2/P3 acceptance is merged; the former
+      prospective-only/P2 NOT_ASSESSED/P3 null projection is superseded by receipts
+      6103645886 and 6120586132. Preserve the historical rule, evidence and narrower
+      limitations; do not infer current-generation rights/eligibility or W3B acceptance.
+      This records set uses #8635's ordinary review/validation/CI/merge/source gate. Apply
+      DEC:GMI-THEME-FABRIC-C0-CONVERGENCE; preserve
+      census originals, optional #8643 scope, R-J.10/R9, E1/A1, R-H.W2w gaps and all existing
+      natural/qualification/owner gates. No K phase-2 release or mission-completion claim.
+  - id: TAXONOMY-V2
+    title: "Taxonomy V2: sub_theme tier and display-tier classification axes"
+    status: done
+    pr: [8940, 8941, 8942, 8945, 8948, 8961, 8974, 8975, 8999, 8969, 9000, 8968, 8973, 8976, 8987]
+    next_action: >
+      Seat 6f14c2da (DEC:GMI-TAXONOMY-UPGRADE-V2, DEC:GMI-SUB-THEME-POPULATION-KEEP-ADD). All
+      fifteen PRs are merged, and production is proven: the nightly-materialized
+      data/theme_graph on main (commit 8ce9f3e9908d, 2026-10-14) holds 12 sub_theme nodes and
+      132 PARENT_OF rows (93 + 39), as specified. Follow-ons, not part of this wave: the L12
+      hierarchy-breadth and L13 micro RS-proxy display readers (no rank-like keys), F04
+      consumption coordinated with the MarketOntology owner (no wiring without a new DEC), a
+      hierarchy browse page through the design lane, and a human ratifier for the 27
+      RELATION_WITHDRAW events that would retire the direct theme->micro_theme rows.
+  - id: RECOVERY-S2
+    title: "Recovery step 2: native issuer economic-context source repair (#9423)"
+    status: done
+    pr: 9423
+    next_action: >
+      DO_NOT_REDO. Squash 072822093ccd on main. Private economic-context API delivery with
+      the C01 grain; no vendor-membership laundering (gate 2). Nothing left in this wave.
+  - id: RECOVERY-S3
+    title: "Recovery step 3: activity membership admission (#9645) and PIT history fold (#9644)"
+    status: done
+    pr: [9645, 9644]
+    next_action: >
+      DO_NOT_REDO. Squashes d47f5b14d246 (A1 admission: candidates land PROPOSED, never
+      ratified by code) and b04a9d898b0d (A2: contracts/theme_graph/
+      activity_membership_history.v1.schema.json plus the ACTIVITY_HISTORY_* fold in
+      engine/theme_graph/materialize.py). The fold is a pure function no nightly job calls;
+      wiring it into the build and the edges.v1 projection are owed to the ThemeState
+      producer owner (DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19).
+  - id: RECOVERY-S4
+    title: "Recovery step 4: generation-specific ThemeState applicability readers (#9670)"
+    status: done
+    pr: 9670
+    next_action: >
+      DO_NOT_REDO. Squash cea783c92a86: engine/theme_graph/theme_state_owner_readers.py
+      StateQualificationReader and the diagnostic-only publication_applicability in
+      engine/theme_graph/theme_state.py. Read-only; the current shadow generation reads
+      D2E_UNSEALED. Reader custody/auth, shadow-writer wiring and the t9 pin amendment are
+      owed to the D2E/ThemeState owners, not to this wave.
+  - id: RECOVERY-S5
+    title: "Recovery step 5: API parity on the C01 grain (#9652)"
+    status: done
+    pr: 9652
+    next_action: >
+      DO_NOT_REDO. Squash 82e854321c8c. Terminal consumption stays behind the #868
+      integration safety hold (Sol/Chairman); EFFECT_NONE retained, never bypassed.
+  - id: RECOVERY-S6
+    title: "Recovery step 6: cohort delivery contract (#9641)"
+    status: done
+    pr: 9641
+    next_action: >
+      DO_NOT_REDO. Squash e5d6f40157e2. Read-only cohort context; no selection or ranking
+      authority.
+  - id: RECOVERY-S7
+    title: "Recovery step 7: measured coverage proof (#9745), diagnostic strata (7d) and operating-proof tests (7e)"
+    status: done
+    pr: [9745, 9754, 9753]
+    next_action: >
+      DO_NOT_REDO once merged. #9745 (scripts/gmi_coverage_proof.py, tests/
+      test_gmi_coverage_proof.py, research/theme_graph/coverage_20261019/) measures the
+      §7 thresholds: denominator honesty PASS, principal activity FAIL 0/[1926,1931] U.S.
+      and 0/[1,1019] China, taxonomy FAIL on owner_reviewed
+      (DSC:GMI-PRINCIPAL-ACTIVITY-COVERAGE-IS-ZERO-ON-2026-10-19). 7d holds research/
+      theme_graph/diagnostic_20261019/; 7e holds tests/test_gmi_operating_proof.py with each
+      property PASS or xfail(strict) naming its owner. Re-measure by re-running the proof
+      script; never by editing the report.
+  - id: RECOVERY-S8
+    title: "Recovery step 8: descriptive-product acceptance records and Neural Web reconciliation"
+    status: done
+    pr: 9757
+    next_action: >
+      DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19 records the per-threshold verdicts
+      and owner acts; DSC:GMI-NEURAL-WEB-THEME-STATE-REGISTRY-UNCHANGED-THROUGH-STEP-7
+      records that no third ThemeState producer/store exists. MISSION_COMPLETE=false.
+
 landmines:
   - >-
     The old next_action waiting for the 2026-08-15 scrape is superseded permanently.
     Natural graph data has accrued through belief_time 2026-08-27.
   - >-
-    D2C/D2D/D2E were not completed as distinct waves. W3B must not leapfrog them.
+    D2C/D2D source and original D2E selected-generation P2/P3 are accepted. W3B still
+    owes current-generation qualified owner binding and natural producer/reader proof;
+    do not replay accepted original D2E evidence or promote later subjects by inheritance.
   - >-
     Existing data/neuralweb/theme_state.json is useful predecessor context, not a second
     future authority. W3B must reconcile it; no third ThemeState producer/store.
@@ -250,23 +396,83 @@ landmines:
     path exists, every watcher-enabled child requires explicit CONTINUE/STOP semantics;
     terminal STOP disarms both temporary watchers and does not authorize the next child.
   - >-
-    The production nightly runs scripts/build_thematic_state.py with no --mode, so LEGACY never
-    calls publish_generation: any state that must reach production is written through
-    generation.write_atomic inside generation.family_lock in the LEGACY branch, and an audit
-    that expects publish_generation there will mis-judge it
-    (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION).
+    The engine job runs scripts/build_thematic_state.py with no --mode, so LEGACY never calls
+    publish_generation, and the engine step stays LEGACY byte for byte. The graph shadow
+    reaches production only through the separate --mode GRAPH_SHADOW_STATE step in the
+    off-render oracle_offrender job (generation.write_atomic inside generation.family_lock).
+    A new nightly artifact gets its own narrow mode in an off-render job; never flip the
+    default mode, and an audit that expects publish_generation in production will mis-judge
+    it (DSC:GMI-LEGACY-THEMATIC-STATE-NEVER-CALLS-PUBLISH-GENERATION).
+  - >-
+    The daily engine job concludes failure on every recent nightly, and only on its final OIP
+    integrity step, which runs after "commit engine outputs" has succeeded. A step or job
+    gated on needs.engine.result == 'success' is therefore skipped every night. Use needs
+    plus the job-level if: always() && needs.et_gate.outputs.run != 'false' idiom
+    (DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT).
 next_action: >
-  Seat 6f14c2da (Meta-CEO, Chairman handoff on #8324 comment 5991777960) carries the program;
-  resume from agentos/handoffs/GMI-THEME-GRAPH-2026-10-06.md. Landed 2026-10-06: #8509, #8417,
-  #8486, #8455, #8524, #8432, #8435, #8538, #8507. Next, in order: land #8539 (gate #8 G1) on
-  concluded green at its exact head; land the reads-owner repair (Wave G pass-1 M1/M2) and the
-  Terminal US projection (gate #8 lane B); run the Wave G pass-2 read-only integrator audit over
-  that tree; then read the 2026-10-07 nightly as the natural receipt for D2E acceptance P2, the G1
-  shadow state and the projection artifact. W3B and W3C close only on that production evidence.
-  Remaining operator acts (mini4 credential install, mini2 disk) are never seat work.
+  2026-11-02 ship checkpoint (agentos/handoffs/GMI-THEME-GRAPH-2026-11-02-completion-ship.md):
+  O5 verdicts + G-UI-8 (#10530 -> 501dd034), the S3 relationship_edges/v1 envelope
+  wiring (#10556 -> 36cea924, O6) and the nav entry (#10520 -> 0d56cffc) are MERGED and
+  land-checked; the taxonomy owner-disposition contract (#10563 -> d0fed53e, O7) carries
+  research/theme_graph/micro_owner_dispositions.yml with zero rows and the coverage
+  proof's owner_review block, so remainder (2) below is now a data act for the taxonomy
+  owner, not a missing implementation. PRODUCTION_PROOF is held: the six site/gmi*.html
+  are live on www.mastermind-x.com (render 41445582969; live bytes == main), and #10583
+  (-> f3d4eb62) made /gmi.css and /gmi.js public so the open shells render styled
+  (they sat behind the default-deny asset gate as 401 JSON). The post-authority main
+  baseline waits on two foreign reds (tests/test_macro_command_panels.py data drift,
+  macro-suite owner; tests/test_markets_regime_strip.py render-sync). The envelope DEC ratify-or-replace is an EXACT_HUMAN_GATE asked
+  once on #agent-dispatch (ts 1793619136.295869). O5/O6/O7 are consumed: DO_NOT_REDO.
+  Earlier 2026-11-02 state: the 2026-10-21 Chairman completion commission has returned all five
+  orchestrators. Both integration PRs are merged (#10482 -> 17040f00 relationships; #10099
+  -> fd27c31a GMI explorer, six site/gmi*.html pages); the nav entry is #10520; O5's
+  independent verdicts are recorded in research/theme_graph/GMI_O5_VERIFICATION_VERDICTS_2026-11-02.md,
+  boundary 3 (no promotion) MET, boundaries 1 (D2E/W3B/W3C) and 2 (descriptive plus the
+  8.2 envelope) NOT MET with every remainder owner-named (live checkpoint
+  agentos/handoffs/GMI-THEME-GRAPH-2026-11-02.md). Micro expansion ratified additively
+  (303 micros, DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68); the coverage proof
+  reads the activity ledger by default (#10029) and no longer double-counts an explicit
+  --activity-proposals path; the first M1 activity witness is receipt-bound on main
+  (#10026 -> 61f82f58) and MEMBER_OF waits on a Chairman graph_membership_use ruling. The prior remainder below still
+  states the incumbent-owner acts. Recovery steps 2 through 8 of research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
+  §9 are merged and recorded (waves RECOVERY-S2..S8); the seat lane is complete and
+  DO_NOT_REDO. The descriptive product is accepted as a MEASURED, OPEN record
+  (DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19): only denominator honesty is
+  closed; principal activity is 0 on both markets and the taxonomy has no owner review.
+  Each remainder is an incumbent-owner act, in this order: (1) ThemeState producer owner
+  wires the A2 activity-membership history fold into the nightly build under its own
+  narrow --mode in an off-render job and emits the edges.v1 projection, after which the
+  first nightly measures freshness and corrections for real; (2) the named GMI curator
+  ratifies PROPOSED activity memberships one evidenced row at a time (gate 5) and the
+  taxonomy owner records a disposition per micro; (3) Data OS supplies China issuer
+  resolution and listed counts and U.S. identity qualification; (4) #7870 adds the C01
+  rights row in config/theme_sources.yml; (5) the D2E owner seals the current shadow
+  generation and takes reader custody/auth with the t9 pin amendment; (6) the Terminal
+  #868 hold is released by its holding authority before any actual-explanation proof.
+  W3B/W3C current-generation owner binding and D2E sealing remain the original open
+  development frontier. Predictive candidates (micro RS proxy L13, transmission,
+  opportunity) go to the existing evaluator, F04 MarketOntology and K3-D owners; no
+  promotion from this acceptance. Preserve the explicit #8793 and Terminal #868 denied
+  effects, API524 EFFECT_UNKNOWN on its original carrier, immutable C01 generation 040b
+  and all current-use rights. Re-measure coverage by re-running
+  scripts/gmi_coverage_proof.py, never by editing a report. MISSION_COMPLETE=false.
+
 ---
 
 ## Current production substrate
+
+Current census at Macro 9629927bfc7a4dad13b89590e86cd1b9be33573a: graph computed
+2026-10-16T17:12Z contains 3,975 nodes, 25,643 edges and 13,349 latest-belief edges.
+Taxonomy V2 contains 10 categories, 18 themes, 12 subthemes and 68 microthemes.
+All 103 original micro candidates and 46 addendum activities are still unadmitted;
+none establishes a qualified canonical micro membership or economic magnitude.
+The current shadow generation bd084373e896ac0bd192b4eb3766c81f contains 663
+UNAVAILABLE / NOT_QUALIFIED subjects. These are measured source facts, not qualified
+coverage or completed U.S./China consumer proof. Full count denominators, owner gaps,
+primary research, acceptance thresholds and next implementation sequence are in
+research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md.
+
+Historical predecessor receipt (retained evidence):
 
 Natural GMI receipt at current reconciliation (D2E pre-acceptance census, 2026-10-05, read from
 origin/main 20eb503a09): data/theme_graph/_meta.json computed_at 2026-10-05T07:55:06Z, lane

@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-14T16:08:13.172979+00:00",
+  "followon": "d15e7ac3f0bd9ea7ee9f203f96f0a9469c6357fb",
+  "qualified_a1": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+  "rc": 1,
+  "tree": "2a00233c1394e16058930d52d275fed89b4a38f6",
+  "branch_mutation": false,
+  "purpose": "Adjacent in-scope readiness: preview follow-on against now qualified A1 plus approved current base; no duplicate hosted producer or source publication"
+}

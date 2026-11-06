@@ -193,13 +193,6 @@ def test_e_h_correction_after_cutoff_visible_when_evaluated_later():
     assert latest["value"] == 9.0
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-BASIS: GAAP vs non-GAAP value change still yields supersedes at "
-        f"collectors/equity_revisions.py:412-421 ({BASE_PIN})"
-    ),
-)
 def test_e_i_incompatible_gaap_basis_produces_no_revision_delta():
     """E-I: GAAP vs non-GAAP observations are noncomparable — no revision event."""
     prior = _lineage_row(value=1.0, basis="GAAP")
@@ -209,13 +202,6 @@ def test_e_i_incompatible_gaap_basis_produces_no_revision_delta():
     assert current["supersedes_observation_id"] is None
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-BASIS: diluted vs basic EPS basis change still yields supersedes at "
-        f"collectors/equity_revisions.py:412-421 ({BASE_PIN})"
-    ),
-)
 def test_e_i_incompatible_eps_share_basis_produces_no_revision_delta():
     """E-I: diluted vs basic EPS must not produce a revision across the basis boundary."""
     prior = _lineage_row(value=1.0, basis="basic")
@@ -235,13 +221,6 @@ def test_e_i_missing_unit_or_currency_yields_refusal_not_substitution():
     assert "CANONICAL_CURRENCY_UNAVAILABLE" in reasons
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "GAP-E-BASIS: cross-currency observations are not refused at comparison seam "
-        f"collectors/equity_revisions.py:412-416 ({BASE_PIN})"
-    ),
-)
 def test_e_i_usd_estimate_never_silently_converted_against_foreign_price_currency():
     """E-I: USD estimate paired with foreign currency must refuse, never convert."""
     prior = _lineage_row(value=1.0, currency="USD", unit="USD/sh")
@@ -249,3 +228,113 @@ def test_e_i_usd_estimate_never_silently_converted_against_foreign_price_currenc
     _apply_lineage([current], pd.DataFrame([prior]))
     assert current["correction_state"] != "supersedes"
     assert current["correction_state"] != "unchanged" or current["currency"] == "USD"
+
+
+def _state_rows(label: str, state: str, state_at: str, time: str):
+    rows = [_observation(label, time=time), _count_row(label, time)]
+    for row in rows:
+        row["expectation_state"] = state
+        row["expectation_state_as_of"] = state_at
+    return rows, [_attempt(label, time=time)]
+
+
+def test_withdrawal_after_cutoff_preserves_history_but_refuses_current_baseline():
+    """E2-D: withdrawal is cutoff-aware and never falls back or becomes zero."""
+    prior_rows, prior_attempts = _state_rows(
+        "withdrawn", "WITHDRAWN", "2026-10-02T11:30:00Z", "2026-10-02T10:00:00Z")
+    before = _payload(prior_rows, prior_attempts, as_of="2026-10-02T11:00:00Z")
+    assert before["last_structurally_supported_snapshot"]["snapshot"] is not None
+    assert before["normalized_baseline"]["expectation_state"] == "CURRENT"
+    # A state whose clock is after the cutoff was not knowable at the cutoff.
+    snap = before["latest_captured_snapshot"]["snapshot"]
+    assert snap["expectation_state"] == "CURRENT"
+    assert snap["expectation_state_as_of"] is None
+    assert snap["expectation_state_age_seconds"] is None
+    assert snap["selected_observation"]["expectation_state"] is None
+    assert snap["selected_observation"]["expectation_state_as_of"] is None
+    assert "11:30" not in repr(before)
+
+    after_rows, after_attempts = _state_rows(
+        "withdrawn", "WITHDRAWN", "2026-10-02T11:30:00Z", "2026-10-02T10:00:00Z")
+    after = _payload(after_rows, after_attempts, as_of="2026-10-02T12:00:00Z")
+    current = after["latest_captured_snapshot"]["snapshot"]
+    assert current["expectation_state"] == "WITHDRAWN"
+    assert current["expectation_state_age_seconds"] == 1800
+    assert current["selected_observation"]["value"] == 2.5
+    assert after["last_structurally_supported_snapshot"] == {
+        "status": "UNAVAILABLE", "snapshot": None, "candidates": []}
+    baseline = after["normalized_baseline"]
+    assert baseline["expectation_state"] == "WITHDRAWN"
+    assert baseline["status"] == "WITHDRAWN_UNAVAILABLE"
+    assert baseline["value"] is None
+    assert "EXPECTATION_WITHDRAWN_AT_CUTOFF" in baseline["reasons"]
+
+
+def _current_rows(label: str, time: str):
+    return [_observation(label, time=time), _count_row(label, time)], [_attempt(label, time=time)]
+
+
+def test_newer_current_snapshot_supersedes_older_withdrawal():
+    """E2-D: the governing state is the latest captured snapshot's, not any snapshot's."""
+    old_rows, old_attempts = _state_rows(
+        "old", "WITHDRAWN", "2026-10-02T10:30:00Z", "2026-10-02T10:00:00Z")
+    new_rows, new_attempts = _current_rows("new", "2026-10-02T11:00:00Z")
+    result = _payload(old_rows + new_rows, old_attempts + new_attempts)
+    assert result["latest_captured_snapshot"]["snapshot"]["expectation_state"] == "CURRENT"
+    baseline = result["normalized_baseline"]
+    assert baseline["expectation_state"] == "CURRENT"
+    assert baseline["status"] not in {"WITHDRAWN_UNAVAILABLE", "STALE_UNAVAILABLE"}
+    assert "EXPECTATION_WITHDRAWN_AT_CUTOFF" not in baseline["reasons"]
+    supported = result["last_structurally_supported_snapshot"]
+    assert supported["status"] == "AVAILABLE"
+    assert supported["snapshot"]["identity"]["collection_session_id"] == "new"
+    assert supported["snapshot"]["selected_observation"]["observation_id"] == "new-average"
+
+
+def test_newer_withdrawal_refuses_baseline_without_prior_substitution():
+    """E2-D: a later visible withdrawal refuses the baseline and never falls back."""
+    old_rows, old_attempts = _current_rows("old", "2026-10-02T10:00:00Z")
+    new_rows, new_attempts = _state_rows(
+        "new", "WITHDRAWN", "2026-10-02T11:30:00Z", "2026-10-02T11:00:00Z")
+    result = _payload(old_rows + new_rows, old_attempts + new_attempts)
+    assert result["latest_captured_snapshot"]["snapshot"]["expectation_state"] == "WITHDRAWN"
+    assert result["last_structurally_supported_snapshot"] == {
+        "status": "UNAVAILABLE", "snapshot": None, "candidates": []}
+    baseline = result["normalized_baseline"]
+    assert baseline["expectation_state"] == "WITHDRAWN"
+    assert baseline["status"] == "WITHDRAWN_UNAVAILABLE"
+    assert baseline["value"] is None
+    assert baseline["candidate_observation_id"] is None
+    assert "EXPECTATION_WITHDRAWN_AT_CUTOFF" in baseline["reasons"]
+
+
+def test_stale_state_preserves_raw_evidence_but_refuses_normalized_baseline():
+    """E2-D: stale keeps native value/clocks while normalized admission remains None."""
+    rows, attempts = _state_rows(
+        "stale", "STALE", "2026-10-02T11:30:00Z", "2026-10-02T10:00:00Z")
+    result = _payload(rows, attempts)
+    current = result["latest_captured_snapshot"]["snapshot"]
+    assert current["expectation_state"] == "STALE"
+    assert current["expectation_state_age_seconds"] == 1800
+    assert current["selected_observation"]["value"] == 2.5
+    assert current["selected_observation"]["provider_observed_at"] == "2026-10-02T10:00:00Z"
+    assert current["selected_observation"]["system_observed_at"] == "2026-10-02T10:00:00Z"
+    assert result["last_structurally_supported_snapshot"] == {
+        "status": "UNAVAILABLE", "snapshot": None, "candidates": []}
+    baseline = result["normalized_baseline"]
+    assert baseline["expectation_state"] == "STALE"
+    assert baseline["status"] == "STALE_UNAVAILABLE"
+    assert baseline["value"] is None
+    assert baseline["value"] != 0
+    assert "EXPECTATION_STALE_AT_CUTOFF" in baseline["reasons"]
+
+
+def test_invalid_explicit_state_fails_closed():
+    """E2-D: unconstrained reader states cannot create source authority."""
+    rows, attempts = _state_rows("bad-state", "FRESH", "2026-10-02T11:30:00Z",
+                                 "2026-10-02T10:00:00Z")
+    result = _payload(rows, attempts)
+    assert result["denominators"]["reason_counts"]["INVALID_EXPECTATION_STATE"] == 1
+    assert result["last_structurally_supported_snapshot"]["snapshot"] is None
+    assert result["normalized_baseline"]["expectation_state"] == "CURRENT"
+    assert result["normalized_baseline"]["value"] is None

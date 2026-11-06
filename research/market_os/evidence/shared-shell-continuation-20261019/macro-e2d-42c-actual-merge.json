@@ -1,0 +1,130 @@
+{
+  "started_at": "2026-10-20T10:24:55.506387+00:00",
+  "head": "e2d10f933587f58be8716505529a37f8839901f7",
+  "incoming_main": "42c859546ececa797b400db0adeb8c5a22f96832",
+  "source_effect": "single ordinary no-commit merge through original worktree; controller disarmed with visible marker",
+  "steps": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "e2d10f933587f58be8716505529a37f8839901f7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "pr",
+        "view",
+        "7949",
+        "--repo",
+        "mastermindx-market-intelligence/macro",
+        "--json",
+        "state,headRefOid,labels,mergedAt,autoMergeRequest"
+      ],
+      "exit": 0,
+      "stdout": "{\"autoMergeRequest\":null,\"headRefOid\":\"e2d10f933587f58be8716505529a37f8839901f7\",\"labels\":[{\"id\":\"LA_kwDOS4LjIs8AAAACtokucA\",\"name\":\"merge-blocked\",\"description\":\"Sweeper found a genuine red or merge conflict \u2014 needs a session/operator\",\"color\":\"d93f0b\"}],\"mergedAt\":null,\"state\":\"OPEN\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "merge",
+        "--no-ff",
+        "--no-commit",
+        "42c859546ececa797b400db0adeb8c5a22f96832"
+      ],
+      "exit": 1,
+      "stdout": "Auto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging app/deploy/Caddyfile\nCONFLICT (content): Merge conflict in app/deploy/Caddyfile\nAuto-merging app/deploy/update.sh\nCONFLICT (content): Merge conflict in app/deploy/update.sh\nAuto-merging config/site_access.yml\nAuto-merging mockups/evidence/prophet-p0b-zero-fouc/manifest.json\nCONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/manifest.json\nAuto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\nCONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\nAuto-merging mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\nCONFLICT (content): Merge conflict in mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\nAuto-merging site/canada.html\nCONFLICT (content): Merge conflict in site/canada.html\nAuto-merging site/canada_stock.html\nCONFLICT (content): Merge conflict in site/canada_stock.html\nAuto-merging site/chat.html\nCONFLICT (content): Merge conflict in site/chat.html\nAuto-merging site/china.html\nCONFLICT (content): Merge conflict in site/china.html\nAuto-merging site/china_lookup.html\nCONFLICT (content): Merge conflict in site/china_lookup.html\nwarning: Cannot merge binary files: site/china_special_situations.html (HEAD vs. 42c859546ececa797b400db0adeb8c5a22f96832)\nAuto-merging site/china_special_situations.html\nCONFLICT (content): Merge conflict in site/china_special_situations.html\nwarning: Cannot merge binary files: site/etfs.html (HEAD vs. 42c859546ececa797b400db0adeb8c5a22f96832)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nCONFLICT (content): Merge conflict in site/factors.html\nAuto-merging site/glossary.html\nAuto-merging site/hk_lookup.html\nCONFLICT (content): Merge conflict in site/hk_lookup.html\nAuto-merging site/hk_stocks.html\nCONFLICT (content): Merge conflict in site/hk_stocks.html\nAuto-merging site/intl_stock.html\nCONFLICT (content): Merge conflict in site/intl_stock.html\nAuto-merging site/macro.html\nCONFLICT (content): Merge conflict in site/macro.html\nAuto-merging site/markets.html\nAuto-merging site/mm_brain.js\nAuto-merging site/news.html\nCONFLICT (content): Merge conflict in site/news.html\nAuto-merging site/ontology.html\nCONFLICT (content): Merge conflict in site/ontology.html\nAuto-merging site/reference.html\nCONFLICT (content): Merge conflict in site/reference.html\nAuto-merging site/reports.html\nCONFLICT (content): Merge conflict in site/reports.html\nAuto-merging site/research_screener.html\nCONFLICT (content): Merge conflict in site/research_screener.html\nAuto-merging site/sector_central.html\nCONFLICT (content): Merge conflict in site/sector_central.html\nAuto-merging site/signal_lab.html\nCONFLICT (content): Merge conflict in site/signal_lab.html\nwarning: Cannot merge binary files: site/special_situations.html (HEAD vs. 42c859546ececa797b400db0adeb8c5a22f96832)\nAuto-merging site/special_situations.html\nCONFLICT (content): Merge conflict in site/special_situations.html\nAuto-merging site/stock.html\nCONFLICT (content): Merge conflict in site/stock.html\nAuto-merging site/stocks/index.html\nCONFLICT (content): Merge conflict in site/stocks/index.html\nAuto-merging site/tech_lab.html\nCONFLICT (content): Merge conflict in site/tech_lab.html\nAuto-merging site/theme.js\nCONFLICT (content): Merge conflict in site/theme.js\nwarning: Cannot merge binary files: site/us_stocks.html (HEAD vs. 42c859546ececa797b400db0adeb8c5a22f96832)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\nAuto-merging templates/chat.html\nCONFLICT (content): Merge conflict in templates/chat.html\nAuto-merging templates/mm_brain.js\nAuto-merging tests/test_ci_pack.py\nCONFLICT (content): Merge conflict in tests/test_ci_pack.py\nAutomatic merge failed; fix conflicts and then commit the result.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "rev-parse",
+        "--verify",
+        "MERGE_HEAD"
+      ],
+      "exit": 0,
+      "stdout": "42c859546ececa797b400db0adeb8c5a22f96832\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+        "diff",
+        "--name-only",
+        "--diff-filter=U"
+      ],
+      "exit": 0,
+      "stdout": ".github/ci/legacy-jobs.yml\napp/deploy/Caddyfile\napp/deploy/update.sh\nmockups/evidence/prophet-p0b-zero-fouc/manifest.json\nmockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json\nmockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json\nsite/canada.html\nsite/canada_stock.html\nsite/chat.html\nsite/china.html\nsite/china_lookup.html\nsite/china_special_situations.html\nsite/etfs.html\nsite/factors.html\nsite/hk_lookup.html\nsite/hk_stocks.html\nsite/intl_stock.html\nsite/macro.html\nsite/news.html\nsite/ontology.html\nsite/reference.html\nsite/reports.html\nsite/research_screener.html\nsite/sector_central.html\nsite/signal_lab.html\nsite/special_situations.html\nsite/stock.html\nsite/stocks/index.html\nsite/tech_lab.html\nsite/theme.js\nsite/us_stocks.html\ntemplates/chat.html\ntests/test_ci_pack.py\n",
+      "stderr": ""
+    }
+  ],
+  "merge_exit": 1,
+  "unmerged_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "app/deploy/Caddyfile",
+    "app/deploy/update.sh",
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+    "site/canada.html",
+    "site/canada_stock.html",
+    "site/chat.html",
+    "site/china.html",
+    "site/china_lookup.html",
+    "site/china_special_situations.html",
+    "site/etfs.html",
+    "site/factors.html",
+    "site/hk_lookup.html",
+    "site/hk_stocks.html",
+    "site/intl_stock.html",
+    "site/macro.html",
+    "site/news.html",
+    "site/ontology.html",
+    "site/reference.html",
+    "site/reports.html",
+    "site/research_screener.html",
+    "site/sector_central.html",
+    "site/signal_lab.html",
+    "site/special_situations.html",
+    "site/stock.html",
+    "site/stocks/index.html",
+    "site/tech_lab.html",
+    "site/theme.js",
+    "site/us_stocks.html",
+    "templates/chat.html",
+    "tests/test_ci_pack.py"
+  ],
+  "disposition": "MERGE_STARTED_EXACT_HEAD_WITH_CONFLICTS",
+  "finished_at": "2026-10-20T10:26:50.272344+00:00"
+}

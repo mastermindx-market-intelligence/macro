@@ -94,17 +94,34 @@ def _resolve(node_id: str, master_inputs: ir.MasterInputs, etf_symbols: frozense
 
 # ---------------------------------------------------------------------------
 # §2 — row scope: 2,806 company nodes at pin + post-freeze merged duplicates (DEC)
+#      + post-freeze new listings that collide with no incumbent
 # ---------------------------------------------------------------------------
 
 # DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-INCUMBENT-NODE — enumerated D2A re-pin.
 POST_FREEZE_MERGED_DUPLICATES = frozenset({"co:us:VMRK"})
 FROZEN_COMPANY_NODE_COUNT = 2806
+# Company nodes whose first-mint `computed_at` (nodes.parquet is keep-first, write-once)
+# is strictly before this cutoff are the frozen population. Later nodes are organic
+# nightly growth; they are admitted only if they duplicate no incumbent security
+# (test_post_freeze_company_nodes_are_not_rename_remints). First admitted: co:us:HONA,
+# co:us:P (membership_doc:baskets, minted 2026-10-14T08:53:46Z).
+FREEZE_CUTOFF = "2026-10-14T00:00:00Z"
+POST_FREEZE_NEW_LISTINGS_SEEN = frozenset({"co:us:HONA", "co:us:P"})
+
+
+def _pre_cutoff(company_nodes: pd.DataFrame) -> pd.DataFrame:
+    return company_nodes[company_nodes["computed_at"].astype(str) < FREEZE_CUTOFF]
+
+
+def _post_cutoff_ids(company_nodes: pd.DataFrame) -> set[str]:
+    post = company_nodes[company_nodes["computed_at"].astype(str) >= FREEZE_CUTOFF]
+    return set(post["node_id"].astype(str))
 
 
 def test_the_committed_graph_carries_exactly_2806_company_nodes(company_nodes):
     """Physical company count = frozen pin + lifecycle-merged duplicates (DEC re-pin)."""
     expected = FROZEN_COMPANY_NODE_COUNT + len(POST_FREEZE_MERGED_DUPLICATES)
-    assert len(company_nodes) == expected
+    assert len(_pre_cutoff(company_nodes)) == expected
     dups = POST_FREEZE_MERGED_DUPLICATES
     assert dups <= set(company_nodes["node_id"].astype(str))
     lc = store.read_node_lifecycle(latest=True)
@@ -120,6 +137,33 @@ def test_the_committed_graph_carries_exactly_2806_company_nodes(company_nodes):
             assert target_lc["status"] not in store.RETIRED_LIKE_STATUSES
 
 
+def test_post_freeze_company_nodes_are_not_rename_remints(company_nodes, baked_idres):
+    """Organic growth after FREEZE_CUTOFF is admitted only when it duplicates no
+    incumbent: a post-cutoff node whose latest resolved security_id is already held by
+    another company node is a rename re-mint (DEC:THEME-GRAPH-RENAME-REMINT-MERGES-INTO-
+    INCUMBENT-NODE) and must be merged + enumerated in POST_FREEZE_MERGED_DUPLICATES."""
+    post = _post_cutoff_ids(company_nodes) - POST_FREEZE_MERGED_DUPLICATES
+    assert POST_FREEZE_NEW_LISTINGS_SEEN <= post, (
+        "the listings that motivated FREEZE_CUTOFF must still be post-cutoff nodes")
+    latest = (baked_idres.sort_values("computed_at")
+              .groupby("node_id", as_index=False).tail(1))
+    latest = latest[latest["node_id"].astype(str).isin(set(company_nodes["node_id"].astype(str)))]
+    holders: dict[str, set[str]] = {}
+    for nid, sec in zip(latest["node_id"].astype(str), latest["security_id"]):
+        if sec is None or (isinstance(sec, float) and pd.isna(sec)) or str(sec) == "":
+            continue
+        holders.setdefault(str(sec), set()).add(nid)
+    collisions = {}
+    for sec, ids in holders.items():
+        hit = ids & post
+        if hit and len(ids) > 1:
+            collisions[sec] = sorted(ids)
+    assert not collisions, (
+        f"post-freeze company nodes duplicate an incumbent security: {collisions} — "
+        "merge the re-mint into the incumbent per the DEC and add it to "
+        "POST_FREEZE_MERGED_DUPLICATES")
+
+
 def test_every_company_node_gets_a_row(nodes, company_nodes, master_inputs, etf_symbols):
     """F4: derive_rows is called with the FULL node list (etf nodes included), exactly
     as materialize.py's real build does — a company-nodes-only call would starve rule 4
@@ -130,7 +174,8 @@ def test_every_company_node_gets_a_row(nodes, company_nodes, master_inputs, etf_
         nodes.to_dict("records"), resolution_asof="2026-08-14",
         computed_at="2026-08-18T00:00:00Z", engine_version=store.ENGINE_VERSION)
     expected_count = FROZEN_COMPANY_NODE_COUNT + len(POST_FREEZE_MERGED_DUPLICATES)
-    assert len(rows) == len(company_nodes) == expected_count
+    assert len(rows) == len(company_nodes)
+    assert len(_pre_cutoff(company_nodes)) == expected_count
     assert {r["node_id"] for r in rows} == set(company_nodes["node_id"].astype(str))
     by_id = {r["node_id"]: r for r in rows}
     vmrk_row = by_id.get("co:us:VMRK")
@@ -273,10 +318,26 @@ class TestSection6HostileCases:
         assert row["resolution_state"] == "RESOLVED"
         assert row["security_id"] == "SEC:US-XNYS-CTRA"
 
+    def test_admitted_bats_name_resolves_from_master(self, master_inputs, etf_symbols):
+        """BATS admission replaces CBOE's former zero-master-row fixture premise."""
+        row = _resolve("co:us:CBOE", master_inputs, etf_symbols)
+        assert row["resolution_state"] == "RESOLVED"
+        assert row["security_id"] == "SEC:US-BATS-CBOE"
+        assert row["issuer_id"] == "ISS:US-BATS-CBOE"
+        assert row["listing_key"] == "US-BATS-CBOE"
+        assert row["join_method"] == "master_inception_exact"
+        assert row["refusal_reason"] is None
+        assert json.loads(row["source_receipts"]) == {
+            "master_inception_code": "CBOE", "security_id": "SEC:US-BATS-CBOE",
+        }
+        assert row["master_generated_at"] == master_inputs.generated_at
+        assert row["master_symbol_directory_snapshot"] == master_inputs.symbol_directory_snapshot
+        assert row["master_code_version"] == master_inputs.code_version
+
     @pytest.mark.parametrize("symbol", [
-        "ANGPY", "BLD", "CBOE", "EA", "GATO", "IMPUY", "MAG", "RHHBY",
+        "ANGPY", "BLD", "EA", "GATO", "IMPUY", "MAG", "RHHBY",
     ])
-    def test_the_eight_not_in_master_names(self, symbol, master_inputs, etf_symbols):
+    def test_remaining_not_in_master_names(self, symbol, master_inputs, etf_symbols):
         row = _resolve(f"co:us:{symbol}", master_inputs, etf_symbols)
         assert row["resolution_state"] == "NOT_IN_MASTER", row
         assert row["security_id"] is None
@@ -439,8 +500,9 @@ class TestMutations:
         MUST land NOT_IN_MASTER, never RESOLVED-by-coincidence."""
         bogus = "ZZZNOSUCHTICKERXYZ"
         assert bogus not in master_inputs.master_by_code
-        assert not any(master_inputs.alias_table.resolve(v, bogus, on=date(2026, 8, 14))
-                       for v in master_inputs.vendors)
+        assert not any(master_inputs.alias_table.resolve(
+            v, bogus, on=date(2026, 8, 14), decision_at="2026-08-14T23:59:59Z")
+            for v in master_inputs.vendors)
         row = _resolve(f"co:us:{bogus}", master_inputs, etf_symbols)
         assert row["resolution_state"] == "NOT_IN_MASTER"
         assert row["security_id"] is None

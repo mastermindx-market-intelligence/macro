@@ -1,49 +1,31 @@
 {
-  "ts": "2026-10-06T15:39:03+00:00",
-  "main_sha": "da08fd0ab6648625c6adc1fb4dbfa01c40f63528",
+  "ts": "2026-11-06T00:04:40+00:00",
+  "main_sha": "aa95b0d1d204dc9fd958afbe22e4be3ed647d806",
   "red_required": [
     {
-      "name": "research-loop",
+      "name": "sweep",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36238773776/job/108429786856"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36238918060/job/108395678867"
-    },
-    {
-      "name": "free-content-estate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36238918060/job/108395678833"
-    },
-    {
-      "name": "contract-drift",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36238918060/job/108395678827"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/42099261121/job/127497423932"
     },
     {
       "name": "template-site-sync",
-      "conclusion": "failure",
+      "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36238918060/job/108395678772"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/42099061486/job/127496744613"
     },
     {
-      "name": "tier-gate",
+      "name": "rebuild",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36238918060/job/108395678769"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/42099034826/job/127496654185"
     }
   ],
   "green": false,
-  "consecutive_failures": 211,
+  "consecutive_failures": 248,
   "sensed_shas": [
-    "da08fd0ab6648625c6adc1fb4dbfa01c40f63528",
-    "bd23cfbd3f192389166bef37e490003fadd6d453"
+    "aa95b0d1d204dc9fd958afbe22e4be3ed647d806",
+    "776f2cdce986310152bb6842412d0d2840debb9d"
   ],
   "heartbeat_degraded": false
 }
