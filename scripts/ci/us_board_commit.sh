@@ -32,6 +32,7 @@ git add site/factordata/us_track_ledger.json 2>/dev/null || true
 git add site/factordata/us_board_track_v2.json 2>/dev/null || true
 if git diff --cached --quiet; then
   echo "no US board or rotation changes"
+  push_hold_settle "$BOARD" "$ROTATION"
   if push_hold_red; then exit 1; fi
   exit 0
 fi
@@ -41,7 +42,7 @@ push_hold_oversize_staged "$BOARD" "$ROTATION" || rc=$?
 if [ "$rc" -ne 0 ]; then exit 1; fi
 if git diff --cached --quiet; then
   echo "nothing left to land"
-  push_hold_settle
+  push_hold_settle "$BOARD" "$ROTATION"
   if push_hold_red; then exit 1; fi
   exit 0
 fi
@@ -59,7 +60,7 @@ while push_attempt; do
     if push_do; then
       echo "pushed US board and rotation artifacts on attempt $PUSH_ATTEMPT"
       push_won
-      push_hold_settle
+      push_hold_settle "$BOARD" "$ROTATION"
       if push_hold_red; then exit 1; fi
       exit 0
     fi

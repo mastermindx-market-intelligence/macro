@@ -1,8 +1,8 @@
 {
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
-  "as_of": "2026-10-30",
-  "generated_utc": "2026-11-02T09:44:54Z",
+  "as_of": "2026-11-05",
+  "generated_utc": "2026-11-06T12:04:25Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
@@ -12,21 +12,21 @@
     "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 1 candidates \u2248 1.0 independent bets."
   },
   "same_thesis_groups": [],
-  "earnings_coverage_frac": 1.0,
+  "earnings_coverage_frac": 0.0,
   "by_ticker": {
-    "LTH": {
+    "PFG": {
       "verdict": "new",
       "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.20<0.2",
+      "basis": "membership+high-tier-factor",
       "nearest": [],
       "earnings_leg": {
-        "next_date": "2026-11-03",
+        "next_date": null,
         "same_week_peers": [],
-        "has_data": true
+        "has_data": false
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "LTH: no close peers found in the candidate set.",
-      "why_zh": "LTH\uff1a\u5019\u9009\u96c6\u4e2d\u672a\u627e\u5230\u76f8\u8fd1\u7684\u540d\u79f0\u3002"
+      "why_en": "PFG: no close peers found in the candidate set.",
+      "why_zh": "PFG\uff1a\u5019\u9009\u96c6\u4e2d\u672a\u627e\u5230\u76f8\u8fd1\u7684\u540d\u79f0\u3002"
     }
   },
   "pair_basis": {},
@@ -50,7 +50,7 @@
     "us_standouts_v2": {
       "path": "site/factordata/us_standouts_v2.json",
       "found": true,
-      "as_of": "2026-10-30"
+      "as_of": "2026-11-05"
     },
     "membership": {
       "path": "data/baskets/membership.json",

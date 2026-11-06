@@ -17,7 +17,7 @@
 #   PUSH_HOLD_TRIES   (3)
 #
 # State: ${RUNNER_TEMP:-${TMPDIR:-/tmp}}/push_hold.${GITHUB_RUN_ID:-0}.${PUSH_HOLD_SCOPE}
-#   held, recovered, unreconciled — one item per line.
+#   held, recovered — ref<TAB>path<TAB>full commit per line; unreconciled is sticky.
 #
 # Custody ref:
 #   ${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/${GITHUB_RUN_ID:-0}-${GITHUB_RUN_ATTEMPT:-1}-<12 hex>
@@ -304,6 +304,119 @@ _push_hold_load_ent() {
   PH_LAYOUT=${rest#*$'\t'}
 }
 
+# Existing state binds each ref/path to the full commit that holds its bytes.
+# Unbound historical records cannot authorize retirement.
+_push_hold_full_commit() {
+  local sha="$1"
+  case "$sha" in ""|*[!0-9a-f]*) return 1 ;; esac
+  [ "${#sha}" -eq 40 ] || [ "${#sha}" -eq 64 ]
+}
+
+_push_hold_parse_record() {
+  local line="$1" rest
+  case "$line" in *$'\t'*$'\t'*) ;; *) return 1 ;; esac
+  PH_REF=${line%%$'\t'*}
+  rest=${line#*$'\t'}
+  PH_RECORD_PATH=${rest%%$'\t'*}
+  PH_COMMIT=${rest#*$'\t'}
+  case "$PH_COMMIT" in *$'\t'*) return 1 ;; esac
+  [ -n "$PH_RECORD_PATH" ] || return 1
+  case "$PH_REF" in "${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/"*) ;; *) return 1 ;; esac
+  git check-ref-format "$PH_REF" >/dev/null 2>&1 || return 1
+  _push_hold_full_commit "$PH_COMMIT"
+}
+
+_push_hold_remote_matches() {
+  local ref="$1" commit="$2" line
+  _push_hold_full_commit "$commit" || return 1
+  line=$(perl -e 'alarm 120; exec @ARGV or die' -- git ls-remote --refs origin "$ref" 2>/dev/null) || return 1
+  [ "$line" = "$commit"$'\t'"$ref" ]
+}
+
+_push_hold_remote_commit() {
+  local ref="$1" line commit
+  line=$(perl -e 'alarm 120; exec @ARGV or die' -- git ls-remote --refs origin "$ref" 2>/dev/null) || return 1
+  commit=${line%%$'\t'*}
+  _push_hold_full_commit "$commit" || return 1
+  [ "$line" = "$commit"$'\t'"$ref" ] || return 1
+  if ! git cat-file -e "$commit^{commit}" 2>/dev/null; then
+    git fetch -q --no-tags origin "$commit" || return 1
+  fi
+  git cat-file -e "$commit^{commit}" 2>/dev/null || return 1
+  printf '%s\n' "$commit"
+}
+
+# JSONL uses the existing byte-append rule. Other formats need exact bytes.
+_push_hold_bytes_preserved() {
+  local original="$1" destination="$2" path="$3"
+  case "$path" in
+    *.jsonl) _push_hold_file_is_prefix "$original" "$destination" ;;
+    *) cmp -s "$original" "$destination" ;;
+  esac
+}
+
+_push_hold_verified_entry() {
+  local commit="$1" line="$2" destination="$3" expected_blob expected_size got size
+  _push_hold_load_ent "$line"
+  expected_blob=$PH_BLOB
+  expected_size=$PH_SIZE
+  _push_hold_rebuild_to "$commit" "$PH_I" "$PH_LAYOUT" "$destination" || return 1
+  got=$(git hash-object "$destination" 2>/dev/null) || return 1
+  size=$(_push_hold_filesize "$destination") || return 1
+  [ "$got" = "$expected_blob" ] && [ "$size" = "$expected_size" ]
+}
+
+_push_hold_load_custody() {
+  local commit="$1" tag="$2"
+  _push_hold_full_commit "$commit" || return 1
+  git cat-file -e "$commit^{commit}" 2>/dev/null || return 1
+  printf '%s\n' "$commit" > "$PUSH_HOLD_WORK/local.$tag" || return 1
+  git cat-file blob "$commit:MANIFEST" > "$PUSH_HOLD_WORK/man.$tag" || return 1
+  _push_hold_parse_manifest "$tag" || return 1
+  [ -s "$PUSH_HOLD_WORK/ent.$tag" ] && [ -r "$PUSH_HOLD_WORK/ent.$tag" ]
+}
+
+_push_hold_entry_in_custody() {
+  local original="$1" path="$2" tag="$3" line matched="" matches=0 commit
+  commit=$(cat "$PUSH_HOLD_WORK/local.$tag") || return 1
+  while IFS= read -r line || [ -n "$line" ]; do
+    [ -n "$line" ] || continue
+    _push_hold_load_ent "$line"
+    if [ "$PH_PATH" = "$path" ]; then matched=$line; matches=$((matches + 1)); fi
+  done < "$PUSH_HOLD_WORK/ent.$tag" || return 1
+  [ "$matches" -eq 1 ] || return 1
+  _push_hold_verified_entry "$commit" "$matched" "$PUSH_HOLD_WORK/proof-destination" || return 1
+  _push_hold_bytes_preserved "$original" "$PUSH_HOLD_WORK/proof-destination" "$path"
+}
+
+_push_hold_custody_covers() {
+  local predecessor="$1" successor="$2" commit line path
+  [ -s "$PUSH_HOLD_WORK/ent.$predecessor" ] || return 1
+  commit=$(cat "$PUSH_HOLD_WORK/local.$predecessor") || return 1
+  while IFS= read -r line || [ -n "$line" ]; do
+    [ -n "$line" ] || continue
+    _push_hold_load_ent "$line"
+    path=$PH_PATH
+    _push_hold_verified_entry "$commit" "$line" "$PUSH_HOLD_WORK/proof-original" || return 1
+    _push_hold_entry_in_custody "$PUSH_HOLD_WORK/proof-original" "$path" "$successor" || return 1
+  done < "$PUSH_HOLD_WORK/ent.$predecessor" || return 1
+  return 0
+}
+
+_push_hold_bind_record() {
+  local file="$1" ref="$2" commit="$3" line existing_ref existing_commit
+  while IFS= read -r line || [ -n "$line" ]; do
+    [ -n "$line" ] || continue
+    existing_ref=${line%%$'\t'*}
+    existing_commit=${line#*$'\t'}
+    if [ "$existing_ref" = "$ref" ]; then
+      [ "$existing_commit" = "$commit" ]
+      return $?
+    fi
+  done < "$file" || return 1
+  printf '%s\t%s\n' "$ref" "$commit" >> "$file"
+}
+
 # 0 when $2's bytes start with $1's bytes (the held row is already on HEAD).
 _push_hold_file_is_prefix() {
   local pre="$1" full="$2" ps fs a b
@@ -317,12 +430,10 @@ _push_hold_file_is_prefix() {
 }
 
 _push_hold_entry_landed() {
-  local rebuilt="$1" path="$2"
-  if ! git cat-file -e "HEAD:${path}" 2>/dev/null; then
-    return 1
-  fi
-  git cat-file blob "HEAD:${path}" > "$PUSH_HOLD_WORK/headbytes" || return 1
-  _push_hold_file_is_prefix "$rebuilt" "$PUSH_HOLD_WORK/headbytes"
+  local rebuilt="$1" path="$2" commit="$3"
+  _push_hold_full_commit "$commit" || return 1
+  git cat-file blob "$commit:$path" > "$PUSH_HOLD_WORK/headbytes" 2>/dev/null || return 1
+  _push_hold_bytes_preserved "$rebuilt" "$PUSH_HOLD_WORK/headbytes" "$path"
 }
 
 # 0 when HEAD's blob id is the entry's base (`-` means the path is absent).
@@ -344,29 +455,41 @@ _push_hold_base_ok() {
 _push_hold_mark_unreconciled() {
   local ref="$1" reason="$2" msg rc=0
   printf '%s\n' "$ref" >> "$PUSH_HOLD_STATE/unreconciled" || rc=1
-  msg="${ref}: ${reason}. The ref is kept."
+  msg="${ref}: ${reason}. Custody remains unreconciled."
   echo "::error title=held rows not restored::${msg}"
   _push_hold_summary "$msg"
   return "$rc"
 }
 
 _push_hold_record_recovered() {
-  local n="$1" ref line
+  local n="$1" ref commit line
   ref=$(cat "$PUSH_HOLD_WORK/ref.$n") || return 1
+  commit=$(cat "$PUSH_HOLD_WORK/local.$n") || return 1
+  _push_hold_full_commit "$commit" || return 1
   while IFS= read -r line || [ -n "$line" ]; do
     [ -n "$line" ] || continue
     _push_hold_load_ent "$line"
-    printf '%s\t%s\n' "$ref" "$PH_PATH" >> "$PUSH_HOLD_STATE/recovered" || return 1
-  done < "$PUSH_HOLD_WORK/ent.$n"
+    printf '%s\t%s\t%s\n' "$ref" "$PH_PATH" "$commit" >> "$PUSH_HOLD_STATE/recovered" || return 1
+  done < "$PUSH_HOLD_WORK/ent.$n" || return 1
   return 0
 }
 
+# 0: confirmed absent; 1: confirmed unchanged; 2: moved or unreadable.
+# Reconcile every client result once. Never retry or repin a custody deletion.
 _push_hold_delete_remote() {
-  local ref="$1" line
-  perl -e 'alarm 120; exec @ARGV or die' -- git push origin --delete "$ref" || return 1
-  line=$(git ls-remote origin "$ref" 2>/dev/null) || return 1
-  [ -z "$line" ] || return 1
-  return 0
+  local ref="$1" commit="$2" line observed
+  _push_hold_full_commit "$commit" || return 2
+  case "$ref" in "${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/"*) ;; *) return 2 ;; esac
+  git check-ref-format "$ref" >/dev/null 2>&1 || return 2
+  # Compare-and-delete the exact proved custody commit; never a moved ref.
+  perl -e 'alarm 120; exec @ARGV or die' -- git push "--force-with-lease=$ref:$commit" origin ":$ref" || true
+  line=$(perl -e 'alarm 120; exec @ARGV or die' -- git ls-remote --refs origin "$ref" 2>/dev/null) || return 2
+  [ -n "$line" ] || return 0
+  observed=${line%%$'\t'*}
+  _push_hold_full_commit "$observed" || return 2
+  [ "$line" = "$observed"$'\t'"$ref" ] || return 2
+  [ "$observed" = "$commit" ] || return 2
+  return 1
 }
 
 _push_hold_refs_share_path() {
@@ -449,7 +572,7 @@ _push_hold_parse_manifest() {
 }
 
 _push_hold_apply_ref() {
-  local n="$1" ref localref line dest got all_landed can_apply why st path
+  local n="$1" ref localref line dest got all_landed can_apply why st path rc
   ref=$(cat "$PUSH_HOLD_WORK/ref.$n") || return 1
   localref=$(cat "$PUSH_HOLD_WORK/local.$n") || return 1
   if [ ! -s "$PUSH_HOLD_WORK/ent.$n" ]; then
@@ -476,7 +599,7 @@ _push_hold_apply_ref() {
       _push_hold_mark_unreconciled "$ref" "rebuilt bytes for ${PH_PATH} do not match ${PH_BLOB}"
       return 1
     fi
-    if ! _push_hold_entry_landed "$dest" "$PH_PATH"; then
+    if ! _push_hold_entry_landed "$dest" "$PH_PATH" "$PUSH_HOLD_ACCEPTED_HEAD"; then
       all_landed=0
     fi
     if ! _push_hold_base_ok "$PH_PATH" "$PH_HEAD"; then
@@ -490,10 +613,16 @@ _push_hold_apply_ref() {
     fi
   done < "$PUSH_HOLD_WORK/ent.$n" || return 1
   if [ "$all_landed" -eq 1 ]; then
-    if _push_hold_delete_remote "$ref"; then
-      echo "hold ${ref} already landed on HEAD; deleted ${ref}"
+    if _push_hold_delete_remote "$ref" "$localref"; then
+      echo "hold ${ref} already landed on accepted HEAD; deleted ${ref}"
     else
-      echo "::warning title=hold ref remains::${ref} already landed on HEAD but the ref is still on origin"
+      rc=$?
+      if [ "$rc" -eq 1 ]; then
+        echo "::warning title=hold ref remains::${ref} already landed on accepted HEAD; unchanged custody ref confirmed"
+      else
+        _push_hold_mark_unreconciled "$ref" "custody deletion readback is unresolved or the ref identity moved" || true
+        return 1
+      fi
     fi
     return 0
   fi
@@ -555,7 +684,8 @@ push_hold_recovery_ok() {
 }
 
 _push_hold_recover_impl() {
-  local ls_out line ref tail localref n i j fromref st why rc failed=0
+  local ls_out line ref tail localref commit discovered main_commit n i j fromref st why rc failed=0
+  local left right blocked progress done_count active_count
   push_hold_recovery_ok || return 1
   ls_out=$(perl -e 'alarm 120; exec @ARGV or die' -- git ls-remote origin "${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/*" 2>/dev/null) || {
     _push_hold_prepare_state || return 1
@@ -567,10 +697,19 @@ _push_hold_recover_impl() {
   [ -n "$ls_out" ] || return 0
   _push_hold_work_reset || return 1
   _push_hold_save_groups "$@" || return 1
+  # A local unpublished commit is never accepted-tree retirement evidence.
+  PUSH_HOLD_ACCEPTED_HEAD=$(git rev-parse HEAD) || return 1
+  main_commit=$(_push_hold_remote_commit refs/heads/main) || return 1
+  if ! git merge-base --is-ancestor "$PUSH_HOLD_ACCEPTED_HEAD" "$main_commit"; then
+    _push_hold_mark_unreconciled "recovery" "local HEAD is not proved in published main" || true
+    return 1
+  fi
   printf '%s\n' "$ls_out" > "$PUSH_HOLD_WORK/lsremote" || return 1
   n=0
   while IFS= read -r line; do
     [ -n "$line" ] || continue
+    discovered=${line%%$'\t'*}
+    _push_hold_full_commit "$discovered" || return 1
     ref=${line#*$'\t'}
     [ -n "$ref" ] || continue
     n=$((n + 1))
@@ -580,46 +719,103 @@ _push_hold_recover_impl() {
       *) tail=$ref ;;
     esac
     localref="refs/${tail}"
-    printf '%s\n' "$localref" > "$PUSH_HOLD_WORK/local.$n" || return 1
     if ! git fetch -q --no-tags origin "+${ref}:${localref}"; then
       printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
       printf '%s\n' "fetch failed" > "$PUSH_HOLD_WORK/why.$n" || return 1
       continue
     fi
-    if ! git cat-file blob "${localref}:MANIFEST" > "$PUSH_HOLD_WORK/man.$n" 2>/dev/null; then
-      printf '%s\n' "bad" > "$PUSH_HOLD_WORK/st.$n" || return 1
-      printf '%s\n' "MANIFEST unreadable" > "$PUSH_HOLD_WORK/why.$n" || return 1
-      continue
-    fi
-    if ! _push_hold_parse_manifest "$n"; then
-      _push_hold_mark_unreconciled "$ref" "manifest validation or state bookkeeping failed"
+    commit=$(git rev-parse --verify "$localref^{commit}") || return 1
+    if [ "$commit" != "$discovered" ]; then
+      _push_hold_mark_unreconciled "$ref" "fetched identity differs from discovery" || true
       return 1
     fi
-  done < "$PUSH_HOLD_WORK/lsremote"
+    if ! _push_hold_load_custody "$commit" "$n"; then
+      _push_hold_mark_unreconciled "$ref" "manifest validation or state bookkeeping failed" || true
+      return 1
+    fi
+  done < "$PUSH_HOLD_WORK/lsremote" || return 1
   printf '%s\n' "$n" > "$PUSH_HOLD_WORK/ref.count" || return 1
   [ "$n" -gt 0 ] || return 1
 
-  : > "$PUSH_HOLD_WORK/super_names" || return 1
+  # A from-name is provenance only. Prove every active predecessor entry in
+  # its claimed successor before allowing that edge to suppress recovery.
+  : > "$PUSH_HOLD_WORK/edges" || return 1
   i=1
   while [ "$i" -le "$n" ]; do
     if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "ok" ]; then
-      while IFS= read -r fromref; do
+      while IFS= read -r fromref || [ -n "$fromref" ]; do
         [ -n "$fromref" ] || continue
-        printf '%s\n' "$fromref" >> "$PUSH_HOLD_WORK/super_names" || return 1
-      done < "$PUSH_HOLD_WORK/from.$i"
+        j=1
+        while [ "$j" -le "$n" ]; do
+          ref=$(cat "$PUSH_HOLD_WORK/ref.$j") || return 1
+          if [ "$ref" = "$fromref" ]; then
+            if [ "$i" -eq "$j" ]; then
+              _push_hold_mark_unreconciled "$ref" "lineage cycle (self-edge)" || true
+              return 1
+            fi
+            if [ "$(cat "$PUSH_HOLD_WORK/st.$j")" != "ok" ] || ! _push_hold_custody_covers "$j" "$i"; then
+              _push_hold_mark_unreconciled "$ref" "claimed successor does not prove every predecessor entry preserved" || true
+              return 1
+            fi
+            printf '%s %s\n' "$j" "$i" >> "$PUSH_HOLD_WORK/edges" || return 1
+          fi
+          j=$((j + 1))
+        done
+      done < "$PUSH_HOLD_WORK/from.$i" || return 1
     fi
     i=$((i + 1))
   done
+
+  # A bounded topological pass rejects cycles before any ref is marked super.
+  # Every superseded node in this finite acyclic graph reaches a terminal.
+  : > "$PUSH_HOLD_WORK/topo_done" || return 1
+  active_count=0
   i=1
   while [ "$i" -le "$n" ]; do
-    if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "ok" ]; then
-      ref=$(cat "$PUSH_HOLD_WORK/ref.$i")
-      if grep -qxF "$ref" "$PUSH_HOLD_WORK/super_names"; then
-        printf '%s\n' "super" > "$PUSH_HOLD_WORK/st.$i" || return 1
-      fi
-    fi
+    if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "ok" ]; then active_count=$((active_count + 1)); fi
     i=$((i + 1))
   done
+  done_count=0
+  while [ "$done_count" -lt "$active_count" ]; do
+    progress=0
+    i=1
+    while [ "$i" -le "$n" ]; do
+      if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "ok" ]; then
+        rc=0
+        grep -qxF "$i" "$PUSH_HOLD_WORK/topo_done" || rc=$?
+        if [ "$rc" -gt 1 ]; then
+          _push_hold_mark_unreconciled "recovery" "could not read lineage topology state" || true
+          return 1
+        fi
+        if [ "$rc" -eq 0 ]; then i=$((i + 1)); continue; fi
+        blocked=0
+        while read -r left right; do
+          if [ "$right" = "$i" ]; then
+            rc=0
+            grep -qxF "$left" "$PUSH_HOLD_WORK/topo_done" || rc=$?
+            if [ "$rc" -gt 1 ]; then
+              _push_hold_mark_unreconciled "recovery" "could not read lineage predecessor state" || true
+              return 1
+            fi
+            if [ "$rc" -eq 1 ]; then blocked=1; fi
+          fi
+        done < "$PUSH_HOLD_WORK/edges" || return 1
+        if [ "$blocked" -eq 0 ]; then
+          printf '%s\n' "$i" >> "$PUSH_HOLD_WORK/topo_done" || return 1
+          done_count=$((done_count + 1))
+          progress=1
+        fi
+      fi
+      i=$((i + 1))
+    done
+    if [ "$progress" -eq 0 ]; then
+      _push_hold_mark_unreconciled "recovery" "lineage cycle has no terminal recovery order" || true
+      return 1
+    fi
+  done
+  while read -r left right; do
+    printf '%s\n' "super" > "$PUSH_HOLD_WORK/st.$left" || return 1
+  done < "$PUSH_HOLD_WORK/edges" || return 1
 
   i=1
   while [ "$i" -le "$n" ]; do
@@ -650,12 +846,7 @@ _push_hold_recover_impl() {
     st=$(cat "$PUSH_HOLD_WORK/st.$i")
     ref=$(cat "$PUSH_HOLD_WORK/ref.$i")
     case "$st" in
-      super)
-        if ! _push_hold_record_recovered "$i"; then
-          _push_hold_mark_unreconciled "$ref" "could not record a superseded ref"
-          failed=1
-        fi
-        ;;
+      super) ;;
       ok)
         _push_hold_apply_ref "$i" || failed=1
         ;;
@@ -669,6 +860,18 @@ _push_hold_recover_impl() {
     i=$((i + 1))
   done
   [ "$failed" -eq 0 ] || return 1
+  # Record predecessors only after all terminal recovery/proof succeeded.
+  i=1
+  while [ "$i" -le "$n" ]; do
+    if [ "$(cat "$PUSH_HOLD_WORK/st.$i")" = "super" ]; then
+      if ! _push_hold_record_recovered "$i"; then
+        ref=$(cat "$PUSH_HOLD_WORK/ref.$i") || ref="recovery"
+        _push_hold_mark_unreconciled "$ref" "could not record proved predecessor" || true
+        return 1
+      fi
+    fi
+    i=$((i + 1))
+  done
   push_hold_recovery_ok
 }
 
@@ -688,61 +891,95 @@ push_hold_recover() {
   return "$rc"
 }
 
-_push_hold_held_has() {
-  local path="$1" line got
-  [ -f "$PUSH_HOLD_STATE/held" ] || return 1
-  while IFS= read -r line; do
-    got=${line#*$'\t'}
-    [ "$got" = "$path" ] && return 0
-  done < "$PUSH_HOLD_STATE/held"
+_push_hold_held_preserves() {
+  local original="$1" path="$2" n="$3" i=1
+  while [ "$i" -le "$n" ]; do
+    if _push_hold_entry_in_custody "$original" "$path" "settle-held-$i"; then return 0; fi
+    i=$((i + 1))
+  done
   return 1
 }
 
 _push_hold_settle_impl() {
-  local before now line ref r p ok
+  local before now published="" main_commit line ref commit r p ok held_count=0 failed=0
+  local retire_line retire_ref retiring
   push_hold_recovery_ok || return 2
   [ -s "$PUSH_HOLD_STATE/recovered" ] || return 0
+  # Retained as fresh diagnostics and a writable-state fence. A changed
+  # filename is never content-preservation evidence.
   : > "$PUSH_HOLD_STATE/pushed_names" || return 2
+  now=$(git rev-parse HEAD 2>/dev/null) || return 2
   if [ -f "$PUSH_HOLD_STATE/head_before" ]; then
     before=$(cat "$PUSH_HOLD_STATE/head_before") || return 2
-    now=$(git rev-parse HEAD 2>/dev/null) || return 2
-    if [ -n "$before" ] && [ -n "$now" ] && [ "$now" != "$before" ]; then
-      git diff-tree --no-commit-id --name-only -r HEAD > "$PUSH_HOLD_STATE/pushed_names" || return 2
+    if [ -n "$before" ] && [ "$now" != "$before" ]; then
+      git diff-tree --no-commit-id --name-only -r "$now" > "$PUSH_HOLD_STATE/pushed_names" || return 2
     fi
   fi
+  # A new process can reconstruct proof from existing immutable records even
+  # when recovery's transient inventory no longer exists.
+  _push_hold_work_reset || return 2
+  _push_hold_save_groups "$@" || return 2
   : > "$PUSH_HOLD_STATE/settle_refs" || return 2
-  while IFS= read -r line; do
+  while IFS= read -r line || [ -n "$line" ]; do
     [ -n "$line" ] || continue
-    ref=${line%%$'\t'*}
-    if ! grep -qxF "$ref" "$PUSH_HOLD_STATE/settle_refs"; then
-      printf '%s\n' "$ref" >> "$PUSH_HOLD_STATE/settle_refs" || return 2
-    fi
+    _push_hold_parse_record "$line" || return 2
+    _push_hold_bind_record "$PUSH_HOLD_STATE/settle_refs" "$PH_REF" "$PH_COMMIT" || return 2
   done < "$PUSH_HOLD_STATE/recovered" || return 2
-  while IFS= read -r ref; do
-    [ -n "$ref" ] || continue
+  # One identity binding spans both journals. Only destinations outside the
+  # complete retirement set can preserve custody after this settlement.
+  cp "$PUSH_HOLD_STATE/settle_refs" "$PUSH_HOLD_WORK/settle_bindings" || return 2
+  : > "$PUSH_HOLD_WORK/settle_held" || return 2
+  if [ -f "$PUSH_HOLD_STATE/held" ]; then
+    while IFS= read -r line || [ -n "$line" ]; do
+      [ -n "$line" ] || continue
+      _push_hold_parse_record "$line" || return 2
+      _push_hold_bind_record "$PUSH_HOLD_WORK/settle_bindings" "$PH_REF" "$PH_COMMIT" || return 2
+      _push_hold_bind_record "$PUSH_HOLD_WORK/settle_held" "$PH_REF" "$PH_COMMIT" || return 2
+    done < "$PUSH_HOLD_STATE/held" || return 2
+  fi
+  while IFS= read -r line || [ -n "$line" ]; do
+    [ -n "$line" ] || continue
+    ref=${line%%$'\t'*}; commit=${line#*$'\t'}
+    retiring=0
+    while IFS= read -r retire_line || [ -n "$retire_line" ]; do
+      retire_ref=${retire_line%%$'\t'*}
+      if [ "$retire_ref" = "$ref" ]; then retiring=1; break; fi
+    done < "$PUSH_HOLD_STATE/settle_refs" || return 2
+    [ "$retiring" -eq 0 ] || continue
+    _push_hold_remote_matches "$ref" "$commit" || return 2
+    held_count=$((held_count + 1))
+    _push_hold_load_custody "$commit" "settle-held-$held_count" || return 2
+  done < "$PUSH_HOLD_WORK/settle_held" || return 2
+  main_commit=$(_push_hold_remote_commit refs/heads/main) || return 2
+  if git merge-base --is-ancestor "$now" "$main_commit"; then published=$now; fi
+  while IFS= read -r line || [ -n "$line" ]; do
+    [ -n "$line" ] || continue
+    ref=${line%%$'\t'*}; commit=${line#*$'\t'}
+    _push_hold_load_custody "$commit" "settle-original" || return 2
     ok=1
-    while IFS= read -r line; do
-      r=${line%%$'\t'*}
-      p=${line#*$'\t'}
-      [ "$r" = "$ref" ] || continue
-      if grep -qxF "$p" "$PUSH_HOLD_STATE/pushed_names" 2>/dev/null; then
-        continue
-      fi
-      if _push_hold_held_has "$p"; then
-        continue
-      fi
+    while IFS= read -r r || [ -n "$r" ]; do
+      [ -n "$r" ] || continue
+      _push_hold_load_ent "$r"; p=$PH_PATH
+      if ! _push_hold_verified_entry "$commit" "$r" "$PUSH_HOLD_WORK/proof-original"; then ok=0; break; fi
+      if [ -n "$published" ] && _push_hold_entry_landed "$PUSH_HOLD_WORK/proof-original" "$p" "$published"; then continue; fi
+      if _push_hold_held_preserves "$PUSH_HOLD_WORK/proof-original" "$p" "$held_count"; then continue; fi
       ok=0
-    done < "$PUSH_HOLD_STATE/recovered" || return 2
+    done < "$PUSH_HOLD_WORK/ent.settle-original" || return 2
     if [ "$ok" -ne 1 ]; then
-      echo "::warning title=hold ref kept::${ref} has a path that is neither in the pushed commit nor held again"
+      echo "::warning title=hold ref kept::$ref has original bytes not proved in a published tree or verified successor custody"
+      _push_hold_mark_unreconciled "$ref" "content preservation was not proved" || true
+      failed=1
       continue
     fi
-    if _push_hold_delete_remote "$ref"; then
-      echo "hold settled ${ref}"
+    if _push_hold_delete_remote "$ref" "$commit"; then
+      echo "hold settled $ref"
     else
-      echo "::warning title=hold ref remains::${ref} delete did not verify"
+      echo "::warning title=hold ref remains::$ref delete did not verify"
+      _push_hold_mark_unreconciled "$ref" "exact custody retirement did not verify" || true
+      failed=1
     fi
   done < "$PUSH_HOLD_STATE/settle_refs" || return 2
+  [ "$failed" -eq 0 ] || return 2
   return 0
 }
 
@@ -881,13 +1118,14 @@ push_hold_oversize_staged() {
     return 2
   fi
 
+  # Provenance only; recovery and retirement independently prove preservation.
   : > "$PUSH_HOLD_WORK/from_refs" || return 2
   if [ -s "$PUSH_HOLD_STATE/recovered" ]; then
     while IFS= read -r line; do
       [ -n "$line" ] || continue
-      fromref=${line%%$'\t'*}
-      frompath=${line#*$'\t'}
-      [ "$fromref" != "$frompath" ] || continue
+      _push_hold_parse_record "$line" || return 2
+      fromref=$PH_REF
+      frompath=$PH_RECORD_PATH
       if grep -qxF "$frompath" "$PUSH_HOLD_WORK/hold_paths"; then
         if ! grep -qxF "$fromref" "$PUSH_HOLD_WORK/from_refs"; then
           printf '%s\n' "$fromref" >> "$PUSH_HOLD_WORK/from_refs" || return 2
@@ -998,7 +1236,7 @@ push_hold_oversize_staged() {
   # Record verified custody before changing the real index or worktree.
   while IFS= read -r path; do
     [ -n "$path" ] || continue
-    if ! printf '%s\t%s\n' "$ref" "$path" >> "$PUSH_HOLD_STATE/held"; then
+    if ! printf '%s\t%s\t%s\n' "$ref" "$path" "$commit" >> "$PUSH_HOLD_STATE/held"; then
       _push_hold_mark_unreconciled "$ref" "could not record verified hold" || true
       return 2
     fi

@@ -1,33 +1,52 @@
 {
-  "appended": 0,
-  "asof": "2026-10-30",
+  "appended": 7,
+  "asof": "2026-11-05",
   "candidates": {
-    "R": 3,
-    "T": 9,
-    "W": 39
+    "R": 0,
+    "T": 17,
+    "W": 38
   },
   "deduped": {
-    "R": 3,
-    "T": 9,
-    "W": 39
+    "R": 0,
+    "T": 10,
+    "W": 38
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "consulted": false
+      "asof": "2026-11-06",
+      "consulted": true,
+      "n_keys": 27,
+      "n_themes": 18,
+      "ok": true,
+      "reason": null,
+      "source": "site/basketdata/foresight_cascade.json"
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": false,
-      "null_reasons": {},
+      "consulted": true,
+      "null_reasons": {
+        "ohlcv_absent": 15
+      },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {},
+      "themes_read": {
+        "Commodities Agriculture": {
+          "theme_thrust_frac": 0.1111,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Digital Entertainment": {
+          "theme_thrust_frac": 0.087,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        }
+      },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 0,
-      "tickers_read": 0
+      "tickers_ok": 41,
+      "tickers_read": 56
     },
     "keys": [
       "relay_count_3d",
@@ -45,10 +64,21 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": false
+      "consulted": true,
+      "high_lookback": 63,
+      "members_indexed": 136,
+      "n_covered": 93,
+      "reason": null,
+      "window_sessions": 21
     },
     "turnover": {
-      "consulted": false
+      "consulted": true,
+      "last_session": "2026-11-05",
+      "n_tickers": 1549,
+      "ok": true,
+      "reason": null,
+      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
+      "window_max": 60
     }
   },
   "feature_source_w": {
@@ -77,50 +107,58 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [],
+    "T": [
+      "MOS",
+      "PPC",
+      "SJM",
+      "CALM",
+      "TTWO",
+      "PENN",
+      "MGM"
+    ],
     "W": []
   },
-  "n_universe": 1491,
+  "n_universe": 1489,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-11-01 11:24:27",
-  "runtime_s": 95.2,
+  "run_utc": "2026-11-06 13:22:37",
+  "runtime_s": 102.5,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
-    "asof": "2026-10-30",
-    "n_members": 170,
+    "age_days": -1,
+    "asof": "2026-11-06",
+    "n_members": 136,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.213,
+        "emerging_score": 2.443,
         "rank": 1,
-        "theme": "Defense & Aerospace"
+        "theme": "Healthy Food & Nutrition"
       },
       {
-        "emerging_score": 2.021,
+        "emerging_score": 2.114,
         "rank": 2,
-        "theme": "Space Tech"
+        "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 1.907,
+        "emerging_score": 1.981,
         "rank": 3,
-        "theme": "Electric Vehicles"
+        "theme": "Commodities Agriculture"
       },
       {
-        "emerging_score": 1.893,
+        "emerging_score": 1.813,
         "rank": 4,
-        "theme": "Energy Renewable"
+        "theme": "Digital Entertainment"
       },
       {
-        "emerging_score": 1.868,
+        "emerging_score": 1.8,
         "rank": 5,
-        "theme": "Transportation & Logistics"
+        "theme": "Aging Population & Longevity"
       }
     ]
   },
@@ -129,17 +167,17 @@
       "2B",
       "3B"
     ],
-    "aligned": 39,
-    "asof_max": "2026-10-30",
+    "aligned": 38,
+    "asof_max": "2026-11-05",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-30",
-    "evaluated": 712,
+    "asof_run": "2026-11-05",
+    "evaluated": 713,
     "fresh": 39,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 17.9,
-    "skipped": 5,
+    "runtime_s": 21.0,
+    "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 56,
     "universe_n": 717

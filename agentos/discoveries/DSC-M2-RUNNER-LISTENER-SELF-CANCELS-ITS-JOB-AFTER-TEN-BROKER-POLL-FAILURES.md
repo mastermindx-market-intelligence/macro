@@ -54,7 +54,7 @@ so_what: >
   rejection; a seat records the gate and the evidence once (#8748 comment 6114287529) and
   does not re-investigate or re-dispatch.
 kind: landmine
-verified_at: 2026-10-11
+verified_at: 2026-11-02
 verified_by: >
   Read-only reads on the M2 Studio 2026-10-11 ~21:0x-21:5xZ: `~/actions-runner-2/_diag/
   Runner_20261011-031347-utc.log` (04:49:10Z renewjob back-off, 04:49:20Z Catch
@@ -69,6 +69,10 @@ verified_by: >
   and `…/38014851530/jobs` (startedAt / completedAt / runner_name); org audit-log query
   (no cancel rows); githubstatus incidents.json (no 10-09 -> 10-11 Actions incident);
   collect_tail job log 04:49:53Z GH001 line. Posted as #8748 issuecomment-6114287529.
+  Recurrence re-verified read-only 2026-11-02 ~22Z by seat fd47d431: runner 2.338.0
+  `~/actions-runner-2/_diag/Runner_20261101-230051-utc.log` (506 `ResponseEnded` lines;
+  06:25:51Z Shutting down JobDispatcher -> 06:28:12Z `Job collect completed with result:
+  Canceled`), the connectivity watchdog log and `gh run view 41378879186`.
 scope: [macro, ".github/workflows/daily.yml", ".github/workflows/closing-bell.yml", "runner-host:m2studio ~/actions-runner*/_diag/**", "scripts/prophet_rescue.py"]
 confidence: verified
 ---
@@ -77,3 +81,20 @@ Observed by seat fd47d431 (Market-Intelligence Institutional Buildout) as the cr
 gate on its 10-12 post-nightly proofs; the nightly, the runner hosts and the GH001 lane
 (#8042 / #8756) all belong to other owners. The signature is cheap to check and the
 instruments that normally answer "why did it die" are all silent here — which is the finding.
+
+**Recurrence 2026-11-02 (runner 2.338.0).** The failure mode is now `The response ended
+prematurely. (ResponseEnded)` on the broker GET instead of the 100 s client timeout; the
+outcome is the same. On mac-builder-5 the listener logged it at 06:25:51Z, then `Shutting
+down JobDispatcher`, and at 06:28:12Z `Job collect completed with result: Canceled`: daily.yml
+run 41378879186, job 125065160538, collectors step 02:44:13Z to 06:26:04Z, the
+massive_stock_day publish step skipped, listener exit 103 after 03:48:34. The installed
+connectivity watchdog now observes the class (`DEGRADED recent broker listener faults ...
+broker_response_ended=N` on every M2 runner through the night) and correctly refuses to
+restart a runner with a live worker; that is observation, not prevention. A census of
+`completed with result: Canceled` across the M2 listener logs since 10-20 counts 87 lines
+(collect on 10-30, 11-01 and 11-02, engine nearly daily, standout_audit_us on 11-02; some may
+be ordinary concurrency cancels). Downstream, the R2 massive manifest stayed at Last-Modified
+2026-11-01T05:42:22Z and `macro-market-memory-technicals.service` failed 2026-11-02T21:37:21Z
+on its 26-hour freshness bound, a correct fail-closed refusal. The so_what is unchanged: the
+levers are runner-host operator acts (open carriers #8748, #8142 auto-heal and #6351); the
+seat recorded the recurrence once and re-dispatched nothing.

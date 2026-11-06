@@ -147,3 +147,29 @@ PR body closes: "This is the Agent OS freshness repair exposed by the live #651 
 3. The #651 canary repetition is gated on "this Agent OS correction is protected" — once this PR's merge lands, re-running Mastermind #651 head `3e70694f7c5af9aee1d3f06ab0b4d2a253f30799` against the new Macro main should emit the SC1 next-action. The DSC's `falsifier:` field is the exact command for that re-run.
 
 **No blocking issue found. No retry. No scope expansion. Audit complete.**
+
+## Historical evidence reconciliation — 2026-11-05
+
+The alternative September 21 audit preserved at [PR #7638 head
+`02c8c498a4b543d11d240adae5db24d1e2bfb7c9`](https://github.com/mastermindx-market-intelligence/macro/blob/02c8c498a4b543d11d240adae5db24d1e2bfb7c9/orch/audits/macro_PR-7619.mm.md)
+records an additional result corroborated by the original [#7619 PR
+body](https://github.com/mastermindx-market-intelligence/macro/pull/7619): re-running
+the #651 consumer against candidate `4b7b4e3ccde8ab8fa8dd521d24c9f68d9d6b2039`
+emitted the repaired SC1 next action, five active waves, six do-not-redo waves, and
+a **7,276-byte canonical packet**. The body also records `git diff --check`
+passing. These are dated source receipts, not a new production or continuation
+test.
+
+The earlier description of `check_validated_claims.py` as template-only is
+inaccurate. At audited merge `4d0196c72dc9f8ec4872a95b83cc40760f1b1114`, [checker
+blob `86be3a08347f2300d85644e303e3c653fa1ac88b`](https://github.com/mastermindx-market-intelligence/macro/blob/4d0196c72dc9f8ec4872a95b83cc40760f1b1114/scripts/check_validated_claims.py)
+also scanned site HTML/JS, Prophet JSON, engine display-copy fields, and selected
+registry data. Neither audited `agentos/` file falls within those inputs; the
+original audit's scope conclusion and PASS verdict remain unchanged.
+
+Native #7619 metadata identifies branch
+`claude/ccr-sessionless-continuity-agentos-20260921`; the alternative audit's
+different branch name is not adopted. This reconciliation preserves historical
+evidence without renewing old review requirements, commissioning a canary, or
+claiming current acceptance of the dependent products. All preceding current-main
+audit bytes are preserved.
