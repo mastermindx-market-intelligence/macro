@@ -152,8 +152,9 @@ test('test_promise_horizon_block_renders_from_a_committed_shaped_record', async 
   assert.ok(copy.en.includes('513'), 'the graded-call count renders');
   assert.ok(copy.en.includes('1,033'), 'the matured-episode count renders');
   assert.ok(copy.en.includes('below it'), 'the comparator names the sign');
-  const twentyOne = splitParas(s).filter((p) => p.includes('were right 53% of the time'));
+  const twentyOne = splitParas(s).filter((p) => p.includes('were right 53.0% of the time'));
   assert.equal(twentyOne.length, 1, 'the 21-day split line survives as its own paragraph');
+  assert.ok(twentyOne[0].includes('against a 52.5% bar'), 'the original 0.53/0.525 fixture does not hide its distinct bar');
   assert.ok(twentyOne[0].includes('Split honestly'), 'the 21-day line is the split line');
   assert.notEqual(twentyOne[0], para, 'the two horizons are two separate paragraphs');
 });
@@ -247,3 +248,27 @@ test('test_promise_copy_is_bilingual', async () => {
     assert.ok(!copy.zh.includes(banned), 'ZH avoids ' + banned);
   }
 });
+
+// Producer _cohort_stats and _dart_baseline publish rates to three decimals.
+// Preserve whole-percent presentation except when it hides a distinct pair.
+for (const [accuracy, bar, left, right, en, zh] of [
+  [0.530, 0.525, '53.0', '52.5', 'above it', '高于基准'],
+  [0.525, 0.530, '52.5', '53.0', 'below it', '低于基准'],
+  [0.525, 0.525, '53', '53', 'level with it', '与基准持平'],
+  [0.531, 0.532, '53.1', '53.2', 'below it', '低于基准'],
+  [0, 0.001, '0.0', '0.1', 'below it', '低于基准'],
+  [0.999, 1, '99.9', '100.0', 'below it', '低于基准'],
+]) {
+  test(`distinct producer rates remain visible: ${accuracy} versus ${bar}`, async () => {
+    const fx = base();
+    Object.assign(fx.ic.by_horizon[91].episodes.claims,
+      { dir_accuracy: accuracy, base_dart: bar });
+    const before = JSON.stringify(fx.ic);
+    const html = await renderHonesty(fx);
+    const copy = legs(paraWith(html, 'calendar days'));
+    assert.ok(copy.en.includes(`right ${left}% of the time against a ${right}% bar — ${en}`));
+    assert.ok(copy.zh.includes(`方向正确率 ${left}%（基准 ${right}%）—— ${zh}`));
+    assert.equal(JSON.stringify(fx.ic), before, 'display does not change producer data');
+    assert.ok(copy.en.includes('not the headline grade'));
+  });
+}
