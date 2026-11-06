@@ -638,6 +638,32 @@ def _bridge_cpi_month_vs_breakeven(
     return "basis_mismatch:reference_end"
 
 
+def _bridge_h1_target_stem(
+    left: QualifiedObservation, right: QualifiedObservation
+) -> Optional[str]:
+    """Frozen house projection (left, ``*_first_print``) vs H1 receipt
+    (right, ``*_h1``): the release-identity stem must agree (A30 / R2-E1-S13).
+    Constraints already guarantee both suffixes; the bridge still refuses a
+    non-str target defensively so the bridge contract stays total."""
+    if not isinstance(left.target, str) or not isinstance(right.target, str):
+        return "basis_mismatch:target_stem"
+    left_stem = (
+        left.target[: -len("_first_print")]
+        if left.target.endswith("_first_print")
+        else left.target
+    )
+    right_stem = (
+        right.target[: -len("_h1")]
+        if right.target.endswith("_h1")
+        else right.target
+    )
+    if not left_stem.strip() or not right_stem.strip():
+        return "basis_mismatch:target_stem"
+    if left_stem != right_stem:
+        return "basis_mismatch:target_stem"
+    return None
+
+
 def _explicit_effr_gap_bp(context: Optional[Mapping[str, Any]]) -> Optional[float]:
     """The caller-supplied EFFR-minus-target-midpoint gap in bp, or None when
     it is absent or unusable (None, bool, non-numeric, NaN, +/-inf). Never raises."""
@@ -771,9 +797,65 @@ def _compute_term_premium(left, right, rule, context, _mk) -> ComparisonResult:
     )
 
 
+def _epoch_token(value) -> Optional[str]:
+    """Strip whitespace and refuse the blank / NA-sentinel shapes; return the
+    cleaned string or None when the value is absent, whitespace-only, or a
+    ``NA`` / ``na`` / ``n/a`` literal (per the B0H1-R1 ruling)."""
+    if not isinstance(value, str):
+        return None
+    s = value.strip()
+    if s == "" or s.lower() in ("na", NA):
+        return None
+    return s
+
+
+def _compute_h1_target(left, right, rule, context, _mk) -> ComparisonResult:
+    """Frozen house projection (left, ``*_first_print``) vs H1 receipt
+    (right, ``*_h1``): matched at an explicit evaluation epoch (A29).
+
+    The H1 epoch arrives ONLY via ``context["eval_target_epoch"]`` and is
+    matched against the RIGHT operand's own ``target_epoch``; the LEFT
+    ``target_epoch`` is echoed in ``assumptions`` and is never compared.
+    """
+    ctx = dict(context) if context else {}
+    ref = right.content_ref
+    if not isinstance(ref, str) or ref[len("same_vintage:"):].strip() == "":
+        return _mk(ComparisonStatus.NOT_COMPARABLE, "unknown_basis:content_ref")
+    eval_tok = _epoch_token(ctx.get("eval_target_epoch"))
+    right_tok = _epoch_token(right.target_epoch)
+    if eval_tok is None or right_tok is None:
+        return _mk(ComparisonStatus.NOT_COMPARABLE, "unknown_basis:eval_target_epoch")
+    left_tok = _epoch_token(left.target_epoch)
+    if left_tok is None:
+        return _mk(ComparisonStatus.NOT_COMPARABLE, "unknown_basis:model_target_epoch")
+    if eval_tok != right_tok:
+        return _mk(ComparisonStatus.NOT_COMPARABLE, "basis_mismatch:eval_target_epoch")
+    if left.unit in PCT_UNITS:
+        diff = (left.value - right.value) * 100.0
+        unit = "bp"
+    else:
+        diff = left.value - right.value
+        unit = left.unit
+    limitations: Tuple[str, ...] = ("h1_target_not_official_first_print",)
+    if "proxy_vintage" in right.quality:
+        limitations = limitations + ("proxy_vintage:right",)
+    return _mk(
+        ComparisonStatus.DIRECTLY_COMPARABLE,
+        "h1_target_direct_difference",
+        difference=diff,
+        unit=unit,
+        assumptions=(
+            "eval_target_epoch:%s" % eval_tok,
+            "model_target_epoch:%s" % left_tok,
+        ),
+        limitations=limitations,
+    )
+
+
 _BRIDGES = {
     "sep_vs_market_year_end.v1": _bridge_sep_vs_market,
     "cpi_month_vs_breakeven_10y.v1": _bridge_cpi_month_vs_breakeven,
+    "forecast_vs_h1_target.v1": _bridge_h1_target_stem,
 }
 _UNDERIDENTIFIED = {
     "zq_month_vs_policy_midpoint.v1": _under_zq_vs_midpoint,
@@ -783,6 +865,7 @@ _COMPUTE = {
     "sep_vs_market_year_end.v1": _compute_sep_vs_market,
     "inflation_compensation.v1": _compute_inflation_compensation,
     "term_premium_kw_vs_acm.v1": _compute_term_premium,
+    "forecast_vs_h1_target.v1": _compute_h1_target,
 }
 
 
@@ -902,6 +985,22 @@ RULES: Dict[str, ComparisonRule] = {
         {"unit": ("bp",)},
         {"unit": ("bp",)},
         ("unit",),
+        None,
+    ),
+    "forecast_vs_h1_target.v1": _rule(
+        "forecast_vs_h1_target.v1",
+        "accuracy",
+        {"evidence_class": ("house_estimate",), "target": ("*_first_print",)},
+        {
+            "evidence_class": ("official_measurement",),
+            "target": ("*_h1",),
+            "content_ref": ("same_vintage:*",),
+        },
+        (
+            "basket_or_index", "reference_start", "reference_end",
+            "unit", "seasonal_treatment",
+            "curve_convention", "rate_index", "averaging_law", "tenor",
+        ),
         None,
     ),
 }

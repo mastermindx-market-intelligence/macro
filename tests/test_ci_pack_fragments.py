@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
 import subprocess
 import tempfile
 from pathlib import Path
@@ -514,6 +515,35 @@ def test_module_docstring_documents_the_opt_in_merge_driver() -> None:
         'git config merge.cipack.driver '
         '"python3 scripts/ci_pack_fragments.py merge3 %O %A %B"'
     ) in doc
+
+
+def test_edit_side_permuted_is_a_required_keyword_only_flag() -> None:
+    """The moved-separator guard flag cannot be omitted: it is required.
+
+    ``_apply_order_and_edits`` runs the ``_moved_separators_agree`` guard
+    exactly when ``edit_side_permuted`` is True, so the flag decides whether a
+    permutation that moved a separator is checked on the edit side. The
+    behaviour lives in the signature: keyword-only with no default, so a caller
+    that omits it raises ``TypeError`` at the call site. This pins that shape,
+    because re-adding ``= False`` keeps every behavioural test here green while
+    restoring the silent no-guard merge for a permuted-edit-side caller.
+    """
+    import scripts.ci_pack_fragments as module
+
+    param = inspect.signature(module._apply_order_and_edits).parameters[
+        "edit_side_permuted"
+    ]
+    assert param.kind is inspect.Parameter.KEYWORD_ONLY, (
+        "edit_side_permuted must stay keyword-only: a positional caller could "
+        "pass the flag by accident, or a refactor could drop it from the call "
+        "entirely, and the moved-separator guard would silently stop running"
+    )
+    assert param.default is inspect.Parameter.empty, (
+        "HAZARD: re-adding a default (edit_side_permuted: bool = False) lets a "
+        "permuted-edit-side caller omit the flag and merge without the "
+        "moved-separator guard; it must stay required so omission raises "
+        "TypeError at the call site instead of silently merging"
+    )
 
 
 def test_merge3_cli_writes_ours_and_exits_like_a_merge_driver(tmp_path: Path) -> None:

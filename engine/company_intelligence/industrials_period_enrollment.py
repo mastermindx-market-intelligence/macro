@@ -95,9 +95,19 @@ def _with_stated_end(
     """Return ``(cell copy, stated end)``. A non-mapping ``period`` is refused
     as ``cell period is required``; a non-``str`` or malformed ``period.end``
     is refused as ``cell period.end must be a YYYY-MM-DD string``, naming the
-    field instead of leaking ``date.fromisoformat``'s bare message and chaining
-    any parse error as ``__cause__``. Only the exact ASCII ``YYYY-MM-DD`` shape
-    is admitted — ``20260703`` and fullwidth digits are refused before parsing.
+    field instead of leaking ``date.fromisoformat``'s bare message. Chaining
+    differs per branch: a non-mapping ``period`` and a non-``str`` end are
+    each a bare ``raise`` and chain nothing (``__cause__`` and
+    ``__context__`` are both ``None``);
+    the shape gate below chains a SYNTHETIC shape error whose text begins
+    ``expected exactly YYYY-MM-DD``, not a parse error; only the parser
+    branch chains ``date.fromisoformat``'s own
+    ``ValueError``. The gate runs before the parser and admits exactly the
+    ASCII ``YYYY-MM-DD`` shape, so it also refuses forms that the 3.12 parser
+    itself accepts — ``20260703``, week-without-day ``2026-W27`` and
+    trailing-garbage ``02071203:6``. ``flags=re.ASCII`` is load-bearing for
+    fullwidth digits: an unflagged ``\\d`` matches them, the gate admits the
+    string, and the parser's message lands in ``__cause__`` instead.
     """
     period = cell.get("period")
     if not isinstance(period, Mapping):

@@ -200,6 +200,19 @@ def _as_mapping(x):
     return x if isinstance(x, Mapping) else {}
 
 
+def _container_rows(x):
+    """(rows, malformed_container) for an iterated payload container (private).
+
+    Only a ``list`` / ``tuple`` is a container: anything else (dict, str, int)
+    reads as EMPTY and is flagged, because iterating it would invent rows the
+    owner never emitted (a dict yields its keys, a str its characters). An
+    absent / ``None`` container is a missing input, not a malformed one.
+    """
+    if isinstance(x, (list, tuple)):
+        return list(x), False
+    return [], x is not None
+
+
 def _zdiff(a, b):
     """a - b, propagating an Unmeasured operand instead of arithmetic."""
     if isinstance(a, Unmeasured):
@@ -906,18 +919,39 @@ class GroupMeasurement:
 
     @property
     def coverage(self):
-        """Measured share of the expected population, or Unmeasured when unknown."""
+        """Measured share of the expected population, or Unmeasured when unknown.
+
+        SET-BASED over the expected ids: a member counts once however often it is
+        listed, and an id measured but NOT expected never raises coverage above
+        1.0 -- it is reported by :attr:`unexpected_members` instead. On the count
+        path ``measured_n > expected_n`` is inconsistent counting, not a coverage
+        above 1, so it stays ``Unmeasured("invalid_counts")``.
+        """
         if self.expected_members:
-            return len(self.measured_members) / len(self.expected_members)
+            expected = set(self.expected_members)
+            present = expected & set(self.measured_members)
+            return len(present) / len(expected)
         if _is_count(self.expected_n) and self.expected_n > 0 and _is_count(self.measured_n):
+            if self.measured_n > self.expected_n:
+                return Unmeasured("invalid_counts")
             return self.measured_n / self.expected_n
         return Unmeasured("empty_population")
+
+    @property
+    def unexpected_members(self) -> tuple:
+        """Measured ids OUTSIDE the expected set (read-only); they never count
+        toward :attr:`coverage` and are never treated as expected members."""
+        if not self.expected_members:
+            return ()
+        return tuple(sorted(set(self.measured_members) - set(self.expected_members), key=str))
 
     def to_dict(self) -> dict:
         return _object_to_dict(
             self,
             _GROUP_MEASUREMENT_SCHEMA,
-            {"coverage": _json(self.coverage), "may_rank": False},
+            {"coverage": _json(self.coverage),
+             "unexpected_members": list(self.unexpected_members),
+             "may_rank": False},
         )
 
 
@@ -1044,7 +1078,7 @@ def us_sector_cohort() -> tuple:
 
 def _sector_record_value(rec, horizon: str):
     """(value) float or Unmeasured for one sector_cycles record (private)."""
-    now = rec.get("now") or {}
+    now = _as_mapping(rec.get("now"))
     if now.get("thin_history") is True:
         return Unmeasured("thin_history")
     raw = now.get(horizon)
@@ -1086,11 +1120,22 @@ def from_sector_record(rec, *, benchmark=None, session_end=None,
 
 
 def sector_cohort_snapshot(payload, *, horizon: str = "rs_63d") -> dict:
-    """Whole-cohort read over a sector_cycles.compute() payload (never re-sources)."""
+    """Whole-cohort read over a sector_cycles.compute() payload (never re-sources).
+
+    Total over NESTED malformed payloads: every nested mapping read goes through
+    ``_as_mapping``, a non-list/tuple ``sectors`` container reads as empty and is
+    flagged (``malformed_container``), and a row that is not a mapping is skipped
+    and counted (``malformed_rows``) -- an absent member stays a missing input.
+    """
     payload = _as_mapping(payload)
-    meta = payload.get("meta") or {}
+    meta = _as_mapping(payload.get("meta"))
+    container, malformed_container = _container_rows(payload.get("sectors"))
     records = {}
-    for rec in payload.get("sectors") or []:
+    malformed_rows = 0
+    for rec in container:
+        if not isinstance(rec, Mapping):
+            malformed_rows += 1
+            continue
         ticker = rec.get("ticker")
         if isinstance(ticker, str):
             records[ticker] = rec
@@ -1133,6 +1178,8 @@ def sector_cohort_snapshot(payload, *, horizon: str = "rs_63d") -> dict:
         "zscores": _json(cohort_zscores(values, cohort_id=US_SECTOR_COHORT_ID)),
         "measurements": measurements,
         "outside_cohort": outside_cohort,
+        "malformed_rows": malformed_rows,
+        "malformed_container": malformed_container,
     }
 
 
@@ -1145,8 +1192,8 @@ def from_leadership_receipt(receipt, *, group_id: str, cohort_id: str,
             f"horizon must be one of {sorted(_RECEIPT_HORIZON_SESSIONS)}, got {horizon!r}"
         )
     receipt = _as_mapping(receipt)
-    benchmark = receipt.get("benchmark") or {}
-    sample = receipt.get("sample") or {}
+    benchmark = _as_mapping(receipt.get("benchmark"))
+    sample = _as_mapping(receipt.get("sample"))
     observed_n = sample.get("observed_n")
     configured_n = sample.get("configured_n")
     raw = receipt.get(horizon)
@@ -1176,10 +1223,15 @@ def diagnose_rotation_payload(payload, *, cohort_id: str) -> dict:
     is never modified.
     """
     payload = _as_mapping(payload)
+    container, malformed_container = _container_rows(payload.get("subsectors"))
     rows = []
     flag_counts = {}
-    for row in payload.get("subsectors") or []:
-        perf = row.get("perf") or {}
+    malformed_rows = 0
+    for row in container:
+        if not isinstance(row, Mapping):
+            malformed_rows += 1
+            continue
+        perf = _as_mapping(row.get("perf"))
         missing_coerced_to_zero = perf.get("1M") is None or perf.get("3M") is None
         rs_ratio = row.get("rs_ratio")
         rs_mom = row.get("rs_mom")
@@ -1214,6 +1266,8 @@ def diagnose_rotation_payload(payload, *, cohort_id: str) -> dict:
         "rows": rows,
         "flag_counts": flag_counts,
         "owner_fields_modified": False,
+        "malformed_rows": malformed_rows,
+        "malformed_container": malformed_container,
     }
 
 
@@ -1519,6 +1573,10 @@ _MEASURED_READ_EVENT_KEYS = ("id", "event_type", "sector", "from_key", "to_key",
 _MEASURED_READ_HISTORY_SOURCE = "/sectordata/sector_cycles.json#sectors[].rs_history"
 _MEASURED_READ_EVENTS_SOURCE = "/marketdata/rotation_events.json#active"
 _MEASURED_READ_EARLY_SOURCE = "/marketdata/rotation_events.json#early_context"
+#: The declared source basis words engine/sector_cycles.py emits -> the label this
+#: read prints. An absent/None basis keeps the producer default ("tr"); any other
+#: word is an unknown basis and is labelled "unknown", never a matching label.
+_MEASURED_READ_PRICE_BASIS = {"tr": "total_return", "price": "price_only"}
 
 
 def _measured_read_event_row(ev) -> dict:
@@ -1528,10 +1586,10 @@ def _measured_read_event_row(ev) -> dict:
     and the v2 cross rows (``event_type``/``donor``/``receiver``). Absent owner
     fields project to ``None`` -- a value is never invented.
     """
-    from_leg = ev.get("from_leg") or {}
-    to_leg = ev.get("to_leg") or {}
-    donor = ev.get("donor") or {}
-    receiver = ev.get("receiver") or {}
+    from_leg = _as_mapping(ev.get("from_leg"))
+    to_leg = _as_mapping(ev.get("to_leg"))
+    donor = _as_mapping(ev.get("donor"))
+    receiver = _as_mapping(ev.get("receiver"))
     sector = ev.get("sector")
     if sector is None:
         sector = ev.get("from_sector")
@@ -1606,14 +1664,24 @@ def measured_group_read(cycles_payload, *, rotation_payload=None, research_estim
     benchmark = meta.get("benchmark")
     history_schema = hist_meta.get("schema")
     history_as_of = hist_meta.get("as_of")
+    basis = hist_meta.get("basis")
+    if basis is None:
+        price_basis = "total_return"        # the producer default (basis "tr")
+    elif isinstance(basis, str):
+        price_basis = _MEASURED_READ_PRICE_BASIS.get(basis, "unknown")
+    else:
+        price_basis = "unknown"             # a non-str basis is no basis word
     history_mismatch = bool(
         history_as_of is not None and session_end is not None and history_as_of != session_end
     )
 
     expected = us_sector_cohort()
+    container, _ = _container_rows(payload.get("sectors"))
     records = {}
-    for rec in payload.get("sectors") or []:
-        ticker = rec.get("ticker") if isinstance(rec, Mapping) else None
+    for rec in container:
+        if not isinstance(rec, Mapping):
+            continue
+        ticker = rec.get("ticker")
         if isinstance(ticker, str):
             records[ticker] = rec
     outside_cohort = sorted(set(records) - set(expected))
@@ -1724,14 +1792,24 @@ def measured_group_read(cycles_payload, *, rotation_payload=None, research_estim
                     reason_codes=list(ec.get("reason_codes") or []), coverage=ec_coverage,
                 )
         rot_as_of = rotation_payload.get("as_of")
+        active = rotation_payload.get("active")
         if rot_as_of is not None and session_end is not None and rot_as_of != session_end:
             confirmed_events.update(
                 status="incompatible_generation", reason="as_of_mismatch", as_of=rot_as_of,
             )
+        elif not isinstance(active, (list, tuple)):
+            # Unmeasured is not zero: an absent / None `active` is a MISSING input
+            # and any other non-container is a MALFORMED payload. Neither is a
+            # measured zero, so n_active stays None and no row is projected.
+            confirmed_events.update(
+                status="unavailable",
+                reason="missing_input" if active is None else "invalid_payload",
+                as_of=rot_as_of,
+            )
         else:
             seen = set()
             deduped = []
-            for ev in rotation_payload.get("active") or []:
+            for ev in active:
                 if not isinstance(ev, Mapping):
                     continue
                 ev_id = ev.get("id")
@@ -1770,7 +1848,7 @@ def measured_group_read(cycles_payload, *, rotation_payload=None, research_estim
             "cohort_id": US_SECTOR_COHORT_ID,
             "session_end": session_end,
             "benchmark": benchmark,
-            "price_basis": "total_return",
+            "price_basis": price_basis,
             "history_schema": history_schema,
             "history_as_of": history_as_of,
         },

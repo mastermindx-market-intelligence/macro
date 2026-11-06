@@ -79,6 +79,7 @@ do_not_redo:
 danger_areas:
   - The owner sha256 values are witnesses at main 2079f9bbc12c and are not compared live; a test that compares them would red on every unrelated owner edit.
   - dei:EntityCommonStockSharesOutstanding is a cover-page count as of a date near filing, and us-gaap:CommonStockSharesOutstanding is a balance-sheet count at period end. They share a metric kind but have different instants. B1 must never merge them into one point.
+prs: [9264]
 ---
 
 # Capital Structure V2 — B0 share-source admission handoff

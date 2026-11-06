@@ -1537,3 +1537,325 @@ def test_cli_main_bad_sessions_returns_2(tmp_path, capsys):
     assert rc == 2
     captured = capsys.readouterr()
     assert "sessions" in captured.err
+
+
+# ---------------------------------------------------------------------------
+# T15 - ni-edgar-body-2: (1, 4) band, open-window guard, filing tags
+# ---------------------------------------------------------------------------
+
+
+def _v2_forensics(cik10: str, accession: str, filing_date: str) -> FakeForensics:
+    return FakeForensics(
+        current={
+            cik10: {
+                "filings": {
+                    "recent": {
+                        "accessionNumber": [accession],
+                        "filingDate": [filing_date],
+                        "form": ["8-K"],
+                        "items": ["2.02"],
+                        "primaryDocument": ["p.htm"],
+                    }
+                }
+            }
+        }
+    )
+
+
+def _fetch_versioned(
+    tmp_path: Path,
+    case: dict,
+    *,
+    forensics,
+    session: FakeSession | None = None,
+    **kwargs,
+) -> tuple[dict, list[dict], dict]:
+    archive = _make_archive(tmp_path, session or FakeSession(), pacer=_make_pacer())
+    return eb.fetch_bodies(
+        [case],
+        forensics=forensics,
+        archive=archive,
+        session_dates=SESSIONS,
+        out_dir=tmp_path / "out",
+        retrieved_at=RETRIEVED_AT,
+        **kwargs,
+    )
+
+
+def test_body_versions_and_bands():
+    assert eb.EDGAR_BODY_VERSIONS == ("ni-edgar-body-1", "ni-edgar-body-2")
+    assert eb.BODY_BANDS == {"ni-edgar-body-1": (1, 1), "ni-edgar-body-2": (1, 4)}
+    assert "window_open" not in eb.REASON_ORDER
+    assert eb.REASON_ORDER_V2 == (
+        eb.REASON_ORDER[:2] + ("window_open",) + eb.REASON_ORDER[2:]
+    )
+
+
+def test_session_window_band_1_4():
+    # Tuesday 2026-09-15: one session before, four after (Mon 09-21).
+    assert eb.session_window("2026-09-15T15:00:00Z", SESSIONS, (1, 4)) == (
+        date(2026, 9, 14),
+        date(2026, 9, 15),
+        date(2026, 9, 21),
+    )
+    # The default band is the version-1 window.
+    assert eb.session_window("2026-09-15T15:00:00Z", SESSIONS) == eb.session_window(
+        "2026-09-15T15:00:00Z", SESSIONS, (1, 1)
+    )
+    # Last full band: Monday 2026-10-05 ends on the final session (Fri 10-09).
+    assert eb.session_window("2026-10-05T15:00:00Z", SESSIONS, (1, 4)) == (
+        date(2026, 10, 2),
+        date(2026, 10, 5),
+        date(2026, 10, 9),
+    )
+    # One session later the band runs off the calendar.
+    assert eb.session_window("2026-10-06T15:00:00Z", SESSIONS, (1, 4)) is None
+    # v1 still covers the same seen date.
+    assert eb.session_window("2026-10-06T15:00:00Z", SESSIONS) is not None
+
+
+@pytest.mark.parametrize(
+    "band", [(0, 4), (1, 0), (1,), (1, 4, 1), [1, 4], (True, 4), (1, 4.0), None]
+)
+def test_session_window_bad_band_raises(band):
+    with pytest.raises(eb.EdgarBodyError):
+        eb.session_window("2026-09-15T15:00:00Z", SESSIONS, band)
+
+
+def test_filing_session_offset_and_relation():
+    seen = "2026-09-15T15:00:00Z"
+    assert eb.filing_session_offset(date(2026, 9, 14), seen, SESSIONS) == -1
+    assert eb.filing_session_offset(date(2026, 9, 15), seen, SESSIONS) == 0
+    assert eb.filing_session_offset(date(2026, 9, 18), seen, SESSIONS) == 3
+    # A non-session filing date rolls forward to the next session (Sat -> Mon).
+    assert eb.filing_session_offset(date(2026, 9, 19), seen, SESSIONS) == 4
+    # Late-evening UTC seen date maps to its New York market date.
+    assert eb.filing_session_offset(
+        date(2026, 9, 15), "2026-09-16T02:00:00Z", SESSIONS
+    ) == 0
+    assert eb.filing_relation(-1) == "filed_before_seen"
+    assert eb.filing_relation(0) == "filed_same_session"
+    assert eb.filing_relation(3) == "filed_after_seen"
+
+
+def test_v2_reaches_a_filing_v1_misses(tmp_path):
+    cik10 = "0000320193"
+    accession = "0000320193-26-000150"
+    case = _case("late", f"cik:{cik10}", "2026-09-15T15:00:00Z")
+
+    v1_map, v1_records, v1_report = _fetch_versioned(
+        tmp_path / "v1", case, forensics=_v2_forensics(cik10, accession, "2026-09-18")
+    )
+    assert v1_map == {"late": "body_unavailable:no_qualifying_8k"}
+    assert v1_report["version"] == "ni-edgar-body-1"
+    assert v1_records[0]["window"] == ["2026-09-14", "2026-09-15", "2026-09-16"]
+
+    session = FakeSession()
+    _wire_routes(
+        session, cik10, accession, "p.htm",
+        b"<html><body><p>Results for the quarter.</p></body></html>",
+    )
+    v2_map, v2_records, v2_report = _fetch_versioned(
+        tmp_path / "v2",
+        case,
+        forensics=_v2_forensics(cik10, accession, "2026-09-18"),
+        session=session,
+        version=eb.EDGAR_BODY_VERSION_2,
+        as_of=date(2026, 10, 14),
+    )
+    assert v2_map == {"late": "available"}
+    assert v2_report["version"] == "ni-edgar-body-2"
+    record = v2_records[0]
+    assert record["window"] == ["2026-09-14", "2026-09-15", "2026-09-21"]
+    filing = record["filings"][0]
+    assert filing["accession"] == accession
+    assert filing["session_offset"] == 3
+    assert filing["relation"] == "filed_after_seen"
+
+
+def test_v2_tags_a_filing_before_the_seen_session(tmp_path):
+    cik10 = "0000320193"
+    accession = "0000320193-26-000151"
+    session = FakeSession()
+    _wire_routes(
+        session, cik10, accession, "p.htm",
+        b"<html><body><p>Agreement entered.</p></body></html>",
+    )
+    _, records, _ = _fetch_versioned(
+        tmp_path,
+        _case("early", f"cik:{cik10}", "2026-09-15T15:00:00Z"),
+        forensics=_v2_forensics(cik10, accession, "2026-09-14"),
+        session=session,
+        version=eb.EDGAR_BODY_VERSION_2,
+        as_of=date(2026, 10, 14),
+    )
+    filing = records[0]["filings"][0]
+    assert filing["session_offset"] == -1
+    assert filing["relation"] == "filed_before_seen"
+
+
+def test_v1_records_carry_no_v2_keys(tmp_path):
+    cik10 = "0000320193"
+    accession = "0000320193-26-000152"
+    session = FakeSession()
+    _wire_routes(
+        session, cik10, accession, "p.htm",
+        b"<html><body><p>Same-day filing.</p></body></html>",
+    )
+    status_map, records, report = _fetch_versioned(
+        tmp_path,
+        _case("same", f"cik:{cik10}", "2026-09-15T15:00:00Z"),
+        forensics=_v2_forensics(cik10, accession, "2026-09-15"),
+        session=session,
+    )
+    assert status_map == {"same": "available"}
+    filing = records[0]["filings"][0]
+    assert "session_offset" not in filing
+    assert "relation" not in filing
+    assert report["version"] == "ni-edgar-body-1"
+    assert list(report["reasons"]) == list(eb.REASON_ORDER)
+
+
+def test_v2_window_open_fetches_no_submissions(tmp_path):
+    cik10 = "0000320193"
+    forensics = _v2_forensics(cik10, "0000320193-26-000153", "2026-09-18")
+    # Window for 09-15 ends Mon 09-21; as_of on that day leaves it open.
+    status_map, records, report = _fetch_versioned(
+        tmp_path,
+        _case("open", f"cik:{cik10}", "2026-09-15T15:00:00Z"),
+        forensics=forensics,
+        version=eb.EDGAR_BODY_VERSION_2,
+        as_of=date(2026, 9, 21),
+    )
+    assert status_map == {"open": "body_unavailable:window_open"}
+    assert records[0]["window"] == ["2026-09-14", "2026-09-15", "2026-09-21"]
+    assert records[0]["filings"] == []
+    assert forensics.current_calls == 0
+    assert report["reasons"]["window_open"] == 1
+    assert list(report["reasons"]) == list(eb.REASON_ORDER_V2)
+
+
+def test_v2_window_closed_the_day_after_its_end(tmp_path):
+    cik10 = "0000320193"
+    accession = "0000320193-26-000154"
+    session = FakeSession()
+    _wire_routes(
+        session, cik10, accession, "p.htm",
+        b"<html><body><p>Filed on the last day.</p></body></html>",
+    )
+    forensics = _v2_forensics(cik10, accession, "2026-09-21")
+    status_map, records, _ = _fetch_versioned(
+        tmp_path,
+        _case("closed", f"cik:{cik10}", "2026-09-15T15:00:00Z"),
+        forensics=forensics,
+        session=session,
+        version=eb.EDGAR_BODY_VERSION_2,
+        as_of=date(2026, 9, 22),
+    )
+    assert status_map == {"closed": "available"}
+    assert forensics.current_calls == 1
+    assert records[0]["filings"][0]["session_offset"] == 4
+
+
+def test_v2_no_cik_and_calendar_gap_precede_window_open(tmp_path):
+    forensics = FakeForensics()
+    no_cik_map, _, _ = _fetch_versioned(
+        tmp_path / "a",
+        _case("nocik", "unresolved:no_mention", "2026-09-15T15:00:00Z"),
+        forensics=forensics,
+        version=eb.EDGAR_BODY_VERSION_2,
+        as_of=date(2026, 9, 1),
+    )
+    assert no_cik_map == {"nocik": "body_unavailable:no_cik"}
+    gap_map, _, _ = _fetch_versioned(
+        tmp_path / "b",
+        _case("gap", "cik:0000320193", "2026-10-07T15:00:00Z"),
+        forensics=forensics,
+        version=eb.EDGAR_BODY_VERSION_2,
+        as_of=date(2026, 9, 1),
+    )
+    assert gap_map == {"gap": "body_unavailable:calendar_gap"}
+    assert forensics.current_calls == 0
+
+
+@pytest.mark.parametrize(
+    "version, as_of",
+    [
+        (eb.EDGAR_BODY_VERSION_2, None),
+        (eb.EDGAR_BODY_VERSION_2, "2026-10-14"),
+        (eb.EDGAR_BODY_VERSION_2, datetime(2026, 10, 14, tzinfo=timezone.utc)),
+        (eb.EDGAR_BODY_VERSION, date(2026, 10, 14)),
+        ("ni-edgar-body-3", date(2026, 10, 14)),
+        ("ni-edgar-body-3", None),
+    ],
+)
+def test_fetch_bodies_version_and_as_of_errors(tmp_path, version, as_of):
+    with pytest.raises(eb.EdgarBodyError):
+        _fetch_versioned(
+            tmp_path,
+            _case("x", "cik:0000320193", "2026-09-15T15:00:00Z"),
+            forensics=FakeForensics(),
+            version=version,
+            as_of=as_of,
+        )
+
+
+def _cli_inputs(tmp_path: Path, case: dict) -> list[str]:
+    cases_path = tmp_path / "cases.jsonl"
+    sessions_path = tmp_path / "sessions.json"
+    cases_path.write_text(json.dumps(case) + "\n", encoding="utf-8")
+    sessions_path.write_text(
+        json.dumps({"sessions": [d.isoformat() for d in SESSIONS]}),
+        encoding="utf-8",
+    )
+    return [
+        "--cases",
+        str(cases_path),
+        "--sessions",
+        str(sessions_path),
+        "--cache",
+        str(tmp_path / "cache"),
+        "--out",
+        str(tmp_path / "out"),
+        "--user-agent",
+        USER_AGENT,
+    ]
+
+
+def test_cli_main_v2_with_as_of(tmp_path, capsys):
+    cik10 = "0000320193"
+    accession = "0000320193-26-000155"
+    session = FakeSession()
+    _wire_routes(
+        session, cik10, accession, "p.htm",
+        b"<html><body><p>CLI v2 body.</p></body></html>",
+    )
+    archive = _make_archive(tmp_path, session, pacer=_make_pacer())
+    argv = _cli_inputs(tmp_path, _case("cli-v2", f"cik:{cik10}", "2026-09-15T15:00:00Z"))
+    rc = eb.main(
+        argv + ["--version", eb.EDGAR_BODY_VERSION_2, "--as-of", "2026-10-14"],
+        forensics=_v2_forensics(cik10, accession, "2026-09-18"),
+        archive=archive,
+    )
+    assert rc == 0
+    parsed = json.loads(capsys.readouterr().out.strip())
+    assert parsed["available"] == 1
+    report = json.loads((tmp_path / "out" / "body_report.json").read_text("utf-8"))
+    assert report["version"] == "ni-edgar-body-2"
+    assert "window_open" in report["reasons"]
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ["--version", "ni-edgar-body-2"],
+        ["--version", "ni-edgar-body-2", "--as-of", "2026-13-01"],
+        ["--as-of", "2026-10-14"],
+        ["--version", "ni-edgar-body-1", "--as-of", "2026-10-14"],
+    ],
+)
+def test_cli_main_version_as_of_errors_return_2(tmp_path, capsys, extra):
+    argv = _cli_inputs(tmp_path, _case("cli-bad", "cik:0000320193", "2026-09-15T15:00:00Z"))
+    rc = eb.main(argv + extra, forensics=FakeForensics(), archive=None)
+    assert rc == 2
+    assert "as-of" in capsys.readouterr().err

@@ -98,6 +98,16 @@ __all__ = [
 PREREG_PATH = "research/LEADERSHIP_ROTATION_PREREG_V1.md"
 PREREG_COMMIT = "fafdaf094f7271bb09c2bf605f1fd4bcc6ad7ceb"
 PREREG_BLOB_SHA = "9d1313e0fc0c5c9720dc1aeb16c9ebf273d70abe"
+# V2 amendment (research/LEADERSHIP_ROTATION_PREREG_V2.md, 2026-10-14): H1 null
+# reference, two-part size rule, G2 positive control, R13, C2. V1 stays frozen
+# and is still required unchanged at every reading head (V2 section 0).
+PREREG_V2_PATH = "research/LEADERSHIP_ROTATION_PREREG_V2.md"
+PREREG_V2_BLOB_SHA = "1fcd151cfc4cdeb321789feb50d3fbb127cce056"
+# V2.1 amendment (research/LEADERSHIP_ROTATION_PREREG_V2_1.md, 2026-10-14): VOIDED verdict
+# class, clause->outcome-class table, alarm first-match precedence, Option A
+# matching precision. Required landed and unchanged before any P1 read (run_p1).
+PREREG_V2_1_PATH = "research/LEADERSHIP_ROTATION_PREREG_V2_1.md"
+PREREG_V2_1_BLOB_SHA = "8f48509b65c70f7f3786402cba9b21940a907e83"
 SEED = 20261014
 H_PRIMARY = 20
 H_SECONDARY = 63
@@ -284,17 +294,23 @@ def zscore(R) -> np.ndarray:
         return z
     changes = np.diff(R)  # changes[j] = R_{j+1} - R_j
     scale = np.sqrt(H_PRIMARY)
-    for t in range(SIGMA_CHANGES, n):
-        if np.isnan(R[t]) or np.isnan(R[t - Z_LOOKBACK]):
-            continue
-        # changes[t-63:t] are dR at s = t-62 .. t (ORCH-SCI window, R1).
-        window = changes[t - SIGMA_CHANGES : t]
-        if np.isnan(window).any():
-            continue
-        sigma = window.std(ddof=1)
-        if not np.isfinite(sigma) or sigma == 0.0:
-            continue
-        z[t] = (R[t] - R[t - Z_LOOKBACK]) / (sigma * scale)
+    # Vectorized form of the original per-t loop (prereg V2 harness repair,
+    # speed only): row i of ``win`` is changes[t-63:t] for t = 63 + i, i.e. dR
+    # at s = t-62 .. t (ORCH-SCI window, R1). Each row is reduced on its own
+    # contiguous copy with the same ``std(ddof=1)``, so the output is
+    # bitwise-identical to the loop (pinned by
+    # tests/test_leadership_rotation_study.py::test_zscore_vectorized_is_bitwise_identical_to_v1_loop).
+    t = np.arange(SIGMA_CHANGES, n)
+    win = np.ascontiguousarray(
+        np.lib.stride_tricks.sliding_window_view(changes, SIGMA_CHANGES)[: n - SIGMA_CHANGES]
+    )
+    ok = ~(np.isnan(R[t]) | np.isnan(R[t - Z_LOOKBACK]) | np.isnan(win).any(axis=1))
+    sigma = np.full(len(t), np.nan)
+    if ok.any():
+        sigma[ok] = win[ok].std(axis=1, ddof=1)
+    good = ok & np.isfinite(sigma) & (sigma != 0.0)
+    tg = t[good]
+    z[tg] = (R[tg] - R[tg - Z_LOOKBACK]) / (sigma[good] * scale)
     return z
 
 
@@ -698,6 +714,26 @@ def assert_prereg_landed(
             f"{path} at {head} is {found or 'absent'}, expected frozen {blob_sha}"
         )
     return {"add_commit": add, "blob_sha": blob_sha, "head": head}
+
+
+def assert_protocol_landed(
+    repo: str,
+    head: str = "HEAD",
+    main_ref: str = "origin/main",
+) -> dict:
+    """V1 AND V2 must both be on main and unchanged at the reading head.
+
+    V2 section 6: the protocol identity for every read after the amendment is
+    the V2 landing commit; V1's blob must also be untouched (V1 section 12.7).
+    Raises PreregNotLanded / PreregChanged exactly as assert_prereg_landed.
+    """
+    v1 = assert_prereg_landed(
+        repo, head=head, main_ref=main_ref, path=PREREG_PATH, blob_sha=PREREG_BLOB_SHA
+    )
+    v2 = assert_prereg_landed(
+        repo, head=head, main_ref=main_ref, path=PREREG_V2_PATH, blob_sha=PREREG_V2_BLOB_SHA
+    )
+    return {"v1": v1, "v2": v2, "head": head}
 
 
 # ---------------------------------------------------------------------------

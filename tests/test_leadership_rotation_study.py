@@ -41,8 +41,9 @@ def _git(repo, *args, check=True):
 # ---------------------------------------------------------------------------
 
 
-# MUTATION: scripts/leadership_rotation_study.py:291 widen the sigma window to
-# `changes[t - SIGMA_CHANGES + 1 : t + 1]` (1-day look-ahead) -- the z at the
+# MUTATION: scripts/leadership_rotation_study.py zscore shift the sigma window to
+# `sliding_window_view(changes, SIGMA_CHANGES)[1 : n - SIGMA_CHANGES + 1]` (the
+# vectorized form of `changes[t - SIGMA_CHANGES + 1 : t + 1]`, a 1-day look-ahead) -- the z at the
 # last kept index then differs between the full and truncated series and this
 # test FAILS.
 def test_truncation_invariance_no_lookahead():
@@ -93,8 +94,8 @@ def test_truncation_invariance_no_lookahead():
 # ---------------------------------------------------------------------------
 
 
-# MUTATION: scripts/leadership_rotation_study.py:294 change `window.std(ddof=1)`
-# to `window.std(ddof=0)` -- sigma becomes sqrt(62/63) instead of 1 and the
+# MUTATION: scripts/leadership_rotation_study.py zscore change `win[ok].std(axis=1, ddof=1)`
+# to `win[ok].std(axis=1, ddof=0)` -- sigma becomes sqrt(62/63) instead of 1 and the
 # hand-computed value FAILS.
 def test_zscore_hand_computed_at_one_index():
     # 63 changes: 31 of +1, 31 of -1, one 0 -> mean 0,
@@ -542,3 +543,109 @@ def test_partition_guard_seals_p2_p3_and_p1_is_inclusive():
         study.partition_mask(cal, "P2")
     with pytest.raises(PartitionSealed):
         study.partition_mask(cal, "P3")
+
+
+# V2 amendment (research/LEADERSHIP_ROTATION_PREREG_V2.md section 6): the read
+# guard pins V1 AND V2. MUTATION: drop the second assert_prereg_landed call in
+# assert_protocol_landed -- the "V2 edited" case below then passes and FAILS this.
+def test_protocol_guard_requires_both_versions(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-q", "-b", "main")
+    _git(repo, "config", "user.email", "lane@example.com")
+    _git(repo, "config", "user.name", "lane")
+    _git(repo, "commit", "--allow-empty", "-q", "-m", "root")
+
+    v1 = repo / study.PREREG_PATH
+    v1.parent.mkdir(parents=True)
+    v1.write_text("prereg v1\n", encoding="utf-8")
+    _git(repo, "add", study.PREREG_PATH)
+    _git(repo, "commit", "-q", "-m", "land v1")
+    v1_landed = _git(repo, "rev-parse", "HEAD").stdout.strip()
+    v1_blob = _git(repo, "rev-parse", f"{v1_landed}:{study.PREREG_PATH}").stdout.strip()
+
+    v2 = repo / study.PREREG_V2_PATH
+    v2.write_text("prereg v2\n", encoding="utf-8")
+    _git(repo, "add", study.PREREG_V2_PATH)
+    _git(repo, "commit", "-q", "-m", "land v2")
+    v2_landed = _git(repo, "rev-parse", "HEAD").stdout.strip()
+    v2_blob = _git(repo, "rev-parse", f"{v2_landed}:{study.PREREG_V2_PATH}").stdout.strip()
+    monkeypatch.setattr(study, "PREREG_BLOB_SHA", v1_blob)
+    monkeypatch.setattr(study, "PREREG_V2_BLOB_SHA", v2_blob)
+
+    # a head between the two landings has V1 but not V2: refused
+    _git(repo, "update-ref", "refs/remotes/origin/main", v2_landed)
+    with pytest.raises(PreregNotLanded):
+        study.assert_protocol_landed(str(repo), head=v1_landed, main_ref="origin/main")
+
+    # a descendant of both landings passes and names both landing commits
+    _git(repo, "commit", "--allow-empty", "-q", "-m", "descendant")
+    descendant = _git(repo, "rev-parse", "HEAD").stdout.strip()
+    result = study.assert_protocol_landed(str(repo), head=descendant, main_ref="origin/main")
+    assert result["v1"]["add_commit"] == v1_landed
+    assert result["v2"]["add_commit"] == v2_landed
+    assert result["head"] == descendant
+
+    # V2 edited after landing (V2 section 7 invalidator 9): refused
+    v2.write_text("prereg v2 edited\n", encoding="utf-8")
+    _git(repo, "commit", "-aqm", "edit v2")
+    edited = _git(repo, "rev-parse", "HEAD").stdout.strip()
+    with pytest.raises(PreregChanged):
+        study.assert_protocol_landed(str(repo), head=edited, main_ref="origin/main")
+
+
+def _zscore_v1_loop(R):
+    """Verbatim V1 per-t loop (blob fafdaf09 era) kept as the identity oracle."""
+    R = np.asarray(R, dtype=float)
+    n = len(R)
+    z = np.full(n, np.nan)
+    if n <= study.SIGMA_CHANGES:
+        return z
+    changes = np.diff(R)
+    scale = np.sqrt(study.H_PRIMARY)
+    for t in range(study.SIGMA_CHANGES, n):
+        if np.isnan(R[t]) or np.isnan(R[t - study.Z_LOOKBACK]):
+            continue
+        window = changes[t - study.SIGMA_CHANGES : t]
+        if np.isnan(window).any():
+            continue
+        sigma = window.std(ddof=1)
+        if not np.isfinite(sigma) or sigma == 0.0:
+            continue
+        z[t] = (R[t] - R[t - study.Z_LOOKBACK]) / (sigma * scale)
+    return z
+
+
+# MUTATION: scripts/leadership_rotation_study.py zscore drop np.isnan(win).any(axis=1) from ok
+# MUTATION: scripts/leadership_rotation_study.py zscore slice sliding_window_view[1:] (off-by-one window)
+def test_zscore_vectorized_is_bitwise_identical_to_v1_loop():
+    rng = np.random.default_rng(20261014)
+    for k in range(120):
+        n = int(rng.integers(10, 900))
+        R = np.cumsum(rng.normal(0.0, [1e-3, 7e-3, 3e-2][k % 3], n))
+        if k % 3 == 0:
+            R[rng.integers(0, n, size=int(rng.integers(1, 12)))] = np.nan
+        if k % 5 == 0 and n > 200:
+            a = int(rng.integers(0, n - 100))
+            R[a : a + 80] = R[a]  # flat stretch -> sigma == 0 windows
+        if k % 7 == 0:
+            R[: int(rng.integers(0, n))] = np.nan
+        assert np.array_equal(study.zscore(R), _zscore_v1_loop(R), equal_nan=True), k
+
+
+def test_prereg_pins_match_the_committed_documents():
+    """Every prereg blob pin equals the git blob of the document it names (V1, V2,
+    V2.1 §0), so a doc edit without a re-pin — or a re-pin without the doc — fails."""
+    import hashlib
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    for path, pin in (
+        (study.PREREG_PATH, study.PREREG_BLOB_SHA),
+        (study.PREREG_V2_PATH, study.PREREG_V2_BLOB_SHA),
+        (study.PREREG_V2_1_PATH, study.PREREG_V2_1_BLOB_SHA),
+    ):
+        data = (root / path).read_bytes()
+        blob = hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+        assert blob == pin, f"{path}: blob {blob} != pin {pin}"
+    assert study.PREREG_V2_1_BLOB_SHA != "0" * 40

@@ -62,6 +62,10 @@ ADMISSION_CONFIG = "config/capital_structure_share_source_admission.v1.json"
 #: count plus the longest ordinary filing lag.  Older than this is refused.
 MAX_BASIS_AGE_DAYS = 150
 
+#: Authorized-capital facts are state quantities, never a comparable share
+#: basis: they can never be a candidate and never change a selection.
+AUTHORIZED_CAPITAL_KINDS = ("common_shares_authorized", "common_shares_issued", "common_shares_reserved_for_future_issuance")
+
 #: The B0 admission's support limits, carried verbatim on every partial result
 #: (cross-checked against the config by the test suite).
 SUPPORT_LIMITS: tuple[str, ...] = (
@@ -448,6 +452,8 @@ def _classify(record: Mapping[str, Any], as_of: datetime) -> tuple[_Fact | None,
     metric = _get(record, "metric", "kind")
     if metric == "public_float":
         return None, f"rejected:{observation_id}:public_float_usd_is_not_a_share_basis"
+    if metric in AUTHORIZED_CAPITAL_KINDS:
+        return None, f"not_a_share_basis_kind:{metric}"
     if metric != "common_shares_outstanding":
         return None, f"rejected:{observation_id}:metric_not_admitted:{metric}"
     if _get(record, "security_class", "classification") != "common_stock":

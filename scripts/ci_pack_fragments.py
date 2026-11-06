@@ -591,7 +591,7 @@ def _apply_order_and_edits(
     edit_frags: list[Fragment],
     *,
     order_is_ours: bool,
-    edit_side_permuted: bool = False,
+    edit_side_permuted: bool,
 ) -> MergeResult | None:
     """Apply one side's order-only permutation and the other side's text edits.
 
@@ -602,13 +602,19 @@ def _apply_order_and_edits(
     ``None`` means this shape is not that case; the caller records ``__order__``.
 
     ``edit_side_permuted`` declares that the edit side carries the SAME job-key
-    permutation as the order-only side instead of base order, so the guard in
-    ``_moved_separators_agree`` runs here and cannot be forgotten by a caller:
-    a separator the permutation moved must also have moved on the edit side,
+    permutation as the order-only side instead of base order; the guard in
+    ``_moved_separators_agree`` runs here exactly when it is True, so a
+    separator the permutation moved must also have moved on the edit side,
     otherwise mixed glue would let one swap's separator silently outrank the
-    other's and this returns ``None``. The agreed-permutation caller passes it
+    other's and this returns ``None``. The flag is keyword-only with no
+    default, so a caller that omits it raises ``TypeError`` at its own call
+    site instead of silently merging with no guard. Omission is the only
+    shape the signature can catch: a caller that states a WRONG False is not
+    caught by it, because no signature sees the edit side's key order, so
+    such a call merges unguarded and its coverage rests on that caller's own
+    base-order precondition. The agreed-permutation caller passes
     True. The base-order callers (an edit side whose keys stay in base order)
-    must leave it False: hoisting the guard unconditionally turns their clean
+    state False: hoisting the guard unconditionally would turn their clean
     merge into an ``__order__`` conflict.
     """
     if edit_side_permuted and not _moved_separators_agree(
@@ -686,8 +692,9 @@ def _moved_separators_agree(
     by itself it would let a positional swap's glue silently outrank a
     whole-fragment swap's; that mixed-glue shape must stay an ``__order__``
     conflict, so ``_apply_order_and_edits`` returns ``None`` for it when its
-    ``edit_side_permuted`` argument says the edit side carries this same
-    permutation.
+    required keyword-only ``edit_side_permuted`` argument says the edit side
+    carries this same permutation; every caller states that flag, so the
+    guard cannot be skipped by omission.
     """
     base_by = _unique_map(base_frags)
     order_by = _unique_map(order_frags)
@@ -767,6 +774,7 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
                 ours_frags,
                 theirs_frags,
                 order_is_ours=True,
+                edit_side_permuted=False,
             )
             if applied is not None:
                 return applied
@@ -776,6 +784,7 @@ def merge3(base: str, ours: str, theirs: str) -> MergeResult:
                 theirs_frags,
                 ours_frags,
                 order_is_ours=False,
+                edit_side_permuted=False,
             )
             if applied is not None:
                 return applied

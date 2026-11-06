@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from scripts.leadership_rotation_inference import (
+    VERDICT_CLASSES,
     ALPHA_ONE_SIDED,
     CLUSTER_RADIUS,
     COVERAGE_MIN,
@@ -221,24 +223,125 @@ def test_h1_iut_max_p_and_margin_clauses():
     assert ni_det["cond_a"] is False
 
 
-# MUTATION: scripts/leadership_rotation_inference.py:338 map P1 to SUPPORTED on pass
-def test_verdict_precedence_and_r14_labels():
-    base = dict(
-        executable=True,
-        source_limited=False,
-        immature=False,
-        honest_n=MIN_HONEST_N,
-        clause1_ok=True,
-        stable=True,
-        coverage=COVERAGE_MIN,
-    )
-    assert verdict("P1", **base) == "DEVELOPMENT_PASS"
-    assert verdict("P3", **base) == "SUPPORTED"
-    assert verdict("P2", **base) == "CONSISTENT"
-    assert verdict("P0", **{**base, "clause1_ok": False}) == "DEVELOPMENT_FAIL"
-    assert verdict("P1", **{**base, "honest_n": MIN_HONEST_N - 1}) == "UNDERPOWERED"
-    assert verdict("P3", **{**base, "coverage": 0.79}) == "NOT_SUPPORTED"
-    assert verdict("P1", executable=False, source_limited=True, immature=True, honest_n=0, clause1_ok=False, stable=False, coverage=0.0) == "NOT_EXECUTABLE"
+def _v1_verdict(partition, *, executable, source_limited, immature, honest_n, clause1_ok, stable, coverage, h2_safety_ok=True):
+    """The pre-V2.1 verdict at head 1b17e8045cd8, kept verbatim as an oracle."""
+    if not executable:
+        return "NOT_EXECUTABLE"
+    if source_limited:
+        return "SOURCE_LIMITED"
+    if immature:
+        return "IMMATURE"
+    if honest_n < MIN_HONEST_N:
+        return "UNDERPOWERED"
+    passed = clause1_ok and stable and coverage >= COVERAGE_MIN and h2_safety_ok
+    if partition in ("P0", "P1"):
+        return "DEVELOPMENT_PASS" if passed else "DEVELOPMENT_FAIL"
+    if partition == "P2":
+        return "CONSISTENT" if passed else "NOT_SUPPORTED"
+    return "SUPPORTED" if passed else "NOT_SUPPORTED"
+
+
+_BASE = dict(
+    executable=True,
+    source_limited=False,
+    immature=False,
+    honest_n=MIN_HONEST_N,
+    margin_met=True,
+    p_holm=0.001,
+    stable=True,
+    coverage=COVERAGE_MIN,
+    ni_ok=True,
+    powered_in_principle=True,
+)
+
+
+# MUTATION: scripts/leadership_rotation_inference.py:verdict map P1 to SUPPORTED on pass
+def test_verdict_labels_per_partition():
+    assert verdict("P1", **_BASE) == "DEVELOPMENT_PASS"
+    assert verdict("P0", **_BASE) == "DEVELOPMENT_PASS"
+    assert verdict("P2", **_BASE) == "CONSISTENT"
+    assert verdict("P3", **_BASE) == "SUPPORTED"
+    assert verdict("P0", **{**_BASE, "margin_met": False}) == "DEVELOPMENT_FAIL"
+    assert verdict("P1", **{**_BASE, "honest_n": MIN_HONEST_N - 1}) == "UNDERPOWERED"
+    with pytest.raises(ValueError):
+        verdict("P4", **_BASE)
+
+
+# MUTATION: scripts/leadership_rotation_inference.py:verdict let a coverage shortfall fall through to NOT_SUPPORTED
+def test_no_failure_reaches_not_supported_by_exhaustion():
+    """V2.1 §2 (R2): coverage, power and maturity are source/design states,
+    never evidence against the hypothesis."""
+    assert verdict("P3", **{**_BASE, "coverage": 0.79}) == "SOURCE_LIMITED"
+    assert verdict("P2", **{**_BASE, "coverage": float("nan")}) == "SOURCE_LIMITED"
+    assert verdict("P3", **{**_BASE, "powered_in_principle": None}) == "NOT_EXECUTABLE"
+    assert verdict("P2", **{**_BASE, "powered_in_principle": False}) == "NOT_EXECUTABLE"
+    assert verdict("P1", **{**_BASE, "powered_in_principle": None}) == "DEVELOPMENT_PASS"
+    assert verdict("P3", **{**_BASE, "margin_met": None}) == "NOT_EXECUTABLE"
+    # inconclusive, not contrary: margin met, p or stability short
+    assert verdict("P3", **{**_BASE, "p_holm": 0.025}) == "INSUFFICIENT"
+    assert verdict("P2", **{**_BASE, "p_holm": float("nan")}) == "INSUFFICIENT"
+    assert verdict("P3", **{**_BASE, "stable": False}) == "INSUFFICIENT"
+    # the only routes to the binding negative
+    assert verdict("P3", **{**_BASE, "margin_met": False}) == "NOT_SUPPORTED"
+    assert verdict("P2", **{**_BASE, "ni_ok": False}) == "NOT_SUPPORTED"
+    assert verdict("P3", **{**_BASE, "margin_met": False, "p_holm": 0.9, "stable": False}) == "NOT_SUPPORTED"
+
+
+# MUTATION: scripts/leadership_rotation_inference.py:verdict test immaturity before source limitation
+def test_first_match_precedence_order():
+    everything = {
+        **_BASE,
+        "executable": False,
+        "source_limited": True,
+        "immature": True,
+        "honest_n": 0,
+        "coverage": 0.0,
+        "margin_met": None,
+        "powered_in_principle": None,
+    }
+    assert verdict("P3", **{**everything, "voided": 10}) == "VOIDED:10"
+    assert verdict("P3", **everything) == "NOT_EXECUTABLE"
+    assert verdict("P3", **{**everything, "executable": True}) == "SOURCE_LIMITED"
+    step = {**everything, "executable": True, "source_limited": False}
+    assert verdict("P3", **step) == "NOT_EXECUTABLE"  # row 4: unpowered
+    step["powered_in_principle"] = True
+    assert verdict("P3", **step) == "IMMATURE"
+    step["immature"] = False
+    assert verdict("P3", **step) == "UNDERPOWERED"
+    step["honest_n"] = MIN_HONEST_N
+    assert verdict("P3", **step) == "SOURCE_LIMITED"  # row 7: coverage
+    step["coverage"] = COVERAGE_MIN
+    assert verdict("P3", **step) == "NOT_EXECUTABLE"  # row 9a: undefined point
+    for bad in (0, 12, True, 1.0, "3"):
+        with pytest.raises(ValueError):
+            verdict("P1", **{**_BASE, "voided": bad})
+    for k in range(1, 12):
+        assert verdict("P0", **{**_BASE, "voided": k}) == f"VOIDED:{k}"
+    assert set(VERDICT_CLASSES) >= {"VOIDED", "INSUFFICIENT", "NOT_SUPPORTED", "SUPPORTED"}
+
+
+# MUTATION: scripts/leadership_rotation_inference.py:verdict drop the stability clause from the P0/P1 pass
+def test_development_pass_set_is_unchanged_from_v1():
+    """Exhaustive: R2 moves no P0/P1 pass, so no size count moves."""
+    import itertools
+
+    n = 0
+    for part, ex, sl, im, hn, mm, p, stb, cov, ni in itertools.product(
+        ("P0", "P1"), (True, False), (True, False), (True, False), (19, 20),
+        (True, False, None), (0.001, 0.025, float("nan")), (True, False),
+        (0.79, 0.80, float("nan")), (True, False),
+    ):
+        new = verdict(part, executable=ex, source_limited=sl, immature=im, honest_n=hn,
+                      margin_met=mm, p_holm=p, stable=stb, coverage=cov, ni_ok=ni)
+        clause = mm is True and p < ALPHA_ONE_SIDED
+        old = _v1_verdict(part, executable=ex, source_limited=sl, immature=im, honest_n=hn,
+                          clause1_ok=clause, stable=stb, coverage=cov, h2_safety_ok=ni)
+        assert (new == "DEVELOPMENT_PASS") == (old == "DEVELOPMENT_PASS")
+        if old != new:
+            # the only relabel is a coverage shortfall: FAIL → SOURCE_LIMITED
+            assert old == "DEVELOPMENT_FAIL" and new == "SOURCE_LIMITED" and not (cov >= COVERAGE_MIN)
+        n += 1
+    assert n == 2 * 2 * 2 * 2 * 2 * 3 * 3 * 2 * 3 * 2
 
 
 def test_clause1_uses_holm_alpha():

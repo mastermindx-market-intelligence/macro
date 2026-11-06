@@ -75,6 +75,7 @@ danger_areas:
   - The owner sha256 values are witnesses at main 1c8ff99ff7c0 and are not compared live; a test that compares them would red on every unrelated owner edit.
   - C0 counts assumed flows in the balance identity. F1 must keep scenario financing proceeds conditional, so that an assumption never adds cash.
   - A covenant's defined Liquidity may include revolver availability. Never compare it to a cash basis without the declared minimum_liquidity_basis assumption.
+prs: [9268]
 ---
 
 # Capital Structure V2 — F0 financial-input binding handoff
