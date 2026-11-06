@@ -1232,3 +1232,120 @@ def test_ew_finite_diagnostic_does_not_read_inputs_or_change_samples(monkeypatch
     samples = [-.1]*1983 + [0.]*17;before=list(samples)
     sc.ew_bootstrap_bound_agreement(samples, alpha=.05/6)
     assert samples == before
+
+
+# Synthetic power-design checks do not read or fit any market/forward outcome.
+@pytest.mark.parametrize('family', ['grey_deer_ew_mkt_v1','grey_deer_ew_rs_v1'])
+def test_ew_synthetic_floor_design_has_exact_overlap_clusters_and_no_future_rows(family):
+    from scripts import grey_deer_ew_power_diagnostic as power
+    for index in (0,1,7,39,399):
+        value=power.sample(family,index)
+        assert len(value['outcomes']) == 200
+        assert value['event_count'] == 20 and value['non_event_count'] == 180
+        assert value['event_clusters'] == 5
+        assert sc._event_cluster_count([(None,None,y) for y in value['outcomes']],21) == 5
+        assert len(value['synthetic_adverse_indices']) == (12 if family.endswith('rs_v1') else 0)
+        assert all(value['outcomes'][i] == 1 for i in value['synthetic_adverse_indices'])
+        assert all(0 < p < 1 for p in value['candidate_null']+value['candidate_alternative'])
+        assert all(0 < p < 1 for v in value['comparators'].values() for p in v)
+
+
+def test_ew_synthetic_expected_skill_is_five_percent_not_outcome_selected():
+    from scripts import grey_deer_ew_power_diagnostic as power
+    value=power.sample('grey_deer_ew_mkt_v1',0)
+    assert value['expected_candidate_brier'] == pytest.approx(.09 + .03**2)
+    assert value['expected_alternative_brier_skill'] == pytest.approx(.05)
+    assert 1-value['expected_candidate_brier']/value['expected_comparator_brier'] == pytest.approx(.05)
+    null_loss=power.BASE_LOSS+power.COMPARATOR_AMPLITUDE**2
+    assert null_loss == value['expected_comparator_brier']
+
+
+def test_ew_synthetic_probabilities_do_not_depend_on_generated_outcomes(monkeypatch):
+    from scripts import grey_deer_ew_power_diagnostic as power
+    original=power._rng
+    class ChangedLabels:
+        def randint(self,*args): return 5
+    base=power.sample('grey_deer_ew_mkt_v1',0)
+    monkeypatch.setattr(power,'_rng',lambda f,i,s:ChangedLabels() if s=='labels' else original(f,i,s))
+    changed=power.sample('grey_deer_ew_mkt_v1',0)
+    assert changed['outcomes'] != base['outcomes']
+    assert changed['candidate_alternative'] == base['candidate_alternative']
+    assert changed['candidate_null'] == base['candidate_null']
+    assert changed['comparators'] == base['comparators']
+
+
+def test_ew_synthetic_noise_has_declared_blocks_and_independent_arms():
+    from scripts import grey_deer_ew_power_diagnostic as power
+    signs=power._signs('grey_deer_ew_mkt_v1',17,'candidate')
+    transitions=[i for i in range(1,len(signs)) if signs[i]!=signs[i-1]]
+    assert len(transitions)>0
+    assert all((b-a)%21 == 0 for a,b in zip(transitions,transitions[1:]))
+    assert signs != power._signs('grey_deer_ew_mkt_v1',17,'comparator:M0')
+    assert signs == power._signs('grey_deer_ew_mkt_v1',17,'candidate')
+
+
+@pytest.mark.parametrize('family,index',[('unregistered',0),('grey_deer_ew_mkt_v1',-1),
+    ('grey_deer_ew_mkt_v1',1000),('grey_deer_ew_rs_v1',True)])
+def test_ew_synthetic_unknown_family_or_replication_is_not_rebound(family,index):
+    from scripts import grey_deer_ew_power_diagnostic as power
+    with pytest.raises(ValueError): power.sample(family,index)
+
+
+def test_ew_synthetic_condition_calls_original_paired_owner(monkeypatch):
+    from scripts import grey_deer_ew_power_diagnostic as power
+    from unittest.mock import Mock
+    native=Mock(wraps=sc.ew_paired_brier_statistics)
+    monkeypatch.setattr(sc,'ew_paired_brier_statistics',native)
+    value=power.sample('grey_deer_ew_mkt_v1',0)
+    out=power.evaluate_condition(value,'alternative')
+    assert native.call_count==1 and native.call_args.kwargs=={'horizon':21}
+    assert set(out['comparisons'])=={'M0','B1'}
+    assert out['both_with_calibration'] == (
+        out['tail_only_with_calibration'] and out['bound_only_with_calibration'])
+
+
+def test_ew_small_synthetic_run_is_not_registered_power_or_model_acceptance(monkeypatch):
+    from scripts import grey_deer_ew_power_diagnostic as power
+    def forbidden(*a,**kw): raise AssertionError('pure diagnostic cannot read source or outcomes')
+    monkeypatch.setattr('builtins.open',forbidden)
+    out=power.run_diagnostic(1)
+    assert out['status']=='INSUFFICIENT_REPLICATIONS'
+    assert not out['registered_power_artifact'] and not out['scientific_acceptance']
+    assert not out['outcome_data_read'] and not out['market_data_read'] and not out['model_fitted']
+    assert all(v is False for v in out['authority'].values())
+    assert all(not row['replication_floor_met'] and not row['power_threshold_met_in_this_design']
+               for row in out['families'].values())
+    assert out['design']['conceptual_counts_are_real_receipts'] is False
+
+
+def test_ew_power_wilson_interval_is_mc_uncertainty_not_forecast():
+    from scripts import grey_deer_ew_power_diagnostic as power
+    zero=power._wilson(0,400);all_hits=power._wilson(400,400)
+    assert zero[0]==0 and 0<zero[1]<.02
+    assert .98<all_hits[0]<1 and all_hits[1]==1
+    low,high=power._wilson(320,400)
+    assert low<.8<high
+
+
+@pytest.mark.parametrize('replications',[0,True,1001,'400'])
+def test_ew_power_invalid_work_budget_is_not_silently_clamped(replications):
+    from scripts import grey_deer_ew_power_diagnostic as power
+    with pytest.raises(ValueError):power.run_diagnostic(replications)
+
+
+def test_ew_power_runner_does_not_overwrite_frozen_or_prior_artifact(tmp_path,monkeypatch):
+    from scripts import grey_deer_ew_power_diagnostic as power
+    def forbidden(*args,**kwargs):raise AssertionError('must reject before simulation')
+    monkeypatch.setattr(power,'run_diagnostic',forbidden)
+    existing=tmp_path/power.OUTPUT_NAME;existing.write_text('retained original')
+    for destination in (existing,tmp_path/'EW_POWER_v1.json'):
+        with pytest.raises(SystemExit):
+            power.main(['--output',str(destination),'--pre-run-ref','https://github.com/mastermindx-market-intelligence/macro/pull/10798'])
+    assert existing.read_text()=='retained original'
+
+
+def test_ew_power_runner_requires_source_link_before_execution(tmp_path,monkeypatch):
+    from scripts import grey_deer_ew_power_diagnostic as power
+    def forbidden(*args,**kwargs):raise AssertionError('must reject before simulation')
+    monkeypatch.setattr(power,'run_diagnostic',forbidden)
+    with pytest.raises(SystemExit):power.main(['--output',str(tmp_path/power.OUTPUT_NAME),'--pre-run-ref','chat-only'])
