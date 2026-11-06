@@ -22973,6 +22973,7 @@ jobs:
       - "site/basket_china/**"
       - "site/basket_hk/**"
       - "site/basket_intl/**"
+      - "site/allocation.html"
       - "templates/allocation.html.j2"
       - "templates/basket_detail.html.j2"
       - "templates/sector_central.html.j2"
@@ -26709,6 +26710,7 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - engine/rate_futures_repricing.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
@@ -35351,6 +35353,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - collectors/rate_futures.py
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -36848,6 +36852,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
