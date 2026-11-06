@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-10-14T01:51:33.889854+00:00",
+  "head": "55cf7d01e9ae1a306cd7f7b3c1de71f6c741f1ec",
+  "prior_qualification": "bac_occ_qualification.json",
+  "current_qualification": "bac_occ_current_qualification.json",
+  "current_qualification_sha256": "3b0745bc924394750c0e5767c5d36656e9bab5a7ec5f0ca426c74add45e26240",
+  "changed_artifact": "site/basketdata/fear_greed.json",
+  "reviewed_changes": {
+    "generated_utc": {
+      "before": "2026-10-13T22:46:10Z",
+      "after": "2026-10-14T00:20:33Z"
+    }
+  },
+  "observations_values_and_vintages_unchanged": true,
+  "agency_feed_and_rights_unchanged": true,
+  "provider_calls": 0,
+  "public_approval": false
+}

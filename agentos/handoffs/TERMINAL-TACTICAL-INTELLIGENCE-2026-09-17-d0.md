@@ -2,6 +2,180 @@
 workstream: WS:TERMINAL-TACTICAL-INTELLIGENCE
 session: claude/terminal-tactical-continuity-20260917-sol-003
 model: sol
+ended_because: ci_handoff
+mission: 'Qualify the preserved Terminal Tactical Intelligence continuity for source publication while retaining
+  the full original product mission: real inputs, existing Radar integration, useful Terminal/browser workflow,
+  prospective evaluation and separately admitted options expression.'
+state_before: The September record mixed dated observations with then-current actions. Later canonical source
+  shows merged D0/history/R1-A carriers and a completed spent R1-B study, so pending-merge, zero-registration
+  and first-run instructions are historical.
+changed:
+- path: agentos/handoffs/TERMINAL-TACTICAL-INTELLIGENCE-2026-09-17-d0.md
+  what: Add dated current frontmatter and preserve the complete original frontmatter and Markdown body verbatim;
+    retain all scientific, effect, custody and production boundaries.
+verified:
+- claim: Terminal D0 and history-refresh source carriers have actually merged.
+  command: Read mastermindx-market-intelligence/mastermind-terminal PR601 and PR595 on 2026-11-06.
+  result: PR601 merged 2026-09-20 as f4bc91827a075748dc5c97c889888ae2ee643a87; PR595 merged 2026-10-04 as fb6f5cc39e592e7f9967835a85617b4fef427b09.
+    These merge facts do not establish present data freshness or production acceptance.
+- claim: R1-A source has merged and its no-promotion scientific disposition remains unchanged.
+  command: Read Macro PR7270 on 2026-11-06.
+  result: Merged 2026-10-03 as 5f20adbd6be6b136b2efe41585bd4ef964b5bf2e. Do not reopen its old source gate,
+    rerun the unchanged 84 cells, or retune its result.
+- claim: The existing R1-B carrier contains a completed research result and a spent study identity.
+  command: Read Macro PR7274 comment5984265269 and RESULT_V4.json, TTI_R1B_V4_REPORT.md and RUN_RECEIPT_V4.json
+    at 51bb68b2cf9680f9abf4546a602172a5e157a7e3.
+  result: The committed receipt reports attempt002 completed through persist on 2026-10-04 at reviewed code13caccc4cd7c949dae75ed5f1ab85b7627c5311e;
+    study_id_spent=true. Result authority is retrospective_research_only, disposition NO_PROMOTION, and may_alert/may_rank/may_size/may_trade
+    are false. This inventory is not independent numerical or scientific acceptance.
+- claim: The D1 source-arrival carrier remains unfinished.
+  command: Read Macro PR7275 body, comments and submitted reviews on 2026-11-06.
+  result: Draft at bf047bbf259d8f579ad8254f1ab3de80c5204299; no submitted review. Source review and natural
+    current-RTH health-path proof remain separate from the dated 90-case and 1522-case local receipts.
+- claim: This records recovery uses a qualified actual workspace without retrying its acquire.
+  command: Reconcile the original operation-bound workspace after the single PARTIAL acquire, inspect HEAD/index/status/processes,
+    and read studio_git_publish_status.
+  result: Original workspace reached exact clean base731a1a0f9843d35173f4f4a992a3c810ac999f6d with no writer/lock
+    found. Installed publisher reports clean=true, ready_to_push=true, publication NOT_APPLIED. No alternate
+    allocation or checkout rewrite was performed.
+unverified:
+- claim: The R1-B result has independent scientific acceptance or is released.
+  what_would_verify: The specific independent admission-artifact adjudication plus actual current source/check/release
+    receipts on PR7274. This record supplies none.
+- claim: Current data, Radar integration and the Terminal product journey are proven live.
+  what_would_verify: Existing-owner current-RTH/source receipts, lawful integration, served browser proof and
+    prospective/acceptance evidence for the original scope.
+decisions:
+- DEC:TERMINAL-TACTICAL-PRICE-FIRST-APPROVAL
+discoveries:
+- DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION
+- DSC:TERMINAL-INTRADAY-REFRESH-FAILURE-MASKING
+unresolved:
+- PR7274 remains Draft and held. Its completed result still needs the specific independent admission-artifact
+  adjudication and source/check/release decision; this records task does not supply them.
+- PR7275 retains source review, current integration/CI and natural current-RTH arrival-proof obligations. Terminal595
+  merge does not certify current stores or end-to-end availability.
+- Existing Radar shadow integration, useful Terminal forming/confirmed UI, real browser journey, prospective
+  calibration and separately validated options expression remain unfinished.
+- Historical source-arrival, motivating INTC sessions and licensed raw inputs retain their original evidence
+  and access boundaries.
+- This PR still requires actual records validation, guarded source publication, applicable fresh CI and explicit
+  records-source release.
+next_actions:
+- Complete the bounded sixteen-record qualification on Macro7262 and consume its actual current-head checks;
+  keep source publication, merge and product acceptance distinct.
+- 'Consume the existing PR7274 result/attempt receipts and its explicit independent-review holds on the same
+  carrier. The v4 identity is spent: do not register or run it again and do not create a duplicate results
+  carrier.'
+- Advance PR7275 through its existing source/review/CI and natural live-source proof boundaries, then continue
+  existing Radar and Terminal integration without adding another detector, store or runtime.
+- Use the actual merged Terminal601, Terminal595 and Macro7270 source receipts; preserve all dated scientific
+  and production limitations.
+do_not_redo:
+- Do not rerun or re-register the spent R1-B v4 study, restore zero-outcome wording as current state, or create
+  a second results carrier.
+- Do not rerun or retune the unchanged R1-A 84-cell study, rebuild D0, or recensus the unchanged archived pilot.
+- Do not replay any recorded platform, source, provider, INTC, authentication or review effect through another
+  carrier. Later source receipts are not blanket clearance.
+- Do not treat a merged dependency, published research result or records checkpoint as live freshness, calibrated
+  probability, trade authority or parent product completion.
+- 'The Chairman approved the price-first architecture and first milestone on 2026-09-17; Terminal #598 comment
+  5720001976. Do not request that approval again.'
+- 'D0 implementation exists on Terminal #601 at 773b16f8e825ab4b39ce3c7a5fa5caf32868d55f; do not create a replacement
+  branch or rebuild the qualifier.'
+- Do not retry the predecessor blocked live INTC API inspection through another tool or transport. Static non-INTC
+  archival qualification is a separate completed operation.
+- Do not treat the five metadata-free 277-bar slices as full histories; the qualifier already rejects them.
+- Do not use whole-file diagnostic hashes or future-window inventory as model features; only the named pure
+  cutoff view is causal.
+- Do not rerun generic workstream archaeology or the full Macro suite in this sparse records checkout; targeted
+  validation and compile-context recovery already passed.
+- 'D0 and session-chain implementation are now on #601 at c0f36cb16fadd190ad747fc47a28405d9ec0fca4; original
+  773b16f8 references below are historical checkpoints, not the current review target.'
+- Do not repeat the unchanged Executive authentication denial or try another credential/provider as a bypass.
+  No worker START or ambiguous modifying effect exists for this review request.
+- Do not rerun the same 315-date chain census on unchanged files as new research. Coverage counts do not measure
+  edge and do not consume scientific trial budget.
+- 'Do not ask the Chairman to reconnect unfinished Executive or reapprove the design; #598 comment 5721925192.'
+- Do not mistake a proposed 84-cell study, a RED test, a successful docs-only push or a review request for
+  implemented research, empirical evidence or a STARTed worker.
+danger_areas:
+- Historical frontmatter and body below are dated evidence, not executable current instructions.
+- Corrected-history outcomes do not establish historical availability, live fills, predictive calibration or
+  trading authority.
+- Original platform/source/authentication refusals and uncertain effects remain operation-local; no carrier
+  or identity bypass is authorized.
+- Records validation, source acceptance, merge, deployment and original product acceptance remain distinct.
+- INTC remained unqueried in the static pilot, not absent from the vendor universe.
+- Nominal occupancy is not trade completeness; early-close post-market and hourly boundary-straddles are explicitly
+  unqualified.
+- No inference of market-maker motives, news foreknowledge, signal calibration or options profitability follows
+  from these counts.
+- Macro records are knowledge, not runtime admission or source-custody transfer.
+- 'Full nominal-grid filtering is not a universal research gate: it leaves JPM/XOM with zero full chains and
+  would silently condition an all-name study on observation density.'
+- Terminal historical projection drops provider vw/n and truncates volume; downstream HLC3 volume averages
+  are proxies, not exact trade VWAP.
+- Existing daily RuleSpec horizons and rotational/positional Species classes must not be silently relabeled
+  as intraday units.
+- Any final performance inference requires the registered recipe; no negative or positive trading result has
+  been produced by this continuation.
+prs:
+- 7262
+- 7270
+- 7274
+- 7275
+---
+
+# Continuity qualification — 2026-11-06
+
+This current frontmatter supersedes obsolete continuation instructions in the dated record below. Terminal #601 and #595 and Macro #7270 are actually merged. Macro #7274 already contains a registered v4 result and its study identity is spent; do not re-register or rerun it. Independent result adjudication, #7274/#7275 source release, current data freshness, Radar/Terminal integration and the original product acceptance remain separate and unfinished.
+
+Authority and exact source evidence: https://github.com/mastermindx-market-intelligence/macro/pull/7262#issuecomment-6678637967; Mastermind#2028, root macro-backlog-oldest-first-20261105-c3. The twelve dated decision/discovery records retain their original bytes. This task changes no scientific rule, empirical result, TrialLedger, source denial, runtime or product surface. The original complete frontmatter and Markdown body are preserved verbatim.
+
+# Historical original body — September 2026
+
+## §0 State — what is true right now
+The first qualification consumer is built and locally exercised against real archival inputs; the parent product is not built or validated. Terminal #601 is the sole D0 implementation carrier, while #598 carries the approved product commission.
+
+## §1 What is LEFT — in order
+Complete the exact-head source/check/release gates, use measured coverage defects to advance the existing data owner, then freeze and evaluate the price-first setup families. Source archaeology should start from the exact refs here, not the predecessor chat transcript.
+
+## §2 What will bite you
+The last historical bar, HTTP serve time and per-bar knowledge time are different clocks. All pilot data findings are dated and population-specific. A fixture with 277 rows and only a bars key is not a research history.
+
+## §3 What was decided and found
+DEC:TERMINAL-TACTICAL-PRICE-FIRST-APPROVAL records present Chairman intent and owner boundaries. DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION records the real-input result and its falsifier.
+
+## §4 Not in scope — do not adopt
+No new strategic program, event store, replay authority, scientific registry, provider, automated trade, capital allocation or independent updater. No transfer of #595, Live Entry Radar, TOI or Options program custody. A checkpoint is not parent completion.
+
+## Earlier continuation boundary (superseded by the current checkpoint below)
+Local D0 implementation and the static-input census are complete and must not be repeated. Release awaits independent review; new scientific registration awaits recovery of the blocked source read. Existing data repair and downstream product dependencies are separately held, not abandoned. No future automatic CEO action or worker execution is implied by the GitHub check runs.
+
+## Current checkpoint
+
+FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED.
+
+The active code carrier is #601 at `c0f36cb16fadd190ad747fc47a28405d9ec0fca4`. It now includes locally proven session-chain qualification, not just per-file diagnostics. Existing original input hashes were reused, and all new code is committed/pushed. This is BUILT_NOT_PROVEN for release; no strategy result, signal, scanner or parent completion is claimed. This author implementation is not an independent review.
+
+The critical review lane is blocked on the authenticated Executive connection for this conversation (HTTP 401 on the running installed native MCP service). App/plugin discovery exposed no authenticated Executive action; no raw provider fallback was used. The existing review operation and exact #601 carrier are preserved, with no receiver/START or effect uncertainty. D1 source-seam investigation and archived chain qualification advanced independently; further source-writing/data freshness needs the existing #595 owner. R1 source access remains on its previously blocked carrier. Downstream shadow/UI/options depend on those held lanes. Shared CI remains GitHub-owned; queued is not executing, and no external worker or automatic CEO return is claimed.
+
+Current procedure: Mastermind protected `b731149296a9d837d426730813f68d5acc6133ac`, compatible Skillpack 1.0.1; all required active/reconciliation/closeout bytes fetched from this pin and matched the loaded procedure. A later source or connection change requires only bounded relevant reconciliation, not redoing the program.
+
+
+## Current authoritative continuation correction
+The earlier Executive-authentication primary next action is superseded by current Chairman correction. Executive remains under construction. The next material result is actual price-pattern research on #7270, whose registration/source writes hit specific platform refusals. Independent source review already improved the #595 release decision; no source repair is claimed. Source and trial denials are operation-local and were not routed around. Successful publication of the design preserves it but does not complete TTI.
+
+# Archived original frontmatter — September 2026
+
+The complete original metadata is retained as dated evidence. Current next actions are in the qualified frontmatter above.
+
+```yaml
+---
+workstream: WS:TERMINAL-TACTICAL-INTELLIGENCE
+session: claude/terminal-tactical-continuity-20260917-sol-003
+model: sol
 ended_because: blocked
 mission: Continue the approved TTI product beyond D0 coverage, correct the unfinished-Executive dependency mistake,
   prepare the first precise price-pattern/turn study, and advance the existing history-repair review without duplicating
@@ -172,35 +346,4 @@ danger_areas:
 - Any final performance inference requires the registered recipe; no negative or positive trading result has been
   produced by this continuation.
 ---
-
-## §0 State — what is true right now
-The first qualification consumer is built and locally exercised against real archival inputs; the parent product is not built or validated. Terminal #601 is the sole D0 implementation carrier, while #598 carries the approved product commission.
-
-## §1 What is LEFT — in order
-Complete the exact-head source/check/release gates, use measured coverage defects to advance the existing data owner, then freeze and evaluate the price-first setup families. Source archaeology should start from the exact refs here, not the predecessor chat transcript.
-
-## §2 What will bite you
-The last historical bar, HTTP serve time and per-bar knowledge time are different clocks. All pilot data findings are dated and population-specific. A fixture with 277 rows and only a bars key is not a research history.
-
-## §3 What was decided and found
-DEC:TERMINAL-TACTICAL-PRICE-FIRST-APPROVAL records present Chairman intent and owner boundaries. DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION records the real-input result and its falsifier.
-
-## §4 Not in scope — do not adopt
-No new strategic program, event store, replay authority, scientific registry, provider, automated trade, capital allocation or independent updater. No transfer of #595, Live Entry Radar, TOI or Options program custody. A checkpoint is not parent completion.
-
-## Earlier continuation boundary (superseded by the current checkpoint below)
-Local D0 implementation and the static-input census are complete and must not be repeated. Release awaits independent review; new scientific registration awaits recovery of the blocked source read. Existing data repair and downstream product dependencies are separately held, not abandoned. No future automatic CEO action or worker execution is implied by the GitHub check runs.
-
-## Current checkpoint
-
-FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED.
-
-The active code carrier is #601 at `c0f36cb16fadd190ad747fc47a28405d9ec0fca4`. It now includes locally proven session-chain qualification, not just per-file diagnostics. Existing original input hashes were reused, and all new code is committed/pushed. This is BUILT_NOT_PROVEN for release; no strategy result, signal, scanner or parent completion is claimed. This author implementation is not an independent review.
-
-The critical review lane is blocked on the authenticated Executive connection for this conversation (HTTP 401 on the running installed native MCP service). App/plugin discovery exposed no authenticated Executive action; no raw provider fallback was used. The existing review operation and exact #601 carrier are preserved, with no receiver/START or effect uncertainty. D1 source-seam investigation and archived chain qualification advanced independently; further source-writing/data freshness needs the existing #595 owner. R1 source access remains on its previously blocked carrier. Downstream shadow/UI/options depend on those held lanes. Shared CI remains GitHub-owned; queued is not executing, and no external worker or automatic CEO return is claimed.
-
-Current procedure: Mastermind protected `b731149296a9d837d426730813f68d5acc6133ac`, compatible Skillpack 1.0.1; all required active/reconciliation/closeout bytes fetched from this pin and matched the loaded procedure. A later source or connection change requires only bounded relevant reconciliation, not redoing the program.
-
-
-## Current authoritative continuation correction
-The earlier Executive-authentication primary next action is superseded by current Chairman correction. Executive remains under construction. The next material result is actual price-pattern research on #7270, whose registration/source writes hit specific platform refusals. Independent source review already improved the #595 release decision; no source repair is claimed. Source and trial denials are operation-local and were not routed around. Successful publication of the design preserves it but does not complete TTI.
+```
