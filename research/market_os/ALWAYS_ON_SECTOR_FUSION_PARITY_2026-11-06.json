@@ -1,0 +1,88 @@
+{
+  "scope": "deterministic source parity on sixteen constructed cases; no production proof",
+  "base": "0c4c28e4a3e1ba0b1dde3ebdd9774355822f1527",
+  "legacy_source_sha256": "9c9ada9106e53ae7bc062da86c1475829a1f517af9bffbe1ee3162b7e53dffb9",
+  "cases_equal": 16,
+  "cases": [
+    {
+      "rotation_session": null,
+      "membership": "normal",
+      "output_sha256": "ba1627411a9c73a2e02904da6b8907991b223496bfd758395def4257344fc7db"
+    },
+    {
+      "rotation_session": null,
+      "membership": "empty",
+      "output_sha256": "655fd6f284624709e104d40793a972c1c66cb26d25eb3582d4159e418394fea5"
+    },
+    {
+      "rotation_session": null,
+      "membership": "missing",
+      "output_sha256": "1cc1aff7af17cb7cff354c3d2825632520a99fe26596709cd8f5d523e9715ff8"
+    },
+    {
+      "rotation_session": null,
+      "membership": "malformed",
+      "output_sha256": "1cc1aff7af17cb7cff354c3d2825632520a99fe26596709cd8f5d523e9715ff8"
+    },
+    {
+      "rotation_session": "2026-11-04",
+      "membership": "normal",
+      "output_sha256": "ffcb7492f3fa211242324be6357053adf2777390c5b530f1934529b21c4eaa23"
+    },
+    {
+      "rotation_session": "2026-11-04",
+      "membership": "empty",
+      "output_sha256": "515f5689cc0ef4cd69d885788afddf181405062abbda5e985ef9dd71218af4d7"
+    },
+    {
+      "rotation_session": "2026-11-04",
+      "membership": "missing",
+      "output_sha256": "51f754da69b36e82b8a6b0fc9b4e425761bdac8a5e2889f7b25e58c0a8f986b5"
+    },
+    {
+      "rotation_session": "2026-11-04",
+      "membership": "malformed",
+      "output_sha256": "51f754da69b36e82b8a6b0fc9b4e425761bdac8a5e2889f7b25e58c0a8f986b5"
+    },
+    {
+      "rotation_session": "2026-11-05",
+      "membership": "normal",
+      "output_sha256": "4c231e52f83b137509af09ed349ca4bb5af420cbca28d8bc0c35e18c547f3fbc"
+    },
+    {
+      "rotation_session": "2026-11-05",
+      "membership": "empty",
+      "output_sha256": "c7a56e1d70307942bd5b4643be9bb36a561b79deffccb319f42a3880279ea6c8"
+    },
+    {
+      "rotation_session": "2026-11-05",
+      "membership": "missing",
+      "output_sha256": "6919f30c3126d33679beabe1d41cbb073447fb0777aa770bc51e42014c32a237"
+    },
+    {
+      "rotation_session": "2026-11-05",
+      "membership": "malformed",
+      "output_sha256": "6919f30c3126d33679beabe1d41cbb073447fb0777aa770bc51e42014c32a237"
+    },
+    {
+      "rotation_session": "2026-11-09",
+      "membership": "normal",
+      "output_sha256": "412953f4454768427cdb9637415b26c4e57bd5473f63e15996b51457f2a582b6"
+    },
+    {
+      "rotation_session": "2026-11-09",
+      "membership": "empty",
+      "output_sha256": "1388ea99d1796574512e6fb6c6406a9483b567e0bdce1c7c09c30466cf5c255e"
+    },
+    {
+      "rotation_session": "2026-11-09",
+      "membership": "missing",
+      "output_sha256": "c6f744edcbe4d5064a2f89f8961f005946b2f4341977671052c2257f94cb7327"
+    },
+    {
+      "rotation_session": "2026-11-09",
+      "membership": "malformed",
+      "output_sha256": "c6f744edcbe4d5064a2f89f8961f005946b2f4341977671052c2257f94cb7327"
+    }
+  ]
+}

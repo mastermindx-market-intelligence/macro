@@ -15161,6 +15161,7 @@ jobs:
       - engine/postmortem.py
       - research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md
       - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20141,6 +20142,7 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25137,6 +25139,7 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28312,6 +28315,7 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -36427,6 +36431,7 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -37814,6 +37819,7 @@ jobs:
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
       - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -47075,6 +47081,7 @@ jobs:
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "contracts/theme_graph/curation_assertion.v1.schema.json"
       - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -47363,6 +47370,7 @@ jobs:
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -51845,6 +51853,7 @@ jobs:
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
       - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

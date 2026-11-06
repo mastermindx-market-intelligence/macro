@@ -2242,6 +2242,29 @@ def action_board(sector_timing: dict, notable: list[dict],
                       + len(_ab_take_profits) + len(_ab_hold) + len(_ab_avoid))}
 
 
+def persist_action_board(site: Path, board: dict,
+                         *, generated_utc: str | None = None) -> dict:
+    """Persist the existing assembled rows through the source-bound board writer.
+
+    Preserve build_site's row computation, including its completed-session alpha
+    selection and display stamp. The focused builder computes those inputs through
+    its own existing path; this repair does not silently recompute or equate them.
+    The basket hash describes the bytes observed at publication, not atomicity of
+    the entire legacy Sector bundle. Contract failure preserves the previous file.
+    """
+    from scripts.build_sector_action_board import write_action_board
+
+    site = Path(site)
+    return write_action_board(
+        site / "basketdata" / "action_board.json",
+        baskets_path=site / "basketdata" / "baskets.json",
+        action_board=board,
+        generated_utc=generated_utc
+        or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    )
+
+
+
 def sector_setup_view(latest: dict, timing: dict | None = None) -> dict | None:
     """The Sector Confluence board — the PRIMARY buy/sell setup engine
     (engine.sector_signals): a confluence of MACD + StochRSI crossovers on the
@@ -6942,13 +6965,19 @@ def main() -> int:
     # build_site runs earlier than build_sector_central in the engine job). The US board
     # pre-merges every per-item field (sector_setup, EW overlay, two-reads) onto each row,
     # so the shared include is self-sufficient from action_board alone — no lookup dict.
+    #
+    # Published through the existing canonical writer, not
+    # as a bare {"action_board": ...} object: the bare envelope carried no source date
+    # and no basket binding, so a served board lost its as_of/baskets_sha256 and every
+    # generation check could no longer bind it to its basket source (see
+    # research/market_os/ALWAYS_ON_MACRO_MIGRATION_2026-11-05.md §2). A contract failure
+    # leaves the PREVIOUS artifact in place — publishing a degraded board is worse than
+    # publishing nothing new.
     try:
-        _ab_json = site / "basketdata" / "action_board.json"
-        _ab_json.parent.mkdir(parents=True, exist_ok=True)
-        _ab_json.write_text(json.dumps({"action_board": _ab}, ensure_ascii=False),
-                            encoding="utf-8")
+        persist_action_board(site, _ab)
     except Exception as _abe:  # noqa: BLE001 — additive persistence, never fatal
-        log.warning("action_board.json persist failed (%s)", _abe)
+        log.error("action_board.json canonical publish failed (%s) — the previous "
+                  "artifact is preserved", _abe)
 
     # Mag 7 regime panel (data/mag7_regime/latest.json — DISPLAY-ONLY context read).
     # Injected into latest so the template accesses it as latest.mag7_regime.

@@ -33,6 +33,10 @@ from __future__ import annotations
 import json
 import logging
 import re
+from copy import deepcopy
+from dataclasses import dataclass
+from datetime import date
+from typing import Mapping
 
 import numpy as np
 import pandas as pd
@@ -40,6 +44,7 @@ import pandas as pd
 from lib import config
 
 log = logging.getLogger(__name__)
+_INPUT_NOT_SUPPLIED = object()
 
 # conviction tiers (score 0–100, after gate + context) — EN-first, zh kept for the bilingual UI
 TIERS = [
@@ -384,9 +389,46 @@ def _tier_for(score: float) -> tuple[str, str, str]:
     return TIERS[-1][1], TIERS[-1][2], TIERS[-1][3]
 
 
+FusionCalibrationKey = tuple[str | None, str | None, str]
+
+
+def fusion_calibration_key(rec: dict) -> FusionCalibrationKey:
+    """The existing beta key plus risk family/state; never a positional row identity."""
+    now = rec.get("now") or {}
+    return (
+        _as_str(rec.get("ticker")) or rec.get("name"),
+        rec.get("family") or ("us_sector" if rec.get("kind") == "sector" else None),
+        now.get("timing_state") or "",
+    )
+
+
+def _resolve_fusion_calibration(rec: dict) -> tuple[float, float]:
+    """Legacy acquisition only; retain the established fail-soft calibration rules."""
+    key, family, state = fusion_calibration_key(rec)
+    try:
+        from engine.conditions import sector_macro_beta
+        beta = sector_macro_beta(key)
+    except Exception:  # noqa: BLE001
+        beta = 0.0
+    try:
+        from engine.cycles import risk_size_mult
+        size_mult = float(risk_size_mult(state, family))
+    except Exception:  # noqa: BLE001
+        size_mult = 1.0
+    return beta, size_mult
+
+
 def _fuse(rec: dict, mkt: dict, n_peers: int, trend: dict | None = None,
-          heat: dict | None = None, members: list | None = None) -> dict:
-    """The gated-confluence conviction for one sector/basket + the reasoning trace."""
+          heat: dict | None = None, members: list | None = None, *,
+          calibration: tuple[float, float] | None = None) -> dict:
+    """The gated-confluence conviction for one sector/basket + the reasoning trace.
+
+    Legacy helper callers may omit calibration. The explicit-input entry point
+    always supplies it, including valid zero values, and never enters a loader.
+    """
+    if calibration is None:
+        calibration = _resolve_fusion_calibration(rec)
+    beta, size_mult = calibration
     now = rec.get("now") or {}
     state, state_d = _state_score(now)
     mom, mom_d = _momentum_confirm(now, n_peers)
@@ -400,12 +442,6 @@ def _fuse(rec: dict, mkt: dict, n_peers: int, trend: dict | None = None,
     # GATE 1 — macro regime, differentiated PER SECTOR by macro beta (the US-only lever):
     # in risk-off, cyclicals (high beta) are gated harder than defensives (negative beta).
     gate = mkt.get("gate_factor", 0.7)
-    beta = 0.0
-    try:
-        from engine.conditions import sector_macro_beta
-        beta = sector_macro_beta(_as_str(rec.get("ticker")) or rec.get("name"))
-    except Exception:  # noqa: BLE001
-        beta = 0.0
     risk_on = mkt.get("risk_on") or 0.0
     gate_eff = float(np.clip(gate * (1.0 + 0.25 * beta * risk_on), 0.2, 1.0))
     if lead > 0:
@@ -450,13 +486,6 @@ def _fuse(rec: dict, mkt: dict, n_peers: int, trend: dict | None = None,
     # tail → size down); it NEVER lifts a score and never touches direction. Per the W4.6
     # verdict every cell currently ships 1.0 (no risk-sizing signal survived FDR), so this is
     # presently a no-op — but it is wired so a future price-basis re-fit binds automatically.
-    fam = rec.get("family") or ("us_sector" if rec.get("kind") == "sector" else None)
-    size_mult = 1.0
-    try:
-        from engine.cycles import risk_size_mult as _rsm
-        size_mult = float(_rsm(now.get("timing_state") or "", fam))
-    except Exception:  # noqa: BLE001
-        size_mult = 1.0
     if size_mult < 1.0 and score > 50:
         # shave the ABOVE-neutral portion of the score by the size multiplier (never below 50,
         # never a lift). This is the size cap; direction (the sign around 50) is untouched.
@@ -740,7 +769,8 @@ def _lens_date(value) -> str | None:
     return m.group(0) if m else None
 
 
-def _fast_lens_status(armed: bool, rotation_raw: dict) -> dict:
+def _fast_lens_status(armed: bool, rotation_raw: dict, *,
+                      source_raw=_INPUT_NOT_SUPPLIED) -> dict:
     """What the page tells the reader about the fast lens: state fresh, stale or absent.
 
     compute() answers "may this re-order the board": the loader returns {} for a missing file and
@@ -750,11 +780,13 @@ def _fast_lens_status(armed: bool, rotation_raw: dict) -> dict:
     """
     if armed:
         return {"state": "fresh", "asof": _lens_date((rotation_raw or {}).get("asof"))}
-    try:
-        p = config.data_dir() / "us_sector_rotation" / "latest.json"
-        raw = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
-    except Exception:  # noqa: BLE001
-        raw = {}
+    raw = source_raw
+    if raw is _INPUT_NOT_SUPPLIED:
+        try:
+            p = config.data_dir() / "us_sector_rotation" / "latest.json"
+            raw = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+        except Exception:  # noqa: BLE001
+            raw = {}
     if isinstance(raw, dict) and raw.get("instruments"):
         date = _lens_date(raw.get("asof")) or _lens_date(raw.get("ts"))
         if date:
@@ -778,7 +810,7 @@ def _load_rotation_events():
         return None
 
 
-def _measured_read(cyc) -> dict:
+def _measured_read(cyc, *, rotation_payload=_INPUT_NOT_SUPPLIED) -> dict:
     """T17: bounded display-tier measured group read over the cycle spine payload.
 
     Pure projection via engine.leadership_rotation_context (lazy import); never
@@ -792,7 +824,9 @@ def _measured_read(cyc) -> dict:
         return {"schema": "leadership_rotation_context.measured_group_read/v1",
                 "status": "unavailable", "reason": "projection_error"}
     try:
-        return _lrc.measured_group_read(cyc, rotation_payload=_load_rotation_events())
+        if rotation_payload is _INPUT_NOT_SUPPLIED:
+            rotation_payload = _load_rotation_events()
+        return _lrc.measured_group_read(cyc, rotation_payload=rotation_payload)
     except Exception as e:  # noqa: BLE001
         log.warning("sector_central: measured_read projection failed: %s", e)
         return {"schema": _lrc.MEASURED_READ_SCHEMA, "status": "unavailable",
@@ -980,9 +1014,29 @@ def _membership_coverage(spec, *, as_of, used_members, source_version) -> dict:
     return out
 
 
+@dataclass(frozen=True)
+class SectorCentralInputs:
+    """Declared inputs for display fusion; acquisition/publication stay with their owners.
+
+    The cycle spine and context are already computed dependencies, not proof of
+    independent daily production. Calibration keys preserve the existing beta and
+    family/state lookup semantics. Missing keys are errors; the core never falls
+    back to repository configuration or cached calibration.
+    """
+
+    cycle_spine: dict | None
+    market_context: dict
+    closes: pd.DataFrame | None
+    narrative_rotation: dict | None
+    membership_document: dict | None
+    membership_unavailable: bool
+    rotation_artifact: dict
+    rotation_events: dict | None
+    fusion_calibrations: Mapping[FusionCalibrationKey, tuple[float, float]]
+
+
 def compute() -> dict | None:
-    """Top-level: fuse the cycle spine + market regime + trend gates + heat/crowding into
-    per-sector and per-basket central intelligence records, ranked by conviction."""
+    """Compatibility adapter: acquire legacy inputs, then delegate display fusion."""
     try:
         from engine import sector_cycles as sc
         cyc = sc.compute()
@@ -992,9 +1046,6 @@ def compute() -> dict | None:
     if not cyc or not cyc.get("sectors"):
         return None
     mkt = market_context()
-    heat = mkt.get("heat", {})
-
-    # the validated trend gates need the close panel (sectors) + the rotation gate (baskets)
     closes = None
     try:
         from engine.inputs import yahoo_closes
@@ -1007,30 +1058,82 @@ def compute() -> dict | None:
         rotation = compute_narrative_rotation(region="us")
     except Exception as e:  # noqa: BLE001
         log.debug("central: narrative rotation unavailable: %s", e)
-    trend = _trend_gates(closes, rotation)
 
-    # basket membership (for crowding aggregation) — data/baskets/membership.json,
-    # members[].ticker (fallback `symbol`; SIC-D-B13 — the base `symbol`-only read left the
-    # crowding input permanently empty because every member keys `ticker`)
-    # SIC-D-B03: the file is read ONCE here — the memb scoring build below is untouched, and
-    # the same read feeds the dated per-basket disclosure (_membership_coverage).
+    membership = None
+    membership_unavailable = False
+    try:
+        path = config.data_dir() / "baskets" / "membership.json"
+        if path.exists():
+            membership = json.loads(path.read_text(encoding="utf-8")) or {}
+        else:
+            membership_unavailable = True
+    except Exception:  # noqa: BLE001
+        membership_unavailable = True
+
+    calibrations = {}
+    for rec in [*cyc["sectors"], *cyc.get("baskets", [])]:
+        key = fusion_calibration_key(rec)
+        if key not in calibrations:
+            calibrations[key] = _resolve_fusion_calibration(rec)
+
+    import datetime as _dt
+    inputs = SectorCentralInputs(
+        cycle_spine=cyc,
+        market_context=mkt,
+        closes=closes,
+        narrative_rotation=rotation,
+        membership_document=membership,
+        membership_unavailable=membership_unavailable,
+        rotation_artifact=_load_rotation_artifact(),
+        rotation_events=_load_rotation_events(),
+        fusion_calibrations=calibrations,
+    )
+    return compute_from_inputs(inputs, evaluation_date=_dt.datetime.now(_dt.timezone.utc).date())
+
+
+def compute_from_inputs(inputs: SectorCentralInputs, *, evaluation_date: date) -> dict | None:
+    """Fuse one explicit input set without data reads, clock reads or ledger effects.
+
+    The caller selects/coheres source generations and supplies the evaluation day.
+    This function does not acquire inputs, publish a generation, update grades, or
+    make an upstream snapshot current. Returned mutable payloads do not alias the
+    supplied cycle/context/rotation documents.
+    """
+    if not isinstance(evaluation_date, date):
+        raise ValueError("evaluation_date must be an explicit date")
+    cyc = deepcopy(inputs.cycle_spine)
+    if not cyc or not cyc.get("sectors"):
+        return None
+    mkt = deepcopy(inputs.market_context)
+    heat = mkt.get("heat", {})
+    trend = _trend_gates(inputs.closes, inputs.narrative_rotation)
+
+    def _calibration(rec):
+        key = fusion_calibration_key(rec)
+        try:
+            value = inputs.fusion_calibrations[key]
+        except KeyError:
+            raise ValueError(f"missing fusion calibration for {key!r}") from None
+        if not isinstance(value, tuple) or len(value) != 2:
+            raise ValueError(f"invalid fusion calibration for {key!r}")
+        return value
+
+    # The same source status feeds scoring and dated membership disclosure.
+    # An available empty document differs from an unreadable/missing source.
     memb = {}
     memb_src: dict = {}
     memb_version = None
-    memb_failed = False
-    try:
-        f = config.data_dir() / "baskets" / "membership.json"
-        if f.exists():
-            doc = json.loads(f.read_text(encoding="utf-8")) or {}
+    memb_failed = inputs.membership_unavailable
+    if not memb_failed:
+        try:
+            doc = inputs.membership_document or {}
             memb_version = doc.get("version")
             memb_src = doc.get("baskets") or {}
-            for bid, b in memb_src.items():
-                memb[bid] = _crowding_member_ids(b.get("members"))
-        else:
+            for bid, basket in memb_src.items():
+                memb[bid] = _crowding_member_ids(basket.get("members"))
+        except Exception:  # noqa: BLE001
+            memb = {}
             memb_failed = True
-    except Exception:  # noqa: BLE001
-        memb = {}
-        memb_failed = True
 
     n_sec = len(cyc["sectors"])
     sectors = []
@@ -1038,7 +1141,8 @@ def compute() -> dict | None:
         carried = _carry(rec)
         finviz = SPDR_TO_FINVIZ.get(rec.get("ticker"))
         h = heat.get(finviz) if finviz else None
-        fused = _fuse(rec, mkt, n_sec, trend=trend.get(rec.get("id")), heat=h)
+        fused = _fuse(rec, mkt, n_sec, trend=trend.get(rec.get("id")), heat=h,
+                      calibration=_calibration(rec))
         sectors.append({**carried, **fused})
     n_bsk = max(len(cyc.get("baskets", [])), 1)
     baskets = []
@@ -1047,7 +1151,7 @@ def compute() -> dict | None:
         bid = (rec.get("id") or "")[2:] if (rec.get("id") or "").startswith("b-") else rec.get("id")
         used = memb.get(bid, [])
         fused = _fuse(rec, mkt, n_bsk, trend=trend.get(rec.get("id")),
-                      members=used)
+                      members=used, calibration=_calibration(rec))
         cov = _membership_coverage(
             _MEMB_SOURCE_UNAVAILABLE if memb_failed else memb_src.get(bid),
             as_of=(cyc.get("meta") or {}).get("asOf"), used_members=used,
@@ -1066,13 +1170,13 @@ def compute() -> dict | None:
     # age — the raw artifact is only attached when both sides carry the same
     # daily session; every other pairing keeps conviction order and is stamped
     # in meta.rotation_alignment with a typed reason.
-    import datetime as _dt
     from engine import sector_generation_guard as _sgg
-    rotation_raw = _load_rotation_artifact()
+    source_rotation = deepcopy(inputs.rotation_artifact)
+    rotation_raw = source_rotation
     rotation_alignment = _sgg.session_alignment(
         rotation_raw.get("session") or rotation_raw.get("asof"),
         cyc["meta"]["asOf"],
-        today=_dt.datetime.now(_dt.timezone.utc).date(),
+        today=evaluation_date,
     )
     if rotation_raw.get("ts"):
         # provenance only — ts is never the gate
@@ -1091,7 +1195,8 @@ def compute() -> dict | None:
     mkt["n_sectors"] = len(sectors)
     rotation_armed = bool(rotation_raw and rotation_raw.get("instruments"))
     mkt["rotation_board_order"] = "fast-lens" if rotation_armed else "conviction"
-    mkt["fast_lens"] = _fast_lens_status(rotation_armed, rotation_raw)
+    mkt["fast_lens"] = _fast_lens_status(
+        rotation_armed, rotation_raw, source_raw=source_rotation)
 
     return {
         "as_of": cyc["meta"]["asOf"],
@@ -1112,7 +1217,8 @@ def compute() -> dict | None:
         "market": mkt,
         "sectors": sectors,
         "baskets": baskets,
-        "measured_read": _measured_read(cyc),
+        "measured_read": _measured_read(
+            cyc, rotation_payload=deepcopy(inputs.rotation_events)),
     }
 
 

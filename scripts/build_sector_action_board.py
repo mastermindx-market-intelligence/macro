@@ -17,6 +17,12 @@ sys.path.insert(0, str(ROOT))
 from jinja2 import Environment, FileSystemLoader  # noqa: E402
 log = logging.getLogger("build_sector_action_board")
 
+#: The six actionable lanes a board counts. Mirrors the freshness gate's own
+#: lane set (``scripts/check_sector_intelligence_freshness.py``).
+_ACTION_LANES = (
+    "buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid",
+)
+
 
 def _basket_as_of(payload: dict[str, Any]) -> str:
     top = payload.get("as_of")
@@ -50,6 +56,15 @@ def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
             pass
 
 
+class ActionBoardContractError(ValueError):
+    """The canonical action-board contract cannot be satisfied for this input.
+
+    The artifact MUST NOT be written when this is raised: the caller keeps the
+    previous one. Publishing a board without its source date and basket
+    binding is what strips a live consumer of the provenance it validates.
+    """
+
+
 def write_action_board(
     output: Path,
     *,
@@ -57,14 +72,25 @@ def write_action_board(
     action_board: dict[str, Any],
     generated_utc: str,
 ) -> dict[str, Any]:
-    """Write a self-describing board bound to the exact basket bytes."""
-    basket_raw = baskets_path.read_bytes()
-    basket_payload = json.loads(basket_raw)
-    if not isinstance(basket_payload, dict):
-        raise ValueError("baskets.json must contain a JSON object")
+    """Bind the board to one observed basket byte snapshot and publish atomically.
+
+    The basket date/hash identify the associated basket generation. They do not
+    establish freshness or common provenance for every other board input.
+    Invalid source/board content leaves the previous artifact untouched.
+    """
     if not isinstance(action_board, dict):
-        raise ValueError("action_board must be a dictionary")
-    as_of = _basket_as_of(basket_payload)
+        raise ActionBoardContractError("action_board must be a dictionary")
+    if not _board_has_rows(action_board):
+        raise ActionBoardContractError("action_board carries no actionable rows")
+    try:
+        basket_raw = baskets_path.read_bytes()
+        basket_payload = json.loads(basket_raw)
+        if not isinstance(basket_payload, dict):
+            raise ValueError("baskets.json must contain a JSON object")
+        as_of = _basket_as_of(basket_payload)
+        datetime.fromisoformat(as_of.replace("Z", "+00:00"))
+    except (OSError, ValueError) as exc:
+        raise ActionBoardContractError(f"basket source is unusable: {exc}") from exc
     payload = {
         "schema": "sector_intelligence_action_board.v1",
         "as_of": as_of,
@@ -74,6 +100,26 @@ def write_action_board(
     }
     _atomic_json_write(output, payload)
     return payload
+
+
+def _board_has_rows(board: dict[str, Any]) -> bool:
+    """True when the board carries at least one actionable row.
+
+    Mirrors the emptiness rule of the freshness gate
+    (``scripts/check_sector_intelligence_freshness.py``) exactly: the six
+    lanes must hold a row AND the published total must be positive. A board
+    that fails either test is a failed computation, not a generation, and must
+    not overwrite the last accepted artifact.
+    """
+    lane_count = sum(
+        len(board.get(lane) or [])
+        for lane in _ACTION_LANES
+        if isinstance(board.get(lane) or [], list)
+    )
+    total = board.get("total")
+    if not isinstance(total, int):
+        total = lane_count
+    return total > 0 and lane_count > 0
 
 
 def _environment(root: Path) -> Environment:
@@ -193,11 +239,6 @@ def build_action_board(
         board.get("total"),
     )
     return payload
-
-
-_ACTION_LANES = (
-    "buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid",
-)
 
 
 def main() -> int:
