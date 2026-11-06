@@ -734,14 +734,22 @@ def test_us_long_open_failure_expires_and_fresh_recovery_restores_copy(js):
     EVENT_HANDLERS.visibilitychange();
     out.expired_action = action.children[0].textContent;
     out.expired_thesis = thesis.children[0].textContent;
+    out.expired_base_action = action.getAttribute("data-wtd-base-en");
+    out.expired_base_verdict = action.getAttribute("data-wtd-base-verdict");
     FEED.built = new Date(browserNow - 1000).toISOString();
     FEED.live.source_event_time = new Date(browserNow - 15 * 60000).toISOString();
     patchMacro(FEED);
+    out.recovered_base_action = action.getAttribute("data-wtd-base-en");
+    out.recovered_base_verdict = action.getAttribute("data-wtd-base-verdict");
     """
     out = _harness(js.read_text(), feed, "us", now="2026-11-05T15:06:00Z", after=after)
     assert not out.get("error"), out.get("error")
     assert "unavailable" in out["expired_action"]
     assert "historical snapshot" in out["expired_thesis"]
+    assert out["expired_base_action"] == out["expired_action"]
+    assert out["expired_base_verdict"] == "UNAVAILABLE"
+    assert out["recovered_base_action"] == "Reduce risk. Protect capital."
+    assert out["recovered_base_verdict"] == "RISK_OFF"
     assert out["thesis"].startswith("Risk-off")
     assert out["action"] == "Reduce risk. Protect capital."
     assert out["score"] == "38"

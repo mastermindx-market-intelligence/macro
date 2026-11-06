@@ -120,7 +120,17 @@
       ["[data-wtd-primary] .mx5-action-sub", "Last displayed assessment" + suffixEn, "最近显示的评估" + suffixZh]
     ];
     pairs.forEach(function (p) {
-      var el = document.querySelector(p[0]); if (el) setBL(el, p[1], p[2]);
+      var el = document.querySelector(p[0]);
+      if (el) {
+        setBL(el, p[1], p[2]);
+        if (p[0] === "[data-wtd-primary] .mx5-action-label") {
+          // The existing warning reader restores this same baseline on quiet.
+          // Expiry must invalidate the baseline as well as the visible label.
+          el.setAttribute("data-wtd-base-en", p[1]);
+          el.setAttribute("data-wtd-base-zh", p[2]);
+          el.setAttribute("data-wtd-base-verdict", "UNAVAILABLE");
+        }
+      }
     });
     var pill = document.getElementById("ms-live-pill");
     if (pill) pill.classList.remove("on");
@@ -445,8 +455,12 @@
       }
       /* What To Do primary row — concise action plus verdict/score context. */
       var wl = document.querySelector("[data-wtd-primary] .mx5-action-label");
-      if (wl && actionPair)
+      if (wl && actionPair) {
+        wl.setAttribute("data-wtd-base-en", actionPair[0]);
+        wl.setAttribute("data-wtd-base-zh", actionPair[1]);
+        wl.setAttribute("data-wtd-base-verdict", disp.verdict);
         setBL(wl, actionPair[0], actionPair[1]);
+      }
       var ws = document.querySelector("[data-wtd-primary] .mx5-action-sub");
       if (ws && disp.score != null)
         setBL(ws, (disp.label_en || disp.verdict) + " · " + disp.score + "/100",

@@ -166,3 +166,48 @@ The measured-score repair changes source truthfulness and current-assessment ava
 ## 11. Release boundary
 PR: https://github.com/mastermindx-market-intelligence/macro/pull/10782
 The first source head `3fce398ed4fb6f4dae48c11b2daabbc5cecd46b8` contains the score repair; the following same-branch commit adds the qualified claims identity repair and tab-resume expiry. No merge-on-green label has been armed at this record boundary. Main-branch rules were read: no enforced formal approval requirement was returned; the protected source delivery contract and existing controller remain binding. The main authority check passed on the first head. The red `ci-authority/codex/merge-queue-pilot` check explicitly identifies an inactive base context; it is not the main authority check. Exact final-head qualification is still required.
+
+## 12. Pre-open warning, production runtime, and consumer interaction — November 6 follow-through
+
+### The system had recorded substantial damage before the crash
+
+Accepted source commit [f1fc8efbed084af73d14b82f93247703e6fa018e](https://github.com/mastermindx-market-intelligence/macro/commit/f1fc8efbed084af73d14b82f93247703e6fa018e), timestamped November 5 11:36:13 UTC / 06:36:13 ET, contains a November 4 Leadership Crack assessment: BROKEN, median member drawdown -39.23% from the 63-session high, index drawdown -1.58%, dislocation true, and 42/42 members meeting the detector's own freshness definition. Its state_since October 16 is state history, not first customer availability.
+
+Ancestry and exact Leadership blob equality establish the same record in accepted main head 5f20e1571d6793cee6fdb3124033c2d9cc5cd1c6. GitHub main/push [fences run 42030287026](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42030287026) was created at November 5 12:48:39 UTC / 07:48:39 ET. This is an observed upper bound on accepted-source availability before the 08:30 claims release and cash open. It is not a subscriber delivery/acknowledgment clock.
+
+The envelope at that received main head (Git blob 61b231ae4cfd2458ef1aae67937c469945d10acb) reports 57/MIXED usable, FRAGILE, fresh same-session BROKEN leadership and Radar caution/82. It was produced at 11:19:07 UTC. Policy NORMAL means zero active policies; all execution, gating, ranking and sizing grants remain false. The older f1fc envelope blob 2e79abf49ad545b320ecd8913cb0a43a569c040f carries the same selected foreground fields.
+
+This is a failure to present and consistently apply an existing warning, not evidence that the specific crash's timing or magnitude was predictable. Original #9428 owns the foreground response. The exact selected-field replay there preserves57/history, presents the qualified warning above the gauge, and gives the existing warning response precedence in What To Do Now. Advancing the expected session without new evidence produces unavailable rather than ordinary guidance. Both cases passed. These are controlled consumer tests, not production acceptance.
+
+### Original #9428 effects are reconciled
+
+The old body was stale. Original combined Fabric review risk-response-integration-review-20261015-c1-01 is terminal and ACCEPTED/reviewer. Canonical [October 17 source receipt](https://github.com/mastermindx-market-intelligence/macro/pull/9428#issuecomment-6235653016) records genuine resolution of the old CI/CSS source refusals on the same carrier. The foreground polish worker risk-response-pro-briefing-polish-20261017-c1-01 is terminal; its already-applied useful result was reviewed and accepted, response SHA256 635a742109341b84a3502c051c36273abf6a7e9d36eb569695c37e7f0a5c2e7f.
+
+Recovery remains on its original C1 workspace/branch. Current-main integration preserves the existing EW-P4 detail consumer and all387 current CI jobs, with only the original15 additive risk-response closure paths. The current October18 no-accent-edge design rule replaces the obsolete top stripe with neutral even borders and labeled semantic ink. Earlier specifically refused mission-note bytes remain unchanged and unstaged. Separate #8132/#7029/forecast/portfolio holds remain separate.
+
+### Actual production runtime was inspected
+
+The existing documented Macro deployment identity authenticated on the verified M2 Studio route; no key bytes, host inventory, credentials or raw sensitive configuration were exposed or changed. The first fleet-mapping helper returned an invalid owner result; a bounded runtime-metadata diagnostic and direct M2 hardware identity established the actual carrier, then two accepted Macro source records identified the serving role and existing credential.
+
+At November6 00:06:30 UTC, serving-tier source was aa95b0d1d204dc9fd958afbe22e4be3ed647d806, not this candidate. Latest risk_state was built November5 22:59:33 UTC, expected completed session November5, nightlyNovember4, live=false, stale=true, n_live=0, display57. The separate envelope marked measured data unusable. This confirms the after-close stale-guidance contradiction.
+
+Two bounded retained journal reads found291 risk-state task-status records across the premarket/regular/postclose windows. One was failed at14:00:55 UTC; subsequent executions succeeded. The incumbent journal reports task status and duration, not historical score/quote payloads. These logs do not establish that57 was displayed throughout regular hours or that the single failure caused the incident.
+
+### A real two-reader expiry defect was found before release
+
+Running this PR's actual unavailableAssessment function with original #9428's actual warning consumer reproduced a dangerous sequence:
+1. Score assessment expires: visible action correctly becomes Current risk assessment unavailable.
+2. The element still retains its older data-wtd-base-* fields.
+3. A subsequent eligible quiet warning response restores Stay selective. Add where setups confirm from that expired baseline.
+
+The repair invalidates the existing action baseline alongside the visible label, using UNAVAILABLE as the presentation baseline verdict. Valid score recovery updates that same baseline. It does not add a resolver, forecast, risk state, queue, policy grant or trader.
+
+Both template/site regressions failed before the fix. All91 affected session-floor, copy-sync and participation-copy checks pass after repair. The same combined-consumer replay now preserves unavailable through the later quiet response. Current paired-JS SHA256: 9a52dbd1d204eb4938a99f25b973cf100c825617f6059cd885529a534edddb17. Node/DOM execution is software proof, not a real browser.
+
+For #9428's current-main integration, the wider selection initially returned567passed,2failed,2existing artifact-dependent skips. The two failures used different simulated publications under one identical build clock and were correctly rejected by the ordering fence; distinct sequential publication clocks restore the intended healthy/degraded/healthy test, with2passed on focused rerun. Production ordering was not weakened.
+
+### Release state at this repair boundary
+
+Old head d2826053 passed all26 binding hosted checks. The controller required a main refresh and deferred it under its workload cap (17 indexed proofs vs cap8). A subsequently reproduced consumer defect materially invalidated integration readiness; the current session [explicitly disarmed its own PR](https://github.com/mastermindx-market-intelligence/macro/pull/10782#issuecomment-6673408881) before source changes and retains ownership through repair/requalification/release. This is not an empty refresh or a capacity-gate workaround.
+
+New-head tests and release qualification remain required. #9428 must consume the accepted freshness repair on its original carrier before combined acceptance. Browser currently reports missing originating browser context; verified server access does not substitute for the authenticated UI path. No merged/deployed/customer-accepted outcome is asserted at this boundary.
