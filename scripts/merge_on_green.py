@@ -172,7 +172,7 @@ So the sweep is now BUDGET-AWARE, in three places. It preflights `GET
 /rate_limit` (which does not itself count against the core budget) and DEFERS —
 exit 0 with a notice, never a red run — when the remaining budget cannot fund a
 useful pass. It sizes the pull-request window from the live core limit (25 at the
-historical 1,000/hour limit, up to 100 on Enterprise), in a rotating order that no
+historical 1,000/hour limit, up to 128 on Enterprise), in a rotating order that no
 pull request can be starved out of, and it says which ones it deferred. And it
 re-reads the budget as it goes, stopping cleanly rather than dying half-way
 through on a 403. A deferred sweep merges strictly FEWER pull requests than a
@@ -346,11 +346,12 @@ _LAST_INTEGRATION_BASELINE_SHA = ""
 # pull request. The Enterprise transfer raised this repository's live limit to
 # 15,000/hour, but the old fixed cap kept deferring a 29-pull backlog with 14,904
 # calls still available (run 31536402658). Scale from the proven 25/1,000 ratio,
-# but stop at the pull-list API's 100-item page. If the quota cannot be read, the
-# known-safe 25 remains the fallback.
+# but retain a bounded 128-PR evaluation ceiling: paginated discovery already
+# spans the full backlog independently of this cap. If quota cannot be read,
+# the known-safe 25 remains the fallback.
 REFERENCE_CORE_LIMIT = 1_000
 FALLBACK_PULL_CAP = 25
-MAX_PULL_CAP = 100
+MAX_PULL_CAP = 128
 # Fixed overhead and worst-case marginal cost used to shrink the window when the
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
@@ -358,11 +359,14 @@ MAX_PULL_CAP = 100
 # Extra commit-file pagination reads shared by every PR and commit in one sweep.
 # Exhaustion keeps the affected inventory incomplete; it never clears a proof.
 COMMIT_FILE_PAGE_READ_CAP = 100
-FULL_SWEEP_FIXED_REQUESTS = 87
+# 87 measured + 5 for the adaptive hosted-pool census (one queued-run read, one
+# mature-run list and up to ADAPTIVE_CENSUS_SAMPLE_RUNS job lists), charged even on
+# the sweeps that skip it so the shrink formula stays pessimistic.
+FULL_SWEEP_FIXED_REQUESTS = 92
 AUTHORITY_RUN_LOOKUP_CAP = 8
 MAX_REQUESTS_PER_PULL = 19 + AUTHORITY_RUN_LOOKUP_CAP
-# A 25-pull reference pass now models 87 fixed + 25 x up-to-27 + 8 refresh
-# attempts = 770 calls. The floor retains the reference 90-percent bound while
+# A 25-pull reference pass now models 92 fixed + 25 x up-to-27 + 8 refresh
+# attempts = 775 calls. The floor retains the reference 90-percent bound while
 # room for other lanes in the ordinary cheaper shape. Larger buckets do
 # not need a proportionally larger dead zone: `pull_cap` shrinks to what the
 # remaining requests can actually afford.
@@ -404,6 +408,57 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # breaker and re-created the CI stampede it was meant to stop.
 HIGH_LOAD_LEASE_THRESHOLD = 1
 ACTIVE_PR_PROOF_STATUSES = ("queued", "in_progress", "pending", "requested", "waiting")
+# Adaptive headroom ABOVE the flat cap, never a flat raise.  The flat 8 was sized
+# against a pool pinned at 180/180 on 2026-08-11; the repository now sits on the
+# Enterprise plan's 500-standard-hosted-job ceiling (see ci.yml's ci-pack comment),
+# where 16 proofs x 15 hosted jobs = 240 still fit, yet on an idle pool the flat cap
+# leaves most runners unused while a red backlog drains at 8 proofs per hour.
+#
+# The pressure signal is JOB-level, never run-level.  A ci.yml run is `in_progress`
+# the moment `ci-plan` gets a runner, and its twelve pack jobs are only CREATED
+# minutes later when the dynamic matrix resolves (observed 2026-11-05, run
+# 42044812799: ci-plan 14:25:09, packs created 14:28:45); jobs still blocked on
+# `needs` are not listed at all.  So a run-level `queued` count cannot see a
+# saturated pool (every pack sits queued INSIDE an in-progress run), while any
+# `queued` job in a run's job list is, by construction, a job the pool has refused
+# a runner.  Each sweep that could use headroom therefore samples the jobs of the
+# newest ADAPTIVE_CENSUS_SAMPLE_RUNS in-progress ci.yml runs that are at least
+# ADAPTIVE_CENSUS_MATURITY_SECONDS old (the maturity filter only steers the sample
+# toward runs whose packs exist; it is never itself evidence) and widens only on
+# POSITIVE evidence that the pool is serving this repository's hosted jobs.  A run
+# is SERVED evidence only when a GitHub-hosted LATER-WAVE job (a `ci-pack-*`
+# or `ci-gate` job, by name, created after the run's earliest job; the dynamic
+# matrix resolves only after `ci-plan` completes) is running, and nothing in
+# the run shows refusal.  First-wave jobs (`ci-plan`, `contract-delta`, a
+# re-run `ci-plan`, the pc-route `trusted-ci` gate jobs) never serve, whatever
+# their timestamps say.  REFUSAL evidence is any non-self-hosted job that is neither running
+# nor completed (queued, pending, waiting, requested; unlabelled jobs included)
+# and any job the pool took longer than ADAPTIVE_PICKUP_GRACE_SECONDS to start
+# (`started_at - created_at`, the pickup latency the job payload already carries;
+# the free pool observed 2-82 s).  Jobs whose requested labels include
+# `self-hosted` are ignored (ci.yml has none today; the macstudio render lanes
+# live in other workflows and never appear in these job lists); only labels
+# with a GitHub-hosted prefix count as served evidence, so a runner-group job
+# that reports only its group label (the pc-route `trusted-pack`) can refuse
+# but never serve.  A running or completed job without a usable `started_at`,
+# or a job list shorter than its own `total_count`, makes the census unreadable.  `READ_TOKEN` is repo-scoped, so other repositories' load on the shared
+# account ceiling is visible only through its effect on this repository's own
+# jobs; a pool that fills after our packs were admitted shows up in the next
+# launched run's packs, so the ADMISSION overshoot is bounded by the cap itself
+# (16 proofs, about 13 concurrent hosted jobs each, under the account-wide 500
+# ceiling) and the admission cap collapses to 8 on the first sweep that sees a
+# refused or slow job; proofs already admitted still run to completion.  An
+# unreadable census, or no sampled run with served evidence, is the flat cap,
+# exactly today's behaviour.  The per-sweep cap and the durable lease are
+# unchanged: a sweep still launches at most MAX_REFRESHES_PER_SWEEP.
+ADAPTIVE_PROOF_CAP_MAX = 16
+ADAPTIVE_CENSUS_SAMPLE_RUNS = 3
+ADAPTIVE_CENSUS_MATURITY_SECONDS = 240
+ADAPTIVE_CENSUS_JOB_PAGE = 100
+ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
+ADAPTIVE_PICKUP_GRACE_SECONDS = 120
+ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
+ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
 # The rotation advances by the live pull cap every bucket, so every armed pull
 # request enters the window within ceil(N / cap) buckets — ~40 minutes for a
 # 93-PR backlog. Ten minutes matches the recovery cron; the sweeper keeps NO state
@@ -3036,6 +3091,184 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
     return total
 
 
+@dataclass(frozen=True)
+class HostedPoolCensus:
+    """Job-level evidence of hosted-pool service for this repository's ci.yml."""
+
+    #: ci.yml runs whose first job (`ci-plan`, hosted) has no runner yet.
+    queued_runs: int
+    #: Mature in-progress ci.yml runs whose job lists were read.
+    sampled_runs: int
+    #: Non-self-hosted jobs in those runs neither running nor completed.
+    refused_jobs: int
+    #: Sampled runs with a later-wave GitHub-hosted job running and no refusal.
+    served_runs: int
+    #: Non-self-hosted jobs the pool took longer than the pickup grace to start.
+    slow_jobs: int = 0
+
+
+def _clean_count(payload: Any, key: str) -> int | None:
+    count = payload.get(key) if isinstance(payload, dict) else None
+    if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+        return None
+    return count
+
+
+def _job_labels(job: dict[str, Any]) -> list[str] | None:
+    labels = job.get("labels")
+    if not isinstance(labels, list) or not all(isinstance(l, str) for l in labels):
+        return None
+    return labels
+
+
+def _github_hosted_label(labels: list[str]) -> bool:
+    """A label GitHub itself serves (`ubuntu-latest`, `ubuntu-24.04`, ...)."""
+    return any(label.startswith(ADAPTIVE_HOSTED_LABEL_PREFIXES) for label in labels)
+
+
+def _run_job_evidence(jobs: list[Any]) -> tuple[int, int, bool] | None:
+    """``(refused, slow, served)`` for one run's job list; ``None`` if unclean.
+
+    Self-hosted jobs are ignored.  Every other job is refusal evidence when it is
+    neither running nor completed, or when the pool took longer than the pickup
+    grace to start it.  Served evidence needs a GitHub-hosted LATER-WAVE job (a
+    `ci-pack-*`/`ci-gate` job by name, created after the run's earliest job) to
+    be running: the first wave (`ci-plan`, `contract-delta` on pull requests, a
+    re-run `ci-plan`, the pc-route trusted-ci gate) is admitted before the pack
+    matrix exists, so it says nothing about whether the pool will serve the
+    packs, whatever its timestamps say.  A running or completed job without a
+    usable `started_at` is unclean (``None``), like a job without `created_at`.
+    """
+    parsed: list[tuple[dt.datetime, dt.datetime | None, str, bool, bool]] = []
+    for job in jobs:
+        if not isinstance(job, dict):
+            return None
+        labels = _job_labels(job)
+        if labels is None:
+            return None
+        if "self-hosted" in labels:
+            continue
+        created = _parse_dt(job.get("created_at"))
+        if created is None:
+            return None
+        status = job.get("status")
+        name = job.get("name")
+        if not isinstance(status, str) or not isinstance(name, str):
+            return None
+        started = _parse_dt(job.get("started_at"))
+        if started is None and status in ("in_progress", "completed"):
+            return None
+        later_wave = name.startswith(ADAPTIVE_LATER_WAVE_JOB_PREFIXES)
+        parsed.append((created, started, status, _github_hosted_label(labels), later_wave))
+    if not parsed:
+        return 0, 0, False
+    first_wave = min(created for created, _s, _st, _h, _l in parsed)
+    grace = dt.timedelta(seconds=ADAPTIVE_PICKUP_GRACE_SECONDS)
+    refused = slow = 0
+    served = False
+    for created, started, status, hosted, later_wave in parsed:
+        if status not in ("in_progress", "completed"):
+            refused += 1
+            continue
+        if started - created > grace:
+            slow += 1
+        if status == "in_progress" and hosted and later_wave and created > first_wave:
+            served = True
+    return refused, slow, served and refused == 0 and slow == 0
+
+
+def hosted_pool_census(
+    repo: str, token: str, *, now: dt.datetime | None = None
+) -> HostedPoolCensus | None:
+    """Sample this repository's mature in-progress ci.yml runs at the JOB level.
+
+    One ``per_page=1`` read of queued ci.yml runs, one list of the newest
+    in-progress ci.yml runs created at least ``ADAPTIVE_CENSUS_MATURITY_SECONDS``
+    ago (so their dynamic pack matrix is likely to exist), and one job list per
+    sampled run.  ``None`` on any read that is not clean, including a job list
+    longer than one page or a job without a usable timestamp, so the caller
+    falls back to the flat cap rather than reading an API blip as a free pool.
+    """
+    base = f"{GITHUB_API}/repos/{repo}/actions"
+    query = urllib.parse.urlencode({"status": "queued", "per_page": "1"})
+    status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
+    queued_runs = _clean_count(payload, "total_count") if status < 400 else None
+    if queued_runs is None:
+        return None
+    cutoff = (now or dt.datetime.now(dt.timezone.utc)) - dt.timedelta(
+        seconds=ADAPTIVE_CENSUS_MATURITY_SECONDS
+    )
+    query = urllib.parse.urlencode(
+        {
+            "status": "in_progress",
+            "per_page": str(ADAPTIVE_CENSUS_SAMPLE_RUNS),
+            "created": "<" + cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    )
+    status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
+    runs = payload.get("workflow_runs") if isinstance(payload, dict) else None
+    if status >= 400 or not isinstance(runs, list):
+        return None
+    sampled = refused = served = slow = 0
+    for run in runs[:ADAPTIVE_CENSUS_SAMPLE_RUNS]:
+        run_id = run.get("id") if isinstance(run, dict) else None
+        if not isinstance(run_id, int) or isinstance(run_id, bool):
+            return None
+        query = urllib.parse.urlencode(
+            {"filter": "latest", "per_page": str(ADAPTIVE_CENSUS_JOB_PAGE)}
+        )
+        status, payload = _request("GET", f"{base}/runs/{run_id}/jobs?{query}", token)
+        jobs = payload.get("jobs") if isinstance(payload, dict) else None
+        total = _clean_count(payload, "total_count")
+        if (
+            status >= 400
+            or not isinstance(jobs, list)
+            or total is None
+            or total > ADAPTIVE_CENSUS_JOB_PAGE
+            or total != len(jobs)
+        ):
+            return None
+        evidence = _run_job_evidence(jobs)
+        if evidence is None:
+            return None
+        run_refused, run_slow, run_served = evidence
+        sampled += 1
+        refused += run_refused
+        slow += run_slow
+        if run_served:
+            served += 1
+    return HostedPoolCensus(queued_runs, sampled, refused, served, slow)
+
+
+def adaptive_proof_cap(census: HostedPoolCensus | None) -> tuple[int, str]:
+    """``clamp(8 + headroom, 8, 16)`` from job-level evidence; flat cap otherwise."""
+    if census is None:
+        return MAX_IN_FLIGHT_PR_PROOFS, "census unavailable: flat cap"
+    full = ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS
+    if census.queued_runs > 0 or census.refused_jobs > 0 or census.slow_jobs > 0:
+        headroom = 0
+        why = (
+            f"hosted pool refused {census.queued_runs} queued run(s), "
+            f"{census.refused_jobs} waiting hosted job(s), "
+            f"{census.slow_jobs} slow pickup(s) in "
+            f"{census.sampled_runs} mature run(s)"
+        )
+    elif census.served_runs >= ADAPTIVE_SERVED_RUNS_FULL_HEADROOM:
+        headroom = full
+        why = f"{census.served_runs} of {census.sampled_runs} mature run(s) served"
+    elif census.served_runs > 0:
+        headroom = full // 2
+        why = f"{census.served_runs} of {census.sampled_runs} mature run(s) served"
+    else:
+        headroom = 0
+        why = f"no mature run witnessed the hosted pool ({census.sampled_runs} sampled)"
+    cap = max(
+        MAX_IN_FLIGHT_PR_PROOFS,
+        min(ADAPTIVE_PROOF_CAP_MAX, MAX_IN_FLIGHT_PR_PROOFS + headroom),
+    )
+    return cap, f"+{headroom} adaptive: {why}"
+
+
 def refresh_lease_reservation_count(
     repo: str,
     token: str,
@@ -3889,9 +4122,9 @@ def pull_cap_for_limit(limit: Any) -> int:
 
     The 25-at-1,000 baseline is measured production behavior, not a guessed
     request cost. Scaling that ratio preserves the old budget share after an
-    account-tier change; the 100 ceiling matches the single pull-list page and
-    keeps one reconciliation bounded. An unreadable or malformed limit falls
-    back to the known-safe baseline.
+    account-tier change; the 128 ceiling covers the measured 110-PR backlog
+    using existing paginated discovery while keeping one reconciliation bounded.
+    An unreadable or malformed limit falls back to the known-safe baseline.
     """
     if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
         return FALLBACK_PULL_CAP
@@ -8201,12 +8434,33 @@ def main() -> int:
         if active_pr_proofs is not None
         else None
     )
+    # The adaptive cap is read only where headroom could admit a refresh: a readable
+    # census and lease, refresh authority, fewer proofs in flight than the widest
+    # cap, and a flat-cap allowance smaller than what this sweep could launch (with
+    # no proof in flight the flat cap already affords a full MAX_REFRESHES_PER_SWEEP).
+    # It degrades to the flat cap on ANY census problem, including a RateLimited
+    # read: it must never route the sweep into the deferred path.
+    proof_cap, adaptive_detail = MAX_IN_FLIGHT_PR_PROOFS, "census skipped: flat cap"
+    effective_proofs = int(effective_active_proofs or 0)
+    if (
+        active_pr_proofs is not None
+        and refresh_lease.readable
+        and budget.refresh_authorized
+        and effective_proofs < ADAPTIVE_PROOF_CAP_MAX
+        and MAX_IN_FLIGHT_PR_PROOFS - effective_proofs < budget.max_refreshes
+    ):
+        try:
+            pool_census = hosted_pool_census(repo, read_token)
+        except Exception as exc:
+            adaptive_detail = f"census failed ({exc}): flat cap"
+        else:
+            proof_cap, adaptive_detail = adaptive_proof_cap(pool_census)
     if active_pr_proofs is None or not refresh_lease.readable:
         budget.max_refreshes = 0
         refresh_load_detail = refresh_load_detail or "census/lease unreadable; new refreshes paused"
     else:
         available_refreshes = max(
-            0, MAX_IN_FLIGHT_PR_PROOFS - int(effective_active_proofs or 0)
+            0, proof_cap - int(effective_active_proofs or 0)
         )
         budget.max_refreshes = min(budget.max_refreshes, available_refreshes)
         budget.requires_refresh_lease = (
@@ -8216,7 +8470,7 @@ def main() -> int:
             f"{active_pr_proofs} indexed pull-request ci run(s) plus "
             f"{reservation_count} unindexed durable "
             f"reservation(s), global cap "
-            f"{MAX_IN_FLIGHT_PR_PROOFS}, {budget.max_refreshes} CI workload slot(s) "
+            f"{proof_cap} ({adaptive_detail}), {budget.max_refreshes} CI workload slot(s) "
             "available this sweep"
             + (" (durable lease required)" if budget.requires_refresh_lease else "")
         )

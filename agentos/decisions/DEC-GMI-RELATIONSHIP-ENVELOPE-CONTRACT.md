@@ -71,7 +71,7 @@ evidence:
   - "m2_integration/direction_fix.md: 31 direction errors in a 100-item blind sample, all filer-on-to-side rows; fixed in judge._observation_row (be599c5e), re-pinned 770909e8 -> 5b442662; 603c3551 superseded."
   - "m2_recall/recall_report_v1.json sha256 915de3481ec77f4702d0dad0d842862809491b6f024a409598b6ba690a2237a8; tests/test_relationship_m2_envelope.py::test_committed_recall_report_equals_fresh_compare regenerates and requires byte equality."
   - "Cap fix b316e4e1 (tests 7 failed -> 8 passed); delta rows P 86 / D1a 1085 / D1b 1027 / D2a 521 / D2b 486 = 3205; judging r2 52578762 byte-inclusion proof, 600 earlier ids unchanged, replay 1138 sources 0 failures, 480 accepted rows spot-checked 0 mismatches."
-  - "A25: .github/ci/legacy-jobs.yml job company-intelligence-relationships (scope exclusive, 63 paths = union of the lanes' ci_registration_proposal*.yml closures, 11 suites). A26: config/dataset_registry.yml rows for the package and edges (tests/test_dataos_registry.py 60 passed)."
+  - "A25: .github/ci/legacy-jobs.yml job company-intelligence-relationships (scope exclusive, 69 paths = union of the lanes' ci_registration_proposal*.yml closures plus the m2 extraction suites, 11 test files over 12 pytest steps; corrected 2026-11-02 from '63 paths, 11 suites' after O5 re-counted the committed job). A26: config/dataset_registry.yml rows for the package and edges (tests/test_dataos_registry.py 60 passed)."
 affects:
   - "WS:GMI-THEME-GRAPH"
   - "engine/company_intelligence/relationships/**"

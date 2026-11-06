@@ -1901,7 +1901,7 @@ def _ex107_parser_rows(fixture_name: str) -> tuple[str, str, list[dict[str, Any]
     )
     rows = result["observations"]
     assert {row["extraction"]["parser_version"] for row in rows} == {
-        "capital-structure-document-terms/1.2.0"
+        "capital-structure-document-terms/1.3.0"
     }
     return accession, form, rows
 
