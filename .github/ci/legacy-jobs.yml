@@ -22973,6 +22973,7 @@ jobs:
       - "site/basket_china/**"
       - "site/basket_hk/**"
       - "site/basket_intl/**"
+      - "site/allocation.html"
       - "templates/allocation.html.j2"
       - "templates/basket_detail.html.j2"
       - "templates/sector_central.html.j2"
