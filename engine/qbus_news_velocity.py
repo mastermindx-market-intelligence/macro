@@ -3,7 +3,10 @@
 ``compute_news_velocity`` is a pure read of one security's indexed reports.
 It reports how many distinct reports the reader may see (active status,
 rights-allowed sources) fall in the last 24 hours and 7 days, beside that
-security's own trailing 28 UTC-day counts and their median.
+security's own trailing 28 UTC-day counts and their median. A report counts
+as of ``now`` only if the store had first received it by ``now``: a report
+received later is outside every count, bin and basis total, even when its
+published time is earlier.
 ``compare_to_typical`` compares one 24h count with that median for display
 only. Display-tier context only.
 """
@@ -15,6 +18,7 @@ import math
 import sqlite3
 
 from engine.qbus_news_cluster import UNKNOWN_CLUSTER_POLICY_VERSION
+from engine.qbus_news_editorial import NewsEditorialView
 
 SCHEMA = "qbus.news_velocity.v1"
 METHOD = (
@@ -38,12 +42,29 @@ _DAILY_WINDOW_DAYS = 28
 # the column existed (and hand-built fixtures) lack it; the literal NULL keeps
 # the query valid there and _distinct_stories labels those stories
 # "unknown (pre-column)". The first two texts are byte-identical except for
-# that one selected expression. The third text is for databases whose cluster
-# tables are absent (a shape NewsStore never writes): it drops both cluster
-# joins, so every report is its own story and no policy stamp exists.
+# that one selected expression. The third text is for databases whose
+# news_clusters table is absent while news_cluster_members survives: it keeps
+# the members join and selects a literal NULL policy column, so member stories
+# stay grouped and read "unknown (pre-column)". The fourth text is for
+# databases with neither cluster table (a shape NewsStore never writes): it
+# drops both cluster joins, so every report is its own story and no policy
+# stamp exists.
+#
+# The seventh column is the report's first receipt, the store's
+# ``first_received_at`` state field. It bounds possession: a report the store
+# first received after ``as_of`` is dropped before any count. json_valid
+# guards hand-built fixtures; when the stamp is absent or unreadable, the
+# projection's ``received_at`` (the latest receipt, never earlier than the
+# first) stands in, which can only exclude more, never admit a later report.
+# A stamp that parses but names an instant outside the representable UTC
+# range is treated as unreadable. A report with no readable published time
+# is dated by that same possession instant, so a redelivery after ``as_of``
+# neither moves it later nor drops it out of the windows it was counted in.
 _STORY_SQL = """
 SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
-       c.cluster_policy_version
+       c.cluster_policy_version,
+       CASE WHEN json_valid(s.state_json)
+            THEN json_extract(s.state_json, '$.first_received_at') END
 FROM news_security_index AS i
 JOIN news_states AS s
   ON s.source = i.source
@@ -64,7 +85,9 @@ ORDER BY i.source, i.source_item_id
 
 _STORY_SQL_NO_POLICY_COLUMN = """
 SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
-       NULL
+       NULL,
+       CASE WHEN json_valid(s.state_json)
+            THEN json_extract(s.state_json, '$.first_received_at') END
 FROM news_security_index AS i
 JOIN news_states AS s
   ON s.source = i.source
@@ -83,8 +106,31 @@ WHERE i.security_id = ?
 ORDER BY i.source, i.source_item_id
 """
 
+_STORY_SQL_MEMBERS_ONLY = """
+SELECT i.source, i.source_item_id, p.published_at, p.received_at, m.cluster_id,
+       NULL,
+       CASE WHEN json_valid(s.state_json)
+            THEN json_extract(s.state_json, '$.first_received_at') END
+FROM news_security_index AS i
+JOIN news_states AS s
+  ON s.source = i.source
+ AND s.source_item_id = i.source_item_id
+JOIN news_state_projection AS p
+  ON p.source = i.source
+ AND p.source_item_id = i.source_item_id
+LEFT JOIN news_cluster_members AS m
+  ON m.source = i.source
+ AND m.source_item_id = i.source_item_id
+WHERE i.security_id = ?
+  AND s.status = 'active'
+  AND s.source IN ({placeholders})
+ORDER BY i.source, i.source_item_id
+"""
+
 _STORY_SQL_NO_CLUSTER_TABLES = """
-SELECT i.source, i.source_item_id, p.published_at, p.received_at, NULL, NULL
+SELECT i.source, i.source_item_id, p.published_at, p.received_at, NULL, NULL,
+       CASE WHEN json_valid(s.state_json)
+            THEN json_extract(s.state_json, '$.first_received_at') END
 FROM news_security_index AS i
 JOIN news_states AS s
   ON s.source = i.source
@@ -104,16 +150,14 @@ def _has_cluster_policy_column(conn: sqlite3.Connection) -> bool:
     return any(str(row[1]) == "cluster_policy_version" for row in rows)
 
 
-def _cluster_tables_present(conn: sqlite3.Connection) -> bool:
+def _cluster_tables_present(conn: sqlite3.Connection) -> set[str]:
+    """The subset of the two cluster tables that exists in ``conn``."""
     rows = conn.execute(
         "SELECT name FROM sqlite_master"
         " WHERE type='table'"
         " AND name IN ('news_clusters','news_cluster_members')"
     ).fetchall()
-    return {str(row[0]) for row in rows} == {
-        "news_clusters",
-        "news_cluster_members",
-    }
+    return {str(row[0]) for row in rows}
 
 
 def compute_news_velocity(
@@ -122,6 +166,10 @@ def compute_news_velocity(
     security_id: str,
     now: datetime,
     allowed_sources: Collection[str],
+    curated: bool = False,
+    allowed_url_sources: Collection[str] = (),
+    allowed_teaser_sources: Collection[str] = (),
+    editorial_view: NewsEditorialView | None = None,
 ) -> dict:
     """Return schema ``qbus.news_velocity.v1`` for one security as of ``now``.
 
@@ -150,19 +198,37 @@ def compute_news_velocity(
         # "IN ()" is invalid SQLite, and there is nothing to count anyway.
         return _assemble(security_id, as_of, {}, counted_sources)
     placeholders = ",".join("?" for _ in counted_sources)
-    if _cluster_tables_present(conn):
+    present = _cluster_tables_present(conn)
+    if present == {"news_clusters", "news_cluster_members"}:
         story_sql = (
             _STORY_SQL
             if _has_cluster_policy_column(conn)
             else _STORY_SQL_NO_POLICY_COLUMN
         )
+    elif present == {"news_cluster_members"}:
+        # Membership survives without its cluster rows: keep the members
+        # join, and every member story reads as an unknown policy stamp.
+        story_sql = _STORY_SQL_MEMBERS_ONLY
     else:
         story_sql = _STORY_SQL_NO_CLUSTER_TABLES
+    curated_params: tuple[str, ...] = ()
+    if curated:
+        from engine.qbus_news_quality import curated_sql_clause, register_curated_reader
+        register_curated_reader(conn, editorial_view)
+        clause, curated_params = curated_sql_clause(
+            tuple(source for source in allowed_url_sources if source in counted_sources),
+            tuple(source for source in allowed_teaser_sources if source in counted_sources),
+            editorial_view=editorial_view,
+        )
+        story_sql = story_sql.replace(
+            "AND s.status = 'active'",
+            f"AND s.status = 'active' {clause}",
+        )
     rows = conn.execute(
         story_sql.format(placeholders=placeholders),
-        (security_id, *counted_sources),
+        (security_id, *curated_params, *counted_sources),
     ).fetchall()
-    stories = _distinct_stories(rows)
+    stories = _distinct_stories(rows, as_of)
     return _assemble(security_id, as_of, stories, counted_sources)
 
 
@@ -203,14 +269,19 @@ def compare_to_typical(
 
 def _distinct_stories(
     rows: list[tuple[object, ...]],
+    as_of: datetime,
 ) -> dict[tuple[str, str], tuple[datetime, str, str, str | None]]:
     """One entry per (source, source_item_id); the ordered row wins ties.
+
+    A report the store first received after ``as_of`` is skipped: it was not
+    in possession at the calculation instant.
 
     The entry carries the report's effective time, its time basis, its story
     key (the cluster id, or ``item:`` + source + ``\\x1f`` + source_item_id
     when the report sits in no cluster) and the policy label of the cluster
     that minted it: the stored stamp, ``None`` for no cluster, or
-    ``UNKNOWN_CLUSTER_POLICY_VERSION`` when the cluster row is missing or
+    ``UNKNOWN_CLUSTER_POLICY_VERSION`` when the cluster row is missing
+    (deleted, or the clusters table absent while membership survives) or
     was minted before the stamp column existed.
     """
     stories: dict[
@@ -223,13 +294,15 @@ def _distinct_stories(
         received_at,
         cluster_id,
         policy_version,
+        first_received_at,
     ) in rows:
         key = (str(source), str(source_item_id))
         if key in stories:
             continue
-        when, basis = _effective_time(published_at, received_at)
-        if when is None:
+        possessed = _possession_time(first_received_at, received_at)
+        if possessed is None or possessed > as_of:
             continue
+        when, basis = _effective_time(published_at, possessed)
         if cluster_id is None:
             story_key = "item:" + key[0] + "\x1f" + key[1]
             label = None
@@ -243,13 +316,42 @@ def _distinct_stories(
     return stories
 
 
+def _possession_time(
+    first_received_at: object, received_at: object
+) -> datetime | None:
+    """When the store first held the report.
+
+    The stored first receipt when it parses; otherwise the projection's
+    latest receipt, which is never earlier than the first. ``None`` when
+    neither parses: possession is unknown, so the caller skips the report
+    rather than counting it at an as-of it may postdate.
+    """
+    for value in (first_received_at, received_at):
+        try:
+            instant = _parse_instant(value)
+        except (TypeError, ValueError, OverflowError):
+            # OverflowError: an offset stamp whose UTC instant falls outside
+            # datetime's range (year 1 east of UTC, year 9999 west of it).
+            instant = None
+        if instant is not None:
+            return instant
+    return None
+
+
 def _effective_time(
-    published_at: object, received_at: object
-) -> tuple[datetime | None, str]:
+    published_at: object, possessed: datetime
+) -> tuple[datetime, str]:
+    """The report's time and its basis.
+
+    The published time when present. Otherwise the possession instant from
+    ``_possession_time``: the first receipt when it reads, else the latest.
+    Using the first receipt keeps a redelivered report on the day the store
+    first held it.
+    """
     published = _parse_instant(published_at)
     if published is not None:
         return published, "published_at"
-    return _parse_instant(received_at), "received_at"
+    return possessed, "received_at"
 
 
 def _parse_instant(value: object) -> datetime | None:

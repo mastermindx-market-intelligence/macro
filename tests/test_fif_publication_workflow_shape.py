@@ -269,13 +269,15 @@ def test_d13_t3_isolation_confinement_and_crash_gate() -> None:
 
 def test_d13_w4_upload_carries_the_contract_files() -> None:
     """D13 W4: the always-upload artifact gains the contract acquire result +
-    summary, so a crashed contract night still leaves its evidence behind."""
+    summary, so a crashed contract night still leaves its evidence behind.
+    MINOR-3: the acquire-contract run report rides the same always-upload."""
     workflow = _workflow()
     steps = _steps(workflow)
     upload = next(step for step in steps if step.get("name") == UPLOAD_STEP)
     run_text = str(upload["with"]["path"])
     assert "fif-contract-acquire-result-${{ github.run_id }}.json" in run_text
     assert "fif-contract-acquire-summary-${{ github.run_id }}.json" in run_text
+    assert "fif-contract-acquire-acquire-report-${{ github.run_id }}.json" in run_text
 
 
 UPLOAD_STEP = "upload FIF publication reports (always)"
@@ -316,6 +318,17 @@ def test_capture_step_uses_the_contract_coverage_file() -> None:
     capture = next(step for step in steps if step.get("name") == CAPTURE_STEP)
     assert "--coverage-file config/fundamental_forensics/coverage/five_issuer_v1.json" in capture["run"]
     assert "--recorded-at" in capture["run"]
+
+
+def test_contract_sec_steps_pace_at_two_requests_per_second() -> None:
+    # Seat ruling (C0-c r6): the production contract lane is held to <=2 SEC
+    # requests/s, so both SEC-touching contract steps pass an explicit 0.5 s
+    # minimum interval instead of inheriting the 0.12 s argparse default.
+    workflow = _workflow()
+    steps = _steps(workflow)
+    for name in (CONTRACT_ACQUIRE_STEP, CAPTURE_STEP):
+        step = next(step for step in steps if step.get("name") == name)
+        assert "--min-interval-seconds 0.5" in step["run"], name
 
 
 def test_publish_step_publishes_then_verifies() -> None:

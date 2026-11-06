@@ -137,6 +137,7 @@ def test_continuation_for_stale_alias_when_blast_symbol_is_historical():
     )
     aliases = _ident.VendorAliasTable.__new__(_ident.VendorAliasTable)
     aliases._rows = rows
+    aliases._observation_state = None  # mirror VendorAliasTable.__init__'s default
     result = continuation_for("MMC", aliases, DECISION,
                               chain_id="c1", channel_id="ch1", chain_asof="2026-09-25")
     assert isinstance(result, NoLink)

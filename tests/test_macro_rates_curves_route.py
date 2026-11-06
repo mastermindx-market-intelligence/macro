@@ -715,15 +715,359 @@ def _t11_collapse_main_prior_label(html: str) -> str:
     )
 
 
+# Shapes ``date_pair`` / ``date_display_pair`` actually emit. Anything else
+# (a word, a raw ISO date, free text) must not collapse.
+_T11_DATE_EN = r"(\d{1,2} [A-Z][a-z]{2} \d{4})"
+_T11_DATE_ZH = r"(\d{4}年\d{1,2}月\d{1,2}日)"
+_T11_OLD_WHAT_CHANGED_NOTE = (
+    '<span class="mq-section-note">'
+    '<span class="l-en">Today against last time, measured the same way.</span>'
+    '<span class="l-zh">以相同方法将今天与上次对比。</span></span>'
+)
+_T11_DATED_NOTE_RE = re.compile(
+    r'<span class="mq-section-note">'
+    r'<span class="l-en">' + _T11_DATE_EN + r" against " + _T11_DATE_EN
+    + r", measured the same way\.</span>"
+    r'<span class="l-zh">' + _T11_DATE_ZH + r"与" + _T11_DATE_ZH
+    + r"对比，测算方法相同。</span>"
+    r"</span>"
+)
+_T11_UNDATED_NOTE_RE = re.compile(
+    r'<span class="mq-section-note">'
+    r'<span class="l-en">The latest reading against the one before it, '
+    r'measured the same way\.</span>'
+    r'<span class="l-zh">以相同方法将最新读数与上一读数对比。</span>'
+    r'</span>'
+)
+_T11_PRIOR_HEAD_DATE_RE = re.compile(
+    r'(<th scope="col"><span class="l-en">Prior</span><span class="l-zh">上期</span>)'
+    r'<span class="mq-owner-field"><span class="l-en">' + _T11_DATE_EN + r"</span>"
+    r'<span class="l-zh">' + _T11_DATE_ZH + r"</span></span>"
+)
+_T11_CURRENT_HEAD_DATE_RE = re.compile(
+    r'(<th scope="col"><span class="l-en">Current</span><span class="l-zh">当前</span>)'
+    r'<span class="mq-owner-field"><span class="l-en">' + _T11_DATE_EN + r"</span>"
+    r'<span class="l-zh">' + _T11_DATE_ZH + r"</span></span>"
+)
+
+
+def _t11_collapse_prior_date(html: str) -> str:
+    """Collapse the what-changed prior-date edit back onto the frozen golden.
+
+    The Change column now names the gap it covers. When the prior is an
+    earlier comparable reading, the note is "<current> against <prior>,
+    measured the same way." and each date is repeated under Prior and
+    Current. Otherwise the note is the undated sentence and the heads stay
+    bare. The T11 goldens froze the older "Today against last time" note
+    and those bare heads. They are never regenerated from this renderer
+    (tests/fixtures/macro_suite_t11/README): a golden refresh has to carry
+    its paired input generation, and this edit is not that refresh. Both
+    new note forms map back to that exact golden span, and a date span
+    directly after Prior or Current is removed. The date groups accept
+    only the shapes ``date_pair`` produces, inside that markup, so free
+    text, a non-date, or a date on any other head still fails the compare.
+    """
+    html = _T11_DATED_NOTE_RE.sub(_T11_OLD_WHAT_CHANGED_NOTE, html)
+    html = _T11_UNDATED_NOTE_RE.sub(_T11_OLD_WHAT_CHANGED_NOTE, html)
+    html = _T11_PRIOR_HEAD_DATE_RE.sub(r"\1", html)
+    html = _T11_CURRENT_HEAD_DATE_RE.sub(r"\1", html)
+    return html
+
+
+# T21 (reviewed 2026-10-17): the frozen T11 goldens in
+# tests/fixtures/macro_suite_t11/pages/ froze BASE e38026e9f4e's
+# rendering, in which the T21 label keys had no table entry and
+# rendered as the de-slugged fallback. The reviewed T21 strings now
+# ship in lib/macro_suite_labels.py, so the entries below collapse
+# exactly those measured strings back to BASE's fallback text for the
+# T11 comparison only. Every entry is a MEASURED whole text node
+# (`>…<` boundaries, exact node text) from the R1 diff of the
+# re-rendered suite against the committed goldens; the goldens are
+# never regenerated from the candidate renderer
+# (tests/fixtures/macro_suite_t11/README).
+_T21_LABEL_COLLAPSE: tuple[tuple[tuple[str, ...], str, str], ...] = (
+    # (label refs "vocab:key:lang", T21 rendered text, BASE e38026e9 rendered text)
+    (("metric:glt_real_yield_10y_contribution_z:en",), ">10-year real yield, against its own history<", ">Glt real yield 10y contribution z<"),
+    (("metric:glt_real_yield_10y_contribution_z:zh",), ">10年期实际收益率（对比自身历史）<", ">10年期实际收益率贡献 z 值<"),
+    (("metric:glt_boj_monetary_contribution_z:en",), ">BoJ balance sheet, against its own history<", ">Glt boj monetary contribution z<"),
+    (("metric:cb_boj_balance_sheet_impulse_13w:en",), ">BoJ balance sheet, change over 13 weeks<", ">Cb boj balance sheet impulse 13w<"),
+    (("metric:cb_boj_balance_sheet_impulse_52w:en",), ">BoJ balance sheet, change over 52 weeks<", ">Cb boj balance sheet impulse 52w<"),
+    (("metric:cb_boj_balance_sheet_level:en",), ">BoJ balance sheet, local currency<", ">Cb boj balance sheet level<"),
+    (("metric:glt_broad_dollar_contribution_z:en",), ">Broad dollar, against its own history<", ">Glt broad dollar contribution z<"),
+    (("metric:glt_monetary_coverage_ratio:en",), ">Central-bank coverage<", ">Glt monetary coverage ratio<"),
+    (("basis:trailing_13w_pct_change:en",), ">Change over the last 13 weeks<", ">Trailing 13w pct change<"),
+    (("basis:trailing_52w_pct_change:en",), ">Change over the last 52 weeks<", ">Trailing 52w pct change<"),
+    (("metric:glt_funding_coverage_ratio:en",), ">Dollar-funding coverage<", ">Glt funding coverage ratio<"),
+    (("metric:glt_ecb_monetary_contribution_z:en",), ">ECB balance sheet, against its own history<", ">Glt ecb monetary contribution z<"),
+    (("metric:cb_ecb_balance_sheet_impulse_13w:en",), ">ECB balance sheet, change over 13 weeks<", ">Cb ecb balance sheet impulse 13w<"),
+    (("metric:cb_ecb_balance_sheet_impulse_52w:en",), ">ECB balance sheet, change over 52 weeks<", ">Cb ecb balance sheet impulse 52w<"),
+    (("metric:cb_ecb_balance_sheet_level:en",), ">ECB balance sheet, local currency<", ">Cb ecb balance sheet level<"),
+    (("unit:EUR billions:en",), ">EUR bn<", ">Eur billions<"),
+    (("metric:glt_fed_monetary_contribution_z:en",), ">Fed balance sheet, against its own history<", ">Glt fed monetary contribution z<"),
+    (("metric:cb_fed_balance_sheet_impulse_52w:en",), ">Fed balance sheet, change over 52 weeks<", ">Cb fed balance sheet impulse 52w<"),
+    (("metric:cb_fed_balance_sheet_level:en",), ">Fed balance sheet, local currency<", ">Cb fed balance sheet level<"),
+    (("metric:glt_high_yield_oas_contribution_z:en",), ">High-yield spread, against its own history<", ">Glt high yield oas contribution z<"),
+    (("direction:higher_easier_funding:en",), ">Higher = easier dollar funding<", ">Higher easier funding<"),
+    (("direction:higher_more_accommodative:en",), ">Higher = more accommodative<", ">Higher more accommodative<"),
+    (("direction:higher_more_coverage:en",), ">Higher = more coverage<", ">Higher more coverage<"),
+    (("direction:higher_more_expansionary:en",), ">Higher = more expansionary<", ">Higher more expansionary<"),
+    (("unit:JPY billions:en",), ">JPY bn<", ">Jpy billions<"),
+    (("basis:standardized_monetary_contribution:en",), ">Standardized contribution to the central-bank money reading<", ">Standardized monetary contribution<"),
+    (("basis:standardized_funding_contribution:en",), ">Standardized contribution to the dollar-funding reading<", ">Standardized funding contribution<"),
+    (("unit:USD billions:en",), ">USD bn<", ">Usd billions<"),
+    (("unit:ratio_0_1:en",), ">share (0–1)<", ">Ratio 0 1<"),
+    (("unit:ratio_0_1:zh",), ">占比（0–1）<", ">比率（0–1）<"),
+    (("metric:glt_monetary_coverage_ratio:zh",), ">央行数据覆盖率<", ">全球货币覆盖率<"),
+    (("basis:standardized_monetary_contribution:zh",), ">对央行货币读数的标准化贡献<", ">标准化货币贡献<"),
+    (("basis:standardized_funding_contribution:zh",), ">对美元融资读数的标准化贡献<", ">标准化融资贡献<"),
+    (("metric:glt_broad_dollar_contribution_z:zh",), ">广义美元（对比自身历史）<", ">广义美元贡献 z 值<"),
+    (("direction:higher_easier_funding:zh",), ">数值越高＝美元融资越宽松<", ">数值越高＝融资越容易<"),
+    (("direction:higher_more_coverage:zh",), ">数值越高＝覆盖越全<", ">数值越高＝覆盖越广<"),
+    (("direction:higher_more_expansionary:zh",), ">数值越高＝越扩张<", ">数值越高＝越宽松<"),
+    (("metric:cb_boj_balance_sheet_impulse_13w:zh",), ">日本央行资产负债表（13周变化）<", ">日本央行资产负债表脉冲（13周）<"),
+    (("metric:cb_boj_balance_sheet_impulse_52w:zh",), ">日本央行资产负债表（52周变化）<", ">日本央行资产负债表脉冲（52周）<"),
+    (("metric:glt_boj_monetary_contribution_z:zh",), ">日本央行资产负债表（对比自身历史）<", ">日本央行货币贡献 z 值<"),
+    (("metric:cb_boj_balance_sheet_level:zh",), ">日本央行资产负债表（本币）<", ">日本央行资产负债表水平<"),
+    (("metric:cb_ecb_balance_sheet_impulse_13w:zh",), ">欧洲央行资产负债表（13周变化）<", ">欧央行资产负债表脉冲（13周）<"),
+    (("metric:cb_ecb_balance_sheet_impulse_52w:zh",), ">欧洲央行资产负债表（52周变化）<", ">欧央行资产负债表脉冲（52周）<"),
+    (("metric:glt_ecb_monetary_contribution_z:zh",), ">欧洲央行资产负债表（对比自身历史）<", ">欧央行货币贡献 z 值<"),
+    (("metric:cb_ecb_balance_sheet_level:zh",), ">欧洲央行资产负债表（本币）<", ">欧央行资产负债表水平<"),
+    (("metric:glt_funding_coverage_ratio:zh",), ">美元融资数据覆盖率<", ">全球融资覆盖率<"),
+    (("metric:cb_fed_balance_sheet_impulse_52w:zh",), ">美联储资产负债表（52周变化）<", ">美联储资产负债表脉冲（52周）<"),
+    (("metric:glt_fed_monetary_contribution_z:zh",), ">美联储资产负债表（对比自身历史）<", ">美联储货币贡献 z 值<"),
+    (("metric:cb_fed_balance_sheet_level:zh",), ">美联储资产负债表（本币）<", ">美联储资产负债表水平<"),
+    (("basis:trailing_13w_pct_change:zh",), ">近13周变化<", ">过去13周百分比变化<"),
+    (("basis:trailing_52w_pct_change:zh",), ">近52周变化<", ">过去52周百分比变化<"),
+    (("metric:glt_high_yield_oas_contribution_z:zh",), ">高收益利差（对比自身历史）<", ">高收益利差贡献 z 值<"),
+)
+
+
+# Measured collapses for reviewed reader-facing changes, one JSON file per change
+# under tests/fixtures/macro_suite_t11/collapses/. Each pair is [text as rendered
+# now, text the golden froze], exact bytes, applied by str.replace, so any other
+# edit still fails T11. An empty second item removes a new element whole. The
+# goldens are never regenerated from the candidate renderer. One file per change,
+# so changes in review at the same time do not touch the same lines here.
+T11_COLLAPSE_DIR = T11_DATA / "collapses"
+
+
+def _t11_registered_collapses() -> list[tuple[str, str]]:
+    pairs: list[tuple[str, str]] = []
+    for path in sorted(T11_COLLAPSE_DIR.glob("*.json")):
+        record = json.loads(path.read_text(encoding="utf-8"))
+        pairs.extend((new, old) for new, old in record["pairs"])
+    return pairs
+
+
+_T11_REGISTERED_COLLAPSE = _t11_registered_collapses()
+
+
+def _t11_collapse_t21_labels(html: str) -> str:
+    """Collapse the reviewed T21 label strings back to BASE's fallback.
+
+    T21 reviewed these labels; the T11 goldens froze BASE e38026e9's
+    de-slugged fallback rendering. Only the exact measured text in
+    ``_T21_LABEL_COLLAPSE`` collapses (whole text node or attribute
+    value, boundaries included), so the byte-identity check still
+    fails on any other edit. The goldens are never regenerated from
+    the candidate renderer (tests/fixtures/macro_suite_t11/README).
+    """
+    for _refs, _new, _old in _T21_LABEL_COLLAPSE:
+        html = html.replace(_new, _old)
+    # The registered collapses run here because every comparison already
+    # calls this function, on both sides.
+    for _new, _old in _T11_REGISTERED_COLLAPSE:
+        html = html.replace(_new, _old)
+    return html
+
+
+def test_11_t21_label_collapse_is_bound_to_reviewed_labels() -> None:
+    """Every ``_T21_LABEL_COLLAPSE`` entry is bound to the shipped labels.
+
+    For each entry: the ref names a key that exists in the labels module;
+    the T21 text is exactly the shipped label string (its boundaries wrap a
+    whole text node or an attribute value); and replacing the shipped
+    string by that key's BASE fallback — ``deslug`` for EN, the labels
+    module's own zh-parity applied to the de-slugged pair for ZH, both
+    computed with the module's functions, never retyped literals — yields
+    the BASE text exactly. No entry's rendered text is a transformed form
+    of its label, so no escaping/formatting function is recorded.
+    """
+    from lib import macro_suite_labels as L
+
+    assert _T21_LABEL_COLLAPSE, "the T21 collapse table must not be empty"
+    for refs, new, old in _T21_LABEL_COLLAPSE:
+        assert refs and new != old, (refs, new, old)
+        assert (new.startswith(">") and new.endswith("<")) or (
+            new.startswith('="') and new.endswith('"')), (refs, new)
+        assert (old.startswith(">") and old.endswith("<")) or (
+            old.startswith('="') and old.endswith('"')), (refs, old)
+        new_text, old_text = new[1:-1], old[1:-1]
+        rebuilt = new_text
+        for ref in refs:
+            vocab, key, lang = ref.split(":", 2)
+            table = L._VOCABULARIES.get(vocab)
+            assert table is not None and key in table, ref
+            shipped = L.label(vocab, key)[lang]
+            fallback_pair = L.apply_zh_parity(
+                L._pair(L.deslug(key), L.deslug(key)))
+            rebuilt = rebuilt.replace(shipped, fallback_pair[lang])
+        assert rebuilt == old_text, (refs, new, old, rebuilt)
+
+
+def test_11_t21_label_collapse_does_not_mask_other_edits() -> None:
+    """Relabelling the golden with the T21 strings passes T11; any other
+    single-character edit inside the compared region still fails it."""
+    name = "macro_liquidity_central_banks.html"
+    golden = (T11_PAGES / name).read_text(encoding="utf-8")
+    relabelled = golden
+    for _refs, new, old in _T21_LABEL_COLLAPSE:
+        relabelled = relabelled.replace(old, new)
+    assert relabelled != golden
+    _assert_same_macro_suite_region(golden, relabelled, name)
+    marker = _SUITE_REGION[0]
+    idx = relabelled.find(marker)
+    assert idx >= 0, "golden LCB page must carry the suite-region start marker"
+    mutated = (relabelled[:idx + len(marker)] + "X"
+               + relabelled[idx + len(marker):])
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, mutated, name)
+
+
+def test_11_prior_date_collapse_does_not_mask_other_edits() -> None:
+    """Rewriting a frozen golden into the new what-changed markup passes T11.
+
+    A character in the note, a non-date in a date span, a date span on a
+    head other than Prior or Current, or any other character in the region
+    still fails. The goldens stay frozen.
+    """
+    name = "macro_financial_conditions.html"
+    golden = (T11_PAGES / name).read_text(encoding="utf-8")
+    dated_note = (
+        '<span class="mq-section-note">'
+        '<span class="l-en">4 Sep 2026 against 1 Aug 2026, measured the same way.</span>'
+        '<span class="l-zh">2026年9月4日与2026年8月1日对比，测算方法相同。</span></span>'
+    )
+    undated_note = (
+        '<span class="mq-section-note">'
+        '<span class="l-en">The latest reading against the one before it, measured the same way.</span>'
+        '<span class="l-zh">以相同方法将最新读数与上一读数对比。</span></span>'
+    )
+    prior_span = (
+        '<span class="mq-owner-field"><span class="l-en">1 Aug 2026</span>'
+        '<span class="l-zh">2026年8月1日</span></span>'
+    )
+    current_span = (
+        '<span class="mq-owner-field"><span class="l-en">4 Sep 2026</span>'
+        '<span class="l-zh">2026年9月4日</span></span>'
+    )
+    prior_label = '<th scope="col"><span class="l-en">Prior</span><span class="l-zh">上期</span>'
+    current_label = '<th scope="col"><span class="l-en">Current</span><span class="l-zh">当前</span>'
+    metric_label = '<th scope="col"><span class="l-en">Metric</span><span class="l-zh">指标</span>'
+
+    rewritten = golden.replace(_T11_OLD_WHAT_CHANGED_NOTE, dated_note, 1)
+    rewritten = rewritten.replace(prior_label, prior_label + prior_span, 1)
+    rewritten = rewritten.replace(current_label, current_label + current_span, 1)
+    assert rewritten != golden
+    _assert_same_macro_suite_region(golden, rewritten, name)
+
+    undated = golden.replace(_T11_OLD_WHAT_CHANGED_NOTE, undated_note, 1)
+    assert undated != golden
+    _assert_same_macro_suite_region(golden, undated, name)
+
+    wording = rewritten.replace("measured the same way.", "measured the same way.X", 1)
+    assert wording != rewritten
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, wording, name)
+
+    nondate = rewritten.replace("1 Aug 2026", "yesterday", 1)
+    assert nondate != rewritten
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, nondate, name)
+
+    other_head = rewritten.replace(metric_label, metric_label + current_span, 1)
+    assert other_head != rewritten
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, other_head, name)
+
+    marker = _SUITE_REGION[0]
+    idx = rewritten.find(marker)
+    assert idx >= 0, "golden financial-conditions page must carry the suite-region start marker"
+    mutated = rewritten[:idx + len(marker)] + "X" + rewritten[idx + len(marker):]
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, mutated, name)
+
+
 def _assert_same_macro_suite_region(before_html: str, after_html: str, name: str) -> None:
+    """Byte-compare one macro-suite region after the accepted collapses.
+
+    ``_t11_collapse_prior_date`` folds this edit's dated Change column
+    back to the frozen "Today against last time" note. The goldens stay
+    as they are: a refresh has to carry its paired input generation
+    (tests/fixtures/macro_suite_t11/README), and this edit is not that
+    refresh. The missing-prior and T21 collapses still run, on both sides.
+    """
     before = _region(before_html, name)
     after = _region(after_html, name)
     assert before is not None and after is not None, f"{name}: no macro-suite region"
-    assert _t11_collapse_main_prior_label(before) == _t11_collapse_main_prior_label(after), (
+    assert (_t11_collapse_t21_labels(_t11_collapse_main_prior_label(
+                _t11_collapse_prior_date(before)))
+            == _t11_collapse_t21_labels(_t11_collapse_main_prior_label(
+                _t11_collapse_prior_date(after)))), (
         f"{name}: the macro-suite region is NOT byte-identical to the committed "
         "page. That is a regression introduced by this packet's shared-surface "
         "edits, not main-side drift."
     )
+
+
+def test_11_registered_collapses_are_exact_and_explained() -> None:
+    """Each file says why. Each pair starts at a tag boundary, so a collapse
+    cannot fold a loose word out of the middle of a sentence."""
+    files = sorted(T11_COLLAPSE_DIR.glob("*.json"))
+    assert files, "the collapse directory must not be empty"
+    for path in files:
+        record = json.loads(path.read_text(encoding="utf-8"))
+        assert set(record) == {"why", "pairs"}, path.name
+        assert record["why"].strip(), path.name
+        assert record["pairs"], path.name
+        for new, old in record["pairs"]:
+            assert isinstance(new, str) and isinstance(old, str), path.name
+            assert new[0] in "<>", (path.name, new)
+            assert new != old, (path.name, new)
+
+
+@pytest.mark.parametrize("new,old", _T11_REGISTERED_COLLAPSE)
+def test_11_registered_collapse_does_not_mask_other_edits(new: str, old: str) -> None:
+    """The change itself passes T11. The same change with one more character
+    fails, and a pair whose frozen text is on no golden fails as stale."""
+    if old:
+        names = [p.name for p in sorted(T11_PAGES.glob("*.html"))
+                 if old in (_region(p.read_text(encoding="utf-8"), p.name) or "")]
+        assert names, f"no golden holds {old!r}"
+        name = names[0]
+        golden = (T11_PAGES / name).read_text(encoding="utf-8")
+        changed = golden.replace(old, new)
+        stray = golden.replace(old, new[:-1] + "X" + new[-1], 1)
+    else:
+        name = "macro_inflation_system.html"
+        golden = (T11_PAGES / name).read_text(encoding="utf-8")
+        assert "</main>" in golden
+        changed = golden.replace("</main>", new + "</main>", 1)
+        stray = golden.replace("</main>", new[:-1] + "X" + new[-1] + "</main>", 1)
+    assert changed != golden
+    _assert_same_macro_suite_region(golden, changed, name)
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, stray, name)
+
+
+def test_late_within_tolerance_note_still_raises_the_hub_note() -> None:
+    """The hub's "not current today" note reads the note title, so the new
+    title must count as stale or the hub would silently drop that note."""
+    view = {"diagnostics": [{
+        "tone": "warn",
+        "title": {"en": "Required source late, within tolerance"},
+    }]}
+    assert builder._input_note_from_view(view) == "stale"
 
 
 def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
@@ -839,10 +1183,12 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
         ROOT, page, data_root=data, out_dir=out, env=env,
         page_built_at=altered_stamp,
     )
-    before = _region(altered, name)
-    after = _region((out / name).read_text(encoding="utf-8"), name)
+    before = _region(_t11_collapse_t21_labels(altered), name)
+    after = _region(_t11_collapse_t21_labels((out / name).read_text(encoding="utf-8")), name)
     assert before is not None and after is not None
-    assert before == after
+    # The re-render carries this edit's dated Change column. Collapse it
+    # the same way T11 does; the altered stamp still has to match.
+    assert _t11_collapse_prior_date(before) == _t11_collapse_prior_date(after)
     assert altered_stamp in before
     assert stamp not in before
 

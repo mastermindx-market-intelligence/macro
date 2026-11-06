@@ -166,6 +166,69 @@ def test_accrual_three_point_boundary_is_inclusive() -> None:
     assert dict(finding.derived_values)["accrual_ratio_change"] == "0.03"
 
 
+def _finding(result, detector_id: str):
+    return next(item for item in result.findings if item.detector_id == detector_id)
+
+
+def test_a26_working_capital_finding_exposes_amount_base_and_materiality() -> None:
+    finding = _finding(_run(), "receivables_stretch")
+    derived = dict(finding.derived_values)
+    # Fixture: AR 121 -> 155 against 2024 revenue 1120 (amount 34, 3.04pp of revenue).
+    assert derived["accounts_receivable_change"] == "34"
+    assert derived["accounts_receivable_change_share_of_revenue_pp"].startswith("3.0357")
+    assert {item.period_end for item in finding.inputs} == {"2023-12-31", "2024-12-31"}
+    assert not [code for code in finding.limitations if code.startswith("small_base:")]
+
+
+def test_a26_tiny_base_is_caveated_not_scored() -> None:
+    payload = deepcopy(_load("companyfacts_versions.json"))
+    _set_value(payload, "AccountsReceivableNetCurrent", LATEST_ACCESSION, "2023-12-31", 10)
+    finding = _finding(_run(payload), "receivables_stretch")
+    derived = dict(finding.derived_values)
+    assert "small_base:accounts_receivable" in finding.limitations
+    assert derived["accounts_receivable_change"] == "145"
+    assert finding.authority == "review_priority_only"
+    assert not [key for key in derived if "score" in key or "risk" in key]
+
+
+def test_a26_basis_change_across_periods_is_caveated() -> None:
+    payload = deepcopy(_load("companyfacts_versions.json"))
+    receivables = payload["facts"]["us-gaap"]["AccountsReceivableNetCurrent"]["units"]["USD"]
+    moved = [entry for entry in receivables if entry["end"] == "2023-12-31"]
+    payload["facts"]["us-gaap"]["AccountsReceivableNetCurrent"]["units"]["USD"] = [
+        entry for entry in receivables if entry["end"] != "2023-12-31"
+    ]
+    payload["facts"]["us-gaap"]["ReceivablesNetCurrent"] = {
+        "label": "Receivables, Net, Current",
+        "units": {"USD": moved},
+    }
+    finding = _finding(_run(payload), "receivables_stretch")
+    assert "basis_changed:accounts_receivable" in finding.limitations
+    assert not [code for code in finding.limitations if code.startswith("basis_changed:revenue")]
+
+
+def test_a27_findings_separate_observation_from_inference_and_never_assert_fraud_or_alpha() -> None:
+    from engine.fundamental_forensics.pack_evaluation import A27_PATTERNS
+
+    payload = deepcopy(_load("companyfacts_versions.json"))
+    _set_value(payload, "AccountsReceivableNetCurrent", LATEST_ACCESSION, "2023-12-31", 10)
+    result = _run(payload)
+    assert not [pattern.pattern for pattern in A27_PATTERNS if pattern.search(result.canonical_json())]
+    for finding in result.findings:
+        # Observation: each input names the filed observation and facts it was read from.
+        assert finding.inputs and all(item.observation_id and item.fact_ids for item in finding.inputs)
+        # Inference: the rule, its thresholds and the derived numbers are explicit, never a verdict.
+        assert finding.formula and finding.thresholds and finding.derived_values
+        assert finding.authority == "review_priority_only" and finding.display_only is True
+    # Uncertainty: a legitimate tiny-base explanation is labelled on the finding, not hidden.
+    assert "small_base:accounts_receivable" in _finding(result, "receivables_stretch").limitations
+
+
+def test_a26_unchanged_basis_carries_no_basis_caveat() -> None:
+    for finding in _run().findings:
+        assert not [code for code in finding.limitations if code.startswith("basis_changed:")]
+
+
 def test_nonadjacent_annual_periods_are_not_compared() -> None:
     payload = deepcopy(_load("companyfacts_versions.json"))
     for concept in payload["facts"]["us-gaap"].values():
