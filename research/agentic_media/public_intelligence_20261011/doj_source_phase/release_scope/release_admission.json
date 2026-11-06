@@ -1,0 +1,108 @@
+{
+  "observed_at": "2026-10-14T04:47:42.838303+00:00",
+  "main": "0707965ccaf60252152cfbf558f762195723ef7e",
+  "counts": {
+    "queued": 16,
+    "in_progress": 12,
+    "pending": 1,
+    "requested": 0,
+    "waiting": 0
+  },
+  "cap": 8,
+  "lease": {
+    "id": 11807532412,
+    "node_id": "LA_kwDOS4LjIs8AAAACv8ilfA",
+    "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/labels/merge-refresh-in-flight",
+    "name": "merge-refresh-in-flight",
+    "color": "1d76db",
+    "default": false,
+    "description": "m1 p=8920 h=1d65092964584c9237d00d68a381a3badd9ee8de t=1791943176 g=3943df424829",
+    "archived_at": null,
+    "archived_by": null
+  },
+  "lease_prs": [],
+  "controller": [
+    {
+      "id": 38513223115,
+      "head_sha": "0707965ccaf60252152cfbf558f762195723ef7e",
+      "status": "pending",
+      "conclusion": null,
+      "event": "workflow_run",
+      "created_at": "2026-10-14T04:47:35Z",
+      "updated_at": "2026-10-14T04:47:36Z",
+      "display_title": "merge-on-green"
+    },
+    {
+      "id": 38513191251,
+      "head_sha": "16e94177f063b27c7da6adeb709df2f8b8613996",
+      "status": "in_progress",
+      "conclusion": null,
+      "event": "workflow_run",
+      "created_at": "2026-10-14T04:47:13Z",
+      "updated_at": "2026-10-14T04:47:37Z",
+      "display_title": "merge-on-green"
+    },
+    {
+      "id": 38513186123,
+      "head_sha": "16e94177f063b27c7da6adeb709df2f8b8613996",
+      "status": "pending",
+      "conclusion": null,
+      "event": "workflow_run",
+      "created_at": "2026-10-14T04:47:10Z",
+      "updated_at": "2026-10-14T04:47:11Z",
+      "display_title": "merge-on-green"
+    },
+    {
+      "id": 38513181179,
+      "head_sha": "16e94177f063b27c7da6adeb709df2f8b8613996",
+      "status": "queued",
+      "conclusion": null,
+      "event": "workflow_run",
+      "created_at": "2026-10-14T04:47:07Z",
+      "updated_at": "2026-10-14T04:47:07Z",
+      "display_title": "merge-on-green"
+    },
+    {
+      "id": 38513158907,
+      "head_sha": "16e94177f063b27c7da6adeb709df2f8b8613996",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "workflow_run",
+      "created_at": "2026-10-14T04:46:51Z",
+      "updated_at": "2026-10-14T04:47:35Z",
+      "display_title": "merge-on-green"
+    }
+  ],
+  "baseline": [
+    {
+      "id": 38513218832,
+      "head_sha": "0707965ccaf60252152cfbf558f762195723ef7e",
+      "status": "pending",
+      "conclusion": null,
+      "event": "push",
+      "created_at": "2026-10-14T04:47:32Z",
+      "updated_at": "2026-10-14T04:47:33Z",
+      "display_title": "fix(screener): qualify Exposure holdings before filtering (#9191)"
+    },
+    {
+      "id": 38512903255,
+      "head_sha": "16e94177f063b27c7da6adeb709df2f8b8613996",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "event": "push",
+      "created_at": "2026-10-14T04:43:57Z",
+      "updated_at": "2026-10-14T04:47:33Z",
+      "display_title": "fix(agentos): report outbound supersession, misnamed cycles and conte\u2026"
+    },
+    {
+      "id": 38512636925,
+      "head_sha": "80df7978789e866a1563bfe0ccb9c96319c0196e",
+      "status": "in_progress",
+      "conclusion": null,
+      "event": "push",
+      "created_at": "2026-10-14T04:40:52Z",
+      "updated_at": "2026-10-14T04:42:33Z",
+      "display_title": "fix(ci): SNI artifact walks prune on the path relative to their scan \u2026"
+    }
+  ]
+}

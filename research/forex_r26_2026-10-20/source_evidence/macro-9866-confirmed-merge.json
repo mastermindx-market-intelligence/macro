@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-21T22:39:43.206598+00:00",
+  "pr": {
+    "head_sha": "57bb2f29a4bb341ef32eaa04d5cd058e1045b53d",
+    "merge_commit_sha": "b5daf09b647c9c3d49c0c3050a6243daa4d7f559",
+    "merged": true,
+    "merged_at": "2026-10-21T22:39:26Z",
+    "number": 9866,
+    "state": "closed"
+  },
+  "commit": {
+    "parents": [
+      "cf7e7536c24303c750768b6a49982e00acd31dc8"
+    ],
+    "sha": "b5daf09b647c9c3d49c0c3050a6243daa4d7f559",
+    "tree": "d02e6970facf525588170874af1d068dc55e2bbc"
+  },
+  "expected_integration_tree": "d02e6970facf525588170874af1d068dc55e2bbc",
+  "tree_matches": true
+}

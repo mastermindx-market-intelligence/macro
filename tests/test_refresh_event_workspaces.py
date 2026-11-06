@@ -340,7 +340,7 @@ def test_corrected_lifecycle_state_is_sticky_across_an_unchanged_source_rebuild(
 def test_load_prior_workspace_raises_on_genuine_fetch_failure(capsys) -> None:
     """Unit-level: any failure OTHER than a clean not-published 404 raises
     PriorWorkspaceFetchFailed, never returns None, and emits a line-start
-    ::warning naming the event and the error class."""
+    ::warning naming the event and the closed failure category."""
 
     def boom(event_id: str) -> dict:
         raise TimeoutError("connection timed out")
@@ -353,7 +353,7 @@ def test_load_prior_workspace_raises_on_genuine_fetch_failure(capsys) -> None:
     assert any(line.startswith("::warning title=event-workspace-prior-fetch-failed::") for line in lines), out
     warning_line = next(line for line in lines if line.startswith("::warning title=event-workspace-prior-fetch-failed::"))
     assert "evt_boom" in warning_line
-    assert "TimeoutError" in warning_line
+    assert '"exception_category":"timeout"' in warning_line
 
 
 def test_load_prior_workspace_returns_none_on_clean_not_published(capsys) -> None:
@@ -371,6 +371,144 @@ def test_load_prior_workspace_returns_none_on_clean_not_published(capsys) -> Non
 def test_load_prior_workspace_returns_the_workspace_on_a_hit() -> None:
     payload = {"event_id": "evt_x", "lifecycle": {"state": "complete"}}
     assert load_prior_workspace("evt_x", fetch=lambda eid: payload) == payload
+
+
+def test_p1_caught_read_failure_does_not_disclose_exception_text(capsys, caplog):
+    secret = "https://private.invalid/?signed=SECRET headers=SECRET body=SECRET"
+    original = TimeoutError(secret)
+    def fail(_event_id):
+        raise original
+    with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+        load_prior_workspace("evt_fixture", fetch=fail)
+    assert caught.value.__cause__ is original
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SECRET" not in rendered and "private.invalid" not in rendered
+    assert '"exception_category":"timeout"' in rendered
+
+
+def test_p1_clean_absence_keeps_debug_output_free_of_exception_text(capsys, caplog):
+    import logging
+    def absent(_event_id):
+        raise _PriorWorkspaceNotPublished("SECRET signed URL and response body")
+    with caplog.at_level(logging.DEBUG):
+        assert load_prior_workspace("evt_fixture", fetch=absent) is None
+    output = capsys.readouterr()
+    assert "SECRET" not in output.out + output.err + caplog.text
+    assert "event-workspace-prior-fetch-failed" not in output.out
+
+
+@pytest.mark.parametrize("kind", [reader.WorkspaceChainIntegrityError, RuntimeError])
+def test_p1_current_generation_lookup_sanitizes_failures_without_fallback(monkeypatch, capsys, caplog, kind):
+    original = kind("SECRET signed URL and response body")
+    def fail(*args, **kwargs):
+        raise original
+    monkeypatch.setattr(reader, "find_current_event_id_for_company", fail)
+    with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+        load_prior_workspace_for_ticker("DHI", base_url="https://fixture.invalid/company_intelligence")
+    assert caught.value.__cause__ is original
+    output = capsys.readouterr()
+    assert "SECRET" not in output.out + output.err + caplog.text + str(caught.value)
+
+
+def test_p1_body_failure_keeps_stage_through_phase1_without_any_publication(monkeypatch, tmp_path, capsys, caplog):
+    import requests
+    import socket
+    base = "https://fixture.invalid/company_intelligence"
+    event_id = "evt_cik0000795266_2026q3_results"
+    response = requests.Response()
+    response.status_code = 503
+    original = requests.HTTPError("https://private.invalid/?secret=SECRET body=SECRET", response=response)
+    def get(url, **kwargs):
+        if url == base + "/event_workspaces/manifest.json":
+            ok = requests.Response()
+            ok.status_code, ok.url = 200, url
+            ok._content = json.dumps({"generation_id": "a" * 24}).encode()
+            ok._content_consumed = True
+            return ok
+        raise original
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(reader.requests, "get", get)
+    def carry(ticker):
+        return load_prior_workspace(event_id, base_url=base) if ticker == "KBH" else None
+    fake = _FakeR2()
+    with pytest.raises(RefreshError) as caught:
+        _refresh(tmp_path, fake, homebuilder_carry_forward_loader=carry)
+    assert fake.puts == []
+    assert not (tmp_path / "event_workspaces" / "manifest.json").exists()
+    assert not (tmp_path / "event_workspaces" / "generations").exists()
+    details = reader.read_failure_diagnostics(caught.value)
+    assert details == {"request_stage": "immutable_workspace_body", "exception_category": "http_error", "http_status": 503}
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SECRET" not in rendered and "private.invalid" not in rendered
+    assert '"request_stage":"immutable_workspace_body"' in rendered
+
+
+@pytest.mark.parametrize("site", ["chain", "current_marker"])
+@pytest.mark.parametrize("category", ["timeout", "http_error"])
+def test_p1_chain_and_current_marker_failures_are_closed(monkeypatch, tmp_path, capsys, caplog, site, category):
+    import requests
+    import socket
+    from scripts import refresh_event_workspaces as owner
+    secret = "SYNTHETIC_SECRET https://private.invalid/?signed=SYNTHETIC_SECRET"
+    if category == "http_error":
+        response = requests.Response()
+        response.status_code = 503
+        original = requests.HTTPError(secret, response=response)
+    else:
+        original = TimeoutError(secret)
+    def fail(*args, **kwargs):
+        raise original
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    fake = _FakeR2()
+    if site == "chain":
+        monkeypatch.setattr(owner.ci_reader, "read_event_source_revisions", fail)
+        with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+            owner._event_known_revisions(FLAGSHIP_EVENT_ID)
+    else:
+        with pytest.raises(RefreshError) as caught:
+            _refresh(tmp_path, fake, current_marker_loader=fail)
+    assert caught.value.__cause__ is original
+    assert fake.puts == []
+    assert not (tmp_path / "event_workspaces" / "generations").exists()
+    assert not (tmp_path / "event_workspaces" / "manifest.json").exists()
+    expected = {"request_stage": None, "exception_category": category,
+                "http_status": 503 if category == "http_error" else None}
+    assert reader.read_failure_diagnostics(caught.value) == expected
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SYNTHETIC_SECRET" not in rendered and "private.invalid" not in rendered
+    assert json.dumps(expected, sort_keys=True, separators=(",", ":")) in str(caught.value)
+    if site == "chain":
+        assert json.dumps(expected, sort_keys=True, separators=(",", ":")) in output.out
+
+
+@pytest.mark.parametrize("already_current", [True, False])
+def test_p1_sibling_publish_noop_never_claims_new_promotion(tmp_path, monkeypatch, capsys, already_current):
+    import socket
+    from scripts import publish_company_intelligence_r2 as publisher
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(publisher, "_client", lambda: None)
+    def no_write_publish(path, **kwargs):
+        kwargs.pop("s3")
+        kwargs.pop("bucket")
+        class CurrentStore:
+            def get_object(self, *, Bucket, Key):
+                assert Key == WS_MARKER
+                return {"Body": io.BytesIO((path / "event_workspaces" / "manifest.json").read_bytes()), "ETag": "fixture"}
+            def put_object(self, **kwargs):
+                pytest.fail("already-current generation must not CREATE or promote anything")
+        return publisher.publish_event_workspaces(path, s3=CurrentStore() if already_current else None,
+                                                  bucket="fixture", **kwargs)
+    monkeypatch.setitem(globals(), "publish_event_workspaces", no_write_publish)
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake) == 0
+    assert fake.puts == []
+    output = capsys.readouterr().out
+    assert "immutable generation published" not in output
+    assert "sibling marker promoted" not in output
+    assert "event workspaces: generation validated; publish step returned success" in output
 
 
 class _FakeRequestsResponse:
@@ -1738,3 +1876,544 @@ def test_chained_generations_never_carry_a_clock_earlier_than_a_row_observation(
             for path in (generation_dir / "workspaces").glob("*.json")
         }
         validate_generation_clocks(manifest, rows)
+
+
+@pytest.mark.parametrize("ticker,expected", [
+    ("rtx", "a2026-07x238xkerexhibit99.htm"),
+    ("noc", "noc-06302026xearningsrelea.htm"),
+])
+def test_generic_ex99_current_defense_release_manifests(ticker, expected):
+    from scripts.refresh_event_workspaces import _manifest_exhibit_count
+    # Captured official SEC document maps; no fabricated replacement date/body.
+    raw = (FIXTURES / f"{ticker}_2026q2_index_headers.html").read_bytes()
+    assert _select_exhibit_99_1(_parse_sgml_manifest(raw.decode())) == expected
+    assert _manifest_exhibit_count(raw) == 1
+
+
+def test_generic_ex99_ambiguity_does_not_grant_release_admission():
+    assert _select_exhibit_99_1([("EX-99", "a.htm"), ("EX-99", "b.htm")]) is None
+    assert _select_exhibit_99_1([("EX-99", "ex991.htm"), ("EX-99", "other.htm")]) is None
+    assert _select_exhibit_99_1([("8-K", "main.htm"), ("EX-101.SCH", "x.xsd")]) is None
+    assert _select_exhibit_99_1([("EX-99", "image.jpg")]) is None
+    assert _select_exhibit_99_1([("EX-99", "other.htm"), ("EX-99.1", "release.htm")]) == "release.htm"
+
+
+@pytest.mark.parametrize("ticker,cik", [("LMT","0000936468"),("RTX","0000101829"),("NOC","0001133421"),("LHX","0000202058"),("GD","0000040533")])
+def test_registered_industrial_prior_is_carried_by_the_real_default_loader(monkeypatch,ticker,cik):
+    # A supported discovery issuer must not disappear during a quiet refresh.
+    base="https://example.test/industrial-prior/"+ticker
+    event_id="evt_cik"+cik+"_2026q2_results"
+    saved={"event_id":event_id,"lifecycle":{"state":"corrected","observed_at":"2026-10-15T04:44:02Z"}}
+    response=_FakeRequestsResponse(status_code=200,payload=saved)
+    manifest={"files":{f"workspaces/{event_id}.json":{"bytes":len(json.dumps(saved).encode()),"sha256":sha256(json.dumps(saved).encode()).hexdigest()}}}
+    def fake_get(url,*,headers=None,timeout=None):
+        if url==base+"/event_workspaces/manifest.json":return _FakeRequestsResponse(status_code=200,payload={"generation_id":"industrial-prior"})
+        if url==base+"/event_workspaces/generations/industrial-prior/manifest.json":return _FakeRequestsResponse(status_code=200,payload=manifest)
+        if url==base+f"/event_workspaces/generations/industrial-prior/workspaces/{event_id}.json":return response
+        raise AssertionError("unexpected fixture read: "+url)
+    monkeypatch.setattr(reader,"_fetch_bytes",_as_fetch_bytes(fake_get))
+    assert load_prior_workspace_for_ticker(ticker,base_url=base)==saved
+
+
+def test_registered_industrial_prior_read_error_is_not_silent_absence(monkeypatch):
+    def fake_get(url,*,headers=None,timeout=None):return _FakeRequestsResponse(status_code=500,payload={})
+    monkeypatch.setattr(reader,"_fetch_bytes",_as_fetch_bytes(fake_get))
+    with pytest.raises(PriorWorkspaceFetchFailed):
+        load_prior_workspace_for_ticker("LMT",base_url="https://example.test/industrial-prior-failure")
+
+
+# These responses are synthetic requests.Response objects. No SEC request occurs.
+def _sec_synthetic_response(url, status=200, body=b"synthetic", headers=None):
+    import requests
+    response = requests.Response()
+    response.status_code = status
+    response.url = url
+    response._content = body
+    response._content_consumed = True
+    response.headers.update(headers or {})
+    return response
+
+
+@pytest.fixture
+def _sec_mock_transport(monkeypatch):
+    import requests
+    import socket
+    from scripts import refresh_event_workspaces as owner
+    def refuse(*args, **kwargs):
+        raise AssertionError("selected SEC acquisition tests never use the network")
+    monkeypatch.setattr(socket.socket, "connect", refuse)
+    monkeypatch.setattr(owner.time, "sleep", lambda _: None)
+    calls = []
+    responses = {}
+    def get(url, **kwargs):
+        calls.append((url, kwargs))
+        if url not in responses:
+            raise AssertionError(f"unplanned synthetic HTTP request: {url}")
+        return responses[url]() if callable(responses[url]) else responses[url]
+    monkeypatch.setattr(requests, "get", get)
+    return owner, calls, responses
+
+
+def test_sec_exhibit_checks_redirect_eligibility_before_following(_sec_mock_transport):
+    owner, calls, responses = _sec_mock_transport
+    next_url = EXHIBIT_URL.replace("www.sec.gov", "sec.gov").replace(EXHIBIT_NAME, "canonical.htm")
+    responses[EXHIBIT_URL] = _sec_synthetic_response(EXHIBIT_URL, 302, headers={"Location": next_url})
+    responses[next_url] = _sec_synthetic_response(next_url, body=b"actual synthetic entity", headers={"Content-Type": "text/html; charset=UTF-8", "Content-Encoding": "gzip"})
+    response = owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    receipt = owner._acquisition_receipt(response, cik=AAPL_CIK, accession=AAPL_ACCESSION,
+                                          url=EXHIBIT_URL, text=response[1].decode(), decode_policy="utf8_strict")
+    assert [call[0] for call in calls] == [EXHIBIT_URL, next_url]
+    assert all(call[1]["allow_redirects"] is False for call in calls)
+    assert receipt["final_url"] == next_url and receipt["entity_sha256"] == sha256(response[1]).hexdigest()
+    assert receipt["body_representation"] == "requests.content_after_content_decoding"
+    assert receipt["content_encoding"] == "gzip"  # header metadata, NOT a raw-wire digest
+    assert receipt["declared_charset"] == "utf-8"
+    assert receipt["acquired_at"].endswith("Z")
+    assert receipt["redirects"] == [{"url": EXHIBIT_URL, "status": 302, "location": next_url, "next_url": next_url}]
+
+
+@pytest.mark.parametrize("location", [
+    "https://evil.test/body.htm", "https://www.sec.gov.evil.test/body.htm",
+    EXHIBIT_URL.replace(str(int(AAPL_CIK)), "999999"),
+    EXHIBIT_URL.replace(AAPL_ACCESSION.replace("-", ""), "000000000026000001"),
+    EXHIBIT_URL + "?token=x", EXHIBIT_URL + "#fragment", "\n" + EXHIBIT_URL,
+])
+def test_sec_exhibit_never_requests_ineligible_redirect_target(_sec_mock_transport, location):
+    owner, calls, responses = _sec_mock_transport
+    responses[EXHIBIT_URL] = _sec_synthetic_response(EXHIBIT_URL, 302, headers={"Location": location})
+    with pytest.raises(owner.RefreshError):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 1
+
+
+def test_sec_exhibit_cycle_limit_and_implicit_history_fail_closed(_sec_mock_transport):
+    owner, calls, responses = _sec_mock_transport
+    responses[EXHIBIT_URL] = _sec_synthetic_response(EXHIBIT_URL, 302, headers={"Location": EXHIBIT_URL})
+    with pytest.raises(owner.RefreshError, match="cycle"):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 1
+    calls.clear()
+    response = _sec_synthetic_response(EXHIBIT_URL)
+    response.history = [_sec_synthetic_response("https://evil.test", 302)]
+    responses[EXHIBIT_URL] = response
+    with pytest.raises(owner.RefreshError, match="unobserved redirect"):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 1
+    calls.clear()
+    for i in range(7):
+        url = EXHIBIT_URL if i == 0 else f"{ARCHIVE_BASE}/hop{i}.htm"
+        responses[url] = _sec_synthetic_response(url, 302, headers={"Location": f"hop{i + 1}.htm"})
+    with pytest.raises(owner.RefreshError, match="limit"):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 6  # the sixth redirect is observed but never followed
+
+
+@pytest.mark.parametrize("traced", [False, True])
+def test_sec_actual_acquisition_to_bound_source_row_retains_receipt(_sec_mock_transport, traced):
+    from copy import deepcopy
+    from engine.company_intelligence.event_workspace import WorkspaceError
+    owner, calls, responses = _sec_mock_transport
+    fake = _http_get_factory()
+    for url in (SUBMISSIONS_URL, HEADERS_URL, EXHIBIT_URL):
+        status, body = fake(url)
+        responses[url] = _sec_synthetic_response(url, status, body, {"Content-Type": "text/html; charset=utf-8"})
+    trace = []
+    filing = owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION,
+                                         **({"trace": trace.append} if traced else {}))
+    receipt = filing["acquisition_receipt"]
+    assert receipt["requested_url"] == EXHIBIT_URL and receipt["final_url"] == EXHIBIT_URL
+    assert receipt["entity_sha256"] == receipt["source_sha256"]
+    assert receipt["decode_policy"] == ("utf8_strict" if traced else "utf8_strict_then_latin1_strict")
+    assert all((kwargs.get("allow_redirects") is False) == (url == EXHIBIT_URL) for url, kwargs in calls)
+    if traced:
+        assert trace[0]["source"]["acquisition_receipt"] == receipt
+    tx, tx_sha = _transcript()
+    def build(selected, prior_receipt=None):
+        return build_event_workspace(registry=apple_registry(), ticker="AAPL", asof=AAPL_CALL_DATE,
+            fiscal_period=flagship_fiscal_period(), exhibit_body=selected["exhibit_body"], filing=selected,
+            transcript=tx, transcript_sha256=tx_sha, observed_at="2026-08-16T18:00:00Z",
+            source_available_at=ACCEPTANCE, prior_acquisition_receipt=prior_receipt)
+    workspace = build(filing)
+    source = next(item for item in workspace["sources"] if item["kind"] == "issuer_release")
+    assert json.loads(json.dumps(source))["acquisition_receipt"] == receipt
+    without = {k: v for k, v in filing.items() if k != "acquisition_receipt"}
+    prior = build(without)
+    assert workspace["event_id"] == prior["event_id"]
+    assert workspace["lifecycle"] == prior["lifecycle"]
+    assert workspace["facts"] == prior["facts"]
+    prior_source = next(item for item in prior["sources"] if item["kind"] == "issuer_release")
+    assert {k: v for k, v in source.items() if k != "acquisition_receipt"} == prior_source
+    offline = build(without, prior_receipt=receipt)
+    assert "acquisition_receipt" not in next(item for item in offline["sources"] if item["kind"] == "issuer_release")
+    for prior_receipt in ({**receipt, "source_sha256": "0" * 64}, {**receipt, "acquired_at": "9999-01-01T00:00:00Z"}):
+        refreshed = build(filing, prior_receipt=prior_receipt)
+        assert next(item for item in refreshed["sources"] if item["kind"] == "issuer_release")["acquisition_receipt"] == receipt
+    for field, value in [("source_sha256", "0" * 64), ("final_url", "https://evil.test/body.htm")]:
+        bad = deepcopy(filing)
+        bad["acquisition_receipt"][field] = value
+        with pytest.raises(WorkspaceError, match="acquisition receipt"):
+            build(bad)
+
+
+def test_sec_legacy_custom_http_and_offline_binding_never_mint_receipts(_sec_mock_transport):
+    owner, calls, responses = _sec_mock_transport
+    fixture_http = _http_get_factory()
+    trace = []
+    for traced in (False, True):
+        filing = owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION,
+            http_get=fixture_http, **({"trace": trace.append} if traced else {}))
+        assert "acquisition_receipt" not in filing
+    assert "acquisition_receipt" not in trace[0]["source"]
+    assert calls == []
+    from engine.earnings_release.binding import bind_release_document
+    bound = bind_release_document(cik=AAPL_CIK, accession=AAPL_ACCESSION,
+                                  body=EXHIBIT.read_text(), exhibit_url=EXHIBIT_URL)
+    assert not hasattr(bound, "acquisition_receipt")
+
+
+def test_sec_selected_acquisition_refuses_implicit_foreign_response_before_binding(_sec_mock_transport, monkeypatch):
+    """Old requests.get followed this redirect then discarded its final URL."""
+    import requests
+    owner, calls, responses = _sec_mock_transport
+    plain = _http_get_factory()
+    def get(url, **kwargs):
+        calls.append((url, kwargs))
+        if url != EXHIBIT_URL:
+            status, body = plain(url)
+            return _sec_synthetic_response(url, status, body)
+        if kwargs.get("allow_redirects") is False:
+            return _sec_synthetic_response(url, 302, headers={"Location": "https://unrelated.example/release.htm"})
+        # Synthetic legacy-library response, never a real foreign fetch.
+        response = _sec_synthetic_response("https://unrelated.example/release.htm", 200, EXHIBIT.read_bytes())
+        response.history = [_sec_synthetic_response(url, 302)]
+        return response
+    monkeypatch.setattr(requests, "get", get)
+    with pytest.raises(RefreshError, match="selected SEC acquisition refused"):
+        owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert sum(url == EXHIBIT_URL for url, _ in calls) == 1
+    assert not any(url.startswith("https://unrelated.example") for url, _ in calls)
+
+
+def test_sec_actual_decoder_is_recorded_and_strict_trace_does_not_backfill(_sec_mock_transport):
+    owner, calls, responses = _sec_mock_transport
+    plain = _http_get_factory()
+    body = b"<html>synthetic caf\xe9</html>"
+    for url in (SUBMISSIONS_URL, HEADERS_URL):
+        status, value = plain(url)
+        responses[url] = lambda url=url, status=status, value=value: _sec_synthetic_response(url, status, value)
+    responses[EXHIBIT_URL] = lambda: _sec_synthetic_response(EXHIBIT_URL, body=body, headers={"Content-Type": "text/html; charset=iso-8859-1"})
+    legacy = owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    receipt = legacy["acquisition_receipt"]
+    assert receipt["decoder"] == "latin-1" and receipt["declared_charset"] == "iso-8859-1"
+    assert receipt["entity_sha256"] == sha256(body).hexdigest()
+    assert receipt["source_sha256"] == sha256(body.decode("latin-1").encode("utf-8")).hexdigest()
+    assert receipt["entity_sha256"] != receipt["source_sha256"]
+    traces = []
+    with pytest.raises(RefreshError, match="does not decode as UTF-8"):
+        owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION, trace=traces.append)
+    assert traces[0]["candidates"][-1]["outcome"] == "decode_failure"
+    assert traces[0]["source"] is None
+
+
+@pytest.mark.parametrize("url", ["https://foreign.example/ex991.htm", f"{ARCHIVE_BASE}/index.htm", f"{ARCHIVE_BASE}/index-headers.html", f"{ARCHIVE_BASE}/filing-index-headers.html"])
+def test_sec_initial_ineligible_url_is_rejected_before_any_request(_sec_mock_transport, url):
+    from engine.earnings_release.receipts import ReceiptError
+    owner, calls, _ = _sec_mock_transport
+    with pytest.raises(ReceiptError):
+        owner._http_get_sec_exhibit(url, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert calls == []
+
+
+def test_sec_real_acquisition_repeated_source_keeps_original_receipt_and_generation(_sec_mock_transport, tmp_path):
+    owner, _, responses = _sec_mock_transport
+    plain = _http_get_factory()
+    for url in (SUBMISSIONS_URL, HEADERS_URL, EXHIBIT_URL):
+        status, body = plain(url)
+        responses[url] = lambda url=url, status=status, body=body: _sec_synthetic_response(url, status, body)
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake, http_get=owner._http_get) == 0
+    first = _marker(tmp_path)
+    prior = json.loads((tmp_path / "event_workspaces" / "generations" / first["generation_id"] / "workspaces" / f"{FLAGSHIP_EVENT_ID}.json").read_text())
+    source = next(s for s in prior["sources"] if s["kind"] == "issuer_release")
+    original_receipt = source["acquisition_receipt"]
+    puts = len(fake.puts)
+    assert _refresh(tmp_path, fake, http_get=owner._http_get, prior_workspace=prior) == 0
+    second = _marker(tmp_path)
+    assert second["generation_id"] == first["generation_id"]
+    assert fake.puts[puts:] == []
+    current = json.loads((tmp_path / "event_workspaces" / "generations" / second["generation_id"] / "workspaces" / f"{FLAGSHIP_EVENT_ID}.json").read_text())
+    assert next(s for s in current["sources"] if s["kind"] == "issuer_release")["acquisition_receipt"] == original_receipt
+
+
+@pytest.mark.parametrize("prior_kind", ["first", "old_source_without_receipt", "new_transport_same_body"])
+def test_sec_acquisition_cutoff_survives_actual_generation_write(_sec_mock_transport, tmp_path, prior_kind):
+    """Synthetic acquisition facts; exercise BOTH builder and immutable writer."""
+    from copy import deepcopy
+    from engine.company_intelligence.event_workspace import WorkspaceError, _utc
+    owner, _, responses = _sec_mock_transport
+    plain = _http_get_factory()
+    for url in (SUBMISSIONS_URL, HEADERS_URL, EXHIBIT_URL):
+        status, body = plain(url)
+        responses[url] = lambda url=url, status=status, body=body: _sec_synthetic_response(url, status, body)
+    filing = owner.acquire_results_filing(cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    acquired = "2026-10-24T21:00:00.123456Z"
+    filing["acquisition_receipt"]["acquired_at"] = acquired
+    tx, tx_sha = _transcript()
+    kwargs = dict(registry=apple_registry(), ticker="AAPL", asof=AAPL_CALL_DATE,
+        fiscal_period=flagship_fiscal_period(), exhibit_body=filing["exhibit_body"],
+        transcript=tx, transcript_sha256=tx_sha, source_available_at=ACCEPTANCE)
+    observed = "2026-10-24T21:00:00.123456Z" if prior_kind == "first" else "2026-08-16T18:00:00Z"
+    prior_receipt = None
+    if prior_kind == "new_transport_same_body":
+        prior_receipt = {**filing["acquisition_receipt"], "acquired_at": "2026-08-17T18:00:00.987654Z", "content_type": "text/html"}
+    row = build_event_workspace(**kwargs, filing=filing, observed_at=observed,
+        prior_observed_at=observed, prior_source_sha256=filing["acquisition_receipt"]["source_sha256"],
+        prior_acquisition_receipt=prior_receipt)
+    assert _utc(row["generated_at"], field_name="generated_at") >= _utc(acquired, field_name="acquired_at")
+    directory = write_workspace_generation(tmp_path, {row["event_id"]: row})
+    manifest = json.loads((directory / "manifest.json").read_text())
+    emitted = json.loads((directory / "workspaces" / f"{row['event_id']}.json").read_text())
+    original_manifest_bytes = (directory / "manifest.json").read_bytes()
+    original_row_bytes = (directory / "workspaces" / f"{row['event_id']}.json").read_bytes()
+    assert emitted["generated_at"] == manifest["generated_at"] == "2026-10-24T21:00:01Z"
+    assert emitted["lifecycle"] == row["lifecycle"]
+    source = next(s for s in emitted["sources"] if s["kind"] == "issuer_release")
+    assert source["acquisition_receipt"]["acquired_at"] == acquired
+    validate_generation_clocks(manifest, {row["event_id"]: emitted})
+    bad_manifest, bad_row = deepcopy(manifest), deepcopy(emitted)
+    bad_manifest["generated_at"] = bad_row["generated_at"] = "2026-10-24T21:00:00Z"
+    with pytest.raises(WorkspaceError):
+        validate_generation_clocks(bad_manifest, {row["event_id"]: bad_row})
+    # A valid identical repeat retains the original actual fact and cutoff.
+    repeat_filing = deepcopy(filing)
+    repeat_filing["acquisition_receipt"]["acquired_at"] = "2026-10-25T21:00:00.654321Z"
+    repeated = build_event_workspace(**kwargs, filing=repeat_filing, observed_at="2026-10-25T21:00:01Z",
+        prior_observed_at=observed, prior_source_sha256=source["source_sha256"],
+        prior_acquisition_receipt=source["acquisition_receipt"])
+    repeat_dir = write_workspace_generation(tmp_path, {row["event_id"]: repeated})
+    assert repeat_dir == directory
+    assert (repeat_dir / "manifest.json").read_bytes() == original_manifest_bytes
+    assert (repeat_dir / "workspaces" / f"{row['event_id']}.json").read_bytes() == original_row_bytes
+
+
+@pytest.mark.parametrize("location", ["index.htm", "index.html", "index.txt", "index-headers.html", "filing-index.htm", "filing-index.html", "filing-index-headers.html", "filing-index-headers.txt", "./canonical.htm", "../canonical.htm", "a/../canonical.htm", "%63anonical.htm", "a\\canonical.htm", "canonical.htm?", "canonical.htm#", "https:canonical.htm", "https:/canonical.htm"])
+def test_sec_redirect_rejects_index_and_raw_normalization_before_follow(_sec_mock_transport, location):
+    owner, calls, responses = _sec_mock_transport
+    responses[EXHIBIT_URL] = _sec_synthetic_response(EXHIBIT_URL, 302, headers={"Location": location})
+    with pytest.raises(owner.RefreshError):
+        owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("mode,expected,rc", [
+    ("publish", "marker_put_acknowledged", 0),
+    ("noop", "already_current", 0),
+    ("noop_dry", "already_current", 0),
+    ("no_client", "not_attempted_no_client", 0),
+    ("dry", "dry_run", 0),
+    ("conflict", "marker_conflict", PUBLISH_CONFLICT),
+    ("lost_marker_response", "marker_put_failed_effect_unknown", 1),
+    ("partial_payload", "payload_failure_partial_effects_possible", 1),
+])
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_actual_publisher_outcomes_do_not_infer_effect_from_rc0(tmp_path, monkeypatch, mode, expected, rc):
+    import socket
+    from scripts.company_intelligence_publication_evidence import PublicationEvidence
+    from scripts import publish_company_intelligence_r2 as publisher
+    from tests.test_company_intelligence_event_workspace import _p1_t5_case
+    out = tmp_path / "output"
+    _, _, _, original_receipt, _ = _p1_t5_case(out)
+    marker = _marker(out)
+    class Store(_FakeR2):
+        def put_object(self, **kwargs):
+            if kwargs["Key"] == WS_MARKER and mode == "lost_marker_response":
+                super().put_object(**kwargs)  # Real effect before response loss.
+                raise TimeoutError("synthetic response lost")
+            if kwargs["Key"].endswith(f"/workspaces/{FLAGSHIP_EVENT_ID}.json") and mode == "partial_payload":
+                super().put_object(**kwargs)
+                raise TimeoutError("synthetic payload response lost")
+            return super().put_object(**kwargs)
+    fake = Store(remote_manifest=marker if mode.startswith("noop") else {**marker, "generation_id": "f" * 24} if mode == "conflict" else None,
+                 conflict_on_cas=mode == "conflict")
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(publisher, "_client", lambda: None)
+    artifact = tmp_path / "evidence.json"
+    evidence = PublicationEvidence(artifact, checkout="a" * 40, run_id="123", run_attempt="2")
+    result = publisher.publish_event_workspaces(out, s3=None if mode == "no_client" else fake,
+        bucket="fixture", dry_run=mode in {"dry", "noop_dry"}, evidence=evidence)
+    assert result == rc
+    evidence.finish(out, "returned_success" if rc == 0 else "returned_conflict" if rc == PUBLISH_CONFLICT else "failed")
+    payload = json.loads(artifact.read_text())
+    assert payload["candidates"][0]["publish_outcome"] == expected
+    retained = payload["candidates"][0]["snapshot"]["selected"][0]["source"]["acquisition_receipt"]
+    assert retained == original_receipt  # Same-run retention is not a new acquisition.
+    if rc:
+        assert payload["final_local_selection"] is None
+    if mode == "lost_marker_response":
+        assert WS_MARKER in fake.objects  # 'Failed effect/not promoted' would be false.
+    if mode == "partial_payload":
+        assert fake.puts  # Some immutable effects actually happened.
+    if mode in {"noop", "noop_dry", "dry", "no_client"}:
+        assert fake.puts == []
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_actual_refresh_chain_and_skipped_closing_write_are_retained(tmp_path, monkeypatch, capsys):
+    import socket
+    from engine.fundamental_forensics.models import stable_id
+    from engine.company_intelligence.identity import company_id_for_cik
+    from scripts import refresh_event_workspaces as owner
+    original_stub = _stub_dhi_revision
+    def safe_stub(**kwargs):
+        row = original_stub(**kwargs)
+        cik = row["event_id"][len("evt_cik"):len("evt_cik") + 10]
+        source = row["sources"][0]
+        source["filing_key"]["cik"] = cik
+        source["url"] = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{source['filing_key']['accession'].replace('-', '')}/ex991.htm"
+        source["document_id"] = stable_id("disclosure_document", cik, source["filing_key"], source["url"], source["source_sha256"])
+        row["issuer"]["company_id"] = company_id_for_cik(cik)
+        return row
+    monkeypatch.setitem(globals(), "_stub_dhi_revision", safe_stub)
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    def offline(_work, **kwargs):
+        with monkeypatch.context() as nested:
+            nested.setitem(globals(), "publish_event_workspaces", kwargs["publish_generation"])
+            test_refresh_publishes_original_and_amendment_as_two_chained_generations(tmp_path / "output")
+        return 0
+    monkeypatch.setattr(owner, "refresh", offline)
+    artifact = tmp_path / "evidence.json"
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path / "output"),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready), "--evidence-checkout", "a" * 40,
+        "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 0
+    payload = json.loads(artifact.read_text())
+    assert len(payload["candidates"]) == 2
+    assert [x["publish_outcome"] for x in payload["candidates"]] == ["marker_put_acknowledged"] * 2
+    assert payload["final_local_selection"]["candidate_sequence"] == 2
+    assert payload["retention_status"] == "metadata_complete"
+    assert "closing write skipped" in capsys.readouterr().out
+
+    assert ready.read_text().splitlines()[-1] == "sec_evidence_ready=true"
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_main_later_failure_never_relabels_prior_candidate_as_final(tmp_path, monkeypatch):
+    import socket
+    from scripts import refresh_event_workspaces as owner
+    from tests.test_company_intelligence_event_workspace import _p1_t5_case
+    _p1_t5_case(tmp_path / "output")
+    fake = _FakeR2()
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    def offline(_work, **kwargs):
+        assert kwargs["publish_generation"](tmp_path / "output", s3=fake, bucket="fixture") == 0
+        raise RefreshError("synthetic later refresh failure")
+    monkeypatch.setattr(owner, "refresh", offline)
+    artifact = tmp_path / "evidence.json"
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path / "output"),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready), "--evidence-checkout", "a" * 40,
+        "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 1
+    payload = json.loads(artifact.read_text())
+    assert payload["candidates"][0]["publish_outcome"] == "marker_put_acknowledged"
+    assert payload["refresh_outcome"] == "failed" and payload["retention_status"] == "partial"
+    assert payload["final_local_selection"] is None
+
+    assert ready.read_text().splitlines()[-1] == "sec_evidence_ready=true"
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_workflow_upload_is_one_metadata_file_without_new_permissions():
+    import yaml
+    workflow = yaml.safe_load((Path(__file__).parents[1] / ".github/workflows/company-intelligence.yml").read_text())
+    steps = workflow["jobs"]["refresh"]["steps"]
+    uploads = [s for s in steps if str(s.get("uses", "")).startswith("actions/upload-artifact@")]
+    assert len(uploads) == 1
+    upload = uploads[0]
+    assert upload["with"]["path"] == "${{ runner.temp }}/selected-sec-evidence/evidence.json"
+    assert upload["with"]["retention-days"] == 7
+    assert upload["if"] == "always() && steps.publication.outputs.sec_evidence_ready == 'true'"
+    assert any(s.get("id") == "publication" and 'sec_evidence_ready=false' in s.get("run", "") for s in steps)
+    assert workflow["permissions"] == {"contents": "read"}
+    checkout = next(s for s in steps if str(s.get("uses", "")).startswith("actions/checkout@"))
+    assert "scripts/company_intelligence_publication_evidence.py" in checkout["with"]["sparse-checkout"]
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_serialization_failure_cannot_enable_stale_artifact_upload(tmp_path, monkeypatch):
+    from scripts import refresh_event_workspaces as owner
+    from scripts import company_intelligence_publication_evidence as retention
+    from tests.test_company_intelligence_event_workspace import _p1_t5_case
+    _p1_t5_case(tmp_path / "output")
+    fake = _FakeR2()
+    artifact = tmp_path / "evidence.json"
+    artifact.write_text("SYNTHETIC_SECRET stale data")
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    def offline(_work, **kwargs):
+        return kwargs["publish_generation"](tmp_path / "output", s3=fake, bucket="fixture")
+    monkeypatch.setattr(owner, "refresh", offline)
+    def denied(*_args):
+        raise OSError("SYNTHETIC_SECRET write failure")
+    monkeypatch.setattr(retention.os, "replace", denied)
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path / "output"),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready),
+        "--evidence-checkout", "a" * 40, "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 0
+    assert WS_MARKER in fake.objects  # Publication's acknowledged effect is unchanged.
+    assert not artifact.exists()
+    assert ready.read_text() == "sec_evidence_ready=false\n"
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_invalid_context_clears_stale_output_without_publishing(tmp_path, monkeypatch, capsys):
+    from scripts import refresh_event_workspaces as owner
+    artifact = tmp_path / "evidence.json"
+    artifact.write_text("SYNTHETIC_SECRET stale data")
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    monkeypatch.setattr(owner, "refresh", lambda *a, **k: pytest.fail("invalid context must not start refresh"))
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready),
+        "--evidence-checkout", "SYNTHETIC_SECRET", "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 1
+    assert artifact.read_text() == "SYNTHETIC_SECRET stale data"
+    assert ready.read_text() == "sec_evidence_ready=false\n"
+    captured = capsys.readouterr()
+    assert "SYNTHETIC_SECRET" not in captured.out + captured.err
+
+
+@pytest.fixture
+def _p1_t5_offline(monkeypatch):
+    import socket
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("P1.T5 offline: network forbidden"))
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+@pytest.mark.parametrize("mode", ["source", "symlink", "hardlink", "artifact", "missing"])
+def test_p1_t5_newready_sink_cannot_corrupt_input_or_artifact(tmp_path, monkeypatch, mode):
+    import os
+    from scripts import refresh_event_workspaces as owner
+    from tests.test_company_intelligence_event_workspace import _p1_t5_case
+    output = tmp_path / "output"
+    _p1_t5_case(output)
+    marker = output / "event_workspaces/manifest.json"
+    original = marker.read_bytes()
+    artifact = tmp_path / "evidence.json"
+    ready = tmp_path / "github-output"
+    if mode == "source":
+        ready = marker
+    elif mode == "symlink":
+        ready.symlink_to(marker)
+    elif mode == "hardlink":
+        os.link(marker, ready)
+    elif mode == "artifact":
+        ready = artifact
+    monkeypatch.setattr(owner, "refresh", lambda *a, **k: 0)
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(output),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready),
+        "--evidence-checkout", "a" * 40, "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 0
+    assert marker.read_bytes() == original
+    json.loads(artifact.read_text())
+    assert "sec_evidence_ready=true" not in artifact.read_text()
+    if mode == "missing":
+        assert not ready.exists()

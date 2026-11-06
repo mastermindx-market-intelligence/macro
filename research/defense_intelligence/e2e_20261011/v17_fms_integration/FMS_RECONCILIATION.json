@@ -1,0 +1,18 @@
+{
+  "head_before": "0e618fb80e5941e731fa559692a39efddd83b94d",
+  "main_integrated": "b4e1d4c724a91a608448b468baf94d4558bf91e8",
+  "upstream_graph_exact_replay": true,
+  "corrected_68_cases_identical_to_accepted_head": true,
+  "observation_count": 95,
+  "incumbent_observations_preserved": 94,
+  "receipts_byte_identical": true,
+  "new_acquisition_coverage_preserved": true,
+  "projection_state_matches_95_observations": true,
+  "upstream_acquisition_clock": "2026-10-14T15:30:25.791636+00:00",
+  "corrected_known_at_preserved": "2026-10-14T02:33:08.231760+00:00",
+  "actual_projection_generated_at": "2026-10-14T16:31:07.773505+00:00",
+  "content_id": "grfms1-99e291f07d6e091b7e753569",
+  "graph_sha256": "90a41d86c7f15bc8ec87af09871718a41f62f2b692003883839f828e9a53c237",
+  "network_acquisition": false,
+  "upstream_write": false
+}

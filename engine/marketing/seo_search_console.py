@@ -1193,12 +1193,35 @@ def _build_parquet(
 # ---------------------------------------------------------------------------
 
 
+def _reporting_window_rows(df: "pd.DataFrame", as_of: str, window: dict) -> "pd.DataFrame":
+    """Select exact native calendar dates without altering retained history."""
+    def _day(value: str) -> str:
+        if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+            raise ValueError("GSC reporting dates must be exact YYYY-MM-DD labels")
+        date.fromisoformat(value)  # Reject impossible dates, without truncating timestamps.
+        return value
+
+    if not isinstance(window, dict):
+        raise ValueError("GSC reporting window must contain start and end dates")
+    start, end, dated = (_day(window.get("start")), _day(window.get("end")), _day(as_of))
+    if not start <= end <= dated:
+        raise ValueError("GSC reporting window must satisfy start <= end <= as_of")
+    if df.empty:
+        return df
+    if "date" not in df.columns:
+        raise ValueError("GSC retained rows are missing native calendar dates")
+    for value in df["date"]:
+        _day(value)
+    return df.loc[df["date"].between(start, end, inclusive="both")].copy()
+
+
 def _build_scorecard(
     df: "pd.DataFrame",
     as_of: str,
     window: dict,
 ) -> dict:
-    """Build page_family_scorecard.json from the full parquet dataframe."""
+    """Build page_family_scorecard.json from observed rows in its stated window."""
+    df = _reporting_window_rows(df, as_of, window)
     from engine.marketing.seo_director import classify_page
     from urllib.parse import urlparse
 
@@ -1308,12 +1331,13 @@ def _build_scorecard(
 
 
 def _build_query_gaps(df: "pd.DataFrame", as_of: str, window: dict) -> dict:
-    """Build query_gaps.json from the full parquet dataframe.
+    """Build query_gaps.json from observed rows in its stated window.
 
     Gaps = non-brand queries with impressions >= _GAP_MIN_IMPRESSIONS in window AND
     (ctr < _GAP_MAX_CTR OR position in [_GAP_POS_LOW, _GAP_POS_HIGH]).
     Sorted by impressions descending, capped at _GAP_LIMIT.
     """
+    df = _reporting_window_rows(df, as_of, window)
     if df.empty or "query" not in df.columns:
         return {
             "schema": "gsc_gaps.v1",

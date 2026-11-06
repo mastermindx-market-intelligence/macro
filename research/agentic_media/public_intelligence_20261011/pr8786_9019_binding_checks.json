@@ -1,0 +1,104 @@
+{
+  "actions": [
+    {
+      "checks": [
+        "ci-authority/codex/merge-queue-pilot"
+      ],
+      "repository": "mastermindx-market-intelligence/macro",
+      "type": "ci_failure"
+    }
+  ],
+  "errors": [],
+  "observedAt": "2026-10-12T04:53:39.387209Z",
+  "policy": {
+    "checkPolicy": "all",
+    "configPath": null,
+    "requiredReviewers": [],
+    "source": "no-config",
+    "strictChangesRequested": false
+  },
+  "schemaVersion": 1,
+  "state": "actionable",
+  "targets": [
+    {
+      "actions": [
+        {
+          "checks": [
+            "ci-authority/codex/merge-queue-pilot"
+          ],
+          "type": "ci_failure"
+        }
+      ],
+      "checks": {
+        "fail": [
+          "ci-authority/codex/merge-queue-pilot"
+        ],
+        "malformed": [],
+        "pass": [
+          "ci-gate",
+          "ci-pack-9",
+          "ci-pack-0",
+          "ci-pack-11",
+          "ci-pack-8",
+          "ci-pack-7",
+          "ci-pack-4",
+          "ci-pack-3",
+          "capability-broker",
+          "ci-pack-10",
+          "ci-pack-1",
+          "ci-pack-2",
+          "ci-pack-5",
+          "ci-pack-6",
+          "grader-manifest",
+          "self-mod-fence",
+          "ci-authority/main",
+          "ci-authority",
+          "ci-plan",
+          "contract-delta",
+          "fence-pack"
+        ],
+        "pending": [],
+        "skipping": [
+          "trusted-ci",
+          "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'"
+        ],
+        "total": 26,
+        "unknown": []
+      },
+      "kind": "explicit",
+      "landingAuthorization": null,
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/69a1/macro-main",
+      "pending": [],
+      "pr": {
+        "autoMerge": null,
+        "autoMergeEnabled": false,
+        "baseRefName": "main",
+        "baseSha": "5267c66846e7733bc1eb30edc1524daff51598ca",
+        "headRefName": "claude/mmx-public-intelligence-press-20261011",
+        "headSha": "9019a29c2e35da499fb5c822e515be9ce9c21027",
+        "isMergeQueueEnabled": false,
+        "mergeQueueEntry": null,
+        "mergeStateStatus": "CLEAN",
+        "mergeable": "MERGEABLE",
+        "number": 8786,
+        "reviewDecision": null,
+        "state": "OPEN",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8786"
+      },
+      "repository": "mastermindx-market-intelligence/macro",
+      "repositoryPolicy": {
+        "mergeCommitAllowed": true,
+        "rebaseMergeAllowed": true,
+        "squashMergeAllowed": true
+      },
+      "reviews": {
+        "missingRequiredReviewers": [],
+        "requiredReviewers": [],
+        "unresolvedThreadCount": 0
+      },
+      "state": "actionable"
+    }
+  ]
+}

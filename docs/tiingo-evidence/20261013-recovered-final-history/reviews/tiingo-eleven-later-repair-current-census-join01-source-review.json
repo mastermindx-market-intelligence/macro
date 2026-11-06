@@ -1,0 +1,65 @@
+{
+  "schema": "tiingo.exact_current_census_semantic_join_source_review/v1",
+  "recorded_at_utc": "2026-10-14T02:55:06.096876+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "verdict": "PASS",
+  "source_file": "tiingo-eleven-later-repair-current-census-join01.py",
+  "source_sha256": "f07c4cec963a5841ce98deac219e6cbcdbfe7fd749f192d5e68a8a57f372f0e9",
+  "scope": "One metadata-only semantic join on this exact retained input set, producing two new exclusive E outputs; no replay of capture, qualification, coverage or readers.",
+  "input_sha256": {
+    "eod-qualified-catalogue-coverage-eleven-strict-timeout-later-repair-prefix01-delta.json": "1d7d8bb7762cde131f785a04f7490dc307d076d78a1607a2d73de408305e2b80",
+    "eod-eleven-strict-timeout-later-repair-prefix01-qualified.json": "085c4147fc7e24579869398955a01242f5da6e6cdc2c3bb314dea9cbeabdf26e",
+    "eod-eleven-structured-timeout-later-repair01-20261013-01a12ab6-result.json": "f2340622f80e4edc1a998943699d749c6e2c5953b7c340cb61b12de9a2bafd7d",
+    "tiingo-eleven-strict-timeout-later-repair-capture-actual-parent-consumption.json": "43ed640cca4aab2f4745b032ffc48d22cd28f83b952dd94fec990c7cd5021cf9",
+    "tiingo-eleven-repair-prefix01-qualify01-actual-root-acceptance.json": "991df3da754c4b643cd322976b2785a3d5cdea90e2e2ac2196f988900a172f8b",
+    "eod-wave15-original-six-phase-final-disposition-partition-accounting.json": "78974f63c410f4e39b176a487a1e790f4c78ba6f725ec240b0ab75d7b5b62d69",
+    "tiingo-eleven-repair-prefix01-coverage01-launch-packet.json": "cd0a644cd020a3d8fd88e86adf710165ec82f6849525e9a8df21d037c181cbb8",
+    "tiingo-eleven-repair-prefix01-coverage01-observed-wait.json": "ebc9291782fc8127f7e673f9dc81aedb0381e693e9386b8fd72b347184425030",
+    "tiingo-eleven-repair-prefix01-coverage01-validation.json": "6e56ddedd6fc08b25083af2d29cde5ee8ed33afba9c8d8745639ec1b939b9086"
+  },
+  "verification": {
+    "all_nine_exact_input_hashes_verified": true,
+    "ast_compile_only": true,
+    "candidate_executed": false,
+    "actual_coverage_wait0_and_validation_true_bound_to_packet_and_census": true,
+    "actual_qualification_root_and_q_hash_bound": true,
+    "exact_eleven_capture_success_pairs_equal_qualified_pairs": true,
+    "q_hash_matches_incremental_and_accepted_census_maps": true,
+    "4392_original_identity_conservation_preserved": true,
+    "47550_histories_100592522_bars_reconcile_from_prior_plus_11_and_18366": true,
+    "47689_catalogue_conservation_and_22_missing_including_3_quality": true,
+    "both_new_output_names_lstat_absent": true
+  },
+  "material_gaps": [],
+  "annotation_findings": {
+    "stale_generic_delta_hash": "70f65ed4c806cead64b810a171c404530ab94cc4f317ebbef3d35a7c30b4c6e8",
+    "correct_actual_qualification_hash": "085c4147fc7e24579869398955a01242f5da6e6cdc2c3bb314dea9cbeabdf26e",
+    "prior_no_retry_flag": true,
+    "derived_current_no_retry_flag": false,
+    "known_uncaptured_candidates_before": 13,
+    "known_uncaptured_candidates_after": 13,
+    "removed_candidates": [],
+    "note": "Actual retained list has thirteen still-missing tickers and no repaired ticker; filtering is a no-op on these bytes. Do not report that repaired tickers were removed."
+  },
+  "control_judgment": [
+    "The current census corrects the generic qualification pointer using the actual accepted q hash, and derives failed_vendor_requests_not_retried=False from the explicit successful later-repair result. It does not relabel the original failures.",
+    "The narrow schema explicitly marks a current census after actual later repair and carries original census/result hashes. Counts, accepted receipt and qualification maps, missing windows and original accounting bytes are retained.",
+    "Nine input hashes and exact method bytes are checked at entry and again before publication; all paths actually followed by this exact pinned packet, QA and capture metadata resolve to the pinned retained evidence.",
+    "Two open-x outputs preserve originals. They are separate publications: if publication is interrupted or only one is saved, reconcile the exact partial output rather than blindly rerunning the join.",
+    "The generated parent receipt records the commissioning root's reported consumed immediate coverage native exit0/chunk00e490 with no allocated session ID. Durable subprocess wait is independent evidence and is not itself proof of native terminal consumption."
+  ],
+  "execution_and_acceptance_limits": [
+    "Only the original root that actually consumed immediate native coverage chunk00e490 may adopt the parent-consumption attestation; this review does not create that tool return.",
+    "Parent must consume the join's own actual return and verify both new output hashes and their semantics before treating the current-census join as accepted.",
+    "No complete-vendor-history, canonical identity, PIT, programme acceptance or new retry permission follows. Original22925/91287 lost native returns remain unknown.",
+    "Existing HTTP/provider, CI approval, Fabric and publisher refusals remain preserved."
+  ],
+  "review_effects": {
+    "candidate_executions": 0,
+    "archive_writes": 0,
+    "provider_requests": 0,
+    "credential_reads": 0,
+    "reader_rescans": 0,
+    "delegations": 0
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "scope": "Local existing native fixture template renders only. Synthetic/admitted fixture inputs; no acquisition, economic or historical availability claim; no full build/site emission/browser/publisher.",
+  "source_base": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
+  "browser": "NEW_CHROMIUM_LAUNCH_HELD; no browser execution performed",
+  "pages": {
+    "scanner-coverage": {
+      "sha256": "c7b3a62ddeb60471236e08190f395717d55a4a4b698c127be0fc41a819e5f23a",
+      "bytes": 20389454,
+      "mixed_cjk_native_titles": 0,
+      "canonical_theme_consumer_included": true
+    },
+    "dislocations": {
+      "sha256": "35192a6e90c1a3d526b5ddfdebc27077d784be2f0fac0a1ef91f30aa8948e78e",
+      "bytes": 20623902,
+      "mixed_cjk_native_titles": 0,
+      "canonical_theme_consumer_included": true
+    },
+    "transmission": {
+      "sha256": "8397cae9cd88b4a294c43ed022f6ba0c09981f0bc6976797c7b317b9eba90729",
+      "bytes": 20608674,
+      "mixed_cjk_native_titles": 0,
+      "canonical_theme_consumer_included": true
+    }
+  },
+  "views": {
+    "scanner": {
+      "converted_triggers": 40,
+      "all_tab_reachable_in_markup": true,
+      "all_native_titles_removed": true,
+      "exact_locale_pairs_sha256": "0ddfa543ded33ce4dfcbb186f23799a735fa119b6d6fe1afc187a8d44552b789",
+      "example": [
+        "Evidence tier not yet defined",
+        "证据层级尚未定义"
+      ]
+    },
+    "coverage": {
+      "converted_triggers": 3840,
+      "all_tab_reachable_in_markup": true,
+      "all_native_titles_removed": true,
+      "exact_locale_pairs_sha256": "e04cc4ead330f7b6e715393e1637d3c2e25eb03756c7cfcd3f08bc4859948117",
+      "example": [
+        "INDEX CLOSE · Delayed end-of-day source",
+        "指数收盘 · 延迟收盘数据源"
+      ]
+    },
+    "dislocations": {
+      "converted_triggers": 21,
+      "all_tab_reachable_in_markup": true,
+      "all_native_titles_removed": true,
+      "exact_locale_pairs_sha256": "fa3e110ee4b1ce24b1e4b184d68dff69a4ac54c466b9414aaad8bbf5a022af71",
+      "example": [
+        "No admitted fragility score",
+        "无已准入的脆弱度评分"
+      ]
+    },
+    "transmission": {
+      "converted_triggers": 13,
+      "all_tab_reachable_in_markup": true,
+      "all_native_titles_removed": true,
+      "exact_locale_pairs_sha256": "5f66726fb23c10db210773529968dd9e8e2a587dd1bbfff3d25a02237a1fff48",
+      "example": [
+        "Qualified funding pressure observed at the origin market.",
+        "在源头市场观测到的合格融资压力。"
+      ]
+    }
+  }
+}

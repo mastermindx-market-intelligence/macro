@@ -285,3 +285,143 @@ def test_cl_rows_present_and_nondelegable(rulings: list[dict]):
     assert not not_nondelegable, (
         f"CL rows that are not marked nondelegable=True: {not_nondelegable}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Fail-closed CI diff coverage / exact tested-base transport regressions
+# ---------------------------------------------------------------------------
+
+def test_conflict_guard_fails_closed_without_git_diff(monkeypatch, capsys):
+    """Missing history may not turn H1/H2/W1 into an accidental green run."""
+    monkeypatch.setattr(_conflict_mod, "_get_changed_files", lambda _root: ([], False))
+    monkeypatch.setattr(sys, "argv", ["check_ruling_conflicts.py"])
+    assert _conflict_mod.main() == 2
+    assert "H1/H2/W1" in capsys.readouterr().err
+
+
+def test_conflict_guard_treats_failed_git_diff_as_unavailable(monkeypatch, tmp_path):
+    """A valid merge-base is insufficient if changed-path enumeration fails."""
+    def broken_diff(args, **_kwargs):
+        if args[1] == "merge-base":
+            return subprocess.CompletedProcess(args, 0, stdout="a" * 40 + "\n")
+        if args[1] == "diff":
+            return subprocess.CompletedProcess(args, 128, stdout="")
+        return subprocess.CompletedProcess(args, 0, stdout="")
+
+    monkeypatch.setattr(_conflict_mod.subprocess, "run", broken_diff)
+    changed, available = _conflict_mod._get_changed_files(tmp_path)
+    assert changed == []
+    assert available is False
+
+
+def test_ruling_ci_consumes_exact_base_without_network_refetch():
+    """The ruling guard uses the planner's tested-base object, not moving main."""
+    manifest = yaml.safe_load(
+        (_REPO_ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
+    )
+    steps = manifest["jobs"]["ruling-graph"]["steps"]
+    cmd = next(
+        step["run"] for step in steps
+        if step.get("name", "").startswith("conflict checker (hard fail")
+    )
+    assert "git fetch" not in cmd
+    assert "TESTED_BASE_SHA" in cmd
+    assert "git rev-list --parents -n 1 HEAD" in cmd
+    assert "git merge-base --is-ancestor" in cmd
+    assert "CI_DISABLE_BASE_REPLAY" in cmd
+    assert "CI_TESTED_TREE_SHA" in cmd
+    assert "head=$head_sha" in cmd
+    assert 'RULING_DIFF_BASE="$TESTED_BASE_SHA"' in cmd
+
+
+def test_trusted_pc_route_requires_two_parent_tested_merge(tmp_path):
+    """Missing env pin is safe only at a proved two-parent synthetic merge."""
+    manifest = yaml.safe_load(
+        (_REPO_ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
+    )
+    cmd = next(
+        step["run"] for step in manifest["jobs"]["ruling-graph"]["steps"]
+        if step.get("name", "").startswith("conflict checker (hard fail")
+    )
+    # Execute the exact pre-check from the manifest, not the full graph checker
+    # whose production inputs are intentionally absent from this temporary repo.
+    prefix = cmd.split('RULING_DIFF_BASE="$TESTED_BASE_SHA" python ', 1)[0]
+    script = prefix + '\nprintf "%s\\n" "$TESTED_BASE_SHA"\n'
+    env = os.environ.copy()
+    for key in ("TESTED_BASE_SHA", "CI_DISABLE_BASE_REPLAY",
+                "CI_SEMANTIC_ROLE", "CI_BASE_SHA", "CI_TESTED_TREE_SHA",
+                "TESTED_TREE_SHA", "GITHUB_REF", "GITHUB_EVENT_NAME"):
+        env.pop(key, None)
+
+    def run_checked(attributes=None):
+        scoped_env = dict(env)
+        scoped_env.update(attributes or {})
+        return subprocess.run(
+            ["bash", "-eo", "pipefail", "-c", script],
+            cwd=tmp_path, env=scoped_env, capture_output=True, text=True,
+        )
+
+    def git(*args):
+        result = subprocess.run(
+            ["git", "-C", str(tmp_path), *args],
+            check=True, capture_output=True, text=True,
+        )
+        return result.stdout.strip()
+
+    git("init", "-b", "main")
+    git("config", "user.name", "CI Test")
+    git("config", "user.email", "ci-test@example.invalid")
+    (tmp_path / "base.txt").write_text("base\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "base")
+    base_sha = git("rev-parse", "HEAD")
+    single_parent = run_checked()
+    assert single_parent.returncode != 0
+    assert base_sha in single_parent.stdout
+
+    valid_replay = {
+        "CI_DISABLE_BASE_REPLAY": "1",
+        "CI_SEMANTIC_ROLE": "main",
+        "CI_BASE_SHA": base_sha,
+        "CI_TESTED_TREE_SHA": base_sha,
+    }
+    replay = run_checked(valid_replay)
+    assert replay.returncode == 0, replay.stderr
+    assert replay.stdout.splitlines()[-1] == base_sha
+
+    main_baseline = run_checked({
+        "TESTED_BASE_SHA": base_sha,
+        "TESTED_TREE_SHA": base_sha,
+        "GITHUB_REF": "refs/heads/main",
+        "GITHUB_EVENT_NAME": "workflow_dispatch",
+    })
+    assert main_baseline.returncode == 0, main_baseline.stderr
+
+    git("checkout", "-b", "feature")
+    (tmp_path / "feature.txt").write_text("feature\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "feature")
+    git("checkout", "main")
+    (tmp_path / "main.txt").write_text("main\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "main")
+    expected_base = git("rev-parse", "HEAD")
+    git("merge", "--no-ff", "-m", "synthetic merge", "feature")
+
+    two_parent = run_checked()
+    assert two_parent.returncode == 0, two_parent.stderr
+    assert two_parent.stdout.splitlines()[-1] == expected_base
+
+    hosted = run_checked({"TESTED_BASE_SHA": expected_base})
+    assert hosted.returncode == 0, hosted.stderr
+    assert hosted.stdout.splitlines()[-1] == expected_base
+
+    wrong_hosted = run_checked({"TESTED_BASE_SHA": base_sha})
+    assert wrong_hosted.returncode != 0
+    assert git("rev-parse", "HEAD") in wrong_hosted.stdout
+    assert "does not match first parent" in wrong_hosted.stdout
+
+    rejected_replay = run_checked(valid_replay)
+    assert rejected_replay.returncode != 0
+    assert "invalid base-replay identity" in rejected_replay.stdout
+    assert git("rev-parse", "HEAD") in rejected_replay.stdout

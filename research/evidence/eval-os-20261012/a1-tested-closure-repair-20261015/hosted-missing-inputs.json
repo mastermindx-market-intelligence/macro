@@ -1,0 +1,16 @@
+{
+  "head": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+  "base": "3f62e87835b22a2239f031f4fd6253d9e3aff7fa",
+  "tested": "0ec629a508fe96af93d1b1bc1d5405343952b30e",
+  "missing": [
+    "engine/sector_intelligence/consumer_cyclical_display.py",
+    "engine/sector_intelligence/consumer_cyclical_projection.py",
+    "engine/sector_intelligence/consumer_cyclical_shared_contract.py",
+    "engine/sector_intelligence/finance_case_signal.py",
+    "engine/sector_intelligence/finance_page_signal.py",
+    "engine/sector_intelligence/finance_projection.py",
+    "engine/sector_intelligence/finance_watching.py",
+    "engine/sector_intelligence/finance_witness_hints.py",
+    "scripts/build_consumer_cyclical_plnt_page.py"
+  ]
+}

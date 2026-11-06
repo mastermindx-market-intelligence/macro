@@ -1,0 +1,313 @@
+{
+ "schema": "orch-e.w3.crops.v1",
+ "cells": [
+  {
+   "file": "crypto_flatchip_dark_en_1440.png",
+   "page": "crypto.html",
+   "theme": "dark",
+   "lang": "en",
+   "doc_theme": "dark",
+   "doc_lang": "en",
+   "nodes": [
+    {
+     "cls": "market-change nb-chg down stale",
+     "text": "-1.27%",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-3.2%",
+     "color": "color(srgb 0.878431 0.392157 0.392157)"
+    },
+    {
+     "cls": "market-change nb-chg ",
+     "text": "0.0%",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-4.2%",
+     "color": "color(srgb 0.878431 0.392157 0.392157)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-1.8%",
+     "color": "color(srgb 0.878431 0.392157 0.392157)"
+    },
+    {
+     "cls": "market-change nb-chg ",
+     "text": "0.0%",
+     "color": "rgb(139, 147, 161)"
+    }
+   ]
+  },
+  {
+   "file": "vector_nullctx_dark_en_1440.png",
+   "page": "_w3_fixture_vector.html",
+   "theme": "dark",
+   "lang": "en",
+   "doc_theme": "dark",
+   "doc_lang": "en",
+   "nodes": [
+    {
+     "cls": "complex-context ",
+     "text": "Benchmark asset",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "No context on file today",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "complex-context pos",
+     "text": "Leading BTC by +10.1% over 8 weeks",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "Market leadership",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "Total market value",
+     "color": "rgb(139, 147, 161)"
+    }
+   ]
+  },
+  {
+   "file": "crypto_flatchip_dark_zh_1440.png",
+   "page": "crypto.html",
+   "theme": "dark",
+   "lang": "zh",
+   "doc_theme": "dark",
+   "doc_lang": "zh-CN",
+   "nodes": [
+    {
+     "cls": "market-change nb-chg down stale",
+     "text": "-1.27%",
+     "color": "color(srgb 0.270588 0.721569 0.45098)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-3.2%",
+     "color": "color(srgb 0.270588 0.721569 0.45098)"
+    },
+    {
+     "cls": "market-change nb-chg ",
+     "text": "0.0%",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-4.2%",
+     "color": "color(srgb 0.270588 0.721569 0.45098)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-1.8%",
+     "color": "color(srgb 0.270588 0.721569 0.45098)"
+    },
+    {
+     "cls": "market-change nb-chg ",
+     "text": "0.0%",
+     "color": "rgb(139, 147, 161)"
+    }
+   ]
+  },
+  {
+   "file": "vector_nullctx_dark_zh_1440.png",
+   "page": "_w3_fixture_vector.html",
+   "theme": "dark",
+   "lang": "zh",
+   "doc_theme": "dark",
+   "doc_lang": "zh-CN",
+   "nodes": [
+    {
+     "cls": "complex-context ",
+     "text": "基准资产",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "今日暂无背景",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "complex-context pos",
+     "text": "近 8 周领先 BTC +10.1%",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "市场主导度",
+     "color": "rgb(139, 147, 161)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "市场总市值",
+     "color": "rgb(139, 147, 161)"
+    }
+   ]
+  },
+  {
+   "file": "crypto_flatchip_light_en_1440.png",
+   "page": "crypto.html",
+   "theme": "light",
+   "lang": "en",
+   "doc_theme": "light",
+   "doc_lang": "en",
+   "nodes": [
+    {
+     "cls": "market-change nb-chg down stale",
+     "text": "-1.27%",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-3.2%",
+     "color": "color(srgb 0.710745 0.246588 0.26102)"
+    },
+    {
+     "cls": "market-change nb-chg ",
+     "text": "0.0%",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-4.2%",
+     "color": "color(srgb 0.710745 0.246588 0.26102)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-1.8%",
+     "color": "color(srgb 0.710745 0.246588 0.26102)"
+    },
+    {
+     "cls": "market-change nb-chg ",
+     "text": "0.0%",
+     "color": "rgb(76, 90, 108)"
+    }
+   ]
+  },
+  {
+   "file": "vector_nullctx_light_en_1440.png",
+   "page": "_w3_fixture_vector.html",
+   "theme": "light",
+   "lang": "en",
+   "doc_theme": "light",
+   "doc_lang": "en",
+   "nodes": [
+    {
+     "cls": "complex-context ",
+     "text": "Benchmark asset",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "No context on file today",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "complex-context pos",
+     "text": "Leading BTC by +10.1% over 8 weeks",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "Market leadership",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "Total market value",
+     "color": "rgb(76, 90, 108)"
+    }
+   ]
+  },
+  {
+   "file": "crypto_flatchip_light_zh_1440.png",
+   "page": "crypto.html",
+   "theme": "light",
+   "lang": "zh",
+   "doc_theme": "light",
+   "doc_lang": "zh-CN",
+   "nodes": [
+    {
+     "cls": "market-change nb-chg down stale",
+     "text": "-1.27%",
+     "color": "color(srgb 0.143922 0.459373 0.325882)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-3.2%",
+     "color": "color(srgb 0.143922 0.459373 0.325882)"
+    },
+    {
+     "cls": "market-change nb-chg ",
+     "text": "0.0%",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-4.2%",
+     "color": "color(srgb 0.143922 0.459373 0.325882)"
+    },
+    {
+     "cls": "market-change nb-chg down",
+     "text": "-1.8%",
+     "color": "color(srgb 0.143922 0.459373 0.325882)"
+    },
+    {
+     "cls": "market-change nb-chg ",
+     "text": "0.0%",
+     "color": "rgb(76, 90, 108)"
+    }
+   ]
+  },
+  {
+   "file": "vector_nullctx_light_zh_1440.png",
+   "page": "_w3_fixture_vector.html",
+   "theme": "light",
+   "lang": "zh",
+   "doc_theme": "light",
+   "doc_lang": "zh-CN",
+   "nodes": [
+    {
+     "cls": "complex-context ",
+     "text": "基准资产",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "今日暂无背景",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "complex-context pos",
+     "text": "近 8 周领先 BTC +10.1%",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "市场主导度",
+     "color": "rgb(76, 90, 108)"
+    },
+    {
+     "cls": "complex-context ",
+     "text": "市场总市值",
+     "color": "rgb(76, 90, 108)"
+    }
+   ]
+  }
+ ],
+ "crypto_flatchip": "REAL data render (build_crypto at 7fc0d068e03f, MM_DATA_GUARD=1): USDT-USD, USDC-USD and LEO-USD 24H moves sit inside FLAT_CHG_PCT and read 0.0% with no tone class.",
+ "vector_nullctx": "FIXTURE render: the real build_vector path with ONE input patched — complex card [1] keeps its tone but its context_en/context_zh are blanked, because no card in the committed data lacks context. Served as _w3_fixture_vector.html; never written to site/vector.html.",
+ "fixture_patch": {
+  "symbol": "ETH",
+  "tone": "up",
+  "was_en": "Leading BTC by +2.0% over 8 weeks",
+  "was_zh": "近 8 周领先 BTC +2.0%"
+ }
+}

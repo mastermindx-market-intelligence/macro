@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-08-10T21:25:50Z",
+ "accession": "0000817720-26-000055",
+ "cik": "0000817720",
+ "doc_byte_length": 1875971,
+ "doc_sha256": "d8cd914f29821b0d7d4fdc030a185c1d839cbe4f77e078495cc32f50abb2a5bb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-10",
+ "form": "10-K",
+ "period_of_report": "2026-06-27",
+ "primary_document": "syna-20260627.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1607980,
+  "byte_start": 1606562,
+  "normalized": "Customer B17%15%*",
+  "normalized_sha256": "1c3e5124735d8ad4bf976f743ad7eebafe6d760a56d059dd6f70a9bd969dd010",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:2.62pt 1pt 1.5pt 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\">Customer B</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:2.62pt 1pt 1.5pt 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-271\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1218\">17</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2.62pt 1pt 1.5pt 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-272\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1219\">15</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2.62pt 1pt 1.5pt 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:114%\">*</span></td></tr>",
+  "raw_sha256": "ae33935fce96a4f164b15f68751b1c011022d8cdf216d116d29f1e8b455d09fe"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/817720/000081772026000055/syna-20260627.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 125677,
+   "byte_start": 125016,
+   "context_ref": "c-271",
+   "raw": "<xbrli:context id=\"c-271\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000817720</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">syna:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-06-29</xbrli:startDate><xbrli:endDate>2026-06-27</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "691e57af7ab70d845eb04e8892effffa22a81a28f0487fdbd147547144e10aff"
+  },
+  {
+   "byte_end": 126338,
+   "byte_start": 125677,
+   "context_ref": "c-272",
+   "raw": "<xbrli:context id=\"c-272\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000817720</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">syna:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-06-30</xbrli:startDate><xbrli:endDate>2025-06-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "dea3bce732454950c603c7b83ab5cca850bc0bba876698d7664568f4943ff6a4"
+  }
+ ]
+}

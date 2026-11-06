@@ -1,0 +1,36 @@
+{
+  "status": "LOCAL_MOUNT_AND_VISUAL_SOURCE_ACCEPTED",
+  "source_hashes": {
+    "templates/intl_workspace/macro.html.j2": "153c31c19bcea3cdad53295ca0052f9f8bb8fdd0df8362b9e824e633689f1f7b",
+    "templates/intl_workspace_macro.css": "11b8e48f9f15a8e90c556e0c703e60818ac1db8a9c02786fd6f59ccbc219dc15",
+    "templates/intl_workspace.js": "f8bd52725591b55a451a75a30ea9abc7688805e885a1080bede1abb9f4329f56",
+    "templates/intl_workspace/shell.html.j2": "cfd14dee9c0f14126a83a0683630acff0e41a1a8ed1064491312ea4a3f725eb5",
+    "templates/intl.html.j2": "d6cb43416aa9a59397c2ab62e5e2d64a21ccf86194ac2dc9eb472921c797edce",
+    "tests/test_intl_workspace_macro_render.py": "b7cba75ef9d0297232b8e47b8f688c2ccfb37f758fae09328e96d0b988306d97",
+    "tests/intl_workspace_controller.test.cjs": "436c4e27d2d41507ee1c8ce30523b6964cbffa7d3b172916ec7714151558e4af"
+  },
+  "native_ruling": {
+    "file": "IM04_MACRO_VISUAL_DELTA_RULING.json",
+    "sha256": "786a7b246cd49517a2162569ea518a85529d9bb7b0349dd881b3da65e40d9b79",
+    "disposition": "R3 material geometry approved; required bilingual quality/unit fixes and keyboard-scroll proof completed."
+  },
+  "final_copy_delta": "Context uses existing bilingual currency/price-return names; market option attributes use existing entry relabeler. No model/state or evidence identity changes.",
+  "checks": {
+    "final_render": 12,
+    "mounted_actual_full_template": 24,
+    "native_reference_keyboard": 4,
+    "canonical_screenshots": 32,
+    "focus_captures": 16,
+    "console_errors_final_capture": 0,
+    "failed_responses_final_capture": 0
+  },
+  "canonical_manifest": "mockups/evidence/paper-international-macro/states/manifest.json",
+  "canonical_manifest_sha256": "97f4026d7db6b76c25ce9bf6b31338c451d7090476120ac387ef8d5ee2abe4d9",
+  "other_receipts": {
+    "IM04_MACRO_MOUNTED_BROWSER.json": "414f5d7fd6d6ddb827a867e4464739ea4a0bde5ee1b44fc6ab82510fdfba75b1",
+    "IM04_MACRO_REFERENCE_KEYBOARD.json": "ce0dc6591c0e1552cdd90b7333620fb261b6ce46dd9309e3ab74dcb413dd3d9b",
+    "IM04_MACRO_CANONICAL_CAPTURE.json": "6c47d19ad5c9141987787579c7cec322db6be0a3c6e21372bee380ab935705c5"
+  },
+  "proof_limits": "Stored official bytes with fixed evaluation clock. Final actual full template/controller/entry24cases plus32canonical captures cover all final source. Native reference4checks precede copy and table-width deltas; reference CSS unchanged. Anonymous local captures do not establish live authentication/subscription or full normal main. Rejected missing-asset and collapsed-caption/heading captures retained outside repo.",
+  "final_layout_repairs": "Actual full mobile inspection found native table caption and desktop first-column width collapsing Chinese text; scoped mobile caption/row-heading display widths repaired, actual24cases now assert both widths."
+}

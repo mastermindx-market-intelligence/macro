@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-17T20:50:29Z",
+ "accession": "0001628280-26-057406",
+ "cik": "0002023554",
+ "doc_byte_length": 2223398,
+ "doc_sha256": "67db98cde04724db6c97f165d660b795179294112814bbf0a5411ad916651848",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "sndk-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1668716,
+  "byte_start": 1667925,
+  "normalized": "The Supply Agreement expires on September 28, 2029, and automatically renews for additional one-year terms unless earlier terminated by either of the parties. The Company also entered into an agreement to grant SDSS certain intellectual property rights on a royalty-free basis for use in manufacturing products on the Company’s behalf for the term of and under the Supply Agreement.",
+  "normalized_sha256": "221d1ac42ef4af6dade9e894ec18cb32b76094993c480c5e39718af03364fb45",
+  "raw": " The Supply Agreement expires on September 28, 2029, and automatically renews for additional </span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonNumeric contextRef=\"c-232\" name=\"sndk:LongTermPurchaseCommitmentRenewalTerm\" format=\"ixt-sec:durwordsen\" id=\"f-979\">one-year</ix:nonNumeric> </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">terms unless earlier terminated by either of the parties. The Company also entered into an agreement to grant SDSS certain intellectual property rights on a royalty-free basis for use in manufacturing products on the Company&#8217;s behalf for the term of and under the Supply Agreement.",
+  "raw_sha256": "1819eb553a6dcebaf34b4b6b64a44a6b703abb4dab9652d7dc0e018e1bc14511"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026057406/sndk-20260703.htm",
+ "xbrl_contexts": []
+}

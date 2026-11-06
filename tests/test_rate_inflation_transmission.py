@@ -3,8 +3,93 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from engine import rate_inflation_transmission as rit
+
+
+def _native_scenario_calibration(monkeypatch, *, asof='2025-05-06'):
+    """Synthetic observations, actual incumbent fit and additive emitter."""
+    from scripts import calibrate_rate_inflation as producer
+    index = pd.bdate_range(end=asof, periods=700)
+    x = 2 + np.sin(np.arange(700) / 17) * .6 + np.arange(700) * .003
+    frame = pd.DataFrame({'us10y_real': x}, index=index)
+    closes = {'SPY': pd.Series(200 * np.exp(-.3 * x), index=index),
+              'TLT': pd.Series(100 * np.exp(.2 * x), index=index)}
+    monkeypatch.setattr(producer.inputs, 'yahoo_closes', lambda: closes)
+    # No estimator/asset registry changes. Only the two supplied synthetic
+    # series are available; every other incumbent asset remains absent.
+    metadata = {}
+    betas = producer.scenario_betas(frame, metadata=metadata, generated_at=asof+'T12:00:00Z')
+    return {'meta': {'asof': asof, 'horizon_d': 63}, 'scenario_betas': betas, 'scenario_beta_metadata': metadata}, frame
+
+
+def test_scenario_metadata_preserves_incumbent_scalar_fit_and_actual_sample(monkeypatch):
+    from scripts import calibrate_rate_inflation as producer
+    cal, frame = _native_scenario_calibration(monkeypatch)
+    assert producer.scenario_betas(frame) == cal['scenario_betas']
+    m = cal['scenario_beta_metadata']
+    assert m['horizon_sessions'] == 63 and m['minimum_n'] == 504
+    assert m['calendar']['count'] == 700 and m['calendar']['end'] == str(frame.index[-1])
+    for asset, cell in m['cells']['real10y_chg63'].items():
+        assert cell['n'] == 637 and cell['start'] == str(frame.index[63])
+        assert cell['end'] == str(frame.index[-1]) and cell['beta'] == cal['scenario_betas']['real10y_chg63'][asset]
+        assert cell['effective_n'] is None and cell['sample_count_kind'] == 'overlapping_paired_observations'
+        assert cell['paired_sample_sha256'].startswith('sha256:')
+    assert m['historical_vintage_claim'] is False and 'rights_ref' not in m
+
+
+def test_scenario_beta_adapter_is_owner_identical_without_series_or_future_calendar(monkeypatch):
+    cal, _ = _native_scenario_calibration(monkeypatch)
+    result = rit.evaluate_scenario_beta(cal, shock_bp=50, horizon='63d', path_shape='terminal_only',
+      effective_at='2025-05-06', knowledge_cutoff='2025-05-06T23:00:00Z')
+    cfg = {'scenarios': [{'key':'ontology_explicit_real10y','driver':'real10y_chg63','shock_bp':50,
+      'label_en':'Assumed real 10Y change — same-window illustration','label_zh':'假设实际10年期收益率变化—同窗示意'}]}
+    assert result['scenario'] == rit.scenarios(None, cal, cfg)[0]
+    assert result['method_class'] == 'EMPIRICAL_SAME_WINDOW_BETA' and result['confirmed'] is None
+    assert result['coverage']['displayed_assets'] == ['SPY', 'TLT']
+    assert result['uncertainty'] == 'not_provided_by_native_owner'
+    assert all(c['en'] and c['zh'] for c in result['caveats'])
+
+
+@pytest.mark.parametrize('path,value', [
+    (['scenario_beta_metadata'], None),
+    (['scenario_beta_metadata','generated_at'], '2025-05-07T00:00:00Z'),
+    (['scenario_beta_metadata','cells','real10y_chg63','SPY','n'], True),
+    (['scenario_beta_metadata','cells','real10y_chg63','SPY','n'], 1),
+    (['scenario_beta_metadata','cells','real10y_chg63','SPY','effective_n'], 637),
+    (['scenario_beta_metadata','cells','real10y_chg63','SPY','paired_sample_sha256'], None),
+    (['scenario_beta_metadata','calendar','unit'], 'calendar_days'),
+    (['scenario_beta_metadata','method_versions','estimator'], 'sha256:'+'f'*64),
+    (['scenario_betas','real10y_chg63','SPY'], -999),
+    (['meta','asof'], '2025-05-07'),
+])
+def test_scenario_beta_adapter_rejects_missing_or_incompatible_native_metadata(monkeypatch, path, value):
+    cal, _ = _native_scenario_calibration(monkeypatch)
+    cursor = cal
+    for key in path[:-1]: cursor = cursor[key]
+    cursor[path[-1]] = value
+    with pytest.raises(rit.ScenarioMetadataUnavailable):
+        rit.evaluate_scenario_beta(cal, shock_bp=50, horizon='63d', path_shape='terminal_only',
+          effective_at='2025-05-06', knowledge_cutoff='2025-05-06T23:00:00Z')
+
+
+@pytest.mark.parametrize('horizon,shape', [('60d','terminal_only'), ('63d','linear_sessions'), ('63d','step_at_start')])
+def test_scenario_beta_adapter_does_not_invent_other_horizons_or_paths(monkeypatch, horizon, shape):
+    cal, _ = _native_scenario_calibration(monkeypatch)
+    with pytest.raises(rit.ScenarioMetadataUnavailable):
+        rit.evaluate_scenario_beta(cal, shock_bp=50, horizon=horizon, path_shape=shape,
+          effective_at='2025-05-06', knowledge_cutoff='2025-05-06T23:00:00Z')
+
+
+def test_scenario_metadata_counts_real_missing_pairs_not_nominal_frame_length(monkeypatch):
+    from scripts import calibrate_rate_inflation as producer
+    cal, frame = _native_scenario_calibration(monkeypatch)
+    frame.iloc[100:110, 0] = np.nan
+    m = {}; beta = producer.scenario_betas(frame, metadata=m, generated_at='2025-05-06T12:00:00Z')
+    # Both the missing current x and its lagged counterpart remove paired rows.
+    assert m['cells']['real10y_chg63']['SPY']['n'] == 617
+    assert beta == producer.scenario_betas(frame)
 
 
 def _synthetic_frame(n: int = 800) -> pd.DataFrame:

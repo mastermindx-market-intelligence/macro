@@ -1,0 +1,44 @@
+{
+  "started_at": "2026-10-20T11:13:36.631451+00:00",
+  "head_before": "e2d10f933587f58be8716505529a37f8839901f7",
+  "merge_head": "42c859546ececa797b400db0adeb8c5a22f96832",
+  "tree_before": "c9be0caaf0b45d3a76a20e28982604845bd74f00",
+  "remote_pr": {
+    "autoMergeRequest": null,
+    "headRefOid": "e2d10f933587f58be8716505529a37f8839901f7",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "state": "OPEN"
+  },
+  "whitespace_base": "42c859546ececa797b400db0adeb8c5a22f96832",
+  "prior_whitespace_refusal": "against H included incoming-main additions; commit was not attempted; owned delta now checked against exact incoming M",
+  "generated_publication": "13006 canonical-only outputs returned to normal merged bytes after exact owner transform proof; 610-path source diff; existing renderer owns full emission",
+  "purpose": "local ordinary M merge checkpoint to permit subsequent normal main ancestry integration; fresh combined CI/push/publication remain pending",
+  "commit_attempted": true,
+  "whitespace": {
+    "exit": 0,
+    "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-local-merge-whitespace-v2.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "commit_started_at": "2026-10-20T11:13:37.490118+00:00",
+  "commit_exit": 0,
+  "finished_at": "2026-10-20T11:13:45.150844+00:00",
+  "log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-local-merge-commit-v2.log",
+    "bytes": 113,
+    "sha256": "3be7274fa3d123639ab4e95b036da63d1536394a5a0b9e7acf39f84a32c2bfb9"
+  },
+  "head_after": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "parents_after": [
+    "e2d10f933587f58be8716505529a37f8839901f7",
+    "42c859546ececa797b400db0adeb8c5a22f96832"
+  ],
+  "tree_after": "c9be0caaf0b45d3a76a20e28982604845bd74f00",
+  "status_after": []
+}

@@ -1,0 +1,31 @@
+{
+  "scope": "Local source/runtime qualification; no installed entitlement, production performance or independent investor acceptance",
+  "base_head": "58307ed08b46c2a1726b6caf56241fd05f40ef13",
+  "repair": "Actual investor subject binding bridges successful SDK restoration until the page owner takes over; delayed INITIAL_SESSION no longer clears the finance read or retains an old sign-out request.",
+  "regression_evidence": "Three actual-component failures before repair; 40 affected tests and 18 packaging/priority tests pass after repair.",
+  "timing": {
+    "all_pass": true,
+    "median_ms": 2787.3500000089407,
+    "p95_ms": 2838.2999999970198,
+    "max_ms": 2838.2999999970198,
+    "target_ms": 3000
+  },
+  "matrix_cells": 24,
+  "density_program_cases": 11,
+  "rtx_cases": 2,
+  "canonical_inputs_unchanged": true,
+  "styling": "No CSS changes; four current rendered images inspected, with the earlier full dual-theme treatment retained.",
+  "instrumentation": "ASGI shutdown retained the optional journal; no synchronous receipt writes in the request path. CI census was active during timing.",
+  "request_count": 1977,
+  "non_success_requests": [
+    {
+      "path": "/government_revenue.html/government_revenue.html",
+      "query": "",
+      "status": 404,
+      "elapsed_ms": 3.2734160049585626
+    }
+  ],
+  "harness_input_failure": "First matrix invocation accidentally supplied the full page URL to a base-origin argument. It requested /government_revenue.html/government_revenue.html, returned404 and captured0. Original failure retained; corrected base-origin invocation captured24. Product bytes and assertions unchanged.",
+  "full_candidate_proof": "Required on the next committed source; prior receipt remains historical",
+  "review": "New V10 Fabric review is pending. V9 retained review is explicitly unaccepted; same-carrier current-output refusal was not retried."
+}

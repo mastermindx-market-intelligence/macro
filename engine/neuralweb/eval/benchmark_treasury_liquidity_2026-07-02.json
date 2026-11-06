@@ -1,0 +1,83 @@
+{
+  "benchmark_id": "treasury_liquidity_2026-07-02",
+  "frozen": true,
+  "source": "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-02",
+    "session_label": "date only",
+    "adjudication_date": "2026-07-12",
+    "historical_source_availability": "unverified",
+    "dependence_group": "june-july-2026-risk-on",
+    "source": {
+      "path": "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "sha256": "5c593990c373e2a14ff77e33824536d55b8c9f33c3dfdd40a995be7dda9c8568"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-02",
+        "source_lines": [
+          163,
+          168
+        ],
+        "text": "| Date | TGA balance | Liquidity implication |\n|---|---:|---|\n| Jun 29 | $876.96B | Already below the prior-week level |\n| Jun 30 | $919.15B | Quarter-end rebuild/spike |\n| Jul 1 | $807.36B | Large cash release into the private system |\n| Jul 2 | $770.59B | About $149B below Jun 30 |",
+        "sha256": "1bd4f07274d4283ad28518b07fb2e8bfb3b0b29e8dd86cb1c764fe470e18ad66"
+      },
+      {
+        "event_date": "2026-07-02",
+        "source_lines": [
+          172,
+          174
+        ],
+        "text": "When Treasury spends from its account at the Federal Reserve, the money generally lands in private deposits and bank reserves. This improves market plumbing even when the Fed itself does nothing.\n\nThe local canonical net-liquidity proxy rose by roughly $162 billion from June 30 to July 2. Almost all of that improvement came from the TGA drawdown and quarter-turn RRP mechanics.",
+        "sha256": "459792c5d9f92fa4fcc0e1a13d203aaebf3cfe888cfdb119ffc92fac05e66541"
+      },
+      {
+        "event_date": "2026-07-02",
+        "source_lines": [
+          178,
+          178
+        ],
+        "text": "- Fed assets fell by about $11 billion from June 24 to July 1.",
+        "sha256": "e7c1d14597314bc2db9f588b95e957685b44192bf47306e5de2c228f0bd825c5"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        174,
+        180
+      ],
+      "text": "The local canonical net-liquidity proxy rose by roughly $162 billion from June 30 to July 2. Almost all of that improvement came from the TGA drawdown and quarter-turn RRP mechanics.\n\nThis was **not QE**:\n\n- Fed assets fell by about $11 billion from June 24 to July 1.\n- ON RRP usage briefly spiked at quarter-end and then collapsed back near $1 billion.\n- The move was a Treasury cash-flow effect, not a new central-bank asset-purchase program.",
+      "sha256": "afb4dc967f6873972190399b5e0dbf914439eb5e6a4e271c21700af9de5e0bf3"
+    }
+  },
+  "question_en": "Using only the supplied balances and balance-sheet readings through July 2, explain the liquidity change and distinguish Treasury cash spending from QE. What does the arithmetic not establish?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-02 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-02] | Date | TGA balance | Liquidity implication |\n|---|---:|---|\n| Jun 29 | $876.96B | Already below the prior-week level |\n| Jun 30 | $919.15B | Quarter-end rebuild/spike |\n| Jul 1 | $807.36B | Large cash release into the private system |\n| Jul 2 | $770.59B | About $149B below Jun 30 |\n[2026-07-02] When Treasury spends from its account at the Federal Reserve, the money generally lands in private deposits and bank reserves. This improves market plumbing even when the Fed itself does nothing.\n\nThe local canonical net-liquidity proxy rose by roughly $162 billion from June 30 to July 2. Almost all of that improvement came from the TGA drawdown and quarter-turn RRP mechanics.\n[2026-07-02] - Fed assets fell by about $11 billion from June 24 to July 1.",
+  "expected_properties": [
+    {
+      "tag": "arithmetic",
+      "check": "TGA fell 919.15B to 770.59B between June 30 and July 2: 148.56B; do not conflate this with the approximately 162B net-liquidity proxy change."
+    },
+    {
+      "tag": "mechanism",
+      "check": "Explain Treasury cash release into deposits/reserves and the quarter-turn RRP contribution; distinguish them from Fed asset purchases."
+    },
+    {
+      "tag": "counterevidence",
+      "check": "Fed assets fell about 11B from June 24 to July 1, so these readings do not establish QE."
+    },
+    {
+      "tag": "limits",
+      "check": "Do not infer an exact stock-price causal effect, durable liquidity support, later TGA readings, or current trading authority."
+    }
+  ],
+  "known_failure_modes": [
+    "Treat retrospective supplied diagnostic text as a historically served point-in-time snapshot.",
+    "Turn a distinct population, selected anecdote or failed calibration into a validated execution signal.",
+    "Import later observations absent from the supplied cutoff slice or count related cases as independent trials."
+  ],
+  "gold_standard_sentence": "The TGA drawdown is $148.56B, while the broader proxy rose about $162B with RRP effects. Treasury spending can add reserves without QE; the Fed asset decline and these balances do not prove a durable rally or a precise price effect.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "portfolio.fred_response_hardening.validation.v1",
+  "generated_at": "2026-10-22T07:41:12.984179+00:00",
+  "base": "af0ba2d50a32c7a422508b442f35010dcdf154a2",
+  "source_sha256": {
+    "collectors/fred.py": "cd283e3de968314e620df1b84bd5945106c88f6e357f481f8d2c6be8c244e048",
+    "tests/test_collect_failfast.py": "b9c9988e5981a2c6e407797dac0987b4b3fcced846f97232bac5b661672a2d01"
+  },
+  "red": {
+    "failed": 15,
+    "passed": 5,
+    "deselected": 8,
+    "warnings": 9
+  },
+  "green": {
+    "passed": 41,
+    "failed": 0,
+    "warnings": 0
+  },
+  "lint": "unavailable",
+  "network": "blocked by existing autouse fixture; synthetic responses only",
+  "files": {
+    "README.md": {
+      "bytes": 2863,
+      "sha256": "9afc58ac8cf16203750d80f011639f232086bc640a3217b1041e04c142e78be7"
+    },
+    "green-result.json": {
+      "bytes": 800,
+      "sha256": "79a61d285bbd06f821c74332a0933facd0af844cf57d7386b39d01f19b3b4392"
+    },
+    "green.log.gz": {
+      "bytes": 52,
+      "sha256": "f11f7d63e2d589f5adc44a745b3216058184fad39a9a6bdfc82c83e10fcff4e0"
+    },
+    "red-result.json": {
+      "bytes": 569,
+      "sha256": "ddd52fe03ebd587b9f82e41161ecedf30ee85f3183f88269416d7a76f5e49af6"
+    },
+    "red.log.gz": {
+      "bytes": 5065,
+      "sha256": "fffc581aaf4f3b3a4c6a804409147f299edd547ebad3f633ab0e13d07fac1cb1"
+    }
+  }
+}

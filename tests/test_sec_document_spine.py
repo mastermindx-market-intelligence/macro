@@ -1248,3 +1248,22 @@ def test_reuse_lookup_returns_none_without_a_stored_prior_manifest(tmp_path):
     (directory / ".hidden.json").write_bytes(b"{}")
     (directory / "notes.txt").write_bytes(b"operator scratch")
     assert find_reusable_primary_retrieval(tmp_path, tonight) is None
+
+
+def test_collector_reexports_the_exact_native_reader_contracts():
+    from collectors import sec_document_spine as collector
+    from engine.fundamental_forensics import sec_document_spine as spine
+
+    public = (
+        "ArchiveReceipt", "ArchiveStoreError", "archive_receipt_from_json_bytes",
+        "content_storage_key", "manifest_storage_key", "read_archive_object_bytes",
+        "receipt_storage_key",
+    )
+    private = ("_decode_receipt", "_http_metadata", "_receipt_bytes", "_receipt_id", "_utc_text")
+    bounds = ("HARD_MAX_DOCUMENT_BYTES", "HARD_MAX_ARCHIVE_RECEIPT_BYTES")
+    for name in (*public, *private, *bounds):
+        assert getattr(collector, name) is getattr(spine, name), name
+    for name in public:
+        assert name in collector.__all__ and name in spine.__all__
+    assert collector.ChecksumMismatch.__bases__ == (spine.ArchiveStoreError,)
+    assert collector.ArchiveResponseTooLarge.__bases__ == (spine.ArchiveStoreError,)

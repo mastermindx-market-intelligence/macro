@@ -20,6 +20,84 @@ from .normalize import DetectorSpec, ForensicsRegistry
 MIN_PERIOD_GAP_DAYS = 300
 MAX_PERIOD_GAP_DAYS = 430
 
+ISSUER_CLASSES: frozenset[str] = frozenset(
+    {"industrial", "software", "bank", "insurance", "reit", "utility", "unknown"}
+)
+_INDUSTRIAL_OR_SOFTWARE: frozenset[str] = frozenset({"industrial", "software"})
+DETECTOR_APPLICABILITY: dict[str, frozenset[str]] = {
+    "margin_compression_despite_revenue_growth": _INDUSTRIAL_OR_SOFTWARE,
+    "receivables_stretch": _INDUSTRIAL_OR_SOFTWARE,
+    "inventory_build": _INDUSTRIAL_OR_SOFTWARE,
+    "capital_intensity_rising": _INDUSTRIAL_OR_SOFTWARE,
+    "accruals_trending_up": ISSUER_CLASSES - frozenset({"bank", "insurance"}),
+}
+
+NOT_EVALUABLE_REASON_NOT_APPLICABLE_FOR_ISSUER_CLASS = "not_applicable_for_issuer_class"
+NOT_EVALUABLE_REASONS: frozenset[str] = frozenset(
+    {
+        "two_consecutive_annual_periods",
+        "three_consecutive_annual_periods",
+        "consecutive_annual_periods",
+        "positive_revenue_required",
+        "positive_revenue_and_nonzero_prior_balance_required",
+        "nonzero_revenue_and_positive_capex_required",
+        "nonzero_prior_operating_income_required",
+        "positive_assets_required",
+        "detector_rule_unavailable_at_as_of",
+        NOT_EVALUABLE_REASON_NOT_APPLICABLE_FOR_ISSUER_CLASS,
+    }
+)
+
+
+def issuer_class_for_sic(sic: str | int | None) -> str:
+    """Map an SEC SIC code onto an issuer class.
+
+    6020–6199 and 6710–6719 are bank; 6300–6411 insurance; 6798 reit;
+    4900–4991 utility; 7370–7379 software; any other parseable code industrial;
+    None or unparseable unknown.
+    """
+    code = _parse_sic(sic)
+    if code is None:
+        return "unknown"
+    if 6020 <= code <= 6199 or 6710 <= code <= 6719:
+        return "bank"
+    if 6300 <= code <= 6411:
+        return "insurance"
+    if code == 6798:
+        return "reit"
+    if 4900 <= code <= 4991:
+        return "utility"
+    if 7370 <= code <= 7379:
+        return "software"
+    return "industrial"
+
+
+def _parse_sic(sic: str | int | None) -> int | None:
+    if sic is None or isinstance(sic, bool):
+        return None
+    if isinstance(sic, int):
+        return sic if sic >= 0 else None
+    text = str(sic).strip()
+    if not text or not text.isdigit():
+        return None
+    return int(text)
+
+
+def _gated_issuer_class(detector_id: str, issuer_sic: str | int | None) -> str | None:
+    """Return the issuer class when this detector must not evaluate, else None.
+
+    None SIC and class ``unknown`` gate nothing and record nothing new.
+    """
+    if issuer_sic is None:
+        return None
+    issuer_class = issuer_class_for_sic(issuer_sic)
+    if issuer_class == "unknown":
+        return None
+    applicable = DETECTOR_APPLICABILITY.get(detector_id)
+    if applicable is None or issuer_class in applicable:
+        return None
+    return issuer_class
+
 
 def _decimal(observation: NormalizedObservation) -> Decimal:
     return Decimal(observation.value)
@@ -29,6 +107,42 @@ def _growth(current: Decimal, prior: Decimal) -> Decimal | None:
     if prior == 0:
         return None
     return (current - prior) / abs(prior) * Decimal("100")
+
+
+def _change_exceeds_base(current: Decimal, prior: Decimal) -> bool:
+    """A move larger than its own base: the percentage reading rests on a small base."""
+    return abs(current - prior) > abs(prior)
+
+
+def _materiality(
+    metric: str, current: Decimal, prior: Decimal, current_revenue: Decimal
+) -> tuple[dict[str, Decimal], tuple[str, ...]]:
+    """A26: the amount behind a growth reading, sized against the revenue it is read beside.
+
+    A percentage change alone hides whether the move matters; the absolute change and
+    its share of current revenue let a reader judge materiality, and ``small_base``
+    marks a move larger than its own base. Exposure only: no verdict changes here.
+    """
+    change = current - prior
+    derived = {f"{metric}_change": change}
+    if current_revenue > 0:
+        derived[f"{metric}_change_share_of_revenue_pp"] = change / current_revenue * Decimal("100")
+    caveats = (f"small_base:{metric}",) if _change_exceeds_base(current, prior) else ()
+    return derived, caveats
+
+
+def _basis_changes(source_observations: list[NormalizedObservation]) -> tuple[str, ...]:
+    """A26: a metric read under different mapping rules, tiers or units across periods.
+
+    A change between periods mapped on different bases may be a definition shift,
+    not an economic one, so it is named beside the reading rather than hidden in it.
+    """
+    bases: dict[str, set[tuple[str, str, str]]] = {}
+    for item in source_observations:
+        bases.setdefault(item.metric, set()).add(
+            (item.mapping_rule_id, item.mapping_tier, item.unit)
+        )
+    return tuple(sorted(f"basis_changed:{metric}" for metric, seen in bases.items() if len(seen) > 1))
 
 
 def _periods_are_consecutive(vintages: tuple[StatementVintage, ...]) -> bool:
@@ -204,6 +318,7 @@ def _two_period_detector(
         for item in inputs
     }
     triggered, derived, failures, limitations = compute(values)
+    limitations = tuple(limitations) + _basis_changes(source_items)
     if triggered is None:
         return _not_evaluable(
             spec, registry, entity_cik=entity_cik, period_ends=period_ends, inputs=inputs,
@@ -242,12 +357,13 @@ def _margin_compute(spec: DetectorSpec, periods: tuple[str, str]):
         gross_margin_prior = values[(prior, "gross_profit")] / prior_revenue * Decimal("100")
         gross_margin_current = values[(current, "gross_profit")] / current_revenue * Decimal("100")
         fired = revenue_growth >= minimum_growth and gross_margin_current < gross_margin_prior
+        caveats = ("small_base:revenue",) if _change_exceeds_base(current_revenue, prior_revenue) else ()
         return fired, {
             "revenue_growth_pp": revenue_growth,
             "gross_margin_prior_pp": gross_margin_prior,
             "gross_margin_current_pp": gross_margin_current,
             "gross_margin_change_pp": gross_margin_current - gross_margin_prior,
-        }, (), ()
+        }, (), caveats
 
     return compute
 
@@ -264,11 +380,16 @@ def _working_capital_compute(spec: DetectorSpec, periods: tuple[str, str], metri
         revenue_growth = _growth(current_revenue, prior_revenue)
         metric_growth = _growth(current_metric, prior_metric)
         growth_gap = metric_growth - revenue_growth
-        return growth_gap > gap_threshold, {
+        derived = {
             "revenue_growth_pp": revenue_growth,
             f"{metric}_growth_pp": metric_growth,
             "growth_gap_pp": growth_gap,
-        }, (), ()
+        }
+        sized, caveats = _materiality(metric, current_metric, prior_metric, current_revenue)
+        derived.update(sized)
+        if _change_exceeds_base(current_revenue, prior_revenue):
+            caveats += ("small_base:revenue",)
+        return growth_gap > gap_threshold, derived, (), caveats
 
     return compute
 
@@ -291,8 +412,14 @@ def _capital_intensity_compute(spec: DetectorSpec, periods: tuple[str, str]):
             "capital_expenditures_growth_pp": capex_growth,
             "capex_revenue_growth_gap_pp": capex_revenue_gap,
         }
+        sized, caveats = _materiality(
+            "capital_expenditures", current_capex, prior_capex, current_revenue
+        )
+        derived.update(sized)
+        if _change_exceeds_base(current_revenue, prior_revenue):
+            caveats += ("small_base:revenue",)
         if current_oi <= 0:
-            return capex_revenue_gap > gap_threshold, derived, (), (
+            return capex_revenue_gap > gap_threshold, derived, (), caveats + (
                 "nonpositive_operating_income_revenue_only_branch",
             )
         if prior_oi == 0:
@@ -303,8 +430,10 @@ def _capital_intensity_compute(spec: DetectorSpec, periods: tuple[str, str]):
             "operating_income_growth_pp": operating_income_growth,
             "capex_operating_income_growth_gap_pp": capex_oi_gap,
         })
+        if _change_exceeds_base(current_oi, prior_oi):
+            caveats += ("small_base:operating_income",)
         fired = capex_revenue_gap > gap_threshold and capex_oi_gap > gap_threshold
-        return fired, derived, (), ()
+        return fired, derived, (), caveats
 
     return compute
 
@@ -368,6 +497,7 @@ def _accruals_detector(
         source_observations=source_items,
         derived_values=derived,
         computed_at=computed_at,
+        limitations=_basis_changes(source_items),
     )
 
 
@@ -379,6 +509,7 @@ def evaluate_detectors(
     computed_at: datetime,
     detector_rules_eligible: bool = True,
     entity_cik: str,
+    issuer_sic: str | int | None = None,
 ) -> tuple[Finding, ...]:
     """Evaluate every registered detector; absence always becomes an explicit state."""
     observations = {item.observation_id: item for item in normalized_observations}
@@ -396,6 +527,22 @@ def evaluate_detectors(
                     source_observations=[],
                     missing_inputs=("detector_rule_unavailable_at_as_of",),
                     computed_at=computed_at,
+                )
+            )
+            continue
+        gated_class = _gated_issuer_class(spec.detector_id, issuer_sic)
+        if gated_class is not None:
+            results.append(
+                _not_evaluable(
+                    spec,
+                    registry,
+                    entity_cik=entity_cik,
+                    period_ends=tuple(item.period_end for item in selected),
+                    inputs=(),
+                    source_observations=[],
+                    missing_inputs=(NOT_EVALUABLE_REASON_NOT_APPLICABLE_FOR_ISSUER_CLASS,),
+                    computed_at=computed_at,
+                    limitations=(f"issuer_class:{gated_class}",),
                 )
             )
             continue

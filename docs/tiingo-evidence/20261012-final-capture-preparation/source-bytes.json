@@ -1,0 +1,15 @@
+{
+  "schema": "tiingo.reviewed_preparation_source_bytes/v1",
+  "sha256": {
+    "wave14-window01-parent-acceptance.json": "e3b9e381cb50013e42211d85657d5cced5f18b9f51ac46892cca10169247e36e",
+    "source9038-terminal-ci-acceptance.json": "3c7e5cab99525b3a1fd6d13cda9bfbc0c34530b3cdaeeeb89961c213e2147d58",
+    "source9038-merge-timing-error.json": "0c3d68a7d0946e06963203d61f37d9e89eae1fe8d31f5d303fdf71a1d6be2b73",
+    "boats-first-gap-and-budget-checks.json": "4fddd5104fa1573956de05d1b142a00e7074a5a8e002682e6f00dfbdcb5e4782",
+    "boats-control-only-checks.json": "e4587f2aa3bce72474288d5738c993ebf2d635b7241045b1eae32caffb17e27a",
+    "boats-control-only-review.json": "c77af1029b7b312a39bfc083b1868f1f8b02107031dff3d1948515deb3c6efef",
+    "reviewed-boats-raw-method.py": "5354cc084fb6a8e65653894b0306c9bf89dd940dcfa19cfa779523f5a648933d",
+    "reviewed-boats-qualification-method.py": "e13773e6374fe3f39f92b8ab3b31eb6403a543204a7c7250dad0c67f487dd0b9"
+  },
+  "copied_without_restamping": true,
+  "new_raw_capture_executed": false
+}

@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - lib/intl_gs_dossier_view.py
+  - templates/intl_workspace/dossier.html.j2
+  - templates/intl_workspace/_gs_dossier_macros.html.j2
+  - templates/intl_workspace/_gs_macros.html.j2
+  - templates/intl_workspace_surveillance.css
+  - site/intl_workspace_surveillance.css
+manifest: mockups/evidence/intl-gs-w2b/dossier/manifest.json

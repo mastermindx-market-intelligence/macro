@@ -1,0 +1,1065 @@
+{
+ "auditor": "seat model (claude-opus-5-5), 2026-10-14",
+ "cases": [
+  {
+   "body_family_hits": 9,
+   "case_id": "0203c8f4b17e7c32",
+   "class": "NO_EVENT",
+   "flags": [
+    "issuer_not_in_headline"
+   ],
+   "fold": "f1",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_present": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 22,
+   "case_id": "04e9f4e9c5dd7348",
+   "class": "NO_EVENT",
+   "flags": [
+    "earnings_only_items_T1_T3"
+   ],
+   "fold": "f1",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "commentary",
+   "note": "Investor commentary on income stocks; no new issuer action.",
+   "proxy_cell": "negative",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_absent": 2,
+    "present_value_differs": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 1,
+   "case_id": "12888188eeb43572",
+   "class": "NO_EVENT",
+   "flags": [
+    "issuer_not_in_headline"
+   ],
+   "fold": "f5",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 2,
+   "case_id": "13f9cd891072561f",
+   "class": "WRONG_ISSUER",
+   "flags": [],
+   "fold": "f4",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "partner_named",
+   "note": "The resolved issuer is a partner named in the headline; the event belongs to another company.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "7.01"
+   ],
+   "slot_classes": {
+    "present_vs_absent": 1
+   },
+   "template": "T3"
+  },
+  {
+   "body_family_hits": 0,
+   "case_id": "24274c667413e1be",
+   "class": "OTHER_EVENT",
+   "flags": [
+    "body_family_zero"
+   ],
+   "fold": "f5",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "event_filing_absent",
+   "note": "The one attached filing reports trial data; the filing for the headline's capital action is not attached.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "7.01",
+    "8.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 3
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 18,
+   "case_id": "26a0b5728c9f940d",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f1",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "",
+   "proxy_cell": "negative",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_present": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 14,
+   "case_id": "285ee21452d75ab7",
+   "class": "WRONG_ISSUER",
+   "flags": [
+    "issuer_not_in_headline"
+   ],
+   "fold": "f2",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "other_company_subject",
+   "note": "The headline reports another company's results; the resolved issuer is only mentioned.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02",
+    "7.01",
+    "8.01"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 47,
+   "case_id": "33d6ad63bcc2d8b0",
+   "class": "WRONG_ISSUER",
+   "flags": [],
+   "fold": "f2",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "single_letter_ticker",
+   "note": "A one-letter ticker resolved to an unrelated issuer; the issuer-in-headline flag was a false positive.",
+   "proxy_cell": "negative",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_present": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 1,
+   "case_id": "3deeaaf696829728",
+   "class": "NO_EVENT",
+   "flags": [
+    "earnings_only_items_T1_T3"
+   ],
+   "fold": "f2",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "solicitation",
+   "note": "Law-firm investor solicitation; no issuer action.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_absent": 3
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 3,
+   "case_id": "40f141dfd2278bf5",
+   "class": "NO_EVENT",
+   "flags": [],
+   "fold": "f5",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "listicle",
+   "note": "Stock list article; no issuer action.",
+   "proxy_cell": "negative",
+   "qualifying_items": [
+    "2.02",
+    "7.01"
+   ],
+   "slot_classes": {
+    "absent_reason_differs": 1,
+    "agree_absent": 2
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 0,
+   "case_id": "42230fc4062d9c43",
+   "class": "WRONG_ISSUER",
+   "flags": [
+    "body_family_zero",
+    "issuer_not_in_headline"
+   ],
+   "fold": "f2",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "other_company_subject",
+   "note": "The headline reports another company's outlook; the resolved issuer is a customer it implies.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 16,
+   "case_id": "5fa111268385f5a4",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f3",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "",
+   "proxy_cell": "negative",
+   "qualifying_items": [
+    "2.02",
+    "7.01"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 19,
+   "case_id": "6102dc48fd128d00",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f4",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "1.01",
+    "8.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 2,
+    "agree_present": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 0,
+   "case_id": "6a09a069e13a1772",
+   "class": "NO_EVENT",
+   "flags": [
+    "body_family_zero",
+    "issuer_not_in_headline"
+   ],
+   "fold": "f5",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "1.01"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 9,
+   "case_id": "6e93f9d1021b542c",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f1",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 5,
+   "case_id": "70c3eca15231c1d4",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f3",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "present_vs_absent": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 10,
+   "case_id": "77c504d5e4bdab9f",
+   "class": "NO_EVENT",
+   "flags": [],
+   "fold": "f4",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "commentary",
+   "note": "Question-form commentary; the attached body happens to carry guidance, the headline reports no event.",
+   "proxy_cell": "ambiguous",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 13,
+   "case_id": "8209ca03e15e8472",
+   "class": "NO_EVENT",
+   "flags": [],
+   "fold": "f3",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "quote_page",
+   "note": "Price-quote page; no issuer action.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 62,
+   "case_id": "8794d6338edc0821",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f1",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "The offering filing is attached alongside an earnings filing from the prior day.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "1.01",
+    "2.02",
+    "7.01",
+    "8.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 2,
+    "present_value_differs": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 7,
+   "case_id": "8b682d052c40a37f",
+   "class": "NO_EVENT",
+   "flags": [
+    "earnings_only_items_T1_T3",
+    "issuer_not_in_headline"
+   ],
+   "fold": "f2",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "commentary",
+   "note": "Sector income-stock commentary; no issuer action.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_absent": 2,
+    "present_value_differs": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 69,
+   "case_id": "8f74b5aea8f72cec",
+   "class": "NO_EVENT",
+   "flags": [],
+   "fold": "f3",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "commentary",
+   "note": "Income arithmetic article about the issuer; no issuer action.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "8.01"
+   ],
+   "slot_classes": {
+    "absent_reason_differs": 1,
+    "agree_absent": 1,
+    "agree_present": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 6,
+   "case_id": "913f696c23cbedaa",
+   "class": "MATCH",
+   "flags": [
+    "earnings_only_items_T1_T3"
+   ],
+   "fold": "f1",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "The earnings release attached carries the capital-return action the headline reports.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_present": 2,
+    "present_vs_absent": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 0,
+   "case_id": "9357a11376cad73c",
+   "class": "WRONG_ISSUER",
+   "flags": [
+    "body_family_zero"
+   ],
+   "fold": "f4",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "common_word_ticker",
+   "note": "Political news; a common English word resolved as a ticker.",
+   "proxy_cell": "negative",
+   "qualifying_items": [
+    "7.01"
+   ],
+   "slot_classes": {
+    "present_vs_absent": 1
+   },
+   "template": "T3"
+  },
+  {
+   "body_family_hits": 4,
+   "case_id": "947b73a0f2f0baf1",
+   "class": "MATCH",
+   "flags": [
+    "earnings_only_items_T1_T3"
+   ],
+   "fold": "f2",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "Commentary on a reported event; the attached filing reports that event.",
+   "proxy_cell": "negative",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_absent": 1,
+    "present_value_differs": 1,
+    "present_vs_absent": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 13,
+   "case_id": "a956da6ec7ae61e2",
+   "class": "NO_EVENT",
+   "flags": [
+    "earnings_only_items_T1_T3",
+    "issuer_not_in_headline"
+   ],
+   "fold": "f1",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "commentary",
+   "note": "Income-stock commentary; no issuer action.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_absent": 2,
+    "present_value_differs": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 13,
+   "case_id": "aa7ae83ba3d0ec5c",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f2",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02",
+    "7.01"
+   ],
+   "slot_classes": {
+    "present_vs_absent": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 64,
+   "case_id": "ac30ce21b19aca45",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f4",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "The underwriting filing two days later is attached; a second attached filing reports acquisition financials.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "8.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 1,
+    "present_value_differs": 1,
+    "present_vs_absent": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 0,
+   "case_id": "ae73860ac3011770",
+   "class": "NO_EVENT",
+   "flags": [
+    "body_family_zero",
+    "issuer_not_in_headline"
+   ],
+   "fold": "f5",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "commentary",
+   "note": "Fund commentary; no issuer action.",
+   "proxy_cell": "ambiguous",
+   "qualifying_items": [
+    "7.01",
+    "8.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 2,
+    "present_vs_absent": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 82,
+   "case_id": "b0673e2868c44e9f",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f4",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "The attached filing reports the same tender program.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "1.01",
+    "7.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 2,
+    "malformed_value": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 0,
+   "case_id": "b95967705eb0bb54",
+   "class": "WRONG_ISSUER",
+   "flags": [
+    "body_family_zero"
+   ],
+   "fold": "f3",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "name_collision_private",
+   "note": "A private firm shares the resolved issuer's name; the issuer-in-headline flag was a false positive.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "7.01",
+    "8.01"
+   ],
+   "slot_classes": {
+    "agree_present": 1
+   },
+   "template": "T3"
+  },
+  {
+   "body_family_hits": 22,
+   "case_id": "ba2654d517ab8024",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f5",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 4,
+   "case_id": "ba3d331c50a63bad",
+   "class": "NO_EVENT",
+   "flags": [
+    "issuer_not_in_headline"
+   ],
+   "fold": "f5",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "7.01"
+   ],
+   "slot_classes": {
+    "absent_reason_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 5,
+   "case_id": "c87c5cb167eb7969",
+   "class": "WRONG_ISSUER",
+   "flags": [
+    "earnings_only_items_T1_T3"
+   ],
+   "fold": "f1",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "private_subject",
+   "note": "The headline's subject is a private firm; the resolved issuer is not it.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_absent": 1
+   },
+   "template": "T3"
+  },
+  {
+   "body_family_hits": 18,
+   "case_id": "d00c34e9532199fb",
+   "class": "MATCH",
+   "flags": [
+    "issuer_not_in_headline"
+   ],
+   "fold": "f4",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "",
+   "note": "The headline names a product, not the issuer; the issuer-in-headline flag was a false negative.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "7.01",
+    "8.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 1
+   },
+   "template": "T3"
+  },
+  {
+   "body_family_hits": 0,
+   "case_id": "d7f5b33520e46491",
+   "class": "OTHER_EVENT",
+   "flags": [
+    "body_family_zero"
+   ],
+   "fold": "f2",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "event_filing_absent",
+   "note": "The one attached filing reports preliminary results; the capital-action filing is not attached.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02",
+    "7.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 3
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 28,
+   "case_id": "d907d9ae55928fad",
+   "class": "OTHER_EVENT",
+   "flags": [],
+   "fold": "f1",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "event_filing_absent",
+   "note": "The attached filing reports an asset-acquisition closing and its financing; the capital-return filing is not attached.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "7.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 1,
+    "present_vs_absent": 2
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 15,
+   "case_id": "ded7194dd8a45431",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f3",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "8.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 2,
+    "agree_present": 1
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 10,
+   "case_id": "e0f7bc4b304d9f0b",
+   "class": "NO_EVENT",
+   "flags": [
+    "issuer_not_in_headline"
+   ],
+   "fold": "f3",
+   "in_sample": true,
+   "issuer_named_in_headline": false,
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "present_value_differs": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 3,
+   "case_id": "e6fe76f584bb4332",
+   "class": "NO_EVENT",
+   "flags": [],
+   "fold": "f5",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "commentary",
+   "note": "Income-stock commentary; no issuer action.",
+   "proxy_cell": "negative",
+   "qualifying_items": [
+    "7.01"
+   ],
+   "slot_classes": {
+    "agree_absent": 1,
+    "present_vs_absent": 2
+   },
+   "template": "T1"
+  },
+  {
+   "body_family_hits": 8,
+   "case_id": "ebe79d38ec54ba71",
+   "class": "MATCH",
+   "flags": [],
+   "fold": "f4",
+   "in_sample": true,
+   "issuer_named_in_headline": true,
+   "kind": "",
+   "note": "",
+   "proxy_cell": "ambiguous",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "agree_present": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 0,
+   "case_id": "69cdff734be8096d",
+   "class": "OTHER_EVENT",
+   "flags": [
+    "body_family_zero"
+   ],
+   "fold": "f3",
+   "in_sample": false,
+   "issuer_named_in_headline": true,
+   "kind": "event_filing_absent",
+   "note": "Motivating card M3: the headline reports a product expansion; the attached filing reports a different event.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "8.01"
+   ],
+   "slot_classes": {
+    "malformed_value": 1
+   },
+   "template": "T3"
+  },
+  {
+   "body_family_hits": 0,
+   "case_id": "942a8b6e282f8f76",
+   "class": "NO_EVENT",
+   "flags": [
+    "body_family_zero"
+   ],
+   "fold": "f1",
+   "in_sample": false,
+   "issuer_named_in_headline": true,
+   "kind": "quote_page",
+   "note": "Motivating card M7: price-quote page; no issuer action.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "8.01"
+   ],
+   "slot_classes": {
+    "malformed_value": 1
+   },
+   "template": "T2"
+  },
+  {
+   "body_family_hits": 3,
+   "case_id": "cda8daa3f5309de6",
+   "class": "WRONG_ISSUER",
+   "flags": [
+    "earnings_only_items_T1_T3"
+   ],
+   "fold": "f2",
+   "in_sample": false,
+   "issuer_named_in_headline": true,
+   "kind": "single_letter_ticker",
+   "note": "Motivating card M9: a one-letter ticker resolved to an unrelated issuer.",
+   "proxy_cell": "positive",
+   "qualifying_items": [
+    "2.02"
+   ],
+   "slot_classes": {
+    "malformed_value": 1
+   },
+   "template": "T3"
+  }
+ ],
+ "class_by_template": {
+  "T1": {
+   "MATCH": 7,
+   "NO_EVENT": 8,
+   "OTHER_EVENT": 3
+  },
+  "T2": {
+   "MATCH": 7,
+   "NO_EVENT": 7,
+   "WRONG_ISSUER": 3
+  },
+  "T3": {
+   "MATCH": 1,
+   "WRONG_ISSUER": 4
+  }
+ },
+ "class_counts": {
+  "MATCH": 15,
+  "NO_EVENT": 15,
+  "OTHER_EVENT": 3,
+  "WRONG_ISSUER": 7
+ },
+ "class_definitions": {
+  "MATCH": "The headline reports an event of the routed template family at the resolved issuer, and at least one attached filing reports that event.",
+  "NO_EVENT": "The headline reports no issuer event of the template family (market report, commentary, list, quote page, solicitation).",
+  "OTHER_EVENT": "The headline event is real and the resolved issuer is its subject, but no attached filing reports it.",
+  "WRONG_ISSUER": "The resolved issuer is not the subject of the headline."
+ },
+ "class_rate_wilson95": {
+  "MATCH": {
+   "ci": [
+    0.242,
+    0.53
+   ],
+   "rate": 0.375
+  },
+  "NO_EVENT": {
+   "ci": [
+    0.242,
+    0.53
+   ],
+   "rate": 0.375
+  },
+  "OTHER_EVENT": {
+   "ci": [
+    0.026,
+    0.199
+   ],
+   "rate": 0.075
+  },
+  "WRONG_ISSUER": {
+   "ci": [
+    0.087,
+    0.32
+   ],
+   "rate": 0.175
+  }
+ },
+ "flags_vs_verdicts": {
+  "any_flag": {
+   "false_pos": 3,
+   "flagged": 20,
+   "missed_non_match": 8,
+   "population_flag_rate": 0.446,
+   "precision": 0.85,
+   "recall": 0.68,
+   "true_pos": 17
+  },
+  "body_family_zero": {
+   "false_pos": 0,
+   "flagged": 7,
+   "missed_non_match": 18,
+   "population_flag_rate": 0.223,
+   "precision": 1.0,
+   "recall": 0.28,
+   "true_pos": 7
+  },
+  "earnings_only_items_T1_T3": {
+   "false_pos": 2,
+   "flagged": 7,
+   "missed_non_match": 20,
+   "population_flag_rate": 0.159,
+   "precision": 0.714,
+   "recall": 0.2,
+   "true_pos": 5
+  },
+  "issuer_not_in_headline": {
+   "false_pos": 1,
+   "flagged": 11,
+   "missed_non_match": 15,
+   "population_flag_rate": 0.191,
+   "precision": 0.909,
+   "recall": 0.4,
+   "true_pos": 10
+  }
+ },
+ "n_population": 157,
+ "n_sample": 40,
+ "non_match": {
+  "ci": [
+   0.47,
+   0.758
+  ],
+  "n": 25,
+  "rate": 0.625
+ },
+ "non_match_kinds": {
+  "NO_EVENT/commentary": 7,
+  "NO_EVENT/listicle": 1,
+  "NO_EVENT/market_report": 5,
+  "NO_EVENT/quote_page": 1,
+  "NO_EVENT/solicitation": 1,
+  "OTHER_EVENT/event_filing_absent": 3,
+  "WRONG_ISSUER/common_word_ticker": 1,
+  "WRONG_ISSUER/name_collision_private": 1,
+  "WRONG_ISSUER/other_company_subject": 2,
+  "WRONG_ISSUER/partner_named": 1,
+  "WRONG_ISSUER/private_subject": 1,
+  "WRONG_ISSUER/single_letter_ticker": 1
+ },
+ "seed": 20261016,
+ "slot_classes_by_verdict": {
+  "MATCH": {
+   "n_slots": 29,
+   "share": {
+    "agree_absent": 0.379,
+    "agree_present": 0.207,
+    "malformed_value": 0.034,
+    "present_value_differs": 0.207,
+    "present_vs_absent": 0.172
+   }
+  },
+  "NO_EVENT": {
+   "n_slots": 31,
+   "share": {
+    "absent_reason_differs": 0.097,
+    "agree_absent": 0.484,
+    "agree_present": 0.065,
+    "present_value_differs": 0.258,
+    "present_vs_absent": 0.097
+   }
+  },
+  "OTHER_EVENT": {
+   "n_slots": 9,
+   "share": {
+    "agree_absent": 0.778,
+    "present_vs_absent": 0.222
+   }
+  },
+  "WRONG_ISSUER": {
+   "n_slots": 7,
+   "share": {
+    "agree_absent": 0.143,
+    "agree_present": 0.286,
+    "present_value_differs": 0.286,
+    "present_vs_absent": 0.286
+   }
+  }
+ }
+}

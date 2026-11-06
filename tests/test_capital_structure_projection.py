@@ -725,3 +725,169 @@ def test_biocatalyst_pit_adapter_schema_refuses_capability_or_authority_widening
         match="read_payload_sha256_mismatch",
     ):
         validate_capital_structure_pit_read(stale_receipt)
+
+
+def test_projection_uniqueness_does_not_compare_every_issuer_pair(monkeypatch):
+    """A normal multi-issuer read must not spend quadratic work on wide records."""
+    import jsonschema._utils as schema_utils
+
+    bundle = _build([
+        _event(f"{index:010d}-26-000001", "S-3", seen="2026-08-01T10:00:00Z",
+               issuer_id=f"sec:cik:{index:010d}", cik=str(index), ticker=f"T{index}")
+        for index in range(1, 41)
+    ])
+    original_equal = schema_utils.equal
+    record_comparisons = 0
+
+    def counted(one, two):
+        nonlocal record_comparisons
+        if (isinstance(one, dict) and isinstance(two, dict)
+                and one.get("schema") == "capital_structure.projection.v1"
+                and two.get("schema") == one.get("schema")):
+            record_comparisons += 1
+        return original_equal(one, two)
+
+    monkeypatch.setattr(schema_utils, "equal", counted)
+    validate_projection_bundle(bundle)
+    assert record_comparisons <= 2 * len(bundle["records"])
+
+
+@pytest.mark.parametrize("values, valid", [
+    ([1, 1.0], False),
+    ([True, 1], True),
+    ([False, 0], True),
+    ([None, None], False),
+    ([{"x": True}, {"x": 1}], True),
+    ([{"x": 1}, {"x": 1.0}], False),
+    ([{"x": [1, {"y": False}]}, {"x": [1.0, {"y": 0}]}], True),
+    ([{"a": 1, "b": 2}, {"b": 2.0, "a": 1.0}], False),
+    ([[1, 2], [2, 1]], True),
+    ([[1, 2], [1.0, 2.0]], False),
+    ([{"issuer_id": "a", "x": 1}, {"issuer_id": "b", "x": 1}], True),
+    ([{"issuer_id": "a", "x": 1}, {"issuer_id": "a", "x": 2}], True),
+    ([{"issuer_id": "a", "x": 1}, {"issuer_id": "a", "x": 1.0}], False),
+    ([{"issuer_id": True}, {"issuer_id": 1}], True),
+    ([{"issuer_id": 1}, {"issuer_id": 1.0}], False),
+    ([{"issuer_id": "a"}, {"x": 1}, {"x": 1.0}], False),
+])
+def test_projection_validation_preserves_json_schema_unique_equality(tmp_path, values, valid):
+    schema_path = tmp_path / "uniqueness.schema.json"
+    schema_path.write_text(json.dumps({
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object", "properties": {"items": {"type": "array", "uniqueItems": True}},
+    }))
+    if valid:
+        validate_projection_bundle({"items": values}, schema_path)
+    else:
+        with pytest.raises(ValueError):
+            validate_projection_bundle({"items": values}, schema_path)
+
+
+@pytest.mark.parametrize("corruption", ["late_duplicate", "late_authority", "late_private_key", "late_bad_date", "late_bad_uri"])
+def test_projection_validation_still_rejects_late_corruption(corruption):
+    bundle = _build([
+        _event(f"{index:010d}-26-000001", "S-3", seen="2026-08-01T10:00:00Z",
+               issuer_id=f"sec:cik:{index:010d}", cik=str(index), ticker=f"T{index}")
+        for index in range(1, 9)
+    ])
+    row = bundle["records"][-1]
+    if corruption == "late_duplicate":
+        bundle["records"].append(copy.deepcopy(row))
+    elif corruption == "late_authority":
+        row["authority"]["sizing_authority"] = True
+    elif corruption == "late_private_key":
+        row["latest_observed_event"]["source"]["object_key"] = "private/key"
+    elif corruption == "late_bad_date":
+        row["latest_observed_event"]["filing_date"] = "2026-13-01"
+    else:
+        row["latest_observed_event"]["source"]["filing_url"] = "https://unapproved.example/filing"
+    with pytest.raises(ValueError):
+        validate_projection_bundle(bundle)
+
+
+def test_projection_does_not_repeat_property_name_schema_per_object(monkeypatch):
+    """The fixed public-name rule need not resolve the same schema for every row."""
+    from jsonschema import Draft202012Validator
+
+    bundle = _build([
+        _event(f"{index:010d}-26-000001", "S-3", seen="2026-08-01T10:00:00Z",
+               issuer_id=f"sec:cik:{index:010d}", cik=str(index), ticker=f"T{index}")
+        for index in range(1, 41)
+    ])
+    original = Draft202012Validator.VALIDATORS["propertyNames"]
+    calls = 0
+
+    def counted(*args):
+        nonlocal calls
+        calls += 1
+        yield from original(*args)
+
+    monkeypatch.setitem(Draft202012Validator.VALIDATORS, "propertyNames", counted)
+    validate_projection_bundle(bundle)
+    assert calls <= 2
+
+
+@pytest.mark.parametrize("name, valid", [
+    ("public", True), ("private_note", True), ("object_key", False),
+    ("objects_key", True), ("raw_document", False), ("score", False),
+    ("probabilities", False), ("capacity", False), ("runway", False),
+    ("overhang", False), ("prefix_score", True), ("score_suffix", True),
+])
+def test_projection_property_name_fast_path_matches_original(tmp_path, name, valid):
+    from jsonschema import Draft202012Validator
+
+    native = json.loads((ROOT / "contracts/capital_structure_projection.schema.json").read_text())
+    schema = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object", "propertyNames": {"$ref": "#/$defs/safe_property_name"},
+        "$defs": {"safe_property_name": native["$defs"]["safe_property_name"]},
+    }
+    value = {name: 1}
+    assert Draft202012Validator(schema).is_valid(value) is valid
+    path = tmp_path / "names.json"
+    path.write_text(json.dumps(schema))
+    if valid:
+        validate_projection_bundle(value, path)
+    else:
+        with pytest.raises(ValueError):
+            validate_projection_bundle(value, path)
+
+
+@pytest.mark.parametrize("name, valid", [("secret", True), ("public", False)])
+def test_projection_property_names_preserve_nested_resource_scope(tmp_path, name, valid):
+    schema = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://example.test/root",
+        "type": "object", "propertyNames": {"$ref": "#/$defs/safe_property_name"},
+        "$defs": {"safe_property_name": {"not": {"pattern": "^secret$"}}},
+        "properties": {"child": {
+            "$id": "https://example.test/child", "type": "object",
+            "$defs": {"safe_property_name": {"const": "secret"}},
+            "propertyNames": {"$ref": "#/$defs/safe_property_name"},
+        }},
+    }
+    path = tmp_path / "scoped-names.json"
+    path.write_text(json.dumps(schema))
+    value = {"child": {name: 1}}
+    if valid:
+        validate_projection_bundle(value, path)
+    else:
+        with pytest.raises(ValueError):
+            validate_projection_bundle(value, path)
+
+
+@pytest.mark.parametrize("schema", [True, False, {
+    "propertyNames": {"$ref": "#/$defs/safe_property_name"},
+    "$defs": {"safe_property_name": {"not": {"pattern": "^secret$"}, "maxLength": 3}},
+}])
+def test_projection_property_name_optimization_keeps_other_schemas(tmp_path, schema):
+    from jsonschema import Draft202012Validator
+
+    value = {"long_name": 1}
+    path = tmp_path / "other-schema.json"
+    path.write_text(json.dumps(schema))
+    if Draft202012Validator(schema).is_valid(value):
+        validate_projection_bundle(value, path)
+    else:
+        with pytest.raises(ValueError):
+            validate_projection_bundle(value, path)

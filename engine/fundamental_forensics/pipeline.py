@@ -77,6 +77,7 @@ def run_fixture_slice(
         computed_at=computed_time,
         detector_rules_eligible=detector_rules_eligible,
         entity_cik=ingested.entity_cik,
+        issuer_sic=submissions.get("sic"),
     )
 
     states = [item.state for item in findings]

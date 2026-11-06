@@ -1,0 +1,48 @@
+{
+  "baseline_source": "7c8069a604c77a63ef4c048263cef45f262d0bdc",
+  "subject_source": "ef699bd38eea3ab818a26ea8d0c9f1d49428eae2",
+  "files": {
+    "scripts/ci/govrev_publisher_preflight.py": {
+      "old_sha256": "3f24c2e2139ea6f11103997bd07a1e69ec938e1012856f5112557ba2d65948f9",
+      "current_sha256": "3f24c2e2139ea6f11103997bd07a1e69ec938e1012856f5112557ba2d65948f9",
+      "byte_equal": true
+    },
+    "scripts/ci/govrev_candidate_proof.py": {
+      "old_sha256": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
+      "current_sha256": "43267a7a3352810d7dd3751d3c4e6150dbc6e274a0ceb6d129c627a5ba26e299",
+      "byte_equal": true
+    },
+    ".github/workflows/government-revenue-live.yml": {
+      "old_sha256": "5e9b2f1ef9350cea660d57ee828e975737659024a94c19b0ad8e8acb47fcf60e",
+      "current_sha256": "e6f2941f9efaf638d8bc82592a6f5cf38d9b0323db2e8c2dd087b08052aa1376",
+      "byte_equal": false,
+      "changed_top_keys": [
+        "jobs"
+      ],
+      "added_jobs": [],
+      "removed_jobs": [],
+      "changed_existing_jobs": [
+        "refresh"
+      ]
+    },
+    ".github/workflows/daily.yml": {
+      "old_sha256": "d8fc80c7889b08f2950643bb541b0c952d388b547639c3b16de67206523b5c80",
+      "current_sha256": "ed25c015087e6bd29c7b6c5c02f1b15b7ddc1ffb31b94712f2cfa860dbeca9bb",
+      "byte_equal": false,
+      "changed_top_keys": [
+        "jobs"
+      ],
+      "added_jobs": [],
+      "removed_jobs": [],
+      "changed_existing_jobs": [
+        "collect",
+        "capital_structure"
+      ]
+    },
+    ".github/workflows/fms-acquire.yml": {
+      "old_sha256": "5995f83b35c5a39ea663e5e802f6431c9cd805a69d557be06596041dcd16175e",
+      "current_sha256": "5995f83b35c5a39ea663e5e802f6431c9cd805a69d557be06596041dcd16175e",
+      "byte_equal": true
+    }
+  }
+}

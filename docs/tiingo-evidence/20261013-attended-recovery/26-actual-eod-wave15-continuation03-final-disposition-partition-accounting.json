@@ -1,0 +1,95 @@
+{
+  "schema": "tiingo.physical_continuation_qualified_quality_failure_never_accounting/v1",
+  "recorded_at_utc": "2026-10-13T03:22:25.562551+00:00",
+  "run_id": "eod-wave15-original-unadmitted-continuation03-20261013-01a12ab6",
+  "method_sha256": "078f7b4d74344b8aa79b6caf93c7c676f7174adc19edfc0bbad875565293726b",
+  "core_sha256": "1a8518d92ffac20d2ff3dbae76d0e4b8af10b3ddbc470f12d44324829a698755",
+  "accepted_qualification_method_sha256": [
+    "1a8518d92ffac20d2ff3dbae76d0e4b8af10b3ddbc470f12d44324829a698755"
+  ],
+  "actual_original_result_sha256": "0a7e43fe3e883d2012666c15072c41ee950ca0dd93a5d261d6631ee1c53d016a",
+  "actual_original_terminal_parent_sha256": "7c65c2d6c2ce33076eba89fcf473b7f88d5114f70e2c244770d21cc483fa9681",
+  "actual_disposition_window_parent_sha256": {
+    "tiingo-wave15-continuation03-disposition-window01-actual-parent-consumption.json": "4a558304a14efb780eb5670bcf80269864e0f2f8fb4ff9d564ca33fcf8ffa1e6"
+  },
+  "all_physical_1893_identities_accounted_exactly_once": true,
+  "actual_original_capture_terminal_return_consumed": true,
+  "all_listed_qualification_writer_returns_consumed": true,
+  "successful_requests": 73,
+  "qualified_successes": 73,
+  "source_quality_quarantined_successes": 0,
+  "held_attempted_failures": [
+    {
+      "source": "eod-bars",
+      "symbol": "TSHR",
+      "request_path": "/tiingo/daily/TSHR/prices?endDate=2020-06-30&startDate=2018-04-10",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "TSLRF",
+      "request_path": "/tiingo/daily/TSLRF/prices?endDate=2026-10-09&startDate=2024-07-10",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "TSLTF",
+      "request_path": "/tiingo/daily/TSLTF/prices?endDate=2026-10-09&startDate=2019-01-11",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "TSLVF",
+      "request_path": "/tiingo/daily/TSLVF/prices?endDate=2026-10-09&startDate=2021-06-14",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    }
+  ],
+  "never_admitted_count": 1816,
+  "all_captured_successes_partitioned_between_valid_and_quality": true,
+  "all_qualified_nonempty_reader_lineage_verified": true,
+  "all_captured_successes_reader_qualified": true,
+  "all_selected_captured": false,
+  "qualified_nonempty_responses": 73,
+  "qualified_empty_responses": 0,
+  "qualified_disjoint_bars": 153409,
+  "qualified_raw_bytes": 34554039,
+  "quarantined_raw_bytes": 0,
+  "all_captured_raw_bytes": 34554039,
+  "qualification_sha256": {
+    "eod-wave15-unadmitted-continuation03-prefix01-qualified.json": "53d8402bf7e42e8023551471f3ac02ecf36e102be0672e3d509df3173e39455d"
+  },
+  "coverage_sha256": {
+    "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation03-prefix01-delta.json": "bfb85bcaed88ec86483f91493f4f68d9dcabf9cb501cd470a0a7ab19e4259bc8"
+  },
+  "last_coverage_file": "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation03-prefix01-delta.json",
+  "last_coverage_sha256": "bfb85bcaed88ec86483f91493f4f68d9dcabf9cb501cd470a0a7ab19e4259bc8",
+  "global_candidate_status": {
+    "NONEMPTY_DESIRED_REQUEST_WINDOWS_CAPTURED": 45724,
+    "CAPTURED_EMPTY_RESPONSE": 117,
+    "UNCAPTURED_CATALOGUE_WINDOW": 1845,
+    "CAPTURED_SOURCE_QUALITY_QUARANTINED": 3
+  },
+  "global_histories": 45724,
+  "global_bars": 96788107,
+  "minimum_four_admission_gap_seconds": 5.000233167083934,
+  "prior_failures_retried": false,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "archive_writes": 0,
+  "source_payloads_modified": false,
+  "complete_vendor_history_proven": false,
+  "canonical_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "programme_acceptance_claimed": false,
+  "retained_full_original_sha256": "452f3e2d948987e20a19bc5a02f0ca0727d39051faf619c88b735fb4a1c38d67",
+  "licensed_market_rows_or_invalid_field_values_copied": false,
+  "never_admitted_request_rows_not_copied": true
+}

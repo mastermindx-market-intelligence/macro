@@ -123,6 +123,90 @@ STANCES: dict[str, dict] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
+# §2.3b Doctrine stance — the ONE plain-English action vocabulary a product face
+# may show (docs/DESIGN_DOCTRINE.md Law 1; components/COMPONENTS.md ## stance-chip).
+# The producer stamps it next to the engine stance; no renderer maps it
+# (RIG sector-intelligence-cycles-20261021 adjudication SIC-ADJ-01 / SIC-V3-C01).
+# ink: ok | warn | muted — the chip ink token the doctrine assigns to the stance
+# (Act / Get ready → --ink-ok; Watch / Protect → --ink-warn; Stand aside / Ignore
+# → --muted). Stance is not direction: a doctrine stance is never painted --up/--down.
+# ─────────────────────────────────────────────────────────────────────────────
+# One vocabulary, no second ZH fork (SIC-ADJ-02 / SIC-V4-C01; VTC-029, PRC-036). EN is
+# docs/DESIGN_DOCTRINE.md:44 verbatim (ASCII apostrophe). ZH is the exact string the
+# production templates already render for the same doctrine word: get_ready
+# templates/china_altdata.html.j2:227; watch / protect / aside
+# templates/stage_analysis.html.j2:1497 / :1499 / :1500 (stand-aside also
+# templates/_market_regime_strip.html.j2:8); ignore templates/options.html.j2:3630.
+# "act" has no production ZH origin and is the one NEW string. No doctrine ZH may equal
+# an engine STANCES zh word (WAIT 观望, GET READY 准备, AVOID 回避 …) and Watch never
+# carries the engine's WAIT word 观望 — asserted below and in tests/test_cycle_ontology.py.
+DOCTRINE_STANCES: dict[str, dict] = {
+    "act":       {"en": "Act",                 "zh": "行动",         "ink": "ok"},
+    "get_ready": {"en": "Get ready",           "zh": "做好准备",     "ink": "ok"},
+    "watch":     {"en": "Watch — don't chase", "zh": "观察 —— 别追", "ink": "warn"},
+    "protect":   {"en": "Protect gains",       "zh": "保护利润",     "ink": "warn"},
+    "aside":     {"en": "Stand aside",         "zh": "暂时观望",     "ink": "muted"},
+    "ignore":    {"en": "Ignore",              "zh": "忽略",         "ink": "muted"},
+}
+
+# Engine stance → doctrine stance. One row per STANCES key, each with its rationale.
+# "ignore" is reserved for abstained/absent calls and is deliberately NOT a target:
+# a missing engine stance renders as "Stance unavailable" (no chip), never as a
+# mapped doctrine word (SIC-V3-C02).
+DOCTRINE_STANCE: dict[str, str] = {
+    "BUY":               "act",        # bullish; the only fresh-entry stance in the matrix
+    "GET READY":         "get_ready",  # anticipatory; pre-entry, turn signaled but not confirmed
+    "HOLD":              "watch",      # bullish, already held. HOLD is stamped on every RALLY ON row — the clean (non-divergent)
+                                       # Recovery/Expansion/Peak cells and the divergent Trough/Downturn cells — on Recovery × TOP WATCH, and by the
+                                       # Peak extended-uptrend override (trend_up × Peak × ladder in BOTTOM WATCH / TURN SIGNALED / FRESH BUY,
+                                       # note_key extended_uptrend, engine/cycle_ontology.py:1059-1063). The doctrine word is knowingly "Watch — don't
+                                       # chase" in warn ink for all of them: a held position is never a fresh entry, and the chip is not an exit
+                                       # (SIC-ADJ-01a; PRC-037; SIC-V5-C02)
+    "HIGH-RISK BOUNCE":  "watch",      # caution; a bounce is watched, never chased
+    "COUNTERTREND ONLY": "watch",      # caution; tactical only — watch the trend, do not commit
+    "TRIM":              "protect",    # caution; reduce — protect what was gained
+    "SELL":              "protect",    # bearish; exit protects what remains
+    "WAIT":              "aside",      # neutral; no position, no entry
+    "AVOID":             "aside",      # bearish; no position
+}
+
+# Tone → admissible doctrine ink. A bullish engine read may carry ok (entry) or warn
+# (extended); caution is always warn; bearish is warn (exit) or muted (no position);
+# neutral/anticipatory are fixed. The module refuses to import if a mapping would
+# let the chip ink contradict the engine tone (SIC-V3-C01: ink never contradicts now.tone).
+_TONE_INK_GROUPS: dict[str, set[str]] = {
+    "bullish":      {"ok", "warn"},
+    "anticipatory": {"ok"},
+    "caution":      {"warn"},
+    "bearish":      {"warn", "muted"},
+    "neutral":      {"muted"},
+}
+assert set(DOCTRINE_STANCE) == set(STANCES), "DOCTRINE_STANCE must map every STANCES key exactly once"
+assert None not in DOCTRINE_STANCE, "a missing stance is never mapped (SIC-V3-C02)"
+for _s, _d in DOCTRINE_STANCE.items():
+    assert _d in DOCTRINE_STANCES and _d != "ignore", (_s, _d)
+    assert DOCTRINE_STANCES[_d]["ink"] in _TONE_INK_GROUPS[STANCES[_s]["tone"]], (_s, _d, STANCES[_s]["tone"])
+del _s, _d
+# SIC-ADJ-02: the doctrine vocabulary never collides with the engine's stance words, and
+# Watch never reads as the engine's WAIT (观望).
+_ENGINE_ZH = {_v["zh"] for _v in STANCES.values()}
+for _k, _v in DOCTRINE_STANCES.items():
+    assert _v["zh"] not in _ENGINE_ZH, ("doctrine ZH collides with an engine stance word", _k, _v["zh"])
+assert "观望" not in DOCTRINE_STANCES["watch"]["zh"], "Watch must not carry the engine's WAIT word (SIC-ADJ-02)"
+del _k, _v, _ENGINE_ZH
+
+
+def doctrine_for(stance: str | None) -> dict | None:
+    """Doctrine stance record for an engine stance, or None when the engine stamped
+    no stance (the face then shows "Stance unavailable", never a chip)."""
+    if stance is None or stance not in DOCTRINE_STANCE:
+        return None
+    key = DOCTRINE_STANCE[stance]
+    meta = DOCTRINE_STANCES[key]
+    return {"doctrine_stance": key, "doctrine_stance_en": meta["en"],
+            "doctrine_stance_zh": meta["zh"], "doctrine_ink": meta["ink"]}
+
+# ─────────────────────────────────────────────────────────────────────────────
 # §2.3 The full 5×8 crosswalk matrix
 # Keys: (phase, ladder_state) → {stance, divergence, note_key}
 # note_key indexes DIVERGENCE_NOTES below.
@@ -995,6 +1079,9 @@ def resolve_state(
         },
         "phase_conf":            phase_conf,
         "failed_cycle_override": failed_override,
+        # §2.3b producer-stamped doctrine stance (SIC-ADJ-01): the face shows this,
+        # the engine stance above lives in the provenance drawer.
+        **doctrine_for(stance),
     }
 
 
@@ -1228,6 +1315,7 @@ def export_payload() -> dict:
             "zh":         STANCES[cell["stance"]]["zh"],
             "note_en":    DIVERGENCE_NOTES.get(cell.get("note_key", "none"), {"en": ""})["en"],
             "note_zh":    DIVERGENCE_NOTES.get(cell.get("note_key", "none"), {"zh": ""})["zh"],
+            "doctrine_stance": DOCTRINE_STANCE[cell["stance"]],
         }
     # Add pos-gated Downturn cells for JS (JS can use these for display guidance)
     for ladder_s in ("TURN SIGNALED", "FRESH BUY"):
@@ -1245,6 +1333,7 @@ def export_payload() -> dict:
                 "note_en":    DIVERGENCE_NOTES["countertrend_downturn_high"]["en"] if pos_gate == ">=55" else "",
                 "note_zh":    DIVERGENCE_NOTES["countertrend_downturn_high"]["zh"] if pos_gate == ">=55" else "",
                 "pos_gate":   pos_gate,
+                "doctrine_stance": DOCTRINE_STANCE[stance],
             }
 
     return {
@@ -1253,6 +1342,8 @@ def export_payload() -> dict:
         "phases":           PHASES,
         "zones":            ZONES,
         "stances":          STANCES,
+        "doctrine":         DOCTRINE_STANCES,
+        "doctrine_stance":  DOCTRINE_STANCE,
         "ladder":           LADDER,
         "ladder_dir":       LADDER_DIR,
         "crosswalk":        crosswalk_flat,

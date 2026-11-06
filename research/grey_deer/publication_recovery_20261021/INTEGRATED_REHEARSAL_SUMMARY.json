@@ -1,0 +1,183 @@
+{
+  "schema": "grey_deer.full_archive_isolated_rehearsal.v2",
+  "candidate": "da54885500484235d3ca06b14237e06d6676e654",
+  "baseline": "fe7afd0111141bae27927715e709d074fea729e2",
+  "started_at": "2026-10-21T10:39:25.558184+00:00",
+  "completed_at": "2026-10-21T10:39:39.059369+00:00",
+  "qualified": true,
+  "archive": {
+    "sha256": "828107b554ba10c124f90a446aefb330fb234e99b7ed41854f44c666ffde392c",
+    "bytes": 103966720,
+    "members": 5204
+  },
+  "helper_sha256": {
+    "deploy_from_git.sh": "b983a9e88f6eddeac00929797d1e05c80e09e3c206bcabf4e26342fdb7dbb42f",
+    "deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+  },
+  "all_snapshot_authority_unchanged": true,
+  "all_canonical_authority_unchanged": true,
+  "production_identity_unchanged": true,
+  "production_before": {
+    "service": {
+      "MainPID": "3972732",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+    },
+    "marker": "fe7afd0111141bae27927715e709d074fea729e2",
+    "health": {
+      "http_status": 200,
+      "status": "ok",
+      "paper_only": true,
+      "reasoning_policy_ok": true,
+      "scheduled_runtime_ok": true,
+      "commit": "fe7afd0111141bae27927715e709d074fea729e2"
+    }
+  },
+  "production_after": {
+    "service": {
+      "MainPID": "3972732",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+    },
+    "marker": "fe7afd0111141bae27927715e709d074fea729e2"
+  },
+  "startup_process": {
+    "exit_code": 0,
+    "launcher_reaped": true,
+    "process_group_gone": true,
+    "communication_completed": true,
+    "stdout_bytes": 47,
+    "stderr_bytes": 0,
+    "stderr_tail": ""
+  },
+  "failure": null,
+  "read_only_live_roots": [
+    "/opt/macro",
+    "/opt/mastermind",
+    "/opt/mastermind-live-data",
+    "/opt/mastermind/vendor"
+  ],
+  "limitations": [
+    "Paused registration/startup is not natural scheduled execution or real publication proof.",
+    "Temporary receiver data effects are not production effects.",
+    "Code restoration is not rollback of future publication or decision evidence.",
+    "Unchanged release-helper fault-matrix evidence remains separately scoped."
+  ],
+  "report": {
+    "file": "INTEGRATED_REHEARSAL_RESULT.json",
+    "bytes": 1015044,
+    "sha256": "de1bf3394237687ad85bfd74ab3dd50b3e9205ad7ed4a3ec282ecde62d246178"
+  },
+  "startup": {
+    "registered_startup_called": true,
+    "startup_completed": true,
+    "dispatch_mode": "resume held before registered startup; executor dispatch forbidden",
+    "candidate_modules": {
+      "app.main": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+      "brain.perception_publication": "f965f02c5f4a79cc24d3943d3535087deb07b7866a30ca50eff0aae4b334228c",
+      "brain.perception_receipt": "bad6a9afd29959b183ea13e6e7b607dbbe25378b1fdb5b8057effb8ef040f643"
+    },
+    "scheduler_running": true,
+    "scheduler_state_before_shutdown": 2,
+    "first_run_states": {
+      "autonomous_first_run": false,
+      "china_first_run": false,
+      "hk_first_run": false,
+      "heavyweight_first_run": false,
+      "etf_first_run": false
+    },
+    "threads_created": [
+      "APScheduler",
+      "scheduler-watchdog"
+    ],
+    "qualified": true,
+    "resume_requests": [
+      {
+        "state": 2,
+        "job_count": 18
+      }
+    ],
+    "dispatch_attempts": [],
+    "first_run_attempts": [],
+    "denied_events": [],
+    "write_paths": [
+      "receiver/data",
+      "receiver/data/governance",
+      "receiver/data/governance/doctrine_hash.json",
+      "receiver/data/governance/run_events.jsonl",
+      "receiver/data/portfolios/autonomous",
+      "receiver/data/portfolios/autonomous/.paper_transaction.lock",
+      "receiver/data/portfolios/china",
+      "receiver/data/portfolios/china/.paper_transaction.lock",
+      "receiver/data/portfolios/hk",
+      "receiver/data/portfolios/hk/.paper_transaction.lock"
+    ],
+    "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "job_count": 18,
+    "job_ids": [
+      "watch_us_overnight",
+      "publish_macro_snapshot",
+      "macro_refresh",
+      "portfolio_risk_compose",
+      "prewarm_marks",
+      "derisk_us_intraday",
+      "watch_asia_overnight",
+      "settle_pending",
+      "portfolio_risk_daily",
+      "daily_mark",
+      "autonomous_daily",
+      "loop_maintenance",
+      "experiment_maturity",
+      "settle_brain_asia",
+      "china_daily",
+      "hk_daily",
+      "cio_weekly",
+      "improvement_agenda_weekly"
+    ]
+  },
+  "baseline_copy": {
+    "exit_code": 0,
+    "change_count": 3330,
+    "stderr": ""
+  },
+  "backup_copy": {
+    "exit_code": 0,
+    "change_count": 3330,
+    "stderr": ""
+  },
+  "backup_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "stderr": ""
+  },
+  "candidate_copy": {
+    "exit_code": 0,
+    "change_count": 3348,
+    "stderr": ""
+  },
+  "candidate_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "stderr": ""
+  },
+  "restoration": {
+    "exit_code": 0,
+    "change_count": 3348,
+    "stderr": ""
+  },
+  "restoration_verification": {
+    "exit_code": 0,
+    "change_count": 0,
+    "stderr": ""
+  },
+  "authority_count": 10,
+  "rehearsal_binding": {
+    "controller_sha256": "443aedbfbd051091b01b23b5e417251f97f7a68c598aff307324762123146878",
+    "startup_sha256": "bd2546bc075693167bdece56488bb80a9e10dc71cedbfa5d8723968e0b7332b9",
+    "harness_source_commit": "5313b44dc202300e72dd64079aae4e579027af3e",
+    "health_latency_measured": false,
+    "final_admitted_archive_rehearsed": false
+  }
+}

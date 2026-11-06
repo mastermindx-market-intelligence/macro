@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ticker_index.html.j2
+  - site/stocks/index.html
+  - site/assets/css/a64bfe42.css
+manifest: mockups/evidence/paid024-layout-20261023/manifest.json

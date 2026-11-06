@@ -1,0 +1,47 @@
+--- scripts/build_vector.py
++++ scripts/build_vector.py
+@@ -4364,7 +4364,8 @@
+     out = dict(state='unavailable', buy_share_pct=None, observed_at=None,
+                evaluated_at=None, n_hours=None, window_24h_complete=False,
+                window_72h_complete=False, historical_gap=False,
+-               scope=None, causally_qualified=False)
++               scope=None, causally_qualified=False, elapsed_coverage=None,
++               venue=None, instrument=None, unit=None)
+     if not isinstance(regime, Mapping):
+         return out
+     legs = regime.get('context_legs')
+@@ -4399,7 +4400,33 @@
+                evaluated_at=evaluated.strftime('%Y-%m-%d %H:%M UTC'),
+                window_24h_complete=bool(n >= 24 and raw.get('window_24h_complete') is True),
+                window_72h_complete=bool(n >= 72 and raw.get('window_72h_complete') is True),
+-               historical_gap=raw.get('gap_detected') is True)
++               historical_gap=raw.get('gap_detected') is True,
++               venue='OKX', instrument='BTC derivatives', unit='unavailable')
++    coverage = raw.get('elapsed_coverage')
++    if coverage is not None:
++        rows = coverage.get('rows') if isinstance(coverage, Mapping) else None
++        elapsed = coverage.get('elapsed_hours') if isinstance(coverage, Mapping) else None
++        completeness = coverage.get('completeness') if isinstance(coverage, Mapping) else None
++        first_ts = coverage.get('first_ts') if isinstance(coverage, Mapping) else None
++        last_ts = coverage.get('last_ts') if isinstance(coverage, Mapping) else None
++        rows_ok = isinstance(rows, Integral) and not isinstance(rows, (bool, np.bool_)) and int(rows) >= 0
++        elapsed_ok = elapsed is None or (
++            isinstance(elapsed, Real) and not isinstance(elapsed, (bool, np.bool_))
++            and np.isfinite(float(elapsed)) and float(elapsed) >= 0)
++        stamps_ok = all(v is None or isinstance(v, str) for v in (first_ts, last_ts))
++        state_ok = completeness in ('complete', 'incomplete', 'unavailable')
++        consistent = completeness != 'complete' or (rows == 24 and float(elapsed) == 23.0)
++        if not (rows_ok and elapsed_ok and stamps_ok and state_ok and consistent):
++            out.update(state='unavailable', buy_share_pct=None, window_24h_complete=False,
++                       elapsed_coverage=None)
++            return out
++        out['elapsed_coverage'] = {
++            'rows': int(rows), 'first_ts': first_ts, 'last_ts': last_ts,
++            'elapsed_hours': None if elapsed is None else float(elapsed),
++            'completeness': completeness,
++        }
++        if completeness != 'complete':
++            out['window_24h_complete'] = False
+     if raw['stale'] or (evaluated-observed) > pd.Timedelta(hours=STALE_AFTER_H):
+         out['state'] = 'stale'
+         return out

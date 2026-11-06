@@ -1,0 +1,55 @@
+{
+  "schema": "gmi.native_current_identity_qualification/v1",
+  "at": "2026-10-11T13:21:57.760079+00:00",
+  "source_commit": "5e6e9a40ee2fb0949ffdf2867eab801dc785cb39",
+  "method": "Committed bytes verified by Git blob identity; actual lib.dataos.identity.IssuerMaster resolution; singleton active legal-issuer metadata and SEC CIK agreement",
+  "sources": {
+    "data/reference/security_master.parquet": {
+      "sha256": "23b92f9cdd672425bceeece8709185fdfcc8014967408be50874d5e106fce22e",
+      "byte_length": 79534,
+      "git_blob": "1166226d162ceb6e1239c34d6348041922992eff"
+    },
+    "data/reference/issuer_master.parquet": {
+      "sha256": "8d2d136a1ed8466f1a1c57ebbb14b438f27c9a0d4e1ea17214b4ef3e79877402",
+      "byte_length": 43844,
+      "git_blob": "fec60fb1e6e43255010e4543c6315b1223c9a277"
+    }
+  },
+  "parties": [
+    {
+      "ticker_label": "MU",
+      "issuer_id": "ISS:US-XNAS-MU",
+      "security_id": "SEC:US-XNAS-MU",
+      "listing_key": "US-XNAS-MU",
+      "cik": "0000723125",
+      "company_id": "cik:0000723125",
+      "legal_name": "MICRON TECHNOLOGY INC",
+      "evidence_source": "sec_company_tickers",
+      "evidence_snapshot": "2026-08-18",
+      "identity_mode": "current"
+    },
+    {
+      "ticker_label": "NVDA",
+      "issuer_id": "ISS:US-XNAS-NVDA",
+      "security_id": "SEC:US-XNAS-NVDA",
+      "listing_key": "US-XNAS-NVDA",
+      "cik": "0001045810",
+      "company_id": "cik:0001045810",
+      "legal_name": "NVIDIA CORP",
+      "evidence_source": "sec_company_tickers",
+      "evidence_snapshot": "2026-08-18",
+      "identity_mode": "current"
+    }
+  ],
+  "historical_identity_admitted": false,
+  "source_purpose_admitted": false,
+  "dataset_adopted": false,
+  "private_artifact_published": false,
+  "production_accepted": false,
+  "limitations": [
+    "The retained reference evidence is a current identity snapshot, not a historical alias window.",
+    "Naive reference ingestion/effective fields are not converted to temporal instants.",
+    "No source-body or reviewer-text retrieval occurred.",
+    "This receipt does not install a resolver or permit C01 publication."
+  ]
+}

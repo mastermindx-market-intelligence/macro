@@ -118,6 +118,88 @@ def one_pass(pack, quotes, *, now, ledger=None, state_dir=None, **kwargs):
                        state_dir=state_dir, spool=kwargs.pop("spool", None), **kwargs)
 
 
+def _synthetic_research_case(episode):
+    """Native-contract synthetic inputs; never a claimed live market case."""
+    from hashlib import sha256
+    from lib.opportunity_case import compose_case
+    from lib.opportunity_evidence import compose_vector
+    from tests.test_opportunity_evidence_vector_contract import _opportunity_case_inputs
+    stamp = episode.candidate_at
+    asof = {"value": stamp, "grain": "datetime", "t0_source": "radar_observed_at", "t0_mode": "live",
+            "t0_evidence_ref": {"owner_store": "data/entry_radar/",
+                "native_identity": {"episode_id": episode.episode_id},
+                "native_digest": {"state": "known", "sha256": sha256(episode.canonical.encode()).hexdigest()},
+                "recorded_clock": {"value": stamp, "grain": "datetime", "clock_class": "belief_or_build",
+                                   "native_field": "candidate_at", "state": "known"}}}
+    subject = {"subject_type": "us_listing_symbol", "value": episode.ticker,
+               "identity_state": "single_owner_native", "identity_bridge": None}
+    slots = [{"construct": "drl_resid_shock", "state": "observed",
+              "value_or_null": {"resid_z": 1.25}, "basis": {"peer_basis": "market"},
+              "asof": {"value": stamp, "grain": "datetime"},
+              "known_at": {"value": stamp, "grain": "datetime"}}]
+    vector = compose_vector(subject, asof, slots, permitted_consumers=["opportunity_case_k5"])
+    return compose_case(**_opportunity_case_inputs(vector, include_evaluation=False))
+
+
+def test_research_case_is_read_after_native_pass_without_changing_lifecycle_or_priority(tmp_path, pack, monkeypatch):
+    monkeypatch.setattr(le, "_attach_catalyst", lambda *args, **kwargs: None)
+    ledger = ll.LiveEpisodeLedger(tmp_path)
+    first = _arm_over_two_passes(pack, ledger, tmp_path)
+    episode = next(e for e in ledger.episodes if e.state == "CANDIDATE")
+    case = _synthetic_research_case(episode)
+    before = {e.episode_id: e.canonical for e in ledger.episodes}
+    result = le.run_pass(now=et_now(37), pack=pack,
+        quotes=quote_book(pack, multiple=0.96, ts=et_now(35)), ledger=ledger,
+        state_dir=tmp_path, unspooled_ok=True,
+        opportunity_cases={episode.episode_id: case})
+    row = next(r for r in result.payload["episodes"] if r["episode_id"] == episode.episode_id)
+    projection = row["research_case"]
+    assert projection["case_ref"]["case_id"] == case["case_id"]
+    assert projection["inferred"]["slots"] == []  # uncaptured DRL is not historically available
+    assert result.payload["research_priority"] == first.payload["research_priority"]
+    assert {e.episode_id: e.canonical for e in ledger.episodes} == before
+    assert result.delta.empty
+    assert le.forward_knowledge_keys(result.payload) == []
+    assert all(row[field] is None for field in ll.NULL_ONLY_FIELDS)
+    assert result.payload["health"]["opportunity_cases"]["attached"] == 1
+
+
+@pytest.mark.parametrize("mutation", ["wrong_episode", "changed_bytes", "future", "retro", "score"])
+def test_research_case_bad_binding_withholds_only_the_projection(tmp_path, mutation):
+    from tests.test_entry_radar_w4_ledger import ledger_with_candidate
+    from lib import opportunity_case as oc
+    from lib import opportunity_evidence as oe
+    ledger, _, _ = ledger_with_candidate(tmp_path)
+    episode = next(e for e in ledger.episodes if e.state == "CANDIDATE")
+    case = _synthetic_research_case(episode)
+    vector = case["inputs"]["vector"]
+    if mutation == "score": case["calibrated"]["opportunity_score"] = 7
+    elif mutation == "wrong_episode": vector["asof"]["t0_evidence_ref"]["native_identity"]["episode_id"] = "other"
+    elif mutation == "changed_bytes": vector["asof"]["t0_evidence_ref"]["native_digest"]["sha256"] = "0" * 64
+    elif mutation == "future": vector["generated_at"] = "2099-01-01T00:00:00Z"
+    else: vector["asof"]["t0_mode"] = "retrospective_research"
+    if mutation != "score":
+        vector["content_sha256"] = oe.compute_content_sha256(vector)
+        case = oc.compose_case(**case["inputs"])
+    rows = le._episode_rows(ledger, NEXT_SESSION)
+    before = [e.canonical for e in ledger.episodes]
+    health = {}
+    le._attach_opportunity_cases(rows, cases={episode.episode_id: case}, now=et_now(37), health=health)
+    assert all("research_case" not in row for row in rows)
+    assert health["opportunity_cases"]["state"] == "unavailable"
+    assert [e.canonical for e in ledger.episodes] == before
+
+
+def test_research_case_unknown_and_over_bound_inputs_do_not_create_episodes():
+    rows = []
+    health = {}
+    le._attach_opportunity_cases(rows, cases={"absent": {}}, now=et_now(37), health=health)
+    assert rows == [] and health["opportunity_cases"]["attached"] == 0
+    assert health["opportunity_cases"]["refusals"] == {"case_episode_not_selected": 1}
+    le._attach_opportunity_cases(rows, cases={str(i): {} for i in range(9)}, now=et_now(37), health=health)
+    assert health["opportunity_cases"]["refusals"] == {"case_input_bound_invalid": 1}
+
+
 def name_of(result: le.PassResult, ticker: str) -> le.NameResult:
     for row in result.names:
         if row.ticker == ticker:

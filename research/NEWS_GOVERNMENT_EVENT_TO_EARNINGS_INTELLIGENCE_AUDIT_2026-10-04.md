@@ -10,6 +10,16 @@
 
 This document supersedes the first research draft for Commission 1. It is an adversarial audit, not an implementation authorization. It deliberately separates merged source truth, held/draft carriers, historical production receipts, current runtime proof, and research recommendations.
 
+## Scenario-owner amendment — 2026-11-06
+
+This dated amendment addresses PR #8399 review 5411923352 and supplement 5991012808. It corrects only the scenario ownership, collision census and dependent implementation language. The remaining October 4 audit, repository/procedure pins, empirical/vendor discussion and runtime UNKNOWNs are preserved as dated evidence; this is not a repeated current estate or market-data census.
+
+**Owner map:** FIF/company financial owners retain reported financial facts; Earnings Intelligence/Company Event retains issuer event, document and claim truth; **WS:MARKET-OS / F07 / MAS-148** owns AssumptionChange, the valuation bridge and scenario workflows; K3E retains expectation-to-market interpretation; qledger/existing graders retain evaluation. Commission 1 composes these owners and receives no new scenario authority.
+
+The current F07 contract at Macro `0cd0e3284b10acb15f5b79d6b28ca72e93c3d3bf`, blob `5618abd1415c460f8aed61f7dfa5a4bc26692a8d`, includes October 20 issuer/metric and retained-source amendments. The coarse search-only path remains unable to qualify positive source context; the separately qualified retained-document path exists and verifies its own receipt, issuer, interval, rights and decision clocks. Neither path licenses an event or management forecast to supply arbitrary model-input magnitudes: events supply direction, and proposals use only already-published model presets. SEC-companyfacts/filing, consensus-rights refusal, point-in-time binding and research-display/shadow-only restrictions remain controlling.
+
+Merged #7134 and #7701 provide the incumbent event bridge and typed event-to-AssumptionChange/shadow-scenario seam. Open #8061 contains an occupied, synthetic/reference-only richer F07 successor specification. Its adoption requires current F07/FIF/identity/rights/source/calibration qualification; neither this amendment nor that reference is a production kernel, source lease, approval or implementation commission. The broader operating/KPI family below is therefore an **integration/admission extension through F07**, not a new scenario engine by default. Appendix A pins the evidence.
+
 ## A. Executive conclusion
 
 The core thesis survives the audit, but the architecture and priority change materially.
@@ -25,6 +35,7 @@ The current estate now contains or is actively carrying all of the following:
 - a held Economic Propagation hypothesis contract/compiler in Macro PR #6514 that already defines relationship-gated mechanism hypotheses, typed abstention, exact identity, clock checks, zero scalar authority, and no new store;
 - an active Information→Price / K3E Expectation Market Dynamics programme in Macro PRs #8312 and #8337 with a prospective expectation-capture surface and explicit cutoff queries, although normalization, rights, identity, basis, source-publication clocks, long history, and canonical publication remain incomplete;
 - Government Revenue, Federal Register, SEC, Research Vault, FIF, and market-data owners that already cover much of the acquisition and evidence substrate.
+- **Scenario-owner amendment:** merged F07 event bridge #7134 and typed proposal/shadow scenario #7701, plus the occupied synthetic/reference-only F07 successor on #8061; the wider operating/KPI gap requires owner-native integration and admission.
 
 Therefore the hardened target is:
 
@@ -33,14 +44,14 @@ Therefore the hardened target is:
       -> exact identity + dependence + temporal eligibility
       -> economic relationship gate
       -> mechanism / KPI hypothesis with typed abstention
-      -> deterministic scenario projection with numeric firewall
+      -> F07-owned scenario integration with numeric firewall
       -> existing K3E expectation surface / normalized expectation contract
       -> existing market/pricing owners + K3E Information→Price
       -> qledger / existing grading owners
       -> context-only consumers
       -> future Decision Snapshot only after that owner is production-accepted
 
-The **only clearly missing new analytical primitive** is a deterministic, provenance-complete fundamental-scenario projection that turns an accepted mechanism/KPI hypothesis into inspectable low/base/high operating scenarios without allowing a language model to mint numeric authority. Even that should be a derived view owned by the existing Earnings/Company Event programme, not a new global event store or decision plane.
+The principal scenario gap is **owner-native integration and admission of qualified event/mechanism evidence into the existing F07/MAS-148 scenario family**. Reuse the merged event-to-AssumptionChange seam and adjudicate/adopt the richer Catalyst F07-successor reference rather than duplicate its math. Broader source-derived operating/KPI ranges remain a proposed extension beyond the current direction-to-model-preset contract. Their contract, real FIF/Event/identity/rights/clock binding and production proof require an explicit F07 ruling; Earnings/Company Event remains event truth, not a replacement scenario owner. No language model may mint numeric authority.
 
 ### Audit verdict on priority
 
@@ -50,7 +61,7 @@ The paid-data recommendation is also narrowed. The first draft made a historical
 
 ### Hardest architectural laws
 
-1. **No duplicate owner.** Earnings Intelligence owns issuer event/document/claim truth. Theme Graph owns theme truth. Government Revenue owns procurement truth. Evidence Foundation composes; it does not store a second copy. qledger / existing grading owners evaluate. K3E owns expectation-to-market dynamics. Portfolio owners retain decision authority.
+1. **No duplicate owner.** Earnings Intelligence owns issuer event/document/claim truth. Theme Graph owns theme truth. Government Revenue owns procurement truth. Evidence Foundation composes; it does not store a second copy. FIF/company financial owners retain financial facts. WS:MARKET-OS / F07 / MAS-148 owns AssumptionChange, valuation bridges and scenarios. qledger / existing grading owners evaluate. K3E owns expectation-to-market dynamics. Portfolio owners retain decision authority.
 2. **No event-to-EPS language-model shortcut.** Models may propose mechanisms, KPI mappings, alternatives, missing assumptions, and falsifiers. Deterministic code owns units, accounting basis, fiscal periods, currency, formulas, market reactions, estimate arithmetic, and promotion.
 3. **No historical possession claim from a present-day backfill.** Actual-possession replay and source-availability replay are separate modes and must never be conflated.
 4. **No independent evidence by article count.** Source-version, document, claim, real-world event, and origin-family identities are distinct.
@@ -100,6 +111,8 @@ The state labels below are intentionally stricter than the first draft. Code in 
 | Portfolio V3 Decision Snapshot | **SPEC_ONLY / NOT production authority** | Mastermind design still carries NOT_BUILT / BUILT_NOT_PROVEN distinctions and a Decision Snapshot architecture. Commission 1 should be snapshot-ready but must not route around current portfolio owners. Evidence: https://github.com/mastermindx-market-intelligence/Mastermind/blob/84df29801d4078724c2b603a136de5aa1532cdfe/docs/superpowers/specs/2026-09-15-mastermind-portfolio-v3-risk-first-autonomous-manager-design.md |
 | Static Mastermind census | **STALE OBSERVABILITY** | Checked-in census remains generated 2026-07-16. Evidence: https://github.com/mastermindx-market-intelligence/Mastermind/blob/84df29801d4078724c2b603a136de5aa1532cdfe/data/census/CENSUS.md |
 | Research Vault | **MACRO-OWNED SUBSYSTEM** | Current code ownership remains under Macro's engine/research_vault plus its storage/delivery plane; no separate repository was established by this audit. |
+| F07 event-to-AssumptionChange and shadow scenario | **MERGED SOURCE / RESEARCH_DISPLAY_ONLY; current production proof not supplied here** | Amendment 2026-11-06: #7134/#7701 and the current F07 contract provide a reusable event/scenario seam. Event direction selects existing model presets; no arbitrary event-derived magnitude. See Appendix A. |
+| Catalyst richer F07 successor | **OCCUPIED SYNTHETIC/REFERENCE-ONLY; NOT PRODUCTION-ADMITTED** | Amendment 2026-11-06: open #8061 at `886c1d26` includes the richer reference. Adjudicate/adopt it through F07; do not create a parallel kernel or treat its structural labels as financial/source admission. |
 
 ### Duplicate and adjacent-program audit
 
@@ -115,6 +128,8 @@ The implementation owner must re-census these at start. They are not all merged 
 - **Current GMI audited v3 research, PR #8324** — draft research carrier; useful evidence, not merged source law.
 - **Regime mechanism evidence, PR #8306** — adjacent mechanism-evidence work in Neural Web; not an issuer-event owner.
 - **FIF** — filing/fundamental truth and PIT fundamentals.
+- **WS:MARKET-OS / F07 / MAS-148** — AssumptionChange, valuation bridge and scenario owner; merged #7134/#7701, `engine/valuation_event_bridge.py`, `engine/valuation_event_proposal.py`, `engine/valuation_assumptions.py` and the current frozen F07 contract.
+- **Catalyst #8061** — occupied richer F07 successor research, synthetic/reference-only; no takeover or independent production scenario engine.
 - **qbus / qledger** — qualitative event substrate and evaluation substrate.
 - **Decision Snapshot V3** — future consumer, not current authority.
 
@@ -263,7 +278,7 @@ The identity hierarchy is:
               -> economic relationship
                 -> mechanism hypothesis
                   -> operating KPI
-                    -> deterministic scenario projection
+                    -> F07-owned scenario integration / admitted extension
                       -> expectation state
                         -> market-incorporation evidence
                           -> evaluated claim
@@ -373,9 +388,11 @@ Minimum mechanism semantics remain:
 - typed abstention;
 - zero rank/size/gate/trade authority.
 
-### Deterministic fundamental scenario projection
+### Deterministic fundamental scenario projection — proposed F07 extension
 
-This is the principal additive analytical contract recommended by this audit. It should be a **derived, context-only projection**, not a store.
+This specifies the desired operating/KPI extension **inside the incumbent F07 scenario family**, as a derived context-only view, not a new store, schema owner or math kernel. Current F07 already provides typed proposals/abstentions, rights and point-in-time checks, correction/double-count controls and shadow evaluation through existing math. Its event supplies direction and its model supplies published preset magnitudes.
+
+Before using a broader input class or model family below, the current assigned F07 owner must adjudicate the contract/admission delta, compose FIF financial facts and Earnings events, and assess the occupied #8061 successor reference. Real source/identity/rights/clock and model-applicability receipts remain necessary. This proposed numeric firewall does not silently widen the current F07 interface or turn management's documentary forecast into model authority.
 
 Each numeric input must carry:
 
@@ -393,7 +410,7 @@ Each numeric input must carry:
 - authority class;
 - uncertainty/range if applicable.
 
-Allowed authority classes:
+Proposed provenance classes for the extension, subject to F07 contract/admission and source rights; these are **not** new magnitude authorities in current F07:
 
 - source_observed_fact;
 - deterministic_derivation;
@@ -577,7 +594,9 @@ No "underreaction" model earns authority until out-of-sample validation shows in
 | Government Revenue | native opportunity/award/revision objects | government_demand | procurement lifecycle and realized obligations | mechanism/scenario research |
 | Federal Register / Regulations / legislation | official-source/policy owners | policy_regulatory | rule lifecycle and exposure | mechanism/scenario research |
 | Theme Graph | WS:GMI-THEME-GRAPH | thematic_relationship | secondary context only; use PIT membership | propagation candidates |
-| FIF / PIT fundamentals | canonical filing/fundamental owners | fundamental_state | scenario baselines | deterministic calculator |
+| FIF / PIT fundamentals | canonical filing/fundamental owners | fundamental_state | reported facts and admitted scenario baselines | F07-owned deterministic scenario family |
+| Event-to-AssumptionChange / valuation bridge / scenarios | WS:MARKET-OS / F07 / MAS-148 | typed proposal and shadow scenario | reuse #7134/#7701; obtain the owner ruling for broader operating/KPI inputs | existing F07 consumers; no duplicate math |
+| Catalyst #8061 successor reference | existing F07/FIF ownership; occupied Catalyst research carrier | synthetic/reference-only scenario specification | adjudicate/adopt the qualified subset; real-source and production admission still owed | F07, not a new production kernel |
 | Economic Propagation PR #6514, if accepted | Alpha Intelligence integration contract | economic_relationship/mechanism | relationship-gated mechanism hypothesis | scenario projection |
 | K3E expectation capture / EXP-1 | Expectation Market Dynamics | earnings_expectations | pre-event expectation surface | expectation gap |
 | Prices/options/breadth | existing market owners | market_pricing | event-study/pricing evidence | K3E Information→Price |
@@ -587,7 +606,7 @@ No "underreaction" model earns authority until out-of-sample validation shows in
 
 ### Ownership ruling
 
-The event-to-expectation lane is **not a program key**. It is a composition recipe across these owners.
+The event-to-expectation lane is **not a program key**. It is a composition recipe across these owners. FIF owns reported financial facts; Earnings/Company Event owns events/documents/claims; F07/MAS-148 owns assumption changes, valuation bridges and scenarios; K3E owns expectation-to-market; existing graders evaluate. A broader operating/KPI contract requires F07 adjudication/admission, not default creation under Earnings.
 
 ---
 
@@ -778,11 +797,11 @@ Everything begins SHADOW / context-only. Promotion requires:
 
 ### P0 — do now, inside existing owners
 
-1. **Collision freeze and owner map.** Reconcile current Earnings Intelligence, Evidence Foundation, K3-D PR #6514, K3E PRs #8312/#8337, Theme Graph, Government Revenue, FIF, qbus, qledger, Events & News R2 and Decision Snapshot status before code.
+1. **Collision freeze and owner map.** Reconcile current Earnings Intelligence, Evidence Foundation, K3-D PR #6514, K3E PRs #8312/#8337, Theme Graph, Government Revenue, FIF, F07/MAS-148 and merged #7134/#7701, occupied Catalyst #8061, qbus, qledger, Events & News R2 and Decision Snapshot status before code.
 2. **Clock and replay integrity.** Add or validly project the hardened clock model without creating a new time store. Implement separate possession and source-availability replay modes.
 3. **Finish native K3E expectation qualification first.** Resolve rights, identity, units, currency, basis and source-publication clocks; finish provider-neutral normalized expectation semantics. Do not buy a historical feed under this commission.
 4. **Mechanism integration, not reinvention.** If K3-D is accepted, specialize through it. If not, preserve its relationship-gating/abstention laws under the canonical Earnings owner.
-5. **Deterministic fundamental scenario projection + numeric firewall.** This is the principal new analytical primitive.
+5. **F07 scenario integration/admission + numeric firewall.** Reuse the merged event-to-AssumptionChange seam, adjudicate/adopt the occupied richer successor reference, and obtain the F07 contract ruling before extending into broader operating/KPI inputs. The gap is real-source integration and qualified extension, not another scenario math kernel.
 6. **Event-relative market-incorporation evidence through existing market/K3E owners.** No new Pricing State owner.
 7. **Replay harness.** Explicit as_of, exact source generations, identity epochs, relationship/theme vintages and market-session semantics.
 8. **qledger / existing grader shadow registration.** No second scoreboard.
@@ -819,6 +838,7 @@ Everything begins SHADOW / context-only. Promotion requires:
 - a new Event-to-Expectation program key;
 - a second mechanism schema that duplicates accepted K3-D semantics;
 - a second expectation/pricing owner that duplicates K3E;
+- a scenario schema/engine that duplicates F07/MAS-148 or the occupied Catalyst successor reference;
 - one aggregate event-conviction score;
 - LLM-generated EPS/revenue/target-price numbers;
 - headline-only magnitude extraction;
@@ -837,8 +857,8 @@ Everything begins SHADOW / context-only. Promotion requires:
 At implementation start:
 - re-pin protected Mastermind and load current procedures;
 - re-pin Macro and Terminal;
-- re-check PR #6514, #8312, #8337, #8186, #8324 and any successors;
-- re-read current Earnings, Evidence Foundation, Theme Graph, Government Revenue, FIF, qbus and qledger owners;
+- re-check PR #6514, #8312, #8337, #8186, #8324 and any successors; verify the merged #7134/#7701 F07 seam, current F07 contract and occupied #8061 successor reference;
+- re-read current Earnings, Evidence Foundation, Theme Graph, Government Revenue, FIF, WS:MARKET-OS/F07/MAS-148, qbus and qledger owners;
 - produce one owner map.
 
 Acceptance: no proposed field, store, identity or evaluator duplicates a current owner.
@@ -861,9 +881,11 @@ Use the accepted canonical mechanism owner. If K3-D remains held, do not silentl
 
 Acceptance: unresolved identity, absent economic relationship, rights block or clock failure produces typed abstention.
 
-### Phase 3 — deterministic scenario projection
+### Phase 3 — F07 scenario integration and admitted operating/KPI extension
 
-Implement only a small initial family:
+First bind qualified event/mechanism evidence to the existing F07 proposal/scenario seam and adjudicate the #8061 successor reference. Record the current F07 contract/admission ruling before introducing any input, operating-KPI family or scenario schema beyond its accepted preset-only interface. Preserve the current retained-source qualification and coarse-path abstention distinction, SEC/companyfacts/filing and consensus-rights restrictions, point-in-time binding, model-version and shadow-only limits.
+
+Only after that ruling, extend/compose through F07 for a small admitted family; the following is proposed scope, not implementation authority:
 - contract/order;
 - capacity;
 - customer gain/loss;
@@ -871,7 +893,7 @@ Implement only a small initial family:
 - supply constraint;
 - guidance/preannouncement.
 
-Acceptance: every output number reproduces exactly from admissible inputs and formula version; incompatible basis/unit/period/currency fails closed.
+Acceptance: the actual F07 owner ruling and real FIF/Event/identity/rights/clock receipts bind the admitted subset; existing math is reused or extended through that owner without a semantic twin; every output number reproduces exactly from admissible inputs and formula version; incompatible basis/unit/period/currency/share-basis fails closed. No current F07 proposal receives a new magnitude authority from this report.
 
 ### Phase 4 — expectations
 
@@ -920,9 +942,9 @@ Acceptance: only shadow claims are registered. Any promotion is a separate commi
 
 ## L. Exact bounded follow-on implementation commission
 
-> **IMPLEMENTATION COMMISSION — EVENT-TO-EXPECTATION P0 COMPLETION, COLLISION-SAFE**
+> **DRAFT IMPLEMENTATION COMMISSION TEMPLATE — EVENT-TO-EXPECTATION P0 COMPLETION, COLLISION-SAFE**
 >
-> Implement only the bounded P0 completion described in the 2026-10-04 audited Commission 1 report.
+> This is a proposed follow-on template, not an admitted execution. A separately assigned implementation must use the October 4 audit with this November 6 scenario-owner amendment and current source law. Resolve the actual F07 contract/admission ruling before extending its scenario interface.
 >
 > This commission does not authorize portfolio/trading changes, ranking, sizing, gating, new provider purchases, a new program key, a new global event store, a new evidence store, a new grading ledger, a new theme graph, or a second expectation/pricing owner.
 >
@@ -941,6 +963,8 @@ Acceptance: only shadow claims are registered. Any promotion is a separate commi
 > - Theme Graph;
 > - Government Revenue;
 > - FIF / PIT fundamentals;
+> - WS:MARKET-OS / F07 / MAS-148, merged #7134/#7701, the event bridge/proposal/assumptions consumers and current F07 contract;
+> - occupied Catalyst #8061 F07-successor reference, retaining synthetic/reference-only status and its current writer/source custody;
 > - qbus / news_events / importance_v0;
 > - qledger / existing grading owners;
 > - Macro Events & News R2;
@@ -975,11 +999,11 @@ Acceptance: only shadow claims are registered. Any promotion is a separate commi
 >
 > Reuse the accepted canonical mechanism contract. If K3-D is accepted, compose through it. If it remains held/rejected, preserve its Graph-1 relationship gate, exact identity, typed abstention, no-scalar and zero-authority laws inside the canonical Earnings owner. Do not mint a parallel mechanism schema.
 >
-> **Deterministic scenario projection**
+> **F07-owned scenario integration/admission**
 >
-> Implement a context-only derived view for the bounded event families. Every numeric input carries value, unit, scale, currency, accounting basis, metric definition, fiscal period, scope, sign convention, provenance, known_at and authority class.
+> Reuse the incumbent event-to-AssumptionChange/shadow-scenario seam and adjudicate/adopt the richer #8061 reference through F07. No independent scenario engine, schema owner or Earnings-owned replacement is commissioned. A broader operating/KPI extension needs an explicit current F07 contract/admission ruling plus real FIF/Event/identity/rights/clock binding. Every admitted numeric input carries value, unit, scale, currency, accounting basis, metric definition, fiscal period, scope, sign convention, provenance, known_at and authority class.
 >
-> Allowed numeric authority classes: source-observed fact, deterministic derivation, versioned empirical prior, explicit user/test scenario assumption.
+> Proposed extension provenance classes, only after F07 admission: source-observed fact, deterministic derivation, versioned empirical prior, explicit user/test scenario assumption. Current F07 still accepts direction from events and magnitudes only from published model presets; these proposed classes do not override its SEC/filing, consensus-rights, point-in-time or shadow-only restrictions.
 >
 > Language-model hypotheses are never numeric authority.
 >
@@ -1010,7 +1034,7 @@ Acceptance: only shadow claims are registered. Any promotion is a separate commi
 > 3. clock/replay contract delta;
 > 4. identity/dependence contract delta;
 > 5. bounded mechanism composition proof;
-> 6. deterministic scenario projection;
+> 6. F07 contract/admission ruling and owner-native scenario integration/extension proof, including disposition of the occupied successor reference;
 > 7. numeric-firewall tests;
 > 8. K3E normalized expectation integration proof;
 > 9. market-incorporation projection;
@@ -1021,7 +1045,7 @@ Acceptance: only shadow claims are registered. Any promotion is a separate commi
 >
 > **Acceptance**
 >
-> Accept only if no duplicate owner/control plane is created; historical replay cannot see future generations; possession and source-availability replay remain distinct; corrections preserve prior state; every scenario number has admissible provenance; no LLM can inject authoritative magnitude; source dependence prevents syndicated corroboration inflation; missingness stays typed; expectation and pricing ownership remain K3E/existing owners; all outputs remain context/shadow; and no production trading behavior changes.
+> Accept only if the actual F07 admission and real-source bindings are evidenced, its existing source/rights/preset-only/shadow limits remain intact unless legitimately changed by that owner, and no duplicate scenario engine or other owner/control plane is created; historical replay cannot see future generations; possession and source-availability replay remain distinct; corrections preserve prior state; every scenario number has admissible provenance; no LLM can inject authoritative magnitude; source dependence prevents syndicated corroboration inflation; missingness stays typed; expectation and pricing ownership remain K3E/existing owners; all outputs remain context/shadow; and no production trading behavior changes.
 >
 > **Out of scope**
 >
@@ -1059,6 +1083,18 @@ Acceptance: only shadow claims are registered. Any promotion is a separate commi
 - K3E EXP-1 explicit-cutoff consumer: https://github.com/mastermindx-market-intelligence/macro/pull/8337
 - Macro Events & News R2: https://github.com/mastermindx-market-intelligence/macro/pull/8186
 - GMI audited v3 draft: https://github.com/mastermindx-market-intelligence/macro/pull/8324
+
+## A1a. Scenario-owner amendment evidence — 2026-11-06
+
+These immutable references support only the scenario-owner correction; the other audit pins remain the October 4 snapshot.
+
+- F07/MAS-148 ownership, blob `446886fdc0bb6d5e7a8a9c9474a30ad0190646bf`: https://github.com/mastermindx-market-intelligence/macro/blob/0cd0e3284b10acb15f5b79d6b28ca72e93c3d3bf/agentos/handoffs/MARKET-ONTOLOGY-F07-VALUATION-SCENARIO-FABLE-COO-2026-08-26.md
+- Current F07 contract including the October 20 amendments, blob `5618abd1415c460f8aed61f7dfa5a4bc26692a8d`: https://github.com/mastermindx-market-intelligence/macro/blob/0cd0e3284b10acb15f5b79d6b28ca72e93c3d3bf/research/F07_EVENT_ASSUMPTION_PROPOSAL_CONTRACT_V1.md
+- Merged #7134 event bridge, merge `de2e66c4133706392f93fa9f58bce9d10176aafb`: https://github.com/mastermindx-market-intelligence/macro/pull/7134 ; source https://github.com/mastermindx-market-intelligence/macro/blob/de2e66c4133706392f93fa9f58bce9d10176aafb/engine/valuation_event_bridge.py
+- Merged #7701 typed proposal/shadow scenario, merge `8b5f391c1cb2e82a27d0c247c59d599b3dbdc8c4`: https://github.com/mastermindx-market-intelligence/macro/pull/7701 ; source https://github.com/mastermindx-market-intelligence/macro/blob/8b5f391c1cb2e82a27d0c247c59d599b3dbdc8c4/engine/valuation_event_proposal.py
+- Incumbent consumer: https://github.com/mastermindx-market-intelligence/macro/blob/0cd0e3284b10acb15f5b79d6b28ca72e93c3d3bf/engine/valuation_assumptions.py
+- Occupied #8061 synthetic/reference-only F07 successor at `886c1d26f9c044755c07c5a22a10319d69fd27ae`, blob `d1e61fb90c4377435c7e18b1e1a360a9f181c2d7`: https://github.com/mastermindx-market-intelligence/macro/blob/886c1d26f9c044755c07c5a22a10319d69fd27ae/research/CATALYST_INTELLIGENCE_R17_F07_SUCCESSOR_AND_DISCOVERY.md
+- Governing research correction: https://github.com/mastermindx-market-intelligence/macro/pull/8399#pullrequestreview-5411923352 and https://github.com/mastermindx-market-intelligence/macro/pull/8399#issuecomment-5991012808 . The earlier approval was dismissed and is not reused.
 
 ## A2. External primary/vendor sources
 
@@ -1113,6 +1149,9 @@ Acceptance: only shadow claims are registered. Any promotion is a separate commi
 | prospective expectation capture exists | TRUE / held acceptance | PR #8312 |
 | explicit-cutoff expectation consumer exists | TRUE / held acceptance | PR #8337 |
 | generic economic propagation mechanism contract is greenfield | FALSE | held PR #6514 occupies the semantic lane |
+| event-conditioned scenario projection is wholly greenfield | FALSE | November 6 amendment: merged F07 #7134/#7701 and current contract `5618abd1`; no repeated broader census |
+| broader operating/KPI input family is already admitted by current F07 | NOT ESTABLISHED | Existing direction-to-model-preset contract remains; owner ruling and real-source binding are owed |
+| Catalyst richer F07 reference is a production kernel | FALSE | #8061/d1e61fb9 is synthetic/reference-only; adoption, native source/rights/calibration and production proof remain owed |
 | a new shared evidence store is needed | REJECTED | Evidence Foundation physical store refusal |
 | Decision Snapshot is current production authority | FALSE | Mastermind V3 spec remains not accepted production authority |
 | current static census is fresh | FALSE | generated 2026-07-16 |
@@ -1130,7 +1169,7 @@ Acceptance: only shadow claims are registered. Any promotion is a separate commi
 7. Full training-grade effective-dated subtheme membership across all source planes is unfinished; GMI D2C remains the owner.
 8. No broad blind benchmark of LLM mechanism/KPI extraction against a frozen Mastermind event corpus was run here.
 9. No predictive alpha test was run here. The report recommends a validation design; it does not claim predictive success.
-10. The exact implementation location for the deterministic scenario projection should be adjudicated by the Earnings owner at implementation start; this report does not create that owner.
+10. F07/MAS-148 owns assumption/valuation/scenario placement. Its current assigned owner must adjudicate the broader operating/KPI contract and #8061 reference adoption with FIF financial truth and Earnings event truth; this report neither creates that owner nor grants new interface/source authority. Current retained-source qualification exists for the bounded F07 path, but broader family admission and production-grade proof remain owed.
 
 ---
 
@@ -1149,8 +1188,9 @@ Acceptance: only shadow claims are registered. Any promotion is a separate commi
 11. **"Already priced" hardened.** Added anticipation, confounding, overlapping-event and factor-control requirements; no intuitive label.
 12. **Validation hardened.** Added preregistration, event/date clustering, block/bootstrap inference, multiple-testing correction, source-coverage drift, regime stability, actionability/costs and explicit falsifiers.
 13. **Vendor diligence hardened.** Contract-dependent AI/derived/redistribution rights are UNKNOWN unless proven; marketing claims are separated from observed capability.
-14. **P0 redefined.** P0 is completion and integration of current owners plus deterministic scenario/replay infrastructure, not creation of a new system.
+14. **P0 redefined.** P0 is completion and integration of current owners, F07 scenario integration/admission and replay integrity, not creation of a new system or scenario math kernel.
 15. **No implementation performed.** This document changes research only.
+16. **Scenario ownership corrected, 2026-11-06.** Review 5411923352/supplement 5991012808 identified merged F07/MAS-148 and the occupied Catalyst successor. Sections A/B/E/G/J/K/L and Appendices A/B/C now agree: FIF owns facts, Earnings owns events, F07 owns assumptions/valuation/scenarios and K3E owns expectation-to-market. The current October 20 F07 amendments are acknowledged without widening preset magnitudes, rights or shadow authority. The rest of the October 4 audit remains historical.
 
 ---
 
