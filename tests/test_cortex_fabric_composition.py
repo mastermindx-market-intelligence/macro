@@ -17,6 +17,9 @@ import pytest
 import pandas.core.arrays.arrow.extension_types  # noqa: F401
 
 from engine.neuralweb import cortex as cx
+# Load before NativeApplicationHTTPFixture snapshots sys.modules. Its cleanup
+# restores that snapshot; a late import can leave a stale package attribute.
+from engine.neuralweb import metabolism
 from engine import fabric_inference_client as transport, llm_auth as auth
 from engine import provider_production_modes as owner, provider_health
 from lib import ai_costs
@@ -367,7 +370,6 @@ def test_host_profile_intersection_uses_real_allowed_providers(cortex, monkeypat
 
 
 def test_stake_registration_unknown_does_not_append_or_retry(cortex, monkeypatch):
-    from engine.neuralweb import metabolism
     effects = []
     def register(hypothesis, **kwargs):
         effects.append(hypothesis)
@@ -487,24 +489,30 @@ def test_stake_uses_actual_registry_trial_governance_and_inbox_receipts(cortex):
 
 @pytest.mark.parametrize("failure", ["registry", "trial", "governance", "inbox"])
 def test_stake_partial_business_writes_retain_original_intent(cortex, monkeypatch, failure):
-    from engine.neuralweb import metabolism
-    if failure == "registry": monkeypatch.setattr(metabolism, "_append_registry", lambda *a, **kw: False)
-    elif failure == "trial": monkeypatch.setattr(metabolism, "_log_to_trial_ledger", lambda *a, **kw: None)
-    elif failure == "governance": monkeypatch.setattr(metabolism, "_emit_governance", lambda *a, **kw: None)
+    assert sys.modules["engine.neuralweb.metabolism"] is metabolism
+    assert metabolism.register_hypothesis.__globals__ is vars(metabolism)
+    if failure in {"registry", "trial", "governance"}:
+        helper = {"registry": "_append_registry", "trial": "_log_to_trial_ledger",
+                  "governance": "_emit_governance"}[failure]
+        fault = Mock(return_value=False if failure == "registry" else None)
+        monkeypatch.setattr(metabolism, helper, fault)
     else:
         original = Path.open
+        fault = Mock(side_effect=OSError("synthetic inbox write failure"))
         def fail(path, *args, **kwargs):
             if path == cortex.path.parent / "hypothesis_inbox.jsonl" and args and args[0] == "a":
-                raise OSError("synthetic inbox write failure")
+                return fault()
             return original(path, *args, **kwargs)
         monkeypatch.setattr(Path, "open", fail)
     cortex.responses = [packet(tool("stake_hypothesis", hypothesis(), "hyp-1"))]
     call(cortex)
+    fault.assert_called_once()
     assert len(cortex.native.posts) == 1 and record(cortex)["tools"][0]["phase"] == "intent"
     paths = cx._fabric_effect_paths(cortex.root, "stake_hypothesis")
     before = [p.read_bytes() if p.exists() else None for p in paths]
     held_no_replay(cortex, monkeypatch)
     assert [p.read_bytes() if p.exists() else None for p in paths] == before
+    fault.assert_called_once()
 
 
 def test_invalid_hypothesis_is_audited_as_business_refusal(cortex):
