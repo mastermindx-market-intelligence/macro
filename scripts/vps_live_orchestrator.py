@@ -2757,6 +2757,31 @@ class Orchestrator:
         return self._publish_private_members(captured, request,
             expected_current_content_id=expected_current_content_id, generations_root=root)
 
+    def publish_member_ohlcv_inputs(
+        self, encoded, *, generation_id: str, source_revision: str,
+        expected_current_content_id: str | None, lane: str = "snapshot",
+    ) -> GenerationPublishResult:
+        """Stage genuine captured member candles through the sole private owner."""
+        from lib.member_ohlcv_generation_contract import (
+            EncodedMemberOHLCVInputs, MemberOHLCVContractError, MEMBERS,
+            MAX_MEMBER_BYTES, MAX_BUNDLE_BYTES, prepare_member_ohlcv_generation_request,
+        )
+        if not isinstance(encoded, EncodedMemberOHLCVInputs):
+            raise MemberOHLCVContractError("encoded_ohlcv_inputs_required")
+        if not isinstance(encoded.members, Mapping) or set(encoded.members) != set(MEMBERS):
+            raise MemberOHLCVContractError("invalid_ohlcv_member_set")
+        captured = dict(encoded.members)
+        if (any(type(raw) is not bytes or not 0 < len(raw) <= MAX_MEMBER_BYTES for raw in captured.values())
+                or sum(map(len, captured.values())) > MAX_BUNDLE_BYTES):
+            raise MemberOHLCVContractError("invalid_ohlcv_member_bytes")
+        root = self._yahoo_private_root()
+        request = prepare_member_ohlcv_generation_request(
+            sources={name: Path(name) for name in MEMBERS}, input_identity=encoded.input_identity,
+            breadth=encoded.breadth, yahoo=encoded.yahoo, prior=encoded.prior,
+            generation_id=generation_id, source_revision=source_revision, lane=lane)
+        return self._publish_private_members(captured, request,
+            expected_current_content_id=expected_current_content_id, generations_root=root)
+
     def publish_sector_documents(
         self, composition, *, input_identity: Mapping[str, Any],
         generation_id: str, source_revision: str,

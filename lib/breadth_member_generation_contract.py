@@ -200,7 +200,7 @@ def _copy(value):
 
 
 def _panel(frame, *, field: str, source: str):
-    if field not in values.FIELDS:
+    if field not in values.OHLCV_FIELDS:
         _error("invalid_panel_field")
     try:
         return values._capture_panels({field: frame}, fields=(field,), source_session=source)[field]
@@ -386,6 +386,34 @@ def _captured_yahoo(yahoo, *, now, require_current):
     captured = replace(snapshot, manifest=MappingProxyType(manifest), members=MappingProxyType(raw))
     return VerifiedYahooGeneration(VerifiedYahooCohort(snapshot.generation_id, source,
         MappingProxyType(frames)), captured)
+
+
+def verify_breadth_snapshot(snapshot, *, yahoo, now, require_current=False):
+    """Revalidate exact captured bytes; mutable derived frames are not authority."""
+    manifest = _copy(dict(snapshot.manifest))
+    raw = dict(snapshot.members)
+    if (snapshot.domain != DOMAIN or manifest.get("domain") != DOMAIN
+            or manifest.get("content_id") != snapshot.content_id
+            or manifest.get("generation_id") != snapshot.generation_id
+            or manifest.get("published_at") != snapshot.published_at
+            or set(raw) != set(MEMBERS)
+            or any(type(data) is not bytes or not 0 < len(data) <= MAX_MEMBER_BYTES for data in raw.values())
+            or sum(map(len, raw.values())) > MAX_BUNDLE_BYTES):
+        _error("breadth_capture_identity_mismatch")
+    from scripts.vps_live_orchestrator import _generation_content_id
+    artifacts = sorted(({"name": name, "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
+                        for name, data in raw.items()), key=lambda row: row["name"])
+    if (manifest.get("artifacts") != artifacts or _generation_content_id(
+            domain=DOMAIN, generation_id=snapshot.generation_id, lane=manifest.get("lane"),
+            source_revision=manifest.get("source_revision"), input_identity=manifest.get("input_identity"),
+            captured=artifacts) != snapshot.content_id):
+        _error("breadth_capture_content_mismatch")
+    inputs = validate_breadth_member_bundle(member_bytes=raw, input_identity=manifest.get("input_identity"),
+        yahoo=yahoo, published_at=snapshot.published_at, now=now,
+        source_revision=manifest.get("source_revision"), computed_at=manifest.get("computed_at"),
+        require_current=require_current)
+    return VerifiedBreadthMemberGeneration(inputs,
+        replace(snapshot, manifest=MappingProxyType(manifest), members=MappingProxyType(raw)))
 
 
 def _yahoo_identity(yahoo):
@@ -905,8 +933,4 @@ def read_verified_breadth_member_inputs(*, generations_root, now, yahoo=None, sn
             domain=dependency["domain"], generation_id=dependency["generation_id"],
             content_id=dependency["content_id"], members=YAHOO_GENERATION_MEMBERS)
         yahoo = verify_yahoo_snapshot(pinned, now=now, require_current=require_current)
-    captured = validate_breadth_member_bundle(member_bytes=snapshot.members,
-        input_identity=manifest.get("input_identity"), yahoo=yahoo, published_at=snapshot.published_at,
-        now=now, source_revision=manifest.get("source_revision"), computed_at=manifest.get("computed_at"),
-        require_current=require_current)
-    return VerifiedBreadthMemberGeneration(captured, snapshot)
+    return verify_breadth_snapshot(snapshot, yahoo=yahoo, now=now, require_current=require_current)

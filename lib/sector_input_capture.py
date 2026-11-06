@@ -45,3 +45,12 @@ def read_sector_price_captures(*, generations_root: Path, now: datetime) -> Sect
     breadth = read_verified_breadth_member_inputs(generations_root=generations_root,
         now=captured_at, yahoo=yahoo, require_current=True)
     return SectorPriceCaptures(yahoo, breadth, captured_at)
+
+
+def read_sector_member_ohlcv_capture(*, prices: SectorPriceCaptures, generations_root: Path, now: datetime):
+    """Bind genuine member candles to this price pair without resolving it again."""
+    from lib.member_ohlcv_generation_contract import read_verified_member_ohlcv_inputs
+    if not isinstance(prices, SectorPriceCaptures) or _instant(now) < _instant(prices.captured_at):
+        raise ValueError("captured_sector_price_pair_required")
+    return read_verified_member_ohlcv_inputs(generations_root=generations_root, now=_instant(now),
+        breadth=prices.breadth, yahoo=prices.yahoo, require_current=True)

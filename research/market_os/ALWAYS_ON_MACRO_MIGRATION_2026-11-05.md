@@ -587,3 +587,33 @@ captured auxiliary closure. The protected holdings result may not be consumed or
 redispatched. CI registration, a new Terminal managed carrier and browser acceptance
 remain fenced by their recorded capability results. No Macro source activation,
 legacy-writer transfer or estate-wide completion is claimed.
+
+
+## Genuine member OHLCV generation and recovery closure — 2026-11-06
+
+The real five-field acquisition now has a bounded six-member private generation
+under the incumbent publisher. It binds exact captured breadth/Yahoo evidence,
+keeps failed replacements unchanged, preserves archive-only prior names, and
+distinguishes historical-only, current, retained and unavailable observations.
+The current Sector capture owner can bind this selected generation without
+rereading either price dependency. [Contract](SECTOR_MEMBER_OHLCV_GENERATION_2026-11-06.md).
+
+The final affected run passed **130 tests**, including 36 new contract tests.
+Actual local private publication/readback, stale reuse, original publication,
+allocation-before-decode and exact prior/dependency checks are exercised.
+[Source/test receipts](SECTOR_MEMBER_OHLCV_GENERATION_SOURCE_REVIEW_2026-11-06.json).
+This remains source qualification; collection and runtime scheduling are not activated.
+
+The earlier barrier design hold is materially narrowed by source inspection: the
+three Options helpers form a complete sourced closure. Their exact original bytes
+can be retained in the original attempt capsule before checkout mutation, allowing
+recovery to reach unchanged Options admission without importing a partial checkout.
+One journal must distinguish incomplete source from SOURCE_READY/RESTORING; the
+latter allows guarded runtime starts while preserving unresolved per-timer intent.
+No later target may overwrite that journal. A held restoration is not success.
+The barrier-aware installed updater/helper must precede first guarded reset. These
+are ready design requirements, not implemented or deployed protection.
+
+Next: complete the auxiliary captured-value projections and composition-input
+adapter, then implement and qualify the existing updater/setup barrier. Required
+holdings remain protected, and original CI/Terminal/browser gates still bind.

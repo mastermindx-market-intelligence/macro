@@ -3,7 +3,7 @@
   "root_id": "macro-always-on-shared-shell-20261105-c3",
   "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T14:05:24.044972+00:00",
+  "recorded_at": "2026-11-06T14:22:20.145029+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -1483,8 +1483,8 @@
       "remaining": "Actual source binding, resolved Market State, genuine OHLCV/holdings and auxiliary closure remain required; existing CI/Terminal/browser/effect fences unchanged."
     },
     "source_barrier_recovery_ruling": {
-      "state": "DESIGN_NOT_READY_NO_MUTATION",
-      "recorded_at": "2026-11-06T14:05:24.044972+00:00",
+      "state": "DESIGN_READY_SOURCE_IMPLEMENTATION_REQUIRED",
+      "recorded_at": "2026-11-06T14:22:20.145029+00:00",
       "pending_requirements": [
         "Preserve updater fd9 and Options guards/finalizers",
         "Stable fd8 lock and fail-closed pending marker",
@@ -1495,10 +1495,27 @@
         "Setup joins incumbent mutation owner and keeps its finalizer"
       ],
       "unresolved": [
-        "Immutable old-helper closure before imports",
-        "Durable restoration intent after successful source transaction"
+        "Source implementation and Linux crash/first-adoption qualification",
+        "Real release and activation remain gated"
       ],
-      "no_deployment": true
+      "no_deployment": true,
+      "helper_closure": {
+        "market-memory-options-unit-boundary.sh": "c7400b5d1a5532d4987c101f27411c8aca96542de42233317d7a108d82fdded4",
+        "market-memory-options-runtime-fence.sh": "2dc48933a390b12b5b35d097292ba12af5240886921a981158d62109b619328e",
+        "market-memory-options-dropin-migration.sh": "9b162f750c74252449e8d718774984ae376989710c3e099f97f7aafabbb943ea"
+      },
+      "resolution": "Capture original helper closure; one journal separates incomplete source from SOURCE_READY/RESTORING; preserve held timer restoration and original target; qualified installed helper/updater before first reset"
+    },
+    "member_ohlcv_private_generation": {
+      "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "base_sha": "bb107bccc52152d46b5ee91865632a22bced6e20",
+      "contract": "research/market_os/SECTOR_MEMBER_OHLCV_GENERATION_2026-11-06.md",
+      "proof": "research/market_os/SECTOR_MEMBER_OHLCV_GENERATION_SOURCE_REVIEW_2026-11-06.json",
+      "final_passed": 130,
+      "new_contract_tests": 36,
+      "actual_provider_requests": false,
+      "private_fixture_publication_readback": true,
+      "remaining": "Actual bootstrap/policy/auxiliary source capture, protected holdings, complete composition adapter and runtime/native activation"
     }
   }
 }

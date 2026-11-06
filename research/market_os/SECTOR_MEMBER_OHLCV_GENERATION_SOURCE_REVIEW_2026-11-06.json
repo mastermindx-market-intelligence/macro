@@ -1,0 +1,56 @@
+{
+  "base_sha": "bb107bccc52152d46b5ee91865632a22bced6e20",
+  "counts_overlap": true,
+  "files_sha256": {
+    "lib/breadth_member_generation_contract.py": "36796e6ac7b1e860b002bfe1a68434b8b9dfd98cf3cb8d4f41a476899900c09a",
+    "lib/member_ohlcv_generation_contract.py": "b18d04940bcb991dec39a686a077e4a26b2370e924c0d55d053894fb99acc375",
+    "lib/sector_input_capture.py": "499f8cef7b0de45f242fd048722f1b96ce45bedcc0c962a03a25928c5b8f4cd2",
+    "scripts/vps_live_orchestrator.py": "913ecfa5033ff1c1c7d45886a05525f08bb8183220857f1b3b990f4b29006862",
+    "tests/test_member_ohlcv_generation_contract.py": "4970217eef54fe82471e34b7c4de65c67be0868f3e40874cccdc7f1477f9a118"
+  },
+  "final": {
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_member_ohlcv_generation_contract.py",
+      "tests/test_breadth_member_generation_contract.py",
+      "tests/test_basket_ohlcv_explicit_inputs.py"
+    ],
+    "elapsed_seconds": 150.329,
+    "exit_code": 0,
+    "log": "/tmp/mmx-member-ohlcv-generation-final-20261106.log",
+    "sha256": "16bc43e0bd5920a418fde620dfccfafa8b008752896a4f9ece91d6077656b32e"
+  },
+  "final_passed": 130,
+  "initial": {
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_member_ohlcv_generation_contract.py"
+    ],
+    "elapsed_seconds": 99.766,
+    "exit_code": 0,
+    "log": "/tmp/mmx-member-ohlcv-generation-20261106.log",
+    "sha256": "d40d0261ce671a7f7c77795d35c72c7740cb7cd04ce8f1c4c8db117f74873e54"
+  },
+  "initial_passed": 31,
+  "limits": [
+    "Provider response summaries are acquisition evidence, not reconstructed discarded response bytes",
+    "Prior retention verified at publication; reader does not recursively replay historical prior chain",
+    "Bootstrap and policy provenance still require actual source capture adapter",
+    "Partial/unavailable candles remain explicit; current target does not assert all member fields current",
+    "No runtime scheduling, provider call, source activation, new publisher/auth/control plane or authenticated product proof",
+    "Protected holdings effect fence and CI/Terminal/browser capability fences remain"
+  ],
+  "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+  "new_contract_tests": 36,
+  "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+  "recorded_at": "2026-11-06T14:22:20.145029+00:00",
+  "review": "Parent source inspection plus advisory native judgment. Population-allocation ordering finding corrected and regression-tested. No independent formal review claimed.",
+  "schema": "mastermind.source-review.v1",
+  "status": "SOURCE_QUALIFIED_NOT_ACTIVATED"
+}
