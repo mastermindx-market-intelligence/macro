@@ -1,0 +1,18 @@
+{
+  "method": "Read exact HEAD blobs for 9 omitted representative pages into this owned worktree; remove unchanged materializations after tests",
+  "source_sha": "5a2439d7a99548f6373893980e1952c495abfa48",
+  "paths": [
+    "site/us_stocks.html",
+    "site/macro.html",
+    "site/china.html",
+    "site/baskets.html",
+    "site/stocks/AAPL.html",
+    "site/index.html",
+    "site/products/market-terminal.html",
+    "site/products/mastermind-ai.html",
+    "site/products/market-dashboards.html"
+  ],
+  "pytest_exit": 0
+}
+..                                                                       [100%]
+2 passed in 4.18s

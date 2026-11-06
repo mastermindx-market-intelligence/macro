@@ -41,6 +41,7 @@ from __future__ import annotations
 import json
 import logging
 import sys
+import tempfile
 import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -3250,43 +3251,80 @@ def build(
         except Exception as e:  # noqa: BLE001
             log.debug("build_leader_radar: byte-stability carry skipped: %s", e)
 
-    # ── Write artifact ────────────────────────────────────────────────────────
-    out_path.write_text(
-        json.dumps(payload, separators=(",", ":"), default=_json_default)
-    )
-    log.info(
-        "build_leader_radar: wrote %s (%d rows, %d fire_p, %d fire_o, %.1fs, stale=%s)",
-        out_path, len(rows), len(fire_precipice_set), len(fire_onset_set),
-        elapsed, stale,
-    )
-
-    # ── Render HTML ───────────────────────────────────────────────────────────
+    # ── Prepare output pair before publishing either vintage (D03 T38) ──────
     tpl_root = config.ROOT / "templates"
     tpl_path = tpl_root / "leader_radar.html.j2"
-    if tpl_path.exists():
-        try:
+    html_out = site_root / "leader_radar.html"
+    has_template = tpl_path.exists()
+    if not has_template and html_out.exists():
+        log.warning("build_leader_radar: template %s absent; retaining output pair", tpl_path)
+        print("::warning title=leader_radar::template leader_radar.html.j2 absent — "
+              "published radar.json and leader_radar.html unchanged; "
+              "exit 0 does not prove a current page", flush=True)
+        return payload
+
+    staged_outputs: list[tuple[Path, Path]] = []
+    try:
+        outputs = [(out_path, json.dumps(payload, separators=(",", ":"), default=_json_default))]
+        if has_template:
             from jinja2 import Environment, FileSystemLoader
             env = Environment(loader=FileSystemLoader(str(tpl_root)), autoescape=False)
-            tpl = env.get_template("leader_radar.html.j2")
-            rendered = tpl.render(leader_radar=payload)
-            # write_page, not write_text: the template carries no data-base shim,
-            # so a raw write ships the page with its per-ticker fetches pointed at
-            # Pages instead of R2 whenever this builder runs outside the render
-            # lane's inject_data_base sweep. This variable target is exactly the
-            # shape the old line-regex guard could not see; layer 3b of
-            # tests/test_site_shim.py now holds it.
-            html_out = write_page(site_root / "leader_radar.html", rendered)
-            log.info("build_leader_radar: rendered %s", html_out)
-        except Exception as e:  # noqa: BLE001
-            log.warning("build_leader_radar: HTML render failed: %s", e, exc_info=True)
-            print(f"::warning title=leader_radar::HTML render failed (non-fatal) — "
-                  f"radar.json updated but site/leader_radar.html was NOT re-rendered "
-                  f"and stays on its last-committed vintage: "
-                  f"{type(e).__name__}: {e}", flush=True)
+            rendered = env.get_template("leader_radar.html.j2").render(leader_radar=payload)
+            outputs.append((html_out, rendered))
+        else:
+            # Fixture/data-only builds have never required a template. An existing
+            # page is fenced above so this fallback cannot create a mixed vintage.
+            print("::warning title=leader_radar::template leader_radar.html.j2 absent — "
+                  "JSON-only build; no published HTML page exists", flush=True)
+
+        for target, content in outputs:
+            # A sibling keeps write_page's data-base/shared-shell paths at the
+            # final page depth. Never publish raw template HTML without this owner.
+            with tempfile.NamedTemporaryFile(
+                dir=target.parent, prefix=f".{target.stem}-",
+                suffix=target.suffix, delete=False,
+            ) as handle:
+                staged = Path(handle.name)
+            staged_outputs.append((staged, target))
+            if target == html_out:
+                write_page(staged, content)
+            else:
+                staged.write_text(content)
+            # NamedTemporaryFile starts at 0600; published assets must remain readable.
+            staged.chmod(target.stat().st_mode & 0o777 if target.exists() else 0o644)
+    except Exception as e:  # noqa: BLE001
+        log.warning("build_leader_radar: output preparation failed: %s", e, exc_info=True)
+        print(f"::warning title=leader_radar::output preparation failed (non-fatal) — "
+              f"published radar.json and leader_radar.html unchanged; "
+              f"exit 0 does not prove a current page: {type(e).__name__}: {e}", flush=True)
     else:
-        log.info("build_leader_radar: template %s absent — skipping HTML", tpl_path)
-        print("::warning title=leader_radar::template leader_radar.html.j2 absent — "
-              "HTML skipped; baked page stays on its last-committed vintage", flush=True)
+        try:
+            # Each replacement is atomic; the pair is not. Rendering/staging
+            # failures cannot advance JSON, but an interrupted publication can.
+            for staged, target in staged_outputs:
+                staged.replace(target)
+        except Exception as e:  # noqa: BLE001
+            log.warning("build_leader_radar: output publication failed: %s", e, exc_info=True)
+            print(f"::warning title=leader_radar::output publication failed (non-fatal) — "
+                  f"radar.json and leader_radar.html vintages may differ; inspect both "
+                  f"published outputs; exit 0 does not prove a current page: "
+                  f"{type(e).__name__}: {e}", flush=True)
+        else:
+            log.info(
+                "build_leader_radar: wrote %s (%d rows, %d fire_p, %d fire_o, %.1fs, stale=%s)",
+                out_path, len(rows), len(fire_precipice_set), len(fire_onset_set),
+                elapsed, stale,
+            )
+            if len(staged_outputs) == 2:
+                log.info("build_leader_radar: rendered %s", html_out)
+    finally:
+        for staged, _ in staged_outputs:
+            try:
+                staged.unlink(missing_ok=True)
+            except OSError as e:
+                log.warning("build_leader_radar: staging cleanup failed for %s: %s", staged, e)
+                print(f"::warning title=leader_radar::staging cleanup failed for {staged.name}: "
+                      f"{type(e).__name__}: {e}", flush=True)
 
     return payload
 

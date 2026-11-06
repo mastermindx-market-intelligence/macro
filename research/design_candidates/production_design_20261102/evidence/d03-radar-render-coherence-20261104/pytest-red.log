@@ -1,0 +1,185 @@
+FFFFFF.F.F                                                               [100%]
+=================================== FAILURES ===================================
+_ TestRenderPublicationCoherence.test_template_failure_preserves_published_outputs[previous-pair-parse] _
+tests/test_build_leader_radar.py:3613: in test_template_failure_preserves_published_outputs
+    assert [p.read_bytes() if p.exists() else None for p in (data, page)] == before
+E   assert [b'{"schema":...ration</p>\n'] == [b'{"generati...ration</p>\n']
+E
+E     At index 0 diff: b'{"schema":"leader_radar.v2","as_of":"2024-07-12","built_at":"2026-11-04T08:26:51.445526+00:00","stale":true,"degraded":["breadth 191 sessions behind price data"],"degraded_zh":["\\u5e7f\\u5ea6\\u6570\\u636e\\u843d\\u540e\\u4ef7\\u683c\\u6570\\u636e191\\u4e2a\\u4ea4\\u6613\\u65e5"],"elapsed_s":0.29,"freshness":{"price_through":"2024-07-12","breadth_through":"2023-10-06","rs_series_through":null,"regime_as_of":"2026-07-11","revisions_asof":"2026-07-10","state_history_through":null,"built_at":"2026-11-04T08:26:51.445526+00:00"},"history_since":null,"hist...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+----------------------------- Captured stdout call -----------------------------
+::warning title=leader_radar::HTML render failed (non-fatal) — radar.json updated but site/leader_radar.html was NOT re-rendered and stays on its last-committed vintage: TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------ Captured log call -------------------------------
+WARNING  scripts.build_leader_radar:build_leader_radar.py:2354 build_leader_radar: stale (latest=2024-07-12) — state frozen
+WARNING  scripts.build_leader_radar:build_leader_radar.py:3281 build_leader_radar: HTML render failed: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/scripts/build_leader_radar.py", line 3270, in build
+    tpl = env.get_template("leader_radar.html.j2")
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1113/test_template_failure_preserve0/templates/leader_radar.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+_ TestRenderPublicationCoherence.test_template_failure_preserves_published_outputs[previous-pair-render] _
+tests/test_build_leader_radar.py:3613: in test_template_failure_preserves_published_outputs
+    assert [p.read_bytes() if p.exists() else None for p in (data, page)] == before
+E   assert [b'{"schema":...ration</p>\n'] == [b'{"generati...ration</p>\n']
+E
+E     At index 0 diff: b'{"schema":"leader_radar.v2","as_of":"2024-07-12","built_at":"2026-11-04T08:26:51.945160+00:00","stale":true,"degraded":["breadth 191 sessions behind price data"],"degraded_zh":["\\u5e7f\\u5ea6\\u6570\\u636e\\u843d\\u540e\\u4ef7\\u683c\\u6570\\u636e191\\u4e2a\\u4ea4\\u6613\\u65e5"],"elapsed_s":0.11,"freshness":{"price_through":"2024-07-12","breadth_through":"2023-10-06","rs_series_through":null,"regime_as_of":"2026-07-11","revisions_asof":"2026-07-10","state_history_through":null,"built_at":"2026-11-04T08:26:51.945160+00:00"},"history_since":null,"hist...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+----------------------------- Captured stdout call -----------------------------
+::warning title=leader_radar::HTML render failed (non-fatal) — radar.json updated but site/leader_radar.html was NOT re-rendered and stays on its last-committed vintage: ZeroDivisionError: division by zero
+------------------------------ Captured log call -------------------------------
+WARNING  scripts.build_leader_radar:build_leader_radar.py:2354 build_leader_radar: stale (latest=2024-07-12) — state frozen
+WARNING  scripts.build_leader_radar:build_leader_radar.py:3281 build_leader_radar: HTML render failed: division by zero
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/scripts/build_leader_radar.py", line 3271, in build
+    rendered = tpl.render(leader_radar=payload)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1113/test_template_failure_preserve1/templates/leader_radar.html.j2", line 1, in top-level template code
+    {{ 1 / 0 }}
+ZeroDivisionError: division by zero
+_ TestRenderPublicationCoherence.test_template_failure_preserves_published_outputs[first-build-parse] _
+tests/test_build_leader_radar.py:3613: in test_template_failure_preserves_published_outputs
+    assert [p.read_bytes() if p.exists() else None for p in (data, page)] == before
+E   assert [b'{"schema":...y":[]}', None] == [None, None]
+E
+E     At index 0 diff: b'{"schema":"leader_radar.v2","as_of":"2024-07-12","built_at":"2026-11-04T08:26:52.186225+00:00","stale":true,"degraded":["breadth 191 sessions behind price data"],"degraded_zh":["\\u5e7f\\u5ea6\\u6570\\u636e\\u843d\\u540e\\u4ef7\\u683c\\u6570\\u636e191\\u4e2a\\u4ea4\\u6613\\u65e5"],"elapsed_s":0.09,"freshness":{"price_through":"2024-07-12","breadth_through":"2023-10-06","rs_series_through":null,"regime_as_of":"2026-07-11","revisions_asof":"2026-07-10","state_history_through":null,"built_at":"2026-11-04T08:26:52.186225+00:00"},"history_since":null,"history_gaps":[],"cove...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+----------------------------- Captured stdout call -----------------------------
+::warning title=leader_radar::HTML render failed (non-fatal) — radar.json updated but site/leader_radar.html was NOT re-rendered and stays on its last-committed vintage: TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------ Captured log call -------------------------------
+WARNING  scripts.build_leader_radar:build_leader_radar.py:2354 build_leader_radar: stale (latest=2024-07-12) — state frozen
+WARNING  scripts.build_leader_radar:build_leader_radar.py:3281 build_leader_radar: HTML render failed: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/scripts/build_leader_radar.py", line 3270, in build
+    tpl = env.get_template("leader_radar.html.j2")
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1113/test_template_failure_preserve2/templates/leader_radar.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+_ TestRenderPublicationCoherence.test_template_failure_preserves_published_outputs[first-build-render] _
+tests/test_build_leader_radar.py:3613: in test_template_failure_preserves_published_outputs
+    assert [p.read_bytes() if p.exists() else None for p in (data, page)] == before
+E   assert [b'{"schema":...y":[]}', None] == [None, None]
+E
+E     At index 0 diff: b'{"schema":"leader_radar.v2","as_of":"2024-07-12","built_at":"2026-11-04T08:26:52.377217+00:00","stale":true,"degraded":["breadth 191 sessions behind price data"],"degraded_zh":["\\u5e7f\\u5ea6\\u6570\\u636e\\u843d\\u540e\\u4ef7\\u683c\\u6570\\u636e191\\u4e2a\\u4ea4\\u6613\\u65e5"],"elapsed_s":0.12,"freshness":{"price_through":"2024-07-12","breadth_through":"2023-10-06","rs_series_through":null,"regime_as_of":"2026-07-11","revisions_asof":"2026-07-10","state_history_through":null,"built_at":"2026-11-04T08:26:52.377217+00:00"},"history_since":null,"history_gaps":[],"cove...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+----------------------------- Captured stdout call -----------------------------
+::warning title=leader_radar::HTML render failed (non-fatal) — radar.json updated but site/leader_radar.html was NOT re-rendered and stays on its last-committed vintage: ZeroDivisionError: division by zero
+------------------------------ Captured log call -------------------------------
+WARNING  scripts.build_leader_radar:build_leader_radar.py:2354 build_leader_radar: stale (latest=2024-07-12) — state frozen
+WARNING  scripts.build_leader_radar:build_leader_radar.py:3281 build_leader_radar: HTML render failed: division by zero
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/scripts/build_leader_radar.py", line 3271, in build
+    rendered = tpl.render(leader_radar=payload)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1113/test_template_failure_preserve3/templates/leader_radar.html.j2", line 1, in top-level template code
+    {{ 1 / 0 }}
+ZeroDivisionError: division by zero
+_ TestRenderPublicationCoherence.test_missing_template_with_existing_page_preserves_outputs[previous-pair] _
+tests/test_build_leader_radar.py:3627: in test_missing_template_with_existing_page_preserves_outputs
+    assert [p.read_bytes() if p.exists() else None for p in (data, page)] == before
+E   assert [b'{"schema":...ration</p>\n'] == [b'{"generati...ration</p>\n']
+E
+E     At index 0 diff: b'{"schema":"leader_radar.v2","as_of":"2024-07-12","built_at":"2026-11-04T08:26:52.589999+00:00","stale":true,"degraded":["breadth 191 sessions behind price data"],"degraded_zh":["\\u5e7f\\u5ea6\\u6570\\u636e\\u843d\\u540e\\u4ef7\\u683c\\u6570\\u636e191\\u4e2a\\u4ea4\\u6613\\u65e5"],"elapsed_s":0.1,"freshness":{"price_through":"2024-07-12","breadth_through":"2023-10-06","rs_series_through":null,"regime_as_of":"2026-07-11","revisions_asof":"2026-07-10","state_history_through":null,"built_at":"2026-11-04T08:26:52.589999+00:00"},"history_since":null,"histo...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+----------------------------- Captured stdout call -----------------------------
+::warning title=leader_radar::template leader_radar.html.j2 absent — HTML skipped; baked page stays on its last-committed vintage
+------------------------------ Captured log call -------------------------------
+WARNING  scripts.build_leader_radar:build_leader_radar.py:2354 build_leader_radar: stale (latest=2024-07-12) — state frozen
+_ TestRenderPublicationCoherence.test_missing_template_with_existing_page_preserves_outputs[page-only] _
+tests/test_build_leader_radar.py:3627: in test_missing_template_with_existing_page_preserves_outputs
+    assert [p.read_bytes() if p.exists() else None for p in (data, page)] == before
+E   assert [b'{"schema":...ration</p>\n'] == [None, b'<!do...ration</p>\n']
+E
+E     At index 0 diff: b'{"schema":"leader_radar.v2","as_of":"2024-07-12","built_at":"2026-11-04T08:26:52.817249+00:00","stale":true,"degraded":["breadth 191 sessions behind price data"],"degraded_zh":["\\u5e7f\\u5ea6\\u6570\\u636e\\u843d\\u540e\\u4ef7\\u683c\\u6570\\u636e191\\u4e2a\\u4ea4\\u6613\\u65e5"],"elapsed_s":0.11,"freshness":{"price_through":"2024-07-12","breadth_through":"2023-10-06","rs_series_through":null,"regime_as_of":"2026-07-11","revisions_asof":"2026-07-10","state_history_through":null,"built_at":"2026-11-04T08:26:52.817249+00:00"},"history_since":null,"hist...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+----------------------------- Captured stdout call -----------------------------
+::warning title=leader_radar::template leader_radar.html.j2 absent — HTML skipped; baked page stays on its last-committed vintage
+------------------------------ Captured log call -------------------------------
+WARNING  scripts.build_leader_radar:build_leader_radar.py:2354 build_leader_radar: stale (latest=2024-07-12) — state frozen
+_ TestRenderPublicationCoherence.test_partial_page_preparation_does_not_touch_published_pair _
+tests/test_build_leader_radar.py:3655: in test_partial_page_preparation_does_not_touch_published_pair
+    assert [p.read_bytes() for p in (data, page)] == before
+E   assert [b'{"schema":...head>partial'] == [b'{"generati...ration</p>\n']
+E
+E     At index 0 diff: b'{"schema":"leader_radar.v2","as_of":"2024-07-12","built_at":"2026-11-04T08:26:53.156466+00:00","stale":true,"degraded":["breadth 191 sessions behind price data"],"degraded_zh":["\\u5e7f\\u5ea6\\u6570\\u636e\\u843d\\u540e\\u4ef7\\u683c\\u6570\\u636e191\\u4e2a\\u4ea4\\u6613\\u65e5"],"elapsed_s":0.11,"freshness":{"price_through":"2024-07-12","breadth_through":"2023-10-06","rs_series_through":null,"regime_as_of":"2026-07-11","revisions_asof":"2026-07-10","state_history_through":null,"built_at":"2026-11-04T08:26:53.156466+00:00"},"history_since":null,"hist...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+----------------------------- Captured stdout call -----------------------------
+::warning title=leader_radar::HTML render failed (non-fatal) — radar.json updated but site/leader_radar.html was NOT re-rendered and stays on its last-committed vintage: OSError: page preparation failed
+------------------------------ Captured log call -------------------------------
+WARNING  scripts.build_leader_radar:build_leader_radar.py:2354 build_leader_radar: stale (latest=2024-07-12) — state frozen
+WARNING  scripts.build_leader_radar:build_leader_radar.py:3281 build_leader_radar: HTML render failed: page preparation failed
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/scripts/build_leader_radar.py", line 3278, in build
+    html_out = write_page(site_root / "leader_radar.html", rendered)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py", line 1247, in _execute_mock_call
+    result = effect(*args, **kwargs)
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-radar-render-coherence-20261104-c2-90803ae2c4d5b4db/tests/test_build_leader_radar.py", line 3650, in fail_after_partial_write
+    raise OSError("page preparation failed")
+OSError: page preparation failed
+_ TestRenderPublicationCoherence.test_second_replacement_failure_warns_about_possible_mixed_vintage _
+tests/test_build_leader_radar.py:3701: in test_second_replacement_failure_warns_about_possible_mixed_vintage
+    assert page.read_bytes() == previous_page
+E   AssertionError: assert b'<!DOCTYPE h.../body></html>' == b'<!doctype h...eration</p>\n'
+E
+E     At index 2 diff: b'D' != b'd'
+E     Use -v to get more diff
+------------------------------ Captured log call -------------------------------
+WARNING  scripts.build_leader_radar:build_leader_radar.py:2354 build_leader_radar: stale (latest=2024-07-12) — state frozen
+WARNING  pages:pages.py:634 data_base.js shim read failed ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-1113/test_second_replacement_failur0/templates/data_base.js') — falling back to external ref
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_build_leader_radar.py::TestRenderPublicationCoherence::test_template_failure_preserves_published_outputs[previous-pair-parse]
+FAILED tests/test_build_leader_radar.py::TestRenderPublicationCoherence::test_template_failure_preserves_published_outputs[previous-pair-render]
+FAILED tests/test_build_leader_radar.py::TestRenderPublicationCoherence::test_template_failure_preserves_published_outputs[first-build-parse]
+FAILED tests/test_build_leader_radar.py::TestRenderPublicationCoherence::test_template_failure_preserves_published_outputs[first-build-render]
+FAILED tests/test_build_leader_radar.py::TestRenderPublicationCoherence::test_missing_template_with_existing_page_preserves_outputs[previous-pair]
+FAILED tests/test_build_leader_radar.py::TestRenderPublicationCoherence::test_missing_template_with_existing_page_preserves_outputs[page-only]
+FAILED tests/test_build_leader_radar.py::TestRenderPublicationCoherence::test_partial_page_preparation_does_not_touch_published_pair
+FAILED tests/test_build_leader_radar.py::TestRenderPublicationCoherence::test_second_replacement_failure_warns_about_possible_mixed_vintage
+8 failed, 2 passed in 6.22s

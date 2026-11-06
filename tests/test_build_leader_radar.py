@@ -3569,3 +3569,138 @@ def test_lag_clock_prints_month_and_day_without_a_leading_zero():
     html = _lag_clock_html(rs_series_through="2026-01-05")
     assert "Relative strength through Jan 5" in html
     assert "\u76f8\u5bf9\u5f3a\u5ea6\u622a\u81f31\u67085\u65e5" in html
+
+
+# ── D03 T38: render failure must not advance only the JSON vintage ────────────
+
+class TestRenderPublicationCoherence:
+    _template = (
+        '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"></head>'
+        '<body><time>{{ leader_radar.built_at }}</time>'
+        '<span>{{ leader_radar.as_of }}</span></body></html>'
+    )
+
+    def _fixture(self, tmp_path, *, template=True, old_json=True, old_html=True):
+        root = _build_fixture_root(tmp_path, ["NVDA"])
+        data = root / "site" / "leaderradar" / "radar.json"
+        page = root / "site" / "leader_radar.html"
+        data.parent.mkdir(exist_ok=True)
+        if old_json:
+            data.write_bytes(b'{"generation":"previous"}\n')
+        if old_html:
+            page.write_bytes(b"<!doctype html><p>previous generation</p>\n")
+        if template:
+            (root / "templates").mkdir()
+            (root / "templates" / "leader_radar.html.j2").write_text(self._template)
+        return root, data, page
+
+    def _assert_no_staging_files(self, root):
+        assert not list((root / "site").glob(".leader_radar-*.html"))
+        assert not list((root / "site" / "leaderradar").glob(".radar-*.json"))
+
+    @pytest.mark.parametrize("template", [
+        "{% if %}",  # parse failure
+        "{{ 1 / 0 }}",  # render failure
+    ], ids=["parse", "render"])
+    @pytest.mark.parametrize("existing", [True, False], ids=["previous-pair", "first-build"])
+    def test_template_failure_preserves_published_outputs(self, tmp_path, capsys, template, existing):
+        root, data, page = self._fixture(tmp_path, old_json=existing, old_html=existing)
+        before = [p.read_bytes() if p.exists() else None for p in (data, page)]
+        (root / "templates" / "leader_radar.html.j2").write_text(template)
+
+        _run_build_no_lane(root)
+
+        assert [p.read_bytes() if p.exists() else None for p in (data, page)] == before
+        assert any(
+            line.startswith("::warning title=leader_radar::") and "unchanged" in line
+            for line in capsys.readouterr().out.splitlines()
+        )
+        self._assert_no_staging_files(root)
+
+    @pytest.mark.parametrize("old_json", [True, False], ids=["previous-pair", "page-only"])
+    def test_missing_template_with_existing_page_preserves_outputs(self, tmp_path, capsys, old_json):
+        root, data, page = self._fixture(tmp_path, template=False, old_json=old_json)
+        before = [p.read_bytes() if p.exists() else None for p in (data, page)]
+
+        _run_build_no_lane(root)
+
+        assert [p.read_bytes() if p.exists() else None for p in (data, page)] == before
+        assert any(
+            line.startswith("::warning title=leader_radar::")
+            and "template" in line and "unchanged" in line
+            for line in capsys.readouterr().out.splitlines()
+        )
+        self._assert_no_staging_files(root)
+
+    def test_missing_template_without_page_keeps_json_only_contract(self, tmp_path):
+        root, data, page = self._fixture(tmp_path, template=False, old_json=False, old_html=False)
+
+        payload = _run_build_no_lane(root)
+
+        assert json.loads(data.read_text()) == payload
+        assert not page.exists()
+        self._assert_no_staging_files(root)
+
+    def test_partial_page_preparation_does_not_touch_published_pair(self, tmp_path, capsys):
+        root, data, page = self._fixture(tmp_path)
+        before = [p.read_bytes() for p in (data, page)]
+
+        def fail_after_partial_write(path, html):
+            Path(path).write_text("<html><head>partial")
+            raise OSError("page preparation failed")
+
+        with patch("scripts.build_leader_radar.write_page", side_effect=fail_after_partial_write):
+            _run_build_no_lane(root)
+
+        assert [p.read_bytes() for p in (data, page)] == before
+        assert any(
+            line.startswith("::warning title=leader_radar::") and "unchanged" in line
+            for line in capsys.readouterr().out.splitlines()
+        )
+        self._assert_no_staging_files(root)
+
+    def test_success_publishes_same_vintage_with_root_relative_assets(self, tmp_path):
+        root, data, page = self._fixture(tmp_path)
+        data.chmod(0o644)
+        page.chmod(0o644)
+
+        payload = _run_build_no_lane(root)
+
+        assert json.loads(data.read_text()) == payload
+        html = page.read_text()
+        assert f"<time>{payload['built_at']}</time>" in html
+        assert f"<span>{payload['as_of']}</span>" in html
+        assert 'data-dbase' in html
+        assert 'src="data_base.js' in html
+        assert 'src="shared_shell_bridge.js?v=' in html
+        assert 'href="shared_shell.css?v=' in html
+        assert 'src="../' not in html
+        assert data.stat().st_mode & 0o777 == 0o644
+        assert page.stat().st_mode & 0o777 == 0o644
+        first = [p.read_bytes() for p in (data, page)]
+
+        _run_build_no_lane(root)
+
+        assert [p.read_bytes() for p in (data, page)] == first, "unchanged express rebake must remain byte-stable"
+        self._assert_no_staging_files(root)
+
+    def test_second_replacement_failure_warns_about_possible_mixed_vintage(self, tmp_path, capsys):
+        root, data, page = self._fixture(tmp_path)
+        previous_page = page.read_bytes()
+        real_replace = Path.replace
+
+        def fail_page_promotion(path, target):
+            if Path(target) == page:
+                raise OSError("page replacement failed")
+            return real_replace(path, target)
+
+        with patch.object(Path, "replace", fail_page_promotion):
+            payload = _run_build_no_lane(root)
+
+        assert json.loads(data.read_text()) == payload
+        assert page.read_bytes() == previous_page
+        warnings = [line for line in capsys.readouterr().out.splitlines()
+                    if line.startswith("::warning title=leader_radar::")]
+        assert any("publication failed" in line and "may differ" in line for line in warnings)
+        assert not any("unchanged" in line for line in warnings)
+        self._assert_no_staging_files(root)
