@@ -136,3 +136,14 @@ def test_the_edge_checker_rejects_a_stripe(bad):
 )
 def test_the_edge_checker_allows_marks_and_hairlines(ok):
     assert edge_stripes(ok) == []
+
+
+def test_the_dossier_verdict_box_keeps_its_even_hairline():
+    """theme.css gives .verdict a left accent; the dossier overrides it with an even border."""
+    assert ".verdict { border:1px solid var(--line); }" in (ROOT / "templates" / "sector.html.j2").read_text(encoding="utf-8")
+
+
+def test_the_act_now_lane_head_stripe_is_suppressed():
+    """theme.css paints a bar before .anv2-lane-hd; the China act-now board removes it."""
+    board = (ROOT / "templates" / "_china_act_now_board.html.j2").read_text(encoding="utf-8")
+    assert ".anv2-lane-hd::before { content: none; }" in board

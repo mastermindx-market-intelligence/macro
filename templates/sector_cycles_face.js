@@ -108,6 +108,7 @@
     if (r && r.next_turn) out.rhythmAgrees = r.next_turn === lt[1] && (!pj || !pj.nextTurn || pj.nextTurn === lt[1]);
     return out;
   }
+  SC_FACE.deck = function (key) { return dk(key).slice(); };   // [en, zh] copy, throws on a missing key
   SC_FACE.legFamily = legFamily;
   SC_FACE.projPast = projPast;
 SC_FACE.hazardPass = function (cell, ek, key) { return !!cell && cell.p != null && cell.source === 'MODEL' && cell.cell_verdict === 'PASS' && !!ek && !!ek.hazard && ek.hazard[key] === 'qualified_model_cell' && ek.model_cell_current_claim === 'parity_holds'; }

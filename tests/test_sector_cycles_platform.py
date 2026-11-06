@@ -850,6 +850,72 @@ def test_card_position_label_names_the_legacy_clock():
         assert out == [[want, "no number"], [want, "no number"]], (lang, out)
 
 
+@needs_node
+def test_card_position_label_reads_the_face_deck_when_present():
+    """#10777 review M5: the label's words come from SC_FACE.deck, not page literals."""
+    stub = ("var window = { SC_FACE: { deck: function (k) {"
+            " return { 'cycles.mode_osc_chip': ['CHIP', 'ZCHIP'], 'cycles.clock_read': ['READ', 'ZREAD'] }[k].slice(); } } };\n")
+    for lang, want in (("en", "CHIP · READ 37/100"), ("zh", "ZCHIP · ZREAD 37/100")):
+        out = _node(stub + _clocklab_src(lang, ["Cycle position 37/100"]) +
+                    "_clockLab(); console.log(JSON.stringify(labs.map(function (l) { return l.textContent; })));")
+        assert out == [want], (lang, out)
+
+
+def _sheet_src(steps):
+    """Run _wireSheetFocus over a stub sheet. Each step sets activeElement / state.focus,
+    then opens or closes; the result lists what received focus."""
+    fz = _freezone()
+    return ("var log = [];\n"
+            "function node(id, inside) { return { id: id, inside: inside, focus: function () { log.push(id); } }; }\n"
+            "var EL = { chip: node('chip', false), x: node('x', true), other: node('other', false), card: node('card:XLK', false) };\n"
+            "var body = { id: 'body' };\n"
+            "var sheetEl = { contains: function (a) { return !!(a && a.inside); } };\n"
+            "var document = { body: body, activeElement: body,"
+            " getElementById: function (i) { return i === 'sc-detail' ? sheetEl : null; },"
+            " querySelector: function (q) { log.push('q:' + q); return q.indexOf('XLK') >= 0 ? EL.card : null; } };\n"
+            "var sheetDetent = 'hidden', state = { focus: null };\n"
+            "function openSheet(d) { sheetDetent = d || 'half'; }\n"
+            "function closeSheet() { sheetDetent = 'hidden'; }\n"
+            + _extract_js_fn(fz, "_wireSheetFocus") + "\n_wireSheetFocus();\n"
+            "var steps = " + json.dumps(steps) + ";\n"
+            "steps.forEach(function (s) {"
+            " document.activeElement = s.active === 'body' ? body : EL[s.active];"
+            " if ('focus' in s) state.focus = s.focus;"
+            " if (s.op === 'open') openSheet('half'); else closeSheet(); });\n"
+            "console.log(JSON.stringify([log, sheetDetent]));")
+
+
+@needs_node
+@pytest.mark.parametrize("steps, focused", [
+    # keyboard: a chip opens the sheet, the user tabs to ✕ and closes -> focus back on the chip
+    ([{"active": "chip", "focus": "XLK", "op": "open"}, {"active": "x", "op": "close"}], ["chip"]),
+    # scrim / swipe close with focus left on body after a keyboard open -> the opener
+    ([{"active": "chip", "focus": "XLK", "op": "open"}, {"active": "body", "op": "close"}], ["chip"]),
+    # touch open (no focused opener) -> the record's chip or card is the fallback
+    ([{"active": "body", "focus": "XLK", "op": "open"}, {"active": "x", "op": "close"}],
+     ['q:.cyc-chip[data-id="XLK"], .cyc-card[data-id="XLK"]', "card:XLK"]),
+    # focus already moved to a control outside the sheet -> left where it is
+    ([{"active": "chip", "focus": "XLK", "op": "open"}, {"active": "other", "op": "close"}], []),
+    # an id that is not a plain token never reaches a selector
+    ([{"active": "body", "focus": 'a"]', "op": "open"}, {"active": "body", "op": "close"}], []),
+    # a second open while the sheet is up keeps the first opener
+    ([{"active": "chip", "focus": "XLK", "op": "open"}, {"active": "x", "focus": "XLE", "op": "open"},
+      {"active": "x", "op": "close"}], ["chip"]),
+])
+def test_every_sheet_close_returns_focus_to_its_opener(steps, focused):
+    """#10777 review M1: ✕, scrim and swipe close through closeSheet; none strands focus."""
+    log, detent = _node(_sheet_src(steps))
+    assert log == focused
+    assert detent == "hidden"
+
+
+def test_sheet_focus_wiring_runs_in_the_freezone():
+    fz = _freezone()
+    assert "\n  _wireSheetFocus();\n" in fz
+    text = _text("sector_cycles.js")
+    assert "  function openSheet(d) { setDetent(d || \"half\"); }\n  function closeSheet() { setDetent(\"hidden\"); }\n" in text
+
+
 def test_card_clock_label_runs_on_every_card_mount():
     fz = _freezone()
     assert "  var _mcd0 = mountCards;\n  mountCards = function () { _mcd0(); try { _clockLab(); } catch (e) {} };" in fz

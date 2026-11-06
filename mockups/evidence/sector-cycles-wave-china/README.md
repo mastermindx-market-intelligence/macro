@@ -161,5 +161,8 @@ python3 <scratch>/cap_wrap.py scripts/capture_page_evidence.py \
 - **Desk-table name links** (`.scc-desk-tbl .nm a:hover`). They sit in the map view's
   `#sc-desk-table` disclosure, which ships `hidden`, so their hover state was not
   captured.
+- **`/china.html` act-now board.** The board's lane-head override
+  (`.anv2-lane-hd::before { content: none; }`) is guarded by source tests only. This
+  pack holds no pixel cells of `/china.html`; that page's board is captured at P22.
 - **Production.** This is a local scratch render. The deployed page and its natural
   nightly update are owed at P22.

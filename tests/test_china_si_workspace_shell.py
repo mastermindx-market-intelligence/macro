@@ -166,6 +166,58 @@ def test_rail_selection_has_no_colored_edge() -> None:
     assert ".si-view-btn:focus-visible { outline:2px solid var(--link)" in s
 
 
+def _rail_rules(css: str) -> list[tuple[str, str]]:
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    return [(" ".join(m.group(1).split()), m.group(2))
+            for m in re.finditer(r"([^{}]*\.si-view-btn[^{}]*)\{([^{}]*)\}", css)]
+
+
+def rail_edge_problems(css: str) -> list[str]:
+    """Any edge accent on a rail button: a side or logical border, a box-shadow, a
+    gradient fill, or a pseudo-element. border-radius and a zero border are allowed."""
+    out = []
+    for sel, body in _rail_rules(css):
+        if re.search(r"::?(?:before|after)\b", sel):
+            out.append(f"{sel}: pseudo-element")
+        for decl in body.split(";"):
+            if ":" not in decl:
+                continue
+            prop, val = (x.strip().lower() for x in decl.split(":", 1))
+            if prop.startswith("border") and not prop.endswith("radius") and val not in ("0", "0px", "none"):
+                out.append(f"{sel}: {prop}")
+            elif prop == "box-shadow" and val not in ("none", "0", "unset", "initial"):
+                out.append(f"{sel}: box-shadow")
+            elif prop.startswith("background") and "gradient" in val:
+                out.append(f"{sel}: gradient")
+    return out
+
+
+def test_no_rail_rule_paints_an_edge_in_any_state() -> None:
+    rules = _rail_rules(_page())
+    sels = [sel for sel, _ in rules]
+    assert len(rules) >= 10, sels   # base, hover, on, focus and every breakpoint are in scope
+    assert any(".si-view-btn.on .si-vb-g" in sel for sel in sels)
+    assert rail_edge_problems(_page()) == []
+
+
+@pytest.mark.parametrize("bad", [
+    ".si-view-btn.on { border-left:3px solid var(--link); }",
+    "@media (max-width:880px) { .si-view-btn.on { border-bottom:2px solid var(--link); } }",
+    ".si-view-btn:hover { box-shadow: inset 3px 0 0 var(--link); }",
+    ".si-view-btn.on { background: linear-gradient(90deg, var(--link) 3px, transparent 3px); }",
+    ".si-view-btn.on::before { content:''; width:3px; background:var(--link); }",
+    ".si-view-btn.on .si-vb-g { border-inline-start: 2px solid var(--link); }",
+])
+def test_rail_edge_checker_rejects_each_stripe_form(bad: str) -> None:
+    assert rail_edge_problems(bad)
+
+
+def test_rail_edge_checker_admits_the_quiet_fill() -> None:
+    ok = (".si-view-btn.on { background:color-mix(in srgb, var(--link) 11%, var(--panel)); "
+          "border-radius:9px; border:0; box-shadow:none; }")
+    assert rail_edge_problems(ok) == []
+
+
 def test_board_universe_toggle_survives_on_mobile() -> None:
     """It used to hide under 880px as "redundant with the page-level one". With the
     board in Overview and the cycle map's toggle in The Map they are no longer the same

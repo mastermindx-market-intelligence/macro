@@ -2599,17 +2599,49 @@
   // clock (now.pos_v2) under the same "Cycle position" chip, so one fund showed 37/100 here and
   // 93/100 there. The card label now names its clock in the deck's words (cycles.clock_read).
   function _clockLab() {
+    var F = typeof window !== "undefined" && window.SC_FACE;
+    function w(k, fb) { try { return F && F.deck ? F.deck(k) : fb; } catch (e) { return fb; } }   // the deck's words
+    var chip = w("cycles.mode_osc_chip", ["Cycle position", "周期位置"]), read = w("cycles.clock_read", ["cycle read", "周期读数"]);
     var labs = document.querySelectorAll(".cc-leg-lab");
     for (var i = 0; i < labs.length; i++) {
       if (labs[i].hasAttribute("data-clock")) continue;
       var m = /(\d+)\/100$/.exec(labs[i].textContent);
       if (!m) continue;
       labs[i].setAttribute("data-clock", "read");
-      labs[i].textContent = L("Cycle position", "周期位置") + " · " + L("cycle read", "周期读数") + " " + m[1] + "/100";
+      labs[i].textContent = L.apply(null, chip) + " · " + L.apply(null, read) + " " + m[1] + "/100";
     }
   }
   var _mcd0 = mountCards;
   mountCards = function () { _mcd0(); try { _clockLab(); } catch (e) {} };
+  // The close button, scrim, swipe and Escape all close the China mobile sheet through closeSheet. Focus
+  // returns to the control that opened it (or, after a touch open, to the record's chip)
+  // instead of stranding inside the hidden sheet.
+  function _wireSheetFocus() {
+    var opener = null, rec = null, os0 = openSheet, cs0 = closeSheet;
+    function inSheet(a) { var s = document.getElementById("sc-detail"); return !!(a && s && s.contains && s.contains(a)); }
+    function loose(a) { return !a || a === document.body || inSheet(a); }
+    function back(x) {
+      var P = typeof window !== "undefined" && window.SC_PLATFORM;
+      if (!x) return false;
+      if (P && P.returnFocus) return P.returnFocus(x);
+      try { x.focus(); return true; } catch (e) { return false; }
+    }
+    openSheet = function (d) {
+      var a = document.activeElement;
+      if (sheetDetent === "hidden") opener = loose(a) ? null : a;
+      rec = state.focus || rec;
+      os0(d);
+    };
+    closeSheet = function () {
+      var a = document.activeElement, o = opener, id = rec;
+      var strand = loose(a);
+      cs0(); opener = null; rec = null;
+      if (!strand || back(o)) return;
+      if (id && /^[\w.-]+$/.test(id) && document.querySelector)
+        back(document.querySelector('.cyc-chip[data-id="' + id + '"], .cyc-card[data-id="' + id + '"]'));
+    };
+  }
+  _wireSheetFocus();
   function _platInit() {
     if (!_seam()) return;
     var P = window.SC_PLATFORM, host = document.getElementById("sc-cyclemap") || document.querySelector(".sc-page") || document.body;

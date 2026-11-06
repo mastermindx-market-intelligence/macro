@@ -540,10 +540,20 @@ def test_pure_render_seam_negatives():
 def test_export_surface_is_pinned():
     keys = _run([["__keys", []]])[0]
     assert keys == sorted([
-        "version", "_basePairs", "legFamily", "projPast", "hazardPass", "cellState", "clockLines", "stance",
+        "version", "_basePairs", "deck", "legFamily", "projPast", "hazardPass", "cellState", "clockLines", "stance",
         "phaseAge", "clocks", "hazard", "hazardChip", "rhythm", "readFace", "prov", "card", "timing", "rsTrail",
         "turnInspector", "trendRisk", "evidence", "methods", "focus"])
     assert re.search(r"SC_FACE = \{ version: 'sc-face\.v1' \}", SRC)
+
+
+def test_deck_accessor_returns_a_copy_of_the_pair_and_fails_closed():
+    """The page labels the card clock in the deck's words through SC_FACE.deck."""
+    got = _run([["deck", ["cycles.clock_read"]], ["deck", ["cycles.mode_osc_chip"]]])
+    assert got == [["cycle read", "周期读数"], ["Cycle position", "周期位置"]]
+    assert "SC_FACE.deck = function (key) { return dk(key).slice(); }" in SRC
+    page = (ROOT / "templates" / "sector_cycles.js").read_text(encoding="utf-8")
+    assert 'w("cycles.clock_read", ["cycle read", "周期读数"])' in page
+    assert 'w("cycles.mode_osc_chip", ["Cycle position", "周期位置"])' in page
 
 
 # ---- D31: light-theme series ink and selected chips -------------------------------------------------

@@ -7775,6 +7775,7 @@ jobs:
       - "templates/_aibrief_css.j2"
       - "templates/_all_tools_menu.html.j2"
       - "templates/_base_effect_strip.html.j2"
+      - "templates/_china_act_now_board.html.j2"
       - "templates/_cycle_locked_slot.html.j2"
       - "templates/_decision_card.html.j2"
       - "templates/_forming_narratives.html.j2"
