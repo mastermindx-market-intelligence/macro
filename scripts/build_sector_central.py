@@ -73,14 +73,7 @@ _SC_PAYLOAD_URL = "premiumdata/sector_central.json"
 #: and the template's own fold ids are pinned together by
 #: tests/test_sector_central_gate.py::test_lane_table_matches_build_site (and
 #: ::test_lane_ids_exist_in_template), so a drift is a red, not a silent leak.
-_ACTNOW_LANES = [
-    ("buy_now", "ab-buy-fold", False),
-    ("buy_soon", "ab-soon-fold", False),
-    ("on_the_run", "ab-run-fold", False),
-    ("take_profits", "ab-trim-fold", False),
-    ("hold", "dash-hold-fold", True),
-    ("avoid", "dash-hold-fold", True),
-]
+from lib.sector_action_preview import _ACTNOW_LANES, split_actnow  # noqa: E402
 
 
 def _gate_cfg() -> dict:
@@ -221,49 +214,6 @@ def _theme_tape_view(site: Path):
         return None
 
 
-def split_actnow(action_board: dict | None, preview: int, *, gated: bool = True):
-    """Tier-preview split for the Act-Now board. Returns (pgate, locked).
-
-    Pure in `action_board` — the caller hands the SAME dict to the page render,
-    which re-derives its own preview slices in-template from `pgate` so the lane
-    headings and empty-state branches keep reading the FULL lists (the counts and
-    the state are what stays free; only the names are paid).
-
-    `locked` is the [{lane, rows, wrap}] list the include consumes in its
-    rows-only shape, keyed by the `.actbody` id each row was sliced out of.
-
-    Returns (None, []) when nothing is withheld anywhere — a board at or under
-    the preview cap ships whole, because a wall over nothing is worse than no
-    wall, and an ungated page must stay byte-identical to the pre-gate one.
-    """
-    if not gated or not isinstance(action_board, dict):
-        return None, []
-    preview = max(0, int(preview))
-    locked: list[dict] = []
-    total = 0
-    hold_shown = 0
-    for key, dest, wrap in _ACTNOW_LANES:
-        rows = list(action_board.get(key) or [])
-        total += len(rows)
-        # Stand aside is ONE .actbody fed by hold+avoid, so the lane's budget is
-        # spent on `hold` first and `avoid` takes the remainder — exactly how the
-        # template slices it, or the two halves would disagree about what shipped.
-        budget = max(0, preview - hold_shown) if key == "avoid" else preview
-        shown = rows[:budget]
-        if key == "hold":
-            hold_shown = len(shown)
-        if len(rows) > len(shown):
-            locked.append({"lane": dest, "rows": rows[len(shown):], "wrap": wrap})
-    if not locked:
-        return None, []
-    n_locked = sum(len(L["rows"]) for L in locked)
-    pgate = {
-        "tier": "essential",
-        "payload": _SC_PAYLOAD_URL,
-        "preview": preview,
-        "actnow": {"preview": preview, "locked": n_locked, "total": total},
-    }
-    return pgate, locked
 
 
 def write_payload(env, site: Path, pgate: dict | None, locked: list[dict],

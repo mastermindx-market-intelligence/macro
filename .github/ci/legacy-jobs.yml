@@ -7248,6 +7248,8 @@ jobs:
       # job's venv line (the suite's own test_import_stays_light pins that).
       - name: tier-preview split contract (sector_central act-now board)
         run: python -m pytest tests/test_sector_central_gate.py tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py tests/test_sector_central_history.py tests/test_research_receiver_entry.py -q
+      - name: native Sector view preserves source dates and tier isolation
+        run: python -m pytest tests/test_sector_native_view.py -q
       # SIC-I07R: saved sector investigations through the existing watch/save
       # owner (templates/watchstore.js designated list, section 'si'). Runs as
       # its own step because test_sector_receiver_contracts.py pins the step
