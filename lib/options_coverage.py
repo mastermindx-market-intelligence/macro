@@ -43,7 +43,7 @@ SHAPE (schema ``options_coverage.v1``)
 """
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import date, timedelta
 
 SCHEMA = "options_coverage.v1"
 
@@ -166,3 +166,14 @@ def coverage_object(*, universe_name_en: str, universe_name_zh: str,
         "status": _status(asof, expected_session),
         "sources": list(sources or []),
     }
+
+
+def options_session_status(stamp: object, expected: date) -> str:
+    from lib import nyse_calendar
+    try:
+        session = date.fromisoformat(stamp) if isinstance(stamp, str) else None
+    except ValueError:
+        session = None
+    if session is None or session.isoformat() != stamp or not nyse_calendar.is_session(session) or session > expected:
+        return "unavailable"
+    return "latest_completed_session" if session == expected else "historical"

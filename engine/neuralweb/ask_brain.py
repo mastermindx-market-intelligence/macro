@@ -166,9 +166,10 @@ _OPTIONS_TRIGGER_TERMS = re.compile(
     r"\b(iv|implied\s+vol(?:atility)?|skew|gamma|gex|gamma\s+exposure|opex|"
     r"pin\s+risk|pinning|options?\s+flow|options|call\s+wall|put\s+wall|"
     r"dealer\s+positioning|open\s+interest|put[/-]call|vanna|charm|straddle|"
-    r"iv\s+rank|iv\s+percentile|term\s+structure)\b"
+    r"iv\s+rank|iv\s+percentile|term\s+structure|(?:sell|buy|short|long|write)\s+(?:a\s+)?(?:put|call)s?|"
+    r"strike\s+(?:put|call)|(?:put|call)\s+(?:strike|expiry|expiration))\b"
     r"|\b\d{1,2}dte\b|\bodte\b"
-    r"|(?:期权|期權|隐含波动率|隱含波動率|偏度|伽马|伽瑪|未平仓|未平倉)",
+    r"|(?:期权|期權|隐含波动率|隱含波動率|行权价|行權價|看跌期权|看漲期權|偏度|伽马|伽瑪|未平仓|未平倉)",
 )
 
 # Liquidity plumbing trigger terms — checked after factor/China, before options/generic.

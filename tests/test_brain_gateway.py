@@ -8078,3 +8078,54 @@ def test_sync_exhausted_recovery_does_not_ship_earlier_tool_narration(tmp_path):
     assert len(client.calls) == 3
     assert usage["input_tokens"] == 2798
     assert usage["output_tokens"] == 12000
+
+
+@pytest.fixture
+def vol_book():
+    return {"schema": "options_hub.vol/v1", "asof": "2026-10-30", "root": "GOOG",
+            "atm_iv": 30, "iv_rank_252": 0,
+            "term": [{"exp": "2026-11-27", "atm_iv": 32}],
+            "smile": [{"exp": "2026-11-27", "points": [{"strike": 280, "call_iv": 31, "put_iv": 33}]}]}
+
+
+def test_expiry_side_strike_and_source_clock_are_independent(monkeypatch, vol_book):
+    from datetime import date
+    from engine.neuralweb import options_evidence
+    from app import hub_data
+    monkeypatch.setattr(hub_data, "read_vol", lambda root: vol_book)
+    sel = {"expiration": "2026-11-27", "strike": 280, "right": "put"}
+    read = lambda params: options_evidence.hub_volatility("GOOG", params, date(2026, 11, 2))
+    selected = read(sel)
+    assert selected["status"] == "historical" and selected["iv_percentile_252"] == 0
+    assert selected["selected_smile_point"]["iv_pct"] == 33
+    assert read({**sel, "expiration": "2026-11-20"})["selected_smile_point"]["iv_pct"] is None
+    assert read({**sel, "strike": 285})["selected_smile_point"]["iv_pct"] is None
+    assert read({**sel, "expiration": "2026-11"})["expiry_observations"] == [
+        {"expiration": "2026-11-27", "atm_iv_pct": 32}]
+    assert "selected_smile_point" not in read({**sel, "expiration": "2026-11"})
+    vol_book["smile"] = vol_book["smile"] * 2
+    assert read(sel)["selected_smile_point"]["iv_pct"] is None
+    vol_book["root"] = "GOOGL"
+    assert read(sel)["status"] == "unavailable"
+
+
+def test_empty_success_and_resolved_member_boundary(tmp_path, monkeypatch):
+    from engine.neuralweb import brain_gateway
+    from app import hub_data
+    reads = []
+    def empty(root):
+        reads.append(root)
+        return {"schema": "options_hub.vol/v1", "asof": "2026-10-29", "root": root,
+                "atm_iv": None, "smile": [], "term": []}
+    monkeypatch.setattr(hub_data, "read_vol", empty)
+    monkeypatch.setattr(brain_gateway, "_resolve_tier", lambda uid, root: {
+        "status": "active", "tier": "pro", "features": ["terminal_live_options"] if uid == "member" else []})
+    def dispatch(uid):
+        return brain_gateway._dispatch_brain_tool("explain_options_context", {"ticker": "GOOG"},
+                                                  tmp_path, tmp_path, "", user_id=uid)
+    assert "volatility_evidence" not in dispatch("guest:sample") and not reads
+    assert "volatility_evidence" not in dispatch("paid_without_feature") and not reads
+    evidence = dispatch("member")["volatility_evidence"]
+    assert evidence["options_hub"]["status"] == "no_observations"
+    assert evidence["exact_contract_quote"] == "unavailable"
+    assert reads == ["GOOG"]

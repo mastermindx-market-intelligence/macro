@@ -194,3 +194,11 @@ def tier_rank() -> tuple[str, ...] | None:
         return canonical
     except Exception:  # noqa: BLE001 — unavailable catalog never widens delivery
         return None
+
+
+def has_terminal_options_feature(entitlement: dict) -> bool:
+    """The feature granted by billing, including the private unlimited tier."""
+    features = entitlement.get("features")
+    tier = entitlement.get("tier")
+    return ((isinstance(features, list) and "terminal_live_options" in features)
+            or (isinstance(tier, str) and tier.strip().lower() == "unlimited"))

@@ -228,3 +228,66 @@ def test_write_json_publishes_a_payload_containing_a_nan(tmp_path):
     assert written["rows"][0]["d_oi_pct"] is None
     assert written["asof"] == "2026-08-06"
     assert "NaN" not in path.read_text()   # never the invalid JSON literal
+
+
+def test_running_cross_root_rankings_match_every_full_prefix(monkeypatch):
+    """A later root can win, tie at the cutoff, or have no dated rows."""
+    import pandas as pd
+    from scripts import build_options_hub_nightly as builder
+
+    asof = "2026-10-30"
+    roots = ["GOOG", "GOOGL", "EMPTY", "SPY"]
+    def chain(root):
+        count = 0 if root == "EMPTY" else 120
+        return pd.DataFrame({
+            "root": [root] * count, "strike": range(100, 100 + count),
+            "right": ["P"] * count, "expiration": ["2026-11-27"] * count,
+            "bid_eod": [1.0] * count, "ask_eod": [1.2] * count,
+            "close": [1 + (i % 4) for i in range(count)],
+            "volume": [1 + ((i + len(root)) % 13) for i in range(count)],
+        })
+
+    def oi(root, day):
+        frame = chain(root)[["root", "strike", "right", "expiration"]].copy()
+        frame["date"] = day
+        frame["open_interest"] = [100 + (0 if day < asof else (i % 31) - 15)
+                                  for i in range(len(frame))]
+        return frame
+
+    monkeypatch.setattr(builder, "_load_eod_for_date", lambda root, *_: chain(root))
+    monkeypatch.setattr(builder, "_load_oi_for_date", lambda root, day, _: oi(root, day))
+    monkeypatch.setattr(builder, "_load_parquets",
+                        lambda tier, root, years, store: oi(root, "2026-10-29"))
+    original = builder.build_cross_root
+    visits = []
+    def counted(roots, *args, **kwargs):
+        visits.append(list(roots))
+        return original(roots, *args, **kwargs)
+    monkeypatch.setattr(builder, "build_cross_root", counted)
+
+    rankings = builder._CrossRootRankings(asof)
+    for idx, root in enumerate(roots):
+        rankings.include(root, None)
+        assert rankings.failed_root is None
+        assert (rankings.movers, rankings.hot) == original(roots[:idx + 1], asof, None)
+    assert visits == [[root] for root in roots]
+    assert len(rankings.movers["movers"]) == 100
+    assert len(rankings.hot["by_premium"]) == 100
+    assert len(rankings.hot["by_volume"]) == 50
+
+
+def test_unreadable_root_preserves_previous_cross_root_boards(tmp_path, monkeypatch):
+    from scripts import build_options_hub_nightly as builder
+
+    def broken(*_):
+        raise OSError("unreadable EOD partition")
+    monkeypatch.setattr(builder, "_load_eod_for_date", broken)
+    rankings = builder._CrossRootRankings("2026-10-30")
+    rankings.include("GOOG", None)
+    assert rankings.failed_root == "GOOG"
+    for name in ("oi_movers.json", "hot_contracts.json"):
+        (tmp_path / name).write_text("previous board")
+    builder._publish_aggregates(1, rankings, "2026-10-30", tmp_path, None, "",
+                                tmp_path, tmp_path, tmp_path)
+    for name in ("oi_movers.json", "hot_contracts.json"):
+        assert (tmp_path / name).read_text() == "previous board"

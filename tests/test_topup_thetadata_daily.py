@@ -2449,3 +2449,57 @@ def test_pilot_cli_bad_native_binding_refuses_before_daily_source(pilot_cli_case
     else:del c.config.transport.preflight
     with pytest.raises(SystemExit) as ex:topup.main(['--daily','--workers','1'])
     assert ex.value.code==2 and not c.calls and not c.fake.calls and not c.receipt.parent.exists()
+
+
+def test_topup_retains_enrolled_roots(tmp_path, monkeypatch):
+    from engine import options_universe
+    monkeypatch.setattr(options_universe, "gex_symbols", lambda: ["GOOGL"])
+    monkeypatch.setattr(options_universe, "baskets_universe", lambda: ["GOOG", "GOOGL", "NEW"])
+    (tmp_path / "_backfill_state.json").write_text(json.dumps({
+        "version": 1, "completed": {"BABA": ["2025"], "DEFUNCT": ["2020"], "../BAD": ["2026"]},
+    }))
+    for symbol, year in [("BABA", 2026), ("DEFUNCT", 2020)]:
+        folder = tmp_path / "eod" / symbol
+        folder.mkdir(parents=True)
+        (folder / f"{year}.parquet").touch()
+    roots = topup._maintained_roots(tmp_path, date(2026, 11, 2), topup._daily_universe())
+    assert all(roots.count(root) == 1 for root in ["GOOGL", "BABA"])
+    assert "DEFUNCT" not in roots and "../BAD" not in roots
+
+
+def test_terminal_catalog_filters_market_type_and_exact_share_class():
+    from engine.terminal_options_universe import match_catalogs
+    data = {"as_of": "2026-10-31", "symbols": {
+        "GOOG": {"sec": "Equities", "mkt": "NASDAQ"},
+        "GOOGL": {"sec": "Equities", "mkt": "NASDAQ"},
+        "OTHER": {"sec": "Equities", "mkt": "HKEX"},
+        "FUT": {"sec": "Futures", "mkt": "US"},
+        "ETF": {"sec": "Funds", "mkt": "US"},
+        "CBOECO": {"sec": "Equities", "mkt": "Cboe"},
+        "../BAD": {"sec": "Equities", "mkt": "US"},
+    }}
+    symbols, receipt = match_catalogs(data, {"GOOG", "OTHER", "FUT", "ETF", "CBOECO", "../BAD"}, date(2026, 11, 2))
+    assert symbols == {"GOOG", "ETF", "CBOECO"} and receipt["unmatched_roots"] == 1
+    with pytest.raises(ValueError, match="clock"):
+        match_catalogs(data, symbols, date(2026, 11, 30))
+
+
+def test_terminal_extension_uses_remaining_budget_and_reports_unreached(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    from engine import terminal_options_universe
+    monkeypatch.setattr(terminal_options_universe, "terminal_candidates",
+                        lambda _day, _deadline: ({"GOOG", "GOOGL", "THIN"}, {"matched_roots": 3}))
+    monkeypatch.setattr(topup._time, "monotonic", lambda: 300)
+    ctx = topup.RunContext(date(2026, 11, 2), date(2026, 10, 30), False)
+    present = {"eod_S": "complete", "oi_S": "complete", "greeks_S": "complete"}
+    def pool(store, roots, td, *, workers, deadline_min, ctx):
+        assert set(roots) == {"GOOG", "THIN"}
+        assert deadline_min == 2 and workers == 2
+        return {"GOOG": topup.RootResult("GOOG", "complete", present)}, True, False
+    monkeypatch.setattr(topup, "_run_daily_pool", pool)
+    prior = {"GOOGL": topup.RootResult("GOOGL", "already_present", present)}
+    start = datetime(2026, 11, 2, 22, tzinfo=timezone.utc)
+    receipt = topup._terminal_session_coverage(tmp_path, ctx, None, 2, 420, prior, start)
+    assert receipt["status"] == "partial" and receipt["not_reached"] == 1
+    assert receipt["full_settled_panel"] == 2 and receipt["inspected"] == 2
+    assert topup._terminal_session_coverage(tmp_path, ctx, None, 2, 290, prior, start)["status"] == "deferred"

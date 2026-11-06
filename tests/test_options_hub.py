@@ -565,14 +565,14 @@ class TestRouterSanitization:
     def test_valid_root_passes(self):
         """Valid roots must not raise."""
         from app.hub import _sanitize_root
-        for root in ["SPY", "QQQ", "IWM", "XLF", "SPXW", "BTC"]:
+        for root in ["SPY", "QQQ", "IWM", "XLF", "SPXW", "BTC", "^VIX", "BRK.B", "BF-B"]:
             assert _sanitize_root(root) == root
 
     def test_invalid_root_raises_400(self):
         """Invalid roots (path traversal, special chars) must raise HTTPException(400)."""
         from app.hub import _sanitize_root
         from fastapi import HTTPException as FastHTTPException
-        for bad in ["../etc/passwd", "SPY/GEX", "SPY;drop", "", "A" * 20]:
+        for bad in ["../etc/passwd", "SPY/GEX", "SPY;drop", "BRK..B", "", "A" * 20]:
             with pytest.raises(FastHTTPException) as exc_info:
                 _sanitize_root(bad)
             assert exc_info.value.status_code == 400

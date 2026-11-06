@@ -65,9 +65,12 @@ import json
 import logging
 import os
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from lib import nyse_calendar
+from lib.options_coverage import options_session_status
 
 log = logging.getLogger(__name__)
 
@@ -676,21 +679,57 @@ def _read_options_state(root: Path):
         return None, f"options_entry/state.parquet unreadable: {exc}"
 
 
+_FAMILIES = {
+    "gex": ("iv30", "gamma_regime", "gamma_regime_structurally_constant", "dist_to_flip_pct",
+            "wall_up_dist_pct", "wall_down_dist_pct", "max_pain_dist_pct", "pin_risk",
+            "gex_confirm_verdict", "vanna_hedge_5d", "opex_days"),
+    "skew": ("skew", "skew_5d_chg"),
+    "ivspread": ("ivspread_rel", "ivspread_5d_chg"),
+    "flow": ("net_doi", "doi_pc", "fresh_contracts", "fresh_premium_mn", "zerodte_share"),
+}
+
+
+def current_state(row: dict, expected: date) -> dict:
+    """A recent skew print cannot renew older GEX, volatility spread or flow evidence."""
+    row = dict(row)
+    statuses = {}
+    for family, fields in _FAMILIES.items():
+        status = options_session_status(row.get(f"src_{family}_asof"), expected)
+        statuses[family] = status
+        if status != "latest_completed_session":
+            for field in fields:
+                if field in row:
+                    row[field] = None
+    # These exposures come from a separately dated chain. The entry table does not carry
+    # that chain's clock. The row maximum and GEX summary date cannot qualify them.
+    for field in ("front7_charm_share", "front7_gex_share", "signed_vanna_pressure"):
+        if field in row:
+            row[field] = None
+    row["stored_evidence_quality"] = row.pop("evidence_quality", None)
+    count = sum(status == "latest_completed_session" for status in statuses.values())
+    missing = "stale" if "historical" in statuses.values() else "unavailable"
+    row["evidence_quality"] = (missing, "thin", "partial", "partial", "full")[count]
+    row["source_status"] = statuses
+    row["expected_session"] = expected.isoformat()
+    return row
+
+
 _OPTIONS_ROW_CAP = 100
 
 
 def _tool_read_options_entry_state(root: Path, params: dict) -> dict:
     """Read the options entry state snapshot (RO-7). Raw fields only — the table
     carries NO composites (RO-2); rows sort alphabetically to avoid implying rank."""
+    ticker = str(params.get("ticker") or "").upper()
+    expected = nyse_calendar.expected_last_session()
     df, err = _read_options_state(root)
     if df is None:
         return {"rows": [], "error": err}
-    ticker = params.get("ticker")
     if ticker:
-        df = df[df["ticker"] == str(ticker).upper()]
+        df = df[df["ticker"] == ticker]
     top_n = min(int(params.get("top_n") or 25), _OPTIONS_ROW_CAP)
     df = df.sort_values("ticker").head(top_n)
-    rows = json.loads(df.to_json(orient="records"))
+    rows = [current_state(row, expected) for row in json.loads(df.to_json(orient="records"))]
     return {"rows": rows, "n_total": int(len(df)),
             "note": "display-tier raw fields; iv_rank_* structurally null (A9); "
                     "gamma_regime structurally constant per name (audit #29)"}
@@ -701,13 +740,14 @@ def _tool_explain_options_context(root: Path, params: dict) -> dict:
     ticker = str(params.get("ticker") or "").upper()
     if not ticker:
         return {"error": "ticker required"}
+    expected = nyse_calendar.expected_last_session()
     df, err = _read_options_state(root)
     if df is None:
-        return {"error": err}
+        return {"ticker": ticker, "error": err}
     sub = df[df["ticker"] == ticker]
     if sub.empty:
         return {"ticker": ticker, "note": "no options state row (thin/absent coverage)"}
-    r = json.loads(sub.iloc[[0]].to_json(orient="records"))[0]
+    r = current_state(json.loads(sub.iloc[[0]].to_json(orient="records"))[0], expected)
     lines: list[str] = []
     if r.get("gex_confirm_verdict"):
         lines.append(f"GEX structure verdict: {r['gex_confirm_verdict']} (display-only).")
@@ -764,10 +804,11 @@ def _tool_list_options_contradictions(root: Path, _params: dict) -> dict:
         return {"contradictions": [], "error": f"board read failed: {exc}"}
     out: list[dict] = []
     st = df.set_index("ticker")
+    expected = nyse_calendar.expected_last_session()
     for t in sorted(buys):
         if t not in st.index:
             continue
-        r = st.loc[t]
+        r = current_state(st.loc[t].to_dict(), expected)
         reasons: list[str] = []
         try:
             if r.get("skew_5d_chg") is not None and float(r["skew_5d_chg"]) > 0:
