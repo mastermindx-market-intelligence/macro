@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SOUN-BULL-20260805",
-  "asof": "2026-11-04",
+  "asof": "2026-11-06",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.0,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 26.8
   },
   "geometry": {
-    "dist_to_stop_r": -0.566,
+    "dist_to_stop_r": -0.51,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 197.8,
-    "p1": -1.0442,
-    "p2": -0.5221,
+    "horizon_pct_used": 202.2,
+    "p1": -1.0067,
+    "p2": -0.5033,
     "p3": null,
-    "move_r": -1.566,
+    "move_r": -1.51,
     "mfe_r": 0.0,
     "mae_r": -1.566
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 89,
-  "tau": 1.9778,
+  "days_elapsed": 91,
+  "tau": 2.0222,
   "closed": true,
   "outcome": "NO_ENTRY"
 }
