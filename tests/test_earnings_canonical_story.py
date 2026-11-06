@@ -177,7 +177,9 @@ def test_closed_contracts_reject_claim_numeric_and_field_invention() -> None:
         {"body_html": "<p>Revenue reached 999 million.</p>"}, slot, {"validators": {}}
     )
     assert report["ok"] is False
-    assert "999" in report["metrics"]["unanchored"]
+    # The receipt keeps magnitude with the literal so million/billion swaps
+    # cannot pass as the same numeric claim.
+    assert report["metrics"]["unanchored"] == ["999 million"]
 
 
 def test_digest_rejects_rehashed_claim_to_wrong_fact_and_selection_disclosure() -> None:

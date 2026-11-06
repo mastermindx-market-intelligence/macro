@@ -1,0 +1,293 @@
+{
+  "schema": "capital_structure.share_source_admission.v1",
+  "version": "capital-structure-share-source-admission/1.0.0",
+  "task": "B0",
+  "masterplan": "research/capital_structure/e2e_20261013/MASTERPLAN.md §13 row B0 (seat-held; not on main at write time)",
+  "acceptance_rows": [
+    "A16",
+    "A17",
+    "A48",
+    "A49"
+  ],
+  "observed_at": "2026-10-14T06:46:33Z",
+  "observed_main_head": "2079f9bbc12cb87f7858fa25f07b04a4cb827306",
+  "admission": {
+    "admitted_input_family": "share_count_observations",
+    "admitted_input_schemas": [
+      "capital_structure.share_count_observation.v1",
+      "capital_structure.share_count_observation.v2"
+    ],
+    "admitted_producers": [
+      "share_count_truth",
+      "share_count_materializer"
+    ],
+    "caller_supplied_only": true,
+    "consumer_may_fetch": false,
+    "provider_proof": "absent",
+    "publication_state": "gated_off",
+    "retention_state": "hard_disabled",
+    "max_binding_support": "partial",
+    "support_without_observations": "unavailable",
+    "support_limits": [
+      "publication_not_activated",
+      "provider_conformance_unproven",
+      "concurrent_writer_unproven",
+      "retention_disabled",
+      "no_committed_share_ledger",
+      "collector_production_unverified",
+      "security_class_concept_level_only",
+      "weighted_average_eps_not_admitted",
+      "non_affiliate_shares_not_admitted"
+    ],
+    "observed_ledger_selects_denominator": false,
+    "accepted_dispositions": [
+      "observed"
+    ],
+    "non_observed_dispositions": {
+      "deferred": "visible as a rejected candidate with its state.reason; never a value",
+      "ambiguous": "visible as a contradicted candidate; multiple distinct values or contexts for one fact slot"
+    }
+  },
+  "metric_kinds": {
+    "common_shares_outstanding": {
+      "unit": "shares",
+      "share_basis": "issued_and_outstanding",
+      "concepts": [
+        "us-gaap:CommonStockSharesOutstanding",
+        "dei:EntityCommonStockSharesOutstanding"
+      ],
+      "concepts_kept_separate": true,
+      "security_match": "concept_semantic_common_stock",
+      "note": "Two named XBRL concepts, one metric kind; the cover-page DEI count and the balance-sheet count are separate facts with their own period_end and filing and are never silently substituted for each other."
+    },
+    "public_float": {
+      "unit": "USD",
+      "share_basis": null,
+      "concepts": [
+        "dei:EntityPublicFloat"
+      ],
+      "concepts_kept_separate": true,
+      "security_match": "not_security_specific",
+      "note": "A dollar value of non-affiliate equity at the float measurement date. It is never a share count and never stands in for non_affiliate_public_float shares, issued_and_outstanding or any other share basis (A16)."
+    }
+  },
+  "unadmitted_share_bases": {
+    "weighted_average_eps": "No admitted producer. us-gaap WeightedAverageNumberOfSharesOutstandingBasic/Diluted are not in share_count_truth.SUPPORTED_FACTS. The Fundamental Forensics catalog (config/fundamental_forensics/metrics/v1/metric_catalog.yaml) carries basic_weighted_average_shares and diluted_weighted_average_shares, but FIF is not an A17 share-source owner and is not admitted here; admitting it is a separate seat decision. A period-average EPS denominator is never an outstanding count (A16).",
+    "non_affiliate_public_float": "No admitted producer of a non-affiliate share count; dei:EntityPublicFloat is USD and is not converted to shares by price.",
+    "assumed_as_converted": "Owned by instrument terms (O1/O3), not by the share-count source.",
+    "scenario_incremental_issuance": "Owned by scenarios, not by the share-count source.",
+    "potentially_resalable_existing": "Owned by registration/resale terms, not by the share-count source.",
+    "authorized_unissued": "Charter/proxy evidence, not Company Facts.",
+    "reserved_for_issuance": "Instrument and plan terms, not Company Facts.",
+    "treasury": "Not in share_count_truth.SUPPORTED_FACTS.",
+    "preferred_as_converted_equivalent": "Instrument terms, not Company Facts."
+  },
+  "owners": [
+    {
+      "owner_id": "share_count_truth",
+      "path": "engine/capital_structure/share_count_truth.py",
+      "observed_sha256": "33dfd9903481e0976a526549512473ef0985fe83ccc538782ebcf36d79133829",
+      "role": "Pure normalization kernel: exact already-acquired Company Facts bytes plus a caller receipt to immutable v1 observations; never calls EDGAR, never selects a current count.",
+      "state": "code_only",
+      "admits": "observation_shape_v1"
+    },
+    {
+      "owner_id": "share_count_materializer",
+      "path": "engine/capital_structure/share_count_materializer.py",
+      "observed_sha256": "aece7c915641cc27f675305e219e175b8bb86c63ce8161609734a57659dffabb",
+      "role": "Pure authenticated Company Facts to v2 observations materializer over a selected signed coverage receipt and an injected verifier; reuses share_count_truth.SUPPORTED_FACTS.",
+      "state": "code_only",
+      "admits": "observation_shape_v2"
+    },
+    {
+      "owner_id": "share_count_publication",
+      "path": "engine/capital_structure/share_count_publication.py",
+      "observed_sha256": "c086d0ddba89148b5febc9fbaeb77195611cffec4b185bcec82bfc45ddf8933c",
+      "role": "Storage boundary: HMAC-signed external head selecting immutable receipt and ledger bytes.",
+      "state": "gated_off",
+      "admits": "nothing_until_activation_ruling"
+    },
+    {
+      "owner_id": "share_count_r2_conformance",
+      "path": "engine/capital_structure/share_count_r2_conformance.py",
+      "observed_sha256": "6ca177f71e15830581a60ec033ece23e4401e6e0b1d6b34fb0555bdea82c7a30",
+      "role": "Manual, main-only sequential R2 conditional-write witness.",
+      "state": "never_run",
+      "admits": "nothing_until_reviewed_passed_receipt"
+    },
+    {
+      "owner_id": "share_count_r2_concurrency",
+      "path": "engine/capital_structure/share_count_r2_concurrency.py",
+      "observed_sha256": "64a7524e6ec1ef51599ce067a394116abf454fc14a3a187e3d9a13fcde7c5e4d",
+      "role": "Manual Wave 9 concurrent-writer witness in a disposable namespace.",
+      "state": "never_run",
+      "admits": "nothing_until_reviewed_passed_receipt"
+    },
+    {
+      "owner_id": "share_count_retention",
+      "path": "engine/capital_structure/share_count_retention.py",
+      "observed_sha256": "af3d6d3cc5ed8a3fafba354839996b02e145c5febe7cf1facded0ceeb49b8f56",
+      "role": "Fail-closed pre-production retention planner behind an injected authenticated reader.",
+      "state": "hard_disabled",
+      "admits": "nothing"
+    },
+    {
+      "owner_id": "companyfacts_authenticated_read",
+      "path": "engine/capital_structure/companyfacts_authenticated_read.py",
+      "observed_sha256": "928aa8b7c6ce3df047ff5777292ff4fda8445f3830f92956d3fd158954312cdb",
+      "role": "Metadata-only authenticated read facade over the selected Company Facts generation receipt.",
+      "state": "code_only",
+      "admits": "generation_metadata_only"
+    },
+    {
+      "owner_id": "materialize_command",
+      "path": "scripts/materialize_capital_structure_share_counts.py",
+      "observed_sha256": "559e92c2c87c524e5e5c8f40e210d52c9e7d75e933a24156b1512aa5bea92171",
+      "role": "Production bridge command invoked by the daily capital_structure job only when the publication variable is true.",
+      "state": "gated_off",
+      "admits": "nothing_until_activation_ruling"
+    },
+    {
+      "owner_id": "retain_command",
+      "path": "scripts/retain_capital_structure_share_counts.py",
+      "observed_sha256": "9d7c836bdbf8f883fceb48a94cd97b72c0f9d67f75229b699fdef9dee1690935",
+      "role": "Hard-disabled retention shell; refuses remote listing or deletion.",
+      "state": "hard_disabled",
+      "admits": "nothing"
+    },
+    {
+      "owner_id": "conformance_operator_handoff",
+      "path": "research/CAPITAL_STRUCTURE_SHARE_COUNT_R2_CONFORMANCE_HANDOFF.md",
+      "observed_sha256": "496aa4293406e2529d4ba4f4d502aefda7af982dc0b14edbc90039bc6585f6b6",
+      "role": "Operator boundary and next steps for provider provisioning (sections 0, 6, 7).",
+      "state": "binding_doc",
+      "admits": "limitations_and_owner_actions"
+    },
+    {
+      "owner_id": "observation_v2_schema",
+      "path": "contracts/capital_structure_share_count_observation_v2.schema.json",
+      "observed_sha256": "4f3fceeb20ad98bd3f26e731794dd2c0fc4cbb7db5efcc49506683a0426c665c",
+      "role": "Closed v2 observation schema: metric.kind in {common_shares_outstanding, public_float}; every authority flag false.",
+      "state": "binding_contract",
+      "admits": "observation_shape_v2"
+    },
+    {
+      "owner_id": "conformance_workflow",
+      "path": ".github/workflows/capital-share-count-r2-conformance.yml",
+      "observed_sha256": "78719829acbb0c4895812ce7835871933d62ff0a475e1215f9f5aed874aecbfb",
+      "role": "Dispatch-only, main-only, protected Environment capital-share-count-r2-conformance.",
+      "state": "never_run",
+      "admits": "nothing"
+    },
+    {
+      "owner_id": "concurrency_workflow",
+      "path": ".github/workflows/capital-share-count-r2-concurrency.yml",
+      "observed_sha256": "1f1a847a2162acc2025e57e09da4a7781f47af3ea4f844aed43acc63c3037587",
+      "role": "Dispatch-only Wave 9 witness on the same protected Environment.",
+      "state": "never_run",
+      "admits": "nothing"
+    }
+  ],
+  "limitations": [
+    {
+      "limit_id": "publication_not_activated",
+      "fact": "The daily capital_structure step 'materialize authenticated capital-structure share counts (context-only)' runs only if vars.CAPITAL_STRUCTURE_SHARE_COUNT_PUBLICATION_ENABLED == 'true' (and its retention step additionally needs CAPITAL_STRUCTURE_SHARE_COUNT_RETENTION_ENABLED); independently, the capital_structure job (needs: collect) was skipped in every scheduled run this seat inspected, so no run evidences a materialized share-count generation.",
+      "evidence": ".github/workflows/daily.yml lines 1096-1100 and 1144-1152; gh run view <id> --json jobs for runs 38498969461, 38342984890, 38340204231 and 38196229068: capital_structure conclusion skipped"
+    },
+    {
+      "limit_id": "provider_conformance_unproven",
+      "fact": "The sequential R2 conformance workflow has zero runs and no receipt; the protected Environment is not provisioned.",
+      "evidence": "gh run list --workflow capital-share-count-r2-conformance.yml -> 0 runs; gh api repos/{repo}/environments -> no capital/share environment"
+    },
+    {
+      "limit_id": "concurrent_writer_unproven",
+      "fact": "The Wave 9 concurrent-writer workflow has zero runs and no receipt; publication activation is blocked on it.",
+      "evidence": "gh run list --workflow capital-share-count-r2-concurrency.yml -> 0 runs; conformance handoff section 6"
+    },
+    {
+      "limit_id": "retention_disabled",
+      "fact": "Retention is hard-disabled until provider-proven conditional delete, a shared publisher/retention fence and a head-write-incapable capability exist.",
+      "evidence": "scripts/retain_capital_structure_share_counts.py docstring; daily.yml retention step"
+    },
+    {
+      "limit_id": "no_committed_share_ledger",
+      "fact": "origin/main carries no share-count ledger or observation artifact under data/capital_structure; the only companyfacts path is a publish lock file.",
+      "evidence": "git ls-tree -r --name-only origin/main data/capital_structure"
+    },
+    {
+      "limit_id": "collector_production_unverified",
+      "fact": "sec_capital_structure_companyfacts is registered in scripts.collect (daily collect job, R2 generations), but this seat could not read its job logs (HTTP 404) and does not claim a selected production generation.",
+      "evidence": "daily.yml collect step comment; job log API 404 for the inspected runs"
+    },
+    {
+      "limit_id": "security_class_concept_level_only",
+      "fact": "Observations carry security_class.classification common_stock from XBRL concept semantics with raw_label null; no class-of-stock or CUSIP identifier, so multi-class issuers cannot be security-matched from Company Facts alone.",
+      "evidence": "share_count_truth.SUPPORTED_FACTS; v2 schema security_class enum"
+    },
+    {
+      "limit_id": "weighted_average_eps_not_admitted",
+      "fact": "No admitted producer emits weighted-average EPS shares.",
+      "evidence": "share_count_truth.SUPPORTED_FACTS"
+    },
+    {
+      "limit_id": "non_affiliate_shares_not_admitted",
+      "fact": "No admitted producer emits a non-affiliate share count; EntityPublicFloat is USD.",
+      "evidence": "share_count_truth.SUPPORTED_FACTS; v2 schema normalized.unit"
+    },
+    {
+      "limit_id": "unit_test_not_provider_proof",
+      "fact": "Green unit tests and schema validation of these owners prove code properties only, never provider behaviour, publication or coverage (A17, A49).",
+      "evidence": "conformance handoff sections 0 and 6"
+    }
+  ],
+  "consumer_rules": [
+    "B1 consumes caller-supplied observations through ShareInputs bound to one of admitted_input_schemas; it never fetches, never reads R2, never reads a local pointer and never calls a producer.",
+    "An observed ledger never selects the denominator by itself: selection requires an observed common_shares_outstanding fact whose period_end and filing are at or before as_of, with no contradicting candidate for the same instant.",
+    "public_float USD facts never substitute for any share basis, and no share basis substitutes for another; a unit or date mismatch refuses or yields contradicted, never the largest or newest value.",
+    "deferred and ambiguous observations stay visible as rejected or contradicted candidates with their reasons.",
+    "The binding support for share_count_observations is at most partial and always names support_limits; unavailable when no observations are supplied.",
+    "Every authority flag on consumed observations stays false; the result is context only (A48)."
+  ],
+  "owner_actions": [
+    {
+      "action": "Final independent code re-audit of the exact merged share-count bytes",
+      "owner": "operator / seat",
+      "performed_by_b0": false
+    },
+    {
+      "action": "Provision the protected Environment and disposable R2 bucket and credential, then dispatch the sequential conformance workflow with run_conformance=true",
+      "owner": "operator",
+      "performed_by_b0": false
+    },
+    {
+      "action": "Separately review and dispatch the Wave 9 concurrent-writer workflow",
+      "owner": "operator",
+      "performed_by_b0": false
+    },
+    {
+      "action": "Record a separate publication activation ruling before CAPITAL_STRUCTURE_SHARE_COUNT_PUBLICATION_ENABLED is set",
+      "owner": "operator / Chairman",
+      "performed_by_b0": false
+    }
+  ],
+  "forbidden": [
+    "activate any publication or migration variable",
+    "bypass trust, signature or authentication checks",
+    "add a signing, storage or authentication plane",
+    "inspect credentials or secrets",
+    "add a collector or spend SEC request reserves (500/20/20 under 540)",
+    "describe a unit test, schema or this record as provider proof"
+  ],
+  "not_admitted_owners": [
+    {
+      "owner": "fundamental_forensics",
+      "path": "config/fundamental_forensics/metrics/v1/metric_catalog.yaml",
+      "metrics": [
+        "common_shares_outstanding",
+        "basic_weighted_average_shares",
+        "diluted_weighted_average_shares"
+      ],
+      "reason": "Not in the A17 owner list. Its records are not share_count_observations and cannot bind through ShareInputs; a FIF share metric never selects or substitutes for a share basis without a separate admission decision."
+    }
+  ]
+}

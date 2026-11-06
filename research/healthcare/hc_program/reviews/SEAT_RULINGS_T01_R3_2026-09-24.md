@@ -1,0 +1,8 @@
+R-T01R3-01: everything accepted at 28b986d4 stays — the seven-status taxonomy, the bilingual label texts the frozen probes pin, the display-only tier, the collector contract. This round changes the READ PATH's qualification and the unavailable wording only.
+R-T01R3-02 (= D1F-B1/B2/B3 root cause): qualification is decided by the observation reader from the observation's own facts (selected capture present, pair consistent, not legacy, non-empty source generation) — never inferred from row counts, never left as None on a production path.
+R-T01R3-03 (= D1F-B1/B2): "no matching records" is a claim that the source WAS read and matched nothing; a torn pair, a cold start or a legacy cache may never render it. Complete-empty ≠ failed ≠ stale ≠ unrecognized ≠ not-observed ≠ unreadable.
+R-T01R3-04 (= D1F-B2 wording): a state in which nothing was attempted says "not yet observed", not "refresh failed"; a torn pair says "unreadable"; only a recorded failed refresh says "refresh failed". All three are `source_status=UNAVAILABLE`, tone mute, tier unchanged.
+R-T01R3-05 (= D1F-B3): `capture time unknown` is a disclosure for the LEGACY cache only; a qualified capture always knows its capture time and publishes `freshness.capture_qualified = True`.
+R-T01R3-06: the frozen probe files are law over this packet's wording — if a pinned string differs from the sentences above, match the pinned string and quote the probe.
+R-T01R3-07: seam-level tests build real parquet+sidecar pairs through the collector's public `save_shortage_observation`; unit tests that hand-build a `capture` dict do not discharge this ruling.
+R-T01R3-08: commit and push after every numbered step; keep each exec under 12 minutes.

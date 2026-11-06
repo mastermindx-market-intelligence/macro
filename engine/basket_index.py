@@ -137,13 +137,23 @@ def _splice_fresher_tail(ticker: str, deep: pd.DataFrame, fresh: pd.DataFrame,
     tail = fresh[fresh.index > deep.index.max()]
     if tail.empty:
         return deep
-    factor = 1.0
     common = deep.index.intersection(fresh.index)
-    if len(common):
+    if not len(common):
+        # Without a matched price observation, the bases are unrelated; joining
+        # the two series at factor=1 would fabricate a seam return.
+        log.warning("basket member %s: newer %s lacks a shared price anchor; skip tail",
+                    ticker, store)
+        return deep
+    try:
         d = common.max()
         dc, fc = float(deep.loc[d, "close"]), float(fresh.loc[d, "close"])
-        if np.isfinite(dc) and np.isfinite(fc) and fc > 0 and dc > 0:
-            factor = dc / fc
+    except (KeyError, TypeError, ValueError):
+        return deep
+    if not (np.isfinite(dc) and np.isfinite(fc) and dc > 0 and fc > 0):
+        log.warning("basket member %s: newer %s has no valid shared price; skip tail",
+                    ticker, store)
+        return deep
+    factor = dc / fc
     tail = tail.copy()
     px = [c for c in ("open", "high", "low", "close") if c in tail.columns]
     tail[px] = tail[px] * factor
@@ -158,8 +168,9 @@ def _load_member_ohlcv(ticker: str) -> pd.DataFrame | None:
     open), then the yahoo store (close+volume → high/low/open synthesised as the close). Cached.
     The china_stocks fallback never collides with the US stores (A-share tickers carry a .SS/.SZ
     suffix), so it makes the basket machinery China-capable without touching the US path.
-    Deep store preferred but recency-probed against the first existing fallback (index-only read)
-    and a stale/empty deep tape is healed from it."""
+    Deep store preferred, but all existing fallback stores are recency-probed
+    (index-only read); the freshest usable tail wins, preserving provider order
+    on equal timestamps. A stale/empty deep tape is healed without misdating it."""
     if ticker in _CACHE:
         return _CACHE[ticker]
     out: pd.DataFrame | None = None
@@ -184,19 +195,36 @@ def _load_member_ohlcv(ticker: str) -> pd.DataFrame | None:
                     deep_last = (di.tz_localize(None) if di.tz is not None else di).max()
                 except Exception:  # noqa: BLE001
                     deep_last = pd.NaT
-                for fpath, store in ((sp, "data/stocks"), (cp, "data/china_stocks"),
-                                     (yp, "data/yahoo")):
+                # A present but stale stocks file must not mask a later Yahoo bar.
+                # The 2026-10-16 renderer census found 151 live basket members
+                # where the *first* probeable fallback ended before the last
+                # Yahoo observation.  Rank lightweight index probes by actual
+                # timestamp; on equal dates keep the richer stocks/China source.
+                # Read full OHLCV only for the best usable candidate, never
+                # every fallback's price columns on the common fresh path.
+                candidates = []
+                for priority, (fpath, store) in enumerate((
+                    (sp, "data/stocks"), (cp, "data/china_stocks"),
+                    (yp, "data/yahoo"),
+                )):
                     if not fpath.exists():
                         continue
                     fb_last = _parquet_last_date(fpath)
-                    if fb_last is None:
-                        continue  # empty/unreadable candidate has no opinion — next store
+                    if fb_last is None or (not pd.isna(deep_last) and fb_last <= deep_last):
+                        continue
+                    candidates.append((fb_last, -priority, fpath, store))
+                for _date, _priority, fpath, store in sorted(candidates, reverse=True):
                     try:
-                        if pd.isna(deep_last) or fb_last > deep_last:
-                            out = _splice_fresher_tail(ticker, out, pd.read_parquet(fpath), store)
+                        candidate = _splice_fresher_tail(
+                            ticker, out, pd.read_parquet(fpath), store,
+                        )
+                        if len(candidate) > len(out):
+                            out = candidate
+                            break
                     except Exception as e:  # noqa: BLE001
                         log.debug("basket member %s: tail-splice skipped: %s", ticker, e)
-                    break  # first PROBEABLE fallback decides — the fall-through preference order
+                    # A timestamp probe is not proof that a full parquet has a
+                    # usable close; try the next *already probed* fresher source.
             # an EMPTY deep-store file must not shadow a full fallback tape — fall through
         if out is None:
             if sp.exists():

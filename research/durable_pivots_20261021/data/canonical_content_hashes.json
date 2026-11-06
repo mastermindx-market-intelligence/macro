@@ -1,0 +1,202 @@
+{
+  "SPY": {
+    "rows": 8481,
+    "sha256": "8f8936895ec370eaea818c3b24a7393e04c18e1d2bffa996928fec45ce436973"
+  },
+  "QQQ": {
+    "rows": 6939,
+    "sha256": "b1b38b0b172857f8db32da448533d522083e533328a576a0cbc5b417b8a15dac"
+  },
+  "IWM": {
+    "rows": 6631,
+    "sha256": "f096b91a840355e5a2bb63db53b530e6c78b54963c59d55835363c713e39e042"
+  },
+  "DIA": {
+    "rows": 7225,
+    "sha256": "6c4421258984140ce5c4a54bd2f4b953feb1cdcec6d75dafef3f11ceb819d77d"
+  },
+  "XLK": {
+    "rows": 6991,
+    "sha256": "978e2eda70edba64365734c6fff80c1b7054aabb94fee379684ff9f427ec9d8e"
+  },
+  "XLF": {
+    "rows": 6991,
+    "sha256": "a978c9928d169d01f3df17e9405ea482630d1498854059ea649f9c954876f66d"
+  },
+  "XLE": {
+    "rows": 6991,
+    "sha256": "234933bff3cb5a84ac720fc98dd7d35aed691b401b3d267aced6bd9682b22619"
+  },
+  "XLI": {
+    "rows": 6991,
+    "sha256": "63ce4e13ae0165963d8cdf61d1f17e360335f8aacd7cd47b918b03bf2064197e"
+  },
+  "XLY": {
+    "rows": 6991,
+    "sha256": "7429e5cf2f4acfd55b148347a36ec45e56283e735d6413355154e5c10b4bb808"
+  },
+  "XLP": {
+    "rows": 6991,
+    "sha256": "af80ed418ce02a0f00e1c7ee8a0deab2abb478f43536b01b0d99d140c29d6275"
+  },
+  "XLU": {
+    "rows": 6991,
+    "sha256": "d3666b3ebb1d9eb1ed6ca4189a3d88b23d2aea8c33521e5aaa5a6a7163527fe5"
+  },
+  "XLV": {
+    "rows": 6991,
+    "sha256": "b8c8e78cea759aab1363757ec2bdbd56d59b103c465303f05e9c0f384ae2c257"
+  },
+  "XLB": {
+    "rows": 6991,
+    "sha256": "d069fa0bc36fa55c9c2893e32deb9664c091f9bc143b26cd676034dcad526808"
+  },
+  "XLRE": {
+    "rows": 2766,
+    "sha256": "10d7d9ea0bfa3e2ec85728d218164c9095c0c09cc1fd54459e4221e1b3b0bff7"
+  },
+  "XLC": {
+    "rows": 2088,
+    "sha256": "429f1a58987f921ec4200993e2a30fb8e2227f66ffe9cd9aa9d14b09a4619da9"
+  },
+  "SOXX": {
+    "rows": 6347,
+    "sha256": "9d2a1b9e280fa6861a7c11dc7949069f43a4b908bcc90bb625786ba928837a38"
+  },
+  "AAPL": {
+    "rows": 11548,
+    "sha256": "7fd46f2324e69345ede145041f02e3b64d2e62091f0451aae1aeb66f85284ece"
+  },
+  "MSFT": {
+    "rows": 10222,
+    "sha256": "a8f357fc9be8874f9745ac188665492cfb2b3372588197f6f945156976de7eab"
+  },
+  "NVDA": {
+    "rows": 6971,
+    "sha256": "3ca2a2d7efebb080c2a0d71f56fb87889b35c4c61d460d0b15f8edb08c2aa9a9"
+  },
+  "AMD": {
+    "rows": 11736,
+    "sha256": "1f7192e2f81e67d6aad6fd8e91b4e9a8835ba188bf742a0b7ed52c21a7bfacf7"
+  },
+  "INTC": {
+    "rows": 11736,
+    "sha256": "cfbc14e4eaeb41bb835e502e2647af4cbb61176e9be50d0dd11e6ada40e8c3d9"
+  },
+  "MU": {
+    "rows": 10671,
+    "sha256": "53aa07d54af90a1b4eb69416f755be3442d701e3cb637862127d21cd1e043ac4"
+  },
+  "AMZN": {
+    "rows": 7396,
+    "sha256": "5ccc6509c1d0c0660aa7aaa0cca5e1317c9015677239ed79785cfdf61b680e5a"
+  },
+  "GOOGL": {
+    "rows": 5570,
+    "sha256": "a4dce85dc8953086171644b8783378969e714db7ff927de5cfa08860778b8868"
+  },
+  "META": {
+    "rows": 3618,
+    "sha256": "f10c0ce149c3434c0180ba03aa82f108788e9aa014887b2e352c8c54a51d9d78"
+  },
+  "TSLA": {
+    "rows": 4095,
+    "sha256": "f2cf7f3147d9515272ca35e001b84bbdb4549b221fde024454d6a25450ea8ccc"
+  },
+  "JPM": {
+    "rows": 11736,
+    "sha256": "65857f7b69b6cfda141a56beb83bc63c6100aea0e518c2e322912195ae63e03f"
+  },
+  "XOM": {
+    "rows": 11788,
+    "sha256": "d47e39fb950cd354e60fc791b47fec5c02a82c515eb719f88bacfc77537daf62"
+  },
+  "CVX": {
+    "rows": 11788,
+    "sha256": "d13eab1066ab9061f7fbf27e360d27400a87b516a4b92206b09b6486069ac88d"
+  },
+  "CAT": {
+    "rows": 11788,
+    "sha256": "00cf7b62b65aa9e70ac1d7e75901437a8832c91bc37c3e725e0ccff31749c06e"
+  },
+  "FCX": {
+    "rows": 7865,
+    "sha256": "47c8677bb7683967c1ce9bc63d815213f5fa7dfc0811929f5c395b0153d659b9"
+  },
+  "NEM": {
+    "rows": 11736,
+    "sha256": "3b5084931da3e299d7d89ca9d34e8530b0f4208085afcb68e2a57a72b4339ea6"
+  },
+  "KO": {
+    "rows": 11788,
+    "sha256": "50e60f4fd48ea327a2c0b51e1dbe2410e3afdd29aff41dc2f3b3b669f630deb5"
+  },
+  "PEP": {
+    "rows": 11788,
+    "sha256": "736f5d6a8cdc73a8f9bccfe4c3ca9e1bbccb718a747587b2ba777b65213af2bb"
+  },
+  "WMT": {
+    "rows": 11788,
+    "sha256": "c2219a1342b1f9ea3ef9cae3f1c6dbb604ef8448f7f6eb5222bd8f6dd05e6299"
+  },
+  "WM": {
+    "rows": 9646,
+    "sha256": "8e1b8e9279dfe530ea08084af3c9b477e2d2a78e5ee46f785b6d41c71b57f4ac"
+  },
+  "JNJ": {
+    "rows": 11788,
+    "sha256": "0ffb25ebff6677d59513c4bc5babcee6ecffd5cdf6a72bb97ff506e4c6340bd2"
+  },
+  "PFE": {
+    "rows": 11788,
+    "sha256": "0e7ba192293b57254e35431eb6682a9a4f24ac3f1c39c97fb78b9f32113bcea9"
+  },
+  "GLD": {
+    "rows": 5506,
+    "sha256": "49ada85ac1539c33ad9110a8c1806207f19de34edd840bb0b810dfdb197b0164"
+  },
+  "SLV": {
+    "rows": 5144,
+    "sha256": "78a7282b9833898062a84b83f6392e143a118a25193140891fd4cb18042e9e72"
+  },
+  "USO": {
+    "rows": 5157,
+    "sha256": "37b08ffd2a17075783e1cb4442c6bd9aea1c2991929fc91d751134e0bcaf99a2"
+  },
+  "TLT": {
+    "rows": 6088,
+    "sha256": "ab9b471f766db6ab9651e149817c870b57f9ca63e99d09f270950d582558c7a0"
+  },
+  "IEF": {
+    "rows": 6088,
+    "sha256": "3d1093c117b970752820c769413d41feb5b813cb756c9354e8f5924a1f1bd90f"
+  },
+  "HYG": {
+    "rows": 4906,
+    "sha256": "bc6a5bce36fbf10f84a12f795c897db49c45e82aa41802e6fea6275963bdba3e"
+  },
+  "EEM": {
+    "rows": 5910,
+    "sha256": "6976c96212d524f64790be28b25359b0c1e0eea0deab6155b5f3ddeeb7c4d26c"
+  },
+  "EFA": {
+    "rows": 6316,
+    "sha256": "ded8ccb58899e60944d189b32678ec1475f2818d72fa88a0db3e7747ffef8db3"
+  },
+  "EWJ": {
+    "rows": 7690,
+    "sha256": "268f0ced9dc1a4f1aff75d9a8e6f873531973f19b168495c20a2fe520373e7f8"
+  },
+  "FXI": {
+    "rows": 5535,
+    "sha256": "7f7f4883730cc0f386c9de794e15c7d766126c54c3fd31a10cc091037c49419d"
+  },
+  "BTC-USD": {
+    "rows": 4405,
+    "sha256": "624583279b655d5df6fcdd9f9ed27c77b4d9e316f2d54bab77fb174e9aa79f45"
+  },
+  "ETH-USD": {
+    "rows": 3256,
+    "sha256": "0c1b76d7f9c4f3c0fec2557d018b46fbf0f712f43294be790f2860dc7b984add"
+  }
+}

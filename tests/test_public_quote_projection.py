@@ -14,6 +14,7 @@ import math
 import pytest
 
 from app.public_quote_projection import (
+    project_extended_quote,
     DEFAULT_LIVE_MAX_AGE_SECONDS,
     DEFAULT_STALE_MAX_AGE_SECONDS,
     PublicQuote,
@@ -24,6 +25,109 @@ from app.public_quote_projection import (
     project_regular_quote,
     session_of,
 )
+
+
+def _extended_row(instant="2026-10-23T12:00:00+00:00", **changes):
+    from datetime import datetime
+    now = datetime.fromisoformat(instant).timestamp()
+    row = {
+        "extPrice": 99, "extAsOfMs": now * 1000 - 1000.25,
+        "extTs": math.floor((now * 1000 - 1000.25) / 1000),
+        "extSession": "pre", "extMarketSession": "pre",
+        "extSource": "polygon-snapshot-rt", "extBasis": "REALTIME",
+        "extRegularClose": 100, "extRegularSessionDate": "2026-10-22",
+        "extRegularSource": "daily_file", "extChg": 999,
+        "last": 100, "prevClose": 90, "chg": 100 / 9,
+        "regularSessionDate": "2026-10-22", "marketSession": "pre",
+        "ts": now - 72000, "basis": "DELAYED_15M",
+    }
+    row.update(changes)
+    return row, now
+
+
+def test_extended_tuple_preserves_regular_sign_clock_and_debranding():
+    row, now = _extended_row()
+    regular = project_regular_quote(row, ticker="NVDA", now=now, published_at="")
+    ext = project_extended_quote(row, now=now)
+    assert regular.change_pct > 0
+    assert ext["change_pct"] == -1
+    assert ext["completed_regular_reference"] == {"price": 100, "session_date": "2026-10-22"}
+    assert ext["as_of_ms"] == row["extAsOfMs"]
+    assert ext["observed_at"].endswith("58.999Z")
+    assert ext["freshness"] == "live"
+    assert not any("source" in k or "basis" in k for k in ext)
+
+
+@pytest.mark.parametrize("changes", [
+    {"extPrice": 0}, {"extPrice": True}, {"extPrice": 10**1000}, {"extAsOfMs": None},
+    {"extAsOfMs": float("inf")}, {"extTs": None}, {"extTs": 1},
+    {"extRegularClose": 0}, {"extRegularSessionDate": "2026-10-23"},
+    {"extRegularSource": "manifest"}, {"extSession": "post"},
+    {"extMarketSession": "post"}, {"extSource": "webull"},
+    {"extSource": "yahoo_unofficial"}, {"extSource": "alpaca"},
+    {"extSource": []}, {"extSource": "unknown"}, {"extBasis": []},
+])
+def test_extended_invalid_inputs_leave_regular_fallback(changes):
+    row, now = _extended_row(**changes)
+    assert project_extended_quote(row, now=now) is None
+    assert project_regular_quote(row, ticker="NVDA", now=now, published_at="").price == 100
+
+
+@pytest.mark.parametrize("offset", [-0.001, 120.001])
+def test_extended_clock_rejects_future_and_stale_despite_fresh_regular(offset):
+    row, now = _extended_row()
+    row.update(extAsOfMs=(now - offset) * 1000, extTs=math.floor(now - offset), ts=now)
+    assert project_extended_quote(row, now=now, max_age_seconds=120) is None
+
+
+@pytest.mark.parametrize("instant,reference,phase,accepted", [
+    ("2026-10-23T13:29:59+00:00", "2026-10-22", "pre", True),
+    ("2026-10-23T13:30:00+00:00", "2026-10-22", "pre", False),
+    ("2026-10-26T12:00:00+00:00", "2026-10-23", "pre", True),
+    ("2026-10-24T12:00:00+00:00", "2026-10-23", "pre", False),
+    ("2026-07-03T12:00:00+00:00", "2026-07-02", "pre", False),
+    ("2026-10-24T04:00:01+00:00", "2026-10-23", "post", False),
+    ("2026-11-02T13:00:00+00:00", "2026-10-30", "pre", True),
+    ("2026-03-09T12:00:00+00:00", "2026-03-06", "pre", True),
+    ("2026-11-27T18:00:01+00:00", "2026-11-27", "post", True),
+    ("2026-11-27T22:00:00+00:00", "2026-11-27", "post", False),
+    ("2026-10-23T20:00:01+00:00", "2026-10-23", "post", True),
+    ("2029-01-02T13:00:00+00:00", "2028-12-29", "pre", False),
+])
+def test_extended_actual_session_boundaries(instant, reference, phase, accepted):
+    row, now = _extended_row(instant, extRegularSessionDate=reference,
+                             extSession=phase, extMarketSession=phase)
+    # Exactly at a post-open boundary the candidate must also be post-market.
+    row.update(extAsOfMs=(now - 0.5) * 1000, extTs=math.floor(now - 0.5))
+    assert (project_extended_quote(row, now=now) is not None) is accepted
+
+
+def test_extended_uses_own_market_session_and_retains_delayed_basis():
+    row, now = _extended_row("2026-11-27T19:00:00+00:00", extRegularSessionDate="2026-11-27",
+        extSession="post", extMarketSession="post", marketSession="rth", extBasis="DELAYED_15M")
+    assert project_extended_quote(row, now=now)["freshness"] == "delayed"
+
+
+def test_extended_old_session_print_and_ns_masquerading_as_ms_rejected():
+    row, now = _extended_row("2026-10-23T13:30:01+00:00")
+    assert project_extended_quote(row, now=now) is None
+    row, now = _extended_row()
+    row.update(extAsOfMs=row["extAsOfMs"] * 1e6, extTs=math.floor(row["extAsOfMs"] * 1000))
+    assert project_extended_quote(row, now=now) is None
+
+
+def test_extended_deadline_is_own_age_or_actual_phase_end():
+    row, now = _extended_row()
+    assert project_extended_quote(row, now=now, max_age_seconds=120)["valid_until_ms"] == row["extAsOfMs"] + 120000
+    row, now = _extended_row("2026-10-23T13:29:59+00:00")
+    assert project_extended_quote(row, now=now)["valid_until_ms"] == (now + 1) * 1000
+    assert project_extended_quote(row, now=now + 1) is None
+    row, now = _extended_row("2026-11-27T21:59:59+00:00", extRegularSessionDate="2026-11-27",
+                             extSession="post", extMarketSession="post")
+    assert project_extended_quote(row, now=now)["valid_until_ms"] == (now + 1) * 1000
+    assert project_extended_quote(row, now=now + 1) is None
+    row, now = _extended_row()
+    assert project_extended_quote(row, now=row["extAsOfMs"] / 1000 + 120, max_age_seconds=120) is None
 
 NOW = 1787871758.0 + 5
 CLOSED_NOW = 1787871758.0 + 5 * 3600
