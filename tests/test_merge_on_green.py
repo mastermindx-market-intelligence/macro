@@ -10585,3 +10585,106 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# --- live authorization diagnostics (Policy Monitor release recovery) ----------
+
+
+@pytest.mark.parametrize(
+    ("status", "payload", "headers", "expected"),
+    (
+        (
+            403,
+            {"message": "Resource not accessible by integration"},
+            {"x-ratelimit-remaining": "412"},
+            ("HTTP 403", "Resource not accessible by integration"),
+        ),
+        (
+            403,
+            {"message": "Forbidden"},
+            {
+                "x-ratelimit-remaining": "0",
+                "x-ratelimit-limit": "5000",
+                "x-ratelimit-reset": "1793928600",
+            },
+            ("primary API quota", "0 of 5000 requests left", "1793928600"),
+        ),
+        (
+            403,
+            {"message": "You have exceeded a secondary rate limit."},
+            {"retry-after": "60"},
+            ("secondary (burst) rate limit", "retry-after 60s"),
+        ),
+        (
+            403,
+            None,
+            {"x-ratelimit-remaining": "412"},
+            ("HTTP 403",),
+        ),
+        (429, None, {}, ("HTTP 429",)),
+        (500, {"message": "Server Error"}, {}, ("HTTP 500", "Server Error")),
+        (200, [], {}, ("HTTP 200",)),
+    ),
+    ids=(
+        "permission",
+        "primary-header-evidence",
+        "secondary-retry-after",
+        "unexplained-forbidden",
+        "unexplained-429",
+        "server-failure",
+        "malformed-success",
+    ),
+)
+def test_live_authorization_failure_reports_cause_without_changing_admission(
+    monkeypatch, capsys, status, payload, headers, expected
+):
+    calls = []
+
+    def fail_read(method, url, token, data=None):
+        calls.append((method, url, token, data))
+        return status, payload
+
+    monkeypatch.setattr(MOG, "_request", fail_read)
+    monkeypatch.setattr(MOG, "_LAST_RESPONSE_HEADERS", headers)
+    budget = _authorized_budget(max_refreshes=1)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "test-write-credential", budget, "stale"
+    ) == "authorization-unreadable"
+    assert calls == [
+        ("GET", f"{MOG.GITHUB_API}/repos/acme/widgets/pulls/1", "test-write-credential", None)
+    ], "the same credential and endpoint must fail closed before any write"
+    assert budget.refresh_attempts_used == 0
+    assert budget.refreshes_used == 0
+    out = capsys.readouterr().out
+    for fragment in expected:
+        assert fragment in out
+    if not headers.get("retry-after") and headers.get("x-ratelimit-remaining") != "0":
+        assert "API quota" not in out
+        assert "secondary (burst)" not in out
+
+
+@pytest.mark.parametrize("quota", (False, True), ids=("permission", "quota"))
+def test_live_authorization_diagnostic_redacts_and_bounds_untrusted_response(
+    monkeypatch, capsys, quota
+):
+    credential = "test-private-write-credential"
+    message = (
+        f"Forbidden {credential}\r\n::error title=injected::"
+        "\x1b[31m %0A forged " + ("x" * 2000)
+    )
+    monkeypatch.setattr(MOG, "_request", lambda *_a: (403, {"message": message}))
+    monkeypatch.setattr(
+        MOG, "_LAST_RESPONSE_HEADERS",
+        {"x-ratelimit-remaining": "0", "x-ratelimit-limit": "5000"} if quota else {},
+    )
+    assert MOG.live_authorized_pull(
+        "acme/widgets", _pull(1), credential
+    ) == (None, "authorization-unreadable")
+    out = capsys.readouterr().out
+    prefix = "::warning title=merge-on-green authorization::"
+    assert out.startswith(prefix)
+    assert len(out.splitlines()) == 1
+    assert credential not in out and "[redacted]" in out
+    assert "\r" not in out and "\x1b" not in out
+    assert "%250A" in out and "%0A" not in out
+    assert len(out.removeprefix(prefix).rstrip("\n")) <= 600
