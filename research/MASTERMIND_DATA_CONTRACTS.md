@@ -1790,3 +1790,110 @@ One claim that a reader may expect and will not find: this document does **not**
 HON divergence to any specific corporate action. Naming one would require an ex-date and a
 factor to check against, and §4.2.6 is the finding that no such store exists. The measurement
 stands on its own; the mechanism is deliberately left unclaimed.
+
+## 8. Proposed TP1/R0 cash-context integration contract — 2026-10-09
+
+**PROPOSED; no dataset activation, storage migration, source authenticity or delivery
+authority is asserted.** This record extends the existing TP1 and R0 contract homes,
+not a parallel cash-pressure store or classifier. Anchors: Macro #8660
+`0c65ff24820eade42e09265dbe627c027480bda5` and #8659
+`f7d5e05705023912bd87cce17f10638b8bea9218`.
+
+### 8.1 Source and clock grain
+
+The existing `equity.tick_plane.stream_event/v0` normalizer identifies original frame
+bytes by digest and retains original array index, actual receipt, source precision, SIP and
+optional participant/TRF clocks, source-scoped native identity, condition codes and
+exact price/quantity text. Use it for T/Q data. A mixed Hub frame requires explicit,
+complete selected-event scope preserving the original bytes and indices; a decoded
+JavaScript Number roundtrip is not original source evidence.
+
+Keep the incumbent `SIP_NBBO_QUOTE_LOCATION_PROXY` definition: lit-only, prior
+consolidated SIP quote, original quote receipt no later than the trade receipt,
+qualified continuity and explicit quote-age policy. Do not turn provisional stream
+records into finalized ORIGINAL/revision-zero historical R0 records. A later
+execution-referenced method requires a new named version and trade participant
+timestamp; quote SIP time must precede that reference as well as satisfy receipt
+cutoffs. TRF receipt time is not execution time.
+
+Raw `ds` supplies exact fractional shares where present; positive fractional quantity
+can coexist with integer `s=0`. Q sizes are shares, not implicit 100-share lots.
+Bound decimal token/exponent/coefficient complexity before expansion. Exact products
+and sums require sufficient bounded arithmetic precision or typed refusal; division
+and returns use a separately stated rounding policy. Existing historical method and
+input semantics are not silently changed by a new live ingress profile.
+
+### 8.2 Identity, gaps and available evidence
+
+Native event identity remains the existing session/ticker × exchange × TRF scope ×
+trade ID × SIP clock. Frame/part identity and receipt history are separate.
+Cross-part/generation identical redelivery cannot add volume or reset the original
+availability clock. Conflicting same-identity payloads remain ambiguous.
+Noncontiguous vendor sequence values do not by themselves prove a gap or continuity.
+
+Subscription/entitlement changes, restart/reconnect, clock discontinuity, parse loss,
+queue overflow, ring eviction and unqualified cursors invalidate affected windows.
+A new ring cannot make an earlier incomplete window whole. External original-source
+receipts and a qualified completeness watermark remain necessary; a helper's boolean
+attestation, file digest or connection uptime does not establish them.
+
+The canonical private minute keeps classification and venue counters, exact sampled
+notionals and source-volume included/excluded/unknown quantities separately.
+Classification coverage is not market-capture coverage. TRF gross is a venue slice,
+not an additional mutually exclusive classification bucket. Pressure balance is
+(buy − sell)/(buy + sell) only among classified notional and is null when that
+denominator is zero. Partial-RTH sample volume and full-day aggregate volume are not
+comparable denominators without explicit scope reconciliation.
+
+### 8.3 Private transport and retention
+
+Reuse `write_private_trade_part` for immutable normalized T-only parts, and the
+existing TP1 private-minute and R0 private-context projection schemas. Q is explicitly
+memory-only in the minimum; no durable raw-Q or mixed-frame journal is authorized.
+Derived-byte readback is not full raw signing replay. Unfinished forward labels may
+be censored after restart, gap, session end or evidence expiry. Later REST correction
+vintage never overwrites an original as-seen observation.
+
+Use the existing strict conditional private-store interface with an explicitly
+bound private target. Create immutable objects, read back declared bytes, then
+compare-and-swap a bounded current manifest. Readers pin one generation and verify
+the complete referenced set before exposing context. Partial/corrupt/missing/late
+evidence must not become neutral or successful empty flow. CAS conflict and an
+unknown/error write outcome remain distinct.
+
+The current strict-store protocol has no deletion API. Remote expiry requires an
+admitted lifecycle or owner-provided expiry primitive; removing a manifest reference
+does not prove object deletion. Bound total bytes and counts: queue entries, parts,
+physical orphans, partitions, generations, open/pending windows, manifest references
+and gap/tombstone records. Capacity refusal preserves identity/history and makes the
+affected scope unavailable instead of discarding inconvenient evidence.
+
+Inherited maxima remain finite: 2 MiB/2,000 events per raw frame; source universe 600;
+NBBO ring default 4,096/name, hard 8,192/name and 131,072 total; captured minute
+500 frames/12 MiB/12,000 events; minute 10,000 observations; T part 2,000 rows/4 MiB;
+R0 context 1–5 minutes/20,000 quotes; private minute 32 KiB and R0 view 24 KiB.
+These are structural refusal ceilings, not a measured production memory profile.
+The integration owner must freeze aggregate budgets and retention before native
+writes; existing per-call caps cannot be summed into a claim of accepted capacity.
+
+### 8.4 Consumer and authority envelope
+
+Existing private projections carry explicit delivery holds/public-delivery=false.
+This appendix does not reopen every old licensing decision or clear a new route.
+A specific minimal private/service/public-safe projection and consumer entitlement
+must be admitted before delivery. Never embed private raw or derived bytes into a
+public file because its outer producer already publishes publicly.
+
+A permitted compact `rotation_context.cash_pressure_context` must retain method,
+evidence mode, source/dependency roots, source generation, exact session/window,
+original availability, derived/publication clocks, expiry, correction status,
+coverage denominators and typed unknown reasons. The child's freshness cannot
+refresh the whole risk envelope or erase unrelated valid evidence. Completed-window
+response and later outcome labels stay distinguishable; a label unavailable at the
+original decision cannot enter its earlier signal.
+
+Use the existing live RiskEnvelope producer and explicit qualified live-reader
+selection for current-day advisory context, and the existing sole nightly Rotation
+writer for settled context. Audit strict whitelists, redaction, prompt/UI visibility
+and late expiry across NeuralWeb/Brain/Terminal/Portfolio-facing readers. No independent
+cash vote, risk threshold, automatic alert, sizing or trade authority is granted.

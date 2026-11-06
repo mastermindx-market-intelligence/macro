@@ -18,6 +18,7 @@ _DIRECT_DOMAINS = {
     "benzinga_article_updated",
     "benzinga_stream_event",
     "benzinga_rest_observed",
+    "massive_news_published",
 }
 _MIRROR_DOMAINS = {"massive_benzinga_system_updated"}
 

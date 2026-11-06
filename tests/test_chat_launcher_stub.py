@@ -699,7 +699,7 @@ def test_shared_root_and_root_absolute_assets_pass():
 @pytest.mark.parametrize("original,replacement,asset", [
     ("_mmBrainScript.src = _mmBrainSrc();", "_mmBrainScript.src = 'mm_brain.js';", "mm_brain.js"),
     ("_mmOverlayScript.src = _mmOverlaySrc;", "_mmOverlayScript.src = 'terminal_overlay.js';", "terminal_overlay.js"),
-    ("s.src = pfx + 'account.js?v=20260913-account-actions';", "s.src = 'account.js?v=20260913-account-actions';", "account.js?v=20260913-account-actions"),
+    ("s.src = pfx + 'account.js?v=20261101-expectation-surface-nav';", "s.src = 'account.js?v=20261101-expectation-surface-nav';", "account.js?v=20261101-expectation-surface-nav"),
     ("s.src = pfx + 'onboard.js';", "s.src = 'onboard.js';", "onboard.js"),
 ])
 def test_guard_rejects_relative_mutations_of_real_child_assets(theme_src, original, replacement, asset):
