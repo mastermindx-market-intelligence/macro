@@ -163,13 +163,18 @@
 {%- if not _v.hidden -%}<span class="l-en">{{ _v.action[0] }}</span><span class="l-zh">{{ _v.action[1] }}</span>{%- endif -%}
 {%- else -%}
 <section class="risk-foreground" id="risk-response-summary" data-state="{{ _v.state }}" data-expected-session="{{ _expected if _expected is string else '' }}"{% if _v.hidden %} hidden{% endif %} role="status" aria-live="polite" aria-atomic="true" aria-labelledby="risk-response-title">
-  <div class="rr-head">
-    <h2 id="risk-response-title"><span class="l-en">{{ _v.title[0] }}</span><span class="l-zh">{{ _v.title[1] }}</span></h2>
+  <div class="rr-briefing-main">
+    <div class="rr-head">
+      <h2 id="risk-response-title"><span class="l-en">{{ _v.title[0] }}</span><span class="l-zh">{{ _v.title[1] }}</span></h2>
+      <p class="rr-date" id="risk-response-date"><span class="l-en">{% if _v.date %}{{ _fg.settled_label[0] }}{{ _v.date }}{% endif %}</span><span class="l-zh">{% if _v.date %}{{ _fg.settled_label[1] }}{{ _v.date }}{% endif %}</span></p>
+    </div>
+    <p class="rr-line" id="risk-response-cause"><span class="l-en">{{ _v.cause[0] }}</span><span class="l-zh">{{ _v.cause[1] }}</span></p>
+  </div>
+  <div class="rr-briefing-response">
+    <p class="rr-response-label"><span class="l-en">Risk response</span><span class="l-zh">风险应对</span></p>
+    <p class="rr-line" id="risk-response-action"><span class="l-en">{{ _v.action[0] }}</span><span class="l-zh">{{ _v.action[1] }}</span></p>
     <button type="button" class="rr-open" aria-controls="dlg-risk" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-risk')"><span class="l-en">{{ _fg.open_details[0] }}</span><span class="l-zh">{{ _fg.open_details[1] }}</span></button>
   </div>
-  <p class="rr-line" id="risk-response-cause"><span class="l-en">{{ _v.cause[0] }}</span><span class="l-zh">{{ _v.cause[1] }}</span></p>
-  <p class="rr-line" id="risk-response-action"><span class="l-en">{{ _v.action[0] }}</span><span class="l-zh">{{ _v.action[1] }}</span></p>
-  <p class="rr-line" id="risk-response-date"><span class="l-en">{% if _v.date %}{{ _fg.settled_label[0] }}{{ _v.date }}{% endif %}</span><span class="l-zh">{% if _v.date %}{{ _fg.settled_label[1] }}{{ _v.date }}{% endif %}</span></p>
 </section>
 {%- endif -%}
 {%- endmacro %}

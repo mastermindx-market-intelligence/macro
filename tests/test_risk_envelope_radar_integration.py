@@ -1452,3 +1452,93 @@ def test_risk_off_total_hazard_outage_requires_well_formed_source_contract(mutat
     assert 'Market State: Risk-off; combined hazard coverage incomplete.' not in settled
     assert 'Market State: Risk-off; combined hazard coverage incomplete.' not in live['cause']
     assert e['hazard_summary']['stage'] is None
+
+
+# Pro holistic audit: layout changes must retain the same qualified signal,
+# separate its response visually, and keep the original modal/live identities.
+def test_pro_briefing_separates_condition_from_source_owned_response():
+    from bs4 import BeautifulSoup
+    e = _partial_live_warning()
+    original = deepcopy(e)
+    soup = BeautifulSoup(_foreground_render(e), 'html.parser')
+    card = soup.select_one('#risk-response-summary')
+    assert card is not None and card.get('data-state') == 'partial-warning'
+    main = card.select_one('.rr-briefing-main')
+    response = card.select_one('.rr-briefing-response')
+    assert main is not None, 'Condition/evidence area is not present'
+    assert response is not None, 'Source-owned response needs its own visual area'
+    for ident in ('risk-response-title','risk-response-cause','risk-response-date'):
+        assert main.select_one('#'+ident) is not None
+        assert len(soup.select('#'+ident)) == 1
+    assert response.select_one('#risk-response-action') is not None
+    assert 'Risk response' in response.get_text()
+    assert '风险应对' in response.get_text()
+    button = response.select_one('button.rr-open')
+    assert button.get('aria-controls') == 'dlg-risk'
+    assert button.get('aria-haspopup') == 'dialog'
+    assert button.get('type') == 'button'
+    assert e == original
+
+
+def test_pro_briefing_details_control_has_a_deliberate_touch_target():
+    import re
+    css = (ROOT / 'templates/_risk_envelope_band.css.j2').read_text()
+    button_rules = re.findall(r'#risk-response-summary \.rr-open\s*\{([^}]+)\}',css)
+    assert button_rules
+    rules = ' '.join(button_rules)
+    assert re.search(r'min-(?:height|block-size)\s*:\s*44px',rules), 'Details control needs the 44px product target'
+    assert 'color-mix(' not in css[css.index('/* Chairman 2026-10-15'):]
+
+
+def test_pro_briefing_still_hides_quiet_and_preserves_action_only_contract():
+    from tests.test_macro_risk_dialog import _env
+    e = source_envelope()
+    e['hazard_summary'].update(stage='NONE',contributing_sources=[])
+    e['measured_state'].update(usable=True,verdict='RISK_ON',as_of=e['source_session'])
+    markup = _foreground_fragment(_foreground_render(e))
+    assert 'data-state="quiet"' in markup and ' hidden' in markup.split('>')[0]
+    partial = _partial_live_warning()
+    j = _env()
+    action = j.from_string('{% from "_risk_envelope_band.html.j2" import risk_foreground %}{{ risk_foreground(e, e.source_session, true) }}').render(e=partial)
+    assert 'Review exposure. Respect existing stops.' in action
+    assert '<section' not in action and 'rr-briefing-' not in action
+
+
+# One cross-renderer semantic matrix guards the visual redesign against the
+# SSR/live drift that earlier incident repairs exposed. It adds no runtime plane.
+@pytest.mark.parametrize('case', ['partial','warning','quiet','measured_risk_off','total_outage','unavailable'])
+def test_pro_briefing_keeps_server_and_live_bilingual_semantics_in_lockstep(case):
+    from bs4 import BeautifulSoup
+    e = _risk_off_with_partial_unavailable_hazards() if case == 'total_outage' else _partial_live_warning()
+    if case == 'warning':
+        e['hazard_summary'].update(stage='FRAGILE',stage_reason='observed_settled_evidence')
+        e['live_transition'].update(stable_stage='FRAGILE',candidate_stage='FRAGILE',pending=None)
+    elif case in ('quiet','measured_risk_off'):
+        e['hazard_summary'].update(stage='NONE',contributing_sources=[])
+        e['live_transition'].update(stable_stage='NONE',candidate_stage='NONE',pending=None)
+        if case == 'measured_risk_off':
+            e['measured_state'].update(usable=True,verdict='RISK_OFF',as_of=e['source_session'])
+    elif case == 'unavailable':
+        e['hazard_summary']['contributing_sources']=[]
+        e['measured_state'].update(usable=False,verdict=None)
+    original=deepcopy(e)
+    section=BeautifulSoup(_foreground_fragment(_foreground_render(e)),'html.parser').select_one('#risk-response-summary')
+    live=_js_value(_FOREGROUND_DOM+"applyFeed(FEED);var v=foregroundResult();v.zh={};['title','cause','action'].forEach(function(k){v.zh[k]=nodes['risk-response-'+k].querySelector('.l-zh').textContent;});console.log(JSON.stringify(v));",e)
+    assert section['data-state']==live['state']
+    assert section.has_attr('hidden')==live['hidden']
+    if not live['hidden']:
+        for field in ('title','cause','action'):
+            assert section.select_one('#risk-response-'+field+' .l-en').get_text()==live[field],(case,field,'en')
+            assert section.select_one('#risk-response-'+field+' .l-zh').get_text()==live['zh'][field],(case,field,'zh')
+    assert e==original
+
+
+
+def test_pro_briefing_resolves_house_radius_when_legacy_theme_omits_aliases():
+    # Actual linked public theme lacks r-card/r-ctl aliases; browser showed
+    # a 0px rectangle despite the intended house curvature. Existing documented
+    # house dimensions are fallback values, not a second global token family.
+    css=(ROOT/'templates/_risk_envelope_band.css.j2').read_text().split('/* Chairman 2026-10-15')[1]
+    assert 'border-radius:var(--r-card, 12px)' in css
+    assert 'border-radius:var(--r-ctl, 8px)' in css
+    assert ':root' not in css

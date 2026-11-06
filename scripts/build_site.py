@@ -7239,9 +7239,10 @@ def main() -> int:
     # band. Built HERE (not read from disk) so the artifact and the page it renders
     # always describe the same session — reading a stale committed copy is exactly
     # the drift the per-source clocks exist to expose. The builder also writes both
-    # canonical copies (data/ + site/riskdata/) atomically. Additive display band:
-    # a failure leaves risk_envelope=None and the band renders nothing at all,
-    # which is the honest outcome — never a fabricated calm read.
+    # canonical copies (data/ + site/riskdata/) atomically. A failed composition
+    # leaves risk_envelope=None: the evidence band stays absent, while the
+    # foreground briefing and action card explicitly report unavailable evidence.
+    # Missing data must never become a hidden or fabricated all-clear.
     _risk_envelope = None
     try:
         from scripts.build_risk_envelope import write as _write_risk_envelope
