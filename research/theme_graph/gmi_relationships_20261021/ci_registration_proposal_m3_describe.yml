@@ -1,0 +1,28 @@
+# CI registration PROPOSAL — GMI ORCH-REL M3 describe (REL-M3-DESCRIBE-BUILD
+# lane, 2026-10-22).
+#
+# FRAGMENT for the GMI COMPLETION seat to fold into job
+# `company-intelligence-relationships` (the M1 proposal in
+# ci_registration_proposal.yml).  Registration is a CI-authority change owned
+# by the seat, NOT by this lane: this file proposes `paths_add:` / `steps_add:`
+# and touches no .github/ or config/ path.
+#
+# `paths_add` lists every repo path the M3 suite imports or opens that is NOT
+# already in the M1 `paths:` or the m2_harvest / m2_keys / m2_judge /
+# m2_precision fragments' paths_add: the suite's full import/read closure is
+# otherwise unchanged from them (the producer script, the
+# package_v2/replay/clock engine modules, lib/dataos/temporal, the four
+# contracts, the pinned extraction/sources/manifest inputs, the two committed
+# data files, the resolver pin, conftest.py, scripts/__init__.py and the
+# earlier suites are all already listed).  Proven by exporting exactly the M1
+# paths + all fragments' paths_add + these paths_add with `git archive` at the
+# lane commit and running tests/test_relationship_m3_describe.py inside that
+# export (rc 0 — see the lane return).
+paths_add:
+  - "engine/company_intelligence/relationships/describe.py"
+  - "scripts/relationship_m3_describe.py"
+  - "research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json"
+  - "tests/test_relationship_m3_describe.py"
+steps_add:
+  - name: Relationship M3 descriptive renderer + correction demo
+    run: python -m pytest tests/test_relationship_m3_describe.py -q

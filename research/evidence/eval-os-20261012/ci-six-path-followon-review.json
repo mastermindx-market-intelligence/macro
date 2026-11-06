@@ -1,0 +1,52 @@
+{
+  "schema": "eval_os_independent_six_path_followon_review.v1",
+  "adjudication": "ACCEPTED_ADDITIVE_SIX_PATH_DECLARATIONS_PENDING_ROOT_FOCUSED_PROOF",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "observed_at": "2026-10-13T23:49:24.921285+00:00",
+  "reviewed_prior_manifest_sha256": "19bf4b23803719387204689967df9cb39ed42b5603c3f80ab6167ca931f5f38e",
+  "followon_manifest_sha256": "9c4939e337747ffa50004fc509dc8c2354686d31472c6e1790b1e43fda74e581",
+  "job_count": 299,
+  "only_additions": [
+    [
+      "crypto-assistant-context",
+      "engine/k3e_eval1_forward.py"
+    ],
+    [
+      "crypto-assistant-context",
+      "engine/pick_forward_dist.py"
+    ],
+    [
+      "crypto-assistant-context",
+      "engine/seasonality/multiplicity.py"
+    ],
+    [
+      "research-price-panel",
+      "engine/k3e_eval1_forward.py"
+    ],
+    [
+      "research-price-panel",
+      "engine/pick_forward_dist.py"
+    ],
+    [
+      "research-price-panel",
+      "engine/seasonality/multiplicity.py"
+    ]
+  ],
+  "matches_six_named_closure_omissions": true,
+  "all_other_parsed_job_fields_equal": true,
+  "all_original_paths_order_preserved": true,
+  "all_job_ids_equal": true,
+  "findings": [],
+  "retained_controls": {
+    "receipt": "../integration/current-main-repair-20261013-tests.txt",
+    "sha256": "36759d28a36437d9f984e340f0360bbff0410baab54400d0f7f54fb72d2c9dc8",
+    "result": "65PASS/1FAIL162.73s",
+    "scope": "Packing budget and updater controls pass. Sole closure failure exposes these six newly incomingjob dependencies; no new packing ceiling/updater repair is inferred."
+  },
+  "acceptance_impact": "Safe exact declaration widening in two newly current-main jobs; accepted A1 source/browser/resource and reviewed updater unchanged. Preserve exclusivity/commands/weights/gates. No source ortest change needed outside manifest.",
+  "pending": "Root reruns only3affectedCItests session33752; new committed/published repairhead and exactheadCI still owed.",
+  "tests_or_CI_queries_by_reviewer": false,
+  "source_writes": false,
+  "dispatches": false
+}

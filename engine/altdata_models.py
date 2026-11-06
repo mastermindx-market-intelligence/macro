@@ -616,7 +616,7 @@ def channel_records(signals: dict, affiliations: dict | None = None, *,
         m = rec(r["ticker"])
         if m is not None:
             m["metrics"].update(app_rating=r.get("rating"), app_reviews=r.get("reviews"))
-        if r.get("lean") == "strong":
+        if r.get("lean") == "strong" and not pd.isna(r.get("reviews")):
             add(r["ticker"], "app_demand", f"{r.get('rating')}★ × {r.get('reviews'):,} reviews")
     for r in signals.get("patents", []):
         m = rec(r["ticker"])
