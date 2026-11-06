@@ -1,0 +1,68 @@
+/* Compact timing disclosure uses the incumbent dashboard material and tokens. */
+.dash-mtf-tbl [data-pvt-cell] { vertical-align: top; min-width: 14rem; }
+.pvt-detail { position: relative; }
+.pvt-detail summary { cursor: pointer; display: grid; gap: var(--sp-1,4px); padding: var(--sp-1,4px); border-radius: var(--r-chip,6px); list-style: none; }
+.pvt-detail summary::-webkit-details-marker { display: none; }
+.pvt-detail summary:focus-visible { outline: 2px solid var(--ink-info, var(--link)); outline-offset: 2px; }
+.pvt-detail summary:hover, .pvt-detail[open] summary { background: var(--panel2); }
+.pvt-chips { display: flex; flex-wrap: wrap; gap: var(--sp-2,8px); }
+.pvt-chip { color: var(--muted); font-size: var(--fs-micro,10px); white-space: nowrap; }
+.pvt-chip b { color: var(--text); font-variant-numeric: tabular-nums; }
+.pvt-current { font-size: var(--fs-label,11px); color: var(--text); }
+.pvt-current::after { content: ' ›'; color: var(--muted); }
+.pvt-state-invalidated, .pvt-state-sequence_unresolved { color: var(--ink-act, var(--act)); }
+.pvt-state-extended, .pvt-state-stale, .pvt-state-expired { color: var(--ink-warn, var(--warn)); }
+.pvt-state-confirmed, .pvt-state-retest_held { color: var(--ink-info, var(--info)); }
+.pvt-evidence { width: 100%; min-width: 0; padding: var(--sp-3,12px); margin-top: var(--sp-2,8px); background: var(--panel2); border: 1px solid var(--line); border-radius: var(--r-card,12px); color: var(--text); box-shadow: var(--card-shadow); }
+.pvt-evidence header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3,12px); margin-bottom: var(--sp-3,12px); font-size: var(--fs-sm,12.5px); }
+.pvt-source { color: var(--muted); font-size: var(--fs-micro,10px); }
+.pvt-notice { margin: 0 0 var(--sp-3,12px); color: var(--ink-warn, var(--warn)); font-size: var(--fs-sm,12.5px); }
+.pvt-levels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-2,8px); margin-bottom: var(--sp-3,12px); }
+.pvt-levels div { display: grid; gap: var(--sp-1,4px); }
+.pvt-levels span { color: var(--muted); font-size: var(--fs-micro,10px); }
+.pvt-levels b { font-size: var(--fs-sm,12.5px); font-variant-numeric: tabular-nums; }
+.pvt-timeframes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3,12px); }
+.pvt-timeframe h4 { margin: 0 0 var(--sp-1,4px); font-size: var(--fs-label,11px); }
+.pvt-checks { padding: 0; margin: 0; list-style: none; }
+.pvt-check { display: grid; grid-template-columns: 1rem minmax(0, 1fr) auto; gap: var(--sp-1,4px); align-items: baseline; padding: var(--sp-1,4px) 0; font-size: var(--fs-sm,12.5px); }
+.pvt-check > span:first-child, .pvt-check-status { color: var(--muted); }
+.pvt-check-pass > span:first-child { color: var(--ink-info, var(--info)); }
+.pvt-check-fail > span:first-child { color: var(--ink-warn, var(--warn)); }
+.pvt-clock { margin: var(--sp-1,4px) 0 0; color: var(--muted); font-size: var(--fs-micro,10px); font-variant-numeric: tabular-nums; }
+.pvt-parent { margin-top: var(--sp-3,12px); padding-top: var(--sp-2,8px); border-top: 1px solid var(--line); }
+.pvt-receipts { margin: var(--sp-3,12px) 0 0; padding-top: var(--sp-2,8px); border-top: 1px solid var(--line); font-size: var(--fs-micro,10px); color: var(--muted); }
+.pvt-receipts > div { display: flex; justify-content: space-between; gap: var(--sp-2,8px); margin: var(--sp-1,4px) 0; }
+.pvt-receipts dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+.pvt-footnote { margin: var(--sp-3,12px) 0 0; color: var(--muted); font-size: var(--fs-micro,10px); }
+html[data-theme="light"] .pvt-evidence { background: var(--panel); box-shadow: var(--popover-shadow); }
+@media (max-width: 600px) {
+  .pvt-evidence { padding: var(--sp-2,8px); }
+  .pvt-timeframes { grid-template-columns: 1fr; }
+  .pvt-levels { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pvt-receipts > div { display: grid; gap: 0; }
+  .pvt-receipts dd { text-align: left; }
+}
+
+.pvt-detail > .pvt-evidence { display: none; }
+.pvt-dialog { width: min(44rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); padding: var(--sp-3,12px); border: 1px solid var(--line); border-radius: var(--r-card,12px); background: var(--panel); color: var(--text); box-shadow: var(--popover-shadow); }
+.pvt-dialog::backdrop { background: rgba(8,14,24,.55); }
+.pvt-dialog .pvt-evidence { margin: 0; border: 0; padding: var(--sp-2,8px); box-shadow: none; }
+.pvt-close { display: block; min-height: 36px; margin-left: auto; margin-bottom: var(--sp-2,8px); padding: var(--sp-1,4px) var(--sp-3,12px); border: 1px solid var(--line); border-radius: var(--r-btn,10px); background: var(--panel2); color: var(--text); font: inherit; cursor: pointer; }
+.pvt-close:focus-visible { outline: 2px solid var(--ink-info, var(--link)); outline-offset: 2px; }
+
+.pvt-check-mark::before { content: '—'; }
+.pvt-check-pass .pvt-check-mark::before { content: '✓'; }
+.pvt-check-fail .pvt-check-mark::before { content: '×'; }
+.pvt-check-wait .pvt-check-mark::before { content: '◷'; }
+
+.pvt-history { margin-top: var(--sp-3,12px); padding-top: var(--sp-2,8px); border-top: 1px solid var(--line); }
+.pvt-history h4 { margin: 0 0 var(--sp-1,4px); font-size: var(--fs-label,11px); }
+.pvt-history ol { padding: 0; margin: 0; list-style: none; }
+.pvt-history li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-1,4px) var(--sp-3,12px); padding: var(--sp-1,4px) 0; font-size: var(--fs-label,11px); }
+.pvt-history time { color: var(--muted); font-size: var(--fs-micro,10px); font-variant-numeric: tabular-nums; }
+.pvt-close { position: sticky; top: 0; z-index: 1; }
+
+.pvt-context { margin-bottom: var(--sp-3,12px); padding-bottom: var(--sp-2,8px); border-bottom: 1px solid var(--line); }
+.pvt-context h4 { margin: 0 0 var(--sp-2,8px); font-size: var(--fs-label,11px); }
+.pvt-context-band { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-3,12px); }
+.pvt-context p:not(.pvt-clock) { margin: var(--sp-2,8px) 0 0; font-size: var(--fs-label,11px); color: var(--muted); }
