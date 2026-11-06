@@ -321,6 +321,8 @@ class TestSnapshotNeverRaises:
         assert "level" in snap
         assert "glance_en" in snap
         assert "glance_zh" in snap
+        assert "drivers_en" in snap
+        assert "drivers_zh" in snap
         assert "doctrine" in snap
         assert "dealer_sign_passport" in snap
         assert "post_opex_watch" in snap
@@ -351,6 +353,28 @@ class TestSnapshotNeverRaises:
             assert "validated" not in val.lower(), f"{field!r} contains 'validated'"
 
 
+def test_phase_free_driver_read_never_claims_current_cycle_phase():
+    en, zh = opex_risk._make_driver_read(
+        "elevated",
+        3,
+        3,
+        {
+            "pin_proximity": True,
+            "dealer_load_extreme": True,
+            "concentration_hot": True,
+        },
+    )
+    assert "Mid-cycle" not in en
+    assert "Expiration week" not in en
+    assert "expiry-week" not in en
+    assert "到期周" not in zh
+    assert "exposure concentration elevated" in en
+    assert "敞口集中度偏高" in zh
+    assert "dealer books stretched" in en
+    assert "3/3 signals active" in en
+    assert "3/3项信号激活" in zh
+
+
 # ── G. enrich_opex_events ─────────────────────────────────────────────────────
 
 class TestEnrichOpexEvents:
@@ -365,8 +389,10 @@ class TestEnrichOpexEvents:
         return {
             "level": level,
             "level_zh": {"quiet": "平静", "elevated": "偏高", "heavy": "重度"}[level],
-            "glance_en": "Expiration week. Watch, don't chase.",
-            "glance_zh": "到期周。观望，不追涨。",
+            "glance_en": "Mid-cycle. Watch, don't chase.",
+            "glance_zh": "周期中段。观望，不追涨。",
+            "drivers_en": "Dealer load rising — watch for sticky tape. Watch, don't chase. (2/3 signals active)",
+            "drivers_zh": "经销商负载上升 — 注意粘性价格行为。观望，不追涨。（2/3项信号激活）",
             "n_hot": 2,
             "n_applicable": 3,
         }
@@ -378,6 +404,17 @@ class TestEnrichOpexEvents:
         assert opex_ev["opex_risk_level"] == "elevated"
         assert opex_ev["opex_risk_level_zh"] == "偏高"
         assert opex_ev["opex_risk_n_hot"] == 2
+        assert opex_ev["opex_risk_glance_en"].startswith("Dealer load rising")
+        assert "Mid-cycle" not in opex_ev["opex_risk_glance_en"]
+
+    def test_event_glance_falls_back_for_legacy_snapshot_without_driver_fields(self):
+        snap = self._make_snap()
+        snap.pop("drivers_en")
+        snap.pop("drivers_zh")
+        enriched = enrich_opex_events(self._make_events(), snap)
+        opex_ev = next(e for e in enriched if e["type"] == "OPEX")
+        assert opex_ev["opex_risk_glance_en"] == snap["glance_en"]
+        assert opex_ev["opex_risk_glance_zh"] == snap["glance_zh"]
 
     def test_non_opex_rows_unchanged(self):
         events = self._make_events()
@@ -403,3 +440,62 @@ class TestEnrichOpexEvents:
 
     def test_empty_events_returns_empty(self):
         assert enrich_opex_events([], {"level": "quiet"}) == []
+
+
+def test_current_glance_keeps_phase_and_legacy_concentration_wording():
+    en, zh = opex_risk._make_glance(
+        "elevated", "mid_cycle", 4, True, 3, 3, None,
+        {"pin_proximity": True, "dealer_load_extreme": True, "concentration_hot": True},
+    )
+    assert en == (
+        "Mid-cycle (quad-witching) — 4d to expiry. "
+        "price may stick near big strikes, dealer books stretched, expiry-week exposure crowded. "
+        "Dealer load rising — watch for sticky tape. Watch, don't chase. (3/3 signals active)"
+    )
+    assert zh == (
+        "Mid-cycle (quad-witching) — 4d to expiry。"
+        "价格或被大额行权价吸住，做市商持仓拉满，到期周敞口拥挤。"
+        "经销商负载上升 — 注意粘性价格行为。观望，不追涨。（3/3项信号激活）"
+    )
+
+
+@pytest.mark.parametrize("concentrated", [False, True])
+def test_off_week_snapshot_drivers_do_not_claim_expiry_week(tmp_path, concentrated):
+    surface = _make_surface()
+    surface["date"] = pd.bdate_range(end="2026-11-05", periods=len(surface)).strftime("%Y-%m-%d")
+    for name in ("front7_abs_charm_share", "front7_abs_gex_share"):
+        surface.loc[surface.index[-1], name] = 1.0 if concentrated else 0.0
+    _write_surface(tmp_path, "index_etf", surface)
+    close = pd.Series(np.linspace(400.0, 600.0, 600), index=pd.bdate_range(end="2026-11-05", periods=600))
+    snap = opex_risk.snapshot(close, None, data_root=tmp_path)
+    assert "error" not in snap
+    assert snap["window_phase"]["phase"] == "mid_cycle"
+    assert snap["states"]["concentration_hot"] is concentrated
+    assert snap["glance_en"].startswith("Mid-cycle")
+    assert "expiry-week" not in snap["drivers_en"]
+    assert "到期周" not in snap["drivers_zh"]
+    assert ("exposure concentration elevated" in snap["drivers_en"]) is concentrated
+    assert ("敞口集中度偏高" in snap["drivers_zh"]) is concentrated
+
+
+def test_unavailable_snapshot_has_honest_event_driver_copy(tmp_path):
+    with patch.object(opex_risk, "_snapshot_inner", side_effect=ValueError("fixture failure")):
+        snap = opex_risk.snapshot(None, None, data_root=tmp_path)
+    assert snap["n_applicable"] == 0
+    assert snap["drivers_en"] == "OPEX positioning read unavailable — surface data absent."
+    assert snap["drivers_zh"] == "OPEX持仓读取不可用 — 数据缺失。"
+    assert snap["error"] == "fixture failure"
+
+
+@pytest.mark.parametrize("en_driver,zh_driver", [(None, None), ("", ""), ("fresh EN", ""), ("", "新中文")])
+def test_legacy_driver_fallback_is_independent_by_language(en_driver, zh_driver):
+    snap = {"glance_en": "Mid-cycle. Legacy EN", "glance_zh": "周期中段。旧中文"}
+    if en_driver is not None:
+        snap["drivers_en"] = en_driver
+    if zh_driver is not None:
+        snap["drivers_zh"] = zh_driver
+    event = {"type": "OPEX", "date": "2026-11-20"}
+    enriched = enrich_opex_events([event], snap)[0]
+    assert enriched["opex_risk_glance_en"] == (en_driver or snap["glance_en"])
+    assert enriched["opex_risk_glance_zh"] == (zh_driver or snap["glance_zh"])
+    assert event == {"type": "OPEX", "date": "2026-11-20"}
