@@ -37,6 +37,14 @@
     </div>
   </header>
 
+  {% with lock_renderer='markets_app.js', lock_fill='cyc-cards',
+    lock_hide='.cyc-stage,.mkt-grid,.cyc-cards-hd,#cyc-cards,.cyc-asof',
+    lock_en="Members get where each market sits on one clock, "
+    ~ "each market's scorecard, and the valuation map.",
+    lock_zh='会员可查看各市场在同一张时钟上的位置、每个市场的记分卡，以及估值地图。' %}
+  {% include "_cycle_locked_slot.html.j2" %}
+  {% endwith %}
+
   <section class="cyc-stage">
     <div class="cyc-hero">
       <div class="cyc-hero-hd">

@@ -1,0 +1,41 @@
+{
+  "incumbent_gate_record": {
+    "delta_adjusted": {
+      "delta_adj_minute_agreement": 0.526,
+      "improves_direction": false,
+      "note": "no improvement on bars \u2014 bid-ask-bounce-limited; reliable direction needs the trade-level NBBO tape",
+      "tested": true,
+      "tick_minute_agreement": 0.556
+    },
+    "direction_reliable": false,
+    "metric_kind": "self_consistency (tick rule vs quote rule; no independent aggressor label)",
+    "n_trades": 101934,
+    "net_sign_recovery": 0.4108,
+    "per_trade_agreement_tick_vs_quote": 0.7774,
+    "per_trade_size_weighted": 0.8083,
+    "scored": false
+  },
+  "incumbent_raw_cache": "data/options_flow/_dbento_sample.parquet",
+  "incumbent_raw_cache_present": false,
+  "incumbent_rerun_possible": false,
+  "tape_sessions": [
+    {
+      "agreement_method": "quote_rule_self_consistency",
+      "n_trades": 8225,
+      "net_sign_recovery": 0.619,
+      "per_trade_agreement": 0.6715
+    },
+    {
+      "agreement_method": "quote_rule_self_consistency",
+      "n_trades": 10157,
+      "net_sign_recovery": 0.5,
+      "per_trade_agreement": 0.6996
+    },
+    {
+      "agreement_method": "quote_rule_self_consistency",
+      "n_trades": 12737,
+      "net_sign_recovery": 0.6774,
+      "per_trade_agreement": 0.7197
+    }
+  ]
+}

@@ -30,9 +30,19 @@ if [ "$CHECK_ONLY" -eq 1 ] && [ "$RUN_NOW" -eq 1 ]; then
   echo "ERROR: --check and --run-now are mutually exclusive" >&2
   exit 2
 fi
-for path in "$OPS_ROOT" "$VENV_ROOT" "$RUNTIME_ROOT" "$ENV_FILE"; do
-  case "$path" in /*) ;; *) echo "ERROR: paths must be absolute: $path" >&2; exit 1 ;; esac
-done
+# The source unit is deliberately fixed to these paths and longr:longr.
+# Reject a different installation before clone, package, directory or unit effects.
+if [ "$OPS_ROOT" != /opt/mastermind-earnings/macro ] ||
+   [ "$VENV_ROOT" != /opt/mastermind-earnings/venv ] ||
+   [ "$RUNTIME_ROOT" != /var/lib/mastermind-earnings ] ||
+   [ "$ENV_FILE" != /etc/mastermind/earnings-worker.env ]; then
+  echo "ERROR: fixed earnings service requires its canonical installation paths" >&2
+  exit 1
+fi
+if [ "$(id -un)" != longr ] || [ "$(id -gn)" != longr ]; then
+  echo "ERROR: fixed earnings service requires caller longr:longr" >&2
+  exit 1
+fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_SERVICE="$SCRIPT_DIR/systemd/$SERVICE_NAME"
 SOURCE_TIMER="$SCRIPT_DIR/systemd/$TIMER_NAME"
@@ -88,16 +98,19 @@ if [ "$CHECK_ONLY" -eq 0 ]; then
   sudo install -o root -g root -m 0644 "$SOURCE_SERVICE" "/etc/systemd/system/$SERVICE_NAME"
   sudo install -o root -g root -m 0644 "$SOURCE_TIMER" "/etc/systemd/system/$TIMER_NAME"
   sudo systemctl daemon-reload
-  sudo systemctl enable --now "$TIMER_NAME"
 fi
 "$VENV_ROOT/bin/python" -c 'import anthropic,boto3,pandas,pyarrow,requests,yaml'
 cmp -s "$SOURCE_SERVICE" "/etc/systemd/system/$SERVICE_NAME"
 cmp -s "$SOURCE_TIMER" "/etc/systemd/system/$TIMER_NAME"
-systemctl is-enabled --quiet "$TIMER_NAME"
-systemctl is-active --quiet "$TIMER_NAME"
 env EARNINGS_OPS_ROOT="$OPS_ROOT" EARNINGS_PYTHON="$VENV_ROOT/bin/python" EARNINGS_RUNTIME_ROOT="$RUNTIME_ROOT" \
   EARNINGS_LOCK_DIR=/run/lock/mastermind-earnings-worker.lock \
   "$OPS_ROOT/$ENV_WRAPPER_REL" "$ENV_FILE" "$OPS_ROOT/$RUN_REL" --check-env
+# Activate only after imports, exact installed-unit comparison and worker env validation.
+if [ "$CHECK_ONLY" -eq 0 ]; then
+  sudo systemctl enable --now "$TIMER_NAME"
+fi
+systemctl is-enabled --quiet "$TIMER_NAME"
+systemctl is-active --quiet "$TIMER_NAME"
 if [ "$RUN_NOW" -eq 1 ]; then
   sudo systemctl start "$SERVICE_NAME"
   test "$(systemctl show "$SERVICE_NAME" -p Result --value)" = success
