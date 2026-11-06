@@ -1672,17 +1672,35 @@ def _stamp_rhythm_disclosure(records, *, today_x, sector_benchmark=None,
                              "reason": "stamp_error"}
 
 
+def member_candle_from_inputs(members, idx, *, close, volume=None) -> MemberIndexCandle | None:
+    """Wrap the incumbent explicit close index without loading or inventing OHLCV."""
+    full, metadata = basket_index.member_index_from_inputs(members, idx, close=close, volume=volume)
+    if full is None:
+        return None
+    return MemberIndexCandle(close=full, coverage_pct=metadata.get("coverage_pct"),
+        n_live=metadata.get("n_live"), n_stale_tail=metadata.get("n_stale_tail"))
+
+
+def member_candle_from_captured_inputs(members, *, captured):
+    """Named consumer of one already-verified private breadth/member capture."""
+    close, volume, evidence = captured.member_index_inputs(members)
+    if evidence["member_observation_session"] != captured.source_session:
+        evidence["index_unavailable_reason"] = "member_population_session_mismatch"
+        return None, evidence
+    return member_candle_from_inputs(members, close.index, close=close, volume=volume), evidence
+
+
 def _acquire_member_candle(members: list, *, label: str = "") -> MemberIndexCandle | None:
     """Legacy member capture with the incumbent whole-basket failure isolation."""
     try:
         idx = basket_index.deep_calendar(members)
-        if idx is None or len(idx) < 300:
+        if idx is None or len(idx) < basket_index.MIN_MEMBER_INDEX_SESSIONS:
             return None
         cand, cmeta = basket_index.consolidated_candle(members, idx, mode="equal", pit=False)
         if cand is None or "close" not in cand:
             return None
         full = cand["close"].replace([np.inf, -np.inf], np.nan).dropna()
-        if len(full) < 300:
+        if len(full) < basket_index.MIN_MEMBER_INDEX_SESSIONS:
             return None
         return MemberIndexCandle(close=full,
                                  coverage_pct=(cmeta or {}).get("coverage_pct"),

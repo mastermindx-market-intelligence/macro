@@ -84,8 +84,8 @@ def sources(tmp_path_factory):
     for group, klass, count in zip(BROAD_GROUPS, (BreadthAdapter, SmallCapBreadthAdapter, MidCap400BreadthAdapter),
                                    (400, 450, 350)):
         names = [f"T{i:04d}" for i in range(count)]
-        close = pd.DataFrame(100 + np.arange(300)[:, None] / 10 + np.arange(count)[None, :] / 20,
-                             index=_dates(300), columns=names)
+        close = pd.DataFrame(100 + np.arange(320)[:, None] / 10 + np.arange(count)[None, :] / 20,
+                             index=_dates(320), columns=names)
         panels = {"close": close, "high": close + 2, "low": close - 2, "volume": close * 0 + 1000}
         a = klass(breadth_config=CFG, yahoo_config=YCFG)
         a._download_adjusted_capture = lambda symbols, period, panels=panels, **kwargs: values.AdjustedPriceCapture(
@@ -497,3 +497,70 @@ def test_encoder_recomputes_dependency_content_identity_using_incumbent_owner(so
         manifest=manifest, content_id=manifest["content_id"]))
     with pytest.raises(ValueError, match="capture_content_mismatch"):
         contract.encode_breadth_member_acquisitions(**{**sources, "yahoo": altered})
+
+
+def test_private_generation_supplies_sector_member_index_without_candle_fabrication(tmp_path, encoded, monkeypatch):
+    from engine import basket_index, sector_cycles
+    owner = _owner(tmp_path)
+    result = owner.publish_breadth_member_inputs(encoded, generation_id="cycle-member-source",
+        source_revision=REVISION, expected_current_content_id=None)
+    assert result.status == "published", result.detail
+    selected = contract.read_verified_breadth_member_inputs(generations_root=owner.state_dir / "generations",
+                                                           yahoo=encoded.yahoo, now=PUBLISHED)
+    with monkeypatch.context() as mp:
+        for obj, name in ((config, "load"), (config, "data_dir"), (store, "read"),
+                          (pd, "read_parquet"), (basket_index, "_load_member_ohlcv")):
+            mp.setattr(obj, name, forbidden)
+        candle, evidence = sector_cycles.member_candle_from_captured_inputs(
+            selected.inputs.membership["baskets"]["test_theme"]["members"], captured=selected.inputs)
+    assert candle is not None and len(candle.close) == 319
+    assert str(candle.close.index[-1].date()) == SOURCE
+    assert candle.coverage_pct == .75 and candle.n_live == 4
+    assert evidence["volume_unavailable"] == ["NEW"]
+    assert evidence["range_fields"] == "not_supplied"
+    assert evidence["member_observation_session"] == SOURCE
+    assert not hasattr(candle, "open") and not hasattr(candle, "high")
+
+
+def test_member_source_mapping_does_not_borrow_volume_for_donated_or_different_closes(encoded):
+    captured = _validate(encoded)
+    # Isolated value-mapping counterexample: a donated historical close exists
+    # where the selected primary source lacks that close; its volume cannot be attached.
+    groups = {g: {field: panel.copy() for field, panel in panels.items()} for g, panels in captured.groups.items()}
+    first, second = captured.resolved_panel.index[:2]
+    groups["breadth"]["close"].at[first, "T0000"] = np.nan
+    groups["breadth"]["close"].at[second, "T0000"] *= 1.1
+    mapped = replace(captured, groups=groups)
+    close, volume, evidence = mapped.member_index_inputs(captured.membership["baskets"]["test_theme"]["members"])
+    assert close.at[first, "T0000"] > 0
+    assert pd.isna(volume.at[first, "T0000"]) and pd.isna(volume.at[second, "T0000"])
+    assert volume.at[close.index[-1], "T0000"] == 1000
+    assert "NEW" not in volume
+
+
+@pytest.mark.parametrize("removed_member_with_later_tape", [False, True])
+def test_member_population_cannot_inherit_a_newer_unobserved_desk_tail(encoded, removed_member_with_later_tape):
+    from engine.sector_cycles import member_candle_from_captured_inputs
+    captured = _validate(encoded)
+    panel = captured.resolved_panel.copy()
+    panel.loc[panel.index[-4]:, ["T0000", "T0001", "T0002"]] = np.nan
+    members = deepcopy(captured.membership["baskets"]["test_theme"]["members"][:3])
+    if removed_member_with_later_tape:
+        panel["NEW"] = np.linspace(10., 20., len(panel))
+        members.append({"ticker": "NEW", "added": str(panel.index[0].date()),
+                        "removed": str(panel.index[-20].date())})
+    mapped = replace(captured, resolved_panel=panel)
+    close, _, evidence = mapped.member_index_inputs(members)
+    assert close.index[-1] == panel.index[-5]
+    assert evidence["member_observation_session"] != evidence["bundle_source_session"]
+    candle, current_evidence = member_candle_from_captured_inputs(members, captured=mapped)
+    assert candle is None
+    assert current_evidence["index_unavailable_reason"] == "member_population_session_mismatch"
+    assert current_evidence["member_observation_session"] == str(panel.index[-5].date())
+
+
+def test_thematic_capture_does_not_misclassify_an_uncaptured_amalgam_member(encoded):
+    captured = _validate(encoded)
+    assert "T0400" in captured.primary.columns
+    with pytest.raises(contract.BreadthMemberContractError, match="uncaptured_member_index_population"):
+        captured.member_index_inputs([{"ticker": "T0400", "added": "2025-01-01"}])

@@ -37,6 +37,9 @@ this is a descriptive consolidated tape, not an out-of-sample backtest. Coverage
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
+from copy import deepcopy
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
@@ -352,6 +355,161 @@ def _base_weights(members: list[dict], present: list[str], mode: str,
     return pd.Series(1.0, index=present)                            # equal
 
 
+@dataclass(frozen=True)
+class _CloseIndexKernel:
+    close: pd.DataFrame
+    previous_close: pd.DataFrame
+    mask: pd.DataFrame
+    weights: pd.DataFrame
+    level: pd.Series | None
+    previous_level: pd.Series | None
+    first: pd.Timestamp | None
+    stale_tail: tuple[str, ...]
+    lookahead: bool
+
+
+def _weighted_return(returns: pd.DataFrame, present: list[str], weights: pd.DataFrame) -> pd.Series:
+    return (returns[present] * weights).sum(axis=1, min_count=1)
+
+
+def _close_index_kernel(*, members, idx, present, close_raw, mode, conv_map, pit, alpha_pit):
+    """The incumbent close/membership/weight calculation; no loading or diagnostics."""
+    close = close_raw.ffill()
+    prev_close = close.shift(1)
+    r_close = close / prev_close - 1.0
+    mask = _live_mask(members, idx, present, pit=pit, close=close)
+    # 2026-07 staleness audit: a member whose tape ENDED (deep-store fetch gap, delisting
+    # missing its `removed` stamp) would otherwise ride the ffill at a frozen price,
+    # contributing 0% daily returns that dilute every subsequent basket move (ai_infra
+    # printed −10% off its June top while its median member was −23%). Exit each member
+    # from the live set a few grace bars past its last REAL bar, and disclose in meta.
+    stale_tail = []
+    for t in present:
+        lv = close_raw[t].last_valid_index()
+        if lv is None or lv >= idx[-1]:
+            continue
+        pos_lv = int(idx.get_loc(lv))
+        if (len(idx) - 1 - pos_lv) <= _STALE_TAIL_GRACE:
+            continue
+        cutoff = idx[pos_lv + _STALE_TAIL_GRACE]
+        live_after = mask.loc[mask.index > cutoff, t]
+        if live_after.any():
+            mask.loc[mask.index > cutoff, t] = False
+            stale_tail.append(t)
+
+    # daily renormalised weights over the live set
+    lookahead = False
+    if mode == "alpha" and alpha_pit:
+        # POINT-IN-TIME: a per-day tilt from a monthly rebalance grid (no look-ahead).
+        wmat = _alpha_weights_pit(present, r_close, mask)[present]
+        w = mask.astype(float) * wmat.to_numpy()
+    else:
+        base_w = _base_weights(members, present, mode, conv_map, r_close, mask)
+        w = mask.astype(float) * base_w.reindex(present).to_numpy()
+        lookahead = (mode == "alpha")           # static alpha vector = in-sample illustration
+    wsum = w.sum(axis=1).replace(0, np.nan)
+    w = w.div(wsum, axis=0)
+
+    Rc = _weighted_return(r_close, present, w)
+    first = Rc.first_valid_index()
+    if first is None:
+        return _CloseIndexKernel(close, prev_close, mask, w, None, None, None,
+                                 tuple(stale_tail), lookahead)
+    lvl_close = pd.Series(np.nan, index=idx)
+    lvl_close.loc[first:] = (1.0 + Rc.loc[first:].fillna(0.0)).cumprod()
+    prev_lvl = lvl_close.shift(1)
+    prev_lvl.loc[first] = 1.0
+    return _CloseIndexKernel(close, prev_close, mask, w, lvl_close, prev_lvl, first,
+                             tuple(stale_tail), lookahead)
+
+
+MIN_MEMBER_INDEX_SESSIONS = 300
+
+
+def _capture_index_panel(frame, *, volume=False):
+    """Primitive value validation for an explicit calculation, without acquisition."""
+    from lib.adjusted_price_capture import MAX_ROWS, MAX_COLUMNS, MAX_PANEL_CELLS
+    if (not isinstance(frame, pd.DataFrame) or len(frame) > MAX_ROWS
+            or len(frame.columns) > MAX_COLUMNS or frame.size > MAX_PANEL_CELLS
+            or frame.columns.has_duplicates
+            or any(not isinstance(t, str) or not t or len(t) > 24 for t in frame.columns)):
+        raise ValueError("Invalid member-index panel")
+    idx = frame.index
+    if (not isinstance(idx, pd.DatetimeIndex) or idx.hasnans or idx.has_duplicates
+            or not idx.is_monotonic_increasing or idx.tz is not None
+            or not idx.equals(idx.normalize())):
+        raise ValueError("Invalid member-index calendar")
+    if any(not pd.api.types.is_numeric_dtype(frame[t]) or pd.api.types.is_bool_dtype(frame[t])
+           or pd.api.types.is_complex_dtype(frame[t]) for t in frame.columns):
+        raise ValueError("Invalid member-index value")
+    raw = frame.to_numpy(dtype=float, na_value=np.nan)
+    present = ~np.isnan(raw)
+    if (not np.isfinite(raw[present]).all() or (raw[present] < 0).any()
+            or not volume and (raw[present] == 0).any()):
+        raise ValueError("Invalid member-index value")
+    return pd.DataFrame(raw.copy(), index=idx.copy().as_unit("ns"), columns=frame.columns.copy())
+
+
+def member_index_from_inputs(members, idx: pd.DatetimeIndex, *, close: pd.DataFrame,
+                             volume: pd.DataFrame | None = None) -> tuple[pd.Series | None, dict]:
+    """Current-membership equal-weight close index from actual captured fields.
+
+    This is the Sector-cycle close-index contract, not a full candle. The caller
+    supplies an admitted source calendar; this function has no loader, cache,
+    provider, config, clock, publication or session-calendar lookup. Missing range
+    fields are never invented. Volume is optional coverage evidence, never filled.
+    """
+    from datetime import date
+    from lib.adjusted_price_capture import MAX_ROWS, MAX_COLUMNS, MAX_PANEL_CELLS
+    if (not isinstance(members, (list, tuple)) or len(members) > MAX_COLUMNS
+            or not isinstance(idx, pd.DatetimeIndex) or len(idx) > MAX_ROWS
+            or idx.hasnans or idx.has_duplicates or not idx.is_monotonic_increasing
+            or idx.tz is not None or not idx.equals(idx.normalize())):
+        raise ValueError("Invalid explicit member-index inputs")
+    document = deepcopy(list(members))
+    tickers = []
+    for member in document:
+        ticker = member.get("ticker") if isinstance(member, Mapping) else None
+        if not isinstance(ticker, str) or not ticker or len(ticker) > 24 or ticker in tickers:
+            raise ValueError("Ambiguous member-index membership")
+        for when in (member.get("added"), member.get("removed")):
+            if when is not None and (not isinstance(when, str) or date.fromisoformat(when).isoformat() != when):
+                raise ValueError("Invalid member-index membership date")
+        tickers.append(ticker)
+    calendar = idx.copy().as_unit("ns")
+    if len(calendar) * len(tickers) > MAX_PANEL_CELLS:
+        raise ValueError("Member-index projection bound")
+    captured = _capture_index_panel(close)
+    captured_volume = None if volume is None else _capture_index_panel(volume, volume=True)
+    # Membership order is retained. A nonempty frame outside the supplied
+    # calendar or an all-null column is not a resolved member.
+    raw = captured.reindex(index=calendar, columns=[t for t in tickers if t in captured])
+    present = [t for t in tickers if t in raw and bool(raw[t].notna().any())]
+    meta = {"mode": "equal", "pit": False, "n_total": len(tickers), "n_with_close": len(present),
+            "coverage_pct": None, "n_live_with_volume": None, "status": "unavailable",
+            "reason": "insufficient_resolved_members", "index_sessions": 0}
+    if len(present) < 3:
+        return None, meta
+    core = _close_index_kernel(members=document, idx=calendar, present=present,
+        close_raw=raw[present], mode="equal", conv_map=None, pit=False, alpha_pit=True)
+    if core.level is None:
+        return None, {**meta, "reason": "no_member_index_returns"}
+    full = core.level.replace([np.inf, -np.inf], np.nan).dropna().rename("close")
+    n_live = int(core.mask.iloc[-1].sum())
+    meta.update({"n_live": n_live, "n_stale_tail": len(core.stale_tail),
+        "stale_tail": sorted(core.stale_tail)[:12], "index_sessions": len(full),
+        "as_of": str(full.index[-1].date()) if len(full) else None,
+        "start": str(full.index[0].date()) if len(full) else None, "lookahead": core.lookahead})
+    if captured_volume is not None:
+        latest = captured_volume.reindex(index=calendar, columns=present).iloc[-1]
+        observed = int((latest.notna() & (latest > 0) & core.mask.iloc[-1]).sum())
+        meta.update({"n_live_with_volume": observed,
+                     "coverage_pct": round(observed / n_live, 3) if n_live else None})
+    if len(full) < MIN_MEMBER_INDEX_SESSIONS:
+        return None, {**meta, "reason": "insufficient_index_history"}
+    return full.copy(deep=True), {**meta, "status": "available", "reason": None}
+
+
 def consolidated_candle(members: list[dict], idx: pd.DatetimeIndex, mode: str = "equal",
                         conv_map: dict | None = None, pit: bool = True,
                         alpha_pit: bool = True
@@ -383,67 +541,28 @@ def consolidated_candle(members: list[dict], idx: pd.DatetimeIndex, mode: str = 
         return pd.DataFrame(cols, index=idx)
 
     close_raw = _field("close")
-    close = close_raw.ffill()
     high = _field("high").ffill()
     low = _field("low").ffill()
     open_ = _field("open").ffill()
     vol = _field("volume")
 
-    prev_close = close.shift(1)
-    r_close = close / prev_close - 1.0
-    r_high = high / prev_close - 1.0
-    r_low = low / prev_close - 1.0
-    r_open = open_ / prev_close - 1.0
-
-    mask = _live_mask(members, idx, present, pit=pit, close=close)
-    # 2026-07 staleness audit: a member whose tape ENDED (deep-store fetch gap, delisting
-    # missing its `removed` stamp) would otherwise ride the ffill at a frozen price,
-    # contributing 0% daily returns that dilute every subsequent basket move (ai_infra
-    # printed −10% off its June top while its median member was −23%). Exit each member
-    # from the live set a few grace bars past its last REAL bar, and disclose in meta.
-    stale_tail = []
-    for t in present:
-        lv = close_raw[t].last_valid_index()
-        if lv is None or lv >= idx[-1]:
-            continue
-        pos_lv = int(idx.get_loc(lv))
-        if (len(idx) - 1 - pos_lv) <= _STALE_TAIL_GRACE:
-            continue
-        cutoff = idx[pos_lv + _STALE_TAIL_GRACE]
-        live_after = mask.loc[mask.index > cutoff, t]
-        if live_after.any():
-            mask.loc[mask.index > cutoff, t] = False
-            stale_tail.append(t)
+    core = _close_index_kernel(members=members, idx=idx, present=present,
+        close_raw=close_raw, mode=mode, conv_map=conv_map, pit=pit, alpha_pit=alpha_pit)
+    close, prev_close, mask, w = core.close, core.previous_close, core.mask, core.weights
+    stale_tail, lookahead = list(core.stale_tail), core.lookahead
     if stale_tail:
         log.warning("basket candle: %d member tape(s) stale past %d-bar grace — exited "
                     "from the live set at tape end: %s", len(stale_tail), _STALE_TAIL_GRACE,
                     ",".join(sorted(stale_tail)[:12]))
-
-    # daily renormalised weights over the live set
-    lookahead = False
-    if mode == "alpha" and alpha_pit:
-        # POINT-IN-TIME: a per-day tilt from a monthly rebalance grid (no look-ahead).
-        wmat = _alpha_weights_pit(present, r_close, mask)[present]
-        w = mask.astype(float) * wmat.to_numpy()
-    else:
-        base_w = _base_weights(members, present, mode, conv_map, r_close, mask)
-        w = mask.astype(float) * base_w.reindex(present).to_numpy()
-        lookahead = (mode == "alpha")           # static alpha vector = in-sample illustration
-    wsum = w.sum(axis=1).replace(0, np.nan)
-    w = w.div(wsum, axis=0)
-
-    def _wret(rf: pd.DataFrame) -> pd.Series:
-        return (rf[present] * w).sum(axis=1, min_count=1)
-
-    Rc, Rh, Rl, Ro = _wret(r_close), _wret(r_high), _wret(r_low), _wret(r_open)
-    first = Rc.first_valid_index()
+    r_high = high / prev_close - 1.0
+    r_low = low / prev_close - 1.0
+    r_open = open_ / prev_close - 1.0
+    Rh, Rl, Ro = (_weighted_return(frame, present, w) for frame in (r_high, r_low, r_open))
+    first = core.first
     if first is None:
         return None, {"n_total": n_total, "n_with_ohlcv": len(present), "coverage_pct": None,
                       "mode": mode}
-    lvl_close = pd.Series(np.nan, index=idx)
-    lvl_close.loc[first:] = (1.0 + Rc.loc[first:].fillna(0.0)).cumprod()
-    prev_lvl = lvl_close.shift(1)
-    prev_lvl.loc[first] = 1.0    # the implicit cumprod base — the level the day before `first`
+    lvl_close, prev_lvl = core.level, core.previous_level
 
     cand = pd.DataFrame(index=idx)
     cand["close"] = lvl_close

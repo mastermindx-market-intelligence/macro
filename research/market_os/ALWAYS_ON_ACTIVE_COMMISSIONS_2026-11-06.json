@@ -3,7 +3,7 @@
   "root_id": "macro-always-on-shared-shell-20261105-c3",
   "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T08:58:40.323039+00:00",
+  "recorded_at": "2026-11-06T09:31:49.331986+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -1086,6 +1086,36 @@
         "Data-only handoff, canonical board, auxiliary source capture, final five-member Sector composer",
         "Source-updater recovery/first-install and legacy writer drain/anti-downgrade",
         "CI capability-owner gate, protected release, authorized API/Terminal integration and authenticated beta proof; estate waves"
+      ]
+    },
+    "member_index_inputs": {
+      "base_sha": "7885f75fc27877b5757fdafc860da6552a2f52bf",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/MEMBER_INDEX_EXPLICIT_INPUTS_2026-11-06.md",
+      "proof": {
+        "passed": 204,
+        "exit_code": 0,
+        "warnings": 6,
+        "log": "/tmp/mmx-member-index-final-20261106.log",
+        "sha256": "0bcf1ae6f6bf7ba19e0fa129a0ee8e71d37ccc73f5d6fb7fc328c9835d6c8648",
+        "diff_check": 0,
+        "scope": "Literal baseline numerical parity; actual private publication/read -> typed Sector member-index consumer; no provider/runtime/beta proof"
+      },
+      "behavior": [
+        "Shared incumbent close-index kernel; legacy full-candle mathematics retained",
+        "Explicit actual closes and optional volume; 300 constructed observations; no synthetic OHLC",
+        "Eligible actual member endpoint, removed-member clock exclusion, stale current-binding refusal",
+        "Selected-primary matching-close volume only; explicit thematic projection scope"
+      ],
+      "baseline_fixture": {
+        "path": "tests/fixtures/base_basket_index_7885.py",
+        "source_sha256": "92cd14b8224a5444e05dfc79a41612b13fa74cb9d055ff6aa10f8d696abb3151",
+        "fixture_sha256": "8d0b5de11e37e538aad51a25da78ea00860de1795565a00b68ec1d6bc1443ec9"
+      },
+      "remaining": [
+        "Captured amalgam and sponsor holdings populations",
+        "Pure Pulse, baskets/handoff and canonical board; auxiliary inputs and final Sector producer",
+        "Updater/legacy-writer transfer, CI and protected releases, API/Terminal integration and authenticated beta; estate waves"
       ]
     }
   }

@@ -91,6 +91,50 @@ class CapturedBreadthMemberInputs:
             {t: None if frame is None else frame.copy(deep=True) for t, frame in self.references.items()},
             source_basis=dict(self.resolution["source_basis"]), require_complete_proxy_legs=True)
 
+    def member_index_inputs(self, members):
+        """Actual member closes and matching-source volume; no candle synthesis.
+
+        This binding covers the captured thematic population, not separately owned
+        Nasdaq/Russell amalgam membership. Remove only a suffix with no eligible
+        member observation; interior holes retain the incumbent index semantics.
+        """
+        if (not isinstance(members, (list, tuple)) or len(members) > values.MAX_COLUMNS
+                or any(not isinstance(row, Mapping) or not isinstance(row.get("ticker"), str)
+                       for row in members)):
+            _error("invalid_member_index_population")
+        tickers = [row["ticker"] for row in members]
+        if len(set(tickers)) != len(tickers) or len(self.primary) * len(tickers) > values.MAX_PANEL_CELLS:
+            _error("invalid_member_index_population")
+        if any(ticker not in self.resolved_panel.columns for ticker in tickers):
+            _error("uncaptured_member_index_population")
+        from engine.basket_index import _live_mask
+        members = deepcopy(list(members))
+        close = self.resolved_panel.reindex(columns=tickers).copy(deep=True)
+        eligible = _live_mask(members, close.index, tickers, pit=False, close=close)
+        observed = (close.notna() & eligible).any(axis=1)
+        close = close.iloc[:int(observed.to_numpy().nonzero()[0][-1]) + 1] if bool(observed.any()) else close.iloc[:0]
+        volumes, origins = {}, {}
+        for ticker in tickers:
+            if self.resolution["price_source"].get(ticker) != "primary_breadth":
+                continue
+            group = self.primary_metadata["merge"]["source"].get(ticker)
+            if group not in self.groups or ticker not in self.groups[group]["volume"]:
+                continue
+            original = self.groups[group]["close"][ticker].reindex(close.index)
+            matching = original.notna() & close[ticker].notna() & original.eq(close[ticker])
+            actual = self.groups[group]["volume"][ticker].reindex(close.index).where(matching)
+            if bool(actual.notna().any()):
+                volumes[ticker] = actual.copy(deep=True)
+                origins[ticker] = group
+        volume = pd.DataFrame(volumes, index=close.index) if volumes else None
+        evidence = {"bundle_source_session": self.source_session,
+            "member_observation_session": str(close.index[-1].date()) if len(close) else None,
+            "close_source": {t: self.resolution["price_source"].get(t) for t in tickers},
+            "volume_source": origins, "volume_unavailable": [t for t in tickers if t not in volumes],
+            "range_fields": "not_supplied", "index_construction": "equal_weight_close_returns",
+            "source_basis": dict(self.resolution["source_basis"])}
+        return close, volume, evidence
+
 
 @dataclass(frozen=True)
 class VerifiedBreadthMemberGeneration:

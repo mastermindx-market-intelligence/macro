@@ -356,3 +356,24 @@ The source now contains a fixed19member private generation for the three broad g
 The actual temporary publication/read/basket-calculation path passed focused verification with checkout reads forbidden. Final contract49, affected consumer76, expanded254 and generic publisher68 tests passed; these counts overlap and are not additive. Exact receipts, limits, source provenance and independent baseline fixture hashes are in `BREADTH_MEMBER_GENERATION_CONTRACT_2026-11-06.md`. Runtime ownership, provider freshness, release and authenticated beta remain unproven.
 
 Next safe source slice: use genuine captured member fields to extract the existing close-index kernel for Sector cycles. The primary capture has close/high/low/volume, and extras have only close; no open or alternate close basis may be synthesized. Then finish the data-only handoff/board and full producer, alongside the existing updater/CI/Terminal release lanes.
+
+
+## Captured member-index milestone — 2026-11-06
+
+The existing basket close-index calculation now accepts actual captured close and
+optional volume inputs. Its legacy OHLC path shares the same numerical kernel.
+The private thematic generation feeds the existing Sector `MemberIndexCandle`
+without a loader or synthesized range fields. The endpoint clock excludes removed
+members, and an older population cannot be served as a current Sector candle.
+Separate amalgam populations remain an explicit next input obligation.
+
+The complete affected gate passed 204 tests; six warnings concern pytest's old
+temporary-directory cleanup. Literal pre-extraction numerical fixtures, actual
+private publication/read/consumer proof and the baseline Canadian-fixture diagnosis
+are recorded in [the member-index contract](MEMBER_INDEX_EXPLICIT_INPUTS_2026-11-06.md).
+No provider acquisition, runtime transfer, release or authenticated beta is implied.
+
+Next safe source slice: extract the existing Pulse projection and basket/Brief
+handoff assembly over explicit archive, calibration and display inputs, then the
+canonical board and final Sector composer. Source updater recovery, CI capability,
+protected releases and Terminal/authenticated beta remain separate open lanes.
