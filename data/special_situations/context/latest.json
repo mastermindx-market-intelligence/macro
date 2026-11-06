@@ -1,16 +1,16 @@
 {
   "schema": "special_sits_context.v1",
   "asof": "2026-11-06",
-  "built": "2026-11-06T10:07:56Z",
+  "built": "2026-11-06T12:32:36Z",
   "is_context_only": true,
   "disclaimer": "Context only — event tracking + display-tier setup ranking, never a signal or sizing input.",
   "counts": {
     "total": 1570,
-    "new_today": 132,
+    "new_today": 133,
     "grade_a": 0,
-    "grade_b": 1,
+    "grade_b": 2,
     "with_arb": 10,
-    "cross_border": 537
+    "cross_border": 538
   },
   "top_setups": [
     {
@@ -35,6 +35,48 @@
       ]
     },
     {
+      "ticker": "DNLI",
+      "company": "Denali Therapeutics Inc.",
+      "category": "Divestitures",
+      "stage": "",
+      "grade": "B",
+      "score": 60.0,
+      "tier": "T1",
+      "mc_musd": 3700.0,
+      "date_filed": "2026-06-21",
+      "why": [
+        "Buy setup live",
+        "Deeply oversold (weeks)",
+        "Strong history for this event type"
+      ],
+      "why_zh": [
+        "买点设置已触发",
+        "周线深度超卖",
+        "此类事件历史表现强"
+      ]
+    },
+    {
+      "ticker": "SGHC",
+      "company": "Super Group (SGHC) Ltd",
+      "category": "Capital Returns",
+      "stage": "announced",
+      "grade": "C",
+      "score": 54.0,
+      "tier": "T2",
+      "mc_musd": null,
+      "date_filed": "2026-11-03",
+      "why": [
+        "Buy setup live",
+        "Deeply oversold (weeks)",
+        "EDGAR filing confirmed"
+      ],
+      "why_zh": [
+        "买点设置已触发",
+        "周线深度超卖",
+        "EDGAR披露已确认"
+      ]
+    },
+    {
       "ticker": "HTO",
       "company": "H2O AMERICA",
       "category": "Capital Returns",
@@ -53,6 +95,48 @@
         "买点设置已触发",
         "周线深度超卖",
         "板块领跑轮动"
+      ]
+    },
+    {
+      "ticker": "NMRA",
+      "company": "Neumora Therapeutics, Inc.",
+      "category": "Delistings",
+      "stage": "notice",
+      "grade": "C",
+      "score": 50.4,
+      "tier": "T1",
+      "mc_musd": 2262.0855350384445,
+      "date_filed": "2026-11-02",
+      "why": [
+        "Buy setup live",
+        "Deeply oversold (weeks)",
+        "Sector leading rotation"
+      ],
+      "why_zh": [
+        "买点设置已触发",
+        "周线深度超卖",
+        "EDGAR披露已确认"
+      ]
+    },
+    {
+      "ticker": "USGO",
+      "company": "U.S. GoldMining Inc.",
+      "category": "Delistings",
+      "stage": "notice",
+      "grade": "C",
+      "score": 46.8,
+      "tier": "T1",
+      "mc_musd": null,
+      "date_filed": "2026-11-03",
+      "why": [
+        "Buy setup live",
+        "Deeply oversold (weeks)",
+        "EDGAR filing confirmed"
+      ],
+      "why_zh": [
+        "买点设置已触发",
+        "周线深度超卖",
+        "EDGAR披露已确认"
       ]
     },
     {
@@ -113,15 +197,15 @@
       ]
     },
     {
-      "ticker": "BBUC",
-      "company": "Brookfield Business Corporation",
-      "category": "Divestitures",
-      "stage": "",
+      "ticker": "HBCYF",
+      "company": "HSBC HOLDINGS PLC",
+      "category": "Issuer Tenders",
+      "stage": "live",
       "grade": "C",
-      "score": 40.0,
+      "score": 40.5,
       "tier": null,
-      "mc_musd": 9700.0,
-      "date_filed": "2026-06-21",
+      "mc_musd": null,
+      "date_filed": "2026-11-05",
       "why": [
         "Deeply oversold (weeks)",
         "Strong history for this event type",
@@ -136,6 +220,13 @@
   ],
   "changes": {
     "items": [
+      {
+        "kind": "new",
+        "ticker": "BEEM",
+        "category": "Deal Terminations",
+        "from": null,
+        "to": "announced"
+      },
       {
         "kind": "new",
         "ticker": "HOS",
@@ -243,13 +334,6 @@
       },
       {
         "kind": "new",
-        "ticker": "EZGO",
-        "category": "Other",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
         "ticker": "HBCYF",
         "category": "Issuer Tenders",
         "from": null,
@@ -271,10 +355,10 @@
       },
       {
         "kind": "new",
-        "ticker": "KHC",
-        "category": "Divestitures",
+        "ticker": "CDLR",
+        "category": "Going-Private",
         "from": null,
-        "to": "announced"
+        "to": "live"
       },
       {
         "kind": "new",
@@ -286,13 +370,6 @@
       {
         "kind": "new",
         "ticker": "BPPFF",
-        "category": "Divestitures",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "GIL",
         "category": "Divestitures",
         "from": null,
         "to": "announced"
@@ -418,7 +495,21 @@
       },
       {
         "kind": "new",
-        "ticker": "LOB-PA",
+        "ticker": "BIVIW",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "BRBI",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "GIL",
         "category": "Capital Returns",
         "from": null,
         "to": "announced"
@@ -1047,11 +1138,11 @@
         "to": "vote-scheduled"
       },
       {
-        "kind": "grade_down",
-        "ticker": "USGO",
-        "category": "Delistings",
-        "from": "C",
-        "to": null
+        "kind": "grade_up",
+        "ticker": "SGHC",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "C"
       },
       {
         "kind": "stage",
@@ -1073,13 +1164,6 @@
         "category": "Divestitures",
         "from": null,
         "to": "announced"
-      },
-      {
-        "kind": "grade_down",
-        "ticker": "NMRA",
-        "category": "Delistings",
-        "from": "C",
-        "to": null
       },
       {
         "kind": "grade_down",
@@ -1138,13 +1222,6 @@
         "to": null
       },
       {
-        "kind": "grade_down",
-        "ticker": "DNLI",
-        "category": "Divestitures",
-        "from": "B",
-        "to": null
-      },
-      {
         "kind": "grade_up",
         "ticker": "BBUC",
         "category": "Divestitures",
@@ -1166,7 +1243,7 @@
         "to": "C"
       }
     ],
-    "n": 147
+    "n": 146
   },
   "prev_state": {
     "asof": "2026-11-04",
@@ -7238,16 +7315,16 @@
     }
   },
   "_current_by_key": {
+    "BEEM|Deal Terminations": {
+      "stage": "announced",
+      "grade": null
+    },
     "HOS|Deal Terminations": {
       "stage": "announced",
       "grade": null
     },
     "GMED|Capital Returns": {
       "stage": "announced",
-      "grade": null
-    },
-    "nan|Tender Offers": {
-      "stage": "live",
       "grade": null
     },
     "SVM|Strategic Reviews": {
@@ -7302,17 +7379,13 @@
       "stage": "announced",
       "grade": null
     },
-    "EZGO|Other": {
-      "stage": "announced",
-      "grade": null
-    },
     "nan|Issuer Tenders": {
       "stage": "live",
       "grade": null
     },
     "HBCYF|Issuer Tenders": {
       "stage": "live",
-      "grade": null
+      "grade": "C"
     },
     "PMM|Issuer Tenders": {
       "stage": "live",
@@ -7322,11 +7395,15 @@
       "stage": "live",
       "grade": null
     },
-    "nan|Divestitures": {
-      "stage": "announced",
+    "nan|Going-Private": {
+      "stage": "live",
       "grade": null
     },
-    "KHC|Divestitures": {
+    "CDLR|Going-Private": {
+      "stage": "live",
+      "grade": null
+    },
+    "nan|Divestitures": {
       "stage": "announced",
       "grade": null
     },
@@ -7335,10 +7412,6 @@
       "grade": null
     },
     "BPPFF|Divestitures": {
-      "stage": "announced",
-      "grade": null
-    },
-    "GIL|Divestitures": {
       "stage": "announced",
       "grade": null
     },
@@ -7410,7 +7483,15 @@
       "stage": "announced",
       "grade": null
     },
-    "LOB-PA|Capital Returns": {
+    "BIVIW|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
+    "BRBI|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
+    "GIL|Capital Returns": {
       "stage": "announced",
       "grade": null
     },
@@ -7976,7 +8057,7 @@
     },
     "SGHC|Capital Returns": {
       "stage": "announced",
-      "grade": null
+      "grade": "C"
     },
     "SKY|Capital Returns": {
       "stage": "announced",
@@ -8920,10 +9001,6 @@
     },
     "RAASY|Going-Private": {
       "stage": "closed",
-      "grade": null
-    },
-    "nan|Going-Private": {
-      "stage": "live",
       "grade": null
     },
     "RNW|Going-Private": {

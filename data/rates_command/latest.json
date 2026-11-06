@@ -1,7 +1,7 @@
 {
   "schema": "rates_command.v1",
   "asof": "2026-11-05",
-  "built": "2026-11-06T10:40:00.779459+00:00",
+  "built": "2026-11-06T13:01:37.269888+00:00",
   "display_only": true,
   "authority": false,
   "board": {
@@ -1622,7 +1622,7 @@
     "components": {
       "d1": {
         "input_id": "data/bonds/bond_health.json#/fed_path/effr_meeting_path",
-        "content_ref": "bb1f938558c340f40c4fc814b2582e7e6baad447ea96b67eed6ab8be3d8bd31a",
+        "content_ref": "2fe1b14b94c9d8e99a7c070769d9028a44154bd0c4c2451d89c1cbd5b337543b",
         "cutoff": null,
         "state": "missing"
       },
@@ -1634,7 +1634,7 @@
       },
       "t0_rate_path": {
         "input_id": "data/bonds/bond_health.json#/fed_path/effr_meeting_path",
-        "content_ref": "bb1f938558c340f40c4fc814b2582e7e6baad447ea96b67eed6ab8be3d8bd31a",
+        "content_ref": "2fe1b14b94c9d8e99a7c070769d9028a44154bd0c4c2451d89c1cbd5b337543b",
         "cutoff": "2026-11-06",
         "state": "present"
       }
@@ -1648,11 +1648,61 @@
     "status": "unavailable",
     "reason": "i0_stale"
   },
+  "policy_path_repricing": {
+    "schema": "rate_futures.repricing.v1",
+    "evaluated_at": "2026-11-06T13:01:37.240408+00:00",
+    "asof": "2026-11-05",
+    "historical_availability_qualified": false,
+    "display_only": true,
+    "authority": false,
+    "can_score": false,
+    "can_rank": false,
+    "can_size": false,
+    "can_gate": false,
+    "can_trade": false,
+    "families": {
+      "zq": {
+        "status": "unavailable",
+        "rate_family": "EFFR",
+        "horizons": {},
+        "historical_availability_qualified": false,
+        "display_only": true,
+        "authority": false,
+        "can_score": false,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_trade": false,
+        "reason": "missing_source"
+      },
+      "sofr": {
+        "status": "unavailable",
+        "rate_family": "SOFR",
+        "horizons": {},
+        "historical_availability_qualified": false,
+        "display_only": true,
+        "authority": false,
+        "can_score": false,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_trade": false,
+        "reason": "missing_source"
+      }
+    },
+    "caveats": [
+      "Matched-contract changes include fixings and risk premia; not a causal policy shock.",
+      "Rolling coordinates use the incumbent whole-month centre approximation.",
+      "Provider daily Close is not authenticated exchange settlement.",
+      "Latest-vintage storage and capture clocks do not certify historical availability.",
+      "This is measured context, not a directional forecast or trading permission."
+    ]
+  },
   "regime_outlook": {
     "schema_version": "regime_outlook.v1",
     "scope": "US",
-    "analysis_cutoff": "2026-11-06T10:40:00.769711+00:00",
-    "built_at": "2026-11-06T10:40:00.771207+00:00",
+    "analysis_cutoff": "2026-11-06T13:01:37.259954+00:00",
+    "built_at": "2026-11-06T13:01:37.261266+00:00",
     "mapping_version": "VERDICT_MAPPING_V2",
     "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
     "inputs": {
@@ -1663,7 +1713,7 @@
       },
       "R": {
         "path": "data/regime/latest.json",
-        "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
+        "sha256": "b295f1f643607fd46695c693c023d2f0036810917b2462ca9c830ff8f0d24908",
         "read_status": "available"
       },
       "M": {
@@ -1683,7 +1733,7 @@
       },
       "B": {
         "path": "data/bonds/bond_health.json",
-        "sha256": "bb1f938558c340f40c4fc814b2582e7e6baad447ea96b67eed6ab8be3d8bd31a",
+        "sha256": "2fe1b14b94c9d8e99a7c070769d9028a44154bd0c4c2451d89c1cbd5b337543b",
         "read_status": "available"
       },
       "C": {
@@ -2306,7 +2356,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/labor_nowcast/read",
-          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
+          "sha256": "b295f1f643607fd46695c693c023d2f0036810917b2462ca9c830ff8f0d24908",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-05",
           "precision": "date",
@@ -2343,7 +2393,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/state",
-          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
+          "sha256": "b295f1f643607fd46695c693c023d2f0036810917b2462ca9c830ff8f0d24908",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-30",
           "precision": "date",
@@ -2380,7 +2430,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/complacency/breadth_div",
-          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
+          "sha256": "b295f1f643607fd46695c693c023d2f0036810917b2462ca9c830ff8f0d24908",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-05",
           "precision": "date",
@@ -2417,7 +2467,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/label",
-          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
+          "sha256": "b295f1f643607fd46695c693c023d2f0036810917b2462ca9c830ff8f0d24908",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-05",
           "precision": "date",
@@ -2454,7 +2504,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
+          "sha256": "b295f1f643607fd46695c693c023d2f0036810917b2462ca9c830ff8f0d24908",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-05",
           "precision": "date",
@@ -2565,7 +2615,7 @@
         "source": {
           "artifact": "B",
           "pointer": "/fed_path/implied_cuts_12m",
-          "sha256": "bb1f938558c340f40c4fc814b2582e7e6baad447ea96b67eed6ab8be3d8bd31a",
+          "sha256": "2fe1b14b94c9d8e99a7c070769d9028a44154bd0c4c2451d89c1cbd5b337543b",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-05",
           "precision": "date",
@@ -2634,7 +2684,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
+          "sha256": "b295f1f643607fd46695c693c023d2f0036810917b2462ca9c830ff8f0d24908",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-05",
           "precision": "date",
@@ -2856,7 +2906,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/trend",
-          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
+          "sha256": "b295f1f643607fd46695c693c023d2f0036810917b2462ca9c830ff8f0d24908",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-10-30",
           "precision": "date",
@@ -2893,7 +2943,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-          "sha256": "f093c3aeeaeb67914fc824cba28fbecb2894e345a438f36858ca5c3e7c6454cb",
+          "sha256": "b295f1f643607fd46695c693c023d2f0036810917b2462ca9c830ff8f0d24908",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-05",
           "precision": "date",
