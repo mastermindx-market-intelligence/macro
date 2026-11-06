@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-11-06T09:25:40.208045+00:00",
+  "generated_utc": "2026-11-06T11:12:47.375262+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -799,12 +799,13 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.25,
+      "alt_score": 5,
+      "alt_weighted": 1.45,
       "alt_channels": [
         "affiliation",
         "github_momentum",
         "lobbying",
+        "special_situation",
         "stocktwits_bull"
       ],
       "top_holder": {
@@ -999,10 +1000,11 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 6,
-      "alt_weighted": 2.45,
+      "alt_score": 7,
+      "alt_weighted": 2.8,
       "alt_channels": [
         "affiliation",
+        "analyst_upgrade_cluster",
         "app_demand",
         "github_momentum",
         "hf_model_momentum",
@@ -1047,6 +1049,34 @@
         "title": "Institution",
         "shares": 174802084
       }
+    },
+    {
+      "ticker": "IEP",
+      "actors": [
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "CONTROLS",
+          "provenance": "FACT",
+          "qualitative": false
+        },
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 2,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.7,
+      "alt_channels": [
+        "affiliation",
+        "special_situation"
+      ],
+      "top_holder": null
     },
     {
       "ticker": "GOOGL",
@@ -1519,33 +1549,6 @@
         "title": "Institution",
         "shares": 3648400
       }
-    },
-    {
-      "ticker": "IEP",
-      "actors": [
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "CONTROLS",
-          "provenance": "FACT",
-          "qualitative": false
-        },
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 2,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": null
     },
     {
       "ticker": "ASML",
