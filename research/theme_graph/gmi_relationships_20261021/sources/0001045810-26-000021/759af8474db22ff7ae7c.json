@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T21:42:19Z",
+ "accession": "0001045810-26-000021",
+ "cik": "0001045810",
+ "doc_byte_length": 1967931,
+ "doc_sha256": "da9d303996fc11fe1e7d64c463bc3b338521fbf1291eacda3e269d446abfaa36",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2026-01-25",
+ "primary_document": "nvda-20260125.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 307737,
+  "byte_start": 307409,
+  "normalized": "We have entered into an intellectual property license arrangement with Groq, Inc., or Groq, that required significant, nonrefundable payments. Successfully incorporating the licensed technology into our architectures and product roadmaps requires significant engineering effort and may not occur on expected timelines or at all.",
+  "normalized_sha256": "759af8474db22ff7ae7c428a871956b0cba39e4a82956a99e3447a85ef0cd2a0",
+  "raw": "We have entered into an intellectual property license arrangement with Groq, Inc., or Groq, that required significant, nonrefundable payments. Successfully incorporating the licensed technology into our architectures and product roadmaps requires significant engineering effort and may not occur on expected timelines or at all.",
+  "raw_sha256": "759af8474db22ff7ae7c428a871956b0cba39e4a82956a99e3447a85ef0cd2a0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+ "xbrl_contexts": []
+}

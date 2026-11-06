@@ -481,6 +481,7 @@ from engine.prophet_early_leadership_evidence import (
     EarlyLeadershipEvidenceError,
     build_early_leadership_evidence,
 )
+from engine.theme_graph.theme_state import canonical_sha256, compose_state, read_theme_state
 
 
 _DECISION = "2026-09-29T20:10:00Z"
@@ -489,6 +490,57 @@ _KNOWN = "2026-09-29T20:05:00Z"
 _THEME = "theme:memory-storage"
 _ISSUER = "ISS:A"
 _SECURITY = "SEC:XNAS:A"
+
+
+def _leadership_theme_owner_read(*, allowed=True, purpose="research_internal",
+                                 qualified=False, effective_at=_ASOF, known_at=_KNOWN,
+                                 subject_id=_THEME, graph_generation_id="fixture:theme-graph:1"):
+    """Exercise the real ThemeState owner with synthetic, outcome-blind receipts."""
+    payloads = {
+        "ontology": {"canonical_mapping": {"state": "SUBJECT_IS_CANONICAL", "theme_node_ids": []}},
+        "identity": {"status": "RESOLVED"},
+        "membership": {
+            "status": "AVAILABLE", "members": [_SECURITY, "SEC:XNAS:B"],
+            "declared_count": 2, "eligible_count": 2, "observed_count": 2,
+        },
+        "rights": {"allowed": allowed, "purpose": purpose},
+    }
+    if qualified:
+        payloads["eligibility"] = {
+            "status": "QUALIFIED", "policy_revision": "fixture:research-policy:1", "reason_codes": [],
+            "applicability": {
+                "basis": "CURRENT_DATA_QUALIFICATION",
+                "qualified_graph_generation_id": graph_generation_id,
+                "subject_id": subject_id,
+            },
+        }
+    generations = {role: "fixture:" + role + ":1" for role in payloads}
+    owners = {}
+    for role, payload in payloads.items():
+        owners[role] = {
+            "owner": role, "schema": "fixture." + role + "/v1",
+            "generation_id": generations[role], "graph_generation_id": graph_generation_id,
+            "subject_id": subject_id, "query": {"effective_at": effective_at, "known_at": known_at},
+            "effective_at": effective_at, "known_at": known_at,
+            "available_at": effective_at, "recorded_at": known_at,
+            "availability": "AVAILABLE", "payload": payload, "sha256": canonical_sha256(payload),
+        }
+    owners.setdefault("eligibility", None)
+    artifact = compose_state(
+        [{
+            "node_id": subject_id, "kind": "canonical_theme",
+            "name_en": "Memory Storage", "name_zh": "存储",
+            "source_family": None, "native_id": None,
+            "owners": owners, "observations": {}, "canonical_aggregation": None,
+        }],
+        graph_generation_id=graph_generation_id, owner_generations=generations,
+        effective_at=effective_at, known_at=known_at, generated_at=known_at,
+        require_eligibility_applicability=True,
+    )
+    return read_theme_state(
+        artifact, subject_id, effective_at=effective_at, known_at=known_at,
+        expected_generation_id=artifact["generation_id"],
+    )
 
 
 def _leadership_inputs():
@@ -561,6 +613,7 @@ def _leadership_inputs():
         "authority": "display",
         "rights_state": "internal_allowed",
         "receipts": ["gmi:theme-state:receipt"],
+        "owner_read": _leadership_theme_owner_read(),
     }
     exposure = {
         "schema": "prophet.economic_exposure_read/v1",
@@ -933,6 +986,9 @@ def _clock_inputs(asof="2026-09-29T20:00:00.100Z"):
     exposure["known_at"] = "2026-09-29T19:57:00.100Z"
     geometry["quote_asof"] = "2026-09-29T20:08:00.100Z"
     geometry["known_at"] = "2026-09-29T20:09:00.100Z"
+    theme["owner_read"] = _leadership_theme_owner_read(
+        effective_at=theme["asof"], known_at=theme["known_at"],
+    )
     return candidate, peer, theme, exposure, setup, geometry
 
 
@@ -1021,3 +1077,154 @@ def test_material_owner_clock_change_changes_evidence_identity():
         economic_exposure=exposure2, setup_observation=setup2, entry_geometry=geometry2,
     )
     assert first["evidence_id"] != second["evidence_id"]
+
+
+# Rights repair: the real canonical owner decides availability; display labels cannot grant it.
+@pytest.mark.parametrize("qualified, status", [(False, "DESCRIPTIVE"), (True, "QUALIFIED")])
+def test_early_leadership_accepts_available_canonical_owner_reads(qualified, status):
+    theme = _leadership_inputs()[2]
+    theme["owner_read"] = _leadership_theme_owner_read(qualified=qualified)
+    assert theme["owner_read"]["status"] == status
+    out = _build_leadership(theme_state=theme)
+    assert out["research_state"] == "READY_FOR_RESEARCH_COMPARISON"
+    assert out["theme_state_projection"]["owner_read"]["status"] == status
+    assert len(out["authority"]) == 9
+    assert all(value is False for value in out["authority"].values())
+
+
+@pytest.mark.parametrize("allowed, purpose", [
+    (False, "research_internal"), ("true", "research_internal"),
+    (1, "research_internal"), (True, "publication"),
+])
+@pytest.mark.parametrize("label", ["internal_allowed", "approved", "arbitrary_positive_label"])
+def test_early_leadership_labels_cannot_override_canonical_rights_refusal(allowed, purpose, label):
+    theme = _leadership_inputs()[2]
+    theme["rights_state"] = label
+    theme["owner_read"] = _leadership_theme_owner_read(allowed=allowed, purpose=purpose)
+    assert theme["owner_read"]["status"] == "UNAVAILABLE"
+    assert "RIGHTS_NOT_ADMITTED" in theme["owner_read"]["reason_codes"]
+    out = _build_leadership(theme_state=theme)
+    assert out["research_state"] == "UNAVAILABLE"
+    assert out["research_features"]["theme_acceleration"] == pytest.approx(0.25)
+    assert out["theme_state_projection"]["owner_read"]["subject_availability"] is None
+    assert all(value is False for value in out["authority"].values())
+
+
+@pytest.mark.parametrize("label", ["RIGHTS_BLOCKED", "UNAVAILABLE"])
+def test_early_leadership_preserves_local_negative_rights_evidence(label):
+    theme = _leadership_inputs()[2]
+    theme["rights_state"] = label
+    assert theme["owner_read"]["status"] == "DESCRIPTIVE"
+    assert _build_leadership(theme_state=theme)["research_state"] == "UNAVAILABLE"
+
+
+@pytest.mark.parametrize("missing", [True, False])
+def test_early_leadership_requires_canonical_owner_read(missing):
+    theme = _leadership_inputs()[2]
+    if missing:
+        del theme["owner_read"]
+    else:
+        theme["owner_read"] = None
+    with pytest.raises(EarlyLeadershipEvidenceError, match="theme_owner_read_not_object"):
+        _build_leadership(theme_state=theme)
+
+
+@pytest.mark.parametrize("field, value, error", [
+    ("schema", "theme_state/v1", "schema_invalid"),
+    ("status", "READY", "status_invalid"),
+    ("status", [], "status_invalid"),
+    ("reason_codes", "RIGHTS_NOT_ADMITTED", "reasons_invalid"),
+    ("reason_codes", [""], "reasons_invalid"),
+    ("reason_codes", ["UNPROVEN"], "available_invalid"),
+    ("subject_id", "theme:other", "subject_mismatch"),
+    ("state_sha256", "z" * 64, "digest_invalid"),
+    ("state_sha256", "a" * 63, "digest_invalid"),
+    ("generation_id", "another-generation", "generation_mismatch"),
+    ("effective_at", "2026-09-29T20:00:00.000001Z", "effective_at_mismatch"),
+    ("known_at", "2026-09-29T20:05:00.000001Z", "clock_invalid"),
+    ("known_at", "2026-09-29", "known_at_invalid"),
+    ("state_generated_at", "2026-09-29T20:05:00.000001Z", "clock_invalid"),
+    ("state_generated_at", "2026-09-29T19:59:59Z", "clock_invalid"),
+    ("subject", None, "available_invalid"),
+])
+def test_early_leadership_refuses_malformed_or_unbound_owner_reads(field, value, error):
+    theme = _leadership_inputs()[2]
+    theme["owner_read"][field] = value
+    with pytest.raises(EarlyLeadershipEvidenceError, match="theme_owner_read_" + error):
+        _build_leadership(theme_state=theme)
+
+
+@pytest.mark.parametrize("change", ["extra_field", "missing_field"])
+def test_early_leadership_owner_read_contract_is_closed(change):
+    theme = _leadership_inputs()[2]
+    if change == "extra_field":
+        theme["owner_read"]["local_rights_override"] = True
+        error = "fields_not_closed"
+    else:
+        del theme["owner_read"]["state_sha256"]
+        error = "schema_invalid"
+    with pytest.raises(EarlyLeadershipEvidenceError, match="theme_owner_read_" + error):
+        _build_leadership(theme_state=theme)
+
+
+@pytest.mark.parametrize("field, value", [
+    ("node_id", "theme:other"), ("availability", "UNAVAILABLE"),
+    ("reason_codes", ["RIGHTS_NOT_ADMITTED"]),
+])
+def test_early_leadership_available_read_requires_available_matching_subject(field, value):
+    theme = _leadership_inputs()[2]
+    theme["owner_read"]["subject"][field] = value
+    with pytest.raises(EarlyLeadershipEvidenceError, match="theme_owner_read_available_invalid"):
+        _build_leadership(theme_state=theme)
+
+
+@pytest.mark.parametrize("qualified", [False, True])
+def test_early_leadership_owner_read_status_must_match_eligibility(qualified):
+    theme = _leadership_inputs()[2]
+    theme["owner_read"] = _leadership_theme_owner_read(qualified=qualified)
+    theme["owner_read"]["status"] = "DESCRIPTIVE" if qualified else "QUALIFIED"
+    with pytest.raises(EarlyLeadershipEvidenceError, match="theme_owner_read_eligibility_mismatch"):
+        _build_leadership(theme_state=theme)
+
+
+@pytest.mark.parametrize("change", ["missing_reasons", "retained_subject"])
+def test_early_leadership_unavailable_read_cannot_claim_a_subject(change):
+    theme = _leadership_inputs()[2]
+    available_subject = theme["owner_read"]["subject"]
+    theme["owner_read"] = _leadership_theme_owner_read(allowed=False)
+    if change == "missing_reasons":
+        theme["owner_read"]["reason_codes"] = []
+    else:
+        theme["owner_read"]["subject"] = available_subject
+    with pytest.raises(EarlyLeadershipEvidenceError, match="theme_owner_read_unavailable_invalid"):
+        _build_leadership(theme_state=theme)
+
+
+def test_early_leadership_owner_generation_is_content_addressed_without_raw_receipts():
+    theme = _leadership_inputs()[2]
+    original = copy.deepcopy(theme)
+    first = _build_leadership(theme_state=theme)
+    assert theme == original
+    projection = first["theme_state_projection"]["owner_read"]
+    assert set(projection) == {
+        "schema", "status", "reason_codes", "subject_id", "generation_id",
+        "state_sha256", "state_generated_at", "effective_at", "known_at", "subject_availability",
+    }
+    assert "owner_receipts" not in json.dumps(first)
+    assert "payload" not in projection
+    theme["owner_read"] = _leadership_theme_owner_read(graph_generation_id="fixture:theme-graph:2")
+    second = _build_leadership(theme_state=theme)
+    assert second["evidence_id"] != first["evidence_id"]
+    assert second["research_features"] == first["research_features"]
+    projection["reason_codes"].append("OUTPUT_MUTATED")
+    assert original["owner_read"]["reason_codes"] == []
+    assert theme["owner_read"]["reason_codes"] == []
+
+
+def test_early_leadership_owner_read_preserves_equivalent_precise_clock_spellings():
+    theme = _leadership_inputs()[2]
+    first = _build_leadership(theme_state=theme)
+    for field in ("effective_at", "known_at", "state_generated_at"):
+        theme["owner_read"][field] = theme["owner_read"][field].replace("Z", "+00:00")
+    second = _build_leadership(theme_state=theme)
+    assert second["evidence_id"] == first["evidence_id"]

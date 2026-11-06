@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-24T22:14:48Z",
+ "accession": "0001193125-26-067506",
+ "cik": "0000851310",
+ "doc_byte_length": 3283293,
+ "doc_sha256": "7a454472c5841f29903ab7796a3b99189e63e83cc86d206c242d4cb4f14ec219",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "hlit-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 384806,
+  "byte_start": 383903,
+  "normalized": "Difficulties in managing relationships with any of our current contract manufacturers, particularly Plexus, that manufacture our products off-shore, or any of our suppliers of key components, subassemblies and modules used in our products, could impede our ability to meet our customers’ requirements and adversely affect our operating results. An inability to obtain adequate and timely deliveries of our products or any components or materials used in our products, or the inability of any of our contract manufacturers to scale their production to meet demand, or any other circumstance that would require us to seek alternative sources of supply, would negatively affect our ability to ship our products on a timely basis, which could damage relationships with current and prospective customers and harm our business and materially and adversely affect our revenue and other operating results.",
+  "normalized_sha256": "9a755dbb6672932260bef5594982cbf120f102992cc5b4764149fd7ef0a22f21",
+  "raw": "Difficulties in managing relationships with any of our current contract manufacturers, particularly Plexus, that manufacture our products off-shore, or any of our suppliers of key components, subassemblies and modules used in our products, could impede our ability to meet our customers&#8217; requirements and adversely affect our operating results. An inability to obtain adequate and timely deliveries of our products or any components or materials used in our products, or the inability of any of our contract manufacturers to scale their production to meet demand, or any other circumstance that would require us to seek alternative sources of supply, would negatively affect our ability to ship our products on a timely basis, which could damage relationships with current and prospective customers and harm our business and materially and adversely affect our revenue and other operating results.",
+  "raw_sha256": "161153a75eaa77bd6217b5f4622c75d22c5a3d9f870e7050123043575aa674a5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/851310/000119312526067506/hlit-20251231.htm",
+ "xbrl_contexts": []
+}

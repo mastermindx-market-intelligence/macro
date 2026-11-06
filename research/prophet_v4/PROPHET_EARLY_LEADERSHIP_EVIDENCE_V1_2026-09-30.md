@@ -169,3 +169,53 @@ not hosted execution proof. Independent re-review and the new exact-head hosted
 result remain required; source-owned ThemeState and H1 evaluation/rights admission
 are separate. No numerical feature definitions, rank, B1/B4, plan, sizing or
 trading authority are changed.
+
+
+## 2026-11-06 canonical owner-read repair
+
+**Current source status: implemented, pending new exact-head hosted proof.**
+The earlier test counts above describe their dated source revisions. They do
+not establish execution of this repair or admission to H1 research.
+
+The ThemeState projection now requires `owner_read`, obtained from the existing
+`engine.theme_graph.theme_state.read_theme_state` owner. The consumer binds its
+closed `gmi.theme_state_read/v1` shape, subject, generation/state digest,
+precise effective/known/generated clocks, status, reasons and available subject.
+DESCRIPTIVE and QUALIFIED are both sufficient source states for a research
+comparison when every other existing input qualifies. UNAVAILABLE requires
+reasons and no asserted subject, and cannot produce research readiness.
+Missing, malformed, mismatched or future owner reads refuse the envelope.
+
+The legacy `rights_state` label remains context. It cannot grant readiness;
+the existing RIGHTS_BLOCKED and UNAVAILABLE labels still block it. The compiler
+does not inspect rights-owner payloads or decide licensing policy. Content
+digests establish document/generation binding, not source authentication or an
+entitlement grant. Actual producer integration and owner authentication remain
+outside this pure consumer.
+
+Only receipt metadata is projected into the research envelope. Raw subject
+owner receipts and rights payloads remain with the canonical source owner.
+Accepted issuer/security and complete setup-lineage joins, microsecond clock
+distinctions, numerical decomposition and all nine false authority flags are
+preserved. An unavailable source can retain already-supplied descriptive
+numerical features; that does not make the envelope ready or permit their use
+for ranking, H1 admission, sizing or trading.
+
+The existing structural test module now builds synthetic receipts through the
+public canonical `compose_state` and `read_theme_state` functions. Added controls
+cover rights refusal, wrong purpose and non-boolean admission, positive-looking
+legacy labels, missing/malformed reads, generation/subject/clock mismatches,
+status/subject/eligibility consistency, content identity and metadata-only deep
+copy behavior. Existing assertions remain intact.
+
+Both existing CI owners retain their original gates and workloads. The
+code-gated washout-turn-organ owns the focused execution step and its exact
+compiler/test paths. The data-gated unrun-picks-boards retains that existing
+suite and gains the compiler/schema closure plus its required, already-used
+`jsonschema==4.26.0` dependency. No job, timeout, packing ceiling or runtime
+capacity is added.
+
+No local Python execution was available for this source repair. The new hosted
+CI run must supply execution evidence before source release. This source-only
+slice still provides no live selector, empirical selection improvement,
+production ThemeState adapter, H1/trial admission or financial authority.

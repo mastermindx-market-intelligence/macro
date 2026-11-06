@@ -244,6 +244,7 @@ def _theme(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
         "schema", "theme_id", "asof", "known_at", "membership_vintage",
         "member_count", "priced_member_count", "coverage", "performance",
         "dynamics", "breadth", "diffusion", "authority", "rights_state", "receipts",
+        "owner_read",
     }
     _closed(row, keys, "theme")
     if row.get("schema") != "theme_state/v1":
@@ -313,6 +314,75 @@ def _theme(row: Mapping[str, Any], decision: datetime) -> dict[str, Any]:
         "authority": authority,
         "rights_state": _text(row.get("rights_state"), "theme_rights_state_invalid"),
         "receipts": receipts_out,
+    }
+
+
+def _theme_owner_read(row: Mapping[str, Any], theme: Mapping[str, Any],
+                      decision: datetime) -> dict[str, Any]:
+    """Bind an existing ThemeState owner's read; never derive rights from a label.
+
+    The caller supplies the canonical read result. Its content digest binds the
+    generation, not source authentication or entitlement. Only read metadata is
+    projected; raw owner receipts and rights payloads stay with the source owner.
+    """
+    keys = {
+        "schema", "status", "reason_codes", "subject_id", "generation_id",
+        "state_sha256", "state_generated_at", "effective_at", "known_at", "subject",
+    }
+    _closed(row, keys, "theme_owner_read")
+    if set(row) != keys or row.get("schema") != "gmi.theme_state_read/v1":
+        raise EarlyLeadershipEvidenceError("theme_owner_read_schema_invalid")
+    status = row["status"]
+    if not isinstance(status, str) or status not in {"UNAVAILABLE", "DESCRIPTIVE", "QUALIFIED"}:
+        raise EarlyLeadershipEvidenceError("theme_owner_read_status_invalid")
+    reasons = row["reason_codes"]
+    if (not isinstance(reasons, list)
+            or any(not isinstance(reason, str) or not reason.strip() for reason in reasons)):
+        raise EarlyLeadershipEvidenceError("theme_owner_read_reasons_invalid")
+    if row["subject_id"] != theme["theme_id"]:
+        raise EarlyLeadershipEvidenceError("theme_owner_read_subject_mismatch")
+    digest = row["state_sha256"]
+    if (not isinstance(digest, str) or len(digest) != 64
+            or any(char not in "0123456789abcdef" for char in digest)):
+        raise EarlyLeadershipEvidenceError("theme_owner_read_digest_invalid")
+    if row["generation_id"] != digest[:32]:
+        raise EarlyLeadershipEvidenceError("theme_owner_read_generation_mismatch")
+    effective = _utc(row["effective_at"], "theme_owner_read_effective_at_invalid")
+    known = _utc(row["known_at"], "theme_owner_read_known_at_invalid")
+    generated = _utc(row["state_generated_at"], "theme_owner_read_generated_at_invalid")
+    if effective != _utc(theme["asof"], "theme_asof_invalid"):
+        raise EarlyLeadershipEvidenceError("theme_owner_read_effective_at_mismatch")
+    if not effective <= generated <= known <= _utc(theme["known_at"], "theme_clock_invalid") <= decision:
+        raise EarlyLeadershipEvidenceError("theme_owner_read_clock_invalid")
+
+    subject = row["subject"]
+    if status == "UNAVAILABLE":
+        if not reasons or subject is not None:
+            raise EarlyLeadershipEvidenceError("theme_owner_read_unavailable_invalid")
+        availability = None
+    else:
+        if (reasons or not isinstance(subject, Mapping)
+                or subject.get("node_id") != theme["theme_id"]
+                or subject.get("availability") != "AVAILABLE"
+                or subject.get("reason_codes") != []):
+            raise EarlyLeadershipEvidenceError("theme_owner_read_available_invalid")
+        eligibility = subject.get("eligibility")
+        if (not isinstance(eligibility, Mapping)
+                or eligibility.get("status") not in ("QUALIFIED", "NOT_QUALIFIED", "INELIGIBLE")
+                or (status == "QUALIFIED") != (eligibility["status"] == "QUALIFIED")):
+            raise EarlyLeadershipEvidenceError("theme_owner_read_eligibility_mismatch")
+        availability = subject["availability"]
+    return {
+        "schema": row["schema"],
+        "status": status,
+        "reason_codes": list(reasons),
+        "subject_id": row["subject_id"],
+        "generation_id": row["generation_id"],
+        "state_sha256": digest,
+        "state_generated_at": _iso(generated),
+        "effective_at": _iso(effective),
+        "known_at": _iso(known),
+        "subject_availability": availability,
     }
 
 
@@ -474,6 +544,12 @@ def build_early_leadership_evidence(
     if peer["return_basis"] != cand["return_basis"]:
         raise EarlyLeadershipEvidenceError("return_basis_mismatch")
 
+    theme["owner_read"] = _theme_owner_read(theme_state.get("owner_read"), theme, decision)
+    theme_source_available = (
+        theme["owner_read"]["status"] in {"DESCRIPTIVE", "QUALIFIED"}
+        and theme["rights_state"] not in {"RIGHTS_BLOCKED", "UNAVAILABLE"}
+    )
+
     if peer["measurement_state"].startswith("UNAVAILABLE"):
         decomposition = {
             "state": "UNAVAILABLE",
@@ -500,7 +576,7 @@ def build_early_leadership_evidence(
 
     mandatory_ready = (
         not peer["measurement_state"].startswith("UNAVAILABLE")
-        and theme["rights_state"] not in {"RIGHTS_BLOCKED", "UNAVAILABLE"}
+        and theme_source_available
         and exposure["economic_exposure_confirmed"]
         and setup["state"] != "UNKNOWN"
         and lineage["state"] == "BOUND"
@@ -509,7 +585,7 @@ def build_early_leadership_evidence(
         research_state = "READY_FOR_RESEARCH_COMPARISON"
     elif (
         peer["measurement_state"].startswith("UNAVAILABLE")
-        or theme["rights_state"] in {"RIGHTS_BLOCKED", "UNAVAILABLE"}
+        or not theme_source_available
     ):
         research_state = "UNAVAILABLE"
     else:
