@@ -874,7 +874,11 @@ def _load_pit_membership(pit_path=None) -> pd.DataFrame | None:
                     raw["end_date"] = pd.to_datetime(raw["end_date"])
                 else:
                     raw["end_date"] = pd.NaT
-                df = raw[["ticker", "start_date", "end_date"]].reset_index(drop=True)
+                cols = ["ticker", "start_date", "end_date"]
+                if "src" in raw.columns:
+                    raw["src"] = raw["src"].astype(str)
+                    cols.append("src")
+                df = raw[cols].reset_index(drop=True)
             else:
                 log.warning("grading: sp1500_pit_membership missing expected columns; skipping")
     except Exception as e:  # noqa: BLE001 — additive, never fatal

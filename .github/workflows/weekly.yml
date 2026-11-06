@@ -90,6 +90,11 @@ jobs:
         # calibration just leaves last week's (stale) calibration in place.
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          # Dead-name CIK/price recovery uses the same Polygon/Massive-compatible key
+          # family as daily/closing-bell. Empty secrets degrade safely; when provisioned
+          # this makes the weekly de-bias path match its documented vendor contract.
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
           # see daily.yml: turns ON browser live prices when the repo var is set.
           LIVE_QUOTES_WORKER_URL: ${{ vars.LIVE_QUOTES_WORKER_URL }}
         run: |

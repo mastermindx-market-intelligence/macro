@@ -51891,3 +51891,34 @@ jobs:
         run: pip install pytest
       - name: earnings worker service and simulated bootstrap contracts
         run: python -m pytest tests/test_earnings_worker_systemd.py -q
+
+  alpha-leadership-integrity:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - collectors/**
+      - lib/**
+      - engine/*.py
+      - engine/marketing/**
+      - config.yml
+      - config/delisted_symbols.yml
+      - scripts/__init__.py
+      - scripts/residual_alpha_phase0.py
+      - scripts/alpha_leadership_conditional_continuity.py
+      - scripts/worktree_sparse.py
+      - tests/__init__.py
+      - tests/conftest.py
+      - tests/test_residual_alpha_phase0_honesty.py
+      - tests/test_alpha_leadership_conditional_continuity.py
+    timeout-minutes: 4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install synthetic test dependencies
+        run: pip install pytest numpy pandas pyyaml
+      - name: Alpha synthetic continuity and Phase 0 honesty
+        run: python -m pytest tests/test_residual_alpha_phase0_honesty.py tests/test_alpha_leadership_conditional_continuity.py -q -p no:cacheprovider

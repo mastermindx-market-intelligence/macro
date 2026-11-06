@@ -4406,6 +4406,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Existing synthetic Alpha suites have a narrow code owner.
+    "alpha-leadership-integrity",
     # Installer simulations own their concrete source/read closure without
     # adding weight to unrelated ordinary-code packing probes.
     "earnings-worker-systemd",

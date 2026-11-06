@@ -186,7 +186,7 @@ def _polygon_cik(ticker: str) -> int | None:
     except Exception:  # noqa: BLE001
         key = None
     import os
-    key = key or os.environ.get("POLYGON_API_KEY")
+    key = key or os.environ.get("POLYGON_API_KEY") or os.environ.get("MASSIVE_API_KEY")
     if not key:
         return None
     import requests

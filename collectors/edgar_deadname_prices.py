@@ -39,7 +39,8 @@ from lib import config
 
 log = logging.getLogger(__name__)
 
-REFRESH_DAYS = 90          # delisted history is static; refresh rarely
+REFRESH_DAYS = 90          # successful delisted history is static; refresh rarely
+MISS_REFRESH_DAYS = 7       # a zero-row/vendor-unavailable miss is transient; weekly retry
 _UA = {"User-Agent": "Mozilla/5.0 (macro-dashboard research)"}
 
 # --- identity guards (a ticker string is a MUTABLE key) ------------------------
@@ -120,7 +121,7 @@ def _stooq_daily(ticker: str) -> pd.Series | None:
 def _polygon_daily(ticker: str, start: str, end: str) -> pd.Series | None:
     """Polygon daily aggregates — serves delisted tickers when a key is present."""
     import os
-    key = os.environ.get("POLYGON_API_KEY")
+    key = os.environ.get("POLYGON_API_KEY") or os.environ.get("MASSIVE_API_KEY")
     try:
         key = key or (config.load().get("polygon") or {}).get("api_key") \
             or (config.load().get("keys") or {}).get("polygon")
@@ -209,7 +210,12 @@ def fetch_dead_prices(force: bool = False, max_new: int = 150,
         if not ts:
             return True
         try:
-            return (datetime.now(timezone.utc) - pd.to_datetime(ts)).days > REFRESH_DAYS
+            age = (datetime.now(timezone.utc) - pd.to_datetime(ts)).days
+            # A miss commonly means transient IP/credential/vendor unavailability, not
+            # that the historical security has no price forever. Retry on the weekly
+            # cadence; keep successful static histories on the slow 90-day refresh.
+            ttl = MISS_REFRESH_DAYS if int((seen.get(t) or {}).get("n") or 0) == 0 else REFRESH_DAYS
+            return age >= ttl
         except Exception:  # noqa: BLE001
             return True
 

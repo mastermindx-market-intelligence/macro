@@ -178,20 +178,25 @@ def score_panel(closes, market, tkr_sector, sector_ret, *, label, win, minp,
     for d in grid:
         if d not in fwd.index:
             continue
-        fr = fwd.loc[d].dropna()
-        if membership is not None:                      # PIT: only names in the index then
-            fr = fr[fr.index.isin(_eligible(membership, d))]
-        if len(fr) < 10:
+        # Freeze the predictor universe BEFORE looking at which future labels exist.
+        # Missing forward outcomes may reduce IC coverage; they must never change the
+        # historical signal cross-section or its sector-neutral normalization.
+        eligible = list(R.columns)
+        if membership is not None:
+            members = _eligible(membership, d)
+            eligible = [t for t in eligible if t in members]
+        fr = fwd.loc[d].reindex(eligible)
+        n_labels = int(fr.notna().sum())
+        if n_labels < 10:
             continue
-        nseries.append(int(len(fr)))
+        nseries.append(n_labels)
         for c in cand:
             if d not in sigs[c].index:
                 continue
-            s = sigs[c].loc[d]
-            if membership is not None:
-                s = s[s.index.isin(fr.index)]
-            ic[c].append(rank_ic(s, fr))
-            sn = s - s.groupby(sec).transform("mean")  # within-sector demeaned
+            signal = sigs[c].loc[d].reindex(eligible)
+            ic[c].append(rank_ic(signal, fr))
+            signal_sector = sec.reindex(signal.index)
+            sn = signal - signal.groupby(signal_sector).transform("mean")
             ic[f"{c}|SN"].append(rank_ic(sn, fr))
 
     rows, pvals = {}, {}
@@ -215,32 +220,47 @@ def score_panel(closes, market, tkr_sector, sector_ret, *, label, win, minp,
             "ic": rows, "ls": ls}
 
 
-def quintile_ls(R, sig, grid, horizon, n_trials, membership=None):
-    """Long top-quintile / short bottom-quintile, EW, monthly rebalance, net of cost."""
-    w = pd.DataFrame(0.0, index=R.index, columns=R.columns)
+def _quintile_weights(R, sig, grid, membership=None):
+    """Monthly target weights; NaN means no rebalance, zero means explicit exit."""
+    w = pd.DataFrame(np.nan, index=R.index, columns=R.columns, dtype=float)
     for d in grid:
+        if d not in w.index:
+            continue
         s = sig.loc[d].dropna() if d in sig.index else pd.Series(dtype=float)
-        if membership is not None:                       # PIT: only members on date d
+        if membership is not None:
             s = s[s.index.isin(_eligible(membership, d))]
         if len(s) < 25:
             continue
         hi, lo = s.quantile(0.8), s.quantile(0.2)
         top, bot = s[s >= hi].index, s[s <= lo].index
         if len(top) and len(bot):
+            w.loc[d, :] = 0.0
             w.loc[d, top] = 1.0 / len(top)
             w.loc[d, bot] = -1.0 / len(bot)
-    w = w.replace(0.0, np.nan).ffill().fillna(0.0)
+    return w.ffill().fillna(0.0)
+
+
+def quintile_ls(R, sig, grid, horizon, n_trials, membership=None):
+    """Long/short monthly-rebalanced sleeve, EW, net of cost.
+
+    ``horizon`` bounds the scorecard/grid span; it is NOT a fixed holding period.
+    Missing returns on a held name make that day's sleeve P&L unresolved rather
+    than silently renormalizing over the surviving positions.
+    """
+    w = _quintile_weights(R, sig, grid, membership=membership)
     pos = w.shift(1)
-    # clip daily returns at ±50% — kills garbage ticks in thin/delisted yahoo
-    # history that otherwise blow the compounded LS to ±inf (rank-IC is immune).
-    gross = (pos * R.clip(-0.5, 0.5)).sum(axis=1)
+    held_missing = pos.ne(0.0) & R.isna()
+    gross = (pos * R).sum(axis=1, min_count=1)
+    gross[held_missing.any(axis=1)] = np.nan
     turn = w.diff().abs().sum(axis=1)
     net = (gross - (COST_BPS / 1e4) * turn).loc[grid[0]:]
     net = net[net.index <= grid[-1]]
     mom = ret_moments(net)
     out = {"sharpe": round(float(net.mean() / net.std() * np.sqrt(252)), 2) if net.std() else None,
-           "cum_pct": round(float(((1 + net).prod() - 1) * 100), 1),
-           "n_days": int(net.notna().sum())}
+           "cum_pct": round(float(((1 + net.dropna()).prod() - 1) * 100), 1),
+           "n_days": int(net.notna().sum()),
+           "unresolved_held_return_days": int(held_missing.any(axis=1).loc[grid[0]:grid[-1]].sum()),
+           "holding_rule": "monthly_rebalance_until_next_grid_date"}
     if mom:
         dsr = deflated_sharpe(mom[0], mom[1], mom[2], mom[3], n_trials=max(n_trials, 1),
                               trading_year=252)
