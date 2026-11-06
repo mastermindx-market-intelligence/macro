@@ -567,3 +567,35 @@ def test_valid_retained_reuse_preserves_original_time_and_checks_current_age(tmp
         now=datetime(2026, 11, 5, 23, tzinfo=timezone.utc))
     assert stale.status == "rejected", stale.detail
     assert (root / "sector/current.json").read_bytes() == pointer
+
+
+
+@pytest.mark.parametrize("audience", ["preview", "entitled"])
+def test_real_owner_composition_flows_through_private_publisher_gates_and_wire(tmp_path, audience):
+    from engine.sector_basket_documents import compose_sector_documents
+    from tests.test_sector_document_composition import captured, composition_identity, BUILT, SOURCE as COMPUTED_SOURCE
+    composition = compose_sector_documents(**captured())
+    owner = publisher.Orchestrator(live_dir=tmp_path / "public/live",
+        state_dir=tmp_path / "state", data_dir=tmp_path / "data", now=BUILT)
+    published = owner.publish_sector_documents(composition,
+        input_identity=composition_identity(composition), generation_id="all-owner-g1",
+        source_revision="all-owner-fixture", expected_current_content_id=None)
+    assert published.status == "published", published.detail
+    reader = SectorGenerationReader(generations_root=owner.state_dir / "generations", clock=lambda: BUILT)
+    client = _client(reader)
+    client.cookies.set("sb-fixture-auth-token", "fixture")
+    response = client.get("/api/sector-generation?audience=" + audience)
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["schema"] == "sector_generation.read/v1"
+    assert body["source_session"] == COMPUTED_SOURCE
+    assert body["published_at"] == published.published_at
+    assert body["qualification"] == "accepted"
+    assert body["projection"]["receipt"]["generation_id"] == "all-owner-g1"
+    assert body["projection"]["data"]["audience"] == audience
+    assert body["projection"]["data"]["brief"]["as_of"] == COMPUTED_SOURCE
+    assert body["projection"]["data"]["action_board"]["as_of"] == COMPUTED_SOURCE
+    assert response.headers["cache-control"] == "private, no-store"
+    assert response.headers["vary"] == "Cookie"
+    assert "baskets_sha256" not in response.text and "synthetic_test_fixture" not in response.text
+    assert len(response.content) <= wire.MAX_ENCODED_BYTES

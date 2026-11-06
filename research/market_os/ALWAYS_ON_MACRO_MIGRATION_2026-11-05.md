@@ -512,3 +512,43 @@ discloses that the raw research-handoff receiver is unbound. These facts must su
 the fixed-five composer, source capture and eventual native journey integration.
 The next source step is that composer; no data-writer transfer or Macro release has
 occurred. Existing CI, holdings and browser fences remain unchanged.
+
+
+## Fixed-five composition, private publication and beta refresh — 2026-11-06
+
+All five Sector documents now compute through the incumbent engines from explicit
+input objects. The same effective Yahoo panel feeds cycles, Central and grading;
+shared setup/timing prices and cycle membership are checked. The final basket bytes
+bind the board. The existing Orchestrator now stages this exact composition through
+its private publisher, with source/baseline/build facts checked and actual-time final
+admission. Deferred ledger effects remain unapplied.
+
+The final seven-suite integration passed **328 tests**. The real synthetic-input chain
+reaches both preview and entitled API wire responses through the existing gates.
+Older declared baselines, expired inputs, delayed reuse, future computation and changed
+composition data are covered. [Contract](SECTOR_DOCUMENT_COMPOSITION_INPUTS_2026-11-06.md)
+and [exact proof](SECTOR_DOCUMENT_COMPOSITION_SOURCE_REVIEW_2026-11-06.json).
+
+The current-price adapter reads one selected Yahoo and one selected breadth generation,
+requires their exact dependency/current session and preserves explicit historical
+recovery separately. Its three new tests pass; the preceding affected run's one new
+assertion had the wrong expected error code and is corrected. This is the price pair,
+not yet the complete OHLCV/holdings/configuration/context/history capture.
+[Capture contract and remaining source classes](SECTOR_CURRENT_PRICE_CAPTURE_2026-11-06.md).
+
+Terminal #1311 merged through its original queue carrier and was deployed once by the
+existing beta release owner to **bb65839dc6078f2943f6b5a6f58f5261350a85dd**.
+Attempt `c009336b0f544f01a2af7efa43fb949c` committed; source preflight is CLEAN;
+independent Git/marker/local/public status agree; service is active/running/enabled;
+pending and shared holds are absent. The credential-free Sector path still returns
+401/access_denied/data:null/private,no-store. [Full release proof](BETA_TERMINAL_1311_RELEASE_PROOF_2026-11-06.json).
+This installs the existing 60-second visible polling and resume-refresh lifecycle,
+not the new generation-backed native consumer. Authenticated behavior is still owed.
+
+The distinct managed Terminal generation-consumer workspace request returned
+REFUSED / NOT_APPLIED / REPOSITORY_SOURCE_UNAVAILABLE. One bounded diagnostic found
+no mmx-workspace executable in the current shell PATH; exact underlying source cause
+is unproven. No unchanged retry or alternate carrier was attempted. The CI denial,
+holdings effect fence and browser capability failure remain. Macro source is not
+activated, its PR is not armed, and the source updater/writer transfer, complete
+capture, application/native integration and estate rollout remain open.

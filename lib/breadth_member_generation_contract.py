@@ -879,7 +879,8 @@ def prepare_breadth_member_generation_request(*, sources, input_identity, yahoo,
         bundle_validator=validate_bundle)
 
 
-def read_verified_breadth_member_inputs(*, generations_root, now, yahoo=None, snapshot_reader=None, dependency_reader=None):
+def read_verified_breadth_member_inputs(*, generations_root, now, yahoo=None, snapshot_reader=None,
+                                       dependency_reader=None, require_current=False):
     from scripts.vps_live_orchestrator import read_selected_generation
     root = Path(generations_root)
     if not root.is_absolute():
@@ -903,8 +904,9 @@ def read_verified_breadth_member_inputs(*, generations_root, now, yahoo=None, sn
         pinned = (dependency_reader or read_retained_generation)(generations_root=root,
             domain=dependency["domain"], generation_id=dependency["generation_id"],
             content_id=dependency["content_id"], members=YAHOO_GENERATION_MEMBERS)
-        yahoo = verify_yahoo_snapshot(pinned, now=now)
+        yahoo = verify_yahoo_snapshot(pinned, now=now, require_current=require_current)
     captured = validate_breadth_member_bundle(member_bytes=snapshot.members,
         input_identity=manifest.get("input_identity"), yahoo=yahoo, published_at=snapshot.published_at,
-        now=now, source_revision=manifest.get("source_revision"), computed_at=manifest.get("computed_at"))
+        now=now, source_revision=manifest.get("source_revision"), computed_at=manifest.get("computed_at"),
+        require_current=require_current)
     return VerifiedBreadthMemberGeneration(captured, snapshot)

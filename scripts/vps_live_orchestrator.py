@@ -2757,6 +2757,68 @@ class Orchestrator:
         return self._publish_private_members(captured, request,
             expected_current_content_id=expected_current_content_id, generations_root=root)
 
+    def publish_sector_documents(
+        self, composition, *, input_identity: Mapping[str, Any],
+        generation_id: str, source_revision: str,
+        expected_current_content_id: str | None, lane: str = "snapshot",
+    ) -> GenerationPublishResult:
+        """Stage one completed calculation through the sole private publisher.
+
+        This bridge acquires nothing and applies no deferred ledger effects. The
+        capture adapter owns source provenance and supplies the observed selection
+        fence. The existing domain factory decides admission at publication time.
+        """
+        from copy import deepcopy
+        from engine.sector_basket_documents import SectorDocumentComposition
+        from lib.sector_generation_contract import (
+            SECTOR_GENERATION_MEMBERS, SectorGenerationContractError,
+            _decode_member, prepare_sector_generation_request,
+        )
+        if not isinstance(composition, SectorDocumentComposition):
+            raise SectorGenerationContractError("completed_composition_required")
+        if (not isinstance(composition.member_bytes, Mapping)
+                or set(composition.member_bytes) != set(SECTOR_GENERATION_MEMBERS)):
+            raise SectorGenerationContractError("invalid_member_set")
+        captured = dict(composition.member_bytes)
+        if (any(type(raw) is not bytes or not 0 < len(raw) <= MAX_GENERATION_ARTIFACT_BYTES
+                for raw in captured.values()) or sum(map(len, captured.values())) > MAX_GENERATION_BYTES):
+            raise SectorGenerationContractError("invalid_member_bytes")
+        evidence = deepcopy(composition.evidence)
+        if (not isinstance(evidence, dict)
+                or evidence.get("member_sha256") != {name: hashlib.sha256(raw).hexdigest()
+                                                    for name, raw in captured.items()}
+                or evidence.get("member_bytes") != {name: len(raw) for name, raw in captured.items()}):
+            raise SectorGenerationContractError("composition_bytes_changed")
+        if not isinstance(input_identity, Mapping):
+            raise SectorGenerationContractError("missing_sector_identity")
+        identity = deepcopy(dict(input_identity))
+        view = identity.get("sector_view")
+        if (not isinstance(view, Mapping)
+                or view.get("source_session") != evidence.get("core_source_session")
+                or (view.get("baseline_session") or view.get("source_session")) != evidence.get("baseline_session")):
+            raise SectorGenerationContractError("composition_identity_mismatch")
+        computed_at = evidence.get("built_at")
+        # Bind the two ISO build fields actually emitted by this composition.
+        # Minute-resolution compact-handoff display text remains display-only.
+        try:
+            computed = datetime.fromisoformat(computed_at)
+            if computed.tzinfo is None or computed.utcoffset() is None:
+                raise ValueError
+            central = _decode_member(captured[SECTOR_GENERATION_MEMBERS[0]])
+            board = _decode_member(captured[SECTOR_GENERATION_MEMBERS[4]])
+            if (central.get("publication", {}).get("built_utc") != computed.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    or board.get("generated_utc") != computed_at):
+                raise ValueError
+        except (TypeError, ValueError, AttributeError, OverflowError):
+            raise SectorGenerationContractError("composition_build_clock_mismatch") from None
+        root = self._yahoo_private_root()
+        request = prepare_sector_generation_request(
+            sources={name: Path(name) for name in SECTOR_GENERATION_MEMBERS},
+            input_identity=identity, generation_id=generation_id,
+            source_revision=source_revision, lane=lane, computed_at=computed_at)
+        return self._publish_private_members(captured, request,
+            expected_current_content_id=expected_current_content_id, generations_root=root)
+
     def _publish_private_members(
         self, captured: Mapping[str, bytes], request: GenerationRequest, *,
         expected_current_content_id: str | None, generations_root: Path,

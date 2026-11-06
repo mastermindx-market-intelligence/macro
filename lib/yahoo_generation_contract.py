@@ -447,14 +447,14 @@ def prepare_yahoo_generation_request(*, sources: Mapping[str, Path], input_ident
 
 
 def read_verified_yahoo_cohort(*, generations_root: Path, now: datetime,
-                               snapshot_reader=None) -> VerifiedYahooGeneration:
+                               snapshot_reader=None, require_current: bool = False) -> VerifiedYahooGeneration:
     from scripts.vps_live_orchestrator import read_selected_generation
     root = Path(generations_root)
     if not root.is_absolute():
         raise YahooGenerationContractError("absolute_private_root_required")
     snapshot = (snapshot_reader or read_selected_generation)(generations_root=root,
         domain=YAHOO_GENERATION_DOMAIN, members=YAHOO_GENERATION_MEMBERS)
-    return verify_yahoo_snapshot(snapshot, now=now)
+    return verify_yahoo_snapshot(snapshot, now=now, require_current=require_current)
 
 
 def verify_yahoo_snapshot(snapshot, *, now: datetime, require_current: bool = False) -> VerifiedYahooGeneration:

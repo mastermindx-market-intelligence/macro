@@ -564,3 +564,86 @@ def test_thematic_capture_does_not_misclassify_an_uncaptured_amalgam_member(enco
     assert "T0400" in captured.primary.columns
     with pytest.raises(contract.BreadthMemberContractError, match="uncaptured_member_index_population"):
         captured.member_index_inputs([{"ticker": "T0400", "added": "2025-01-01"}])
+
+
+
+def _publish_current_pair(tmp_path, encoded):
+    snapshot = encoded.yahoo.snapshot
+    base = yahoo_contract.EncodedYahooInputs(dict(snapshot.members),
+        deepcopy(dict(snapshot.manifest["input_identity"])))
+    first = _owner(tmp_path, NOW + timedelta(seconds=1)).publish_yahoo_inputs(base,
+        generation_id=snapshot.generation_id, source_revision=REVISION,
+        expected_current_content_id=None)
+    assert first.status == "published" and first.content_id == snapshot.content_id
+    owner = _owner(tmp_path)
+    broad = owner.publish_breadth_member_inputs(encoded, generation_id="broad-g1",
+        source_revision=REVISION, expected_current_content_id=None)
+    assert broad.status == "published", broad.detail
+    return owner, first, broad
+
+
+def test_sector_price_pair_reads_each_selection_once_without_ambient_fallback(tmp_path, encoded, monkeypatch):
+    from lib.sector_input_capture import read_sector_price_captures
+    owner, yahoo, broad = _publish_current_pair(tmp_path, encoded)
+    original_read = publisher.read_selected_generation
+    reads = []
+    def read(**kwargs):
+        reads.append(kwargs["domain"])
+        return original_read(**kwargs)
+    with monkeypatch.context() as mp:
+        mp.setattr(publisher, "read_selected_generation", read)
+        for obj, name in ((config, "load"), (config, "data_dir"), (store, "read"), (pd, "read_parquet")):
+            mp.setattr(obj, name, forbidden)
+        pair = read_sector_price_captures(generations_root=owner.state_dir / "generations", now=PUBLISHED)
+        baskets = compute_baskets_from_inputs(pair.breadth.inputs.basket_inputs())
+        lineage = pair.input_lineage()
+    assert reads == [yahoo_contract.YAHOO_GENERATION_DOMAIN, contract.DOMAIN]
+    assert pair.yahoo.snapshot.content_id == yahoo.content_id
+    assert pair.breadth.snapshot.content_id == broad.content_id
+    assert baskets["as_of"] == SOURCE
+    assert lineage["yahoo"]["content_id"] == yahoo.content_id
+    assert lineage["breadth_members"]["content_id"] == broad.content_id
+    lineage["yahoo"]["member_sha256"]["SPY"] = "changed"
+    assert pair.input_lineage()["yahoo"]["member_sha256"]["SPY"] != "changed"
+
+
+def test_sector_price_pair_refuses_advanced_yahoo_instead_of_retained_fallback(tmp_path, encoded, monkeypatch):
+    from lib.sector_input_capture import read_sector_price_captures
+    owner, _, _, _ = _publish_with_dependency(tmp_path, encoded)
+    original_read = publisher.read_selected_generation
+    reads = []
+    def read(**kwargs):
+        reads.append(kwargs["domain"])
+        return original_read(**kwargs)
+    monkeypatch.setattr(publisher, "read_selected_generation", read)
+    monkeypatch.setattr(publisher, "read_retained_generation", forbidden)
+    with pytest.raises(ValueError, match="dependency"):
+        read_sector_price_captures(generations_root=owner.state_dir / "generations",
+                                   now=PUBLISHED + timedelta(seconds=2))
+    assert reads == [yahoo_contract.YAHOO_GENERATION_DOMAIN, contract.DOMAIN]
+
+
+def test_current_pair_refuses_old_cohort_while_explicit_recovery_remains_available(tmp_path, encoded, monkeypatch):
+    from lib.sector_input_capture import read_sector_price_captures
+    owner, first, broad = _publish_current_pair(tmp_path, encoded)
+    root = owner.state_dir / "generations"
+    later = PUBLISHED + timedelta(days=1)
+    before = {str(p.relative_to(root)): (p.read_bytes(), p.stat().st_mtime_ns)
+              for p in root.rglob("*") if p.is_file()}
+    reads = []
+    original_read = publisher.read_selected_generation
+    def read(**kwargs):
+        reads.append(kwargs["domain"])
+        return original_read(**kwargs)
+    with monkeypatch.context() as mp:
+        mp.setattr(publisher, "read_selected_generation", read)
+        with pytest.raises(yahoo_contract.YahooGenerationContractError, match="^source_not_current_target$"):
+            read_sector_price_captures(generations_root=root, now=later)
+    assert reads == [yahoo_contract.YAHOO_GENERATION_DOMAIN]
+    old = contract.read_verified_breadth_member_inputs(generations_root=root, now=later)
+    assert old.snapshot.content_id == broad.content_id
+    assert old.inputs.receipt["yahoo"]["content_id"] == first.content_id
+    with pytest.raises(ValueError):
+        contract.read_verified_breadth_member_inputs(generations_root=root, now=later, require_current=True)
+    assert {str(p.relative_to(root)): (p.read_bytes(), p.stat().st_mtime_ns)
+            for p in root.rglob("*") if p.is_file()} == before

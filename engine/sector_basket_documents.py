@@ -203,3 +203,260 @@ def assemble_sector_basket_documents(inputs: SectorBasketDocumentInputs) -> Sect
     except (TypeError, ValueError, OverflowError, RecursionError) as exc:
         raise ValueError("Sector basket documents are not finite JSON values") from exc
     return SectorBasketDocuments(data, handoff, pulse, evidence)
+
+
+@dataclass(frozen=True)
+class SectorDocumentContext:
+    """Captured adjuncts for the existing five-member Sector calculation.
+
+    The capture adapter owns byte provenance and input-generation admission. This
+    context contains no precomputed Central, cycles, board or publication receipt.
+    Core and basket-baseline sessions remain distinct explicit source facts.
+    """
+    core_source_session: str
+    baseline_session: str
+    market_context: dict
+    membership_unavailable: bool
+    rotation_artifact: dict
+    rotation_events: dict | None
+    fragmentation: dict | None
+    fusion_calibrations: Mapping
+    setup_latest: dict
+    setup_closes: object
+    setup_sectors: tuple[str, ...]
+    context_history: Sequence[dict]
+    bottoming_cycle_rows: list[dict] | None
+    bottoming_ledger_session: str | None
+    sector_names_zh: Mapping[str, str]
+    factor_seasonality: dict | None
+    flow: dict | None
+    pulse_archive: list[dict]
+    pulse_heat_calibration: dict
+    grader_calls: object
+    grader_frozen: object
+    auxiliary_evidence: dict
+
+
+@dataclass(frozen=True)
+class SectorDocumentComposition:
+    member_bytes: Mapping[str, bytes]
+    deferred_effects: tuple
+    evidence: dict
+
+
+class SectorDocumentCompositionError(ValueError):
+    """A required captured calculation is unavailable or incoherent."""
+
+
+def compose_sector_documents(*, basket_inputs, theme_inputs, allocation_inputs,
+                             cycle_inputs, timing_inputs, context: SectorDocumentContext,
+                             evaluation_date: date, built_at: datetime) -> SectorDocumentComposition:
+    """Compute exactly the incumbent five Sector members, with no publication effects.
+
+    The trusted capture adapter supplies existing explicit input types. Prepared
+    theme features and their enrichment must be bound to that adapter's verified
+    thematic capture; narrative retains its separately owned price projection.
+    The previous selected Central is only ThemeScoreInputs.prior_sector_text.
+    No caller-supplied result substitutes for a calculation in this composition.
+    Staging, byte admission, selection, auth and ledger advancement stay upstream.
+    """
+    from dataclasses import fields, replace
+    import hashlib
+    import pandas as pd
+    from engine import basket_index, baskets, cycles, narrative_rotation, sector_action_board
+    from engine import sector_central, sector_central_grader, sector_cycles, theme_scoring
+    from engine.sector_generation_guard import parse_session, rotation_context_from_inputs
+    from lib.sector_generation_contract import SECTOR_GENERATION_MEMBERS
+
+    expected_types = (
+        (basket_inputs, baskets.BasketInputs), (theme_inputs, theme_scoring.ThemeScoreInputs),
+        (allocation_inputs, narrative_rotation.NarrativeAllocationInputs),
+        (cycle_inputs, sector_cycles.SectorCyclesInputs),
+        (timing_inputs, sector_action_board.SectorTimingInputs),
+        (context, SectorDocumentContext),
+    )
+    if any(not isinstance(value, expected) for value, expected in expected_types):
+        raise TypeError("Existing captured Sector input types are required")
+    if (type(evaluation_date) is not date or not isinstance(built_at, datetime)
+            or built_at.tzinfo is None or built_at.utcoffset() is None):
+        raise SectorDocumentCompositionError("explicit_evaluation_and_aware_build_clocks_required")
+    built = built_at.astimezone(timezone.utc)
+    core_session = _session(context.core_source_session, "core_source_session")
+    baseline = _session(context.baseline_session, "baseline_session")
+    if (max(date.fromisoformat(core_session), date.fromisoformat(baseline)) > evaluation_date
+            or built.date() < evaluation_date or baseline > core_session):
+        raise SectorDocumentCompositionError("incompatible_source_or_evaluation_clocks")
+    if (theme_inputs.region != "us" or allocation_inputs.region != "us"
+            or theme_inputs.evaluation_date != evaluation_date
+            or timing_inputs.source_session != core_session):
+        raise SectorDocumentCompositionError("incompatible_owner_scope_or_clock")
+    left, right = cycle_inputs.calculation_inputs, timing_inputs.calculation_inputs
+    if (not isinstance(left, cycles.CycleCalculationInputs)
+            or not isinstance(right, cycles.CycleCalculationInputs)):
+        raise SectorDocumentCompositionError("captured_cycle_context_required")
+    cycle_day = date.fromisoformat(left.evaluation_date)
+    if not date.fromisoformat(core_session) <= cycle_day <= evaluation_date:
+        raise SectorDocumentCompositionError("incompatible_cycle_evaluation_clock")
+    for field in fields(left):
+        a, b = getattr(left, field.name), getattr(right, field.name)
+        same = (set(a) == set(b) and all(a[key].equals(b[key]) for key in a)
+                if field.name == "reference_sessions" else a == b)
+        if not same:
+            raise SectorDocumentCompositionError("inconsistent_shared_cycle_context")
+
+    # One detached value set for this call. Acquisition must not mutate admitted
+    # inputs concurrently; this copy is not another capture/provenance authority.
+    basket_inputs, theme_inputs, allocation_inputs, cycle_inputs, timing_inputs, value = deepcopy(
+        (basket_inputs, theme_inputs, allocation_inputs, cycle_inputs, timing_inputs, context))
+    bounded_yahoo, bounded_price, observed, raw_tip = sector_cycles._bound_panels(
+        cycle_inputs.closes_tr, cycle_inputs.closes_px, cycle_inputs.benchmark,
+        sector_cycles._clock_date(cycle_inputs.asof))
+    if observed is None or observed.date().isoformat() != core_session:
+        raise SectorDocumentCompositionError("yahoo_effective_session_mismatch")
+    cycle_inputs = replace(cycle_inputs, closes_tr=bounded_yahoo, closes_px=bounded_price)
+    membership = (basket_inputs.membership or {}).get("baskets") or {}
+    if dict(cycle_inputs.basket_specs) != membership:
+        raise SectorDocumentCompositionError("different_captured_basket_membership")
+    try:
+        setup_closes = basket_index._capture_index_panel(value.setup_closes)
+    except (TypeError, ValueError) as exc:
+        raise SectorDocumentCompositionError("invalid_setup_price_capture") from exc
+    reference = cycle_inputs.calculation_inputs.reference_sessions.get("US")
+    if (reference is None or "SPY" not in setup_closes
+            or not set(value.setup_sectors).issubset(setup_closes.columns)
+            or not setup_closes.index.isin(reference).all()
+            or (len(setup_closes) and setup_closes.index[-1].date().isoformat() > core_session)):
+        raise SectorDocumentCompositionError("setup_prices_outside_admitted_core")
+    def same_observations(series, reference_series):
+        return series.astype("float64").dropna().equals(reference_series.astype("float64").dropna())
+    for ticker in setup_closes.columns.intersection(bounded_yahoo.columns):
+        if not same_observations(setup_closes[ticker], bounded_yahoo[ticker]):
+            raise SectorDocumentCompositionError("different_captured_setup_prices")
+    for ticker, frame in timing_inputs.etf_frames.items():
+        if ticker not in bounded_yahoo or frame is None:
+            continue
+        if (not isinstance(frame, pd.DataFrame) or "close" not in frame
+                or not same_observations(frame["close"], bounded_yahoo[ticker])):
+            raise SectorDocumentCompositionError("different_captured_timing_prices")
+    setup_day = parse_session(value.setup_latest.get("date"))
+    if value.setup_latest.get("date") is not None and (setup_day is None or setup_day > evaluation_date):
+        raise SectorDocumentCompositionError("invalid_setup_context_clock")
+    frozen = value.grader_frozen
+    if frozen is not None:
+        if (not isinstance(frozen, pd.DataFrame) or not isinstance(frozen.index, pd.DatetimeIndex)
+                or frozen.index.has_duplicates or frozen.index.hasnans
+                or not frozen.index.equals(frozen.index.normalize())
+                or not frozen.index.is_monotonic_increasing
+                or frozen.index.tz is not None):
+            raise SectorDocumentCompositionError("invalid_captured_frozen_history")
+        if len(frozen) and frozen.index[-1].date().isoformat() > core_session:
+            raise SectorDocumentCompositionError("frozen_price_history_after_core_session")
+    basket_data = baskets.compute_baskets_from_inputs(basket_inputs)
+    theme_result = theme_scoring.compute_theme_intel_core(theme_inputs)
+    allocation = narrative_rotation.compute_narrative_rotation_core(allocation_inputs)
+    cycle_data = sector_cycles.compute_from_inputs(cycle_inputs)
+    for label, data in (("baskets", basket_data), ("theme_intel", theme_result.payload),
+                        ("allocation", allocation), ("cycles", cycle_data)):
+        if not isinstance(data, dict) or not data:
+            raise SectorDocumentCompositionError(label + "_calculation_unavailable")
+    if (cycle_data.get("meta") or {}).get("asOf") != core_session:
+        raise SectorDocumentCompositionError("cycle_source_session_mismatch")
+    cycle_data.update(rotation_context_from_inputs(
+        consumer_session=core_session, rotation_events=value.rotation_events,
+        fragmentation=value.fragmentation, today=evaluation_date))
+
+    documents = assemble_sector_basket_documents(SectorBasketDocumentInputs(
+        source_session=baseline, basket_payload=basket_data, theme_intel=theme_result.payload,
+        allocation=allocation, context_history=value.context_history,
+        rotation_events=value.rotation_events, bottoming_cycle_rows=value.bottoming_cycle_rows,
+        bottoming_ledger_session=value.bottoming_ledger_session, sector_names_zh=value.sector_names_zh,
+        factor_seasonality=value.factor_seasonality, flow=value.flow, pulse_archive=value.pulse_archive,
+        pulse_heat_calibration=value.pulse_heat_calibration, built_at=built))
+    timing = sector_action_board.sector_timing_and_notable_from_inputs(timing_inputs)
+    setups = sector_action_board.sector_setup_from_inputs(
+        latest=value.setup_latest, closes=setup_closes,
+        sectors=value.setup_sectors, timing=timing.timing)
+    if setups is None:
+        raise SectorDocumentCompositionError("sector_setup_unavailable")
+    action = sector_action_board.assemble_action_board_from_inputs(
+        sector_timing=timing.timing, notable=timing.notable, baskets=documents.baskets,
+        allocation=allocation, sector_setups=setups)
+
+    def encode(document):
+        try:
+            return json.dumps(document, ensure_ascii=False, separators=(",", ":"),
+                              allow_nan=False).encode("utf-8")
+        except (TypeError, ValueError, OverflowError, RecursionError) as exc:
+            raise SectorDocumentCompositionError("nonfinite_or_unserializable_document") from exc
+
+    # Final basket bytes are serialized ONCE and then shared with the board hash,
+    # Central secondary-source facts and the eventual existing publisher request.
+    basket_raw = encode(documents.baskets)
+    handoff_raw = encode(documents.si_handoff)
+    board_document = sector_action_board.action_board_envelope(
+        basket_raw=basket_raw, action_board=action, generated_utc=built.isoformat())
+    board_raw = encode(board_document)
+
+    central_data = sector_central.compute_from_inputs(sector_central.SectorCentralInputs(
+        cycle_spine=cycle_data, market_context=value.market_context,
+        closes=cycle_inputs.closes_tr, narrative_rotation=allocation,
+        membership_document=basket_inputs.membership,
+        membership_unavailable=value.membership_unavailable,
+        rotation_artifact=value.rotation_artifact, rotation_events=value.rotation_events,
+        fusion_calibrations=value.fusion_calibrations), evaluation_date=evaluation_date)
+    if not isinstance(central_data, dict) or not central_data.get("sectors"):
+        raise SectorDocumentCompositionError("central_calculation_unavailable")
+    if central_data.get("as_of") != core_session:
+        raise SectorDocumentCompositionError("central_source_session_mismatch")
+
+    # Grading observes the same admitted Yahoo panel and one captured frozen store.
+    # It does not append today's calls, freeze basket levels or use computed charts.
+    frozen_levels = sector_central_grader.frozen_basket_levels_from_inputs(frozen)
+    freeze_start = str(frozen.index[0].date()) if frozen is not None and len(frozen) else None
+    central_data["grader"] = sector_central_grader.grade_from_inputs(
+        value.grader_calls, yahoo_panel=cycle_inputs.closes_tr,
+        basket_levels=frozen_levels, frozen_df=frozen, freeze_start=freeze_start)
+
+    def byte_status(name, raw, observed_at):
+        return {"status": "ok", "path": name, "sha256": hashlib.sha256(raw).hexdigest(),
+                "as_of": observed_at, "error": None, "transport": "sector_generation_member"}
+    secondary = {
+        "flows_html": {"status": "not_applicable", "path": None, "sha256": None,
+                       "as_of": None, "error": None},
+        "si_handoff": byte_status(SECTOR_GENERATION_MEMBERS[3], handoff_raw,
+                                  baseline),
+        "action_board": byte_status(SECTOR_GENERATION_MEMBERS[4], board_raw, baseline),
+        "baskets": byte_status(SECTOR_GENERATION_MEMBERS[2], basket_raw, baseline),
+        "grader": {"status": "ok", "path": None, "sha256": None, "as_of": None,
+                   "error": None, "mode": "captured_pre_append_calculation"},
+    }
+    central_data = sector_central.complete_document_from_inputs(
+        central_data, built_at=built, secondary_sources=secondary,
+        premium_publication={"path": "premiumdata/sector_central.json", "written": False,
+                             "withheld_rows": 0},
+        transport={"kind": "sector_generation", "legacy_html_published": False,
+                   "publication_receipt_owner": "existing_generation_publisher"},
+        research_mode="unbound_native")
+    members = {
+        SECTOR_GENERATION_MEMBERS[0]: encode(central_data),
+        SECTOR_GENERATION_MEMBERS[1]: encode(cycle_data),
+        SECTOR_GENERATION_MEMBERS[2]: basket_raw,
+        SECTOR_GENERATION_MEMBERS[3]: handoff_raw,
+        SECTOR_GENERATION_MEMBERS[4]: board_raw,
+    }
+    evidence = {
+        "core_source_session": core_session, "baseline_session": baseline,
+        "evaluation_date": evaluation_date.isoformat(), "cycle_evaluation_date": cycle_day.isoformat(),
+        "cycle_asof": cycle_inputs.asof, "built_at": built.isoformat(),
+        "yahoo_evaluation_panel_tip": raw_tip.date().isoformat() if raw_tip is not None else None,
+        "basket_documents": documents.evidence, "timing": timing.input_evidence,
+        "auxiliary": deepcopy(value.auxiliary_evidence),
+        "member_sha256": {name: hashlib.sha256(raw).hexdigest() for name, raw in members.items()},
+        "member_bytes": {name: len(raw) for name, raw in members.items()},
+        "grader": {"calls_appended": False, "frozen_history_advanced": False,
+                   "freeze_start": freeze_start, "price_source_session": core_session},
+        "deferred_effect_count": len(theme_result.deferred_effects),
+        "native_research_receiver": "unbound",
+        "publication": "not_performed; existing generation factory must admit actual bytes",
+    }
+    return SectorDocumentComposition(members, deepcopy(theme_result.deferred_effects), evidence)

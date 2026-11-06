@@ -223,6 +223,15 @@ def prepare_sector_generation_request(
     if set(sources) != set(SECTOR_GENERATION_MEMBERS):
         raise SectorGenerationContractError("invalid_member_set")
     identity = deepcopy(dict(input_identity))
+    if computed_at is not None:
+        try:
+            if not isinstance(computed_at, str) or len(computed_at) > 32:
+                raise ValueError
+            computed = datetime.fromisoformat(computed_at.replace("Z", "+00:00"))
+            if computed.tzinfo is None or computed.utcoffset() is None:
+                raise ValueError
+        except (TypeError, ValueError, OverflowError):
+            raise SectorGenerationContractError("invalid_computation_clock") from None
 
     def validate_member(captured_path: Path) -> str | None:
         try:
@@ -237,6 +246,12 @@ def prepare_sector_generation_request(
                 or context.input_identity != identity):
             return "sector_identity_changed_during_admission"
         try:
+            if computed_at is not None:
+                # The incumbent publisher supplies the actual target receipt,
+                # including an original receipt when reusing retained bytes.
+                publication = datetime.fromisoformat(context.published_at.replace("Z", "+00:00"))
+                if context.computed_at != computed_at or computed > publication:
+                    return "sector_computation_after_publication_or_changed"
             views = preflight_sector_bundle(
                 member_bytes=context.members, input_identity=context.input_identity,
                 generation_id=context.generation_id,
