@@ -1,0 +1,1874 @@
+[
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "dark",
+    "locale": "en",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "73a2e9c64502db28--measurements.png",
+    "sha256": "73a2e9c64502db28940ec109f5f99824d1ecf840e935735bcb7f29564ebd5c12",
+    "bytes": 53716,
+    "width": 390,
+    "height": 844,
+    "applied_theme": "dark",
+    "applied_locale": "en",
+    "force_state": {
+      "name": "actual_scroll_measurements",
+      "operation": "Actual browser scrollTo",
+      "scroll_y": 1000
+    },
+    "capture_tool_module_sha256": "61a9e07b327ea502703d46110036e0662b9f1778b29b6a5c4c743d0ea271cc83",
+    "captured_at": "2026-10-13T07:43:32.836Z",
+    "base_url": "http://127.0.0.1:61519",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      },
+      "/preferences.js": {
+        "status": 200,
+        "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+      },
+      "/assets/theme-tokens.css": {
+        "status": 200,
+        "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+      }
+    },
+    "containment": [
+      {
+        "text": "REASONS\nRecorded owner support is available; its current source and task qualification are not established. Forward observations have not matured for this window.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "EVIDENCE REFS\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "synthetic:fixture-v1\nNo browser link is declared for this reference.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 144.15625,
+            "width": 113.15625,
+            "scrollWidth": 113,
+            "clientWidth": 113
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 297.015625,
+            "width": 266.015625,
+            "scrollWidth": 266,
+            "clientWidth": 266
+          }
+        ]
+      },
+      {
+        "text": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\nRepository source declaration",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 205.96875,
+            "width": 174.96875,
+            "scrollWidth": 175,
+            "clientWidth": 175
+          }
+        ]
+      },
+      {
+        "text": "species:SYNTHETIC-V1\nNo browser link is declared for this reference.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 168.75,
+            "width": 137.75,
+            "scrollWidth": 138,
+            "clientWidth": 138
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 297.015625,
+            "width": 266.015625,
+            "scrollWidth": 266,
+            "clientWidth": 266
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 178.484375,
+            "width": 147.484375,
+            "scrollWidth": 147,
+            "clientWidth": 147
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 178.484375,
+            "width": 147.484375,
+            "scrollWidth": 147,
+            "clientWidth": 147
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+        "text": "Repository source declaration",
+        "rel": "noopener noreferrer",
+        "target": "_blank"
+      }
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "dark",
+    "locale": "en",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "18ffd63fcdd9bf9a--references.png",
+    "sha256": "18ffd63fcdd9bf9ae535bc8a74d114082d2407b38fc20d8d2e98f40b80ab7385",
+    "bytes": 75517,
+    "width": 390,
+    "height": 844,
+    "applied_theme": "dark",
+    "applied_locale": "en",
+    "force_state": {
+      "name": "actual_scroll_references",
+      "operation": "Actual browser scrollTo",
+      "scroll_y": 2000
+    },
+    "capture_tool_module_sha256": "61a9e07b327ea502703d46110036e0662b9f1778b29b6a5c4c743d0ea271cc83",
+    "captured_at": "2026-10-13T07:43:32.942Z",
+    "base_url": "http://127.0.0.1:61519",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      },
+      "/preferences.js": {
+        "status": 200,
+        "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+      },
+      "/assets/theme-tokens.css": {
+        "status": 200,
+        "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+      }
+    },
+    "containment": [
+      {
+        "text": "REASONS\nRecorded owner support is available; its current source and task qualification are not established. Forward observations have not matured for this window.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "EVIDENCE REFS\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "synthetic:fixture-v1\nNo browser link is declared for this reference.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 144.15625,
+            "width": 113.15625,
+            "scrollWidth": 113,
+            "clientWidth": 113
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 297.015625,
+            "width": 266.015625,
+            "scrollWidth": 266,
+            "clientWidth": 266
+          }
+        ]
+      },
+      {
+        "text": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\nRepository source declaration",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 205.96875,
+            "width": 174.96875,
+            "scrollWidth": 175,
+            "clientWidth": 175
+          }
+        ]
+      },
+      {
+        "text": "species:SYNTHETIC-V1\nNo browser link is declared for this reference.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 168.75,
+            "width": 137.75,
+            "scrollWidth": 138,
+            "clientWidth": 138
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 297.015625,
+            "width": 266.015625,
+            "scrollWidth": 266,
+            "clientWidth": 266
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 178.484375,
+            "width": 147.484375,
+            "scrollWidth": 147,
+            "clientWidth": 147
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 178.484375,
+            "width": 147.484375,
+            "scrollWidth": 147,
+            "clientWidth": 147
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+        "text": "Repository source declaration",
+        "rel": "noopener noreferrer",
+        "target": "_blank"
+      }
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "dark",
+    "locale": "zh",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "69f6752f296119ea--measurements.png",
+    "sha256": "69f6752f296119ea61ef2094f619b35a8fc8926712efa02bfba03ce650255e1b",
+    "bytes": 64409,
+    "width": 390,
+    "height": 844,
+    "applied_theme": "dark",
+    "applied_locale": "zh",
+    "force_state": {
+      "name": "actual_scroll_measurements",
+      "operation": "Actual browser scrollTo",
+      "scroll_y": 1000
+    },
+    "capture_tool_module_sha256": "61a9e07b327ea502703d46110036e0662b9f1778b29b6a5c4c743d0ea271cc83",
+    "captured_at": "2026-10-13T07:43:35.111Z",
+    "base_url": "http://127.0.0.1:61519",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      },
+      "/preferences.js": {
+        "status": 200,
+        "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+      },
+      "/assets/theme-tokens.css": {
+        "status": 200,
+        "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+      }
+    },
+    "containment": [
+      {
+        "text": "依据与限制\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。 该窗口的前瞻观测尚未成熟。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "证据引用\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "synthetic:fixture-v1\n此引用没有声明可通过浏览器访问的链接。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 144.15625,
+            "width": 113.15625,
+            "scrollWidth": 113,
+            "clientWidth": 113
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 273.375,
+            "width": 242.375,
+            "scrollWidth": 242,
+            "clientWidth": 242
+          }
+        ]
+      },
+      {
+        "text": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\n仓库中的来源声明",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      },
+      {
+        "text": "species:SYNTHETIC-V1\n此引用没有声明可通过浏览器访问的链接。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 168.75,
+            "width": 137.75,
+            "scrollWidth": 138,
+            "clientWidth": 138
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 273.375,
+            "width": 242.375,
+            "scrollWidth": 242,
+            "clientWidth": 242
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+        "text": "仓库中的来源声明",
+        "rel": "noopener noreferrer",
+        "target": "_blank"
+      }
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "dark",
+    "locale": "zh",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "ac8f815e0b2b57a7--references.png",
+    "sha256": "ac8f815e0b2b57a77f3d03f0f25c64974b4c3ec690b1afd046a696e435eaff7e",
+    "bytes": 88149,
+    "width": 390,
+    "height": 844,
+    "applied_theme": "dark",
+    "applied_locale": "zh",
+    "force_state": {
+      "name": "actual_scroll_references",
+      "operation": "Actual browser scrollTo",
+      "scroll_y": 2000
+    },
+    "capture_tool_module_sha256": "61a9e07b327ea502703d46110036e0662b9f1778b29b6a5c4c743d0ea271cc83",
+    "captured_at": "2026-10-13T07:43:35.165Z",
+    "base_url": "http://127.0.0.1:61519",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      },
+      "/preferences.js": {
+        "status": 200,
+        "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+      },
+      "/assets/theme-tokens.css": {
+        "status": 200,
+        "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+      }
+    },
+    "containment": [
+      {
+        "text": "依据与限制\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。 该窗口的前瞻观测尚未成熟。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "证据引用\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "synthetic:fixture-v1\n此引用没有声明可通过浏览器访问的链接。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 144.15625,
+            "width": 113.15625,
+            "scrollWidth": 113,
+            "clientWidth": 113
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 273.375,
+            "width": 242.375,
+            "scrollWidth": 242,
+            "clientWidth": 242
+          }
+        ]
+      },
+      {
+        "text": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\n仓库中的来源声明",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      },
+      {
+        "text": "species:SYNTHETIC-V1\n此引用没有声明可通过浏览器访问的链接。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 168.75,
+            "width": 137.75,
+            "scrollWidth": 138,
+            "clientWidth": 138
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 273.375,
+            "width": 242.375,
+            "scrollWidth": 242,
+            "clientWidth": 242
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+        "text": "仓库中的来源声明",
+        "rel": "noopener noreferrer",
+        "target": "_blank"
+      }
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "light",
+    "locale": "en",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "37e9cdc2786b6961--measurements.png",
+    "sha256": "37e9cdc2786b696182ba12718f4f3e0a84fbfedf553469ea52a38a5585a1d1e1",
+    "bytes": 53169,
+    "width": 390,
+    "height": 844,
+    "applied_theme": "light",
+    "applied_locale": "en",
+    "force_state": {
+      "name": "actual_scroll_measurements",
+      "operation": "Actual browser scrollTo",
+      "scroll_y": 1000
+    },
+    "capture_tool_module_sha256": "61a9e07b327ea502703d46110036e0662b9f1778b29b6a5c4c743d0ea271cc83",
+    "captured_at": "2026-10-13T07:43:36.883Z",
+    "base_url": "http://127.0.0.1:61519",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      },
+      "/preferences.js": {
+        "status": 200,
+        "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+      },
+      "/assets/theme-tokens.css": {
+        "status": 200,
+        "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+      }
+    },
+    "containment": [
+      {
+        "text": "REASONS\nRecorded owner support is available; its current source and task qualification are not established. Forward observations have not matured for this window.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "EVIDENCE REFS\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "synthetic:fixture-v1\nNo browser link is declared for this reference.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 144.15625,
+            "width": 113.15625,
+            "scrollWidth": 113,
+            "clientWidth": 113
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 297.015625,
+            "width": 266.015625,
+            "scrollWidth": 266,
+            "clientWidth": 266
+          }
+        ]
+      },
+      {
+        "text": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\nRepository source declaration",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 205.96875,
+            "width": 174.96875,
+            "scrollWidth": 175,
+            "clientWidth": 175
+          }
+        ]
+      },
+      {
+        "text": "species:SYNTHETIC-V1\nNo browser link is declared for this reference.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 168.75,
+            "width": 137.75,
+            "scrollWidth": 138,
+            "clientWidth": 138
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 297.015625,
+            "width": 266.015625,
+            "scrollWidth": 266,
+            "clientWidth": 266
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 178.484375,
+            "width": 147.484375,
+            "scrollWidth": 147,
+            "clientWidth": 147
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 178.484375,
+            "width": 147.484375,
+            "scrollWidth": 147,
+            "clientWidth": 147
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+        "text": "Repository source declaration",
+        "rel": "noopener noreferrer",
+        "target": "_blank"
+      }
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "light",
+    "locale": "en",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "816eaf822d3908c6--references.png",
+    "sha256": "816eaf822d3908c6664f6a9fa25f2ac2a9242145afeecf3fb7e10b6248b6db1c",
+    "bytes": 74737,
+    "width": 390,
+    "height": 844,
+    "applied_theme": "light",
+    "applied_locale": "en",
+    "force_state": {
+      "name": "actual_scroll_references",
+      "operation": "Actual browser scrollTo",
+      "scroll_y": 2000
+    },
+    "capture_tool_module_sha256": "61a9e07b327ea502703d46110036e0662b9f1778b29b6a5c4c743d0ea271cc83",
+    "captured_at": "2026-10-13T07:43:36.923Z",
+    "base_url": "http://127.0.0.1:61519",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      },
+      "/preferences.js": {
+        "status": 200,
+        "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+      },
+      "/assets/theme-tokens.css": {
+        "status": 200,
+        "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+      }
+    },
+    "containment": [
+      {
+        "text": "REASONS\nRecorded owner support is available; its current source and task qualification are not established. Forward observations have not matured for this window.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "EVIDENCE REFS\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "synthetic:fixture-v1\nNo browser link is declared for this reference.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 144.15625,
+            "width": 113.15625,
+            "scrollWidth": 113,
+            "clientWidth": 113
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 297.015625,
+            "width": 266.015625,
+            "scrollWidth": 266,
+            "clientWidth": 266
+          }
+        ]
+      },
+      {
+        "text": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\nRepository source declaration",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 205.96875,
+            "width": 174.96875,
+            "scrollWidth": 175,
+            "clientWidth": 175
+          }
+        ]
+      },
+      {
+        "text": "species:SYNTHETIC-V1\nNo browser link is declared for this reference.",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 168.75,
+            "width": 137.75,
+            "scrollWidth": 138,
+            "clientWidth": 138
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 297.015625,
+            "width": 266.015625,
+            "scrollWidth": 266,
+            "clientWidth": 266
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 178.484375,
+            "width": 147.484375,
+            "scrollWidth": 147,
+            "clientWidth": 147
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 178.484375,
+            "width": 147.484375,
+            "scrollWidth": 147,
+            "clientWidth": 147
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+        "text": "Repository source declaration",
+        "rel": "noopener noreferrer",
+        "target": "_blank"
+      }
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "light",
+    "locale": "zh",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "3df20604f27ea731--measurements.png",
+    "sha256": "3df20604f27ea7315bbefe54cf6b4b9fd7aa6051074fe18fd945721676eed43f",
+    "bytes": 62911,
+    "width": 390,
+    "height": 844,
+    "applied_theme": "light",
+    "applied_locale": "zh",
+    "force_state": {
+      "name": "actual_scroll_measurements",
+      "operation": "Actual browser scrollTo",
+      "scroll_y": 1000
+    },
+    "capture_tool_module_sha256": "61a9e07b327ea502703d46110036e0662b9f1778b29b6a5c4c743d0ea271cc83",
+    "captured_at": "2026-10-13T07:43:39.045Z",
+    "base_url": "http://127.0.0.1:61519",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      },
+      "/preferences.js": {
+        "status": 200,
+        "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+      },
+      "/assets/theme-tokens.css": {
+        "status": 200,
+        "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+      }
+    },
+    "containment": [
+      {
+        "text": "依据与限制\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。 该窗口的前瞻观测尚未成熟。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "证据引用\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "synthetic:fixture-v1\n此引用没有声明可通过浏览器访问的链接。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 144.15625,
+            "width": 113.15625,
+            "scrollWidth": 113,
+            "clientWidth": 113
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 273.375,
+            "width": 242.375,
+            "scrollWidth": 242,
+            "clientWidth": 242
+          }
+        ]
+      },
+      {
+        "text": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\n仓库中的来源声明",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      },
+      {
+        "text": "species:SYNTHETIC-V1\n此引用没有声明可通过浏览器访问的链接。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 168.75,
+            "width": 137.75,
+            "scrollWidth": 138,
+            "clientWidth": 138
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 273.375,
+            "width": 242.375,
+            "scrollWidth": 242,
+            "clientWidth": 242
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+        "text": "仓库中的来源声明",
+        "rel": "noopener noreferrer",
+        "target": "_blank"
+      }
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "light",
+    "locale": "zh",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "32c5d35e5b95483b--references.png",
+    "sha256": "32c5d35e5b95483b542a9b6928864169712ed20d69fe09eafffb589a559d15bd",
+    "bytes": 86468,
+    "width": 390,
+    "height": 844,
+    "applied_theme": "light",
+    "applied_locale": "zh",
+    "force_state": {
+      "name": "actual_scroll_references",
+      "operation": "Actual browser scrollTo",
+      "scroll_y": 2000
+    },
+    "capture_tool_module_sha256": "61a9e07b327ea502703d46110036e0662b9f1778b29b6a5c4c743d0ea271cc83",
+    "captured_at": "2026-10-13T07:43:39.103Z",
+    "base_url": "http://127.0.0.1:61519",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      },
+      "/preferences.js": {
+        "status": 200,
+        "sha256": "c22da47436d7db34ff2dec4de32cc1924aac756d2f8f15063049b1042a0e760f"
+      },
+      "/assets/theme-tokens.css": {
+        "status": 200,
+        "sha256": "1e51597823e122331df8b99dffe97c6259dcf5c193dd0a5ff0015851d378c5f4"
+      }
+    },
+    "containment": [
+      {
+        "text": "依据与限制\n已有所有者记录的证据支持；当前来源与任务验证范围仍无法确认。 该窗口的前瞻观测尚未成熟。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "证据引用\nsynthetic:fixture-v1 research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md species:SYNTHETIC-V1",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 92.59375,
+            "width": 61.59375,
+            "scrollWidth": 62,
+            "clientWidth": 62
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          }
+        ]
+      },
+      {
+        "text": "synthetic:fixture-v1\n此引用没有声明可通过浏览器访问的链接。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 144.15625,
+            "width": 113.15625,
+            "scrollWidth": 113,
+            "clientWidth": 113
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 273.375,
+            "width": 242.375,
+            "scrollWidth": 242,
+            "clientWidth": 242
+          }
+        ]
+      },
+      {
+        "text": "research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md\n仓库中的来源声明",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      },
+      {
+        "text": "species:SYNTHETIC-V1\n此引用没有声明可通过浏览器访问的链接。",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 168.75,
+            "width": 137.75,
+            "scrollWidth": 138,
+            "clientWidth": 138
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 273.375,
+            "width": 242.375,
+            "scrollWidth": 242,
+            "clientWidth": 242
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      },
+      {
+        "text": "",
+        "left": 31,
+        "right": 359,
+        "width": 328,
+        "scrollWidth": 328,
+        "clientWidth": 328,
+        "children": [
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 359,
+            "width": 328,
+            "scrollWidth": 328,
+            "clientWidth": 328
+          },
+          {
+            "tag": "SPAN",
+            "left": 31,
+            "right": 133.0625,
+            "width": 102.0625,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "href": "https://github.com/mastermindx-market-intelligence/macro/blob/1c1411292d993d76bbe0eaaa38f636e5a170cbde/research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md",
+        "text": "仓库中的来源声明",
+        "rel": "noopener noreferrer",
+        "target": "_blank"
+      }
+    ]
+  }
+]

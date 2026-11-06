@@ -119,6 +119,7 @@ def _write_stub(scratch: Path, name: str, raw: dict) -> Path:
 
 
 def write_fixture_site(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     scratch.mkdir(parents=True, exist_ok=True)
     for name in ("theme.css", "navigation-refresh.css", "theme.js",
                  "logo_config.js", "nav_market.js", "product-nav-icons.css"):
@@ -135,7 +136,8 @@ def write_fixture_site(scratch: Path) -> None:
     items = diff_changes({"gamma_regime": "long"}, {"gamma_regime": "short"})
     raw_changed["state_changes"] = {"vs_asof": "2026-09-08", "items": items}
     stub_changed = _write_stub(scratch, "changed.json", raw_changed)
-    (scratch / "changed.html").write_text(
+    write_unshimmed_html(
+        scratch / "changed.html",
         render(REPO_ROOT, fixture=stub_changed), encoding="utf-8")
 
     raw_empty = _load_raw()
@@ -147,7 +149,8 @@ def write_fixture_site(scratch: Path) -> None:
         }],
     }
     stub_empty = _write_stub(scratch, "empty.json", raw_empty)
-    (scratch / "empty.html").write_text(
+    write_unshimmed_html(
+        scratch / "empty.html",
         render(REPO_ROOT, fixture=stub_empty), encoding="utf-8")
 
     raw_flat = _load_raw()
@@ -155,7 +158,8 @@ def write_fixture_site(scratch: Path) -> None:
     raw_flat["systematic"]["cta"]["state"] = "adding"
     raw_flat["systematic"]["cta"]["cta_near_flat"] = True
     stub_flat = _write_stub(scratch, "nearflat.json", raw_flat)
-    (scratch / "nearflat.html").write_text(
+    write_unshimmed_html(
+        scratch / "nearflat.html",
         render(REPO_ROOT, fixture=stub_flat), encoding="utf-8")
 
 
