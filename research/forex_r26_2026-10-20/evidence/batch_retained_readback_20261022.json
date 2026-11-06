@@ -1,0 +1,59 @@
+{
+  "schema": "forex.r26.batch_retained_readback_summary.v1",
+  "at": "2026-10-22T10:32:17.749174+00:00",
+  "policy_version": "tiingo-forex-local-close-batch-candidate/1",
+  "source_sha256": "ab5153b812d57a1d672bd4062595b14e68e002e68ad6b13f5e7b45f4bef8b656",
+  "verified_at_utc": "2026-10-22T10:32:17.692333+00:00",
+  "assessed_at_utc": "2026-10-22T10:32:17.692346+00:00",
+  "receipt_ids": {
+    "minute": "2bc9f93e5870b780582da71dc5bfb75de8990032e4d11b2982c9d247eb311865",
+    "native": "241f4315a507983d70306d7159bccf2c61ebede61ba0ebc5cfc38aa5cd3114cb",
+    "earlier_native": "b9a473cc9cf008e915a8eeabf6bb538a5e12873b2e780101b04a9f7a4d75e283"
+  },
+  "rows": {
+    "minute": 282,
+    "native": 2,
+    "earlier_native": 1
+  },
+  "required_interval_ends_utc": [
+    "2026-10-22T04:00:00+00:00",
+    "2026-10-22T08:00:00+00:00"
+  ],
+  "batch_checks_satisfied": false,
+  "slots": [
+    {
+      "role": "supporting",
+      "interval_end_utc": "2026-10-22T04:00:00+00:00",
+      "supporting_checks_satisfied": true,
+      "latest_freshness_satisfied": null,
+      "individual_checks_satisfied": false,
+      "closed_minute_complete_receipts": [
+        "2bc9f93e5870b780582da71dc5bfb75de8990032e4d11b2982c9d247eb311865"
+      ],
+      "closed_minute_invalid_receipts": []
+    },
+    {
+      "role": "latest",
+      "interval_end_utc": "2026-10-22T08:00:00+00:00",
+      "supporting_checks_satisfied": false,
+      "latest_freshness_satisfied": false,
+      "individual_checks_satisfied": null,
+      "closed_minute_complete_receipts": [],
+      "closed_minute_invalid_receipts": []
+    }
+  ],
+  "full_assessment_sha256": "d080c60551276e422323e37fb96a2a170189729be84bbd7c60d60863f4192c29",
+  "eligible_observations_count": 0,
+  "monitoring_admitted": false,
+  "inventory_selection_consistent": null,
+  "atomic_census_proven": false,
+  "provider_requests": 0,
+  "capture_or_materializer_calls": 0,
+  "archive_mutations": 0,
+  "product_use_approval": {
+    "state": "COMPLETE",
+    "authority": "Chairman attestation",
+    "reference": "Macro PR #9996 comment 6331071428",
+    "scope": "R26 Tiingo Forex product use; technical source admission remains separate"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "scope": "isolated Chromium component probe; not production",
+  "source_base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
+  "candidate_state": "uncommitted worktree",
+  "native_process": 91729,
+  "exit_code": 0,
+  "browser_version": "151.0.7922.34",
+  "declared_rows": 400,
+  "newer_links": 10,
+  "real_episode_map": {
+    "cards": 420,
+    "unique_ids": 400,
+    "duplicate_ids": 20
+  },
+  "same_rows_without_nested_newer_link": {
+    "cards": 400,
+    "unique_ids": 400,
+    "duplicate_ids": 0
+  },
+  "sha256": {
+    "templates/_prophet_card.html.j2": "9d66537eab5a21e91e09b70dee8511b5032fe66781771169ceb9ce4f50ec7d75",
+    "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
+    "scripts/build_site.py": "f588bc6a2ead5eb3db04cb1cbe879b199cd5f57ae265591059cc3c250af891b2",
+    "site/prophet/index.json": "a5dbea6169468d6cacd7aa2153209cddd67b0b9e9494ee7b910ba05c972a41c2"
+  },
+  "method": "Existing _us_prophet_episode_map -> actual plan partial -> Chromium DOM. Control changes only episode-map newer fields to null; original rows are unchanged."
+}

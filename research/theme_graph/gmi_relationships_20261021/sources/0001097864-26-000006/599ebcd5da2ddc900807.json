@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-09T21:24:05Z",
+ "accession": "0001097864-26-000006",
+ "cik": "0001097864",
+ "doc_byte_length": 2781990,
+ "doc_sha256": "28b760672ffe0b798bc137892d3a5c7e3acc0d5c4d6e23339916756738ea0cd9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-09",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "on-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 518998,
+  "byte_start": 518661,
+  "normalized": "We had one customer, a distributor, whose revenue accounted for approximately 11% and 10% of the total revenue for the years ended 2025 and 2024, respectively, across all reportable segments. Although we are not dependent on any single customer, a significant disruption in key customer relationships could adversely affect our business.",
+  "normalized_sha256": "599ebcd5da2ddc90080781e04c3fbd3e5bd52d16999ec198aae307175d5b41ec",
+  "raw": "We had one customer, a distributor, whose revenue accounted for approximately 11% and 10% of the total revenue for the years ended 2025 and 2024, respectively, across all reportable segments. Although we are not dependent on any single customer, a significant disruption in key customer relationships could adversely affect our business.",
+  "raw_sha256": "599ebcd5da2ddc90080781e04c3fbd3e5bd52d16999ec198aae307175d5b41ec"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1097864/000109786426000006/on-20251231.htm",
+ "xbrl_contexts": []
+}
