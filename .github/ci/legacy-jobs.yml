@@ -5860,6 +5860,29 @@ jobs:
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
         run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_quote_native_metadata.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_catalyst_attach.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
 
+  p08-synthetic-composition:
+    if: ${{ false }}  # executed inside the ordinary PR code pack
+    gate: code
+    scope: exclusive
+    # Research-only fixture composition; does not reopen the Q02 E1/E2 campaign.
+    paths:
+      - "engine/__init__.py"
+      - "engine/options_american_exercise.py"
+      - "research/options_estate/p08_synthetic_composition.py"
+      - "research/options_estate/P08_SYNTHETIC_COMPOSITION.md"
+      - "tests/test_p08_synthetic_composition.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest numpy scipy
+      - name: P08 synthetic composition and adoption boundaries
+        run: python -m pytest tests/test_p08_synthetic_composition.py -q
+
   quant-q02-american-exercise:
     if: ${{ false }}
     gate: code
@@ -6133,9 +6156,11 @@ jobs:
         # regression is the first failure a reader sees rather than the id contract
         # failing for a borrowed reason; it rides this existing step because a step is
         # the masking unit (run_ci_pack.py returns on the first non-zero step) while
-        # pytest reports every file inside one step.  No dependency widened: probed at
-        # RUN time it loads only pandas/numpy/pyarrow/pyyaml — exactly this job's thin
-        # install line — and blocking plotly leaves it 12-passed.
+        # pytest reports every file inside one step. The historical thesis-ID-only
+        # probe used pandas/numpy/pyarrow/pyyaml and reported 12 passes with plotly
+        # blocked; it was not a dependency inventory for this whole job.
+        # The UK Policy Watch suite also renders the real view and requires jinja2,
+        # which is retained in the existing combined dependency install above.
         run: >
           python -m pytest
           tests/test_ai_desk.py tests/test_ai_desk_scorer.py
@@ -13611,6 +13636,7 @@ jobs:
           tests/test_fundamental_forensics_lane_c2_bac_periods.py
           tests/test_fundamental_forensics_header_period_composition.py
           tests/test_fundamental_forensics_displayed_title_fold.py
+          tests/test_fundamental_forensics_bare_year_columns.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
           -q
@@ -15232,12 +15258,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
-      # The four suites and their measured import closure (inference's owned tier).
+      # The five suites and their measured import closure (inference's owned tier).
       - "tests/test_company_management_outlook_contract.py"
       - "tests/test_company_management_outlook.py"
       - "tests/test_market_ontology_technology_economic_change.py"
-      - "tests/test_market_ontology_technology_research_registration.py"
       - "tests/fixtures/technology_economic_change/conformant_assertion.json"
+      - "tests/test_market_ontology_technology_research_registration.py"
+      - "tests/test_market_ontology_technology_dossier_page.py"
+      - "tests/test_market_ontology_technology_published_signal.py"
       - "contracts/company_intelligence/management_outlook_comparison.v1.schema.json"
       - "contracts/market_ontology/technology_economic_change.evidence.v1.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -15249,6 +15277,10 @@ jobs:
       - "engine/company_intelligence/views.py"
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
+      - "engine/market_ontology/technology_dossier_page.py"
+      - "engine/market_ontology/technology_published_signal.py"
+      # One fragment template, named literally. Do not widen this to templates/**.
+      - "templates/_technology_economic_change_page.html.j2"
       - "engine/theme_graph/__init__.py"
       # engine/market_ontology/__init__.py runs on every import of the two subjects
       # and loads exposure_map; inference does not follow implicit parent-package
@@ -15270,8 +15302,11 @@ jobs:
       - "engine/market_ontology/theme_research_registry.py"
       - "engine/market_ontology/semiconductor_theme_research.py"
       # technology_economic_change import_module's theme_research_binding for
-      # the cutoff clock helpers (le, readable, is_instant, parse_clock,
-      # parse_day); the absent-binding arm blocks it in sys.modules.
+      # canonical_text and for the cutoff clock helpers (le, readable,
+      # is_instant, parse_clock, parse_day); the absent-binding arm blocks it
+      # in sys.modules. Registration treats the shell as theme_research_registry
+      # plus theme_research_binding; shared_shell_unavailable is that pair not
+      # both importable.
       - "engine/market_ontology/theme_research_binding.py"
       # The owned import closure of those modules: the data files
       # curation_assertion.py reads, then the modules
@@ -15380,7 +15415,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests jsonschema
       - name: Technology ex-Semis boundary (comparison contract + calculator + economic-change composer)
-        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py -q
+        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py tests/test_market_ontology_technology_dossier_page.py tests/test_market_ontology_technology_published_signal.py -q
 
   cn-standout-audit:
     if: ${{ false }}
@@ -21614,6 +21649,31 @@ jobs:
       - name: grader-manifest test suite
         run: python -m pytest tests/test_grader_manifest.py -q
 
+  meta-ceo-fabric-contracts:
+    if: ${{ false }}
+    gate: code
+    # C0/C1/C2 paid-Fabric adoption guidance is tested independently without
+    # broadening the self-mod-fence job selected by unrelated code PRs.
+    scope: exclusive
+    paths:
+      - AGENTS.md
+      - CLAUDE.md
+      - docs/CODEX_META_CEO_FABRIC.md
+      - scripts/__init__.py
+      - scripts/fabric_harness_attribution.py
+      - tests/test_meta_ceo_fabric_contract.py
+      - tests/test_fabric_harness_attribution.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install deterministic regression dependency
+        run: pip install pytest
+      - name: Assigned Meta-CEO and Fabric parent-attribution contracts
+        run: python -m pytest tests/test_meta_ceo_fabric_contract.py tests/test_fabric_harness_attribution.py -q
+
   self-mod-fence:
     if: ${{ false }}
     gate: code
@@ -21849,9 +21909,9 @@ jobs:
     # sentinel is required by that runner; it prevents duplicate GitHub jobs.
     if: ${{ false }}
     gate: code
-    # These eleven whole-file suites exercise the knowledge compiler and its
-    # committed records. Audit: 43 concrete transitive files plus the complete
-    # Agent OS store and runtime-read source documents. The Git/subprocess and
+    # Complete whole-file suites exercise the knowledge and project compilers
+    # and committed records. Explicit paths include their transitive helpers,
+    # complete Agent OS store and runtime-read source documents. The Git/subprocess and
     # glob edges use temporary fixture repositories or those same declared
     # sources. Ship-capture and F01 retain their broad closure in self-mod-fence.
     # No suite or security step is removed; no packing ceiling is raised.
@@ -21887,6 +21947,14 @@ jobs:
       - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
       - scripts/__init__.py
       - scripts/agentos.py
+      - scripts/agentos_direction.py
+      - scripts/agentos_direction_acceptance.py
+      - scripts/agentos_plan_adoption.py
+      - scripts/agentos_project_archive.py
+      - scripts/agentos_project_plan_contract.py
+      - scripts/agentos_project_proposal.py
+      - scripts/agentos_standing_instructions.py
+      - scripts/project_knowledge_recipes.py
       - scripts/agentos_records_draft.py
       - scripts/agentos_ship_capture.py
       - scripts/audit_stranded_work.py
@@ -21903,6 +21971,17 @@ jobs:
       - tests/test_agentos_compile.py
       - tests/test_agentos_records_draft.py
       - tests/test_agentos_schema.py
+      - tests/test_agentos_direction.py
+      - tests/test_agentos_direction_acceptance.py
+      - tests/test_agentos_direction_owner.py
+      - tests/test_agentos_plan_adoption.py
+      - tests/test_agentos_project_archive.py
+      - tests/test_agentos_project_knowledge_owner.py
+      - tests/test_agentos_project_plan_contract.py
+      - tests/test_agentos_project_plan_owner.py
+      - tests/test_agentos_project_proposal.py
+      - tests/test_agentos_standing_instructions.py
+      - tests/test_project_knowledge_recipes.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
@@ -21928,6 +22007,18 @@ jobs:
             tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
           # Owned, no-network P1 project preflight: explicit run for contract-delta.
           python -m pytest tests/test_linear_projector_p1_offline.py -q
+          # Complete bounded project-source/authoring suites owned by this job.
+          python -m pytest tests/test_agentos_direction.py \
+            tests/test_agentos_direction_acceptance.py \
+            tests/test_agentos_direction_owner.py \
+            tests/test_agentos_plan_adoption.py \
+            tests/test_agentos_project_archive.py \
+            tests/test_agentos_project_knowledge_owner.py \
+            tests/test_agentos_project_plan_contract.py \
+            tests/test_agentos_project_plan_owner.py \
+            tests/test_agentos_project_proposal.py \
+            tests/test_agentos_standing_instructions.py \
+            tests/test_project_knowledge_recipes.py -q
 
   capability-broker:
     if: ${{ false }}
@@ -22010,7 +22101,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py tests/test_provider_native_enablement.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -22839,6 +22930,10 @@ jobs:
         run: pip install pytest pandas pyarrow jinja2 pyyaml
       - name: basket staleness warn tests
         run: python -m pytest tests/test_basket_staleness_warn.py -q
+      - name: regional basket detail source identity and unavailable counts
+        run: |
+          node --version
+          python -m pytest tests/test_theme_detail_cycles.py -q
 
   sector-basket-links:
     if: ${{ false }}
@@ -22878,6 +22973,7 @@ jobs:
       - "site/basket_china/**"
       - "site/basket_hk/**"
       - "site/basket_intl/**"
+      - "site/allocation.html"
       - "templates/allocation.html.j2"
       - "templates/basket_detail.html.j2"
       - "templates/sector_central.html.j2"
@@ -26264,8 +26360,10 @@ jobs:
     # 5,909 ceilings in tests/test_ci_pack.py PACKING_PROBES). `scope: exclusive`
     # makes the paths below REPLACE inference: they are the exact non-wildcard
     # closure (tests/test_ci_pack.py::
-    # test_curated_exclusive_scopes_cover_their_own_import_closure) and nothing
-    # under templates/. No ceiling moves.
+    # test_curated_exclusive_scopes_cover_their_own_import_closure) plus the eight
+    # Jinja templates the render tests load at runtime through FileSystemLoader
+    # (T25 AUDIT-N3 finding A1, 2026-11-04): a template-only PR must still run
+    # the s10 render guards. No ceiling moves.
     paths:
       - "config/global_liquidity_transmission_v1.yml"
       - "engine/global_liquidity.py"
@@ -26322,6 +26420,15 @@ jobs:
       - "scripts/check_macro_command_copy.py"
       - "scripts/count_macro_command_machine_text.py"
       - "tests/test_macro_workspace_liquidity_central_banks.py"
+      # Jinja templates loaded at runtime by tests/test_global_liquidity_views.py render tests
+      - "templates/_all_tools_menu.html.j2"
+      - "templates/_curve_panel.html.j2"
+      - "templates/_macro_suite_nav.html.j2"
+      - "templates/_macro_suite_shell.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/macro_liquidity_central_banks.html.j2"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33989,6 +34096,143 @@ jobs:
       - name: pick-conditional forward distributions — PIT/embargo (w1) + HAR standardizer pin (w1.5)
         run: python -m pytest tests/test_pick_forward_dist.py tests/test_pick_forward_dist_phase1.py -q
 
+  admin-analytics-pages:
+    # The live page reader must retain every exclusion while avoiding repeated
+    # membership work. Real PostgreSQL fixtures use a fresh Unix-only cluster;
+    # no production rows, network database or optional skipped CI proof.
+    if: ${{ false }}  # Executed inside the required ci-pack wrapper.
+    gate: code
+    # Retain the complete derived import/read closure; discard only opaque
+    # fallback domains that otherwise select unrelated homepage/Prophet probes.
+    scope: exclusive
+    paths:
+      - "admin/**"
+      - "app/**"
+      - "collectors/**"
+      - "config/**"
+      - "contracts/**"
+      - "engine/*.py"
+      - "engine/biocatalyst/**"
+      - "engine/capital_structure/**"
+      - "engine/catalyst_opportunity/**"
+      - "engine/chronicle/**"
+      - "engine/codex_lane/**"
+      - "engine/company_intelligence/**"
+      - "engine/company_theme_exposure/**"
+      - "engine/context_index/**"
+      - "engine/earnings_narrative/**"
+      - "engine/earnings_release/**"
+      - "engine/entry_radar/**"
+      - "engine/fundamental_forensics/**"
+      - "engine/government_revenue/**"
+      - "engine/institutional_census/**"
+      - "engine/intelligence_workspace/**"
+      - "engine/market_ontology/**"
+      - "engine/market_os/**"
+      - "engine/marketing/**"
+      - "engine/medtech/**"
+      - "engine/metabolism/**"
+      - "engine/neuralweb/**"
+      - "engine/news_impact/**"
+      - "engine/oracle/**"
+      - "engine/pick_lab/**"
+      - "engine/press/**"
+      - "engine/price_pressure/**"
+      - "engine/prophet_lab/**"
+      - "engine/prophet_live/**"
+      - "engine/research_intelligence/**"
+      - "engine/research_vault/**"
+      - "engine/seasonality/**"
+      - "engine/sector_intelligence/**"
+      - "engine/stock_identity/**"
+      - "engine/theme_graph/**"
+      - "lib/**"
+      - "research/**"
+      - "scripts/__init__.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/build_security_master.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/calibrate_rate_inflation.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_research_vault_source_freshness.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "scripts/probe_theme_exposure_axes.py"
+      - "scripts/publish_company_disclosure.py"
+      - "scripts/query_k3e_expectation_surface.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/sparse_guard.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/worktree_sparse.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/sector_pulse.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/alerts_triage.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/factors.json"
+      - "site/factordata/impulse.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/leaderradar/radar.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/prophet/index.json"
+      - "site/turn_watch/turn_watch.json"
+      - "site/vol/regime.json"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_analytics_exclusions.py"
+      - "tests/test_analytics_pages_postgres.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest requests
+      - name: page analytics SQL contracts and real PostgreSQL equivalence
+        run: |
+          pg_bin="$(pg_config --bindir)"
+          export PATH="$pg_bin:$PATH"
+          for tool in psql initdb pg_ctl; do command -v "$tool" >/dev/null; done
+          test "$(id -u)" -ne 0
+          python -m pytest tests/test_analytics_exclusions.py tests/test_analytics_pages_postgres.py -q
+
   unrun-serving-admin:
     # admin control surfaces + the brain/tape serving edges.
     if: ${{ false }}
@@ -36100,6 +36344,7 @@ jobs:
       - "tests/test_prophet_postmortem.py"
       - "tests/test_prophet_r7_wave_a_plan_cards.py"
       - "tests/test_prophet_strategy_definition.py"
+      - "tests/test_prophet_whynot_receipts.py"
       - "tests/test_stock_events.py"
       - "tests/test_us_basket_turn.py"
       - "tests/test_us_board_priority_ui.py"
@@ -36238,6 +36483,18 @@ jobs:
         run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
       - name: Prophet R7 Wave A watchlist save outcomes and saved/tonight columns (A2)
         run: python -m pytest tests/test_prophet_r7_wave_a_watchlist.py -q
+      # §6.9 R5 PR-time copy contract. The complete why-not suite stays in its
+      # existing data-gated job during this bootstrap: as of 2026-09-10 current main
+      # carried four known harness failures that #7059 repairs, so moving the whole
+      # file first would have made the prerequisite red on its own base. These four
+      # hermetic copy laws are the source-change contract that must execute before
+      # #7059 can merge. As of 2026-11-05 the first two names exist on frozen main
+      # 7241e9b; #7059 adds the latter two, so this selector bootstraps green and
+      # expands automatically on that exact head.
+      - name: Prophet intake receipt copy contract (PR-time hermetic subset)
+        run: >-
+          python -m pytest tests/test_prophet_whynot_receipts.py -q
+          -k "every_order_code_has_non_empty_bilingual_copy or template_copy_mirrors_the_engine_copy_exactly or plan_not_built_copy_never_claims_every_check_passed or validated_word_is_confined_to_the_exact_negative_disclaimer"
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet R7 Wave A refusal receipts and design guards (A3)
@@ -48087,6 +48344,50 @@ jobs:
       - name: news impact F2 negative-control repairs (amount formatting, text safety)
         run: python -m pytest tests/test_news_impact_f2_amount_format.py tests/test_news_impact_f2_text_safety.py -q
 
+  news-v91-vertical-proofs:
+    # News Intelligence Estate masterplan section 9.1 vertical proofs (V91). Each
+    # research/news_intelligence_estate_20261021/v91_proofs/v<n>_*.py runs offline
+    # twice and its verdicts are pinned against the sibling .expected file. This job
+    # is byte-identical in every V91 pull request, so they merge in any order.
+    if: ${{ false }}
+    gate: code
+    paths:
+      - "tests/test_v91_vertical_proofs.py"
+      - "research/news_intelligence_estate_20261021/v91_proofs/**"
+      - "app/company_intelligence.py"
+      - "app/integrated_answer.py"
+      - "app/ticker_news.py"
+      - "collectors/federal_register.py"
+      - "collectors/hk_hkexnews.py"
+      - "contracts/news_impact/**"
+      - "engine/company_intelligence/**"
+      - "engine/company_theme_exposure/**"
+      - "engine/earnings_release/**"
+      - "engine/foresight_cascade.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/macro_surprise.py"
+      - "engine/news_events.py"
+      - "engine/news_impact/**"
+      - "engine/news_rss.py"
+      - "engine/policy_calendar.py"
+      - "engine/qbus_news_*.py"
+      - "engine/rates_inflation_command.py"
+      - "engine/release_market_context.py"
+      - "engine/release_target_truth.py"
+      - "scripts/build_foresight.py"
+      - "tests/earnings_economic_fixtures.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install V91 vertical proof dependencies
+        run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jsonschema
+      - name: V91 vertical proofs (offline, deterministic, verdicts pinned)
+        run: python -m pytest tests/test_v91_vertical_proofs.py -q
+
   site20-s4-chart-brief-js:
     if: ${{ false }}
     gate: code
@@ -49022,6 +49323,156 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp11-reader-pins
         run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
+
+  robotics-theme-research:
+    # Re-land of #7908 after #8013, stacked on #7870. One exclusive gate:code
+    # job for the Robotics vertical. paths: is the measured static import
+    # closure of the eight suites on this head, including the #7870 shared
+    # shell (engine.theme_graph.curation_assertion,
+    # semiconductor_theme_research, theme_research_binding,
+    # rights.load_registry_snapshot) and the modules those imports reach.
+    # A dependency edit schedules this job, and contract-delta does not
+    # see the suites as unwired.
+    # Measured on this head: suite_dependency_closure over the eight
+    # suites on the run line is 66 files, and declared paths: is 69 (the
+    # 66, engine/__init__.py and the two tests/fixtures/** patterns).
+    # curated_exclusive_closure_findings is UNCOVERED 0.
+    # engine/__init__.py is declared although the closure does not list it:
+    # suite_dependency_closure does not emit ancestor package __init__.py
+    # files, yet importing any engine.* module executes it, so an edit to
+    # it must still schedule this job. engine/market_ontology/__init__.py
+    # has the same gap and was undeclared before this re-land; it stays
+    # with the ancestor-init follow-up to ci_scope_dependencies.
+    # config/sparse_worktree.json and scripts/worktree_sparse.py are not
+    # declared (in no suite's closure, and neither is a package __init__).
+    # run_ci_pack weight 18 (_job_weight: two commands, pip install and
+    # pytest, + eight tests/test_ mentions x2 + len//800 = 0). Its pack
+    # slot is not fixed: partition_jobs packs only the jobs a diff selects.
+    # Earlier, on 94b86c4 (120893 tracked paths), the six suites of that
+    # head had a 64-file suite_dependency_closure and
+    # curated_exclusive_closure_findings UNCOVERED 0. The same 64-file
+    # union on fe6d00ec still excludes engine/theme_graph/store.py,
+    # engine/market_ontology/theme_research_mounts.py and
+    # engine/research_priority_ordering.py (curated_exclusive_closure_findings
+    # uncovered 0 before and after the drop; probes stayed 134/5787/10,
+    # 134/5590/10, 129/5550/10), so those three are not declared. Unmarked literals
+    # PUBLIC_PAGE_PATHS and EXTRA_PUBLIC_JSON
+    # (site/state_of_themes.html, site/basket/robotics_automation.html,
+    # site/basketdata/foresight_cascade.json) are reads and stay. Not reads,
+    # so not declared: data/baskets/membership.json,
+    # data/neuralweb/theme_state.json, data/theme_graph/evidence.parquet,
+    # site/marketdata/basket_confluence.json, site/prophet/index.json,
+    # scripts/build_state_of_themes.py (its literal is ci-trigger-closure: data).
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_graph_identity_breaks.yml"
+      - "config/theme_sources.yml"
+      - "contracts/evidence_foundation/block.v1.schema.json"
+      - "contracts/evidence_foundation/recipe.v1.schema.json"
+      - "contracts/evidence_foundation/reference.v1.schema.json"
+      - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "contracts/market_ontology/robotics_theme_research.v1.schema.json"
+      - "contracts/market_ontology/semiconductor_theme_research.v1.schema.json"
+      - "contracts/theme_graph/curation_assertion.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/guidance_history.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/industrials_profiles.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/rms_segment_profile.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/robotics_owner_bundle.py"
+      - "engine/market_ontology/robotics_theme_research.py"
+      - "engine/market_ontology/semiconductor_theme_research.py"
+      - "engine/market_ontology/theme_research_binding.py"
+      - "engine/press/__init__.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/curation_assertion.py"
+      - "engine/theme_graph/identity.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/evidence_foundation.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "site/basket/robotics_automation.html"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/state_of_themes.html"
+      - "tests/__init__.py"
+      - "tests/fixtures/robotics_non_regression/**"
+      - "tests/fixtures/robotics_theme_research/**"
+      - "tests/robotics_research_helpers.py"
+      - "tests/test_market_ontology_robotics_theme_research.py"
+      - "tests/test_robotics_known_revisions_replay.py"
+      - "tests/test_robotics_owner_bundle.py"
+      - "tests/test_robotics_research_composition.py"
+      - "tests/test_robotics_research_inputs.py"
+      - "tests/test_robotics_research_temporal.py"
+      - "tests/test_robotics_shared_type_mirror.py"
+      - "tests/test_robotics_theme_non_regression.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the Robotics theme-research suites
+        run: pip install pytest jsonschema pyyaml pandas pyarrow
+      - name: robotics theme research suites
+        run: |
+          TZ=UTC python -m pytest \
+            tests/test_market_ontology_robotics_theme_research.py \
+            tests/test_robotics_known_revisions_replay.py \
+            tests/test_robotics_owner_bundle.py \
+            tests/test_robotics_research_composition.py \
+            tests/test_robotics_research_inputs.py \
+            tests/test_robotics_research_temporal.py \
+            tests/test_robotics_shared_type_mirror.py \
+            tests/test_robotics_theme_non_regression.py \
+            -q
   ric-f0-a10-canonical-calendar:
     if: ${{ false }}
     gate: code
@@ -49358,6 +49809,7 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "scripts/__init__.py"
+      - "scripts/audit_china_gold_premium.py"
       - "scripts/build_commodities.py"
       - "scripts/check_commodity_publication.py"
       - "scripts/check_site_asset_refs.py"
@@ -49366,6 +49818,7 @@ jobs:
       - "site/commodities.html"
       - "site/theme.css"
       - "templates/_commodity_decision_workspace.html.j2"
+      - "templates/_china_gold_premium.html.j2"
       - "templates/commodities.html.j2"
       - "templates/commodity-workspace.css"
       - "templates/commodity-workspace.js"
@@ -49385,6 +49838,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_commodity_decision_workspace.py"
+      - "tests/test_china_gold_premium.py"
       - "tests/test_commodity_publication.py"
       - "tests/test_commodity_presentation_render.py"
       - "tests/test_commodity_supply_context.py"
@@ -51412,6 +51866,31 @@ jobs:
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
         run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py -q
+
+  earnings-worker-systemd:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - ops/bootstrap_earnings_worker_linux.sh
+      - ops/systemd/mastermind-earnings-worker.service
+      - ops/systemd/mastermind-earnings-worker.timer
+      - ops/launchd/run_earnings_worker.sh
+      - ops/launchd/run_with_env.sh
+      - ops/earnings_worker_requirements.txt
+      - tests/test_earnings_worker_systemd.py
+      - tests/__init__.py
+    timeout-minutes: 4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install test dependency
+        run: pip install pytest
+      - name: earnings worker service and simulated bootstrap contracts
+        run: python -m pytest tests/test_earnings_worker_systemd.py -q
   institutional-13f-ingestion-contracts:
     # 13F census ingestion: the SEC source parser and the bounded rolling ingest.
     # Both suites were grandfathered dark in config/unrun_test_baseline.json while

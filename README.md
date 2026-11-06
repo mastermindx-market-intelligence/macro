@@ -5,10 +5,13 @@ factor appetite → sector flows → sector selection**. Its most important job 
 classifying the current regime, scoring confidence, and flagging transitions
 before they're confirmed.
 
-No server. GitHub Actions collects data after the US close, commits parquet to
-this repo (the repo *is* the database), regenerates a static dashboard on
-GitHub Pages, and pings Telegram/Discord with the daily snapshot and any fired
-alerts.
+The repository includes both generated dashboard artifacts and an additive
+server-side application. The batch collectors and builders produce data and
+static pages; [the FastAPI application](app/main.py) provides API routes, and
+[the Caddy configuration](app/deploy/Caddyfile) includes static-file serving
+and API proxying. These are source-level components, not a claim about the
+currently deployed service. The GitHub Pages setup below describes the original
+static-site workflow, not current service deployment or activation instructions.
 
 ## The regime model in one paragraph
 
