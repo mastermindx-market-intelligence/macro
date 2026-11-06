@@ -15,6 +15,9 @@ normalized chart level series; we map those to the engine's horizon grid and der
 """
 from __future__ import annotations
 
+from datetime import date
+import math
+
 from engine.subsector_rotation import MOM_HORIZONS, _rotation_metrics
 
 # CN perf horizon (in the basket JSON) → the rotation engine's horizon grid.
@@ -56,12 +59,27 @@ def _perf_map(basket: dict, series) -> dict:
     return out
 
 
-def _members(basket: dict, top: int = 8) -> list[dict]:
+def _members(basket: dict, top: int = 8, *, asof: str | None = None) -> list[dict]:
+    cut = _observation_day(asof)
     rows = []
     for m in (basket.get("members") or []):
         r20 = m.get("ret_20d")
+        price_day = _observation_day(m.get("price_asof"))
+        if cut is None or (price_day is not None and price_day > cut):
+            price_day = None
+        weekly = None
+        if cut is not None and price_day == cut and _observation_day(m.get("ret_5d_asof")) == cut:
+            value = m.get("ret_5d")
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                try:
+                    percent = float(value) * 100.0
+                    if math.isfinite(percent):
+                        weekly = round(percent, 2)
+                except (OverflowError, ValueError):
+                    pass
         rows.append({"t": m.get("symbol"),
-                     "1W": None,  # THS member rows carry only 20d / ytd
+                     "1W": weekly, "1W_asof": cut if weekly is not None else None,
+                     "price_asof": price_day,
                      "1M": round(r20 * 100.0, 2) if r20 is not None else None,
                      "name": m.get("name")})
     rows.sort(key=lambda m: (m["1M"] if m["1M"] is not None else -1e9), reverse=True)
@@ -87,7 +105,7 @@ def compute_china_rotation(ths_json: dict, curated_json: dict, *,
             "key": k, "name": b.get("name") or k, "name_zh": b.get("name_zh") or b.get("name") or k,
             "theme": b.get("category") or "", "theme_zh": b.get("category_zh") or b.get("category") or "",
             "n_members": b.get("n_members") or 0,
-            "members": _members(b),
+            "members": _members(b, asof=asof),
             **sub_met[k],
         })
     subsectors.sort(key=lambda s: s["emerging_score"], reverse=True)
@@ -132,3 +150,13 @@ def compute_china_rotation(ths_json: dict, curated_json: dict, *,
         "highlights": {"emerging": emerging, "fading": fading, "leaders": leaders, "laggards": laggards},
         "n_subsectors": len(subsectors), "n_themes": len(themes),
     }
+
+
+def _observation_day(value) -> str | None:
+    """Accept only a declared, valid ISO session date; never infer one from time."""
+    if not isinstance(value, str) or len(value) != 10:
+        return None
+    try:
+        return value if date.fromisoformat(value).isoformat() == value else None
+    except ValueError:
+        return None

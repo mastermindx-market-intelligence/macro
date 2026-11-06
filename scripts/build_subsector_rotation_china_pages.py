@@ -20,6 +20,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 from lib import config  # noqa: E402
+from engine.subsector_rotation_china import _observation_day  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from scripts.build_subsector_rotation_pages import QUAD, QUADX, PERF_ROWS, _fmt_pc, _lede  # noqa: E402
 
@@ -57,6 +58,9 @@ def build(site: Path | None = None) -> int:
             # China parameterization of the shared template
             stock_base="china_lookup.html#", back_href="sector_central_china.html#si-movement",
             back_en="China Subsector Rotation map", back_zh="中国子行业轮动图",
+            show_member_weekly=True, snapshot_asof=_observation_day(data.get("asof")),
+            member_total=(sub["n_members"] if type(sub.get("n_members")) is int
+                          and sub["n_members"] >= len(members) else None),
         )
         write_page(out_dir / f"{sub['key']}.html", html)
         n += 1

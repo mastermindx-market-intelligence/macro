@@ -5468,7 +5468,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_917),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_668),
 )
@@ -5478,6 +5478,18 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-05 PR #7023 China weekly-member producer-to-detail step: paired
+    source measurement, base 034b1f22ba35 against candidate 27f54baea185,
+    same run_ci_pack blob. index137jobs/5912->5917, free137jobs/5927->5927,
+    Prophet131jobs/5668->5668, all ten packs, identical selected IDs with no
+    entrants or exits. The sole estimated-weight delta is the existing job
+    rc-r14-china-rotation-events, whose separate producer/detail step adds one
+    command and two tests/test_ references (two references x two units each),
+    moving its planner weight 10->15; every other job's estimated weight is
+    unchanged. Raise only the index probe's weight ceiling to the measured
+    5,917. These are planner estimates, not runtime evidence; job-count, pack,
+    timeout and admission bounds remain unchanged.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
