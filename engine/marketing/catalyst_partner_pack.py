@@ -241,8 +241,10 @@ def _route(scan_url: str | None, route_receipt: str | None) -> tuple[str, bool]:
              "DUPLICATE_OR_INVALID_UTM")
     _require(parsed.hostname != "preview.invalid", "ROUTE_RECEIPT_FOR_PLACEHOLDER")
     # Partner readers must land on the accessible HTML first-value experience,
-    # never the machine-readable JSON scan endpoint.
-    _require(parsed.hostname in ("www.mastermind-x.com", "mastermind-x.com")
+    # never the machine-readable JSON scan endpoint. Only the canonical www
+    # host serves it: the apex only 301-redirects (app/deploy/Caddyfile), so
+    # it is not a route a partner link may name.
+    _require(parsed.hostname == "www.mastermind-x.com"
              and parsed.path == "/api/catalyst",
              "INVALID_SCAN_ROUTE")
     return u, True
@@ -373,6 +375,7 @@ def build_partner_pack(
     *, preview_only: bool = True, now_utc: datetime | None = None,
     scan_url: str | None = None, route_receipt: str | None = None,
     angle_plan: dict | None = None,
+    event_time_basis: str | None = None,
 ) -> dict:
     """Compile a gated draft. No network, model, publication or side effects.
 
@@ -392,6 +395,16 @@ def build_partner_pack(
     now = now_utc.astimezone(_UTC)
     ticks = _ticker_list(selected_tickers)
     event, sources, relations = _public_packet(event_packet, now)
+    if event_time_basis is not None:
+        # A named clock basis is only ever the SEC acceptance datetime of an
+        # earnings filing; every other packet keeps the generic event-time
+        # label rather than an invented clock name.
+        _require(event_time_basis == "SEC_ACCEPTANCE"
+                 and event["event_kind"] == "earnings"
+                 and any(ref.startswith("sec:")
+                         for ref in event["headline_evidence_ids"]),
+                 "INVALID_EVENT_TIME_BASIS")
+        event["event_time_basis"] = "SEC_ACCEPTANCE"
     partner = _partner(partner_profile, now, demo_only=event["demo_only"])
     claims = _claims(event_packet, ticks, relations, sources)
     if angle_plan is not None:
@@ -976,10 +989,18 @@ def build_partner_pack_from_native_event(
             "receipt_id": receipts[0],
         },
     }
+    # The native earnings producer sets event_time_utc from the filing's SEC
+    # acceptance_datetime (catalyst_packets.build_event_packet: earnings
+    # event_time, its unqualified/future clock refusals, and the packet's
+    # event_time_utc stamp), so only that kind may name the basis.
+    clock_refused = {"unqualified_source_clocks", "future_sec_acceptance"}
+    basis = ("SEC_ACCEPTANCE"
+             if native_kind == "earnings" and not clock_refused & set(missing)
+             else None)
     pack = build_partner_pack(
         read_model, partner_profile, ticks, preview_only=preview_only,
         now_utc=now, scan_url=scan_url, route_receipt=route_receipt,
-        angle_plan=angle_plan,
+        angle_plan=angle_plan, event_time_basis=basis,
     )
     # C03 retired registry: a pack id already retired for this event is never
     # re-emitted, even if the same evidence would hash to the same id again.

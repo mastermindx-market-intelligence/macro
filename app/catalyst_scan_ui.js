@@ -88,6 +88,11 @@
       section.append(make("h3", entry.headline));
       section.append(make("p", "Evidence as of " + entry.as_of_utc +
         " · " + entry.relationship + " · " + entry.correction_state));
+      // The SEC acceptance clock is named by its basis, never shown as a source stamp.
+      if (entry.event_time_basis === "SEC_ACCEPTANCE" && typeof entry.event_time_utc === "string" &&
+          /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(entry.event_time_utc)) {
+        section.append(make("p", "SEC acceptance (UTC): " + entry.event_time_utc));
+      }
       list(section, "What changed", entry.what_changed, "text");
       list(section, "Conditional scenarios — not predictions", entry.scenarios, "trigger");
       list(section, "What would invalidate this reading", entry.invalidators, "text");

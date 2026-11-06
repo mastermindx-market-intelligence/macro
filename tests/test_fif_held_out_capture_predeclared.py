@@ -11,6 +11,7 @@ disjoint from gold, D0 and wave one) are pinned against the real fixture.
 """
 from __future__ import annotations
 
+import hashlib
 import importlib
 import json
 from datetime import date
@@ -18,11 +19,15 @@ from pathlib import Path
 
 import pytest
 
+from engine.fundamental_forensics.detectors import issuer_class_for_sic
 from scripts import capture_fif_issuer_packages as gsrc
 from tests.test_fif_gsrc_capture import _D0_PATH, _FakeResponse, _R5_SETS
 
 _REPO = Path(__file__).resolve().parents[1]
 _G_SRC = _REPO / "tests" / "fixtures" / "fundamental_forensics" / "g_src"
+_COVERAGE_V1 = (
+    _REPO / "config" / "fundamental_forensics" / "coverage" / "five_issuer_v1.json"
+)
 _CLOCK = "2026-10-31T00:00:00Z"
 _ZZ_CIK10 = "0000000042"
 _GOLD_AAPL = {"0000320193-25-000079", "0000320193-26-000020"}
@@ -744,12 +749,15 @@ def test_contract_declares_the_predeclared_admission_rule() -> None:
     assert contract["contract_id"] == "fif-held-out-v1"
     assert contract["admission_rule"] == "predeclared_split_rows"
     decisions = contract["split_decisions"]
-    assert [decision["id"] for decision in decisions] == [1, 2]
+    assert [decision["id"] for decision in decisions] == [1, 2, 3]
     assert decisions[0]["decision"] == (
         "DEC:FIF-HELD-OUT-BYTES-ARE-STAGED-NOT-COMMITTED"
     )
     assert decisions[1]["decision"] == (
         "DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE-20261031"
+    )
+    assert decisions[2]["decision"] == (
+        "DEC:FIF-Q0-SPLIT-DECISION-3-PK12-BIOTECH-HELD-OUT"
     )
     for decision in decisions:
         assert decision["declared_at"]
@@ -807,3 +815,145 @@ def test_split_two_rows_are_disjoint_from_gold_d0_wave_one_and_split_one() -> No
     assert split2 & d0_accessions == set()
     assert split2 & g_src_accessions == set()
     assert split2 & _GOLD_AAPL == set()
+
+
+# ---------------------------------------------------------------------------
+# (vi) The committed split-3 facts (DEC:FIF-Q0-SPLIT-DECISION-3-PK12-BIOTECH-
+# HELD-OUT): eight SIC 2834-2836 issuers, three FY2021-2023 10-K rows each,
+# identity-witnessed by compact submissions files under the held-out root.
+# ---------------------------------------------------------------------------
+
+_SPLIT3_TICKERS = ("GILD", "AMGN", "EXEL", "NBIX", "NTLA", "FATE", "CRSP", "ARWR")
+_SPLIT3_ROW_KEYS = _ROW_KEYS | {"pack_scope"}
+_BIOTECH_SICS = {"2834", "2835", "2836"}
+_DEV_BIOTECH_TICKERS = {"VRTX", "REGN", "MRNA", "BEAM", "BIIB", "ALNY", "SRPT"}
+
+
+def _split3_issuers(contract: dict) -> dict[str, dict]:
+    return {
+        str(issuer["ticker"]): issuer
+        for issuer in contract["issuers"]
+        if issuer.get("ticker") in _SPLIT3_TICKERS
+    }
+
+
+def test_contract_has_24_predeclared_split_three_rows_over_eight_issuers() -> None:
+    contract = _held_out_contract()
+    split3 = _split_rows(contract, 3)
+    assert len(split3) == 24
+    by_ticker: dict[str, list[dict]] = {}
+    for ticker, _cik, row in split3:
+        by_ticker.setdefault(ticker, []).append(row)
+    assert sorted(by_ticker) == sorted(_SPLIT3_TICKERS)
+    for ticker, rows in sorted(by_ticker.items()):
+        assert len(rows) == 3, ticker
+        for row in rows:
+            assert row["form"] == "10-K", (ticker, row["accession"])
+            assert set(row) == _SPLIT3_ROW_KEYS, (ticker, row["accession"])
+            assert row["pack_scope"] == ["PK12"], (ticker, row["accession"])
+            assert row["census_ref"] == f"held_out_contract.json#{ticker}"
+            assert row["retention_state"] == "not_retained"
+    # The eight split-3 issuers are appended after the five reference issuers.
+    assert [i["ticker"] for i in contract["issuers"]] == [
+        "AAPL", "SNOW", "CAT", "BAC", "GOOGL", *_SPLIT3_TICKERS
+    ]
+
+
+def test_split_three_issuers_are_sic_283x_biotech_of_class_industrial() -> None:
+    contract = _held_out_contract()
+    split3 = _split3_issuers(contract)
+    assert sorted(split3) == sorted(_SPLIT3_TICKERS)
+    for ticker, issuer in sorted(split3.items()):
+        assert issuer["sic"] in _BIOTECH_SICS, ticker
+        assert issuer["issuer_class"] == issuer_class_for_sic(issuer["sic"]), ticker
+
+
+def test_split_three_witness_files_match_their_contract_sic_sources() -> None:
+    contract = _held_out_contract()
+    for ticker, issuer in sorted(_split3_issuers(contract).items()):
+        source = issuer["sic_source"]
+        witness_path = HELD_OUT_ROOT / "split3_submissions" / f"{ticker}.json"
+        assert witness_path.is_file(), ticker
+        assert (_REPO / str(source["capture_path"])).resolve() == (
+            witness_path.resolve()
+        ), ticker
+        payload = witness_path.read_bytes()
+        assert hashlib.sha256(payload).hexdigest() == source["sha256"], ticker
+        witness = json.loads(payload.decode("utf-8"))
+        assert witness["sic"] == issuer["sic"], ticker
+        assert {row["accessionNumber"] for row in witness["filings_10k"]} == {
+            row["accession"]
+            for row in issuer["accessions"]
+            if row["split_decision"] == 3
+        }, ticker
+
+
+def test_split_three_rows_are_disjoint_from_every_earlier_set() -> None:
+    contract = _held_out_contract()
+    split3_rows = _split_rows(contract, 3)
+    new_accessions = {row["accession"] for _t, _c, row in split3_rows}
+    new_ciks = {i["cik"] for i in _split3_issuers(contract).values()}
+    assert len(new_accessions) == 24, "split-3 accessions must be distinct"
+    assert len(new_ciks) == 8
+    # Earlier waves of the same contract: split 1 and split 2 rows.
+    earlier_rows = _split_rows(contract, 1) + _split_rows(contract, 2)
+    earlier_accessions = {row["accession"] for _t, _c, row in earlier_rows}
+    assert new_accessions & earlier_accessions == set()
+    # The five reference issuers themselves (exact CIK strings, no prefixes).
+    reference_ciks = {
+        str(issuer["cik"])
+        for issuer in contract["issuers"]
+        if issuer.get("ticker") not in _SPLIT3_TICKERS
+    }
+    assert new_ciks & reference_ciks == set()
+    # The shipped coverage contract, gold, and the dev biotech corpus.
+    coverage = json.loads(_COVERAGE_V1.read_text(encoding="utf-8"))
+    coverage_accessions = {
+        str(row["accession"])
+        for issuer in coverage["issuers"]
+        for row in issuer.get("accessions") or []
+    }
+    coverage_ciks = {str(issuer["cik"]) for issuer in coverage["issuers"]}
+    assert new_accessions & coverage_accessions == set()
+    assert new_ciks & coverage_ciks == set()
+    assert new_accessions & _GOLD_AAPL == set()
+    assert set(_split3_issuers(contract)) & _DEV_BIOTECH_TICKERS == set()
+
+
+def test_select_predeclared_split_rows_returns_only_the_split_three_plan() -> None:
+    contract = _held_out_contract()
+    for ticker, issuer in sorted(_split3_issuers(contract).items()):
+        selected = gsrc.select_predeclared_split_rows(issuer, 3)
+        rows = [row for row in issuer["accessions"] if row["split_decision"] == 3]
+        assert len(rows) == 3, ticker
+        # All three rows are 10-Ks: 10-K first, then filing_date descending.
+        assert [item.accession for item in selected] == [
+            row["accession"]
+            for row in sorted(rows, key=lambda r: r["filing_date"], reverse=True)
+        ], ticker
+        assert all(item.selection == "admission_candidate" for item in selected)
+    # The five reference issuers predeclare no split-3 row: empty plan, never
+    # an invented one, and no refusal fires at selection time.
+    for issuer in contract["issuers"]:
+        if issuer.get("ticker") in _SPLIT3_TICKERS:
+            continue
+        assert gsrc.select_predeclared_split_rows(issuer, 3) == [], issuer["ticker"]
+
+
+def test_split_three_decision_records_the_two_dropped_issuers() -> None:
+    contract = _held_out_contract()
+    entry = {d["id"]: d for d in contract["split_decisions"]}[3]
+    assert entry["decision"] == "DEC:FIF-Q0-SPLIT-DECISION-3-PK12-BIOTECH-HELD-OUT"
+    drops = entry["dropped_before_capture"]
+    assert [drop["ticker"] for drop in drops] == ["EDIT", "IONS"]
+    for drop in drops:
+        assert drop["reason"] == "no_security_master_row_at_base", drop["ticker"]
+        assert drop["security_master_blob"], drop["ticker"]
+    assert {drop["ticker"]: drop["cik"] for drop in drops} == {
+        "EDIT": "0001650664",
+        "IONS": "0000874015",
+    }
+    # A dropped issuer appears nowhere among the contract's issuer rows.
+    assert {drop["cik"] for drop in drops} & {
+        i["cik"] for i in contract["issuers"]
+    } == set()

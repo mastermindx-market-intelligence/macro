@@ -45,3 +45,13 @@ predeclared in `held_out_contract.json`), captured by lane `fif-heldout-cap2-202
 on host `ubuntu2` into `~/lanes/stage/fif-heldout` (new accession directories beside the
 wave-one ones). Digest-only `package_manifest.json` per package; each per-CIK
 `capture_index.json` / `request_log.jsonl` was merged by the capture script, not rewritten.
+
+## Packages wave 3 (2026-11-01)
+
+Split decision 3 (`DEC:FIF-Q0-SPLIT-DECISION-3-PK12-BIOTECH-HELD-OUT`): 24 predeclared FY2021–FY2023 10-K rows, three
+per issuer, for the eight PK12 biotech issuers in `held_out_contract.json`, captured once by lane
+`fif-heldout-cap3-20261101-r3` on host `ubuntu1` into `~/lanes/stage/fif-heldout` (new CIK directories beside the
+existing five) at 2026-11-01T21:37:52Z. 18 are ADMITTED. The reviewed tool, unchanged, refused six: `primary_unparseable`
+(manifest kept) NTLA 0000950170-22-001981, CRSP 0000950170-22-001282; `member_missing` (no manifest) NTLA
+0000950170-24-018736, FATE 0000950170-24-020158, CRSP 0000950170-24-017571, ARWR 0001564590-21-057888. The six refused
+rows stay in the contract and are reported as capture refusals, never dropped or replaced. Manifests are digest-only.

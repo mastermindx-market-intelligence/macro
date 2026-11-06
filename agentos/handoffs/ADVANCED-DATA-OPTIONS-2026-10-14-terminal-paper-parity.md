@@ -87,10 +87,9 @@ unresolved:
 - Earlier Matrix output-binding drift cause remains UNPROVEN; accepted sessions and unchanged runtime are not a
   permanent root-cause fix.
 next_actions:
-- Merge this ordinary records PR through incumbent protection/controller, then verify every recorded file byte and
-  bind actual merge SHA in canonical issue599/checkpoint.
-- Delete the same fable-matrix-scheduled-session-acceptance follow-up only after the final records merge is verified;
-  no producer or product redeploy is required for records.
+- Publish the commissioned Lab A-G source mapping through normal protected record release; preserve the earlier scoped Matrix/Paper acceptance and all AD waves.
+- Consume supported index-html-implementation binding/import and next --explain; P14.T1 is the current source-only Lab replay seam qualification, not a runtime or browser grant.
+- Preserve original browser extension refusal, review61394 publication/lease UNKNOWN and T03k UNKNOWN; resume dependent acceptance only on material lawful resolution.
 do_not_redo:
 - Do not repeat completed Matrix, withholding or Flow recovery, reload producers, change quarantine/originals or
   retry refused publicR2 access.
@@ -123,3 +122,37 @@ The existing builder reused its `BUILD_ID`; the exact git marker and served scri
 Matrix two natural sessions and genuine older/newer withholding are complete under [Macro #9189](https://github.com/mastermindx-market-intelligence/macro/pull/9189#issuecomment-6158274112). Flow recovery remains closed under [Macro #7861](https://github.com/mastermindx-market-intelligence/macro/pull/7861#issuecomment-6126102350) and merged records9010. No runtime, producer, plist, original data or quarantine was changed to manufacture acceptance.
 
 The final record PR's actual merge SHA and byte comparison are appended to the canonical return after protected landing. This record does not preclaim its own merge or require another runtime deploy.
+
+
+## Lab A–G programme mapping continuation — November 3, 2026
+
+The October14 verified Matrix/Paper acceptance above remains historical scoped evidence,
+not full Lab completion. Under Mastermind1842 comment6621763091, the existing
+[workstream Lab subsection](../workstreams/WS-ADVANCED-DATA-OPTIONS.md#3d-options-research-lab--original-ag-source-mapping)
+now maps all original implementation-handoff stages A–G, five lenses, shared state,
+saved investigation and deployed acceptance without replacing the AD waves. Original
+Lab root01a118f3 owns this mapping; the Options parent owns only its separate structural
+adoption DEC. No current runtime writer, lease or frozen effect is transferred.
+
+Terminal1183 is protected-merged and installed atfd010145 with activation OFF; canonical
+1151comment6542883161 accepts that limited layer. Authenticated Lab-to-Plan remains
+unproven under original1182comment6540385685; review61394/publication/lease UNKNOWN,
+T03k UNKNOWN and export refusal remain unchanged. The protected Terminalf528 source
+read shows unchanged Lab/Hub/Plan paths, so accepted source checks are reused.
+
+Current receiver: publish/validate the source map through normal protected record release;
+use only the supported existing buffer binding/import commands once available; consume
+`mmtask --slug index-html-implementation next --explain`; begin eligible LAB-E source-only
+interface qualification without runtime/provider/browser effects. Retain all accepted
+outcomes and scoped holds. This continuation is source mapping, not installation or
+product acceptance, and must not reopen the completed October14 production proof.
+
+### Retained October14 next-action history (superseded for this continuation)
+
+```yaml
+next_actions:
+- Merge this ordinary records PR through incumbent protection/controller, then verify every recorded file byte and
+  bind actual merge SHA in canonical issue599/checkpoint.
+- Delete the same fable-matrix-scheduled-session-acceptance follow-up only after the final records merge is verified;
+  no producer or product redeploy is required for records.
+```

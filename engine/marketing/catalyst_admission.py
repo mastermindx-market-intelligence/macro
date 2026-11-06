@@ -19,6 +19,8 @@ from engine.marketing.catalyst_packets import (
 from engine.marketing.catalyst_scan import SourceCoverageReceipt
 
 _MAX_EVENTS = 20
+# F1: the one canonical production family this seam emits under.
+RIGHTS_FAMILY = "sec_issuer_earnings_release_facts"
 _LOOKBACK = timedelta(days=7)
 
 
@@ -27,7 +29,7 @@ class AdmittedEdgarSource:
     """Read methods of incumbent issuer, filings and rights owners.
 
     The injected provider does NOT gain rights by being registered; the
-    canonical sec_edgar registry must separately allow a public emission and
+    canonical rights registry must separately allow a public emission and
     each individual source must receive a live, source-specific owner grant.
     """
 
@@ -75,7 +77,7 @@ def read_qualified_event_context(
         # Source rights are stated in ONE canonical registry, not inferred
         # from a sec.gov host or from a model-generated description.
         from engine.theme_graph.rights import assert_public_emission_allowed
-        assert_public_emission_allowed("sec_edgar")
+        assert_public_emission_allowed(RIGHTS_FAMILY)
 
         issuers = owner.issuer_universe(now)
         if not isinstance(issuers, Mapping) or not 1 <= len(issuers) <= 10_000:

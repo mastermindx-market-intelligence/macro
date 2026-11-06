@@ -10,17 +10,20 @@ research/grey_deer/evidence/EW_P4_DESCRIPTIVE_UI_2026-10-31.md for the mapping.
 """
 from __future__ import annotations
 
+import collections
 import hashlib
 import json
 import re
 from copy import deepcopy
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
 from bs4 import BeautifulSoup
 
 from lib.rotation_observation_notification import validate as lib_validate
-from tests.test_macro_risk_dialog import _dlg, _render, _vm
+from tests.test_dashboard_template_render import _env
+from tests.test_macro_risk_dialog import _dlg, _vm
 
 ROOT = Path(__file__).resolve().parents[1]
 FIX = ROOT / "tests" / "fixtures" / "ew_p4_observation"
@@ -62,8 +65,39 @@ def envelope(wrapper: dict | None = None, *, rotation: dict | None = None) -> di
     return env
 
 
+_RENDER_CACHE: dict[str, str] = {}
+
+
+@lru_cache(maxsize=1)
+def _dashboard_template():
+    """Compile once per process (#10414). Building the Environment and compiling the
+    dashboard and its includes cost about 1.2 s on every call, 143 times over, and that
+    took the dashboard-render-contract job past its 15-minute limit. Only the compile is
+    shared: render() below still runs the template against each distinct envelope."""
+    return _env().get_template("dashboard.html.j2")
+
+
+def _canon(value):
+    """Type-tagged canonical form. json.dumps(sort_keys=True, default=repr) would merge
+    {1: x} with {"1": x}, a tuple with a list, and an object with the string of its
+    repr; those are exactly the odd-typed inputs this suite feeds the renderer."""
+    if isinstance(value, dict):
+        return ("dict", tuple(sorted(((_canon(k), _canon(v)) for k, v in value.items()), key=repr)))
+    if isinstance(value, (list, tuple)):
+        return (type(value).__name__, tuple(_canon(v) for v in value))
+    return (type(value).__name__, repr(value))
+
+
 def render(env: dict) -> str:
-    return _dlg(_render(_vm(risk_envelope=env)))
+    """One dashboard render per distinct envelope (FU2) on the once-compiled template
+    (#10414). The template render is ~3 s and most cases re-render the same fixture, so
+    the suite was render-bound (FU2: ~500 s locally). The key is a type-tagged canonical
+    form of the envelope; the ORIGINAL object is rendered, so odd-typed cases
+    (non-object wrappers, bad timestamps) keep their exact inputs."""
+    key = repr(_canon(env))
+    if key not in _RENDER_CACHE:
+        _RENDER_CACHE[key] = _dlg(_dashboard_template().render(**_vm(risk_envelope=env), mode="macro"))
+    return _RENDER_CACHE[key]
 
 
 def glance(dlg: str) -> str:
@@ -146,7 +180,7 @@ def test_five_second_glance_structure():
     g = glance(dlg)
     assert dlg.index('id="gde-ew"') < dlg.index("<details")  # precedes the drawer
     for frag in ("gde-ew-title", "US Technology leadership", "Observed",
-                 "Both fell; XLP fell less than XLK.", "Source session Oct 30",
+                 "Both sectors fell; consumer staples (XLP) fell less than technology (XLK).", "Source session Oct 30",
                  "Quality: Complete", "Watch only: this describes what happened"):
         assert frag in g, frag
     assert g.count("<a ") == 1
@@ -160,18 +194,22 @@ def test_five_second_glance_structure():
 def test_side_by_side_ratio_legs_table():
     dlg = render(envelope(_fixtures()["journey_b_both_fell"]))
     table = re.search(r'<table class="gde-ew-legs">.*?</table>', dlg, re.S).group(0)
-    for frag in ("-1.00%", "-3.00%", "+2.06%", ">XLP<", ">XLK<",
-                 "Receiver (numerator)", "Donor (denominator)", "Relative (XLP vs XLK)",
+    for frag in ("-1.00%", "-3.00%", "+2.06%", ">Consumer staples (XLP)<", ">Technology (XLK)<",
+                 ">必需消费（XLP）<", ">科技（XLK）<",
+                 "Receiver (numerator)", "Donor (denominator)", ">Relative<", ">相对<",
+                 ">Consumer staples (XLP) vs technology (XLK)<", ">必需消费（XLP） 对 科技（XLK）<",
                  "2 sessions, Oct 29 → Oct 30 · US cash sessions"):
         assert frag in table, frag
-    assert "Both fell; XLP fell less than XLK." in dlg
+    # D1: the relative row names the pair; it never carries a stray dash cell
+    assert ">—<" not in table
+    assert "Both sectors fell; consumer staples (XLP) fell less than technology (XLK)." in dlg
 
 
 def test_side_by_side_ratio_partial_window_mismatch_withholds_numbers():
     dlg = render(envelope(_fixtures()["partial_window_mismatch"]))
     assert 'class="gde-ew-legs"' not in dlg  # legs and ratio withheld with the window
     g = glance(dlg)
-    assert "Partial evidence for XLP vs XLK; ratio withheld." in g
+    assert "Partial evidence for consumer staples (XLP) vs technology (XLK); ratio withheld." in g
     for pct in ("-1.00%", "-3.00%", "+2.06%"):
         assert pct not in g, pct
 
@@ -217,7 +255,7 @@ def test_correction_history_original_and_corrected():
 def test_withdrawal_keeps_original_and_hides_current_values():
     dlg = render(envelope(_fixtures()["withdrawn"]))
     g = glance(dlg)
-    assert "Evidence for XLP vs XLK was withdrawn on Oct 30." in g
+    assert "Evidence for consumer staples (XLP) vs technology (XLK) was withdrawn on Oct 30." in g
     for pct in ("-1.00%", "-3.00%", "+2.06%"):
         assert pct not in g, pct
     study = re.search(r'<details class="gde-ew-study">.*?</details>', dlg, re.S).group(0)
@@ -318,7 +356,7 @@ def test_quiet_headline_does_not_suppress_qualified_observation():
     env["hazard_summary"] = dict(env["hazard_summary"], stage="NONE")
     dlg = render(env)
     assert state_of(dlg) == "observed"
-    assert "Both fell; XLP fell less than XLK." in glance(dlg)
+    assert "Both sectors fell; consumer staples (XLP) fell less than technology (XLK)." in glance(dlg)
 
 
 def test_fragile_headline_does_not_create_an_observation():
@@ -390,13 +428,24 @@ def test_css_no_edge_stripe_no_color_literal_focus_visible():
     assert "outline-offset:2px" in block
 
     js = (ROOT / "templates" / "rotation_events.js").read_text(encoding="utf-8")
-    rc_ew = js[js.index(".rc-ew{margin"):]
-    rc_ew = rc_ew[:rc_ew.index("var s=document.createElement")]
+    # B1: the glance is styled by a governed stylesheet, never a runtime-injected one
+    assert ".rc-ew{" not in js
+    assert not re.search(r"\.rc-ew[\w-]*(?::[\w-]+)?\s*[,{]", js)
+    rc_ew = re.sub(r"/\*.*?\*/", "", (ROOT / "templates" / "rotation_glance.css").read_text(encoding="utf-8"), flags=re.S)
     assert not re.search(r'border-(left|right|top|inline-start|inline-end|block-start)\s*:', rc_ew)
     assert not re.search(r'box-shadow[^;}]*inset', rc_ew)
     assert not re.search(r'#[0-9a-fA-F]{3,8}\b', rc_ew)
     assert "rgb(" not in rc_ew and "hsl(" not in rc_ew
-    assert ".rc-ew-next:focus-visible" in rc_ew
+    assert not re.search(r'(?:^|[^-a-z])(red|blue|green|white|black|orange|yellow|purple|gray|grey)\s*[;}]', rc_ew)
+    assert ".rc-ew-next:focus-visible" in rc_ew and "outline:2px solid var(--link)" in rc_ew
+    assert "outline-offset:2px" in rc_ew
+    # sizes come from the --fs-* scale, never literal px
+    assert not re.search(r"font-size\s*:\s*\d", rc_ew) and "var(--fs-" in rc_ew
+    # light is its own art direction: a raised white panel with the card shadow
+    assert ':root[data-theme="light"] .rc-ew {' in rc_ew and "var(--card-shadow)" in rc_ew
+    # host-scoped tokens always carry their fallback on Sector Central
+    for tok in ("--ink-1", "--ink-2", "--ink-3", "--r-card", "--r-ctl"):
+        assert f"var({tok})" not in rc_ew, tok
     # the pre-existing rc-ec edge stripe is repaired (even border, warn surface)
     assert ".rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle);" in js
     assert ".rc-ec-stale,.rc-ec-conflict{border-left:" not in js
@@ -499,11 +548,72 @@ def test_review_r1_observation_id_is_selectable_monospace():
     assert "#dlg-risk .gde-ew-id {user-select:all; font-family:var(--font-mono);}" in css
 
 
+def test_fu2_radar_band_wraps_raises_and_matches_sector_central():
+    css = re.sub(r"/\*.*?\*/", "", (ROOT / "templates" / "_risk_envelope_band.css.j2").read_text(encoding="utf-8"), flags=re.S)
+    # D2: the sources table wraps at 320 instead of clipping inside a fixed floor, and
+    # below 481 px it reduces to stacked labelled rows instead of letter-level breaks
+    # ("SOURC E", "Marke t" in the first FU2 light shots at 390).
+    assert "min-width:460px" not in css
+    cell = re.search(r"#dlg-risk \.gde-tbl th, #dlg-risk \.gde-tbl td \{([^}]*)\}", css).group(1)
+    assert "overflow-wrap:break-word" in cell and "anywhere" not in cell
+    narrow = css[css.index("@media(max-width:480px)"):]
+    narrow = narrow[:narrow.index("\n}\n") + 3]
+    assert "#dlg-risk .gde-tbl thead {position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}" in narrow
+    assert "#dlg-risk .gde-tbl td {display:grid; grid-template-columns:minmax(0, 7.5em) minmax(0, 1fr);" in narrow
+    assert "#dlg-risk .gde-tbl td > * {grid-column:2;}" in narrow  # the required badge stays in the value column
+    assert 'html:not([data-lang="zh"]) #dlg-risk .gde-tbl td::before {content:attr(data-label-en); content:attr(data-label-en) / "";}' in narrow
+    assert 'html[data-lang="zh"] #dlg-risk .gde-tbl td::before {content:attr(data-label-zh); content:attr(data-label-zh) / "";}' in narrow
+    # Review (FU2): labels and prose read in the UI face on the Radar host, where the
+    # page-wide td rule sets the numeric face; the As-of date never splits.
+    assert "font-family:var(--font-ui); letter-spacing:normal;}" in narrow.split("td::before {color")[1].split("\n")[0]
+    assert '#dlg-risk .gde-tbl td[data-label-en="As of"] {white-space:nowrap;}' in css
+    assert "#dlg-risk .gde-tbl td .l-en, #dlg-risk .gde-tbl td .l-zh {font-family:var(--font-ui); letter-spacing:normal;}" in css
+    assert "#dlg-risk .gde-ew-legs td:not(.tnum) {font-family:var(--font-ui); letter-spacing:normal; font-variant-numeric:normal;}" in css
+    soup = BeautifulSoup(render(envelope(deepcopy(_fixtures()["observed_rise"]))), "html.parser")
+    heads = [th.select_one(".l-en").get_text(strip=True) for th in soup.select(".gde-tbl thead th")]
+    heads_zh = [th.select_one(".l-zh").get_text(strip=True) for th in soup.select(".gde-tbl thead th")]
+    rows = soup.select(".gde-tbl tbody tr")
+    # Review (FU2): every cell child is an element, so the stacked grid never auto-places
+    # a bare text run into the label column; explicit roles keep the table semantics.
+    assert soup.select_one(".gde-tbl")["role"] == "table"
+    assert all(th["role"] == "columnheader" for th in soup.select(".gde-tbl thead th"))
+    for td in soup.select(".gde-tbl tbody td"):
+        assert td["role"] == "cell"
+        assert not [t for t in td.find_all(string=True, recursive=False) if t.strip()], td
+    assert rows
+    for row in rows:
+        cells = row.find_all("td")
+        assert [td["data-label-en"] for td in cells] == heads
+        assert [td["data-label-zh"] for td in cells] == heads_zh
+    # D6: legs row headers are sentence-case UI labels, as on Sector Central
+    legs_th = re.search(r"#dlg-risk \.gde-ew-legs th \{([^}]*)\}", css).group(1)
+    for decl in ("text-transform:none", "letter-spacing:normal", "font-family:var(--font-ui)", "font-size:var(--fs-label)"):
+        assert decl in legs_th, decl
+    # L3: light raises the card as a white panel with the card shadow; only the surface token
+    # moves, so warning-state backgrounds keep winning
+    assert 'html[data-theme="light"] #dlg-risk .gde-ew {--gde-ew-surface:var(--panel); box-shadow:var(--card-shadow);}' in css
+    assert "background:var(--gde-ew-surface)" in css
+    light_rule = css[css.index('html[data-theme="light"] #dlg-risk .gde-ew {'):]
+    assert "background:" not in light_rule[:light_rule.index("}")]
+
+
 def test_review_r1_site_copy_is_byte_identical_to_template():
-    site = ROOT / "site" / "rotation_events.js"
-    if not site.exists():
-        pytest.skip("site/ not materialized in this sparse tree")
-    assert site.read_bytes() == (ROOT / "templates" / "rotation_events.js").read_bytes()
+    for name in ("rotation_events.js", "rotation_glance.css"):
+        site = ROOT / "site" / name
+        if not site.exists():
+            pytest.skip("site/ not materialized in this sparse tree")
+        assert site.read_bytes() == (ROOT / "templates" / name).read_bytes(), name
+
+
+def test_sector_central_links_the_governed_glance_stylesheet():
+    tpl = (ROOT / "templates" / "sector_central.html.j2").read_text(encoding="utf-8")
+    assert '<link rel="stylesheet" href="rotation_glance.css">' in tpl
+    build = (ROOT / "scripts" / "build_sector_central.py").read_text(encoding="utf-8")
+    assert '"rotation_glance.css"' in build
+    page = ROOT / "site" / "sector_central.html"
+    if page.exists():
+        assert re.search(r'<link rel="stylesheet" href="rotation_glance\.css\?v=[0-9a-f]{8}">',
+                         page.read_text(encoding="utf-8"))
 
 
 def _git_blob_id(path: Path) -> str:
@@ -525,6 +635,17 @@ def test_receipt_shots_depict_the_source_under_test():
         "templates/_risk_envelope_band.html.j2",
         "templates/_risk_envelope_band.css.j2",
         "templates/rotation_events.js",
+        "templates/rotation_glance.css",
+        # Review (FU2): the tokens the L3/L4 claims rest on, the Radar host page and
+        # the Sector Central page are render inputs too; a later edit to any of
+        # them fails this test instead of leaving the shots silently stale.
+        "templates/theme.css",
+        "templates/dashboard.html.j2",
+        "templates/_risk_radar_workspace.html.j2",
+        "templates/sector_central.html.j2",
+        "templates/si_workspace.js",
+        "site/theme.css",
+        "site/si_workspace.js",
         "tests/probe_ew_p4_descriptive_ui_browser.py",
     } <= paths
     assert {f"tests/fixtures/ew_p4_observation/{p.name}" for p in FIX.glob("*.json")} <= paths
@@ -535,23 +656,65 @@ def test_receipt_shots_depict_the_source_under_test():
         assert row["blob_at_source_revision"] == row["blob_on_pr_branch"], row["path"]
         assert _git_blob_id(p) == row["blob_at_source_revision"], row["path"]
 
+    glance = (ROOT / "templates" / "rotation_glance.css").read_bytes()
+    assert rec["glance_css_sha256"] == hashlib.sha256(glance).hexdigest()
+
+    # EW-P5 FU2 recapture: 3 families × EN/ZH × dark/light × 1440/1280/390/320
+    # (48) + 6 Radar states × 2 themes (12) + 4 Sector Central states × 2 themes (8).
     cases = rec["cases"]
-    assert len(cases) == 46
+    assert len(cases) == 68
+    widths = (1440, 1280, 390, 320)
+    themes = ("dark", "light")
+    assert rec["matrix"] == {"widths": list(widths), "themes": list(themes), "langs": ["en", "zh"],
+                             "state_shots": "every degraded state at 390/en in both themes on both hosts"}
     matrix = {(c["surface"], c["state"], c["lang"], c["theme"], c["width"]) for c in cases}
     for surface, state in (("radar", "stale"), ("radar", "observed"), ("sc", "observed")):
         for lang in ("en", "zh"):
-            for theme in ("dark", "light"):
-                for width in (1280, 390, 320):
+            for theme in themes:
+                for width in widths:
                     assert (surface, state, lang, theme, width) in matrix
-    radar_states = {c["state"] for c in cases if c["surface"] == "radar"}
-    sc_states = {c["state"] for c in cases if c["surface"] == "sc"}
-    assert {"partial", "conflicting", "unavailable", "withdrawn", "corrected", "unreadable"} <= radar_states
-    assert {"stale", "withdrawn", "corrected", "unreadable"} <= sc_states
+    # L1: every degraded state is shown in BOTH art directions, not dark only.
+    for state in ("partial", "conflicting", "unavailable", "withdrawn", "corrected", "unreadable"):
+        for theme in themes:
+            assert ("radar", state, "en", theme, 390) in matrix, (state, theme)
+    for state in ("stale", "withdrawn", "corrected", "unreadable"):
+        for theme in themes:
+            assert ("sc", state, "en", theme, 390) in matrix, (state, theme)
+    # L2: real Tab navigation reached the disclosure, a visible focus outline was
+    # measured and Enter opened it — once per (host, width, theme), both themes.
+    keyboard = {}
+    for c in cases:
+        kb = c["keyboard_details"]
+        if kb:
+            assert kb["reached"] is True and kb["opened_by_enter"] is True and kb["focus_outline"] is True, c["screenshot"]
+            assert c["focus_outline"] is True, c["screenshot"]
+            keyboard[(c["surface"], c["width"], c["theme"])] = kb
+    for surface in ("radar", "sc"):
+        for width in widths:
+            for theme in themes:
+                assert (surface, width, theme) in keyboard, (surface, width, theme)
+    # L4: every visible Radar warning run (input caveats + sources-table warn words)
+    # resolved to ONE computed colour and that colour is the theme's --ink-warn token;
+    # the token differs between the two art directions. Sector Central samples nothing.
+    tokens = collections.defaultdict(set)
+    for case in cases:
+        ink = case["warning_ink"]
+        if case["surface"] == "radar":
+            assert ink["consistent"] is True and ink["matches_token"] is True, case["screenshot"]
+            assert ink["caveat"] and ink["warn"], case["screenshot"]
+            assert set(ink["caveat"]) | set(ink["warn"]) == {ink["token_ink_warn"]}, case["screenshot"]
+            tokens[case["theme"]].add(ink["token_ink_warn"])
+        else:
+            assert ink is None, case["screenshot"]
+    assert len(tokens["dark"]) == 1 and len(tokens["light"]) == 1 and tokens["dark"] != tokens["light"]
     for case in cases:
         shot = EVIDENCE / case["screenshot"]
         assert hashlib.sha256(shot.read_bytes()).hexdigest() == case["sha256"], case["screenshot"]
         assert case["no_horizontal_overflow"] is True, case["screenshot"]
         assert case["page_errors"] == [], case["screenshot"]
+    for sheet in ("contact-radar-observed", "contact-radar-stale", "contact-sc-observed",
+                  "contact-sc-states", "contact-radar-states"):
+        assert (EVIDENCE / f"{sheet}.png").exists(), sheet
 
 
 # ---------------------------------------------------------------------------
@@ -661,3 +824,109 @@ def test_fu_scan_reaches_every_drawer_line():
     text = _text(_new_elements(render(envelope(_fixtures()["observed_rise"]))))
     for phrase in ("What argues against this", "What would undo this", "Next: "):
         assert phrase in text, phrase
+
+
+# ---------------------------------------------------------------------------
+# EW-P4-ACT O06: no consumer claims an id without a source-owned receipt.
+# ---------------------------------------------------------------------------
+def _no_receipt(v):
+    v.pop("recorded")
+
+
+def _set_receipt(key, value):
+    def mutate(v):
+        v["recorded"][key] = value
+    return mutate
+
+
+O06_VARIANTS = {
+    "missing": _no_receipt,
+    "null": lambda v: v.update(recorded=None),
+    "non_object": lambda v: v.update(recorded="macro.rotation_events.ledger"),
+    "array": lambda v: v.update(recorded=[v["recorded"]]),
+    "wrong_source": _set_receipt("source", "macro.rotation_events.cache"),
+    "wrong_ledger": _set_receipt("ledger", "rotation_events/other.jsonl"),
+    "uppercase_hex": lambda v: v["recorded"].update(receipt_sha256=v["recorded"]["receipt_sha256"].upper()),
+    "short_digest": lambda v: v["recorded"].update(receipt_sha256=v["recorded"]["receipt_sha256"][1:]),
+    "non_string_digest": _set_receipt("receipt_sha256", 7),
+}
+
+
+def _observation_id_attr(dlg: str) -> str:
+    m = re.search(r'id="gde-ew"[^>]*data-observation-id="([^"]*)"', dlg)
+    assert m, "data-observation-id missing"
+    return m.group(1)
+
+
+def test_o06_a_receipted_view_keeps_its_id():
+    fixture = _fixtures()["journey_b_both_fell"]
+    dlg = render(envelope(fixture))
+    assert state_of(dlg) == "observed"
+    assert _observation_id_attr(dlg) == fixture["notification"]["observation_id"]
+
+
+@pytest.mark.parametrize("variant", sorted(O06_VARIANTS))
+def test_o06_a_view_without_its_ledger_receipt_is_unreadable_and_claims_no_id(variant):
+    fixture = deepcopy(_fixtures()["journey_b_both_fell"])
+    O06_VARIANTS[variant](fixture)
+    lib_validate(fixture["notification"])  # the notification itself is still lib-valid
+    dlg = render(envelope(fixture))
+    assert state_of(dlg) == "unreadable", variant
+    assert _observation_id_attr(dlg) == "", variant
+    assert fixture["notification"]["observation_id"] not in dlg, variant
+
+
+def test_o06_an_invalid_view_never_echoes_its_raw_id():
+    """Supersedes the B1 echo: malformed_id used to carry rotobs_XYZ escaped in the attribute."""
+    dlg = render(envelope(_fixtures()["malformed_id"]))
+    assert state_of(dlg) == "unreadable"
+    assert _observation_id_attr(dlg) == ""
+    assert "rotobs_XYZ" not in dlg
+
+
+def test_o06_a_future_session_view_is_unreadable_and_claims_no_id():
+    """A lib-valid, receipted view for a later session must not echo its id either."""
+    fixture = _fixtures()["malformed_future"]
+    lib_validate(fixture["notification"])
+    assert fixture["notification"]["event_as_of"] > SESSION
+    dlg = render(envelope(fixture))
+    assert state_of(dlg) == "unreadable"
+    assert _observation_id_attr(dlg) == ""
+    assert fixture["notification"]["observation_id"] not in dlg
+
+
+# ── sector display names: glance JS, Radar band and registry agree ──────────
+def _js_sector_names() -> dict:
+    src = (ROOT / "templates" / "rotation_events.js").read_text(encoding="utf-8")
+    body = re.search(r"var SECTOR_NAMES = \{(.*?)\};", src, re.S).group(1)
+    return {k: (en, zh) for k, en, zh in
+            re.findall(r"(\w+): \['([^']*)', '([^']*)'\]", body)}
+
+
+def _band_sector_names() -> dict:
+    src = (ROOT / "templates" / "_risk_envelope_band.html.j2").read_text(encoding="utf-8")
+    body = re.search(r"\{% set _EW_SECTOR_NAMES = \{(.*?)\} %\}", src, re.S).group(1)
+    return {k: (en, zh) for k, en, zh in
+            re.findall(r"'(\w+)': \('([^']*)', '([^']*)'\)", body)}
+
+
+@pytest.mark.needs_full_checkout("data")
+def test_sector_display_names_mirror_the_registry_in_both_renderers():
+    js, band = _js_sector_names(), _band_sector_names()
+    assert len(js) == 5 and js == band
+    pairs = json.loads((ROOT / "data" / "oracle" / "ratio_pairs.json").read_text(encoding="utf-8"))["pairs"]
+    rows = pairs if isinstance(pairs, list) else list(pairs.values())
+    defensive = [r for r in rows if "defensive_sector" in json.dumps(r)]
+    assert defensive, "registry lost its defensive-sector pairs"
+    for r in defensive:
+        en_num, en_den = r["name_en"].split(" vs ")
+        zh_num, zh_den = r["name_zh"].split(" vs ")
+        assert js[r["num"]] == (en_num.lower(), zh_num), r["id"]
+        assert js[r["den"]] == (en_den.lower(), zh_den), r["id"]
+
+
+def test_the_banned_relative_words_never_return_to_rotation_copy():
+    for path in ("templates/rotation_events.js", "templates/_risk_envelope_band.html.j2", "app/mailer.py"):
+        text = (ROOT / path).read_text(encoding="utf-8")
+        assert "relative shelter" not in text.lower(), path
+        assert "抗跌" not in text, path
