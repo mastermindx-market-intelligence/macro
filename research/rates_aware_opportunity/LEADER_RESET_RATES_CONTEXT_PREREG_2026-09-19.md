@@ -1,6 +1,6 @@
 # Leader-reset × rates-context preregistration — v1
 
-Operation: `rates-entry-context-20260919-sol-006`.  
+Operation: `rates-entry-context-20260919-sol-006`.
 Parent mission: rates-aware opportunity intelligence under the existing RIC / Prophet / Live Entry Radar / Evaluation ownership model.
 
 ## Question

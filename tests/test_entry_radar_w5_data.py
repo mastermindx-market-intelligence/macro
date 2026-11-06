@@ -1186,9 +1186,7 @@ def test_prereg_constants_are_the_ones_the_modules_consume():
     assert episodes.INCUMBENT not in prereg.EXPECTED_SPEC_HASHES, (
         "the incumbent gauge is a Q5 COMPARATOR, never an arena detector")
 
-# --------------------------------------------------------------------------- #
-# Rates-aware opportunity context — pure research join, no outcome authority
-# --------------------------------------------------------------------------- #
+
 def _rates_row(*, as_of="2026-09-02", level=4.50, prev_as_of="2026-09-01",
                prev_level=4.60, available_at=None, historical=False):
     return {
@@ -1291,6 +1289,7 @@ def test_rates_context_counts_directions_without_fusing_a_score():
     ten = _rates_row(level=4.50, prev_level=4.60)
     two = _rates_row(level=4.20, prev_level=4.10)
     two["source_column"] = "us2y"
+    two["source_id"] = "DGS2"
     artifact = {"schema": "yield_momentum.v1", "display_only": True,
                 "authority": False, "series": {"2y": two, "10y": ten}}
     out = rates_context.project(artifact, decision_session=date(2026, 9, 3))
@@ -1319,6 +1318,7 @@ def test_rates_context_front_long_state_is_descriptive_not_a_score():
     ten = _rates_row(level=4.50, prev_level=4.60)
     two = _rates_row(level=4.10, prev_level=4.20)
     two["source_column"] = "us2y"
+    two["source_id"] = "DGS2"
     artifact = {"schema": "yield_momentum.v1", "display_only": True,
                 "authority": False, "series": {"2y": two, "10y": ten}}
     out = rates_context.project(artifact, decision_session=date(2026, 9, 3))
@@ -1341,3 +1341,133 @@ def test_rates_context_prereg_machine_contract_is_frozen_before_outcomes():
                                 "size": False, "trade": False}
     assert cfg["outcomes_opened"] is False
     assert cfg["registered_in_trial_ledger"] is False
+
+
+def test_rates_context_accepts_only_canonical_tenor_pairs():
+    from engine.entry_radar.replay import rates_context
+    series = {}
+    for tenor, source_id, column in (
+            ("2y", "DGS2", "us2y"), ("5y", "DGS5", "us5y"),
+            ("10y", "DGS10", "us10y"), ("20y", "DGS20", "us20y"),
+            ("30y", "DGS30", "us30y")):
+        row = _rates_row()
+        row.update(source_id=source_id, source_column=column)
+        series[tenor] = row
+    out = rates_context.project(
+        {"schema": "yield_momentum.v1", "series": series},
+        decision_session="2026-09-03")
+    assert out["coverage"]["usable_tenors"] == 5
+    assert out["front_long_state"] == "both_easing"
+    assert all(row["issues"] == [] for row in out["tenors"].values())
+    assert all(value is False for value in out["authority"].values())
+
+
+def test_rates_context_refuses_missing_or_mismatched_tenor_identity():
+    from engine.entry_radar.replay import rates_context
+    for tenor, source_id, column in (
+            ("2y", "DGS2", "us2y"), ("5y", "DGS5", "us5y"),
+            ("10y", "DGS10", "us10y"), ("20y", "DGS20", "us20y"),
+            ("30y", "DGS30", "us30y")):
+        other = "10" if tenor != "10y" else "2"
+        for field, value in (
+                ("source_id", "DGS" + other), ("source_column", "us" + other + "y"),
+                ("source_id", None), ("source_column", None)):
+            row = _rates_row()
+            row.update(source_id=source_id, source_column=column)
+            if value is None:
+                row.pop(field)
+            else:
+                row[field] = value
+            out = rates_context.project(
+                {"schema": "yield_momentum.v1", "series": {tenor: row}},
+                decision_session="2026-09-03")
+            got = out["tenors"][tenor]
+            assert got["usable_for_corrected_history"] is False
+            assert "source_identity_mismatch" in got["issues"]
+            assert got["level"] is None and got["last_change_bp"] is None
+            assert out["coverage"]["usable_tenors"] == 0
+
+
+def test_rates_context_mislabeled_front_cannot_form_primary_state():
+    from engine.entry_radar.replay import rates_context
+    two = _rates_row()
+    two["source_column"] = "us2y"  # Deliberately retain DGS10.
+    out = rates_context.project(
+        {"schema": "yield_momentum.v1",
+         "series": {"2y": two, "10y": _rates_row()}},
+        decision_session="2026-09-03")
+    assert out["front_long_state"] == "unavailable"
+    assert out["coverage"]["usable_tenors"] == 1
+    assert out["tenors"]["10y"]["usable_for_corrected_history"] is True
+
+
+def test_rates_context_inconsistent_declared_change_withholds_context():
+    from engine.entry_radar.replay import rates_context
+    row = _rates_row()
+    row["last_observed"]["change_bp"] = 10.0
+    row.update(velocity_bp={"5d": -12, "22d": 18, "63d": 44},
+               acceleration_bp=-7, turn_watch="rolldown_forming", path_qualified=True)
+    out = rates_context.project(_rates_artifact(row), decision_session="2026-09-03")
+    got = out["tenors"]["10y"]
+    assert "declared_change_mismatch" in got["issues"]
+    assert got["usable_for_corrected_history"] is False
+    assert got["level"] is None and got["previous_level"] is None
+    assert got["last_change_bp"] is None and got["acceleration_bp"] is None
+    assert all(value is None for value in got["velocity_bp"].values())
+    assert got["source_turn_watch"] is None and got["path_qualified"] is False
+    assert out["coverage"] == {"usable_tenors": 0, "easing_tenors": 0,
+                               "rising_tenors": 0, "flat_tenors": 0}
+
+
+def test_rates_context_invalid_declared_changes_fail_closed():
+    from engine.entry_radar.replay import rates_context
+    for declared in (float("nan"), float("inf"), "not-a-change", False):
+        row = _rates_row()
+        row["last_observed"]["change_bp"] = declared
+        out = rates_context.project(_rates_artifact(row), decision_session="2026-09-03")
+        got = out["tenors"]["10y"]
+        assert got["usable_for_corrected_history"] is False
+        assert "declared_change_mismatch" in got["issues"]
+
+
+def test_rates_context_inconsistent_long_cannot_form_primary_state():
+    from engine.entry_radar.replay import rates_context
+    two = _rates_row()
+    two.update(source_id="DGS2", source_column="us2y")
+    ten = _rates_row()
+    ten["last_observed"]["change_bp"] = 999.0
+    out = rates_context.project(
+        {"schema": "yield_momentum.v1", "series": {"2y": two, "10y": ten}},
+        decision_session="2026-09-03")
+    assert out["front_long_state"] == "unavailable"
+    assert out["coverage"]["usable_tenors"] == 1
+    assert out["tenors"]["2y"]["usable_for_corrected_history"] is True
+
+
+def test_rates_context_missing_observation_date_fails_closed():
+    from engine.entry_radar.replay import rates_context
+    row = _rates_row(as_of="not-a-date")
+    out = rates_context.project(_rates_artifact(row), decision_session="2026-09-03")
+    assert out["tenors"]["10y"]["usable_for_corrected_history"] is False
+    assert "missing_observation" in out["tenors"]["10y"]["issues"]
+    assert out["coverage"]["usable_tenors"] == 0
+
+
+def test_rates_context_invalid_previous_dates_fail_closed():
+    from engine.entry_radar.replay import rates_context
+    for previous in ("2026-09-02", "2026-09-04", None, "not-a-date"):
+        row = _rates_row()
+        row["last_observed"]["previous_as_of"] = previous
+        out = rates_context.project(_rates_artifact(row), decision_session="2026-09-03")
+        assert out["tenors"]["10y"]["usable_for_corrected_history"] is False
+        assert out["tenors"]["10y"]["last_change_bp"] is None
+
+
+def test_rates_context_malformed_levels_fail_without_exception():
+    from engine.entry_radar.replay import rates_context
+    for level in (True, 10 ** 1000):
+        row = _rates_row()
+        row["level"] = row["last_observed"]["level"] = level
+        out = rates_context.project(_rates_artifact(row), decision_session="2026-09-03")
+        assert out["tenors"]["10y"]["usable_for_corrected_history"] is False
+        assert out["tenors"]["10y"]["level"] is None

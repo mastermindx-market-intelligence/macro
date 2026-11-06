@@ -14,6 +14,13 @@ from typing import Any
 SCHEMA = "entry_radar.rates_context.v1"
 SOURCE_SCHEMA = "yield_momentum.v1"
 TENORS = ("2y", "5y", "10y", "20y", "30y")
+TENOR_SOURCES = {
+    "2y": ("DGS2", "us2y"),
+    "5y": ("DGS5", "us5y"),
+    "10y": ("DGS10", "us10y"),
+    "20y": ("DGS20", "us20y"),
+    "30y": ("DGS30", "us30y"),
+}
 AUTHORITY = {
     "can_rank": False,
     "can_score": False,
@@ -54,9 +61,11 @@ def _instant(value: Any) -> datetime | None:
 
 
 def _number(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
     try:
         out = float(value)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
     return out if math.isfinite(out) else None
 
@@ -80,6 +89,11 @@ def _tenor_row(tenor: str, source: Mapping[str, Any], *,
             observed.get("historical_availability_qualified"))
 
     usable = True
+    expected_id, expected_column = TENOR_SOURCES[tenor]
+    if (source.get("source_id") != expected_id
+            or source.get("source_column") != expected_column):
+        issues.append("source_identity_mismatch")
+        usable = False
     replay_qualified = False
     if obs_day is None or level is None:
         issues.append("missing_observation")
@@ -108,17 +122,24 @@ def _tenor_row(tenor: str, source: Mapping[str, Any], *,
     source_turn = source_turn if isinstance(source_turn, str) else None
     path_qualified = bool(source.get("path_qualified"))
 
-    if previous_day is not None and previous_level is not None and level is not None:
+    if (obs_day is not None and previous_day is not None
+            and previous_level is not None and level is not None):
         if previous_day >= obs_day:
             issues.append("invalid_previous_observation")
+            usable = False
         else:
-            change_bp = round((level - previous_level) * 100.0, 1)
-            declared = _number(observed.get("change_bp"))
-            if declared is not None and declared != change_bp:
-                issues.append("declared_change_mismatch")
+            change_bp = _number(round((level - previous_level) * 100.0, 1))
+            if change_bp is None:
+                issues.append("invalid_bound_change")
+                usable = False
+    if observed.get("change_bp") is not None:
+        declared = _number(observed["change_bp"])
+        if declared is None or change_bp is None or declared != change_bp:
+            issues.append("declared_change_mismatch")
+            usable = False
 
     return {
-        "source_column": source.get("source_column") or ("us" + tenor),
+        "source_column": source.get("source_column"),
         "source_id": source.get("source_id"),
         "observation_date": obs_day.isoformat() if obs_day else None,
         "level": level if usable else None,

@@ -1,0 +1,344 @@
+{
+  "contract_id": "consumer_cyclical_intelligence_read_model.v1",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-24T00:00:00+00:00",
+  "subject": {
+    "issuer_cik": "0001637207",
+    "ticker": "PLNT",
+    "subject_type": "company"
+  },
+  "comparison_basis": "explicit_same_quarter_prior_year",
+  "facts": [
+    {
+      "basis": "as_reported_period_value",
+      "definition": "Total revenue for the quarter ended 2026-06-30, as reported in PLNT's Q2 2026 results press release exhibit.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "evidence": {
+        "document": "plntq22026pressreleaseex991.htm",
+        "locator": "Exhibit 99.1 results table — total revenue, quarter ended 2026-06-30",
+        "revision": "as-filed"
+      },
+      "key": "total_revenue_current",
+      "kind": "revenue_line",
+      "metric": "total_revenue",
+      "native_admitted": false,
+      "native_ref": null,
+      "perimeter": "consolidated_company",
+      "period_end": "2026-06-30",
+      "period_kind": "quarter",
+      "period_start": "2026-04-01",
+      "published_at": null,
+      "role": "actual",
+      "scale_power10": 3,
+      "sign_convention": "signed_as_reported",
+      "target": null,
+      "unit": "USD",
+      "value_text": "365223"
+    },
+    {
+      "basis": "as_reported_period_value",
+      "definition": "Total revenue for the quarter ended 2025-06-30, as reported in PLNT's Q2 2026 results press release exhibit.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "evidence": {
+        "document": "plntq22026pressreleaseex991.htm",
+        "locator": "Exhibit 99.1 results table — total revenue, quarter ended 2025-06-30",
+        "revision": "as-filed"
+      },
+      "key": "total_revenue_prior",
+      "kind": "revenue_line",
+      "metric": "total_revenue",
+      "native_admitted": false,
+      "native_ref": null,
+      "perimeter": "consolidated_company",
+      "period_end": "2025-06-30",
+      "period_kind": "quarter",
+      "period_start": "2025-04-01",
+      "published_at": null,
+      "role": "actual",
+      "scale_power10": 3,
+      "sign_convention": "signed_as_reported",
+      "target": null,
+      "unit": "USD",
+      "value_text": "340879"
+    },
+    {
+      "basis": "as_reported_period_value",
+      "definition": "Advertising revenue for the quarter ended 2026-06-30, as reported in PLNT's Q2 2026 results press release exhibit.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "evidence": {
+        "document": "plntq22026pressreleaseex991.htm",
+        "locator": "Exhibit 99.1 results table — advertising revenue, quarter ended 2026-06-30",
+        "revision": "as-filed"
+      },
+      "key": "advertising_revenue_current",
+      "kind": "revenue_line",
+      "metric": "advertising_revenue",
+      "native_admitted": false,
+      "native_ref": null,
+      "perimeter": "consolidated_company",
+      "period_end": "2026-06-30",
+      "period_kind": "quarter",
+      "period_start": "2026-04-01",
+      "published_at": null,
+      "role": "actual",
+      "scale_power10": 3,
+      "sign_convention": "signed_as_reported",
+      "target": null,
+      "unit": "USD",
+      "value_text": "32922"
+    },
+    {
+      "basis": "as_reported_period_value",
+      "definition": "Advertising revenue for the quarter ended 2025-06-30, as reported in PLNT's Q2 2026 results press release exhibit.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "evidence": {
+        "document": "plntq22026pressreleaseex991.htm",
+        "locator": "Exhibit 99.1 results table — advertising revenue, quarter ended 2025-06-30",
+        "revision": "as-filed"
+      },
+      "key": "advertising_revenue_prior",
+      "kind": "revenue_line",
+      "metric": "advertising_revenue",
+      "native_admitted": false,
+      "native_ref": null,
+      "perimeter": "consolidated_company",
+      "period_end": "2025-06-30",
+      "period_kind": "quarter",
+      "period_start": "2025-04-01",
+      "published_at": null,
+      "role": "actual",
+      "scale_power10": 3,
+      "sign_convention": "signed_as_reported",
+      "target": null,
+      "unit": "USD",
+      "value_text": "22781"
+    },
+    {
+      "basis": "as_reported_period_value",
+      "definition": "Advertising expense for the quarter ended 2026-06-30, as reported in PLNT's Q2 2026 results press release exhibit.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "evidence": {
+        "document": "plntq22026pressreleaseex991.htm",
+        "locator": "Exhibit 99.1 results table — advertising expense, quarter ended 2026-06-30",
+        "revision": "as-filed"
+      },
+      "key": "advertising_expense_current",
+      "kind": "expense_line",
+      "metric": "advertising_expense",
+      "native_admitted": false,
+      "native_ref": null,
+      "perimeter": "consolidated_company",
+      "period_end": "2026-06-30",
+      "period_kind": "quarter",
+      "period_start": "2026-04-01",
+      "published_at": null,
+      "role": "actual",
+      "scale_power10": 3,
+      "sign_convention": "signed_as_reported",
+      "target": null,
+      "unit": "USD",
+      "value_text": "32922"
+    },
+    {
+      "basis": "as_reported_period_value",
+      "definition": "Advertising expense for the quarter ended 2025-06-30, as reported in PLNT's Q2 2026 results press release exhibit.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "evidence": {
+        "document": "plntq22026pressreleaseex991.htm",
+        "locator": "Exhibit 99.1 results table — advertising expense, quarter ended 2025-06-30",
+        "revision": "as-filed"
+      },
+      "key": "advertising_expense_prior",
+      "kind": "expense_line",
+      "metric": "advertising_expense",
+      "native_admitted": false,
+      "native_ref": null,
+      "perimeter": "consolidated_company",
+      "period_end": "2025-06-30",
+      "period_kind": "quarter",
+      "period_start": "2025-04-01",
+      "published_at": null,
+      "role": "actual",
+      "scale_power10": 3,
+      "sign_convention": "signed_as_reported",
+      "target": null,
+      "unit": "USD",
+      "value_text": "22777"
+    }
+  ],
+  "results": [
+    {
+      "basis": "same_quarter_prior_year_change",
+      "definition": "total_revenue_current minus total_revenue_prior, in USD thousands.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "input_refs": [
+        "total_revenue_current",
+        "total_revenue_prior"
+      ],
+      "key": "total_revenue_change",
+      "period_end": "2026-06-30",
+      "period_kind": "quarter",
+      "period_start": "2026-04-01",
+      "scale_power10": 3,
+      "sign_convention": "signed_difference",
+      "unit": "USD",
+      "value_text": "24344",
+      "withheld_reason": null
+    },
+    {
+      "basis": "same_quarter_prior_year_change",
+      "definition": "advertising_revenue_current minus advertising_revenue_prior, in USD thousands.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "input_refs": [
+        "advertising_revenue_current",
+        "advertising_revenue_prior"
+      ],
+      "key": "advertising_revenue_change",
+      "period_end": "2026-06-30",
+      "period_kind": "quarter",
+      "period_start": "2026-04-01",
+      "scale_power10": 3,
+      "sign_convention": "signed_difference",
+      "unit": "USD",
+      "value_text": "10141",
+      "withheld_reason": null
+    },
+    {
+      "basis": "same_quarter_prior_year_change",
+      "definition": "advertising_expense_current minus advertising_expense_prior, in USD thousands.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "input_refs": [
+        "advertising_expense_current",
+        "advertising_expense_prior"
+      ],
+      "key": "advertising_expense_change",
+      "period_end": "2026-06-30",
+      "period_kind": "quarter",
+      "period_start": "2026-04-01",
+      "scale_power10": 3,
+      "sign_convention": "signed_difference",
+      "unit": "USD",
+      "value_text": "10145",
+      "withheld_reason": null
+    },
+    {
+      "basis": "difference_of_change_values",
+      "definition": "advertising_revenue_change minus advertising_expense_change, in USD thousands; the residual is exact and is never rounded away.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "input_refs": [
+        "advertising_expense_current",
+        "advertising_expense_prior",
+        "advertising_revenue_current",
+        "advertising_revenue_prior"
+      ],
+      "key": "advertising_net_change",
+      "period_end": "2026-06-30",
+      "period_kind": "quarter",
+      "period_start": "2026-04-01",
+      "scale_power10": 3,
+      "sign_convention": "signed_difference",
+      "unit": "USD",
+      "value_text": "-4",
+      "withheld_reason": null
+    },
+    {
+      "basis": "same_period_difference",
+      "definition": "advertising_revenue_current minus advertising_expense_current for the quarter ended 2026-06-30, in USD thousands; an exactly computed zero, not a missing value.",
+      "display_quantum": "1_thousand",
+      "event": "plnt_q2_2026_results",
+      "input_refs": [
+        "advertising_expense_current",
+        "advertising_revenue_current"
+      ],
+      "key": "advertising_current_period_net",
+      "period_end": "2026-06-30",
+      "period_kind": "quarter",
+      "period_start": "2026-04-01",
+      "scale_power10": 3,
+      "sign_convention": "signed_difference",
+      "unit": "USD",
+      "value_text": "0",
+      "withheld_reason": null
+    },
+    {
+      "basis": "share_of_change_ratio",
+      "definition": "advertising_revenue_change divided by total_revenue_change, as a percentage at two decimal places.",
+      "display_quantum": "0.01_percent",
+      "event": "plnt_q2_2026_results",
+      "input_refs": [
+        "advertising_revenue_current",
+        "advertising_revenue_prior",
+        "total_revenue_current",
+        "total_revenue_prior"
+      ],
+      "key": "advertising_share_of_revenue_change_pct",
+      "period_end": "2026-06-30",
+      "period_kind": "quarter",
+      "period_start": "2026-04-01",
+      "scale_power10": 0,
+      "sign_convention": "signed_difference",
+      "unit": "percent",
+      "value_text": "41.66",
+      "withheld_reason": null
+    }
+  ],
+  "explanation": {
+    "lead": "Most of the increase in PLNT total revenue for the quarter ended 2026-06-30 is associated with advertising revenue that rose $10,141 thousand against $10,145 thousand of advertising expense, so a substantial part of the revenue increase does not translate one-for-one into incremental profit.",
+    "counterevidence": [
+      "The revenue and expense sides of advertising are not equal at table precision: the net change is -4 thousand USD, carried exactly rather than rounded to the same displayed figure.",
+      "Advertising is $10,141 thousand of a $24,344 thousand revenue increase, so most of the increase sits outside these two lines and is not explained here.",
+      "Franchise, corporate-club and equipment economics each require their own analysis and are untouched by this panel."
+    ],
+    "next_observation": [
+      "Comparable-club dues growth and retained operating contribution for the same quarter.",
+      "Franchisee economics in later filings, where PLNT actually discloses them.",
+      "Whether advertising expense keeps tracking advertising revenue at the same rate in the next reported quarter."
+    ],
+    "does_not_prove": [
+      "Organic growth.",
+      "A complete profit bridge for the quarter.",
+      "Any conclusion about franchise health.",
+      "Dues are not observed visits; dues revenue cannot be read as traffic.",
+      "Subtracting the advertising change alone and calling the remainder organic growth is a forbidden conclusion."
+    ]
+  },
+  "degraded_dependencies": [
+    {
+      "dependency": "native_source_receipt",
+      "reason": "Accession 0001637207-26-000042 exhibit plntq22026pressreleaseex991.htm is not retained by the incumbent source owner, so every fact here is a research oracle and not a native receipt.",
+      "state": "unavailable"
+    },
+    {
+      "dependency": "timezone_attested_publication_clock",
+      "reason": "The SEC acceptance stamp is unlabeled and is never first public availability, so no fact claims a publication clock.",
+      "state": "unavailable"
+    }
+  ],
+  "source_records": [
+    {
+      "acceptance_clock_basis": "unlabeled",
+      "accession_no": "0001637207-26-000042",
+      "document": "plntq22026pressreleaseex991.htm",
+      "issuer_cik": "0001637207",
+      "locator": "Exhibit 99.1, PLNT Q2 2026 results press release, accession 0001637207-26-000042",
+      "observed_at": "2026-09-24",
+      "publisher": "U.S. Securities and Exchange Commission",
+      "record_id": "src_plnt_q2_2026_ex991",
+      "retention_state": "not_retained",
+      "sec_acceptance_raw": "2026-08-06 06:30:44",
+      "source_family": "sec_edgar_exhibit",
+      "source_uri": "https://www.sec.gov/Archives/edgar/data/1637207/000163720726000042/plntq22026pressreleaseex991.htm"
+    }
+  ],
+  "availability": "ready"
+}

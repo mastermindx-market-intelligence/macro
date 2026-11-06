@@ -14,7 +14,9 @@ from __future__ import annotations
 
 import ast
 import json
+import logging
 import re
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -582,3 +584,171 @@ class TestMarkdownMultiGrader:
         assert not re.search(r"`[^`]+,[^`]+`", row), (
             f"graders must not be rendered as one comma-joined path: {row}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Grey Deer pullback forward log — owed keys, not raw grade lines
+# ---------------------------------------------------------------------------
+# Pinned Friday 2026-07-17. Horizon 5 from 2026-07-01 / 2026-07-02 matures on
+# 2026-07-09 / 2026-07-10 (owed). Horizon 5 from 2026-07-16 matures on
+# 2026-07-23 (not owed: one session of grace, and several sessions short).
+
+_GD_TODAY = date(2026, 7, 17)
+_GD_SPEC = {
+    "key": "grey_deer_pullback_forward_log",
+    "path": "data/grey_deer_pullback/forward_log.jsonl",
+    "format": "jsonl",
+    "graders": [
+        "engine/grey_deer_pullback_forward_grade.py",
+        "scripts/grey_deer_pullback_nightly.py",
+    ],
+    "grade_field": None,
+    "grade_ts_field": None,
+    "tune_step": False,
+    "storage_note": None,
+}
+_GD_GRADES = "data/grey_deer_pullback/forward_log_graded.jsonl"
+
+
+def _gd_issued(asof: str, *, ticker: str = "SPY", horizon: int = 5,
+               config_id: str = "cfg-a") -> dict:
+    return {"asof": asof, "ticker": ticker, "horizon": horizon, "config_id": config_id}
+
+
+def _gd_grade_top(asof: str, graded_at: str, *, ticker: str = "SPY",
+                  horizon: int = 5, config_id: str = "cfg-a") -> dict:
+    return {
+        "asof": asof, "ticker": ticker, "horizon": horizon, "config_id": config_id,
+        "graded_at": graded_at,
+    }
+
+
+def _gd_grade_nested(asof: str, graded_at: str, *, ticker: str = "SPY",
+                     horizon: int = 5, config_id: str = "cfg-a") -> dict:
+    return {
+        "key": {
+            "asof": asof, "ticker": ticker, "horizon": horizon, "config_id": config_id,
+        },
+        "graded_at": graded_at,
+    }
+
+
+def _gd_audit(tmp_path: Path, issued: list[dict], grades: list[dict] | None,
+              today: date = _GD_TODAY) -> dict:
+    _make_jsonl(tmp_path / _GD_SPEC["path"], issued)
+    if grades is not None:
+        _make_jsonl(tmp_path / _GD_GRADES, grades)
+    return agc.audit_entry(_GD_SPEC, tmp_path, _today=today)
+
+
+class TestGreyDeerPullbackClosure:
+    def test_orphan_grade_does_not_count(self, tmp_path: Path) -> None:
+        """A grade whose key matches no issued row is not a grade."""
+        result = _gd_audit(
+            tmp_path,
+            [_gd_issued("2026-07-16")],
+            [_gd_grade_top("2026-07-01", "2026-07-10T15:00:00+00:00")],
+        )
+        assert result["n_graded"] == 0
+        assert result["last_graded_at"] is None
+
+    def test_owed_ungraded_key_is_grader_starved(self, tmp_path: Path) -> None:
+        """One matched grade does not close the lane while an owed key is open."""
+        result = _gd_audit(
+            tmp_path,
+            [_gd_issued("2026-07-01"), _gd_issued("2026-07-02")],
+            [_gd_grade_top("2026-07-01", "2026-07-10T15:00:00+00:00")],
+        )
+        assert result["verdict"] == "GRADER-STARVED"
+        assert result["n_owed_ungraded"] == 1
+        assert result["n_graded"] == 1
+        assert result["last_graded_at"] == "2026-07-10T15:00:00+00:00"
+
+    def test_all_owed_graded_with_immature_key_is_closed(self, tmp_path: Path) -> None:
+        """A not-yet-owed issued key is not starvation once every owed key is graded."""
+        result = _gd_audit(
+            tmp_path,
+            [_gd_issued("2026-07-01"), _gd_issued("2026-07-16")],
+            [_gd_grade_top("2026-07-01", "2026-07-10T15:00:00+00:00")],
+        )
+        assert result["n_owed_ungraded"] == 0
+        assert result["verdict"] == "CLOSED"
+        assert result["n_graded"] == 1
+
+    def test_legacy_nested_key_grade_matches(self, tmp_path: Path) -> None:
+        """A nested `key` grade matches an issued row the same way a top-level one does."""
+        result = _gd_audit(
+            tmp_path,
+            [_gd_issued("2026-07-01"), _gd_issued("2026-07-02", config_id="cfg-b")],
+            [
+                _gd_grade_top("2026-07-01", "2026-07-10T15:00:00+00:00"),
+                _gd_grade_nested(
+                    "2026-07-02", "2026-07-11T15:00:00+00:00", config_id="cfg-b",
+                ),
+                _gd_grade_top("2026-06-01", "2026-07-12T15:00:00+00:00"),
+            ],
+        )
+        assert result["n_graded"] == 2
+        assert result["last_graded_at"] == "2026-07-11T15:00:00+00:00"
+        assert result["n_owed_ungraded"] == 0
+        assert result["verdict"] == "CLOSED"
+
+    def test_duplicate_grade_rows_count_once(self, tmp_path: Path) -> None:
+        """Keep-first: a second grade for the same key does not count."""
+        result = _gd_audit(
+            tmp_path,
+            [_gd_issued("2026-07-01")],
+            [
+                _gd_grade_top("2026-07-01", "2026-07-10T15:00:00+00:00"),
+                _gd_grade_top("2026-07-01", "2026-07-20T15:00:00+00:00"),
+            ],
+        )
+        assert result["n_graded"] == 1
+        assert result["last_graded_at"] == "2026-07-10T15:00:00+00:00"
+        assert result["n_owed_ungraded"] == 0
+
+    def test_unparseable_asof_is_not_owed(self, tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+        """A bad asof is skipped once and is not an owed key."""
+        issued = [
+            {"asof": "not-a-date", "ticker": "SPY", "horizon": 5, "config_id": "cfg-a"},
+            {"asof": "still-not-a-date", "ticker": "QQQ", "horizon": 5, "config_id": "cfg-a"},
+            _gd_issued("2026-07-01"),
+        ]
+        with caplog.at_level(logging.WARNING, logger="audit_grading_closure"):
+            result = _gd_audit(tmp_path, issued, [])
+        assert result["n_owed_ungraded"] == 1
+        assert result["n_graded"] == 0
+        warnings = [r for r in caplog.records if "grey_deer_pullback_forward_log" in r.message]
+        assert len(warnings) == 1
+
+    def test_today_pin_controls_owed_window(self, tmp_path: Path) -> None:
+        """`_today` decides maturity. Horizon 1 from 2026-07-16 matures on 2026-07-17."""
+        issued = [_gd_issued("2026-07-16", horizon=1)]
+        on_maturity = _gd_audit(tmp_path, issued, [], today=date(2026, 7, 17))
+        assert on_maturity["n_owed_ungraded"] == 0
+        next_session = _gd_audit(tmp_path, issued, [], today=date(2026, 7, 20))
+        assert next_session["n_owed_ungraded"] == 1
+        assert next_session["verdict"] == "GRADER-STARVED"
+
+    def test_other_ledger_has_no_owed_field(self, tmp_path: Path) -> None:
+        """A non-Grey-Deer jsonl entry keeps its old verdict and gains no owed field."""
+        ledger_path = tmp_path / "data" / "risk_radar" / "forward_log.jsonl"
+        _make_jsonl(ledger_path, [
+            {"asof": "2026-01-01", "state": "RISK-OFF", "graded": None},
+            {"asof": "2026-01-08", "state": "RISK-ON", "graded": None},
+        ])
+        spec = {
+            "key": "risk_radar_forward_log",
+            "path": "data/risk_radar/forward_log.jsonl",
+            "format": "jsonl",
+            "grader": "engine/risk_radar_audit.py",
+            "grade_field": "graded",
+            "grade_ts_field": None,
+            "tune_step": False,
+            "storage_note": None,
+        }
+        result = agc.audit_entry(spec, tmp_path)
+        assert "n_owed_ungraded" not in result
+        assert result["verdict"] == "GRADER-STARVED"
+        assert result["n_logged"] == 2
+        assert result["n_graded"] == 0

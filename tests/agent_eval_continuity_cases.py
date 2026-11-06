@@ -61,6 +61,10 @@ def test_historical_handoff_names_both_live_source_gates_without_permission() ->
     assert "Mastermind #162 is merged/do-not-redo" in " ".join(handoff["do_not_redo"])
     assert "Mastermind #398" in actions and "d79d2ec3537d8eb060055731a7c3cebee0c543eb" in actions
     assert "91cb16860ee9e140d28052e5981b7c8f94aac4ecd42e788d3c7a75e3415e5cf8" in actions
+    assert "source-custody-lawful current-Macro workspace exists" not in actions
+    assert "incident #386" in actions and "READ/A0" in actions
+    assert "Mastermind #760 is merged/do-not-redo" in " ".join(handoff["do_not_redo"])
+    assert "Macro #7344 is merged/do-not-redo" in " ".join(handoff["do_not_redo"])
     assert "EFFECT_UNKNOWN" in " ".join(handoff["do_not_redo"])
     assert "6760" in json.dumps(handoff["verified"])
     assert handoff["unverified"], "Pending proof must not disappear during records repair"
@@ -114,6 +118,8 @@ def test_real_compiler_recovers_new_handoff_and_excludes_old(tmp_path, mentioned
     assert "Mastermind #398" in items[0]["excerpt"]
     assert "d79d2ec3537d8eb060055731a7c3cebee0c543eb" in items[0]["excerpt"]
     assert "91cb16860ee9e140d28052e5981b7c8f94aac4ecd42e788d3c7a75e3415e5cf8" in items[0]["excerpt"]
+    assert "incident #386" in items[0]["excerpt"]
+    assert "READ/A0" in items[0]["excerpt"]
     assert any(x["path"].endswith(str(OLD)) and "older_handoff" in x["reason"]
                for x in bundle["excluded"])
     assert "not for permission" in section(bundle, "workstream")["title"]

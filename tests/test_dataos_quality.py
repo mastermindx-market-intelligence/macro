@@ -300,3 +300,548 @@ def test_an_annotation_is_a_single_line_even_when_the_message_wraps() -> None:
 def test_emitting_nothing_prints_nothing(capsys) -> None:
     assert emit_annotations([]) == 0
     assert capsys.readouterr().out == ""
+
+
+# ── C03: cross-source agreement inspector ──
+import dataclasses  # noqa: E402
+import inspect  # noqa: E402
+import json  # noqa: E402
+from decimal import Decimal  # noqa: E402
+from fractions import Fraction  # noqa: E402
+
+from lib.dataos.quality import (  # noqa: E402
+    AgreementInspection,
+    AgreementState,
+    AgreementTolerance,
+    DiscrepancyCause,
+    InspectionOutcome,
+    PairObservation,
+    RatioStep,
+    SourceSemantics,
+    agreement_findings,
+    inspect_agreement,
+)
+
+
+def _c03_sem(**over) -> SourceSemantics:
+    """A fully declared source; everything can be overridden per test."""
+    declared = dict(
+        source_id="vendor_a", generation="g1", instrument="NVDA@XNYS",
+        session="REGULAR", currency="USD", price_type="CONSOLIDATED_CLOSE",
+        timestamp_convention="SESSION_CLOSE_LOCAL", basis="SADJ",
+        adjustment_reference="actions@2026-06-30", unit="USD/share",
+    )
+    declared.update(over)
+    return SourceSemantics(**declared)
+
+
+def _c03_rows(pairs) -> list[dict]:
+    return [{"date": d, "close": v} for d, v in pairs]
+
+
+_C03_TOL = AgreementTolerance(precision="0.0001", within="0.0005", minor="0.005")
+
+
+def _c03_inspect(left_pairs, right_pairs, *, left_sem=None, right_sem=None,
+                 keys=("date",), value_col="close", tol=None, min_overlap=1):
+    return inspect_agreement(
+        _c03_rows(left_pairs),
+        left_sem if left_sem is not None else _c03_sem(),
+        _c03_rows(right_pairs),
+        right_sem if right_sem is not None else _c03_sem(source_id="vendor_b"),
+        keys=keys if isinstance(keys, str) else list(keys), value_col=value_col,
+        tolerance=tol if tol is not None else _C03_TOL, min_overlap=min_overlap)
+
+
+def test_C03_agreement_vocabulary_is_exactly_the_section_7_set() -> None:
+    assert [(s.name, s.value) for s in AgreementState] == [
+        (name, name) for name in (
+            "AGREE", "WITHIN_TOLERANCE", "DISCREPANT_MINOR",
+            "DISCREPANT_MAJOR", "UNRESOLVED",
+        )
+    ]
+
+
+def test_C03_outcome_and_cause_vocabularies_are_closed() -> None:
+    assert [o.name for o in InspectionOutcome] == [
+        "COMPARED", "INCOMPATIBLE", "INSUFFICIENT_OVERLAP", "DUPLICATE_KEY"]
+    assert [c.name for c in DiscrepancyCause] == ["SEMANTIC_DIFFERENCE", "UNKNOWN"]
+    for vocabulary in (InspectionOutcome, DiscrepancyCause):
+        for member in vocabulary:
+            for banned in ("VENDOR", "ERROR", "WRONG", "FACTOR"):
+                assert banned not in member.name
+
+
+def test_C03_declarations_are_keyword_only_without_defaults() -> None:
+    params = inspect.signature(inspect_agreement).parameters
+    for name in ("keys", "value_col", "tolerance", "min_overlap"):
+        assert params[name].kind is inspect.Parameter.KEYWORD_ONLY, name
+        assert params[name].default is inspect.Parameter.empty, name
+
+
+@pytest.mark.parametrize("kwargs, exc", [
+    ({"precision": 0.0001}, TypeError),
+    ({"within": True}, TypeError),
+    ({"precision": Fraction(-1, 100)}, ValueError),
+    ({"within": "0.5", "minor": "0.1"}, ValueError),
+    ({"precision": "not a number"}, ValueError),
+    ({"precision": Decimal("NaN")}, ValueError),
+])
+def test_C03_tolerance_refuses_inexact_or_incoherent_declarations(kwargs, exc) -> None:
+    declared = {"precision": "0.0001", "within": "0.0005", "minor": "0.005"}
+    declared.update(kwargs)
+    with pytest.raises(exc, match=r"precision|within|minor"):
+        AgreementTolerance(**declared)
+
+
+def test_C03_tolerance_normalises_exactly_to_fractions() -> None:
+    tol = AgreementTolerance(precision=1, within=Decimal("0.0005"),
+                             minor=Fraction(1, 200))
+    assert type(tol.precision) is Fraction and tol.precision == Fraction(1)
+    assert tol.within == Fraction("0.0005") == Fraction(1, 2000)
+    assert tol.minor == Fraction(1, 200)
+    assert AgreementTolerance("0.0001", "1/2000", "0.005") == AgreementTolerance(
+        Fraction(1, 10000), Decimal("0.0005"), Fraction(1, 200))
+
+
+@pytest.mark.parametrize("field", [
+    "source_id", "generation", "instrument", "session", "currency",
+    "price_type", "timestamp_convention", "basis", "unit",
+])
+def test_C03_semantics_refuse_an_empty_declaration(field) -> None:
+    with pytest.raises(ValueError, match=field):
+        _c03_sem(**{field: "   "})
+
+
+def test_C03_semantics_allow_an_empty_adjustment_reference_only() -> None:
+    assert _c03_sem(adjustment_reference="").adjustment_reference == ""
+    for field in ("source_id", "generation", "instrument", "session", "currency",
+                  "price_type", "timestamp_convention", "basis", "unit"):
+        with pytest.raises(ValueError):
+            _c03_sem(**{field: ""})
+    with pytest.raises(ValueError):
+        _c03_sem(currency=5)
+
+
+@pytest.mark.parametrize("kwargs, exc", [
+    ({"keys": []}, ValueError),
+    ({"keys": "date"}, TypeError),
+    ({"value_col": "date"}, ValueError),
+    ({"min_overlap": 0}, ValueError),
+    ({"min_overlap": True}, TypeError),
+    ({"min_overlap": 1.0}, TypeError),
+    ({"tolerance": ("0.0001", "0.0005", "0.005")}, TypeError),
+    ({"left_sem": ("vendor_a", "g1")}, TypeError),
+])
+def test_C03_malformed_call_declarations_raise(kwargs, exc) -> None:
+    with pytest.raises(exc):
+        _c03_inspect([("2026-06-01", 100)], [("2026-06-01", 100)], **kwargs)
+
+
+# ── C03.01: a replay of one generation must agree within precision ──────────
+def test_C03_01_same_generation_replay_agrees_within_precision() -> None:
+    pairs = [(f"2026-06-0{d}", Decimal("100.00") + d) for d in range(1, 6)]
+    insp = _c03_inspect(pairs, pairs, right_sem=_c03_sem())
+    assert insp.outcome is InspectionOutcome.COMPARED
+    assert insp.same_generation is True
+    assert insp.state is AgreementState.AGREE
+    assert insp.cause is None
+    assert all(o.state is AgreementState.AGREE for o in insp.observations)
+    assert agreement_findings(insp) == []
+
+
+def test_C03_01_same_generation_beyond_precision_is_major() -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", Decimal("100.00"))],
+        [("2026-06-01", Decimal("100.01"))],
+        right_sem=_c03_sem(),
+    )
+    assert insp.same_generation is True
+    assert insp.outcome is InspectionOutcome.COMPARED
+    assert insp.state is AgreementState.DISCREPANT_MAJOR
+    assert insp.cause is DiscrepancyCause.UNKNOWN
+    assert insp.observations[0].state is AgreementState.DISCREPANT_MAJOR
+
+
+def test_C03_01_the_same_difference_between_independent_sources_is_within_tolerance() -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", Decimal("100.00"))],
+        [("2026-06-01", Decimal("100.01"))],
+    )
+    assert insp.same_generation is False
+    assert insp.outcome is InspectionOutcome.COMPARED
+    assert insp.state is AgreementState.WITHIN_TOLERANCE
+    assert insp.cause is None
+    assert insp.observations[0].state is AgreementState.WITHIN_TOLERANCE
+
+
+def test_C03_01_independent_discrepancy_is_retained_unresolved() -> None:
+    first_left, first_right = 100.0, 100.5
+    insp = _c03_inspect(
+        [("2026-06-01", first_left), ("2026-06-02", 200.0)],
+        [("2026-06-01", first_right), ("2026-06-02", 220.0)],
+    )
+    assert insp.outcome is InspectionOutcome.COMPARED
+    assert insp.state is AgreementState.UNRESOLVED
+    assert insp.cause is DiscrepancyCause.UNKNOWN
+    assert [o.state for o in insp.observations] == [
+        AgreementState.DISCREPANT_MINOR, AgreementState.DISCREPANT_MAJOR]
+    # the raw values are retained exactly as given — identity, not a copy
+    assert insp.observations[0].left is first_left
+    assert insp.observations[0].right is first_right
+    assert insp.counts() == {"AGREE": 0, "WITHIN_TOLERANCE": 0,
+                             "DISCREPANT_MINOR": 1, "DISCREPANT_MAJOR": 1,
+                             "UNRESOLVED": 0}
+
+
+def test_C03_01_band_boundaries_are_inclusive_and_exact() -> None:
+    base = [("2026-06-01", Fraction(100))]
+    # d == within * m exactly:  b = a / (1 - within)
+    within_edge = Fraction(200000, 1999)
+    insp = _c03_inspect(base, [("2026-06-01", within_edge)])
+    assert insp.observations[0].state is AgreementState.WITHIN_TOLERANCE
+    assert insp.observations[0].rel_diff == _C03_TOL.within
+    # d == minor * m exactly:  b = a / (1 - minor)
+    minor_edge = Fraction(20000, 199)
+    insp = _c03_inspect(base, [("2026-06-01", minor_edge)])
+    assert insp.observations[0].state is AgreementState.DISCREPANT_MINOR
+    assert insp.observations[0].rel_diff == _C03_TOL.minor
+    # one unit beyond the minor band → the next band
+    insp = _c03_inspect(base, [("2026-06-01", Fraction(101))])
+    assert insp.observations[0].state is AgreementState.DISCREPANT_MAJOR
+
+
+# ── C03.02: semantics first; values across a difference are never compared ──
+def test_C03_02_raw_against_split_adjusted_is_incompatible() -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", 100)], [("2026-06-01", 100)],
+        right_sem=_c03_sem(source_id="vendor_b", basis="RAW",
+                           adjustment_reference=""),
+    )
+    assert insp.outcome is InspectionOutcome.INCOMPATIBLE
+    assert insp.state is AgreementState.UNRESOLVED
+    assert insp.cause is DiscrepancyCause.SEMANTIC_DIFFERENCE
+    assert insp.explanation[0] == ("basis", "SADJ", "RAW")
+    assert insp.overlap is None and insp.observations == ()
+    assert agreement_findings(insp)[0].family is CheckFamily.CROSS_SOURCE
+
+
+def test_C03_02_total_return_adjusted_is_never_compared_with_a_printed_price() -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", 100)], [("2026-06-01", 100)],
+        left_sem=_c03_sem(basis="TRADJ"),
+        right_sem=_c03_sem(source_id="vendor_b", basis="RAW",
+                           adjustment_reference=""),
+    )
+    assert insp.outcome is InspectionOutcome.INCOMPATIBLE
+    assert insp.cause is DiscrepancyCause.SEMANTIC_DIFFERENCE
+    assert insp.explanation[0] == ("basis", "TRADJ", "RAW")
+
+
+def test_C03_02_closing_auction_against_consolidated_is_incompatible() -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", 100)], [("2026-06-01", 100)],
+        right_sem=_c03_sem(source_id="vendor_b", price_type="CLOSING_AUCTION"),
+    )
+    assert insp.outcome is InspectionOutcome.INCOMPATIBLE
+    assert insp.explanation == (
+        ("price_type", "CONSOLIDATED_CLOSE", "CLOSING_AUCTION"),)
+
+
+@pytest.mark.parametrize("field, other", [
+    ("instrument", "NVDA@XNAS"),
+    ("session", "EXTENDED"),
+    ("currency", "GBX"),
+    ("price_type", "CLOSING_AUCTION"),
+    ("timestamp_convention", "UTC_STAMPED"),
+    ("basis", "RAW"),
+    ("adjustment_reference", "actions@2026-09-30"),
+    ("unit", "USD"),
+])
+def test_C03_02_any_single_semantic_difference_is_incompatible(field, other) -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", 100)], [("2026-06-01", 100)],
+        right_sem=_c03_sem(source_id="vendor_b", **{field: other}),
+    )
+    assert insp.outcome is InspectionOutcome.INCOMPATIBLE
+    assert insp.cause is DiscrepancyCause.SEMANTIC_DIFFERENCE
+    assert insp.explanation == ((field, getattr(_c03_sem(), field), other),)
+
+
+def test_C03_02_two_generations_of_one_source_are_incompatible() -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", 100)], [("2026-06-01", 100)],
+        right_sem=_c03_sem(generation="g2"),
+    )
+    assert insp.same_generation is False
+    assert insp.outcome is InspectionOutcome.INCOMPATIBLE
+    assert insp.explanation == (("generation", "g1", "g2"),)
+    assert insp.explanation[-1][0] == "generation"
+
+
+def test_C03_02_incompatible_rows_are_never_examined() -> None:
+    class _Boom:
+        def __iter__(self):
+            raise AssertionError("rows must never be examined for an incompatible pair")
+
+    insp = inspect_agreement(
+        _Boom(), _c03_sem(), _Boom(),
+        _c03_sem(source_id="vendor_b", basis="RAW", adjustment_reference=""),
+        keys=["date"], value_col="close", tolerance=_C03_TOL, min_overlap=1)
+    assert insp.outcome is InspectionOutcome.INCOMPATIBLE
+    assert insp.observations == () and insp.overlap is None
+
+
+def test_C03_02_the_inspection_carries_no_consensus_value() -> None:
+    assert [f.name for f in dataclasses.fields(AgreementInspection)] == [
+        "outcome", "state", "cause", "same_generation", "explanation", "overlap",
+        "left_only", "right_only", "left_unkeyed", "right_unkeyed",
+        "duplicate_keys", "observations", "ratio_step",
+    ]
+    insp = _c03_inspect([("2026-06-01", 100)], [("2026-06-01", 100.5)])
+    banned = ("score", "consensus", "golden", "value", "mean", "average",
+              "winner", "preferred", "reconciled", "best")
+    for attr in dir(insp):
+        for word in banned:
+            assert word not in attr.lower(), attr
+
+
+def test_C03_02_the_verdict_is_symmetric() -> None:
+    left_pairs = [("2026-06-01", 100), ("2026-06-02", 200)]
+    right_pairs = [("2026-06-01", 100.5), ("2026-06-02", 220)]
+    vendor_b = _c03_sem(source_id="vendor_b")
+    forward = _c03_inspect(left_pairs, right_pairs)
+    backward = inspect_agreement(
+        _c03_rows(right_pairs), vendor_b, _c03_rows(left_pairs), _c03_sem(),
+        keys=["date"], value_col="close", tolerance=_C03_TOL, min_overlap=2)
+    assert backward.outcome is forward.outcome
+    assert backward.state is forward.state
+    assert backward.cause is forward.cause
+    assert [o.state for o in backward.observations] == \
+        [o.state for o in forward.observations]
+    assert backward.left_only == forward.right_only
+    assert backward.right_only == forward.left_only
+
+
+# ── C03.03: overlap, history depth and step boundaries ──────────────────────
+def test_C03_03_disjoint_sampled_dates_are_insufficient_overlap() -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", 100), ("2026-06-02", 101), ("2026-06-03", 102)],
+        [("2026-06-08", 100), ("2026-06-09", 101), ("2026-06-10", 102)],
+    )
+    assert insp.outcome is InspectionOutcome.INSUFFICIENT_OVERLAP
+    assert insp.state is AgreementState.UNRESOLVED
+    assert insp.cause is DiscrepancyCause.UNKNOWN
+    assert insp.overlap == 0 and insp.left_only == 3 and insp.right_only == 3
+    assert insp.left_unkeyed == 0 and insp.right_unkeyed == 0
+    assert insp.observations == () and insp.ratio_step is None
+
+
+def test_C03_03_min_overlap_is_the_declared_threshold() -> None:
+    pairs = [(f"2026-06-0{d}", 100) for d in range(1, 4)]
+    at_threshold = _c03_inspect(pairs, pairs, min_overlap=3)
+    assert at_threshold.outcome is InspectionOutcome.COMPARED
+    below_threshold = _c03_inspect(pairs, pairs, min_overlap=4)
+    assert below_threshold.outcome is InspectionOutcome.INSUFFICIENT_OVERLAP
+
+
+def test_C03_03_deeper_history_on_one_side_never_funds_a_step() -> None:
+    left_pairs = [(f"2026-05-{d:02d}", 200) for d in range(1, 8)] + \
+        [("2026-06-01", 100), ("2026-06-02", 100)]
+    insp = _c03_inspect(left_pairs, [("2026-06-01", 100), ("2026-06-02", 100)])
+    assert insp.outcome is InspectionOutcome.COMPARED
+    assert insp.state is AgreementState.AGREE
+    assert insp.ratio_step is None
+    assert insp.left_only == 7
+    assert insp.overlap == 2
+
+
+def test_C03_03_a_step_boundary_is_the_interval_between_sampled_keys() -> None:
+    keys = ["2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22"]
+    insp = _c03_inspect(
+        [(k, 100) for k in keys],
+        [(keys[0], 200), (keys[1], 200), (keys[2], 100), (keys[3], 100)],
+    )
+    step = insp.ratio_step
+    assert isinstance(step, RatioStep)
+    assert step.boundary == (("2026-06-08",), ("2026-06-15",))
+    assert (step.first_run, step.second_run) == (2, 2)
+    assert step.before == Fraction(2) and step.after == Fraction(1)
+    # the boundary is an interval, never an inferred event date
+    assert len(step.boundary) == 2
+
+
+def test_C03_a_one_sided_factor_shows_a_step_but_names_no_cause() -> None:
+    keys = ["2026-06-01", "2026-06-02", "2026-06-03",
+            "2026-06-04", "2026-06-05", "2026-06-06"]
+    insp = _c03_inspect(
+        [(k, 100) for k in keys],
+        [(k, 200) for k in keys[:3]] + [(k, 100) for k in keys[3:]],
+    )
+    assert insp.outcome is InspectionOutcome.COMPARED
+    assert [o.state for o in insp.observations[:3]] == \
+        [AgreementState.DISCREPANT_MAJOR] * 3
+    assert [o.state for o in insp.observations[3:]] == [AgreementState.AGREE] * 3
+    assert insp.state is AgreementState.UNRESOLVED
+    assert insp.cause is DiscrepancyCause.UNKNOWN
+    step = insp.ratio_step
+    assert step is not None
+    assert step.before == Fraction(2) and step.after == Fraction(1)
+    assert step.first_run == 3 and step.second_run == 3
+    message = agreement_findings(insp)[0].message
+    for word in ("factor", "split", "adjustment", "cause"):
+        assert word not in message.lower()
+
+
+# ── C03.04: unknown causes stay unknown; a missing value is never zero ──────
+def test_C03_04_irregular_discrepancies_have_no_step_and_no_named_cause() -> None:
+    offsets = ["0.05", "-0.03", "0.9", "0.1", "0.02"]
+    insp = _c03_inspect(
+        [(f"2026-06-{d:02d}", Fraction(100)) for d in range(1, 6)],
+        [(f"2026-06-{d:02d}", Fraction(100) + Fraction(offsets[i]))
+         for i, d in enumerate(range(1, 6))],
+    )
+    assert insp.outcome is InspectionOutcome.COMPARED
+    assert insp.state is AgreementState.UNRESOLVED
+    assert insp.cause is DiscrepancyCause.UNKNOWN
+    assert insp.ratio_step is None
+    assert insp.counts()["DISCREPANT_MAJOR"] == 1   # 0.9
+    assert insp.counts()["DISCREPANT_MINOR"] == 1   # 0.1
+    assert insp.counts()["WITHIN_TOLERANCE"] == 3
+
+
+@pytest.mark.parametrize("bad", [None, NAN, True, "ABSENT"])
+def test_C03_04_a_missing_value_is_unresolved_never_zero(bad) -> None:
+    left_rows = [{"date": "2026-06-01", "close": 0}]
+    right_rows = (
+        [{"date": "2026-06-01"}] if bad == "ABSENT"
+        else [{"date": "2026-06-01", "close": bad}])
+    insp = inspect_agreement(
+        left_rows, _c03_sem(), right_rows, _c03_sem(source_id="vendor_b"),
+        keys=["date"], value_col="close", tolerance=_C03_TOL, min_overlap=1)
+    obs = insp.observations[0]
+    assert obs.state is AgreementState.UNRESOLVED
+    assert obs.abs_diff is None and obs.rel_diff is None
+    assert insp.state is AgreementState.UNRESOLVED
+    assert insp.cause is DiscrepancyCause.UNKNOWN
+
+
+# ── grain, exactness, inputs ────────────────────────────────────────────────
+def test_C03_duplicate_keys_are_a_finding_not_a_crash() -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", 100), ("2026-06-01", 101), ("2026-06-02", 100)],
+        [("2026-06-03", 100), ("2026-06-03", 100), ("2026-06-02", 100)],
+    )
+    assert insp.outcome is InspectionOutcome.DUPLICATE_KEY
+    assert insp.state is AgreementState.UNRESOLVED
+    assert insp.cause is DiscrepancyCause.UNKNOWN
+    assert insp.duplicate_keys == (
+        ("left", ("2026-06-01",)), ("right", ("2026-06-03",)))
+    assert insp.observations == () and insp.overlap is None
+    findings = agreement_findings(insp, dataset_id="tape")
+    assert len(findings) == 1
+    assert findings[0].family is CheckFamily.CROSS_SOURCE
+    assert findings[0].evidence["duplicate_key_count"] == 2
+
+
+def test_C03_unkeyed_rows_are_counted_not_compared() -> None:
+    insp = _c03_inspect(
+        [("2026-06-01", 100), (None, 999)],
+        [("2026-06-01", 100.5)],
+    )
+    assert insp.outcome is InspectionOutcome.COMPARED
+    assert insp.left_unkeyed == 1 and insp.right_unkeyed == 0
+    assert len(insp.observations) == 1
+    assert all(o.key != (None,) for o in insp.observations)
+
+
+def test_C03_float_values_compare_by_shortest_repr_exactly() -> None:
+    # 114.8 / 57.4 is exactly Fraction(2) under shortest-repr conversion
+    keys = ["2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22"]
+    insp = _c03_inspect(
+        [(k, 57.4) for k in keys],
+        [(keys[0], 114.8), (keys[1], 114.8), (keys[2], 57.4), (keys[3], 57.4)],
+    )
+    assert insp.ratio_step is not None
+    assert insp.ratio_step.before == Fraction(2)
+    assert insp.ratio_step.after == Fraction(1)
+    # 0.1 + 0.2 vs 0.3: an exact comparison, within the declared precision
+    insp = _c03_inspect([("2026-06-01", 0.1 + 0.2)], [("2026-06-01", 0.3)])
+    obs = insp.observations[0]
+    assert obs.state is AgreementState.AGREE
+    assert obs.abs_diff == Fraction(4, 10 ** 17)
+
+
+def test_C03_generators_are_accepted_and_inputs_are_not_mutated() -> None:
+    left_rows = [{"date": "2026-06-01", "close": 100},
+                 {"date": "2026-06-02", "close": 101}]
+    right_rows = [{"date": "2026-06-01", "close": 100.5},
+                  {"date": "2026-06-02", "close": 101}]
+    # a deepcopy before/after (rows are JSON scalars, so a json round-trip is one)
+    left_before = json.loads(json.dumps(left_rows))
+    right_before = json.loads(json.dumps(right_rows))
+    insp = inspect_agreement(
+        (row for row in left_rows), _c03_sem(),
+        (row for row in right_rows), _c03_sem(source_id="vendor_b"),
+        keys=["date"], value_col="close", tolerance=_C03_TOL, min_overlap=1)
+    assert insp.outcome is InspectionOutcome.COMPARED
+    assert left_rows == left_before and right_rows == right_before
+    assert isinstance(insp.observations[0], PairObservation)
+
+
+# ── findings ────────────────────────────────────────────────────────────────
+def test_C03_findings_are_cross_source_with_bounded_json_evidence() -> None:
+    keys = [f"2026-06-{d:02d}" for d in range(1, 13)]
+    insp = _c03_inspect([(k, 100) for k in keys], [(k, 200) for k in keys])
+    findings = agreement_findings(insp, dataset_id="tape")
+    assert len(findings) == 1
+    finding = findings[0]
+    assert finding.family is CheckFamily.CROSS_SOURCE
+    assert finding.severity is Severity.WARN
+    assert finding.dataset_id == "tape"
+    evidence = finding.evidence
+    assert set(evidence) == {
+        "outcome", "state", "cause", "same_generation", "explanation", "overlap",
+        "left_only", "right_only", "left_unkeyed", "right_unkeyed",
+        "duplicate_keys", "duplicate_key_count", "counts", "sample", "ratio_step",
+    }
+    assert len(evidence["sample"]) == 5  # 12 discrepant observations, bounded
+    assert evidence["sample"][0][3] == AgreementState.DISCREPANT_MAJOR.value
+    assert json.dumps(evidence)  # JSON-serialisable
+    assert annotation_line(finding).startswith("::")
+
+
+def test_C03_agreement_yields_no_finding() -> None:
+    pairs = [("2026-06-01", 100), ("2026-06-02", 101)]
+    assert agreement_findings(_c03_inspect(pairs, pairs)) == []
+    near = _c03_inspect(
+        [("2026-06-01", 100)], [("2026-06-01", 100.01)])
+    assert near.state is AgreementState.WITHIN_TOLERANCE
+    assert agreement_findings(near, dataset_id="tape") == []
+
+
+def test_C03_finding_severity_is_the_callers_declaration() -> None:
+    insp = _c03_inspect([("2026-06-01", 100)], [("2026-06-01", 200)])
+    (finding,) = agreement_findings(insp, dataset_id="tape",
+                                    severity=Severity.BLOCK)
+    assert finding.severity is Severity.BLOCK
+    assert annotation_line(finding).startswith(
+        "::error title=cross_source_reconciliation-block::")
+
+
+def test_C03_finding_text_names_no_cause_or_winner() -> None:
+    incompatible = _c03_inspect(
+        [("2026-06-01", 100)], [("2026-06-01", 100)],
+        right_sem=_c03_sem(source_id="vendor_b", basis="RAW",
+                           adjustment_reference=""))
+    unresolved = _c03_inspect(
+        [("2026-06-01", 100), ("2026-06-02", 200)],
+        [("2026-06-01", 100.5), ("2026-06-02", 220)])
+    banned = ("consensus", "golden", "score", "wrong", "error by", "vendor is",
+              "factor", "split", "cause")
+    for insp in (incompatible, unresolved):
+        message = agreement_findings(insp)[0].message
+        assert "not in agreement; retained, not reconciled" in message or \
+            "the declarations differ on" in message
+        for word in banned:
+            assert word not in message.lower(), word

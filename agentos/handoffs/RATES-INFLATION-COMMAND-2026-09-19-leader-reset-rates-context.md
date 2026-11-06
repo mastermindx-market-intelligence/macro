@@ -63,6 +63,36 @@ danger_areas:
   - Leader-reset is a leader-like proxy, not sector leadership proof and not semiconductor-specific.
 ---
 
+## 2026-11-06 source-repair qualification
+
+The front matter above preserves the original September handoff. Its test counts,
+TrialLedger digest/row count, main-comparison result and `ended_because: complete`
+describe that historical bounded slice; they are not current verification or
+completion of the parent research program.
+
+Repair `macro-pr7418-canonical-source-repair-20261106-c3` binds every tenor to its
+canonical DGS ID and source column, fails inconsistent declared changes closed,
+and handles missing observation dates without raising. The current W5 test file
+is preserved byte-for-byte before the appended rates-context cases. Positive 2y
+fixtures now identify DGS2. All scientific parameters and the machine prereg are
+unchanged; only the reviewed Operation-line trailing spaces were removed from
+the human prereg.
+
+Direct execution of the 20 selected actual test-function bodies reports
+12 passed / 8 failed against the original adapter, then
+20 passed / 0 failed against the repaired adapter.
+This is not pytest or a full repository import: package initializers and the
+unrelated W5 cases were not executed. The existing DATA `signal-contract` owner
+registers the W5 suite; ordinary CODE CI is not feature-execution proof.
+The amended freeze receipt binds the exact source hashes and preserves the
+historical receipt separately.
+
+No target outcomes or TrialLedger were accessed. Source acceptance, upstream
+availability qualification, existing scientific-owner registration and empirical
+acceptance remain distinct gates. This handoff amendment grants no production,
+ranking, scoring, sizing, gating or trading authority.
+
+
 This bounded slice freezes the join and scientific question only. It does not
 register or execute the target study, strengthen authority, or complete the
 parent rates-aware opportunity suite.
