@@ -784,13 +784,28 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:go_macro_ask", capability_id="fabric_application_go_macro_ask",
         protocol="native_application_v1", automatic=True),
+    "native_fabric_macro_batch_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_BATCH_FABRIC_APPLICATION_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:macro_batch", capability_id="fabric_application_macro_batch",
+        protocol="native_application_v1", automatic=True),
+    "native_fabric_macro_analysis_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_ANALYSIS_FABRIC_APPLICATION_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:macro_analysis", capability_id="fabric_application_macro_analysis",
+        protocol="native_application_v1", automatic=True),
+    "native_fabric_macro_portfolio_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_PORTFOLIO_FABRIC_APPLICATION_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:macro_portfolio", capability_id="fabric_application_macro_portfolio",
+        protocol="native_application_v1", automatic=True),
 }
 _APPLICATION_MODE_IDS = frozenset({"shared_fabric"})
 @dataclass(frozen=True)
 class _ServiceFabricRelation:
-    lane: str
+    lane: str | None
     workload: str
-    transport_id: str
+    transport_id: str | None
     automatic_transport_id: str | None = None
 
 _SERVICE_FABRIC_RELATIONS = {
@@ -802,6 +817,12 @@ _SERVICE_FABRIC_RELATIONS = {
         "brain", "site_interactive", "native_go_macro_brain_v1", "native_fabric_macro_brain_auto_v1"),
     "macro_ask_fabric": _ServiceFabricRelation(
         "ask-brain", "site_interactive", "native_go_macro_ask_v1", "native_fabric_macro_ask_auto_v1"),
+    "macro_batch_fabric": _ServiceFabricRelation(
+        None, "site_batch", None, "native_fabric_macro_batch_auto_v1"),
+    "macro_analysis_fabric": _ServiceFabricRelation(
+        None, "lobe_analysis", None, "native_fabric_macro_analysis_auto_v1"),
+    "macro_portfolio_fabric": _ServiceFabricRelation(
+        None, "portfolio_analysis", None, "native_fabric_macro_portfolio_auto_v1"),
 }
 _APPLICATION_RECORD_KEYS = _APPLICATION_MODE_IDS | frozenset(_SERVICE_FABRIC_RELATIONS)
 _APPLICATION_ID = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}\Z")
@@ -923,7 +944,8 @@ def _validate_service_fabric_relation(
     relation = _SERVICE_FABRIC_RELATIONS.get(service_mode_id)
     if type(relation) is not _ServiceFabricRelation:
         _application_refuse("fabric_application_selection_invalid")
-    if lane != relation.lane or not profile_present or profile != relation.workload:
+    if ((relation.lane is not None and lane != relation.lane)
+            or not profile_present or profile != relation.workload):
         _application_refuse("fabric_application_selection_invalid")
 
 
@@ -955,7 +977,21 @@ class ApplicationFabricFactory:
         _validate_service_fabric_relation(
             self.mode_id, self.lane, self.service_mode_id,
             self._profile_present, self._profile)
-        return self.mode_id if self.service_mode_id is None else self.service_mode_id
+        if self.service_mode_id is not None:
+            return self.service_mode_id
+        # Fixed historical transports keep their original identity. AUTO generic
+        # consumers have explicit native authorities for each workload; a local
+        # policy intersection cannot turn Admin into a batch/analysis principal.
+        mode = _application_fabric_mode(self.mode_id, self.root)
+        if not mode.transport.automatic:
+            return self.mode_id
+        if self._profile_present and self._profile == "site_interactive":
+            return self.mode_id
+        for record_id, relation in _SERVICE_FABRIC_RELATIONS.items():
+            if (relation.lane is None and self._profile_present
+                    and self._profile == relation.workload):
+                return record_id
+        _application_refuse("fabric_application_workload_authority_missing")
 
     def _request_timeout(self, caller_cfg: Mapping[str, Any] | None = None):
         """A caller may narrow the immutable startup budget, never widen it.
@@ -1035,6 +1071,10 @@ class ApplicationFabricFactory:
                     ("fabric",), (),
                 )
         transport = mode.transport
+        if (transport.automatic and caller_cfg is not None
+                and "workload_profile" in caller_cfg
+                and (not self._profile_present or caller_cfg["workload_profile"] != self._profile)):
+            _application_refuse("fabric_application_workload_authority_mismatch")
         if transport.automatic and (transport.protocol != "native_application_v1"
                 or transport.model is not None or transport.provider_id is not None
                 or transport.cost_basis != "unknown" or transport.native_recipe_digest is not None
