@@ -38,7 +38,11 @@ def _parse_date(value: object) -> date | None:
     if not isinstance(value, str) or not value:
         return None
     try:
-        return date.fromisoformat(value[:10])
+        if len(value) == 10:
+            return date.fromisoformat(value)
+        if len(value) > 10 and value[10] in ("T", " "):
+            return datetime.fromisoformat(value.replace("Z", "+00:00")).date()
+        return None
     except ValueError:
         return None
 
@@ -66,6 +70,9 @@ def _html_metadata(path: Path, errors: list[str]) -> dict[str, str | None]:
     except (OSError, UnicodeDecodeError) as exc:
         errors.append(f"site/sector_central.html is absent or unreadable: {exc}")
         return {key: None for key in _HTML_ATTRS}
+    # Non-greedy so text between two comments survives; an unclosed
+    # ``<!--`` hides the rest of the page from a browser, so it does here too.
+    text = re.sub(r"<!--.*?(?:-->|\Z)", "", text, flags=re.S)
     out: dict[str, str | None] = {}
     for key, attr in _HTML_ATTRS.items():
         match = re.search(rf'\b{re.escape(attr)}="([^"]+)"', text)

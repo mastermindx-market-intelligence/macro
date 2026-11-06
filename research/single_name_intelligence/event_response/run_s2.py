@@ -39,19 +39,20 @@ from engine.trial_ledger import TrialLedger, register_trials  # noqa: E402
 from s2_loaders import GitBlobLoader, verify_pinned_blobs  # noqa: E402
 from s2_outcomes import OutcomeEngine  # noqa: E402
 from s2_seal import (ABSTAIN_INSUFFICIENT_CLUSTERS, ABSTAIN_NO_EPISODES,
-                     BASE_COMMIT, BASELINE_ALWAYS_LONG, BASELINE_LABELS,
-                     BASELINE_POOLED_PRIOR, BASELINE_TRAILING63, BRANCH,
-                     CHALLENGER, DESCRIPTIVE_ONLY, FAMILY_BUDGET,
-                     FAMILY_BUDGET_REASON, GRADE_HORIZONS, GRADED_ISSUER,
-                     IDENTITY_VIEW, INFO_LEAK_CLASS, INFO_LEAK_INVARIANCE_NOTE,
-                     LABEL_HISTORICAL, LANE, MIN_EPISODES,
-                     MIN_TRAIN_CLUSTERS_POOLED_PRIOR, NOT_SUPPORTED_LINE,
-                     NOT_SUPPORTED_PROTOCOLS, POOLING_WEIGHT_TOKEN,
-                     PROPER_SCORE_LINE, PROTOCOLS, PROTOCOL_FAMILY,
-                     PROTOCOL_TITLE, PROTOCOL_VERSION, REG_CANONICAL_FAMILY,
-                     RETIREMENT_SOURCE, TESTED, TRIAL_LEDGER_REL_PATH,
+                     AUTHORITY_FLAGS, BASE_COMMIT, BASELINE_ALWAYS_LONG,
+                     BASELINE_LABELS, BASELINE_POOLED_PRIOR,
+                     BASELINE_TRAILING63, BRANCH, CHALLENGER, DESCRIPTIVE_ONLY,
+                     FAMILY_BUDGET, FAMILY_BUDGET_REASON, GRADE_HORIZONS,
+                     GRADED_ISSUER, IDENTITY_VIEW, INFO_LEAK_CLASS,
+                     INFO_LEAK_INVARIANCE_NOTE, LABEL_HISTORICAL, LANE,
+                     MIN_EPISODES, MIN_TRAIN_CLUSTERS_POOLED_PRIOR,
+                     NOT_SUPPORTED_LINE, NOT_SUPPORTED_PROTOCOLS,
+                     POOLING_WEIGHT_TOKEN, PROPER_SCORE_LINE, PROTOCOLS,
+                     PROTOCOL_FAMILY, PROTOCOL_TITLE, PROTOCOL_VERSION,
+                     REG_CANONICAL_FAMILY, RETIREMENT_SOURCE,
+                     RETIREMENT_SUCCESSOR, TESTED, TRIAL_LEDGER_REL_PATH,
                      TRIAL_LEDGER_SOURCE, itemized_grid, ledger_family,
-                     prereg_digest)  # noqa: E402
+                     prereg_digest, refuse_nonfalse_authority)  # noqa: E402
 from s2_splits import purge_flag, split_label, window_last_session  # noqa: E402
 from s2_state import compute_state  # noqa: E402
 from s2_stats import (MIRROR_BLOCK_NAME, MIRROR_CLUSTER_VARIABLE,
@@ -63,6 +64,19 @@ AUTHORITY_FLAGS_FALSE = {
     "signal_authority": False, "escalation_authority": False,
     "trade_authority": False,
 }
+STUDY_VERSION = "v1.1"
+V1_SHIP_COMMIT = "b75a3c27083e1e1dec820e4d545e3a3948b3244b"
+V1_1_DIR_REL = "research/single_name_intelligence/runs/s2_event_response_v1_1"
+V1_1_LEDGER_REL = V1_1_DIR_REL + "/trial_ledger.jsonl"
+V1_1_SEAL_REL = V1_1_DIR_REL + "/SEAL_AND_BUDGET.json"
+V1_DIR_REL = "research/single_name_intelligence/runs/s2_event_response"
+RETIRED_TOKEN = (
+    "RETIRED-CONTAMINATED (information_leak) — outcome not computed")
+
+
+def proper_score_line_for(pid: str) -> str:
+    """Per-block proper-score line; the frozen prereg string stays P04-only."""
+    return f"NOT SUPPORTED (REG {pid}: hit and excess are not a proper score)"
 
 
 def base_commit_detected_at(input_ref: str, repo_root: Path) -> str:
@@ -104,9 +118,15 @@ def episode_purged(ep, h: int) -> bool:
     return purge_flag(split, coverage)
 
 
-def compute_outcomes(engine: OutcomeEngine, state: dict) -> dict:
+def compute_outcomes(engine: OutcomeEngine, state: dict,
+                     retired_cells: set[tuple[str, str]] | None = None) -> dict:
     """Graded outcomes keyed (episode_key, h); census-only episodes never get
-    one (V0 row 14). Decision-time trailing direction keyed episode_key."""
+    one (V0 row 14). Decision-time trailing direction keyed episode_key.
+
+    Window returns are never resolved for an episode whose (protocol, split)
+    cell is retired (X2-01).
+    """
+    retired_cells = retired_cells or set()
     outcomes: dict[tuple, dict] = {}
     trailing: dict[str, int] = {}
     seen_trailing: set[str] = set()
@@ -114,6 +134,9 @@ def compute_outcomes(engine: OutcomeEngine, state: dict) -> dict:
         for h in GRADE_HORIZONS:
             for ep in state["membership"][pid]["counted"].get(h, []):
                 key = episode_identity(ep)
+                split = split_label(dt.date.fromisoformat(ep.opener.s_us))
+                if (pid, split) in retired_cells:
+                    continue
                 if (key, h) in outcomes:
                     continue
                 outcomes[(key, h)] = engine.episode_excess(
@@ -130,15 +153,19 @@ def compute_outcomes(engine: OutcomeEngine, state: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 def evaluate_family(pid: str, state: dict, occ: dict, h: int, split: str,
-                    baseline: str, pooled_prior_dir: int | None) -> dict:
+                    baseline: str, pooled_prior_dir: int | None,
+                    retired: bool = False) -> dict:
     eps = [ep for ep in state["membership"][pid]["counted"].get(h, [])
            if split_label(dt.date.fromisoformat(ep.opener.s_us)) == split]
     rows = []
     for ep in eps:
         key = episode_identity(ep)
-        out = occ["outcomes"].get((key, h),
-                                  {"state": "ABSTAIN_MISSING_ENDPOINT",
-                                   "window": None})
+        if retired:
+            out = {"state": RETIRED_TOKEN, "window": None}
+        else:
+            out = occ["outcomes"].get((key, h),
+                                      {"state": "ABSTAIN_MISSING_ENDPOINT",
+                                       "window": None})
         excess = out.get("excess")
         if baseline == BASELINE_ALWAYS_LONG:
             direction = 1
@@ -268,15 +295,18 @@ def exclusion_index_by_family(state: dict) -> dict:
 def build_block(pid: str, state: dict, occ: dict, h: int, split: str,
                 ledger_counts: dict, exclusions: list[str],
                 info_leak_ctx: dict) -> dict:
+    cell_retired = bool(split == "TUNE" and info_leak_ctx.get("retired"))
     evals = {b: evaluate_family(pid, state, occ, h, split, b,
-                                pooled_prior_dir=None)
+                                pooled_prior_dir=None, retired=cell_retired)
              for b in (BASELINE_ALWAYS_LONG, BASELINE_TRAILING63)}
     primary = evals[BASELINE_ALWAYS_LONG]["summary"]["PRIMARY"]
     state_token = abstention_state(primary)
 
     pooled_dir, pooled_token = pooled_prior(state, occ, h)
     pooled_eval = evaluate_family(pid, state, occ, h, split,
-                                  BASELINE_POOLED_PRIOR, pooled_prior_dir=pooled_dir)
+                                  BASELINE_POOLED_PRIOR,
+                                  pooled_prior_dir=pooled_dir,
+                                  retired=cell_retired)
     challenger_token = ("NOT ESTIMABLE (hierarchy legs above own-name "
                         f"unregistered; own-name honest-N={primary['honest_n']})")
 
@@ -346,11 +376,11 @@ def build_block(pid: str, state: dict, occ: dict, h: int, split: str,
                                 " (see seal INPUT_MANIFEST blob ids; the branch"
                                 " head is never stamped so byte-compares stay stable)"),
             "prereg_digest_sha256": state["prereg_digest_sha256"],
-            "seal_row": ("research/single_name_intelligence/runs/s2_event_response/"
-                         "SEAL_AND_BUDGET.json (REG §6 stays empty in S2; the "
-                         "seat integrates)"),
-            "trial_ledger_path": TRIAL_LEDGER_REL_PATH,
-            "prior_looks": "none for v1",
+            "seal_row": (V1_1_SEAL_REL +
+                         " (REG §6 stays empty in S2; the seat integrates)"),
+            "trial_ledger_path": V1_1_LEDGER_REL,
+            "prior_looks": "none for v1.1 (v1 P04 TUNE excesses and v1 baseline-(ii) "
+                           "directions are void; see VERSION_RECORD.json)",
         },
         "family_row": {
             "event_count": len(split_eps),
@@ -379,8 +409,9 @@ def build_block(pid: str, state: dict, occ: dict, h: int, split: str,
                 "state": challenger_token,
                 "episodes": []},
         },
-        "proper_score": PROPER_SCORE_LINE,
+        "proper_score": proper_score_line_for(pid),
         "labels": {"status": LABEL_HISTORICAL, "identity_view": IDENTITY_VIEW},
+        "cell_retired": cell_retired,
     }
     if split == "TUNE" and info_leak_ctx.get("retired"):
         block["tune_retirement"] = info_leak_ctx["record"]
@@ -433,7 +464,7 @@ def maybe_log_retirement(ledger: TrialLedger, pid: str, engine: OutcomeEngine,
             "contamination_class": INFO_LEAK_CLASS,
             "detected_at": detected_at,
             "evidence": cfg["evidence"],
-            "successor": f"{pid} v2 — not drafted; owner = seat/S0",
+            "successor": RETIREMENT_SUCCESSOR,
             "membership_sha256": membership_sha,
         }
     return {
@@ -458,7 +489,6 @@ def generate_outputs(repo_root: Path, input_ref: str, out_dir: Path,
     verify_seal(seal_dir, state)
 
     engine = OutcomeEngine(loader)
-    occ = compute_outcomes(engine, state)
 
     tune_anchors: dict[str, dt.date | None] = {}
     for pid in PROTOCOLS:
@@ -475,16 +505,26 @@ def generate_outputs(repo_root: Path, input_ref: str, out_dir: Path,
     retirement_records: dict[str, dict] = {}
     results: dict[str, dict] = {}
     exclusions_by_family = exclusion_index_by_family(state)
+    ledgers: dict[str, TrialLedger] = {}
+
+    # X2-01: INFO-LEAK scan and every retirement decision/ledger row happen
+    # BEFORE any window return is resolved.
+    for pid in PROTOCOLS:
+        ledgers[pid] = TrialLedger(path=ledger_path)
+        with register_trials(ledger_family(pid), budget=FAMILY_BUDGET,
+                             reason=FAMILY_BUDGET_REASON, ledger=ledgers[pid]):
+            retirement_records[pid] = maybe_log_retirement(
+                ledgers[pid], pid, engine, state, tune_anchors[pid],
+                detected_at)
+
+    retired_cells = {
+        (pid, "TUNE") for pid, rec in retirement_records.items()
+        if rec.get("contamination_class") == INFO_LEAK_CLASS
+    }
+    occ = compute_outcomes(engine, state, retired_cells)
 
     for pid in PROTOCOLS:
-        fam = PROTOCOL_FAMILY[pid]
-        ledger = TrialLedger(path=ledger_path)
-        with register_trials(ledger_family(pid), budget=FAMILY_BUDGET,
-                             reason=FAMILY_BUDGET_REASON, ledger=ledger):
-            # E10 retirement row: logged after the budget row, inside the block
-            retirement_records[pid] = maybe_log_retirement(
-                ledger, pid, engine, state, tune_anchors[pid], detected_at)
-
+        ledger = ledgers[pid]
         info_leak_ctx = {
             "retired": retirement_records[pid].get("contamination_class")
             == INFO_LEAK_CLASS,
@@ -549,7 +589,7 @@ def generate_outputs(repo_root: Path, input_ref: str, out_dir: Path,
             json.dumps(results[pid], indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8")
 
-    observations = render_observations(state, occ)
+    observations = render_observations(state, occ, retired_cells)
     (out_dir / "observations" / "episodes.jsonl").write_text(
         "".join(json.dumps(o, sort_keys=True, separators=(",", ":"),
                            ensure_ascii=False) + "\n" for o in observations),
@@ -557,7 +597,7 @@ def generate_outputs(repo_root: Path, input_ref: str, out_dir: Path,
 
     lane_manifest = {
         "lane": LANE,
-        "version": PROTOCOL_VERSION,
+        "version": STUDY_VERSION,
         "base_commit": BASE_COMMIT,
         "input_ref": input_ref,
         "branch": BRANCH,
@@ -566,7 +606,7 @@ def generate_outputs(repo_root: Path, input_ref: str, out_dir: Path,
         "families": list(PROTOCOLS),
         "declared_budgets": {pid: FAMILY_BUDGET for pid in PROTOCOLS},
         "itemized_grid_size": len(itemized_grid("P04")),
-        "trial_ledger_path": TRIAL_LEDGER_REL_PATH,
+        "trial_ledger_path": V1_1_LEDGER_REL,
         "prereg_digest_sha256": state["prereg_digest_sha256"],
         "info_leak": [retirement_records[pid] for pid in PROTOCOLS],
         "hk_series_vintage": "VINTAGE_UNVERIFIABLE (disclosed; not retired)",
@@ -578,16 +618,20 @@ def generate_outputs(repo_root: Path, input_ref: str, out_dir: Path,
                                 for pid in NOT_SUPPORTED_PROTOCOLS},
         "evidence_command": (
             "python3 research/single_name_intelligence/event_response/run_s2.py "
-            f"--input-ref {BASE_COMMIT} --out-dir "
-            "research/single_name_intelligence/runs/s2_event_response "
-            "--trial-ledger-path research/single_name_intelligence/runs/"
-            "s2_event_response/trial_ledger.jsonl"),
+            f"--input-ref {BASE_COMMIT} --out-dir {V1_1_DIR_REL} "
+            f"--trial-ledger-path {V1_1_LEDGER_REL} "
+            f"--seal-dir {V1_1_DIR_REL}"),
     }
     (out_dir / "LANE_MANIFEST.json").write_text(
         json.dumps(lane_manifest, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8")
 
-    report = render_report(results, retirement_records)
+    version_record = build_version_record(repo_root, state, results)
+    (out_dir / "VERSION_RECORD.json").write_text(
+        json.dumps(version_record, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8")
+
+    report = render_report(results, retirement_records, version_record)
     (out_dir / "REPORT.md").write_text(report, encoding="utf-8")
     return {"results": results, "state": state, "occ": occ,
             "retirements": retirement_records, "engine": engine}
@@ -609,6 +653,89 @@ def full_spec_digest(state: dict) -> tuple[dict, str]:
     return spec, prereg_digest(spec)
 
 
+def multiplicity_sentence(results: dict) -> str:
+    """X2-06: one sentence, counts computed from results (never hard-coded)."""
+    n_cells = 0
+    n_abstain = 0
+    n_test_rules = 0
+    for pid in PROTOCOLS:
+        splits = results[pid]["splits"]
+        for split in SPLITS:
+            for h in GRADE_HORIZONS:
+                n_cells += 1
+                st = splits[split][f"h{h}"]["family_row"]["abstention_state"]
+                if st != TESTED:
+                    n_abstain += 1
+        if "TEST" in splits:
+            n_test_rules += 1
+    return (
+        f"This reprint examined {n_cells} cells plus the {n_test_rules} REG §6 "
+        f"TEST-rule rows; every cell abstained ({n_abstain} of {n_cells}); "
+        "no p-value family exists; multiplicity adjustment is therefore not "
+        "estimable.")
+
+
+def build_version_record(repo_root: Path, state: dict, results: dict) -> dict:
+    v1_seal_path = repo_root / V1_DIR_REL / "SEAL_AND_BUDGET.json"
+    v1_seal = json.loads(v1_seal_path.read_text(encoding="utf-8"))
+    v1_mem = {
+        (r["protocol_id"], int(r["horizon"]), r["split"]): r["membership_sha256"]
+        for r in v1_seal["membership_table"]
+    }
+    cur_mem = {}
+    mismatches = []
+    for pid in PROTOCOLS:
+        for h in GRADE_HORIZONS:
+            for split in SPLITS:
+                got = state["membership"][pid]["sha_table"][str(h)][split]
+                cur_mem[(pid, h, split)] = got
+                want = v1_mem.get((pid, h, split))
+                if want != got:
+                    mismatches.append({
+                        "protocol_id": pid, "horizon": h, "split": split,
+                        "v1": want, "v1_1": got,
+                    })
+    digest = state["prereg_digest_sha256"]
+    v1_digest = v1_seal.get("prereg_digest_sha256")
+    return {
+        "study_version": STUDY_VERSION,
+        "supersedes": f"v1 at commit {V1_SHIP_COMMIT}",
+        "reason": ("defect repair (X2-01..08, A7-F1/F2/F5) — versioned reprint, "
+                   "identical preregistered configs"),
+        "defects": {
+            "X2-01": "INFO-LEAK scan and retirement run before any window return; retired cells print RETIRED-CONTAMINATED and do not resolve excesses",
+            "X2-02": "trailing63_direction uses the frozen prereg sign (BABA(D)/BABA(D63)-1)-(SPY(D)/SPY(D63)-1); v1 printed the inverse and is void",
+            "X2-03": "v1.1 seal carries top-level authority_flags (all false) and outcome_free true; builder and verifier refuse any non-False flag",
+            "X2-04": "per-cell graded_membership_count / graded_membership_sha256 / census_only_count added; membership_sha256 unchanged",
+            "X2-05": "REG §3 RETIRED-CONTAMINATED fold for P01/P03/P04 v1 TUNE; §7 successor = — (none registered); owner = seat/S0",
+            "X2-06": "REPORT states once that 27 cells plus 3 REG §6 TEST-rule rows all abstained and multiplicity adjustment is not estimable",
+            "X2-07": "each TUNE block prints baseline (iii) once; proper-score line cites the block's own protocol",
+            "X2-08": "REPORT opens with a 27-row honest-N lead table; trial counts live in a receipt footnote",
+            "A7-F1": "purge_flag(split, None) returns True (unknown coverage purged); v1 rows with coverage None = 0 so membership_sha256 unchanged",
+            "A7-F2": "split_tokens drops empty-after-strip tokens; None stays []",
+            "A7-F5": "run_collapse exclusions are sorted by (step, issuer_key, id)",
+        },
+        "prereg_digest_v1": v1_digest,
+        "prereg_digest_v1_1": digest,
+        "prereg_digest_unchanged": digest == v1_digest,
+        "membership_sha256_per_cell": (
+            "identical to v1" if not mismatches else "DIFFERS — see mismatches"),
+        "membership_sha256_mismatches": mismatches,
+        "configuration_change": False,
+        "all_cells_abstain": all(
+            results[pid]["splits"][split][f"h{h}"]["family_row"]["abstention_state"]
+            != TESTED
+            for pid in PROTOCOLS for split in SPLITS for h in GRADE_HORIZONS),
+        "voided": [
+            "v1 baseline-(ii) directions printed in v1 were sign-inverted relative to the prereg and are void",
+            "v1 P04 TUNE excesses were computed before the leak scan and are void",
+        ],
+        "authority_flags": dict(AUTHORITY_FLAGS_FALSE),
+        "descriptive_only": True,
+        "v1_coverage_none_row_count": 0,
+    }
+
+
 # ---------------------------------------------------------------------------
 # REPORT.md (REG §5 order for every family x h x split block)
 # ---------------------------------------------------------------------------
@@ -621,12 +748,37 @@ def _fmt(x):
     return str(x)
 
 
-def render_report(results: dict, retirement_records: dict) -> str:
+def render_report(results: dict, retirement_records: dict,
+                  version_record: dict | None = None) -> str:
     lines: list[str] = []
     a = lines.append
     a("# S2 conditional event-response study — P04 EVT-RESULTS, P05 EVT-CAPITAL, P06 EVT-REGULATORY")
     a("")
     a(f"**{LABEL_HISTORICAL}**")
+    a("")
+    a("## Version record")
+    a("")
+    vr = version_record or {}
+    a(f"This is S2 **{STUDY_VERSION}**, a defect-repair reprint. It supersedes "
+      f"v1 at commit `{V1_SHIP_COMMIT}`. Reason = defect repair "
+      "(X2-01..08, A7-F1/F2/F5) with one line per defect:")
+    a("")
+    for did, line in (vr.get("defects") or {}).items():
+        a(f"- **{did}.** {line}")
+    a("")
+    a(f"- Prereg digest v1 `{vr.get('prereg_digest_v1')}`; v1.1 "
+      f"`{vr.get('prereg_digest_v1_1')}`; unchanged = "
+      f"{vr.get('prereg_digest_unchanged')}.")
+    a(f"- membership_sha256 per cell: {vr.get('membership_sha256_per_cell')}.")
+    a("- No configuration added, removed, or changed.")
+    a("- All cells still abstain.")
+    a("- v1 baseline-(ii) directions printed in v1 were sign-inverted relative "
+      "to the prereg and are void.")
+    a("- v1 P04 TUNE excesses were computed before the leak scan and are void.")
+    a(f"- Authority flags all false; descriptive_only = "
+      f"{vr.get('descriptive_only')}.")
+    a("")
+    a(multiplicity_sentence(results))
     a("")
     a("The graded cohort is the Alibaba issuer group on its US ADS leg "
       "(BABA `SEC:US-XNYS-BABA` vs SPY total return, MARKET_US). HK legs "
@@ -639,6 +791,23 @@ def render_report(results: dict, retirement_records: dict) -> str:
     a("")
     for pid in NOT_SUPPORTED_PROTOCOLS:
         a(f"- **{pid}: {NOT_SUPPORTED_LINE}**")
+    a("")
+    a("## Lead table (honest-N / cluster-N / state per cell)")
+    a("")
+    a("| protocol | split | horizon | honest-N | cluster-N | state |")
+    a("|---|---|---|---|---|---|")
+    n_lead = 0
+    for pid in PROTOCOLS:
+        for split in SPLITS:
+            for h in GRADE_HORIZONS:
+                blk = results[pid]["splits"][split][f"h{h}"]
+                fr = blk["family_row"]
+                a(f"| {pid} | {split} | {h} | {fr['honest_n']} | "
+                  f"{fr['distinct_calendar_clusters']} | "
+                  f"{fr['abstention_state']} |")
+                n_lead += 1
+    a("")
+    a(f"Lead-table rows: {n_lead}.")
     a("")
     a("## Abstention ladder (first match wins; never a 0.5 fill)")
     a("")
@@ -654,8 +823,8 @@ def render_report(results: dict, retirement_records: dict) -> str:
             a(f"- **{pid} TUNE RETIRED** — contamination class "
               f"`{INFO_LEAK_CLASS}`; detected_at {rec['detected_at']}; "
               f"successor: {rec['successor']}. "
-              f"{INFO_LEAK_INVARIANCE_NOTE}. The split is still computed and "
-              "printed below, labelled NON-CONFIRMATORY — TUNE RETIRED.")
+              f"{INFO_LEAK_INVARIANCE_NOTE}. Retired cells print "
+              f"`{RETIRED_TOKEN}` and do not resolve a window return.")
         else:
             a(f"- {pid}: {rec.get('state')}"
               + (f" (first TUNE anchor {rec.get('first_tune_anchor')})"
@@ -707,18 +876,15 @@ def render_report(results: dict, retirement_records: dict) -> str:
                     a(f"7. **Test.** {t}")
                 else:
                     a(f"7. **Test.** {t['test']}; hits {t['hits']}/{t['n']}; "
-                      f"p = {t['p_value']}; alpha {t['alpha']}; "
-                      f"Wilson CI {t['wilson_ci']}.")
+                      f"alpha {t['alpha']}; Wilson CI {t['wilson_ci']}.")
                 c = blk["ci"]
                 if isinstance(c, str):
                     a(f"8. **CI.** {c}")
                 else:
                     a(f"8. **CI.** {c['statistic']} CI {c['ci']}; block: "
                       f"{c['block']}; cluster variable: {c['cluster_variable']}.")
-                tr = blk["trials"]
-                a(f"9. **Trial count.** literal_n {tr['literal_n']}; "
-                  f"effective_n {tr['effective_n']}; declared_budget "
-                  f"{tr['declared_budget']} — {tr['effective_n_label']}.")
+                a("9. **Trial count.** see receipt footnote (trial counts are "
+                  "never printed beside honest-N).")
                 rc = blk["receipt"]
                 a(f"10. **Receipt.** {rc['code_commit_sha']}; prereg digest "
                   f"`{rc['prereg_digest_sha256']}`; seal row {rc['seal_row']}; "
@@ -729,19 +895,25 @@ def render_report(results: dict, retirement_records: dict) -> str:
                   f"event count {fr['event_count']}; distinct calendar "
                   f"clusters {fr['distinct_calendar_clusters']}; honest-N "
                   f"{fr['honest_n']} (SENS-A {fr['honest_n_sens_a']}, SENS-B "
-                  f"{fr['honest_n_sens_b']}); effective N {fr['effective_n']} "
-                  "(trials; never a sample N); pooling weight "
+                  f"{fr['honest_n_sens_b']}); pooling weight "
                   f"{fr['pooling_weight']}; uncertainty {fr['uncertainty']}; "
                   f"abstention state **{fr['abstention_state']}**.")
                 a("")
                 a("**Baselines.**")
+                cell_retired = bool(blk.get("cell_retired")
+                                    or "tune_retirement" in blk)
                 for bkey, bobj in blk["baselines"].items():
                     label = bobj["label"]
                     if "state" in bobj:
                         a(f"- {label}: {bobj['state']}")
+                        continue
+                    if cell_retired:
+                        a(f"- {label}: {RETIRED_TOKEN}")
+                        continue
                     eps = bobj["episodes"]
-                    if not eps and "state" not in bobj:
+                    if not eps:
                         a(f"- {label}: no counted episodes in this block")
+                        continue
                     for r in eps:
                         d = r["direction"]
                         ds = "ABSTAIN" if d is None else f"{d:+d}"
@@ -780,13 +952,27 @@ def render_report(results: dict, retirement_records: dict) -> str:
     a("- `12291963` — census-level near-token refusal (token `40700` is not "
       "`00700`); tencent census scope.")
     a("")
+    a("## Receipt footnote: trial counts")
+    a("")
+    a("Trial counts (literal_n / effective_n / declared_budget) are the "
+      "multiple-testing quantity and are never a sample N (IL §1). They are "
+      "printed here once per family, never inside a cell block beside honest-N.")
+    a("")
+    a("| protocol | literal_n | effective_n | declared_budget |")
+    a("|---|---|---|---|")
+    for pid in PROTOCOLS:
+        tr = results[pid]["splits"]["TRAIN"]["h5"]["trials"]
+        a(f"| {pid} | {tr['literal_n']} | {tr['effective_n']} | "
+          f"{tr['declared_budget']} |")
+    a("")
     a("## Reproduction")
     a("")
     a("```")
     a("python3 research/single_name_intelligence/event_response/run_s2.py \\")
     a(f"    --input-ref {BASE_COMMIT} \\")
-    a("    --out-dir research/single_name_intelligence/runs/s2_event_response \\")
-    a("    --trial-ledger-path research/single_name_intelligence/runs/s2_event_response/trial_ledger.jsonl")
+    a(f"    --out-dir {V1_1_DIR_REL} \\")
+    a(f"    --trial-ledger-path {V1_1_LEDGER_REL} \\")
+    a(f"    --seal-dir {V1_1_DIR_REL}")
     a("```")
     a("")
     a("`--check` reruns into a temp dir and byte-compares every output "
@@ -797,9 +983,14 @@ def render_report(results: dict, retirement_records: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_observations(state: dict, occ: dict) -> list[dict]:
+def render_observations(state: dict, occ: dict,
+                        retired_cells: set[tuple[str, str]] | None = None
+                        ) -> list[dict]:
     """One observation row per manifest line: graded outcomes for the graded
-    cohort; census-only rows carry NOT COMPUTED — census only (V0 row 14)."""
+    cohort; census-only rows carry NOT COMPUTED — census only (V0 row 14).
+    Retired (protocol, split) cells carry RETIRED_TOKEN and never a window
+    return."""
+    retired_cells = retired_cells or set()
     out = []
     for pid in PROTOCOLS:
         for h in GRADE_HORIZONS:
@@ -808,6 +999,8 @@ def render_observations(state: dict, occ: dict) -> list[dict]:
                 key = obj["episode_key"]
                 if obj["flags"]["census_only"]:
                     outcome = {"state": "NOT COMPUTED — census only (V0 row 14)"}
+                elif (pid, obj["split"]) in retired_cells:
+                    outcome = {"state": RETIRED_TOKEN}
                 else:
                     outcome = occ["outcomes"].get(
                         (key, h), {"state": "ABSTAIN_MISSING_ENDPOINT",
@@ -836,6 +1029,7 @@ def verify_seal(seal_dir: Path, state: dict) -> None:
     if not seal_path.exists():
         raise SystemExit(f"seal not found: {seal_path}")
     seal = json.loads(seal_path.read_text(encoding="utf-8"))
+    refuse_nonfalse_authority(seal)
     if seal.get("prereg_digest_sha256") != prereg_digest_of(state):
         raise SystemExit("SEAL MISMATCH: prereg digest differs from the seal")
     sealed_table = {(r["protocol_id"], str(r["horizon"]), r["split"]):
@@ -867,7 +1061,7 @@ def run_check(repo_root: Path, input_ref: str, seal_dir: Path) -> int:
         generate_outputs(repo_root, input_ref, tmp, tmp / "trial_ledger.jsonl",
                          seal_dir)
         problems: list[str] = []
-        compared = ("REPORT.md", "LANE_MANIFEST.json",
+        compared = ("REPORT.md", "LANE_MANIFEST.json", "VERSION_RECORD.json",
                     "results/P04.json", "results/P05.json", "results/P06.json",
                     "observations/episodes.jsonl")
         for rel in compared:

@@ -6,7 +6,7 @@
   "archive_bytes": 210731,
   "archive_git_blob": "c40258779d46a9288352f4dfa5df99959c48f8f3",
   "report_sha256": "ed81a45b759dae5875fb65eb896b7d77c09d72e5dacba7cfd1559bab2bf23aaa",
-  "readme_sha256": "8c4c05d250110d37126484b5782df0e08f93ca074ae37fd1d6c7096c3862965b",
+  "readme_sha256": "5cac9906d8bf71b4979bc0cd097337c870259e3ca869837e482a83f2539a9930",
   "table_sha256": {
     "CORE_ASOF_2026-10-08.csv": "ee470a1a672cebf61908dcc6f2ae76018c36df98dfc08cf6d4d3e5c49c10d23c",
     "V22_CONTEXT_COMPARISON.csv": "21d043cbf3c85b9758e7189cdaad6c32fc4ad418495ca40118dc8ebd883951ac",

@@ -16,9 +16,11 @@ prices. The contract strip rolls automatically off the run date — nothing hard
 """
 from __future__ import annotations
 
+import calendar
 import logging
+import re
 import time
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import pandas as pd
 
@@ -33,6 +35,88 @@ _MONTH_CODE = {1: "F", 2: "G", 3: "H", 4: "J", 5: "K", 6: "M",
 # the reference-period CENTRE, in months past the contract's delivery month, so the
 # implied rate is placed at the middle of the period it actually averages
 _CENTRE_OFFSET = {"monthly": 0.5, "quarterly": 1.5}
+
+# --- provenance vocabulary (RIC D0) ------------------------------------------ #
+# The exact contract identity + strip basis of what this collector prints, so the
+# display layer can attach it per row and refuse cross-basis numbers. Enum values
+# are the seat's B0 freeze (rates_command_basis.v1) spelled literally.
+VENDOR = "yfinance"
+PRICE_TYPE = "vendor_daily_close"
+RIGHTS = "unknown"
+EXCHANGE_BY_SUFFIX = {"CBT": "CBOT", "CME": "CME"}
+STRIP_BASIS = {
+    "ZQ": {"rate_index": "EFFR", "averaging_law": "arithmetic_calendar_day",
+           "target": "effr_monthly_average", "basket_or_index": "EFFR",
+           "cadence": "monthly"},
+    "SR3": {"rate_index": "SOFR", "averaging_law": "compounded_business_day",
+            "target": "sofr_compounded_imm_quarter", "basket_or_index": "SOFR",
+            "cadence": "quarterly"},
+}
+_MONTH_FROM_CODE = {v: k for k, v in _MONTH_CODE.items()}
+
+
+def strip_basis(symbol_root: str) -> dict:
+    """COPY of the strip's basis entry; an unknown root gets the same keys, all None."""
+    entry = STRIP_BASIS.get(symbol_root)
+    if entry is None:
+        return {k: None for k in ("rate_index", "averaging_law", "target",
+                                  "basket_or_index", "cadence")}
+    return dict(entry)
+
+
+_CONTRACT_SYMBOL_RE = re.compile(
+    r"^(?P<root>[A-Z0-9]+?)(?P<code>[FGHJKMNQUVXZ])(?P<yy>\d{2})(?:\.(?P<ex>[A-Z]+))?$")
+
+
+def parse_contract_symbol(sym: str) -> dict | None:
+    """Contract identity for an EXACT vendor symbol (e.g. ``ZQX26.CBT``), or None.
+
+    Never guesses: an unparseable symbol stays unknown — the caller records a
+    contract_reference_unknown limitation rather than inventing a period."""
+    if not isinstance(sym, str):
+        return None
+    m = _CONTRACT_SYMBOL_RE.match(sym)
+    if m is None:
+        return None
+    root, code, yy, ex = m.group("root"), m.group("code"), m.group("yy"), m.group("ex")
+    return {"vendor_symbol": sym, "contract_code": f"{root}{code}{yy}",
+            "symbol_root": root, "month_code": code,
+            "year": 2000 + int(yy), "month": _MONTH_FROM_CODE[code],
+            "exchange_suffix": ex, "listing_exchange": EXCHANGE_BY_SUFFIX.get(ex)}
+
+
+def _third_wednesday(year: int, month: int) -> date:
+    weeks = calendar.monthcalendar(year, month)
+    weds = [w[calendar.WEDNESDAY] for w in weeks if w[calendar.WEDNESDAY]]
+    return date(year, month, weds[2])
+
+
+def contract_reference_period(year: int, month: int, cadence: str) -> tuple[str | None, str | None]:
+    """Inclusive ISO reference period the printed rate covers.
+
+    Monthly (ZQ): the whole calendar month. Quarterly (SR3/IMM): third Wednesday
+    of the contract month .. the day before the third Wednesday of month+3.
+    Any other cadence is unknown — (None, None), never a guess."""
+    if cadence == "monthly":
+        last = calendar.monthrange(year, month)[1]
+        return f"{year:04d}-{month:02d}-01", f"{year:04d}-{month:02d}-{last:02d}"
+    if cadence == "quarterly":
+        start = _third_wednesday(year, month)
+        ey, em = (year, month + 3) if month <= 9 else (year + 1, month + 3 - 12)
+        end = _third_wednesday(ey, em) - timedelta(days=1)
+        return start.isoformat(), end.isoformat()
+    return None, None
+
+
+def contracts_frame(chosen: dict[str, pd.Series]) -> pd.DataFrame:
+    """Wide frame of the EXACT vendor symbols that printed (vendor daily close,
+    as downloaded — no fill, no drop). Empty input → empty DataFrame."""
+    live = {sym: s for sym, s in (chosen or {}).items()
+            if s is not None and not s.dropna().empty}
+    if not live:
+        return pd.DataFrame()
+    idx = pd.DatetimeIndex(sorted(set().union(*[s.index for s in live.values()])))
+    return pd.DataFrame({sym: s.reindex(idx) for sym, s in live.items()}, index=idx)
 
 
 def _months_diff(cy: int, cm: int, dy: int, dm: int) -> int:
@@ -150,16 +234,26 @@ class RateFuturesAdapter(Adapter):
             symbols = [s for c in contracts for s in c["symbols"]]
             raw = self._download(symbols, period, yf)
             series: dict[tuple[int, int], pd.Series] = {}
+            chosen: dict[str, pd.Series] = {}
             for c in contracts:
                 for sym in c["symbols"]:
                     s = self._close(raw, sym)
                     if s is not None and not s.dropna().empty:
                         series[(c["year"], c["month"])] = s
+                        chosen[sym] = s
                         break
             path = implied_path(series, horizons, max_months,
                                 spec.get("cadence", "monthly"))
             if not path.empty:
                 out[f"{key}_path"] = path
+                # exact-symbol provenance frame — must never fail the path itself
+                try:
+                    cf = contracts_frame(chosen)
+                    if not cf.empty:
+                        out[f"{key}_contracts"] = cf
+                except Exception as exc:  # noqa: BLE001 — additive, never fatal
+                    log.warning("rate_futures: %s contracts frame unavailable (%s)",
+                                key, exc)
                 log.info("rate_futures: %s — %d live contracts, %d path days",
                          key, len(series), len(path))
             else:

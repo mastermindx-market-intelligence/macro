@@ -1,0 +1,39 @@
+{
+  "fixture_scope": "frozen selected admitted fact/binding for portable guards; original retained body independently byte replayed externally",
+  "fact": {
+    "accounting_basis": "issuer_reported_program_cost_estimate:SiAW:unfavorable_EAC",
+    "fact_class": "reported_eac",
+    "fact_id": "evt_cik0001133421_2026q2_results:siaw_unfavorable_eac",
+    "owner_ref": "event_workspace:260310c59f4c5ba6b7afc231:evt_cik0001133421_2026q2_results",
+    "period": "2026Q2",
+    "source_span": {
+      "document_id": "disclosure_document_c0a6de7d1e4ca1fe32680d634e2e01e5ca9f52e915325170510f99b7e01f6581",
+      "receipt_state": "byte_replayed",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm",
+      "span_id": "span_4a699239fa5df7f2cf39",
+      "text_sha256": "a21855da08cb102d1d217c53dc5824a3a795c1c1a44e971bf01ab9da3a2acbbf"
+    },
+    "unit": "USD_million",
+    "value": 68.0
+  },
+  "source_binding": {
+    "content_id": "260310c59f4c5ba6b7afc231",
+    "contract": "event_workspace.v1",
+    "issuer_id": "cik:0001133421",
+    "observed_at": "2026-10-13T05:44:47Z",
+    "owner_admission_ref": "event_workspace:260310c59f4c5ba6b7afc231:evt_cik0001133421_2026q2_results",
+    "owner_family": "company_intelligence",
+    "periods": [
+      "2026Q2",
+      "2025Q2",
+      "2026H1",
+      "2025H1",
+      "2026-06-30",
+      "2025-12-31",
+      "2026FY"
+    ],
+    "security_id": "xnys:NOC",
+    "sha256": "0c7fa8bd9cac248beecbf4c3ba8dae2ce7812825029f9c319b9640a48cd9ee54",
+    "source_available_at": "2026-07-21T10:45:45Z"
+  }
+}

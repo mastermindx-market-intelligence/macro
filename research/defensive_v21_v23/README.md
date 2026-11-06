@@ -6,7 +6,7 @@ The paper-only status sheet reconstructs market bars through **October 8, 2026**
 
 ## Included
 
-- [RESEARCH_V21_V23.md](./RESEARCH_V21_V23.md): full methodology, result tables, limitations and continuation decisions.
+- [RESEARCH_REPORT.md](./RESEARCH_REPORT.md): full methodology, result tables, limitations and continuation decisions.
 - source/tests: original executed offline V21 confirmed/developing watch reconstruction, V22 market-beta-adjusted all-crossover comparison and V23 incremental condition contrast, with 21 passing mechanical tests.
 - results: 72 dated V21 watch states, 2,771 derived V22 condition outcomes and V23 matched/clustered comparisons, verified receipts.
 - specs: pre-run frozen method declarations per stage; stage extensions are posthoc to earlier V11–V20 history.

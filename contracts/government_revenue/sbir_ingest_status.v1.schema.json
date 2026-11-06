@@ -1,0 +1,588 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/government_revenue/sbir_ingest_status.v1.schema.json",
+  "title": "Existing SBIR ingest status v1",
+  "description": "Canonical existing producer shape. Closed objects exclude source PII, abstracts and raw transport. Executable format checking and existing hash/generation/cross-field checks are required; JSON Schema alone does not prove bindings or source activation.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "contract": {
+      "const": "government_revenue.sbir_ingest_status.v1"
+    },
+    "status": {
+      "const": "ok"
+    },
+    "partial": {
+      "const": false
+    },
+    "collection_complete": {
+      "const": true
+    },
+    "projection_eligible": {
+      "const": true
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|\\+00:00)$"
+    },
+    "effective_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|\\+00:00)$"
+    },
+    "known_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|\\+00:00)$"
+    },
+    "last_successful_observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|\\+00:00)$"
+    },
+    "freshness": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "const": "fresh"
+        },
+        "last_good_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|\\+00:00)$"
+        }
+      },
+      "required": [
+        "state",
+        "last_good_at"
+      ],
+      "additionalProperties": false
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^sbir-[0-9a-f]{24}$"
+    },
+    "projection_generation_id": {
+      "type": "string",
+      "pattern": "^sbir-[0-9a-f]{24}$"
+    },
+    "coverage_manifest_id": {
+      "type": "string",
+      "pattern": "^sbir-coverage-[0-9a-f]{64}$"
+    },
+    "coverage_manifest": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "contract": {
+          "const": "government_revenue.sbir_coverage_manifest.v1"
+        },
+        "coverage_scope": {
+          "const": "Bounded offset-paged SBIR.gov award observations for the declared agency/year query cells only; never a complete SBIR/STTR corpus, never issuer attribution, and never a production-conversion claim."
+        },
+        "endpoint": {
+          "const": "https://api.www.sbir.gov/public/api/awards"
+        },
+        "documentation": {
+          "const": [
+            "https://www.sbir.gov/api",
+            "https://www.sbir.gov/data-resources/data-dictionary/award"
+          ]
+        },
+        "query_cells": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "agency": {
+                "enum": [
+                  "DOW",
+                  "HHS",
+                  "NASA",
+                  "NSF",
+                  "DOE",
+                  "USDA",
+                  "EPA",
+                  "DOC",
+                  "ED",
+                  "DOT",
+                  "DHS"
+                ]
+              },
+              "year": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^(19|20)\\d{2}$"
+              }
+            },
+            "required": [
+              "agency",
+              "year"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "probed_at": {
+          "const": "2026-08-08"
+        },
+        "probed_valid_agency_query_codes": {
+          "const": [
+            "DOW",
+            "HHS",
+            "NASA",
+            "NSF",
+            "DOE",
+            "USDA",
+            "EPA",
+            "DOC",
+            "ED",
+            "DOT",
+            "DHS"
+          ]
+        },
+        "legacy_response_agency_codes": {
+          "const": [
+            "DOD"
+          ]
+        },
+        "paging": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "offset_based_start_parameter"
+            },
+            "page_size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "max_pages_per_cell": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2
+            },
+            "sort": {
+              "const": "award_date_desc_fixed_by_source"
+            },
+            "sort_is_configurable": {
+              "const": false
+            },
+            "pagination_metadata_available": {
+              "const": false
+            },
+            "total_record_count_available": {
+              "const": false
+            },
+            "source_exhaustion_signal": {
+              "const": "short_page_only"
+            }
+          },
+          "required": [
+            "kind",
+            "page_size",
+            "max_pages_per_cell",
+            "sort",
+            "sort_is_configurable",
+            "pagination_metadata_available",
+            "total_record_count_available",
+            "source_exhaustion_signal"
+          ],
+          "additionalProperties": false
+        },
+        "safety_caps": {
+          "type": "object",
+          "properties": {
+            "max_cells_per_run": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4
+            },
+            "max_rows_per_run": {
+              "const": 800
+            },
+            "max_requests_per_run": {
+              "const": 8
+            },
+            "request_pacing_seconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "published_rate_limit_requests": {
+              "const": 10
+            },
+            "published_rate_limit_window_seconds": {
+              "const": 600
+            }
+          },
+          "required": [
+            "max_cells_per_run",
+            "max_rows_per_run",
+            "max_requests_per_run",
+            "request_pacing_seconds",
+            "published_rate_limit_requests",
+            "published_rate_limit_window_seconds"
+          ],
+          "additionalProperties": false
+        },
+        "identity": {
+          "type": "object",
+          "properties": {
+            "source_native_key": {
+              "const": "agency_tracking_number"
+            },
+            "key_definition": {
+              "const": "unique across all of TECH-Net per the official Award data dictionary"
+            },
+            "rows_without_key_are_refused": {
+              "const": true
+            },
+            "issuer_join": {
+              "const": "exact_uei_only_against_reviewed_recipient_graph"
+            },
+            "name_association_is_attribution": {
+              "const": false
+            }
+          },
+          "required": [
+            "source_native_key",
+            "key_definition",
+            "rows_without_key_are_refused",
+            "issuer_join",
+            "name_association_is_attribution"
+          ],
+          "additionalProperties": false
+        },
+        "clocks": {
+          "type": "object",
+          "properties": {
+            "source_at": {
+              "const": "proposal_award_date (first day of contract performance, per source)"
+            },
+            "effective_at": {
+              "const": "proposal_award_date"
+            },
+            "observed_at": {
+              "const": "collector retrieval instant"
+            },
+            "known_at": {
+              "const": "collector retrieval instant; knowledge is observation-bound and never backdated"
+            },
+            "source_publication_clock_available": {
+              "const": false
+            },
+            "source_reporting_lag_note": {
+              "const": "SBIR.gov states newly added awards need at least 24 hours to appear and that annual completeness lags; absence of a recent award is not evidence of no award."
+            }
+          },
+          "required": [
+            "source_at",
+            "effective_at",
+            "observed_at",
+            "known_at",
+            "source_publication_clock_available",
+            "source_reporting_lag_note"
+          ],
+          "additionalProperties": false
+        },
+        "omissions": {
+          "type": "object",
+          "properties": {
+            "full_sbir_corpus": {
+              "const": false
+            },
+            "bulk_download_used": {
+              "const": false
+            },
+            "bulk_download_urls": {
+              "const": [
+                "https://data.www.sbir.gov/awarddatapublic/award_data.csv",
+                "https://data.www.sbir.gov/mod_awarddatapublic_no_abstract/award_data_no_abstract.csv"
+              ]
+            },
+            "abstract_persisted": {
+              "const": false
+            },
+            "pii_source_fields_never_persisted": {
+              "const": [
+                "poc_name",
+                "poc_title",
+                "poc_phone",
+                "poc_email",
+                "pi_name",
+                "pi_phone",
+                "pi_email",
+                "ri_poc_name",
+                "ri_poc_phone",
+                "address1",
+                "address2",
+                "city",
+                "zip"
+              ]
+            }
+          },
+          "required": [
+            "full_sbir_corpus",
+            "bulk_download_used",
+            "bulk_download_urls",
+            "abstract_persisted",
+            "pii_source_fields_never_persisted"
+          ],
+          "additionalProperties": false
+        },
+        "limitations": {
+          "const": [
+            "Phase I to Phase II movement is progression evidence only. SBIR.gov publishes no parent/child link between a Phase I and a Phase II award, so phase movement is never production conversion, revenue, backlog, bookings, obligation, or outlay."
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "contract",
+        "coverage_scope",
+        "endpoint",
+        "documentation",
+        "query_cells",
+        "probed_at",
+        "probed_valid_agency_query_codes",
+        "legacy_response_agency_codes",
+        "paging",
+        "safety_caps",
+        "identity",
+        "clocks",
+        "omissions",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "bounded": {
+      "const": true
+    },
+    "source_only": {
+      "const": true
+    },
+    "first_baseline": {
+      "type": "boolean"
+    },
+    "history_synthesized": {
+      "const": false
+    },
+    "cells_declared": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "cells_collected": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "cells_source_exhausted": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "cells_truncated_by_page_cap": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "requests_this_run": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 8
+    },
+    "rows_seen": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 800
+    },
+    "rows_accepted": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 800
+    },
+    "rows_rejected_without_identity": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 800
+    },
+    "observations_new_this_run": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 800
+    },
+    "observations_total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "receipts_this_run": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 8
+    },
+    "phase_counts_this_run": {
+      "type": "object",
+      "properties": {
+        "I": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "II": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unrecognized": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "I",
+        "II",
+        "unrecognized"
+      ],
+      "additionalProperties": false
+    },
+    "completeness": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "const": "complete"
+        },
+        "full_sbir_corpus": {
+          "const": false
+        },
+        "bounded_sample_complete": {
+          "const": true
+        },
+        "source_exhausted": {
+          "type": "boolean"
+        },
+        "truncated_by_page_cap": {
+          "type": "boolean"
+        },
+        "pagination_metadata_available": {
+          "const": false
+        },
+        "scope": {
+          "const": "Bounded offset-paged SBIR.gov award observations for the declared agency/year query cells only; never a complete SBIR/STTR corpus, never issuer attribution, and never a production-conversion claim."
+        },
+        "claim": {
+          "const": "source exhaustion is provable only by a short page; a fully retrieved declared page cap is a complete bounded sample, not corpus completion"
+        }
+      },
+      "required": [
+        "state",
+        "full_sbir_corpus",
+        "bounded_sample_complete",
+        "source_exhausted",
+        "truncated_by_page_cap",
+        "pagination_metadata_available",
+        "scope",
+        "claim"
+      ],
+      "additionalProperties": false
+    },
+    "errors": {
+      "const": []
+    },
+    "source_urls": {
+      "const": [
+        "https://api.www.sbir.gov/public/api/awards"
+      ]
+    },
+    "limitations": {
+      "const": [
+        "Phase I to Phase II movement is progression evidence only. SBIR.gov publishes no parent/child link between a Phase I and a Phase II award, so phase movement is never production conversion, revenue, backlog, bookings, obligation, or outlay."
+      ]
+    },
+    "authority": {
+      "type": "object",
+      "properties": {
+        "tier": {
+          "const": "display"
+        },
+        "context_only": {
+          "const": true
+        },
+        "can_rank": {
+          "const": false
+        },
+        "can_size": {
+          "const": false
+        },
+        "can_gate": {
+          "const": false
+        },
+        "can_originate_signal": {
+          "const": false
+        },
+        "can_add_candidates": {
+          "const": false
+        },
+        "can_escalate": {
+          "const": false
+        }
+      },
+      "required": [
+        "tier",
+        "context_only",
+        "can_rank",
+        "can_size",
+        "can_gate",
+        "can_originate_signal",
+        "can_add_candidates",
+        "can_escalate"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "contract",
+    "status",
+    "partial",
+    "collection_complete",
+    "projection_eligible",
+    "observed_at",
+    "effective_at",
+    "known_at",
+    "last_successful_observed_at",
+    "freshness",
+    "run_id",
+    "projection_generation_id",
+    "coverage_manifest_id",
+    "coverage_manifest",
+    "bounded",
+    "source_only",
+    "first_baseline",
+    "history_synthesized",
+    "cells_declared",
+    "cells_collected",
+    "cells_source_exhausted",
+    "cells_truncated_by_page_cap",
+    "requests_this_run",
+    "rows_seen",
+    "rows_accepted",
+    "rows_rejected_without_identity",
+    "observations_new_this_run",
+    "observations_total",
+    "receipts_this_run",
+    "phase_counts_this_run",
+    "completeness",
+    "errors",
+    "source_urls",
+    "limitations",
+    "authority"
+  ],
+  "additionalProperties": false
+}
