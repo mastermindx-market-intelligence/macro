@@ -94,7 +94,8 @@ def _today(root: Path | None = None) -> datetime.date:
 def _get_changed_files(root: Path) -> tuple[list[Path], bool]:
     """Return (list_of_changed_paths, git_ok).
 
-    git_ok=False means git was unavailable and diff-scoped checks should be skipped.
+    git_ok=False means the full changed-file set was not proven. Callers
+    must fail closed: H1/H2/W1 cannot be silently skipped.
     Returns both staged/unstaged and HEAD..merge-base changes.
     """
     diff_base = os.environ.get("RULING_DIFF_BASE", "origin/main").strip()
@@ -106,6 +107,8 @@ def _get_changed_files(root: Path) -> tuple[list[Path], bool]:
         if merge_base_result.returncode != 0:
             return [], False
         merge_base = merge_base_result.stdout.strip()
+        if not re.fullmatch(r"[0-9a-f]{40}", merge_base):
+            return [], False
 
         committed = subprocess.run(
             ["git", "diff", "--name-only", f"{merge_base}...HEAD"],
@@ -121,8 +124,9 @@ def _get_changed_files(root: Path) -> tuple[list[Path], bool]:
         )
         names: set[str] = set()
         for proc in (committed, uncommitted, unstaged):
-            if proc.returncode == 0:
-                names.update(proc.stdout.splitlines())
+            if proc.returncode != 0:
+                return [], False
+            names.update(proc.stdout.splitlines())
 
         paths = [root / n for n in names if n.strip()]
         return [p for p in paths if p.exists()], True
@@ -639,10 +643,11 @@ def main() -> int:
     changed_files, git_ok = _get_changed_files(root)
     if not git_ok:
         print(
-            "[NOTICE] check_ruling_conflicts: git unavailable or merge-base unreachable. "
-            "Skipping diff-scoped checks (H1, H2, W1). W2/W3 still run.",
+            "::error::check_ruling_conflicts: required Git diff unavailable; "
+            "refusing to skip diff-scoped H1/H2/W1 checks.",
             file=sys.stderr,
         )
+        return 2
 
     # Collect all findings
     hard_findings: list[dict] = []

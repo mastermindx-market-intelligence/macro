@@ -353,3 +353,19 @@ and the general pending-transition fence — is governed by the child contract
 `research/prophet_v4/d2/D2B1_R1_FROZEN_CONTRACT_2026-08-20.md` (including its own
 post-review AMENDMENT §1). This contract's laws remain binding except where that
 child contract explicitly amends them for the security axis.
+
+### AMENDMENT §7 (2026-10-18) — ratified reopen of allowlist-refused rows
+
+The FIX 5 allowlist refusal (§1 above) types the would-be members of an unratified new
+group `EVIDENCE_CONFLICT` with `issuer_cik` stamped and `issuer_id` UNCHANGED — for a
+first-time group that value is NULL, so no assignment is at stake. Before this
+amendment such a row stayed terminal forever, and a later ratification in
+`config/issuer_group_allowlist.yml` could never take effect (measured: CENT/CENTA,
+CIK 0000887733). The mint-once rule for `EVIDENCE_CONFLICT` is therefore narrowed:
+a row is re-examined by `apply_issuer_correction` ONLY when ALL hold — `issuer_id`
+is NULL, its stamped `issuer_cik` is now on the allowlist, it carries no
+`security_state`, and NO conflicted sibling sharing that CIK carries a committed
+`issuer_id` (all-or-nothing per CIK, so a partial reopen can never mint a second
+issuer for one registrant). Every other `EVIDENCE_CONFLICT` row — in particular any
+row whose committed non-null `issuer_id` is disputed — stays mint-once, recorded and
+never auto-executed. RESOLVED and DEFERRED_IDENTITY_EXCEPTION are unchanged.

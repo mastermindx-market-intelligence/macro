@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-12T18:43:55Z",
+ "accession": "0001895262-26-000076",
+ "cik": "0001895262",
+ "doc_byte_length": 2547631,
+ "doc_sha256": "f45be69703d371724ebab79f57f3008bd2f57fa61c35de50d9f159629e2afe16",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ne-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2333846,
+  "byte_start": 2332340,
+  "normalized": "TotalEnergies(1)(1)10.5 %",
+  "normalized_sha256": "86163e5f9463bb7bf73078019913329cf249846b0749c736fdff7c017742dcfb",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">TotalEnergies</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:right;vertical-align:top\"><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:7pt;font-weight:400;line-height:120%\">(1)</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:right;vertical-align:top\"><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:7pt;font-weight:400;line-height:120%\">(1)</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-411\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1490\">10.5</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td></tr>",
+  "raw_sha256": "72ebad622959f0ab16bb81f751b6fe88be6e79e4b3d63702a6884ad10d3b5845"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1895262/000189526226000076/ne-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 213492,
+   "byte_start": 212706,
+   "context_ref": "c-411",
+   "raw": "<xbrli:context id=\"c-411\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001895262</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">ne:TotalEnergiesMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:StatementBusinessSegmentsAxis\">ne:ReportableSegmentMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "55467c263f8a15a4fb20de089a32e7e9da0b5bec6251a405b75020af8ff1df17"
+  }
+ ]
+}
