@@ -1,0 +1,20 @@
+{
+  "added_exact_import_dependencies": {
+    "crypto-assistant-context": [
+      "engine/government_revenue/program_dossier.py"
+    ],
+    "defense-rail-laws": [
+      "tests/fixtures/government_program_ontology/builders.py"
+    ],
+    "fif-kernel-guards": [
+      "engine/government_revenue/program_dossier.py"
+    ],
+    "research-price-panel": [
+      "engine/government_revenue/program_dossier.py"
+    ],
+    "ticker-news-qbus": [
+      "engine/government_revenue/program_dossier.py"
+    ]
+  },
+  "all_other_job_semantics_unchanged": true
+}

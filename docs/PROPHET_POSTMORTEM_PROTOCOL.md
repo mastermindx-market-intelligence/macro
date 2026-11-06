@@ -29,6 +29,8 @@ adjudication, not in the frequency.
 ```bash
 python -m scripts.prophet_postmortem              # writes both artifacts
 python -m scripts.prophet_postmortem --dry-run    # headline only, writes nothing
+python -m scripts.prophet_postmortem --cohort-integrity-only \
+    --artifact data/prophet_postmortem/summary.json   # receipt only, writes nothing
 ```
 
 ---
@@ -97,6 +99,97 @@ open-drawdown leg is flagged visible-at-entry on that row — but the label as a
 makes the weaker, safer claim, and that is the one the report, `summary.json` and the
 admin panel read.
 
+### The cohort-integrity receipt (descriptive, additive)
+
+`summary.json` also carries a top-level `cohort_integrity` block, and the report an
+integrity section rendered **before** the pooled rates. It is a RECEIPT about the
+board's two original membership sources — `retro_grades.parquet` and
+`snapshots.jsonl` — and about which board definition (`rank_by`, exactly as recorded at
+the time) each existing episode was admitted under. It changes no grade, no label and
+no legacy field; an artifact from before the field existed still renders unchanged.
+
+- **Membership window — the frozen original cut.** `as_of` is an explicit, strictly
+  validated ISO calendar date at the engine interface — the generation run's real board
+  `as_of`, or a preserved artifact's validated `as_of` — never the clock, the current
+  config, or the current sources' latest vintage. For each existing episode, every
+  original buy-membership record from the entry date inclusive up to that cut, a closed
+  episode bounded by its existing board exit date EXCLUSIVE and an open one by the cut
+  INCLUSIVE. Records beyond the cut are a later source vintage: excluded from every
+  assignment, counted and dated on `as_of_cut`, never allowed to assign, conflict or
+  re-era an episode. Non-buy lanes never add membership, and each source record is
+  counted — nothing is silently deduped across sources or horizons.
+  `sources` adjudicates agreement only through that frozen cut;
+  `as_of_cut.full_source_reach` discloses the entire read archive separately.
+  Future-only source or duplicate-document conflicts cannot withhold an earlier
+  descriptive era summary. The original duplicate counts remain disclosed, while
+  their dated conflicts are evaluated against the same cut.
+- **Strict dates.** `as_of`, membership date keys, entry dates and board exits must be
+  canonical ISO calendar dates. Timestamps are converted through their own date, never
+  stringified; malformed keys are counted and disclosed by the loaders and refused by
+  the engine. `None` is the only open-episode sentinel — a NaN or nullish exit is
+  explicit unavailability, never a lexical window bound.
+- **Observed gaps.** Membership evidence must be contiguous across the union of the
+  original sources on each recorded board date. The first recorded in-window date a
+  ticker is absent from ALL sources is a genuine gap: stamps after it belong to a later
+  admission, are excluded from attribution (`observed_gap` names the date and the
+  excluded record count), and the episode is never single-assigned. A date absent from
+  one source alone is disjoint coverage, not a gap; a calendar date no source recorded
+  is never inferred.
+- **Partitions** — `conflict > mixed > partial > single > unassigned`. `conflict`:
+  differing stamps on the SAME source/date/ticker (e.g. two horizons), or between the
+  two sources. `mixed`: different recorded stamps on different membership days — an
+  episode crossing an era boundary, with its score and returns untouched. `partial`:
+  agreeing stamps plus at least one membership record with no stamp, or missing
+  original entry-day attribution, or an observed membership gap. `single`: one stamp,
+  every membership record stamped, including an explicitly stamped original entry-day
+  record. `unassigned`: no recorded stamp anywhere in the window.
+- **Entry attribution** — each assignment separately exposes the original entry-day
+  source records, raw stamps, missing-stamp count and attribution state. A later stamped
+  membership cannot attest an absent or missing-stamp original admission; that episode
+  is excluded from the `single` per-era summaries.
+- **Missing is not legacy.** An empty, null, non-string or null-like `rank_by` is
+  missing attribution. It is never date-inferred, never back-filled from the current
+  definition, and never renamed into a manufactured legacy era. A present stamp in one
+  record never silently overrides a missing or conflicting one in another.
+- **Disjoint reach is not disagreement.** A board date carried by only one source is
+  that source's documented coverage, and with fewer than two sources there is no
+  overlap and no cross-source disagreement at all — the receipt says so truthfully. It
+  lists per-overlap-date retro-only and snapshot-only ticker sets, any cross-source
+  stamp disagreements, and within-source same-date stamp disagreements across ALL
+  dates (a horizon conflict on a date the other source never reached is still
+  published), so genuine membership difference is visible without being called a
+  conflict. An unreadable or malformed source is named on the receipt — its stamps are
+  absent, never verified absent.
+- **Per-era summaries** — computed with the existing `aggregate()`, ONLY over `single`
+  explicitly assigned episodes, one fully independent block per recorded stamp, each
+  wrapped `descriptive_only` with an explicit no-promotion authority. Two eras never
+  share a rate denominator, and no pooled cross-era rate, promotion or readiness
+  verdict is produced anywhere.
+- **Incomplete reads and conflicting membership block per-era rates.**
+  `source_validation.state` describes only original-source read and schema integrity.
+  Missing or unreadable sources, malformed lines, malformed or absent dates and invalid
+  membership records produce `incomplete`; generation then omits `per_era` and supplies
+  `original_membership_source_incomplete`. Conflicting original membership —
+  within-source same-date stamps, cross-source stamps, differing same-date ticker sets
+  or duplicate snapshot documents that disagree — withholds `per_era` with
+  `conflicting_original_membership`. Available-source partitions remain descriptive
+  observations; neither state carries any scientific or promotion authority. A missing
+  `rank_by` column is NOT an incomplete read: every stamp is missing attribution
+  (unknown/partial), exposed as a warning.
+- **`--cohort-integrity-only --artifact PATH`** — a read-only bypass: validates the
+  preserved artifact strictly (unreadable, undecodable, non-object, foreign-schema,
+  invalid-`as_of`, non-list or empty episode lists and malformed identity rows are
+  refused with a clear nonzero exit — never repaired), reads its episode list and the
+  original membership sources through the artifact's own validated `as_of` as the
+  frozen cut, and prints the receipt JSON to stdout. It never calls the scorer, the
+  classifier or the aggregator, and never writes a byte. `--artifact` without
+  `--cohort-integrity-only` is refused before the generation path runs, and
+  `--cohort-integrity-only` refuses `--out` / `--report-dir` / `--dry-run` /
+  `--horizon` instead of silently ignoring them.
+
+The legacy pooled summary is retained unchanged for compatibility. It remains the
+headline, and it is a compatibility surface — **not** a cross-era comparison.
+
 ---
 
 ## 3. Reading rules (these are where postmortems usually go wrong)
@@ -133,6 +226,13 @@ of it yet" — and the next step is accrual, not a pre-registration.
 percentage points. It ignores sizing, the overlap between episodes on one night, and the
 fact that the same capital cannot take every pick. It is a first-order screen for whether
 a rule is even worth pre-registering.
+
+**A partition is not a grade, and the legacy summary is not a cross-era verdict.**
+`cohort_integrity` is descriptive: `unassigned` means missing attribution, never a
+legacy era; `mixed` means one episode saw two definitions; `conflict` means the record
+itself disagrees; a date in one source only is coverage, not contradiction. Quote
+per-era numbers only from `cohort_integrity.per_era` — never by dividing the pooled
+legacy summary, and never across era blocks.
 
 ---
 
@@ -225,3 +325,18 @@ and accrued. It may not rank, size, or gate.
 - `engine/track_scoring.py` — the three rules that make a track record honest
 - `research/US_BOARD_MEASUREMENT.md` — what the US board's numbers mean
 - `docs/DESIGN_DOCTRINE.md` — what may be said on a user-facing surface
+
+
+Episode identity and count disclosure: the integrity receipt preserves every original
+artifact episode row and carries its original zero-based `episode_row_index`; it never
+collapses rows by ticker and entry date. `n_episode_rows` counts all original rows;
+`n_episodes` counts validated, unambiguous rows in the five partitions;
+`n_episodes_unavailable` counts the remaining rows. Their sum is `n_episode_rows`.
+Repeated legacy ticker/entry keys cannot establish distinct native episodes and remain
+explicitly unavailable, including when another row field differs. Same-ticker overlapping
+admission intervals are also unavailable; adjacent exclusive-exit intervals remain distinct.
+Malformed identities, entry after the original cut, and non-positive intervals carry precise
+unavailable reasons, never missing-attribution labels. Any such ambiguity withholds era
+summaries. Receipt-only inspection refuses these artifacts before scoring or writing.
+Null source timestamps, including pandas NaT, are counted as malformed source dates;
+readable source bytes do not turn a malformed date into clean source absence.

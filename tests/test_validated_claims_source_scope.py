@@ -8,7 +8,8 @@ artifact backing, so its verdict is a function of the PR tree and it runs in eve
 request's merge gate (the ``validated-claims-source`` pack job). These tests pin the
 three properties that make that true: every scan root is classified, the source scope
 walks exactly the source roots with the SAME matcher, and no source claim can rest on a
-data file.
+data file. scripts/ is a source root through its top-level page builders alone
+(``build_*`` / ``render_*``, PAGE BUILDERS in the checker), never the whole directory.
 
 Hermetic: every tree is built under tmp_path and graded against the real allowlist, so
 nothing here reads the live rendered or data trees.
@@ -32,6 +33,7 @@ SOURCE_FILES = {
     ("templates", "probe_card.html.j2"): f'<p class="lede">{CLAIM}</p>\n',
     ("engine", "probe_copy.py"): f'CARD = {{"label_en": {CLAIM!r}}}\n',
     ("lib", "probe_copy.py"): f"def panel():\n    return dict(caveat={CLAIM!r})\n",
+    ("scripts", "build_probe_page.py"): f"note_en, note_zh = {CLAIM!r}, '无'\n",
 }
 DATA_FILES = {
     ("site", "probe_card.html"): f"<p>{CLAIM}</p>\n",
@@ -95,8 +97,24 @@ def test_the_source_scope_walks_only_the_pr_authored_roots(tree: Path) -> None:
     source = {"/".join(parts) for parts in SOURCE_FILES}
     data = {"/".join(parts) for parts in DATA_FILES}
 
-    assert _files(gate.scan()) == source | data, "the data gate's full scan must see all six"
+    assert _files(gate.scan()) == source | data, "the data gate's full scan must see them all"
     assert _files(gate.scan(scope="source")) == source
+
+
+def test_scripts_is_walked_only_at_its_top_level_page_builders(tree: Path) -> None:
+    """A top-level build_* / render_* authors page copy. A checker, an evidence capture,
+    or a builder one directory down (scripts/research/ writes no site/ output) does not,
+    so gating their copy fields would grade text no page shows."""
+    body = f'CARD = {{"note": {CLAIM!r}}}\n'
+    builders = {_write(tree, ("scripts", name), body)
+                for name in ("build_probe_page.py", "render_probe_page.py")}
+    for parts in (("scripts", "check_probe.py"), ("scripts", "capture_probe_evidence.py"),
+                  ("scripts", "research", "build_probe_study.py"),
+                  ("scripts", "lanes", "render_probe_lane.py")):
+        _write(tree, parts, body)
+
+    assert _files(gate.scan(scope="source")) == builders
+    assert _files(gate.scan()) == builders, "the full scan walks the same builder cut"
 
 
 def test_both_scopes_grade_a_source_line_identically(tree: Path) -> None:
@@ -158,7 +176,8 @@ def test_the_cli_passes_a_clean_source_tree_and_keeps_the_full_scan_default(
     _write(tree, ("site", "probe_card.html"), f"<p>{CLAIM}</p>\n")  # data-gate debt only
 
     _cli(monkeypatch, "--scope", "source")
-    assert "OK [scope=source: engine/, lib/, templates/]" in capsys.readouterr().out
+    assert ("OK [scope=source: engine/, lib/, scripts/build_*.py, scripts/render_*.py, "
+            "templates/]") in capsys.readouterr().out
 
     with pytest.raises(SystemExit) as excinfo:
         _cli(monkeypatch)

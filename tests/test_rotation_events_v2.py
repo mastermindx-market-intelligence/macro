@@ -468,7 +468,7 @@ def test_7_lane_gate_off_no_ledger_append(tmp_path, monkeypatch):
     """COLLECT_LANE unset → events.jsonl should NOT be written/appended."""
     monkeypatch.delenv("COLLECT_LANE", raising=False)
     sectors = _make_minimal_sectors()
-    payload = re_.run_nightly(sectors, tmp_path, generated_utc="test")
+    payload = re_.run_nightly(sectors, tmp_path, generated_utc="2026-10-01 05:00 UTC")
     ledger = tmp_path / "rotation_events" / "events.jsonl"
     assert not ledger.exists(), "events.jsonl should NOT be written when lane gate is off"
 
@@ -477,7 +477,7 @@ def test_7_lane_gate_on_ledger_written(tmp_path, monkeypatch):
     """COLLECT_LANE=nightly → events.jsonl should be written."""
     monkeypatch.setenv("COLLECT_LANE", "nightly")
     sectors = _make_minimal_sectors()
-    payload = re_.run_nightly(sectors, tmp_path, generated_utc="test")
+    payload = re_.run_nightly(sectors, tmp_path, generated_utc="2026-10-01 05:00 UTC")
     ledger = tmp_path / "rotation_events" / "events.jsonl"
     assert ledger.exists(), "events.jsonl should be written when COLLECT_LANE=nightly"
     lines = ledger.read_text().strip().splitlines()
@@ -496,7 +496,7 @@ def test_8_coldstart_idempotency(tmp_path, monkeypatch):
     sectors = _make_minimal_sectors()
 
     # First run
-    payload1 = re_.run_nightly(sectors, tmp_path, generated_utc="test-run1")
+    payload1 = re_.run_nightly(sectors, tmp_path, generated_utc="2026-10-02 05:00 UTC")
     ledger = tmp_path / "rotation_events" / "events.jsonl"
     if ledger.exists():
         count1 = len(ledger.read_text().strip().splitlines())
@@ -504,7 +504,7 @@ def test_8_coldstart_idempotency(tmp_path, monkeypatch):
         count1 = 0
 
     # Second run — same data, same state (already seeded from first run)
-    payload2 = re_.run_nightly(sectors, tmp_path, generated_utc="test-run2")
+    payload2 = re_.run_nightly(sectors, tmp_path, generated_utc="2026-10-03 05:00 UTC")
     if ledger.exists():
         count2 = len(ledger.read_text().strip().splitlines())
     else:
@@ -527,7 +527,7 @@ def test_8_coldstart_seed_written_off_lane(tmp_path, monkeypatch):
     not events.jsonl. (events.jsonl must NOT exist.)"""
     monkeypatch.delenv("COLLECT_LANE", raising=False)
     sectors = _make_minimal_sectors()
-    re_.run_nightly(sectors, tmp_path, generated_utc="test")
+    re_.run_nightly(sectors, tmp_path, generated_utc="2026-10-01 05:00 UTC")
     ledger = tmp_path / "rotation_events" / "events.jsonl"
     seed = tmp_path / "rotation_events" / "coldstart_seed.jsonl"
     assert not ledger.exists(), "events.jsonl must NOT exist off-lane"
@@ -554,14 +554,14 @@ def test_9_flow_not_a_trigger(tmp_path, monkeypatch):
 
     # Run without flow (baseline)
     payload_base = re_.run_nightly(sectors, tmp_path / "no_flow",
-                                   generated_utc="test")
+                                   generated_utc="2026-10-01 05:00 UTC")
 
     # Reset state dir
     (tmp_path / "no_flow" / "rotation_events").mkdir(parents=True, exist_ok=True)
 
     # Run with wild flow (universe=None so flow is not used in classification)
     payload_wild = re_.run_nightly(sectors, tmp_path / "wild_flow",
-                                   generated_utc="test")
+                                   generated_utc="2026-10-01 05:00 UTC")
 
     # created_tonight and active event count must be identical
     assert (len(payload_base["created_tonight"]) ==
