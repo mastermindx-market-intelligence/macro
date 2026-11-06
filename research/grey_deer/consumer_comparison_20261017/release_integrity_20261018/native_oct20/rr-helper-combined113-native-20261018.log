@@ -1,0 +1,1331 @@
+.....FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFFFFFFFF............. [ 63%]
+.........................................                                [100%]
+=================================== FAILURES ===================================
+_______________ test_integrity_stops_service_before_source_copy ________________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_stops_service_b0')
+
+    def test_integrity_stops_service_before_source_copy(tmp_path):
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        result = _run_deploy(env)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_stops_service_b0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_stops_service_b0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:348: AssertionError
+_________ test_integrity_restores_unlisted_and_receiver_deleted_paths __________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_restores_unlist0')
+
+    def test_integrity_restores_unlisted_and_receiver_deleted_paths(tmp_path):
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        remote, source = tmp_path / "remote", tmp_path / "source"
+        (remote / "docs").mkdir(); (remote / "docs/obsolete.md").write_text("receiver-only-old\n")
+        (remote / "CLAUDE.md").write_text("old-instructions\n")
+        (source / "CLAUDE.md").write_text("new-instructions\n")
+        (source / "research").mkdir(); (source / "research/new.md").write_text("new-only\n")
+        env["FAKE_RSYNC_PARTIAL"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_restores_unlist0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_restores_unlist0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:362: AssertionError
+_______ test_integrity_snapshot_failure_cannot_authorize_source_mutation _______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_snapshot_failur0')
+
+    def test_integrity_snapshot_failure_cannot_authorize_source_mutation(tmp_path):
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env["FAKE_FAIL_SNAPSHOT"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_snapshot_failur0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_snapshot_failur0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:372: AssertionError
+____________ test_integrity_failed_restored_health_is_not_complete _____________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_failed_restored0')
+
+    def test_integrity_failed_restored_health_is_not_complete(tmp_path):
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=True)
+        env["FAKE_FAIL_OLD_HEALTH"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_failed_restored0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:381: AssertionError
+_____________ test_integrity_refused_init_preserves_foreign_marker _____________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_refused_init_pr0')
+
+    def test_integrity_refused_init_preserves_foreign_marker(tmp_path):
+        import json
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env["FAKE_FOREIGN_INIT"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_refused_init_pr0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:391: AssertionError
+_____________ test_integrity_excluded_descendants_survive_rollback _____________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_excluded_descen0')
+
+    def test_integrity_excluded_descendants_survive_rollback(tmp_path):
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        (tmp_path / "remote/app/.env").write_text("old-protected-value\n")
+        env.update(FAKE_RSYNC_PARTIAL="1", FAKE_CHANGE_EXCLUDED="1")
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_excluded_descen0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:403: AssertionError
+______ test_integrity_unverified_stop_never_copies_source[FAKE_STOP_FAIL] ______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_unverified_stop0')
+flag = 'FAKE_STOP_FAIL'
+
+    @pytest.mark.parametrize("flag", ["FAKE_STOP_FAIL", "FAKE_STOP_STAYS_ACTIVE"])
+    def test_integrity_unverified_stop_never_copies_source(tmp_path, flag):
+        env, events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env[flag] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_unverified_stop0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_unverified_stop0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:412: AssertionError
+__ test_integrity_unverified_stop_never_copies_source[FAKE_STOP_STAYS_ACTIVE] __
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_unverified_stop1')
+flag = 'FAKE_STOP_STAYS_ACTIVE'
+
+    @pytest.mark.parametrize("flag", ["FAKE_STOP_FAIL", "FAKE_STOP_STAYS_ACTIVE"])
+    def test_integrity_unverified_stop_never_copies_source(tmp_path, flag):
+        env, events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env[flag] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_unverified_stop1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_unverified_stop1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:412: AssertionError
+__ test_integrity_failed_snapshot_preserves_previous_backup_and_availability ___
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_failed_snapshot0')
+
+    def test_integrity_failed_snapshot_preserves_previous_backup_and_availability(tmp_path):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        prior = tmp_path / "remote/.deploy_prev/prior-complete/artifact"
+        prior.parent.mkdir(parents=True)
+        prior.write_bytes(b"prior verified snapshot\n")
+        env["FAKE_FAIL_SNAPSHOT"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_failed_snapshot0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:426: AssertionError
+_______ test_integrity_failed_restore_never_restarts_partial_tree[copy] ________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_failed_restore_0')
+failure = 'copy'
+
+    @pytest.mark.parametrize("failure", ["copy", "health"])
+    def test_integrity_failed_restore_never_restarts_partial_tree(tmp_path, failure):
+        env, events, _old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=failure == "health")
+        env["FAKE_FAIL_RESTORE"] = "1"
+        if failure == "copy":
+            env["FAKE_RSYNC_PARTIAL"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_failed_restore_0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:440: AssertionError
+______ test_integrity_failed_restore_never_restarts_partial_tree[health] _______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_failed_restore_1')
+failure = 'health'
+
+    @pytest.mark.parametrize("failure", ["copy", "health"])
+    def test_integrity_failed_restore_never_restarts_partial_tree(tmp_path, failure):
+        env, events, _old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=failure == "health")
+        env["FAKE_FAIL_RESTORE"] = "1"
+        if failure == "copy":
+            env["FAKE_RSYNC_PARTIAL"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_failed_restore_1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:440: AssertionError
+_________ test_integrity_checksum_restores_same_size_and_mtime_content _________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_checksum_restor0')
+
+    def test_integrity_checksum_restores_same_size_and_mtime_content(tmp_path):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        old = tmp_path / "remote/app/old.py"
+        new = tmp_path / "source/app/old.py"
+        old.write_text("old\n"); new.write_text("NEW\n")
+        os.utime(old, (1700000000, 1700000000))
+        os.utime(new, (1700000000, 1700000000))
+        assert old.stat().st_size == new.stat().st_size and old.stat().st_mtime_ns == new.stat().st_mtime_ns
+        env["FAKE_RSYNC_PARTIAL"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_checksum_restor0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_checksum_restor0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:458: AssertionError
+______ test_integrity_active_cohort_is_preserved_across_upgrade_and_noop _______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_active_cohort_i0')
+
+    def test_integrity_active_cohort_is_preserved_across_upgrade_and_noop(tmp_path):
+        env, events, _old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        marker = _established_marker(tmp_path)
+        original = marker.read_bytes()
+        result = _run_deploy(env)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_active_cohort_i0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_active_cohort_i0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:478: AssertionError
+_ test_integrity_active_cohort_authority_mutation_requires_reconciliation[account.json] _
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_active_cohort_a0')
+field = 'account.json'
+
+    @pytest.mark.parametrize("field", ["account.json", "fills.jsonl"])
+    def test_integrity_active_cohort_authority_mutation_requires_reconciliation(tmp_path, field):
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        marker = _established_marker(tmp_path)
+        original_marker = marker.read_bytes()
+        authority = tmp_path / "live-data/portfolios/autonomous" / field
+        original_authority = authority.read_bytes()
+        env["FAKE_MUTATE_" + ("ACCOUNT" if field == "account.json" else "FILLS") + "_ON_RESTART"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_active_cohort_a0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_active_cohort_a0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:500: AssertionError
+_ test_integrity_active_cohort_authority_mutation_requires_reconciliation[fills.jsonl] _
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_active_cohort_a1')
+field = 'fills.jsonl'
+
+    @pytest.mark.parametrize("field", ["account.json", "fills.jsonl"])
+    def test_integrity_active_cohort_authority_mutation_requires_reconciliation(tmp_path, field):
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        marker = _established_marker(tmp_path)
+        original_marker = marker.read_bytes()
+        authority = tmp_path / "live-data/portfolios/autonomous" / field
+        original_authority = authority.read_bytes()
+        env["FAKE_MUTATE_" + ("ACCOUNT" if field == "account.json" else "FILLS") + "_ON_RESTART"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_active_cohort_a1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_active_cohort_a1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:500: AssertionError
+________ test_integrity_disappearing_active_cohort_is_not_reinitialized ________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_disappearing_ac0')
+
+    def test_integrity_disappearing_active_cohort_is_not_reinitialized(tmp_path):
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        marker = _established_marker(tmp_path)
+        env["FAKE_REMOVE_ACTIVE_ON_FORWARD"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_disappearing_ac0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_disappearing_ac0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:516: AssertionError
+___ test_integrity_unknown_cohort_effects_are_retained[FAKE_LOST_INIT_REPLY] ___
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_unknown_cohort_0')
+failure = 'FAKE_LOST_INIT_REPLY'
+
+    @pytest.mark.parametrize("failure", ["FAKE_LOST_INIT_REPLY", "FAKE_LOST_FINALIZE_REPLY", "FAKE_FAIL_STATUS"])
+    def test_integrity_unknown_cohort_effects_are_retained(tmp_path, failure):
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env[failure] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_unknown_cohort_0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:528: AssertionError
+_ test_integrity_unknown_cohort_effects_are_retained[FAKE_LOST_FINALIZE_REPLY] _
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_unknown_cohort_1')
+failure = 'FAKE_LOST_FINALIZE_REPLY'
+
+    @pytest.mark.parametrize("failure", ["FAKE_LOST_INIT_REPLY", "FAKE_LOST_FINALIZE_REPLY", "FAKE_FAIL_STATUS"])
+    def test_integrity_unknown_cohort_effects_are_retained(tmp_path, failure):
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env[failure] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_unknown_cohort_1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:528: AssertionError
+_____ test_integrity_unknown_cohort_effects_are_retained[FAKE_FAIL_STATUS] _____
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_unknown_cohort_2')
+failure = 'FAKE_FAIL_STATUS'
+
+    @pytest.mark.parametrize("failure", ["FAKE_LOST_INIT_REPLY", "FAKE_LOST_FINALIZE_REPLY", "FAKE_FAIL_STATUS"])
+    def test_integrity_unknown_cohort_effects_are_retained(tmp_path, failure):
+        env, _events, _old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env[failure] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_unknown_cohort_2/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:528: AssertionError
+_______ test_integrity_failed_tag_refresh_restores_exact_preimage[False] _______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_failed_tag_refr0')
+preexisting = False
+
+    @pytest.mark.parametrize("preexisting", [False, True])
+    def test_integrity_failed_tag_refresh_restores_exact_preimage(tmp_path, preexisting):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        dropin = tmp_path / "systemd/fixture.service.d"
+        dropin.mkdir(parents=True)
+        (dropin / "80-datadog.conf").write_text("fixture enabled\n")
+        version = dropin / "81-datadog-version.conf"
+        prior = b"[Service]\n# preserve custom prior bytes\nEnvironment=DD_VERSION=prior-special\n"
+        if preexisting:
+            version.write_bytes(prior)
+        scripts = tmp_path / "source/scripts"
+        scripts.mkdir()
+        _write_executable(scripts / "refresh_datadog_release_tag.sh", '''#!/usr/bin/env bash
+    set -euo pipefail
+    [[ "$MASTERMIND_SERVICE" == fixture.service ]]
+    printf '[Service]\\nEnvironment=DD_VERSION=failed-new\\n' >"$FAKE_ROOT/systemd/$MASTERMIND_SERVICE.d/81-datadog-version.conf"
+    exit 33
+    ''')
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_failed_tag_refr0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_failed_tag_refr0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:554: AssertionError
+_______ test_integrity_failed_tag_refresh_restores_exact_preimage[True] ________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_failed_tag_refr1')
+preexisting = True
+
+    @pytest.mark.parametrize("preexisting", [False, True])
+    def test_integrity_failed_tag_refresh_restores_exact_preimage(tmp_path, preexisting):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        dropin = tmp_path / "systemd/fixture.service.d"
+        dropin.mkdir(parents=True)
+        (dropin / "80-datadog.conf").write_text("fixture enabled\n")
+        version = dropin / "81-datadog-version.conf"
+        prior = b"[Service]\n# preserve custom prior bytes\nEnvironment=DD_VERSION=prior-special\n"
+        if preexisting:
+            version.write_bytes(prior)
+        scripts = tmp_path / "source/scripts"
+        scripts.mkdir()
+        _write_executable(scripts / "refresh_datadog_release_tag.sh", '''#!/usr/bin/env bash
+    set -euo pipefail
+    [[ "$MASTERMIND_SERVICE" == fixture.service ]]
+    printf '[Service]\\nEnvironment=DD_VERSION=failed-new\\n' >"$FAKE_ROOT/systemd/$MASTERMIND_SERVICE.d/81-datadog-version.conf"
+    exit 33
+    ''')
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_failed_tag_refr1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_failed_tag_refr1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:554: AssertionError
+_ test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[False-False] _
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_datadog_tag_matche0')
+onboarded = False, fail_new_release = False
+
+    @pytest.mark.parametrize("onboarded", [False, True])
+    @pytest.mark.parametrize("fail_new_release", [False, True])
+    def test_deploy_datadog_tag_matches_target_and_restores_prior_bytes(tmp_path, onboarded, fail_new_release):
+        import json
+    
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
+        systemd = tmp_path / "systemd"
+        version_path = "systemd/fixture.service.d/81-datadog-version.conf"
+        version = tmp_path / version_path
+        prior = f"[Service]\n# preserve prior configuration\nEnvironment=DD_VERSION={old_sha}\n".encode()
+        if onboarded:
+            version.parent.mkdir(parents=True)
+            (version.parent / "80-datadog.conf").write_text("[Service]\n")
+            version.write_bytes(prior)
+        other = systemd / "mastermind.service.d/81-datadog-version.conf"
+        other.parent.mkdir(parents=True)
+        (other.parent / "80-datadog.conf").write_text("[Service]\n")
+        other.write_bytes(b"unrelated service version\n")
+        scripts = tmp_path / "source/scripts"
+        scripts.mkdir()
+        _write_executable(scripts / "refresh_datadog_release_tag.sh",
+                          (ROOT / "scripts/refresh_datadog_release_tag.sh").read_text())
+        env.update(SYSTEMD_ROOT=str(systemd), SYSTEMCTL_BIN=str(tmp_path / "bin/systemctl"),
+                   FAKE_RESTART_OBSERVE=json.dumps([version_path]))
+    
+        result = _run_deploy(env)
+    
+>       assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_datadog_tag_matche0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_datadog_tag_matche0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:590: AssertionError
+_ test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[False-True] __
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_datadog_tag_matche1')
+onboarded = True, fail_new_release = False
+
+    @pytest.mark.parametrize("onboarded", [False, True])
+    @pytest.mark.parametrize("fail_new_release", [False, True])
+    def test_deploy_datadog_tag_matches_target_and_restores_prior_bytes(tmp_path, onboarded, fail_new_release):
+        import json
+    
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
+        systemd = tmp_path / "systemd"
+        version_path = "systemd/fixture.service.d/81-datadog-version.conf"
+        version = tmp_path / version_path
+        prior = f"[Service]\n# preserve prior configuration\nEnvironment=DD_VERSION={old_sha}\n".encode()
+        if onboarded:
+            version.parent.mkdir(parents=True)
+            (version.parent / "80-datadog.conf").write_text("[Service]\n")
+            version.write_bytes(prior)
+        other = systemd / "mastermind.service.d/81-datadog-version.conf"
+        other.parent.mkdir(parents=True)
+        (other.parent / "80-datadog.conf").write_text("[Service]\n")
+        other.write_bytes(b"unrelated service version\n")
+        scripts = tmp_path / "source/scripts"
+        scripts.mkdir()
+        _write_executable(scripts / "refresh_datadog_release_tag.sh",
+                          (ROOT / "scripts/refresh_datadog_release_tag.sh").read_text())
+        env.update(SYSTEMD_ROOT=str(systemd), SYSTEMCTL_BIN=str(tmp_path / "bin/systemctl"),
+                   FAKE_RESTART_OBSERVE=json.dumps([version_path]))
+    
+        result = _run_deploy(env)
+    
+>       assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_datadog_tag_matche1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_datadog_tag_matche1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:590: AssertionError
+_ test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[True-False] __
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_datadog_tag_matche2')
+onboarded = False, fail_new_release = True
+
+    @pytest.mark.parametrize("onboarded", [False, True])
+    @pytest.mark.parametrize("fail_new_release", [False, True])
+    def test_deploy_datadog_tag_matches_target_and_restores_prior_bytes(tmp_path, onboarded, fail_new_release):
+        import json
+    
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
+        systemd = tmp_path / "systemd"
+        version_path = "systemd/fixture.service.d/81-datadog-version.conf"
+        version = tmp_path / version_path
+        prior = f"[Service]\n# preserve prior configuration\nEnvironment=DD_VERSION={old_sha}\n".encode()
+        if onboarded:
+            version.parent.mkdir(parents=True)
+            (version.parent / "80-datadog.conf").write_text("[Service]\n")
+            version.write_bytes(prior)
+        other = systemd / "mastermind.service.d/81-datadog-version.conf"
+        other.parent.mkdir(parents=True)
+        (other.parent / "80-datadog.conf").write_text("[Service]\n")
+        other.write_bytes(b"unrelated service version\n")
+        scripts = tmp_path / "source/scripts"
+        scripts.mkdir()
+        _write_executable(scripts / "refresh_datadog_release_tag.sh",
+                          (ROOT / "scripts/refresh_datadog_release_tag.sh").read_text())
+        env.update(SYSTEMD_ROOT=str(systemd), SYSTEMCTL_BIN=str(tmp_path / "bin/systemctl"),
+                   FAKE_RESTART_OBSERVE=json.dumps([version_path]))
+    
+        result = _run_deploy(env)
+    
+>       assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_datadog_tag_matche2/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_datadog_tag_matche2/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:590: AssertionError
+__ test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[True-True] __
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_datadog_tag_matche3')
+onboarded = True, fail_new_release = True
+
+    @pytest.mark.parametrize("onboarded", [False, True])
+    @pytest.mark.parametrize("fail_new_release", [False, True])
+    def test_deploy_datadog_tag_matches_target_and_restores_prior_bytes(tmp_path, onboarded, fail_new_release):
+        import json
+    
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
+        systemd = tmp_path / "systemd"
+        version_path = "systemd/fixture.service.d/81-datadog-version.conf"
+        version = tmp_path / version_path
+        prior = f"[Service]\n# preserve prior configuration\nEnvironment=DD_VERSION={old_sha}\n".encode()
+        if onboarded:
+            version.parent.mkdir(parents=True)
+            (version.parent / "80-datadog.conf").write_text("[Service]\n")
+            version.write_bytes(prior)
+        other = systemd / "mastermind.service.d/81-datadog-version.conf"
+        other.parent.mkdir(parents=True)
+        (other.parent / "80-datadog.conf").write_text("[Service]\n")
+        other.write_bytes(b"unrelated service version\n")
+        scripts = tmp_path / "source/scripts"
+        scripts.mkdir()
+        _write_executable(scripts / "refresh_datadog_release_tag.sh",
+                          (ROOT / "scripts/refresh_datadog_release_tag.sh").read_text())
+        env.update(SYSTEMD_ROOT=str(systemd), SYSTEMCTL_BIN=str(tmp_path / "bin/systemctl"),
+                   FAKE_RESTART_OBSERVE=json.dumps([version_path]))
+    
+        result = _run_deploy(env)
+    
+>       assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:04 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_datadog_tag_matche3/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_datadog_tag_matche3/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:590: AssertionError
+____ test_deploy_transfers_and_restores_reasoning_policy_files[False-False] ____
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_transfers_and_rest0')
+preexisting = False, fail_new_release = False
+
+    @pytest.mark.parametrize("preexisting", [False, True])
+    @pytest.mark.parametrize("fail_new_release", [False, True])
+    def test_deploy_transfers_and_restores_reasoning_policy_files(tmp_path, preexisting, fail_new_release):
+        import json
+    
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
+        target_files, prior_files = {}, {}
+        for package in (".claude", ".codex"):
+            source_dir = tmp_path / "source" / package / "agents"
+            source_dir.mkdir(parents=True)
+            for name, data in (("reviewer.md", b"new reviewer policy\n"), ("introduced.md", b"new policy\n")):
+                (source_dir / name).write_bytes(data)
+                relative_path = f"remote/{package}/agents/{name}"
+                target_files[relative_path] = data.hex()
+                prior_files[relative_path] = None
+            if preexisting:
+                old = tmp_path / "remote" / package / "agents/reviewer.md"
+                old.parent.mkdir(parents=True)
+                old.write_bytes(b"prior reviewer policy\n")
+                prior_files[f"remote/{package}/agents/reviewer.md"] = old.read_bytes().hex()
+        env["FAKE_RESTART_OBSERVE"] = json.dumps(sorted(target_files))
+    
+        result = _run_deploy(env)
+    
+>       assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_transfers_and_rest0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_transfers_and_rest0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:633: AssertionError
+____ test_deploy_transfers_and_restores_reasoning_policy_files[False-True] _____
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_transfers_and_rest1')
+preexisting = True, fail_new_release = False
+
+    @pytest.mark.parametrize("preexisting", [False, True])
+    @pytest.mark.parametrize("fail_new_release", [False, True])
+    def test_deploy_transfers_and_restores_reasoning_policy_files(tmp_path, preexisting, fail_new_release):
+        import json
+    
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
+        target_files, prior_files = {}, {}
+        for package in (".claude", ".codex"):
+            source_dir = tmp_path / "source" / package / "agents"
+            source_dir.mkdir(parents=True)
+            for name, data in (("reviewer.md", b"new reviewer policy\n"), ("introduced.md", b"new policy\n")):
+                (source_dir / name).write_bytes(data)
+                relative_path = f"remote/{package}/agents/{name}"
+                target_files[relative_path] = data.hex()
+                prior_files[relative_path] = None
+            if preexisting:
+                old = tmp_path / "remote" / package / "agents/reviewer.md"
+                old.parent.mkdir(parents=True)
+                old.write_bytes(b"prior reviewer policy\n")
+                prior_files[f"remote/{package}/agents/reviewer.md"] = old.read_bytes().hex()
+        env["FAKE_RESTART_OBSERVE"] = json.dumps(sorted(target_files))
+    
+        result = _run_deploy(env)
+    
+>       assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_transfers_and_rest1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_transfers_and_rest1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:633: AssertionError
+____ test_deploy_transfers_and_restores_reasoning_policy_files[True-False] _____
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_transfers_and_rest2')
+preexisting = False, fail_new_release = True
+
+    @pytest.mark.parametrize("preexisting", [False, True])
+    @pytest.mark.parametrize("fail_new_release", [False, True])
+    def test_deploy_transfers_and_restores_reasoning_policy_files(tmp_path, preexisting, fail_new_release):
+        import json
+    
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
+        target_files, prior_files = {}, {}
+        for package in (".claude", ".codex"):
+            source_dir = tmp_path / "source" / package / "agents"
+            source_dir.mkdir(parents=True)
+            for name, data in (("reviewer.md", b"new reviewer policy\n"), ("introduced.md", b"new policy\n")):
+                (source_dir / name).write_bytes(data)
+                relative_path = f"remote/{package}/agents/{name}"
+                target_files[relative_path] = data.hex()
+                prior_files[relative_path] = None
+            if preexisting:
+                old = tmp_path / "remote" / package / "agents/reviewer.md"
+                old.parent.mkdir(parents=True)
+                old.write_bytes(b"prior reviewer policy\n")
+                prior_files[f"remote/{package}/agents/reviewer.md"] = old.read_bytes().hex()
+        env["FAKE_RESTART_OBSERVE"] = json.dumps(sorted(target_files))
+    
+        result = _run_deploy(env)
+    
+>       assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_transfers_and_rest2/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_transfers_and_rest2/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:633: AssertionError
+_____ test_deploy_transfers_and_restores_reasoning_policy_files[True-True] _____
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_transfers_and_rest3')
+preexisting = True, fail_new_release = True
+
+    @pytest.mark.parametrize("preexisting", [False, True])
+    @pytest.mark.parametrize("fail_new_release", [False, True])
+    def test_deploy_transfers_and_restores_reasoning_policy_files(tmp_path, preexisting, fail_new_release):
+        import json
+    
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=fail_new_release)
+        target_files, prior_files = {}, {}
+        for package in (".claude", ".codex"):
+            source_dir = tmp_path / "source" / package / "agents"
+            source_dir.mkdir(parents=True)
+            for name, data in (("reviewer.md", b"new reviewer policy\n"), ("introduced.md", b"new policy\n")):
+                (source_dir / name).write_bytes(data)
+                relative_path = f"remote/{package}/agents/{name}"
+                target_files[relative_path] = data.hex()
+                prior_files[relative_path] = None
+            if preexisting:
+                old = tmp_path / "remote" / package / "agents/reviewer.md"
+                old.parent.mkdir(parents=True)
+                old.write_bytes(b"prior reviewer policy\n")
+                prior_files[f"remote/{package}/agents/reviewer.md"] = old.read_bytes().hex()
+        env["FAKE_RESTART_OBSERVE"] = json.dumps(sorted(target_files))
+    
+        result = _run_deploy(env)
+    
+>       assert result.returncode == (1 if fail_new_release else 0), result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_transfers_and_rest3/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_transfers_and_rest3/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:633: AssertionError
+_____ test_healthy_unchanged_code_does_not_skip_cohort_activation[missing] _____
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_healthy_unchanged_code_do0')
+marker_state = 'missing'
+
+    @pytest.mark.parametrize("marker_state", ["missing", "pending_health"])
+    def test_healthy_unchanged_code_does_not_skip_cohort_activation(tmp_path, marker_state):
+        import json
+        import shutil
+    
+        env, events, _old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        shutil.copytree(tmp_path / "source", tmp_path / "remote", dirs_exist_ok=True)
+        (tmp_path / "remote/.deployed_git_sha").write_text(new_sha + "\n")
+        (tmp_path / "booted_sha").write_text(new_sha)
+        marker = tmp_path / "live-data/portfolio_forward_evaluation/start.json"
+        if marker_state == "pending_health":
+            marker.parent.mkdir(parents=True)
+            marker.write_text(json.dumps({"release_state": marker_state, "deployment_sha": new_sha,
+                                          "evaluation_start": "2026-08-11"}) + "\n")
+        result = _run_deploy(env)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_healthy_unchanged_code_do0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_healthy_unchanged_code_do0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:665: AssertionError
+_ test_healthy_unchanged_code_does_not_skip_cohort_activation[pending_health] __
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_healthy_unchanged_code_do1')
+marker_state = 'pending_health'
+
+    @pytest.mark.parametrize("marker_state", ["missing", "pending_health"])
+    def test_healthy_unchanged_code_does_not_skip_cohort_activation(tmp_path, marker_state):
+        import json
+        import shutil
+    
+        env, events, _old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        shutil.copytree(tmp_path / "source", tmp_path / "remote", dirs_exist_ok=True)
+        (tmp_path / "remote/.deployed_git_sha").write_text(new_sha + "\n")
+        (tmp_path / "booted_sha").write_text(new_sha)
+        marker = tmp_path / "live-data/portfolio_forward_evaluation/start.json"
+        if marker_state == "pending_health":
+            marker.parent.mkdir(parents=True)
+            marker.write_text(json.dumps({"release_state": marker_state, "deployment_sha": new_sha,
+                                          "evaluation_start": "2026-08-11"}) + "\n")
+        result = _run_deploy(env)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_healthy_unchanged_code_do1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_healthy_unchanged_code_do1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:665: AssertionError
+_______________ test_integrity_sigterm_after_copy_restores_once ________________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_sigterm_after_c0')
+
+    def test_integrity_sigterm_after_copy_restores_once(tmp_path):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env["FAKE_TERM_DURING_FORWARD"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 143, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_sigterm_after_c0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 143
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_sigterm_after_c0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:679: AssertionError
+______________ test_integrity_symlinked_snapshot_root_is_refused _______________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_symlinked_snaps0')
+
+    def test_integrity_symlinked_snapshot_root_is_refused(tmp_path):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        other = tmp_path / "outside-backup"
+        other.mkdir()
+        sentinel = other / "sentinel"
+        sentinel.write_text("unchanged\n")
+        (tmp_path / "remote/.deploy_prev").symlink_to(other, target_is_directory=True)
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_symlinked_snaps0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:694: AssertionError
+___________ test_integrity_failed_target_stop_prevents_rollback_copy ___________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_failed_target_s0')
+
+    def test_integrity_failed_target_stop_prevents_rollback_copy(tmp_path):
+        env, events, _old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=True)
+        env["FAKE_ROLLBACK_STOP_FAIL"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_failed_target_s0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:705: AssertionError
+__ test_integrity_receipt_glob_entries_cannot_masquerade_as_empty[directory] ___
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_receipt_glob_en0')
+entry_kind = 'directory'
+
+    @pytest.mark.parametrize("entry_kind", ["directory", "dangling_symlink"])
+    def test_integrity_receipt_glob_entries_cannot_masquerade_as_empty(tmp_path, entry_kind):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        receipt = tmp_path / "live-data/portfolios/hk/settlement_receipts/unreadable.json"
+        receipt.parent.mkdir(parents=True)
+        if entry_kind == "directory":
+            receipt.mkdir()
+        else:
+            receipt.symlink_to(receipt.parent / "missing-target")
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_receipt_glob_en0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_receipt_glob_en0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:723: AssertionError
+_ test_integrity_receipt_glob_entries_cannot_masquerade_as_empty[dangling_symlink] _
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_receipt_glob_en1')
+entry_kind = 'dangling_symlink'
+
+    @pytest.mark.parametrize("entry_kind", ["directory", "dangling_symlink"])
+    def test_integrity_receipt_glob_entries_cannot_masquerade_as_empty(tmp_path, entry_kind):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        receipt = tmp_path / "live-data/portfolios/hk/settlement_receipts/unreadable.json"
+        receipt.parent.mkdir(parents=True)
+        if entry_kind == "directory":
+            receipt.mkdir()
+        else:
+            receipt.symlink_to(receipt.parent / "missing-target")
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_receipt_glob_en1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_receipt_glob_en1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:723: AssertionError
+_______ test_integrity_silent_receipt_scan_failure_never_authorizes_copy _______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_silent_receipt_0')
+
+    def test_integrity_silent_receipt_scan_failure_never_authorizes_copy(tmp_path):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        receipts = tmp_path / "live-data/portfolios/china/settlement_receipts"
+        receipts.mkdir(parents=True)
+        env["FAKE_SILENT_RECEIPT_SCAN_FAILURE"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_silent_receipt_0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_silent_receipt_0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:735: AssertionError
+_____ test_integrity_new_package_with_excluded_cache_fails_restore_closed ______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_new_package_wit0')
+
+    def test_integrity_new_package_with_excluded_cache_fails_restore_closed(tmp_path):
+        env, events, _old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=True)
+        source_package = tmp_path / "source/new_package"
+        source_package.mkdir()
+        (source_package / "module.py").write_text("new-package\n")
+        env["FAKE_CREATE_EXCLUDED_CACHE_ON_RESTART"] = "1"
+        result = _run_deploy(env)
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_integrity_new_package_wit0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_integrity_new_package_wit0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:748: AssertionError
+______________ test_deploy_writes_expected_marker_before_restart _______________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_writes_expected_ma0')
+
+    def test_deploy_writes_expected_marker_before_restart(tmp_path):
+        env, events, _old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_writes_expected_ma0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_writes_expected_ma0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:768: AssertionError
+_ test_deploy_refuses_unresolved_pre_v2_settlement_state[paper_transaction.json] _
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_refuses_unresolved0')
+artifact = 'paper_transaction.json'
+
+    @pytest.mark.parametrize("artifact", ["paper_transaction.json", "settlement_receipts/old.json"])
+    def test_deploy_refuses_unresolved_pre_v2_settlement_state(tmp_path, artifact):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        path = tmp_path / "live-data" / "portfolios" / "china" / artifact
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("{}\n", encoding="utf-8")
+    
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_refuses_unresolved0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:804: AssertionError
+_ test_deploy_refuses_unresolved_pre_v2_settlement_state[settlement_receipts/old.json] _
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_refuses_unresolved1')
+artifact = 'settlement_receipts/old.json'
+
+    @pytest.mark.parametrize("artifact", ["paper_transaction.json", "settlement_receipts/old.json"])
+    def test_deploy_refuses_unresolved_pre_v2_settlement_state(tmp_path, artifact):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        path = tmp_path / "live-data" / "portfolios" / "china" / artifact
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("{}\n", encoding="utf-8")
+    
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_refuses_unresolved1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:804: AssertionError
+_ test_activation_rejects_account_or_fills_byte_mutation[FAKE_MUTATE_ACCOUNT_ON_RESTART] _
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_activation_rejects_accoun0')
+mutation_flag = 'FAKE_MUTATE_ACCOUNT_ON_RESTART'
+
+    @pytest.mark.parametrize("mutation_flag", [
+        "FAKE_MUTATE_ACCOUNT_ON_RESTART",
+        "FAKE_MUTATE_FILLS_ON_RESTART",
+    ])
+    def test_activation_rejects_account_or_fills_byte_mutation(tmp_path, mutation_flag):
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env[mutation_flag] = "1"
+    
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_activation_rejects_accoun0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:824: AssertionError
+_ test_activation_rejects_account_or_fills_byte_mutation[FAKE_MUTATE_FILLS_ON_RESTART] _
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_activation_rejects_accoun1')
+mutation_flag = 'FAKE_MUTATE_FILLS_ON_RESTART'
+
+    @pytest.mark.parametrize("mutation_flag", [
+        "FAKE_MUTATE_ACCOUNT_ON_RESTART",
+        "FAKE_MUTATE_FILLS_ON_RESTART",
+    ])
+    def test_activation_rejects_account_or_fills_byte_mutation(tmp_path, mutation_flag):
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env[mutation_flag] = "1"
+    
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_activation_rejects_accoun1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:824: AssertionError
+________________ test_activation_rejects_missing_authority_file ________________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_activation_rejects_missin0')
+
+    def test_activation_rejects_missing_authority_file(tmp_path):
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env["FAKE_REMOVE_AUTHORITY_ON_RESTART"] = "fills"
+    
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_activation_rejects_missin0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:842: AssertionError
+______ test_failed_deploy_restores_code_marker_and_retains_pending_cohort ______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_failed_deploy_restores_co0')
+
+    def test_failed_deploy_restores_code_marker_and_retains_pending_cohort(tmp_path):
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=True)
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_failed_deploy_restores_co0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:856: AssertionError
+__________ test_partial_rsync_failure_restores_old_tree_and_restarts ___________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_partial_rsync_failure_res0')
+
+    def test_partial_rsync_failure_restores_old_tree_and_restarts(tmp_path):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env["FAKE_RSYNC_PARTIAL"] = "1"
+    
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_partial_rsync_failure_res0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:873: AssertionError
+_____________ test_marker_write_failure_uses_post_backup_rollback ______________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_marker_write_failure_uses0')
+
+    def test_marker_write_failure_uses_post_backup_rollback(tmp_path):
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env["FAKE_FAIL_MARKER"] = "1"
+    
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_marker_write_failure_uses0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:888: AssertionError
+______ test_restart_failure_restores_marker_and_attempts_rollback_restart ______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_restart_failure_restores_0')
+
+    def test_restart_failure_restores_marker_and_attempts_rollback_restart(tmp_path):
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env["FAKE_FAIL_RESTART_ONCE"] = "1"
+    
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_restart_failure_restores_0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:902: AssertionError
+___________ test_deploy_rejects_health_when_scheduler_is_not_running ___________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_deploy_rejects_health_whe0')
+
+    def test_deploy_rejects_health_when_scheduler_is_not_running(tmp_path):
+        env, events, old_sha, new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        env["FAKE_SCHEDULER_OK"] = "false"
+    
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False
+        )
+    
+>       assert result.returncode == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_deploy_rejects_health_whe0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:916: AssertionError
+______ test_partial_copy_rolls_back_shared_runtime_packages[False-common] ______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_partial_copy_rolls_back_s0')
+package = 'common', preexisting = False
+
+    @pytest.mark.parametrize("package", ["common", "integrations"])
+    @pytest.mark.parametrize("preexisting", [False, True])
+    def test_partial_copy_rolls_back_shared_runtime_packages(tmp_path, package, preexisting):
+        """Whole-source rsync ships these packages; rollback must cover them too."""
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        remote = tmp_path / "remote"
+        package_dir = remote / package
+        if preexisting:
+            package_dir.mkdir()
+            (package_dir / "module.py").write_text("old-package\n", encoding="utf-8")
+        source_package = tmp_path / "source" / package
+        source_package.mkdir()
+        (source_package / "module.py").write_text("new-package\n")
+        (source_package / "introduced.py").write_text("new-only\n")
+        env["FAKE_RSYNC_PARTIAL"] = "1"
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False,
+            timeout=30,
+        )
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_partial_copy_rolls_back_s0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_partial_copy_rolls_back_s0/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:941: AssertionError
+___ test_partial_copy_rolls_back_shared_runtime_packages[False-integrations] ___
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_partial_copy_rolls_back_s1')
+package = 'integrations', preexisting = False
+
+    @pytest.mark.parametrize("package", ["common", "integrations"])
+    @pytest.mark.parametrize("preexisting", [False, True])
+    def test_partial_copy_rolls_back_shared_runtime_packages(tmp_path, package, preexisting):
+        """Whole-source rsync ships these packages; rollback must cover them too."""
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        remote = tmp_path / "remote"
+        package_dir = remote / package
+        if preexisting:
+            package_dir.mkdir()
+            (package_dir / "module.py").write_text("old-package\n", encoding="utf-8")
+        source_package = tmp_path / "source" / package
+        source_package.mkdir()
+        (source_package / "module.py").write_text("new-package\n")
+        (source_package / "introduced.py").write_text("new-only\n")
+        env["FAKE_RSYNC_PARTIAL"] = "1"
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False,
+            timeout=30,
+        )
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_partial_copy_rolls_back_s1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_partial_copy_rolls_back_s1/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:941: AssertionError
+______ test_partial_copy_rolls_back_shared_runtime_packages[True-common] _______
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_partial_copy_rolls_back_s2')
+package = 'common', preexisting = True
+
+    @pytest.mark.parametrize("package", ["common", "integrations"])
+    @pytest.mark.parametrize("preexisting", [False, True])
+    def test_partial_copy_rolls_back_shared_runtime_packages(tmp_path, package, preexisting):
+        """Whole-source rsync ships these packages; rollback must cover them too."""
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        remote = tmp_path / "remote"
+        package_dir = remote / package
+        if preexisting:
+            package_dir.mkdir()
+            (package_dir / "module.py").write_text("old-package\n", encoding="utf-8")
+        source_package = tmp_path / "source" / package
+        source_package.mkdir()
+        (source_package / "module.py").write_text("new-package\n")
+        (source_package / "introduced.py").write_text("new-only\n")
+        env["FAKE_RSYNC_PARTIAL"] = "1"
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False,
+            timeout=30,
+        )
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_partial_copy_rolls_back_s2/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_partial_copy_rolls_back_s2/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:941: AssertionError
+___ test_partial_copy_rolls_back_shared_runtime_packages[True-integrations] ____
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined113-20261018-pytest/test_partial_copy_rolls_back_s3')
+package = 'integrations', preexisting = True
+
+    @pytest.mark.parametrize("package", ["common", "integrations"])
+    @pytest.mark.parametrize("preexisting", [False, True])
+    def test_partial_copy_rolls_back_shared_runtime_packages(tmp_path, package, preexisting):
+        """Whole-source rsync ships these packages; rollback must cover them too."""
+        env, events, old_sha, _new_sha = _fake_transport(tmp_path, fail_new_release=False)
+        remote = tmp_path / "remote"
+        package_dir = remote / package
+        if preexisting:
+            package_dir.mkdir()
+            (package_dir / "module.py").write_text("old-package\n", encoding="utf-8")
+        source_package = tmp_path / "source" / package
+        source_package.mkdir()
+        (source_package / "module.py").write_text("new-package\n")
+        (source_package / "introduced.py").write_text("new-only\n")
+        env["FAKE_RSYNC_PARTIAL"] = "1"
+        result = subprocess.run(
+            ["bash", str(DEPLOY_SCRIPT)], env=env, text=True, capture_output=True, check=False,
+            timeout=30,
+        )
+>       assert result.returncode == 1, result.stdout + result.stderr
+E       AssertionError: 2026-10-18 02:47:05 deploy refused: remote roots are missing or noncanonical
+E         /Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/scripts/deploy_code_to_vps.sh: /private/tmp/rr-helper-combined113-20261018-pytest/test_partial_copy_rolls_back_s3/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied
+E         
+E       assert 2 == 1
+E        +  where 2 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/...13-20261018-pytest/test_partial_copy_rolls_back_s3/bin/ssh: /Volumes/Mastermind: bad interpreter: Permission denied\n').returncode
+
+tests/test_deploy_provenance.py:941: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/test_deploy_provenance.py::test_deployed_sha_prefers_valid_marker
+PASSED tests/test_deploy_provenance.py::test_deployed_sha_rejects_marker_and_uses_full_local_head
+PASSED tests/test_deploy_provenance.py::test_deployed_sha_fails_closed_when_both_sources_are_invalid
+PASSED tests/test_deploy_provenance.py::test_health_exposes_exact_full_commit
+PASSED tests/test_deploy_provenance.py::test_non_serve_only_startup_fails_when_scheduler_is_unavailable
+PASSED tests/test_deploy_provenance.py::test_activation_gate_order_and_canonical_lock_are_explicit
+PASSED tests/test_datadog_vps_install.py::test_rendered_config_correlates_host_logs_and_apm
+PASSED tests/test_datadog_vps_install.py::test_rendered_config_accepts_bounded_overrides
+PASSED tests/test_datadog_vps_install.py::test_render_only_rejects_unbounded_tag_values
+PASSED tests/test_datadog_vps_install.py::test_installer_never_enables_high_authority_datadog_features
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_accepts_supported_datadog_preload_paths[/run/datadog-apm-inject/launcher.preload.so]
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_accepts_supported_datadog_preload_paths[/opt/datadog-packages/datadog-apm-inject/stable/inject/launcher.preload.so]
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_accepts_supported_datadog_preload_paths[/opt/datadog/apm/inject/launcher.preload.so]
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_rejects_unrelated_preload_library
+PASSED tests/test_datadog_vps_install.py::test_rendered_config_tags_exact_release_sha
+PASSED tests/test_datadog_vps_install.py::test_release_tag_refresher_is_optional_and_atomic
+PASSED tests/test_forward_evaluation.py::test_not_started_and_archived_are_strict_no_write
+PASSED tests/test_forward_evaluation.py::test_book_paths_reject_request_controlled_segments[../autonomous]
+PASSED tests/test_forward_evaluation.py::test_book_paths_reject_request_controlled_segments[autonomous/../../escape]
+PASSED tests/test_forward_evaluation.py::test_book_paths_reject_request_controlled_segments[/tmp/escape]
+PASSED tests/test_forward_evaluation.py::test_start_is_create_once_and_corrupt_existing_marker_freezes
+PASSED tests/test_forward_evaluation.py::test_release_cli_override_targets_canonical_live_data_only
+PASSED tests/test_forward_evaluation.py::test_snapshot_filters_baseline_and_is_byte_idempotent
+PASSED tests/test_forward_evaluation.py::test_active_missing_artifacts_never_become_zero
+PASSED tests/test_forward_evaluation.py::test_pending_transaction_admits_only_post_baseline_rows_after_health
+PASSED tests/test_forward_evaluation.py::test_stopped_service_baseline_blocks_legacy_and_admits_target_same_day_rows
+PASSED tests/test_forward_evaluation.py::test_explicit_logical_id_prevents_mutable_legacy_row_resurrection
+PASSED tests/test_forward_evaluation.py::test_same_asof_correction_preserves_prior_revision_and_receipt
+PASSED tests/test_forward_evaluation.py::test_read_only_api_serves_status_without_evaluating_or_writing
+PASSED tests/test_forward_evaluation.py::test_partial_inputs_taint_every_dependent_metric
+PASSED tests/test_forward_evaluation.py::test_duplicate_nav_dates_are_one_partial_session
+PASSED tests/test_forward_evaluation.py::test_latest_is_monotonic_and_future_asof_is_no_write
+PASSED tests/test_forward_evaluation.py::test_stale_latest_weights_fall_back_to_current_account_marks
+PASSED tests/test_forward_evaluation.py::test_malformed_nested_ledgers_are_missing_not_false_zero
+PASSED tests/test_forward_evaluation.py::test_empty_latest_positions_cannot_claim_zero_concentration_with_exposure
+PASSED tests/test_forward_evaluation.py::test_effective_exits_lifecycle_and_failure_status_are_honest
+PASSED tests/test_forward_evaluation.py::test_daily_mark_book_failure_has_visible_step_event
+PASSED tests/test_forward_evaluation.py::test_scheduled_post_mark_evaluation_runs_inside_book_lock[_autonomous_job-bot.autonomous-run_autonomous-autonomous]
+PASSED tests/test_forward_evaluation.py::test_scheduled_post_mark_evaluation_runs_inside_book_lock[_china_job-bot.china-run_china-china]
+PASSED tests/test_forward_evaluation.py::test_scheduled_post_mark_evaluation_runs_inside_book_lock[_hk_job-bot.hk-run_hk-hk]
+PASSED tests/test_portfolio_archival.py::test_registry_keeps_history_but_separates_storage_and_product_defaults
+PASSED tests/test_portfolio_archival.py::test_archived_dashboard_reads_are_frozen_local_and_write_nothing
+PASSED tests/test_portfolio_archival.py::test_archived_risk_without_snapshot_does_not_recompute_or_create_file
+PASSED tests/test_portfolio_archival.py::test_nightly_safety_batch_is_active_only
+PASSED tests/test_portfolio_archival.py::test_direct_legacy_runners_fail_closed_before_work
+PASSED tests/test_portfolio_archival.py::test_archived_desk_mcp_cannot_submit_or_clear_pending_state
+PASSED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[flagship]
+PASSED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[flagship_judgment]
+PASSED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[heavyweight]
+PASSED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[etf]
+PASSED tests/test_portfolio_archival.py::test_archived_module_clis_report_status_and_exit_zero[bot.heavyweight-Heavyweight is archived]
+PASSED tests/test_portfolio_archival.py::test_archived_module_clis_report_status_and_exit_zero[bot.etf-ETF Brain is archived]
+PASSED tests/test_portfolio_archival.py::test_current_firm_exposure_ignores_archived_books
+PASSED tests/test_portfolio_archival.py::test_default_shadow_allocation_eligibility_is_active_only
+PASSED tests/test_portfolio_archival.py::test_us_operational_fanout_contains_only_successor
+PASSED tests/test_portfolio_archival.py::test_direct_archived_execution_and_settlement_are_read_only
+PASSED tests/test_portfolio_archival.py::test_direct_archived_derisk_cutters_are_read_only
+PASSED tests/test_portfolio_archival.py::test_archived_manual_run_routes_return_410
+PASSED tests/test_portfolio_archival.py::test_scheduler_registers_no_archived_book_jobs
+PASSED tests/test_portfolio_archival.py::test_stale_scheduler_wrappers_and_first_runs_fail_closed
+FAILED tests/test_deploy_provenance.py::test_integrity_stops_service_before_source_copy
+FAILED tests/test_deploy_provenance.py::test_integrity_restores_unlisted_and_receiver_deleted_paths
+FAILED tests/test_deploy_provenance.py::test_integrity_snapshot_failure_cannot_authorize_source_mutation
+FAILED tests/test_deploy_provenance.py::test_integrity_failed_restored_health_is_not_complete
+FAILED tests/test_deploy_provenance.py::test_integrity_refused_init_preserves_foreign_marker
+FAILED tests/test_deploy_provenance.py::test_integrity_excluded_descendants_survive_rollback
+FAILED tests/test_deploy_provenance.py::test_integrity_unverified_stop_never_copies_source[FAKE_STOP_FAIL]
+FAILED tests/test_deploy_provenance.py::test_integrity_unverified_stop_never_copies_source[FAKE_STOP_STAYS_ACTIVE]
+FAILED tests/test_deploy_provenance.py::test_integrity_failed_snapshot_preserves_previous_backup_and_availability
+FAILED tests/test_deploy_provenance.py::test_integrity_failed_restore_never_restarts_partial_tree[copy]
+FAILED tests/test_deploy_provenance.py::test_integrity_failed_restore_never_restarts_partial_tree[health]
+FAILED tests/test_deploy_provenance.py::test_integrity_checksum_restores_same_size_and_mtime_content
+FAILED tests/test_deploy_provenance.py::test_integrity_active_cohort_is_preserved_across_upgrade_and_noop
+FAILED tests/test_deploy_provenance.py::test_integrity_active_cohort_authority_mutation_requires_reconciliation[account.json]
+FAILED tests/test_deploy_provenance.py::test_integrity_active_cohort_authority_mutation_requires_reconciliation[fills.jsonl]
+FAILED tests/test_deploy_provenance.py::test_integrity_disappearing_active_cohort_is_not_reinitialized
+FAILED tests/test_deploy_provenance.py::test_integrity_unknown_cohort_effects_are_retained[FAKE_LOST_INIT_REPLY]
+FAILED tests/test_deploy_provenance.py::test_integrity_unknown_cohort_effects_are_retained[FAKE_LOST_FINALIZE_REPLY]
+FAILED tests/test_deploy_provenance.py::test_integrity_unknown_cohort_effects_are_retained[FAKE_FAIL_STATUS]
+FAILED tests/test_deploy_provenance.py::test_integrity_failed_tag_refresh_restores_exact_preimage[False]
+FAILED tests/test_deploy_provenance.py::test_integrity_failed_tag_refresh_restores_exact_preimage[True]
+FAILED tests/test_deploy_provenance.py::test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[False-False]
+FAILED tests/test_deploy_provenance.py::test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[False-True]
+FAILED tests/test_deploy_provenance.py::test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[True-False]
+FAILED tests/test_deploy_provenance.py::test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[True-True]
+FAILED tests/test_deploy_provenance.py::test_deploy_transfers_and_restores_reasoning_policy_files[False-False]
+FAILED tests/test_deploy_provenance.py::test_deploy_transfers_and_restores_reasoning_policy_files[False-True]
+FAILED tests/test_deploy_provenance.py::test_deploy_transfers_and_restores_reasoning_policy_files[True-False]
+FAILED tests/test_deploy_provenance.py::test_deploy_transfers_and_restores_reasoning_policy_files[True-True]
+FAILED tests/test_deploy_provenance.py::test_healthy_unchanged_code_does_not_skip_cohort_activation[missing]
+FAILED tests/test_deploy_provenance.py::test_healthy_unchanged_code_does_not_skip_cohort_activation[pending_health]
+FAILED tests/test_deploy_provenance.py::test_integrity_sigterm_after_copy_restores_once
+FAILED tests/test_deploy_provenance.py::test_integrity_symlinked_snapshot_root_is_refused
+FAILED tests/test_deploy_provenance.py::test_integrity_failed_target_stop_prevents_rollback_copy
+FAILED tests/test_deploy_provenance.py::test_integrity_receipt_glob_entries_cannot_masquerade_as_empty[directory]
+FAILED tests/test_deploy_provenance.py::test_integrity_receipt_glob_entries_cannot_masquerade_as_empty[dangling_symlink]
+FAILED tests/test_deploy_provenance.py::test_integrity_silent_receipt_scan_failure_never_authorizes_copy
+FAILED tests/test_deploy_provenance.py::test_integrity_new_package_with_excluded_cache_fails_restore_closed
+FAILED tests/test_deploy_provenance.py::test_deploy_writes_expected_marker_before_restart
+FAILED tests/test_deploy_provenance.py::test_deploy_refuses_unresolved_pre_v2_settlement_state[paper_transaction.json]
+FAILED tests/test_deploy_provenance.py::test_deploy_refuses_unresolved_pre_v2_settlement_state[settlement_receipts/old.json]
+FAILED tests/test_deploy_provenance.py::test_activation_rejects_account_or_fills_byte_mutation[FAKE_MUTATE_ACCOUNT_ON_RESTART]
+FAILED tests/test_deploy_provenance.py::test_activation_rejects_account_or_fills_byte_mutation[FAKE_MUTATE_FILLS_ON_RESTART]
+FAILED tests/test_deploy_provenance.py::test_activation_rejects_missing_authority_file
+FAILED tests/test_deploy_provenance.py::test_failed_deploy_restores_code_marker_and_retains_pending_cohort
+FAILED tests/test_deploy_provenance.py::test_partial_rsync_failure_restores_old_tree_and_restarts
+FAILED tests/test_deploy_provenance.py::test_marker_write_failure_uses_post_backup_rollback
+FAILED tests/test_deploy_provenance.py::test_restart_failure_restores_marker_and_attempts_rollback_restart
+FAILED tests/test_deploy_provenance.py::test_deploy_rejects_health_when_scheduler_is_not_running
+FAILED tests/test_deploy_provenance.py::test_partial_copy_rolls_back_shared_runtime_packages[False-common]
+FAILED tests/test_deploy_provenance.py::test_partial_copy_rolls_back_shared_runtime_packages[False-integrations]
+FAILED tests/test_deploy_provenance.py::test_partial_copy_rolls_back_shared_runtime_packages[True-common]
+FAILED tests/test_deploy_provenance.py::test_partial_copy_rolls_back_shared_runtime_packages[True-integrations]

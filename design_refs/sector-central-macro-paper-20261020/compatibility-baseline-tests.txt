@@ -1,0 +1,157 @@
+F............................FFFFF............FFF...........             [100%]
+=================================== FAILURES ===================================
+______________ test_non_us_templates_are_byte_pinned_post_rollout ______________
+tests/test_p_mp1_shell_nonus_byte_parity.py:202: in test_non_us_templates_are_byte_pinned_post_rollout
+    assert _sha256_text(cur) == _EXPECTED_TEMPLATE_SHA256[rel_path], (
+E   AssertionError: templates/hk.html.j2: content drifted from its pinned post-rollout hash — if this is a legitimate edit, recompute and update the pin
+E   assert 'b9d4299a4faf...7873f115407e8' == '2fb1a5e1fb8b...6166b4edad86c'
+E     
+E     - 2fb1a5e1fb8b901e4dc4bc64cc7916542d0acb508547ee445676166b4edad86c
+E     + b9d4299a4fafbb5b7d22d97d42d71888c4c7a41ce3c452ed6bb7873f115407e8
+___________ TestUSStocktableDataBlock.test_jinja_renders_valid_json ____________
+tests/test_us_stocks_w8g_table.py:93: in test_jinja_renders_valid_json
+    rendered = _render_us_data_block(_make_standouts(rows))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_stocks_w8g_table.py:74: in _render_us_data_block
+    return tmpl.render(us_standouts=us_standouts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:1295: in render
+    self.environment.handle_exception()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:942: in handle_exception
+    raise rewrite_traceback_stack(source=source)
+<template>:8: in top-level template code
+    ???
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:490: in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   jinja2.exceptions.UndefinedError: 'psd_table' is undefined
+____ TestUSStocktableDataBlock.test_all_required_keys_present_on_every_row _____
+tests/test_us_stocks_w8g_table.py:108: in test_all_required_keys_present_on_every_row
+    rendered = _render_us_data_block(_make_standouts(rows))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_stocks_w8g_table.py:74: in _render_us_data_block
+    return tmpl.render(us_standouts=us_standouts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:1295: in render
+    self.environment.handle_exception()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:942: in handle_exception
+    raise rewrite_traceback_stack(source=source)
+<template>:8: in top-level template code
+    ???
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:490: in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   jinja2.exceptions.UndefinedError: 'psd_table' is undefined
+___________ TestUSStocktableDataBlock.test_system_order_not_mutated ____________
+tests/test_us_stocks_w8g_table.py:119: in test_system_order_not_mutated
+    rendered = _render_us_data_block(_make_standouts(rows))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_stocks_w8g_table.py:74: in _render_us_data_block
+    return tmpl.render(us_standouts=us_standouts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:1295: in render
+    self.environment.handle_exception()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:942: in handle_exception
+    raise rewrite_traceback_stack(source=source)
+<template>:8: in top-level template code
+    ???
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:490: in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   jinja2.exceptions.UndefinedError: 'psd_table' is undefined
+_____________ TestUSStocktableDataBlock.test_lane_to_stage_mapping _____________
+tests/test_us_stocks_w8g_table.py:137: in test_lane_to_stage_mapping
+    rendered = _render_us_data_block(_make_standouts(rows))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_stocks_w8g_table.py:74: in _render_us_data_block
+    return tmpl.render(us_standouts=us_standouts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:1295: in render
+    self.environment.handle_exception()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:942: in handle_exception
+    raise rewrite_traceback_stack(source=source)
+<template>:8: in top-level template code
+    ???
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:490: in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   jinja2.exceptions.UndefinedError: 'psd_table' is undefined
+_______ TestUSStocktableDataBlock.test_nullable_fields_serialize_as_null _______
+tests/test_us_stocks_w8g_table.py:151: in test_nullable_fields_serialize_as_null
+    rendered = _render_us_data_block(_make_standouts([row]))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_stocks_w8g_table.py:74: in _render_us_data_block
+    return tmpl.render(us_standouts=us_standouts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:1295: in render
+    self.environment.handle_exception()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:942: in handle_exception
+    raise rewrite_traceback_stack(source=source)
+<template>:8: in top-level template code
+    ???
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:490: in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   jinja2.exceptions.UndefinedError: 'psd_table' is undefined
+_______ TestUSStocktableRealData.test_real_data_serializes_without_error _______
+tests/test_us_stocks_w8g_table.py:251: in test_real_data_serializes_without_error
+    rendered = _render_us_data_block(standouts)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_stocks_w8g_table.py:74: in _render_us_data_block
+    return tmpl.render(us_standouts=us_standouts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:1295: in render
+    self.environment.handle_exception()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:942: in handle_exception
+    raise rewrite_traceback_stack(source=source)
+<template>:8: in top-level template code
+    ???
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:490: in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   jinja2.exceptions.UndefinedError: 'psd_table' is undefined
+___________ TestUSStocktableRealData.test_real_data_all_keys_present ___________
+tests/test_us_stocks_w8g_table.py:260: in test_real_data_all_keys_present
+    rendered = _render_us_data_block(standouts)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_stocks_w8g_table.py:74: in _render_us_data_block
+    return tmpl.render(us_standouts=us_standouts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:1295: in render
+    self.environment.handle_exception()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:942: in handle_exception
+    raise rewrite_traceback_stack(source=source)
+<template>:8: in top-level template code
+    ???
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:490: in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   jinja2.exceptions.UndefinedError: 'psd_table' is undefined
+___________ TestUSStocktableRealData.test_real_data_order_preserved ____________
+tests/test_us_stocks_w8g_table.py:272: in test_real_data_order_preserved
+    rendered = _render_us_data_block(standouts)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_us_stocks_w8g_table.py:74: in _render_us_data_block
+    return tmpl.render(us_standouts=us_standouts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:1295: in render
+    self.environment.handle_exception()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:942: in handle_exception
+    raise rewrite_traceback_stack(source=source)
+<template>:8: in top-level template code
+    ???
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py:490: in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   jinja2.exceptions.UndefinedError: 'psd_table' is undefined
+=========================== short test summary info ============================
+FAILED tests/test_p_mp1_shell_nonus_byte_parity.py::test_non_us_templates_are_byte_pinned_post_rollout
+FAILED tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_jinja_renders_valid_json
+FAILED tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_all_required_keys_present_on_every_row
+FAILED tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_system_order_not_mutated
+FAILED tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_lane_to_stage_mapping
+FAILED tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_nullable_fields_serialize_as_null
+FAILED tests/test_us_stocks_w8g_table.py::TestUSStocktableRealData::test_real_data_serializes_without_error
+FAILED tests/test_us_stocks_w8g_table.py::TestUSStocktableRealData::test_real_data_all_keys_present
+FAILED tests/test_us_stocks_w8g_table.py::TestUSStocktableRealData::test_real_data_order_preserved
+9 failed, 51 passed in 2.65s

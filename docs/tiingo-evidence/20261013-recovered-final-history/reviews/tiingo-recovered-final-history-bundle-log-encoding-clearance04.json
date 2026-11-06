@@ -1,0 +1,45 @@
+{
+  "schema": "tiingo.final_history_log_encoding_clearance/v1",
+  "recorded_at_utc": "2026-10-14T04:39:59.035083+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "verdict": "PASS",
+  "scope": "Only the lossless Pine unit log JSON encoding replacement and unchanged staged evidence scope; no reopened method or raw-data review.",
+  "worktree": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/tiingo-six-phase-closure-20261013-84b8e7dcc2cf09fb",
+  "head": "57c4982b972c238d0de994a9f9f515890d41ddc6",
+  "prior_clearance_file": "tiingo-recovered-final-history-bundle-additive-review03-clearance.json",
+  "prior_clearance_sha256": "4ff71cebaf6ef0e20fcfa32e10ebb14f034f651a26d383f47babb79d1e567fd4",
+  "prior_manifest_sha256": "88a6eed0e90dfdbcef6d28e3ad045619146f7ced67f24e8f5fbd18e4c27ec2f2",
+  "current_manifest_sha256": "ac4016e24324b2ab5b614b019ebd955e6415cdfd968f6d58efdf52541c657214",
+  "replacement": {
+    "old_path": "logs/terminal955-canonical972-affected-Pine-unit-original.log",
+    "new_path": "logs/terminal955-canonical972-affected-Pine-unit-original.json",
+    "original_bytes": 587,
+    "original_sha256": "fe3fb8ba549f668159d7d7eb262c29d1f1dffb076777ca9d470479a14d918bb9",
+    "json_sha256": "8bca6c415b556dc5680403104207173f5c15c1d53cdc7f2a97b22c5b98e2b29d",
+    "stdout_utf8_roundtrip_exact": true,
+    "original_E_log_unchanged": true
+  },
+  "verified": {
+    "manifest_entries": 37,
+    "unchanged_other_entries": 36,
+    "reverse_only_replacement_reconstructs_exact_prior_manifest_digest": true,
+    "all_37_staged_manifest_hashes_match": true,
+    "all_manifest_files_equal_worktree_bytes": true,
+    "exact_staged_paths_count": 40,
+    "exact_staged_paths_match_expected_records_only": true,
+    "staged_handoff_sha256": "c48265783061d11cf41616ec5fb455328f84a3552e8797850535304d8838c38a",
+    "staged_workstream_sha256": "9917c1b560cda9e4f53c19e6cc916eee5dadda65fffe99dd8fd3a4eb03d80134",
+    "git_diff_cached_check_exit_code": 0
+  },
+  "findings": [],
+  "acceptance_width": "Clears this formatting repair for the parent-owned evidence commit/push/hosted-CI/protected-merge chain. No license, credential, intelligence, runtime, provider, deployment or whole-mission acceptance delta. All prior refusal and production-proof limits remain held.",
+  "effects": {
+    "network": 0,
+    "credential_reads": 0,
+    "provider_calls": 0,
+    "source_or_index_mutations": 0,
+    "raw_scans": 0,
+    "worker_dispatches": 0,
+    "local_review_receipts_written": 1
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "procedure_pin": "c49956d14878bd7b9c001258855e12d547596f13",
+  "source_ref": "c48e15193a29fd5eff94e963d0d0c4d6f3104867",
+  "carrier": "mastermindx-market-intelligence/macro#7572",
+  "reconciled_prior_head": "e96f5dd5f6e8239b888792ab47179a848c24ebb7",
+  "research_capability": "Exact-source sighting-to-candidate-episode retention tracing using the existing canonical HEAD validator, with separate published-plan presence",
+  "tests": {
+    "initial_red": {"failed": 10, "cause": "conversion trace module absent"},
+    "owner_suites_before_additive_count_disclosure": {"passed": 213, "failed": 0, "skipped": 0, "warnings": 5},
+    "final_focused_suite": {"passed": 13, "failed": 0, "skipped": 0, "deselected": 154, "warnings": 5},
+    "warnings": "Pre-existing pytest temporary Chromium cleanup permission warnings; no global cleanup change"
+  },
+  "real_run": {
+    "start": "2026-09-01",
+    "cutoff": "2026-09-21T11:00:00Z",
+    "episode_generation": "peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd",
+    "generation_recorded_at": "2026-09-18T09:08:31Z",
+    "canonical_generation_validation": "passed",
+    "door_sightings": 35,
+    "event_receipts": 8,
+    "suppression_receipts": 3,
+    "absent_from_selected_generation": 24,
+    "published_plan_rows_inspected": 426,
+    "declared_plan_count_metadata": 448,
+    "published_plan_rows_for_AMD_INTC_ARM_MU": 0
+  },
+  "agent_os_validation": {"records": 1160, "errors": 0, "warnings": 284},
+  "diff_check": "passed",
+  "limits": [
+    "This is a research diagnostic, not a new live recommendation or entry strategy.",
+    "The selected episode generation predates some flag publications; 24/35 is not an observed production loss rate.",
+    "Dated flags do not prove first publication time or executable entry.",
+    "Absence from the current index does not prove that no historical trade existed.",
+    "Ticker co-occurrence in a plan would not establish conversion of a particular sighting.",
+    "Premarket quotes are separate contextual observations, not inputs to historical replay.",
+    "No producer, archive, episode ledger, rank, admission, sizing, workflow, deployment or trade authority changed."
+  ],
+  "mission_complete": false
+}
