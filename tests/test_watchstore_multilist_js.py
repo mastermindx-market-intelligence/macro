@@ -38,6 +38,14 @@ ROOT = Path(__file__).resolve().parents[1]
 WATCHSTORE = ROOT / "templates" / "watchstore.js"
 WATCHLIST = ROOT / "templates" / "watchlist.js"
 
+
+@needs_node
+def test_private_watchlist_readonly_contract_and_lifecycle():
+    suite = ROOT / 'tests' / 'fixtures' / 'watchlist_readonly.mjs'
+    result = subprocess.run(['node', str(suite)], capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert 'ALL PASS: 16 scenarios; 0 unhandled rejections' in result.stdout
+
 SHIM = """
 var __sets = [];
 var __store = {};

@@ -1,0 +1,24 @@
+{
+  "recorded_at": "2026-10-14T15:54:43.459188+00:00",
+  "source": "Direct Chairman reply in original root chat",
+  "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "answer": "Approve the one-time base integration and repair",
+  "scope": "One ordinary non-force-pushed integration of current main into existing PR6651 carrier; apply bounded accepted source correction and fresh checks once source custody and shared capacity admit",
+  "retained_controls": [
+    "Same PR and carrier",
+    "Preserve unpublished local26 branch and evidence",
+    "No force-push or rebase",
+    "Fresh source and capacity/custody admission before write",
+    "No check or semantic downgrade",
+    "Incumbent controller exclusively performs final merge",
+    "Production verification still required"
+  ],
+  "consumed": true,
+  "local_integration_started_at": "2026-10-14T15:57:41.856778+00:00",
+  "local_merge_head": "50db81266bb88a93d8c0ec318389548c7939d4be",
+  "local_original_head": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "automatic_merge_tree": "3e1f4265437e1d8dd98d376a0cf7374e476ac6da",
+  "publication_authorized_now": false,
+  "publication_hold": "15:55 sharedCI9/cap8; PR8920authoritativelease; local preparation creates no CI producer",
+  "source_correction_applied": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-reachability-20261014/reviewable-post-update-correction.patch"
+}

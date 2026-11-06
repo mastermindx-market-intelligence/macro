@@ -1,0 +1,33 @@
+[
+  {
+    "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20240501a.htm",
+    "retrieved_at": "2026-10-14T12:22:36.962713+00:00",
+    "bytes": 82833,
+    "sha256": "c452fa230f7f9fab71a8646813ab2c9b7bbac0de9b49906de7290ce5c5fc8ba6",
+    "content_type": "text/html",
+    "http_last_modified": "Thu, 26 Feb 2026 22:24:36 GMT",
+    "publication_label": "2024-05-01 14:00 EDT",
+    "publication_label_is_not_contemporaneous_archive_proof": true
+  },
+  {
+    "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20240501a1.htm",
+    "retrieved_at": "2026-10-14T12:22:37.164528+00:00",
+    "bytes": 80419,
+    "sha256": "fc712f62b425182bd674a9bac02241c599a8039c412bfe7943b740e915a40a0b",
+    "content_type": "text/html",
+    "http_last_modified": "Thu, 26 Feb 2026 23:39:21 GMT",
+    "publication_label": "2024-05-01 14:00 EDT",
+    "publication_label_is_not_contemporaneous_archive_proof": true
+  },
+  {
+    "url": "https://www.federalreserve.gov/monetarypolicy/files/monetary20240501a1.pdf",
+    "retrieved_at": "2026-10-14T12:22:37.400195+00:00",
+    "bytes": 134792,
+    "sha256": "fe6646ecc5c520330abf695c0011b6cf10d3e9c7502e48c4accb6d2b3e6a6a3e",
+    "content_type": "application/pdf",
+    "http_last_modified": "Wed, 01 May 2024 18:00:12 GMT",
+    "publication_label": "2024-05-01 14:00 EDT",
+    "publication_label_is_not_contemporaneous_archive_proof": true,
+    "pdf_dates": []
+  }
+]

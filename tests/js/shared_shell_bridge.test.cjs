@@ -1691,3 +1691,21 @@ test('credential-bearing history URLs never mutate or enter the protocol', () =>
     assert.ok(!JSON.stringify(ctx.sent).includes('synthetic-pass'));
   }
 });
+
+// The public application joins the existing beta origin; it does not admit arbitrary parents.
+test('app production parent earns the same exact READY handshake as beta', () => {
+  const parent = 'https://app.mastermind-x.com';
+  const ctx = harness({parent, referrer: parent + '/tools/calculators/cagr.html'});
+  ctx.activate();
+  assert.strictEqual(ctx.api().active, true);
+  assert.ok(ctx.lastOf('READY'));
+  assert.ok(ctx.sent.every(row => row.to === parent));
+});
+for (const parent of ['https://app.mastermind-x.com.evil.example', 'http://app.mastermind-x.com',
+  'https://www.mastermind-x.com', 'https://evil.example']) {
+  test('unapproved parent remains inert: ' + parent, () => {
+    const ctx = harness({parent, referrer: parent + '/'});
+    assert.strictEqual(ctx.sandbox.MMXSharedShell, undefined);
+    assert.strictEqual(ctx.sent.length, 0);
+  });
+}
