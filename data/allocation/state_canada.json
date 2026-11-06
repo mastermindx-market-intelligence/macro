@@ -7,7 +7,6 @@
     "ca_consumer",
     "ca_insurers",
     "ca_oil_gas",
-    "ca_pipelines",
     "ca_tech",
     "ca_utilities"
   ],
@@ -15,7 +14,7 @@
     "ca_oil_gas",
     "ca_banks",
     "ca_consumer",
-    "ca_tech"
+    "ca_utilities"
   ],
   "leader": "ca_oil_gas",
   "names": {
