@@ -94,6 +94,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine.confluence_tiers import MIN_HISTORY  # noqa: E402
+from lib import config  # noqa: E402
+from lib.yahoo_runtime_profile import (  # noqa: E402
+    assert_legacy_write_allowed, parse_profile, require_snapshot, runtime_owns,
+)
 
 log = logging.getLogger("heal_shallow_caches")
 
@@ -126,13 +130,16 @@ DEPTH_FLOOR = MIN_HISTORY
 
 def shallow_targets(root: Path, floor: int = DEPTH_FLOOR) -> list[tuple[str, str, int]]:
     """``(target_dir, ticker, bars)`` for every target cache below the depth floor."""
+    profile = parse_profile(config.load().get("yahoo", {}))
     out: list[tuple[str, str, int]] = []
     for target_dir in TARGET_DIRS:
         d = root / target_dir
         if not d.is_dir():
             continue
         for p in sorted(d.glob("*.parquet")):
-            if p.stem.startswith(SIDECAR_PREFIX):
+            if (p.stem.startswith(SIDECAR_PREFIX)
+                    or (target_dir == "data/yahoo"
+                        and runtime_owns(profile, group="yahoo", symbol=p.stem))):
                 continue
             try:
                 frame = pd.read_parquet(p, columns=["close"])
@@ -145,6 +152,9 @@ def shallow_targets(root: Path, floor: int = DEPTH_FLOOR) -> list[tuple[str, str
 
 
 def _read_donor(root: Path, donor: str, ticker: str) -> pd.DataFrame | None:
+    profile = parse_profile(config.load().get("yahoo", {}))
+    if donor == "data/yahoo" and runtime_owns(profile, group="yahoo", symbol=ticker):
+        return require_snapshot(profile).frame(ticker)
     p = root / donor / f"{ticker}.parquet"
     if not p.exists():
         return None
@@ -168,6 +178,9 @@ def plan_heal(root: Path, ticker: str, target_dir: str = "data/stocks") -> dict 
     Returns None when no donor can help (no deeper local history, or no donor
     that can source every column the target already has, aliases included).
     """
+    profile = parse_profile(config.load().get("yahoo", {}))
+    if target_dir == "data/yahoo" and runtime_owns(profile, group="yahoo", symbol=ticker):
+        return None
     target_path = root / target_dir / f"{ticker}.parquet"
     try:
         target = pd.read_parquet(target_path)
@@ -230,7 +243,13 @@ def apply_heal(plan: dict) -> int:
     for byte and only genuinely earlier dates are added.  The index name is
     carried over — several readers key on it.
     """
-    head, target, path = plan["_head"], plan["_target"], plan["_path"]
+    profile = parse_profile(config.load().get("yahoo", {}))
+    path = Path(plan["_path"])
+    if plan.get("target_dir") == "data/yahoo":
+        assert_legacy_write_allowed(profile, group="yahoo", symbol=plan["ticker"])
+    if path.parent.name == "yahoo":
+        assert_legacy_write_allowed(profile, group="yahoo", symbol=path.stem)
+    head, target = plan["_head"], plan["_target"]
     merged = pd.concat([head, target])
     merged = merged[~merged.index.duplicated(keep="last")].sort_index()
     merged.index.name = target.index.name

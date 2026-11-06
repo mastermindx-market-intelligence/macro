@@ -268,7 +268,7 @@
         "text": "REMOTE_SUB_ADMISSION_REFUSED {\"active_count\":6,\"allowed\":false,\"cpu_count\":24,\"json_locked_count\":6,\"legacy_count\":0,\"load1\":8.314,\"load_ratio_limit\":0.4167,\"max_active\":18,\"reasons\":[\"host_temperature_at_or_above_limit\"],\"stale_reaped\":[]}\n",
         "accepted": false
       },
-      "parent_disposition": "PRETASK_THERMAL_REFUSAL_NO_REPLAY_PARENT_RECOVERY"
+      "parent_disposition": "PRETASK_THERMAL_REFUSAL_NO_REPLAY_PARENT_SOURCE_IMPLEMENTED_INACTIVE_122_TESTS_PASS"
     },
     {
       "name": "basket-context",
@@ -454,6 +454,50 @@
         "worker_start_proven": false
       },
       "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY"
+    },
+    {
+      "name": "sector-api-repair",
+      "run_id": "macro-always-on-20261106-c3-sector-api-repair-01",
+      "work_packet": {
+        "objective": "Repair three concrete parent-identified defects in the recovered, deliberately unwired Sector generation API adapter. Preserve existing auth, projection and publication owners.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+          "parent_run": "macro-always-on-20261106-c3-sector-api-01"
+        },
+        "candidate": {
+          "commit": "bd7c4437992cca7db8d9fbacbd9fcf532baa590e",
+          "parent": "bd11984e445209f79248951d773f2a4cdb3f18d1",
+          "tree": "080ee8733b98044c01adda6919c84d75774ed3a2",
+          "original_host": "m1",
+          "original_workspace": "/Volumes/STORAGE/agent-workspaces/claude/8ed429a11612cd7b/pr-10780-713c29b3e7c8eefe",
+          "m2_patch": "/tmp/mmx-always-on-sector-api-bd7c443.patch",
+          "patch_sha256": "19837828d575e201a1c90b540ac1f68e20107eafb82864ef42affd8b23e03c43",
+          "patch_bytes": 57708,
+          "posture": "Original run terminalrc0/rootverified; source reviewed but notaccepted/integrated. Read exact original artifact, do not mutate its worktree; own isolated managed workspace. If retrieval unavailable report exact blocker, don't recreate from prose."
+        },
+        "scope": [
+          "app/sector_generation.py",
+          "tests/test_sector_generation_api.py",
+          "docs/SECTOR_GENERATION_API_CONTRACT.md"
+        ],
+        "changes": [
+          "Add /basketdata/action_board.json to fixed PREVIEW_RESOURCES, inherited by ENTITLED_RESOURCES. It is a real source of both native projections. Current identical defaultpremium classification is not evidence of exploit, but missing explicit gate must not bypass future action-board policy. Test independent canonical expected set plus real incumbent temporary policy denying only actionboard and early-enforced actionboard with PAYWALL_ENABLED0, both audiences denied before reader. Keep preview excluding premiumdata.",
+          "Align transport fields with actual engine/sector_native_view.py at38f: qualification exactly accepted/stale/degraded, valid ISOsource date, timezone-aware fully valid published_at. Require outer metadata equals projection.receipt values at adapter or narrow envelope boundary; no independent freshness/clock derivation. Preserve declared older Brief baseline distinct from core source_session. Update docs/fixtures which currently recommend current/closed/unavailable. Use real projection fixtures for accepted/stale/degraded, same-session changed authorized content identity and olderbaseline.",
+          "Close resolution/coercion/serialization exception boundary: properties/Mappingmaterialization/unusable reader/RecursionError must yield existing small closed503 with private,no-store/VaryCookie, no internals. Log exception classonly. Correct shallow dictcopy comment. Keep missing/corrupt reader nolegacyfallback. Do not add independent state/verifier/cache/policy."
+        ],
+        "tests": "Rerun all original31 transport tests and actual incumbent auth focused suites as necessary; add discriminating missing-resource/receipt/error controls described above. Real gates can stub identity/entitlement lookups as existing fixtures, but never claim productioncookie/Supabaseproof. Show fixes fail on unmodified candidate. No live providercalls. Do not edit existing authtests/gates or engineprojection. Newtestsremainunwired parentCIintegrationresponsibility.",
+        "fences": "Keep app.main router wiring untouched; parent must bind actual publisherverifiedread and projection first. No readerimplementation, manifestparser, filesystem selection, BFF/nativeUI/publisher/deploy/workflow/config/otheractivefiles. No push/PR/merge/deploy/Slack/email. Do not introduce alternate authentication or inspect credentials. Existing gate internal failures may map tolocked; preserve that verdict instead of inventing new lookup.",
+        "return": "Locally commit qualified source and return immutable base/head/tree/workspace/file list, exact tests and residual integrationlimits. Parent retains originalPR10780 and calls corrected reader once per request after auth. This source result is not productionacceptance."
+      },
+      "observed_status": {
+        "state": "CONTROLLER_CREATED",
+        "worker_start_proven": false
+      },
+      "parent_disposition": "REPAIR_OF_REVIEWED_TERMINAL_SOURCE_NO_ACTIVATION"
     }
   ],
   "additional_reconciliation": {

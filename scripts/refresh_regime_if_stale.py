@@ -46,6 +46,9 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 from lib import config, store  # noqa: E402
+from lib.yahoo_runtime_profile import (  # noqa: E402
+    YahooRuntimeOwnershipError, assert_legacy_write_allowed, parse_profile,
+)
 
 log = logging.getLogger("refresh_regime")
 
@@ -103,6 +106,8 @@ def _repull_yahoo() -> str | None:
     re-runs. KEYLESS (period=1mo, ~16s) so the fast-path stays secret-free; run_adapter upserts
     every fetched series back into the store. Returns the refreshed SPY store date. The caller
     wraps this so a network hiccup can never fail the fast-path."""
+    profile = parse_profile(config.load().get("yahoo", {}))
+    assert_legacy_write_allowed(profile, group="yahoo", symbol="SPY")
     from collectors.base import run_adapter
     from collectors.yahoo import YahooAdapter
     res = run_adapter(YahooAdapter())
@@ -138,6 +143,10 @@ def refresh(force: bool = False) -> dict:
             else:
                 log.warning("STORE STILL BEHIND MARKET after yahoo re-pull (store=%s market=%s) — "
                             "upstream feed has not published the close yet", new_date, market_date)
+        except YahooRuntimeOwnershipError:
+            repull = {"prev": store_date, "market": market_date, "healed": False,
+                      "attempted": False, "reason": "runtime_owner"}
+            log.warning("SPY history is runtime-owned; legacy re-pull refused")
         except Exception as e:  # noqa: BLE001 — the fast-path must never fail on the self-heal
             log.error("yahoo re-pull failed (non-fatal): %s", e)
             repull = {"prev": store_date, "market": market_date, "error": str(e)}
