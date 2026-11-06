@@ -1,0 +1,70 @@
+python3 - <<'PY'
+from pathlib import Path
+import subprocess,json,datetime,hashlib,os
+w=Path('/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27');root=Path('/tmp/shared-shell-css-visual-20261019T1107')
+H='e22e1c33c810da99f7389f5069dd2ee045270c85';M='a3817230e8bc849159b06d81c87ffb4a072ca86b';branch='sol/market-os-shared-shell-design-20260924'
+c=json.loads((root/'macro-postgap-five-conflict-candidates.json').read_text());paths=sorted(x['path'] for x in c['files']);sha=lambda b:hashlib.sha256(b).hexdigest()
+def run(a):
+ p=subprocess.run(a,cwd=w,capture_output=True,timeout=240);return {'args':a,'exit':p.returncode,'stdout':p.stdout.decode(errors='replace'),'stderr':p.stderr.decode(errors='replace')}
+def ok(a):
+ p=run(a);assert p['exit']==0,p;return p['stdout'].strip()
+rec={'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source_operation':'Original shared-shell-r27 merge only; no renderer or host action','head_before':H,'incoming':M,'candidate_receipt_sha256':sha((root/'macro-postgap-five-conflict-candidates.json').read_bytes())}
+try:
+ assert ok(['git','rev-parse','HEAD'])==H and ok(['git','branch','--show-current'])==branch
+ assert not ok(['git','status','--porcelain=v1','--untracked-files=all'])
+ gd=Path(ok(['git','rev-parse','--path-format=absolute','--git-dir']))
+ assert not any((gd/x).exists() for x in ['MERGE_HEAD','index.lock','rebase-merge','rebase-apply','CHERRY_PICK_HEAD'])
+ prior_reviewed=M
+ M=ok(['git','ls-remote','origin','refs/heads/main']).split()[0]
+ rec['incoming']=M;rec['previously_reviewed_incoming']=prior_reviewed
+ rec['remote_main_observed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+ rec['immutable_fetch']=run(['git','fetch','--no-tags','--no-write-fetch-head','origin',M]);assert rec['immutable_fetch']['exit']==0
+ stable_paths=['AGENTS.md','CLAUDE.md','docs/agent_guides/CODEX_WORKSPACE.md','docs/agent_guides/CODEX_DELIVERY.md','scripts/run_ci_pack.py','scripts/capture_page_evidence.py','.github/workflows/ci-authority.yml','.github/workflows/engine-render.yml','.github/workflows/render.yml']
+ rec['critical_source_blobs_stable']={}
+ for p in stable_paths:
+  a=ok(['git','rev-parse',prior_reviewed+':'+p]);b=ok(['git','rev-parse',M+':'+p])
+  rec['critical_source_blobs_stable'][p]=a==b
+ assert all(rec['critical_source_blobs_stable'].values()),'critical source changed; no merge'
+ rec['incoming_delta_paths']=ok(['git','diff','--name-status',prior_reviewed,M])
+ preview=run(['git','merge-tree','--write-tree','--messages',H,M]);assert preview['exit']==1,preview
+ rec['fresh_preview']=preview
+ preview_paths=sorted(set(line.split('\t',1)[1] for line in preview['stdout'].splitlines() if '\t' in line and line.startswith('100')))
+ assert preview_paths==paths,(preview_paths,paths)
+ c['preview_tree']=preview['stdout'].splitlines()[0]
+ rec['preview_tree']=c['preview_tree']
+ rec['candidate_incoming_blobs_rebound']=True
+ pr=json.loads(ok(['gh','api','repos/mastermindx-market-intelligence/macro/pulls/7949']))
+ remote=ok(['git','ls-remote','origin','refs/heads/'+branch]).split()[0]
+ assert remote==H==pr['head']['sha'] and pr['state']=='open' and not pr['merged'] and not pr['labels'] and not pr['auto_merge']
+ assert ok(['git','merge-base',H,M])==c['base']
+ rec['pr_head_before']=pr['head']['sha'];rec['armed']=False
+ rec['sparse_config']=run(['git','config','--worktree','--get','core.sparseCheckout'])
+ rec['sparse_policy']=json.loads((w/'config/sparse_worktree.json').read_text())
+ rec['available_bytes']=os.statvfs(w).f_bavail*os.statvfs(w).f_frsize
+ assert rec['available_bytes']>10*1024**3,'native source volume headroom under10GiB'
+ for p,expected in [('templates/shared_shell.css','b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e'),('templates/shared_shell_bridge.js','048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d')]:
+  assert sha((w/p).read_bytes())==expected,p
+ for x in c['files']:
+  for ref,key in [(c['base'],'base_sha256'),(H,'ours_sha256'),(M,'incoming_sha256')]:
+   b=subprocess.check_output(['git','show',ref+':'+x['path']],cwd=w);assert sha(b)==x[key],(x['path'],ref)
+  assert sha((root/'postgap-merge-candidates'/x['path']).read_bytes())==x['candidate_sha256']
+ (root/'macro-postgap-actual-merge-r2.json').write_text(json.dumps(rec,indent=2)+'\n')
+ rec['merge']=run(['git','merge','--no-ff','--no-commit',M])
+ (root/'macro-postgap-actual-merge-r2.json').write_text(json.dumps(rec,indent=2)+'\n')
+ assert rec['merge']['exit']==1,rec['merge']
+ unmerged=sorted(ok(['git','diff','--name-only','--diff-filter=U']).splitlines());assert unmerged==paths,(unmerged,paths)
+ for x in c['files']:
+  for stage,key in [('1','base_sha256'),('2','ours_sha256'),('3','incoming_sha256')]:
+   b=subprocess.check_output(['git','show',':'+stage+':'+x['path']],cwd=w);assert sha(b)==x[key],(x['path'],stage)
+  (w/x['path']).write_bytes((root/'postgap-merge-candidates'/x['path']).read_bytes())
+ ok(['git','add','--']+paths)
+ assert not ok(['git','ls-files','-u']) and not ok(['git','diff','--name-only'])
+ tree=ok(['git','write-tree'])
+ assert sorted(ok(['git','diff','--name-only',c['preview_tree'],tree]).splitlines())==paths
+ rec.update({'resolved_paths':paths,'index_tree':tree,'only_resolved_paths_differ_from_preview':True,'unmerged_after':[],'unstaged_after':[],'head_after':ok(['git','rev-parse','HEAD']),'merge_head':ok(['git','rev-parse','MERGE_HEAD']),'staged_paths_count':len(ok(['git','diff','--cached','--name-only']).splitlines()),'committed':False,'pushed':False})
+except Exception as e:
+ rec['error']=str(e)
+rec['finished_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+raw=json.dumps(rec,indent=2)+'\n';(root/'macro-postgap-actual-merge-r2.json').write_text(raw)
+print(raw);print(json.dumps({'receipt_sha256':sha(raw.encode())}))
+PY

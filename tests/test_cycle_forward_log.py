@@ -58,6 +58,8 @@ def test_keep_first_invariant(tmp_path, monkeypatch):
     import engine.cycle_forward_log as clf
     import lib.config as config_mod
 
+    # B11 forced lane edit: sector_cycles appends are nightly-lane-gated now
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
     # Patch only the data_dir function — does not inject fake modules into sys.modules
     monkeypatch.setattr(config_mod, "data_dir", lambda: tmp_path)
 

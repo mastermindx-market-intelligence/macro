@@ -1,0 +1,9 @@
+{
+  "scope": "Actual source HTML through synthetic signed local route with JavaScript disabled; no false evidence displayed",
+  "message": "JavaScript is required to inspect evidence. / 查看证据需要启用 JavaScript。",
+  "url": "http://127.0.0.1:59519/#/page/intelligence_os",
+  "noscript_visible": true,
+  "evidence_table_count": 0,
+  "source_index_sha256": "27a1a4e55dee999b435dda94c86730987624621ee3868c7fbea086e308645179",
+  "tool": "Actual inline Node Playwright chromium.newContext(javaScriptEnabled=false); no PNG claimed"
+}

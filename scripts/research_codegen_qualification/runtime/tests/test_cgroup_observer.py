@@ -221,7 +221,16 @@ def test_changed_device_refuses_and_closes(tree, monkeypatch):
             st_ino = info.st_ino
             st_dev = info.st_dev + 1
         return Changed()
-    monkeypatch.setattr(c.os, "fstat", different_device)
+    # Keep the fault local to the observer; patching the shared os module also
+    # replaces pytest capture's fstat, which requires the full stat result.
+    class ObserverOS:
+        fstat = staticmethod(different_device)
+
+        def __getattr__(self, name):
+            return getattr(os, name)
+
+    monkeypatch.setattr(c, "os", ObserverOS())
     with pytest.raises(c.ObservationRefused, match="root_identity"):
         observe()
+    assert os.fstat is original
     assert c.identity(original(fd)) == expected

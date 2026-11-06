@@ -3,13 +3,13 @@
   "crash": false,
   "eligible": [
     "cn_banks",
-    "cn_coal"
+    "cn_pharma_cxo"
   ],
   "held": [
-    "cn_coal",
-    "cn_banks"
+    "cn_banks",
+    "cn_pharma_cxo"
   ],
-  "leader": "cn_coal",
+  "leader": "cn_robotics",
   "names": {
     "cn_ai_compute": "AI Compute & Optics",
     "cn_appliances": "Home Appliances",

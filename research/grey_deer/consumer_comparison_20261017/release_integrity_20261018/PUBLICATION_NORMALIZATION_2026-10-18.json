@@ -1,0 +1,26 @@
+{
+  "schema": "risk_radar.review_publication_normalization.v1",
+  "normalized_at_utc": "2026-10-18T08:22:58.184945+00:00",
+  "reason": "Staged git diff --check identified two Markdown hard-break trailing-space warnings; retain original review bytes while publishing a whitespace-clean presentation.",
+  "original_path": "SETTLEMENT_DEPENDENCY_STATIC_NOTES_2026-10-18.md",
+  "original_sha256": "d6a4b41dacc3590542d836be70fab1f29db98918f5c01f9817def0e8d9bac02a",
+  "original_bytes": 14703,
+  "preserved_original": "source/SETTLEMENT_DEPENDENCY_STATIC_NOTES_ORIGINAL_2026-10-18.json",
+  "preserved_original_value": "utf8_text encoded UTF-8",
+  "published_path": "SETTLEMENT_DEPENDENCY_STATIC_NOTES_2026-10-18.md",
+  "published_sha256": "33bbefc03b2995f06447706eb3ac076844ad05f824d477af0375057221b6b83b",
+  "published_bytes": 14699,
+  "changes": [
+    {
+      "line": 3,
+      "removed_ascii_spaces": 2
+    },
+    {
+      "line": 4,
+      "removed_ascii_spaces": 2
+    }
+  ],
+  "substantive_text_changed": false,
+  "original_transfer_manifest_unchanged": true,
+  "qualification": "The 08:10:26Z 56-file transfer readback remains the historical byte-exact transfer receipt. One presented file was subsequently normalized as recorded here; 55 original files remain byte-identical and the 56th original is recoverable exactly from the retained JSON text. No executable candidate source or test changed."
+}

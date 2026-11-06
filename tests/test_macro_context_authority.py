@@ -2343,3 +2343,107 @@ def test_rates_panel_without_a_lobe_keeps_the_empty_state(l15_panel):
     assert "No rates transmission data." in f
     assert "暂无利率传导数据。" in f
     assert "liq-row" not in f
+
+
+# W26-L24: the bonds card must print the mechanism levels behind its labels.
+def _r26_bonds_section(fragment):
+    match = re.search(r'<section[^>]*data-domain="bonds".*?</section>', fragment, re.S)
+    assert match, "R26 render has no bonds section"
+    return match.group(0)
+
+
+def _r26_forex_section(fragment):
+    match = re.search(r'<section[^>]*data-domain="forex".*?</section>', fragment, re.S)
+    assert match, "R26 render has no forex section"
+    return match.group(0)
+
+
+def _r26_levels(section):
+    dl = re.search(r'<dl data-mechanism-levels="bonds">.*?</dl>', section, re.S)
+    if not dl:
+        return []
+    return re.findall(r'<dd style="margin:0">([^<]*)</dd>', dl.group(0))
+
+
+def test_bonds_card_prints_the_levels_behind_its_labels(r26_render):
+    payload = _r26_payload()
+    payload["bonds"]["mechanism_evidence"]["term_premium"] = 1.0729
+    fragment, _ = r26_render(payload)
+    section = _r26_bonds_section(fragment)
+    assert "Levels behind these labels" in section
+    assert "标签背后的数值" in section
+    assert _r26_levels(section) == ["3.88%", "+82 bp", "2.93%", "1.07%", "+1.07 pp"]
+    assert "1.0729" not in section
+    for label in ("政策利率", "未来12个月市场隐含利率变动", "10年期实际收益率",
+                  "期限溢价", "10年期减3个月利差"):
+        assert label in section
+    dl = re.search(r'<dl data-current-read="bonds">.*?</dl>', section, re.S)
+    assert dl is not None and dl.group(0).count("<dt") == 6
+
+
+def test_bonds_levels_never_reach_the_forex_card(r26_render):
+    control, _ = r26_render(_r26_payload())
+    payload = _r26_payload()
+    mech = payload["forex"]["mechanism_evidence"]
+    mech["fed_path"] = {"policy_rate": 3.88, "implied_bp_12m": 82}
+    mech["real_10y"] = 2.93
+    mech["term_premium"] = 1.02
+    mech["curve_slope_10y3m"] = 1.07
+    fragment, _ = r26_render(payload)
+    forex = _r26_forex_section(fragment)
+    assert "data-mechanism-levels" not in forex
+    assert "Levels behind these labels" not in forex
+    assert "3.88%" not in forex
+    assert "+82 bp" not in forex
+    assert forex == _r26_forex_section(control)
+
+
+def test_bonds_levels_add_no_probability_and_no_extra_rows(r26_render):
+    payload = _r26_payload()
+    payload["bonds"]["mechanism_evidence"]["probability"] = 0.987654321
+    payload["bonds"]["mechanism_evidence"]["p_cond"] = 0.123456789
+    payload["bonds"]["mechanism_evidence"]["score"] = 55.5555
+    payload["bonds"]["mechanism_evidence"]["credit_canary"] = 0.4242
+    fragment, _ = r26_render(payload)
+    section = _r26_bonds_section(fragment)
+    assert _r26_levels(section) == ["3.88%", "+82 bp", "2.93%", "1.02%", "+1.07 pp"]
+    low = section.lower()
+    for banned in ("0.99", "98.77", "0.12", "55.56", "0.42", "probab", "概率", "canary"):
+        assert banned.lower() not in low
+
+
+@pytest.mark.parametrize("mech", [
+    {},
+    None,
+    [],
+    {"fed_path": None, "real_10y": None, "term_premium": None, "curve_slope_10y3m": None},
+    {"fed_path": {"policy_rate": "7412345", "implied_bp_12m": float("nan")},
+     "real_10y": True, "term_premium": float("inf"), "curve_slope_10y3m": False},
+])
+def test_bonds_levels_stay_silent_without_valid_numbers(r26_render, mech):
+    payload = _r26_payload()
+    payload["bonds"]["mechanism_evidence"] = mech
+    fragment, _ = r26_render(payload)
+    section = _r26_bonds_section(fragment)
+    assert "data-mechanism-levels" not in section
+    assert "Levels behind these labels" not in section
+    assert "标签背后的数值" not in section
+    assert "7412345" not in section
+    assert "None" not in section
+    assert re.search(r"\b(nan|inf)\b", section, re.I) is None
+    assert "1.00%" not in section
+    assert "+0.00 pp" not in section
+    assert 'data-current-read="bonds"' in section
+
+
+def test_bonds_levels_print_each_valid_number_alone(r26_render):
+    payload = _r26_payload()
+    payload["bonds"]["mechanism_evidence"] = {
+        "fed_path": {"policy_rate": 4.125, "implied_bp_12m": -50}, "real_10y": "2.9",
+        "term_premium": None, "curve_slope_10y3m": -0.255,
+    }
+    fragment, _ = r26_render(payload)
+    section = _r26_bonds_section(fragment)
+    assert "Levels behind these labels" in section
+    assert _r26_levels(section) == ["%.2f%%" % 4.125, "-50 bp", "%+.2f pp" % -0.255]
+    assert "2.9" not in _r26_levels(section)

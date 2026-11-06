@@ -1,8 +1,9 @@
 """FIF V0-a: no forensics route reaches SEC or R2 while it serves.
 
-A46 acceptance: measured latency SLOs with NO request-time SEC. The five
+A46 acceptance: measured latency SLOs with NO request-time SEC. The six
 production-backed routes (health, financial/query, financial/packet,
-financial/statements, financial/revisions) are served in-process over a
+financial/statements, financial/revisions, financial/catalog) are served
+in-process over a
 publisher-built local store — the fixture pattern of
 tests/test_fundamental_forensics_production_api_chain.py, copied here in
 minimal form rather than imported — while ``socket.socket.connect``,
@@ -36,6 +37,15 @@ from engine.fundamental_forensics.sec_document_spine import build_filing_manifes
 from engine.fundamental_forensics.statement_graph import GOLDEN_AAPL_FIXTURES
 
 ROOT = Path(__file__).resolve().parents[1]
+# Seat ruling R-9761-CLK (b): this is a publisher-family run (the store below is
+# built through the REAL publish CLI at a fixed 2026-10-13 clock), so it reads
+# the byte-identical 1.0.0 registry copy as --repo-root, exactly like
+# test_fundamental_forensics_production_publisher.py. The publisher's CLOCK RULE
+# folds every registry available_at into admitted_at; the live registry's later
+# rule clocks (2026-10-21) would refuse this fixture run with
+# admitted_at_after_recorded_at. The lane under test is request-time network
+# reach, not registry content.
+PINNED_REGISTRY_ROOT = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
 
 # ---------------------------------------------------------------------------
 # Minimal copy of the production-lane fixture pattern (identity derived at
@@ -284,7 +294,7 @@ def _publish_cli(lane: dict, contract: Path, store: Path, report: Path) -> int:
             "--archive-root", str(lane["archive_root"]),
             "--recorded-at", RUN_CLOCK,
             "--store-dir", str(store),
-            "--repo-root", str(ROOT),
+            "--repo-root", str(PINNED_REGISTRY_ROOT),
             "--report-path", str(report),
         ]
     )
@@ -421,6 +431,15 @@ def test_no_forensics_route_opens_a_socket_while_serving(
             "POST",
             "/api/forensics/v1/financial/revisions",
             _policy_body(_REVISION_SCHEMA, identity),
+        ),
+        (
+            "financial/catalog",
+            "POST",
+            "/api/forensics/v1/financial/catalog",
+            json.dumps(
+                {"schema": "fundamental_forensics.financial_catalog_request/v1", "entity_id": identity["entity_id"]},
+                separators=(",", ":"),
+            ).encode("utf-8"),
         ),
     ]
     for name, method, path, body in calls:
