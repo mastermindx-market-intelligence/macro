@@ -851,3 +851,44 @@ def test_state_evidence_covers_the_paths_a_rest_capture_cannot_reach():
         assert by_state[degraded]["banner_shown"] == 1
         assert "SYNTHETIC" in by_state[degraded]["fixture"], (
             "a degraded-state capture must declare its fixture, never imply a real outage")
+
+
+def test_boot_evidence_exercises_pending_topology_without_a_forced_language_event():
+    log = EVIDENCE_DIR / "boot" / "observations.json"
+    assert log.is_file(), "missing normal-boot topology evidence"
+    payload = json.loads(log.read_text(encoding="utf-8"))
+    assert payload["schema"] == "f02x1.boot_evidence.v1"
+    assert payload["driver"] == "scripts/probe_sanctions_geography_boot.py"
+    for field, path in {
+        "data_sha256": SITE / "sanctions-geography-data.json",
+        "page_sha256": SITE / "sanctions-geography.html",
+        "css_sha256": SITE / "sanctions-geography.css",
+        "js_sha256": SITE / "sanctions-geography.js",
+        "driver_sha256": ROOT / payload["driver"],
+    }.items():
+        assert payload["artifacts"][field] == hashlib.sha256(path.read_bytes()).hexdigest()
+    projection = json.loads((SITE / "sanctions-geography-data.json").read_text(encoding="utf-8"))
+    assert payload["projection_id"] == projection["projection_id"]
+    assert payload["source_identity"] == projection["source_identity"]
+    expected = {
+        (scenario, width, locale)
+        for scenario in ("selected-filter", "excluded-selection", "unresolved-register", "topology-failure")
+        for width in (1440, 390)
+        for locale in ("en", "zh")
+    }
+    results = payload["results"]
+    assert len(results) == len(expected)
+    assert {(row["scenario"], row["width"], row["locale"]) for row in results} == expected
+    for row in results:
+        assert row["passed"] is True, row
+        assert row["forced_language_events"] == 0, row
+        assert row["checks"]["normal_boot_without_test_seam"] is True, row
+        assert row["checks"]["register_usable_before_topology"] is True, row
+        assert row["checks"]["no_paths_before_topology"] is True, row
+        assert row["checks"]["initial_locale_applied"] is True, row
+        if row["scenario"] == "unresolved-register":
+            assert row["checks"]["fixture_omits_one_known_boundary"] is True, row
+            assert row["checks"]["synthetic_topology_fixture_declared"] is True, row
+            assert row["observations"]["topology_fixture"].startswith("SYNTHETIC:"), row
+        assert all(value is True for value in row["checks"].values()), row
+        assert (EVIDENCE_DIR / "boot" / row["file"]).is_file(), row

@@ -5,9 +5,9 @@
     "projection_id": "sha256:e91a51346e6f833f31e92397007cbbe4abc661d66da72eeeaac4522cf6ecb647",
     "source_identity": "e91a51346e6f833f31e92397007cbbe4abc661d66da72eeeaac4522cf6ecb647",
     "data_sha256": "9975c909c40682e7403ca3df1e6fa26bb8480d9188a10bcf45d64a124dc797b1",
-    "page_sha256": "6a80f3ceb992f800a51a632995ffc6e5d4ae7773c65ff3a59cbb829534da11a1",
-    "css_sha256": "24d7fa4d421244ca0175d267be1a12bf4bb679590a224ca1263a48b47a402a45",
-    "js_sha256": "cead80e40416d8b2966d5ba9e7590980295ab045290ff72980e7c409b7e410c8",
+    "page_sha256": "e2999bfc0fb9421dbf4989b9d12cb470f6906cac1b53417df9ad266594300f1d",
+    "css_sha256": "85ef34c8307111f102070f2b0977c7d2438b875fd727cfcdac41a301ed9611e0",
+    "js_sha256": "538d7e21f7d13b6f1b9623245e161992f9b85732dc27a02779ebe652b61e65ab",
     "driver_sha256": "58c7492ae4669d5689bd748fb3e796231e45ce8eee7b2ffd47a58f48bf8084ad"
   },
   "note": "Interaction states use the real committed artifact and shards. Degraded states use the real page code with a labelled synthetic projection fixture; no committed artifact is modified and no source outage is asserted.",

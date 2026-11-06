@@ -27,6 +27,8 @@
    luminance depth vs border+shadow depth, ramp endpoint. Everything else —
    ordering, density, spacing, type scale, state meaning, interaction — is shared.
 
+   Colours use the canonical theme tokens directly. SVG fill opacity and matching
+   legend overlays retain the amber intensity scale without a local palette.
    Every colour derives from theme.css tokens; --up/--down are deliberately never
    used, because they swap in ZH (红涨绿跌) and a sanctions add is not "up".      */
 
@@ -78,15 +80,15 @@ body {
 .sg-prov {
   display: flex; flex-wrap: wrap; align-items: center; gap: 0 14px;
   font-family: var(--font-mono); font-size: var(--fs-micro); color: var(--muted);
-  background: color-mix(in srgb, var(--panel2) 60%, transparent);
+  background: var(--panel2);
   border: 1px solid var(--line); border-left-width: 3px;
   border-radius: var(--r-ctl, 8px);
   padding: 9px 13px; margin: 14px 0 0; line-height: 1.9;
 }
 .sg-prov b { color: var(--text); font-weight: 600; }
 .sg-prov .sg-hash { word-break: break-all; }
-.sg-prov--ok   { border-left-color: color-mix(in srgb, var(--ok) 70%, var(--line)); }
-.sg-prov--warn { border-left-color: color-mix(in srgb, var(--warn) 78%, var(--line)); }
+.sg-prov--ok   { border-left-color: var(--ok); }
+.sg-prov--warn { border-left-color: var(--warn); }
 .sg-prov--bad  { border-left-color: var(--act); }
 
 /* ---------- the read ------------------------------------------------------ */
@@ -111,9 +113,9 @@ body {
    every number above it must be read (density law §9.8). */
 .sg-caveat {
   margin: 12px 0 0; padding: 11px 14px; font-size: var(--fs-sm); line-height: 1.55;
-  border: 1px solid var(--line); border-left: 3px solid color-mix(in srgb, var(--warn) 76%, var(--line));
+  border: 1px solid var(--line); border-left: 3px solid var(--warn);
   border-radius: var(--r-ctl, 8px);
-  background: color-mix(in srgb, var(--warn) 7%, var(--panel));
+  background: var(--surface-warn-subtle);
   color: var(--text);
 }
 .sg-caveat b { font-weight: 650; }
@@ -141,16 +143,16 @@ body {
 /* Base landmass — DARK: lighter than the void, land emerging.
    The intensity ramp then lifts a country out of that base.                */
 .sg-geo {
-  fill: color-mix(in srgb, var(--text) 12%, transparent);
-  stroke: color-mix(in srgb, var(--text) 20%, transparent);
+  fill: var(--text); fill-opacity: .12;
+  stroke: var(--text); stroke-opacity: .20;
   stroke-width: .35; outline: none;
   transition: fill .18s ease, stroke .18s ease;
 }
-.sg-geo[data-step="1"] { fill: color-mix(in srgb, var(--warn) 22%, var(--panel)); }
-.sg-geo[data-step="2"] { fill: color-mix(in srgb, var(--warn) 38%, var(--panel)); }
-.sg-geo[data-step="3"] { fill: color-mix(in srgb, var(--warn) 54%, var(--panel)); }
-.sg-geo[data-step="4"] { fill: color-mix(in srgb, var(--warn) 70%, var(--panel)); }
-.sg-geo[data-step="5"] { fill: color-mix(in srgb, var(--warn) 86%, var(--panel)); }
+.sg-geo[data-step="1"] { fill: var(--warn); fill-opacity: 0.22; }
+.sg-geo[data-step="2"] { fill: var(--warn); fill-opacity: 0.38; }
+.sg-geo[data-step="3"] { fill: var(--warn); fill-opacity: 0.54; }
+.sg-geo[data-step="4"] { fill: var(--warn); fill-opacity: 0.7; }
+.sg-geo[data-step="5"] { fill: var(--warn); fill-opacity: 0.86; }
 
 /* A boundary the projection never names carries the base fill and nothing more:
    that is an honest zero ("no published address names this country"). It is NOT
@@ -165,24 +167,24 @@ body {
    zero: the source may name the place, but this asset cannot bind its count.
    A hatch keeps that unavailable identity distinct in both art directions. */
 .sg-geo.is-identityless {
-  fill: url("#sg-identityless-pattern");
-  stroke: color-mix(in srgb, var(--warn) 72%, var(--line));
+  fill: url("#sg-identityless-pattern"); fill-opacity: 1;
+  stroke: var(--warn); stroke-opacity: .72;
   stroke-dasharray: 2 1;
 }
-.sg-identityless-pattern-bg { fill: color-mix(in srgb, var(--panel2) 82%, transparent); }
-.sg-identityless-pattern-line { fill: none; stroke: color-mix(in srgb, var(--warn) 58%, var(--muted)); stroke-width: 1; }
+.sg-identityless-pattern-bg { fill: var(--panel2); fill-opacity: .82; }
+.sg-identityless-pattern-line { fill: none; stroke: var(--warn); stroke-opacity: .58; stroke-width: 1; }
 
 /* Filtered OUT of the current view — deliberately not the same treatment as an
    honest zero. A dimmed boundary still carries its fill, so a reader can see it
    has data that this filter is hiding; a plain boundary has none to show. */
 .sg-geo.is-off { opacity: .22; pointer-events: none; }
 .sg-geo.is-pick { cursor: pointer; }
-.sg-geo.is-pick:hover { stroke: color-mix(in srgb, var(--text) 55%, transparent); stroke-width: .8; }
+.sg-geo.is-pick:hover { stroke: var(--text); stroke-opacity: .55; stroke-width: .8; }
 
 /* DARK selection: a bright ring plus a restrained bloom — the instrument cue. */
 .sg-geo.is-on {
-  stroke: var(--link); stroke-width: 1.15;
-  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--link) 52%, transparent));
+  stroke: var(--link); stroke-opacity: 1; stroke-width: 1.15;
+  filter: drop-shadow(0 0 3px var(--link));
 }
 .sg-map:focus-visible, .sg-geo:focus-visible {
   outline: 2px solid var(--link); outline-offset: 2px;
@@ -195,15 +197,16 @@ body {
 .sg-ramp { display: flex; gap: 2px; }
 .sg-ramp i {
   width: 22px; height: 9px; display: block; border: 1px solid var(--line);
-  border-radius: 0;
+  border-radius: 0; position: relative; background: var(--panel);
 }
-.sg-ramp i:nth-child(1) { background: color-mix(in srgb, var(--warn) 22%, var(--panel)); }
-.sg-ramp i:nth-child(2) { background: color-mix(in srgb, var(--warn) 38%, var(--panel)); }
-.sg-ramp i:nth-child(3) { background: color-mix(in srgb, var(--warn) 54%, var(--panel)); }
-.sg-ramp i:nth-child(4) { background: color-mix(in srgb, var(--warn) 70%, var(--panel)); }
-.sg-ramp i:nth-child(5) { background: color-mix(in srgb, var(--warn) 86%, var(--panel)); }
+.sg-ramp i::before { content: ""; position: absolute; inset: 0; background: var(--warn); }
+.sg-ramp i:nth-child(1)::before { opacity: 0.22; }
+.sg-ramp i:nth-child(2)::before { opacity: 0.38; }
+.sg-ramp i:nth-child(3)::before { opacity: 0.54; }
+.sg-ramp i:nth-child(4)::before { opacity: 0.7; }
+.sg-ramp i:nth-child(5)::before { opacity: 0.86; }
 .sg-legend-hatch { width: 22px; height: 9px; display: inline-block; border: 1px solid var(--line);
-  background: repeating-linear-gradient(45deg, transparent 0 3px, color-mix(in srgb, var(--muted) 55%, transparent) 3px 4px); }
+  background: repeating-linear-gradient(45deg, transparent 0 3px, var(--muted) 3px 4px); }
 
 /* table ----------------------------------------------------------------- */
 
@@ -237,10 +240,10 @@ body {
   background: var(--panel2); border-bottom: 1px solid var(--line); padding: 8px 11px; white-space: nowrap;
 }
 .sg-tbl th.sg-r, .sg-tbl td.sg-r { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
-.sg-tbl td { padding: 8px 11px; border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent); vertical-align: baseline; }
+.sg-tbl td { padding: 8px 11px; border-bottom: 1px solid var(--line-quiet); vertical-align: baseline; }
 .sg-tbl tbody tr { cursor: pointer; }
 .sg-tbl tbody tr:hover { background: var(--panel2); }
-.sg-tbl tbody tr.is-on { background: color-mix(in srgb, var(--warn) 11%, var(--panel)); box-shadow: inset 3px 0 0 0 color-mix(in srgb, var(--warn) 82%, var(--line)); }
+.sg-tbl tbody tr.is-on { background: var(--surface-warn-subtle); box-shadow: inset 3px 0 0 0 var(--warn); }
 .sg-tbl tbody tr:focus-visible { outline: 2px solid var(--link); outline-offset: -2px; }
 .sg-tbl .sg-unres { color: var(--muted); }
 
@@ -260,13 +263,13 @@ body {
   display: inline-flex; align-items: center; gap: 5px; font-size: var(--fs-micro);
   font-weight: 650; letter-spacing: .04em; padding: 3px 8px; margin: 0 4px 4px 0;
   border: 1px solid var(--line); border-radius: var(--r-ctl, 8px);
-  background: color-mix(in srgb, var(--panel2) 70%, transparent); color: var(--muted);
+  background: var(--panel2); color: var(--muted);
   white-space: nowrap;
 }
 .sg-chip::before { content: ""; width: 6px; height: 6px; flex: none; border-radius: 0; background: currentColor; }
-.sg-chip--added   { color: var(--ink-info, var(--info)); border-color: color-mix(in srgb, var(--info) 45%, var(--line)); }
+.sg-chip--added   { color: var(--ink-info, var(--info)); border-color: var(--info); }
 .sg-chip--removed { color: var(--muted); border-style: dashed; }
-.sg-chip--corrected { color: var(--ink-warn, var(--warn)); border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+.sg-chip--corrected { color: var(--ink-warn, var(--warn)); border-color: var(--warn); }
 .sg-chip--unres   { color: var(--muted); border-style: dotted; }
 .sg-chip--prog    { color: var(--text); }
 
@@ -275,7 +278,7 @@ body {
 .sg-crow {
   display: grid; grid-template-columns: minmax(0, 1fr) max-content;
   gap: 2px 10px; align-items: baseline;
-  padding: 7px 0; border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  padding: 7px 0; border-bottom: 1px solid var(--line-quiet);
 }
 .sg-crow-n { font-size: var(--fs-sm); font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
 .sg-crow-m { font-family: var(--font-mono); font-size: var(--fs-micro); color: var(--muted); white-space: nowrap; }
@@ -347,7 +350,7 @@ body {
 .sg-skel { background: var(--panel2); border-radius: var(--r-ctl, 8px); position: relative; overflow: hidden; }
 .sg-skel::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent 20%, color-mix(in srgb, var(--text) 8%, transparent) 50%, transparent 80%);
+  background: linear-gradient(90deg, transparent 20%, var(--mc-ink-08) 50%, transparent 80%);
   animation: sg-sheen 1.25s linear infinite;
 }
 .sg-skel--map { aspect-ratio: 2 / 1; width: 100%; }
@@ -363,13 +366,13 @@ body {
 .sg-degraded {
   display: flex; gap: 11px; align-items: flex-start; margin: 14px 0 0;
   padding: 12px 14px; border-radius: var(--r-ctl, 8px);
-  border: 1px solid color-mix(in srgb, var(--act) 40%, var(--line));
+  border: 1px solid var(--act);
   border-left: 4px solid var(--act);
-  background: color-mix(in srgb, var(--act) 10%, var(--panel));
+  background: var(--panel2);
   font-size: var(--fs-sm); line-height: 1.55;
 }
-.sg-degraded--stale { border-left-color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, var(--line));
-  background: color-mix(in srgb, var(--warn) 9%, var(--panel)); }
+.sg-degraded--stale { border-left-color: var(--warn); border-color: var(--warn);
+  background: var(--surface-warn-subtle); }
 .sg-degraded code { font-family: var(--font-mono); font-size: var(--fs-micro); color: var(--text); }
 .sg-degraded-t { display: block; font-weight: 650; color: var(--text); margin: 0 0 3px; }
 
@@ -381,67 +384,67 @@ body {
 
 html[data-theme="light"] .sg-panel,
 html[data-theme="light"] .sg-disc {
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 8%, transparent);
+  box-shadow: 0 1px 2px var(--mc-ink-08);
 }
-html[data-theme="light"] .sg-read { box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 8%, transparent); }
+html[data-theme="light"] .sg-read { box-shadow: 0 1px 2px var(--mc-ink-08); }
 
 /* Ink on paper: the base landmass is now DARKER than its panel, and the
    borders sharpen — hairline discipline replaces the dark field's glow. */
 html[data-theme="light"] .sg-geo {
-  fill: color-mix(in srgb, var(--text) 6%, var(--panel));
-  stroke: color-mix(in srgb, var(--text) 24%, transparent);
+  fill: var(--text); fill-opacity: .06;
+  stroke: var(--text); stroke-opacity: .24;
   stroke-width: .4;
 }
 
 /* The clay ramp tops out lower than amber does on black: past ~62% a saturated
    clay stops deepening against white and starts to muddy. */
-html[data-theme="light"] .sg-geo[data-step="1"] { fill: color-mix(in srgb, var(--warn) 12%, var(--panel)); }
-html[data-theme="light"] .sg-geo[data-step="2"] { fill: color-mix(in srgb, var(--warn) 24%, var(--panel)); }
-html[data-theme="light"] .sg-geo[data-step="3"] { fill: color-mix(in srgb, var(--warn) 38%, var(--panel)); }
-html[data-theme="light"] .sg-geo[data-step="4"] { fill: color-mix(in srgb, var(--warn) 50%, var(--panel)); }
-html[data-theme="light"] .sg-geo[data-step="5"] { fill: color-mix(in srgb, var(--warn) 62%, var(--panel)); }
+html[data-theme="light"] .sg-geo[data-step="1"] { fill: var(--warn); fill-opacity: 0.12; }
+html[data-theme="light"] .sg-geo[data-step="2"] { fill: var(--warn); fill-opacity: 0.24; }
+html[data-theme="light"] .sg-geo[data-step="3"] { fill: var(--warn); fill-opacity: 0.38; }
+html[data-theme="light"] .sg-geo[data-step="4"] { fill: var(--warn); fill-opacity: 0.5; }
+html[data-theme="light"] .sg-geo[data-step="5"] { fill: var(--warn); fill-opacity: 0.62; }
 
 /* Ring, not glow — a bloom on white is a stain. */
 html[data-theme="light"] .sg-geo.is-on {
   stroke: var(--link); stroke-width: 1.4; filter: none;
 }
-html[data-theme="light"] .sg-geo.is-pick:hover { stroke: color-mix(in srgb, var(--text) 62%, transparent); }
+html[data-theme="light"] .sg-geo.is-pick:hover { stroke: var(--text); stroke-opacity: .62; }
 /* On paper a 22% ink is nearly gone; light dims less far to stay legible. */
 html[data-theme="light"] .sg-geo.is-off { opacity: .34; }
 html[data-theme="light"] .sg-geo.is-identityless {
   fill: url("#sg-identityless-pattern");
-  stroke: color-mix(in srgb, var(--warn) 64%, var(--text));
+  stroke: var(--ink-warn); stroke-opacity: 1;
 }
-html[data-theme="light"] .sg-identityless-pattern-bg { fill: color-mix(in srgb, var(--panel2) 72%, var(--panel)); }
-html[data-theme="light"] .sg-identityless-pattern-line { stroke: color-mix(in srgb, var(--warn) 48%, var(--text)); }
+html[data-theme="light"] .sg-identityless-pattern-bg { fill: var(--panel2); fill-opacity: .72; }
+html[data-theme="light"] .sg-identityless-pattern-line { stroke: var(--ink-warn); stroke-opacity: .48; }
 
-html[data-theme="light"] .sg-ramp i:nth-child(1) { background: color-mix(in srgb, var(--warn) 12%, var(--panel)); }
-html[data-theme="light"] .sg-ramp i:nth-child(2) { background: color-mix(in srgb, var(--warn) 24%, var(--panel)); }
-html[data-theme="light"] .sg-ramp i:nth-child(3) { background: color-mix(in srgb, var(--warn) 38%, var(--panel)); }
-html[data-theme="light"] .sg-ramp i:nth-child(4) { background: color-mix(in srgb, var(--warn) 50%, var(--panel)); }
-html[data-theme="light"] .sg-ramp i:nth-child(5) { background: color-mix(in srgb, var(--warn) 62%, var(--panel)); }
+html[data-theme="light"] .sg-ramp i:nth-child(1)::before { opacity: 0.12; }
+html[data-theme="light"] .sg-ramp i:nth-child(2)::before { opacity: 0.24; }
+html[data-theme="light"] .sg-ramp i:nth-child(3)::before { opacity: 0.38; }
+html[data-theme="light"] .sg-ramp i:nth-child(4)::before { opacity: 0.5; }
+html[data-theme="light"] .sg-ramp i:nth-child(5)::before { opacity: 0.62; }
 
 /* Selected row: quiet tint + rail + deepened ink, never a highlighter smear. */
 html[data-theme="light"] .sg-tbl tbody tr.is-on {
-  background: color-mix(in srgb, var(--warn) 8%, var(--panel));
+  background: var(--surface-warn-subtle);
   box-shadow: inset 3px 0 0 0 var(--warn);
 }
-html[data-theme="light"] .sg-tbl th { background: color-mix(in srgb, var(--panel2) 70%, var(--panel)); }
+html[data-theme="light"] .sg-tbl th { background: var(--panel2); }
 
 /* LIGHT degraded: a bordered sheet rather than a filled rail — a heavy fill on
    white reads as an error page, not as a caveat on live material. */
 html[data-theme="light"] .sg-degraded {
-  background: color-mix(in srgb, var(--act) 5%, var(--panel));
-  border: 1px solid color-mix(in srgb, var(--act) 55%, var(--line));
+  background: var(--panel);
+  border: 1px solid var(--act);
   border-left-width: 4px;
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 8%, transparent);
+  box-shadow: 0 1px 2px var(--mc-ink-08);
 }
 html[data-theme="light"] .sg-degraded--stale {
-  background: color-mix(in srgb, var(--warn) 6%, var(--panel));
-  border-color: color-mix(in srgb, var(--warn) 55%, var(--line));
+  background: var(--surface-warn-subtle);
+  border-color: var(--warn);
   border-left-color: var(--warn);
 }
-html[data-theme="light"] .sg-caveat { box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent); }
+html[data-theme="light"] .sg-caveat { box-shadow: 0 1px 2px var(--mc-text-06); }
 html[data-theme="light"] .sg-prov { background: var(--panel); }
 
 /* =========================================================================

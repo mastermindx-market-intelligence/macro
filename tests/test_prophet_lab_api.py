@@ -61,7 +61,7 @@ def _canned_payload() -> dict:
 _D5_EPISODE_GENERATION = "peg:" + "a" * 64
 _D5_EPISODE_KNOWN_AT = "2026-07-30T20:05:00Z"
 _D5_ANCHOR = {
-    "kind": "reset_low",
+    "kind": "turn_watch_reset_low",
     "time": "2026-07-30T20:00:00Z",
     "price": "100.0000",
     "basis": "turn_watch.reset_low",
@@ -721,3 +721,147 @@ def test_hub_prophet_reuses_the_lab_routes_own_path_resolution(monkeypatch) -> N
     request = _hub_request(client_host="127.0.0.1")
     prophet_lab_api.hub_prophet(request)
     assert calls == [sentinel]
+
+
+@pytest.fixture
+def earnings_detail_client(monkeypatch,tmp_path):
+    from tests.test_intelligence_vector_units import _q06_vector,_install_q06
+    _install_q06(tmp_path)
+    app=FastAPI();app.include_router(prophet_lab_api.router)
+    app.dependency_overrides[prophet_lab_api.require_site_full_user]=lambda:{"sub":"paid-fixture"}
+    monkeypatch.delenv(KILL_SWITCH_ENV,raising=False)
+    monkeypatch.setattr(prophet_lab_api,"_REPO_ROOT",tmp_path)
+    monkeypatch.setattr(prophet_lab_api,"load_candidate_episode_store_snapshot",lambda _: _d5_snapshot())
+    monkeypatch.setattr(prophet_lab_api,"_load_issuer_master",lambda _: _d5_master(include_cik=True))
+    calls=[]
+    def native_vector(**kwargs):
+        calls.append(kwargs)
+        return _q06_vector()
+    monkeypatch.setattr(prophet_lab_api,"build_earnings_intelligence_vector",native_vector)
+    with TestClient(app) as client:
+        yield client,app,calls,tmp_path
+
+
+def _earnings_detail_url():
+    return f"/api/prophet/lab/v1/episodes/{_D5_EPISODE_ID}/earnings"
+
+
+def test_earnings_detail_actual_route_uses_one_native_d5_read(earnings_detail_client):
+    client,_,calls,_=earnings_detail_client
+    response=client.get(_earnings_detail_url())
+    assert response.status_code==200,response.text
+    _assert_private_headers(response)
+    body=response.json()
+    assert body["schema"]=="prophet.episode_earnings_detail/v1"
+    assert body["dossier"]["reported_changes"][0]["change_pct"]==pytest.approx(16.356501765281383)
+    assert len(calls)==1
+    assert all(v is False for v in body["authority"].values())
+
+
+@pytest.mark.parametrize("status",[401,403])
+def test_earnings_detail_auth_blocks_before_any_data(earnings_detail_client,status):
+    client,app,calls,_=earnings_detail_client
+    def deny():raise HTTPException(status_code=status,detail="fixture denial")
+    app.dependency_overrides[prophet_lab_api.require_site_full_user]=deny
+    assert client.get(_earnings_detail_url()).status_code==status
+    assert calls==[]
+
+
+def test_earnings_detail_kill_switch_inherited(earnings_detail_client,monkeypatch):
+    client,_,calls,_=earnings_detail_client
+    monkeypatch.setenv(KILL_SWITCH_ENV,"1")
+    response=client.get(_earnings_detail_url())
+    assert response.status_code==503
+    _assert_private_headers(response);assert calls==[]
+
+
+def test_earnings_detail_missing_episode_inherits_private_404(earnings_detail_client,monkeypatch):
+    client,_,calls,_=earnings_detail_client
+    monkeypatch.setattr(prophet_lab_api,"load_candidate_episode_store_snapshot",lambda _: _d5_snapshot(episodes=()))
+    response=client.get(_earnings_detail_url())
+    assert response.status_code==404
+    _assert_private_headers(response);assert calls==[]
+
+
+def test_earnings_detail_source_contract_absence_does_not_hide_research(earnings_detail_client):
+    from engine.prophet_lab.earnings_dossier import Q06_CONTRACT_PATH
+    client,_,calls,root=earnings_detail_client
+    (root/Q06_CONTRACT_PATH).unlink()
+    response=client.get(_earnings_detail_url())
+    assert response.status_code==200,response.text
+    assert response.json()["comparison_state"]=="SOURCE_CONTRACT_NOT_INSTALLED"
+    assert response.json()["current_observations"][0]["value_usd"]==109417000000
+    assert len(calls)==1
+
+
+def test_earnings_detail_corrupt_native_projection_is_private_503(earnings_detail_client,monkeypatch):
+    client,_,_,_=earnings_detail_client
+    monkeypatch.setattr(prophet_lab_api,"build_earnings_intelligence_vector",lambda **_: {"schema":"bad"})
+    response=client.get(_earnings_detail_url())
+    assert response.status_code==503
+    _assert_private_headers(response)
+    assert "Traceback" not in response.text
+
+
+def test_existing_episode_endpoint_remains_native_vector(earnings_detail_client):
+    client,_,calls,_=earnings_detail_client
+    response=client.get(_episode_intelligence_url())
+    assert response.status_code==200
+    assert response.json()["schema"]==SCHEMA_INTELLIGENCE_VECTOR
+    assert "dossier" not in response.json()
+    assert len(calls)==1
+
+
+
+def test_earnings_detail_route_is_mounted_on_existing_production_router():
+    from app.main import app
+    target="/api/prophet/lab/v1/episodes/{episode_id}/earnings"
+    # Native include-router mounting may be deferred; exercise routing rather
+    # than mistake a shallow route-list representation for a missing endpoint.
+    assert target in app.openapi()["paths"]
+    response=TestClient(app).get(target.replace("{episode_id}","fixture"))
+    assert response.status_code==401
+
+
+
+def test_full_native_earnings_route_preserves_b1_d5_and_source_field(monkeypatch,tmp_path):
+    from tests.test_intelligence_vector_units import _q06_vector,_install_q06
+    episode,master,revisions=_q06_vector(return_inputs=True)
+    _install_q06(tmp_path)
+    snapshot=CandidateEpisodeStoreSnapshot(generation_id=_D5_EPISODE_GENERATION,
+        generation=ValidatedCandidateEpisodeGeneration(path=tmp_path/"not-serialized",
+            events=({"event_type":"OPENED","episode_id":episode["episode_id"],
+                     "known_at":episode["opened_at"]},),suppressions=(),episodes=(episode,),receipt={}))
+    monkeypatch.setattr(prophet_lab_api,"load_candidate_episode_store_snapshot",lambda _:snapshot)
+    monkeypatch.setattr(prophet_lab_api,"_load_issuer_master",lambda _:master)
+    monkeypatch.setattr(prophet_lab_api,"_REPO_ROOT",tmp_path)
+    monkeypatch.delenv(KILL_SWITCH_ENV,raising=False)
+    reads=[]
+    def exact_revision_reader(event_id):
+        reads.append(event_id);return revisions
+    def native_builder(**kwargs):
+        return build_earnings_intelligence_vector(**kwargs,
+            find_event_id=lambda _:"evt_cik0000320193_2026q3_results",
+            read_revisions=exact_revision_reader)
+    monkeypatch.setattr(prophet_lab_api,"build_earnings_intelligence_vector",native_builder)
+    app=FastAPI();app.include_router(prophet_lab_api.router)
+    app.dependency_overrides[prophet_lab_api.require_site_full_user]=lambda:{"sub":"paid-fixture"}
+    response=TestClient(app).get(f"/api/prophet/lab/v1/episodes/{episode['episode_id']}/earnings")
+    assert response.status_code==200,response.text
+    _assert_private_headers(response)
+    body=response.json()
+    assert body["episode_ref"]["episode_id"]==episode["episode_id"]
+    assert body["episode_ref"]["generation_id"]==_D5_EPISODE_GENERATION
+    assert body["decision_cut"]["opened_at"]==episode["opened_at"]
+    assert body["dossier"]["reported_changes"][0]["change_pct"]==pytest.approx(16.356501765281383)
+    assert "evidence_brief" in body
+    brief=body["evidence_brief"]
+    assert brief["supporting_facts"][0]["code"]=="REPORTED_INCREASE"
+    assert brief["supporting_facts"][0]["values"]["change_pct"]==pytest.approx(16.356501765281383)
+    assert "QUALIFIED_PRE_RELEASE_EXPECTATION" in brief["not_established"]
+    assert "CURRENT_MARKET_AND_PORTFOLIO_PERMISSION" in brief["not_established"]
+    assert "MATCHED_PERIOD_CASH_FLOW_RECONCILIATION" in brief["not_established"]
+    assert "cash_flow_reconciliations" not in body["dossier"]
+    assert all(v is False for v in brief["authority"].values())
+    assert reads==["evt_cik0000320193_2026q3_results"]
+    assert body["is_original_as_run_recommendation"] is False

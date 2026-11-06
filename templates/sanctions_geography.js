@@ -362,6 +362,15 @@
       ui.map.appendChild(node);
     });
 
+    // The register is usable while topology loads. Reconcile its latest state
+    // before exposing new paths; never toggle selection or refetch its detail.
+    // Topology also identifies off-map register rows. Only that noninteractive
+    // view is rebuilt; keep a reader's focused country row connected.
+    if (currentView() === "unresolved") { renderTable(); }
+    else { syncMap(visibleRows()); }
+    syncSelection();
+    updateMapAccessibleNames(document.documentElement.getAttribute("data-lang") === "zh");
+    renderCoverage(p);
     if (ui.mapSkel && ui.mapSkel.parentNode) {
       ui.mapSkel.parentNode.removeChild(ui.mapSkel);
     }
@@ -688,8 +697,7 @@
 
   /* ---------------- selection + entry detail ------------------------------ */
 
-  function select(geoId) {
-    model.selected = (model.selected === geoId) ? null : geoId;
+  function syncSelection() {
     var paths = ui.map ? ui.map.querySelectorAll(".sg-geo") : [];
     Array.prototype.forEach.call(paths, function (node) {
       var on = model.selected && node.getAttribute("data-geo-id") === model.selected;
@@ -701,6 +709,11 @@
     Array.prototype.forEach.call(trs, function (tr) {
       tr.classList.toggle("is-on", !!model.selected && tr.getAttribute("data-geo-id") === model.selected);
     });
+  }
+
+  function select(geoId) {
+    model.selected = (model.selected === geoId) ? null : geoId;
+    syncSelection();
     renderEntries();
     if (model.selected) {
       loadSelectedEntries(model.selected).catch(function () {

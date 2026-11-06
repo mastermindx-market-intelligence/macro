@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-14T03:15:52.083681+00:00",
+  "run_id": "mmx-press-writer-contract-followon-20261014-001",
+  "root": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "parent": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "retained_sha256": "30d3dee623d8fda19caf3b7e3e83d3806a492d0aeaa58e86fa6643b8587bdf2a",
+  "patch_sha256": "2451376ba30091505d63bff334d25c9c3eac73cb91c6bcf974aa973dab914c99",
+  "source_sha256": {
+    "engine/press/writer.py": "c0ae6a5785ec2a3b358bd523a8833c72888f98b90fdd6fc877ae550fa94275fd",
+    "tests/test_press_writer.py": "18595a2c7bc15fff25fe3192362e3a36483cb1c74208d1c3407819c631c976b6"
+  },
+  "parent_red": "6 failed, 58 passed in 3.96s on pristine writer with new tests",
+  "combined_green": "319 passed, 1 existing sparse-site skip in 16.73s",
+  "command": "python3 -m pytest tests/test_press_writer.py tests/test_press_validators.py tests/test_press_official_staging.py tests/test_press_run.py tests/test_press_staging_inspection.py tests/test_press_official_feed_candidate.py -q",
+  "provider_calls": 0,
+  "publication": false,
+  "cutover": false,
+  "review": "PASS: independent Terra review of 558ca0a6cded; 64 tests passed in 7.32s",
+  "artifact_delivery": "Initial local destination was outside approved evidence root and refused before read. Same retained run and digest exported to adapter approved /Volumes/Mastermind/evidence root; no provider replay or policy change.",
+  "review_sha256": "07de01203e9f1f718778782f7a117e6fb4eaf87febbc8f35afca7425acc3b5ae",
+  "fabric_acceptance": {
+    "state": "ACCEPTED",
+    "accepted_by": "reviewer",
+    "reason": "VALIDATED_OUTCOME",
+    "run_id": "mmx-press-writer-contract-followon-20261014-001"
+  }
+}

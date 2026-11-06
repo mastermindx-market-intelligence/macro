@@ -36,6 +36,26 @@
     .help:hover .tip{display:block;}
     .help.below .tip{bottom:auto;top:140%;}
     .help.below:hover::before{bottom:auto;top:100%;}
+
+    /* UD-B2-W3 R6: AI / non-AI breadth split relocated from the macro
+       sentiment dialog (census #36). Token-scoped only. Dark: luminance
+       step on --panel2 rails. Light: hairline ring so the two treatments
+       are not a token recolour. */
+    #vsb-breadth-split-section .ud-bs-split{display:flex;flex-direction:column;gap:var(--sp-3,12px);margin:8px 0;}
+    #vsb-breadth-split-section .ud-bs-row{display:grid;grid-template-columns:minmax(96px,auto) 1fr 42px;align-items:center;gap:12px;}
+    #vsb-breadth-split-section .ud-bs-lbl{font-size:var(--fs-sm);font-weight:600;color:var(--ink-1);}
+    #vsb-breadth-split-section .ud-bs-track{position:relative;height:16px;border-radius:var(--r-ctl);background:var(--panel2);overflow:hidden;}
+    #vsb-breadth-split-section .ud-bs-fill{position:absolute;left:0;top:0;bottom:0;border-radius:var(--r-ctl);}
+    #vsb-breadth-split-section .ud-bs-fill--ai{background:var(--info);}
+    #vsb-breadth-split-section .ud-bs-fill--non{background:var(--muted);}
+    #vsb-breadth-split-section .ud-bs-val{font-size:var(--fs-sm);font-weight:800;font-variant-numeric:tabular-nums;text-align:right;color:var(--ink-1);}
+    #vsb-breadth-split-section .ud-bs-delta{font-size:var(--fs-micro);font-weight:700;color:var(--ink-2);margin-top:4px;}
+    #vsb-breadth-split-section .ud-bs-note{font-size:var(--fs-micro);color:var(--ink-3);margin-top:8px;line-height:1.5;}
+    #vsb-breadth-split-section .ud-bs-watch{font-size:var(--fs-micro);color:var(--ink-3);margin-top:8px;line-height:1.5;border-top:1px solid var(--line);padding-top:8px;}
+    html[data-theme="light"] #vsb-breadth-split-section .ud-bs-track{background:var(--panel);box-shadow:0 0 0 1px var(--line);}
+    @media (max-width: 820px) {
+      #vsb-breadth-split-section .ud-bs-row{grid-template-columns:minmax(80px,auto) 1fr 38px;gap:8px;}
+    }
   </style>
 </head>
 <body>
@@ -48,6 +68,74 @@
       'The deeper, geekier reads behind the main dashboard — cross-asset concentration, risk budgeting, the factor scorecard, and the raw market-internals tables. Useful for sanity-checking the headline calls; not needed for day-to-day decisions.',
       '主仪表盘背后更深、更技术的解读 — 跨资产集中度、风险预算、因子记分卡，以及原始的市场内部结构表。用于校验头条判断；日常决策并不需要。') }}
       {{ t('As of', '截至') }} {{ latest.date }}.</p>
+  </div>
+
+  {# UD-B2-W3 R6: AI / non-AI breadth split RELOCATED from the macro
+     sentiment dialog (census #36). Same vm['breadth_split'] contract
+     (stance_en/stance_zh, latest.ai_pct50/nonai_pct50, cohort_sizes,
+     young). Move, do not duplicate. The hero breadth driver chips here. #}
+  <div class="panel span12" id="vsb-breadth-split-section">
+    <h2><span class="l-en">See how AI names compare with everyone else.</span><span class="l-zh">查看 AI 相关个股与其他个股相比如何。</span>
+      {{ help("How many AI-linked names sit above their 50-day trend versus everyone else. Display only — not a signal.", "有多少 AI 相关个股站上 50 日均线，对比其他个股。仅供展示，不是信号。") }}
+    </h2>
+    {% if breadth_split is defined and breadth_split %}
+    {% set _bs = breadth_split %}
+    {% set _bs_lat = _bs.get('latest') or {} %}
+    {% set _bs_cs = _bs.get('cohort_sizes') or {} %}
+    {% if _bs.get('stance_en') %}
+    <p style="margin:8px 0;font-weight:600">
+      <span class="l-en">{{ _bs.stance_en }}</span><span class="l-zh">{{ _bs.get('stance_zh') or _bs.stance_en }}</span>
+    </p>
+    {% endif %}
+    {% set _bs_ai50 = _bs_lat.get('ai_pct50') %}
+    {% set _bs_nonai50 = _bs_lat.get('nonai_pct50') %}
+    {% set _bs_delta = (_bs_ai50 - _bs_nonai50) if (_bs_ai50 is not none and _bs_nonai50 is not none) else none %}
+    <div class="ud-bs-split">
+      {% if _bs_ai50 is not none %}
+      <div class="ud-bs-row" data-vsb-bs="ai">
+        <span class="ud-bs-lbl"><span class="l-en">AI-linked names above their 50-day trend</span><span class="l-zh">AI 相关个股站上 50 日均线</span></span>
+        <span class="ud-bs-track"><span class="ud-bs-fill ud-bs-fill--ai" style="width:{{ _bs_ai50 | round(0) | int }}%"></span></span>
+        <span class="ud-bs-val">{{ _bs_ai50 | round(0) | int }}%</span>
+      </div>
+      {% endif %}
+      {% if _bs_nonai50 is not none %}
+      <div class="ud-bs-row" data-vsb-bs="nonai">
+        <span class="ud-bs-lbl"><span class="l-en">Everyone else</span><span class="l-zh">其他个股</span></span>
+        <span class="ud-bs-track"><span class="ud-bs-fill ud-bs-fill--non" style="width:{{ _bs_nonai50 | round(0) | int }}%"></span></span>
+        <span class="ud-bs-val">{{ _bs_nonai50 | round(0) | int }}%</span>
+      </div>
+      {% endif %}
+    </div>
+    {% if _bs_delta is not none %}
+    <div class="ud-bs-delta">
+      <span class="l-en">{{ _bs_delta | abs | round(0) | int }} pts {{ 'wider for AI' if _bs_delta >= 0 else 'wider for the rest' }}</span>
+      <span class="l-zh">{{ _bs_delta | abs | round(0) | int }} 个百分点差距，{{ 'AI 领先' if _bs_delta >= 0 else '其他领先' }}</span>
+    </div>
+    {% endif %}
+    {% set _bs_ai_n = _bs_cs.get('ai_total') %}
+    {% set _bs_univ = _bs_cs.get('universe') %}
+    {% if _bs_ai_n is not none and _bs_univ is not none %}
+    <div class="ud-bs-note">
+      <span class="l-en">{{ _bs_ai_n }} AI-linked names out of {{ _bs_univ }} tracked</span>
+      <span class="l-zh">{{ _bs_univ }} 只跟踪个股中有 {{ _bs_ai_n }} 只 AI 相关</span>
+    </div>
+    {% endif %}
+    {% if _bs.get('young') %}
+    <div class="ud-bs-note">
+      <span class="l-en">Still building history — readings will stabilise over time.</span>
+      <span class="l-zh">历史数据仍在积累，读数将随时间趋于稳定。</span>
+    </div>
+    {% endif %}
+    <div class="ud-bs-watch">
+      <span class="l-en">Watch: the AI buildout recycles capital among related names. If stocks start moving together again, the calm can break quickly — watch, don't chase.</span>
+      <span class="l-zh">注意：AI 基础设施建设在相关个股间循环资金。若股票重新同步波动，表面平静可能迅速打破，保持观察而非追高。</span>
+    </div>
+    {% else %}
+    <p class="muted">
+      <span class="l-en">Read being updated — this split re-draws nightly.</span>
+      <span class="l-zh">判读更新中——该拆分每晚重绘。</span>
+    </p>
+    {% endif %}
   </div>
 
   {# ===================== CROSS-ASSET CONCENTRATION ===================== #}
