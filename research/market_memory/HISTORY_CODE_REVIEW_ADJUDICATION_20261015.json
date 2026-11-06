@@ -1,0 +1,54 @@
+{
+  "schema": "market_memory.code_review_adjudication.v1",
+  "run_id": "market-time-machine-20261015-code-review-01",
+  "root": "market-time-machine-20261015",
+  "parent": "market-time-machine-20261015",
+  "provider": "minimax",
+  "host": "ubuntu3",
+  "original_subject_head": "c174507305bdb8170665fd535263805e59e6e4ce",
+  "retained_bytes_sha256": "d2bcb6c333b0d00ecc0caf247b0f0b67af7da724492fe669892f1b12a37fbcd5",
+  "reviewed_sha256": {
+    "engine/neuralweb/market_memory_history.py": "5108cd9401f58dd4a2dbb60832c296601da488791cf1e98b953135ffba009574",
+    "engine/neuralweb/market_memory_history_archive.py": "fb12f7b89eb081245e569ef05f94a4e1065ca959ac9bbfed553167ebbdbf51c6"
+  },
+  "verdict": "REVIEW_CONSUMED_ONE_REPRODUCIBLE_CONCERN_REPAIRED",
+  "findings": [
+    {
+      "id": 1,
+      "disposition": "REJECTED_REPRODUCER",
+      "evidence": "Positive prices are validated before _window; zero volume baseline has explicit zero_volume_baseline handling. No admitted zero-price path reproduces the allegation."
+    },
+    {
+      "id": 2,
+      "disposition": "ACCEPTED_AND_REPAIRED",
+      "evidence": "Decoded single-date file budget was1GiB. Tightened to64MiB before materialization and ensured ParquetFile closes on refusal. Regression fails before repair and passes after; async scanner remains forbidden."
+    },
+    {
+      "id": 3,
+      "disposition": "REJECTED_ORDERING_ERROR",
+      "evidence": "build_daily_rows validates every source mapping/date before _coverage. Added malformed-source regression proves typed refusal before coverage."
+    },
+    {
+      "id": 4,
+      "disposition": "REJECTED_REPRODUCER",
+      "evidence": "Zero benchmark prices are rejected before calculation, while _put independently rejects nonfinite subtraction. No claimed admitted reproducer."
+    },
+    {
+      "id": 5,
+      "disposition": "NONBLOCKING_SPECULATION",
+      "evidence": "Arrow currently specifies nullable=True by default; hypothetical future default change is not a present defect. Missing-source volume and exact int64 roundtrip tests already pass."
+    },
+    {
+      "id": 6,
+      "disposition": "DESIGNED_ABSENCE",
+      "evidence": "No placeholder market observation should be invented for an empty source. Added regression proves declared proxy denominator and explicit zero observations survive in coverage."
+    },
+    {
+      "id": 7,
+      "disposition": "REJECTED_OWNER_MISREAD",
+      "evidence": "Existing lib.dataos.temporal.utc normalizes to UTC. Added exact -05:00 input regression yields next-day04:59:59+00:00; reviewer falsely described local-date behavior."
+    }
+  ],
+  "review_scope": "two frozen core/archive modules; not the UI, macro source truth, whole program, CI or deployment",
+  "acceptance_not_requested": "Most returned alleged defects were not valid reproducers. Preserve COMPLETED unaccepted rather than misrepresenting the raw response as correct. Parent adjudication and repaired test evidence remain authoritative source evidence."
+}

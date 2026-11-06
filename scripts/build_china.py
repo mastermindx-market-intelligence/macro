@@ -404,15 +404,8 @@ def china_regime_timeline(hist: pd.DataFrame) -> dict:
 
 def _lifespan_rows(quad: pd.Series) -> list[dict]:
     """Per-quad base rates (count, median length, two most-common next quads)."""
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(quad)
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
-                     "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
-    return rows
+    from engine.playbook import finished_lifespan_rows
+    return finished_lifespan_rows(quad)
 
 
 def _health_rows() -> list[dict]:
@@ -694,7 +687,7 @@ def _build_sector_pages(env) -> int:
 
 def _build_history(env, latest: dict, generated: str) -> None:
     import math
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
+    from engine.playbook import finished_lifespan_rows, transition_stats
     hist = store.read("china_regime", "regime_history")
     if hist is None or "quad" not in hist.columns:
         log.warning("china history: no regime_history; skipping history page")
@@ -703,12 +696,7 @@ def _build_history(env, latest: dict, generated: str) -> None:
     mdf = store.read("china", mi)
     px = mdf["close"] if mdf is not None else pd.Series(dtype=float)
     trans = transition_stats(hist["quad"])
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
-                     "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
+    rows = finished_lifespan_rows(hist["quad"])
 
     # CN-SYS W8 — phase history block (display-only; degrade silently if artifacts absent)
     phase_strip: list[dict] = []
@@ -2158,6 +2146,7 @@ def main() -> int:
         # library FINALIZED rival, no fallback refresh, no public template expansion.
         # Current source-specific mixed-vendor capture and per-stock reason capability
         # are unavailable: typed refusal leaves the board and its reasons unchanged.
+        _cn_w3c_refusal = None
         vm["cn_selection_cohort_internal"] = None
         try:
             from datetime import datetime as _w3c_dt, timezone as _w3c_tz
@@ -2183,12 +2172,14 @@ def main() -> int:
             if _cn_w3c["status"] == "AVAILABLE":
                 vm["cn_selection_cohort_internal"] = _cn_w3c
             else:
+                _cn_w3c_refusal = _cn_w3c
                 log.info("W3C China source unavailable: %s", _cn_w3c["reason_codes"])
         except Exception as _cn_w3c_e:  # noqa: BLE001 — preserve ordinary publication
             log.warning("W3C China source unavailable (%s)", _cn_w3c_e)
         try:
             from engine.theme_graph.selection_cohort_projection import write_product_projection
-            write_product_projection(site, "cn", vm.get("cn_selection_cohort_internal"))
+            # A typed refusal reaches only the product projection (gate #8: preserve reasons); the internal binding stays None.
+            write_product_projection(site, "cn", vm.get("cn_selection_cohort_internal") or _cn_w3c_refusal)
         except Exception as _scp_e:  # noqa: BLE001 — projection never breaks ordinary rendering
             log.warning("selection-cohort projection (cn) not written (%s)", _scp_e)
 

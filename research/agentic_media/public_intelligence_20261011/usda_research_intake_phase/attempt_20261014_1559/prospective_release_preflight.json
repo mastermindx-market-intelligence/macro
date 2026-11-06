@@ -1,0 +1,204 @@
+{
+  "observed_at": "2026-10-14T16:18:31.037836+00:00",
+  "original_candidate": "a18ec9825dd9756fcdc1421c466bb5c769a69883",
+  "protected_main": "1302e876d406fc84552fd56c4d5edae2696da023",
+  "prospective_tree": "754ab7e03bcf1b50b244795342f59b2cf1b022f9",
+  "conflicts": false,
+  "sources": [
+    {
+      "path": "scripts/inspect_press_staging.py",
+      "expected": "ad3415d99a7da810ed9f7f87bdcb729956f130a270820381c304709461112262",
+      "actual": "ad3415d99a7da810ed9f7f87bdcb729956f130a270820381c304709461112262",
+      "same": true
+    },
+    {
+      "path": "scripts/run_press.py",
+      "expected": "9a7417be2bd39e2e8c244e791bb99824e89573e68ef8be5916b81865bd2a45e5",
+      "actual": "9a7417be2bd39e2e8c244e791bb99824e89573e68ef8be5916b81865bd2a45e5",
+      "same": true
+    },
+    {
+      "path": "engine/press/validators.py",
+      "expected": "fdbae60b9bec3635db2a7732e9a2519a4a600d4f0e9e83ee65e962d11786cc46",
+      "actual": "fdbae60b9bec3635db2a7732e9a2519a4a600d4f0e9e83ee65e962d11786cc46",
+      "same": true
+    },
+    {
+      "path": "engine/press/desk_planner.py",
+      "expected": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b",
+      "actual": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b",
+      "same": true
+    },
+    {
+      "path": "config/press.yml",
+      "expected": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+      "actual": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+      "same": true
+    },
+    {
+      "path": "engine/press/earnings_adapter.py",
+      "expected": "7a4196561502252584056be7912d4899926cc7bd1d60e1a55adf6569e5e2b163",
+      "actual": "7a4196561502252584056be7912d4899926cc7bd1d60e1a55adf6569e5e2b163",
+      "same": true
+    },
+    {
+      "path": "engine/earnings_narrative/story_packets.py",
+      "expected": "f60bd3daed8d2620c16963632e3644a3833a226c4539f84f36c734ca2ea05e1e",
+      "actual": "f60bd3daed8d2620c16963632e3644a3833a226c4539f84f36c734ca2ea05e1e",
+      "same": true
+    },
+    {
+      "path": "engine/earnings_narrative/story_store.py",
+      "expected": "83037ae9ce5201f8bfca267bfa2f45e7ae7b47e6d3b7287d52bf7620c3c7762b",
+      "actual": "83037ae9ce5201f8bfca267bfa2f45e7ae7b47e6d3b7287d52bf7620c3c7762b",
+      "same": true
+    },
+    {
+      "path": "engine/earnings_narrative/admission.py",
+      "expected": "aee12aff2521d0810e31984cbda7c1f3f1fbcee7ed527069ebe20ca40bfbb5a5",
+      "actual": "aee12aff2521d0810e31984cbda7c1f3f1fbcee7ed527069ebe20ca40bfbb5a5",
+      "same": true
+    },
+    {
+      "path": "scripts/stage_earnings_story_press.py",
+      "expected": "c6673e8a0bf8ad9dfc411cf159cfe21338c00cab57fc8cb086df5298efc1a60c",
+      "actual": "c6673e8a0bf8ad9dfc411cf159cfe21338c00cab57fc8cb086df5298efc1a60c",
+      "same": true
+    },
+    {
+      "path": "engine/press/writer.py",
+      "expected": "0528fc0724c2727372df43e1ee064f84f159de6f54f7381371e6f13dbe13bb09",
+      "actual": "0528fc0724c2727372df43e1ee064f84f159de6f54f7381371e6f13dbe13bb09",
+      "same": true
+    },
+    {
+      "path": "scripts/publish_earnings_story_packets_r2.py",
+      "expected": "1dea622fd8e045c9831cca9643b84a2018c121c66c476be753e9d2328f037ddf",
+      "actual": "1dea622fd8e045c9831cca9643b84a2018c121c66c476be753e9d2328f037ddf",
+      "same": true
+    },
+    {
+      "path": ".github/workflows/earnings-story-packets.yml",
+      "expected": "b7c8dbb670f777ddefcec98ce0f5afbeebc8f020bd67712ac88037b3a51b03bb",
+      "actual": "b7c8dbb670f777ddefcec98ce0f5afbeebc8f020bd67712ac88037b3a51b03bb",
+      "same": true
+    },
+    {
+      "path": "engine/press/external_candidate.py",
+      "expected": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497",
+      "actual": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497",
+      "same": true
+    },
+    {
+      "path": "engine/press/adjusted_baseline.py",
+      "expected": "76dbd36d2754f170e2fb2e1a09f9453f2d19866674a91c9250dd0ea6957f0f16",
+      "actual": "76dbd36d2754f170e2fb2e1a09f9453f2d19866674a91c9250dd0ea6957f0f16",
+      "same": true
+    },
+    {
+      "path": "engine/whitehouse_feed.py",
+      "expected": "1be31eb229a828aa11554fed50c29c51cdd572e5122469673fb866d9b7fd0c7e",
+      "actual": "1be31eb229a828aa11554fed50c29c51cdd572e5122469673fb866d9b7fd0c7e",
+      "same": true
+    },
+    {
+      "path": "engine/close_pass/massive_close.py",
+      "expected": "63b137a6c35a8346e0ed6adfbfd80c17ec3fc0e1e08fcf828c6dcfe1670d209b",
+      "actual": "63b137a6c35a8346e0ed6adfbfd80c17ec3fc0e1e08fcf828c6dcfe1670d209b",
+      "same": true
+    },
+    {
+      "path": "scripts/build_whitehouse.py",
+      "expected": "56a4b5f535fafb7ffee0d0df873674e7f0677708d47d6ad968f0af99b31dc534",
+      "actual": "56a4b5f535fafb7ffee0d0df873674e7f0677708d47d6ad968f0af99b31dc534",
+      "same": true
+    },
+    {
+      "path": "scripts/qualify_press_nvda_baseline.py",
+      "expected": "b6199b4f5975096a4ccf9246fb37e2b1ba3948a0282700630339a24a5ac38a05",
+      "actual": "b6199b4f5975096a4ccf9246fb37e2b1ba3948a0282700630339a24a5ac38a05",
+      "same": true
+    },
+    {
+      "path": ".github/workflows/press-source-qualification.yml",
+      "expected": "9fbb03ece7326998995a0444b05246c6bfef43d5b3a00999ce399b22d8981e79",
+      "actual": "9fbb03ece7326998995a0444b05246c6bfef43d5b3a00999ce399b22d8981e79",
+      "same": true
+    },
+    {
+      "path": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "expected": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891",
+      "actual": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891",
+      "same": true
+    },
+    {
+      "path": "engine/press/official_feed_candidate.py",
+      "expected": "f01f28bb20896c59b69ed95339875192d1e724a25078742119d2930e5f0d72f2",
+      "actual": "f01f28bb20896c59b69ed95339875192d1e724a25078742119d2930e5f0d72f2",
+      "same": true
+    },
+    {
+      "path": "engine/marketing/breaking_feed.py",
+      "expected": "da5c92c1b91a40e08d842807d97e656642543146fb2222e5918926b4ff930ec6",
+      "actual": "da5c92c1b91a40e08d842807d97e656642543146fb2222e5918926b4ff930ec6",
+      "same": true
+    },
+    {
+      "path": "scripts/stage_official_feed_press.py",
+      "expected": "523005e2e0f2c60b3229973a7a17cc4abb2f3d94dbbfd243ee5918b7e2583840",
+      "actual": "523005e2e0f2c60b3229973a7a17cc4abb2f3d94dbbfd243ee5918b7e2583840",
+      "same": true
+    }
+  ],
+  "all_24_source_hashes_unchanged": true,
+  "prospective_page_hashes": {
+    "blog/index.html": "2832c61b9c1e66c15f2e1fdf2967c7f31006690c49a0f9ff7e33665c81aceb7b",
+    "learn/index.html": "f90d3ecaa13b0c6c282df5a3c0766f88ec5d2310285f84e7f5dac78fb2cc9a73",
+    "tools/calculators/position-size.html": "ed8626dde0f1df97f21a48de7cdd379e5988d88f288b225efb7d114353965d45"
+  },
+  "branch_mutations": 0,
+  "pushes": 0,
+  "ci_dispatches": 0,
+  "protected_landing": false,
+  "installation": false,
+  "shared_source_dependencies": [
+    {
+      "path": "templates/theme.js",
+      "sha256": "1441debd43ea0259318cea1dd183c2eabc250f68ec072f5778a7f4d21ec36bb5",
+      "unchanged_from_accepted_1219_review": true
+    },
+    {
+      "path": "templates/theme.css",
+      "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+      "unchanged_from_accepted_1219_review": true
+    },
+    {
+      "path": "templates/onboard.js",
+      "sha256": "e9bbc4fbc58af7b77c54eedc1739e902ff3059dbc324d3cdbe15a3a4e5074128",
+      "unchanged_from_accepted_1219_review": true
+    },
+    {
+      "path": "templates/navigation-refresh.css",
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+      "unchanged_from_accepted_1219_review": true
+    },
+    {
+      "path": "templates/nav_market.js",
+      "sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+      "unchanged_from_accepted_1219_review": true
+    },
+    {
+      "path": "templates/_public_chrome_css.html.j2",
+      "sha256": "bca384d38c1fe0a8a83589c14c8c99cd03ac75288e2adc99306508cded5bfdb8",
+      "unchanged_from_accepted_1219_review": true
+    },
+    {
+      "path": "templates/_public_chrome_js.html.j2",
+      "sha256": "cdadd39202b665c78977112f6ff82667fcf01047b960602ae3fd88f9b01e4f26",
+      "unchanged_from_accepted_1219_review": true
+    }
+  ],
+  "pages_unchanged_from_accepted_1219_review": true,
+  "accepted_67_Node_checks_reused_for_unchanged_shared_bytes": true,
+  "manifest_rebound": false
+}
