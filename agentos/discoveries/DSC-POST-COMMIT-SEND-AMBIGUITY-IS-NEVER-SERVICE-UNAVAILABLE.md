@@ -28,6 +28,7 @@ so_what: >
 kind: landmine
 verified_at: 2026-09-25
 verified_by: >
+  Historical author-recorded verification dated 2026-09-25; supporting receipt: https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5825891875.
   Source read at Mastermind `f7ffc9cf` and `87117418` on branch
   claude/iac1-p1-packet-carriage-20260925: the `send_effect_code` conditional, the three
   `_EXACT_SEND_OPERATION_*` maps (two read via `.get()` with an `is None` guard, one via a bare
@@ -45,3 +46,9 @@ The reason this is a landmine and not a style note is that the wrong code is the
 one. `SERVICE_UNAVAILABLE` reads like an honest admission of trouble, and a reviewer scanning for
 overclaims will not flag it. It is in fact the stronger claim: it tells the caller the send did
 not happen. The weaker, correct claim is the one that sounds worse.
+
+## Historical provenance — 2026-09-25
+
+The measurements, confidence and verification date above describe the original September 25 observation. The November 6 record repair validates document structure and preserves source references; it does not rerun the historical experiment or establish current runtime behavior. The supporting [original receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5825891875) records the historical evidence.
+
+The [later canonical lineage ruling](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5841164702) designated claude/iac1-p1-packet-carriage-20260925 as **DONOR_TEST_EVIDENCE / DO_NOT_PUBLISH_AS_P1**, with [Mastermind #986](https://github.com/mastermindx-market-intelligence/Mastermind/pull/986) the canonical P1 carrier. Its held C-D child remained STOP / DO_NOT_PUBLISH. These knowledge records grant no transplantation, installation, live-packet or replay authority; all original refused or uncertain effects retain their original target and reconciliation boundary.

@@ -45,6 +45,7 @@ so_what: >
 kind: landmine
 verified_at: 2026-09-25
 verified_by: >
+  Historical author-recorded verification dated 2026-09-25; supporting receipt: https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5826382424.
   Defect confirmed by two independent methods that agreed: Sol proved `_scan_thread`,
   `_history`, `read_consultation_packet`, `_find_packet`, `prepare_send_message` and
   `_validate_outbound_packet` byte-identical between the tested intermediate 5e5c79ce and the
@@ -72,3 +73,9 @@ The authorship point generalises past this codebase. The worker did nothing wron
 implemented a precise instruction precisely. Review that only asks "did the worker follow the
 brief?" cannot catch this class of defect, because the brief is the defect. The only review
 that catches it asks what each instruction REMOVES.
+
+## Historical provenance — 2026-09-25
+
+The measurements, confidence and verification date above describe the original September 25 observation. The November 6 record repair validates document structure and preserves source references; it does not rerun the historical experiment or establish current runtime behavior. The supporting [original receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5826382424) records the historical evidence.
+
+The [later canonical lineage ruling](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5841164702) designated claude/iac1-p1-packet-carriage-20260925 as **DONOR_TEST_EVIDENCE / DO_NOT_PUBLISH_AS_P1**, with [Mastermind #986](https://github.com/mastermindx-market-intelligence/Mastermind/pull/986) the canonical P1 carrier. Its held C-D child remained STOP / DO_NOT_PUBLISH. These knowledge records grant no transplantation, installation, live-packet or replay authority; all original refused or uncertain effects retain their original target and reconciliation boundary.

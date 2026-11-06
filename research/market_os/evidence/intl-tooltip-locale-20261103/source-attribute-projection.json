@@ -1,0 +1,68 @@
+{
+  "templates/intl_workspace/_gs_scanner_macros.html.j2": {
+    "before_sha256": "096659f403948a022d07ec2c71c282f83247bdb0d246b8943503001e92310379",
+    "after_sha256": "62e0909883c72ed61ac30a1e1720e971614b0c951d28d06d14507a059ec7d8d9",
+    "exact_inverse_projection_equal": true,
+    "changes": [
+      {
+        "before": "title=\"{{ state.reason[0] }} · {{ state.reason[1] }}\"",
+        "after": "data-tip-en=\"{{ state.reason[0]|e }}\" data-tip-zh=\"{{ state.reason[1]|e }}\" tabindex=\"0\"",
+        "count": 1
+      },
+      {
+        "before": "title=\"{{ tier.label[0] }} · {{ tier.label[1] }}\"",
+        "after": "data-tip-en=\"{{ tier.label[0]|e }}\" data-tip-zh=\"{{ tier.label[1]|e }}\" tabindex=\"0\"",
+        "count": 1
+      },
+      {
+        "before": "title=\"{{ p.session_title[0] }} · {{ p.session_title[1] }}\"",
+        "after": "data-tip-en=\"{{ p.session_title[0]|e }}\" data-tip-zh=\"{{ p.session_title[1]|e }}\" tabindex=\"0\"",
+        "count": 1
+      },
+      {
+        "before": "title=\"{{ cell.title[0] }} · {{ cell.title[1] }}\"",
+        "after": "data-tip-en=\"{{ cell.title[0]|e }}\" data-tip-zh=\"{{ cell.title[1]|e }}\" tabindex=\"0\"",
+        "count": 1
+      },
+      {
+        "before": "title=\"{{ column.label[0] }} · {{ cell.reason_copy[0] }} · {{ cell.reason_copy[1] }}\"",
+        "after": "data-tip-en=\"{{ column.label[0]|e }} · {{ cell.reason_copy[0]|e }}\" data-tip-zh=\"{{ column.label[1]|e }} · {{ cell.reason_copy[1]|e }}\" tabindex=\"0\"",
+        "count": 1
+      }
+    ]
+  },
+  "templates/intl_workspace/dislocations.html.j2": {
+    "before_sha256": "c0f54e308e2e0491d75dc4d02f3f499f29fcb16349e2e25da9424db2ae261c54",
+    "after_sha256": "a0c3e026ea27005f89cb14b53f41e7a87ed7ae935371e813f323f3dbef021f62",
+    "exact_inverse_projection_equal": true,
+    "changes": [
+      {
+        "before": "title=\"{{ chip.text.en }} · {{ chip.text.zh }}\"",
+        "after": "data-tip-en=\"{{ chip.text.en|e }}\" data-tip-zh=\"{{ chip.text.zh|e }}\" tabindex=\"0\"",
+        "count": 1
+      },
+      {
+        "before": "title=\"{{ c.fragility_reason.en }} · {{ c.fragility_reason.zh }}\"",
+        "after": "data-tip-en=\"{{ c.fragility_reason.en|e }}\" data-tip-zh=\"{{ c.fragility_reason.zh|e }}\" tabindex=\"0\"",
+        "count": 2
+      },
+      {
+        "before": "title=\"{{ c.stance_reason.en }} · {{ c.stance_reason.zh }}\"",
+        "after": "data-tip-en=\"{{ c.stance_reason.en|e }}\" data-tip-zh=\"{{ c.stance_reason.zh|e }}\" tabindex=\"0\"",
+        "count": 2
+      }
+    ]
+  },
+  "templates/intl_workspace/transmission.html.j2": {
+    "before_sha256": "4b41599763aa003aff8d4798850562e92f292d28ca766284112e9456294c9ba9",
+    "after_sha256": "2504a1aa8cce6fa2c62993b2ee2f65402e7a8a054136b2bd0471b82793aa1549",
+    "exact_inverse_projection_equal": true,
+    "changes": [
+      {
+        "before": "title=\"{{ edge.mechanism.en|e }} · {{ edge.mechanism.zh|e }}\"",
+        "after": "data-tip-en=\"{{ edge.mechanism.en|e }}\" data-tip-zh=\"{{ edge.mechanism.zh|e }}\" tabindex=\"0\"",
+        "count": 1
+      }
+    ]
+  }
+}

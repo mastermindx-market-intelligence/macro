@@ -21,6 +21,7 @@ falsifier: >
   gap is real. Guard the gap from OUTSIDE the tree under audit and control the new falsifier at three
   points - FAIL at the parent, PASS at the repaired head, FAIL under the one-leg mutation - since a
   falsifier that cannot tell one leg from two does not close the gap it was written for.
+  Historical targets: integrations/company_consultation_dispatch.py and instrument_p1c.py, with the per-leg controls recorded in https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5828478882.
 so_what: >
   Group mutations systematically overstate coverage on any code with symmetric branches - both legs of
   a two-sided refusal, each field of a validated set, every arm of a fan-out. A reviewer who mutates
@@ -28,3 +29,20 @@ so_what: >
   coverage finding against correct behaviour, not as a defect, and close it with an instrument rather
   than by hand-editing the slice under review: editing the tree you are auditing destroys the
   independence that made the review worth anything.
+kind: landmine
+verified_at: 2026-09-25
+verified_by: >
+  Historical author-recorded verification dated 2026-09-25; supporting receipt: https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5828478882.
+  The C-A receipt records the surviving question-only mutation, failing both-leg mutation, and external f8 discriminator controlled at parent/current/one-leg-mutant. Production behavior was correct; the finding concerned coverage.
+scope:
+  - "Mastermind historical IAC-P1 C-A-4 donor evidence (2026-09-25)"
+  - "integrations/company_consultation_dispatch.py"
+  - "historical instrument_p1c.py"
+confidence: verified
+---
+
+## Historical provenance — 2026-09-25
+
+The measurements, confidence and verification date above describe the original September 25 observation. The November 6 record repair validates document structure and preserves source references; it does not rerun the historical experiment or establish current runtime behavior. The supporting [original receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5828478882) records the historical evidence.
+
+The [later canonical lineage ruling](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5841164702) designated claude/iac1-p1-packet-carriage-20260925 as **DONOR_TEST_EVIDENCE / DO_NOT_PUBLISH_AS_P1**, with [Mastermind #986](https://github.com/mastermindx-market-intelligence/Mastermind/pull/986) the canonical P1 carrier. Its held C-D child remained STOP / DO_NOT_PUBLISH. These knowledge records grant no transplantation, installation, live-packet or replay authority; all original refused or uncertain effects retain their original target and reconciliation boundary.

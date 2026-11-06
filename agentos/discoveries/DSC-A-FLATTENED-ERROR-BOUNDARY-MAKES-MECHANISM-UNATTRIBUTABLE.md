@@ -19,6 +19,7 @@ falsifier: >
   and label the behavioural test for the outcome it actually proves. Do not "strengthen" a flattened-
   boundary test by asserting a distinguishing code there; the boundary cannot carry one, so the
   assertion would pin the flattening rather than the guard.
+  Historical target: integrations/company_consultation_dispatch.py in the C-B source and solo-mutation comparison recorded in https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5829291253.
 so_what: >
   A positive control at a flattened boundary is necessary but not sufficient: it licenses "this slice
   refuses the witness", never "this fence refuses the witness". Any suite whose guards sit behind a
@@ -29,3 +30,20 @@ so_what: >
   it becomes durable is only useful if the caller can tell "nothing happened, retry smaller" from
   "effect unknown, go reconcile", and a plane that cannot express the difference silently converts
   free refusals into reconciliations.
+kind: landmine
+verified_at: 2026-09-25
+verified_by: >
+  Historical author-recorded verification dated 2026-09-25; supporting receipt: https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5829291253.
+  The C-B receipt records the same refusal envelope for the 641-backslash witness with the wire fence present or removed because the payload clamp refuses first; this proves an attribution limitation.
+scope:
+  - "Mastermind historical IAC-P1 C-B donor evidence (2026-09-25)"
+  - "integrations/company_consultation_dispatch.py"
+  - "flattened error boundaries"
+confidence: verified
+---
+
+## Historical provenance — 2026-09-25
+
+The measurements, confidence and verification date above describe the original September 25 observation. The November 6 record repair validates document structure and preserves source references; it does not rerun the historical experiment or establish current runtime behavior. The supporting [original receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5829291253) records the historical evidence.
+
+The [later canonical lineage ruling](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5841164702) designated claude/iac1-p1-packet-carriage-20260925 as **DONOR_TEST_EVIDENCE / DO_NOT_PUBLISH_AS_P1**, with [Mastermind #986](https://github.com/mastermindx-market-intelligence/Mastermind/pull/986) the canonical P1 carrier. Its held C-D child remained STOP / DO_NOT_PUBLISH. These knowledge records grant no transplantation, installation, live-packet or replay authority; all original refused or uncertain effects retain their original target and reconciliation boundary.

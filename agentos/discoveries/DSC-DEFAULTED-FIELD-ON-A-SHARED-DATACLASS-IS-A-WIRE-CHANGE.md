@@ -23,6 +23,7 @@ falsifier: >
   writes them. Measured: `7d46e301` 25 passed / `b127f96f` 25 passed / `7e45b3ec` 8 failed,
   17 passed / `0603e1e0` 8 failed, 17 passed. If the pre-field head failed too, the break is
   older and this record does not apply.
+  Historical named consumer: tests/test_slack_agent_dialogue_executive_terminal_return_projector.py. The four-head comparison is recorded in https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5826680691; the whole-suite ninth failure and 43-suite differential are recorded in https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5826830442. Preserve the distinction between the eight filtered failures and nine whole-suite failures.
 so_what: >
   When a brief adds a field to a type that crosses a service boundary, the brief must name the
   wire, not only the behaviour: which operations serialize this type, which consumers validate
@@ -44,6 +45,7 @@ so_what: >
 kind: landmine
 verified_at: 2026-09-25
 verified_by: >
+  Historical author-recorded verification dated 2026-09-25; supporting receipt: https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5826830442.
   Four-head execution of `tests/test_slack_agent_dialogue_executive_terminal_return_projector.py
   -k owner_seam` on `~/.venvs/mastermind-workbench-modern-mcp-test/bin/python`, fresh `mktemp -d`
   temproot per invocation, in a read-only detached worktree: 25 passed at `7d46e301` and
@@ -77,3 +79,9 @@ Worth separating two things a reviewer conflates under "I fenced the V1 engine".
 behaviour means V1 never populates the field. Fencing the wire means V1's response never
 carries the key. The first does not imply the second, and only the second is what an exact-shape
 consumer is asserting about.
+
+## Historical provenance — 2026-09-25
+
+The measurements, confidence and verification date above describe the original September 25 observation. The November 6 record repair validates document structure and preserves source references; it does not rerun the historical experiment or establish current runtime behavior. The supporting [original receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5826830442) records the historical evidence.
+
+The [later canonical lineage ruling](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5841164702) designated claude/iac1-p1-packet-carriage-20260925 as **DONOR_TEST_EVIDENCE / DO_NOT_PUBLISH_AS_P1**, with [Mastermind #986](https://github.com/mastermindx-market-intelligence/Mastermind/pull/986) the canonical P1 carrier. Its held C-D child remained STOP / DO_NOT_PUBLISH. These knowledge records grant no transplantation, installation, live-packet or replay authority; all original refused or uncertain effects retain their original target and reconciliation boundary.

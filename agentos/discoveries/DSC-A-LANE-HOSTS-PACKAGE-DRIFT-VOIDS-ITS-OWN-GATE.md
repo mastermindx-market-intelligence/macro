@@ -27,6 +27,7 @@ so_what: >
 kind: constraint
 verified_at: 2026-09-25
 verified_by: >
+  Historical author-recorded verification dated 2026-09-25; supporting receipt: https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827737154.
   Read `pyproject.toml:38` (`"mcp==1.28.1"`) in the repository; `pip show mcp` returned 2.2.0 on
   `mb`'s lane venv and 1.28.1 in the local gate venv; the mcp 2.x import error text names the
   `FastMCP` -> `MCPServer` rename itself. The same 42 files ran clean (`0 failed`) in the pinned
@@ -44,3 +45,9 @@ by the same process, so the evidence cannot report on its own environment - the 
 identical whether the host is pinned or not. The only fix that generalises is an independently
 pinned verifier on the accepting side, which is also what makes a worker's green gate acceptable
 testimony rather than proof.
+
+## Historical provenance — 2026-09-25
+
+The measurements, confidence and verification date above describe the original September 25 observation. The November 6 record repair validates document structure and preserves source references; it does not rerun the historical experiment or establish current runtime behavior. The supporting [original receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827737154) records the historical evidence.
+
+The [later canonical lineage ruling](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5841164702) designated claude/iac1-p1-packet-carriage-20260925 as **DONOR_TEST_EVIDENCE / DO_NOT_PUBLISH_AS_P1**, with [Mastermind #986](https://github.com/mastermindx-market-intelligence/Mastermind/pull/986) the canonical P1 carrier. Its held C-D child remained STOP / DO_NOT_PUBLISH. These knowledge records grant no transplantation, installation, live-packet or replay authority; all original refused or uncertain effects retain their original target and reconciliation boundary.

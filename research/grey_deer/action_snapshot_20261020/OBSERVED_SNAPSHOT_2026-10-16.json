@@ -1,0 +1,1505 @@
+{
+  "schema": "grey_deer.dated_observed_snapshot.v1",
+  "started_at": "2026-10-20T02:49:35.685241+00:00",
+  "completed_at": "2026-10-20T02:50:11.904143+00:00",
+  "declared_asof": "2026-10-16",
+  "source_commit": "247677efade31ea32d6b6ef5b701de61c47392cd",
+  "comparison_source_commit": "3ab3382af89242c7b7fe8c65360bd883a7dd3504",
+  "method_commit": "4a06cd4a6b323312d2a59d6130efdb60997fe149",
+  "method_path": "scripts/research/grey_deer_exposure_census.py",
+  "method_sha256": "d6240027cd15fadfec4511a3be42203dba6df87095bd65b50a049394abf6abce",
+  "executed_functions": [
+    "observed_features",
+    "strict_return",
+    "valid_price"
+  ],
+  "script_sha256": "db1e96af04c496f8b04d8bdfe7be0883477cde6b415e011bc09bab9da47de46e",
+  "runtime": {
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "pandas": "3.0.5",
+    "numpy": "2.5.2",
+    "pyarrow": "25.0.1"
+  },
+  "scope": "Descriptive observed features only; retained revised-history Git archives; fixed 36 ETF proxies",
+  "point_in_time_eligible": false,
+  "historical_available_at": null,
+  "first_user_publication_at": null,
+  "provider_calls": 0,
+  "fitted_models": 0,
+  "future_labels_computed": 0,
+  "independent_episode_count": null,
+  "source_purpose_change": false,
+  "numerical_policy_authority": false,
+  "rows": [
+    {
+      "ticker": "SPY",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.011065157971047346,
+      "obs_tr_return_5": -0.019677109547117544,
+      "obs_tr_return_20": 0.00204807408997576,
+      "obs_price_dd_63": -0.020331446058168168,
+      "obs_price_sma_gap_20": -0.010288072129602699,
+      "obs_price_sma_gap_200": 0.05273742174639717,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.0,
+      "relative_to_spy_20": 0.0
+    },
+    {
+      "ticker": "RSP",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.004232575172601782,
+      "obs_tr_return_5": 0.004928666376493807,
+      "obs_tr_return_20": 0.012269799667198988,
+      "obs_price_dd_63": -0.038963988724236676,
+      "obs_price_sma_gap_20": 0.012059228661389865,
+      "obs_price_sma_gap_200": 0.03562727223980455,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.025099664777024744,
+      "relative_to_spy_20": 0.010200833514406149
+    },
+    {
+      "ticker": "DIA",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-14",
+      "status": "NO_VALID_OBSERVATION_AT_ASOF",
+      "source_sessions_behind": 2,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.0011236067979216724,
+      "obs_tr_return_5": 0.009021204587394971,
+      "obs_tr_return_20": 0.0031026061416641326,
+      "obs_price_dd_63": -0.050072756209408764,
+      "obs_price_sma_gap_20": 0.0025032106743461124,
+      "obs_price_sma_gap_200": 0.023148793500041398,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.019011767082203646,
+      "relative_to_spy_20": -0.0195998714148663
+    },
+    {
+      "ticker": "IWM",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.016867763404664893,
+      "obs_tr_return_5": -0.030472502780541477,
+      "obs_tr_return_20": -0.04808167324407653,
+      "obs_price_dd_63": -0.11357302537743363,
+      "obs_price_sma_gap_20": -0.031760287341674354,
+      "obs_price_sma_gap_200": -0.02596934268760409,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.011012079120621965,
+      "relative_to_spy_20": -0.05002728774223564
+    },
+    {
+      "ticker": "QQQ",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.02500001676790009,
+      "obs_tr_return_5": -0.05519990237884931,
+      "obs_tr_return_20": -0.015122883912027651,
+      "obs_price_dd_63": -0.06563460905432783,
+      "obs_price_sma_gap_20": -0.044064886363441524,
+      "obs_price_sma_gap_200": 0.05169693247106877,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.03623580881123889,
+      "relative_to_spy_20": -0.01713586248603638
+    },
+    {
+      "ticker": "XLK",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.030234162201433712,
+      "obs_tr_return_5": -0.07701980909856154,
+      "obs_tr_return_20": -0.031201963525999465,
+      "obs_price_dd_63": -0.091732667224242,
+      "obs_price_sma_gap_20": -0.0630800783175286,
+      "obs_price_sma_gap_200": 0.0952991517492714,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.05849368622307005,
+      "relative_to_spy_20": -0.03318207826123687
+    },
+    {
+      "ticker": "XLP",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.010844513591333316,
+      "obs_tr_return_5": 0.05022177185760257,
+      "obs_tr_return_20": 0.06517219861671264,
+      "obs_price_dd_63": 0.0,
+      "obs_price_sma_gap_20": 0.057714395527949325,
+      "obs_price_sma_gap_200": 0.043059257931390205,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.07130189663573883,
+      "relative_to_spy_20": 0.0629951058825835
+    },
+    {
+      "ticker": "XLV",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.002708932337747383,
+      "obs_tr_return_5": 0.034541357295257535,
+      "obs_tr_return_20": 0.05342540928380357,
+      "obs_price_dd_63": -0.002708932337747383,
+      "obs_price_sma_gap_20": 0.03861225065783391,
+      "obs_price_sma_gap_200": 0.12188460076929486,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.055306743696791116,
+      "relative_to_spy_20": 0.05127232567208595
+    },
+    {
+      "ticker": "XLU",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.013445319041484272,
+      "obs_tr_return_5": 0.01931898671838672,
+      "obs_tr_return_20": 0.034558820435744986,
+      "obs_price_dd_63": -0.08814002485115757,
+      "obs_price_sma_gap_20": 0.04021881347149936,
+      "obs_price_sma_gap_200": -0.04740305868584238,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.03977882863419535,
+      "relative_to_spy_20": 0.03244429801962778
+    },
+    {
+      "ticker": "XLF",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.004523249464979617,
+      "obs_tr_return_5": 0.014434513468571941,
+      "obs_tr_return_20": -0.002568991005241994,
+      "obs_price_dd_63": -0.05191258272261379,
+      "obs_price_sma_gap_20": 0.019707247925164095,
+      "obs_price_sma_gap_200": 0.034203995371363094,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.034796313896058084,
+      "relative_to_spy_20": -0.0046076283310168
+    },
+    {
+      "ticker": "XLB",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.0071201895940704585,
+      "obs_tr_return_5": 0.030143594063735346,
+      "obs_tr_return_20": 0.02329126313920571,
+      "obs_price_dd_63": -0.05123905522305783,
+      "obs_price_sma_gap_20": 0.026726721634679373,
+      "obs_price_sma_gap_200": 0.0011452251935513136,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.05082070825443763,
+      "relative_to_spy_20": 0.02119977034886511
+    },
+    {
+      "ticker": "XLC",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.018854524195575206,
+      "obs_tr_return_5": -0.0005435546302470229,
+      "obs_tr_return_20": -0.0011407550383635279,
+      "obs_price_dd_63": -0.04127922145300611,
+      "obs_price_sma_gap_20": -0.01321586041373446,
+      "obs_price_sma_gap_200": -0.028049307498903442,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.019517604967921764,
+      "relative_to_spy_20": -0.0031823115185718454
+    },
+    {
+      "ticker": "XLE",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.0252403901261693,
+      "obs_tr_return_5": 0.048555561521311574,
+      "obs_tr_return_20": 0.06741751305950605,
+      "obs_price_dd_63": 0.0,
+      "obs_price_sma_gap_20": 0.06755940424336493,
+      "obs_price_sma_gap_200": 0.18438085553674433,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.06960224200916842,
+      "relative_to_spy_20": 0.06523583115400577
+    },
+    {
+      "ticker": "XLI",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.0007743456029848383,
+      "obs_tr_return_5": -0.00880357750761629,
+      "obs_tr_return_20": -0.009067034931401485,
+      "obs_price_dd_63": -0.10053080559880012,
+      "obs_price_sma_gap_20": -0.0075633905343062136,
+      "obs_price_sma_gap_200": -0.030127026891287878,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.011091786334273879,
+      "relative_to_spy_20": -0.011092390982809452
+    },
+    {
+      "ticker": "XLRE",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.0040485392271962795,
+      "obs_tr_return_5": 0.013217957918600032,
+      "obs_tr_return_20": -0.000355646471126847,
+      "obs_price_dd_63": -0.08367743130995187,
+      "obs_price_sma_gap_20": 0.01661401332454404,
+      "obs_price_sma_gap_200": -0.025106517917135807,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.03355533955809298,
+      "relative_to_spy_20": -0.002398807625358268
+    },
+    {
+      "ticker": "XLY",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.008376726452343108,
+      "obs_tr_return_5": -0.003455909569532456,
+      "obs_tr_return_20": 0.015110245602523609,
+      "obs_price_dd_63": -0.06173870756045874,
+      "obs_price_sma_gap_20": 0.012245772416547007,
+      "obs_price_sma_gap_200": -0.02963053151400452,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.01654679303682416,
+      "relative_to_spy_20": 0.013035473896210403
+    },
+    {
+      "ticker": "SMH",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.03408855470735972,
+      "obs_tr_return_5": -0.10531556074233595,
+      "obs_tr_return_20": -0.05795815352994105,
+      "obs_price_dd_63": -0.14846196996712246,
+      "obs_price_sma_gap_20": -0.10190748767270674,
+      "obs_price_sma_gap_200": 0.055626831609225214,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.08735739217071203,
+      "relative_to_spy_20": -0.05988358160801044
+    },
+    {
+      "ticker": "SOXX",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.041421395376193715,
+      "obs_tr_return_5": -0.11800144241103039,
+      "obs_tr_return_20": -0.0744367383844341,
+      "obs_price_dd_63": -0.1630506582159691,
+      "obs_price_sma_gap_20": -0.1189007871217872,
+      "obs_price_sma_gap_200": 0.055075257767501995,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.1002979057425556,
+      "relative_to_spy_20": -0.07632848607974285
+    },
+    {
+      "ticker": "XBI",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.03645340832939592,
+      "obs_tr_return_5": -0.061455398879341816,
+      "obs_tr_return_20": -0.07912196145929018,
+      "obs_price_dd_63": -0.1488056341693914,
+      "obs_price_sma_gap_20": -0.0585379746001955,
+      "obs_price_sma_gap_200": 0.02969694781106602,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.04261686607452764,
+      "relative_to_spy_20": -0.08100413308311749
+    },
+    {
+      "ticker": "IGV",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.047992720889247664,
+      "obs_tr_return_5": -0.07393274133690941,
+      "obs_tr_return_20": -9.585181003091137e-05,
+      "obs_price_dd_63": -0.07393274133690941,
+      "obs_price_sma_gap_20": -0.03645836810197556,
+      "obs_price_sma_gap_200": 0.1131915066733149,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.055344654621629075,
+      "relative_to_spy_20": -0.002139543955467116
+    },
+    {
+      "ticker": "KRE",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.0008601800515233293,
+      "obs_tr_return_5": 0.011592456130982809,
+      "obs_tr_return_20": -0.034947053658044736,
+      "obs_price_dd_63": -0.1041961082353895,
+      "obs_price_sma_gap_20": -0.0036181788544231708,
+      "obs_price_sma_gap_200": -0.012999566302814736,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.03189721058502948,
+      "relative_to_spy_20": -0.036919513848293284
+    },
+    {
+      "ticker": "ARKK",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-14",
+      "status": "NO_VALID_OBSERVATION_AT_ASOF",
+      "source_sessions_behind": 2,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.030859181696874738,
+      "obs_tr_return_5": -0.04326160320272121,
+      "obs_tr_return_20": 0.01562879354398028,
+      "obs_price_dd_63": -0.08945888695371873,
+      "obs_price_sma_gap_20": -0.05312175312532119,
+      "obs_price_sma_gap_200": 0.08158424101743522,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.0337887054073821,
+      "relative_to_spy_20": -0.007357179924761814
+    },
+    {
+      "ticker": "HYG",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.003500540032165489,
+      "obs_tr_return_5": -0.004790919726780141,
+      "obs_tr_return_20": -0.016911163913195915,
+      "obs_price_dd_63": -0.03828825861738794,
+      "obs_price_sma_gap_20": -0.0070408799675947265,
+      "obs_price_sma_gap_200": -0.03577093501231454,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.01518498646243005,
+      "relative_to_spy_20": -0.018920487443069844
+    },
+    {
+      "ticker": "LQD",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.0009661688320878881,
+      "obs_tr_return_5": 0.009667003499344906,
+      "obs_tr_return_20": -0.008155059491617433,
+      "obs_price_dd_63": -0.03237880464823317,
+      "obs_price_sma_gap_20": 0.005352489474806044,
+      "obs_price_sma_gap_200": -0.04273749789811543,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.02993311013364819,
+      "relative_to_spy_20": -0.010182279518733961
+    },
+    {
+      "ticker": "TLT",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.001000398022177107,
+      "obs_tr_return_5": 0.02654526296118931,
+      "obs_tr_return_20": -0.010801195940635111,
+      "obs_price_dd_63": -0.049738781081021144,
+      "obs_price_sma_gap_20": 0.01632082781135491,
+      "obs_price_sma_gap_200": -0.05765710438400584,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.047150151198604995,
+      "relative_to_spy_20": -0.012823007561069466
+    },
+    {
+      "ticker": "IEF",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.0007747614389199686,
+      "obs_tr_return_5": 0.011409358228826605,
+      "obs_tr_return_20": -0.000750225877177435,
+      "obs_price_dd_63": -0.033561345356833194,
+      "obs_price_sma_gap_20": 0.00786381379608625,
+      "obs_price_sma_gap_200": -0.03942941361667762,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.031710437528989166,
+      "relative_to_spy_20": -0.0027925805552737604
+    },
+    {
+      "ticker": "BIL",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-14",
+      "status": "NO_VALID_OBSERVATION_AT_ASOF",
+      "source_sessions_behind": 2,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.0,
+      "obs_tr_return_5": 0.0006559978044426984,
+      "obs_tr_return_20": 0.002987715025515092,
+      "obs_price_dd_63": -0.0017452406367448603,
+      "obs_price_sma_gap_20": -0.00013113803281938896,
+      "obs_price_sma_gap_200": 1.8540306651715355e-05,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.010563734367777355,
+      "relative_to_spy_20": -0.019712162285567048
+    },
+    {
+      "ticker": "SGOV",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-14",
+      "status": "NO_VALID_OBSERVATION_AT_ASOF",
+      "source_sessions_behind": 2,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.00019900789026050525,
+      "obs_tr_return_5": 0.0006967223447171822,
+      "obs_tr_return_20": 0.0028988068316253557,
+      "obs_price_dd_63": -0.0016879969267273864,
+      "obs_price_sma_gap_20": -0.00013922047867465093,
+      "obs_price_sma_gap_200": 6.068483846677353e-05,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.01060486213155487,
+      "relative_to_spy_20": -0.019799058286223525
+    },
+    {
+      "ticker": "GLD",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.0018290133654252916,
+      "obs_tr_return_5": -0.006682554725602419,
+      "obs_tr_return_20": -0.04776030864919267,
+      "obs_price_dd_63": -0.10759921688161644,
+      "obs_price_sma_gap_20": -0.006010593900241945,
+      "obs_price_sma_gap_200": -0.07944615048342296,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.013255382433753127,
+      "relative_to_spy_20": -0.04970657998060879
+    },
+    {
+      "ticker": "FXI",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.012259141550550967,
+      "obs_tr_return_5": -0.011682286982201417,
+      "obs_tr_return_20": -0.013986000772276186,
+      "obs_price_dd_63": -0.07338445431497931,
+      "obs_price_sma_gap_20": -0.005627125492387863,
+      "obs_price_sma_gap_200": -0.060289742655102896,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.008155295201994761,
+      "relative_to_spy_20": -0.016001303008155054
+    },
+    {
+      "ticker": "MCHI",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.009479548786761716,
+      "obs_tr_return_5": -0.025689790556058023,
+      "obs_tr_return_20": -0.03523646019668514,
+      "obs_price_dd_63": -0.10064991237520482,
+      "obs_price_sma_gap_20": -0.02076099502652795,
+      "obs_price_sma_gap_200": -0.09185479347773429,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.006133367962225966,
+      "relative_to_spy_20": -0.037208328872366137
+    },
+    {
+      "ticker": "EWH",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.0004529089183147317,
+      "obs_tr_return_5": 0.001359958629728153,
+      "obs_tr_return_20": -0.016035661386072375,
+      "obs_price_dd_63": -0.053961465023433464,
+      "obs_price_sma_gap_20": -0.0012659274185888858,
+      "obs_price_sma_gap_200": -0.029616669710627708,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": 0.02145932567903941,
+      "relative_to_spy_20": -0.018046774345104266
+    },
+    {
+      "ticker": "EWC",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": 0.004143875226460203,
+      "obs_tr_return_5": 0.026257887240570765,
+      "obs_tr_return_20": 0.005978090386152157,
+      "obs_price_dd_63": -0.03288629595571446,
+      "obs_price_sma_gap_20": 0.021559351675854987,
+      "obs_price_sma_gap_200": 0.04468362191333952,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.04685700725244479,
+      "relative_to_spy_20": 0.003921983782809502
+    },
+    {
+      "ticker": "EWJ",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.005763418736235537,
+      "obs_tr_return_5": -0.0304516997583012,
+      "obs_tr_return_20": -0.021855698418371428,
+      "obs_price_dd_63": -0.04470401183093875,
+      "obs_price_sma_gap_20": -0.02564263039009962,
+      "obs_price_sma_gap_200": 0.04012731061375985,
+      "obs_damage_5pct": false,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.010990858538665882,
+      "relative_to_spy_20": -0.023854915873228633
+    },
+    {
+      "ticker": "INDA",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.006047985629053065,
+      "obs_tr_return_5": 0.035411712173417875,
+      "obs_tr_return_20": -0.00749688894043643,
+      "obs_price_dd_63": -0.056797922050626726,
+      "obs_price_sma_gap_20": 0.01285728484353621,
+      "obs_price_sma_gap_200": -0.03725049228599531,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": true,
+      "relative_to_spy_5": 0.056194568398872935,
+      "relative_to_spy_20": -0.009525454194481253
+    },
+    {
+      "ticker": "EEM",
+      "declared_asof": "2026-10-16",
+      "observation_asof": "2026-10-16",
+      "status": "OBSERVED_AT_ASOF",
+      "source_sessions_behind": 0,
+      "basis": {
+        "returns": "source total-return close",
+        "drawdown_and_sma": "source split-adjusted, dividend-unadjusted close"
+      },
+      "obs_tr_return_1": -0.017354606414011542,
+      "obs_tr_return_5": -0.059131802353005636,
+      "obs_tr_return_20": -0.06236014294045955,
+      "obs_price_dd_63": -0.09044862717820046,
+      "obs_price_sma_gap_20": -0.059905787961340495,
+      "obs_price_sma_gap_200": -0.011769167179361939,
+      "obs_damage_5pct": true,
+      "obs_stabilization_candidate": false,
+      "relative_to_spy_5": -0.040246630156377416,
+      "relative_to_spy_20": -0.064276573844951
+    }
+  ],
+  "source_identities": [
+    {
+      "ticker": "SPY",
+      "path": "data/yahoo/SPY.parquet",
+      "bytes": 244641,
+      "sha256": "4628a0de7c489988d30e7b52843d6f25d520b553f140d17ef5a42ccf39c70ff4",
+      "rows": 8487,
+      "min_date": "1993-01-29",
+      "max_date": "2026-10-16",
+      "prior_bytes": 244617,
+      "prior_sha256": "410f3f872b2e00c85a08e22c6460e3f848d84c419d8437b6e6b6745308fa7e7d",
+      "prior_rows": 8486,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "RSP",
+      "path": "data/yahoo/RSP.parquet",
+      "bytes": 163531,
+      "sha256": "a4920fea51ecd7f291bd1e0fea9f572203a732749a54765393935bfed318d6f4",
+      "rows": 5904,
+      "min_date": "2003-05-01",
+      "max_date": "2026-10-16",
+      "prior_bytes": 163509,
+      "prior_sha256": "7aaa040be716040fd99f6a02ac640d88341fdc55e9ab9897a774b6479834ec65",
+      "prior_rows": 5903,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "DIA",
+      "path": "data/yahoo/DIA.parquet",
+      "bytes": 204698,
+      "sha256": "702f4534589dfa4a2d3b036c83ea6276257d5c5c82bbd638be36460eb8ae1a40",
+      "rows": 7229,
+      "min_date": "1998-01-20",
+      "max_date": "2026-10-14",
+      "prior_bytes": 204698,
+      "prior_sha256": "702f4534589dfa4a2d3b036c83ea6276257d5c5c82bbd638be36460eb8ae1a40",
+      "prior_rows": 7229,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": []
+    },
+    {
+      "ticker": "IWM",
+      "path": "data/yahoo/IWM.parquet",
+      "bytes": 192348,
+      "sha256": "2f80ee2c87d062ca0f46febf35d9c04ff54e8906b4ea4602ac9349630313433f",
+      "rows": 6637,
+      "min_date": "2000-05-26",
+      "max_date": "2026-10-16",
+      "prior_bytes": 192324,
+      "prior_sha256": "ca881cd8b4d8b23bdd419086a10f889e59ff6aeee26ba84ed8e628458fb33dc1",
+      "prior_rows": 6636,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "QQQ",
+      "path": "data/yahoo/QQQ.parquet",
+      "bytes": 201452,
+      "sha256": "219f7792a993b6a07f55885e52a93c80288aa3d83fb98f576cdee64f76603f2a",
+      "rows": 6945,
+      "min_date": "1999-03-10",
+      "max_date": "2026-10-16",
+      "prior_bytes": 201376,
+      "prior_sha256": "e3b749f5347112b506e69869194d2b009b3da7bde1a00f7a05104a7bd06d1f48",
+      "prior_rows": 6944,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLK",
+      "path": "data/yahoo/XLK.parquet",
+      "bytes": 190058,
+      "sha256": "fefda61bf479195b01e7ce99e7d5c241d21910c1d50da9397696576734631559",
+      "rows": 6997,
+      "min_date": "1998-12-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 190040,
+      "prior_sha256": "f50b3dc0f60aa7696923a4f8da5c81a1d0f024946b113942d116ca5a51969bed",
+      "prior_rows": 6996,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLP",
+      "path": "data/yahoo/XLP.parquet",
+      "bytes": 181578,
+      "sha256": "409857fb77f0ba9d2b86a138a53b574a04382918a8378b96a34a7c45adee0f87",
+      "rows": 6997,
+      "min_date": "1998-12-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 181555,
+      "prior_sha256": "a8badfbeddf13e46e5b88534f90cd7d7a79915eeb414e05d295b9333c29b52de",
+      "prior_rows": 6996,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLV",
+      "path": "data/yahoo/XLV.parquet",
+      "bytes": 184332,
+      "sha256": "f43f3b37f09df61a5a21d1e89ab705e43c71aa85517f98e5825285c0fe8973d4",
+      "rows": 6997,
+      "min_date": "1998-12-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 184310,
+      "prior_sha256": "4165cf38ed9481b570a5ed4d339e81e44b0e1d22c5729ef1bacf1c6e09833272",
+      "prior_rows": 6996,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLU",
+      "path": "data/yahoo/XLU.parquet",
+      "bytes": 186465,
+      "sha256": "f7cb27c800ea418a2197acb20629316c0ce996366e9b6351bbaa2c7e4bb854ba",
+      "rows": 6997,
+      "min_date": "1998-12-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 186441,
+      "prior_sha256": "5f4062788861667e4af89acfc5c79856fab390cd9d9e95b614bc862c25de892d",
+      "prior_rows": 6996,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLF",
+      "path": "data/yahoo/XLF.parquet",
+      "bytes": 189127,
+      "sha256": "a406b4a7511462ab345c40c0aad75719f8690f546b4cd560df1db8021e972b92",
+      "rows": 6997,
+      "min_date": "1998-12-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 189107,
+      "prior_sha256": "49442a13736629d97cd904a54d9eca0da6df6d36b2c00884758696168bebae99",
+      "prior_rows": 6996,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLB",
+      "path": "data/yahoo/XLB.parquet",
+      "bytes": 188153,
+      "sha256": "38c2f1522a135e8e5d76fa2a91e9a1657c7574d53dd36519faf4f747e7a99034",
+      "rows": 6997,
+      "min_date": "1998-12-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 188137,
+      "prior_sha256": "6f9062cbdc1d22227a1c1ba26fb7edaa52406e17ad4aa855a3df83737b4a09bc",
+      "prior_rows": 6996,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLC",
+      "path": "data/yahoo/XLC.parquet",
+      "bytes": 60453,
+      "sha256": "8673f5b2d6b4c40f8b623af9f42ac29fc7db270afffa4641d9aaf8f857bec91f",
+      "rows": 2094,
+      "min_date": "2018-06-19",
+      "max_date": "2026-10-16",
+      "prior_bytes": 60442,
+      "prior_sha256": "e9cf6fd8783ab808b2bdedcd5217488194b175bcb1d6ece1abb3d9c51307bdb4",
+      "prior_rows": 2093,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLE",
+      "path": "data/yahoo/XLE.parquet",
+      "bytes": 193670,
+      "sha256": "93392544bab4e4a362c62779976ac402ee069280923ea465cf97726182d4a016",
+      "rows": 6997,
+      "min_date": "1998-12-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 193648,
+      "prior_sha256": "6fd2b13fa430a0a0b53c41461760f4a7b309069205871dab775230873b5fcaca",
+      "prior_rows": 6996,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLI",
+      "path": "data/yahoo/XLI.parquet",
+      "bytes": 189261,
+      "sha256": "e5b4b1f72000f6f1b9eae60c73b8bba505e7aaa2d4db5b8781161ef8358ac804",
+      "rows": 6997,
+      "min_date": "1998-12-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 189239,
+      "prior_sha256": "b7137ff4a0ea322ae45fdca8973a6e233c1f3839ab614fc51550048bc0403db8",
+      "prior_rows": 6996,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLRE",
+      "path": "data/yahoo/XLRE.parquet",
+      "bytes": 72633,
+      "sha256": "9f98be7c4ac638071255ccca0f4071f08d778c540c99bbc83f90bbfdfad1f9e4",
+      "rows": 2772,
+      "min_date": "2015-10-08",
+      "max_date": "2026-10-16",
+      "prior_bytes": 72609,
+      "prior_sha256": "bc8112ecb80b64c57b0eb0d1aaf61deacb4d3dd22cbace544577a929185d5833",
+      "prior_rows": 2771,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XLY",
+      "path": "data/yahoo/XLY.parquet",
+      "bytes": 189742,
+      "sha256": "fe43453ac7a650f48c67eaaa59ba974fab1acc3b76535173cd0698aabb7d43fe",
+      "rows": 6997,
+      "min_date": "1998-12-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 189726,
+      "prior_sha256": "42130f3cddf965df922d3c1ffebc7f86fa437e64a25423d0d5aa284b6b561446",
+      "prior_rows": 6996,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "SMH",
+      "path": "data/yahoo/SMH.parquet",
+      "bytes": 179322,
+      "sha256": "d80d829e69f01ea514486e05e3f2c173be21dbe328bb8140ef18ef6ccba1705c",
+      "rows": 6632,
+      "min_date": "2000-06-05",
+      "max_date": "2026-10-16",
+      "prior_bytes": 179301,
+      "prior_sha256": "e9c9123fe122320709fa2e866456d17dd13fe8f8a3d00b8e5ac0273fcca8b82d",
+      "prior_rows": 6631,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "SOXX",
+      "path": "data/yahoo/SOXX.parquet",
+      "bytes": 173055,
+      "sha256": "d15a5d60b4e8b31fca211cf27cd66b90a20bc5fee551f738e8429411ec2b58fb",
+      "rows": 6353,
+      "min_date": "2001-07-13",
+      "max_date": "2026-10-16",
+      "prior_bytes": 172982,
+      "prior_sha256": "903acf889f832645a52f86ff302c4c01bbb4bc7b9bb52dfb02325abf8711a697",
+      "prior_rows": 6352,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "XBI",
+      "path": "data/yahoo/XBI.parquet",
+      "bytes": 146376,
+      "sha256": "eb4fe4ec97e69ac52dcb1fb6523be0860b8049f6ca4d79a38b9fc5d7b2803d8b",
+      "rows": 5207,
+      "min_date": "2006-02-06",
+      "max_date": "2026-10-16",
+      "prior_bytes": 146353,
+      "prior_sha256": "639acd1669d3d181cd3c40317d4902bfa4c82ff95470cac7435345ff35a27dca",
+      "prior_rows": 5206,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "IGV",
+      "path": "data/yahoo/IGV.parquet",
+      "bytes": 167410,
+      "sha256": "2571b0b4cd07669d2f48199bd4ef973bb31510ad02248fe6acd72a1a15b14c87",
+      "rows": 6351,
+      "min_date": "2001-07-17",
+      "max_date": "2026-10-16",
+      "prior_bytes": 167388,
+      "prior_sha256": "57ed0df6d1724157d541b0e189a2c8941b3dc48021a55d89d4697f865d460875",
+      "prior_rows": 6350,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "KRE",
+      "path": "data/yahoo/KRE.parquet",
+      "bytes": 140413,
+      "sha256": "94931290d2f2ff1403e9498f4efffeb90620049a1ca2c8deb487c8b44b718ae6",
+      "rows": 5112,
+      "min_date": "2006-06-22",
+      "max_date": "2026-10-16",
+      "prior_bytes": 140396,
+      "prior_sha256": "71cd99d27537c5e402952f877022cd561932726bcd441ee91f84ea48148728e6",
+      "prior_rows": 5111,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "ARKK",
+      "path": "data/yahoo/ARKK.parquet",
+      "bytes": 82291,
+      "sha256": "b14b78997fa7cf87dda5646d034530220b1c3fccbd711e942e6f91a4c2439061",
+      "rows": 3005,
+      "min_date": "2014-10-31",
+      "max_date": "2026-10-14",
+      "prior_bytes": 82291,
+      "prior_sha256": "b14b78997fa7cf87dda5646d034530220b1c3fccbd711e942e6f91a4c2439061",
+      "prior_rows": 3005,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": []
+    },
+    {
+      "ticker": "HYG",
+      "path": "data/yahoo/HYG.parquet",
+      "bytes": 128688,
+      "sha256": "8075ab8cf2339e23c8d1689757904e218a9541e72c2d042f770a75c5d989135a",
+      "rows": 4912,
+      "min_date": "2007-04-11",
+      "max_date": "2026-10-16",
+      "prior_bytes": 128670,
+      "prior_sha256": "681f3c62d434db7f2092360ae00bc5c1456daaa3816d153b0a036b5a298406b0",
+      "prior_rows": 4911,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "LQD",
+      "path": "data/yahoo/LQD.parquet",
+      "bytes": 155791,
+      "sha256": "7cc68d1f366f14961f72e6dc3cc71b4bb33b94f1457d51abdb785a4360e9f738",
+      "rows": 6094,
+      "min_date": "2002-07-30",
+      "max_date": "2026-10-16",
+      "prior_bytes": 155773,
+      "prior_sha256": "feb23cbc44c327691dbbf1bd071b6b44b89674d568ec4546762e8fc0fcb2b393",
+      "prior_rows": 6093,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "TLT",
+      "path": "data/yahoo/TLT.parquet",
+      "bytes": 165878,
+      "sha256": "b2af871c5c07bada28a65d172043d1738d201d6e5c68e29971345d66cab725c8",
+      "rows": 6094,
+      "min_date": "2002-07-30",
+      "max_date": "2026-10-16",
+      "prior_bytes": 165854,
+      "prior_sha256": "3dd5b301959ffa00520a1da2440fbc8871cc18c3a8a94fcb9614d7a795837907",
+      "prior_rows": 6093,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "IEF",
+      "path": "data/yahoo/IEF.parquet",
+      "bytes": 156145,
+      "sha256": "b3e2ee7a5b30bc39387afc3d4e0ae47f86d945f72d5b0295eb8c5cca4ed285d1",
+      "rows": 6094,
+      "min_date": "2002-07-30",
+      "max_date": "2026-10-16",
+      "prior_bytes": 156122,
+      "prior_sha256": "ac47c26059cf982358d4e7d3eb0d2784cc040373440d424125bbce343287eab5",
+      "prior_rows": 6093,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "BIL",
+      "path": "data/yahoo/BIL.parquet",
+      "bytes": 91194,
+      "sha256": "c57f5142f02a8101a61c4445732be4f9f20d4c5ee04b962e47fb4267b33041d3",
+      "rows": 4876,
+      "min_date": "2007-05-30",
+      "max_date": "2026-10-14",
+      "prior_bytes": 91194,
+      "prior_sha256": "c57f5142f02a8101a61c4445732be4f9f20d4c5ee04b962e47fb4267b33041d3",
+      "prior_rows": 4876,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": []
+    },
+    {
+      "ticker": "SGOV",
+      "path": "data/yahoo/SGOV.parquet",
+      "bytes": 34654,
+      "sha256": "83a7abd5976ac738a5ad6510354d426fe8342606b4876b63027f4cd9479e1902",
+      "rows": 1602,
+      "min_date": "2020-06-01",
+      "max_date": "2026-10-14",
+      "prior_bytes": 34654,
+      "prior_sha256": "83a7abd5976ac738a5ad6510354d426fe8342606b4876b63027f4cd9479e1902",
+      "prior_rows": 1602,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": []
+    },
+    {
+      "ticker": "GLD",
+      "path": "data/yahoo/GLD.parquet",
+      "bytes": 153764,
+      "sha256": "2daee4b1c2f6bbf1df0ca55dc53cfe0320734c69b81f18e29492387a1da09b3f",
+      "rows": 5512,
+      "min_date": "2004-11-18",
+      "max_date": "2026-10-16",
+      "prior_bytes": 153736,
+      "prior_sha256": "19c7555e1f51c51b8489c220ec0f1e096a2dd1cbeb9edc8794d17e7bd14ef9d4",
+      "prior_rows": 5511,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "FXI",
+      "path": "data/yahoo/FXI.parquet",
+      "bytes": 149475,
+      "sha256": "e07dfb79b9749dd5e33060142ddcb1172de275b2ce787d911a8e0559047fe7e5",
+      "rows": 5541,
+      "min_date": "2004-10-08",
+      "max_date": "2026-10-16",
+      "prior_bytes": 149457,
+      "prior_sha256": "721dcde5122a40c7a7c249b833624b135daefccb41381a48577cb00fa9869902",
+      "prior_rows": 5540,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "MCHI",
+      "path": "data/yahoo/MCHI.parquet",
+      "bytes": 104055,
+      "sha256": "c39930fbe494dc94a54022e3befda02a40207f9fece1c6fbd4bbe3028b407d47",
+      "rows": 3910,
+      "min_date": "2011-03-31",
+      "max_date": "2026-10-16",
+      "prior_bytes": 104038,
+      "prior_sha256": "fbed7904f8b589011e3602e7ac802d696b0230117da4c670cbf51add23a4adb1",
+      "prior_rows": 3909,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "EWH",
+      "path": "data/yahoo/EWH.parquet",
+      "bytes": 175284,
+      "sha256": "aea2f7b1dd85aa03b268057f1c894f599c9d0587245db331e960720af460c387",
+      "rows": 7696,
+      "min_date": "1996-03-18",
+      "max_date": "2026-10-16",
+      "prior_bytes": 175272,
+      "prior_sha256": "088eae010203110f5b36c4d93b03d371408a01922f32744c9c9a5be4e97bbec8",
+      "prior_rows": 7695,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "EWC",
+      "path": "data/yahoo/EWC.parquet",
+      "bytes": 177652,
+      "sha256": "22c0454f4afc0f66abd90ab1a771020c95c2b36d0ccac97f368e2e650765a2f1",
+      "rows": 7696,
+      "min_date": "1996-03-18",
+      "max_date": "2026-10-16",
+      "prior_bytes": 177641,
+      "prior_sha256": "858dfe0f19bd90a80fd8670efc64f4c84b7d980557327c55aa3cfc2e1ee4ac36",
+      "prior_rows": 7695,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "EWJ",
+      "path": "data/yahoo/EWJ.parquet",
+      "bytes": 182439,
+      "sha256": "6f2543dcd62ec56a383e9a63cfc281565acf01900011c29234886e960bafee49",
+      "rows": 7696,
+      "min_date": "1996-03-18",
+      "max_date": "2026-10-16",
+      "prior_bytes": 182416,
+      "prior_sha256": "3668de153a69d5d573676a4b47abc103b87214ebf852d9170664301199378618",
+      "prior_rows": 7695,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "INDA",
+      "path": "data/yahoo/INDA.parquet",
+      "bytes": 95575,
+      "sha256": "74e1e9cbf3461a52b694cc28b46209bedba02572f9236f7d287de7cf5a08b478",
+      "rows": 3697,
+      "min_date": "2012-02-03",
+      "max_date": "2026-10-16",
+      "prior_bytes": 95503,
+      "prior_sha256": "dacbdd7420f4fa6e804c72dac57aae0344dbdc80a0f3a6fbac407514f6eaf7fa",
+      "prior_rows": 3696,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    },
+    {
+      "ticker": "EEM",
+      "path": "data/yahoo/EEM.parquet",
+      "bytes": 160769,
+      "sha256": "290dbe3eb8ec02bf3b179c0cebd5552d087d10bdd8c225ffa4ab5d96f01efeea",
+      "rows": 5916,
+      "min_date": "2003-04-14",
+      "max_date": "2026-10-16",
+      "prior_bytes": 160745,
+      "prior_sha256": "d53b91582429a339e44a893490f866b7ae239244f4d1498b824e32e53ccc7c81",
+      "prior_rows": 5915,
+      "revised_common_rows": {
+        "close": 0,
+        "close_price": 0
+      },
+      "prior_dates_missing": 0,
+      "dates_added": [
+        "2026-10-16"
+      ]
+    }
+  ]
+}

@@ -25,9 +25,10 @@ so_what: >
   than truncating, so an over-capacity page is an unreadable thread, not a degraded one. Separately,
   the adapter discards the raw response body after decoding, so no caller can measure the true page
   size - a capacity law that cannot be validated against a real page is a second, quieter defect.
-kind: law
+kind: constraint
 verified_at: 2026-09-25
 verified_by: >
+  Historical author-recorded verification dated 2026-09-25; supporting receipt: https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827320369.
   Read `SlackWebApiAdapter._standard_message` and `_parse_message` at Mastermind `87117418` for the
   required field set and the accepted `message_changed` / `message_deleted` subtypes; measured entry
   costs with `json.dumps(..., ensure_ascii=False, separators=(",",":"))` as a strict lower bound and
@@ -44,3 +45,11 @@ confidence: verified
 The bare-payload charge is seductive because it is the only number the producer has in hand. The
 number that matters belongs to the consumer, and it is knowable without calling the API at all -
 by reading which fields that consumer's parser insists on.
+
+## Historical provenance — 2026-09-25
+
+The measurements, confidence and verification date above describe the original September 25 observation. The November 6 record repair validates document structure and preserves source references; it does not rerun the historical experiment or establish current runtime behavior. The supporting [original receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827320369) records the historical evidence.
+
+The [later canonical lineage ruling](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5841164702) designated claude/iac1-p1-packet-carriage-20260925 as **DONOR_TEST_EVIDENCE / DO_NOT_PUBLISH_AS_P1**, with [Mastermind #986](https://github.com/mastermindx-market-intelligence/Mastermind/pull/986) the canonical P1 carrier. Its held C-D child remained STOP / DO_NOT_PUBLISH. These knowledge records grant no transplantation, installation, live-packet or replay authority; all original refused or uncertain effects retain their original target and reconciliation boundary.
+
+The linked receipt corroborates the entry-versus-frame defect and edit-history duplication. Its fixture shapes differ from this record's minimal-entry examples; the exact figures above remain the original author's measurements, not a fresh reproduction from that comment.

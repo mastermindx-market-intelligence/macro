@@ -18,6 +18,7 @@ falsifier: >
   ceiling, the clamp is sound for a byte-denominated budget. Measured largest fitting text, in
   UTF-8 bytes: backslash 1,241 - quote 1,241 - ASCII 2,483 - CJK 2,481 - astral 2,480. The
   non-ASCII cases are NOT the worst case under `ensure_ascii=False`.
+  Historical target: Mastermind common/agent_dialogue_consultation_contract.py at 87117418ff22107e604053051fe9fd301f8703bb; the named witness and boundary are recorded in https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827320369.
 so_what: >
   Fix the unit in the name and prove it with a non-ASCII discriminator, because the same budget is
   8x wrong under the other reading: in CHARACTERS an astral character is 4 UTF-8 bytes times the 2x
@@ -27,9 +28,10 @@ so_what: >
   and the doubly-escaped quantity is a different helper with a different ceiling; and (2) deriving
   an expansion bound from encoder flags alone, when a VALIDATOR upstream has already made the
   expensive characters unreachable.
-kind: law
+kind: constraint
 verified_at: 2026-09-25
 verified_by: >
+  Historical author-recorded verification dated 2026-09-25; supporting receipt: https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827320369.
   Executed probes against Mastermind `87117418`: `_require_string` rejects newline, NUL, DEL,
   empty and untrimmed text (all `MESSAGE_INVALID`); binary search for the largest rendering text
   per character class gave the five figures above; `(4500-2018)//2 = 1241` admits 1,241 and refuses
@@ -45,3 +47,9 @@ confidence: verified
 The instructive part is that the obvious repair - subtract the overhead from the ceiling - is
 already an improvement over no clamp at all, and it still fails. A budget that is *closer* to
 right is not right: the responder is entitled to spend every byte it is offered.
+
+## Historical provenance — 2026-09-25
+
+The measurements, confidence and verification date above describe the original September 25 observation. The November 6 record repair validates document structure and preserves source references; it does not rerun the historical experiment or establish current runtime behavior. The supporting [original receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827320369) records the historical evidence.
+
+The [later canonical lineage ruling](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5841164702) designated claude/iac1-p1-packet-carriage-20260925 as **DONOR_TEST_EVIDENCE / DO_NOT_PUBLISH_AS_P1**, with [Mastermind #986](https://github.com/mastermindx-market-intelligence/Mastermind/pull/986) the canonical P1 carrier. Its held C-D child remained STOP / DO_NOT_PUBLISH. These knowledge records grant no transplantation, installation, live-packet or replay authority; all original refused or uncertain effects retain their original target and reconciliation boundary.

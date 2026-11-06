@@ -319,12 +319,13 @@
   },
   {
    "match": "validated a-share",
-   "backing": "research/CHINA_HK_STOCK_SIGNALS.md — the validated A-share effects: within-sector 3M reversal (Sharpe 0.58) and low-vol defensive tilt (Sharpe 0.98). MEASURED, ~35y. The Reversal Sleeve product page names the same within-sector 3M reversal edge.",
+   "backing": "research/CHINA_HK_STOCK_SIGNALS.md — the validated A-share effects: within-sector 3M reversal (Sharpe 0.58) and low-vol defensive tilt (Sharpe 0.98). MEASURED, ~35y. The Reversal Sleeve product page names the same within-sector 3M reversal edge. The sleeve's builder (scripts/build_cn_reversal_sleeve.py) stamps that same edge into the note of its published artifact site/factordata/cn_reversal_sleeve.json.",
    "surfaces": [
     "china",
     "china_lookup",
     "subsectors_china",
-    "cn_reversal_sleeve"
+    "cn_reversal_sleeve",
+    "build_cn_reversal_sleeve"
    ]
   },
   {
@@ -1289,6 +1290,13 @@
    ]
   },
   {
+   "match": "WHEN validated confluence",
+   "backing": "signal_gate.is_buyable — the T1–T3 MACD-2D × StochRSI-3D confluence buy-GATE (research/SECTOR_CONFLUENCE.md; #736), the same gate the 'validated entry confluence (T1–T3)' us_stocks and 'validated-confluence buy-gate' sig_badge entries cite. Buy Board 2.0's WHEN gate is that gate verbatim, as HARD admission (scripts/build_stock_board_v2.py BUYABLE_TIERS = signal_gate.BUYABLE_TIERS; _when_gate → signal_gate.is_buyable). Covers the SHADOW note of site/factordata/us_standouts_v2.json only; it claims no edge for the WHAT trajectory half, which is graded in parallel until precision@k beats the live board.",
+   "surfaces": [
+    "build_stock_board_v2"
+   ]
+  },
+  {
    "match": "validated t1-t4 confluence",
    "backing": "code/CSS comments naming the same T1-T4 confluence buy gate (signal_gate; research/SECTOR_CONFLUENCE.md) — the prime-entry badge plumbing in intelligence_hub (jinja macro comment + .egate style-block comment), not free prose; the displayed badge itself is gated by the entry above.",
    "surfaces": [
@@ -1577,22 +1585,6 @@
    "backing": "ZH counterpart of 'one read on this page that is validated' (gex.html): engine/vol_regime — VIX/VIX3M term-structure slope + bond vol (MOVE) + vol-risk premium, 1990+ history, DSR 0.9998, HAC t~-10; predicts forward realized vol and improves risk-adjusted returns as a subtract-only sizing overlay. The sentence's whole point is that it is the ONLY validated read on the page — the honest scoping the doctrine asks for.",
    "surfaces": [
     "gex"
-   ]
-  },
-  {
-   "match": "经验证的策略输出",
-   "backing": "BTC override-release alert (engine/btc_alerts._conviction, type override_release) — sizing returns to the engine's validated strategy output. Backing artifact: reports/btc-vector-optimal-phase0.md — the optimal BTC vector beats buy-and-hold on both axes (MaxDD -32.3% vs -83.8%, CAGR 70.3% vs 57.7%), block-bootstrap Sharpe CI [0.81, 1.44, 2.04] with P(Sharpe>0)=1.0 and the lower CI above zero, split-half stable (pre 1.86 vs 1.39; post 0.85 vs 0.51) and leave-one-crisis-out stable (drop 2018_bear / 2020_covid / 2021_may all keep the Sharpe and ~+42pp of drawdown). Same evidence shape as the spvector entries. Covers the EN `edge` and zh `edge_zh` halves of the same sentence.",
-   "surfaces": [
-    "btc_alerts",
-    "vector"
-   ]
-  },
-  {
-   "match": "validated strategy output",
-   "backing": "EN twin of '经验证的策略输出' (BTC override-release alert). Backing artifact: reports/btc-vector-optimal-phase0.md — MaxDD -32.3% vs -83.8% buy-and-hold, CAGR 70.3% vs 57.7%, block-bootstrap Sharpe CI lower bound above zero, split-half and leave-one-crisis-out stable. The EN half became gateable only when `edge` joined the scanned display-copy fields (2026-07-29).",
-   "surfaces": [
-    "btc_alerts",
-    "vector"
    ]
   },
   {

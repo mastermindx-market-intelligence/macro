@@ -16,6 +16,7 @@ falsifier: >
   blind to a vanished suite and the pass-count identity is load-bearing. To confirm the identity is
   the thing doing the work, re-run WITH the reconciliation: it must fail with a residual equal to
   the number of tests in the deleted file.
+  Historical named suite: tests/test_workspace_agent_return_service.py; compare the 42-suite invocation and 1943 + 9 + 7 = 1959 reconciliation in https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827737154.
 so_what: >
   Any acceptance whose evidence is "no new failures" is incomplete without a count that closes.
   Two independent runs can agree on a pass TOTAL for unrelated reasons - one having fixed nine
@@ -23,9 +24,10 @@ so_what: >
   itself is not evidence either. Publish the identity, not the total: baseline, fixed, added, and
   the residual. A residual of zero is the claim; a non-zero residual names exactly how many tests
   went missing and sends you looking for the file rather than for a regression that is not there.
-kind: law
+kind: landmine
 verified_at: 2026-09-25
 verified_by: >
+  Historical author-recorded verification dated 2026-09-25; supporting receipt: https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827737154.
   Ran the 42-file dialogue consumer set on one interpreter with a fresh `mktemp -d` temproot at
   Mastermind `87117418` (`9 failed, 1943 passed, 2 skipped`) and at `0c0fd718`
   (`1959 passed, 2 skipped`), comparing sorted FAILED node ids: 0 new, 9 fixed, and the seven new
@@ -44,3 +46,9 @@ The subtle part is that the pass total looked *reassuring* precisely because it 
 reporting `1943 passed` invites the inference that nothing moved, when in one of them nine tests had
 been repaired, seven added, and an entire suite file had stopped being collected. Matching totals
 are a coincidence to be explained, not a result.
+
+## Historical provenance — 2026-09-25
+
+The measurements, confidence and verification date above describe the original September 25 observation. The November 6 record repair validates document structure and preserves source references; it does not rerun the historical experiment or establish current runtime behavior. The supporting [original receipt](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5827737154) records the historical evidence.
+
+The [later canonical lineage ruling](https://github.com/mastermindx-market-intelligence/Mastermind/pull/600#issuecomment-5841164702) designated claude/iac1-p1-packet-carriage-20260925 as **DONOR_TEST_EVIDENCE / DO_NOT_PUBLISH_AS_P1**, with [Mastermind #986](https://github.com/mastermindx-market-intelligence/Mastermind/pull/986) the canonical P1 carrier. Its held C-D child remained STOP / DO_NOT_PUBLISH. These knowledge records grant no transplantation, installation, live-packet or replay authority; all original refused or uncertain effects retain their original target and reconciliation boundary.
