@@ -1,0 +1,65 @@
+{
+  "benchmark_id": "mag7_flow_calibration_2026-07-11",
+  "frozen": true,
+  "source": "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-11",
+    "session_label": "date only",
+    "adjudication_date": "2026-07-11",
+    "historical_source_availability": "unverified",
+    "dependence_group": "mag7-june-july-2026-turn",
+    "source": {
+      "path": "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+      "sha256": "feb1ab9da314c452fefe3bc49b1a05dadf9dffe25fed6f01ee956d2de1da51d7"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-11",
+        "source_lines": [
+          49,
+          61
+        ],
+        "text": "**F4 — The flow stores saw the rotation; nothing aggregated or surfaced it.**\nRecomputed cohort net premium (sum of the 7 members, Lee-Ready-signed pilot store,\n$M): 06-22 −24.9 · 06-23 −33.8 · 06-24 −51.8 · **06-25 +146.8** · 06-26 +60.6 ·\n06-29 +121.9 · 06-30 +85.2 · 07-01 +187.5 · 07-02 +15.6. The daily series flipped\npositive one session before the price low; the 5-session sum first turned positive on\n06-26, the low itself. Honesty constraints (red-team, binding): (i) this is\n**coincident-to-at-most-one-session-leading — \"flow led price\" is NOT established**,\nand flow-as-shadow-of-price is not excluded; (ii) the *generals lagged in flow* —\n06-25 was led by the non-generals (+$110.2M vs AAPL+META +$36.6M), NVDA was −$11.1M on\nthe low day itself, and META's signature +$148.8M call spike came 07-01, five sessions\nafter the low (a confirmation, not a lead); (iii) the direction signing failed its own\npromotion gate (bar recovery 0.41 vs the 0.70 bar; 44-65% of trades excluded at\nmidpoint), so a real-time cohort chip would have been **display-only visibility, not a",
+        "sha256": "904b400f2e1cc5c6fbf960807e3e9c3fef4400309bf07c3400cfe3741c8808f9"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        54,
+        66
+      ],
+      "text": "06-26, the low itself. Honesty constraints (red-team, binding): (i) this is\n**coincident-to-at-most-one-session-leading — \"flow led price\" is NOT established**,\nand flow-as-shadow-of-price is not excluded; (ii) the *generals lagged in flow* —\n06-25 was led by the non-generals (+$110.2M vs AAPL+META +$36.6M), NVDA was −$11.1M on\nthe low day itself, and META's signature +$148.8M call spike came 07-01, five sessions\nafter the low (a confirmation, not a lead); (iii) the direction signing failed its own\npromotion gate (bar recovery 0.41 vs the 0.70 bar; 44-65% of trades excluded at\nmidpoint), so a real-time cohort chip would have been **display-only visibility, not a\ntradable signal**. What is honestly claimable: a cohort-level flow surface would have\nmade the generals-bid / memory-hedge split *visible* as it formed — MU put-heavy on\n06-23/24/25/26 (and again 07-01/02), call-positive only 06-22/29/30; by 07-06 MU showed\n+79k net new put OI vs META +90k net new call OI with SMH P/C at 6.28 — and today that\nsplit is invisible because GICS grouping folds both into \"Information Technology\".",
+      "sha256": "b9c3adab930df4ae5e5e8af28cf023a338cc3514ab0a507cc662a9f437825561"
+    }
+  },
+  "question_en": "As a diagnostic reading of the supplied July 11 flow analysis, what is supportable about timing, cohort composition and visibility, and why is a calibrated leading tradable signal not established?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-11 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-11] **F4 — The flow stores saw the rotation; nothing aggregated or surfaced it.**\nRecomputed cohort net premium (sum of the 7 members, Lee-Ready-signed pilot store,\n$M): 06-22 −24.9 · 06-23 −33.8 · 06-24 −51.8 · **06-25 +146.8** · 06-26 +60.6 ·\n06-29 +121.9 · 06-30 +85.2 · 07-01 +187.5 · 07-02 +15.6. The daily series flipped\npositive one session before the price low; the 5-session sum first turned positive on\n06-26, the low itself. Honesty constraints (red-team, binding): (i) this is\n**coincident-to-at-most-one-session-leading — \"flow led price\" is NOT established**,\nand flow-as-shadow-of-price is not excluded; (ii) the *generals lagged in flow* —\n06-25 was led by the non-generals (+$110.2M vs AAPL+META +$36.6M), NVDA was −$11.1M on\nthe low day itself, and META's signature +$148.8M call spike came 07-01, five sessions\nafter the low (a confirmation, not a lead); (iii) the direction signing failed its own\npromotion gate (bar recovery 0.41 vs the 0.70 bar; 44-65% of trades excluded at\nmidpoint), so a real-time cohort chip would have been **display-only visibility, not a",
+  "expected_properties": [
+    {
+      "tag": "timing",
+      "check": "Daily flow turned positive one session before the low and five-session flow at the low; retain coincident-to-at-most-one-session-leading, not an established general lead."
+    },
+    {
+      "tag": "composition",
+      "check": "Non-generals led the June 25 flow; NVDA was negative on the low day and META spike was later confirmation."
+    },
+    {
+      "tag": "calibration",
+      "check": "Bar recovery 0.41 was below 0.70 and 44-65% of trades were excluded at midpoint; do not promote signed flow to a calibrated execution signal."
+    },
+    {
+      "tag": "limits",
+      "check": "A retrospective cohort display can improve visibility without proving predictive alpha, independence or historically available live coverage."
+    }
+  ],
+  "known_failure_modes": [
+    "Treat retrospective supplied diagnostic text as a historically served point-in-time snapshot.",
+    "Turn a distinct population, selected anecdote or failed calibration into a validated execution signal.",
+    "Import later observations absent from the supplied cutoff slice or count related cases as independent trials."
+  ],
+  "gold_standard_sentence": "The flow sequence supports visibility around the turn, not established predictive leadership. Cohort composition matters, and the failed signing gate confines the evidence to display rather than a calibrated tradable signal.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

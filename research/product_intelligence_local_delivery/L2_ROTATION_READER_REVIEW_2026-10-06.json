@@ -1,0 +1,149 @@
+{
+  "reviewed_head": "1537636f53cc24184a16e7a044f066d7e43f2ac4",
+  "pr": 8470,
+  "main_pin": "7db649d66e54835ad3dc1b324725251489128215",
+  "main_baseline_note": "d0f14c62544daca98258cbf68a5e1e3bef54ab74: grep read_ledger_history count 0 (confirmed)",
+  "pr_tests": {
+    "command": "cd \"$SCR\" && PYTHONPATH=\"$SCR\" .probe-venv/bin/python -m pytest tests/test_rotation_events.py -q -k read_ledger_history 2>&1 | tail -3",
+    "summary_line": "18 passed, 23 deselected in 0.49s"
+  },
+  "probes": [
+    {
+      "id": "a",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1419-1431 @ 1537636f",
+      "script": "Mix _history_created(replayed=True) + _history_closed(); assert modes, mode_counts, mode filters (see L2 md §a).",
+      "output": "modes_all=[RECONSTRUCTED_REPLAY, RETAINED_LEDGER_UNMARKED]; mode_counts {1,1}; replay_count=1; unmarked_count=1",
+      "consumer_rule": "Display each row's envelope mode; filter with query mode replay vs ledger_unmarked."
+    },
+    {
+      "id": "b",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1289-1301,1341-1346 @ 1537636f",
+      "script": "Before: bad asof before through → INVALID. After: boundary+future obs>through then malformed line 3 → OK stopped_by through (PR test pattern).",
+      "output": "malformed_before: INVALID MISSING_OBSERVATION_CLOCK; after-through pattern: OK through 1 row first_uninspected_line=3; junk on line 2 immediately after in-window row still INVALID_JSON",
+      "consumer_rule": "Fail closed on corrupt lines already reached; rows with observation_date>through are not parsed."
+    },
+    {
+      "id": "c",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1176-1470 @ 1537636f (no backfill_leg_names call); grep lines 1493,1765 outside reader",
+      "script": "Row with name_en OLD_EN_LABEL; read_ledger_history; grep backfill in module.",
+      "output": "returned_name_en=OLD_EN_LABEL; grep hits only backfill_leg_names def and closed_recent path",
+      "consumer_rule": "Show stored leg labels from native row; never today's registry names from this reader."
+    },
+    {
+      "id": "d",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1325-1346 @ 1537636f",
+      "script": "closed closed_asof vs through; asof==through inclusion.",
+      "output": "closed_asof 2026-07-10 excluded at through 2026-07-05; asof==2026-07-05 included; closed_asof==through included",
+      "consumer_rule": "Boundary is observation clock: created uses asof, closed uses closed_asof; inclusive at ==."
+    },
+    {
+      "id": "e",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1435-1448 @ 1537636f",
+      "script": "Duplicate identical created rows.",
+      "output": "selected_rows=2; event_counts.created=2; same lifecycle_id twice; no duplicate field in coverage",
+      "consumer_rule": "Treat event_counts as raw line counts; dedupe by lifecycle_id+line if needed."
+    },
+    {
+      "id": "f",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1341-1346,1395-1416,1439-1440 @ 1537636f",
+      "script": "ts before/after asof; ts after through with asof<=through; bad/missing ts.",
+      "output": "ts_before_asof OK both clocks returned; ts_after_through_asof_ok OK row kept; bad/missing ts INVALID MISSING_RECORD_CLOCK",
+      "consumer_rule": "through gates observation_date only; show recorded_at vs observation_date per row; no coverage skew flag."
+    },
+    {
+      "id": "L-A",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1435-1446,1457-1472 @ 1537636f",
+      "script": "List envelope and native clock fields on created+closed rows.",
+      "output": "Envelope: observation_date, recorded_at, mode; native ts/asof/closed_asof/started; coverage first/last are observation dates",
+      "consumer_rule": "first_observation/last_observation are observation-clock bounds on selected rows only."
+    },
+    {
+      "id": "L-B",
+      "verdict": "UNHANDLED",
+      "evidence": "engine/rotation_events.py:1371-1389 @ 1537636f (keys only); GMI PIT #8432/#8435",
+      "script": "Inspect returned from_key/to_key and native row legs.",
+      "output": "membership_asof_field=null; stored keys/labels only",
+      "consumer_rule": "Membership as-of observation date requires external cohort graph; not this reader's contract."
+    },
+    {
+      "id": "P1",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1251 @ 1537636f",
+      "script": "shasum -a 256; stat before/after read; one-byte append.",
+      "output": "source_sha256 matches shasum; mtime/size unchanged; one-byte changes hash",
+      "consumer_rule": "Cite source_sha256 for ledger bytes provenance."
+    },
+    {
+      "id": "P2",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1200-1208,1450-1453 @ 1537636f",
+      "script": "limit=2 with malformed line 3; invalid limit/through raise ValueError; 50k-row timing.",
+      "output": "limit2 OK stopped_by limit; query_errors typed ValueError; time_full_50k=1.955s time_limit100=0.028s",
+      "consumer_rule": "Invalid query args raise before IO; limit stops scan before later physical lines."
+    },
+    {
+      "id": "P3",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1226-1247 @ 1537636f",
+      "script": "missing, empty, directory path, chmod 0 file.",
+      "output": "MISSING, EMPTY, UNREADABLE (directory), UNREADABLE (permission)",
+      "consumer_rule": "Map status MISSING/EMPTY/UNREADABLE without raising."
+    },
+    {
+      "id": "P4",
+      "verdict": "HANDLED",
+      "evidence": "engine/rotation_events.py:1458-1472 @ 1537636f (return dict shape)",
+      "script": "Build consumer display lines from OK result with through.",
+      "output": "statement 4 lines; cannot_support: ts/through skew warning, duplicate inflation, membership PIT",
+      "consumer_rule": "Honest counts need mode_counts + invalid_rows + observation bounds; gaps named above."
+    }
+  ],
+  "findings": [
+    {
+      "n": 1,
+      "severity": "MAJOR",
+      "probe": "a/f",
+      "claim": "RECONSTRUCTED_REPLAY is inferred only from native `replayed is True`; replay-sourced rows without the flag classify as RETAINED_LEDGER_UNMARKED with no warning.",
+      "evidence": "engine/rotation_events.py:1419-1423 @ 1537636f",
+      "repair": "Document contract and/or add coverage flag when replay metadata is absent; optional source hint field.",
+      "recheck": "Probe row with replay provenance but replayed omitted; expect explicit UNMARKED_WITH_REPLAY_RISK or documented consumer rule."
+    },
+    {
+      "n": 2,
+      "severity": "MAJOR",
+      "probe": "f",
+      "claim": "Write clock `ts` may be after `through` while observation_date is within `through`; reader returns OK with no coverage skew signal.",
+      "evidence": "engine/rotation_events.py:1341-1346 @ 1537636f",
+      "repair": "Add optional coverage.clock_skew_rows or per-row clock_consistency field.",
+      "recheck": "Probe ts=2026-07-20, asof=2026-07-05, through=2026-07-05; expect skew listed in coverage."
+    },
+    {
+      "n": 3,
+      "severity": "MINOR",
+      "probe": "e",
+      "claim": "Duplicate lifecycle lines inflate event_counts; coverage has no duplicate lifecycle count.",
+      "evidence": "engine/rotation_events.py:1447-1448 @ 1537636f",
+      "repair": "Expose duplicate_lifecycle_count or distinct lifecycle_id count in coverage.",
+      "recheck": "Two identical created lines; coverage reports duplicate count 1."
+    },
+    {
+      "n": 4,
+      "severity": "NOTE",
+      "probe": "L-B",
+      "claim": "Leg membership as-of observation date is out of scope; consumer must join external GMI/cohort surfaces.",
+      "evidence": "L0 UNHANDLED; engine/rotation_events.py:1371-1389 @ 1537636f",
+      "repair": "none in this reader",
+      "recheck": "Held #8432/#8486 lanes; no change expected on #8470."
+    }
+  ],
+  "verdict": "ACCEPT_WITH_FOLLOWUPS",
+  "consumer_display_statement": "When status is OK, show coverage.mode_counts for replay vs retained-unmarked, coverage.invalid_rows, and coverage.first_observation..last_observation (observation-clock). Per row, show mode, observation_date, recorded_at, and native row labels. State the through boundary as inclusive on observation_date. Do not imply cohort membership or deduplicated lifecycle counts without client-side logic.",
+  "gaps": []
+}

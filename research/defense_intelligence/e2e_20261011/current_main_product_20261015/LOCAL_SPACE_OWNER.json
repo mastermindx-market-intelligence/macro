@@ -1,0 +1,14 @@
+{
+  "state": "SPACE_LOCAL_OWNER_ADOPTED_FOR_CANDIDATE_BUILD",
+  "current_canonical_owner_unmodified": "449f7f3c5b6a8c9faa181a28",
+  "new_local_owner": "5a5bc26d8f2c10a2931c0350",
+  "new_local_manifest_sha256": "88b7e7ff8cb07be848a99b7ada0e0c12deb5caf6c444ab35978b2473dd9565d2",
+  "changed_event_keys": [
+    "evt_cik0001133421_2026q2_results"
+  ],
+  "other9_event_payloads_preserved": true,
+  "all_aliases_preserved": true,
+  "upstream_writes": 0,
+  "new_source_acquisition": false,
+  "qualified_prior_delta": "Q 1df6eb658238; seven NOC Space/GEM63XL facts"
+}

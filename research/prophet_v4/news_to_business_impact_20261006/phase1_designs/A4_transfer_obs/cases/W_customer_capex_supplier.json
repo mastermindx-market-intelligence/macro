@@ -1,0 +1,93 @@
+{
+  "schema": "transfer_edge.v1",
+  "authority": "context_only",
+  "prophet_flags": {
+    "may_rank": false,
+    "may_size": false,
+    "may_gate": false,
+    "prophet_authority": false
+  },
+  "unsolicited_instruction_detected": false,
+  "transfer_id": "xfer_d4d635d3fd7af11f42bc115b",
+  "source_fact_id": "fact_678e8bf5a1906cc701210c40",
+  "source_company_id": "cik:0000320193",
+  "target_company_id": "cik:0001046179",
+  "target_role": "supplier",
+  "edge_direction": "source_to_target",
+  "operating_effect_on_target": "positive",
+  "mechanism_channel": "revenue_demand",
+  "exposure": {
+    "form": "unknown",
+    "absence": {
+      "schema": "field_absence.v1",
+      "authority": "context_only",
+      "reason": "stated_without_number",
+      "subject": "exposure",
+      "detail": "named foundry, no share figure",
+      "missing_fields": []
+    }
+  },
+  "timing": {
+    "lag_kind": "next_quarter",
+    "horizon_period": {
+      "year": 2027,
+      "quarter": 1,
+      "calendar_end": "2027-03-31",
+      "period_kind": "quarter"
+    }
+  },
+  "alternatives": [
+    {
+      "channel": "market_only",
+      "claimed_quote": "Same-session semiconductor basket moves are a separate market-only hypothesis."
+    }
+  ],
+  "graph_provenance": {
+    "graph": "economic_relationship",
+    "generator_kind": "source_span_two_party",
+    "generator_id": "span_gate.v1",
+    "as_of": "2026-09-28T13:35:00Z",
+    "belief_time": "2026-09-28T13:35:00Z",
+    "hop_count": 1,
+    "path": [
+      "cik:0000320193",
+      "cik:0001046179"
+    ]
+  },
+  "two_party_span": {
+    "claimed_quote": "Apple increased iPhone assembly capex and named TSMC as the foundry that will take the incremental wafer starts.",
+    "span": {
+      "schema": "source_span.v1",
+      "authority": "context_only",
+      "span_id": "span_8d4f69ef27da9b40ad67",
+      "document_id": "doc_aapl_capex_20260928",
+      "document_version": 1,
+      "locator": {
+        "kind": "text_span",
+        "sub_kind": "transcript_segment",
+        "segment_index": 0,
+        "span_start_byte": 0,
+        "span_end_byte": 112
+      },
+      "text_sha256": "ea6b7d0e18f87054e754daf0847ffcbd6988fd9a2a0cd5a9f3838418236425b4",
+      "display_excerpt": "Apple increased iPhone assembly capex and named TSMC as the foundry that will take the incremental wafer starts.",
+      "rights_profile": "rp_unknown_v1",
+      "receipt_state": "byte_replayed",
+      "receipt": {
+        "source_sha256": "c8f2d0a816e5c9ecadd7895334eadbd11ed39f3605020f572051f182017c1648",
+        "segment_index": 0,
+        "segment_sha256": "ea6b7d0e18f87054e754daf0847ffcbd6988fd9a2a0cd5a9f3838418236425b4",
+        "segment_bytes": 112,
+        "span_start_byte": 0,
+        "span_end_byte": 112,
+        "text_sha256": "ea6b7d0e18f87054e754daf0847ffcbd6988fd9a2a0cd5a9f3838418236425b4"
+      },
+      "unreplayable_reason": null
+    }
+  },
+  "shock_id": null,
+  "supersedes_transfer_id": null,
+  "observed_at": "2026-09-28T13:35:00Z",
+  "source_available_at": "2026-09-28T13:32:14Z",
+  "display_summary": "Over the next-quarter window, Apple's named foundry relationship with TSMC is the documented path for the capex increase; exposure share is not stated."
+}

@@ -1,0 +1,1322 @@
+{
+  "schema": "defense_retained_cost_observation.v1",
+  "observed_at": "2026-10-14T11:23:53.031725+00:00",
+  "original_root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "capture_script_sha256": "87e137545d42d63d5fc40fbe99556b4ba1184ba809f91a683c86e4a4f8f2b7e6",
+  "source_head": "3d715806076f71dcac406678fa238026640ffc45",
+  "native_sessions": [
+    {
+      "thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_thread_id": null,
+      "role": null,
+      "agent_path": null,
+      "observed_models_and_effort": [
+        [
+          "gpt-6-astra",
+          "ultra"
+        ]
+      ],
+      "usage_observed_at": "2026-10-14T11:23:18.386Z",
+      "total_token_usage": {
+        "input_tokens": 344191165,
+        "cached_input_tokens": 337626496,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1158638,
+        "reasoning_output_tokens": 409604,
+        "total_tokens": 345349803
+      }
+    },
+    {
+      "thread_id": "01a13303-18b4-7990-8c62-c66cea6205c4",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/publication_recovery",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T10:21:54.217Z",
+      "total_token_usage": {
+        "input_tokens": 76457787,
+        "cached_input_tokens": 74941312,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 340370,
+        "reasoning_output_tokens": 173909,
+        "total_tokens": 76798157
+      }
+    },
+    {
+      "thread_id": "01a13303-827f-7e30-8617-81258d33cf61",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/investor_acceptance",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T08:21:37.809Z",
+      "total_token_usage": {
+        "input_tokens": 89769134,
+        "cached_input_tokens": 88741248,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 332984,
+        "reasoning_output_tokens": 136158,
+        "total_tokens": 90102118
+      }
+    },
+    {
+      "thread_id": "01a13309-2c3a-73f2-842e-c124cdce8b56",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/product_journey",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T11:47:05.920Z",
+      "total_token_usage": {
+        "input_tokens": 96756464,
+        "cached_input_tokens": 95020160,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 404277,
+        "reasoning_output_tokens": 196460,
+        "total_tokens": 97160741
+      }
+    },
+    {
+      "thread_id": "01a1330f-7f48-7e11-9b5c-d59f48c4c00f",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/official_sources",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T09:57:32.845Z",
+      "total_token_usage": {
+        "input_tokens": 79747444,
+        "cached_input_tokens": 77989248,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 349260,
+        "reasoning_output_tokens": 159378,
+        "total_tokens": 80096704
+      }
+    },
+    {
+      "thread_id": "01a13337-1958-7a32-bdd7-5004d2362fab",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/research_adjudication",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T08:40:43.701Z",
+      "total_token_usage": {
+        "input_tokens": 56275255,
+        "cached_input_tokens": 55145984,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 288771,
+        "reasoning_output_tokens": 125258,
+        "total_tokens": 56564026
+      }
+    },
+    {
+      "thread_id": "01a13356-f007-7e80-a9e1-5214fa41cfc2",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/saved_workflow_integration",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T10:32:25.171Z",
+      "total_token_usage": {
+        "input_tokens": 57414360,
+        "cached_input_tokens": 56286336,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 146202,
+        "reasoning_output_tokens": 57444,
+        "total_tokens": 57560562
+      }
+    },
+    {
+      "thread_id": "01a13387-3319-7b93-8170-edc7e66e0256",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/market_context",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T12:27:36.022Z",
+      "total_token_usage": {
+        "input_tokens": 71808009,
+        "cached_input_tokens": 70468992,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 277559,
+        "reasoning_output_tokens": 118011,
+        "total_tokens": 72085568
+      }
+    },
+    {
+      "thread_id": "01a133b6-7eeb-7120-bd12-d17d677d19b4",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/archetype_acceptance",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T11:52:55.079Z",
+      "total_token_usage": {
+        "input_tokens": 52273245,
+        "cached_input_tokens": 50628736,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 190900,
+        "reasoning_output_tokens": 72709,
+        "total_tokens": 52464145
+      }
+    },
+    {
+      "thread_id": "01a133ba-f518-7320-88f4-0389d4a7bc72",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/operating_acceptance",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T09:57:28.969Z",
+      "total_token_usage": {
+        "input_tokens": 41822771,
+        "cached_input_tokens": 40953600,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 121368,
+        "reasoning_output_tokens": 45929,
+        "total_tokens": 41944139
+      }
+    },
+    {
+      "thread_id": "01a133f6-50f1-77d2-9cbd-868a949c791f",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "worker",
+      "agent_path": "/root/dev_participant_one",
+      "observed_models_and_effort": [
+        [
+          "gpt-5.6-terra",
+          "medium"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T06:39:47.007Z",
+      "total_token_usage": {
+        "input_tokens": 619804,
+        "cached_input_tokens": 549376,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 3422,
+        "reasoning_output_tokens": 714,
+        "total_tokens": 623226
+      }
+    },
+    {
+      "thread_id": "01a133f6-73d0-7090-84e1-82e54a2623e9",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "worker",
+      "agent_path": "/root/dev_participant_two",
+      "observed_models_and_effort": [
+        [
+          "gpt-5.6-terra",
+          "medium"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T06:48:20.587Z",
+      "total_token_usage": {
+        "input_tokens": 1511332,
+        "cached_input_tokens": 1440000,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 8952,
+        "reasoning_output_tokens": 2088,
+        "total_tokens": 1520284
+      }
+    },
+    {
+      "thread_id": "01a13414-697d-7b52-85ab-e68424111991",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "explorer",
+      "agent_path": "/root/viewport_diagnostic",
+      "observed_models_and_effort": [
+        [
+          "gpt-5.6-terra",
+          "medium"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T09:12:52.114Z",
+      "total_token_usage": {
+        "input_tokens": 1990123,
+        "cached_input_tokens": 1847808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 14256,
+        "reasoning_output_tokens": 2522,
+        "total_tokens": 2004379
+      }
+    },
+    {
+      "thread_id": "01a13703-227a-7cd3-9684-c8fd2d0d213d",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/delivery_acceptance",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T22:07:10.748Z",
+      "total_token_usage": {
+        "input_tokens": 31802345,
+        "cached_input_tokens": 31355520,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 130497,
+        "reasoning_output_tokens": 56308,
+        "total_tokens": 31932842
+      }
+    },
+    {
+      "thread_id": "01a13703-81e0-7c62-a9ba-4078c7493dd8",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/performance_recovery",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T22:07:10.911Z",
+      "total_token_usage": {
+        "input_tokens": 27331507,
+        "cached_input_tokens": 26975872,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 110837,
+        "reasoning_output_tokens": 53852,
+        "total_tokens": 27442344
+      }
+    },
+    {
+      "thread_id": "01a1370c-651a-7321-bd7b-b7dc7262c438",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/research_admission",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T22:06:40.457Z",
+      "total_token_usage": {
+        "input_tokens": 28585095,
+        "cached_input_tokens": 28137600,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 117605,
+        "reasoning_output_tokens": 46444,
+        "total_tokens": 28702700
+      }
+    },
+    {
+      "thread_id": "01a1370f-579f-76a3-b2be-fb34496cb58f",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/financial_depth",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-13T22:07:19.226Z",
+      "total_token_usage": {
+        "input_tokens": 27907349,
+        "cached_input_tokens": 27443456,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 104669,
+        "reasoning_output_tokens": 39300,
+        "total_tokens": 28012018
+      }
+    },
+    {
+      "thread_id": "01a13839-5716-7ba3-82cf-709943608987",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/release_acceptance",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-14T04:12:07.972Z",
+      "total_token_usage": {
+        "input_tokens": 22197777,
+        "cached_input_tokens": 21796224,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 72247,
+        "reasoning_output_tokens": 25408,
+        "total_tokens": 22270024
+      }
+    },
+    {
+      "thread_id": "01a13839-ad49-7001-b84c-288e98477b95",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/source_completion",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-14T04:12:11.916Z",
+      "total_token_usage": {
+        "input_tokens": 29937554,
+        "cached_input_tokens": 29460736,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 117419,
+        "reasoning_output_tokens": 49617,
+        "total_tokens": 30054973
+      }
+    },
+    {
+      "thread_id": "01a13839-f414-75d3-8ab6-ba9a20930e7d",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/research_completion",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-14T04:11:59.165Z",
+      "total_token_usage": {
+        "input_tokens": 25350686,
+        "cached_input_tokens": 25012224,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 106057,
+        "reasoning_output_tokens": 50822,
+        "total_tokens": 25456743
+      }
+    },
+    {
+      "thread_id": "01a13857-81ca-7a53-b213-f995e57de308",
+      "parent_thread_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "role": "sol-coordinator",
+      "agent_path": "/root/financial_reconciliation",
+      "observed_models_and_effort": [
+        [
+          "gpt-6.1-sol",
+          "high"
+        ]
+      ],
+      "usage_observed_at": "2026-10-14T03:35:40.343Z",
+      "total_token_usage": {
+        "input_tokens": 6577667,
+        "cached_input_tokens": 6396032,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 39773,
+        "reasoning_output_tokens": 8839,
+        "total_tokens": 6617440
+      }
+    }
+  ],
+  "native_observed_totals": {
+    "input_tokens": 1170326873,
+    "cached_input_tokens": 1148216960,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 4436063,
+    "reasoning_output_tokens": 1830774,
+    "total_tokens": 1174762936
+  },
+  "fabric_scoped_ledger_rows": 58,
+  "fabric_unique_observed_runs": [
+    {
+      "run_id": "defense-capacity-span-01a13703-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13703-227a-7cd3-9684-c8fd2d0d213d",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 829.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791928785
+    },
+    {
+      "run_id": "defense-cash-code-review-01a13300-fd2",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a1370f-579f-76a3-b2be-fb34496cb58f",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 246.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791926131
+    },
+    {
+      "run_id": "defense-cash-retained-review-01a13300-fd1",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a1370f-579f-76a3-b2be-fb34496cb58f",
+      "kind": null,
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 670.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791925975
+    },
+    {
+      "run_id": "defense-final-harness-audit-o6-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13703-81e0-7c62-a9ba-4078c7493dd8",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 95.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791928328
+    },
+    {
+      "run_id": "defense-financial-cas-review-01a13857",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13857-81ca-7a53-b213-f995e57de308",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 131.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791948856
+    },
+    {
+      "run_id": "defense-financial-reconcile-review-01a13857",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13857-81ca-7a53-b213-f995e57de308",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 159.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791947206
+    },
+    {
+      "run_id": "defense-fms-contractors-01a13703-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13703-227a-7cd3-9684-c8fd2d0d213d",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 94.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791945217
+    },
+    {
+      "run_id": "defense-four-issuer-pin-review-01a13300-c",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a1370c-651a-7321-bd7b-b7dc7262c438",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 36.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791926202
+    },
+    {
+      "run_id": "defense-gao-vcs-extraction-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": "outcome",
+      "pool": "bailian",
+      "model": "qwen3.8-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 489.0,
+      "tokens": 222020,
+      "input_tokens": 192917,
+      "cached_tokens": 129792,
+      "output_tokens": 29103,
+      "credits": null,
+      "usage_source": "codex_native_session",
+      "ts": 1791972753
+    },
+    {
+      "run_id": "defense-investor-01a13303-audit1",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13303-827f-7e30-8617-81258d33cf61",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 337.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791857892
+    },
+    {
+      "run_id": "defense-investor-01a13303-compose1",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13303-827f-7e30-8617-81258d33cf61",
+      "kind": null,
+      "pool": "glm",
+      "model": "glm-5.3",
+      "rc": 75,
+      "signal": "admission",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 1234.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791859192
+    },
+    {
+      "run_id": "defense-market-census-01a13387-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13387-3319-7b93-8170-edc7e66e0256",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 118.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791866720
+    },
+    {
+      "run_id": "defense-o1-assertion-repair-20261013-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13303-18b4-7990-8c62-c66cea6205c4",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 2666.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791860997
+    },
+    {
+      "run_id": "defense-o1-proof-repair-20261013-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13303-18b4-7990-8c62-c66cea6205c4",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 3392.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791865554
+    },
+    {
+      "run_id": "defense-o2-sources-20261012-01a1330f",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a1330f-7f48-7e11-9b5c-d59f48c4c00f",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 1080.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791859735
+    },
+    {
+      "run_id": "defense-oversight-core-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 1485.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791974055
+    },
+    {
+      "run_id": "defense-oversight-ui-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": null,
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 1,
+      "signal": "other",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 218.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791974360
+    },
+    {
+      "run_id": "defense-owner-cas-review-01a13300-fd3",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a1370f-579f-76a3-b2be-fb34496cb58f",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 306.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791927606
+    },
+    {
+      "run_id": "defense-p2-durable-declaration-l1-01a13300",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13356-f007-7e80-a9e1-5214fa41cfc2",
+      "kind": null,
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 3502.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791869845
+    },
+    {
+      "run_id": "defense-performance-extraction-review-o6-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13703-81e0-7c62-a9ba-4078c7493dd8",
+      "kind": null,
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 162.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791924585
+    },
+    {
+      "run_id": "defense-progressive-boot-o6-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13703-81e0-7c62-a9ba-4078c7493dd8",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "deterministic",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 550.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791926052
+    },
+    {
+      "run_id": "defense-proof-independent-01a13300-b",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": null,
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 1,
+      "signal": "other",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 865.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791866503
+    },
+    {
+      "run_id": "defense-q0-research-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": null,
+      "pool": "grok",
+      "model": "grok-4.6",
+      "rc": 75,
+      "signal": "admission",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 7.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791858331
+    },
+    {
+      "run_id": "defense-research-input-admission-01a13300-b",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a1370c-651a-7321-bd7b-b7dc7262c438",
+      "kind": null,
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 397.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791925406
+    },
+    {
+      "run_id": "defense-retrospective-method-review-01a13300-20261013-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13839-f414-75d3-8ab6-ba9a20930e7d",
+      "kind": "outcome",
+      "pool": "bailian",
+      "model": "qwen3.8-max",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 413.0,
+      "tokens": 124337,
+      "input_tokens": 110789,
+      "cached_tokens": 78464,
+      "output_tokens": 13548,
+      "credits": null,
+      "usage_source": "codex_native_session",
+      "ts": 1791946509
+    },
+    {
+      "run_id": "defense-retrospective-review-01a13300-20261013-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13839-f414-75d3-8ab6-ba9a20930e7d",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "deterministic",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 1734.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791946927
+    },
+    {
+      "run_id": "defense-six-symbol-basis-review-01a13300-e",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a1370c-651a-7321-bd7b-b7dc7262c438",
+      "kind": null,
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 124.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791928226
+    },
+    {
+      "run_id": "defense-theme-financial-deps-01a13300-fd4",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a1370f-579f-76a3-b2be-fb34496cb58f",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 95.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791928996
+    },
+    {
+      "run_id": "defense-theme-next-consumer-01a13839-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13839-ad49-7001-b84c-288e98477b95",
+      "kind": null,
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 75,
+      "signal": "admission",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 30.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791948436
+    },
+    {
+      "run_id": "defense-theme-owner-review-01a13703-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13703-227a-7cd3-9684-c8fd2d0d213d",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 63.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791925423
+    },
+    {
+      "run_id": "defense-two-issuer-repair-review-01a13300-d",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a1370c-651a-7321-bd7b-b7dc7262c438",
+      "kind": "outcome",
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 154.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791926759
+    },
+    {
+      "run_id": "defense-v10-subject-review-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": null,
+      "pool": "bailian",
+      "model": "qwen3.8-max",
+      "rc": 65,
+      "signal": "other",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 2494.0,
+      "tokens": 3282956,
+      "input_tokens": 3197380,
+      "cached_tokens": 3062656,
+      "output_tokens": 85576,
+      "credits": null,
+      "usage_source": "codex_native_session",
+      "ts": 1791960668
+    },
+    {
+      "run_id": "defense-v4-criticalpath-review-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": null,
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 127.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791949444
+    },
+    {
+      "run_id": "defense-v9-startup-review-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": null,
+      "pool": "minimax",
+      "model": "MiniMax-M3",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 482.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791957772
+    },
+    {
+      "run_id": "dpv3-o5-d5-repair-20261012",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13309-2c3a-73f2-842e-c124cdce8b56",
+      "kind": null,
+      "pool": "bailian",
+      "model": "qwen3.8-flash",
+      "rc": 65,
+      "signal": "other",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 1440.0,
+      "tokens": 6910476,
+      "input_tokens": 6835554,
+      "cached_tokens": 6644736,
+      "output_tokens": 74922,
+      "credits": null,
+      "usage_source": "codex_native_session",
+      "ts": 1791859668
+    },
+    {
+      "run_id": "dpv3-o5-ui-census-20261012",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13309-2c3a-73f2-842e-c124cdce8b56",
+      "kind": "outcome",
+      "pool": "glm",
+      "model": "glm-5.3-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 314.0,
+      "tokens": null,
+      "input_tokens": null,
+      "cached_tokens": null,
+      "output_tokens": null,
+      "credits": null,
+      "usage_source": null,
+      "ts": 1791858152
+    }
+  ],
+  "metered_execution_observations": [
+    {
+      "run_id": "defense-gao-vcs-extraction-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": "outcome",
+      "pool": "bailian",
+      "model": "qwen3.8-flash",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 489.0,
+      "tokens": 222020,
+      "input_tokens": 192917,
+      "cached_tokens": 129792,
+      "output_tokens": 29103,
+      "credits": null,
+      "usage_source": "codex_native_session",
+      "ts": 1791972753
+    },
+    {
+      "run_id": "defense-retrospective-method-review-01a13300-20261013-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13839-f414-75d3-8ab6-ba9a20930e7d",
+      "kind": "outcome",
+      "pool": "bailian",
+      "model": "qwen3.8-max",
+      "rc": 0,
+      "signal": "ok",
+      "accepted_by": "reviewer",
+      "review_rejected": false,
+      "scope_violation": false,
+      "wall_s": 413.0,
+      "tokens": 124337,
+      "input_tokens": 110789,
+      "cached_tokens": 78464,
+      "output_tokens": 13548,
+      "credits": null,
+      "usage_source": "codex_native_session",
+      "ts": 1791946509
+    },
+    {
+      "run_id": "defense-v10-subject-review-01a13300-a",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "kind": null,
+      "pool": "bailian",
+      "model": "qwen3.8-max",
+      "rc": 65,
+      "signal": "other",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 2494.0,
+      "tokens": 3282956,
+      "input_tokens": 3197380,
+      "cached_tokens": 3062656,
+      "output_tokens": 85576,
+      "credits": null,
+      "usage_source": "codex_native_session",
+      "ts": 1791960668
+    },
+    {
+      "run_id": "dpv3-o5-d5-repair-20261012",
+      "root_id": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+      "parent_run_id": "01a13309-2c3a-73f2-842e-c124cdce8b56",
+      "kind": null,
+      "pool": "bailian",
+      "model": "qwen3.8-flash",
+      "rc": 65,
+      "signal": "other",
+      "accepted_by": null,
+      "review_rejected": null,
+      "scope_violation": null,
+      "wall_s": 1440.0,
+      "tokens": 6910476,
+      "input_tokens": 6835554,
+      "cached_tokens": 6644736,
+      "output_tokens": 74922,
+      "credits": null,
+      "usage_source": "codex_native_session",
+      "ts": 1791859668
+    }
+  ],
+  "fabric_summary": {
+    "unique_runs_with_ledger_rows": 36,
+    "accepted_runs": 22,
+    "usage_known_runs": 4,
+    "usage_unknown_runs": 32,
+    "known_total_tokens": 10539789,
+    "wall_s_sum_observed_once_per_run": 26538.0,
+    "usd_total": null,
+    "effective_usd_per_accepted_outcome": null
+  },
+  "limitations": [
+    "Snapshot is incomplete while work continues; missing original-run ledger records and unsettled effects are not zero cost.",
+    "Latest outcome row and latest metered execution observation are retained separately per stable run; reviewer rows cannot erase observed usage. Each run is counted once; no acceptance inferred from process exit.",
+    "Native token counters are observed cumulative usage, including cached input; reasoning output is a subset, not an additive charge.",
+    "Actual contracted billing, provider usage for unmetered runs, local compute, source licensing and installed serve distributions remain unavailable.",
+    "No current pricing estimate or model default is substituted for an actual invoice or missing metering.",
+    "Native lineage is read from session metadata and model/effort from actual turn_context; role labels alone are not model evidence."
+  ],
+  "mission_complete": false
+}

@@ -1,0 +1,81 @@
+{
+  "candidate_start_label_windows": [
+    {
+      "candidate_interval_end": "2026-10-22T04:00:00+00:00",
+      "exact_ohlc_matches": {
+        "close": true,
+        "high": true,
+        "low": true,
+        "open": true
+      },
+      "expected_minute_rows": 240,
+      "minute_response_observed_before_candidate_end": true,
+      "native_response_observed_before_candidate_end": true,
+      "observed_minute_rows": 170,
+      "vendor_label": "2026-10-22T00:00:00.000Z"
+    }
+  ],
+  "eligible_observations": 0,
+  "inference": "Native4hour response can contain a row before the candidate UTC interval end. Observed equality or presence is not finality; physical mapping remains subject to natural-boundary qualification.",
+  "live_feed_admitted": false,
+  "new_api_requests_in_verification": 0,
+  "schema": "forex_r26.open_interval_receipts.v1",
+  "source_records": {
+    "1min": {
+      "first_vendor_label": "2026-10-22T00:00:00.000Z",
+      "last_vendor_label": "2026-10-22T02:49:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/5307dc5ac46fcee569b0b892a09f211a991722e7acbc890682605effc1c9b1de.parquet",
+        "rows": 170,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:49:03.661042+00:00",
+        "raw_bytes": 19648,
+        "raw_sha256": "5307dc5ac46fcee569b0b892a09f211a991722e7acbc890682605effc1c9b1de",
+        "receipt_id": "3d3d7256f357a60a1764be794ee31f562b0a88c9d83dd920df65915608d05afa",
+        "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-22&resampleFreq=1min&startDate=2026-10-22",
+        "source": "forex-bars",
+        "symbol": "eurusd"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/48782d45acfd24d6-5307dc5ac46fcee569b0b892.json",
+      "rows": 170
+    },
+    "4hour": {
+      "first_vendor_label": "2026-10-22T00:00:00.000Z",
+      "last_vendor_label": "2026-10-22T00:00:00.000Z",
+      "materialization": {
+        "path": "normalized/forex-bars/2026-10-22/559d5bab079dfe3717badcc237bfe7c978ecfa6cdb02114796b4f03aeb07d6bc.parquet",
+        "rows": 1,
+        "source": "forex-bars",
+        "status": "WRITTEN"
+      },
+      "reader": {
+        "authority": "RESEARCH_ONLY_VENDOR_SOURCE",
+        "pit_backtest_eligible": false,
+        "purpose": "INSPECTION",
+        "redistribution_admitted": false
+      },
+      "receipt": {
+        "observed_at_utc": "2026-10-22T02:49:05.200350+00:00",
+        "raw_bytes": 116,
+        "raw_sha256": "559d5bab079dfe3717badcc237bfe7c978ecfa6cdb02114796b4f03aeb07d6bc",
+        "receipt_id": "b9a473cc9cf008e915a8eeabf6bb538a5e12873b2e780101b04a9f7a4d75e283",
+        "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-22&resampleFreq=4hour&startDate=2026-10-22",
+        "source": "forex-bars",
+        "symbol": "eurusd"
+      },
+      "receipt_path": "receipts/forex-bars/2026-10-22/93e3ef8404b94227-559d5bab079dfe3717badcc2.json",
+      "rows": 1
+    }
+  },
+  "vendor_finality_asserted": false,
+  "verified_at_utc": "2026-10-22T02:49:33.306833+00:00"
+}

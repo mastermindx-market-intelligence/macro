@@ -1,0 +1,11 @@
+{
+  "state": "INVALID_INCOMPLETE_DIAGNOSTIC_BATCH",
+  "cause": "Principal stopped its diagnostic server before timing controller completion. First six samples completed; samples7-10 connection refused. This is an orchestration error, not an application result.",
+  "preserved": [
+    "TIMING_DIAGNOSTIC_TEN.json",
+    "diagnostic-timing.log",
+    "diagnostic-server/REQUESTS.json",
+    "diagnostic-server/LOOP_DIAGNOSTICS.json"
+  ],
+  "remedy": "One local batch owner starts server, waits for full timing controller completion, then closes server in finally. Same source, instrumentation and thresholds."
+}

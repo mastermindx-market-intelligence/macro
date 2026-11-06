@@ -1,0 +1,45 @@
+{
+  "schema": "tiingo.readonly_qualifier_latency_integrity_diagnosis/v1",
+  "conclusion": "MATERIAL_LATENCY_PATH_IDENTIFIED_NOT_LIVENESS_PROOF",
+  "active_original_session_preserved": 97444,
+  "controller_sha256": "6b4c5eb1527b09078b6bcef1d1e3102c0ffeaf92a6bfa6070360332c34803c9e",
+  "core_sha256": "c6932707a653fd825256a51531b1e320661b2561ef1633edc52880fd8412cebd",
+  "observations": {
+    "controller_start_utc": "2026-10-13T02:39:06.255896+00:00",
+    "log_bytes_at_probe": 545,
+    "log_contains_startup_only": true,
+    "baseline_bytes": 431232,
+    "accepted_proofs": 123,
+    "accepted_proof_bytes": 47509189,
+    "largest_proof_bytes": 6966474,
+    "baseline_accepted_receipts": 45682,
+    "baseline_histories": 45530,
+    "baseline_read_and_parse_seconds": 0.003,
+    "E_stat_seconds_at_probe": [
+      0.001,
+      0.0
+    ],
+    "R_directory_inventory_probe": "Own read-only session19281 settled exit130 after requested interrupt; traceback locates delay in pathlib glob wildcard directory scandir/list(scandir_it), before receipt contents were read. No complete receipt count obtained."
+  },
+  "source_reasoning": [
+    "Before first owned_progress emission, child progress() runs context(): hash verifies and separately JSON-loads every accepted proof, builds all historical rows/ranges/receipt ownership, then loads every EOD receipt from glob(*/*.json).",
+    "Each accepted proof is read twice (sha then load), approximately95MB proof reads per context invocation before receipt enumeration. Fresh subprocesses repeat context for progress, preflight, qualification and coverage.",
+    "Controller captures progress child output; child emits only after the entire scan. Startup-only output cannot distinguish slow I/O from stalled child.",
+    "R metadata probe delay alongside fast E reads is consistent with archive directory/filesystem latency. Exact runtime location and causation are unproven without unavailable process-level evidence."
+  ],
+  "future_phase_recommendations": [
+    "First minimal change: read each immutable proof once into bytes, hash those exact bytes, then parse those same verified bytes; preserve every hash, parent-consumption, source pin, clock, identity, owner, range and foreign-context assertion. This eliminates duplicate proof reads without weakening checks.",
+    "For a separately reviewed future phase, enumerate receipt candidates using existing canonical request-path filename prefixes for exact expected request identities and eligible scope days instead of JSON-opening all historical receipts. Retain all matching candidates, duplicate/context checks, validate_receipt and inclusive own-clock bounds; establish parity against the current exhaustive selection before admission. Never apply a daily cap or discard same-body contexts.",
+    "Add flushed read-only milestones around context/proof loading and receipt scanning so latency is visible. Milestones must not count as settlement, acceptance or writer admission.",
+    "Reuse accepted frozen history knowledge only through an explicitly hash-bound immutable snapshot and unchanged proof membership; stat-only caching or dropping foreign-owner validation is not an acceptable shortcut."
+  ],
+  "limitations": [
+    "No qualifier/helper executed, no provider/key access, no archive or active method mutation, no global process/sysctl scan and no background observer created.",
+    "Earlier permission denials remain held. This review does not prove active97444 dead, stalled or settled and does not authorize replacement.",
+    "Pending Git switch61313 has no child mutation authority and was not touched.",
+    "Own read-only inventory probe19281 is terminal exit130 after interruption; no residual observer or writer was created."
+  ],
+  "provider_requests": 0,
+  "archive_writes": 0,
+  "active_writer_interruptions": 0
+}

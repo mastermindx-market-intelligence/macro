@@ -1,0 +1,22 @@
+cd '/Volumes/Mastermind 2/agent-workspaces/macro/web/forex-r26-source-qualification-20261022-sol-001' && /opt/homebrew/Caskroom/miniconda/base/bin/python3 - <<'PY'
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib
+from scripts.tiingo_ingest import Task,plan_page
+from collectors.tiingo_archive import DEFAULT_ARCHIVE,receipt_identity,request_path
+now=datetime.now(timezone.utc);boundary=datetime(2026,10,22,4,tzinfo=timezone.utc)
+assert boundary<=now<datetime(2026,10,22,8,tzinfo=timezone.utc)
+tasks=[Task('forex-bars','eurusd',{'startDate':'2026-10-22','endDate':'2026-10-22','resampleFreq':frequency}) for frequency in ['1min','4hour']]
+plan=plan_page(tasks);assert plan['plan_sha256']=='96353712a898d1a4e3b7846763e00794cb558c70ed62471a509e1f9debf2a1bc'
+paths={request_path(t.source,t.symbol,t.params):t.params['resampleFreq'] for t in tasks}
+found=[]
+for p in (DEFAULT_ARCHIVE/'receipts'/'forex-bars'/'2026-10-22').glob('*.json'):
+ r=json.loads(p.read_text())
+ if r.get('request_path') in paths:
+  found.append({'path':str(p.relative_to(DEFAULT_ARCHIVE)),'receipt_id':receipt_identity(r),'raw_sha256':r['raw_sha256'],'observed_at_utc':r['observed_at_utc'],'frequency':paths[r['request_path']],'post_boundary':datetime.fromisoformat(r['observed_at_utc'].replace('Z','+00:00'))>=boundary})
+covered={r['frequency'] for r in found if r['post_boundary']}
+result={'schema':'forex_r26.post_boundary_capture_preflight.v1','observed_at_utc':now.isoformat(),'candidate_boundary_utc':boundary.isoformat(),'purpose':'One prospective observation after previously successful open-interval capture; preserve both vintages; not a failure retry or schedule','existing_matching_receipts':found,'post_boundary_frequencies_covered':sorted(covered),'frequencies_to_capture':[f for f in ['1min','4hour'] if f not in covered],'request_budget':len([f for f in ['1min','4hour'] if f not in covered]),'original_open_capture_receipts':['3d3d7256f357a60a1764be794ee31f562b0a88c9d83dd920df65915608d05afa','b9a473cc9cf008e915a8eeabf6bb538a5e12873b2e780101b04a9f7a4d75e283'],'plan':plan,'new_api_requests':0,'retry_authorized':False,'existing_owner':'scripts.tiingo_ingest.collect'}
+evidence=Path('research/forex_r26_2026-10-20/source_evidence')
+with (evidence/'tiingo-eurusd-post-boundary-20261022-preflight.json').open('x') as out:json.dump(result,out,indent=2,sort_keys=True);out.write('\n')
+print(json.dumps(result))
+PY

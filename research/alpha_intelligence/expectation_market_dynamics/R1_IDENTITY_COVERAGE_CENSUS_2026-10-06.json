@@ -1,0 +1,328 @@
+{
+  "schema_version": "r1-identity-coverage-census.v1",
+  "as_of": "2026-10-06T04:54:23Z",
+  "source_revision": "679a325d7d08019f1f0afa10e2e18277da1a38f2",
+  "cutoff": "2026-10-03T06:31:51Z",
+  "universe": {
+    "names": 1503,
+    "sha256": "441a942e97950e2fae5c6a015f38535058b0647a540f8ee1ac2342d02bd6ddc5",
+    "sha256_matches_receipt": true,
+    "receipt_constituent_blobs": [
+      "ee4036e86b462b7edcc8595026d86d3171ea4e52",
+      "aeac187ded459ea94e149c5fc8dabc4e610d3ad0",
+      "a44c8f5e6c36368b402dcc5ecd08479487bc41b6"
+    ]
+  },
+  "sources": [
+    {
+      "path": "data/reference/security_master.parquet",
+      "owner": "UNOWNED (dataset_registry.yml owner macro-dashboard; no agentos owns_paths match)",
+      "blob": "362a32522f92a7cb180763d4bb5c97de865c4061",
+      "fields": [
+        "security_id",
+        "issuer_id",
+        "issuer_state",
+        "issuer_cik",
+        "issuer_evidence_snapshot",
+        "listing_key",
+        "country",
+        "mic",
+        "inception_code",
+        "effective_at",
+        "ingested_at",
+        "security_state",
+        "superseded_by"
+      ],
+      "history": "yes",
+      "rows": 2382
+    },
+    {
+      "path": "data/reference/issuer_master.parquet",
+      "owner": "UNOWNED",
+      "blob": "525395c72994819a160aea1cdedc46365f1d465a",
+      "fields": [
+        "issuer_id",
+        "cik",
+        "legal_name",
+        "n_securities",
+        "evidence_source",
+        "evidence_snapshot",
+        "status",
+        "era"
+      ],
+      "history": "no",
+      "rows": 1213
+    },
+    {
+      "path": "data/reference/vendor_aliases.parquet",
+      "owner": "UNOWNED",
+      "blob": "1197a56fd6107905e8d926629f19ac80b7a76278",
+      "fields": [
+        "vendor",
+        "vendor_symbol",
+        "security_id",
+        "valid_from",
+        "valid_to",
+        "ingested_at"
+      ],
+      "history": "yes",
+      "rows": 6037
+    },
+    {
+      "path": "data/reference/issuer_migrations.parquet",
+      "owner": "UNOWNED",
+      "blob": "2934a600d58fba02d406f6cd2a7fe51ce36ad2d0",
+      "fields": [
+        "security_id",
+        "listing_key",
+        "old_issuer_id",
+        "new_issuer_id",
+        "reason",
+        "evidence_cik",
+        "evidence_snapshot",
+        "migrated_at"
+      ],
+      "history": "yes",
+      "rows": 3
+    },
+    {
+      "path": "data/reference/security_migrations.parquet",
+      "owner": "UNOWNED",
+      "blob": "5c1db07065e54045d320b5dbe1d7455b8a76fdf9",
+      "fields": [
+        "security_id",
+        "superseded_by",
+        "reason",
+        "evidence",
+        "migrated_at"
+      ],
+      "history": "yes",
+      "rows": 1
+    },
+    {
+      "path": "data/symbol_directory/cik_map/2026-09-28.parquet",
+      "owner": "UNOWNED",
+      "blob": "3e10510ed277294f3bdaa9af36f7fb232469f0c8",
+      "fields": [
+        "ticker",
+        "cik",
+        "title"
+      ],
+      "history": "no",
+      "rows": 10428
+    },
+    {
+      "path": "data/openfigi/cusip_ticker.parquet",
+      "owner": "UNOWNED",
+      "blob": "ecdd522c2709aedf3ea84be879c1096bd53319d3",
+      "fields": [
+        "cusip",
+        "ticker",
+        "name",
+        "exch",
+        "sec_type",
+        "_mapped_at"
+      ],
+      "history": "yes",
+      "rows": 2771
+    },
+    {
+      "path": "data/breadth/ticker_sectors.parquet",
+      "owner": "UNOWNED",
+      "blob": "df297127698b9158fa3f26e631fd6e7e8afba3f4",
+      "fields": [
+        "ticker",
+        "sector",
+        "source"
+      ],
+      "history": "no",
+      "rows": 1515
+    },
+    {
+      "path": "data/theme_graph/identity_resolution.parquet",
+      "owner": "WS:GMI-THEME-GRAPH",
+      "blob": "29dde1f62f9ce89ac50b4191a59ea05313d38dd0",
+      "fields": [
+        "schema",
+        "node_id",
+        "graph_kind",
+        "market_scope",
+        "graph_identity_epoch",
+        "source_native_symbol",
+        "resolution_asof",
+        "resolution_state",
+        "issuer_id",
+        "security_id",
+        "listing_key",
+        "join_method",
+        "master_generated_at",
+        "master_symbol_directory_snapshot",
+        "master_code_version",
+        "refusal_reason",
+        "source_receipts",
+        "computed_at",
+        "engine_version"
+      ],
+      "history": "yes",
+      "rows": 151465
+    },
+    {
+      "path": "data/ffiec_y9c/bhc_ticker_map.csv",
+      "owner": "UNOWNED",
+      "blob": "8b7128d7b2363f2372bc81acc9bf2e794cb49376",
+      "fields": [
+        "ticker",
+        "bhc_name",
+        "primary_cert",
+        "rssdhcr",
+        "fail_date"
+      ],
+      "history": "no",
+      "rows": 23
+    },
+    {
+      "path": "lib/dataos/identity.py",
+      "owner": "UNOWNED",
+      "blob": "d9d5018aac47910bf2c802b1a74114a99511f74f",
+      "fields": [
+        "(see source)"
+      ],
+      "history": "yes",
+      "rows": null
+    },
+    {
+      "path": "scripts/build_security_master.py",
+      "owner": "UNOWNED",
+      "blob": "e88882b199e588145a50a4bf67c89127bbe13099",
+      "fields": [
+        "(see source)"
+      ],
+      "history": "module",
+      "rows": null
+    },
+    {
+      "path": "scripts/security_state_producer.py",
+      "owner": "UNOWNED",
+      "blob": "789ef04aa4376016c60d54269838e9894ba8d21b",
+      "fields": [
+        "(see source)"
+      ],
+      "history": "module",
+      "rows": null
+    },
+    {
+      "path": "engine/security_state.py",
+      "owner": "UNOWNED",
+      "blob": "fff4ef00a5e643fcb15b09f500408951fb9f7fe2",
+      "fields": [
+        "(see source)"
+      ],
+      "history": "module",
+      "rows": null
+    },
+    {
+      "path": "collectors/symbol_directory.py",
+      "owner": "UNOWNED",
+      "blob": "408582b91e92244988ff9f8e6872e8e586306cdd",
+      "fields": [
+        "(see source)"
+      ],
+      "history": "module",
+      "rows": null
+    }
+  ],
+  "coverage": {
+    "data/reference/vendor_aliases.parquet": {
+      "issuer_id": 779,
+      "alias_dated": 2,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 777
+    },
+    "data/reference/issuer_migrations.parquet+security_migrations.parquet": {
+      "issuer_id": 779,
+      "alias_dated": 3,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 777
+    },
+    "data/symbol_directory/cik_map/2026-09-28.parquet": {
+      "issuer_id": 1499,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 0
+    },
+    "data/openfigi/cusip_ticker.parquet": {
+      "issuer_id": 898,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 0
+    },
+    "data/breadth/ticker_sectors.parquet": {
+      "issuer_id": 0,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 1471
+    },
+    "data/theme_graph/identity_resolution.parquet": {
+      "issuer_id": 776,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 0
+    },
+    "data/reference/security_master.parquet": {
+      "issuer_id": 779,
+      "alias_dated": 2,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 777
+    },
+    "data/revisions/expectation_observations.parquet": {
+      "issuer_id": 0,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 0
+    }
+  },
+  "provider_statement": "collectors/equity_revisions.py:86 \"_EXPECTATION_PROVIDER = \\\"yfinance\\\"\"",
+  "rights_statement": "collectors/equity_revisions.py:363 \"\\\"rights_class\\\": \\\"UNKNOWN\\\"\"",
+  "publication_clock": {
+    "expectation_attempts": [
+      "attempt_id",
+      "collection_session_id",
+      "provider",
+      "ticker_compat",
+      "attempted_at",
+      "completed_at",
+      "status",
+      "http_status",
+      "latency_ms",
+      "response_payload_hash",
+      "safe_error_class",
+      "safe_error_detail",
+      "observation_count"
+    ],
+    "expectation_observations_clock_fields": {
+      "source_effective_at_nonnull": 0,
+      "source_published_at_nonnull": 0,
+      "provider_observed_at_nonnull": 495320,
+      "system_observed_at_nonnull": 495320,
+      "attempted_at_nonnull": 8991,
+      "completed_at_nonnull": 8991
+    }
+  },
+  "blockers": []
+}

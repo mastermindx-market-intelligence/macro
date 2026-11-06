@@ -1,0 +1,17 @@
+{
+  "recorded_at": "2026-10-14T15:54:43.459188+00:00",
+  "source": "Direct Chairman reply in original root chat",
+  "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "answer": "Approve the one-time base integration and repair",
+  "scope": "One ordinary non-force-pushed integration of current main into existing PR6651 carrier; apply bounded accepted source correction and fresh checks once source custody and shared capacity admit",
+  "retained_controls": [
+    "Same PR and carrier",
+    "Preserve unpublished local26 branch and evidence",
+    "No force-push or rebase",
+    "Fresh source and capacity/custody admission before write",
+    "No check or semantic downgrade",
+    "Incumbent controller exclusively performs final merge",
+    "Production verification still required"
+  ],
+  "consumed": false
+}

@@ -1,0 +1,24 @@
+{
+  "landing": "4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e",
+  "qualified_head": "da16cb4587cac774b9f76b9a455564e85dd6d7be",
+  "parents": "3dd5556be110c0d94c3b83988d8bb06002d82570",
+  "production_17_parity": {
+    "admin/evidence_findings.py": true,
+    "admin/evidence_status.py": true,
+    "admin/intelligence_os.py": true,
+    "admin/server.py": true,
+    "admin/static/app.js": true,
+    "admin/static/index.html": true,
+    "admin/static/preferences.js": true,
+    "admin/static/styles.css": true,
+    "app/deploy/update.sh": true,
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json": true,
+    "engine/neuralweb/response_eval.py": true,
+    "engine/qledger.py": true,
+    "scripts/build_intelligence_registry.py": true,
+    "scripts/grade_qledger.py": true,
+    "admin/theme_tokens.py": true,
+    "templates/theme.css": true,
+    "engine/qledger_desk_adapter.py": true
+  }
+}

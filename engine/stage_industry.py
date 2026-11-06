@@ -411,6 +411,14 @@ def _coerce_frame(stage_frame, dr: Path):
     out = out[out["industry_id"].notna()]
     out["industry_id"] = out["industry_id"].astype(str)
     out = out[out["industry_id"].str.strip().str.lower() != "nan"]
+    # Mirror that belt for the ticker column: a null ticker that survives
+    # to name_industry_percentiles' out[str(tk)] mints a literal "nan" key —
+    # colliding null rows overwrite each other (a row is lost) and a
+    # surviving one dilutes the real group off its 0..100 scale.
+    out = out[out["ticker"].notna()]
+    out["ticker"] = out["ticker"].astype(str)
+    out = out[out["ticker"].str.strip().str.lower() != "nan"]
+    out = out[out["ticker"].str.strip() != ""]
     if out.empty:
         return None
     for c in ("mansfield_rs", "mansfield_rs_change"):

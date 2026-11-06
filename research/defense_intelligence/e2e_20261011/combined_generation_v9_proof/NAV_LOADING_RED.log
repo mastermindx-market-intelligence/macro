@@ -1,0 +1,25 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_gov_primary_auth_and_finance_are_not_parser_blocked_by_nav_enhancements _
+
+    def test_gov_primary_auth_and_finance_are_not_parser_blocked_by_nav_enhancements():
+        env=Environment(loader=FileSystemLoader(str(ROOT/'templates')),autoescape=True)
+        html=env.get_template('government_revenue.html.j2').render(payload_json='{}')
+        rows=scripts(html)
+        names=('logo_config.js','stock-logos.js','live_config.js','live.js')
+        enhancements=[r for r in rows if r['src'] in names]
+        assert [r['src'] for r in enhancements]==list(names)
+>       assert all('defer' in r and r.get('fetchpriority')=='low' and 'async' not in r for r in enhancements)
+E       assert False
+E        +  where False = all(<generator object test_gov_primary_auth_and_finance_are_not_parser_blocked_by_nav_enhancements.<locals>.<genexpr> at 0x10b091970>)
+
+../../../../evidence/defense-v3-20261012/o5/release-acceptance-o7/test_progressive_nav_loading.py:21: AssertionError
+=============================== warnings summary ===============================
+evidence/defense-v3-20261012/o5/release-acceptance-o7/test_progressive_nav_loading.py::test_gov_primary_auth_and_finance_are_not_parser_blocked_by_nav_enhancements
+  /Users/chriswong/Library/Python/3.12/lib/python/site-packages/jinja2/lexer.py:654: DeprecationWarning: invalid escape sequence '\/'
+    .decode("unicode-escape")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../../../evidence/defense-v3-20261012/o5/release-acceptance-o7/test_progressive_nav_loading.py::test_gov_primary_auth_and_finance_are_not_parser_blocked_by_nav_enhancements
+1 failed, 1 warning in 0.72s

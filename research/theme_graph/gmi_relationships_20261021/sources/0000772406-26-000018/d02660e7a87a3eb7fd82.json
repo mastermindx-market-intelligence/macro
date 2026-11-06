@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 278041,
+  "byte_start": 277402,
+  "normalized": "Even with a long-term supply agreement, we are still subject to risks that GlobalFoundries will be unable to meet its supply commitments, achieve anticipated manufacturing yields, manufacture our products on a timely basis, or provide additional wafer capacity beyond its current contractual commitments sufficient to meet our customers' product demands. If this were to occur, we may experience delays in product launches or supply shortages for certain products, which could cause an unanticipated decline in our sales and damage our existing customer relationships and our ability to establish new customer relationships.",
+  "normalized_sha256": "2e171fe13d639f40b16637119d7e46e774a8557a6a9b34294da8429500b02b3f",
+  "raw": "              Even with a long-term supply agreement, we are still subject to risks that GlobalFoundries will be unable to meet its supply commitments, achieve anticipated manufacturing yields, manufacture our products on a timely basis, or provide additional wafer capacity beyond its current contractual commitments sufficient to meet our customers' product demands.  If this were to occur, we may experience delays in product launches or supply shortages for certain products, which could cause an unanticipated decline in our sales and damage our existing customer relationships and our ability to establish new customer relationships.",
+  "raw_sha256": "d02660e7a87a3eb7fd8226a9d8568f2356dc984a833fe8814e695b97d0ba01aa"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}

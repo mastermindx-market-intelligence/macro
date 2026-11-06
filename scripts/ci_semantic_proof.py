@@ -1348,6 +1348,54 @@ def load_semantic_evidence(
     return LoadedSemanticEvidence("semantic", evidence)
 
 
+def resolve_pr_proof_base(
+    loaded: LoadedSemanticEvidence | Mapping[str, Any],
+    *,
+    advertised_base_sha: object,
+    subject_head_sha: object,
+    is_ancestor: Callable[[str, str], bool],
+) -> str:
+    """Resolve the exact proof base of PR-head evidence against an advertised base.
+
+    ``ci.yml`` seals ``base_sha`` as the FIRST PARENT of the tested merge commit
+    (main at run time).  GitHub's check-run / workflow-run ``pull_requests[].base``
+    is the lazily refreshed PR-object snapshot and lags that parent whenever main
+    moves between PR creation and the run (PR #8844, 2026-10-11: advertised
+    ``f1ae1e03`` vs sealed ``3979e12c``, 28 minutes apart, the former an ancestor
+    of the latter).  A byte-equal comparison therefore refused the exact proof of
+    the exact head and left the sweeper with evidence it may not downgrade.
+
+    The identity that matters is the HEAD: the evidence must name the PR head
+    exactly.  The advertised base is then accepted when it equals the sealed base
+    or is an ancestor of it (``is_ancestor(advertised, sealed)``), and the SEALED
+    base — the merge commit's real first parent — is returned so callers bind the
+    tested tree to parents GitHub will actually confirm.  Everything else stays a
+    hard refusal: a different head, a missing or malformed advertised base, a
+    non-ancestor base (diverged or newer than the sealed one).  Failures of the
+    ancestry oracle propagate unchanged so quota deferrals stay deferrals.
+    """
+    # Duck-typed like the callers' ``_bind_pr_tested_tree``: a loaded record
+    # exposes ``.evidence``; a bare evidence mapping is accepted as itself.
+    evidence = loaded if isinstance(loaded, Mapping) else getattr(loaded, "evidence", None)
+    if not isinstance(evidence, Mapping):
+        raise SemanticProofError("semantic evidence is not loaded")
+    if str(evidence.get("role")) != "pr_head":
+        raise SemanticProofError("semantic proof base resolution requires pr_head evidence")
+    evidence_head = _sha(evidence.get("subject_head_sha"), "subject_head_sha", size=40)
+    if evidence_head != _sha(subject_head_sha, "subject_head_sha", size=40):
+        raise SemanticProofError("semantic evidence subject_head_sha mismatch")
+    sealed_base = _sha(evidence.get("base_sha"), "base_sha", size=40)
+    advertised = _sha(advertised_base_sha, "advertised PR base", size=40)
+    if advertised == sealed_base:
+        return sealed_base
+    if not is_ancestor(advertised, sealed_base):
+        raise SemanticProofError(
+            "semantic evidence base_sha mismatch (advertised PR base "
+            f"{advertised[:12]} is not an ancestor of tested base {sealed_base[:12]})"
+        )
+    return sealed_base
+
+
 def _units(evidence: Mapping[str, Any]) -> tuple[SemanticUnit, ...]:
     validated = _validate_evidence(evidence)
     rows: list[SemanticUnit] = []

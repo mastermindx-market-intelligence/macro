@@ -9,7 +9,7 @@
     "median_mom_lag1": 0.17367381427169093,
     "flex_mom_lag1": 0.810515262,
     "ppi_mom_lag1": 0.5416349967744649,
-    "gasoline_mom": 4.435682602267121,
+    "gasoline_mom": 6.407097092163627,
     "shelter_nowcast": 0.11787371544095981
   },
   "legs": {
@@ -23,5 +23,5 @@
     "shelter_nowcast": "revision_optimistic",
     "sticky_mom_lag1": "present"
   },
-  "inputs_hash": "528d57f394b64e493b2fcca3b27a46f7bd43b18b57699805855c1e3ecf03e309"
+  "inputs_hash": "0493d414b182a5eaa8422a8a49288b216fe60325df585a2843357e28e5a04616"
 }

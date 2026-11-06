@@ -1,0 +1,68 @@
+{
+  "status": "SOURCE_ACCEPTED_LOCAL_COMPOSITION_VERIFIED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "base": "4cfe46e339e9c116ddf57f1d0e1a58dc8e231368",
+  "source_hashes": {
+    "engine/intl_workspace_overview.py": "f21a57ff4f3f361597d5619270679c96d6e71d9dd08e5a14f5042b7c5c9dcd4a",
+    "lib/intl_workspace_binding.py": "26e6cd94893f27b7ac452c2b5fe2e4030e41fede50b15a025e2352c89e3aa6a0",
+    "lib/intl_macro_mount.py": "03ce734593449eedca0e8217abd29e7db1ad581293c7c3d911522aef0ab4e6b1",
+    "lib/intl_macro_publication.py": "8a14b8a610c6de3fe4d7d94bcbc56a957e39d0aebae30ba45a87f564796f25a0",
+    "scripts/build_intl.py": "e3bd144b72c816eda7be773b3390f0a88e17784f8863785e2a3ac8c7a22a0319",
+    "tests/test_intl_workspace_overview.py": "0a49bca11e0b5de270b24be8b1dbdd091e0d21ed042728b44570950517010255",
+    "tests/test_intl_workspace_generation_mount.py": "95ef92b7cc4204c6ac49dc663df00e39a83358ba41f7a0bc14737088772ec7c2",
+    "tests/test_intl_macro_mount.py": "55b930e73d3d90d03a57db2c23c2ae0719b6b20b6d5cf6a133b2b6e6e12ff5dc",
+    "tests/test_intl_macro_publication.py": "351c11f311a665cdde8132984abcf9f2065f254b106b26e5589178c1108ce8fb",
+    "tests/test_intl_macro_publication_build.py": "175f065917b85b67c7e4980c0018f843f5c8ea18ce7a5295b4619236329284ef"
+  },
+  "reviews": {
+    "IM04_MACRO_INTEGRATION_REVIEW_R1.json": {
+      "sha256": "f410bf12cfd4d17ae5fd06ff306145f4c9362f67974bbd182b51e0e6a19c8343",
+      "artifact_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f"
+    },
+    "IM04_READER_MOUNT_REVIEW_R1.json": {
+      "sha256": "e2156621d25af218a41bb565f4bdf1b8a1b941db4857f083e9b11489453dba6c",
+      "artifact_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f"
+    },
+    "IM04_NORMAL_PUBLISHER_REVIEW_R1.json": {
+      "sha256": "ab22e15753faf4ec822ce70c9cf1058562ef60e6f63f4b0b075519a8a4bca158",
+      "artifact_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f"
+    }
+  },
+  "tests": {
+    "reader_author": 21,
+    "mount_author": 42,
+    "reader_mount_independent": 23,
+    "publisher_author": 13,
+    "publisher_independent": 24,
+    "shared_generation_author": 63,
+    "shared_integration_independent_python": 24,
+    "shared_integration_independent_browser": 5,
+    "controller_author": 43
+  },
+  "composition": "One exact reader per publication; helper binds actual ECB bytes/terminal observation; fresh uuid4 presentation nonce separate from financial evidence; no equity evaluator or financial source; missing/failed inputs withheld; mount failure preserves existing workspace.",
+  "policy": "docs/INTERNATIONAL_MACRO_DATA_CONTRACT.md#official-ecb-deposit-level-admission",
+  "source_notices": {
+    "signup": 7,
+    "paid_upgrade": 2,
+    "plans": 12,
+    "evidence": [
+      "IM04_ECB_NOTICE_BROWSER.json",
+      "IM04_ECB_NOTICE_UPGRADE_BROWSER.json",
+      "IM04_ECB_NOTICE_PLANS_BROWSER.json"
+    ],
+    "source_hashes": {
+      "templates/onboard.js": "2ffdd9bda2d8be8e0543ff0737b0752de7487063ef9122ce7f642a951bbcedfa",
+      "site/onboard.js": "2ffdd9bda2d8be8e0543ff0737b0752de7487063ef9122ce7f642a951bbcedfa",
+      "templates/plans.html.j2": "d633e74b8596a262d7cdc7a30818df182c0a0fadbb1ea5ecf3f7fa3c7ca4190b",
+      "site/plans.html": "1415101c03bd200182c156724adb71e45d2fa67ed718fdf753f39f2f5452a33f"
+    }
+  },
+  "main_wiring": "Reviewed actual source main invokes _publication_workspace(config.data_dir(), UTC clock); expensive main engines not executed.",
+  "ci": "New source/tests registered in existing foundation and browser owners; measured closures240/261 missing[]; browser adds existing PyArrow dependency.",
+  "not_proven": [
+    "Full normal build against production materializations",
+    "Current authenticated served journey",
+    "Subsequent ordinary publication retains result",
+    "Remaining IM04 Macro measures/cycle economic support and other programme waves"
+  ]
+}

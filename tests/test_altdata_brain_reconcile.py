@@ -519,3 +519,38 @@ class TestReconcileEdgeCases:
         # so no conviction clamp fires.
         assert out["conviction"] == "extreme"
         assert "clamped" not in out or "conviction" not in out.get("clamped", "")
+
+
+# ---------------------------------------------------------------------------
+# Non-finite rs_vs_spy_60d — an unreadable price series is MISSING evidence,
+# never a negative witness (W17 SPEC 2, repro_03)
+# ---------------------------------------------------------------------------
+
+class TestNonFiniteRsIsMissing:
+    """NaN RS must take the rs=None branch, not `nan >= 0 → underweight → AVOID`."""
+
+    def test_det_baseline_nan_rs_is_missing_not_underweight(self):
+        """NaN RS + bullish witness == rs=None: the witness decides, not the NaN sign."""
+        t_nan = _make_t(weighted_score=1.6, extended=False,
+                        rs_vs_spy_60d=float("nan"), channels=["insider_cluster"])
+        t_none = _make_t(weighted_score=1.6, extended=False,
+                         rs_vs_spy_60d=None, channels=["insider_cluster"])
+        assert _det_baseline(t_none, min_weighted=0.9) == (
+            "ACCUMULATE", "medium", "overweight")
+        assert _det_baseline(t_nan, min_weighted=0.9) == _det_baseline(
+            t_none, min_weighted=0.9)
+
+    def test_reconcile_nan_rs_does_not_force_avoid(self):
+        """LLM ACCUMULATE/overweight/high + NaN RS + insider_cluster keeps the None ceiling."""
+        t_nan = _make_t(lean="overweight", action="ACCUMULATE", conviction="high",
+                        weighted_score=1.2, extended=False,
+                        rs_vs_spy_60d=float("nan"), channels=["insider_cluster"])
+        out = _reconcile(t_nan, min_weighted=0.9)
+        assert out["action"] != "AVOID", out
+        t_none = _make_t(lean="overweight", action="ACCUMULATE", conviction="high",
+                         weighted_score=1.2, extended=False,
+                         rs_vs_spy_60d=None, channels=["insider_cluster"])
+        none_out = _reconcile(t_none, min_weighted=0.9)
+        assert (out["action"], out["conviction"], out["lean"]) == (
+            none_out["action"], none_out["conviction"], none_out["lean"])
+        assert out["action"] == "ACCUMULATE", out

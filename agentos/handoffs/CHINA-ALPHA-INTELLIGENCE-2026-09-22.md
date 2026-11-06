@@ -246,3 +246,66 @@ start by replaying #7054, #7456, #7463, #7607, #7629, or #7631. Those are histor
 superseded carriers. The first material question is whether the latest #7657 head is still compatible
 with current main and whether its mobile evidence's one wider-than-viewport element is intentional and
 contained or is a real user-visible overflow.
+
+## Continuation update — 2026-09-23
+
+This section supersedes only the mutable carrier/proof facts in the 2026-09-22 checkpoint above.
+The product law, do-not-redo rules, and selective-synthesis thesis remain unchanged.
+
+**FINALIZATION_CLASSIFICATION: DURABLE_EXECUTION_RUNNING**  
+**MISSION_COMPLETE: false**
+
+### Material deltas since the prior checkpoint
+
+- PR **#7667** has made the compact `Why this regime` causal-driver rail, signal-only regime watch,
+  and Flow Velocity deep landing part of the accepted/live baseline. Do not recover those ideas by
+  reopening #7631.
+- Production proof on 2026-09-23: cache-busted `/china.html` returned HTTP 200 with deep ROW 4,
+  `cnx-playbook-context`, one `data-cn-driver-rail`, Flow Velocity landing, no document horizontal
+  overflow, and no rejected L1-4/Four-Drivers shell. A Chrome matrix across 1440/390 x dark/light x
+  EN/ZH passed all 8 cells with zero page errors and zero failed requests; all four driver pills
+  opened the incumbent Policy / Flows / Risk / Property dialogs and the shared Lens receipt opened
+  through the site-wide `.lens-pop.open` owner and closed on Escape.
+- The visual-evidence review target `mobile.elements_wider_than_viewport=1` is now discriminated:
+  CURRENT PRODUCTION at 390px has the same single wider element, decorative `div.au-a3`
+  (600px wide, clipped from x=-105 to 495), while `documentElement.scrollWidth == clientWidth == 390`.
+  It is inherited decorative aurora geometry, not a #7657 horizontal-scroll regression.
+- PR **#7657** remains the sole current product continuation carrier. GitHub refreshed the SAME branch
+  onto current base `668237947e016f679782e41e61c91c9133a5ea99`, producing candidate head
+  `db505dff26cc3895e4637148b48ab4b224e24dab`. The reviewed owned blobs did not change:
+  `templates/china.html.j2` `b6409450adcf1cb44d663d5822d73d7371eeb2bf`,
+  `tests/test_china_archetype_d_s1.py` `1e5b35db28d0a7e8fa6188658ff93bb00ccc3ba9`,
+  evidence receipt `9f7dad08a6e140901be0d9f0e0b31bab23453771`, manifest
+  `789928ba82f04a64b2704bec2578ebc41794ec2e`.
+- Current GitHub merge-ref proof is
+  `6bcba61bf6c350b7d153bcad1fc9408bd4f1ff1a` with parents current base
+  `668237947e016f679782e41e61c91c9133a5ea99` + candidate
+  `db505dff26cc3895e4637148b48ab4b224e24dab`. A clean detached worktree of that exact merge ref
+  passed `git diff --check`, Jinja parse, the selective-synthesis/static publication slice
+  (**22 passed / 6 runtime-only deselected**), and design-system `enforce-added` with **0 blocking**.
+- The stale `merge-blocked` label from the old semantic-evidence base mismatch was cleared after the
+  branch moved again, matching merge-on-green law. `merge-on-green` remains armed. Fresh full CI is
+  STARTED/RUNNING on the refreshed head; do not poll it with a principal while unchanged.
+
+### Current production / candidate boundary
+
+- **Live now:** restored deep dashboard + first synthesis layer + public live risk-state client +
+  causal driver rail + regime watch + Flow Velocity landing.
+- **Still candidate-only in #7657:** mobile-only section index and the subtle section labels
+  `Action & calendar`, `Markets & risk`, `Drivers & news`, `Deep context`.
+- The current PR diff no longer needs to re-justify the causal driver rail as an unaccepted effect;
+  that capability is already live. #7657 should be judged primarily on the remaining mobile
+  orientation/section-label delta plus its evidence pack.
+
+### Exact next action
+
+1. Let the fresh #7657 semantic CI complete on head
+   `db505dff26cc3895e4637148b48ab4b224e24dab`; do not create a replacement carrier.
+2. If required gates are green and no new material main movement touches the owned/dependency paths,
+   allow the already-armed merge-on-green path to merge #7657.
+3. After merge, use the existing China build/render/VPS publication owner only.
+4. Production-proof the mobile index + section labels on the real served release across
+   desktop/mobile x dark/light x EN/ZH while rechecking deep ROW 4, driver rail, shared Lens,
+   live client HTTP 200, and absence of the rejected L1 shell.
+5. Only then decide whether another bounded synthesis slice is materially useful.
+

@@ -60,6 +60,72 @@ feeds the options-skew forward ledger (MO-PAID-013 F03).
                                ▼
 ```
 
+### 1.x Which session the lane accrues (seat ruling 2026-09-23)
+
+The store writes TWO different panels for two different sessions. The lane
+must accrue the FULL panel, never the partial one:
+
+- **Early priority set (~04:30 local)**: a 12-root priority set for the
+  newest calendar date `D`. This is the panel the lane WOULD pick if it
+  naively used `max(date)` across the greeks tier.
+- **T1 daily maintainer (13:20 / 14:30 / 16:00 / 18:00 local)**: the FULL
+  panel (372-378 roots) for `S = nyse_calendar.session_n_back(D, 1)` —
+  the session BEFORE the last completed one. The manifest
+  `_manifest.json` carries `daily_refresh.S` and `daily_refresh.greeks_S_roots`
+  so the lane can confirm the maintainer ran.
+
+The lane LAGS the store's early set by one session BY DESIGN — the live
+emit reads the FULL S panel, not the partial D panel. Measured 2026-09-23
+on the store host: 48 roots through 2026-08-20, 372-378 roots from
+2026-08-21 to 2026-09-21, 12 on 2026-09-22.
+
+**Resolver rule** (`engine/options_skew.complete_store_session`):
+two sources are consulted and the newer ISO date wins; `method` is
+`"manifest"` when the manifest value tied or won, `"breadth"` otherwise.
+
+| Source | Definition |
+|--------|------------|
+| `breadth_session` | The NEWEST date whose distinct greeks root count is at least `_COMPLETE_SESSION_MIN_FRACTION` (0.5) of the widest panel |
+| `manifest_session` | `daily_refresh.S` when it is a 10-char ISO date AND `daily_refresh.greeks_S_roots` is at least the same fraction of the widest panel (or `>= 1` when the store is empty) |
+
+The chosen session is what `load_chain()` defaults to when called without
+an explicit argument; the partial newest date is named in a single
+`::notice title=options-skew-session::` line. Note: the notice fires only
+on `load_chain()`'s default-asof path (gate/snapshot callers) — the
+`--accrue` lane calls `backfill_from_store`, which uses the explicit-asof
+path. The lane's own evidence of the skip is its `accrual sessions=[…]`
+log line (the dates it actually wrote to), not a separate `::notice` line.
+
+**Catch-up cap** (`engine/options_skew.catch_up_sessions`):
+`scripts.build_options_skew --accrue` does not just write today's session —
+it walks NYSE sessions BACKWARD from the complete store session to the
+ledger's newest COMPLETE thetadata session (exclusive), and calls
+`backfill_from_store` on every date in that range, capped at
+`_CATCH_UP_MAX_SESSIONS` (5) dates. A caught-up ledger backfills zero rows.
+Juneteenth / weekends / holidays are skipped by `session_n_back`.
+
+**Emit guard** (`engine/options_skew.emit_from_ledger`):
+the per-date row counts in the ledger are walked newest-first; any date
+whose row count is below `_THIN_SESSION_MIN_FRACTION` (0.5) of the widest
+count among the up-to-10 dates immediately older than it is dropped, and
+the skipped dates are reported in
+`source_detail["partial_sessions_skipped"]` / `partial_rows_skipped` (always
+present, possibly empty/zero).
+
+**Diagram correction**: the §1 ASCII diagram's step 3 says
+`scripts.build_options_skew --accrue` "appends to data/options_skew/
+snapshots.parquet" without naming the catch-up walk. The arrow under that
+step is the FULL catch-up: today's complete session AND every missed
+session between it and the ledger's newest complete session, up to the cap.
+A caught-up ledger's arrow is a single no-op.
+
+**Older holes** beyond the cap (a 6+ session outage, a holiday stretch)
+are the seat-owned repair: `python -m scripts.build_options_skew
+--backfill FROM TO` (the §3.7 runbook), then publish per §3.8.
+`backfill_from_store` already replaces `polygon_gex` rows with `thetadata`
+rows for the same `(date, underlying)` and skips weekends, so the command
+is the durable repair.
+
 ## 2. Sequencing law (FROZEN — DO NOT REORDER)
 
 | Wave | Branch | Owns |
@@ -302,6 +368,32 @@ ops/launchd/run_with_env.sh .env \
     /opt/homebrew/Caskroom/miniconda/base/bin/python -m scripts.publish_r2 --dirs options_skew
 ```
 
+### 3.8 Restore the shared checkout after ANY manual session (seat correction 2026-09-23)
+
+Every manual step in §3.4–§3.7 runs inside `/Users/chriswong/skew-ops-wt`, the
+checkout BOTH launchd lanes (`com.macro.skewaccrual`, `com.macro.payofflab`)
+refresh at the start of every run. A manual hydrate/backfill leaves the tracked
+`data/options_skew/snapshots.parquet` MODIFIED and a dry-run leaves
+`data/options_payoff_lab/` untracked. Measured 2026-09-23 12:30Z: the scheduled
+accrual aborted at `step_refresh` ("git checkout --detach origin/main failed —
+refusing to run") because the runner detached BEFORE its own reset/clean and git
+refused to overwrite the dirty tracked file; the day's session would have been
+silently skipped. The runners now reset/clean before the detach as well
+(2026-09-23 hardening), but the manual discipline stands — finish every seat
+session in that checkout with:
+
+```bash
+cd /Users/chriswong/skew-ops-wt
+git fetch origin && git reset --hard && git clean -fd && git checkout --detach origin/main && git reset --hard && git clean -fd
+git status --short | wc -l   # must print 0
+```
+
+The durable state is on R2 (`publish_r2 --dirs options_skew`), never in this
+checkout, so discarding local bytes loses nothing once the publish step has
+run. Recovery when a scheduled run has already aborted: restore the checkout as
+above, then `launchctl kickstart gui/$(id -u)/com.macro.skewaccrual` (same
+receipt log) — the accrual is idempotent for the session it targets.
+
 ## 4. Reading the receipt log
 
 The plist's `StandardOutPath` is
@@ -437,3 +529,144 @@ The DEC record test count was refreshed from 71 to 73 (commit `d8eb9219bc`)
 to match the pytest tail in the PR body. The install-runbook §3.3 paragraph
 above (commit `0954661a4f`) documents the round-6 sibling-state-dir log
 destination change at the seat-install level.
+
+## 10. Caught-up no-op (holiday / re-landed session) — A-F03-W2-8 (2026-09-23)
+
+Placed at the end of this doc by seat ruling (A-F03-W2-8 seat round 4,
+2026-09-23): the §2 runner step list is the numbered contract and stays
+untouched; the caught-up case is a behavior appended here.
+
+**The case.** On a Mon-morning invocation where Friday's complete session
+S is already on the ledger, or a holiday-rerun where the maintainer's
+backfill range resolves to a session the ledger already carries byte-for-byte,
+`scripts/build_options_skew.py --accrue`'s underlying receipt carries
+`rows_added=0 AND rows_replaced=0` from `engine.options_skew.backfill_from_store`.
+That case is the **caught-up no-op** — the daily maintainer wrote zero
+rows because the ledger was already current.
+
+**Why a dedicated exit code.** Pre-W2-8, a zero-row backfill fell
+through to `main()`'s rc 0 default, indistinguishable from a fresh
+session write that also landed 0 rows because the chain parsed empty.
+The runner then ran the verify + publish leg (BLOCKER-2 would refuse the
+publish, ABORT at the verify step with rc 5 — see
+`ops/launchd/run_skew_accrual.sh::step_verify_ledger`). That was a
+`2.2:00 PM` lane fault: holiday Mondays logged an "ABORT at verify"
+line for a perfectly fine ledger. The fix is a distinct exit code
+from `--accrue`-only so the runner can branch (one-line receipt +
+skip verify + skip publish + exit 0) WITHOUT touching the verify
+helper's BLOCKER-2 rule (that rule still refuses a no-op under the
+sole-leg `--emit` call where the ledger did not grow). The runner
+only invokes `--accrue` (`ops/launchd/run_skew_accrual.sh` step 6), so
+BLOCKER-2 only ever fires under the `--accrue` leg it actually runs;
+an `--emit`-only caller (the render hosts) is the regional-desk flow
+the rc-3 branch deliberately does NOT touch.
+
+**The contract.** The constant is `ACCRUE_NOOP_EXIT = 3` in
+`scripts/build_options_skew.py`. Five callsites read it:
+
+| Callsite | Reads | Behavior |
+|---|---|---|
+| `scripts/build_options_skew.py::accrue()` | writes `(0, "caught_up")` to `accrual_state` | One `::notice title=options-skew-accrual::caught up — complete session S already on the ledger; nothing to accrue` line at LINE START (the GitHub annotation parser requirement, `tests/test_gh_annotation_line_start.py`). |
+| `scripts/build_options_skew.py::emit()` | maps the builder's `caught_up` vocabulary to the engine's legacy `ledger_only` vocabulary | The on-disk payload `accrual_state` stays `ledger_only` (the engine contract `emit_from_ledger` raises on any value outside `accrued_today \| ledger_only`). The mapping happens in the BUILDER, not the engine. |
+| `scripts/build_options_skew.py::main()` | returns `ACCRUE_NOOP_EXIT` when `do_accrue AND NOT do_emit AND NOT do_backfill AND accrual_state == "caught_up"` | The rc-3 surface is STRICTLY `--accrue` alone. `--accrue --emit` and `--backfill …` keep exiting 0 / 2 — render hosts and regional desks keep seeing rc 0 on a caught-up ledger. |
+| `ops/launchd/run_skew_accrual.sh::step_accrue` | captures rc via `\|\| rc=$?` (not nested `set +e`/`set -e`, which leaks globally in POSIX shell) | rc 3 → log `accrue: NOOP_CAUGHT_UP …`; rc ≠ 0 and ≠ 3 → log `ABORT at step_accrue`, exit 1 (preserves the existing launchd test contract). |
+| `ops/launchd/run_skew_accrual.sh` main sequence | branches on `accrue_rc` | `accrue_rc == 3` → log `NOOP_CAUGHT_UP run_tag=… ledger=…` + log `done (caught-up no-op: verify + publish skipped)` + exit 0. Other non-zero → unchanged ABORT. |
+
+**Detection.** The receipt-driven check fires on BOTH conjuncts
+`dates and dates_backfilled == len(dates) and rows_added + rows_replaced == 0`.
+The original spec language ("`catch_up_sessions(...)` returns `[]`")
+does not match the engine: `catch_up_sessions` always returns at least
+the target session itself, even on an already-caught-up ledger — the
+helper's contract is the date RANGE to walk backwards, not the work to
+do inside that range. The receipt is the truthful signal: it reflects
+`_backfill_row_counts`'s diff against the prior ledger, which uses dict
+equality on the `_normalize_ledger`-projected row. A byte-equal rewrite
+reports `rows_unchanged = N, rows_added = 0, rows_replaced = 0`; a
+shifted floating-point (e.g. `otm_put_iv=0.4001` vs `0.4`) reports
+`rows_replaced = N` and falls through to the ordinary write path.
+
+The `dates_backfilled == len(dates)` conjunct is what excludes the
+store-miss failure mode. When the backfill is asked for `[D2]` but the
+store's greeks only cover D1, `dates_not_in_store=1, dates_backfilled=0,
+rows_added=0, rows_replaced=0` — `rows_added + rows_replaced == 0`
+holds but `dates_backfilled == len(dates)` does NOT (0 ≠ 1). The
+builder therefore returns the rc-0 path on a store-miss, and the
+runner's BLOCKER-2 verify step sees the call and aborts loud — the
+exact outcome the round-2 loose rule (`if dates and rows_touched == 0`)
+silently broke.
+
+**Ledger-bytes contract unchanged.** The caught-up no-op is byte-for-byte
+a no-op on `data/options_skew/snapshots.parquet`. Pre-Rows sidecar
+(`.skew_pre_rows.<pid>`) is removed by the runner on the no-op path so
+the next run starts fresh. The runner DOES NOT touch the verify ledger
+helper (`scripts/skew_accrual_verify_ledger.py`) — that helper still
+refuses a non-growth outcome, and a `--emit`-only caller that the
+builder marks as caught-up still has BLOCKER-2 in effect (the ledger
+did not grow, but `--emit` is a re-render of an existing ledger, not a
+publish — the runner never invokes verify on that path).
+
+**Tests.** Four new W2-8 tests are added to existing homes (no CI
+exemption rows):
+
+- `tests/test_options_skew.py::test_accrue_sole_leg_exits_3_when_caught_up`
+  — seeds D1+D2 with values `compute_skew` would emit for the chain
+  (skew=0.10, otm_put_iv=0.40, atm_call_iv=0.30, n_strikes=4); asserts
+  `main(["--accrue"]) == 3`, the `::notice` lands at line start, the
+  ledger sha is unchanged. The VALUES MATTER: a seed with a different
+  skew (e.g. the `0.10 + i*0.001` jitter from the prior tests) is, by
+  definition, NOT caught-up and would force the receipt to report
+  `rows_replaced > 0`.
+- `tests/test_options_skew.py::test_accrue_with_emit_exits_0_when_caught_up`
+  — same seed, `main(["--accrue","--emit"]) == 0`, payload
+  `accrual_state == "ledger_only"` (the engine vocabulary mapping), every
+  seeded name surfaces in the rendered payload (n=6).
+- `tests/test_options_skew.py::test_accrue_sole_leg_exits_0_when_a_session_was_written`
+  — empty ledger; `--accrue` writes 6 rows for D2 (the complete session
+  S, since `catch_up_sessions` returns `[S]` when there is no theta
+  history to walk back through); rc stays 0. Pins the symmetric
+  behavior — the rc-3 exit is STRICTLY the caught-up case.
+- `tests/test_options_skew.py::test_accrue_sole_leg_returns_0_when_store_misses_complete_session`
+  — RED on the round-2 head, GREEN on this head. Store greeks cover
+  D1 only; manifest claims S=D2 with `greeks_S_roots=6`
+  (under `_COMPLETE_SESSION_MIN_FRACTION × widest=0.95×6=5.7`); the
+  ledger holds D1 only. `complete_store_session` resolves S=D2 via
+  the manifest method; `catch_up_sessions(D2, hist)` returns `[D2]`
+  (lone-date "have" rule makes D1 complete); `backfill_from_store([D2])`
+  reports `dates_not_in_store=1, dates_backfilled=0, rows_added=0,
+  rows_replaced=0`. Without the strict discriminator, the prior
+  round's `if dates and rows_touched == 0:` would fire and `main`
+  would return rc 3 (caught-up) on a real failure — the runner
+  would skip BLOCKER-2 verify and the operator would never see the
+  store-miss. With the strict discriminator
+  (`dates_backfilled == len(dates)` AND `rows_touched == 0`),
+  `main(["--accrue"])` returns rc 0, the receipt's failure signature
+  surfaces in the receipt log, and the runner's BLOCKER-2 step sees
+  the call.
+- `tests/test_skew_accrual_launchd.py::test_runner_caught_up_noop_exits_zero_and_skips_verify_and_publish`
+  — FAKE_ACCRUE_NOOP exits 3; asserts rc=0, the `NOOP_CAUGHT_UP` receipt
+  line, the verify + publish markers absent, the pre_rows sidecar gone.
+- `tests/test_skew_accrual_launchd.py::test_runner_zero_growth_under_a_real_accrue_still_aborts_at_verify`
+  — FAKE_ACCRUE_NO_GROWTH exits 0 (a real accrue that just happened to
+  add zero rows under a missing chain); asserts rc=5 (ABORT at
+  step_verify_ledger) and `NOOP_CAUGHT_UP` absent. Pins that the rc-3
+  branch is reserved for the CATCH-UP STATE, not every zero-row
+  outcome — a fresh zero-row backfill under a missing chain still goes
+  through BLOCKER-2.
+
+**The two-case contract.** A zero-row accrue on a day with a NEW
+complete session (the store resolved a fresh S, but the backfill still
+returned 0 rows because the chain parsed empty, or the manifest and
+the store disagree on coverage) still aborts at step 7
+(`step_verify_ledger` → `BLOCKER-2`) — the rc-3 branch is reserved for
+the byte-equal CATCH-UP STATE only. Cite: PR #7832 (W2-6
+`complete_store_session` resolution + the receipt-driven row diff) and
+this PR (PR #7844, A-F03-W2-8 caught-up no-op).
+
+**Why extend, not waive.** `tests/test_skew_accrual_launchd.py` runs on
+the `skew-accrual-lane` job and `tests/test_options_skew.py` runs on
+the `options-skew-engine` job (verified:
+`tests/test_skew_accrual_launchd.py` at `.github/ci/legacy-jobs.yml`
+on the `skew-accrual-lane` job, `tests/test_options_skew.py` on the
+`options-skew-engine` job), so adding W2-8 cases to those homes
+delivers CI coverage without widening the run line — coverage exists
+on both jobs either way.

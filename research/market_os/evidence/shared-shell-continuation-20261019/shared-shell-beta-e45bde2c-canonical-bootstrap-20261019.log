@@ -1,0 +1,15 @@
+[build] profile environment: beta; MMX_SHARED_SHELL=1 declared by this owner
+[build] target profile resolved: target=beta app=/opt/terminal/beta/terminal src=/opt/terminal/.gitsrc-beta service=terminal-beta health=http://127.0.0.1:3001/
+[build] target profile resolved: receipts=/var/lib/mastermind-terminal-beta/release-preflight policy=terminal_source_audit.beta.json lock=/opt/terminal/.terminal-build-resource.lock installs_global_runtime=0
+[build] beta lifecycle state tree: /var/lib/mastermind-terminal-beta/source-provisioned; build-time env source: /var/lib/mastermind-terminal-beta/host (secret values are never logged and never live in the audited beta target)
+[build] entrance: beta bootstrap — provisions SOURCE, then must still earn runtime acceptance
+[build] build lock acquired: shared=/opt/terminal/.terminal-build-resource.lock/hold target=beta pid=1451207
+[build] preflight bundle selected: script_sha256=a8d1db606afed780cf43b5471ef27d127621eb5de843d36d8d310ba62a8a0b23 policy_digest=99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6 runtime_sha256=e4308b10b0712ee17e4a1410d01a495b3992442bc414576ca6f183a2a3399c52
+[build] beta unit settings verified: terminal-beta declares MMX_SHARED_SHELL=1 (presence only; the environment is never logged)
+[build] beta bootstrap admitted: the beta target root is provably empty and never accepted
+[build] fetching accepted ref origin/master for exact target admission (bootstrap: before any source provisioning) ...
+[build] accepted ref observed: before=e45bde2cac07ac3b29285ff70c40d68900fad62c after=e45bde2cac07ac3b29285ff70c40d68900fad62c
+[build] beta source-provisioned authorization published: /var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json
+fatal: write error: No space left on device
+[build] FATAL: the protected commit produced no source archive for beta provisioning
+[build] build lock released: /opt/terminal/.terminal-build-resource.lock/hold

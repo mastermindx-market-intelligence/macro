@@ -1,0 +1,222 @@
+{
+  "H1": {
+    "mbb_ci95": [
+      0.07555046532859648,
+      0.1872491641520162
+    ],
+    "mbb_se": 0.02884075315255052,
+    "mbb_state": "MEASURED",
+    "mean_d0": 0.13567951018733238,
+    "n_time_blocks": 27,
+    "nw_lag3_mean_of_quarter_means": 0.1356795101873324,
+    "nw_lag3_se": 0.028181224415681782,
+    "pass": true,
+    "per_pair_mean_d0": {
+      "PAIR_CSI300": 0.10235787105458476,
+      "PAIR_HSCEI": 0.16900114932008
+    }
+  },
+  "H2": {
+    "mbb_ci95": [
+      0.0017708008117840997,
+      0.14005256198864272
+    ],
+    "mbb_se": 0.0358236201403667,
+    "mean_d1": 0.08169244584213142,
+    "nw_lag3_se": 0.03792446086950031,
+    "pass": true,
+    "per_pair_mean_d1": {
+      "PAIR_CSI300": 0.06591090334321696,
+      "PAIR_HSCEI": 0.09747398834104588
+    }
+  },
+  "attrition": {
+    "510300": {
+      "first": "2012-05-04",
+      "holdout_bridged_invalid": 0,
+      "holdout_dst_shift_share": 0.0,
+      "holdout_holiday_gaps": 47,
+      "holdout_intervals": 1636,
+      "holdout_zero_returns": 20,
+      "intervals_measured": 3489,
+      "invalid_prices": 0,
+      "last": "2026-10-08",
+      "rows_in": 3490,
+      "winsor_clipped_all": 5
+    },
+    "ASHR": {
+      "first": "2013-11-06",
+      "holdout_bridged_invalid": 0,
+      "holdout_dst_shift_share": 0.0076,
+      "holdout_holiday_gaps": 66,
+      "holdout_intervals": 1701,
+      "holdout_zero_returns": 23,
+      "intervals_measured": 3248,
+      "invalid_prices": 0,
+      "last": "2026-10-08",
+      "rows_in": 3249,
+      "winsor_clipped_all": 7
+    },
+    "FXI": {
+      "first": "2004-10-08",
+      "holdout_bridged_invalid": 0,
+      "holdout_dst_shift_share": 0.0076,
+      "holdout_holiday_gaps": 66,
+      "holdout_intervals": 1701,
+      "holdout_zero_returns": 13,
+      "intervals_measured": 5534,
+      "invalid_prices": 0,
+      "last": "2026-10-08",
+      "rows_in": 5535,
+      "winsor_clipped_all": 9
+    },
+    "SPY": {
+      "first": "1993-01-29",
+      "holdout_bridged_invalid": 0,
+      "holdout_dst_shift_share": 0.0076,
+      "holdout_holiday_gaps": 66,
+      "holdout_intervals": 1701,
+      "holdout_zero_returns": 2,
+      "intervals_measured": 8480,
+      "invalid_prices": 0,
+      "last": "2026-10-08",
+      "rows_in": 8481,
+      "winsor_clipped_all": 21
+    },
+    "_HSCE": {
+      "first": "1993-07-15",
+      "holdout_bridged_invalid": 0,
+      "holdout_dst_shift_share": 0.0,
+      "holdout_holiday_gaps": 75,
+      "holdout_intervals": 1665,
+      "holdout_zero_returns": 0,
+      "intervals_measured": 8196,
+      "invalid_prices": 0,
+      "last": "2026-10-08",
+      "rows_in": 8197,
+      "winsor_clipped_all": 15
+    }
+  },
+  "bar": 0.05,
+  "dropped_holdout_blocks": [],
+  "holdout": [
+    "2020Q1",
+    "2026Q3"
+  ],
+  "holdout_block_means": {
+    "PAIR_CSI300": {
+      "E0": 0.1228,
+      "E1": 0.1744,
+      "E2": 0.3078,
+      "E3": 0.3064,
+      "T": 0.379,
+      "mae_E0": 0.2669,
+      "mae_E1": 0.2305,
+      "mae_E2": 0.1646,
+      "mae_E3": 0.2289
+    },
+    "PAIR_HSCEI": {
+      "E0": 0.1432,
+      "E1": 0.2173,
+      "E2": 0.3727,
+      "E3": 0.3394,
+      "T": 0.437,
+      "mae_E0": 0.2978,
+      "mae_E1": 0.2263,
+      "mae_E2": 0.1288,
+      "mae_E3": 0.2407
+    }
+  },
+  "honest_n": {
+    "eligible_holdout_quarters": 27,
+    "eligible_pair_blocks": 54,
+    "holdout_quarters_planned": 27,
+    "per_pair_blocks": {
+      "PAIR_CSI300": 27,
+      "PAIR_HSCEI": 27
+    }
+  },
+  "hy_out_of_bounds_blocks": 0,
+  "input_sha256": {
+    "china/510300.SS.parquet": "604ad25485220ea33728fdbf42cd1f807a5f950117418e6f56a36429170a7579",
+    "hk/_HSCE.parquet": "4a77aeb03b2a21612e2a6f773b2b75648c3a34f6bff98216fa9e47d7288cdde7",
+    "yahoo/ASHR.parquet": "fa33964262ceb6e9c6bc9b96aff323deaeba595b40560ce8b0858d933d86d639",
+    "yahoo/FXI.parquet": "041b038b12a8db06534b713ca3511c03bb15872cb87a8ecfdd1959905ce934e5",
+    "yahoo/SPY.parquet": "6c785d556c22e20f85f89f55597b10469f0fc4c40a577b8efb04bc11964a3152"
+  },
+  "prereg_sha256": "1c9ee1ef6a71a5d4667f8de197b96f1d4bb2bc0c976151ae86411fc0e49d028c",
+  "psd_report_holdout_hy_matrix": {
+    "is_psd": true,
+    "matrix": [
+      [
+        1.0,
+        0.6889,
+        0.3151
+      ],
+      [
+        0.6889,
+        1.0,
+        0.4007
+      ],
+      [
+        0.3151,
+        0.4007,
+        1.0
+      ]
+    ],
+    "min_eig": 0.3039465855504595,
+    "n": 3,
+    "order": [
+      "510300",
+      "_HSCE",
+      "SPY"
+    ],
+    "repaired": false,
+    "state": "MEASURED",
+    "symmetric": true
+  },
+  "study": "Q18",
+  "synthetic_witness": {
+    "expected_naive_under_attenuation": 0.2292,
+    "hy_corr": 0.5043,
+    "n_days": 1674,
+    "naive_corr": 0.2063,
+    "true_rho": 0.5
+  },
+  "train_descriptive": {
+    "PAIR_CSI300": {
+      "mean_d0": 0.1039,
+      "mean_d1": 0.0804,
+      "n_blocks": 24
+    },
+    "PAIR_HSCEI": {
+      "mean_d0": 0.3448,
+      "mean_d1": 0.1863,
+      "n_blocks": 60
+    }
+  },
+  "train_end_exclusive": "2020-01-01",
+  "verdict": "KEEP",
+  "winsor_bounds_train": {
+    "510300": [
+      -0.10522103010579321,
+      0.07348065218537667
+    ],
+    "ASHR": [
+      -0.11236469711805386,
+      0.09468209055303603
+    ],
+    "FXI": [
+      -0.10948441861964009,
+      0.1326709951062234
+    ],
+    "SPY": [
+      -0.06846313189570427,
+      0.05791124324409129
+    ],
+    "_HSCE": [
+      -0.12177752477407004,
+      0.124070781059654
+    ]
+  }
+}

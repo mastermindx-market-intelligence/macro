@@ -824,3 +824,118 @@ def test_replay_matches_live_when_tierb_only_has_measured_zero_leg():
                       return_value=pd.Series(True, index=subs.index)):
         replay = bt.state_series(subs, calib, sigs=sigs)
     assert replay.iloc[-1] == live["state"]
+
+
+
+def test_probability_evidence_projection_matches_accepted_audit():
+    import hashlib
+    from pathlib import Path
+    from scripts import build_risk_radar_probability_evidence as pe
+
+    payload = pe.build_payload()
+    source = Path(pe.SOURCE)
+    assert payload["schema"] == "risk_radar_probability_evidence.v1"
+    assert payload["precision_grade"] is False
+    assert payload["source"]["sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
+    h21 = payload["horizons"]["h21"]
+    assert h21["cells"]["0.16"]["n"] == 746
+    assert h21["cells"]["0.16"]["thin"] is False
+    assert h21["cells"]["0.16"]["observed_rate"] == 0.12198391420911528
+    assert h21["cells"]["0.25"]["n"] == 34
+    assert h21["cells"]["0.25"]["thin"] is True
+
+
+def test_drawdown_probability_evidence_is_additive_only(tmp_path):
+    import json
+    from engine import risk_radar as rr
+
+    plain = rr._drawdown_prob("caution", 1)
+    evidence = {
+        "schema": "risk_radar_probability_evidence.v1",
+        "evidence_class": "reconstructed_historical",
+        "precision_grade": False,
+        "window": "y2020",
+        "target": {"depth": 0.05, "horizons": [5, 10, 21]},
+        "source": {"path": "accepted.json", "sha256": "abc"},
+        "limitations": ["overlapping windows"],
+        "model_surface": {
+            "state_probability_surface": {
+                horizon: {state: float(prob)
+                          for state, prob in rr._PROB_CAL[horizon].items()}
+                for horizon in ("h5", "h10", "h21")
+            },
+            "conjunction_bump": {
+                horizon: float(rr._CONJ_BUMP[horizon])
+                for horizon in ("h5", "h10", "h21")
+            },
+        },
+        "horizons": {
+            "h5": {"from": "2020-01-02", "through": "2026-09-11",
+                   "population_sha256": "h5", "cells": {
+                       "0.03": {"n": 752, "events": 8, "observed_rate": 0.010638297872340425,
+                                "observed_rate_ci90": [0.003796, 0.019024], "thin": False}}},
+            "h10": {"from": "2020-01-02", "through": "2026-09-03",
+                    "population_sha256": "h10", "cells": {
+                        "0.08": {"n": 747, "events": 28, "observed_rate": 0.03748326639892905,
+                                 "observed_rate_ci90": [0.021476, 0.055013], "thin": False}}},
+            "h21": {"from": "2020-01-02", "through": "2026-08-19",
+                    "population_sha256": "h21", "cells": {
+                        "0.16": {"n": 746, "events": 91, "observed_rate": 0.12198391420911528,
+                                 "observed_rate_ci90": [0.074072, 0.174791], "thin": False}}},
+        },
+    }
+    out_dir = tmp_path / "data" / "risk_radar"
+    out_dir.mkdir(parents=True)
+    (out_dir / "probability_evidence.json").write_text(json.dumps(evidence))
+
+    enriched = rr._drawdown_prob(
+        "caution", 1, include_evidence=True, evidence_root=tmp_path
+    )
+    for key in ("h5", "h10", "h21", "base_h5", "base_h10", "base_h21",
+                "lift_h21", "conjunction_n", "measure", "state_lift_h21"):
+        assert enriched[key] == plain[key]
+    assert "calibration_evidence" not in plain
+    assert enriched["calibration_evidence"]["precision_grade"] is False
+    assert enriched["calibration_evidence"]["horizons"]["h21"] == {
+        "matched": True,
+        "displayed_probability": 0.16,
+        "n": 746,
+        "events": 91,
+        "observed_rate": 0.12198391420911528,
+        "observed_rate_ci90": [0.074072, 0.174791],
+        "thin": False,
+        "from": "2020-01-02",
+        "through": "2026-08-19",
+        "population_sha256": "h21",
+    }
+
+
+def test_drawdown_probability_evidence_fails_soft_without_model_effect(tmp_path):
+    from engine import risk_radar as rr
+
+    plain = rr._drawdown_prob("risk-off", 3)
+    out_dir = tmp_path / "data" / "risk_radar"
+    out_dir.mkdir(parents=True)
+    (out_dir / "probability_evidence.json").write_text('{"schema":"wrong.v0"}')
+    enriched = rr._drawdown_prob(
+        "risk-off", 3, include_evidence=True, evidence_root=tmp_path
+    )
+    assert enriched["calibration_evidence"] is None
+    for key in ("h5", "h10", "h21", "lift_h21", "conjunction_n"):
+        assert enriched[key] == plain[key]
+
+
+
+def test_committed_probability_evidence_matches_its_producer(tmp_path):
+    import json
+    from pathlib import Path
+    from scripts import build_risk_radar_probability_evidence as pe
+
+    output = tmp_path / "probability_evidence.json"
+    produced = pe.write_payload(output=output)
+    committed = json.loads(
+        (Path(__file__).resolve().parents[1] / "data" / "risk_radar" /
+         "probability_evidence.json").read_text(encoding="utf-8")
+    )
+    assert produced == committed
+    assert json.loads(output.read_text(encoding="utf-8")) == committed

@@ -1,0 +1,456 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gmi:theme-state-generation:v1",
+  "title": "Incumbent ThemeState sealed plan; publication authority remains unavailable",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "root",
+    "activation_at",
+    "authority_reason",
+    "schema",
+    "generation_id",
+    "state_b64",
+    "compatibility_b64",
+    "history_b64",
+    "tail_b64",
+    "prior_primary_b64",
+    "prior_mirror_b64",
+    "prior_reference_b64",
+    "history_exists",
+    "history_rows_added",
+    "source_bundle_sha256",
+    "query",
+    "shadow",
+    "rollback_of",
+    "publication_status",
+    "digests",
+    "rollback_selection",
+    "producer_bindings",
+    "owner_bundle_b64",
+    "captured_frontier"
+  ],
+  "properties": {
+    "root": {
+      "type": "string"
+    },
+    "activation_at": {
+      "type": "string"
+    },
+    "authority_reason": {
+      "const": "ACTUAL_OWNER_PUBLICATION_RESOLVER_NOT_WIRED"
+    },
+    "schema": {
+      "const": "neuralweb.theme_state_generation.v1"
+    },
+    "generation_id": {
+      "type": "string",
+      "pattern": "^tsg-[a-f0-9]{64}$"
+    },
+    "state_b64": {
+      "type": "string"
+    },
+    "compatibility_b64": {
+      "type": "string"
+    },
+    "history_b64": {
+      "type": "string"
+    },
+    "tail_b64": {
+      "type": "string"
+    },
+    "prior_primary_b64": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "prior_mirror_b64": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "prior_reference_b64": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "history_exists": {
+      "type": "boolean"
+    },
+    "history_rows_added": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "source_bundle_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "effective_at",
+        "known_at"
+      ],
+      "properties": {
+        "effective_at": {
+          "type": "string"
+        },
+        "known_at": {
+          "type": "string"
+        }
+      }
+    },
+    "shadow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "same_input_bundle_sha256",
+        "graph_capture_id",
+        "state_sha256",
+        "legacy_sha256",
+        "projection_sha256",
+        "differences",
+        "successor_surface",
+        "semantic_binding",
+        "correction_binding",
+        "predecessor_optional_inventory",
+        "predecessor_read",
+        "legacy_narrative_disposition",
+        "canonical_aggregation_disposition",
+        "parity_accepted",
+        "natural",
+        "cutover_allowed",
+        "production_state_sha256",
+        "production_qualification_dispositions",
+        "production_binding",
+        "production_correction_binding"
+      ],
+      "properties": {
+        "same_input_bundle_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "graph_capture_id": {
+          "type": "string"
+        },
+        "state_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "legacy_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "projection_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "differences": {
+          "type": "array"
+        },
+        "successor_surface": {
+          "type": "object"
+        },
+        "semantic_binding": {
+          "type": "string"
+        },
+        "correction_binding": {
+          "type": "string"
+        },
+        "predecessor_optional_inventory": {
+          "type": "array"
+        },
+        "predecessor_read": {
+          "type": "object"
+        },
+        "legacy_narrative_disposition": {
+          "type": "string"
+        },
+        "canonical_aggregation_disposition": {
+          "type": "string"
+        },
+        "parity_accepted": {
+          "const": false,
+          "type": "boolean"
+        },
+        "natural": {
+          "const": false,
+          "type": "boolean"
+        },
+        "cutover_allowed": {
+          "const": false,
+          "type": "boolean"
+        },
+        "production_state_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "production_qualification_dispositions": {
+          "type": "object"
+        },
+        "production_binding": {
+          "type": "string"
+        },
+        "production_correction_binding": {
+          "type": "string"
+        }
+      }
+    },
+    "rollback_of": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^tsg-[a-f0-9]{64}$"
+        }
+      ]
+    },
+    "publication_status": {
+      "const": "UNAVAILABLE"
+    },
+    "digests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state_raw",
+        "state_semantic",
+        "projection_unstamped",
+        "projection_stamped",
+        "compatibility_raw",
+        "history_prefix",
+        "history_tail"
+      ],
+      "properties": {
+        "state_raw": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "state_semantic": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "projection_unstamped": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "projection_stamped": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "compatibility_raw": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "history_prefix": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "history_tail": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "rollback_selection": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "generation_id",
+            "plan_sha256",
+            "history_sha256",
+            "history_length",
+            "state_generated_at",
+            "state_raw_sha256"
+          ],
+          "properties": {
+            "generation_id": {
+              "type": "string",
+              "pattern": "^tsg-[a-f0-9]{64}$"
+            },
+            "plan_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "history_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "history_length": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "state_generated_at": {
+              "type": "string"
+            },
+            "state_raw_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      ]
+    },
+    "producer_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine/neuralweb/theme_state_generation.py",
+        "engine/neuralweb/thematic_state.py",
+        "engine/neuralweb/envelope.py",
+        "scripts/build_thematic_state.py",
+        "contracts/theme_graph/theme_state_generation.v1.schema.json",
+        "engine/neuralweb/theme_state_adapter.py",
+        "engine/theme_graph/theme_state_production.py",
+        "contracts/theme_graph/theme_state.v2.schema.json"
+      ],
+      "properties": {
+        "engine/neuralweb/theme_state_generation.py": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "engine/neuralweb/thematic_state.py": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "engine/neuralweb/envelope.py": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "scripts/build_thematic_state.py": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "contracts/theme_graph/theme_state_generation.v1.schema.json": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "engine/neuralweb/theme_state_adapter.py": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "engine/theme_graph/theme_state_production.py": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "contracts/theme_graph/theme_state.v2.schema.json": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "owner_bundle_b64": {
+      "type": "string"
+    },
+    "captured_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "legacy_predecessor",
+        "legacy_phase_history"
+      ],
+      "properties": {
+        "legacy_predecessor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "availability",
+            "null_reason",
+            "sha256",
+            "bytes_b64"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "availability": {
+              "enum": [
+                "AVAILABLE",
+                "UNAVAILABLE"
+              ]
+            },
+            "null_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "bytes_b64": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "legacy_phase_history": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "availability",
+            "null_reason",
+            "sha256",
+            "bytes_b64"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "availability": {
+              "enum": [
+                "AVAILABLE",
+                "UNAVAILABLE"
+              ]
+            },
+            "null_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "bytes_b64": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

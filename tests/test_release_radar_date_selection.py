@@ -8,6 +8,7 @@ dependency to the suite.
 """
 from __future__ import annotations
 
+import json
 import subprocess
 from pathlib import Path
 
@@ -115,6 +116,7 @@ function _itemsForDate(dateStr) {{
   return _rrItems.filter(function (item) {{ return item.release_date === dateStr; }});
 }}
 function renderCard(item) {{ return "<article class=rr-card>" + item.release + "</article>"; }}
+function _rrUpdateSnapshotNotice() {{}}
 function _inlineEmptyHTML() {{ return "<div class=empty></div>"; }}
 function _setInlineHeader(dateStr) {{ dateHeader.value = dateStr; }}
 function _rrInlineBody() {{ return body; }}
@@ -236,3 +238,177 @@ def test_idempotence_and_timer_token_guards_are_ordered_before_mutation():
 
 def test_rendered_macro_contains_the_same_date_selector_logic():
     assert _selector_source(SITE) == _selector_source(TEMPLATE)
+
+
+SOURCE = TEMPLATE.read_text()
+
+
+def _extract(start: str, end: str) -> str:
+    left = SOURCE.index(start)
+    return SOURCE[left:SOURCE.index(end, left)]
+
+
+def _node(script: str) -> None:
+    result = subprocess.run(
+        ["node", "-e", script], cwd=ROOT, capture_output=True, text=True, timeout=20
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_release_radar_countdowns_use_live_new_york_calendar_day():
+    """An Oct 16 snapshot's baked 'in 13d' must read six days on Oct 23."""
+    source = _extract("    function _rrEasternDay(){", "    function _rrMetaChip")
+    driver = r"""
+const assert = require('assert');
+const NativeDate = Date;
+let now = NativeDate.parse('2026-10-23T07:15:00Z');
+class Clock extends NativeDate {
+  constructor(...args) { super(...(args.length ? args : [now])); }
+  static now() { return now; }
+}
+global.Date = Clock;
+""" + source + r"""
+assert.strictEqual(_rrDaysUntil('2026-10-29'), 6);
+assert.strictEqual(_rrCountdownLabels(_rrDaysUntil('2026-10-29')).en, '6 days away');
+assert.strictEqual(_rrDaysUntil('2026-10-22'), -1);
+assert.strictEqual(_rrCountdownLabels(-1).en, '1 day since release');
+now = NativeDate.parse('2026-10-24T03:59:00Z'); // Still Oct 23 Eastern
+assert.strictEqual(_rrDaysUntil('2026-10-29'), 6);
+now = NativeDate.parse('2026-10-24T04:00:00Z'); // Eastern midnight
+assert.strictEqual(_rrDaysUntil('2026-10-29'), 5);
+now = NativeDate.parse('2026-11-01T05:30:00Z'); // DST fallback
+assert.strictEqual(_rrDaysUntil('2026-11-02'), 1);
+now = NativeDate.parse('2026-11-01T06:30:00Z');
+assert.strictEqual(_rrDaysUntil('2026-11-02'), 1);
+assert.strictEqual(_rrDaysUntil('2026-02-30'), null);
+assert.strictEqual(_rrDaysUntil(null), null);
+"""
+    _node(driver)
+    assert "var daysTo = _rrDaysUntil(item.release_date)" in SOURCE
+    assert "var currentDays = _rrDaysUntil(item.release_date)" in SOURCE
+    assert "_rrCountdownLabels(item.days_to)" not in SOURCE
+    assert "var daysTo = item.days_to" not in SOURCE
+
+
+def test_stale_forecast_snapshot_disclosed_without_claiming_live_models():
+    source = _extract("    function _rrSnapshotNotice(){", "    function _rrUpdateSnapshotNotice(){")
+    driver = (
+        "const assert = require('assert');\n"
+        "var _rrForecastAsOf = '2026-10-16T18:18:59Z';\n"
+        "var _rrForecastFailed = false;\n"
+        + source
+        + """
+const oldNow = Date.now;
+Date.now = () => Date.parse('2026-10-23T07:15:00Z');
+assert(_rrSnapshotNotice().en.includes('last-known'));
+assert(_rrSnapshotNotice().en.includes('Oct 16'));
+_rrForecastAsOf = '2026-10-23T07:14:00Z';
+assert.strictEqual(_rrSnapshotNotice(), null);
+_rrForecastFailed = true;
+assert(_rrSnapshotNotice().en.includes('refresh unavailable'));
+_rrForecastAsOf = '';
+assert(_rrSnapshotNotice().en.includes('no live model estimate'));
+Date.now = oldNow;
+"""
+    )
+    _node(driver)
+
+
+def test_forecast_refresh_coalesces_requests_retains_last_good_and_revalidates():
+    source = _extract("    var _rrForecastSignature = null;", "    /* Deep-link hook:")
+    driver = r"""
+const assert = require('assert');
+let requests = [];
+let listeners = {};
+let tick;
+let renders = [];
+let clocks = 0, notices = 0;
+let _rrForecastAsOf = null, _rrForecastFailed = false;
+global.document = {
+  hidden:false,
+  addEventListener:(name,cb)=>{listeners[name]=cb;}
+};
+global.window = { addEventListener:(name,cb)=>{listeners[name]=cb;} };
+global.fetch = (url,opts) => new Promise((resolve,reject) => {
+  assert.strictEqual(url,'macrodata/release_forecast.json');
+  assert.strictEqual(opts.cache,'no-store');
+  requests.push({resolve,reject});
+});
+global.setInterval = (cb,ms) => { assert.strictEqual(ms,60000); tick=cb; };
+function renderRadar(value){ renders.push(value); }
+function _rrUpdateCountdowns(){ clocks += 1; }
+function _rrUpdateSnapshotNotice(){ notices += 1; }
+""" + source + r"""
+async function drain(){ await new Promise(setImmediate); }
+(async function(){
+  assert.strictEqual(requests.length,1);
+  tick(); listeners.focus(); listeners.visibilitychange();
+  assert.strictEqual(requests.length,1,'pending request must coalesce');
+  let payload = {asof:'2026-10-23T07:00:00Z',upcoming:[{release:'PCE'}]};
+  requests[0].resolve({ok:true,json:async()=>payload});
+  await drain();
+  assert.strictEqual(renders.length,1);
+  assert.strictEqual(_rrForecastFailed,false);
+  tick();
+  assert.strictEqual(requests.length,2);
+  requests[1].resolve({ok:true,json:async()=>payload});
+  await drain();
+  assert.strictEqual(renders.length,1,'identical snapshot must retain DOM');
+  tick();
+  requests[2].reject(new Error('offline'));
+  await drain();
+  assert.strictEqual(_rrForecastFailed,true);
+  assert.strictEqual(renders.length,1,'failure must preserve last-good snapshot');
+  document.hidden=true;
+  tick(); assert.strictEqual(requests.length,3,'hidden page must not fetch');
+  document.hidden=false;
+  listeners.visibilitychange();
+  assert.strictEqual(requests.length,4,'visibility should revalidate');
+  payload = {asof:'2026-10-23T07:30:00Z',upcoming:[{release:'GDP'}]};
+  requests[3].resolve({ok:true,json:async()=>payload});
+  await drain();
+  assert.strictEqual(renders.length,2);
+  assert.strictEqual(_rrForecastFailed,false);
+  assert(clocks>=3 && notices>=4);
+})().catch(error=>{console.error(error);process.exitCode=1;});
+"""
+    _node(driver)
+
+
+def test_refreshed_forecast_reaches_selected_date_and_open_detail():
+    wire = _extract("    function wireCalendarCards(){", "    /* INT-01: stop propagation")
+    detail = _extract("    function _rrRefreshOpenDetail(){", "    /* main render */")
+    # Execute both consumers with an already-wired calendar and an open projection.
+    driver = r"""
+const assert = require('assert');
+let chip = null, selectedPaints = 0, details = [];
+const card = {_rrWired:true,
+  getAttribute:k=>k==='data-cal-date'?'2026-11-05':'CLAIMS',
+  querySelector:()=>chip, appendChild:n=>{chip=n;}
+};
+global.document = {
+  createElement:()=>({remove:()=>{chip=null;}}), querySelectorAll:()=>[card], querySelector:()=>card
+};
+let _rrInlineDate='2026-11-05', _rrInlineSignature='old';
+const item={release:'claims',release_type:'claims',release_date:_rrInlineDate,period:_rrInlineDate,benchmark:197};
+let _rrOpenItem=item, _rrItems=[{...item,period:'different',benchmark:999},{...item,benchmark:211}];
+const RR_TAB_STRIP={textContent:'tabs'}, RR_MODAL_INNER={innerHTML:'previous'};
+const _itemsForDate=d=>_rrItems.filter(i=>i.release_date===d);
+const _inlineItemsSignature=(d,items)=>JSON.stringify([d,items]);
+function selectInlineDate(d,c,immediate){
+  assert.strictEqual(c,card);assert.strictEqual(immediate,true);
+  _rrInlineSignature=_inlineItemsSignature(d,_itemsForDate(d));selectedPaints++;
+}
+function openModal(i,refreshing){assert.strictEqual(refreshing,true);details.push(i.benchmark);}
+""" + wire + detail + r"""
+wireCalendarCards(); _rrRefreshOpenDetail();
+assert(chip);assert.strictEqual(selectedPaints,1);assert.deepStrictEqual(details,[211]);
+wireCalendarCards();assert.strictEqual(selectedPaints,1,'identical selected date must retain its DOM');
+_rrItems=[];wireCalendarCards();_rrRefreshOpenDetail();
+assert.strictEqual(chip,null);assert.strictEqual(selectedPaints,2);
+assert.strictEqual(RR_TAB_STRIP.textContent,'');assert(RR_MODAL_INNER.innerHTML.includes('no longer'));
+_rrItems=[{...item,benchmark:219}];wireCalendarCards();_rrRefreshOpenDetail();
+assert(chip);assert.deepStrictEqual(details,[211,219]);
+"""
+    _node(driver)
+    assert "wireCalendarCards();\n      _rrRefreshOpenDetail();" in SOURCE

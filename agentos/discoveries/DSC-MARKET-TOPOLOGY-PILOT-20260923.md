@@ -1,11 +1,11 @@
 ---
 key: MARKET-TOPOLOGY-PILOT-20260923
-claim: "The topology study has preserved negative industry experiments, a held stock trial, source-qualified current named-security divergence, and executable population/context semantics that prevent several false breadth and forecast conclusions."
+claim: "The topology study has preserved negative industry experiments, a held stock trial, source-qualified September 2026 named-security divergence, and executable population/context semantics that prevent several false breadth and forecast conclusions."
 falsifier: "Reproduce the recorded inputs/scripts or inspect the cited primary sources and identify materially different computations, an invalid source/date/basis, or a violated test invariant. Later success of another model does not erase earlier negative results."
 so_what: "Use the tested measurement/context distinctions; do not promote price persistence or analogue matches into forecasts. Obtain the qualified historical stock extraction through existing owners and retain all unresolved data, timing and terminal-outcome gates."
 kind: data
 verified_at: 2026-09-23
-verified_by: "Macro draft PR #7812 reports and exact source blobs; 47 local reference tests passed, 51 independent Decimal arithmetic comparisons passed, four published code/test blobs matched locally executed files, and the current-case input was written/read back in the existing Studio research archive."
+verified_by: "Historical 2026-09-23 receipt: Macro PR #7812 reports and exact source blobs; 47 local reference tests passed, 51 independent Decimal arithmetic comparisons passed, four published code/test blobs matched locally executed files, and the current-case input was written/read back in the existing Studio research archive."
 scope:
   - research/market_topology
   - data/breadth
@@ -23,9 +23,11 @@ confidence: verified
 Complete the breadth, persistent/emerging leadership, loser/bottoming and historical-analogue research and implementation planning here; reserve Fable for a build-only orchestration handoff when the research decisions are settled. Current Chairman continuation asks for substantive progress beyond the first milestone, not a time quota. No production/trading mandate or model-mode attestation is inferred.
 
 Operation: `market-topology-research-20260923-astra-001`.
-Procedure pin: Mastermind protected master `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, freshly checked unchanged in this turn; compatible Skillpack 1.0.1. Same-commit INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT govern.
+Historical research procedure pin (2026-09-23): Mastermind protected master `4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2`, compatible Skillpack 1.0.1. The original same-commit INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT reads describe that research session, not a fresh verification of current law.
 
-Research publication carrier remains GitHub connector -> Macro branch `sol/market-topology-research-20260923-astra-001`, draft PR #7812. Last research source head before this checkpoint: `cd9e6977ad627119621e2b66cba69bbe8104c633`. Prior cumulative checkpoint: `562ed8afb9e26c4784424a57b7aebbf6a8774e7b`. This is draft evidence, not merged research acceptance. No new workstream/program parent, identity, data, queue or control plane is created.
+The 2026-11-06 records-publication repair continues Mastermind #2028 under compatible protected pin `49c2e1d93e5e080b1671c98087a845e5beb09dd5`. It corrects this continuity frontier and integrates current Macro main. The 21 research documents/code/test files retain their exact pre-amendment blobs; dated inputs, experiments and receipts are not represented as newly executed or reverified.
+
+Research publication carrier remains GitHub connector -> Macro branch `sol/market-topology-research-20260923-astra-001`, PR #7812. The reviewed research head before this continuity amendment is `2ec5949a50dd452c23da04cda617c669ed781c33`. Earlier cumulative checkpoints `cd9e6977ad627119621e2b66cba69bbe8104c633` and `562ed8afb9e26c4784424a57b7aebbf6a8774e7b` are historical. Publication of this research record is distinct from accepting forecasts, commissioning a build, or completing the original mission. No new workstream/program parent, identity, data, queue or control plane is created.
 
 ## Earlier results that must not be redone
 
@@ -90,10 +92,20 @@ Working sandbox `/mnt/data/market_topology_phase4/` contains the remaining scrip
 
 The prior platform-blocked R2 request was not retried through another mode/tool/account/actor. Independent public selected-case research is a different input/scope, not a claim that the canonical-store request succeeded. No production data refresh, deployment, trade, Fable/worker, watcher, automatic wake or background process exists. No known EFFECT_UNKNOWN operation remains. All GitHub research writes continue on the same branch.
 
-## Active frontier before continuing this turn
+## Current frontier: records publication and held empirical work
 
-This is an in-progress checkpoint, not a finalization or transfer. MISSION_COMPLETE: false. FABLE_HANDOFF_READY: false.
+This 2026-11-06 amendment completes a bounded continuity repair. MISSION_COMPLETE: false. FABLE_HANDOFF_READY: false. The original research and product mission remains open.
 
-Next local work: freeze a mechanism-grounded context-conditioned study and a separate past-only analogue-support/shrinkage evaluation plan, with explicit data requirements and already-viewed-sample limits. The selected September 2026 cases are now exposed and cannot be called pristine holdout. Preserve the original stock trial and avoid replacing its failed/unexecuted targets with a newly favourable one. Then record the final research boundary after all resulting evidence is durable.
+The work formerly listed as the next protocol-writing task is already committed at the reviewed head:
 
-On a later continuation, inspect issue #7858 only for material new input evidence, not repeated polling. Qualify any returned extraction against the existing fixtures before the frozen stock trial. If absent, continue independent research from the new context-study frontier; do not restart the raw-stock census or source inventory.
+- `CONTEXT_CONDITIONED_TRIAL_V1.md` freezes the mechanism-grounded price/fundamental/macro-context comparisons and information-availability requirements. The enriched PF/PFC/PFCT models have not been fitted or accepted.
+- `ANALOGUE_SUPPORT_SHRINKAGE_TRIAL_V1.md` freezes past-only support qualification, abstention/shrinkage and calibration comparisons. It reports no empirical market result or improvement over the failed original analogue test.
+- `selective_analogue_reference_v1.py` and `test_selective_analogue_reference_v1.py` preserve a pure reference implementation and its historical 20-test synthetic receipt. These are distinct from the earlier 47 measurement/context tests; neither receipt is a new CI, data-admission or product-acceptance claim.
+
+Do not recreate those protocols or rerun accepted historical studies to reconstruct progress. The selected September 2026 cases and earlier industry samples are already viewed. Preserve the frozen stock trial, negative industry results and explicit sample-exposure limits.
+
+Next material empirical work requires a lawful, immutable extraction and admission receipt from the existing Data OS/reference/economic-return owners. Issue #7858 remains the existing input request, not dispatch, ACK or START. At this amendment it is open, unassigned and has no returned input evidence. Inspect it again only after a material return. Qualify stable identity, economic-return basis, historical eligibility and controls, terminal outcomes, source/availability clocks, and rights against the named fixtures before executing `ORDER_TRANSITION_TRIAL_V1.md`.
+
+Context-conditioned and support/shrinkage studies additionally require their declared historical earnings/consensus and macro-vintage inputs and an accepted evaluation cut. Missing inputs do not authorize model fitting, outcome inspection, retrospective threshold selection or a retry of the platform-blocked R2 request. The existing input and evaluation owners retain those decisions.
+
+A later build-only Fable handoff still requires adjudicated empirical findings, retained methods, exact existing-system integration, user workflows and real-path acceptance criteria. Merging these records would preserve the research and its actionable frontier; it would not satisfy those outstanding gates or confer forecasting, production or trade authority.

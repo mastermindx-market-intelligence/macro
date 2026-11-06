@@ -1,0 +1,100 @@
+{
+  "schema": "economic_network.local_native_capture.v1",
+  "evidence_class": "LOCAL_NATIVE_REPLAY",
+  "started_at": "2026-10-09T03:53:31.343521+00:00",
+  "code_head": "037a23cf0fb232012bcb1a85f9cb714973782194",
+  "code_sha256": {
+    "collectors/edgar_forensics.py": "8e153f35b1d9f243790c2df16749207243168c42676802f1f0e5a886537a9a29",
+    "collectors/sec_document_spine.py": "50f5e14533069fa061bcc2c721e461633acf7bacc7510ce987bbb296e27b0b35",
+    "engine/fundamental_forensics/sec_document_spine.py": "7a329e58bc975205d2b55f7ffb2c13a59298636bc1592aa25253d4becd1a1795",
+    "engine/fundamental_forensics/source_sync.py": "73ddb5ac6ed910b1f4d9a7d76a944063f3251011e7b2af96d7fbb8306f46776a",
+    "engine/research_vault/r2_store.py": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd",
+    "engine/fundamental_forensics/filing_attestation.py": "5feb4f77614c4b90df31c65527f866caea3e6598be006574498d8551c8dd5645",
+    "engine/company_intelligence/pinned_relationship_candidates.py": "1000497dcfef316f1ad0726c08bcba7ba12dbe305175887e191d6f96512649bd"
+  },
+  "requested_cik": "0001045810",
+  "source_policy": "https://www.sec.gov/about/developer-resources",
+  "scope": "one current Submissions response and one selected primary 10-K document; native retries only; local native store; no latest publication",
+  "production_custody": false,
+  "production_admission": false,
+  "status": "CAPTURE_AND_NATIVE_REPLAY_PASS",
+  "completed_at": "2026-10-09T03:53:33.344870+00:00",
+  "task_root": "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/nvda-sec-local-native-20261009",
+  "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee",
+  "snapshot_at": "2026-10-09T03:53:33.331285Z",
+  "manifest_key": "manifests/0001045810/0001045810-26-000021/ffsec_manifest_f050d1fb989d8f840c4291c5eb8b12788f1110bea58bf3b5b4ce239c8a771a61.json",
+  "document": {
+    "archive_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+    "availability": "stored",
+    "byte_length": 1967931,
+    "content_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+    "document_id": "sec_document_5b75587074cf7849d010ec05a7ae7a18d305326a50418897d5d0bc75423bb26a",
+    "document_name": "nvda-20260125.htm",
+    "document_type": null,
+    "retrieval": {
+      "archive_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+      "byte_length": 1967931,
+      "content_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+      "document_id": "sec_document_5b75587074cf7849d010ec05a7ae7a18d305326a50418897d5d0bc75423bb26a",
+      "http_etag": null,
+      "http_last_modified": "Wed, 25 Feb 2026 21:42:44 GMT",
+      "receipt_id": "sec_archive_receipt_8999c2175a87c8a0810a2e01965f3d2007d122a590c4fed80e7f09f70d9dba5d",
+      "retrieved_at": "2026-10-09T03:53:33.185441Z",
+      "schema": "fundamental_forensics.sec_archive_receipt/v1",
+      "status": "retrieved",
+      "storage_key": "objects/sha256/94/94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e.bin.gz"
+    },
+    "role": "primary",
+    "sequence": null,
+    "source_spans": [
+      {
+        "locator": "bytes:0-1967931",
+        "locator_type": "byte_range",
+        "span_id": "sec_span_bfcf0bad5785ee21c7c679f8fd7769711ef2ccb110661fb212efa9920b728e3c",
+        "text_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e"
+      }
+    ],
+    "storage_key": "objects/sha256/94/94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e.bin.gz"
+  },
+  "submissions_receipt": {
+    "schema": "fundamental_forensics_retrieval.v1",
+    "cik": "0001045810",
+    "endpoint": "submissions",
+    "url": "https://data.sec.gov/submissions/CIK0001045810.json",
+    "retrieved_at": "2026-10-09T03:53:31.726239+00:00",
+    "sha256": "0b3ce6a0cd78c43d69b19b7efb9effcd79d0c6bd4c43606aac84d0f872cc9c73",
+    "bytes": 159785,
+    "object_path": "0001045810/submissions/0b3ce6a0cd78c43d69b19b7efb9effcd79d0c6bd4c43606aac84d0f872cc9c73.json.gz",
+    "http_etag": null,
+    "http_last_modified": null
+  },
+  "retained_recorded_at": "2026-10-09T03:53:33.214726+00:00",
+  "retained_manifest_minted": true,
+  "raw_sha256": "94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e",
+  "raw_byte_length": 1967931,
+  "receipt_sidecar_verified": true,
+  "gzip_witness": {
+    "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee",
+    "snapshot_at": "2026-10-09T03:53:33.331285Z",
+    "kind": "archive",
+    "relative_path": "objects/sha256/94/94f539316ae2a9ff625357cf01008cb77b930d1a6a228326f04a3ce5f5a56d2e.bin.gz",
+    "object_key": "fundamental_forensics/sec-source/v1/objects/sha256/11/1131e65e38c5e8a87c6d49a1cf56f22bf47ab88d3debaba8791ca4e7f8f9430a.bin",
+    "sha256": "1131e65e38c5e8a87c6d49a1cf56f22bf47ab88d3debaba8791ca4e7f8f9430a",
+    "byte_length": 166203,
+    "content_type": "application/gzip"
+  },
+  "receipt_sidecar_witness": {
+    "snapshot_id": "ffsecsrc_520d816415a2d1dbde1fcf348abef2cbfdd8b28b88b4bf847a549613002d02ee",
+    "snapshot_at": "2026-10-09T03:53:33.331285Z",
+    "kind": "archive",
+    "relative_path": "receipts/sha256/89/8999c2175a87c8a0810a2e01965f3d2007d122a590c4fed80e7f09f70d9dba5d.json",
+    "object_key": "fundamental_forensics/sec-source/v1/objects/sha256/52/52dc92ce41b106dfee5a8f10a2c09d75112d2274dc2aa562439617e6c1547f6a.bin",
+    "sha256": "52dc92ce41b106dfee5a8f10a2c09d75112d2274dc2aa562439617e6c1547f6a",
+    "byte_length": 701,
+    "content_type": "application/json"
+  },
+  "no_latest_pointers": true,
+  "candidate_inspection": "NOT_YET_ANNOTATED_OR_RUN",
+  "rights": "not_established_for_broader_downstream_use",
+  "historical_system_holding": false
+}

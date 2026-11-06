@@ -1,0 +1,424 @@
+{
+  "bindings": {
+    "schema": "handoff.intl_tool_bindings.v1",
+    "groups": [
+      {
+        "id": "leaders",
+        "label_en": "Find the leaders",
+        "label_zh": "寻找领涨者"
+      },
+      {
+        "id": "recovery",
+        "label_en": "Check the recovery",
+        "label_zh": "检查修复"
+      },
+      {
+        "id": "policy",
+        "label_en": "Follow policy divergence",
+        "label_zh": "跟踪政策分化"
+      },
+      {
+        "id": "backdrop",
+        "label_en": "Understand the backdrop",
+        "label_zh": "理解背景"
+      },
+      {
+        "id": "pressure",
+        "label_en": "Trace the pressure",
+        "label_zh": "追踪压力"
+      },
+      {
+        "id": "challenge",
+        "label_en": "Challenge the conclusion",
+        "label_zh": "检验结论"
+      }
+    ],
+    "tools": [
+      {
+        "presentation_key": "performance_currency",
+        "group_id": "leaders",
+        "order": 0,
+        "label_en": "Performance & currency",
+        "label_zh": "表现与汇率",
+        "question_en": "Find the leaders",
+        "question_zh": "寻找领涨者",
+        "aliases": [
+          "currency",
+          "returns",
+          "FX",
+          "USD",
+          "回报",
+          "汇率"
+        ],
+        "analytical_scope": "seven-market",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "leadership_rotation",
+        "group_id": "leaders",
+        "order": 1,
+        "label_en": "Leadership rotation",
+        "label_zh": "领涨轮动",
+        "question_en": "Find the leaders",
+        "question_zh": "寻找领涨者",
+        "aliases": [
+          "rank",
+          "momentum",
+          "排名",
+          "动量",
+          "轮动"
+        ],
+        "analytical_scope": "seven-market; not capital flow",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "cross_country",
+        "group_id": "leaders",
+        "order": 2,
+        "label_en": "Cross-country comparison",
+        "label_zh": "跨经济体比较",
+        "question_en": "Find the leaders",
+        "question_zh": "寻找领涨者",
+        "aliases": [
+          "country",
+          "economy",
+          "comparison",
+          "经济体",
+          "比较"
+        ],
+        "analytical_scope": "seven-market",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "market_turns",
+        "group_id": "recovery",
+        "order": 3,
+        "label_en": "Market turns",
+        "label_zh": "市场转折",
+        "question_en": "Check the recovery",
+        "question_zh": "检查修复",
+        "aliases": [
+          "trend",
+          "repair",
+          "turns",
+          "拐点",
+          "趋势",
+          "修复"
+        ],
+        "analytical_scope": "world-context plus core; preserve cohort",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "recovery_quality",
+        "group_id": "recovery",
+        "order": 4,
+        "label_en": "Recovery quality",
+        "label_zh": "修复质量",
+        "question_en": "Check the recovery",
+        "question_zh": "检查修复",
+        "aliases": [
+          "recovery",
+          "confirmation",
+          "quality",
+          "修复",
+          "确认"
+        ],
+        "analytical_scope": "owner profile; partial coverage",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "participation_concentration",
+        "group_id": "recovery",
+        "order": 5,
+        "label_en": "Participation & concentration",
+        "label_zh": "参与度与集中度",
+        "question_en": "Check the recovery",
+        "question_zh": "检查修复",
+        "aliases": [
+          "breadth",
+          "constituents",
+          "广度",
+          "成分股",
+          "集中度"
+        ],
+        "analytical_scope": "owner profile; no invented breadth",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "rates_curves_carry",
+        "group_id": "policy",
+        "order": 6,
+        "label_en": "Rates, curves & carry",
+        "label_zh": "利率、曲线与息差",
+        "question_en": "Follow policy divergence",
+        "question_zh": "跟踪政策分化",
+        "aliases": [
+          "rates",
+          "yield",
+          "curve",
+          "carry",
+          "利率",
+          "收益率",
+          "曲线",
+          "息差"
+        ],
+        "analytical_scope": "seven-market plus US anchor",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "central_banks_liquidity",
+        "group_id": "policy",
+        "order": 7,
+        "label_en": "Central banks & liquidity",
+        "label_zh": "央行与流动性",
+        "question_en": "Follow policy divergence",
+        "question_zh": "跟踪政策分化",
+        "aliases": [
+          "central",
+          "banks",
+          "policy",
+          "liquidity",
+          "央行",
+          "政策",
+          "流动性"
+        ],
+        "analytical_scope": "central-bank roster; proxies labeled",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "credit_bonds",
+        "group_id": "policy",
+        "order": 8,
+        "label_en": "Credit & bonds",
+        "label_zh": "信用与债券",
+        "question_en": "Follow policy divergence",
+        "question_zh": "跟踪政策分化",
+        "aliases": [
+          "credit",
+          "bonds",
+          "spreads",
+          "信用",
+          "债券",
+          "利差"
+        ],
+        "analytical_scope": "sovereign and EM regional; not country-credit substitute",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "euro_fragmentation",
+        "group_id": "backdrop",
+        "order": 9,
+        "label_en": "Euro-area fragmentation",
+        "label_zh": "欧元区分化",
+        "question_en": "Understand the backdrop",
+        "question_zh": "理解背景",
+        "aliases": [
+          "euro",
+          "fragmentation",
+          "欧元区",
+          "分化"
+        ],
+        "analytical_scope": "EZ regional context; preserve Japan on return",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "growth_inflation",
+        "group_id": "backdrop",
+        "order": 10,
+        "label_en": "Growth & inflation",
+        "label_zh": "增长与通胀",
+        "question_en": "Understand the backdrop",
+        "question_zh": "理解背景",
+        "aliases": [
+          "growth",
+          "inflation",
+          "cycle",
+          "GDP",
+          "CPI",
+          "增长",
+          "通胀",
+          "周期"
+        ],
+        "analytical_scope": "qualified core; unclassified visible",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "dollar_conditions",
+        "group_id": "backdrop",
+        "order": 11,
+        "label_en": "Dollar conditions",
+        "label_zh": "美元环境",
+        "question_en": "Understand the backdrop",
+        "question_zh": "理解背景",
+        "aliases": [
+          "dollar",
+          "funding",
+          "USD",
+          "美元",
+          "融资"
+        ],
+        "analytical_scope": "global context; distinguish source families",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "structural_fragility",
+        "group_id": "pressure",
+        "order": 12,
+        "label_en": "Structural fragility",
+        "label_zh": "结构性脆弱性",
+        "question_en": "Trace the pressure",
+        "question_zh": "追踪压力",
+        "aliases": [
+          "fragility",
+          "debt",
+          "current",
+          "account",
+          "脆弱",
+          "债务",
+          "经常账户"
+        ],
+        "analytical_scope": "IMF country roster; qualified vintage",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "contagion",
+        "group_id": "pressure",
+        "order": 13,
+        "label_en": "Contagion",
+        "label_zh": "传导",
+        "question_en": "Trace the pressure",
+        "question_zh": "追踪压力",
+        "aliases": [
+          "contagion",
+          "spillover",
+          "transmission",
+          "传导",
+          "溢出"
+        ],
+        "analytical_scope": "distinct statistical and EM-US methods",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "trade_supply_links",
+        "group_id": "pressure",
+        "order": 14,
+        "label_en": "Trade & supply links",
+        "label_zh": "贸易与供应链联系",
+        "question_en": "Trace the pressure",
+        "question_zh": "追踪压力",
+        "aliases": [
+          "trade",
+          "supply",
+          "chain",
+          "exposure",
+          "贸易",
+          "供应链",
+          "敞口"
+        ],
+        "analytical_scope": "model context is not documented company exposure",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "cross_market_correlation",
+        "group_id": "challenge",
+        "order": 15,
+        "label_en": "Cross-market correlation",
+        "label_zh": "跨市场相关性",
+        "question_en": "Challenge the conclusion",
+        "question_zh": "检验结论",
+        "aliases": [
+          "correlation",
+          "diversification",
+          "相关性",
+          "分散"
+        ],
+        "analytical_scope": "qualified weekly USD population; not causality",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "risk_track_record",
+        "group_id": "challenge",
+        "order": 16,
+        "label_en": "Risk-radar track record",
+        "label_zh": "风险雷达记录",
+        "question_en": "Challenge the conclusion",
+        "question_zh": "检验结论",
+        "aliases": [
+          "track",
+          "record",
+          "false",
+          "alarms",
+          "accuracy",
+          "记录",
+          "误报",
+          "验证"
+        ],
+        "analytical_scope": "market profile; sample and authority gate",
+        "page_id": "macro:intl",
+        "existing_route": "/intl.html"
+      },
+      {
+        "presentation_key": "country_sectors_stocks",
+        "group_id": "challenge",
+        "order": 17,
+        "label_en": "Country sectors & stocks",
+        "label_zh": "经济体板块与股票",
+        "question_en": "Challenge the conclusion",
+        "question_zh": "检验结论",
+        "aliases": [
+          "sectors",
+          "stocks",
+          "industry",
+          "板块",
+          "股票",
+          "行业"
+        ],
+        "analytical_scope": "existing stock universe; no assumed market filter",
+        "page_id": "macro:intl_stocks",
+        "existing_route": "/intl_stocks.html"
+      }
+    ]
+  },
+  "public_copy_decision": {
+    "scope": "public_product_copy",
+    "copy_sha256": "99f66113903884058b1f1f67790f43fec78872a1bfab23d8ce53121d6de29331",
+    "approved_tool_keys": [
+      "performance_currency",
+      "leadership_rotation",
+      "cross_country",
+      "market_turns",
+      "recovery_quality",
+      "participation_concentration",
+      "rates_curves_carry",
+      "central_banks_liquidity",
+      "credit_bonds",
+      "euro_fragmentation",
+      "growth_inflation",
+      "dollar_conditions",
+      "structural_fragility",
+      "contagion",
+      "trade_supply_links",
+      "cross_market_correlation",
+      "risk_track_record",
+      "country_sectors_stocks"
+    ],
+    "owner_ref": "macro:international-page-composition",
+    "decision_ref": "paper-waves:approved-library-product-copy:2026-10-06"
+  }
+}

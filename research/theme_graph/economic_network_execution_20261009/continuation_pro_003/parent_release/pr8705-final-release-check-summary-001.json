@@ -1,0 +1,320 @@
+{
+  "schema": "gmi.principal_release_check/v1",
+  "status": "CHECKED_PENDING_PRINCIPAL_ADOPTION",
+  "observed_at": "2026-10-09T10:48:25.015806+00:00",
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 8705,
+  "head": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+  "protected_mastermind": "7d82b9adb839d54e4ab25378ca333e498dd83fcc",
+  "protected_default_branch": "master",
+  "proof_base": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+  "proof_base_detail": "",
+  "current_main": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+  "stale": false,
+  "stale_detail": "the exact checked proof base is the frozen main tip 4d736c55adb6",
+  "baseline_state": "green",
+  "baseline_detail": "1b08293becb8 https://github.com/mastermindx-market-intelligence/macro/actions/runs/37913463623",
+  "anchor_verdict": [
+    "clean",
+    [
+      "ci-gate",
+      "ci-pack-0",
+      "ci-pack-1",
+      "ci-pack-10",
+      "ci-pack-11",
+      "ci-pack-2",
+      "ci-pack-3",
+      "ci-pack-4",
+      "ci-pack-5",
+      "ci-pack-6",
+      "ci-pack-7",
+      "ci-pack-8",
+      "ci-pack-9",
+      "fence-pack"
+    ]
+  ],
+  "all_binding_verdict": [
+    "clean",
+    []
+  ],
+  "semantic_gate": {
+    "clear": true,
+    "passed_count": 324,
+    "blocking_count": 0,
+    "inherited_count": 0,
+    "infrastructure_blocking": false,
+    "passed_units_canonical_sha256": "142a7b3aad7ef058e68728d1efef9ec3170450bc9c93ce3e19af6322f266d459"
+  },
+  "semantic_evidence_sha256": "8ece88df014de230f2c2817d2489777ba78953ef757e72b7ca99b5c7f14047d6",
+  "semantic_evidence_raw_identity": {
+    "schema": "ci.semantic_evidence.v1",
+    "workflow_run_id": "37915994513",
+    "subject_head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+    "base_sha": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+    "tested_tree_sha": "04c56e0092ca2f5158a7020acacae003bf8d6098",
+    "plan_sha256": "5ef042a876c902b7c201374bcace6a50130e742b537f8e360ef66c10263a8eb5",
+    "authority_changed": true
+  },
+  "checks": [
+    {
+      "id": 113782137166,
+      "name": "ci-gate",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113782137166"
+    },
+    {
+      "id": 113773387213,
+      "name": "trusted-ci",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773387213"
+    },
+    {
+      "id": 113773386417,
+      "name": "ci-pack-11",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386417"
+    },
+    {
+      "id": 113773386396,
+      "name": "ci-pack-0",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386396"
+    },
+    {
+      "id": 113773386374,
+      "name": "ci-pack-10",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386374"
+    },
+    {
+      "id": 113773386344,
+      "name": "ci-pack-7",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386344"
+    },
+    {
+      "id": 113773386336,
+      "name": "ci-pack-8",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386336"
+    },
+    {
+      "id": 113773386322,
+      "name": "ci-pack-3",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386322"
+    },
+    {
+      "id": 113773386314,
+      "name": "ci-pack-5",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386314"
+    },
+    {
+      "id": 113773386312,
+      "name": "ci-pack-6",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386312"
+    },
+    {
+      "id": 113773386250,
+      "name": "ci-pack-9",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386250"
+    },
+    {
+      "id": 113773386220,
+      "name": "ci-pack-4",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386220"
+    },
+    {
+      "id": 113773386202,
+      "name": "ci-pack-2",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386202"
+    },
+    {
+      "id": 113773386190,
+      "name": "ci-pack-1",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113773386190"
+    },
+    {
+      "id": 113772551759,
+      "name": "grader-manifest",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113772551759"
+    },
+    {
+      "id": 113772548964,
+      "name": "capability-broker",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113772548964"
+    },
+    {
+      "id": 113772546104,
+      "name": "self-mod-fence",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113772546104"
+    },
+    {
+      "id": 113772249652,
+      "name": "ci-authority/main",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113772249652"
+    },
+    {
+      "id": 113772246437,
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113772246437"
+    },
+    {
+      "id": 113772185089,
+      "name": "ci-plan",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113772185089"
+    },
+    {
+      "id": 113772184937,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994237/job/113772184937"
+    },
+    {
+      "id": 113772184727,
+      "name": "contract-delta",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994513/job/113772184727"
+    },
+    {
+      "id": 113772184352,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994237/job/113772184352"
+    },
+    {
+      "id": 113772184294,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994237/job/113772184294"
+    },
+    {
+      "id": 113772184025,
+      "name": "ci-authority",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994197/job/113772184025"
+    },
+    {
+      "id": 113772182575,
+      "name": "fence-pack",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37915994237/job/113772182575"
+    }
+  ],
+  "comments_read_completely": [
+    {
+      "id": 6078840603,
+      "created_at": "2026-10-09T10:11:38Z",
+      "body_sha256": "1cab805853afa52312fc3a2ca62232bdce124c9685f0ace5a0d075c3696a9411"
+    },
+    {
+      "id": 6078847553,
+      "created_at": "2026-10-09T10:12:07Z",
+      "body_sha256": "c4b4e11fc9e19c8a0d4fd0d44e9337080ca3c41ffd3f6d114f4117b491c4b490"
+    },
+    {
+      "id": 6079313028,
+      "created_at": "2026-10-09T10:44:26Z",
+      "body_sha256": "79c4cd7702b9615f3c79444f8dbd03fb82d3cf2b7fd55c3047af3043bb73c90b"
+    }
+  ],
+  "recorded_hold": null,
+  "reviews": [],
+  "graphql": {
+    "headRefOid": "930125848136f08efd1bb61cc5899d9a5a0eeb51",
+    "baseRefOid": "4d736c55adb630a4a8eb11b261e31acd0f6dc48b",
+    "baseRefName": "main",
+    "isDraft": false,
+    "mergeable": "MERGEABLE",
+    "reviewDecision": null,
+    "autoMergeRequest": null,
+    "reviewThreads": {
+      "nodes": [],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "reviewRequests": {
+      "totalCount": 0,
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    }
+  },
+  "workspace_clean": true,
+  "rest_request_methods": [
+    "GET"
+  ],
+  "no_workflow_dispatch": true,
+  "no_merge_performed": true,
+  "derived_from": {
+    "path": "/Users/chriswong/Library/Caches/Mastermind/economic-network-native-reader-20261009/principal/pr8705-final-release-check-001.json",
+    "bytes": 211856,
+    "sha256": "d2b5de0a1869c782c574c5378292ab8834afea203644900d8fb1fa102a5e67ac",
+    "derivation": "Full release-check receipt preserved; only complete passed-unit list replaced by count and canonical digest in this public summary."
+  }
+}
