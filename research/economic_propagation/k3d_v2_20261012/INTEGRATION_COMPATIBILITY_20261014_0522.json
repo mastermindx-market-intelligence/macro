@@ -1,0 +1,40 @@
+{
+  "old_head": "21c29ffb5bf6c1502e22c01c20ac3bcfcb887c4d",
+  "main": "ed30db5a2af785ad94b84f9b78c873bd7f1242db",
+  "merge_result": 1,
+  "conflicts_reconciled": [
+    "tests/test_ci_pack.py"
+  ],
+  "all_38_semantic_files_unchanged": true,
+  "all_current_main_ci_definitions_preserved": true,
+  "main_jobs": 308,
+  "total_jobs": 309,
+  "additive_control_scope": [
+    "contracts/economic_propagation/propagation_hypothesis.v2.schema.json",
+    "lib/economic_propagation.py",
+    "lib/economic_propagation_v2.py",
+    "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
+  ],
+  "k3d_job_definition_unchanged": true,
+  "k3d_selector_test_ast_unchanged": true,
+  "main_functions_and_classes_preserved": true,
+  "placement": "existing GMI job neighborhood and inventory tail, avoiding first-entry conflict churn; no dropped members",
+  "tests": {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "xml_sha256": "3d526e3c683e6462a0c89eccd9fb86bb4bca446a03c59682c9a6a9ab26c90237",
+  "retained_review": 6158683442,
+  "prior_exact_ci": {
+    "run": 38493079533,
+    "head": "21c29ffb5bf6c1502e22c01c20ac3bcfcb887c4d",
+    "conclusion": "success"
+  },
+  "all_review_threads_resolved": true,
+  "source_release": "NOT_PERFORMED",
+  "ownership_release_denial": "Unchanged on independent #8793; not retried or routed through this integration",
+  "procedure_pin": "d837e04bf60a9fb60b7c530d287115a298fc1af0",
+  "procedure_compatibility": "six relevant protected companions unchanged at3bc4eb265d42aae6be1c3a94a8e12e07937e3045"
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-24T22:14:48Z",
+ "accession": "0001193125-26-067506",
+ "cik": "0000851310",
+ "doc_byte_length": 3283293,
+ "doc_sha256": "7a454472c5841f29903ab7796a3b99189e63e83cc86d206c242d4cb4f14ec219",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-24",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "hlit-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 275503,
+  "byte_start": 275236,
+  "normalized": "This agreement has automatic annual renewals, unless prior notice for nonrenewal is given, and has been automatically renewed for a term expiring in October 2026. We do not generally maintain long-term agreements with any of our contract manufacturers beyond Plexus.",
+  "normalized_sha256": "cac2a5c1f2de59560509f5dc810edfdfa18ef503e505c2e901b47c15bf28bb2f",
+  "raw": " This agreement has automatic annual renewals, unless prior notice for nonrenewal is given, and has been automatically renewed for a term expiring in October 2026. We do not generally maintain long-term agreements with any of our contract manufacturers beyond Plexus.",
+  "raw_sha256": "f551e478beec852e5e2b53be0a00ecb6dd7077579c1098b26daf8f27ea828f9f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/851310/000119312526067506/hlit-20251231.htm",
+ "xbrl_contexts": []
+}

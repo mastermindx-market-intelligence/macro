@@ -1,0 +1,66 @@
+{
+  "schema": "mastermind.risk_radar_state_ladder_evidence.v2",
+  "status": "corrected_post_replay_parity",
+  "rerun_protocol_commit": "e9ff3d234df1f50137bfa38a50995a70f06c1164",
+  "method_commit": "2d8e10039dfcbff341a11b8644963531a8b5bbe9",
+  "original_protocol_commit": "22e779b1f4c7fbb27c1e204667d917c1d92727fa",
+  "source_base": "7c6e35163c9f67087ffe174a7ab3810f47ce6a45",
+  "protected_skillpack": {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "commit": "4ca1b97e65de9d4ba8c868b9d708fb7620a8a76f",
+    "version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "authority": {
+    "status": "descriptive_only",
+    "live_model_changed": false,
+    "probability_changed": false,
+    "gate_changed": false,
+    "policy_changed": false
+  },
+  "selected_result": {
+    "modern_point_monotonic": {"h5": true, "h10": true, "h21": true},
+    "h5_y2020": {
+      "caution_rate": 0.022263450834879406,
+      "elevated_rate": 0.12121212121212122,
+      "elevated_n": 33,
+      "risk_off_rate": 0.14285714285714285,
+      "risk_off_n": 224
+    },
+    "h10_y2020": {
+      "caution_rate": 0.06337371854613234,
+      "elevated_rate": 0.24242424242424243,
+      "elevated_n": 33,
+      "risk_off_rate": 0.2767857142857143,
+      "risk_off_n": 224
+    },
+    "h21_y2020": {
+      "watch_rate": 0.04591836734693878,
+      "caution_rate": 0.16511194029850745,
+      "elevated_rate": 0.30303030303030304,
+      "elevated_n": 33,
+      "elevated_ci90": [0.060517, 0.6],
+      "risk_off_rate": 0.4375,
+      "risk_off_n": 224
+    },
+    "long_history_point_monotonic": {"h5_full": false, "h10_full": false, "h21_full": false}
+  },
+  "verification": {
+    "owning_suites": "205 passed",
+    "focused_method_tests_pre_outcome": "6 passed",
+    "agentos": "0 errors; inherited warnings only",
+    "diff_check": "pass",
+    "result_sha256": "68589bee49f879e5dccb2d59a7064dc2ea1e6e6df4578c360de875afd4fc5d9f",
+    "script_sha256": "1ae55ad3295fc7c5a25918e97d6b80de35a23ee60b9e219bec92c82105762068",
+    "report_sha256": "131be36217b4cb18892feff7670b9b4fe4a9123dc7926586b79c2386dc55bdd0",
+    "interpretation_sha256": "1bac05c4fb0ce2db1607b7301342b1797f0b2f7b6210b25e21128bc099fd9cdd",
+    "run_log_sha256": "472d1b8a7d97735ac1fe759d26cf19ae4e7f305faecf1ff03e7d303980602ab4",
+    "tests_log_sha256": "ce15ca51a20d3aa93785dc02c7496c7ed029a12d4d36e9440baa4b22435c1596",
+    "agentos_log_sha256": "e4dff7b7d21d4523cd8bb4075bb4a02616e8dd33330f2871f751947d53ec8f4c"
+  },
+  "pre_parity": {
+    "pr": 7611,
+    "head": "ae61fbf543250fa57b96236e046640eba3dcfd12",
+    "status": "closed_unmerged_superseded_by_7632"
+  }
+}

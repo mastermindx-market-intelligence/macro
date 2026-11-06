@@ -1516,8 +1516,14 @@ def test_gold_premium_rebuilds_and_reaudits_when_rebase_changes_material_inputs(
     after = "gold_material_after_rebase=$(gold_material_fingerprint)"
     changed = 'if [ "$gold_material_before_rebase" != "$gold_material_after_rebase" ]; then'
 
+    custody_guard = "push_qledger_guard pre-rebase"
+    assert attempt.index(custody_guard) < attempt.index(before)
     assert attempt.index(before) < attempt.index(fetch) < attempt.index(rebase)
     post_rebase = attempt[attempt.index(rebase) :]
+    accepted_pin = "COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}')"
+    accepted_heal = 'python -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED"'
+    assert post_rebase.index(accepted_pin) < post_rebase.index(accepted_heal)
+    assert post_rebase.index(accepted_heal) < post_rebase.index(after)
     assert post_rebase.index(after) < post_rebase.index(changed)
 
     rebuild_guard = "if ! python -m scripts.build_commodities; then"
@@ -1528,7 +1534,7 @@ def test_gold_premium_rebuilds_and_reaudits_when_rebase_changes_material_inputs(
     stage_loop = 'for path in "${GOLD_FOLLOWUP_PATHS[@]}"; do'
     stage = 'git add -A -- "$path"'
     clean = 'push_staged_clean site/ templates/ "${GOLD_FOLLOWUP_PATHS[@]}"'
-    push = "if push_do; then"
+    push = 'if push_do origin "$qledger_push_candidate:refs/heads/main"; then'
 
     assert post_rebase.index(changed) < post_rebase.index(rebuild_guard)
     assert post_rebase.index(rebuild_guard) < post_rebase.index(normalize)
@@ -1539,11 +1545,17 @@ def test_gold_premium_rebuilds_and_reaudits_when_rebase_changes_material_inputs(
     assert post_rebase.rindex(restore) < post_rebase.index(stage_loop)
     assert post_rebase.index(audit) < post_rebase.index(stage_loop)
     assert post_rebase.index(stage_loop) < post_rebase.index(stage)
-    assert post_rebase.index(stage) < post_rebase.index(clean) < post_rebase.index(push)
+    candidate_pin = "qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}')"
+    candidate_guard = (
+        'python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" '
+        '--candidate-ref "$qledger_push_candidate"'
+    )
+    assert post_rebase.index(stage) < post_rebase.index(clean) < post_rebase.index(candidate_pin)
+    assert post_rebase.index(candidate_pin) < post_rebase.index(candidate_guard) < post_rebase.index(push)
 
 
 
-def test_gold_failure_fallback_restores_origin_main_canonical_and_head_optional_outputs(tmp_path):
+def test_gold_failure_fallback_restores_pinned_canonical_and_head_optional_outputs(tmp_path):
     import subprocess
     from pathlib import Path
 
@@ -1597,12 +1609,53 @@ def test_gold_failure_fallback_restores_origin_main_canonical_and_head_optional_
         target.write_text(value)
     run("git", "add", ".")
     run("git", "commit", "-qm", "candidate")
+    candidate_sha = run("git", "rev-parse", "HEAD")
+
+    # A later accepted generation must not replace the attempt's original pin.
+    # All ref/index mutations here belong to this test's fresh temporary repo.
+    for name in (
+        "data/commodity/latest.json",
+        "data/quality/china_gold_premium.json",
+        "site/commodities.html",
+    ):
+        (work / name).write_text("later accepted generation\n")
+    run("git", "add", ".")
+    later_tree = run("git", "write-tree")
+    later_origin_sha = run(
+        "git", "commit-tree", later_tree, "-p", origin_sha, "-m", "later accepted"
+    )
+    run("git", "update-ref", "refs/remotes/origin/main", later_origin_sha)
+    run("git", "reset", "--hard", candidate_sha)
 
     for name in head_values:
         (work / name).write_text("partial failed rebuild\n")
 
+    refused = subprocess.run(
+        [
+            "bash",
+            "-c",
+            helpers + "\nunset COMMODITY_ACCEPTED\ngold_restore_origin_main_outputs\n",
+        ],
+        cwd=work,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    assert refused.returncode != 0
+    assert "Gold fallback requires pinned accepted commit" in refused.stderr
+    assert all(
+        (work / name).read_text() == "partial failed rebuild\n"
+        for name in head_values
+    )
+
     subprocess.run(
-        ["bash", "-c", helpers + "\ngold_restore_origin_main_outputs\n"],
+        [
+            "bash",
+            "-c",
+            helpers + '\nCOMMODITY_ACCEPTED="$1"\ngold_restore_origin_main_outputs\n',
+            "gold-fallback-test",
+            origin_sha,
+        ],
         cwd=work,
         check=True,
         text=True,
@@ -1627,6 +1680,8 @@ def test_gold_failure_fallback_restores_origin_main_canonical_and_head_optional_
     assert "data/commodity/latest.json" in status
     assert "data/quality/china_gold_premium.json" in status
     assert "site/commodities.html" in status
+    assert run("git", "rev-parse", "HEAD") == candidate_sha
+    assert run("git", "rev-parse", "refs/remotes/origin/main") == later_origin_sha
 
 
 def test_gold_refresh_failure_restores_safe_outputs_after_normalization_before_stage():

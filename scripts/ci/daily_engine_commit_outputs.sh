@@ -10,7 +10,6 @@ set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declare
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
 git config user.name "dashboard-bot"
 git config user.email "actions@users.noreply.github.com"
-
 # Gold final-tree binding: the broad candidate is built from the engine checkout,
 # but origin/main can advance the two governed source stores (or the Gold render
 # closure) before the retry loop rebases. Fingerprint the exact material closure
@@ -58,15 +57,17 @@ gold_material_fingerprint() {
   } | git hash-object --stdin
 }
 gold_restore_origin_main_outputs() {
+  local accepted_ref="${COMMODITY_ACCEPTED:?Gold fallback requires pinned accepted commit}"
   local path ref
   # A failed post-rebase rebuild/audit must remain lane-local without shipping a
   # Gold page or machine projection that claims different source artifacts.
-  # Restore the canonical Gold outputs from current origin/main, while discarding
-  # only optional side effects of the attempted second commodity build back to
+  # Restore canonical Gold outputs from the accepted commit pinned for this
+  # attempt, even if origin/main moves again. Discard only optional side effects
+  # of the attempted second commodity build back to
   # this candidate's already-committed HEAD. Write worktree bytes only; the
   # existing follow-up staging/guard path remains the sole commit owner.
   for path in "${GOLD_CANONICAL_OUTPUT_PATHS[@]}"; do
-    ref="origin/main:$path"
+    ref="$accepted_ref:$path"
     mkdir -p "$(dirname "$path")"
     if git cat-file -e "$ref" 2>/dev/null; then
       git show "$ref" > "$path"
@@ -187,7 +188,19 @@ git clean -fd -- \
 # untouched.
 git clean -fd -- \
   data/prophet/origination_receipts \
+  data/prophet/origination_sources \
   data/prophet/legacy_shadow
+# The leader-pullback source has its own provenance-checked narrow checkpoint
+# immediately after the publisher and before build_site. Never let this late broad
+# commit bypass a refused same-path/source-contract gate or overwrite a newer source
+# publication during its -X theirs rebase. Rendered pages remain broad-owner output;
+# only the raw source artifact is restored/unstaged here.
+LEADER_SOURCE_PATH="site/anticipationdata/us_leader_pullback.json"
+if ! git checkout HEAD -- "$LEADER_SOURCE_PATH"; then
+  echo "::error title=Leader source safe restore failed::could not restore checkout-time source; aborting broad commit rather than publishing around the narrow checkpoint"
+  exit 1
+fi
+git reset -q -- "$LEADER_SOURCE_PATH"
 # Re-exclude both exact-published namespaces after the broad add.
 bash scripts/ci/options_signal_nightly.sh exclude-broad
 # W0b (2026-07-08 stale-HK incident): US engine job must NOT commit asia-owned
@@ -254,6 +267,17 @@ git add -f site/live/notify_state.json 2>/dev/null || true
 # imputed from its close-only per-stock JSON so the chart draws candlesticks.
 # US 4H intraday chart data (built by build_site -> build_chart_data.emit_intraday
 # from the cached data/intraday) — gitignored, force-add so the deploy ships it.
+# GH001 carve-out (scripts/ci/qledger_carve.sh — #9556 parity for THIS committer).
+# data/qledger/claims.jsonl sits at GitHub's 100 MiB blob limit on main and grows
+# on every runner; staging it rejected the WHOLE engine commit every night from
+# 2026-10-21 (run 40803269874: "GH001 large-file rejection") — regime update,
+# curated US candidate tier, rendered site all lost at the next checkout. Unstage
+# the oversize qledger planes (custody snapshot + verified park + restore on
+# exit; the ledger's own publication stays with the qledger publication program).
+# A carve that cannot secure custody withholds this commit: exit 1, because a
+# lost engine commit must red the run (see the push_lost branch below).
+. "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"
+qledger_carve_staged || exit 1
 if git diff --cached --quiet; then echo "no engine output changes"; exit 0; fi
 # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): a conflicted
 # autostash apply anywhere upstream of this step leaves `Updated upstream /
@@ -278,6 +302,10 @@ PUSH_MAX_ATTEMPTS=20   # let the 600s DEADLINE stop this loop, not the attempt c
                        # retries burn only ~2 min, so the raised budget above would never bind
 push_retry_init "engine outputs"
 while push_attempt; do
+  # Classify native pending work before the shared helper can clean or rebase.
+  qledger_before_rebase=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
+  push_qledger_guard pre-rebase --candidate "$qledger_before_rebase" \
+    --target-ref refs/heads/main || exit $?
   gold_material_before_rebase=$(gold_material_fingerprint)
   # Fetch the exact named ref before rebasing. The shared helper sees normal
   # AND ignored untracked collisions, quarantines only paths tracked by that
@@ -293,6 +321,9 @@ while push_attempt; do
   # both sides' hashed files (next externalize_css prunes the orphan) and
   # finishes the rebase; anything else is left for the abort+retry below.
   if { perl -e 'alarm 420; exec @ARGV or die' -- git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+    # A nightly may have rendered before a newer accepted workspace landed.
+    COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
+    python -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED" || exit 1
     gold_material_after_rebase=$(gold_material_fingerprint)
     gold_rebuilt_post_rebase=
     gold_post_rebase_refresh_failed=
@@ -300,7 +331,7 @@ while push_attempt; do
       echo "::notice title=China gold final-tree refresh::Gold material inputs moved during rebase; rebuilding the Commodity Vector against post-rebase source truth"
       gold_rebuilt_post_rebase=1
       if ! python -m scripts.build_commodities; then
-        echo "::error title=China gold post-rebase rebuild failed::serving the current origin/main Gold outputs rather than pushing a receipt/page bound to stale source artifacts"
+        echo "::error title=China gold post-rebase rebuild failed::serving the pinned accepted Gold outputs rather than pushing a receipt/page bound to stale source artifacts"
         gold_post_rebase_refresh_failed=1
         gold_restore_origin_main_outputs
       fi
@@ -351,7 +382,7 @@ while push_attempt; do
       gold_post_rebase_audit_rc=$?
       set -e
       if [ "$gold_post_rebase_audit_rc" -ne 0 ]; then
-        echo "::error title=China gold premium post-rebase audit::rebuilt panel disagrees with current source/engine truth; restoring current origin/main Gold outputs and continuing the unrelated nightly publication"
+        echo "::error title=China gold premium post-rebase audit::rebuilt panel disagrees with current source/engine truth; restoring pinned accepted Gold outputs and continuing the unrelated nightly publication"
         gold_post_rebase_refresh_failed=1
       fi
     fi
@@ -377,6 +408,9 @@ while push_attempt; do
           fi
         done
       fi
+      # the carved qledger planes stay out of the render-sync commit too: the
+      # re-add above would re-stage a NEW site/qledger file the carve unstaged
+      if [ "${QLEDGER_CARVED:-false}" = true ]; then git reset -q -- site/qledger data/qledger 2>/dev/null || true; fi
       if push_staged_clean site/ templates/ "${GOLD_FOLLOWUP_PATHS[@]}"; then
         bash scripts/ci/options_signal_nightly.sh commit-render-sync \
           "render-sync: post-rebase guards (template re-copy + ms-board coherence)" \
@@ -390,7 +424,10 @@ while push_attempt; do
         echo "::warning title=render-sync skipped::post-rebase site/templates scanned dirty (conflict markers) — follow-up commit skipped and offenders restored from HEAD; pushing the guarded engine commit only"
       fi
     fi
-    if push_do; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+    # This is the actual final candidate, including any render-sync commit.
+    qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
+    python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$qledger_push_candidate" || exit 1
+    if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
   fi
   push_abort_rebase
   push_backoff
