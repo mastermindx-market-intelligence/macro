@@ -1,0 +1,77 @@
+{
+  "audit": {
+    "findings": [
+      {
+        "asserts_contagion": false,
+        "classification": "confirmed_in_published_artifact",
+        "code": "UNMAPPED_FRESH_REQUIRED_HAZARD",
+        "note": "Fresh required native damage was marked unmapped; aggregate hazard is unavailable, not calm. This source cannot by itself claim spread or breakdown.",
+        "source_id": "leadership-crack-latest",
+        "source_session": "2026-10-14",
+        "source_stage_ceiling": "FRAGILE",
+        "source_state": "CRACKING"
+      },
+      {
+        "classification": "publication_variants_need_consumer_binding",
+        "code": "ENVELOPE_SESSION_DIVERGENCE",
+        "data_session": "2026-10-13",
+        "note": "Both snapshots may be valid for their independent build times. Determine the actual serving path before asserting staleness or release failure.",
+        "site_session": "2026-10-14"
+      },
+      {
+        "classification": "publication_variants_need_source_binding",
+        "code": "LEADERSHIP_SESSION_DIVERGENCE",
+        "note": "The site-facing producer may hold non-persisted or later data. Do not promote the old data pointer or overwrite the fresh site observation.",
+        "persisted_leadership_asof": "2026-10-08",
+        "persisted_leadership_state": "INTACT",
+        "site_leadership_asof": "2026-10-14",
+        "site_leadership_state": "CRACKING"
+      },
+      {
+        "classification": "different_generation_clocks_no_issue_time_inference",
+        "code": "MARKET_PLANE_SCORE_DIVERGENCE",
+        "context_plane_score": 50.0,
+        "measured_score": 44.0,
+        "note": "A context-only plane and a later measured snapshot disagree under the same displayed session label. Without common build cutoff and consumer receipt, this is not a historical forecast error.",
+        "plane_produced_at": "2026-10-14T19:35:57Z",
+        "plane_stale_flag": false,
+        "source_session": "2026-10-14"
+      },
+      {
+        "classification": "observed_quality_qualification",
+        "code": "MARKET_STATE_INPUTS_STALE",
+        "note": "Stale constituent inputs are not proof of fresh underlying market coverage.",
+        "source_session": "2026-10-14",
+        "stale_inputs": [
+          "hy_oas",
+          "ofr_fsi",
+          "pct_above_200",
+          "us10y"
+        ]
+      }
+    ],
+    "schema": "ror1.offline_artifact_consistency.v1",
+    "scope": "read_only_cross_artifact_evidence",
+    "status": "ARTIFACT_COMPARISON_ONLY",
+    "warning": "Not a production freshness sentinel, market score, risk detector, forecast, episode lifecycle, notification receipt or trading policy."
+  },
+  "inputs_sha256": "d093b96637cb59be3e740aa6129a06bf672eabe852b0fc12bdd1fd9f54d6f86a",
+  "macro_commit": "1b12af09222df183ac61ed5bcabb1ecc6bf5c735",
+  "sources": {
+    "data/leadership_crack/latest.json": {
+      "blob_sha": "0770965a8985eed1a897207f48c5b28ede691e00"
+    },
+    "data/market_state/latest.json": {
+      "blob_sha": "fe9ee7da8c49a7f5d590894c48e14146006233ea"
+    },
+    "data/neuralweb/market_plane.json": {
+      "blob_sha": "c229bb14f6a1bdabb8c1151bd517a456cfb9c6e1"
+    },
+    "data/risk_envelope/latest.json": {
+      "blob_sha": "75927ee1fc27c55241120f42d73ae1608e9e91a6"
+    },
+    "site/riskdata/risk_envelope.json": {
+      "blob_sha": "80a2dd2f86a62944803cd3224d448e5ba1eebd76"
+    }
+  }
+}

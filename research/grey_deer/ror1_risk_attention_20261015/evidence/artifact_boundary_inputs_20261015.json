@@ -1,0 +1,135 @@
+{
+  "schema": "ror1.grounded_artifact_excerpt.v1",
+  "macro_commit": "1b12af09222df183ac61ed5bcabb1ecc6bf5c735",
+  "sources": {
+    "site/riskdata/risk_envelope.json": {
+      "blob_sha": "80a2dd2f86a62944803cd3224d448e5ba1eebd76"
+    },
+    "data/risk_envelope/latest.json": {
+      "blob_sha": "75927ee1fc27c55241120f42d73ae1608e9e91a6"
+    },
+    "data/market_state/latest.json": {
+      "blob_sha": "fe9ee7da8c49a7f5d590894c48e14146006233ea"
+    },
+    "data/leadership_crack/latest.json": {
+      "blob_sha": "0770965a8985eed1a897207f48c5b28ede691e00"
+    },
+    "data/neuralweb/market_plane.json": {
+      "blob_sha": "c229bb14f6a1bdabb8c1151bd517a456cfb9c6e1"
+    }
+  },
+  "observations": {
+    "site_envelope": {
+      "schema": "mastermind.risk_envelope/v1",
+      "source_session": "2026-10-14",
+      "produced_at": "2026-10-15T04:51:27Z",
+      "revision": "settled",
+      "data_state": "PARTIAL",
+      "hazard_summary": {
+        "active_episode_count": 0,
+        "capped_sources": [],
+        "contributing_sources": [
+          "risk-radar-us"
+        ],
+        "display_only": true,
+        "primary_episode_id": null,
+        "stage": null,
+        "stage_reason": "required_source_state_unmapped",
+        "stage_since": null,
+        "stage_since_basis": "no_episode_lifecycle_in_v0",
+        "unmapped_required_sources": [
+          "leadership-crack-latest"
+        ],
+        "unreadable_sources": []
+      },
+      "measured_state": {
+        "as_of": "2026-10-14",
+        "role": "slow_confirmed_trend",
+        "score": 44,
+        "source_artifact": "market-state-latest",
+        "usable": true,
+        "verdict": "MIXED"
+      },
+      "provenance": {
+        "sources": [
+          {
+            "source_id": "leadership-crack-latest",
+            "state": "CRACKING",
+            "coverage": "FRESH",
+            "as_of": "2026-10-14",
+            "role": "hazard_evidence",
+            "stage_ceiling": "FRAGILE",
+            "detail": {
+              "cohort_role": "tracked_ai_hardware_damage_monitor",
+              "dislocation": true,
+              "excluded_reason": null,
+              "high_window_sessions": 63,
+              "lineage": {},
+              "n_fresh": 42,
+              "n_total": 42,
+              "state_since": "2026-10-13"
+            }
+          }
+        ]
+      }
+    },
+    "data_envelope": {
+      "schema": "mastermind.risk_envelope/v1",
+      "source_session": "2026-10-13",
+      "produced_at": "2026-10-14T19:32:18Z",
+      "revision": "settled",
+      "data_state": "DEGRADED",
+      "hazard_summary": {
+        "active_episode_count": 0,
+        "capped_sources": [],
+        "contributing_sources": [
+          "risk-radar-us"
+        ],
+        "display_only": true,
+        "primary_episode_id": null,
+        "stage": null,
+        "stage_reason": "required_coverage_unavailable",
+        "stage_since": null,
+        "stage_since_basis": "no_episode_lifecycle_in_v0",
+        "unmapped_required_sources": [],
+        "unreadable_sources": [
+          "leadership-crack-latest"
+        ]
+      }
+    },
+    "market_state": {
+      "asof": "2026-10-14",
+      "score": 44,
+      "verdict": "MIXED",
+      "freshness": {
+        "any_input_stale": true,
+        "stale_inputs": [
+          "hy_oas",
+          "ofr_fsi",
+          "pct_above_200",
+          "us10y"
+        ]
+      }
+    },
+    "leadership": {
+      "asof": "2026-10-08",
+      "state": "INTACT",
+      "n_fresh": 42,
+      "n_total": 42
+    },
+    "market_plane": {
+      "schema": "neuralweb.market_plane.v1",
+      "asof": "2026-10-14",
+      "produced_at": "2026-10-14T19:35:57Z",
+      "verdict": {
+        "verdict": "MIXED",
+        "score": 50,
+        "label_en": "Mixed",
+        "label_zh": "混合"
+      },
+      "stale": false,
+      "is_context_only": true
+    }
+  },
+  "qualification": "Selected fields from five pinned committed artifacts; not user delivery, native data feed proof or comprehensive point-in-time input history."
+}

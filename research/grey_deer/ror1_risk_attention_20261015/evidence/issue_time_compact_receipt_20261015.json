@@ -1,0 +1,275 @@
+{
+  "country_run_summary": {
+    "ca": {
+      "model_alert_true_rows": 0,
+      "recorded_n": 51,
+      "recorded_runs": []
+    },
+    "cn": {
+      "model_alert_true_rows": 26,
+      "recorded_n": 42,
+      "recorded_runs": [
+        {
+          "continuity": "CONTIGUOUS_RECORDED_ROWS_NOT_TRADING_SESSIONS",
+          "first_source_session": "2026-07-10",
+          "last_source_session": "2026-07-16",
+          "left_censored_at_ledger_start": false,
+          "model_flag_later_off_in_recorded_row": true,
+          "observed_rows": 5,
+          "user_notification_claim": false
+        },
+        {
+          "continuity": "CONTIGUOUS_RECORDED_ROWS_NOT_TRADING_SESSIONS",
+          "first_source_session": "2026-09-03",
+          "last_source_session": "2026-09-07",
+          "left_censored_at_ledger_start": false,
+          "model_flag_later_off_in_recorded_row": true,
+          "observed_rows": 3,
+          "user_notification_claim": false
+        },
+        {
+          "continuity": "CONTIGUOUS_RECORDED_ROWS_NOT_TRADING_SESSIONS",
+          "first_source_session": "2026-09-09",
+          "last_source_session": "2026-10-15",
+          "left_censored_at_ledger_start": false,
+          "model_flag_later_off_in_recorded_row": false,
+          "observed_rows": 18,
+          "user_notification_claim": false
+        }
+      ]
+    },
+    "hk": {
+      "model_alert_true_rows": 14,
+      "recorded_n": 47,
+      "recorded_runs": [
+        {
+          "continuity": "CONTIGUOUS_RECORDED_ROWS_NOT_TRADING_SESSIONS",
+          "first_source_session": "2026-07-14",
+          "last_source_session": "2026-07-16",
+          "left_censored_at_ledger_start": false,
+          "model_flag_later_off_in_recorded_row": true,
+          "observed_rows": 3,
+          "user_notification_claim": false
+        },
+        {
+          "continuity": "CONTIGUOUS_RECORDED_ROWS_NOT_TRADING_SESSIONS",
+          "first_source_session": "2026-09-24",
+          "last_source_session": "2026-10-13",
+          "left_censored_at_ledger_start": false,
+          "model_flag_later_off_in_recorded_row": true,
+          "observed_rows": 11,
+          "user_notification_claim": false
+        }
+      ]
+    },
+    "us": {
+      "model_alert_true_rows": 0,
+      "recorded_n": 67,
+      "recorded_runs": []
+    }
+  },
+  "cutoff_views": {
+    "2026-10-13T15:30:00Z": {
+      "ca": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-09T14:38:36Z",
+        "source_session": "2026-10-08",
+        "state": "caution"
+      },
+      "cn": {
+        "model_alert": true,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-09T15:34:53Z",
+        "source_session": "2026-10-09",
+        "state": "risk-off"
+      },
+      "hk": {
+        "model_alert": true,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-09T16:11:18Z",
+        "source_session": "2026-10-09",
+        "state": "elevated"
+      },
+      "us": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-13T06:38:33Z",
+        "source_session": "2026-10-12",
+        "state": "caution"
+      }
+    },
+    "2026-10-13T16:00:00Z": {
+      "ca": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-09T14:38:36Z",
+        "source_session": "2026-10-08",
+        "state": "caution"
+      },
+      "cn": {
+        "model_alert": true,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-13T15:53:13Z",
+        "source_session": "2026-10-13",
+        "state": "risk-off"
+      },
+      "hk": {
+        "model_alert": true,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-09T16:11:18Z",
+        "source_session": "2026-10-09",
+        "state": "elevated"
+      },
+      "us": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-13T06:38:33Z",
+        "source_session": "2026-10-12",
+        "state": "caution"
+      }
+    },
+    "2026-10-13T17:00:00Z": {
+      "ca": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-09T14:38:36Z",
+        "source_session": "2026-10-08",
+        "state": "caution"
+      },
+      "cn": {
+        "model_alert": true,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-13T15:53:13Z",
+        "source_session": "2026-10-13",
+        "state": "risk-off"
+      },
+      "hk": {
+        "model_alert": true,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-13T16:23:07Z",
+        "source_session": "2026-10-13",
+        "state": "elevated"
+      },
+      "us": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-13T06:38:33Z",
+        "source_session": "2026-10-12",
+        "state": "caution"
+      }
+    },
+    "2026-10-14T17:00:00Z": {
+      "ca": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-09T14:38:36Z",
+        "source_session": "2026-10-08",
+        "state": "caution"
+      },
+      "cn": {
+        "model_alert": true,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-14T15:17:16Z",
+        "source_session": "2026-10-14",
+        "state": "risk-off"
+      },
+      "hk": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-14T15:50:01Z",
+        "source_session": "2026-10-14",
+        "state": "caution"
+      },
+      "us": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-14T06:02:59Z",
+        "source_session": "2026-10-13",
+        "state": "caution"
+      }
+    },
+    "2026-10-15T13:00:00Z": {
+      "ca": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-09T14:38:36Z",
+        "source_session": "2026-10-08",
+        "state": "caution"
+      },
+      "cn": {
+        "model_alert": true,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-15T11:55:52Z",
+        "source_session": "2026-10-15",
+        "state": "risk-off"
+      },
+      "hk": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-15T12:28:08Z",
+        "source_session": "2026-10-15",
+        "state": "caution"
+      },
+      "us": {
+        "model_alert": false,
+        "record_status": "RECORDED_SOURCE_ISSUE",
+        "recorded_at_utc": "2026-10-15T05:02:39Z",
+        "source_session": "2026-10-14",
+        "state": "caution"
+      }
+    }
+  },
+  "do_not_interpret_as": [
+    "14 early forecasts of next-day crash or 14 independent episodes",
+    "absence of customer delivery before any source-derived warning",
+    "14 false-positive market days; no realized outcome labels were evaluated",
+    "source as-of and cutoff local date prove due exchange session",
+    "country-level severity proves U.S. market transmission"
+  ],
+  "exploratory_weekday_grid": {
+    "both_issued_flag_days": [
+      "2026-09-24",
+      "2026-09-25",
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07",
+      "2026-10-08",
+      "2026-10-09",
+      "2026-10-12",
+      "2026-10-13"
+    ],
+    "end": "2026-10-13",
+    "n_joint_cn_hk_source_flags_true": 14,
+    "n_unknown": 0,
+    "n_weekday_cutoffs": 31,
+    "start": "2026-09-01",
+    "status": "post_hoc_issue_time_frequency_not_pred_registered_negative_control",
+    "time_utc_hour": 17
+  },
+  "local_full_result_sha256": "8ac614b7b4e1dc190b9b7b5577fec53118f4141ed9c910a774088a4ff663ae4a",
+  "schema": "ror1.issue_clock_exploratory_evidence.v1",
+  "source_blobs": {
+    "ca": "045a9b352ccc4cc35c9d9c21299771ec4926de31",
+    "cn": "facaaeb830b2e7fb4139e10a2e998408f72de44a",
+    "hk": "6ce8ea457097265b5f559cdf38aa0562a128a427",
+    "us": "67332ea3cf70841f0e8398fa8da2054587a2f029"
+  },
+  "source_macro_commit": "9b255a5377385a6b0dab23850e6a6ff67714a5f1",
+  "study_basis": "retrospective filtered recorded issue UTC timestamps from current pinned forward-ledger blobs; not historical Git-commit source vintages, forecast validation or end-user receipts",
+  "validation": {
+    "actual_customer_delivery": "NOT_VERIFIED",
+    "adversarial_synthetic_unittest_cases": 16,
+    "all_four_original_source_blob_assertions_verified": true,
+    "forecast_precision_or_recall": "NOT_ASSESSED",
+    "hash_bound_CLI_fixture_verified": true,
+    "independent_market_expected_session": "NOT_VERIFIED",
+    "no_trade_or_policy_authority": true,
+    "raw_historical_git_vintage": "NOT_RECONSTRUCTED"
+  }
+}

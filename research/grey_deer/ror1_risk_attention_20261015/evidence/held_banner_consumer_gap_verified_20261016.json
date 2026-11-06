@@ -1,0 +1,35 @@
+{
+  "candidate_source": "Macro PR #8132 templates/wh_banner.js",
+  "executed_cases": 3,
+  "observations": [
+    {
+      "case": "legacy_extreme_alert_present_at_boot",
+      "critical_style_count": 1,
+      "dom_banner_count": 1,
+      "synthetic_only": true
+    },
+    {
+      "case": "long_open_tab_does_not_pick_up_new_legacy_severe_alert",
+      "dom_banner_count": 0,
+      "fetches_after_changed_test_feed": 2,
+      "production_proof": false
+    },
+    {
+      "case": "critical_country_projection_without_legacy_alert",
+      "country_attention_visible": false,
+      "dom_banner_count": 0,
+      "initial_fetches": 2,
+      "production_proof": false,
+      "projection_issuer_proven": false
+    }
+  ],
+  "qualifications": [
+    "All browser data and HTML were local synthetic test doubles, not installed origin or entitled browser",
+    "Test characterizes a held candidate not production: warning_projection is unconsumed",
+    "The script's single initial feed fetch does not constitute a long-open refresh/notification subscription",
+    "No changes to risk scores, publication, actual notifications or release holds"
+  ],
+  "schema": "ror1.held_browser_warning_client_gap.v1",
+  "source_git_blob": "9362255160a6a7358014632c53dd865dad163ebe",
+  "tests_passed": 3
+}

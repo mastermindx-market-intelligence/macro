@@ -1,0 +1,150 @@
+{
+  "schema": "ror1.sitewide_alert_source_mount_census.v1",
+  "side_effects": "isolated_research_files_only_no_site_or_alert_changes",
+  "snapshots": {
+    "2026-10-13T16:32:31Z": {
+      "census": {
+        "alert_payload_qualified": false,
+        "authenticated_user_delivery_proven": false,
+        "core_all_mounted": false,
+        "core_missing": [
+          "index.html",
+          "macro.html",
+          "china.html",
+          "hk.html"
+        ],
+        "installed_browser_proven": false,
+        "invalid_source_mounts": [],
+        "mounts_observed": 2,
+        "note": "Source-only static <script> syntax. No proof of served site, script runtime, risk alert, source freshness, or notification.",
+        "pages": {
+          "china.html": {
+            "candidate_scripts": 0,
+            "expected_root_prefix": "",
+            "source_bytes": 274102,
+            "source_sha256": "638cdc6a61cc36950a024f7a817b11a272463249c581e65b3df5962bda577fb8",
+            "state": "UNMOUNTED",
+            "valid_mounts": 0
+          },
+          "hk.html": {
+            "candidate_scripts": 0,
+            "expected_root_prefix": "",
+            "source_bytes": 253775,
+            "source_sha256": "b29d08c2fba93c87197459e02445db27ffb374deb8d19cebc0e92a579bb6c7aa",
+            "state": "UNMOUNTED",
+            "valid_mounts": 0
+          },
+          "index.html": {
+            "candidate_scripts": 0,
+            "expected_root_prefix": "",
+            "source_bytes": 187645,
+            "source_sha256": "978b023fb0e1d5c10b2752de17294c8196f9507d8febaddbcb187e5fbbf658ac",
+            "state": "UNMOUNTED",
+            "valid_mounts": 0
+          },
+          "macro.html": {
+            "candidate_scripts": 0,
+            "expected_root_prefix": "",
+            "source_bytes": 607502,
+            "source_sha256": "edc0ff6fc5cafe5599c65ea2aba8b759dac5f539bb9f0ea98e8661e62bf2396a",
+            "state": "UNMOUNTED",
+            "valid_mounts": 0
+          },
+          "markets.html": {
+            "candidate_scripts": 1,
+            "expected_root_prefix": "",
+            "source_bytes": 66741,
+            "source_sha256": "51eb5728bba67e6418cdaab0a4299232fed37ca15a2998eee2434a8924501e8b",
+            "state": "MOUNTED",
+            "valid_mounts": 1
+          },
+          "status.html": {
+            "candidate_scripts": 1,
+            "expected_root_prefix": "",
+            "source_bytes": 4667,
+            "source_sha256": "6bdee3c0d79592511de70fc15d2b7caf0831a2b41dbeb8dfe5d642ace6225c33",
+            "state": "MOUNTED",
+            "valid_mounts": 1
+          }
+        },
+        "schema": "ror1.alert_script_source_mount_census.v1",
+        "status": "CORE_ALERT_CLIENT_UNMOUNTED_IN_SITE_SOURCE"
+      },
+      "macro_git_commit": "c49e4410492e8d2a0a16d00eca5edb3b45d66bc7"
+    },
+    "2026-10-16_main_pin": {
+      "census": {
+        "alert_payload_qualified": false,
+        "authenticated_user_delivery_proven": false,
+        "core_all_mounted": false,
+        "core_missing": [
+          "index.html"
+        ],
+        "installed_browser_proven": false,
+        "invalid_source_mounts": [],
+        "mounts_observed": 5,
+        "note": "Source-only static <script> syntax. No proof of served site, script runtime, risk alert, source freshness, or notification.",
+        "pages": {
+          "china.html": {
+            "candidate_scripts": 1,
+            "expected_root_prefix": "",
+            "source_bytes": 267627,
+            "source_sha256": "4ee9c2a0d41641680dec6551c48483a04cf6cb533d60468b3560db1b3492f619",
+            "state": "MOUNTED",
+            "valid_mounts": 1
+          },
+          "hk.html": {
+            "candidate_scripts": 1,
+            "expected_root_prefix": "",
+            "source_bytes": 256211,
+            "source_sha256": "9340f8850b1c6acedf485901c3f20173ddab3888fb4263cd5f201ea345ad8f1a",
+            "state": "MOUNTED",
+            "valid_mounts": 1
+          },
+          "index.html": {
+            "candidate_scripts": 0,
+            "expected_root_prefix": "",
+            "source_bytes": 187645,
+            "source_sha256": "53a92e68a6745fd914b24b38a498a41ce6794b344753a1b6d017ef2ee598c8bc",
+            "state": "UNMOUNTED",
+            "valid_mounts": 0
+          },
+          "macro.html": {
+            "candidate_scripts": 1,
+            "expected_root_prefix": "",
+            "source_bytes": 611375,
+            "source_sha256": "c2741b823c1e698ea196b54fb64e9ffd3ba54bb478674746d3b5efcf911ba2a4",
+            "state": "MOUNTED",
+            "valid_mounts": 1
+          },
+          "markets.html": {
+            "candidate_scripts": 1,
+            "expected_root_prefix": "",
+            "source_bytes": 66741,
+            "source_sha256": "2c477095aa59b14411d43147bbc8b0c4e94c0a984dc6d2ba16527bc3c0759040",
+            "state": "MOUNTED",
+            "valid_mounts": 1
+          },
+          "status.html": {
+            "candidate_scripts": 1,
+            "expected_root_prefix": "",
+            "source_bytes": 4667,
+            "source_sha256": "6bdee3c0d79592511de70fc15d2b7caf0831a2b41dbeb8dfe5d642ace6225c33",
+            "state": "MOUNTED",
+            "valid_mounts": 1
+          }
+        },
+        "schema": "ror1.alert_script_source_mount_census.v1",
+        "status": "CORE_ALERT_CLIENT_UNMOUNTED_IN_SITE_SOURCE"
+      },
+      "macro_git_commit": "4ae7f2ac4c58e6e93945a6f09313bcaadba5709e"
+    }
+  },
+  "source_input": "git show <exact-commit>:site/<page>.html for 6 exact paths per commit, read-only from existing M2 repo object database",
+  "what_it_does_not_prove": [
+    "Static script mounting does not prove server deployment, actual browser script execution, alert selection or entitlement",
+    "The unmounted script is not the only possible UI route and this audit cannot rule out independent custom warning components",
+    "A null rr_banner alert is a separate publisher-selection or source-health condition",
+    "The homepage 50 Mixed example is illustrative and must not be treated as live financial data"
+  ]
+}

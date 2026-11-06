@@ -1,0 +1,174 @@
+{
+  "schema": "ror1.country_warning_input_contract_audit.v1",
+  "observed_pinned_macro_main": "9b255a5377385a6b0dab23850e6a6ff67714a5f1",
+  "held_warning_adapter_commit": "639aaed06ce7754110d3bd6e94a0b704bb6c7760",
+  "held_warning_adapter_path": "scripts/risk_warning_source_adapter.py",
+  "adapter_git_blob": "de4f1b7b2427da1c3e7543cc787b1a45cd8228db",
+  "purpose": "descriptive read-only versioned input evidence, not a country risk engine or market-trading forecast",
+  "market_paths": {
+    "us": {
+      "path": "data/regime/latest.json",
+      "git_blob": "c96b9912da627a2c980937e31c14c5c1c610707f",
+      "bytes": 981853,
+      "strict_json_valid": true,
+      "non_json_number_literals": 0,
+      "root_risk_radar_present": true,
+      "root_risk_radar_count": 1,
+      "document_asof": "2026-10-14",
+      "radar_asof": "2026-10-14",
+      "radar_state": "caution",
+      "radar_score": 87.9,
+      "parse_error_class": null
+    },
+    "cn": {
+      "path": "data/china_regime/latest.json",
+      "git_blob": "ef36a42470f073704a1152582679733e99d4a528",
+      "bytes": 149262,
+      "strict_json_valid": true,
+      "non_json_number_literals": 0,
+      "root_risk_radar_present": false,
+      "root_risk_radar_count": 0,
+      "document_asof": "2026-10-15",
+      "radar_asof": null,
+      "radar_state": null,
+      "radar_score": null,
+      "parse_error_class": null
+    },
+    "hk": {
+      "path": "data/hk_regime/latest.json",
+      "git_blob": "643d800b0e7af11c51644e315b48ad943ec3d6f1",
+      "bytes": 149204,
+      "strict_json_valid": false,
+      "non_json_number_literals": 1,
+      "root_risk_radar_present": false,
+      "root_risk_radar_count": 0,
+      "document_asof": null,
+      "radar_asof": null,
+      "radar_state": null,
+      "radar_score": null,
+      "parse_error_class": "strict_non_json_representation"
+    },
+    "ca": {
+      "path": "data/canada_regime/latest.json",
+      "git_blob": "7a7986d67b2c93591692093262050055e2105306",
+      "bytes": 5491,
+      "strict_json_valid": false,
+      "non_json_number_literals": 1,
+      "root_risk_radar_present": false,
+      "root_risk_radar_count": 0,
+      "document_asof": null,
+      "radar_asof": null,
+      "radar_state": null,
+      "radar_score": null,
+      "parse_error_class": "strict_non_json_representation"
+    },
+    "other": {
+      "path": "data/intl/latest.json",
+      "git_blob": "c35ce34603c7dfb0bb3e6afba637fc8f0d2554c7",
+      "bytes": 81379,
+      "strict_json_valid": true,
+      "non_json_number_literals": 0,
+      "root_risk_radar_present": false,
+      "root_risk_radar_count": 7,
+      "document_asof": "2026-10-09",
+      "radar_asof": null,
+      "radar_state": null,
+      "radar_score": null,
+      "parse_error_class": null,
+      "profiles": [
+        {
+          "cc": "JP",
+          "radar_asof": "2026-10-09",
+          "radar_state": "caution"
+        },
+        {
+          "cc": "KR",
+          "radar_asof": "2026-10-08",
+          "radar_state": "watch"
+        },
+        {
+          "cc": "TW",
+          "radar_asof": "2026-10-08",
+          "radar_state": "caution"
+        },
+        {
+          "cc": "IN",
+          "radar_asof": "2026-10-08",
+          "radar_state": "elevated"
+        },
+        {
+          "cc": "AU",
+          "radar_asof": "2026-10-09",
+          "radar_state": "caution"
+        },
+        {
+          "cc": "GB",
+          "radar_asof": "2026-10-08",
+          "radar_state": "watch"
+        },
+        {
+          "cc": "EZ",
+          "radar_asof": "2026-10-08",
+          "radar_state": "caution"
+        }
+      ]
+    },
+    "cn_market_state": {
+      "path": "data/china_market_state/latest.json",
+      "git_blob": "faf675be75424ed14c29e2a0815002e885abbcb6",
+      "bytes": 11740,
+      "strict_json_valid": true,
+      "non_json_number_literals": 0,
+      "root_risk_radar_present": false,
+      "root_risk_radar_count": 0,
+      "document_asof": "2026-10-15",
+      "radar_asof": null,
+      "radar_state": null,
+      "radar_score": null,
+      "parse_error_class": null,
+      "market_state": {
+        "score": 24,
+        "verdict": "RISK_OFF",
+        "radar_state": "risk-off",
+        "radar_score": 97,
+        "radar_has_source_schema": false,
+        "radar_has_source_asof": false
+      }
+    },
+    "hk_market_state": {
+      "path": "data/hk_market_state/latest.json",
+      "git_blob": "b0d139c6d0021a9b5e721243bae45619af062519",
+      "bytes": 11005,
+      "strict_json_valid": true,
+      "non_json_number_literals": 0,
+      "root_risk_radar_present": false,
+      "root_risk_radar_count": 0,
+      "document_asof": "2026-10-15",
+      "radar_asof": null,
+      "radar_state": null,
+      "radar_score": null,
+      "parse_error_class": null,
+      "market_state": {
+        "score": 32,
+        "verdict": "RISK_OFF",
+        "radar_state": "caution",
+        "radar_score": 81,
+        "radar_has_source_schema": false,
+        "radar_has_source_asof": false
+      }
+    }
+  },
+  "adapter_effect_by_market": {
+    "us": "native risk_radar source available; source date must still be checked against independent expected US session",
+    "cn": "missing_radar because regime/latest.json lacks root native risk_radar",
+    "hk": "invalid_json because bare NaN is refused before reading risk_radar",
+    "ca": "invalid_json because bare NaN is refused before reading risk_radar",
+    "other": "seven profiles have native Radar records; independently expected exchange sessions and source freshness remain unqualified"
+  },
+  "evidence_limits": [
+    "Source-adapter candidate #8132 is held and not in production; this models its exact declared path and strict parser, not customer delivery",
+    "The two country Market State reads are valid and RISK_OFF, but their reduced radar blocks lack native source schema/date, so cannot be substituted for risk_radar_intl.v1 without owner qualification",
+    "The feed producer scripts/build_feeds.py documents CN/HK radars are render-inline and produces site/feeds/intl_spillover.json, but that path was not present in this pinned Git tree; installed/R2 availability not established",
+    "No country future drawdown, forward grading, trade sizing, systemic contagion, release or runtime-entitlement claim follows"
+  ]
+}

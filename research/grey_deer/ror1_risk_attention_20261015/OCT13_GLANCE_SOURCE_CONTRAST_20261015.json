@@ -1,0 +1,53 @@
+{
+  "schema": "ror1.immutable_rendered_source_glance_contrast.v1",
+  "pinned_macromain_git_commit": "c49e4410492e8d2a0a16d00eca5edb3b45d66bc7",
+  "commit_time_utc": "2026-10-13T16:32:31Z",
+  "evidence_type": "COMMITTED_STATIC_SITE_SOURCE_NOT_AUTHENTICATED_PRODUCTION_PAGE",
+  "files": {
+    "site/index.html": {
+      "git_blob": "3e7ce16ebeb5cbe3022868d681b264607e6d9116",
+      "source_characters": 179264,
+      "assertions": {
+        "hype_live": true,
+        "demo_mark": true,
+        "demo_display": true
+      }
+    },
+    "site/macro.html": {
+      "git_blob": "217a4a1a542c11e795285f6d0d9966c49f70874e",
+      "source_characters": 581574,
+      "assertions": {
+        "measured_hero": true,
+        "us_title": true,
+        "score": true
+      }
+    },
+    "site/china.html": {
+      "git_blob": "9254db12acf4f9d3ed7571595669fda0f678400f",
+      "source_characters": 260782,
+      "assertions": {
+        "regional_red_hero": true,
+        "score": true
+      }
+    },
+    "site/hk.html": {
+      "git_blob": "73c3e20d63bf105692010d760196c2f61b4a4c97",
+      "source_characters": 240042,
+      "assertions": {
+        "regional_red_hero": true,
+        "score": true
+      }
+    }
+  },
+  "observations": [
+    "At the same October 13 16:32:31Z Git tree, China and HK committed site HTML each had a red Market State hero and ARIA-labelled Risk-off gauge (34 CN, 33 HK).",
+    "The U.S. Macro HTML in that tree had a yellow Mixed/transition hero and ARIA-labelled Mixed score 50.",
+    "The homepage illustrative scripted card also displayed 50/Mixed and was tagged US demo despite a nearby LIVE MARKET READ label; it is not proof of a live score feed.",
+    "Local severe regional state markup coexisted with a Mixed U.S. headline; this is source evidence of disconnected presentation, not proof of what an entitled user's browser received."
+  ],
+  "qualifications": [
+    "No entitled production browser, server deploy revision, CDN/origin response, or real notification delivery was observed.",
+    "US native Radar last source at this tree was Oct12 Caution; CN/HK newly issued Oct13 states use distinct regional market clocks.",
+    "HK measured Risk-off does not mean its native Radar was Risk-off (Oct13 Radar Elevated), and no capital policy or proven contagion follows."
+  ]
+}
