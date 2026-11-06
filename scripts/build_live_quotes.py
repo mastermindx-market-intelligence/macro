@@ -224,7 +224,34 @@ DISPLAY_BOARD_PAYLOAD_DIR = "premiumdata"
 # 24/7 btc-live Action and the 30-min intraday fastpath). The
 # vps_live_orchestrator quality gate (min_resolved=50, min_coverage=0.10) is
 # unaffected: more requested symbols only raises the resolved count.
-DISPLAY_BOARD_CAP = 320
+#
+# Cap raised 320 -> 480 (2026-10-09) after main's own ci.yml proof went red on
+# test_the_board_leg_has_headroom_over_the_cap (320/320) and on the payload
+# coverage test (us_stocks.json pills WLK..ZTS uncovered). Measured on main's
+# committed site/ bytes at 3d90aad6 with this module's own board_display_symbols:
+# uncapped board leg 342 (china_stocks 149, us_stocks 105, hk_stocks 30, crypto
+# 26, canada_stocks 10, macro 10, canada 6, china/commodities/hk 4 each), so the
+# 22 names sorting last (WLK..ZTS, then the ^-index symbols) were being cut.
+# The leg grew 190 -> 342 in seven weeks; 480 puts it at 71% of the cap (~138
+# slots of swing). Cost at the new ceiling: ~88KB serialized at the
+# same ~183B/symbol (vs the 500KB budget), <=24 Yahoo batch requests plus <=5
+# Polygon chunks, ~13s at ~37 symbols/s — still cheap for both producers; the
+# orchestrator gate above is unaffected for the same reason.
+#
+# Cap raised 480 -> 640 (2026-11-05) after main's own proof went red again on
+# test_the_board_leg_has_headroom_over_the_cap (415 > 0.85 * 480 = 408), which
+# turned every CI-authority pull request red because an authority-changing PR may
+# not excuse an inherited red. Measured on main's committed site/ bytes at
+# 09f1c648 with this module's own board_display_symbols (pages plus the
+# premiumdata/us_stocks.json payload): uncapped board leg 415 (china_stocks 259,
+# us_stocks 51, hk_stocks 46, crypto 26, canada_stocks 10, macro 10, canada 6,
+# china/commodities/hk 4 each). The leg grew 342 -> 415 in four weeks, almost all
+# of it the China board; 640 puts it at 65% of the cap (~225 slots of swing, the
+# same ~1.5x margin 480 gave 342). Cost at the new ceiling: ~117KB serialized at
+# the same ~183B/symbol (vs the 500KB budget), <=32 Yahoo batch requests plus
+# <=7 Polygon chunks, ~17s at ~37 symbols/s — still cheap for both producers;
+# the orchestrator gate above is unaffected for the same reason.
+DISPLAY_BOARD_CAP = 640
 
 
 def payload_html(path: Path) -> str:
@@ -438,8 +465,11 @@ def to_worker_quotes(
     The default/public contract intentionally stays narrow: epoch-ms ``ts``,
     ``basis`` and display fields only. The VPS root-readable ``quotes_full.json``
     may opt into the source-native ``quote_ts`` and ``quote_ts_synthetic`` fields
-    that provenance-sensitive server consumers require. Missing provenance is
-    preserved as ``None`` and is never inferred from a non-null timestamp.
+    that provenance-sensitive server consumers require. It also retains the
+    source-native session-open/NBBO fields when supplied by the engine, without
+    re-deriving prices or clocks. These are evidence only: identity, session, freshness and
+    strategy fillability remain the downstream owner's responsibility. Missing
+    evidence is preserved as ``None`` and never inferred from price or timestamps.
 
     New display fields (IFT A1): vol, hi, lo — from the same Yahoo/Polygon batch
     response, zero extra requests.
@@ -465,11 +495,19 @@ def to_worker_quotes(
         if q.get("quote_ts_synthetic"):
             entry["tsSynthetic"] = True
         if include_private_provenance:
+            from lib.quote_native_metadata import copy_response_identity
+            identity = copy_response_identity(q.get("native_quote_identity"))
+            if identity is not None:
+                entry["native_quote_identity"] = identity
             synthetic = q.get("quote_ts_synthetic")
             entry["quote_ts"] = q.get("quote_ts")
             entry["quote_ts_synthetic"] = (
                 synthetic if type(synthetic) is bool else None
             )
+            # Preserve the engine's source-native evidence only in the private
+            # full snapshot. No clock fallback, spread policy or gate verdict.
+            for field in ("day_open", "bid_price", "ask_price", "nbbo_ts", "nbbo_source"):
+                entry[field] = q.get(field)
         # IFT A1: intraday volume + range from same batch response.
         # Keys kept short (vol/hi/lo) to minimise payload bytes.
         dv = q.get("day_volume")
