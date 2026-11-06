@@ -1191,3 +1191,204 @@ def test_retry_budget_is_consumed_cumulatively_across_attempts(
     # Fail-closed: exhausting the budget rejects, it never returns a verdict.
     assert excinfo.value.retryable is True
     assert excinfo.value.kind == "unavailable"
+
+
+class OversizedApi(FakeApi):
+    """A genuine metadata count beyond the endpoint's provable inventory."""
+
+    def __init__(self, count: object = 13996, **kwargs: Any) -> None:
+        super().__init__([], **kwargs)
+        self.pull["changed_files"] = count
+
+    def list_pull_files(
+        self, repository: str, number: int, expected_count: int
+    ) -> object:
+        raise AssertionError("the bounded files endpoint cannot prove this inventory")
+
+
+@pytest.mark.parametrize("count", [3001, 13996])
+def test_oversized_candidate_requires_both_admins_and_reports_unclassified_inventory(
+    count: int,
+) -> None:
+    api = OversizedApi(count, author="author-admin")
+    code, decision, check = AUTHORITY.run_pull_request_target(
+        _event(author="author-admin", actor="actor-admin"), REPOSITORY, api
+    )
+
+    assert code == 0
+    assert decision["reason"] == "same_repo_admin_unclassified_change"
+    assert decision["admin_verified"] is True
+    assert decision["author_admin_verified"] is True
+    assert decision["actor_admin_verified"] is True
+    assert decision["changed_file_count"] == count
+    assert decision["inventory_mode"] == "conservative_authority"
+    assert decision["inventory_complete"] is False
+    assert decision["authority_hit_count"] is None
+    assert decision["authority_hits"] is None
+    assert decision["changed_files_snapshot_attempts"] == 0
+    assert decision["inventory_base_sha"] is None
+    assert decision["post_authorization_base_sha"] == BASE
+    reads = [call for call in api.calls if call[0] != "check"]
+    assert reads == [
+        ("pull", REPOSITORY, PR_NUMBER),
+        ("permission", REPOSITORY, "author-admin"),
+        ("permission", REPOSITORY, "actor-admin"),
+        ("pull", REPOSITORY, PR_NUMBER),
+    ]
+    receipt = json.loads(check["output"]["summary"])
+    assert receipt["inventory_complete"] is False
+    assert receipt["authority_hits"] is None
+    assert check["head_sha"] == HEAD
+    assert check["conclusion"] == "success"
+    assert api.checks[0]["conclusion"] == "failure"  # inactive base context
+
+
+@pytest.mark.parametrize(
+    "permissions,reason",
+    [
+        ({"author-admin": "write"}, "same_repo_author_is_not_admin"),
+        ({"actor-admin": "write"}, "current_head_actor_is_not_admin"),
+        ({"author-admin": "maintain"}, "same_repo_author_is_not_admin"),
+        ({"actor-admin": "read"}, "current_head_actor_is_not_admin"),
+    ],
+)
+def test_oversized_candidate_never_waives_either_live_admin_check(
+    permissions: dict[str, str], reason: str
+) -> None:
+    api = OversizedApi(author="author-admin", permissions=permissions)
+    decision = AUTHORITY.evaluate_pull_request_target(
+        _event(author="author-admin", actor="actor-admin"), REPOSITORY, api
+    )
+    assert decision["allowed"] is False
+    assert decision["reason"] == reason
+    assert decision["inventory_complete"] is False
+    assert decision["authority_hit_count"] is None
+
+
+def test_oversized_fork_is_rejected_even_with_admin_identities() -> None:
+    fork = "contributor/macro"
+    api = OversizedApi(head_repository=fork)
+    decision = AUTHORITY.evaluate_pull_request_target(
+        _event(head_repository=fork), REPOSITORY, api
+    )
+    assert decision["allowed"] is False
+    assert decision["reason"] == "fork_cannot_change_ci_authority"
+    assert not any(call[0] == "permission" for call in api.calls)
+
+
+@pytest.mark.parametrize("count", [None, "13996", 13996.0, True, False, -1])
+def test_malformed_count_cannot_select_conservative_authority(count: object) -> None:
+    api = OversizedApi(count)
+    decision = AUTHORITY.evaluate_pull_request_target(_event(), REPOSITORY, api)
+    assert decision["allowed"] is False
+    assert decision["reason"] == "current_pull_identity_rejected"
+    assert [call[0] for call in api.calls] == ["pull"]
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("head", NEW_HEAD),
+        ("author", "replacement-author"),
+        ("head_repository", "attacker/macro"),
+        ("base_repository", "attacker/macro"),
+        ("base_ref", "codex/merge-queue-pilot"),
+        ("state", "closed"),
+        ("count", 13997),
+        ("count", 3000),
+    ],
+)
+def test_oversized_candidate_revalidates_identity_after_permissions(
+    field: str, value: object
+) -> None:
+    class MovingApi(OversizedApi):
+        def get_collaborator_permission(self, repository: str, login: str) -> object:
+            result = super().get_collaborator_permission(repository, login)
+            if field == "head":
+                self.pull["head"]["sha"] = value
+            elif field == "author":
+                self.pull["user"]["login"] = value
+            elif field == "head_repository":
+                self.pull["head"]["repo"]["full_name"] = value
+            elif field == "base_repository":
+                self.pull["base"]["repo"]["full_name"] = value
+            elif field == "base_ref":
+                self.pull["base"]["ref"] = value
+            elif field == "state":
+                self.pull["state"] = value
+            else:
+                self.pull["changed_files"] = value
+            return result
+
+    decision = AUTHORITY.evaluate_pull_request_target(_event(), REPOSITORY, MovingApi())
+    assert decision["allowed"] is False
+    assert decision["reason"] == "post_authorization_identity_drift"
+    assert decision["inventory_complete"] is False
+
+
+def test_oversized_candidate_preserves_same_ref_base_movement() -> None:
+    class MovingBaseApi(OversizedApi):
+        def get_collaborator_permission(self, repository: str, login: str) -> object:
+            result = super().get_collaborator_permission(repository, login)
+            self.pull["base"]["sha"] = OTHER_BASE
+            return result
+
+    decision = AUTHORITY.evaluate_pull_request_target(_event(), REPOSITORY, MovingBaseApi())
+    assert decision["allowed"] is True
+    assert decision["base_sha"] == BASE
+    assert decision["current_base_sha"] == BASE
+    assert decision["post_authorization_base_sha"] == OTHER_BASE
+    assert decision["inventory_base_sha"] is None
+
+
+@pytest.mark.parametrize("failure_at", ["permission", "post_authorization_pull"])
+def test_oversized_authorization_read_failure_remains_a_failure(failure_at: str) -> None:
+    class UnavailableApi(OversizedApi):
+        def get_pull(self, repository: str, number: int) -> object:
+            if failure_at == "post_authorization_pull" and self.calls:
+                raise RuntimeError("unavailable final identity")
+            return super().get_pull(repository, number)
+
+    api = UnavailableApi(fail="permission" if failure_at == "permission" else "")
+    decision = AUTHORITY.evaluate_pull_request_target(_event(), REPOSITORY, api)
+    assert decision["allowed"] is False
+    assert decision["reason"] == (
+        "author_admin_permission_api_unavailable"
+        if failure_at == "permission"
+        else "post_authorization_pull_api_unavailable"
+    )
+
+
+@pytest.mark.parametrize("bad_response", [None, {"permission": "admin"},
+    {"permission": "admin", "user": {"login": "another-user"}}])
+def test_oversized_candidate_requires_attributed_admin_response(bad_response: object) -> None:
+    class BadPermissionApi(OversizedApi):
+        def get_collaborator_permission(self, repository: str, login: str) -> object:
+            return bad_response
+
+    decision = AUTHORITY.evaluate_pull_request_target(_event(), REPOSITORY, BadPermissionApi())
+    assert decision["allowed"] is False
+    assert decision["reason"] == "same_repo_author_is_not_admin"
+
+
+def test_supported_count_keeps_complete_inventory_and_ordinary_route() -> None:
+    files = [_file(f"site/page-{i}.html") for i in range(3000)]
+    api = FakeApi(files, permission="read")
+    decision = AUTHORITY.evaluate_pull_request_target(_event(), REPOSITORY, api)
+    assert decision["allowed"] is True
+    assert decision["reason"] == "ordinary_change"
+    assert decision["inventory_mode"] == "exact_changed_paths"
+    assert decision["inventory_complete"] is True
+    assert decision["authority_hit_count"] == 0
+    assert decision["inventory_base_sha"] == BASE
+    assert not any(call[0] == "permission" for call in api.calls)
+
+
+def test_supported_incomplete_inventory_cannot_take_oversized_route() -> None:
+    api = FakeApi([_file("site/page.html")])
+    api.pull["changed_files"] = 3000
+    decision = AUTHORITY.evaluate_pull_request_target(_event(), REPOSITORY, api)
+    assert decision["allowed"] is False
+    assert decision["reason"] == "changed_files_rejected"
+    assert decision["inventory_complete"] is False
+    assert not any(call[0] == "permission" for call in api.calls)

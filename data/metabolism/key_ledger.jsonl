@@ -3459,3 +3459,5 @@
 {"schema":"metabolism.key_ledger.v1","ts":"2026-11-04T14:55:12+00:00","key_id":"codex_account","cycle_id":"","stage":"master_brain","est_tokens":30917,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-11-04T14:55:13+00:00","key_id":"codex_account","cycle_id":"","stage":"master_brain","est_tokens":31160,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-11-04T14:55:28+00:00","key_id":"codex_account","cycle_id":"","stage":"master_brain","est_tokens":31466,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-11-05T09:47:43+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":32700,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-11-05T10:04:12+00:00","key_id":"codex_account","cycle_id":"","stage":"master_brain","est_tokens":30631,"outcome":"ok"}

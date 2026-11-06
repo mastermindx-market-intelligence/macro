@@ -1210,3 +1210,54 @@ force.** The assigned session continues with final evidence publication and
 exact-head hosted CI. Genuine formal non-author approval, permitted protected
 release, covering render, deployment and real authenticated user-path acceptance
 remain separate. This milestone is local qualification, not SHIPPED.
+
+
+## 2026-11-05 (America/Chicago) — concrete hosted-failure repair
+
+The previous News head eabea011188707542abd839d96eb0f4ef22f7b38 received a
+concrete pack-9 failure in hosted run [41995766593](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41995766593).
+Eleven of twelve packs passed. Two copy-law guards found a fallback business-activity
+reading and an untranslated Chinese Contraction label; the live-quotes guard found
+415 board symbols beyond the old 480-cap headroom. The semantic gate reported
+different head/base signatures. These failures are preserved, not relabelled as inherited.
+
+This candidate integrates accepted main 96633a798efda34d899e1b135487c89b596215fc.
+Its existing #10755 fix raises the quote cap to 640 while retaining the 85% threshold;
+the real 415-symbol board now passes. No duplicate capacity repair or threshold change
+is introduced. The only merge conflict was generated site/news.html; the accepted
+News artifact is retained exactly at SHA-256
+ea0a47dbd83e8cc664fa9f99769fcfbb86b3a4f8dba1a9adc77e333864e9ee8b.
+
+The bounded source repair adds explicit bilingual noun-phase labels and precise
+plain-language mappings for both existing depth/breadth contradiction branches.
+Both conditions remain necessary before a recession-risk signal may be asserted;
+no classifier, calibration or scoring changes. Only macro_business_activity.html
+is regenerated through its existing single-page owner from the validated current
+snapshot. That snapshot and manifest are unchanged. Original producer wording stays
+in the native snapshot and helper diagnostic return; existing product policy keeps
+internal producer text out of customer Details.
+
+Local evidence: the copy-law suite and actual board guard passed **147 tests with
+three existing skips**. After tightening the mapping keys to include each branch's
+negation, the regenerated page reached the identical fixed point. Final News render,
+API and client checks plus all three original failures passed **165 tests**.
+The six and seven respective warnings remain in complete compressed logs.
+Incoming application startup and deployment restart logic are byte-preserved after
+subtracting the existing News router block and intelligence_history alternative.
+
+Evidence is in ci-regression-baseline-20261106.json, ci-copy-repair-20261106.json,
+integration-focused-20261106.json, their full compressed logs and
+integration-candidate-20261106.json. This records the prepared candidate; immutable
+commit, publication and hosted acceptance require their subsequent readbacks.
+
+The accepted Paper layouts and earlier browser behavior proof remain applicable to
+the unchanged News artifact. The retained seed is still the October 18 edition.
+The next independent source task is an isolated run of the existing full-site owner
+on real committed inputs, without consuming or duplicating the frozen renderer
+proposal. This is not a production freshness or deployment claim.
+
+**Draft/HOLD and the non-merge assignment remain in force.** The prior review and
+renderer-effect fences are unchanged. ChatGPT Web has no blanket independent technical
+review prerequisite for this source repair; a real formal approval remains separate
+where the actual release hold requires it. No Ready action, label arming, formal
+approval, repository merge or deployment is performed here.

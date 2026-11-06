@@ -1,0 +1,66 @@
+{
+  "schema": "news.ci-copy-repair.v1",
+  "subject_head": "eabea011188707542abd839d96eb0f4ef22f7b38",
+  "integrated_main": "96633a798efda34d899e1b135487c89b596215fc",
+  "built_at": "2026-11-06T00:27:34Z",
+  "phases": {
+    "expansion": {
+      "en": "Expansion",
+      "zh": "扩张"
+    },
+    "slowdown": {
+      "en": "Slowdown",
+      "zh": "放缓"
+    },
+    "contraction": {
+      "en": "Contraction",
+      "zh": "收缩"
+    },
+    "recovery": {
+      "en": "Recovery",
+      "zh": "复苏"
+    }
+  },
+  "producer_probes": [
+    {
+      "depth": true,
+      "breadth": false,
+      "reading": {
+        "en": "Six-month momentum has crossed its recession-risk threshold, but weakness is not yet widespread across leading indicators. Both depth and breadth must confirm before a recession-risk signal is asserted.",
+        "zh": "领先层六个月动量已越过衰退风险阈值，但领先分项尚未普遍走弱。只有深度与广度同时确认，才可判定衰退风险信号。"
+      },
+      "helper_returns_original": true
+    },
+    {
+      "depth": false,
+      "breadth": true,
+      "reading": {
+        "en": "Weakness is widespread across leading indicators, but their six-month momentum has not crossed its recession-risk threshold. Both breadth and depth must confirm before a recession-risk signal is asserted.",
+        "zh": "领先分项普遍走弱，但领先层六个月动量尚未越过衰退风险阈值。只有广度与深度同时确认，才可判定衰退风险信号。"
+      },
+      "helper_returns_original": true
+    }
+  ],
+  "protected_inputs_sha256": {
+    "site/macrodata/workspaces/business_activity/US/latest.json": "5ae5106b70f5b6aa35f0bee02a23d13657cd7d46915c4deba007a3a568d35dd2",
+    "site/macrodata/workspaces/manifest.json": "06314e567bf621243d0b766efd80b54c760bb3a6bdcd165933b05970c9db3ea5",
+    "site/news.html": "ea0a47dbd83e8cc664fa9f99769fcfbb86b3a4f8dba1a9adc77e333864e9ee8b"
+  },
+  "rendered_page_sha256": "af3ae39992f76cc7cfeaad12021dae45bfd238fbfea9fbe9be23d7d8c6173353",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "tests/test_macro_command_copy_law.py",
+    "tests/test_build_live_quotes.py::test_the_board_leg_has_headroom_over_the_cap",
+    "-q"
+  ],
+  "returncode": 0,
+  "seconds": 57.16,
+  "raw_log_sha256": "916e3721585e633fabffd03a6f0b81a245849a43f6f87df2f0872d9c78a1d1ad",
+  "original_wording_boundary": "Unchanged native snapshot and helper diagnostic return. Existing product policy excludes internal producer text from customer Details.",
+  "precise_negated_prefixes_verified": true,
+  "render_fixed_point_sha256": "af3ae39992f76cc7cfeaad12021dae45bfd238fbfea9fbe9be23d7d8c6173353",
+  "stored_log": "ci-copy-repair-20261106.log.gz",
+  "stored_log_sha256": "39b1ad76531bbe80f49927bf28b8f00d20aa86b167432361f4a64956d1598b24"
+}

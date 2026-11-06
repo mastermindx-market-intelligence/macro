@@ -1,0 +1,22 @@
+{
+  "schema": "news.integration-focused.v1",
+  "subject_head": "eabea011188707542abd839d96eb0f4ef22f7b38",
+  "merge_parent": "96633a798efda34d899e1b135487c89b596215fc",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "tests/test_news_page_render.py",
+    "tests/test_news_desk_api.py",
+    "tests/test_news_desk_js.py",
+    "tests/test_macro_command_copy_law.py::test_committed_payloads_have_zero_plain_fallbacks",
+    "tests/test_macro_command_copy_law.py::test_zh_l_zh_spans_are_translated",
+    "tests/test_build_live_quotes.py::test_the_board_leg_has_headroom_over_the_cap",
+    "-q"
+  ],
+  "returncode": 0,
+  "seconds": 16.03,
+  "raw_log_sha256": "f5d40276de9f4659869f9d3c459ac495fcb2af3393d2eec95f05103cf0c55104",
+  "stored_log": "integration-focused-20261106.log.gz",
+  "stored_log_sha256": "21ceb9e58b017846c1c39f17be0a7e25da2bf48c713f0e1712b8a1645471a91d"
+}
