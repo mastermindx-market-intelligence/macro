@@ -16,21 +16,21 @@
   "pages": [
     {
       "metrics": {
-        "asof_present": false,
+        "asof_present": true,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 1717,
+            "document_height_px": 1735,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 2671,
+            "document_height_px": 2659,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 0,
-        "document_height_px": 1717,
+        "document_height_px": 1735,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -49,8 +49,8 @@
           "theme": "light",
           "viewport": "desktop"
         },
-        "panel_count": 7,
-        "payload_bytes_total": 3113910,
+        "panel_count": 8,
+        "payload_bytes_total": 3373675,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 247,
@@ -59,10 +59,60 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 306
+        "visible_word_count": 300
       },
       "page_id": "sectors_XLK.html",
       "route": "/sectors/XLK.html"
+    },
+    {
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1983,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2565,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 1983,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 1,
+          "h3": 8,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop"
+        },
+        "panel_count": 3,
+        "payload_bytes_total": 3076625,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 247,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 372
+      },
+      "page_id": "sectors_XLK.html#cycle",
+      "route": "/sectors/XLK.html#cycle"
     }
   ],
   "schema": "mastermind.ux_smell_report.v1",

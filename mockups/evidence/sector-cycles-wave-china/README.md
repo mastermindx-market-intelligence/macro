@@ -1,8 +1,10 @@
-# China Sector Central — wave capture at L6.18
+# China Sector Central — wave capture at L6.21
 
 PR #7646, Sector Cycles wave. This pack shows the rendered China Sector Central page at
-the branch head in every theme × language × viewport cell, plus the same cells with a
-handoff name forced to hover. It supersedes the L6.4 capture (`3fdb12f6`).
+the branch head in every theme × language × viewport cell. Each cell is captured
+three times: at rest, with a handoff name forced to hover, and with a view-rail button
+forced to keyboard focus. It supersedes the L6.4 capture (`3fdb12f6`) and the L6.18
+capture of this directory, which had no focus cells.
 
 The wave changed the China page in five lanes:
 
@@ -26,26 +28,34 @@ The wave changed the China page in five lanes:
 
 | viewport | lang | theme | forced state | PNG | size |
 |---|---|---|---|---|---|
-| desktop 1440 | en | dark | — | `10041b4fdb8e8d77.png` | 1440×1407 |
-| desktop 1440 | en | dark | rvx_hocol_name_hover | `b1e6de43dedc27a8--rvx_hocol_name_hover.png` | 1440×1407 |
-| desktop 1440 | en | light | — | `0f9bfa4daf325c08.png` | 1440×1407 |
-| desktop 1440 | en | light | rvx_hocol_name_hover | `6ad22584f71096b2--rvx_hocol_name_hover.png` | 1440×1407 |
-| desktop 1440 | zh | dark | — | `fd1615f8a6f0a382.png` | 1440×1346 |
-| desktop 1440 | zh | dark | rvx_hocol_name_hover | `57c56e439299818a--rvx_hocol_name_hover.png` | 1440×1346 |
-| desktop 1440 | zh | light | — | `4a2bb9bfea8eaa2b.png` | 1440×1346 |
-| desktop 1440 | zh | light | rvx_hocol_name_hover | `292ea0fd68903a46--rvx_hocol_name_hover.png` | 1440×1346 |
-| mobile 390 | en | dark | — | `0643e6afd013a288.png` | 390×3091 |
-| mobile 390 | en | dark | rvx_hocol_name_hover | `827b264f5a25f80f--rvx_hocol_name_hover.png` | 390×3091 |
-| mobile 390 | en | light | — | `484f3b98fa613d0d.png` | 390×3091 |
-| mobile 390 | en | light | rvx_hocol_name_hover | `f93ae28052a7661d--rvx_hocol_name_hover.png` | 390×3091 |
-| mobile 390 | zh | dark | — | `9ce5d92cf7a52ddc.png` | 390×2784 |
-| mobile 390 | zh | dark | rvx_hocol_name_hover | `8b70b2569dba91d1--rvx_hocol_name_hover.png` | 390×2784 |
-| mobile 390 | zh | light | — | `f5b72f70e2744c9a.png` | 390×2784 |
-| mobile 390 | zh | light | rvx_hocol_name_hover | `d2b8cabcf71dda14--rvx_hocol_name_hover.png` | 390×2784 |
+| desktop 1440 | en | dark | — | `8e16dfae4890a1f4.png` | 1440×1407 |
+| desktop 1440 | en | dark | rvx_hocol_name_hover | `e0ddb73cdd6ed09f--rvx_hocol_name_hover.png` | 1440×1407 |
+| desktop 1440 | en | dark | si_view_btn_focus | `13453171e35b4600--si_view_btn_focus.png` | 1440×1407 |
+| desktop 1440 | en | light | — | `9479c5c40db699e1.png` | 1440×1407 |
+| desktop 1440 | en | light | rvx_hocol_name_hover | `d9058977455aab13--rvx_hocol_name_hover.png` | 1440×1407 |
+| desktop 1440 | en | light | si_view_btn_focus | `d87d7d9ce7ecdfd2--si_view_btn_focus.png` | 1440×1407 |
+| desktop 1440 | zh | dark | — | `0a6b51bfabf3b380.png` | 1440×1346 |
+| desktop 1440 | zh | dark | rvx_hocol_name_hover | `63036af34422dd43--rvx_hocol_name_hover.png` | 1440×1346 |
+| desktop 1440 | zh | dark | si_view_btn_focus | `4d45b332788c1be0--si_view_btn_focus.png` | 1440×1346 |
+| desktop 1440 | zh | light | — | `555e4cb6baed9530.png` | 1440×1346 |
+| desktop 1440 | zh | light | rvx_hocol_name_hover | `3b1e6d20a65cb3f4--rvx_hocol_name_hover.png` | 1440×1346 |
+| desktop 1440 | zh | light | si_view_btn_focus | `5c8f6f3bf6dbc5f9--si_view_btn_focus.png` | 1440×1346 |
+| mobile 390 | en | dark | — | `f9d3bf748ba8bae6.png` | 390×3091 |
+| mobile 390 | en | dark | rvx_hocol_name_hover | `09c7491eb0b2c206--rvx_hocol_name_hover.png` | 390×3091 |
+| mobile 390 | en | dark | si_view_btn_focus | `2ac0d970021ef45f--si_view_btn_focus.png` | 390×3091 |
+| mobile 390 | en | light | — | `5e871aa15567a183.png` | 390×3091 |
+| mobile 390 | en | light | rvx_hocol_name_hover | `765d816d6da0f12a--rvx_hocol_name_hover.png` | 390×3091 |
+| mobile 390 | en | light | si_view_btn_focus | `b7df98e18a284057--si_view_btn_focus.png` | 390×3091 |
+| mobile 390 | zh | dark | — | `8cd9b0fe30a8d155.png` | 390×2784 |
+| mobile 390 | zh | dark | rvx_hocol_name_hover | `194a6b0911c5dcbd--rvx_hocol_name_hover.png` | 390×2784 |
+| mobile 390 | zh | dark | si_view_btn_focus | `0f2d0b70b8f0b390--si_view_btn_focus.png` | 390×2784 |
+| mobile 390 | zh | light | — | `98e168865f813d29.png` | 390×2784 |
+| mobile 390 | zh | light | rvx_hocol_name_hover | `c3b09be89a800631--rvx_hocol_name_hover.png` | 390×2784 |
+| mobile 390 | zh | light | si_view_btn_focus | `f94ef8bf1d96e461--si_view_btn_focus.png` | 390×2784 |
 
 ## Results
 
-- **Capture.** 16 of 16 cells captured on the first run, with 0 console errors and 0
+- **Capture.** 24 of 24 cells captured on the first run, with 0 console errors and 0
   failed responses.
 - **Overflow.** Neither viewport overflows horizontally, and the 390 px page is 390 px
   wide. `elements_wider_than_viewport` is 3 on mobile: the decorative
@@ -59,8 +69,9 @@ The wave changed the China page in five lanes:
   ZH dark).
 - **Act-now lanes (inspected in the PNGs).** The four lane headers have no top bar.
   The Reduce / Avoid subtitle reads "Trend weakening".
-- **Page height.** The mobile pages are 3 px shorter than at the previous recapture
-  (EN 3094 → 3091 px, ZH 2787 → 2784 px), from the switcher's new padding.
+- **Page height.** Unchanged from the L6.18 capture: desktop EN 1407 px and ZH 1346 px,
+  mobile EN 3091 px and ZH 2784 px. At L6.18 the mobile pages were 3 px shorter than at
+  L6.4 (EN 3094 → 3091 px, ZH 2787 → 2784 px), from the switcher's new padding.
 - **Layout shift.** CLS is unchanged from the previous recapture: about 0.68 on
   desktop and 0.27–0.31 on mobile. These are known numbers and are not new to this
   head.
@@ -71,20 +82,29 @@ The wave changed the China page in five lanes:
   for hover proof because the file's `.nm` class carries a hover rule elsewhere
   (`.scc-desk-tbl .nm a:hover`). The handoff name has no hover rule of its own and keeps
   `var(--text)` ink, so the forced cell shows no direction or health colour.
+- **Rail focus (inspected in the PNGs).** `si_view_btn_focus` focuses
+  `.si-view-btn[data-view=map]`, the "The Map" button. The gate asks for focus proof
+  because the template's `:focus-visible` rule changed at L6.18. At 1440, in EN light
+  and EN dark, the focused button carries a complete outline on all four sides, and
+  the selected "Overview" keeps its fill. The forced focus does not move the
+  selection.
 - **Search box.** The 390 px header search box shows a prefilled "600". This is the
   shared shell's search, outside this page's source. It is disclosed on the PR as n1.
 
 ## How it was captured
 
-- **Source.** Branch `claude/sic-cycles-wave-20261102` at
-  `48182b7f4559cb9bdeee6118b2ba0f1e691ef435`. The manifest's
+- **Source.** Branch `claude/sic-cycles-wave-20261102`. The render is of
+  `48182b7f4559cb9bdeee6118b2ba0f1e691ef435` (L6.18). The cells were captured at
+  `07d1962f1e19dd115605612d073419e11c7aa80f` (L6.20). The manifest's
   `target.resolved_sha_or_none` is null by design, because a live origin does not
   disclose the commit it serves. This section is the record of what was rendered.
-- **Later source.** L6.19 (88870da0) is the one commit after this head. It changes
-  the fund-page dossier. The only file this page loads that it touches is
-  `sector_cycles.css`, where it adds three rules scoped to `.scf-rs-key`,
-  `.scf-rs-k` and `.scf-rs-sw`. Only the fund page's RS trail emits those classes,
-  so no cell here changes.
+- **Later source.** Two commits follow the rendered head. L6.19 (`88870da0`) changes
+  the fund-page dossier: `sector.html.j2`, `sector_cycles.css`,
+  `sector_cycles_face.js` and `sector_dossier.js`. L6.20 (`07d1962f`) changes evidence
+  only. The only one of those files this page loads is `sector_cycles.css`, where
+  L6.19 adds three rules scoped to `.scf-rs-key`, `.scf-rs-k` and `.scf-rs-sw`. Only
+  the fund page's RS trail emits those classes. No builder or template input of this
+  page changed, so no cell here would differ at the capture head.
 - **Render.** `render_cn.py` (in this directory) renders the HEAD blobs, not the
   working tree. Its report records:
   - head `48182b7f4559cb9bdeee6118b2ba0f1e691ef435`;
@@ -126,7 +146,8 @@ python3 <scratch>/cap_wrap.py scripts/capture_page_evidence.py \
   --output-dir mockups/evidence/sector-cycles-wave-china --manifest mockups/evidence/sector-cycles-wave-china/manifest.json --smells mockups/evidence/sector-cycles-wave-china/smells.json \
   --viewports desktop,mobile --locales en,zh --themes light,dark --settle-ms 1500 \
   --as-of 2026-11-05T12:00:00Z \
-  --force-state 'rvx_hocol_name_hover:hover(.rvx-hocol .nm)'
+  --force-state 'rvx_hocol_name_hover:hover(.rvx-hocol .nm)' \
+  --force-state 'si_view_btn_focus:focus(.si-view-btn[data-view=map])'
 ```
 
 ## Not proven here
@@ -135,8 +156,8 @@ python3 <scratch>/cap_wrap.py scripts/capture_page_evidence.py \
   approved fixtures, so the manifest records them as gaps. Every cell is anonymous.
 - **Page states** loading, empty, stale and error. They cannot be synthesized against
   static output, so the manifest records them as gaps.
-- **Rail hover and keyboard focus.** They were not captured as forced states. The
-  focus outline is covered by the guard test's source assertion, not by pixels.
+- **Rail hover.** It was not captured as a forced state. The rail's keyboard focus is
+  now captured in pixels (see Results).
 - **Desk-table name links** (`.scc-desk-tbl .nm a:hover`). They sit in the map view's
   `#sc-desk-table` disclosure, which ships `hidden`, so their hover state was not
   captured.
