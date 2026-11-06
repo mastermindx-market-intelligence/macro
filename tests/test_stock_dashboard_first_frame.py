@@ -1742,13 +1742,14 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
             f"{row['theme']}-{row['viewport']['width']}.png"
         )
         assert screenshot["filename"] == expected_name
-        # The November 4 source-bound recapture must not overwrite historical
-        # owner-empty screenshots. Keep the old path intact and bind the new
-        # versioned artifact by its exact receipt hash below.
-        assert screenshot["path"] == (
-            "mockups/evidence/prophet-p0b-zero-fouc/recapture-20261104-c2/"
-            + expected_name
-        )
+        # Versioned recaptures preserve earlier PNGs. Admit canonical relative
+        # descendants of the existing recapture root, including a new run's
+        # subdirectory; reject absolute paths, traversal and symlink escapes.
+        recapture_root = (EVIDENCE_DIR / "recapture-20261104-c2").resolve()
+        artifact = (ROOT / screenshot["path"]).resolve()
+        assert artifact.is_relative_to(recapture_root)
+        assert artifact.name == expected_name
+        assert screenshot["path"] == artifact.relative_to(ROOT.resolve()).as_posix()
         assert (EVIDENCE_DIR / expected_name).is_file()
         assert screenshot["width"] == row["viewport"]["width"]
         assert _sha256(ROOT / screenshot["path"]) == screenshot["sha256"]
