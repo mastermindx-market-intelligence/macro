@@ -53,3 +53,71 @@ The focused affected run passed313 tests,88 deselected,15 existing warnings: pri
 Tests exercise real temporary publication/readback/bound store and dual-basis engine/basket reads with ambient config/path/provider calls trapped; same-session correction with a pointer changing during capture; retained original timestamps; delayed publication; metadata tampering; complete/partial/failed acquisition; max recovery; explicit absence; primitive/size/footer limits; optional volume; typed lineage/clock contradictions; private root refusals; and exception cleanup. These are controlled-provider source proofs, not production provider or beta acceptance.
 
 Remaining: a producer that captures actual bootstrap priors or one verified previous generation, invokes acquisition and propagates the resulting explicit binding through computation; fixed-manifest R2 compatibility where legacy consumers require it; broad/member/board assembly; updater/source/drain/anti-downgrade fences; CI capability resolution; protected release and authenticated beta source-to-screen/fault acceptance. No CLI lane, timer, API mount, ownership profile or live data was activated here.
+
+
+## Qualified producer, explicit bootstrap and calculation scope
+
+Parent source continuation over `ca13f3c6afb068e1d9001b0791e73279ee3d556c`.
+
+`Orchestrator.refresh_yahoo_inputs` executes one acquisition attempt over one
+captured prior. Ordinary mode reads the incumbent selected generation once;
+frames, byte hashes, lengths, prior identity and the expected-current content ID
+all come from that captured object. It samples acquisition evaluation after
+capture, then preparation after the provider returns. It encodes through the
+existing contract and calls the sole publisher once with the original fence.
+A conflicting selection does not cause a new reader, acquisition or retry.
+Uncertain publication and durability are returned unchanged.
+
+Bootstrap is explicit. `capture_yahoo_bootstrap` accepts an exact canonical
+14-key mapping of absolute files or explicit absent priors. It rejects symlinked
+ancestors and uses the incumbent single-descriptor bounded reader for each file.
+It captures bytes and a post-read clock, never paths or loaders. Corruption,
+missing files and read errors do not become absence. The raw-byte capture derives
+both decoded values and their original byte identities. It does not prove that
+legacy writers drained or that sequential file reads formed a quiesced cohort.
+That operational admission remains a separate deployment obligation.
+
+The bootstrap-only decoder validates one physical timestamp index declared by
+pandas metadata and reconstructs selected primitive arrays. The observed legacy
+`Date: timestamp[ms]` shape is supported, as are naive microsecond/nanosecond
+indices; the canonical metadata-free `session: timestamp[ns]` format is unchanged.
+Nested, ambiguous, duplicate, timezone-bearing and unsupported values refuse.
+Original byte/footer/row/row-group/decoded-size bounds apply before materializing.
+Shallow priors can be captured; acquisition must recover the full qualified history.
+No sorting, deduplication, filling or malformed-archive repair occurs in decoding.
+
+A bootstrap refresh is admitted only when selection is genuinely absent. An
+existing, corrupt, unreadable, symlinked or non-directory state refuses before a
+provider request. If first publication races with bootstrap, its original `None`
+fence loses without replacing the winner. A valid old generation remains usable
+as a prior and can advance to a fresh completed session.
+
+`yahoo_calculation_scope` verifies one selected generation inside the process that
+performs calculation and requires an explicit content ID. It enters the existing
+read-only `bind_snapshot` context and restores it on success or exception. Coupled
+products should run inside one scope. Each contributing child must enter its own
+scope using the same captured content ID; a different selection refuses. This is
+an integration seam, not a claim that all existing subprocesses are now bound.
+
+### Producer qualification
+
+Command: `python -m pytest -q tests/test_yahoo_generation_contract.py tests/test_yahoo_runtime_profile.py tests/test_yahoo_cycle_acquisition.py tests/test_sector_generation_reader.py tests/test_vps_live_orchestration.py -k "yahoo or generation"`
+
+Result: **355 passed, 88 deselected, 15 warnings**, exit 0. `git diff --check` also
+returned 0. Log: `/tmp/mmx-yahoo-producer-qualified-20261106.log`.
+
+Tests exercise actual temporary publication and reader/binding, controlled real
+acquisition, original legacy byte identity, malformed/absent input distinctions,
+old-prior advancement, backwards/cross-session clocks, concurrent refresh and
+first-publication races, unchanged uncertain-result propagation, and mismatched
+child identity/context restoration. The only correction after the first expanded
+run was a test's explicit expectation of canonical nanosecond index units;
+production code did not change to satisfy that assertion. Counts overlap prior
+contract qualification and must not be added together.
+
+No provider request, production write, global profile flip, active schedule,
+legacy-writer transfer, code deployment, API mount or authenticated beta acceptance
+is claimed. Next: compose qualified broad/member/board inputs with the accepted
+pure Sector functions, fence updater/legacy ownership, wire the incumbent runtime
+lane and existing API, bind the Terminal consumer, then prove protected release
+and source-to-screen advancement while frontend code remains unchanged.

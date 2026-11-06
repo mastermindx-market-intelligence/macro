@@ -21,6 +21,7 @@ import sys
 import tempfile
 import time
 import uuid
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -2526,9 +2527,121 @@ class Orchestrator:
             root = state / "generations"
             if root.is_symlink():
                 raise YahooGenerationContractError("private_root_symlink")
+            if root.exists() and not root.is_dir():
+                raise YahooGenerationContractError("private_root_not_directory")
         except OSError:
             raise YahooGenerationContractError("private_root_unavailable") from None
         return root
+
+    def _yahoo_clock(self, clock: Callable[[], datetime] | None = None) -> datetime:
+        from lib.yahoo_generation_contract import _instant
+        return _instant(clock() if clock is not None else
+                        self._publication_now if self._publication_now is not None else
+                        datetime.now(timezone.utc))
+
+    def capture_yahoo_bootstrap(
+        self, *, sources: Mapping[str, Path | None], source_ref: str,
+        source_revision: str, clock: Callable[[], datetime] | None = None,
+    ):
+        """Capture explicit legacy files once; missing is explicit, never fallback.
+
+        This is read-only byte capture, not proof that legacy writers have drained.
+        Deployment must supply the source/capture identity and operational fence.
+        """
+        from lib.yahoo_generation_contract import (
+            MAX_YAHOO_MEMBER_BYTES, YahooBootstrapCapture, YahooGenerationContractError,
+            decode_bootstrap_capture,
+        )
+        from lib.yahoo_runtime_profile import SECTOR_CLOSE_TICKERS
+        self._yahoo_private_root()
+        if not isinstance(sources, Mapping) or set(sources) != set(SECTOR_CLOSE_TICKERS):
+            raise YahooGenerationContractError("invalid_bootstrap_capture")
+        selected = dict(sources)
+        if any(path is not None and (not isinstance(path, Path) or not path.is_absolute())
+               for path in selected.values()):
+            raise YahooGenerationContractError("absolute_bootstrap_sources_required")
+        try:
+            if any(parent.is_symlink() for path in selected.values() if path is not None
+                   for parent in path.parents):
+                raise YahooGenerationContractError("bootstrap_source_ancestor_symlink")
+        except OSError:
+            raise YahooGenerationContractError("bootstrap_source_unavailable") from None
+        raw = {ticker: _read_source_bytes(selected[ticker], limit=MAX_YAHOO_MEMBER_BYTES)
+               if selected[ticker] is not None else None for ticker in SECTOR_CLOSE_TICKERS}
+        capture = YahooBootstrapCapture(MappingProxyType(raw), source_ref,
+                                        source_revision, self._yahoo_clock(clock))
+        # Validate captured bytes now, and derive values again at refresh from
+        # those same immutable bytes. No source pathname survives in the object.
+        decode_bootstrap_capture(capture)
+        return capture
+
+    def refresh_yahoo_inputs(
+        self, *, adapter, generation_id: str, source_revision: str,
+        bootstrap=None, clock: Callable[[], datetime] | None = None,
+        period: str = "1mo", lane: str = "snapshot",
+    ) -> GenerationPublishResult:
+        """One acquisition/publication attempt over one captured prior and fence.
+
+        No implicit bootstrap, current-fence refresh, provider restart or retry of
+        uncertain publication occurs here. This method installs no scheduling or
+        ownership transfer and returns the incumbent publication result unchanged.
+        """
+        from lib.yahoo_generation_contract import (
+            YAHOO_GENERATION_DOMAIN, YahooGenerationContractError, decode_bootstrap_capture,
+            encode_yahoo_acquisition, read_verified_yahoo_cohort, _instant,
+        )
+        from lib.yahoo_runtime_profile import SECTOR_CLOSE_TICKERS
+        root = self._yahoo_private_root()
+        if bootstrap is None:
+            selected = read_verified_yahoo_cohort(generations_root=root, now=self._yahoo_clock(clock))
+            prior = selected.prior_identity(captured_at=self._yahoo_clock(clock))
+            frames = selected.cohort.frames
+            expected = selected.snapshot.content_id
+        else:
+            domain = root / YAHOO_GENERATION_DOMAIN
+            if domain.is_symlink() or (domain.exists() and not domain.is_dir()):
+                raise YahooGenerationContractError("bootstrap_selection_not_absent")
+            state, _ = _read_json_state(domain / _GENERATION_SELECTION_NAME)
+            if state != "absent":
+                raise YahooGenerationContractError("bootstrap_selection_not_absent")
+            frames, prior = decode_bootstrap_capture(bootstrap)
+            expected = None
+        evaluation = self._yahoo_clock(clock)
+        if _instant(prior["captured_at"]) > evaluation:
+            raise YahooGenerationContractError("evaluation_before_prior_capture")
+        acquisition = adapter.acquire_cycle_benchmarks(SECTOR_CLOSE_TICKERS,
+            prior_frames=frames, evaluation_instant=evaluation,
+            completed_sessions_only=True, period=period)
+        prepared = self._yahoo_clock(clock)
+        if acquisition.accepted is not True:
+            return GenerationPublishResult(status="rejected", generation_id=generation_id,
+                                           detail="yahoo acquisition did not qualify the complete cohort")
+        encoded = encode_yahoo_acquisition(acquisition, prior_identity=prior,
+            prepared_at=prepared, source_revision=source_revision)
+        return self.publish_yahoo_inputs(encoded, generation_id=generation_id,
+            source_revision=source_revision, expected_current_content_id=expected, lane=lane)
+
+    @contextmanager
+    def yahoo_calculation_scope(
+        self, *, profile, expected_content_id: str,
+        clock: Callable[[], datetime] | None = None,
+    ):
+        """Verify and bind inside this calculation process at an explicit fence.
+
+        Coupled products should run within this one scope. A child process must
+        enter its own scope with the parent's captured content ID; a different
+        selection refuses instead of mixing dependent output generations.
+        """
+        from lib.yahoo_generation_contract import YahooGenerationContractError, read_verified_yahoo_cohort
+        from lib.yahoo_runtime_profile import bind_snapshot
+        if not isinstance(expected_content_id, str) or not _GENERATION_SHA256_RE.fullmatch(expected_content_id):
+            raise YahooGenerationContractError("expected_yahoo_content_id_required")
+        selected = read_verified_yahoo_cohort(generations_root=self._yahoo_private_root(),
+                                              now=self._yahoo_clock(clock))
+        if selected.snapshot.content_id != expected_content_id:
+            raise YahooGenerationContractError("yahoo_calculation_generation_changed")
+        with bind_snapshot(profile, selected.cohort):
+            yield selected
 
     def publish_yahoo_inputs(
         self, encoded, *, generation_id: str, source_revision: str,

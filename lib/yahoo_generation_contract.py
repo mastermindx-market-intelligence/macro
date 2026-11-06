@@ -61,6 +61,15 @@ class EncodedYahooInputs:
 
 
 @dataclass(frozen=True)
+class YahooBootstrapCapture:
+    """Explicit legacy byte capture, not an admitted runtime cohort."""
+    members: Mapping[str, bytes | None]
+    source_ref: str
+    source_revision: str
+    captured_at: datetime
+
+
+@dataclass(frozen=True)
 class VerifiedYahooGeneration:
     cohort: VerifiedYahooCohort
     snapshot: Any
@@ -190,11 +199,7 @@ def encode_history(frame: Any, *, source_session: str) -> bytes:
     return raw
 
 
-def decode_history(raw: bytes, *, source_session: str) -> Any:
-    """Check bounded primitive parquet metadata before materializing values."""
-    import numpy as np
-    import pandas as pd
-    import pyarrow as pa
+def _open_history_parquet(raw: bytes):
     import pyarrow.parquet as pq
     if (not isinstance(raw, bytes) or not 12 <= len(raw) <= MAX_YAHOO_MEMBER_BYTES
             or raw[:4] != b"PAR1" or raw[-4:] != b"PAR1"):
@@ -202,10 +207,19 @@ def decode_history(raw: bytes, *, source_session: str) -> Any:
     footer = int.from_bytes(raw[-8:-4], "little")
     if not 0 < footer <= min(MAX_PARQUET_FOOTER_BYTES, len(raw) - 12):
         raise YahooGenerationContractError("history_footer_invalid")
+    return pq.ParquetFile(BytesIO(raw), thrift_string_size_limit=1024 * 1024,
+        thrift_container_size_limit=128_000, arrow_extensions_enabled=False,
+        page_checksum_verification=True)
+
+
+def decode_history(raw: bytes, *, source_session: str) -> Any:
+    """Check bounded primitive parquet metadata before materializing values."""
+    import numpy as np
+    import pandas as pd
+    import pyarrow as pa
+    import pyarrow.parquet as pq
     try:
-        with pq.ParquetFile(BytesIO(raw), thrift_string_size_limit=1024 * 1024,
-                            thrift_container_size_limit=128_000,
-                            arrow_extensions_enabled=False, page_checksum_verification=True) as parquet:
+        with _open_history_parquet(raw) as parquet:
             metadata = parquet.metadata
             # No serialized Arrow/pandas schema or arbitrary metadata is accepted.
             if (metadata.metadata or not MIN_SECTOR_HISTORY_SESSIONS <= metadata.num_rows <= MAX_HISTORY_ROWS
@@ -451,3 +465,95 @@ def read_verified_yahoo_cohort(*, generations_root: Path, now: datetime,
     return VerifiedYahooGeneration(VerifiedYahooCohort(
         generation_id=snapshot.generation_id, source_session=source,
         frames=MappingProxyType(frames)), snapshot)
+
+
+def _unique_metadata(pairs):
+    output = {}
+    for key, value in pairs:
+        if key in output:
+            raise YahooGenerationContractError("legacy_metadata_ambiguous")
+        output[key] = value
+    return output
+
+
+def decode_legacy_bootstrap_history(raw: bytes) -> Any:
+    """Decode a bounded explicit legacy prior; never an accepted snapshot.
+
+    The installed legacy format has one physical timestamp index named by
+    pandas metadata. Only that index declaration is used. No pandas object,
+    attrs, extension column, path, loader or fallback is reconstructed.
+    A prior can be shallow; strict acquisition must recover it before admission.
+    """
+    import numpy as np
+    import pandas as pd
+    import pyarrow as pa
+
+    try:
+        with _open_history_parquet(raw) as parquet:
+            meta = parquet.metadata
+            if not 1 <= meta.num_rows <= MAX_HISTORY_ROWS or not 1 <= meta.num_row_groups <= 32:
+                raise YahooGenerationContractError("legacy_history_shape_invalid")
+            raw_metadata = meta.metadata or {}
+            if not set(raw_metadata).issubset({b"pandas", b"ARROW:schema"}) or b"pandas" not in raw_metadata:
+                raise YahooGenerationContractError("legacy_index_metadata_required")
+            pandas = json.loads(raw_metadata[b"pandas"].decode("utf-8"), object_pairs_hook=_unique_metadata)
+            indices = pandas.get("index_columns") if isinstance(pandas, dict) else None
+            if (not isinstance(indices, list) or len(indices) != 1
+                    or not isinstance(indices[0], str) or indices[0] in _VALUE_COLUMNS):
+                raise YahooGenerationContractError("legacy_index_metadata_required")
+            index_name = indices[0]
+            schema = parquet.schema_arrow
+            names = schema.names
+            columns = [name for name in _VALUE_COLUMNS if name in names]
+            if (len(set(names)) != len(names) or set(names) != {index_name, *columns}
+                    or not {"close", "close_price"}.issubset(columns)):
+                raise YahooGenerationContractError("legacy_history_schema_invalid")
+            index_type = schema.field(index_name).type
+            if (not pa.types.is_timestamp(index_type) or index_type.tz is not None
+                    or index_type.unit not in ("ms", "us", "ns")
+                    or any(not (pa.types.is_floating(schema.field(name).type)
+                                or pa.types.is_integer(schema.field(name).type)) for name in columns)
+                    or any(field.metadata for field in schema)):
+                raise YahooGenerationContractError("legacy_history_schema_invalid")
+            if sum(meta.row_group(i).total_byte_size for i in range(meta.num_row_groups)) > MAX_PARQUET_DECODE_BYTES:
+                raise YahooGenerationContractError("history_decode_bound")
+            table = parquet.read(columns=[index_name, *columns], use_threads=False, use_pandas_metadata=False)
+        if table.num_rows != meta.num_rows or table.nbytes > MAX_PARQUET_DECODE_BYTES:
+            raise YahooGenerationContractError("history_decode_bound")
+        frame = pd.DataFrame({name: table[name].to_numpy() for name in columns},
+            index=pd.DatetimeIndex(table[index_name].to_numpy(), name=index_name))
+        for name in columns:
+            values = frame[name].to_numpy(dtype=float)
+            present = ~np.isnan(values)
+            if (not np.isfinite(values[present]).all() or (values[present] < 0).any()
+                    or (name != "volume" and (values[present] == 0).any())):
+                raise YahooGenerationContractError("history_value_invalid")
+        return capture_sector_history(frame, minimum_sessions=1)
+    except YahooGenerationContractError:
+        raise
+    except Exception:
+        raise YahooGenerationContractError("legacy_history_decode_invalid") from None
+
+
+def decode_bootstrap_capture(capture: YahooBootstrapCapture) -> tuple[dict, dict]:
+    """Derive actual prior values and identities from the same explicit bytes."""
+    if (not isinstance(capture, YahooBootstrapCapture) or not isinstance(capture.members, Mapping)
+            or len(capture.members) != len(SECTOR_CLOSE_TICKERS)):
+        raise YahooGenerationContractError("invalid_bootstrap_capture")
+    raw = dict(capture.members)
+    if set(raw) != set(SECTOR_CLOSE_TICKERS) or any(
+        value is not None and (type(value) is not bytes or not 0 < len(value) <= MAX_YAHOO_MEMBER_BYTES)
+        for value in raw.values()
+    ):
+        raise YahooGenerationContractError("invalid_bootstrap_capture")
+    stamp = _instant(capture.captured_at)
+    prior = _prior({"kind": "bootstrap", "source_ref": capture.source_ref,
+        "source_revision": capture.source_revision, "domain": YAHOO_GENERATION_DOMAIN,
+        "content_id": None, "captured_at": stamp.isoformat(),
+        "member_sha256": {ticker: hashlib.sha256(value).hexdigest() if value is not None else None
+                          for ticker, value in raw.items()},
+        "member_bytes": {ticker: len(value) if value is not None else None for ticker, value in raw.items()},
+    }, evaluation=stamp)
+    frames = {ticker: decode_legacy_bootstrap_history(raw[ticker]) if raw[ticker] is not None else None
+              for ticker in SECTOR_CLOSE_TICKERS}
+    return frames, prior

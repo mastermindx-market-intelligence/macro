@@ -452,3 +452,410 @@ def test_invalid_prepared_inputs_are_rejected_before_staging_effects(tmp_path, e
         owner.publish_yahoo_inputs(encoded, generation_id=generation_id,
             source_revision=REVISION, expected_current_content_id=None)
     assert not owner.state_dir.exists()
+
+
+# Producer qualification uses the actual acquisition and publisher over fixture
+# bytes. Provider calls and legacy-file writes are never part of these tests.
+def _legacy_bytes(frame, transform=None):
+    copied = frame.copy(deep=True)
+    copied.index.name = "Date"
+    table = pa.Table.from_pandas(copied, preserve_index=True)
+    table = table.set_column(table.schema.get_field_index("Date"), "Date",
+        pa.array(copied.index.to_numpy(dtype="datetime64[ms]"), type=pa.timestamp("ms")))
+    if transform is not None:
+        table = transform(table)
+    stream = BytesIO()
+    pq.write_table(table, stream)
+    return stream.getvalue()
+
+
+def _bootstrap(acquired, *, absent=()):
+    return contract.YahooBootstrapCapture(
+        {ticker: None if ticker in absent else _legacy_bytes(frame)
+         for ticker, frame in acquired[0].frames.items()},
+        "fixture-capture@v1", "b" * 40, NOW - timedelta(seconds=1))
+
+
+def _controlled_adapter(frames, calls, on_acquire=None):
+    adapter = YahooAdapter(yahoo_config={"batch_size": 20, "retries": 2,
+        "backoff_base_s": 0, "upsert_basis_tol": .001})
+    def download(batch, requested_period, *, request_settings):
+        calls.append(("download", tuple(batch), requested_period))
+        return pd.concat({ticker: (frames[ticker] if requested_period == "max" else frames[ticker].iloc[-25:])
+            .rename(columns={"close": "Adj Close", "close_price": "Close", "volume": "Volume"})
+            for ticker in batch}, axis=1)
+    adapter._download = download
+    original = adapter.acquire_cycle_benchmarks
+    def acquire(*args, **kwargs):
+        calls.append(("acquire", kwargs))
+        if on_acquire is not None:
+            on_acquire(kwargs)
+        return original(*args, **kwargs)
+    adapter.acquire_cycle_benchmarks = acquire
+    return adapter
+
+
+def _clock(*values):
+    iterator = iter(values)
+    return lambda: next(iterator)
+
+
+def test_bootstrap_primitive_decode_preserves_original_bytes_and_absence(acquired):
+    capture = _bootstrap(acquired, absent=(SYMBOLS[-1],))
+    frames, prior = contract.decode_bootstrap_capture(capture)
+    for ticker in SYMBOLS[:-1]:
+        pd.testing.assert_frame_equal(frames[ticker], acquired[0].frames[ticker],
+            check_names=False, check_freq=False, check_index_type=False)
+        assert prior["member_sha256"][ticker] == hashlib.sha256(capture.members[ticker]).hexdigest()
+        assert prior["member_bytes"][ticker] == len(capture.members[ticker])
+    assert frames[SYMBOLS[-1]] is None
+    assert prior["member_sha256"][SYMBOLS[-1]] is prior["member_bytes"][SYMBOLS[-1]] is None
+    assert prior["source_ref"] == capture.source_ref and prior["kind"] == "bootstrap"
+    # The explicit bootstrap decoder does not relax canonical admission.
+    with pytest.raises(contract.YahooGenerationContractError, match="history_shape_invalid"):
+        contract.decode_history(capture.members["SPY"], source_session="2026-11-03")
+
+
+def test_shallow_bootstrap_is_a_prior_but_not_a_verified_calculation(acquired):
+    raw = _legacy_bytes(acquired[0].frames["SPY"].iloc[-3:])
+    prior = contract.decode_legacy_bootstrap_history(raw)
+    assert len(prior) == 3
+    with pytest.raises(Exception, match="YAHOO_RUNTIME_HISTORY_INSUFFICIENT"):
+        contract.encode_history(prior, source_session="2026-11-03")
+
+
+@pytest.mark.parametrize("kind", ["metadata_absent", "range_index", "two_indices", "duplicate_metadata",
+    "timezone", "nested", "bool", "extra", "reversed", "duplicate_date"])
+def test_legacy_bootstrap_malformed_archive_is_not_repaired(acquired, kind):
+    frame = acquired[0].frames["SPY"].copy()
+    if kind == "reversed": frame = frame.iloc[::-1]
+    if kind == "duplicate_date": frame.index = pd.DatetimeIndex([frame.index[0], *frame.index[:-1]])
+    def transform(table):
+        if kind == "metadata_absent": return table.replace_schema_metadata(None)
+        if kind in {"range_index", "two_indices", "duplicate_metadata"}:
+            metadata = dict(table.schema.metadata)
+            pandas = json.loads(metadata[b"pandas"])
+            if kind == "duplicate_metadata":
+                metadata[b"pandas"] = b'{"index_columns":["Date"],"index_columns":["Date"]}'
+            else:
+                pandas["index_columns"] = [{"kind": "range", "start": 0, "stop": len(frame), "step": 1}] if kind == "range_index" else ["Date", "Date"]
+                metadata[b"pandas"] = json.dumps(pandas).encode()
+            return table.replace_schema_metadata(metadata)
+        if kind == "timezone":
+            return table.set_column(table.schema.get_field_index("Date"), "Date",
+                pa.array(frame.index, type=pa.timestamp("ms", tz="UTC")))
+        if kind in {"nested", "bool"}:
+            values = [[1.0]] * len(frame) if kind == "nested" else [True] * len(frame)
+            return table.set_column(table.schema.get_field_index("volume"), "volume", pa.array(values))
+        if kind == "extra": return table.append_column("ignored", pa.array([1] * len(frame)))
+        return table
+    raw = _legacy_bytes(frame, transform)
+    with pytest.raises(contract.YahooGenerationContractError):
+        contract.decode_legacy_bootstrap_history(raw)
+
+
+def test_legacy_bounds_apply_before_materialization(acquired, monkeypatch):
+    raw = _legacy_bytes(acquired[0].frames["SPY"])
+    monkeypatch.setattr(contract, "MAX_PARQUET_DECODE_BYTES", 1)
+    with pytest.raises(contract.YahooGenerationContractError, match="history_decode_bound"):
+        contract.decode_legacy_bootstrap_history(raw)
+
+
+def test_capture_reads_each_explicit_file_once_and_retains_no_path(tmp_path, acquired, monkeypatch):
+    owner = _orchestrator(tmp_path)
+    raw = _bootstrap(acquired)
+    paths = {}
+    for ticker in SYMBOLS:
+        path = tmp_path / (ticker + ".parquet")
+        path.write_bytes(raw.members[ticker]); paths[ticker] = path
+    original = publisher._read_source_bytes
+    reads = []
+    def read(path, *, limit):
+        reads.append(path)
+        return original(path, limit=limit)
+    monkeypatch.setattr(publisher, "_read_source_bytes", read)
+    capture = owner.capture_yahoo_bootstrap(sources=paths, source_ref=raw.source_ref,
+        source_revision=raw.source_revision, clock=lambda: NOW)
+    assert reads == list(paths.values()) and capture.captured_at == NOW
+    assert dict(capture.members) == dict(raw.members)
+    paths["SPY"].write_bytes(b"now corrupt")
+    frames, prior = contract.decode_bootstrap_capture(capture)
+    assert frames["SPY"].iloc[-1]["close"] > 0
+    assert prior["member_sha256"]["SPY"] == hashlib.sha256(raw.members["SPY"]).hexdigest()
+    assert not owner.state_dir.exists()
+
+
+@pytest.mark.parametrize("kind", ["missing", "symlink", "corrupt", "relative", "missing_key"])
+def test_bad_bootstrap_file_is_not_implicit_absence(tmp_path, acquired, kind):
+    owner = _orchestrator(tmp_path)
+    path = tmp_path / "source.parquet"
+    path.write_bytes(_legacy_bytes(acquired[0].frames["SPY"]))
+    paths = {ticker: path for ticker in SYMBOLS}
+    if kind == "missing": paths["SPY"] = tmp_path / "absent.parquet"
+    elif kind == "symlink":
+        link = tmp_path / "linked.parquet"; link.symlink_to(path); paths["SPY"] = link
+    elif kind == "corrupt": path.write_bytes(b"invalid")
+    elif kind == "relative": paths["SPY"] = Path("relative.parquet")
+    else: paths.pop("SPY")
+    with pytest.raises((contract.YahooGenerationContractError, publisher.GenerationRejected)):
+        owner.capture_yahoo_bootstrap(sources=paths, source_ref="capture", source_revision=REVISION)
+    assert not owner.state_dir.exists()
+
+
+
+def test_bootstrap_symlinked_ancestor_is_rejected_before_file_read(tmp_path, acquired, monkeypatch):
+    owner = _orchestrator(tmp_path)
+    target = tmp_path / "target"; target.mkdir()
+    path = target / "SPY.parquet"; path.write_bytes(_legacy_bytes(acquired[0].frames["SPY"]))
+    link = tmp_path / "alias"; link.symlink_to(target, target_is_directory=True)
+    monkeypatch.setattr(publisher, "_read_source_bytes", forbidden)
+    with pytest.raises(contract.YahooGenerationContractError, match="bootstrap_source_ancestor_symlink"):
+        owner.capture_yahoo_bootstrap(sources={ticker: link / "SPY.parquet" for ticker in SYMBOLS},
+            source_ref="capture", source_revision=REVISION)
+    assert not owner.state_dir.exists()
+
+
+def test_refresh_explicit_bootstrap_publishes_then_binds_one_process(tmp_path, acquired, monkeypatch):
+    owner = _orchestrator(tmp_path)
+    calls = []
+    adapter = _controlled_adapter(acquired[0].frames, calls)
+    result = owner.refresh_yahoo_inputs(adapter=adapter, generation_id="boot@g1", source_revision=REVISION,
+        bootstrap=_bootstrap(acquired), clock=_clock(NOW, PREPARED))
+    assert result.status == "published", result.detail
+    assert [c[0] for c in calls] == ["acquire", "download"]
+    assert calls[0][1]["evaluation_instant"] == NOW
+    assert calls[0][1]["completed_sessions_only"] is True
+    reader = contract.read_verified_yahoo_cohort
+    reads = []
+    def read(**kwargs):
+        reads.append(kwargs)
+        return reader(**kwargs)
+    monkeypatch.setattr(contract, "read_verified_yahoo_cohort", read)
+    with owner.yahoo_calculation_scope(profile=YahooRuntimeProfile(mode="shadow"),
+                                       expected_content_id=result.content_id) as selected:
+        assert selected.cohort.generation_id == "boot@g1"
+        with monkeypatch.context() as scoped:
+            scoped.setattr(store, "_path", forbidden)
+            scoped.setattr(config, "load", forbidden)
+            scoped.setattr(config, "data_dir", forbidden)
+            pd.testing.assert_series_equal(inputs._yahoo_close("SPY"),
+                selected.cohort.frames["SPY"]["close"], check_names=False, check_freq=False)
+    assert len(reads) == 1
+    assert bound_snapshot_for(group="yahoo", symbol="SPY") is None
+    assert not owner.data_dir.exists() and not owner.live_dir.exists()
+
+
+@pytest.mark.parametrize("kind", ["absent", "corrupt", "symlink", "unreadable"])
+def test_refresh_never_implicitly_bootstraps_or_contacts_provider(tmp_path, acquired, monkeypatch, kind):
+    owner = _orchestrator(tmp_path)
+    domain = owner.state_dir / "generations" / contract.YAHOO_GENERATION_DOMAIN
+    pointer = domain / "current.json"
+    if kind != "absent":
+        domain.mkdir(parents=True)
+        if kind == "corrupt": pointer.write_bytes(b"invalid")
+        elif kind == "symlink": pointer.symlink_to(tmp_path / "absent")
+        else:
+            original = publisher._read_json_state
+            monkeypatch.setattr(publisher, "_read_json_state",
+                lambda path: ("unreadable", None) if path == pointer else original(path))
+    calls = []
+    adapter = _controlled_adapter(acquired[0].frames, calls)
+    with pytest.raises(publisher.SelectedGenerationUnavailable):
+        owner.refresh_yahoo_inputs(adapter=adapter, generation_id="must-not-publish", source_revision=REVISION)
+    assert not calls
+    if kind == "absent": assert not owner.state_dir.exists()
+    else:
+        with pytest.raises(contract.YahooGenerationContractError, match="bootstrap_selection_not_absent"):
+            owner.refresh_yahoo_inputs(adapter=adapter, generation_id="must-not-bootstrap", source_revision=REVISION,
+                bootstrap=_bootstrap(acquired))
+        assert not calls
+
+
+def test_explicit_bootstrap_cannot_overwrite_established_generation(tmp_path, encoded, acquired):
+    owner, published = _publish(tmp_path, encoded)
+    calls = []
+    with pytest.raises(contract.YahooGenerationContractError, match="bootstrap_selection_not_absent"):
+        owner.refresh_yahoo_inputs(adapter=_controlled_adapter(acquired[0].frames, calls),
+            generation_id="bad-bootstrap", source_revision=REVISION, bootstrap=_bootstrap(acquired))
+    assert not calls
+    selected = contract.read_verified_yahoo_cohort(generations_root=owner.state_dir / "generations", now=PUBLISHED)
+    assert selected.snapshot.content_id == published.content_id
+
+
+def test_old_verified_prior_advances_with_fresh_acquisition_clock(tmp_path, encoded, acquired):
+    owner, first = _publish(tmp_path, encoded)
+    later = NOW + timedelta(days=1)
+    fresh = {}
+    for ticker, frame in acquired[0].frames.items():
+        last = frame.iloc[[-1]].copy(); last.index = pd.DatetimeIndex(["2026-11-04"])
+        last["close"] += 1; last["close_price"] += 1
+        fresh[ticker] = pd.concat([frame, last])
+    calls = []
+    # The constructor's task clock remains old. Publication has its independent
+    # current clock override; acquisition receives fresh samples, never self.now.
+    owner._publication_now = later + timedelta(seconds=5)
+    assert owner.now == PUBLISHED
+    result = owner.refresh_yahoo_inputs(adapter=_controlled_adapter(fresh, calls), generation_id="next-session",
+        source_revision=REVISION, clock=_clock(later, later + timedelta(seconds=1),
+            later + timedelta(seconds=2), later + timedelta(seconds=3)))
+    assert result.status == "published", result.detail
+    selected = contract.read_verified_yahoo_cohort(generations_root=owner.state_dir / "generations",
+        now=owner._publication_now)
+    evidence = selected.snapshot.manifest["input_identity"]["yahoo_cohort"]
+    assert selected.cohort.source_session == "2026-11-04"
+    assert evidence["prior"]["content_id"] == first.content_id
+    assert evidence["prior"]["captured_at"] == (later + timedelta(seconds=1)).isoformat()
+    assert evidence["clocks"]["known"]["evaluation_instant"] == (later + timedelta(seconds=2)).isoformat()
+    assert evidence["prepared_at"] == (later + timedelta(seconds=3)).isoformat()
+    assert len(selected.cohort.frames["SPY"]) == len(acquired[0].frames["SPY"]) + 1
+    assert len([call for call in calls if call[0] == "acquire"]) == 1
+
+
+@pytest.mark.parametrize("kind", ["provider_rejected", "clock_backwards", "session_boundary"])
+def test_refresh_failure_preserves_prior_and_makes_no_publication(tmp_path, encoded, acquired, monkeypatch, kind):
+    owner, _ = _publish(tmp_path, encoded)
+    pointer = owner.state_dir / "generations" / contract.YAHOO_GENERATION_DOMAIN / "current.json"
+    before = pointer.read_bytes()
+    calls = []
+    adapter = _controlled_adapter(acquired[0].frames, calls)
+    monkeypatch.setattr(owner, "publish_yahoo_inputs", forbidden)
+    if kind == "provider_rejected":
+        adapter.acquire_cycle_benchmarks = lambda *a, **k: replace(acquired[0], accepted=False, reason="fixture failure")
+        result = owner.refresh_yahoo_inputs(adapter=adapter, generation_id="rejected", source_revision=REVISION,
+            clock=_clock(PUBLISHED, PUBLISHED, PUBLISHED, PUBLISHED))
+        assert result.status == "rejected"
+    elif kind == "clock_backwards":
+        with pytest.raises(contract.YahooGenerationContractError, match="evaluation_before_prior_capture"):
+            owner.refresh_yahoo_inputs(adapter=adapter, generation_id="backwards", source_revision=REVISION,
+                clock=_clock(PUBLISHED, PUBLISHED, NOW))
+        assert not calls
+    else:
+        with pytest.raises(contract.YahooGenerationContractError, match="source_not_completed_target"):
+            owner.refresh_yahoo_inputs(adapter=adapter, generation_id="boundary", source_revision=REVISION,
+                clock=_clock(PUBLISHED, PUBLISHED, PUBLISHED, PUBLISHED + timedelta(days=1)))
+    assert pointer.read_bytes() == before
+
+
+def test_uncertain_publication_result_is_returned_unchanged_once(tmp_path, acquired, monkeypatch):
+    owner = _orchestrator(tmp_path)
+    calls = []
+    uncertain = publisher.GenerationPublishResult(status="uncertain", generation_id="candidate",
+        detail="fixture pointer uncertainty", durability="unconfirmed")
+    publications = []
+    def publish(value, **kwargs):
+        publications.append((value, kwargs)); return uncertain
+    monkeypatch.setattr(owner, "publish_yahoo_inputs", publish)
+    result = owner.refresh_yahoo_inputs(adapter=_controlled_adapter(acquired[0].frames, calls),
+        generation_id="candidate", source_revision=REVISION, bootstrap=_bootstrap(acquired),
+        clock=_clock(NOW, PREPARED))
+    assert result is uncertain and len(publications) == 1
+    assert publications[0][1]["expected_current_content_id"] is None
+    assert len([call for call in calls if call[0] == "acquire"]) == 1
+    assert not owner.state_dir.exists()
+
+
+
+def test_concurrent_refresh_keeps_original_captured_prior_and_cas(tmp_path, encoded, acquired, monkeypatch):
+    owner, first = _publish(tmp_path, encoded)
+    root = owner.state_dir / "generations"
+    original_read = contract.read_verified_yahoo_cohort
+    reads = []
+    def reader(**kwargs):
+        reads.append(kwargs); return original_read(**kwargs)
+    monkeypatch.setattr(contract, "read_verified_yahoo_cohort", reader)
+    corrected = {ticker: frame.copy(deep=True) for ticker, frame in acquired[0].frames.items()}
+    corrected["SPY"]["close"] *= 1.02
+    second_acquisition, _ = _acquire(corrected, priors=acquired[0].frames)
+    replacement = contract.encode_yahoo_acquisition(second_acquisition, prior_identity=acquired[1],
+        prepared_at=PREPARED, source_revision=REVISION)
+    owner._publication_now = PUBLISHED + timedelta(seconds=10)
+    pointer = root / contract.YAHOO_GENERATION_DOMAIN / "current.json"
+    second = {}
+    def concurrent(kwargs):
+        expected_prior = acquired[0].frames["SPY"].copy(deep=True)
+        expected_prior.index = expected_prior.index.as_unit("ns")
+        pd.testing.assert_frame_equal(kwargs["prior_frames"]["SPY"], expected_prior, check_freq=False)
+        second["result"] = owner.publish_yahoo_inputs(replacement, generation_id="competing-g2",
+            source_revision=REVISION, expected_current_content_id=first.content_id)
+        assert second["result"].status == "published"
+        second["pointer"] = pointer.read_bytes()
+    calls = []
+    original_publish = owner.publish_yahoo_inputs
+    candidate = []
+    def publish(value, **kwargs):
+        if kwargs["generation_id"] == "stale-writer-g2": candidate.append((value, kwargs))
+        return original_publish(value, **kwargs)
+    monkeypatch.setattr(owner, "publish_yahoo_inputs", publish)
+    result = owner.refresh_yahoo_inputs(adapter=_controlled_adapter(acquired[0].frames, calls, concurrent),
+        generation_id="stale-writer-g2", source_revision=REVISION,
+        clock=_clock(PUBLISHED, PUBLISHED + timedelta(seconds=1),
+            PUBLISHED + timedelta(seconds=2), PUBLISHED + timedelta(seconds=3)))
+    assert result.status == "rejected", result.detail
+    assert len(reads) == len(candidate) == 1
+    assert candidate[0][1]["expected_current_content_id"] == first.content_id
+    prior = candidate[0][0].input_identity["yahoo_cohort"]["prior"]
+    assert prior["content_id"] == first.content_id
+    for ticker, name in zip(SYMBOLS, MEMBERS):
+        assert prior["member_sha256"][ticker] == hashlib.sha256(encoded.members[name]).hexdigest()
+        assert prior["member_bytes"][ticker] == len(encoded.members[name])
+    assert len([call for call in calls if call[0] == "acquire"]) == 1
+    assert pointer.read_bytes() == second["pointer"]
+    latest = original_read(generations_root=root, now=owner._publication_now)
+    assert latest.snapshot.content_id == second["result"].content_id
+    assert latest.cohort.frames["SPY"]["close"].iloc[-1] == corrected["SPY"]["close"].iloc[-1]
+
+
+def test_bootstrap_racing_first_publication_keeps_original_none_fence(tmp_path, encoded, acquired, monkeypatch):
+    owner = _orchestrator(tmp_path)
+    winner = {}
+    def concurrent(kwargs):
+        winner["result"] = owner.publish_yahoo_inputs(encoded, generation_id="winner",
+            source_revision=REVISION, expected_current_content_id=None)
+        assert winner["result"].status == "published"
+        pointer = owner.state_dir / "generations" / contract.YAHOO_GENERATION_DOMAIN / "current.json"
+        winner["pointer"] = pointer.read_bytes()
+    calls = []
+    publications = []
+    original = owner.publish_yahoo_inputs
+    def publish(value, **kwargs):
+        publications.append(kwargs); return original(value, **kwargs)
+    monkeypatch.setattr(owner, "publish_yahoo_inputs", publish)
+    result = owner.refresh_yahoo_inputs(adapter=_controlled_adapter(acquired[0].frames, calls, concurrent),
+        generation_id="losing-bootstrap", source_revision=REVISION, bootstrap=_bootstrap(acquired),
+        clock=_clock(NOW, PREPARED))
+    assert result.status == "rejected", result.detail
+    assert [p["expected_current_content_id"] for p in publications] == [None, None]
+    assert len([call for call in calls if call[0] == "acquire"]) == 1
+    pointer = owner.state_dir / "generations" / contract.YAHOO_GENERATION_DOMAIN / "current.json"
+    assert pointer.read_bytes() == winner["pointer"]
+
+
+def test_calculation_scope_refuses_different_child_generation_and_restores_on_failure(tmp_path, encoded, monkeypatch):
+    owner, first = _publish(tmp_path, encoded)
+    profile = YahooRuntimeProfile(mode="shadow")
+    ran = []
+    with pytest.raises(contract.YahooGenerationContractError, match="yahoo_calculation_generation_changed"):
+        with owner.yahoo_calculation_scope(profile=profile, expected_content_id="c" * 64):
+            ran.append(True)
+    assert not ran and bound_snapshot_for(group="yahoo", symbol="SPY") is None
+    with pytest.raises(RuntimeError, match="fixture calculation"):
+        with owner.yahoo_calculation_scope(profile=profile, expected_content_id=first.content_id):
+            assert bound_snapshot_for(group="yahoo", symbol="SPY") is not None
+            raise RuntimeError("fixture calculation")
+    assert bound_snapshot_for(group="yahoo", symbol="SPY") is None
+    monkeypatch.setattr(contract, "read_verified_yahoo_cohort", forbidden)
+    for invalid in (None, "", "c" * 63, "c" * 64 + "\n"):
+        with pytest.raises(contract.YahooGenerationContractError, match="expected_yahoo_content_id_required"):
+            with owner.yahoo_calculation_scope(profile=profile, expected_content_id=invalid):
+                ran.append(True)
+    assert not ran
+
+
+def test_refresh_invalid_private_destination_refuses_before_provider(tmp_path, acquired):
+    owner = _orchestrator(tmp_path)
+    owner.state_dir = Path("relative")
+    calls = []
+    with pytest.raises(contract.YahooGenerationContractError, match="absolute_private_root_required"):
+        owner.refresh_yahoo_inputs(adapter=_controlled_adapter(acquired[0].frames, calls),
+            generation_id="invalid", source_revision=REVISION, bootstrap=_bootstrap(acquired))
+    assert not calls
