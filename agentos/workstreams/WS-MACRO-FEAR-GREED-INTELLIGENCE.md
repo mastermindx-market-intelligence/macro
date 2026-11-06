@@ -49,6 +49,76 @@ artifacts:
   - reports/fear_greed_intelligence/pinned-data-snapshot.json
 ---
 
+## November 6 2026 - C4 current-main recovery and qualification
+
+Chairman-authorized Macro PR sweep `github-pr-sweep-2028-c4` continues this
+original carrier under compatible protected Mastermind pin
+`3551bf914bc3cab6117f93377ba89ac1d9c3c30a`. Canonical coordinator:
+https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028
+and source pickup:
+https://github.com/mastermindx-market-intelligence/Macro/pull/9548#issuecomment-6685132870
+
+The original published/local head remained
+`4cbb2439ff07ffe7a0abfc2aa2b960e87ea3dbec`. The interrupted October prepared
+merge into `90eb4df175c009b770303dee417eb09aef1a63b4` was reconciled on this
+same workspace: its control-file timestamps predate the current host boot,
+no current source writer or Git lock was present, and publication status
+proved local/remote identity. This is positive old-process settlement, not
+a fabricated original exit code. Before the ordinary abort, all 1,111
+pre-existing untracked/ignored files and symlinks were hashed and preserved,
+the index/control files and five unique prepared blobs were saved, and
+the three conflict resolutions were retained. The completed abort left
+HEAD unchanged and all 1,111 hashes unchanged. The local preservation
+directory remains available; no reset, clean, rehome or new operation occurred.
+
+A normal no-commit merge prepared accepted main
+`1965b65210786806e468d71356b3c1211d514972`. Exactly three conflicts were
+resolved. The CI manifest preserves all 388 accepted-main jobs and every
+existing gate, command and budget except one added FGI pytest module in
+the existing dashboard contract. Nineteen additive dependency paths
+cover the existing six transitive consumers and the two UI owners.
+Parsed semantic comparison proves all other manifest content unchanged.
+The labor labels and rendered labor page match the incoming main blobs
+exactly; their older incidental edits were superseded by accepted main.
+There are no unmerged paths. The feature diff against this real merge
+base passes whitespace checks; inherited whitespace elsewhere in the
+53,583-path integration is recorded separately and was not rewritten.
+
+Current qualification on this resolved composition:
+- 132 focused source pytest cases passed, with zero skips and one existing
+  datetime.utcnow deprecation warning.
+- The canonical curated CI input-closure test passed separately: one case.
+- The existing workstream schema validator passed: one record, zero errors
+  and zero warnings.
+- Claims, forward-only design, runtime-style injection and visual-evidence
+  guards passed using the actual feature diff against the merge base.
+- The existing browser harness passed all 145 checks, with zero page
+  errors and 16 screenshots across desktop/mobile, English/Chinese and
+  dark/light. It exercises the genuine local Macro to Risk Radar to Fear
+  & Greed flow, details, Escape and focus return. Two representative
+  screenshots were visually inspected.
+- Browser intelligence was recomputed by the candidate engines from nine
+  immutable inputs at source commit
+  `9cfa8918b55a1c4735a90f4ca133506baa9d7966`, explicit as-of October 16.
+  The displayed sentiment clock is October 14 and VIX clock October 16.
+  No missing input files, new shared asset emitter, credentials or
+  production-route mutation were used.
+
+Fresh source-linked receipts and actual screenshots are in
+`research/evidence/fear_greed_integration_20261106/`. The original October
+evidence and revised-observation research replay remain unchanged and
+retain their historical dates. These local fixtures do not establish
+point-in-time forecasting, authenticated production operation or deployment.
+
+Next: reconcile exact original-branch source publication, consume the
+new head's natural hosted CI and fences, then individually qualify the
+existing protected merge controller. After actual merge, verify covering
+render/VPS publication and the served authenticated Risk Radar journey.
+Preserve separate QLedger/data freshness, trade authority, forecast
+validation, shared F01 coordination and unrelated review-effect holds.
+No formal GitHub approval, merge, deployment or product completion is
+claimed by this record. MISSION_COMPLETE: false.
+
 ## October 20 2026 - original-carrier integration qualification
 
 The Chairman's continuing rotation/Sector/Prophet/Risk Radar mission resumes this

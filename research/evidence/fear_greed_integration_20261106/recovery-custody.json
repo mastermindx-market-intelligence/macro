@@ -1,0 +1,37 @@
+{
+  "schema": "c4.fear-greed.recovery-custody.v1",
+  "receipts": {
+    "preservation.json": {
+      "sha256": "672a7a5e97d1b4998b86db9ea60f0469d47eb3a507a5b87f7f13980a801704e0",
+      "bytes": 3455,
+      "local_receipt": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/.proof_runtime/c4-recovery-20261106/preservation.json"
+    },
+    "pre-abort.json": {
+      "sha256": "7b338ae3c810f17a8e81c7456367633541d84cf5eb6cfd95bb20d92a418be9d5",
+      "bytes": 259351,
+      "local_receipt": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/.proof_runtime/c4-recovery-20261106/pre-abort.json"
+    },
+    "abort-result.json": {
+      "sha256": "5d7fff2c5ba8fd6f0556e35e74f6fe1e0f8239d6b5d8cc729daf0d2c516f6351",
+      "bytes": 3613,
+      "local_receipt": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/.proof_runtime/c4-recovery-20261106/abort-result.json"
+    },
+    "fresh-main-fetch.json": {
+      "sha256": "4995fd3c67046e31195bfc88e3fadb3d7ee8456bac85c1d9e9085cc946dd3995",
+      "bytes": 495,
+      "local_receipt": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/.proof_runtime/c4-recovery-20261106/fresh-main-fetch.json"
+    },
+    "fresh-main-merge.json": {
+      "sha256": "b1ce7fdc300870373b9201d81f943ef914b0529a6becd6f2cbe106128e0576fd",
+      "bytes": 1110,
+      "local_receipt": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-fear-greed-dynamics-20261017/.proof_runtime/c4-recovery-20261106/fresh-main-merge.json"
+    }
+  },
+  "original_untracked_entries_preserved": 1111,
+  "original_untracked_bytes": 21972157,
+  "unique_prepared_blobs_preserved": 5,
+  "unique_prepared_blob_bytes": 4765561,
+  "old_process_settlement": "control metadata predates current host boot; no current source writer or Git lock; no fabricated exit status",
+  "abort_terminal_exit_code": 0,
+  "all_original_untracked_hashes_unchanged": true
+}

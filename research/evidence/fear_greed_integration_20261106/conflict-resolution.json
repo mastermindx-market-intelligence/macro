@@ -1,0 +1,117 @@
+{
+  "schema": "c4.fear-greed.current-main-conflict-resolution.v1",
+  "head": "4cbb2439ff07ffe7a0abfc2aa2b960e87ea3dbec",
+  "protected_base": "1965b65210786806e468d71356b3c1211d514972",
+  "resolved_paths": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "blob": "f6da15c1d6d3bd83f3b94be7091a81d1f52231c6",
+      "sha256": "dd9db9f2f232e53ab0585581a63daa0ede0c4b6c43f3ee5958341798f2da0fe8",
+      "bytes": 2601914
+    },
+    {
+      "path": "lib/macro_suite_labels.py",
+      "blob": "3fd66dc5822ded36c7e9889283443e6daee7a337",
+      "sha256": "c1310f2c8ea9f10edaf232bc7858d94047fb4a9ecb448b7c789078db1533a54b",
+      "bytes": 129943
+    },
+    {
+      "path": "site/macro_labor_markets.html",
+      "blob": "45a46a1ac7d87857be87054e9856d06809364276",
+      "sha256": "d88fff7fa3de0a52f509df2c094ee3b56689d27a10c9c32bf26aa72802df8033",
+      "bytes": 252057
+    }
+  ],
+  "manifest_jobs_preserved": 388,
+  "manifest_path_additions": {
+    "nw-lobe-unfreeze": [
+      "engine/fear_greed_intelligence.py",
+      "engine/vol_velocity.py"
+    ],
+    "biocatalyst-serving": [
+      "engine/fear_greed_intelligence.py",
+      "engine/vol_velocity.py"
+    ],
+    "washout-turn-organ": [
+      "engine/fear_greed_intelligence.py",
+      "engine/vol_velocity.py"
+    ],
+    "unrun-picks-boards": [
+      "engine/fear_greed_intelligence.py",
+      "engine/vol_velocity.py"
+    ],
+    "qledger-cluster-honest-ci": [
+      "engine/fear_greed_intelligence.py",
+      "engine/vol_velocity.py"
+    ],
+    "eval-os-a1": [
+      "engine/fear_greed_intelligence.py",
+      "engine/vol_velocity.py"
+    ],
+    "dashboard-render-contract": [
+      "research/FEAR_GREED_INTELLIGENCE_V1.md",
+      "tests/test_fear_greed_intelligence.py",
+      "tests/test_fear_greed.py",
+      "tests/fear_greed_intelligence_browser.py",
+      "scripts/research_fear_greed_intelligence.py",
+      "templates/_fear_greed_intelligence.html.j2"
+    ],
+    "ew-p4-descriptive-ui": [
+      "templates/_fear_greed_intelligence.html.j2"
+    ]
+  },
+  "added_test_steps": 1,
+  "all_other_manifest_semantics_unchanged": true,
+  "unmerged_remaining": [],
+  "feature_diff": [
+    "M\t.github/ci/legacy-jobs.yml",
+    "M\t.github/workflows/render.yml",
+    "A\tagentos/workstreams/WS-MACRO-FEAR-GREED-INTELLIGENCE.md",
+    "M\tengine/fear_greed.py",
+    "A\tengine/fear_greed_intelligence.py",
+    "M\tengine/vol_velocity.py",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/08f4c615a7fff376.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/0b78238c5e116f2c.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/1e5a2dc4162f2df8.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/220be5dfbdb4658f.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/3751f61e16e1f371.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/3b49664a1f2ecc97.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/EVIDENCE.yml",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/README.md",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/SMELLS.md",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/b7e55eaa0a9cae8c.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/c0541f8bf9814a65.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/c917d79451e875df.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/ca8d775eb49a98fa.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/deb6f5e71648dc1a.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/e3c403f787ab83f0.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/e3fb05814849e1ae.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/e5fe7da1e4bf0100.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/ecef3bb7115766d9.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/f9c8de143670fc34.png",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/manifest.json",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/smells.json",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/source-inputs.json",
+    "A\tmockups/evidence/fear-greed-intelligence-20261017/ui-checks.json",
+    "A\treports/fear_greed_intelligence/REPLAY.md",
+    "A\treports/fear_greed_intelligence/pinned-data-snapshot.json",
+    "A\treports/fear_greed_intelligence/replay.json",
+    "A\tresearch/FEAR_GREED_INTELLIGENCE_V1.md",
+    "M\tscripts/build_site.py",
+    "A\tscripts/research_fear_greed_intelligence.py",
+    "M\tsite/risk_radar_workspace.css",
+    "M\tsite/risk_radar_workspace.js",
+    "A\ttemplates/_fear_greed_intelligence.html.j2",
+    "M\ttemplates/_risk_radar_workspace.html.j2",
+    "M\ttemplates/dashboard.html.j2",
+    "M\ttemplates/risk_radar_workspace.css",
+    "M\ttemplates/risk_radar_workspace.js",
+    "A\ttests/fear_greed_intelligence_browser.py",
+    "M\ttests/risk_radar_workspace_browser.py",
+    "M\ttests/test_fear_greed.py",
+    "A\ttests/test_fear_greed_intelligence.py",
+    "M\ttests/test_render_builder_ownership.py"
+  ],
+  "full_staged_diff_check_exit": 2,
+  "full_staged_diff_check_tail": "e.\n+        \ntemplates/_commodity_decision_workspace.html.j2:267: new blank line at EOF.\ntemplates/commodity-workspace.css:359: new blank line at EOF.\ntemplates/commodity-workspace.js:460: new blank line at EOF.\ntemplates/mm_brain_finance_math_v1.js:3: new blank line at EOF.\ntemplates/mm_brain_markdown.js:8: new blank line at EOF.\ntemplates/mm_brain_math.js:259: new blank line at EOF.\ntests/fixtures/capital_structure/document_terms/ex107_F-1_0001193125-26-312562.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/ex107_F-1_0001193125-26-312562.txt:25: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-1A_0001213900-26-081199.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-1A_0001213900-26-081199.txt:25: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-3ASR_0000097216-26-000127.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-3ASR_0000097216-26-000127.txt:25: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-3ASR_0001193125-26-326375.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-3ASR_0001193125-26-326375.txt:25: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-3A_0001493152-26-034502.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-3A_0001493152-26-034502.txt:25: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-3_0001493152-26-034585.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/ex107_S-3_0001493152-26-034585.txt:25: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_b_0001171520-26-000115.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/p130_b_0001171520-26-000115.txt:27: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_b_0001171520-26-000115.txt:34: trailing whitespace.\n+\tMAIL ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_c_classtype_0001731122-26-000704.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/p130_c_classtype_0001731122-26-000704.txt:27: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_c_classtype_0001731122-26-000704.txt:35: trailing whitespace.\n+\tMAIL ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_c_leftshift_0001477932-26-004010.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/p130_c_leftshift_0001477932-26-004010.txt:27: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_c_leftshift_0001477932-26-004010.txt:34: trailing whitespace.\n+\tMAIL ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_c_leftshift_0001477932-26-004010.txt:40: trailing whitespace.\n+\tFORMER COMPANY:\t\ntests/fixtures/capital_structure/document_terms/p130_c_title_0001829126-26-005938.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/p130_c_title_0001829126-26-005938.txt:27: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_c_title_0001829126-26-005938.txt:34: trailing whitespace.\n+\tMAIL ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_d_legacy_0001065949-26-000044.txt:12: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/p130_d_legacy_0001065949-26-000044.txt:27: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_d_legacy_0001065949-26-000044.txt:34: trailing whitespace.\n+\tMAIL ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_d_refusal_0001816590-26-000065.txt:13: trailing whitespace.\n+\tCOMPANY DATA:\t\ntests/fixtures/capital_structure/document_terms/p130_d_refusal_0001816590-26-000065.txt:28: trailing whitespace.\n+\tBUSINESS ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_d_refusal_0001816590-26-000065.txt:36: trailing whitespace.\n+\tMAIL ADDRESS:\t\ntests/fixtures/capital_structure/document_terms/p130_d_refusal_0001816590-26-000065.txt:43: trailing whitespace.\n+\tFORMER COMPANY:\t\ntests/test_commodity_workspace_ui.js:257: new blank line at EOF.\ntests/test_fif_q0_label_conformance.py:1153: new blank line at EOF.\ntests/test_semiconductor_earnings_intake_integration.py:415: new blank line at EOF.\ntests/test_semiconductor_guidance_history.py:551: new blank line at EOF.\nwarning: exhaustive rename detection was skipped due to too many files.\nwarning: you may want to set your diff.renameLimit variable to at least 16361 and retry the command.\n"
+}

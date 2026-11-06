@@ -1,0 +1,59 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_nonregular_owner_artifact_is_refused_before_read[directory] _______
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-289/test_nonregular_owner_artifact0')
+kind = 'directory'
+
+    @pytest.mark.parametrize("kind", ["directory", "symlink"])
+    def test_nonregular_owner_artifact_is_refused_before_read(tmp_path, kind):
+        mod = adapter()
+        path = write_report(tmp_path)
+        raw = path.read_bytes()
+        path.unlink()
+        if kind == "directory":
+            path.mkdir()
+        else:
+            target = tmp_path / "other.json"
+            target.write_bytes(raw)
+            path.symlink_to(target)
+        result = mod.load_findings(tmp_path, [])
+        assert result["status"] == "unavailable"
+>       assert result["reason"] == "owner_artifact_not_regular"
+E       AssertionError: assert 'invalid_owner_artifact' == 'owner_artifact_not_regular'
+E         
+E         - owner_artifact_not_regular
+E         + invalid_owner_artifact
+
+tests/test_evidence_findings.py:178: AssertionError
+________ test_nonregular_owner_artifact_is_refused_before_read[symlink] ________
+
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-289/test_nonregular_owner_artifact1')
+kind = 'symlink'
+
+    @pytest.mark.parametrize("kind", ["directory", "symlink"])
+    def test_nonregular_owner_artifact_is_refused_before_read(tmp_path, kind):
+        mod = adapter()
+        path = write_report(tmp_path)
+        raw = path.read_bytes()
+        path.unlink()
+        if kind == "directory":
+            path.mkdir()
+        else:
+            target = tmp_path / "other.json"
+            target.write_bytes(raw)
+            path.symlink_to(target)
+        result = mod.load_findings(tmp_path, [])
+>       assert result["status"] == "unavailable"
+E       AssertionError: assert 'recorded' == 'unavailable'
+E         
+E         - unavailable
+E         + recorded
+
+tests/test_evidence_findings.py:177: AssertionError
+
+NOTE: sparse worktree — data, mockups, plugins, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_evidence_findings.py::test_nonregular_owner_artifact_is_refused_before_read[directory]
+FAILED tests/test_evidence_findings.py::test_nonregular_owner_artifact_is_refused_before_read[symlink]
+2 failed, 17 deselected in 11.49s

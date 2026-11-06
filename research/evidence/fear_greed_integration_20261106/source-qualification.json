@@ -1,0 +1,118 @@
+{
+  "schema": "c4.fear-greed.source-qualification.v1",
+  "pr": 9548,
+  "operation_id": "macro-fear-greed-dynamics-20261017",
+  "branch": "sol/web-macro-fear-greed-dynamics-20261017",
+  "original_head": "4cbb2439ff07ffe7a0abfc2aa2b960e87ea3dbec",
+  "protected_base": "1965b65210786806e468d71356b3c1211d514972",
+  "mastermind_law_pin": "3551bf914bc3cab6117f93377ba89ac1d9c3c30a",
+  "feature_paths_before_evidence": 47,
+  "focused_pytest_passes": 132,
+  "input_closure_pytest_passes": 1,
+  "browser_checks_passed": 145,
+  "browser_page_errors": 0,
+  "browser_screenshots": 16,
+  "source_qualification_scope": "resolved candidate feature diff against real accepted-main merge base",
+  "visual_inspection": {
+    "screenshots": [
+      "mobile-en-light-summary.png",
+      "desktop-zh-dark-detail.png"
+    ],
+    "observation": "Actual current rendered mobile and desktop screenshots inspected: readable bilingual shared-theme UI; no clipped page-width content; desktop details shows separate sentiment/VIX clocks, VIX/velocity/acceleration values, limited coverage and watch-only language. Mobile summary places contextual market evidence above the FGI dial within the existing scrollable Risk Radar layout.",
+    "scope": "local anonymous fixture on immutable Oct16 inputs; not live/authenticated acceptance"
+  },
+  "production_acceptance": false,
+  "hosted_ci_for_new_head": "pending natural publication run",
+  "merge": "not claimed",
+  "source_record_sha256": "e59d0df1d3bcbbfd844542b2fa8f27a048eb87d5419e62c5fa803ce586e5e768",
+  "files": {
+    "browser-qualification.json": {
+      "sha256": "dbcb62aef685e87b9d11f7b6eedc47317bacfbdae706acb1c8b309e90075cfdf",
+      "bytes": 13929
+    },
+    "candidate-intelligence.json": {
+      "sha256": "e21d001f5fb554bb2100e68ce4a54cfa331c2dd7820d927cbc57096b9e251140",
+      "bytes": 27660
+    },
+    "conflict-resolution.json": {
+      "sha256": "84f29f67cc0e872209b6776ddd6698c9af5e3ba573023a99fc3555d4395cc4fe",
+      "bytes": 10262
+    },
+    "focused-qualification.json": {
+      "sha256": "c47fc5e2e095048627519fce8d0740a3601babaa7df3721837d3fc6c6b78c3cb",
+      "bytes": 9327
+    },
+    "interaction-shots/desktop-en-dark-detail.png": {
+      "sha256": "1320d19b3ad0f524ed593aafcb2be3b4aa263cdcdb33e69c377ce4fd20605a42",
+      "bytes": 261998
+    },
+    "interaction-shots/desktop-en-dark-summary.png": {
+      "sha256": "22d92b4155277d7b2591fe1eb909b2a6481b947426d49d6d25116ec89a372537",
+      "bytes": 265336
+    },
+    "interaction-shots/desktop-en-light-detail.png": {
+      "sha256": "4794cbefafceb60b9d93e7fa0a58aee31aed14b48a9cb0c65b08f6a016fa4eca",
+      "bytes": 186854
+    },
+    "interaction-shots/desktop-en-light-summary.png": {
+      "sha256": "9e38fa591e9f0303f5f68aa10a103b5c36cff8d77dbeeff36c15120411de4b86",
+      "bytes": 175514
+    },
+    "interaction-shots/desktop-zh-dark-detail.png": {
+      "sha256": "96367f4b129445bedd6536ddfbf5935a05ec6f7e4bc6d408eceb8bbf2dbb2d4c",
+      "bytes": 268226
+    },
+    "interaction-shots/desktop-zh-dark-summary.png": {
+      "sha256": "6de90a4c36c6d9366244c10d452e1b49c875acad873e1ac88c7604e382ad4f2b",
+      "bytes": 269275
+    },
+    "interaction-shots/desktop-zh-light-detail.png": {
+      "sha256": "73f873a4403609a1148922e762b288d0379b462461f33d51fb2efb05243bc0a8",
+      "bytes": 197893
+    },
+    "interaction-shots/desktop-zh-light-summary.png": {
+      "sha256": "bc150dc4a19e0b5b78cfa7a5beafef04ea5cc7a53b5ffd62eaebdb5982e89f30",
+      "bytes": 211791
+    },
+    "interaction-shots/mobile-en-dark-detail.png": {
+      "sha256": "842f740b59bf9ac6bdf79ec303a02720f2280da0dc0c703f6eb8c6e8120e4cfc",
+      "bytes": 55279
+    },
+    "interaction-shots/mobile-en-dark-summary.png": {
+      "sha256": "b3d1e3b8ba0012364ecf1ee18130ec350d2ede4f79c37bbff3c8075cbaf3e389",
+      "bytes": 69394
+    },
+    "interaction-shots/mobile-en-light-detail.png": {
+      "sha256": "c344c3e7616974a3070beddd5e443baa9367813f0429e7fd8fa6bb2333579632",
+      "bytes": 55556
+    },
+    "interaction-shots/mobile-en-light-summary.png": {
+      "sha256": "31053de8859daf0cd50ae072f621db314bf0aa878bf50327dedb0ad7ce4cdd23",
+      "bytes": 70218
+    },
+    "interaction-shots/mobile-zh-dark-detail.png": {
+      "sha256": "9b2786dbfcdf8fd90ae1cdfcae6d1f69d40b17942f7edfd0d2e0fb92943a698c",
+      "bytes": 65411
+    },
+    "interaction-shots/mobile-zh-dark-summary.png": {
+      "sha256": "c5cb33d01fd9bc011c42d1092a1b87c0e04d44dc6bb436b448dbaa9041d0dec2",
+      "bytes": 77108
+    },
+    "interaction-shots/mobile-zh-light-detail.png": {
+      "sha256": "87329ac8e8efe9eee7d7bafdb7f21ecf61858f3c667e2d1dbe7a55a56f95747e",
+      "bytes": 65715
+    },
+    "interaction-shots/mobile-zh-light-summary.png": {
+      "sha256": "b3576de749b5719896dd628b81232a91b8101e360d11dc4cdf628bbfca7817e2",
+      "bytes": 78980
+    },
+    "recovery-custody.json": {
+      "sha256": "bca6b720113c67c7dd2fad928545359b4c6dc89cfec7bd6109cac7b2e8931149",
+      "bytes": 1986
+    },
+    "source-guards.json": {
+      "sha256": "66e55dfbcbe6f787d4a5d25979afa665aadd4805254e1c483380abf580056b68",
+      "bytes": 2286
+    }
+  }
+}

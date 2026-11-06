@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-10-14T12:41:10.528500+00:00",
+  "raw_observation_sha256": "642ad0cc3898bf55934aea9952947186197a4ba0b6762a4d7e64bec199f766e9",
+  "a1": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "main": "479e2c695154e0604436c10058799532cbad5e8f",
+  "census": {
+    "queued": 0,
+    "in_progress": 9,
+    "waiting": 0,
+    "pending": 0,
+    "requested": 0
+  },
+  "refresh_lease_prs": [],
+  "incumbent": [
+    {
+      "id": 38565699943,
+      "status": "pending",
+      "conclusion": null,
+      "created_at": "2026-10-14T12:41:07Z",
+      "event": "workflow_run"
+    }
+  ],
+  "cap": 8,
+  "source_publication_admitted": false,
+  "a1_updated": false,
+  "earlier_1235_observation": "Partial TCP connection timeouts; counted10in_progress but total unreadable. No retry or zero-capacity inference."
+}

@@ -199,3 +199,104 @@ def test_days_in_phase_still_rendered_unchanged():
     block = _phase_block(_render(_vm()))
     assert ('<span class="l-en">Days in phase</span><span class="l-zh">已持续天数</span>: 16'
             in block)
+
+
+# --------------------------------------------------------------------------- #
+#  Participation labels: producer vocabularies, zh hero, heat-label row       #
+# --------------------------------------------------------------------------- #
+
+_EVIDENCE = ["turnover_z20=-2.25", "fin_pct_float=2.67%",
+             "broker_rs=0.0700 (positive, sector leading)",
+             "qvix_z=-1.03 (inverted-semantics: high=stress)"]
+_CJK = re.compile(r"[一-鿿]")
+
+
+def _lvm(latest: dict | None = None) -> dict:
+    vm = _vm(latest=latest)
+    vm["participation_labels"] = bcm._participation_labels(vm["participation"]["latest"])
+    return vm
+
+
+def _label_row(html: str) -> str:
+    return _between(html, '<div class="heat-label-row">', "</div>")
+
+
+def _hero(who: str) -> dict:
+    lpl = {"date": "2026-09-29", "qvix": 17.2, "regime": "dormant", "who_controls": who,
+           "risk": "low", "turnover_z20": -2.245}
+    return bcm._compose_state_reading({"latest": lpl}, {}, {})
+
+
+def test_zh_hero_never_emits_a_raw_risk_enum():
+    zh = _hero("mixed")["zh"]
+    assert "整体风险环境为low" not in zh
+    assert re.search(r"整体风险环境为[一-鿿]+。", zh), zh
+
+
+def test_every_producer_enum_value_has_a_label_pair():
+    from engine import china_participation as cp
+    for field, values in (("regime", cp.REGIME_VALUES), ("who_controls", cp.WHO_CONTROLS_VALUES),
+                          ("risk", cp.RISK_VALUES)):
+        for slug in values:
+            key = {"who_controls": "who"}.get(field, field)
+            pair = bcm._participation_labels({field: slug})[key]
+            assert pair["en"] and "_" not in pair["en"], (field, slug, pair)
+            assert _CJK.search(pair["zh"]), (field, slug, pair)
+            assert pair["zh"] not in (slug, slug.replace("_", " ").title()), (field, slug)
+
+
+def test_who_controls_zh_is_composition_not_sentiment():
+    zh = bcm._participation_labels({"who_controls": "mixed"})["who"]["zh"]
+    assert "喜忧参半" not in zh and _CJK.search(zh)
+
+
+def test_regime_and_who_render_from_the_committed_snapshot():
+    row = _label_row(_render(_lvm()))
+    zh = " ".join(re.findall(r'<span class="l-zh">(.*?)</span>', row, re.S))
+    assert "参与制度：沉寂" in zh and "控盘方：多方混合" in zh and "风险：低" in zh
+    assert "Dormant" not in zh and "喜忧参半" not in zh
+
+
+def test_state_proxy_is_not_rendered_as_no_single_group():
+    proxy = _hero("state_proxy")
+    for other in ("mixed", "unclear"):
+        assert proxy["en"] != _hero(other)["en"] and proxy["zh"] != _hero(other)["zh"]
+    assert _hero("mixed")["en"] != _hero("unclear")["en"]
+
+
+def test_participation_evidence_chips_render():
+    row = _label_row(_render(_lvm(latest={"evidence": _EVIDENCE})))
+    for s in _EVIDENCE:
+        assert s in row, s
+    assert "The legs this participation reading rests on" in row
+
+
+def test_empty_evidence_renders_no_chip_row():
+    row = _label_row(_render(_lvm()))
+    assert 'data-part="evidence"' not in row and "null-chip" not in row
+    assert "The legs this participation reading rests on" not in row
+
+
+def test_evidence_strings_are_not_rewritten():
+    row = _label_row(_render(_lvm(latest={"evidence": _EVIDENCE})))
+    chips = re.findall(r'<span class="null-chip">(.*?)</span>', row)
+    assert chips == _EVIDENCE
+
+
+def test_contradictions_block_still_renders_when_present():
+    row = _label_row(_render(_lvm(latest={
+        "evidence": _EVIDENCE,
+        "contradictions": [{"a": "turnover", "b": "margin", "detail": "legs disagree"}]})))
+    assert '<span class="null-chip">turnover vs margin — legs disagree</span>' in row
+    assert row.index('data-part="evidence"') < row.index("turnover vs margin")
+
+
+def test_build_payload_carries_the_participation_labels(monkeypatch):
+    lpl = _vm()["participation"]["latest"]
+    monkeypatch.setattr(bcm, "_read_json", lambda p: {})
+    monkeypatch.setattr(bcm, "_participation_panel", lambda: {"latest": lpl})
+    for name in ("_limit_panel", "_phase_panel", "_policy_panel", "_cross_market_panel"):
+        monkeypatch.setattr(bcm, name, lambda: {})
+    labels = bcm.build_payload()["participation_labels"]
+    assert labels["regime"] == {"en": "Dormant", "zh": "沉寂"}
+    assert labels["risk"] == {"en": "low", "zh": "低"}

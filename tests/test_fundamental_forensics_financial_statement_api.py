@@ -127,6 +127,9 @@ def test_paid_golden_aapl_returns_three_statement_trees(paid_client) -> None:
     _assert_private_headers(response)
     assert response.headers.get("x-fif-response-sha256") == _RESPONSE_SHA_LIVE
     assert hashlib.sha256(response.content).hexdigest() == _RESPONSE_SHA_LIVE
+    # #9761 follow-up (minor 5): this live pin is the no-cutoff body's bytes —
+    # recorded_at stays optional, and absent means the live registry view.
+    assert b"recorded_at" not in _body()
     payload = response.json()
     assert payload["schema"] == "fundamental_forensics.financial_statement_response/v1"
     assert payload["entity"]["entity_id"] == "ISS:US-XNAS-AAPL"

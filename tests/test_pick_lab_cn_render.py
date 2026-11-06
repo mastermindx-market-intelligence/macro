@@ -869,3 +869,181 @@ def test_render_velocity_card_prints_close_at_fire_price():
     }]
     html = _render_cn_lab(build_vm(fx))
     assert '<span class="pick-close">¥77.99</span>' in html
+
+
+# --------------------------------------------------------------------------- #
+#  W30-L38: 25-session path columns (Spec 3) + Accountability matured          #
+#  denominator / board definition (Spec 4). Values mirror the committed        #
+#  cn_audit_scoreboard.json / china_pick_lab.json shapes.                      #
+# --------------------------------------------------------------------------- #
+
+_AUD = {
+    "as_of": "2026-10-16", "schema": "cn_audit_scoreboard.v1",
+    "taxonomy_version": "v2", "board_definition": "cn_prophet_v4",
+    "total_matured": 357,
+    "cells": [
+        {"stratum": "Q4", "raw_n": 302, "effective_n": 1,
+         "state": "ACCRUING", "us_proxy": False},
+        {"stratum": "us_proxy", "raw_n": 55, "effective_n": 1,
+         "state": "ACCRUING", "us_proxy": True},
+    ],
+    "outcome_cause_mix": {"idio_break": 109, "mixed": 104,
+                          "idio_alpha": 86, "macro_headwind": 58},
+    "process_fault_mix": {"clean": 357},
+    "us_proxy_note": "x",
+}
+
+
+def _fx_path25() -> dict:
+    """_cn_prod_fixture with committed path25 values on the first three rows."""
+    lab = _cn_prod_fixture()
+    lab["scoreboard"][0].update(
+        path25_med_mfe=0.116026, path25_med_abs_mae=0.061148,
+        path25_asym=1.8975, path25_n=77)
+    lab["scoreboard"][1].update(path25_asym=1.5, path25_n=None)
+    lab["scoreboard"][2].update(path25_asym=1.5, path25_n=0)
+    return lab
+
+
+def test_path25_fmt_keys_format_committed_values():
+    """Committed rev_pure path25 values format to 11.6% / 6.1% / 1.90 / 77."""
+    from engine.pick_lab.render_cn import _enrich_scoreboard_row
+    r = _enrich_scoreboard_row({
+        "path25_med_mfe": 0.116026, "path25_med_abs_mae": 0.061148,
+        "path25_asym": 1.8975, "path25_n": 77,
+    })
+    assert r["path25_med_mfe_fmt"] == "11.6%"
+    assert r["path25_med_abs_mae_fmt"] == "6.1%"
+    assert r["path25_asym_fmt"] == "1.90"
+    assert r["path25_n_fmt"] == "77"
+
+
+def test_path25_fmt_keys_dash_when_absent():
+    """Absent or None path25 keys render the em-dash, never a stray value."""
+    from engine.pick_lab.render_cn import _enrich_scoreboard_row
+    keys = ("path25_med_mfe_fmt", "path25_med_abs_mae_fmt",
+            "path25_asym_fmt", "path25_n_fmt")
+    nulls = {"path25_med_mfe": None, "path25_med_abs_mae": None,
+             "path25_asym": None, "path25_n": None}
+    for base in ({}, nulls):
+        r = _enrich_scoreboard_row(dict(base))
+        for k in keys:
+            assert r[k] == "—"
+
+
+def test_scoreboard_prints_path25_columns():
+    """Scoreboard prints the 25d path columns; legacy h21 values are gone."""
+    from engine.pick_lab.render_cn import build_vm
+    html = _render_cn_lab(build_vm(_fx_path25(), None))
+    assert ('<td>11.6%</td>\n            <td>6.1%</td>\n'
+            '            <td>1.90 <span class="neu">n 77</span></td>') in html
+    assert html.count('<span class="neu">n ') == 1
+    assert html.count('<td>1.50</td>') == 2
+    assert '<td>9.0%</td>' not in html
+    assert '<td>2.20</td>' not in html
+    assert ('<span class="l-en">MFE med 25d</span>'
+            '<span class="l-zh">MFE中位25日</span>') in html
+    assert ('<span class="l-en">MAE med 25d</span>'
+            '<span class="l-zh">MAE中位25日</span>') in html
+    assert ('<span class="l-en">Asym 25d</span>'
+            '<span class="l-zh">非对称25日</span>') in html
+
+
+def test_hk_template_keeps_legacy_columns():
+    """HK lab is out of scope: no path25 keys, legacy columns still printed."""
+    src = (ROOT / "templates" / "hk_stocks_lab.html.j2").read_text()
+    assert "path25_" not in src
+    assert "row.mfe_med_fmt" in src
+    assert "row.asym_fmt" in src
+
+
+def test_accountability_vm_carries_denominator_and_board_definition():
+    """build_vm passes total_matured and board_definition through to the vm."""
+    import copy
+    from engine.pick_lab.render_cn import build_vm
+    acct = build_vm(None, _AUD)["accountability"]
+    assert acct["total_matured"] == 357
+    assert acct["board_definition"] == "cn_prophet_v4"
+    stripped = copy.deepcopy(_AUD)
+    stripped.pop("total_matured")
+    stripped.pop("board_definition")
+    acct = build_vm(None, stripped)["accountability"]
+    assert acct["total_matured"] is None
+    assert acct["board_definition"] == ""
+
+
+def test_accountability_without_total_matured_shows_plain_accruing():
+    """No denominator in the artifact → clock stays a plain ACCRUING, no (of …)."""
+    import copy
+    from engine.pick_lab.render_cn import build_vm
+    audit = copy.deepcopy(_AUD)
+    audit.pop("total_matured")
+    html = _render_cn_lab(build_vm(None, audit))
+    assert "(of " not in html
+    assert "（共" not in html
+    assert "Oct 15" not in html
+    assert ('<span class="acct-clock">\n'
+            '        <span class="l-en">ACCRUING</span>\n'
+            '        <span class="l-zh">累积中</span>') in html
+
+
+def test_accountability_prints_matured_denominator():
+    """Committed audit: 357-row denominator, board definition, no stale date."""
+    from engine.pick_lab.render_cn import build_vm
+    html = _render_cn_lab(build_vm(None, _AUD))
+    assert html.count('<span class="l-en">Count (of 357)</span>') == 2
+    assert html.count('<span class="l-zh">数量（共357）</span>') == 2
+    assert ('taxonomy v2 · <span class="l-en">board definition</span>'
+            '<span class="l-zh">选板定义</span>\n'
+            '      cn_prophet_v4\n'
+            '      · <span class="l-en">As of</span>') in html
+    assert '<span class="l-en">ACCRUING — 357 rows matured</span>' in html
+    assert '<span class="l-zh">累积中 — 357行已成熟</span>' in html
+    assert ('<span class="l-en">357 rows matured; at least one cell is below its\n'
+            '          cluster-unit floor (SA-R10).</span>') in html
+
+
+def test_no_passed_first_read_date():
+    """The passed first-read date is gone from template source and all renders."""
+    from engine.pick_lab.render_cn import build_vm
+    src = (ROOT / "templates" / "china_stocks_lab.html.j2").read_text()
+    for text in (src,
+                 _render_cn_lab(build_vm(None, None)),
+                 _render_cn_lab(build_vm(None, _AUD)),
+                 _render_cn_lab(build_vm(_cn_prod_fixture(), None))):
+        assert "Oct 15 2026" not in text
+        assert "2026年10月15日" not in text
+        assert "first read" not in text
+
+
+def test_all_cells_reported_drops_accruing():
+    """With no ACCRUING cell left, the clock reports the count, not accruing."""
+    import copy
+    from engine.pick_lab.render_cn import build_vm
+    audit = copy.deepcopy(_AUD)
+    for cell in audit["cells"]:
+        cell["state"] = "reported"
+    html = _render_cn_lab(build_vm(None, audit))
+    assert "every cell meets its cluster-unit floor" in html
+    assert '<span class="l-en">357 rows matured</span>' in html
+    assert "ACCRUING — " not in html
+
+
+def test_footnote_without_board_definition_keeps_seed_shape():
+    """Absent board_definition → footnote renders exactly the seed's shape."""
+    import copy
+    from engine.pick_lab.render_cn import build_vm
+    audit = copy.deepcopy(_AUD)
+    audit.pop("board_definition")
+    html = _render_cn_lab(build_vm(None, audit))
+    assert 'taxonomy v2\n      · <span class="l-en">As of</span>' in html
+    assert "board definition" not in html
+
+
+def test_accountability_section_opening_unchanged():
+    """The set-block insertion emits nothing: section opening stays byte-exact."""
+    from engine.pick_lab.render_cn import build_vm
+    marker = ('<section data-tab-panel="accountability" style="display:none">\n'
+              '    <div class="acct-header">')
+    for lab, audit in ((None, None), (None, _AUD), (_fx_path25(), None)):
+        assert marker in _render_cn_lab(build_vm(lab, audit))

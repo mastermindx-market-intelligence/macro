@@ -1,6 +1,6 @@
 {
   "schema": "marketing.lobe/v1",
-  "as_of": "2026-10-20",
+  "as_of": "2026-11-06",
   "lobe": {
     "id": "marketing",
     "name": "Marketing",
@@ -165,7 +165,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-10-20T08:27:30Z",
-  "inputs_hash": "sha256:3a1ab7df7f291ac5e64970c69b1b32fef3e0f0c4b0a36fd9d46bdc0cb7061468",
+  "produced_at": "2026-11-06T13:42:43Z",
+  "inputs_hash": "sha256:0a329803c086a70f67a5aef41bf333668408fd572e457c8f6197205afb064c0c",
   "tier": "display"
 }

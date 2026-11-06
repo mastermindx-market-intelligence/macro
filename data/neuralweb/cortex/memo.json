@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-20T08:15:28+00:00",
+  "as_of": "2026-11-06T13:43:57+00:00",
   "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
   "what_fired": [],
   "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
@@ -8,7 +8,7 @@
   "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-10-19",
+    "as_of": "2026-11-06",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,8 +20,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 148,
-      "total_rows": 156
+      "ungradeable": 174,
+      "total_rows": 182
     },
     "is_context_only": true
   },
@@ -34,58 +34,50 @@
     "model_used": "claude-sonnet-4-6",
     "provider_attempts": [
       {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": false,
+        "error_type": "transient",
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-1b8b-7592-abd5-8bcf746f9438\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+      },
+      {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": false,
+        "error_type": "transient",
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-2ecc-76d1-8a17-2ea5f0ade815\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+      },
+      {
         "provider": "oauth",
         "model": "claude-opus-4-8",
         "attempted": true,
         "ok": false,
         "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgDA37B4vASygSR3o9uTP'}"
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgmmrMEfwse14E75rsijT'}"
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgDA3G9p3Q34tQy6jib8T'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgDA4XBySaKK3CDMvRykz'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgDA97DiEkYHFd79BnKY5'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgDANXDxTrnVGv1SjGiqH'}"
-      },
-      {
-        "provider": "oauth",
+        "provider": "codex",
         "model": "claude-sonnet-4-6",
         "attempted": true,
         "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgDANY1LCPqCRD3eqHJ2V'}"
+        "error_type": "transient",
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-45c5-7830-9ae1-37feb7797763\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+      },
+      {
+        "provider": "codex",
+        "model": "claude-sonnet-4-6",
+        "attempted": true,
+        "ok": false,
+        "error_type": "transient",
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b11a-57aa-7c62-b55f-742c09e8bebd\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
       }
     ],
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-20T08:06:54Z"
+    "context_as_of": "2026-11-06T13:01:50Z"
   }
 }
