@@ -1,0 +1,61 @@
+# Review — official_feed_candidate.py + tests
+
+## Recommendation: **PASS** (no must-fix findings)
+
+## Scope
+- `engine/press/official_feed_candidate.py` (sha256 `1d682042…fda43d6`)
+- `tests/test_press_official_feed_candidate.py` (sha256 `ce680d3c…fef8d2f6`)
+
+The adapter honors the offline, planning-only, no-effect contract on every code path I traced. No must-fix bug found against the acceptance gates (hash, clock, URL, XML safety, item uniqueness, atom boundaries, tier/source identity, fact dates, rights, no-effect).
+
+## Verified behavior — matches each acceptance gate
+
+**Hash & file binding.** `re.fullmatch(r'[0-9a-f]{64}', …)`, symlink refusal, regular-file check, 1 MB cap, sha256 recomputation — all gate the candidate before XML parse. Test `test_modified_feed_refuses_exact_hash_binding` reproduces the gating.
+
+**Clock & timezone.** `parsedate_to_datetime` + `tzinfo is None` raise + outer `except (TypeError, ValueError, IndexError)` covers empty / non-date / naive inputs identically to the rejected "fall back to poll time" case. `_instant(q['published_at']) != published` rejects drift. Three parametrized clocks all gate.
+
+**UP source URL identity.** `urlsplit` then netloc ∈ {`www.occ.gov`, `www.occ.treas.gov`}, no query/fragment, fullmatch on `/news-issuances/news-releases/\d{4}/nr-occ-\d{4}-\d+\.html`. The lookalike mutation (`www.occ.gov.evil.test`) fails at netloc, exactly as the test asserts.
+
+**XML safety.** `b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper()` plus `ET.fromstring` with `(ET.ParseError, LookupError, ValueError)` covers the entity/`<!DOCTYPE rss [<!ENTITY …>]>` mutation and any parse-time exceptions (e.g., unknown encoding).
+
+**Clipping & duplicate items.** Body must equal `item['body_snippet']` (i.e. ≤ `_SNIPPET_MAX = 600`) AND `content:encoded` must be absent. Duplicate-link channel fails earlier at `len(selected) != 1`. All four feed mutations (duplicate / truncated / entity / lookalike) gate.
+
+**Quantity atom boundary.** Regex `(?<![\w.$])ATOM(?!<\w.])` enforced inside the literal. All four parametrized atoms (`$75`, `50`, `750`, `$750 billion`) gate because the only `750` occurrence in the fixture is preceded by `$` and followed by a digit.
+
+**Tier / source identity.** `_OCC['source_name']` and `tier='official'` flow into `primary_source.name` and `source_name` of every fact. The source-identity mutation list (8 cases) all gate at `source_key` / `feed_url` / `feed_sha256` / clock / rights / `allow_*` / claim-or-ticker validity.
+
+**Own fact dates.** Each fact carries `dated: event_date.isoformat()` (reviewed event date), not `published.date()`. The mutation `{event_date: '2026-10-08'}` gates via the chain `event_date <= published.date()`.
+
+**Rights admission.** `kind` + `review_result` + `rights.qualification == 'government_authored_factual_reporting'` + `rights.scope` non-empty + `allow_*`/`publication_approved` are all strictly `is False` (so 0/None/"False" string gate). The unqualified-rights mutation gates.
+
+**No effect.** `allow_stage`, `allow_emit`, `publication_approved` are hard-`False` in the return; `operation='planning_only'`; `cadence_consumed=False`; `blocked_by_existing_coverage` only reads. `before == after` snapshot in the happy-path test confirms no root mutation.
+
+## Material limits (contract, not bugs — flagging for parent awareness)
+
+1. **600-char body cap.** `parse_feed` truncates via `_SNIPPET_MAX`. Any RSS `<description>` ≥ 600 chars after HTML stripping gates as "complete untruncated RSS summary required". Fixture is 289 chars. Editorial must keep summaries under this; a longer summary needs a different adapter.
+
+2. **content:encoded rejected unconditionally.** Even an empty `content:encoded` element gates. Defensive but over-restrictive — flag if any future OCC item legitimately needs `content:encoded`.
+
+3. **Encoding declaration trusted.** Python `ET` (expat) honors `<?xml encoding="Windows-1252"?>`; ASCII bytes work; non-ASCII bytes that disagree with the declared encoding will silently re-decode. Curator responsibility, not the candidate's, but worth noting.
+
+4. **Feed URL pinned to legacy.** `_OCC['url'] = 'https://www.occ.treas.gov/rss/occ_news.xml'` is hardcoded. Item URLs allow both `www.occ.gov` and `www.occ.treas.gov`. If OCC migrates the RSS host, `_OCC['url']` must move with it.
+
+5. **`candidate_id` prefix.** `'press-external-'` prefix reused for an official-tier source — internally consistent with `external_candidate_plan.v1` schema, possibly misleading in dashboards. Cosmetic.
+
+6. **Fact `tier` is `third_party` even for `official` source.** Matches `external_candidate` precedent. Editorial may want a tier ladder that distinguishes official-authored from first-party measurements. Existing contract — flag separately if so.
+
+## Predecessor debt vs intentional rejections (per acceptance ask)
+
+- Mutation-test inputs (`{'source_key':'cnbc_top'}`, `{feed_url:'https://evil.test/rss'}`, `{allow_stage:True}`, `{reviewed_tickers:{BAC:'NVIDIA'}}`, `{reviewed_claims:[{literal:'$1.95 billion total', …}]}`, etc.) are intentional rejections proving source-specific contract enforcement — not bugs.
+- `press-external-` candidate id prefix, `external` `kind` on `primary_source`, `third_party` fact tier — all inherited from `external_candidate.py`, intentional shared schema.
+- 600-char cap, content:encoded rejection, encoding trust, legacy feed URL — contract decisions, not implementation bugs.
+
+## Test count reconciliation
+
+The official suite exercises 26 cases (1 happy path + 9 + 1 + 3 + 1 + 1 + 4 + 4 + 1 + 1 parametrize tests). The stated 123 combined = 26 official + ~97 external from `external_candidate` — consistent.
+
+## Disposition
+
+**PASS.** The adapter gates every hostile/lookalike/unsafe input the suite throws at it, leaves no writer/provider/cursor/registry effect on disk, and reuses the existing wire parser, context helper, and rights vocabulary without copy-paste drift. The material limits above are contract properties the parent already owns editorially; none are bugs.
+
+Not a legal grant. Source fidelity of the 289-char RSS summary to the live OCC press release, D14 mixed-desk W1, and any public release remain separate gates.

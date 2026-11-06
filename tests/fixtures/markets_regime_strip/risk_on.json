@@ -1,0 +1,30 @@
+{
+  "market_state": {
+    "verdict": "RISK_ON",
+    "label_en": "Risk-on",
+    "label_zh": "风险偏好",
+    "score": 61,
+    "color": "green",
+    "caveat_en": "",
+    "caveat_zh": ""
+  },
+  "hk_market_state": {
+    "verdict": "RISK_ON",
+    "label_en": "Risk-on",
+    "label_zh": "风险偏好",
+    "score": 70,
+    "color": "green",
+    "caveat_en": "Display-only and lighter than the US read: Hong Kong sample has no leading risk radar.",
+    "caveat_zh": "仅供展示，较美股版更轻量：此香港样例没有领先的风险雷达。"
+  },
+  "cn_market_state": {
+    "verdict": "RISK_ON",
+    "label_en": "Risk-on",
+    "label_zh": "风险偏好",
+    "score": 66,
+    "color": "green",
+    "caveat_en": "Display-only and lighter than the US read: China sample has no leading risk radar.",
+    "caveat_zh": "仅供展示，较美股版更轻量：此中国样例没有领先的风险雷达。"
+  },
+  "stance": {}
+}

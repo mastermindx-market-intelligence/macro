@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-25T00:25:18Z",
+ "accession": "0001262039-26-000007",
+ "cik": "0001262039",
+ "doc_byte_length": 2693210,
+ "doc_sha256": "bef9b7bdac3aa28a765d311540862082ccf7ceabb34e60686605c2d814ea3f50",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ftnt-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 588369,
+  "byte_start": 587797,
+  "normalized": "We have in the past experienced shortages and long or uncertain lead times for certain components. Our limited source components for particular appliances and suppliers of those components include specific types of CPUs from Intel and AMD, network and wireless chips from Broadcom, Marvell, Qualcomm and Intel, and memory devices from Intel, Micron, ADATA, Toshiba, Samsung and Western Digital. We also may face shortages in the supply of the capacitors and resistors that are used in the manufacturing of our products, which may persist for an indefinite period of time.",
+  "normalized_sha256": "79145b32734723eeb173e61313dee1e25a9c221b045c6f59103bf370325aa0a6",
+  "raw": " We have in the past experienced shortages and long or uncertain lead times for certain components. Our limited source components for particular appliances and suppliers of those components include specific types of CPUs from Intel and AMD, network and wireless chips from Broadcom, Marvell, Qualcomm and Intel, and memory devices from Intel, Micron, ADATA, Toshiba, Samsung and Western Digital. We also may face shortages in the supply of the capacitors and resistors that are used in the manufacturing of our products, which may persist for an indefinite period of time.",
+  "raw_sha256": "1abce12219746bb768c594561f0a5a2fbcfc540fc9df83b5e174148c756e5694"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1262039/000126203926000007/ftnt-20251231.htm",
+ "xbrl_contexts": []
+}
