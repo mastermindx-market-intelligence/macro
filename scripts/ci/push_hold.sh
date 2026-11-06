@@ -530,6 +530,7 @@ _push_hold_apply_ref() {
 # Admission is distinct from push_hold_red: a legitimate current-run hold and
 # successfully recovered rows do not mean an older ref is unreconciled.
 push_hold_recovery_ok() {
+  local record
   _push_hold_prepare_state || {
     echo "::error title=held rows not restored::could not prepare recovery state"
     return 1
@@ -538,11 +539,17 @@ push_hold_recovery_ok() {
     echo "::error title=held rows not restored::recovery state cannot be inspected and updated"
     return 1
   fi
-  if [ -e "$PUSH_HOLD_STATE/unreconciled" ] || [ -L "$PUSH_HOLD_STATE/unreconciled" ]; then
-    if [ ! -f "$PUSH_HOLD_STATE/unreconciled" ] || [ ! -r "$PUSH_HOLD_STATE/unreconciled" ] || [ -s "$PUSH_HOLD_STATE/unreconciled" ]; then
-      echo "::error title=held rows not restored::unreconciled recovery state blocks new source publication"
-      return 1
+  for record in unreconciled held recovered; do
+    if [ -e "$PUSH_HOLD_STATE/$record" ] || [ -L "$PUSH_HOLD_STATE/$record" ]; then
+      if [ ! -f "$PUSH_HOLD_STATE/$record" ] || [ ! -r "$PUSH_HOLD_STATE/$record" ] || [ ! -w "$PUSH_HOLD_STATE/$record" ]; then
+        echo "::error title=held rows not restored::$record state cannot be inspected and updated"
+        return 1
+      fi
     fi
+  done
+  if [ -s "$PUSH_HOLD_STATE/unreconciled" ]; then
+    echo "::error title=held rows not restored::unreconciled recovery state blocks new source publication"
+    return 1
   fi
   return 0
 }
@@ -691,26 +698,26 @@ _push_hold_held_has() {
   return 1
 }
 
-push_hold_settle() {
+_push_hold_settle_impl() {
   local before now line ref r p ok
-  _push_hold_state_var || return 0
+  push_hold_recovery_ok || return 2
   [ -s "$PUSH_HOLD_STATE/recovered" ] || return 0
-  : > "$PUSH_HOLD_STATE/pushed_names"
+  : > "$PUSH_HOLD_STATE/pushed_names" || return 2
   if [ -f "$PUSH_HOLD_STATE/head_before" ]; then
-    before=$(cat "$PUSH_HOLD_STATE/head_before") || before=""
-    now=$(git rev-parse HEAD 2>/dev/null) || now=""
+    before=$(cat "$PUSH_HOLD_STATE/head_before") || return 2
+    now=$(git rev-parse HEAD 2>/dev/null) || return 2
     if [ -n "$before" ] && [ -n "$now" ] && [ "$now" != "$before" ]; then
-      git diff-tree --no-commit-id --name-only -r HEAD > "$PUSH_HOLD_STATE/pushed_names" || : > "$PUSH_HOLD_STATE/pushed_names"
+      git diff-tree --no-commit-id --name-only -r HEAD > "$PUSH_HOLD_STATE/pushed_names" || return 2
     fi
   fi
-  : > "$PUSH_HOLD_STATE/settle_refs"
+  : > "$PUSH_HOLD_STATE/settle_refs" || return 2
   while IFS= read -r line; do
     [ -n "$line" ] || continue
     ref=${line%%$'\t'*}
     if ! grep -qxF "$ref" "$PUSH_HOLD_STATE/settle_refs"; then
-      printf '%s\n' "$ref" >> "$PUSH_HOLD_STATE/settle_refs"
+      printf '%s\n' "$ref" >> "$PUSH_HOLD_STATE/settle_refs" || return 2
     fi
-  done < "$PUSH_HOLD_STATE/recovered"
+  done < "$PUSH_HOLD_STATE/recovered" || return 2
   while IFS= read -r ref; do
     [ -n "$ref" ] || continue
     ok=1
@@ -725,7 +732,7 @@ push_hold_settle() {
         continue
       fi
       ok=0
-    done < "$PUSH_HOLD_STATE/recovered"
+    done < "$PUSH_HOLD_STATE/recovered" || return 2
     if [ "$ok" -ne 1 ]; then
       echo "::warning title=hold ref kept::${ref} has a path that is neither in the pushed commit nor held again"
       continue
@@ -735,7 +742,17 @@ push_hold_settle() {
     else
       echo "::warning title=hold ref remains::${ref} delete did not verify"
     fi
-  done < "$PUSH_HOLD_STATE/settle_refs"
+  done < "$PUSH_HOLD_STATE/settle_refs" || return 2
+  return 0
+}
+
+push_hold_settle() {
+  local rc=0
+  _push_hold_settle_impl "$@" || rc=$?
+  if [ "$rc" -ne 0 ]; then
+    _push_hold_mark_unreconciled "settlement" "could not establish fresh custody retirement evidence" || true
+    return 2
+  fi
   return 0
 }
 
@@ -752,7 +769,7 @@ push_hold_oversize_staged() {
   local staged_list path size over=0 ungrouped=0 line rest blob headblob overflag
   local n i g hot take layout head_size pfx_hash headsha tree commit ref
   local fromref frompath msg reset_failed=0
-  _push_hold_state_var || return 2
+  push_hold_recovery_ok || return 2
   staged_list=$(git diff --cached --name-only --no-renames --diff-filter=d) || {
     echo "::error title=hold custody failed::could not list staged paths"
     return 2
@@ -782,8 +799,8 @@ push_hold_oversize_staged() {
     return 2
   }
   _push_hold_save_groups "$@" || return 2
-  printf '%s\n' "$staged_list" > "$PUSH_HOLD_WORK/staged"
-  : > "$PUSH_HOLD_WORK/meta"
+  printf '%s\n' "$staged_list" > "$PUSH_HOLD_WORK/staged" || return 2
+  : > "$PUSH_HOLD_WORK/meta" || return 2
   ungrouped=0
   while IFS= read -r path; do
     [ -n "$path" ] || continue
@@ -801,11 +818,11 @@ push_hold_oversize_staged() {
     if git cat-file -e "HEAD:${path}" 2>/dev/null; then
       headblob=$(git rev-parse --verify "HEAD:${path}" 2>/dev/null) || headblob="-"
     fi
-    printf '%s\t%s\t%s\t%s\t%s\n' "$path" "$size" "$blob" "$headblob" "$overflag" >> "$PUSH_HOLD_WORK/meta"
+    printf '%s\t%s\t%s\t%s\t%s\n' "$path" "$size" "$blob" "$headblob" "$overflag" >> "$PUSH_HOLD_WORK/meta" || return 2
     if ! _push_hold_path_in_any "$path"; then
       ungrouped=1
     fi
-  done < "$PUSH_HOLD_WORK/staged"
+  done < "$PUSH_HOLD_WORK/staged" || return 2
 
   if [ "$ungrouped" -eq 1 ]; then
     while IFS= read -r path; do
@@ -815,11 +832,11 @@ push_hold_oversize_staged() {
         echo "::error title=hold membership not proved::${msg}"
         _push_hold_summary "$msg"
       fi
-    done < "$PUSH_HOLD_WORK/staged"
-    cp "$PUSH_HOLD_WORK/staged" "$PUSH_HOLD_WORK/hold_paths"
+    done < "$PUSH_HOLD_WORK/staged" || return 2
+    cp "$PUSH_HOLD_WORK/staged" "$PUSH_HOLD_WORK/hold_paths" || return 2
   else
-    n=$(cat "$PUSH_HOLD_WORK/group.count")
-    : > "$PUSH_HOLD_WORK/hot"
+    n=$(cat "$PUSH_HOLD_WORK/group.count") || return 2
+    : > "$PUSH_HOLD_WORK/hot" || return 2
     i=1
     while [ "$i" -le "$n" ]; do
       g=$(cat "$PUSH_HOLD_WORK/g.$i") || return 2
@@ -836,13 +853,13 @@ push_hold_oversize_staged() {
         if [ "$overflag" = "1" ] && _push_hold_path_in_group "$path" "$g"; then
           hot=1
         fi
-      done < "$PUSH_HOLD_WORK/meta"
+      done < "$PUSH_HOLD_WORK/meta" || return 2
       if [ "$hot" -eq 1 ]; then
-        printf '%s\n' "$i" >> "$PUSH_HOLD_WORK/hot"
+        printf '%s\n' "$i" >> "$PUSH_HOLD_WORK/hot" || return 2
       fi
       i=$((i + 1))
     done
-    : > "$PUSH_HOLD_WORK/hold_paths"
+    : > "$PUSH_HOLD_WORK/hold_paths" || return 2
     while IFS= read -r path; do
       [ -n "$path" ] || continue
       take=0
@@ -855,16 +872,16 @@ push_hold_oversize_staged() {
         i=$((i + 1))
       done
       if [ "$take" -eq 1 ]; then
-        printf '%s\n' "$path" >> "$PUSH_HOLD_WORK/hold_paths"
+        printf '%s\n' "$path" >> "$PUSH_HOLD_WORK/hold_paths" || return 2
       fi
-    done < "$PUSH_HOLD_WORK/staged"
+    done < "$PUSH_HOLD_WORK/staged" || return 2
   fi
   if [ ! -s "$PUSH_HOLD_WORK/hold_paths" ]; then
     echo "::error title=hold custody failed::an over-limit path produced an empty hold set"
     return 2
   fi
 
-  : > "$PUSH_HOLD_WORK/from_refs"
+  : > "$PUSH_HOLD_WORK/from_refs" || return 2
   if [ -s "$PUSH_HOLD_STATE/recovered" ]; then
     while IFS= read -r line; do
       [ -n "$line" ] || continue
@@ -873,18 +890,18 @@ push_hold_oversize_staged() {
       [ "$fromref" != "$frompath" ] || continue
       if grep -qxF "$frompath" "$PUSH_HOLD_WORK/hold_paths"; then
         if ! grep -qxF "$fromref" "$PUSH_HOLD_WORK/from_refs"; then
-          printf '%s\n' "$fromref" >> "$PUSH_HOLD_WORK/from_refs"
+          printf '%s\n' "$fromref" >> "$PUSH_HOLD_WORK/from_refs" || return 2
         fi
       fi
-    done < "$PUSH_HOLD_STATE/recovered"
+    done < "$PUSH_HOLD_STATE/recovered" || return 2
   fi
 
-  rm -f "$PUSH_HOLD_INDEX"
+  rm -f "$PUSH_HOLD_INDEX" || return 2
   GIT_INDEX_FILE="$PUSH_HOLD_INDEX" git read-tree --empty || {
     echo "::error title=hold custody failed::could not start a private index"
     return 2
   }
-  : > "$PUSH_HOLD_WORK/entries"
+  : > "$PUSH_HOLD_WORK/entries" || return 2
   i=0
   while IFS= read -r path; do
     [ -n "$path" ] || continue
@@ -938,27 +955,27 @@ push_hold_oversize_staged() {
       layout=blob
       _push_hold_index_blob "$blob" "blobs/${i}" || return 2
     fi
-    printf 'entry\t%s\t%s\t%s\t%s\t%s\t%s\n' "$i" "$path" "$blob" "$size" "$headblob" "$layout" >> "$PUSH_HOLD_WORK/entries"
+    printf 'entry\t%s\t%s\t%s\t%s\t%s\t%s\n' "$i" "$path" "$blob" "$size" "$headblob" "$layout" >> "$PUSH_HOLD_WORK/entries" || return 2
     i=$((i + 1))
-  done < "$PUSH_HOLD_WORK/hold_paths"
+  done < "$PUSH_HOLD_WORK/hold_paths" || return 2
 
   headsha=$(git rev-parse HEAD) || {
     echo "::error title=hold custody failed::could not read HEAD"
     return 2
   }
   {
-    printf '%s\n' "push-hold/v1"
-    printf 'run\t%s-%s\n' "${GITHUB_RUN_ID:-0}" "${GITHUB_RUN_ATTEMPT:-1}"
-    printf 'scope\t%s\n' "$PUSH_HOLD_SCOPE"
-    printf 'head\t%s\n' "$headsha"
-    cat "$PUSH_HOLD_WORK/entries"
+    printf '%s\n' "push-hold/v1" || return 2
+    printf 'run\t%s-%s\n' "${GITHUB_RUN_ID:-0}" "${GITHUB_RUN_ATTEMPT:-1}" || return 2
+    printf 'scope\t%s\n' "$PUSH_HOLD_SCOPE" || return 2
+    printf 'head\t%s\n' "$headsha" || return 2
+    cat "$PUSH_HOLD_WORK/entries" || return 2
     if [ -s "$PUSH_HOLD_WORK/from_refs" ]; then
       while IFS= read -r fromref; do
         [ -n "$fromref" ] || continue
-        printf 'from\t%s\n' "$fromref"
-      done < "$PUSH_HOLD_WORK/from_refs"
+        printf 'from\t%s\n' "$fromref" || return 2
+      done < "$PUSH_HOLD_WORK/from_refs" || return 2
     fi
-  } > "$PUSH_HOLD_WORK/MANIFEST"
+  } > "$PUSH_HOLD_WORK/MANIFEST" || return 2
   blob=$(git hash-object -w "$PUSH_HOLD_WORK/MANIFEST") || {
     echo "::error title=hold custody failed::could not hash MANIFEST"
     return 2
@@ -978,6 +995,15 @@ push_hold_oversize_staged() {
   ref="${PUSH_HOLD_PREFIX}${PUSH_HOLD_SCOPE}/${GITHUB_RUN_ID:-0}-${GITHUB_RUN_ATTEMPT:-1}-${commit:0:12}"
   _push_hold_push_ref "$commit" "$ref" || return 2
 
+  # Record verified custody before changing the real index or worktree.
+  while IFS= read -r path; do
+    [ -n "$path" ] || continue
+    if ! printf '%s\t%s\n' "$ref" "$path" >> "$PUSH_HOLD_STATE/held"; then
+      _push_hold_mark_unreconciled "$ref" "could not record verified hold" || true
+      return 2
+    fi
+  done < "$PUSH_HOLD_WORK/hold_paths" || return 2
+
   reset_failed=0
   while IFS= read -r path; do
     [ -n "$path" ] || continue
@@ -989,15 +1015,14 @@ push_hold_oversize_staged() {
         reset_failed=1
       fi
     fi
-  done < "$PUSH_HOLD_WORK/hold_paths"
+  done < "$PUSH_HOLD_WORK/hold_paths" || return 2
   while IFS= read -r path; do
     [ -n "$path" ] || continue
     size=$(_push_hold_meta_size "$path") || size="?"
-    printf '%s\t%s\n' "$ref" "$path" >> "$PUSH_HOLD_STATE/held"
     msg="${path} is ${size} B, over ${PUSH_BLOB_LIMIT} B. Withheld with its group; its bytes are kept at ${ref} and the next run restores them."
     echo "::error title=withheld, not lost::${msg}"
     _push_hold_summary "$msg"
-  done < "$PUSH_HOLD_WORK/hold_paths"
+  done < "$PUSH_HOLD_WORK/hold_paths" || return 2
   if [ "$reset_failed" -ne 0 ]; then
     echo "::error title=hold custody failed::${ref} is on origin but the worktree could not be restored"
     return 2
