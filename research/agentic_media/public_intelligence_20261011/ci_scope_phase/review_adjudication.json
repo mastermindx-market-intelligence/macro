@@ -1,0 +1,26 @@
+{
+  "fabric_run": "mmx-press-ci-scope-review-20261014-001",
+  "worker_verdict": "FAIL narrow on initial42/68 scope proposal",
+  "parent_verdict": "ACCEPTED_FINAL_REPAIR_WITH_DETERMINISTIC_PROOF",
+  "valid_findings_addressed": [
+    "runtime config.yml observed and now declared",
+    "all existing package-parent initializers now declared",
+    "observed per-suite test-support module reads conservatively declared"
+  ],
+  "corrected_worker_inferences": [
+    "if:false is intentional logical-job metadata; run_ci_pack executes these commands; not inert",
+    "generated fallback patterns are selector evidence, not candidate YAML additions",
+    "uninvoked lib.pages code alone does not prove runtime config reachability; runtime audit supplies direct proof"
+  ],
+  "tests": {
+    "individual_suites": "63 and5 pass with runtime path read audits",
+    "repo_runtime_writes": false,
+    "initial_full_job": "1 registry failure,823 passes,2 existing sparse skips",
+    "additional_registration": "two names added to CURATED_EXCLUSIVE; exact equality and all ceilings unchanged"
+  },
+  "final_manifest_sha256": "74c05708c169fe1b358131ba12a343397a2e428d273f560f2859be897c107128",
+  "final_registry_sha256": "08af6033a10cc9b7aa4275b6b6c453b13efb57a44dfec0312e920c1e0d15a0ba",
+  "review_stdout_sha256": "04459daa4f72fdea3776b3309a050f93d4931d3bad11ba6c601c2ba9c2edb508",
+  "limits": "No claim of worker PASS on repaired bytes; root owns repair adjudication with deterministic proof. No production proof.",
+  "final_proof": "824 passed,2 existing sparse skips;68 rotation runtime-audit tests pass;160 positive dependency paths/6 negative probes;contract delta0 introduced/0 inherited"
+}
