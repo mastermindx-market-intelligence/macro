@@ -1,0 +1,14 @@
+{
+  "ci-scope-green.log": {
+    "raw_sha256": "d4422f66909ede64ec8ed17cbe4d15e419e12369992afded5c05528e30125b77",
+    "rendered_sha256": "d4422f66909ede64ec8ed17cbe4d15e419e12369992afded5c05528e30125b77",
+    "exact_bytes": "ci-scope-green.log.gz",
+    "readable_change": "trailing whitespace removed only"
+  },
+  "reader-auth.log": {
+    "raw_sha256": "fe3515b928fb8adf1f56cc4006d5b82c644b6bd97e022a69984a44c58d80da91",
+    "rendered_sha256": "f7f1c23e0c53ae1842a58fab3fd10f0c84ac23aa248b4efcdf61dbab7ee1a3db",
+    "exact_bytes": "reader-auth.log.gz",
+    "readable_change": "trailing whitespace removed only"
+  }
+}

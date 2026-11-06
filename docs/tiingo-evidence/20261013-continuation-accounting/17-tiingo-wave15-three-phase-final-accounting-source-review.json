@@ -1,0 +1,38 @@
+{
+  "schema": "tiingo.bounded_three_phase_accounting_source_review/v1",
+  "recorded_at_utc": "2026-10-13T02:45:01.865908+00:00",
+  "decision": "PASS",
+  "method_sha256": "3744200cbd984fe49b79020966f35d4ed1bf2f78f2128e722a845bcfa89ed2b4",
+  "scope": "Future read-only aggregate of accepted original two-phase accounting plus separately consumed phase02 accounting; no execution acceptance",
+  "findings": [
+    "Immutable prior combined1ae and consumed parenta8 pins match. All old referenced qualification/census/window/capture-parent/result hashes match.",
+    "New physical accounting must come from exactcb89 method withc693 core and a root-owned consumed exit-zero parent binding its actual hash; missing future acceptance fails before output.",
+    "Plan9ce exact2015 rows must equal old never-admitted list; remaining budget must equal original24GiB minus old captured bytes.",
+    "Across original43992,physical0133372 andphysical0257125, each result requires one matching hashed consumed capture-parent with expected session and actual exit rule. Unique in-range admission indices must map in order to phase plan and started tasks; no cross-phase started overlap.",
+    "Qualification/quality sets are duplicate-free and attributed outside or inside physical02 selection as appropriate. They plus exact held failures and never-admitted sets must cover original4392; capture success/failed/started ledgers independently reconcile to those same sets.",
+    "Quarantine identities/counts and captured row hints reconcile with qualified bars; total captured raw bytes reconcile to prior+new and qualified+quarantined sums. Latest census hash/status/47689total and history/bar delta checks remain.",
+    "Source uses accepted physical evidence rather than executing producer or materializer. Exclusive new output preserves original and two-phase artifacts.",
+    "Independent capture-only reconciliation of actual three ledgers gives2494 captured successes,5 held failures,1893 never-admitted,total4392,1256537475rawbytes and5571432rowhints. This does not establish final qualification counts."
+  ],
+  "remaining_actual_gates": [
+    "Consume actual97444 qualifier terminal return and complete accurate window-parent evidence.",
+    "Run reviewed cb89 physical accounting only after its gates pass; consume actual accounting terminal return and save accurate bound parent.",
+    "Only then execute this exact aggregate once and retain/consume its actual result. Physical accounting,parent and aggregate output were all absent at review."
+  ],
+  "falsifiers": [
+    "Changed pinned prior proof or mismatched physical method/core/parent",
+    "Duplicate or misattributed admitted request,successful request,quality or failure",
+    "Any captured success without accepted qualification/quality disposition",
+    "Incorrect clock,raw/row/census reconciliation rejected by physical proof or aggregate",
+    "Claiming full capture,provider retry authority or programme acceptance from partial accounting"
+  ],
+  "review_actions": {
+    "method_executed": false,
+    "provider_calls": 0,
+    "credentials_accessed": false,
+    "archive_writes": 0,
+    "source_changes": 0,
+    "offline_syntax_hash_ledger_arithmetic_checks": true,
+    "review_artifact_only_write": true
+  }
+}

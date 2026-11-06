@@ -1,0 +1,281 @@
+{
+  "schema": "mastermind.f04_served_nav_reachability.v1",
+  "generated_at": "2026-09-25T01:10:31Z",
+  "base_url": "https://www.mastermind-x.com",
+  "access": "anonymous (no credential entered; the landing is the anonymous gate state)",
+  "journey": "macro.html -> shared nav (hamburger on mobile) -> dropdown trigger -> ontology item click -> ontology.html",
+  "cells": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "locale": "en",
+      "theme": "dark",
+      "route": "/macro.html",
+      "status": 200,
+      "applied_theme": "dark",
+      "applied_lang": "en",
+      "found": true,
+      "mobileOpened": false,
+      "trigger": "Research研究 ▾",
+      "ddOpen": false,
+      "hovered": "trigger, then item (auto-scrolled into view, pointer kept inside the open panel)",
+      "item": {
+        "text": "WTI Live PathWTI 实时路径Which step of the oil-to-rates path is ",
+        "href": "ontology.html",
+        "box": [
+          185,
+          410,
+          468,
+          78
+        ],
+        "visible": true
+      },
+      "screenshot": "nav-open-macro-desktop-en-dark.png",
+      "screenshot_sha256": "b83a6b501e905e538b7a5e0c1e75514d48b4a6f4579a339e849f9888861357bd",
+      "landed_url": "https://www.mastermind-x.com/ontology.html",
+      "landed_title": "WTI Live Path — Mastermind",
+      "landed_screenshot": "nav-landed-ontology-desktop-en-dark.png",
+      "landed_sha256": "9117906f436ec5d74434f189169ef73c4a5fb69f370ded32853b58da0ab63954",
+      "landed_excerpt": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Sign in to see the current path This page describes the product. The current reading is served only to a signed-in account. Sig",
+      "captured": true
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "locale": "en",
+      "theme": "light",
+      "route": "/macro.html",
+      "status": 200,
+      "applied_theme": "light",
+      "applied_lang": "en",
+      "found": true,
+      "mobileOpened": false,
+      "trigger": "Research研究 ▾",
+      "ddOpen": false,
+      "hovered": "trigger, then item (auto-scrolled into view, pointer kept inside the open panel)",
+      "item": {
+        "text": "WTI Live PathWTI 实时路径Which step of the oil-to-rates path is ",
+        "href": "ontology.html",
+        "box": [
+          185,
+          410,
+          468,
+          78
+        ],
+        "visible": true
+      },
+      "screenshot": "nav-open-macro-desktop-en-light.png",
+      "screenshot_sha256": "0ca69a304bb5f609103acb13561ba2b3cd2e0820344f8060584c05eb912b8812",
+      "landed_url": "https://www.mastermind-x.com/ontology.html",
+      "landed_title": "WTI Live Path — Mastermind",
+      "landed_screenshot": "nav-landed-ontology-desktop-en-light.png",
+      "landed_sha256": "b1217542124723efb64f53dd20f56ebb95be37a99763fdb2a1bbd7774681a768",
+      "landed_excerpt": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Sign in to see the current path This page describes the product. The current reading is served only to a signed-in account. Sig",
+      "captured": true
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "locale": "zh",
+      "theme": "dark",
+      "route": "/macro.html",
+      "status": 200,
+      "applied_theme": "dark",
+      "applied_lang": "zh",
+      "found": true,
+      "mobileOpened": false,
+      "trigger": "Research研究 ▾",
+      "ddOpen": false,
+      "hovered": "trigger, then item (auto-scrolled into view, pointer kept inside the open panel)",
+      "item": {
+        "text": "WTI Live PathWTI 实时路径Which step of the oil-to-rates path is ",
+        "href": "ontology.html",
+        "box": [
+          185,
+          410,
+          468,
+          78
+        ],
+        "visible": true
+      },
+      "screenshot": "nav-open-macro-desktop-zh-dark.png",
+      "screenshot_sha256": "d11e2ffcccb3c880412b65988af0b836c930d4b635a01d66ca69be86d87cdd26",
+      "landed_url": "https://www.mastermind-x.com/ontology.html",
+      "landed_title": "WTI Live Path — Mastermind",
+      "landed_screenshot": "nav-landed-ontology-desktop-zh-dark.png",
+      "landed_sha256": "c1f2259c95ea814be60309c4d083408efeb142824851c5013ceb36b76704614d",
+      "landed_excerpt": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 登录后查看当前路径 本页面介绍该产品。当前读数仅向已登录账户提供。 登录 本页面是什么 传导路径是一种“逐环节递进”的因果主张。本页面按照所有者当前的观测读取其中一条路径：哪些环节已满足、哪个环节使其中止、已记录到什么，以及下一步值得查看什么。本页面不做预测、排名、仓位建议或投资推荐；后段环节为真，也绝不视为前段环节的证据。 问操盘大脑 大脑 · 你的桌面副驾",
+      "captured": true
+    },
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "locale": "zh",
+      "theme": "light",
+      "route": "/macro.html",
+      "status": 200,
+      "applied_theme": "light",
+      "applied_lang": "zh",
+      "found": true,
+      "mobileOpened": false,
+      "trigger": "Research研究 ▾",
+      "ddOpen": false,
+      "hovered": "trigger, then item (auto-scrolled into view, pointer kept inside the open panel)",
+      "item": {
+        "text": "WTI Live PathWTI 实时路径Which step of the oil-to-rates path is ",
+        "href": "ontology.html",
+        "box": [
+          185,
+          410,
+          468,
+          78
+        ],
+        "visible": true
+      },
+      "screenshot": "nav-open-macro-desktop-zh-light.png",
+      "screenshot_sha256": "befb0791df6e715895a5c46a2fe1b7b7310723ea5d64b235b56ab4cfaa6d6ced",
+      "landed_url": "https://www.mastermind-x.com/ontology.html",
+      "landed_title": "WTI Live Path — Mastermind",
+      "landed_screenshot": "nav-landed-ontology-desktop-zh-light.png",
+      "landed_sha256": "c8bd5ceefc9d8cf9c187c789fbd0dc21b3c302806716705862e9107f73584e97",
+      "landed_excerpt": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 登录后查看当前路径 本页面介绍该产品。当前读数仅向已登录账户提供。 登录 本页面是什么 传导路径是一种“逐环节递进”的因果主张。本页面按照所有者当前的观测读取其中一条路径：哪些环节已满足、哪个环节使其中止、已记录到什么，以及下一步值得查看什么。本页面不做预测、排名、仓位建议或投资推荐；后段环节为真，也绝不视为前段环节的证据。 问操盘大脑 大脑 · 你的桌面副驾",
+      "captured": true
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "locale": "en",
+      "theme": "dark",
+      "route": "/macro.html",
+      "status": 200,
+      "applied_theme": "dark",
+      "applied_lang": "en",
+      "found": true,
+      "mobileOpened": true,
+      "trigger": "Research研究 ▾",
+      "ddOpen": true,
+      "item": {
+        "text": "WTI Live PathWTI 实时路径Which step of the oil-to-rates path is ",
+        "href": "ontology.html",
+        "box": [
+          26,
+          388,
+          346,
+          68
+        ],
+        "visible": true
+      },
+      "screenshot": "nav-open-macro-mobile-en-dark.png",
+      "screenshot_sha256": "f6e092ed6950d325a0f409bd1acb2872aa53b25946afeac7073041f085acbf20",
+      "landed_url": "https://www.mastermind-x.com/ontology.html",
+      "landed_title": "WTI Live Path — Mastermind",
+      "landed_screenshot": "nav-landed-ontology-mobile-en-dark.png",
+      "landed_sha256": "cf890bc3f0cbac65ed033a890feb613dca6652ea346b46258e846b8515ee13ec",
+      "landed_excerpt": "NVDA Terminal Sign in to see the current path This page describes the product. The current reading is served only to a signed-in account. Sign in What this page is A transmission path is a claim that one thing leads to another, step by step",
+      "captured": true
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "locale": "en",
+      "theme": "light",
+      "route": "/macro.html",
+      "status": 200,
+      "applied_theme": "light",
+      "applied_lang": "en",
+      "found": true,
+      "mobileOpened": true,
+      "trigger": "Research研究 ▾",
+      "ddOpen": true,
+      "item": {
+        "text": "WTI Live PathWTI 实时路径Which step of the oil-to-rates path is ",
+        "href": "ontology.html",
+        "box": [
+          26,
+          388,
+          346,
+          68
+        ],
+        "visible": true
+      },
+      "screenshot": "nav-open-macro-mobile-en-light.png",
+      "screenshot_sha256": "28314b10fe53490dd778b6592033a55014cdeab1f274e0afaeffcbb21630cfd1",
+      "landed_url": "https://www.mastermind-x.com/ontology.html",
+      "landed_title": "WTI Live Path — Mastermind",
+      "landed_screenshot": "nav-landed-ontology-mobile-en-light.png",
+      "landed_sha256": "11d9bd51624021f24129c5168f7ef6f7d4290a18fc4a9770ca1fafffd95f8209",
+      "landed_excerpt": "NVDA Terminal Sign in to see the current path This page describes the product. The current reading is served only to a signed-in account. Sign in What this page is A transmission path is a claim that one thing leads to another, step by step",
+      "captured": true
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "locale": "zh",
+      "theme": "dark",
+      "route": "/macro.html",
+      "status": 200,
+      "applied_theme": "dark",
+      "applied_lang": "zh",
+      "found": true,
+      "mobileOpened": true,
+      "trigger": "Research研究 ▾",
+      "ddOpen": true,
+      "item": {
+        "text": "WTI Live PathWTI 实时路径Which step of the oil-to-rates path is ",
+        "href": "ontology.html",
+        "box": [
+          26,
+          388,
+          346,
+          68
+        ],
+        "visible": true
+      },
+      "screenshot": "nav-open-macro-mobile-zh-dark.png",
+      "screenshot_sha256": "20d5b20007c325b4b8893d1dac1226124c23add559bafb62a28c8c8b26bdf0cf",
+      "landed_url": "https://www.mastermind-x.com/ontology.html",
+      "landed_title": "WTI Live Path — Mastermind",
+      "landed_screenshot": "nav-landed-ontology-mobile-zh-dark.png",
+      "landed_sha256": "f2053fc33a54a606b7db683585532f8c896a2d234359e729c6dfa98fead1c97b",
+      "landed_excerpt": "NVDA 终端 登录后查看当前路径 本页面介绍该产品。当前读数仅向已登录账户提供。 登录 本页面是什么 传导路径是一种“逐环节递进”的因果主张。本页面按照所有者当前的观测读取其中一条路径：哪些环节已满足、哪个环节使其中止、已记录到什么，以及下一步值得查看什么。本页面不做预测、排名、仓位建议或投资推荐；后段环节为真，也绝不视为前段环节的证据。",
+      "captured": true
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "locale": "zh",
+      "theme": "light",
+      "route": "/macro.html",
+      "status": 200,
+      "applied_theme": "light",
+      "applied_lang": "zh",
+      "found": true,
+      "mobileOpened": true,
+      "trigger": "Research研究 ▾",
+      "ddOpen": true,
+      "item": {
+        "text": "WTI Live PathWTI 实时路径Which step of the oil-to-rates path is ",
+        "href": "ontology.html",
+        "box": [
+          26,
+          388,
+          346,
+          68
+        ],
+        "visible": true
+      },
+      "screenshot": "nav-open-macro-mobile-zh-light.png",
+      "screenshot_sha256": "8aeae869cedf6a9768859c740d9c47183d7cb9cc756d608787e2037d5dfba52d",
+      "landed_url": "https://www.mastermind-x.com/ontology.html",
+      "landed_title": "WTI Live Path — Mastermind",
+      "landed_screenshot": "nav-landed-ontology-mobile-zh-light.png",
+      "landed_sha256": "612052a61ffbc46f74a6d6d163bcfe82952d50434cc5f99e081239171672cb26",
+      "landed_excerpt": "NVDA 终端 登录后查看当前路径 本页面介绍该产品。当前读数仅向已登录账户提供。 登录 本页面是什么 传导路径是一种“逐环节递进”的因果主张。本页面按照所有者当前的观测读取其中一条路径：哪些环节已满足、哪个环节使其中止、已记录到什么，以及下一步值得查看什么。本页面不做预测、排名、仓位建议或投资推荐；后段环节为真，也绝不视为前段环节的证据。",
+      "captured": true
+    }
+  ],
+  "totals": {
+    "attempted": 8,
+    "captured": 8
+  }
+}
