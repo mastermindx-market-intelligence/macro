@@ -98,6 +98,67 @@ def _load_briefs(site_dir: Path, data_dir: Path) -> dict:
     return out
 
 
+def _load_am_edition_panel(site_dir: Path, data_dir: Path) -> dict:
+    """MOR-2b Lane C: load site/am_edition.json (with data/regime/ fallback) for
+    the Morning Orientation band on the aibrief page. Fail-open: any failure
+    returns {'absent': True, 'reason': ...} so the band can render its honest
+    .mx-empty state without breaking the build.
+
+    Returns a dict with:
+      absent (bool) — True when the JSON could not be loaded
+      reason_en, reason_zh — plain-word reasons for the absent state
+      session_state — OPEN / CLOSED / NOT_YET_OPEN when present
+      generated_at — page build time when present
+      first_tape_en, first_tape_zh — the tape block's first row, in plain words
+      source_state — the producer's typed state of the JSON read
+    """
+    out: dict = {
+        "absent": True,
+        "reason_en": "The morning orientation page has not built yet.",
+        "reason_zh": "今晨导读页面尚未生成。",
+        "session_state": None,
+        "generated_at": None,
+        "first_tape_en": None,
+        "first_tape_zh": None,
+        "source_state": None,
+    }
+    payload = _load_json_safe(site_dir / "am_edition.json")
+    if payload is None:
+        payload = _load_json_safe(data_dir / "regime" / "am_edition.json")
+    if payload is None or not isinstance(payload, dict):
+        return out
+    out["absent"] = False
+    out["session_state"] = payload.get("session_state")
+    out["generated_at"] = payload.get("generated_at")
+    # Pull the tape block's first row, in plain words.
+    blocks = payload.get("blocks") or []
+    tape_block = None
+    for blk in blocks:
+        if isinstance(blk, dict) and blk.get("key") == "tape_since_prior_close":
+            tape_block = blk
+            break
+    if isinstance(tape_block, dict):
+        rows = tape_block.get("rows") or []
+        if rows and isinstance(rows[0], dict):
+            row = rows[0]
+            label_en = row.get("label_en") or row.get("symbol") or ""
+            label_zh = row.get("label_zh") or label_en
+            chg = row.get("change_pct")
+            sym = row.get("symbol") or ""
+            if chg is not None:
+                direction_en = "up" if chg > 0 else ("down" if chg < 0 else "flat")
+                direction_zh = "上涨" if chg > 0 else ("下跌" if chg < 0 else "持平")
+                pct_en = f"{chg:+.2f}%"
+                pct_zh = f"{chg:+.2f}%"
+                out["first_tape_en"] = (
+                    f"{sym} {label_en} is {direction_en} {pct_en} since yesterday's close."
+                )
+                out["first_tape_zh"] = (
+                    f"{sym} {label_zh}自昨日收盘以来{direction_zh} {pct_zh}。"
+                )
+    return out
+
+
 def _gather_context_strip(data_dir: Path) -> dict:
     """Panel A: light fail-open reads for the context strip.
 
@@ -273,12 +334,26 @@ def _gather_forward_panel(data_dir: Path, today: date | None = None) -> dict:
         for entry in upcoming:
             if added >= 3:
                 break
+            if not isinstance(entry, dict):
+                continue
             release = entry.get("release", "")
+            if not isinstance(release, str):
+                continue
             # Skip Claims entries (killed model — ADB-R4)
             if "claims" in release.lower():
                 continue
             rel_date = entry.get("release_date", entry.get("date", ""))
-            if not rel_date:
+            if not isinstance(rel_date, str):
+                continue
+            try:
+                release_day = date.fromisoformat(rel_date)
+            except ValueError:
+                continue
+            # Require canonical dates; do not invent timing for malformed producer rows.
+            if release_day.isoformat() != rel_date:
+                continue
+            days_to = (release_day - today).days
+            if days_to < 0:
                 continue
             # Deduplicate by (release, date) — different release_types on same day count once
             dedup_key = f"{release}:{rel_date}"
@@ -288,7 +363,6 @@ def _gather_forward_panel(data_dir: Path, today: date | None = None) -> dict:
 
             label_en = release.upper()
             label_zh = release.upper()
-            days_to = entry.get("days_to", "?")
 
             # Surprise skew — for hover receipt only
             skew = entry.get("surprise_skew") or {}
@@ -306,13 +380,15 @@ def _gather_forward_panel(data_dir: Path, today: date | None = None) -> dict:
             mkt_implied = mkt.get("implied", "")
 
             no_record = "No accuracy record yet" if scoreboard_n == 0 else f"{scoreboard_n} graded"
-            tip_en_parts = [f"In {days_to} day(s). {no_record}."]
+            timing_en = "Today" if days_to == 0 else f"In {days_to} day{'s' if days_to != 1 else ''}"
+            timing_zh = "今天" if days_to == 0 else f"距今 {days_to} 天"
+            tip_en_parts = [f"{timing_en}. {no_record}."]
             if skew_plain_en:
                 tip_en_parts.append(skew_plain_en + ".")
             if mkt_implied:
                 tip_en_parts.append(f"Market implied: {mkt_implied}.")
             tip_en = " ".join(tip_en_parts)
-            tip_zh_parts = [f"距今 {days_to} 天。{no_record}。"]
+            tip_zh_parts = [f"{timing_zh}。{no_record}。"]
             if skew_plain_zh:
                 tip_zh_parts.append(skew_plain_zh + "。")
             tip_zh = " ".join(tip_zh_parts)
@@ -481,6 +557,9 @@ def main() -> int:
         # ABX v2: the three lens brief bodies are now SERVER-rendered by the shared
         # macro (templates/_aibrief_body.html.j2). aibrief.js handles only cortex.
         briefs = _load_briefs(site, data_dir)
+        # MOR-2b Lane C: load site/am_edition.json for the Morning Orientation band
+        # under the page h1. Fail-open — the band renders .mx-empty when absent.
+        panels["am_edition"] = _load_am_edition_panel(site, data_dir)
         html = env.get_template("aibrief.html.j2").render(as_of=as_of, **panels, **briefs)
         write_page(site / "aibrief.html", html)
 

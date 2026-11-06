@@ -1,0 +1,3139 @@
+{
+  "authority": {
+    "gate_changed": false,
+    "live_model_changed": false,
+    "policy_changed": false,
+    "probability_changed": false,
+    "status": "research_only"
+  },
+  "fit": {
+    "authority_base_h21": 0.178,
+    "conjunction_bump_changed": false,
+    "expanding_origin": true,
+    "label_end_before_test_start": true,
+    "method": "Jeffreys(0.5,0.5) per state + weighted PAV"
+  },
+  "folds": {
+    "h10": [
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06941544885177453,
+          "caution": 0.07568533354216474,
+          "elevated": 0.27238805970149255,
+          "risk-off": 0.3073770491803279,
+          "watch": 0.07568533354216474
+        },
+        "first_test": "2010-01-04T00:00:00",
+        "horizon": 10,
+        "population_sha256": "5aaef52a1bb7425bc5e3098d2ba58913f44e02c8b9af2eee896715c8ea6332b8",
+        "test_from": "2010-01-04T00:00:00",
+        "test_n": 252,
+        "test_through": "2010-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2009-12-31T00:00:00",
+        "train_n": 4003,
+        "train_through": "2009-12-16T00:00:00",
+        "training_states": [
+          {
+            "events": 66,
+            "jeffreys_rate": 0.06941544885177453,
+            "n": 957,
+            "state": "calm"
+          },
+          {
+            "events": 30,
+            "jeffreys_rate": 0.07860824742268041,
+            "n": 387,
+            "state": "watch"
+          },
+          {
+            "events": 162,
+            "jeffreys_rate": 0.07516188714153561,
+            "n": 2161,
+            "state": "caution"
+          },
+          {
+            "events": 36,
+            "jeffreys_rate": 0.27238805970149255,
+            "n": 133,
+            "state": "elevated"
+          },
+          {
+            "events": 112,
+            "jeffreys_rate": 0.3073770491803279,
+            "n": 365,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2010
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06770310932798396,
+          "caution": 0.0805793952426744,
+          "elevated": 0.26838235294117646,
+          "risk-off": 0.3024193548387097,
+          "watch": 0.0805793952426744
+        },
+        "first_test": "2011-01-03T00:00:00",
+        "horizon": 10,
+        "population_sha256": "d5011d4153bc5d398bd8c6e0a355f2540b721ad6e1311a24ee4b94490e5b6786",
+        "test_from": "2011-01-03T00:00:00",
+        "test_n": 252,
+        "test_through": "2011-12-30T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2010-12-31T00:00:00",
+        "train_n": 4255,
+        "train_through": "2010-12-16T00:00:00",
+        "training_states": [
+          {
+            "events": 67,
+            "jeffreys_rate": 0.06770310932798396,
+            "n": 996,
+            "state": "calm"
+          },
+          {
+            "events": 37,
+            "jeffreys_rate": 0.08522727272727272,
+            "n": 439,
+            "state": "watch"
+          },
+          {
+            "events": 184,
+            "jeffreys_rate": 0.07969762419006479,
+            "n": 2314,
+            "state": "caution"
+          },
+          {
+            "events": 36,
+            "jeffreys_rate": 0.26838235294117646,
+            "n": 135,
+            "state": "elevated"
+          },
+          {
+            "events": 112,
+            "jeffreys_rate": 0.3024193548387097,
+            "n": 371,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2011
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.07213930348258707,
+          "caution": 0.08057234208620292,
+          "elevated": 0.27419354838709675,
+          "risk-off": 0.2966903073286052,
+          "watch": 0.08057234208620292
+        },
+        "first_test": "2012-01-03T00:00:00",
+        "horizon": 10,
+        "population_sha256": "0c385f56684fe15863453c01c9e4bdcaffe534968c85fd2fb5adfda44e170391",
+        "test_from": "2012-01-03T00:00:00",
+        "test_n": 250,
+        "test_through": "2012-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2011-12-30T00:00:00",
+        "train_n": 4507,
+        "train_through": "2011-12-15T00:00:00",
+        "training_states": [
+          {
+            "events": 72,
+            "jeffreys_rate": 0.07213930348258707,
+            "n": 1004,
+            "state": "calm"
+          },
+          {
+            "events": 38,
+            "jeffreys_rate": 0.08498896247240618,
+            "n": 452,
+            "state": "watch"
+          },
+          {
+            "events": 197,
+            "jeffreys_rate": 0.07976575121163167,
+            "n": 2475,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.27419354838709675,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 125,
+            "jeffreys_rate": 0.2966903073286052,
+            "n": 422,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2012
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06911344137273594,
+          "caution": 0.0778798316111749,
+          "elevated": 0.27419354838709675,
+          "risk-off": 0.29460093896713613,
+          "watch": 0.07418111753371869
+        },
+        "first_test": "2013-01-02T00:00:00",
+        "horizon": 10,
+        "population_sha256": "6a559d95c265faba22116642dc76017b6848b27277733ed6eb440a5db3f032cc",
+        "test_from": "2013-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2013-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2012-12-31T00:00:00",
+        "train_n": 4757,
+        "train_through": "2012-12-14T00:00:00",
+        "training_states": [
+          {
+            "events": 72,
+            "jeffreys_rate": 0.06911344137273594,
+            "n": 1048,
+            "state": "calm"
+          },
+          {
+            "events": 38,
+            "jeffreys_rate": 0.07418111753371869,
+            "n": 518,
+            "state": "watch"
+          },
+          {
+            "events": 203,
+            "jeffreys_rate": 0.0778798316111749,
+            "n": 2612,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.27419354838709675,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 125,
+            "jeffreys_rate": 0.29460093896713613,
+            "n": 425,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2013
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06833176248821866,
+          "caution": 0.07176745005392653,
+          "elevated": 0.27419354838709675,
+          "risk-off": 0.29460093896713613,
+          "watch": 0.07176745005392653
+        },
+        "first_test": "2014-01-02T00:00:00",
+        "horizon": 10,
+        "population_sha256": "be6982429d54dbd353a6e58cae3be869b9804811bc66c4bc4444ebc79e236a63",
+        "test_from": "2014-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2014-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2013-12-31T00:00:00",
+        "train_n": 5009,
+        "train_through": "2013-12-16T00:00:00",
+        "training_states": [
+          {
+            "events": 72,
+            "jeffreys_rate": 0.06833176248821866,
+            "n": 1060,
+            "state": "calm"
+          },
+          {
+            "events": 38,
+            "jeffreys_rate": 0.07196261682242991,
+            "n": 534,
+            "state": "watch"
+          },
+          {
+            "events": 203,
+            "jeffreys_rate": 0.07173070144518857,
+            "n": 2836,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.27419354838709675,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 125,
+            "jeffreys_rate": 0.29460093896713613,
+            "n": 425,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2014
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06801125703564728,
+          "caution": 0.06889835464628877,
+          "elevated": 0.27419354838709675,
+          "risk-off": 0.29118329466357307,
+          "watch": 0.06889835464628877
+        },
+        "first_test": "2015-01-02T00:00:00",
+        "horizon": 10,
+        "population_sha256": "3a21785c4cfd6ae48ffb68c5c2a12bd856ccffa765b5906afd097e3befe87fda",
+        "test_from": "2015-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2015-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2014-12-31T00:00:00",
+        "train_n": 5261,
+        "train_through": "2014-12-16T00:00:00",
+        "training_states": [
+          {
+            "events": 72,
+            "jeffreys_rate": 0.06801125703564728,
+            "n": 1065,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.07055749128919861,
+            "n": 573,
+            "state": "watch"
+          },
+          {
+            "events": 208,
+            "jeffreys_rate": 0.06858552631578947,
+            "n": 3039,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.27419354838709675,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 125,
+            "jeffreys_rate": 0.29118329466357307,
+            "n": 430,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2015
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06757298398615756,
+          "caution": 0.06757298398615756,
+          "elevated": 0.2607361963190184,
+          "risk-off": 0.2769396551724138,
+          "watch": 0.06757298398615756
+        },
+        "first_test": "2016-01-04T00:00:00",
+        "horizon": 10,
+        "population_sha256": "2d40790d5b89a9abe8908e42d12747cff7979dcbd458776a12fdfdd51f6da7f1",
+        "test_from": "2016-01-04T00:00:00",
+        "test_n": 252,
+        "test_through": "2016-12-30T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2015-12-31T00:00:00",
+        "train_n": 5513,
+        "train_through": "2015-12-16T00:00:00",
+        "training_states": [
+          {
+            "events": 72,
+            "jeffreys_rate": 0.06763059701492537,
+            "n": 1071,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.06818181818181818,
+            "n": 593,
+            "state": "watch"
+          },
+          {
+            "events": 217,
+            "jeffreys_rate": 0.06744186046511629,
+            "n": 3224,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.2607361963190184,
+            "n": 162,
+            "state": "elevated"
+          },
+          {
+            "events": 128,
+            "jeffreys_rate": 0.2769396551724138,
+            "n": 463,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2016
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06588940820856447,
+          "caution": 0.06602658788774003,
+          "elevated": 0.25757575757575757,
+          "risk-off": 0.26633663366336635,
+          "watch": 0.06588940820856447
+        },
+        "first_test": "2017-01-03T00:00:00",
+        "horizon": 10,
+        "population_sha256": "bb56cebec5bfe1308171cd990e0aed9ebb38496a0df587f3d0959df7319b5b85",
+        "test_from": "2017-01-03T00:00:00",
+        "test_n": 251,
+        "test_through": "2017-12-29T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2016-12-30T00:00:00",
+        "train_n": 5765,
+        "train_through": "2016-12-15T00:00:00",
+        "training_states": [
+          {
+            "events": 72,
+            "jeffreys_rate": 0.06633119853613907,
+            "n": 1092,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.06511254019292605,
+            "n": 621,
+            "state": "watch"
+          },
+          {
+            "events": 223,
+            "jeffreys_rate": 0.06602658788774003,
+            "n": 3384,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.25757575757575757,
+            "n": 164,
+            "state": "elevated"
+          },
+          {
+            "events": 134,
+            "jeffreys_rate": 0.26633663366336635,
+            "n": 504,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2017
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06288500943347256,
+          "caution": 0.06288500943347256,
+          "elevated": 0.25757575757575757,
+          "risk-off": 0.26633663366336635,
+          "watch": 0.06288500943347256
+        },
+        "first_test": "2018-01-02T00:00:00",
+        "horizon": 10,
+        "population_sha256": "b76d62a9888c5adbcbee8d6daa5c77fdd37ea3d88ac4cc60d154b013ce30bd9c",
+        "test_from": "2018-01-02T00:00:00",
+        "test_n": 251,
+        "test_through": "2018-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2017-12-29T00:00:00",
+        "train_n": 6016,
+        "train_through": "2017-12-14T00:00:00",
+        "training_states": [
+          {
+            "events": 72,
+            "jeffreys_rate": 0.06608933454876938,
+            "n": 1096,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.06298600311041991,
+            "n": 642,
+            "state": "watch"
+          },
+          {
+            "events": 223,
+            "jeffreys_rate": 0.06189421212960399,
+            "n": 3610,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.25757575757575757,
+            "n": 164,
+            "state": "elevated"
+          },
+          {
+            "events": 134,
+            "jeffreys_rate": 0.26633663366336635,
+            "n": 504,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2018
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06525476191816008,
+          "caution": 0.066569613552144,
+          "elevated": 0.25757575757575757,
+          "risk-off": 0.2658582089552239,
+          "watch": 0.06525476191816008
+        },
+        "first_test": "2019-01-02T00:00:00",
+        "horizon": 10,
+        "population_sha256": "c0fea5f35d81308765c439fb1b2522d48a864749788b65ba1cc8945519fb29ef",
+        "test_from": "2019-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2019-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2018-12-31T00:00:00",
+        "train_n": 6267,
+        "train_through": "2018-12-14T00:00:00",
+        "training_states": [
+          {
+            "events": 76,
+            "jeffreys_rate": 0.0678191489361702,
+            "n": 1127,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.06090225563909774,
+            "n": 664,
+            "state": "watch"
+          },
+          {
+            "events": 251,
+            "jeffreys_rate": 0.066569613552144,
+            "n": 3777,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.25757575757575757,
+            "n": 164,
+            "state": "elevated"
+          },
+          {
+            "events": 142,
+            "jeffreys_rate": 0.2658582089552239,
+            "n": 535,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2019
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06338129060966152,
+          "caution": 0.06507455142784938,
+          "elevated": 0.2514792899408284,
+          "risk-off": 0.26358695652173914,
+          "watch": 0.06338129060966152
+        },
+        "first_test": "2020-01-02T00:00:00",
+        "horizon": 10,
+        "population_sha256": "7f8132a49cbc49fc836f72073df949da7e28247803fc88328451cfa9fc7edab8",
+        "test_from": "2020-01-02T00:00:00",
+        "test_n": 253,
+        "test_through": "2020-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2019-12-31T00:00:00",
+        "train_n": 6519,
+        "train_through": "2019-12-16T00:00:00",
+        "training_states": [
+          {
+            "events": 76,
+            "jeffreys_rate": 0.06611927398444252,
+            "n": 1156,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.05878084179970972,
+            "n": 688,
+            "state": "watch"
+          },
+          {
+            "events": 257,
+            "jeffreys_rate": 0.06507455142784938,
+            "n": 3956,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.2514792899408284,
+            "n": 168,
+            "state": "elevated"
+          },
+          {
+            "events": 145,
+            "jeffreys_rate": 0.26358695652173914,
+            "n": 551,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2020
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06200402048105694,
+          "caution": 0.06835228647471571,
+          "elevated": 0.24709302325581395,
+          "risk-off": 0.2760683760683761,
+          "watch": 0.06200402048105694
+        },
+        "first_test": "2021-01-04T00:00:00",
+        "horizon": 10,
+        "population_sha256": "e5a0099810ccd4bcc4b1f9e1f045794b4fa84efd5e2ad25949e2bacca3797e1a",
+        "test_from": "2021-01-04T00:00:00",
+        "test_n": 252,
+        "test_through": "2021-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2020-12-31T00:00:00",
+        "train_n": 6772,
+        "train_through": "2020-12-16T00:00:00",
+        "training_states": [
+          {
+            "events": 76,
+            "jeffreys_rate": 0.06423173803526448,
+            "n": 1190,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.05818965517241379,
+            "n": 695,
+            "state": "watch"
+          },
+          {
+            "events": 282,
+            "jeffreys_rate": 0.06835228647471571,
+            "n": 4132,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.24709302325581395,
+            "n": 171,
+            "state": "elevated"
+          },
+          {
+            "events": 161,
+            "jeffreys_rate": 0.2760683760683761,
+            "n": 584,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2021
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06049746107136435,
+          "caution": 0.06512217611802674,
+          "elevated": 0.24709302325581395,
+          "risk-off": 0.2760683760683761,
+          "watch": 0.06049746107136435
+        },
+        "first_test": "2022-01-03T00:00:00",
+        "horizon": 10,
+        "population_sha256": "ff20c1e209fbdcb1522f4e75b240511abebb74f1f7d885adcdd04221d747d301",
+        "test_from": "2022-01-03T00:00:00",
+        "test_n": 251,
+        "test_through": "2022-12-30T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2021-12-31T00:00:00",
+        "train_n": 7024,
+        "train_through": "2021-12-16T00:00:00",
+        "training_states": [
+          {
+            "events": 76,
+            "jeffreys_rate": 0.06380316930775647,
+            "n": 1198,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.05510204081632653,
+            "n": 734,
+            "state": "watch"
+          },
+          {
+            "events": 282,
+            "jeffreys_rate": 0.06512217611802674,
+            "n": 4337,
+            "state": "caution"
+          },
+          {
+            "events": 42,
+            "jeffreys_rate": 0.24709302325581395,
+            "n": 171,
+            "state": "elevated"
+          },
+          {
+            "events": 161,
+            "jeffreys_rate": 0.2760683760683761,
+            "n": 584,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2022
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.06049746107136435,
+          "caution": 0.06898504757589488,
+          "elevated": 0.2345360824742268,
+          "risk-off": 0.2757452574525745,
+          "watch": 0.06049746107136435
+        },
+        "first_test": "2023-01-03T00:00:00",
+        "horizon": 10,
+        "population_sha256": "0dfeefea2a3de8d1af8de2d3b216d0e84214a89f42fb6e75268b3be16f0c7eb8",
+        "test_from": "2023-01-03T00:00:00",
+        "test_n": 250,
+        "test_through": "2023-12-29T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2022-12-30T00:00:00",
+        "train_n": 7275,
+        "train_through": "2022-12-15T00:00:00",
+        "training_states": [
+          {
+            "events": 76,
+            "jeffreys_rate": 0.06380316930775647,
+            "n": 1198,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.05510204081632653,
+            "n": 734,
+            "state": "watch"
+          },
+          {
+            "events": 304,
+            "jeffreys_rate": 0.06898504757589488,
+            "n": 4413,
+            "state": "caution"
+          },
+          {
+            "events": 45,
+            "jeffreys_rate": 0.2345360824742268,
+            "n": 193,
+            "state": "elevated"
+          },
+          {
+            "events": 203,
+            "jeffreys_rate": 0.2757452574525745,
+            "n": 737,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2023
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.059664604968615594,
+          "caution": 0.06658726721524469,
+          "elevated": 0.2297979797979798,
+          "risk-off": 0.2702523240371846,
+          "watch": 0.059664604968615594
+        },
+        "first_test": "2024-01-02T00:00:00",
+        "horizon": 10,
+        "population_sha256": "063ccf3020077995c6a98b28ca996fd3d2727a65aabb6174a1dc3d46ee45264e",
+        "test_from": "2024-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2024-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2023-12-29T00:00:00",
+        "train_n": 7525,
+        "train_through": "2023-12-14T00:00:00",
+        "training_states": [
+          {
+            "events": 76,
+            "jeffreys_rate": 0.06353820598006645,
+            "n": 1203,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.053500660501981503,
+            "n": 756,
+            "state": "watch"
+          },
+          {
+            "events": 307,
+            "jeffreys_rate": 0.06658726721524469,
+            "n": 4617,
+            "state": "caution"
+          },
+          {
+            "events": 45,
+            "jeffreys_rate": 0.2297979797979798,
+            "n": 197,
+            "state": "elevated"
+          },
+          {
+            "events": 203,
+            "jeffreys_rate": 0.2702523240371846,
+            "n": 752,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2024
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.05867723258364127,
+          "caution": 0.06439942112879884,
+          "elevated": 0.2297979797979798,
+          "risk-off": 0.2702523240371846,
+          "watch": 0.05867723258364127
+        },
+        "first_test": "2025-01-02T00:00:00",
+        "horizon": 10,
+        "population_sha256": "fef5da0cebe6763be2487e32ec319993a61a09303cb7bef65fafbf34ad149457",
+        "test_from": "2025-01-02T00:00:00",
+        "test_n": 250,
+        "test_through": "2025-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2024-12-31T00:00:00",
+        "train_n": 7777,
+        "train_through": "2024-12-16T00:00:00",
+        "training_states": [
+          {
+            "events": 76,
+            "jeffreys_rate": 0.06296296296296296,
+            "n": 1214,
+            "state": "calm"
+          },
+          {
+            "events": 40,
+            "jeffreys_rate": 0.051989730423620026,
+            "n": 778,
+            "state": "watch"
+          },
+          {
+            "events": 311,
+            "jeffreys_rate": 0.06439942112879884,
+            "n": 4836,
+            "state": "caution"
+          },
+          {
+            "events": 45,
+            "jeffreys_rate": 0.2297979797979798,
+            "n": 197,
+            "state": "elevated"
+          },
+          {
+            "events": 203,
+            "jeffreys_rate": 0.2702523240371846,
+            "n": 752,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2025
+      }
+    ],
+    "h21": [
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.1383089770354906,
+          "caution": 0.17689446768944678,
+          "elevated": 0.4659709713988488,
+          "risk-off": 0.4659709713988488,
+          "watch": 0.15335051546391754
+        },
+        "first_test": "2010-01-04T00:00:00",
+        "horizon": 21,
+        "population_sha256": "f909bec620a6c64469a6a03510f51372ba14bc019f642fbc366c6bf1349fbd97",
+        "test_from": "2010-01-04T00:00:00",
+        "test_n": 252,
+        "test_through": "2010-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2009-12-31T00:00:00",
+        "train_n": 3992,
+        "train_through": "2009-12-01T00:00:00",
+        "training_states": [
+          {
+            "events": 132,
+            "jeffreys_rate": 0.1383089770354906,
+            "n": 957,
+            "state": "calm"
+          },
+          {
+            "events": 59,
+            "jeffreys_rate": 0.15335051546391754,
+            "n": 387,
+            "state": "watch"
+          },
+          {
+            "events": 380,
+            "jeffreys_rate": 0.17689446768944678,
+            "n": 2150,
+            "state": "caution"
+          },
+          {
+            "events": 65,
+            "jeffreys_rate": 0.48880597014925375,
+            "n": 133,
+            "state": "elevated"
+          },
+          {
+            "events": 167,
+            "jeffreys_rate": 0.4576502732240437,
+            "n": 365,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2010
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.13891675025075226,
+          "caution": 0.178,
+          "elevated": 0.4586326354461203,
+          "risk-off": 0.4586326354461203,
+          "watch": 0.1560364464692483
+        },
+        "first_test": "2011-01-03T00:00:00",
+        "horizon": 21,
+        "population_sha256": "6b78a960abd9dd3adb817417b1c8ae11739bd8f2c4b96cd107786befe6e7378e",
+        "test_from": "2011-01-03T00:00:00",
+        "test_n": 252,
+        "test_through": "2011-12-30T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2010-12-31T00:00:00",
+        "train_n": 4244,
+        "train_through": "2010-12-01T00:00:00",
+        "training_states": [
+          {
+            "events": 138,
+            "jeffreys_rate": 0.13891675025075226,
+            "n": 996,
+            "state": "calm"
+          },
+          {
+            "events": 68,
+            "jeffreys_rate": 0.1560364464692483,
+            "n": 438,
+            "state": "watch"
+          },
+          {
+            "events": 431,
+            "jeffreys_rate": 0.18720173535791756,
+            "n": 2304,
+            "state": "caution"
+          },
+          {
+            "events": 65,
+            "jeffreys_rate": 0.48161764705882354,
+            "n": 135,
+            "state": "elevated"
+          },
+          {
+            "events": 167,
+            "jeffreys_rate": 0.45026881720430106,
+            "n": 371,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2011
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.14477611940298507,
+          "caution": 0.178,
+          "elevated": 0.4548181839765833,
+          "risk-off": 0.4548181839765833,
+          "watch": 0.15888888888888889
+        },
+        "first_test": "2012-01-03T00:00:00",
+        "horizon": 21,
+        "population_sha256": "8e7344ace678ffa0fd9f4db207b5bcb655da9287b81bd6687c4240b25b02d9e7",
+        "test_from": "2012-01-03T00:00:00",
+        "test_n": 250,
+        "test_through": "2012-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2011-12-30T00:00:00",
+        "train_n": 4496,
+        "train_through": "2011-11-30T00:00:00",
+        "training_states": [
+          {
+            "events": 145,
+            "jeffreys_rate": 0.14477611940298507,
+            "n": 1004,
+            "state": "calm"
+          },
+          {
+            "events": 71,
+            "jeffreys_rate": 0.15888888888888889,
+            "n": 449,
+            "state": "watch"
+          },
+          {
+            "events": 469,
+            "jeffreys_rate": 0.19008097165991902,
+            "n": 2469,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.4934640522875817,
+            "n": 152,
+            "state": "elevated"
+          },
+          {
+            "events": 186,
+            "jeffreys_rate": 0.44089834515366433,
+            "n": 422,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2012
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.13950143815915628,
+          "caution": 0.178,
+          "elevated": 0.45090692538614235,
+          "risk-off": 0.45090692538614235,
+          "watch": 0.14050387596899225
+        },
+        "first_test": "2013-01-02T00:00:00",
+        "horizon": 21,
+        "population_sha256": "6f62d65f57abb0cc04a246e03c6561298aa9480d289759465248c020adb24d54",
+        "test_from": "2013-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2013-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2012-12-31T00:00:00",
+        "train_n": 4746,
+        "train_through": "2012-11-29T00:00:00",
+        "training_states": [
+          {
+            "events": 145,
+            "jeffreys_rate": 0.13950143815915628,
+            "n": 1042,
+            "state": "calm"
+          },
+          {
+            "events": 72,
+            "jeffreys_rate": 0.14050387596899225,
+            "n": 515,
+            "state": "watch"
+          },
+          {
+            "events": 494,
+            "jeffreys_rate": 0.18939103791650708,
+            "n": 2610,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.4870967741935484,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 186,
+            "jeffreys_rate": 0.43779342723004694,
+            "n": 425,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2013
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.1368491278138396,
+          "caution": 0.1751502297631672,
+          "elevated": 0.45090692538614235,
+          "risk-off": 0.45090692538614235,
+          "watch": 0.1368491278138396
+        },
+        "first_test": "2014-01-02T00:00:00",
+        "horizon": 21,
+        "population_sha256": "0ebf05f2190e3528a17d3f98a7b705115ef0d069826fd5ac276e5f176fb53102",
+        "test_from": "2014-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2014-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2013-12-31T00:00:00",
+        "train_n": 4998,
+        "train_through": "2013-11-29T00:00:00",
+        "training_states": [
+          {
+            "events": 145,
+            "jeffreys_rate": 0.13752362948960303,
+            "n": 1057,
+            "state": "calm"
+          },
+          {
+            "events": 72,
+            "jeffreys_rate": 0.13551401869158877,
+            "n": 534,
+            "state": "watch"
+          },
+          {
+            "events": 495,
+            "jeffreys_rate": 0.1751502297631672,
+            "n": 2828,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.4870967741935484,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 186,
+            "jeffreys_rate": 0.43779342723004694,
+            "n": 425,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2014
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.13536644272371956,
+          "caution": 0.17084846483988114,
+          "elevated": 0.4470551174805429,
+          "risk-off": 0.4470551174805429,
+          "watch": 0.13536644272371956
+        },
+        "first_test": "2015-01-02T00:00:00",
+        "horizon": 21,
+        "population_sha256": "1e814e8576ac60e63183c0f56107ddfc562cff850b828e91917f781aa6a60332",
+        "test_from": "2015-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2015-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2014-12-31T00:00:00",
+        "train_n": 5250,
+        "train_through": "2014-12-01T00:00:00",
+        "training_states": [
+          {
+            "events": 145,
+            "jeffreys_rate": 0.13649155722326453,
+            "n": 1065,
+            "state": "calm"
+          },
+          {
+            "events": 76,
+            "jeffreys_rate": 0.1332752613240418,
+            "n": 573,
+            "state": "watch"
+          },
+          {
+            "events": 517,
+            "jeffreys_rate": 0.17084846483988114,
+            "n": 3028,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.4870967741935484,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 186,
+            "jeffreys_rate": 0.43271461716937354,
+            "n": 430,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2015
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.13325449790220661,
+          "caution": 0.16739198010568854,
+          "elevated": 0.4278479236566438,
+          "risk-off": 0.4278479236566438,
+          "watch": 0.13325449790220661
+        },
+        "first_test": "2016-01-04T00:00:00",
+        "horizon": 21,
+        "population_sha256": "7754bdbdacf2a5854f64ff7fcaac0d614b28e42905a12fcd43658e2f43c2381a",
+        "test_from": "2016-01-04T00:00:00",
+        "test_n": 252,
+        "test_through": "2016-12-30T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2015-12-31T00:00:00",
+        "train_n": 5502,
+        "train_through": "2015-12-01T00:00:00",
+        "training_states": [
+          {
+            "events": 145,
+            "jeffreys_rate": 0.1357276119402985,
+            "n": 1071,
+            "state": "calm"
+          },
+          {
+            "events": 76,
+            "jeffreys_rate": 0.12878787878787878,
+            "n": 593,
+            "state": "watch"
+          },
+          {
+            "events": 538,
+            "jeffreys_rate": 0.16739198010568854,
+            "n": 3216,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.46319018404907975,
+            "n": 162,
+            "state": "elevated"
+          },
+          {
+            "events": 191,
+            "jeffreys_rate": 0.4154013015184382,
+            "n": 460,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2016
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.12952318442791413,
+          "caution": 0.164,
+          "elevated": 0.41936451130142954,
+          "risk-off": 0.41936451130142954,
+          "watch": 0.12952318442791413
+        },
+        "first_test": "2017-01-03T00:00:00",
+        "horizon": 21,
+        "population_sha256": "ad60d02d16c26d6b971a78805e620c0259b16a1b9a70120316c36d53e8b43588",
+        "test_from": "2017-01-03T00:00:00",
+        "test_n": 251,
+        "test_through": "2017-12-29T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2016-12-30T00:00:00",
+        "train_n": 5754,
+        "train_through": "2016-11-30T00:00:00",
+        "training_states": [
+          {
+            "events": 145,
+            "jeffreys_rate": 0.13311985361390669,
+            "n": 1092,
+            "state": "calm"
+          },
+          {
+            "events": 76,
+            "jeffreys_rate": 0.12318840579710146,
+            "n": 620,
+            "state": "watch"
+          },
+          {
+            "events": 553,
+            "jeffreys_rate": 0.164,
+            "n": 3374,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.4575757575757576,
+            "n": 164,
+            "state": "elevated"
+          },
+          {
+            "events": 205,
+            "jeffreys_rate": 0.4069306930693069,
+            "n": 504,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2017
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.12758825775659235,
+          "caution": 0.15375,
+          "elevated": 0.41936451130142954,
+          "risk-off": 0.41936451130142954,
+          "watch": 0.12758825775659235
+        },
+        "first_test": "2018-01-02T00:00:00",
+        "horizon": 21,
+        "population_sha256": "eecd56d706156da29a2399ce16d823dbbb72d178dbdf869284ccf779f03aed1c",
+        "test_from": "2018-01-02T00:00:00",
+        "test_n": 251,
+        "test_through": "2018-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2017-12-29T00:00:00",
+        "train_n": 6005,
+        "train_through": "2017-11-29T00:00:00",
+        "training_states": [
+          {
+            "events": 145,
+            "jeffreys_rate": 0.1326344576116682,
+            "n": 1096,
+            "state": "calm"
+          },
+          {
+            "events": 76,
+            "jeffreys_rate": 0.11897356143079316,
+            "n": 642,
+            "state": "watch"
+          },
+          {
+            "events": 553,
+            "jeffreys_rate": 0.15375,
+            "n": 3599,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.4575757575757576,
+            "n": 164,
+            "state": "elevated"
+          },
+          {
+            "events": 205,
+            "jeffreys_rate": 0.4069306930693069,
+            "n": 504,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2018
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.13218394232429978,
+          "caution": 0.15797139830508475,
+          "elevated": 0.4190368164776217,
+          "risk-off": 0.4190368164776217,
+          "watch": 0.13218394232429978
+        },
+        "first_test": "2019-01-02T00:00:00",
+        "horizon": 21,
+        "population_sha256": "d3de62d25722995d09f048a67bc54e9c555cc0a34594923b96a5f9d9c35471ab",
+        "test_from": "2019-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2019-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2018-12-31T00:00:00",
+        "train_n": 6256,
+        "train_through": "2018-11-28T00:00:00",
+        "training_states": [
+          {
+            "events": 158,
+            "jeffreys_rate": 0.14051418439716312,
+            "n": 1127,
+            "state": "calm"
+          },
+          {
+            "events": 78,
+            "jeffreys_rate": 0.11804511278195488,
+            "n": 664,
+            "state": "watch"
+          },
+          {
+            "events": 596,
+            "jeffreys_rate": 0.15797139830508475,
+            "n": 3775,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.4575757575757576,
+            "n": 164,
+            "state": "elevated"
+          },
+          {
+            "events": 214,
+            "jeffreys_rate": 0.40702087286527516,
+            "n": 526,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2019
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.12893038132502901,
+          "caution": 0.155727318803852,
+          "elevated": 0.4188357835200463,
+          "risk-off": 0.4188357835200463,
+          "watch": 0.12893038132502901
+        },
+        "first_test": "2020-01-02T00:00:00",
+        "horizon": 21,
+        "population_sha256": "3b5fa0363cdb03f7f28203f35587a1151b22b90f4d2a1de91bd6e07d0077f6ff",
+        "test_from": "2020-01-02T00:00:00",
+        "test_n": 253,
+        "test_through": "2020-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2019-12-31T00:00:00",
+        "train_n": 6508,
+        "train_through": "2019-11-29T00:00:00",
+        "training_states": [
+          {
+            "events": 158,
+            "jeffreys_rate": 0.13699222126188418,
+            "n": 1156,
+            "state": "calm"
+          },
+          {
+            "events": 79,
+            "jeffreys_rate": 0.11538461538461539,
+            "n": 688,
+            "state": "watch"
+          },
+          {
+            "events": 614,
+            "jeffreys_rate": 0.155727318803852,
+            "n": 3945,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.4467455621301775,
+            "n": 168,
+            "state": "elevated"
+          },
+          {
+            "events": 226,
+            "jeffreys_rate": 0.41032608695652173,
+            "n": 551,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2020
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.12612875035432594,
+          "caution": 0.16023774866569626,
+          "elevated": 0.4200616113868848,
+          "risk-off": 0.4200616113868848,
+          "watch": 0.12612875035432594
+        },
+        "first_test": "2021-01-04T00:00:00",
+        "horizon": 21,
+        "population_sha256": "edc92c40d9eb70c2968b5b61e99b030021f74ec9718c2f0706104ca5c0f59840",
+        "test_from": "2021-01-04T00:00:00",
+        "test_n": 252,
+        "test_through": "2021-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2020-12-31T00:00:00",
+        "train_n": 6761,
+        "train_through": "2020-12-01T00:00:00",
+        "training_states": [
+          {
+            "events": 158,
+            "jeffreys_rate": 0.1330814441645676,
+            "n": 1190,
+            "state": "calm"
+          },
+          {
+            "events": 79,
+            "jeffreys_rate": 0.11422413793103449,
+            "n": 695,
+            "state": "watch"
+          },
+          {
+            "events": 660,
+            "jeffreys_rate": 0.16023774866569626,
+            "n": 4121,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.438953488372093,
+            "n": 171,
+            "state": "elevated"
+          },
+          {
+            "events": 242,
+            "jeffreys_rate": 0.41452991452991456,
+            "n": 584,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2021
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.12306399753629144,
+          "caution": 0.15310838918419228,
+          "elevated": 0.4200616113868848,
+          "risk-off": 0.4200616113868848,
+          "watch": 0.12306399753629144
+        },
+        "first_test": "2022-01-03T00:00:00",
+        "horizon": 21,
+        "population_sha256": "0adae5e9005bbf674e64b968d7c765e7ca4d3a9e929796745d47d3dce8d7508c",
+        "test_from": "2022-01-03T00:00:00",
+        "test_n": 251,
+        "test_through": "2022-12-30T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2021-12-31T00:00:00",
+        "train_n": 7013,
+        "train_through": "2021-12-01T00:00:00",
+        "training_states": [
+          {
+            "events": 158,
+            "jeffreys_rate": 0.13219349457881568,
+            "n": 1198,
+            "state": "calm"
+          },
+          {
+            "events": 79,
+            "jeffreys_rate": 0.10816326530612246,
+            "n": 734,
+            "state": "watch"
+          },
+          {
+            "events": 662,
+            "jeffreys_rate": 0.15310838918419228,
+            "n": 4326,
+            "state": "caution"
+          },
+          {
+            "events": 75,
+            "jeffreys_rate": 0.438953488372093,
+            "n": 171,
+            "state": "elevated"
+          },
+          {
+            "events": 242,
+            "jeffreys_rate": 0.41452991452991456,
+            "n": 584,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2022
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.12306399753629144,
+          "caution": 0.16133060853769302,
+          "elevated": 0.4097938144329897,
+          "risk-off": 0.42401628222523746,
+          "watch": 0.12306399753629144
+        },
+        "first_test": "2023-01-03T00:00:00",
+        "horizon": 21,
+        "population_sha256": "3ad00c747b04be465eac7182c634a81a2519a9138a1aecedc15bc34d098e17fa",
+        "test_from": "2023-01-03T00:00:00",
+        "test_n": 250,
+        "test_through": "2023-12-29T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2022-12-30T00:00:00",
+        "train_n": 7264,
+        "train_through": "2022-11-30T00:00:00",
+        "training_states": [
+          {
+            "events": 158,
+            "jeffreys_rate": 0.13219349457881568,
+            "n": 1198,
+            "state": "calm"
+          },
+          {
+            "events": 79,
+            "jeffreys_rate": 0.10816326530612246,
+            "n": 734,
+            "state": "watch"
+          },
+          {
+            "events": 710,
+            "jeffreys_rate": 0.16133060853769302,
+            "n": 4403,
+            "state": "caution"
+          },
+          {
+            "events": 79,
+            "jeffreys_rate": 0.4097938144329897,
+            "n": 193,
+            "state": "elevated"
+          },
+          {
+            "events": 312,
+            "jeffreys_rate": 0.42401628222523746,
+            "n": 736,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2023
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.12340890844860443,
+          "caution": 0.16008248317777296,
+          "elevated": 0.4015151515151515,
+          "risk-off": 0.4150066401062417,
+          "watch": 0.12340890844860443
+        },
+        "first_test": "2024-01-02T00:00:00",
+        "horizon": 21,
+        "population_sha256": "0cf421ca9731b6079aaf3ad1ee0e0a2ab5c8d73b72bdd7121c1eadf0685af414",
+        "test_from": "2024-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2024-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2023-12-29T00:00:00",
+        "train_n": 7514,
+        "train_through": "2023-11-29T00:00:00",
+        "training_states": [
+          {
+            "events": 158,
+            "jeffreys_rate": 0.13164451827242524,
+            "n": 1203,
+            "state": "calm"
+          },
+          {
+            "events": 83,
+            "jeffreys_rate": 0.11030383091149273,
+            "n": 756,
+            "state": "watch"
+          },
+          {
+            "events": 737,
+            "jeffreys_rate": 0.16008248317777296,
+            "n": 4606,
+            "state": "caution"
+          },
+          {
+            "events": 79,
+            "jeffreys_rate": 0.4015151515151515,
+            "n": 197,
+            "state": "elevated"
+          },
+          {
+            "events": 312,
+            "jeffreys_rate": 0.4150066401062417,
+            "n": 752,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2024
+      },
+      {
+        "authority_partition_h21": {
+          "calm": false,
+          "caution": false,
+          "elevated": true,
+          "risk-off": true,
+          "watch": false
+        },
+        "candidate_surface": {
+          "calm": 0.1215494943350022,
+          "caution": 0.15665769310416236,
+          "elevated": 0.4015151515151515,
+          "risk-off": 0.4150066401062417,
+          "watch": 0.1215494943350022
+        },
+        "first_test": "2025-01-02T00:00:00",
+        "horizon": 21,
+        "population_sha256": "3b64c854daf694c6a003e950b44b6c614b9d4d667fe62848eacbebf2dfcdb331",
+        "test_from": "2025-01-02T00:00:00",
+        "test_n": 250,
+        "test_through": "2025-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2024-12-31T00:00:00",
+        "train_n": 7766,
+        "train_through": "2024-11-29T00:00:00",
+        "training_states": [
+          {
+            "events": 158,
+            "jeffreys_rate": 0.13045267489711934,
+            "n": 1214,
+            "state": "calm"
+          },
+          {
+            "events": 83,
+            "jeffreys_rate": 0.10760309278350516,
+            "n": 775,
+            "state": "watch"
+          },
+          {
+            "events": 756,
+            "jeffreys_rate": 0.15665769310416236,
+            "n": 4828,
+            "state": "caution"
+          },
+          {
+            "events": 79,
+            "jeffreys_rate": 0.4015151515151515,
+            "n": 197,
+            "state": "elevated"
+          },
+          {
+            "events": 312,
+            "jeffreys_rate": 0.4150066401062417,
+            "n": 752,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2025
+      }
+    ],
+    "h5": [
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.022629433992013472,
+          "caution": 0.022629433992013472,
+          "elevated": 0.15298507462686567,
+          "risk-off": 0.18442622950819673,
+          "watch": 0.022629433992013472
+        },
+        "first_test": "2010-01-04T00:00:00",
+        "horizon": 5,
+        "population_sha256": "8c57ddefa4ba20a3b59be3929d782c799d35218daf3269f661d5139fc9618f39",
+        "test_from": "2010-01-04T00:00:00",
+        "test_n": 252,
+        "test_through": "2010-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2009-12-31T00:00:00",
+        "train_n": 4008,
+        "train_through": "2009-12-23T00:00:00",
+        "training_states": [
+          {
+            "events": 27,
+            "jeffreys_rate": 0.02870563674321503,
+            "n": 957,
+            "state": "calm"
+          },
+          {
+            "events": 8,
+            "jeffreys_rate": 0.02190721649484536,
+            "n": 387,
+            "state": "watch"
+          },
+          {
+            "events": 43,
+            "jeffreys_rate": 0.02007383479464698,
+            "n": 2166,
+            "state": "caution"
+          },
+          {
+            "events": 20,
+            "jeffreys_rate": 0.15298507462686567,
+            "n": 133,
+            "state": "elevated"
+          },
+          {
+            "events": 67,
+            "jeffreys_rate": 0.18442622950819673,
+            "n": 365,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2010
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.023821618364285976,
+          "caution": 0.023821618364285976,
+          "elevated": 0.15073529411764705,
+          "risk-off": 0.1814516129032258,
+          "watch": 0.023821618364285976
+        },
+        "first_test": "2011-01-03T00:00:00",
+        "horizon": 5,
+        "population_sha256": "14d1e5645251a16f9a1652257e67e9b2f1df252cf29edafad06ebd985eb4d6c5",
+        "test_from": "2011-01-03T00:00:00",
+        "test_n": 252,
+        "test_through": "2011-12-30T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2010-12-31T00:00:00",
+        "train_n": 4260,
+        "train_through": "2010-12-23T00:00:00",
+        "training_states": [
+          {
+            "events": 27,
+            "jeffreys_rate": 0.027582748244734202,
+            "n": 996,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.023863636363636365,
+            "n": 439,
+            "state": "watch"
+          },
+          {
+            "events": 51,
+            "jeffreys_rate": 0.022198275862068965,
+            "n": 2319,
+            "state": "caution"
+          },
+          {
+            "events": 20,
+            "jeffreys_rate": 0.15073529411764705,
+            "n": 135,
+            "state": "elevated"
+          },
+          {
+            "events": 67,
+            "jeffreys_rate": 0.1814516129032258,
+            "n": 371,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2011
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.024752278110487066,
+          "caution": 0.024752278110487066,
+          "elevated": 0.16451612903225807,
+          "risk-off": 0.18085106382978725,
+          "watch": 0.024752278110487066
+        },
+        "first_test": "2012-01-03T00:00:00",
+        "horizon": 5,
+        "population_sha256": "5b82fe4af118d61aa5a8f9f1ee5c1b46a821620ff0d889541448b14ec18d4c53",
+        "test_from": "2012-01-03T00:00:00",
+        "test_n": 250,
+        "test_through": "2012-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2011-12-30T00:00:00",
+        "train_n": 4512,
+        "train_through": "2011-12-22T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.028358208955223882,
+            "n": 1004,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.023076923076923078,
+            "n": 454,
+            "state": "watch"
+          },
+          {
+            "events": 58,
+            "jeffreys_rate": 0.023598225090762405,
+            "n": 2478,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.16451612903225807,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 76,
+            "jeffreys_rate": 0.18085106382978725,
+            "n": 422,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2012
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.023291973168547662,
+          "caution": 0.023291973168547662,
+          "elevated": 0.16451612903225807,
+          "risk-off": 0.1795774647887324,
+          "watch": 0.023291973168547662
+        },
+        "first_test": "2013-01-02T00:00:00",
+        "horizon": 5,
+        "population_sha256": "96c2b305d2aa2496cf14323d0a7d99d5b8edd8e205101f48151df535108b91a8",
+        "test_from": "2013-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2013-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2012-12-31T00:00:00",
+        "train_n": 4762,
+        "train_through": "2012-12-21T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.027065527065527065,
+            "n": 1052,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.02023121387283237,
+            "n": 518,
+            "state": "watch"
+          },
+          {
+            "events": 58,
+            "jeffreys_rate": 0.022379495026778884,
+            "n": 2613,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.16451612903225807,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 76,
+            "jeffreys_rate": 0.1795774647887324,
+            "n": 425,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2013
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.02196911046720472,
+          "caution": 0.02196911046720472,
+          "elevated": 0.16451612903225807,
+          "risk-off": 0.1795774647887324,
+          "watch": 0.02196911046720472
+        },
+        "first_test": "2014-01-02T00:00:00",
+        "horizon": 5,
+        "population_sha256": "0c1fa62ea0fb1aff5bc22801263162d147ce0d5a040e8d2f0938313f8766c0f6",
+        "test_from": "2014-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2014-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2013-12-31T00:00:00",
+        "train_n": 5014,
+        "train_through": "2013-12-23T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.026836158192090395,
+            "n": 1061,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.019553072625698324,
+            "n": 536,
+            "state": "watch"
+          },
+          {
+            "events": 58,
+            "jeffreys_rate": 0.02060584712927087,
+            "n": 2838,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.16451612903225807,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 76,
+            "jeffreys_rate": 0.1795774647887324,
+            "n": 425,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2014
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.021024227173756047,
+          "caution": 0.021024227173756047,
+          "elevated": 0.16451612903225807,
+          "risk-off": 0.17749419953596288,
+          "watch": 0.021024227173756047
+        },
+        "first_test": "2015-01-02T00:00:00",
+        "horizon": 5,
+        "population_sha256": "ae6cf072f12770a78b490a6d78a65395bd59d0db45aadbf36b4983fddca9dd55",
+        "test_from": "2015-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2015-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2014-12-31T00:00:00",
+        "train_n": 5266,
+        "train_through": "2014-12-23T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.02673545966228893,
+            "n": 1065,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.018292682926829267,
+            "n": 573,
+            "state": "watch"
+          },
+          {
+            "events": 59,
+            "jeffreys_rate": 0.01954022988505747,
+            "n": 3044,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.16451612903225807,
+            "n": 154,
+            "state": "elevated"
+          },
+          {
+            "events": 76,
+            "jeffreys_rate": 0.17749419953596288,
+            "n": 430,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2015
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.020952352954071763,
+          "caution": 0.020952352954071763,
+          "elevated": 0.15644171779141106,
+          "risk-off": 0.16773504273504272,
+          "watch": 0.020952352954071763
+        },
+        "first_test": "2016-01-04T00:00:00",
+        "horizon": 5,
+        "population_sha256": "c4ae486a32a9cc3a9299b4d48d541648b1eac877f9534a3a9b0128b9b4d1d7e0",
+        "test_from": "2016-01-04T00:00:00",
+        "test_n": 252,
+        "test_through": "2016-12-30T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2015-12-31T00:00:00",
+        "train_n": 5518,
+        "train_through": "2015-12-23T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.02658582089552239,
+            "n": 1071,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.017676767676767676,
+            "n": 593,
+            "state": "watch"
+          },
+          {
+            "events": 63,
+            "jeffreys_rate": 0.019683818970861747,
+            "n": 3225,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.15644171779141106,
+            "n": 162,
+            "state": "elevated"
+          },
+          {
+            "events": 78,
+            "jeffreys_rate": 0.16773504273504272,
+            "n": 467,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2016
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.020469957352854753,
+          "caution": 0.020469957352854753,
+          "elevated": 0.15454545454545454,
+          "risk-off": 0.1594059405940594,
+          "watch": 0.020469957352854753
+        },
+        "first_test": "2017-01-03T00:00:00",
+        "horizon": 5,
+        "population_sha256": "f8bdc3ee0e495b0e8685a9bb776a72703472b2cbf447beaee4fdd4cd44b89992",
+        "test_from": "2017-01-03T00:00:00",
+        "test_n": 251,
+        "test_through": "2017-12-29T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2016-12-30T00:00:00",
+        "train_n": 5770,
+        "train_through": "2016-12-22T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.02607502287282708,
+            "n": 1092,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.016881028938906754,
+            "n": 621,
+            "state": "watch"
+          },
+          {
+            "events": 65,
+            "jeffreys_rate": 0.019321533923303835,
+            "n": 3389,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.15454545454545454,
+            "n": 164,
+            "state": "elevated"
+          },
+          {
+            "events": 80,
+            "jeffreys_rate": 0.1594059405940594,
+            "n": 504,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2017
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.01951047569813776,
+          "caution": 0.01951047569813776,
+          "elevated": 0.15454545454545454,
+          "risk-off": 0.1594059405940594,
+          "watch": 0.01951047569813776
+        },
+        "first_test": "2018-01-02T00:00:00",
+        "horizon": 5,
+        "population_sha256": "e508bc30b3cfe2d536d3bd444ef56b03e3634f129cefe084ef7e5d8f0e4f61ef",
+        "test_from": "2018-01-02T00:00:00",
+        "test_n": 251,
+        "test_through": "2018-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2017-12-29T00:00:00",
+        "train_n": 6021,
+        "train_through": "2017-12-21T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.025979945305378303,
+            "n": 1096,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.016329704510108865,
+            "n": 642,
+            "state": "watch"
+          },
+          {
+            "events": 65,
+            "jeffreys_rate": 0.018113938053097346,
+            "n": 3615,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.15454545454545454,
+            "n": 164,
+            "state": "elevated"
+          },
+          {
+            "events": 80,
+            "jeffreys_rate": 0.1594059405940594,
+            "n": 504,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2018
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.0209120745455573,
+          "caution": 0.0209120745455573,
+          "elevated": 0.15454545454545454,
+          "risk-off": 0.1598890942698706,
+          "watch": 0.0209120745455573
+        },
+        "first_test": "2019-01-02T00:00:00",
+        "horizon": 5,
+        "population_sha256": "1fb830d3d23040e04cfefe9693388b0bb13b56884fde479575ebb14c4ac200de",
+        "test_from": "2019-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2019-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2018-12-31T00:00:00",
+        "train_n": 6272,
+        "train_through": "2018-12-21T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.02526595744680851,
+            "n": 1127,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.015789473684210527,
+            "n": 664,
+            "state": "watch"
+          },
+          {
+            "events": 77,
+            "jeffreys_rate": 0.020513499205929063,
+            "n": 3777,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.15454545454545454,
+            "n": 164,
+            "state": "elevated"
+          },
+          {
+            "events": 86,
+            "jeffreys_rate": 0.1598890942698706,
+            "n": 540,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2019
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.020403111494982563,
+          "caution": 0.020403111494982563,
+          "elevated": 0.15088757396449703,
+          "risk-off": 0.15670289855072464,
+          "watch": 0.020403111494982563
+        },
+        "first_test": "2020-01-02T00:00:00",
+        "horizon": 5,
+        "population_sha256": "ba3052a59bc12907dc99daf94ca51d84e13fd00fc5f486bb6b2c1de12cd86f00",
+        "test_from": "2020-01-02T00:00:00",
+        "test_n": 253,
+        "test_through": "2020-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2019-12-31T00:00:00",
+        "train_n": 6524,
+        "train_through": "2019-12-23T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.024632670700086432,
+            "n": 1156,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.015239477503628448,
+            "n": 688,
+            "state": "watch"
+          },
+          {
+            "events": 79,
+            "jeffreys_rate": 0.020065623422513883,
+            "n": 3961,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.15088757396449703,
+            "n": 168,
+            "state": "elevated"
+          },
+          {
+            "events": 86,
+            "jeffreys_rate": 0.15670289855072464,
+            "n": 551,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2020
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.020668957200037506,
+          "caution": 0.02307878202029966,
+          "elevated": 0.14825581395348839,
+          "risk-off": 0.1700854700854701,
+          "watch": 0.020668957200037506
+        },
+        "first_test": "2021-01-04T00:00:00",
+        "horizon": 5,
+        "population_sha256": "c2d5aed998b44ccc3966432d1449721ea769e73d2dcb19c1d6ec642614e77112",
+        "test_from": "2021-01-04T00:00:00",
+        "test_n": 252,
+        "test_through": "2021-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2020-12-31T00:00:00",
+        "train_n": 6777,
+        "train_through": "2020-12-23T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.02392947103274559,
+            "n": 1190,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.015086206896551725,
+            "n": 695,
+            "state": "watch"
+          },
+          {
+            "events": 95,
+            "jeffreys_rate": 0.02307878202029966,
+            "n": 4137,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.14825581395348839,
+            "n": 171,
+            "state": "elevated"
+          },
+          {
+            "events": 99,
+            "jeffreys_rate": 0.1700854700854701,
+            "n": 584,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2021
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.020166637928333755,
+          "caution": 0.021989408243149898,
+          "elevated": 0.14825581395348839,
+          "risk-off": 0.1700854700854701,
+          "watch": 0.020166637928333755
+        },
+        "first_test": "2022-01-03T00:00:00",
+        "horizon": 5,
+        "population_sha256": "8e4b89a0da523019b508e31e5226cf6d1e42c41c6aa4612592b850a6f1a27ee8",
+        "test_from": "2022-01-03T00:00:00",
+        "test_n": 251,
+        "test_through": "2022-12-30T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2021-12-31T00:00:00",
+        "train_n": 7029,
+        "train_through": "2021-12-23T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.0237698081734779,
+            "n": 1198,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.014285714285714285,
+            "n": 734,
+            "state": "watch"
+          },
+          {
+            "events": 95,
+            "jeffreys_rate": 0.021989408243149898,
+            "n": 4342,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.14825581395348839,
+            "n": 171,
+            "state": "elevated"
+          },
+          {
+            "events": 99,
+            "jeffreys_rate": 0.1700854700854701,
+            "n": 584,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2022
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.020166637928333755,
+          "caution": 0.022995015858631628,
+          "elevated": 0.13144329896907217,
+          "risk-off": 0.15679676985195154,
+          "watch": 0.020166637928333755
+        },
+        "first_test": "2023-01-03T00:00:00",
+        "horizon": 5,
+        "population_sha256": "2970096a2958a8d8b7c19c62c5155579c62b9cac86de95864cd28ee8fe9183f5",
+        "test_from": "2023-01-03T00:00:00",
+        "test_n": 250,
+        "test_through": "2023-12-29T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2022-12-30T00:00:00",
+        "train_n": 7280,
+        "train_through": "2022-12-22T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.0237698081734779,
+            "n": 1198,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.014285714285714285,
+            "n": 734,
+            "state": "watch"
+          },
+          {
+            "events": 101,
+            "jeffreys_rate": 0.022995015858631628,
+            "n": 4413,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.13144329896907217,
+            "n": 193,
+            "state": "elevated"
+          },
+          {
+            "events": 116,
+            "jeffreys_rate": 0.15679676985195154,
+            "n": 742,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2023
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.019888952711609422,
+          "caution": 0.021955440190352584,
+          "elevated": 0.12878787878787878,
+          "risk-off": 0.1547144754316069,
+          "watch": 0.019888952711609422
+        },
+        "first_test": "2024-01-02T00:00:00",
+        "horizon": 5,
+        "population_sha256": "8ac2ac5cd58dddf7ef36909fb7ad45806e923a8329f42d858fd7073762cb65db",
+        "test_from": "2024-01-02T00:00:00",
+        "test_n": 252,
+        "test_through": "2024-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2023-12-29T00:00:00",
+        "train_n": 7530,
+        "train_through": "2023-12-21T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.02367109634551495,
+            "n": 1203,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.013870541611624834,
+            "n": 756,
+            "state": "watch"
+          },
+          {
+            "events": 101,
+            "jeffreys_rate": 0.021955440190352584,
+            "n": 4622,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.12878787878787878,
+            "n": 197,
+            "state": "elevated"
+          },
+          {
+            "events": 116,
+            "jeffreys_rate": 0.1547144754316069,
+            "n": 752,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2024
+      },
+      {
+        "authority_partition_h21": null,
+        "candidate_surface": {
+          "calm": 0.01955977128056116,
+          "caution": 0.02137546468401487,
+          "elevated": 0.12878787878787878,
+          "risk-off": 0.1547144754316069,
+          "watch": 0.01955977128056116
+        },
+        "first_test": "2025-01-02T00:00:00",
+        "horizon": 5,
+        "population_sha256": "a4dc12f7da152c291d28ee258e341fb27981824ec5d2c1fb352bb48898de3341",
+        "test_from": "2025-01-02T00:00:00",
+        "test_n": 250,
+        "test_through": "2025-12-31T00:00:00",
+        "train_from": "1994-01-26T00:00:00",
+        "train_last_outcome_end": "2024-12-31T00:00:00",
+        "train_n": 7782,
+        "train_through": "2024-12-23T00:00:00",
+        "training_states": [
+          {
+            "events": 28,
+            "jeffreys_rate": 0.02345679012345679,
+            "n": 1214,
+            "state": "calm"
+          },
+          {
+            "events": 10,
+            "jeffreys_rate": 0.013478818998716302,
+            "n": 778,
+            "state": "watch"
+          },
+          {
+            "events": 103,
+            "jeffreys_rate": 0.02137546468401487,
+            "n": 4841,
+            "state": "caution"
+          },
+          {
+            "events": 25,
+            "jeffreys_rate": 0.12878787878787878,
+            "n": 197,
+            "state": "elevated"
+          },
+          {
+            "events": 116,
+            "jeffreys_rate": 0.1547144754316069,
+            "n": 752,
+            "state": "risk-off"
+          }
+        ],
+        "year": 2025
+      }
+    ]
+  },
+  "input_hashes": {
+    "data/breadth/breadth.parquet": "8dbf8039dc548b7ae03c4134b44a3220d31c1902da427b538a516e9af96fe596",
+    "data/cboe/gex.parquet": "3a92427ae23951798c503b3042b7918606c558f8e251bf4a7f9c752f83b9917c",
+    "data/cboe/putcall.parquet": "597b6309050443d9ab3f9db97f25a3c9b5a8804469c8bda671d2ce58770b5b16",
+    "data/fred/BAMLH0A0HYM2.parquet": "6fa942084941ea47b3a26240311877747ea6b9c2c0d5ce075c8e68c03d0785ae",
+    "data/fred/DEXJPUS.parquet": "eb6622238ba383a25c62d0db45a6cf8bb8f578aa5f2353fa82a080b380ac340e",
+    "data/fred/DFII10.parquet": "83a12828e0ae2147da6a65edecbd7e2427147c413201dda4037c4614bbab2bf8",
+    "data/yahoo/HYG.parquet": "3565c19e9b214fdd23f979f33412b5d2e10aa59299151395164e97bd2102e859",
+    "data/yahoo/SMH.parquet": "f6af2011b7169872ce6b68bc6cdd80c407e99fe10293099f6fa84aa438d161c3",
+    "data/yahoo/SPY.parquet": "22eb6928c5891305c32d8c591ea67a842c62a5c31358c07b2bea7b4939ea6631",
+    "data/yahoo/TLT.parquet": "7259f79c8fff67ed2e68e1c4109078255c168a0eea66374523a95238f6b63200",
+    "data/yahoo/XLP.parquet": "e5429d88f4f98268a38e90e009188d98e1bcd4a247e123a0c11d776c1a200e6a",
+    "data/yahoo/XLU.parquet": "fa978bb76e7b6abb82e7840882daa6b9bf2768a28df4b1fdc83b9ccce484c037",
+    "data/yahoo/XLY.parquet": "6fcaaf8579e60f082a7c6e52d53a05491d8473af9c1c7a82460c6e1ee5f8c516",
+    "data/yahoo/_MOVE.parquet": "82ff4421f3205ceeb4b93e13f70d5702ef706416319e1ad464278a3137bcdf20",
+    "data/yahoo/_VIX.parquet": "24cf56b1d30b2f5ee5e8684f3193a43935b314adab22f39a5209338652e2e9c3",
+    "data/yahoo/_VIX3M.parquet": "795250b913bc911f3b30b85daaf5b461bf9e955a1005f7d510aa20bf4f8fa6c2",
+    "data/yahoo/_VIX9D.parquet": "48aa5779f84da2fbd1e745fc0d007612aaa9a7932536fd51062f1721f8f1e90d"
+  },
+  "missing_optional_inputs": [
+    "data/risk_radar/calibration.json"
+  ],
+  "protocol_commit": "055b3564d1a31b763638e38563afc245c89dcf2f",
+  "results": {
+    "h10": {
+      "annual": [
+        {
+          "candidate_brier": 0.1094192896825397,
+          "current_brier": 0.10735476190476188,
+          "delta": 0.002064527777777811,
+          "n": 252,
+          "year": 2010
+        },
+        {
+          "candidate_brier": 0.1254981984126984,
+          "current_brier": 0.1279011904761905,
+          "delta": -0.002402992063492093,
+          "n": 252,
+          "year": 2011
+        },
+        {
+          "candidate_brier": 0.027797652000000006,
+          "current_brier": 0.0259852,
+          "delta": 0.001812452000000006,
+          "n": 250,
+          "year": 2012
+        },
+        {
+          "candidate_brier": 0.007288777777777777,
+          "current_brier": 0.007452380952380954,
+          "delta": -0.00016360317460317741,
+          "n": 252,
+          "year": 2013
+        },
+        {
+          "candidate_brier": 0.03144401984126984,
+          "current_brier": 0.03085436507936508,
+          "delta": 0.0005896547619047635,
+          "n": 252,
+          "year": 2014
+        },
+        {
+          "candidate_brier": 0.07416519841269842,
+          "current_brier": 0.06669761904761905,
+          "delta": 0.0074675793650793715,
+          "n": 252,
+          "year": 2015
+        },
+        {
+          "candidate_brier": 0.0290685,
+          "current_brier": 0.026190476190476195,
+          "delta": 0.002878023809523806,
+          "n": 252,
+          "year": 2016
+        },
+        {
+          "candidate_brier": 0.005352334661354582,
+          "current_brier": 0.007300398406374504,
+          "delta": -0.0019480637450199224,
+          "n": 251,
+          "year": 2017
+        },
+        {
+          "candidate_brier": 0.1459667171314741,
+          "current_brier": 0.14472390438247013,
+          "delta": 0.0012428127490039798,
+          "n": 251,
+          "year": 2018
+        },
+        {
+          "candidate_brier": 0.029247531746031754,
+          "current_brier": 0.028332539682539678,
+          "delta": 0.0009149920634920761,
+          "n": 252,
+          "year": 2019
+        },
+        {
+          "candidate_brier": 0.12435501976284588,
+          "current_brier": 0.12842094861660083,
+          "delta": -0.004065928853754952,
+          "n": 253,
+          "year": 2020
+        },
+        {
+          "candidate_brier": 0.005926460317460317,
+          "current_brier": 0.007533333333333334,
+          "delta": -0.0016068730158730164,
+          "n": 252,
+          "year": 2021
+        },
+        {
+          "candidate_brier": 0.2125945219123506,
+          "current_brier": 0.21109880478087648,
+          "delta": 0.0014957171314741169,
+          "n": 251,
+          "year": 2022
+        },
+        {
+          "candidate_brier": 0.018468515999999997,
+          "current_brier": 0.017733600000000002,
+          "delta": 0.0007349159999999952,
+          "n": 250,
+          "year": 2023
+        },
+        {
+          "candidate_brier": 0.018855757936507938,
+          "current_brier": 0.020252380952380952,
+          "delta": -0.0013966230158730143,
+          "n": 252,
+          "year": 2024
+        },
+        {
+          "candidate_brier": 0.07151811599999999,
+          "current_brier": 0.07143320000000002,
+          "delta": 8.491599999997657e-05,
+          "n": 250,
+          "year": 2025
+        }
+      ],
+      "base_rate": 0.0720675944333996,
+      "candidate_brier": 0.06482118762425447,
+      "candidate_wace": 0.07207132206759445,
+      "candidate_year_wins": 6,
+      "current_brier": 0.06434140159045726,
+      "current_wace": 0.0322713717693837,
+      "events": 290,
+      "from": "2010-01-04T00:00:00",
+      "mean_candidate_probability": 0.10272937375745526,
+      "mean_current_probability": 0.09461729622266402,
+      "n": 4024,
+      "paired_brier_delta": 0.00047978603379721096,
+      "paired_brier_delta_ci90": [
+        -0.00120536,
+        0.00212445
+      ],
+      "test_years": 16,
+      "through": "2025-12-31T00:00:00"
+    },
+    "h21": {
+      "annual": [
+        {
+          "candidate_brier": 0.2069767817460318,
+          "current_brier": 0.20664642857142854,
+          "delta": 0.000330353174603254,
+          "n": 252,
+          "year": 2010
+        },
+        {
+          "candidate_brier": 0.21902265873015872,
+          "current_brier": 0.22271309523809524,
+          "delta": -0.0036904365079365176,
+          "n": 252,
+          "year": 2011
+        },
+        {
+          "candidate_brier": 0.096803652,
+          "current_brier": 0.09317239999999999,
+          "delta": 0.0036312520000000154,
+          "n": 250,
+          "year": 2012
+        },
+        {
+          "candidate_brier": 0.037323960317460304,
+          "current_brier": 0.03128531746031747,
+          "delta": 0.006038642857142833,
+          "n": 252,
+          "year": 2013
+        },
+        {
+          "candidate_brier": 0.10176493650793648,
+          "current_brier": 0.09779603174603174,
+          "delta": 0.003968904761904743,
+          "n": 252,
+          "year": 2014
+        },
+        {
+          "candidate_brier": 0.14474350793650795,
+          "current_brier": 0.13698015873015876,
+          "delta": 0.0077633492063491905,
+          "n": 252,
+          "year": 2015
+        },
+        {
+          "candidate_brier": 0.06994054761904764,
+          "current_brier": 0.06056230158730159,
+          "delta": 0.00937824603174605,
+          "n": 252,
+          "year": 2016
+        },
+        {
+          "candidate_brier": 0.029416239043824708,
+          "current_brier": 0.02817091633466136,
+          "delta": 0.0012453227091633497,
+          "n": 251,
+          "year": 2017
+        },
+        {
+          "candidate_brier": 0.22808822709163346,
+          "current_brier": 0.23008326693227094,
+          "delta": -0.0019950398406374803,
+          "n": 251,
+          "year": 2018
+        },
+        {
+          "candidate_brier": 0.08125086507936508,
+          "current_brier": 0.07790873015873016,
+          "delta": 0.003342134920634912,
+          "n": 252,
+          "year": 2019
+        },
+        {
+          "candidate_brier": 0.16969760079051383,
+          "current_brier": 0.16961185770750992,
+          "delta": 8.574308300390854e-05,
+          "n": 253,
+          "year": 2020
+        },
+        {
+          "candidate_brier": 0.053390761904761906,
+          "current_brier": 0.05358174603174605,
+          "delta": -0.00019098412698414363,
+          "n": 252,
+          "year": 2021
+        },
+        {
+          "candidate_brier": 0.3035691752988048,
+          "current_brier": 0.29921872509960157,
+          "delta": 0.004350450199203215,
+          "n": 251,
+          "year": 2022
+        },
+        {
+          "candidate_brier": 0.102548768,
+          "current_brier": 0.09876599999999999,
+          "delta": 0.003782768000000006,
+          "n": 250,
+          "year": 2023
+        },
+        {
+          "candidate_brier": 0.07734387698412698,
+          "current_brier": 0.07757579365079366,
+          "delta": -0.00023191666666667887,
+          "n": 252,
+          "year": 2024
+        },
+        {
+          "candidate_brier": 0.12150175999999997,
+          "current_brier": 0.12428200000000005,
+          "delta": -0.0027802400000000727,
+          "n": 250,
+          "year": 2025
+        }
+      ],
+      "base_rate": 0.15606361829025844,
+      "candidate_brier": 0.12770862624254473,
+      "candidate_wace": 0.12262922465208748,
+      "candidate_year_wins": 5,
+      "current_brier": 0.12551816600397614,
+      "current_wace": 0.03708499005964216,
+      "events": 628,
+      "from": "2010-01-04T00:00:00",
+      "mean_candidate_probability": 0.20448757455268388,
+      "mean_current_probability": 0.18608101391650098,
+      "n": 4024,
+      "paired_brier_delta": 0.0021904602385685867,
+      "paired_brier_delta_ci90": [
+        -0.00026557,
+        0.00484212
+      ],
+      "test_years": 16,
+      "through": "2025-12-31T00:00:00"
+    },
+    "h5": {
+      "annual": [
+        {
+          "candidate_brier": 0.03922170634920634,
+          "current_brier": 0.03817769841269841,
+          "delta": 0.0010440079365079263,
+          "n": 252,
+          "year": 2010
+        },
+        {
+          "candidate_brier": 0.07559018253968254,
+          "current_brier": 0.07916544444444444,
+          "delta": -0.0035752619047619005,
+          "n": 252,
+          "year": 2011
+        },
+        {
+          "candidate_brier": 0.0010999120000000002,
+          "current_brier": 0.00084168,
+          "delta": 0.00025823200000000017,
+          "n": 250,
+          "year": 2012
+        },
+        {
+          "candidate_brier": 0.0007887142857142858,
+          "current_brier": 0.001174063492063492,
+          "delta": -0.0003853492063492063,
+          "n": 252,
+          "year": 2013
+        },
+        {
+          "candidate_brier": 0.005193190476190476,
+          "current_brier": 0.004926507936507936,
+          "delta": 0.00026668253968253983,
+          "n": 252,
+          "year": 2014
+        },
+        {
+          "candidate_brier": 0.03267598412698412,
+          "current_brier": 0.030026603174603175,
+          "delta": 0.002649380952380948,
+          "n": 252,
+          "year": 2015
+        },
+        {
+          "candidate_brier": 0.011650531746031745,
+          "current_brier": 0.008916492063492062,
+          "delta": 0.0027340396825396834,
+          "n": 252,
+          "year": 2016
+        },
+        {
+          "candidate_brier": 0.000605003984063745,
+          "current_brier": 0.0011336095617529881,
+          "delta": -0.0005286055776892431,
+          "n": 251,
+          "year": 2017
+        },
+        {
+          "candidate_brier": 0.06647907968127488,
+          "current_brier": 0.06622968924302788,
+          "delta": 0.00024939043824699636,
+          "n": 251,
+          "year": 2018
+        },
+        {
+          "candidate_brier": 0.009448690476190475,
+          "current_brier": 0.008926555555555556,
+          "delta": 0.0005221349206349195,
+          "n": 252,
+          "year": 2019
+        },
+        {
+          "candidate_brier": 0.09692864822134385,
+          "current_brier": 0.10108482213438734,
+          "delta": -0.004156173913043487,
+          "n": 253,
+          "year": 2020
+        },
+        {
+          "candidate_brier": 0.0008490634920634922,
+          "current_brier": 0.001215888888888889,
+          "delta": -0.00036682539682539675,
+          "n": 252,
+          "year": 2021
+        },
+        {
+          "candidate_brier": 0.0903028047808765,
+          "current_brier": 0.08427099601593625,
+          "delta": 0.00603180876494025,
+          "n": 251,
+          "year": 2022
+        },
+        {
+          "candidate_brier": 0.0016657240000000002,
+          "current_brier": 0.001269904,
+          "delta": 0.00039582000000000007,
+          "n": 250,
+          "year": 2023
+        },
+        {
+          "candidate_brier": 0.00816277777777778,
+          "current_brier": 0.008452174603174602,
+          "delta": -0.00028939682539682286,
+          "n": 252,
+          "year": 2024
+        },
+        {
+          "candidate_brier": 0.020558435999999996,
+          "current_brier": 0.021584799999999998,
+          "delta": -0.0010263640000000018,
+          "n": 250,
+          "year": 2025
+        }
+      ],
+      "base_rate": 0.030566600397614316,
+      "candidate_brier": 0.028856969930417496,
+      "candidate_wace": 0.028849155069582508,
+      "candidate_year_wins": 7,
+      "current_brier": 0.02861980218687873,
+      "current_wace": 0.016435884691848906,
+      "events": 123,
+      "from": "2010-01-04T00:00:00",
+      "mean_candidate_probability": 0.04426665009940358,
+      "mean_current_probability": 0.03865656063618291,
+      "n": 4024,
+      "paired_brier_delta": 0.0002371677435387652,
+      "paired_brier_delta_ci90": [
+        -0.00061923,
+        0.00102513
+      ],
+      "test_years": 16,
+      "through": "2025-12-31T00:00:00"
+    }
+  },
+  "schema": "risk_radar_probability_walkforward.v1",
+  "source_base": "668237947e016f679782e41e61c91c9133a5ea99",
+  "source_hashes": {
+    "engine/risk_radar.py": "a2c347cd726646896c48ed7a4437ae64e371e1efc689fd176998f3d2d88158e1",
+    "engine/risk_radar_backtest.py": "77c2a5b7a4547ea96fd02e8be804e4f448facdeb42b707e63478836ff3d3c46a",
+    "research/grey_deer/RISK_RADAR_PROBABILITY_WALKFORWARD_PREREG_2026-09-23.md": "d5c0189e05607de75db8cac106141c837c29dc395f46bd58daaa1696a6228a75",
+    "scripts/research/risk_radar_displayed_probability_audit.py": "b0aded0f7fe98c6cb02e5a10dd653837c25e02dff7a79df5fdb5b99cc199a4d3",
+    "scripts/research/risk_radar_probability_walkforward.py": "a08371b0e0e9565677364b39a2446d55a417bda0fcce3882dafcb0fc52e89f50",
+    "scripts/research/risk_radar_state_ladder_calibration.py": "1ae55ad3295fc7c5a25918e97d6b80de35a23ee60b9e219bec92c82105762068"
+  },
+  "targets": {
+    "depth": 0.05,
+    "horizons": [
+      5,
+      10,
+      21
+    ]
+  },
+  "test_years": [
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "verdict": {
+    "checks": {
+      "annual_wins_at_least_10_all": false,
+      "authority_partition_preserved": true,
+      "brier_ci_upper_nonpositive_all": false,
+      "identical_populations": true,
+      "point_brier_improves_all": false,
+      "wace_nonworse_all": false
+    },
+    "promotion_eligible": false,
+    "status": "not_promotion_eligible"
+  }
+}

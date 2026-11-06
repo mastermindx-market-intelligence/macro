@@ -1,0 +1,148 @@
+{
+  "schema": "ptse.ci_registration_independent_review.v1",
+  "reviewed_date_utc": "2026-10-07",
+  "reviewer": "/root/market_tide_recovery",
+  "author": "/root/ptse_publication_preflight",
+  "disposition": "PASS_FOR_ORDINARY_CI_ADMISSION",
+  "blocking_findings": [],
+  "repository": "mastermindx-market-intelligence/macro",
+  "carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/8364",
+  "reviewed_pr_head_before_integration": "6709ff8a75fe570e921ce06da282fedc6d52f208",
+  "integration_base_ref": "aa1ab61ee655e3750061258e7d77488e443c12c1",
+  "target_path": ".github/ci/legacy-jobs.yml",
+  "base": {
+    "local_path": "/workspace/scratch/f085cc5024b5/ptse_ci_registration/legacy-jobs.current-main.yml",
+    "bytes": 1147912,
+    "git_blob_sha1": "1b759dda80b42512e23730b57728e843c2a50233",
+    "sha256": "d84a9b53084d3e4f9ab503f2a4ab2cb742089c7e585246557ff21830ba1816f8"
+  },
+  "candidate": {
+    "local_path": "/workspace/scratch/f085cc5024b5/ptse_ci_registration/legacy-jobs.final-candidate.yml",
+    "bytes": 1148982,
+    "git_blob_sha1": "29cac4bbdeafdccfbfccb0bc7c4a40073b68fe13",
+    "sha256": "061e7208c1efa1d3f592ee8f0169ab59fc3ef9e370af0c2b7ab02814ab2b9ac1",
+    "trailing_lf_count": 1
+  },
+  "patch": {
+    "local_path": "/workspace/scratch/f085cc5024b5/ptse_ci_registration/ptse-ci-registration.final.patch",
+    "sha256": "e3b909b3a6111af681c5acbefbbba73075b0a6935e6a0e101243e0175283ae82",
+    "added_lines": 25,
+    "removed_lines": 1
+  },
+  "semantic_review": {
+    "changed_job_ids": [
+      "research-price-panel"
+    ],
+    "only_run_field_changes_in_parsed_yaml": true,
+    "incumbent_suite_arguments_retained_in_original_order": [
+      "tests/test_research_price_panel.py",
+      "tests/test_entry_radar_rs_pullback_phase1.py",
+      "tests/test_entry_radar_terminal_minute_observations.py"
+    ],
+    "added_ptse_suite_count": 17,
+    "exact_ptse_suite_set_verified_against_candidate_manifest": true,
+    "total_explicit_suite_arguments": 20,
+    "new_separate_pytest_step": false,
+    "shell_command_has_no_globs_directories_or_dynamic_targets": true,
+    "unchanged": [
+      "all other jobs and their steps",
+      "current main MI-S2 step",
+      "research-price-panel step count and name",
+      "CODE gate",
+      "Python 3.12 declaration",
+      "pip install pytest pandas numpy pyarrow pyyaml",
+      "workflow event admission",
+      "audit classifier",
+      "contract-delta gate"
+    ],
+    "no_exclusive_scope_or_declared_paths_added": true,
+    "effect_authority_change": false
+  },
+  "selector_review": {
+    "method": "Read exact current-main controller sources and verify literal command paths plus direct AST imports; do not execute the global selector.",
+    "status": "SOURCE_REVIEW_PASS; full-checkout inference remains normal hosted CI evidence",
+    "corrected_failure_mode": "A separate PTSE-only pytest command would have no recognized suite because the current classifier misses PTSE unittest class names. Appending the paths to the existing recognized three-suite command preserves the named-suite anchor.",
+    "source_code_paths": [
+      "run_ci_pack.py:1134-1155 builds the suite index from discover_suites.",
+      "run_ci_pack.py:1193-1223 rejects ambiguous commands or pytest commands without a recognized suite.",
+      "run_ci_pack.py:1225-1238 independently adds every existing literal SCOPE_REFERENCE_RE path and its Python dependency closure.",
+      "ci_scope_dependencies.py:952-999 rejects dynamic targets and directories; the final command contains neither.",
+      "ci_scope_dependencies.py:1002-1051 follows existing first-party Python imports to a fixed point.",
+      "audit_unrun_tests.py:183-226 recognizes top-level test functions and Test-prefixed classes; actual pytest collection establishes that the PTSE unittest classes are executable."
+    ],
+    "exact_literal_ptse_suite_paths": 17,
+    "direct_imports_cover_all_ptse_modules": 16,
+    "source33_files_byte_identity_verified": true,
+    "full_global_infer_job_scopes_executed": false,
+    "full_repository_transitive_scope_inventory_claimed": false,
+    "expected_admission": "The added files enter the ordinary existing command and its literal-path dependency ownership. No bypass, waiver, classifier change, or new always-on step is introduced. Full-tree fallback scope remains the existing fail-closed controller's decision."
+  },
+  "controller_sources": [
+    {
+      "path": "scripts/run_ci_pack.py",
+      "git_blob_sha1": "a2fb03844ea7a6e12fd9eba05f0aa9df57d4101f",
+      "source_ref": "aa1ab61ee655e3750061258e7d77488e443c12c1",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/aa1ab61ee655e3750061258e7d77488e443c12c1/scripts/run_ci_pack.py"
+    },
+    {
+      "path": "scripts/ci_scope_dependencies.py",
+      "git_blob_sha1": "4c4779479f5bb41741fe7a5db114dfe304350a8a",
+      "source_ref": "aa1ab61ee655e3750061258e7d77488e443c12c1",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/aa1ab61ee655e3750061258e7d77488e443c12c1/scripts/ci_scope_dependencies.py"
+    },
+    {
+      "path": "scripts/audit_unrun_tests.py",
+      "git_blob_sha1": "9ae74b91a276733b2b1a310cb652a847ad5f7dc0",
+      "source_ref": "aa1ab61ee655e3750061258e7d77488e443c12c1",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/aa1ab61ee655e3750061258e7d77488e443c12c1/scripts/audit_unrun_tests.py"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "git_blob_sha1": "e4c42e9b27a5da7b2cd2d5729e969f05e76d7e73",
+      "source_ref": "aa1ab61ee655e3750061258e7d77488e443c12c1",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/aa1ab61ee655e3750061258e7d77488e443c12c1/.github/workflows/ci.yml"
+    }
+  ],
+  "pytest_verification": {
+    "evidence_path": "/workspace/scratch/f085cc5024b5/ptse_ci_registration/ptse-pytest-registration-verification.json",
+    "evidence_sha256": "7723d71a0621e4e261db2c108f1f1da63969c9bcf8215d99e33c7e8f0a16de84",
+    "interpreter": "/workspace/scratch/f085cc5024b5/market_tide_recovery/test_env/bin/python",
+    "python_version": "3.12.14",
+    "pytest_version": "9.1.1",
+    "scope": "Only the exact 17 PTSE arguments from the 20-file command.",
+    "collected_tests": 304,
+    "collect_exit_code": 0,
+    "passed_tests": 304,
+    "passed_subtests": 324,
+    "execute_exit_code": 0,
+    "execute_reported_seconds": 6.87,
+    "current_conftest": {
+      "source_ref": "aa1ab61ee655e3750061258e7d77488e443c12c1",
+      "git_blob_sha1": "b2d40ef0eebddcfa3b4292a0d1cd296563222cdc",
+      "sha256": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425",
+      "unmodified": true
+    },
+    "source_snapshot_python_files_before_conftest": 63,
+    "ptse_source_and_test_files": 33,
+    "existing_dependencies": 30,
+    "source_bytes_unchanged_after_execution": true,
+    "isolated_dependency_install": [
+      "pytest 9.1.1",
+      "iniconfig 2.3.1",
+      "pluggy 1.6.0",
+      "pygments 2.21.0"
+    ],
+    "guard_overrides_or_dependency_stubs": false,
+    "collect_log_sha256": "d06e44eb9c760c1e4db1956d75bf6f89e645f4c0c6dd2cf238685335c218db04",
+    "execute_log_sha256": "62e4c6ebff1325f3d58a07cdde27e6c9619aaa51cf1dcccd0770a8139851cafd"
+  },
+  "limits": [
+    "Independent nonauthor review of this CI registration patch, not a formal GitHub approval event.",
+    "The three unchanged incumbent suites were not run locally; no unrelated test sweep was performed.",
+    "The isolated snapshot includes exact current conftest but omits unrelated optional owner modules, which follow that conftest's existing import guards.",
+    "The isolated snapshot has no canonical data/site stores or Git checkout. It does not supply full-checkout dirty-tree or complete repository selection proof.",
+    "Full hosted CI on the integrated commit and ordinary merge gates remain required; local collection and execution are not that evidence.",
+    "No source code, remote repository, live data, provider, protected outcome, or frozen C1 was modified or read by this CI review.",
+    "This receipt grants no scientific qualification, W3 owner release, natural first issuance, product acceptance, or live publication authority."
+  ]
+}

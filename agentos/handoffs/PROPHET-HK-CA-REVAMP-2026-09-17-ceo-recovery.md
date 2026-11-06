@@ -2,6 +2,176 @@
 workstream: WS:PROPHET-HK-CA-REVAMP
 session: claude/prophet-hk-ca-ceo-recovery-20260917
 model: sol
+ended_because: ci_handoff
+mission: >
+  Qualify the three preserved September HK/Canada recovery records for truthful
+  source publication. Retain the original end-to-end regional opportunity,
+  native entry, premium UI, normal publication and production-acceptance mission
+  as unfinished; records publication cannot satisfy that product outcome.
+state_before: >
+  The records carrier remained at ef2428088d3317d49884da54e226470a843dcda2.
+  Its September 17 frontmatter mixed dated observations with then-current
+  continuation instructions. Later September returns superseded some carrier
+  and shell-serving statements. No November product or runtime proof follows
+  from those archived observations.
+changed:
+  - path: research/PROPHET_HK_CA_END_TO_END_RECOVERY_2026_09_17.md
+    what: Preserve the exact original approved outcome and delivery-boundary record.
+  - path: research/PROPHET_HK_CA_RECOVERY_R2_EVIDENCE_2026_09_17.md
+    what: Preserve the exact original R2 diagnostic and candidate-proposal evidence.
+  - path: agentos/handoffs/PROPHET-HK-CA-REVAMP-2026-09-17-ceo-recovery.md
+    what: >
+      Add this dated records qualification, retain the entire original body
+      verbatim, and archive the complete original frontmatter verbatim. Separate
+      historical commands and observations from current admission and product truth.
+verified:
+  - claim: The original three source records were recovered at their exact published head.
+    command: >
+      Read PR7248 head ef2428088d3317d49884da54e226470a843dcda2 and its
+      three file objects; verify those same original blobs in the admitted workspace.
+    result: >
+      Outcome memo a2c3c0327ba9429021cde8987d3d70bec9a1072c;
+      R2 memo 7985b17262f736b6d25d952a06d69ab222086f40;
+      original handoff 5ace1851a3d7c2f644d1e66b43d5611cf32ffe07.
+      The two research records remain exact historical source bytes.
+  - claim: Later dated returns invalidate several September 17 instructions as present-tense directions.
+    command: >
+      Read this PR's September 25 comments 5831670669 and 5832201104.
+    result: >
+      Those returns report #7685 closed in favor of landed #6872 shell serving
+      and #7163 closed in favor of merged #7603. They preserve the HK source-edit
+      denial, the real population-control defect, the #7499 R1 baseline and
+      separate #7303/#7700 source custody. These are dated reports, not fresh
+      November UI, runtime, source-writer or production certification.
+  - claim: Current records-only source custody was qualified on the original allocated workspace.
+    command: >
+      Under PR7248 grants 6677866518 and 6678025266, reconcile the single acquire,
+      prove the exact empty original checkout, populate its index from frozen
+      HEAD once, then read the installed publisher status and source preflight.
+    result: >
+      Correct Macro base 731a1a0f9843d35173f4f4a992a3c810ac999f6d;
+      clean workspace and publication NOT_APPLIED before record edits.
+      Original source objects present, all three additions absent on base,
+      root instruction blobs unchanged, no applicable nested instructions.
+      No new worker, alternate workspace or product source takeover.
+unverified:
+  - claim: The authored November records have completed their applicable executable and hosted checks.
+    what_would_verify: >
+      Actual native record validation, preserved baseline-warning comparison,
+      current planner, clean committed source and natural hosted CI bound to the
+      published candidate, followed by the explicit records-release ruling on PR7248.
+      Results must be consumed from their receipts, not inferred from this note.
+  - claim: The original HK/Canada product journey is implemented, published or accepted.
+    what_would_verify: >
+      Current accepted owner source and truthful native regional evidence,
+      coherent opportunity/detail/plan/history journeys, normal publication and
+      entitled EN/ZH, dark/light, desktop/mobile production acceptance.
+  - claim: Historical runtime or access observations establish present execution availability.
+    what_would_verify: >
+      Current evidence from the existing canonical admission, source, runtime
+      and access owners for the exact proposed product action. September
+      do_not_submit, queue counts and tool observations are not current state.
+unresolved:
+  - >
+    This source slice concerns three records only. The broader HK/Canada product
+    remains unfinished and is not closed, parked or shipped by records publication.
+  - >
+    Explicit source-edit, security or tool denials recorded on the original
+    product carriers remain effective until legitimately reconciled. This record
+    neither clears them nor authorizes another carrier, host or account replay.
+  - >
+    #7499's preserved R1 matrix is not a released successor journey. #7303 and
+    #7700 retain their separate geometry/template work; do not absorb their source
+    or reuse another active writer's historical evidence to obtain release.
+next_actions:
+  - >
+    Consume the exact November records qualification and hosted CI on PR7248.
+    Publish and release only this verified three-record slice through the existing
+    guarded source/controller path, preserving the original branch and history.
+  - >
+    A future product continuation must recover the current canonical owner state
+    and original acceptance journey, then advance an authorized unblocked action.
+    Do not execute an archived September next-action merely because it is preserved here.
+  - >
+    Preserve the original HK-first sequencing and native regional identity,
+    entry and evidence authorities. Records acceptance supplies no design,
+    signal, trading, provider, browser, runtime or publication authority.
+do_not_redo:
+  - Do not alter either original research memo or erase the original handoff evidence.
+  - Do not reopen #7685 or #7163 from their obsolete archived instructions.
+  - Do not repeat the old #7018 dependency repair or turn its September queued CI into current state.
+  - Do not rebuild the #7499 R1 design baseline or duplicate #7303/#7700 work.
+  - Do not bypass a recorded platform denial, live writer or uncertain original effect.
+  - Do not manufacture opportunity counts, entry permission, source clocks or production acceptance.
+  - Do not infer worker START, current Executive admission or current Figma/Paper access from old prose.
+danger_areas:
+  - Historical observations and commands are evidence with an epoch, not current authority.
+  - Card and stage counts are not entry permission; fresh quotes are not fresh analysis.
+  - Records checks, source release, merge, deployment and real product acceptance are separate receipts.
+prs: [7248, 7018, 7163, 6996, 7499, 7303, 7700]
+---
+
+# Records qualification — 2026-11-06
+
+This file now distinguishes the dated September recovery record from the current
+three-record publication task. The two research memos are preserved byte for byte.
+The original handoff body follows verbatim, and its complete original frontmatter
+is retained verbatim in the final appendix.
+
+Later September 25 returns on PR #7248 reported landed shell serving and a merged
+alternative to the old #7163 carrier. Their accompanying source denials, product
+defect evidence and separate design/template custody remain part of the record.
+They do not establish November product state. In particular, the archived
+Executive unarmed/do_not_submit observation, queued CI, open #7163 statement and
+unapplied shell proposal must not be issued as current continuation instructions.
+
+Current source authority is the Chairman's oldest-first sweep under Mastermind#2028,
+root macro-backlog-oldest-first-20261105-c3, with protected Mastermind pin
+44b7a4717240201828915bf2f5cbc2fe2ecc60b5. PR #7248 comments 6677866518 and 6678025266
+bound this records slice and its original-workspace recovery. They do not authorize
+a product-source, security, runtime, provider, browser, Figma or Paper action.
+
+The original end-to-end HK/Canada mission and acceptance matrix remain unfinished.
+Their complete wording is preserved below and in the two original research memos.
+Current validation, publication and release evidence belongs on this exact PR;
+none is invented in this authored note.
+
+# Historical handoff body — September 17, 2026
+
+# R3 continuation — repaired dependency, unchanged product obligation
+
+Operation: `prophet-hk-ca-end-to-end-recovery-20260917-sol-001`.
+Canonical recovery carrier: PR #7248 / `claude/prophet-hk-ca-ceo-recovery-20260917`.
+
+**The next action has changed.** #7018's missing dependency is implemented at
+`5c9138b35221dc42d5d44a642f83043a505a9c90` and its hosted differential gate is green.
+The stale request-to-apply wording in older R2 records is superseded for that
+one dependency. Source-owner returns 5711031075 and 5711276375 retain its writer
+and remaining CI/review/release conditions. No second repair or identical test
+campaign is warranted without a new material failure.
+
+The original delivery contract remains
+`research/PROPHET_HK_CA_END_TO_END_RECOVERY_2026_09_17.md`; exact diagnostic and
+candidate-proposal evidence remains
+`research/PROPHET_HK_CA_RECOVERY_R2_EVIDENCE_2026_09_17.md`. Those are evidence,
+not current permission. The security-sensitive three-asset proposal is still
+unapplied. The new source-review preparation was blocked by the platform, and
+was not rerouted. No application, host configuration, provider or production
+mutation occurred in this interval.
+
+No product worker is claimed to be executing after this turn. The active parent
+mission is unchanged. Resume from a material CI/review return or a qualified
+source/execution route, not another round of unchanged polling or broad archaeology.
+
+# Archived original frontmatter — September 17, 2026
+
+The following is the complete original frontmatter, retained as historical evidence.
+
+```yaml
+---
+workstream: WS:PROPHET-HK-CA-REVAMP
+session: claude/prophet-hk-ca-ceo-recovery-20260917
+model: sol
 ended_because: blocked
 mission: >
   Deliver the Chairman-authorized HK and Canada Prophet recovery end to end:
@@ -152,28 +322,4 @@ danger_areas:
   - Runtime unarmed state is not proof that every manual avenue exists or that any worker started.
 prs: [7248, 7018, 7163, 6996]
 ---
-
-# R3 continuation — repaired dependency, unchanged product obligation
-
-Operation: `prophet-hk-ca-end-to-end-recovery-20260917-sol-001`.
-Canonical recovery carrier: PR #7248 / `claude/prophet-hk-ca-ceo-recovery-20260917`.
-
-**The next action has changed.** #7018's missing dependency is implemented at
-`5c9138b35221dc42d5d44a642f83043a505a9c90` and its hosted differential gate is green.
-The stale request-to-apply wording in older R2 records is superseded for that
-one dependency. Source-owner returns 5711031075 and 5711276375 retain its writer
-and remaining CI/review/release conditions. No second repair or identical test
-campaign is warranted without a new material failure.
-
-The original delivery contract remains
-`research/PROPHET_HK_CA_END_TO_END_RECOVERY_2026_09_17.md`; exact diagnostic and
-candidate-proposal evidence remains
-`research/PROPHET_HK_CA_RECOVERY_R2_EVIDENCE_2026_09_17.md`. Those are evidence,
-not current permission. The security-sensitive three-asset proposal is still
-unapplied. The new source-review preparation was blocked by the platform, and
-was not rerouted. No application, host configuration, provider or production
-mutation occurred in this interval.
-
-No product worker is claimed to be executing after this turn. The active parent
-mission is unchanged. Resume from a material CI/review return or a qualified
-source/execution route, not another round of unchanged polling or broad archaeology.
+```
