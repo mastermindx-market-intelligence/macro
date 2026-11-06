@@ -4,7 +4,11 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from collectors.options_free_samples import SourceRejected
 from collectors.options_free_tbt import qualify_cboe_tbt_sample

@@ -8,10 +8,14 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 import plistlib
 import stat
 import subprocess
 from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from collectors.options_free_samples import SourceRejected, qualify_cboe_c1_sample
 

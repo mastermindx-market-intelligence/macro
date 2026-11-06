@@ -103,11 +103,26 @@ def test_occ_wrong_session_does_not_create_zero():
     with pytest.raises(SourceRejected):
         qualify_occ_volume_csv(b, "2026-10-07", "SPY")
 
-def test_external_private_root_refuses_internal_fallback(tmp_path):
-    from scripts.qualify_options_free_samples import _checked_root
+def test_external_private_root_refuses_internal_fallback(monkeypatch, tmp_path):
+    from scripts import qualify_options_free_samples as entry
 
+    external = tmp_path / "external"
+    private = external / "private"
+    private.mkdir(parents=True)
+    internal = tmp_path / "internal"
+    internal.mkdir()
+    monkeypatch.setattr(entry, "EXTERNAL_VOLUME", external)
+    monkeypatch.setattr(entry, "EXTERNAL_PRIVATE_ROOT", private)
+    disk_calls = []
+
+    def unexpected_disk_lookup(*args, **kwargs):
+        disk_calls.append(args)
+        raise AssertionError("path mismatch must precede physical disk inspection")
+
+    monkeypatch.setattr(entry.subprocess, "run", unexpected_disk_lookup)
     with pytest.raises(SourceRejected, match="external private Cboe root"):
-        _checked_root(tmp_path)
+        entry._checked_root(internal)
+    assert disk_calls == []
 
 
 @pytest.mark.parametrize("bad_field,bad_value", [

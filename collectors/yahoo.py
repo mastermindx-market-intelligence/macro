@@ -20,6 +20,11 @@ period='max' instead of spliced (see ``_rebase_shifted``).
 from __future__ import annotations
 
 import logging
+import hashlib
+import json
+import re
+from pathlib import Path
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import time
 
 import pandas as pd
@@ -76,6 +81,45 @@ def _report_delisted_exclusions(tickers: list[str]) -> list[str]:
     return dropped
 
 
+def _wti_temporal_context(index: pd.Index, request: dict | None) -> dict | None:
+    """Allowlisted adapter output only: no attrs, wire metadata or inferred defaults."""
+    if (not isinstance(index, pd.DatetimeIndex) or index.hasnans
+            or not 0 < len(index) <= 12_000):
+        return None
+    zone = None
+    if index.tz is not None:
+        candidate = getattr(index.tz, "key", None) or getattr(index.tz, "zone", None)
+        if isinstance(candidate, str):
+            try:
+                zone = ZoneInfo(candidate).key
+            except (ValueError, ZoneInfoNotFoundError):
+                pass  # Per-label numeric offsets survive; arbitrary tz names do not.
+    def version(value):
+        return value if isinstance(value, str) and re.fullmatch(r"[0-9]+(?:\.[0-9]+){1,3}(?:(?:a|b|rc|\.post|\.dev)[0-9]+)?", value) else None
+    root = Path(__file__).resolve().parents[1]
+    code = {}
+    for relative in ("collectors/yahoo.py", "collectors/base.py", "lib/store.py"):
+        try:
+            code[relative] = hashlib.sha256((root / relative).read_bytes()).hexdigest()
+        except OSError:
+            code[relative] = None
+    return {
+        "schema": "yahoo.wti_adapter_temporal_context.v1",
+        "scope": "adapter_extracted_index_before_collector_validation_not_vendor_wire",
+        "index": {"kind": "datetime", "unit": index.unit,
+                  "timezone": zone, "timezone_aware": index.tz is not None,
+                  "labels": [stamp.isoformat() for stamp in index],
+                  "already_midnight": bool(index.equals(index.normalize()))},
+        "request": request,
+        "parser_versions": {"yfinance": version(getattr(yf, "__version__", None)),
+                            "pandas": version(pd.__version__)},
+        "on_disk_source_sha256_not_execution_attestation": code,
+        "resolved_request_defaults": None, "vendor_session_metadata": None,
+        "vendor_daily_label_convention": None, "provider_available_at": None,
+        "futures_session_completion": None,
+    }
+
+
 class YahooAdapter(Adapter):
     name = "yahoo"
     group = "yahoo"
@@ -125,7 +169,23 @@ class YahooAdapter(Adapter):
         issuer) would never be caught."""
         return list(dict.fromkeys(self.all_tickers() + sorted(delisted_symbols.tickers())))
 
-    def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
+    def fetch(self, full_history: bool = False, *,
+              capture_source_metadata: bool = False) -> dict[str, pd.DataFrame]:
+        if type(capture_source_metadata) is not bool:
+            raise ValueError("capture_source_metadata must be boolean")
+        capture_kw = {"capture_source_metadata": True} if capture_source_metadata else {}
+        if capture_source_metadata:
+            # Per-call metadata only: never annotate inherited cache rows or
+            # fallback frames, and never persist this dictionary in parquet attrs.
+            self._availability_sources = {}
+            self._wti_availability_source = None
+            self._wti_temporal_source = None
+        else:
+            self.__dict__.pop("_availability_sources", None)
+            self.__dict__.pop("_wti_availability_source", None)
+            self.__dict__.pop("_wti_temporal_source", None)
+        self._capture_temporal_metadata = capture_source_metadata
+        self._wti_download_context = None
         tickers = self.all_tickers()
         _report_delisted_exclusions(self.maintained_tickers())
         period = "max" if full_history else "1mo"
@@ -144,7 +204,7 @@ class YahooAdapter(Adapter):
             # 404s every run and never reaches the store.
             df = self._download([fetch_symbol(t) for t in batch], period)
             for t in batch:
-                sub_out = self._extract(df, t, ohlc, no_adj_close)
+                sub_out = self._extract(df, t, ohlc, no_adj_close, **capture_kw)
                 if sub_out is not None:
                     frames[t] = sub_out
         if no_adj_close:
@@ -152,7 +212,7 @@ class YahooAdapter(Adapter):
                      len(no_adj_close), no_adj_close)
         deferred: list[str] = []
         if not full_history:
-            deferred = self._rebase_shifted(frames, ohlc)
+            deferred = self._rebase_shifted(frames, ohlc, **capture_kw)
         # Stooq fallback for searchable single stocks Yahoo refused this run.
         # Basis-deferred names are NOT refilled: Stooq is a different source/basis,
         # so a refill would splice exactly what the guard just refused.
@@ -174,13 +234,34 @@ class YahooAdapter(Adapter):
             raise RuntimeError(f"yahoo returned only {len(frames)}/{len(tickers)} tickers")
         return frames
 
+    def availability_source_metadata(self, ticker: str) -> dict | None:
+        """Declared current-call lineage, not authentication or upstream timing."""
+        value = getattr(self, "_availability_sources", {}).get(ticker)
+        return dict(value) if value is not None else None
+
+    def wti_source_metadata(self) -> dict | None:
+        """Actual current-call CL field, never a calendar/roll/settlement claim."""
+        value = getattr(self, "_wti_availability_source", None)
+        return dict(value) if value is not None else None
+
+    def wti_temporal_metadata(self) -> dict | None:
+        """A detached typed value, never dataframe attrs or provider credentials."""
+        value = getattr(self, "_wti_temporal_source", None)
+        return json.loads(json.dumps(value)) if value is not None else None
+
     def _extract(self, df: pd.DataFrame, t: str, ohlc: set[str],
-                 no_adj_close: list[str]) -> pd.DataFrame | None:
+                 no_adj_close: list[str], *,
+                 capture_source_metadata: bool = False) -> pd.DataFrame | None:
         """Slice one ticker out of a (possibly MultiIndex) yf.download response and
         rename to the store schema; None when yfinance returned nothing for it.
 
         `t` is the CONFIG ticker throughout (store key, ohlc-group membership, log lines);
         the response is keyed by the vendor symbol, which differs for renamed names."""
+        if capture_source_metadata:
+            self._availability_sources.pop(t, None)
+            if t == "CL=F":
+                self._wti_availability_source = None
+                self._wti_temporal_source = None
         try:
             sym = fetch_symbol(t)
             sub = df[sym] if isinstance(df.columns, pd.MultiIndex) else df
@@ -214,13 +295,34 @@ class YahooAdapter(Adapter):
                 if "close" in renamed.columns:
                     renamed["close_price"] = renamed["close"]
             sub_out = renamed.dropna(subset=["close"])
+            if (capture_source_metadata and not sub_out.empty
+                    and t in store.YAHOO_CAPTURE_COHORT and "Adj Close" in available.columns):
+                self._availability_sources[t] = {
+                    "provider": "yahoo", "field": "Adj Close",
+                    "basis": "total_return", "ticker": t}
+            if capture_source_metadata and t == "CL=F" and not sub_out.empty:
+                adjusted = "Adj Close" in available.columns
+                self._wti_availability_source = {
+                    "provider": "yahoo", "ticker": "CL=F",
+                    "series_identity": "vendor_continuous_CL=F",
+                    "field": "Adj Close" if adjusted else "Close",
+                    "basis": ("vendor_continuous_adjusted_close" if adjusted else
+                              "vendor_continuous_close_no_adj_close_returned")}
+                context = getattr(self, "_wti_download_context", None)
+                request = context[1] if context is not None and context[0] is df else None
+                try:
+                    self._wti_temporal_source = _wti_temporal_context(sub_out.index, request)
+                except (ValueError, TypeError, AttributeError, OverflowError, OSError):
+                    # Additive instrumentation must not discard a returned series.
+                    self._wti_temporal_source = None
             return sub_out if not sub_out.empty else None
         except KeyError:
             log.warning("yahoo: no data for %s", t)
             return None
 
     def _rebase_shifted(self, frames: dict[str, pd.DataFrame],
-                        ohlc: set[str]) -> list[str]:
+                        ohlc: set[str], *,
+                        capture_source_metadata: bool = False) -> list[str]:
         """Adjustment-basis guard (the odds-store pattern from scripts/build_odds).
 
         A name whose 1mo window disagrees with stored closes on the overlap dates
@@ -241,6 +343,11 @@ class YahooAdapter(Adapter):
                  len(shifted), shifted[:12])
         for t in shifted:
             frames.pop(t, None)
+            if capture_source_metadata:
+                self._availability_sources.pop(t, None)
+                if t == "CL=F":
+                    self._wti_availability_source = None
+                    self._wti_temporal_source = None
         healed: list[str] = []
         scrap: list[str] = []  # no-Adj-Close names were already logged on the window pass
         bs = self.cfg["batch_size"]
@@ -253,7 +360,8 @@ class YahooAdapter(Adapter):
                             "of this run; the guard retries next night", len(batch), e)
                 continue
             for t in batch:
-                sub_out = self._extract(df, t, ohlc, scrap)
+                capture_kw = {"capture_source_metadata": True} if capture_source_metadata else {}
+                sub_out = self._extract(df, t, ohlc, scrap, **capture_kw)
                 if sub_out is not None:
                     frames[t] = sub_out
                     healed.append(t)
@@ -287,6 +395,7 @@ class YahooAdapter(Adapter):
         return frames
 
     def _download(self, batch: list[str], period: str) -> pd.DataFrame:
+        self._wti_download_context = None
         last_exc: Exception | None = None
         for attempt in range(self.cfg["retries"]):
             try:
@@ -300,6 +409,15 @@ class YahooAdapter(Adapter):
                                  progress=False, group_by="ticker", threads=True)
                 if df is None or df.empty:
                     raise RuntimeError("empty yfinance response")
+                if getattr(self, "_capture_temporal_metadata", False) and "CL=F" in batch:
+                    self._wti_download_context = (df, {
+                        "target": "CL=F", "period": period,
+                        "auto_adjust": False, "progress": False,
+                        "group_by": "ticker", "threads": True,
+                        "batch_symbols_sha256": hashlib.sha256(
+                            json.dumps(batch, separators=(",", ":")).encode()).hexdigest(),
+                        "batch_size": len(batch),
+                    })
                 return df
             except Exception as e:  # noqa: BLE001
                 last_exc = e

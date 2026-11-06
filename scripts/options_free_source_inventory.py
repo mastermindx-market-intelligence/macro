@@ -10,8 +10,12 @@ import argparse
 import hashlib
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Any
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from collectors.options_free_samples import SourceRejected
 from scripts.qualify_options_free_samples import (
