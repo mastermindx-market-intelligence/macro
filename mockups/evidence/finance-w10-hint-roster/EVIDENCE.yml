@@ -1,0 +1,18 @@
+# W10-FIN-2 (#9410) hint roster, round-2 repair: the eleven RESEARCH_HINT_UNVALIDATED citation rows in
+# #company-exposure gain a list style (no bullets, no indent, Tier-2 row surface in both themes, rows wrap
+# at 390px). On main FI_READ_URL is empty, so the shipped page is the not-connected shell and the JS
+# hides every .fi-section (finance_intelligence.js renderNotice) -- the roster is invisible there, as is
+# every other section. Following the T11 receipt, this capture serves a scratch copy of the site whose
+# finance_intelligence.html differs from the built page ONLY in data-fi-read-url="/fi.json". fi.json is
+# CONTRACT-VALID: compose_finance_projection over the projection suite's synthetic 8-slice inputs,
+# accepted by validate_contract("finance_intelligence_read_model.v1") before capture (sha256 e56a83c50e92).
+# Every exposure value painted from it is synthetic; the eleven roster rows are the page's own
+# server-rendered hint rows, labelled "Research hint, not validated". finance_intelligence.css is
+# byte-identical to this commit's site copy (sha256 29c41c9cc2ae); finance_intelligence.js is unchanged by
+# this PR (sha256 adca49e8e3c6). 8/8 rest cells captured, 0 failed responses, 0 console errors.
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/finance_intelligence.css
+  - site/finance_intelligence.css
+  - templates/finance_intelligence.html.j2
+manifest: mockups/evidence/finance-w10-hint-roster/manifest.json

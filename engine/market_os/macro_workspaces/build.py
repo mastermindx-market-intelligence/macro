@@ -53,6 +53,7 @@ from engine.market_os.macro_workspaces import (
     registry,
     trade_flows,
 )
+from engine.market_os.macro_workspaces.publication_prior import apply_producer_prior_seal
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUT_ROOT = ROOT / "site" / "macrodata"
@@ -255,6 +256,7 @@ def build_liquidity_regime(
     body = liquidity_regime.compose(
         regime_latest, built_at=built_at, prior_snapshot=prior, code_version=code_version
     )
+    body = apply_producer_prior_seal(body, prior)
     snapshot = contract.finalize(body)
     contract.validate(snapshot)  # raises ContractError on any violation
 
@@ -469,8 +471,11 @@ def build_all(*, out_root: Path | str = DEFAULT_OUT_ROOT,
         if wid == "liquidity_regime" and prior_snapshot_path:
             prior = _load_json(Path(prior_snapshot_path))
         else:
-            # Self-prior: the previously published artifact, when present and
-            # loadable, is this build's prior print (WARMUP otherwise).
+            # Candidate prior PUBLICATION: the previously written latest.json.
+            # Composers compare effective_date and carry stored.changes.prior_*
+            # forward when this build is the same publication (never a
+            # same-dated build-to-build diff). R1: earlier = earlier
+            # effective_date, never built_at.
             prior_path = out / "workspaces" / wid / "US" / "latest.json"
             if prior_path.exists():
                 try:
@@ -494,6 +499,7 @@ def build_all(*, out_root: Path | str = DEFAULT_OUT_ROOT,
             trade_fred_frames=trade_fred_frames,
             built_at=built_at,
             prior_snapshot=prior, code_version=code_version)
+        body = apply_producer_prior_seal(body, prior)
         snapshot = contract.finalize(body)
         contract.validate(snapshot)
 

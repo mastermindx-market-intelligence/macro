@@ -1,0 +1,51 @@
+{
+  "payload_sha256": "51cd78c34a9fa491bb2b002c48f436631c2399d5c6c68a1a6ec3aecf86fb0cc8",
+  "blocks": [
+    {
+      "key": "market_state",
+      "title_en": "Market state",
+      "title_zh": "市场状态",
+      "state": "STALE_WITH_LAST_KNOWN",
+      "source_ref": "data/market_state/latest.json",
+      "source_owner": "nightly",
+      "source_as_of": "2026-10-08T00:00:00+00:00",
+      "source_as_of_precision": "day",
+      "age_minutes": 2538,
+      "max_age_minutes": 1440,
+      "classification": "owner_fact",
+      "state_reason_en": "Last updated 1 day ago — showing the last known reading, not a fresh one.",
+      "state_reason_zh": "最近更新于1天前——展示的是最新已知读数，而非最新数据。",
+      "rows": [
+        {
+          "label_en": "Mixed",
+          "label_zh": "混合",
+          "posture_en": "Mixed / transition",
+          "posture_zh": "混合 / 转换",
+          "headline_en": "Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
+          "headline_zh": "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。"
+        }
+      ]
+    },
+    {
+      "key": "regime",
+      "title_en": "Regime",
+      "title_zh": "宏观周期",
+      "state": "STALE_WITH_LAST_KNOWN",
+      "source_ref": "data/regime/latest.json",
+      "source_owner": "nightly",
+      "source_as_of": "2026-10-08T00:00:00+00:00",
+      "source_as_of_precision": "day",
+      "age_minutes": 2538,
+      "max_age_minutes": 1440,
+      "classification": "owner_fact",
+      "state_reason_en": "Last updated 1 day ago — showing the last known reading, not a fresh one.",
+      "state_reason_zh": "最近更新于1天前——展示的是最新已知读数，而非最新数据。",
+      "rows": [
+        {
+          "quad_name_en": "Reflation",
+          "quad_name_zh": "再通胀"
+        }
+      ]
+    }
+  ]
+}

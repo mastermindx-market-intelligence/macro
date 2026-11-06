@@ -1,0 +1,13 @@
+{
+  "task_id": "defense-v9-startup-review-01a13300-a",
+  "result_sha256": "fb91fc65e6223efc3f8e11b5012ccbf75292f0cab891473166b535ac3924f652",
+  "result_bytes": 1407,
+  "worker_rc": 0,
+  "accepted": false,
+  "reason": "Retained return begins mid-sentence and omits referenced hardening details; actual investor implementation was absent from worker packet. Same-carrier current-output returned REFUSED/original_current_output_unconfirmed. No retry or alternate artifact carrier.",
+  "root_followup": "Direct inspection found the shared-auth notification can clear an early finance load before duplicate-coalescing prevents its replacement. Actual-component regression and source repair now required.",
+  "source_reviewed": "8c1850a47249dd7f5a4f681775962e19684689cb",
+  "review_provider": "minimax",
+  "author_provider": "codex-native",
+  "scope": "This is review-result adjudication, not customer acceptance."
+}
