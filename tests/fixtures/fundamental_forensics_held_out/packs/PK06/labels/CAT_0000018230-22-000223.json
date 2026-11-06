@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000018230-22-000223",
+    "expected_period_end": "2022-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_absent",
+    "pack_id": "PK06",
+    "polarity": "negative",
+    "reason": "cat-20220930.htm | untagged | Grepped the whole primary for 'FinanceLeaseLiability'/'finance lease liability': 0 matches; 'finance lease' appears only in Cat Financial's lessor-side MD&A ('Finance lease revenue $ 105 $ 120 $ 326 $ 369 Operating lease') and portfolio descriptions | no current finance lease liability amount is disclosed.",
+    "section_family": "lease_liability",
+    "split": "held_out",
+    "target_id": "finance_lease_liability_current",
+    "target_kind": "extract",
+    "trial_id": "PK06|0000018230-22-000223|extract|finance_lease_liability_current"
+  },
+  {
+    "accession": "0000018230-22-000223",
+    "expected_period_end": "2022-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_absent",
+    "pack_id": "PK06",
+    "polarity": "negative",
+    "reason": "cat-20220930.htm | untagged | No lessee lease amounts in the 10-Q: the only Lease-concept facts tagged for the quarter are Cat Financial's lessor-side revenue concepts (e.g. us-gaap:OperatingLeaseLeaseIncome), and greps of the whole primary for 'lessee', 'right-of-use', 'operating lease cost' and 'lease liability' return 0 matches each | the only 'lease' disclosures are Cat Financial's lessor-side MD&A lines, so no operating lease liability total is disclosed.",
+    "section_family": "lease_liability",
+    "split": "held_out",
+    "target_id": "operating_lease_liability_total",
+    "target_kind": "extract",
+    "trial_id": "PK06|0000018230-22-000223|extract|operating_lease_liability_total"
+  }
+]

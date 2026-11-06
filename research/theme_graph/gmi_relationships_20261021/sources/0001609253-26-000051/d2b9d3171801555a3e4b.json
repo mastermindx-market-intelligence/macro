@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-02T21:35:05Z",
+ "accession": "0001609253-26-000051",
+ "cik": "0001609253",
+ "doc_byte_length": 4097365,
+ "doc_sha256": "36a168ef227286d157099cb225925e19be72b17fb2c8e14fbdc514acbc25287b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-02",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "crc-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 4011458,
+  "byte_start": 4011182,
+  "normalized": "Intellectual Property License Agreement, dated November 25, 2014, between Occidental Petroleum Corporation and California Resources Corporation (filed as Exhibit 10.7 to the Registrant's Current Report on Form 8-K filed December 1, 2014 and incorporated herein by reference).",
+  "normalized_sha256": "03bbd774d9e6b7e8ea9294bc86fd647371d0439c96a262145285920c1d2dc5a3",
+  "raw": "Intellectual Property License Agreement, dated November 25, 2014, between Occidental Petroleum Corporation and California Resources Corporation (filed as Exhibit 10.7 to the Registrant's Current Report on Form 8-K filed December 1, 2014 and incorporated herein by reference). ",
+  "raw_sha256": "d2b9d3171801555a3e4be1448eae0a498f09981deeaec56bba60d2e7b7a3ebb5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1609253/000160925326000051/crc-20251231.htm",
+ "xbrl_contexts": []
+}

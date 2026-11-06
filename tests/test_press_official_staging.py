@@ -179,12 +179,16 @@ def _official_draft() -> dict:
 def _stub_writer(monkeypatch, *, ok=True, reason="stubbed writer failure",
                  error: Exception | None = None) -> dict:
     """Mock engine.press.writer.write.  No LLM, no network, no generation."""
-    calls = {"n": 0, "single_provider_attempt": [], "slots": []}
+    calls = {"n": 0, "single_provider_attempt": [], "single_attempt": [], "slots": []}
 
+    # Same keyword surface as engine.press.writer.write: run_press passes
+    # single_attempt=True when max_regenerations == 0 (#10138).
     def _write(slot, cfg, *, state=None, attempt=0, prior_failures=None,
-               single_provider_attempt=False, admitted_token_cap=False):
+               single_provider_attempt=False, admitted_token_cap=False,
+               single_attempt=False):
         calls["n"] += 1
         calls["single_provider_attempt"].append(single_provider_attempt)
+        calls["single_attempt"].append(single_attempt)
         calls["slots"].append(slot.get("id"))
         if error is not None:
             raise error
@@ -290,6 +294,8 @@ def test_successful_private_stage_keeps_exact_source_identity(candidate, monkeyp
     assert out["public_article_approved"] is False and out["allow_emit"] is False
     assert out["status"] == "passed"
     assert calls["n"] == 1 and calls["single_provider_attempt"] == [True]
+    # The official stage never regenerates, so its one call is a single attempt.
+    assert calls["single_attempt"] == [True]
 
     # Nothing was written outside the canonical staging tree.
     new = _snapshot(root) - before

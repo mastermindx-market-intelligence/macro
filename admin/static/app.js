@@ -1246,7 +1246,7 @@ RENDER.overview = async () => {
   const serviceValue = !sv.available || typeof sv.healthy !== "boolean" ? "Unavailable"
     : sv.healthy ? "Running normally" : "Needs attention";
   const serverValue = sys.available && Number.isFinite(mem.used_pct) ? `${mem.used_pct}% memory` : "Unavailable";
-  const serverDetail = sys.available && Number.isFinite(disk.used_pct) ? `${disk.used_pct}% disk used` : "Host metrics are not available in this environment";
+  const serverDetail = sys.available && Number.isFinite(disk.used_pct) ? `${disk.used_pct}% disk used · ${fmtBytes(disk.free)} free` : "Host metrics are not available in this environment";
   const costValue = Number.isFinite(cost.monthly_usd) ? `${fmtUSD(cost.monthly_usd)} /mo` : "Unavailable";
   const costDetail = Number.isFinite(cost.effective_daily_usd) ? `${fmtUSD(cost.effective_daily_usd)} /day · estimate, not billed spend` : "No current cost estimate";
   const alerts = s.key_alerts && Array.isArray(s.key_alerts.items) ? s.key_alerts.items.length : null;
@@ -2885,7 +2885,7 @@ RENDER.system = async () => {
         ${meter("CPU load (last 1 min)", cpu.load1_pct, (cpu.load1 != null ? cpu.load1.toFixed(2) : "—") + ` / ${cpu.count} cores`)}
         ${meter("Memory", mem.used_pct, fmtBytes(mem.used) + " / " + fmtBytes(mem.total))}
         ${swap ? meter("Swap", swap.used_pct, fmtBytes(swap.used) + " / " + fmtBytes(swap.total)) : ""}
-        ${meter("Disk", disk.used_pct, fmtBytes(disk.used) + " / " + fmtBytes(disk.total))}
+        ${meter("Disk", disk.used_pct, fmtBytes(disk.used) + " / " + fmtBytes(disk.total) + " · " + fmtBytes(disk.free) + " free")}
         <div class="sub">running for ${up} · load 5m/15m ${cpu.load5 != null ? cpu.load5.toFixed(2) : "—"} / ${cpu.load15 != null ? cpu.load15.toFixed(2) : "—"}</div>
         ` : `<div class="sub">Server stats are only available when this console is running on the server itself.</div>`}
       </div>
@@ -13594,19 +13594,30 @@ function seoOrdersBlock(orders) {
   return head + `<div class="mkt-seo-orders">${cards}</div>`;
 }
 
-/* Search Console slot — always an explicit unavailable state (unknown ≠ zero). */
+/* Retained collection evidence; never infer live authentication from a snapshot. */
 function seoSearchConsoleBlock(sc) {
   const head = `<div class="section">Search Console</div>`;
   const s = sc || {};
-  if (s.connected) {
-    return head + `<div class="card"><div class="sub">Connected.</div></div>`;
-  }
+  const label = s.available === true ? "Retained collection" :
+    s.available === false ? "Last collection unavailable" : "No collection record";
+  const details = [];
+  if (s.as_of) details.push(["Snapshot as of", s.as_of +
+    (Number.isInteger(s.age_days) ? ` (${s.age_days} days ago)` : "")]);
+  if (s.property) details.push(["Property", s.property]);
+  if (s.window && s.window.start && s.window.end)
+    details.push(["Requested window", `${s.window.start} to ${s.window.end}`]);
+  if (Number.isInteger(s.rows_fetched)) details.push(["Rows fetched", String(s.rows_fetched)]);
+  if (s.reason) details.push(["Recorded reason", s.reason]);
+  const coverage = s.rows_may_be_incomplete === true
+    ? "Results may be incomplete. Missing URLs do not prove zero traffic."
+    : "Complete URL coverage has not been verified.";
   return head + `<div class="card mkt-seo-gsc">
     <div class="mkt-seo-gsc-row">
-      <span class="statpill s-mut mkt-seo-gsc-chip">Not connected</span>
-      <span class="mkt-seo-gsc-txt">${esc(s.note || "Search Console credentials not configured — data unavailable.")}</span>
+      <span class="statpill s-mut mkt-seo-gsc-chip">${esc(label)}</span>
+      <span class="mkt-seo-gsc-txt">${esc(s.note || "Current connection has not been checked.")}</span>
     </div>
-    ${s.hint ? `<div class="sub muted mkt-seo-gsc-hint">${esc(s.hint)}</div>` : ""}
+    ${details.map(([key, value]) => `<div class="sub muted mkt-seo-gsc-hint">${esc(key)}: ${esc(value)}</div>`).join("")}
+    <div class="sub muted mkt-seo-gsc-hint">${esc(coverage)}</div>
   </div>`;
 }
 

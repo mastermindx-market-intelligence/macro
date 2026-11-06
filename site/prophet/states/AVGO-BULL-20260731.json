@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AVGO-BULL-20260731",
-  "asof": "2026-10-30",
+  "asof": "2026-11-06",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 20.3,
+  "management_confidence": 20.9,
   "raw_confidence": 20.0,
-  "delta_vs_base": -39.7,
+  "delta_vs_base": -39.1,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 16.3,
+    "validity": 0.5,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 47.0
+    "overlay": 26.8
   },
   "geometry": {
-    "dist_to_stop_r": 0.261,
+    "dist_to_stop_r": 0.051,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 186.7,
-    "p1": -0.4925,
-    "p2": -0.2463,
+    "horizon_pct_used": 202.2,
+    "p1": -0.6325,
+    "p2": -0.3162,
     "p3": null,
-    "move_r": -0.739,
+    "move_r": -0.949,
     "mfe_r": 0.0,
-    "mae_r": -0.739
+    "mae_r": -0.949
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Nearing Invalidation",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -106.12000732421876,
+  "_mae": -136.27000122070314,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 84,
-  "tau": 1.8667,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 91,
+  "tau": 2.0222,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

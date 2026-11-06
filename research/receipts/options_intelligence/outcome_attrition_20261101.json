@@ -1,0 +1,272 @@
+{
+ "schema": "oi.outcome_attrition_receipt/v1",
+ "generated_at_utc": "2026-11-01T09:04:58Z",
+ "lane_id": null,
+ "producer": "ORCH-1 principal-direct (no Fabric lane; packet oi1-l5-r1 spec executed by the orchestrator to conserve lane budget while census/review hosts were occupied or thermally refused)",
+ "lane_host": "M2 Studio (local), python 3.14.7 + pyarrow 25.0.1 user-site; inputs verified byte-identical to baseline blobs by sha256",
+ "repository_commit": "021af584204c9fb00ad516c2dbc9467503a84083",
+ "count_only": true,
+ "input_blobs": {
+  "data/flow_signals/gate.json": {
+   "sha256": "b31fef54774a7beaf234498f4ebc36793f07601279f84d26704159d4b390c1fe",
+   "last_commit": "6ef6fe67976b 2026-10-18T00:09:10-07:00"
+  },
+  "data/flow_signals/ledger.parquet": {
+   "sha256": "f294e6a18594dbd668276300c8186986e01e352bd10042f9967a534348ec93a8",
+   "last_commit": "a8c3372923a8 2026-10-17T00:19:50-07:00"
+  },
+  "data/flow_signals/grades.parquet": {
+   "sha256": "078f67713338820a6704fd74075c73181e241c68487292f78ec935bded6b9512",
+   "last_commit": "6ef6fe67976b 2026-10-18T00:09:10-07:00"
+  }
+ },
+ "answer_first": [
+  "flow_signal_ledger | attempted 103893 | reached outcome 85603 graded_ok | unavailable 65 no_price_data (+18225 pending not_yet_matured) | OBSERVED, HISTORICAL_COMMITTED as of 2026-10-18",
+  "flow_signal_parquet | attempted 103893 | horizon present: h5 51838, h21 33765, h63 0, h126 0 | null horizons are not zero | OBSERVED",
+  "oa3_exact_option_outcome | attempted null | reached outcome null | unavailable null | GAP: no retained OA-3 outcome table committed",
+  "candidate_feed | attempted null | reached outcome null | unavailable null | GAP: store is R2-only and the feed is inactive (activation receipt absent)"
+ ],
+ "stages": [
+  {
+   "stage": "flow_signal_ledger",
+   "source": "data/flow_signals/gate.json@021af584204c9fb00ad516c2dbc9467503a84083",
+   "as_of": "2026-10-18",
+   "freshness": "HISTORICAL_COMMITTED",
+   "gate_fields": {
+    "schema": "flow_signals.gate/v2",
+    "status": "building_history",
+    "scored": false,
+    "ledger.n_rows": 103893,
+    "ledger.n_sessions": 49,
+    "ledger.last_ts": "2026-10-16T19:59:59+00:00",
+    "harvest.n_new_this_run": 0,
+    "scoring.enabled": false,
+    "scoring.n_scored_total": 0,
+    "scoring.n_scored_this_run": 0,
+    "scoring.by_status": {}
+   },
+   "attempted": 103893,
+   "attempted_scope": "CUMULATIVE: gate ledger.n_rows; equals the ledger.parquet and grades.parquet row counts.",
+   "grader_per_run": {
+    "scope": "PER_RUN: the gate.json grader block describes the one grading run that wrote this blob, not the cumulative ledger.",
+    "run_id": null,
+    "run_id_null_reason": "gate.json (flow_signals.gate/v2) carries no run_id field. The run is identified by the commit that wrote the blob.",
+    "writing_commit": "6ef6fe67976bf0c66ac637e451d975c95acf57f7",
+    "writing_commit_author": "dashboard-bot",
+    "writing_commit_committed_utc": "2026-10-18T07:09:10Z",
+    "writing_commit_subject": "engine: regime update 2026-10-18",
+    "gate_blob": "482412237b95d45f215110082af3d585f0e1f21f",
+    "gate_asof": "2026-10-18",
+    "grader_elapsed_sec": 2.86,
+    "n_graded_ok": 0,
+    "n_not_matured": 18225,
+    "n_split_seam": 0,
+    "n_errors": 65
+   },
+   "cumulative": {
+    "source": "grades.parquet reason_code value counts (stage flow_signal_parquet)",
+    "attempted": 103893,
+    "graded_ok": 85603,
+    "unavailable_total": 65,
+    "unavailable_by_reason": {
+     "no_price_data": 65
+    },
+    "pending_by_reason": {
+     "not_yet_matured": 18225
+    }
+   },
+   "arithmetic_check": "CALCULATED cumulative identity: 85603 graded_ok + 18225 not_yet_matured + 65 no_price_data = 103893 = attempted (gate ledger.n_rows = ledger.parquet rows = grades.parquet rows). The per-run grader counts (0 + 18225 + 0 + 65 = 18290) are not a partition of attempted. INTERPRETED: that run (harvest.n_new_this_run = 0) re-examined the 18290 still-ungraded rows and graded none of them ok, and its two non-ok counts equal the cumulative non-ok classes exactly. grader n_graded_ok = 0 is a per-run count, not a cumulative zero."
+  },
+  {
+   "stage": "flow_signal_parquet",
+   "source": "data/flow_signals/ledger.parquet@021af584204c9fb00ad516c2dbc9467503a84083; data/flow_signals/grades.parquet@021af584204c9fb00ad516c2dbc9467503a84083",
+   "ledger_rows": 103893,
+   "grades_rows": 103893,
+   "columns": {
+    "ledger": "60 columns (names in the parquet schema; no outcome columns)",
+    "grades": [
+     "event_id",
+     "graded_at",
+     "graded_ok",
+     "reason_code",
+     "entry_price",
+     "fill_date",
+     "fwd_ret_5",
+     "fwd_mfe_5",
+     "fwd_mdd_5",
+     "spy_excess_5",
+     "fwd_ret_21",
+     "fwd_mfe_21",
+     "fwd_mdd_21",
+     "spy_excess_21",
+     "fwd_ret_63",
+     "fwd_mfe_63",
+     "fwd_mdd_63",
+     "spy_excess_63",
+     "fwd_ret_126",
+     "fwd_mfe_126",
+     "fwd_mdd_126",
+     "spy_excess_126",
+     "terminal_state_clean8_21",
+     "terminal_state_clean15_126",
+     "prem_touch_50",
+     "outcome_end_session_5",
+     "outcome_end_session_21",
+     "outcome_end_session_63",
+     "outcome_end_session_126"
+    ]
+   },
+   "status_value_counts": {
+    "grades.graded_ok": {
+     "True": 85603,
+     "False": 18290
+    },
+    "grades.reason_code": {
+     "ok": 85603,
+     "not_yet_matured": 18225,
+     "no_price_data": 65
+    },
+    "ledger.source_clock_status": {
+     "ordered": 11319,
+     "<null>": 92574
+    }
+   },
+   "outcome_column_null_counts": {
+    "entry_price": {
+     "non_null": 85603,
+     "null": 18290
+    },
+    "fwd_ret_5": {
+     "non_null": 51838,
+     "null": 52055
+    },
+    "spy_excess_5": {
+     "non_null": 51733,
+     "null": 52160
+    },
+    "fwd_ret_21": {
+     "non_null": 33765,
+     "null": 70128
+    },
+    "spy_excess_21": {
+     "non_null": 33418,
+     "null": 70475
+    },
+    "fwd_ret_63": {
+     "non_null": 0,
+     "null": 103893
+    },
+    "spy_excess_63": {
+     "non_null": 0,
+     "null": 103893
+    },
+    "fwd_ret_126": {
+     "non_null": 0,
+     "null": 103893
+    },
+    "spy_excess_126": {
+     "non_null": 0,
+     "null": 103893
+    },
+    "outcome_end_session_5": {
+     "non_null": 1799,
+     "null": 102094
+    },
+    "outcome_end_session_21": {
+     "non_null": 2735,
+     "null": 101158
+    },
+    "outcome_end_session_63": {
+     "non_null": 0,
+     "null": 103893
+    },
+    "outcome_end_session_126": {
+     "non_null": 0,
+     "null": 103893
+    },
+    "terminal_state_clean8_21": {
+     "non_null": 33765,
+     "null": 70128
+    },
+    "terminal_state_clean15_126": {
+     "non_null": 0,
+     "null": 103893
+    }
+   },
+   "horizon_partition_among_graded_ok": {
+    "h5_only": 51838,
+    "h21_only": 33765,
+    "both": 0,
+    "neither": 0,
+    "non_ok_rows_with_any_horizon": 0
+   },
+   "arithmetic_check": "CALCULATED: 85603 ok + 18225 not_yet_matured + 65 no_price_data = 103893 = ledger rows = grades rows. Among graded_ok rows 51838 (h5) + 33765 (h21) = 85603; no row carries both and none carries neither. h63 and h126 outcome columns are null on all 103893 rows: those horizons are UNOBSERVED, not zero.",
+   "read_status": "OBSERVED",
+   "reason": "pyarrow read of the baseline blobs; only row counts, column names, categorical status counts and null counts were read"
+  },
+  {
+   "stage": "oa3_exact_option_outcome",
+   "source": "engine/options_alpha_exact_option_outcome.py@021af584204c9fb00ad516c2dbc9467503a84083:75-79,191-218",
+   "evaluator_statuses": [
+    "pending",
+    "complete",
+    "unavailable",
+    "excluded",
+    "invalid"
+   ],
+   "unavailable_reasons_enum": [
+    "ENTRY_QUOTE_UNAVAILABLE",
+    "EXIT_QUOTE_UNAVAILABLE",
+    "SOURCE_UNAVAILABLE",
+    "QUOTE_RESPONSE_INVALID",
+    "RAW_BYTES_PAYLOAD_MISMATCH",
+    "EVIDENCE_INTEGRITY_FAILURE"
+   ],
+   "excluded_reasons_enum": [
+    "SAME_DAY_EXPIRATION",
+    "EXPRESSION_CONTRACT_EXPIRED",
+    "NON_STANDARD_DELIVERABLE",
+    "NON_STANDARD_MULTIPLIER",
+    "QUANTITY_NOT_ONE",
+    "POSITION_NOT_LONG",
+    "PACKAGE_NOT_SUPPORTED",
+    "SHORT_OPTION_NOT_SUPPORTED",
+    "HORIZON_CROSSES_SESSION_CLOSE",
+    "ENTRY_BOUNDARY_OUTSIDE_RTH",
+    "EXIT_BOUNDARY_OUTSIDE_RTH",
+    "EXPRESSION_DATE_NOT_NYSE_SESSION",
+    "EXPRESSION_FENCE_BROKEN"
+   ],
+   "committed_outcome_tables": [],
+   "attempted": null,
+   "status": "GAP",
+   "gap": "No retained OA-3 outcome table or receipt is committed at 021af584204c (git ls-tree match on oa3|exact_option returns only code, tests, contracts, policy, prereg, runbook and handoffs). docs/runbooks/OPTIONS_OA3_RETAINED_EVALUATION.md:46-50 'Remaining real-path gate': the preregistration still requires an accepted active expression-selection contract and a natural entry/exit lifecycle. Attempted/unavailable counts are therefore unobserved (null), not zero."
+  },
+  {
+   "stage": "candidate_feed",
+   "store": "R2 keys options_alpha/candidate_feed.json and options_alpha/candidate_feed.receipt.json (scripts/publish_options_alpha_candidate_r2.py@021af584204c:16-17)",
+   "committed_tables": [],
+   "policy_v2_active": false,
+   "status": "GAP",
+   "evidence": [
+    "research/options_estate/options_alpha_candidate_formation_policy_v2.json@021af584204c:5 status preregistered_inactive_until_activation",
+    "research/options_estate/options_alpha_candidate_feed_activation_receipt_v1.json ABSENT at 021af584204c (git cat-file -e)",
+    "scripts/build_options_alpha_candidate_feed.py@021af584204c:222-226 returns produced=False, state=inactive when the activation receipt is missing ('Inactive means no R2 reads/writes')",
+    "data/research/alpha_candidates.parquet is a Research Factory alpha-grammar artifact (writers engine/research_factory/adapter_alpha_grammar.py, scripts/research/compile_alpha_candidates.py), not the options candidate feed; excluded"
+   ],
+   "gap": "Candidate feed store is R2-only and the feed is inactive at the baseline (no activation receipt). R2 needs credentials, which are forbidden to this receipt. No committed options candidate table exists, so candidate attempted/outcome/unavailable counts are unobserved (null), not zero."
+  }
+ ],
+ "gaps": [
+  "Flow-signal snapshot is HISTORICAL_COMMITTED as of 2026-10-18 (ledger.last_ts 2026-10-16T19:59:59Z); stale is not live.",
+  "OA-3 exact-option outcome path has no committed retained outcome table: attrition on that path is unobserved.",
+  "Options candidate feed is R2-only and inactive: candidate-level attrition is unobserved.",
+  "h63/h126 outcome horizons are null on every flow-signal row: unobserved, not zero."
+ ],
+ "notes": [
+  "missing is not zero; null means not observed",
+  "read failure is not empty",
+  "no outcome VALUE, return, score, hit rate, calibration or monitor field was read into this receipt",
+  "gate.json scoring.calibration, scoring.monitor and scoring.model_versions were not read"
+ ]
+}

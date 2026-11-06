@@ -15,9 +15,9 @@
    lazy-mounted below), so it is a promise the data can keep. It has no si-read slot — its
    hero is its read. */
 var VIEWS=['overview','map','moving','money','explore','confluence'];
-var TITLES={overview:['Overview','总览'],map:['The Map','全景图谱'],
-  moving:["What's Moving",'正在轮动'],money:['Money & Breadth','资金与广度'],
-  explore:['Explore','深入探索'],confluence:['Confluence','子行业汇聚']};
+var TITLES={overview:['Brief','简报'],map:['Market map','市场图谱'],
+  moving:['Rotation','轮动'],money:['Breadth & money','广度与资金'],
+  explore:['Themes & compare','主题与比较'],confluence:['Entry evidence','入场证据']};
 /* View glyphs = the estate's hand-drawn masked-icon family (product-nav-icons /
    dashboard-icons — the same set the nav mega-menus draw), tinted via currentColor.
    Never raw emoji beside the wordmark. */
@@ -45,9 +45,9 @@ var GLYPH={
    (defined just below) merges two non-theme keys at runtime — one routing
    the accumulation anchor to moving, and one routing a new si-heat-section
    key to explore with a scroll target of theme-heat-section — giving a live
-   key-count of 23 on the merged table. Any future key added to S2 MUST NOT
+   key-count of 24 on the merged table. Any future key added to S2 MUST NOT
    use a theme prefix (the LINE 324 short-circuit would eat it as dead data);
-   pins asserting the 21-key count or the live 23-key count are both
+   pins asserting the 21-key count or the live 24-key count are both
    intentional, not in conflict. */
 var LEGACY_ANCHORS={
   'actnow-section':['overview','actnow-section'],
@@ -82,7 +82,8 @@ var LEGACY_ANCHORS={
    below preserves the hash-router intent. */
 var LEGACY_ANCHORS_S2={
   'accumulation-section':['moving','accumulation-section'],
-  'si-heat-section':['explore','theme-heat-section']
+  'si-heat-section':['explore','theme-heat-section'],
+  'si-measured':['map','si-measured']
 };
 for(var _k in LEGACY_ANCHORS_S2){LEGACY_ANCHORS[_k]=LEGACY_ANCHORS_S2[_k];}
 
@@ -261,10 +262,19 @@ function paintFoot(){
     return;
   }
   var bh=GR.by_horizon||{}, h=bh['21d']||bh['63d']||bh['126d']||null;
-  g.innerHTML=(h&&h.dir_hit_rate!=null)
+  g.innerHTML=((h&&h.dir_hit_rate!=null)
     ? L('Self-grader: '+Math.round(h.dir_hit_rate*100)+'% hit · n='+(h.n||0),
         '自评分器：命中 '+Math.round(h.dir_hit_rate*100)+'% · n='+(h.n||0))
-    : L('Self-grader: accruing','自评分器：累积中');
+    : L('Self-grader: accruing','自评分器：累积中'))+graderVersionFrame(GR);
+}
+/* RB13 F1: the rail summary is the version-1 cohort once version 2 is active — frame it. */
+function graderVersionFrame(GR){
+  var seg=GR.score_version_segments||{}, s1=seg['1']||null;
+  var v2=(GR.by_score_version||{})['2']||null;
+  if(!s1||!s1.last_date) return '';
+  var out=L(' · v1 calls through '+esc(s1.last_date),' · 版本1判断截至 '+esc(s1.last_date));
+  if(v2) out+=L(' · v2 accruing n='+(v2.n_calls||0),' · 版本2累积中 n='+(v2.n_calls||0));
+  return out;
 }
 function reads(){
   var o=document.getElementById('si-read-overview');
@@ -293,8 +303,20 @@ function openTrace(id){
 /* ── activation ──────────────────────────────────────────────────────────────── */
 var BASE_TITLE=(document.title||'').split(' · ')[0];
 var current=null;
+/* J-restore scroll memory (masterplan §8/§10 — restored origin). Per-view window.scrollY
+   captured at the instant a view is left, replayed when a hashchange (Back/Forward
+   between views) re-enters that view with no explicit scroll target. A first visit has
+   no entry and keeps native behaviour; history.scrollRestoration is never touched —
+   this is additive memory on top of the browser's, not a replacement for it. */
+var SCROLL_MEM={};
+var SCROLL_GEN=0;   /* activation generation (RI09): each activate() supersedes any
+                       still-pending replay frame from an earlier activation — a stale
+                       frame must not scroll a view that is no longer on screen */
 function activate(view,target){
   if(VIEWS.indexOf(view)<0) view='overview';
+  var gen=++SCROLL_GEN;   /* every activation invalidates pending replay frames */
+  /* capture BEFORE the .on swap: the section about to be hidden still owns the viewport */
+  if(current) SCROLL_MEM[current]=window.scrollY;
   var i, secs=document.querySelectorAll('.si-view'), btns=document.querySelectorAll('.si-view-btn');
   for(i=0;i<secs.length;i++) secs[i].classList.toggle('on',secs[i].getAttribute('data-view')===view);
   for(i=0;i<btns.length;i++){
@@ -302,6 +324,20 @@ function activate(view,target){
     btns[i].classList.toggle('on',on);
     if(on) btns[i].setAttribute('aria-current','page'); else btns[i].removeAttribute('aria-current');
   }
+  /* Paper's workflow belongs to Macro. Research and watches land on existing
+     Macro instruments; they do not introduce Terminal routes or storage. */
+  var group=view==='overview'?'brief':
+    (target==='tm-mount'||target==='forming-narratives')?'research':
+    target==='accumulation-section'?'watches':'explore';
+  var workflow=document.querySelectorAll('[data-si-workflow]');
+  for(i=0;i<workflow.length;i++){
+    var selected=workflow[i].getAttribute('data-si-workflow')===group;
+    workflow[i].classList.toggle('on',selected);
+    if(selected) workflow[i].setAttribute('aria-current','page');
+    else workflow[i].removeAttribute('aria-current');
+  }
+  var subnav=document.querySelector('.si-side');
+  if(subnav) subnav.hidden=view==='overview';
   try{ document.title=BASE_TITLE+' · '+TITLES[view][isZh()?1:0]; }catch(e){}
   current=view;
   /* First activation mounts the heavy organs. The view must be laid out first so the
@@ -328,6 +364,19 @@ function activate(view,target){
     var el=document.getElementById(target);
     if(el){ try{ el.scrollIntoView({block:'start'}); }catch(e){ el.scrollIntoView(); } }
     else if(history.replaceState) history.replaceState(null,'','#'+view);
+  }else if(typeof SCROLL_MEM[view]==='number'){
+    /* hashchange path with no explicit target (Back/Forward between views): replay where
+       this view was last left, one frame after the section swap so the layout has settled.
+       First visit (no entry) never reaches here and native behaviour stands. RI09: the
+       frame compares before it writes — if the viewport already sits at the remembered
+       origin (the browser's own restoration settled there) the write is skipped instead
+       of racing it, and a frame whose activation was superseded returns without touching
+       the scroll. history.scrollRestoration stays untouched: additive memory, not a
+       takeover of the browser's own restoration. */
+    requestAnimationFrame(function(){
+      if(gen!==SCROLL_GEN) return;
+      if(window.scrollY!==SCROLL_MEM[view]) window.scrollTo(0,SCROLL_MEM[view]||0);
+    });
   }
 }
 function route(){

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-26T19:54:19Z",
+ "accession": "0001104659-26-035151",
+ "cik": "0001341335",
+ "doc_byte_length": 2171934,
+ "doc_sha256": "ec6bbd9e69b7f6848134751f9580b3f7b4d3f07cc9ad038c8a9520ee51468ecb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-26",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "tmb-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 620058,
+  "byte_start": 619556,
+  "normalized": "Gold production at the Séguéla and Lindero Mines is in the form of gold doré bars. The Company has entered into non-exclusive precious metals purchase agreements primarily with Auramet International LLC, a precious metals merchant headquartered in New Jersey, USA and Stonex Commodities DMCC, a precious metals trader headquartered in Dubai, United Arab Emirates. Refining arrangements are provided by Metalor USA Refining Corporation, Metalor Technologies SA and Argor-Heraeus SA.",
+  "normalized_sha256": "c31c120582a757af8f18b64642456ab95a4dfb296c3d8a9660a806c2478abfd0",
+  "raw": "Gold production at the S&#233;gu&#233;la and Lindero Mines is in the form of gold dor&#233; bars. The Company has entered into non-exclusive precious metals purchase agreements primarily with Auramet International LLC, a precious metals merchant headquartered in New Jersey, USA and Stonex Commodities DMCC, a precious metals trader headquartered in Dubai, United Arab Emirates. &#160;Refining arrangements are provided by Metalor USA Refining Corporation, Metalor Technologies SA and Argor-Heraeus SA.",
+  "raw_sha256": "22c7b5748087a1313f496eedbe49efb34b472989f6d57882462113b83acee7d4"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1341335/000110465926035151/tmb-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

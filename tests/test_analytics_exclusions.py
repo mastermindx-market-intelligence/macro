@@ -447,6 +447,27 @@ def test_request_budget_stays_under_the_edge_origin_pull_timeout():
     assert a._REQUEST_BUDGET_S <= 12.0
     assert a._QUERY_TIMEOUT_S <= a._REQUEST_BUDGET_S
 
+
+def test_pages_uses_null_safe_anti_membership_without_changing_classifiers(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.pages(days=30, limit=500)
+    assert len(seen["all"]) == 1
+    sql = seen["sql"]
+    outer = sql.rsplit("select e.site", 1)[1]
+    assert "e.created_at > now() - interval '43200 minutes'" in outer
+    assert "not exists (select 1 from excluded x where x.visitor_id = e.visitor_id)" in outer
+    assert "not exists (select 1 from bots b where b.visitor_id = e.visitor_id)" in outer
+    assert "not in" not in outer and "left join" not in outer
+    assert "count(distinct e.visitor_id)" in outer
+    assert "avg(e.dwell_ms)" in outer
+    assert "group by 1,2 order by views desc nulls last, 1, 2 limit 500" in outer
+    # The historical classifier definitions, including their non-null ID contract,
+    # remain shared with every other caller; only this outer membership shape changed.
+    assert sql.startswith(a._cte(bot_window=43200))
+    assert "where e.visitor_id is not null" in a._excluded_cte()
+    assert "where e2.visitor_id is not null" in a._excluded_cte()
+    assert "where e.visitor_id is not null" in a._bot_cte(43200)
+
 def test_all_windowed_analytics_surfaces_bound_bot_history(monkeypatch):
     cases = [
         ("pages", lambda: a.pages(minutes=1440)),

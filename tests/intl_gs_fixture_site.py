@@ -226,3 +226,107 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
+
+
+# P12.T2.S4: dependency-free DOM locator for native tooltip contract tests.
+# Only their simple tag/class/attribute descendant selectors are supported;
+# unsupported syntax raises rather than silently widening a selector. This is
+# test HTML parsing, not a browser or a tooltip implementation.
+from html.parser import HTMLParser as _TooltipHTMLParser
+import re as _tooltip_re
+
+
+class TooltipNode:
+    def __init__(self, name='', attrs=(), parent=None):
+        self.name, self.attrs, self.parent = name, dict(attrs), parent
+        self.children = []
+
+    def __getitem__(self, key):
+        return self.attrs[key]
+
+    def get(self, key, default=None):
+        return self.attrs.get(key, default)
+
+    def has_attr(self, key):
+        return key in self.attrs
+
+    def _descendants(self):
+        for child in self.children:
+            yield child
+            yield from child._descendants()
+
+    @staticmethod
+    def _matches(node, token):
+        pattern = r'(?:[\w-]+)?(?:\.[\w-]+|\[[\w-]+(?:=(?:"[^"]*"|\x27[^\x27]*\x27|[^\]]+))?\])*'
+        if not token or _tooltip_re.fullmatch(pattern, token) is None:
+            raise ValueError('Unsupported tooltip test selector: ' + token)
+        tag = _tooltip_re.match(r'^[\w-]+', token)
+        if tag and node.name != tag.group():
+            return False
+        class_part = _tooltip_re.sub(r'\[[^\]]+\]', '', token)
+        if any(cls not in (node.get('class', '') or '').split()
+               for cls in _tooltip_re.findall(r'\.([\w-]+)', class_part)):
+            return False
+        for key, value in _tooltip_re.findall(r'\[([\w-]+)(?:=([^\]]+))?\]', token):
+            if key not in node.attrs or (value and node[key] != value.strip('"\x27')):
+                return False
+        return True
+
+    def select(self, selector):
+        groups = [group.strip().split() for group in selector.split(',')]
+        result = []
+        for group in groups:
+            for token in group:
+                self._matches(self, token)  # validate grammar even on an empty subtree
+        for node in self._descendants():
+            for group in groups:
+                if not group or not self._matches(node, group[-1]):
+                    continue
+                ancestor = node.parent
+                for token in reversed(group[:-1]):
+                    while ancestor is not None and not self._matches(ancestor, token):
+                        ancestor = ancestor.parent
+                    if ancestor is None:
+                        break
+                    ancestor = ancestor.parent
+                else:
+                    result.append(node)
+                    break
+        return result
+
+    def select_one(self, selector):
+        found = self.select(selector)
+        return found[0] if found else None
+
+
+class _TooltipParser(_TooltipHTMLParser):
+    VOID = frozenset('area base br col embed hr img input link meta param source track wbr'.split())
+
+    def __init__(self, html):
+        super().__init__(convert_charrefs=True)
+        self.root = TooltipNode()
+        self.current = self.root
+        self.feed(html)
+        self.close()
+
+    def handle_starttag(self, tag, attrs):
+        node = TooltipNode(tag, attrs, self.current)
+        self.current.children.append(node)
+        if tag not in self.VOID:
+            self.current = node
+
+    def handle_startendtag(self, tag, attrs):
+        node = TooltipNode(tag, attrs, self.current)
+        self.current.children.append(node)
+
+    def handle_endtag(self, tag):
+        node = self.current
+        while node.parent is not None:
+            if node.name == tag:
+                self.current = node.parent
+                return
+            node = node.parent
+
+
+def tooltip_document(html):
+    return _TooltipParser(str(html)).root

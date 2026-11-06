@@ -22,6 +22,7 @@ import math
 import numbers
 import logging
 import sys
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from copy import deepcopy
 from pathlib import Path
@@ -403,15 +404,71 @@ def _r4_currency_rows(strength: dict, horizon: str = "1m") -> dict:
 
     USD is the zero reference, not a ranked currency. Missing/non-finite moves stay
     visible as unavailable rows and never become neutral zeroes.
+
+    Malformed source rows (anything that is not a mapping, or a mapping with no
+    currency identity) are dropped from the comparison and disclosed in
+    ``malformed_rows``; they never become a zero-valued currency and never abort
+    the page.  A malformed payload or horizon list is disclosed the same way and
+    yields no comparable rows; an absent horizon simply has nothing to compare.
+
+    A currency identity observed more than once is quarantined: the whole identity
+    becomes ONE unavailable row carrying ``unavailable_reason``
+    ``"duplicate_currency_identity"``.  No observation wins the identity, so a
+    duplicated currency can neither be ranked nor become the leader, and the
+    available/above/below counts and the bar scale count each identity once.
     """
-    horizon_rows = (((strength or {}).get("horizons") or {}).get(horizon) or [])
     rows: list[dict] = []
     finite_abs: list[float] = []
+    malformed: list[dict] = []
+    groups: dict[str, list[dict]] = {}
 
-    for source in horizon_rows:
-        ccy = str(source.get("ccy") or "")
-        if not ccy or ccy == "USD":
+    def _agreed(sources: list[dict], key: str):
+        """The group's value for `key` when every observation agrees, else None."""
+        value = sources[0].get(key)
+        for source in sources[1:]:
+            if source.get(key) != value:
+                return None
+        return value
+
+    if not isinstance(strength, Mapping):
+        malformed.append({"index": None, "reason": "malformed_strength"})
+        strength = {}
+    horizons = strength.get("horizons")
+    horizon_rows = horizons.get(horizon) if isinstance(horizons, Mapping) else None
+    if horizon_rows is None:
+        horizon_rows = []
+    elif not isinstance(horizon_rows, (list, tuple)):
+        malformed.append({"index": None, "reason": "malformed_horizon_rows"})
+        horizon_rows = []
+
+    for index, source in enumerate(horizon_rows):
+        if not isinstance(source, Mapping):
+            malformed.append({"index": index, "reason": "not_a_mapping"})
             continue
+        raw_ccy = source.get("ccy")
+        if not isinstance(raw_ccy, str) or not raw_ccy.strip():
+            malformed.append({"index": index, "reason": "missing_currency_identity"})
+            continue
+        ccy = raw_ccy.strip().upper()
+        if ccy == "USD":
+            continue
+        groups.setdefault(ccy, []).append(source)
+
+    for ccy, sources in groups.items():
+        if len(sources) > 1:
+            # The identity is ambiguous, so it is quarantined rather than resolved
+            # by picking one of the observations that carry it.
+            rows.append({
+                "ccy": ccy,
+                "ccy_zh": _agreed(sources, "ccy_zh") or ccy,
+                "em": bool(_agreed(sources, "em")),
+                "move_pct": None,
+                "available": False,
+                "unavailable_reason": "duplicate_currency_identity",
+                "cross_section_strength": None,
+            })
+            continue
+        source = sources[0]
         raw = source.get("vs_usd_pct")
         # Retain #8096's one-basis comparison, using R26's numeric admission.
         move = _r4_number(raw)
@@ -423,6 +480,7 @@ def _r4_currency_rows(strength: dict, horizon: str = "1m") -> dict:
             "em": bool(source.get("em")),
             "move_pct": move,
             "available": move is not None,
+            "unavailable_reason": None if move is not None else "missing_or_invalid_move",
             "cross_section_strength": source.get("strength"),
         })
 
@@ -446,6 +504,7 @@ def _r4_currency_rows(strength: dict, horizon: str = "1m") -> dict:
         "n_available": len(available),
         "n_above_usd": sum(row["move_pct"] > 0 for row in available),
         "n_below_usd": sum(row["move_pct"] < 0 for row in available),
+        "malformed_rows": malformed,
     }
 
 

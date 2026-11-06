@@ -351,7 +351,8 @@ html[data-theme="light"] #nxConsequence .nx-empty{ background:var(--panel); bord
   font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
 .nxi-pulse{ width:8px; height:8px; border-radius:50%; background:var(--nxi-accent);
   box-shadow:0 0 0 4px color-mix(in srgb,var(--nxi-accent) 15%,transparent); }
-.nxi[data-state="quiet"] .nxi-pulse{ background:transparent; border:1.5px solid var(--muted); box-shadow:none; }
+/* degraded reuses the quiet hollow: a desk whose refresh is failing is not live. */
+.nxi[data-state="quiet"] .nxi-pulse,.nxi[data-state="degraded"] .nxi-pulse{ background:transparent; border:1.5px solid var(--muted); box-shadow:none; }
 .nxi-title{ margin:6px 0 4px; font-size:21px; line-height:1.16; font-weight:850; letter-spacing:-.02em; }
 .nxi-sub{ margin:0; max-width:72ch; color:var(--muted); font-size:12.5px; line-height:1.5; }
 .nxi-health{ align-self:center; min-width:152px; padding:10px 12px; border-radius:12px;
@@ -900,7 +901,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
       <div class="nxi-kicker"><span class="nxi-pulse"></span>{{ t('Developing + confirmed','发展中 + 已确认') }}</div>
       <h2 class="nxi-title">{{ t('Ranked story stream','排序事件流') }}</h2>
     </div>
-    <div class="nxi-health">
+    <div class="nxi-health" role="status" aria-live="polite">
       <strong id="nxIntelHealth">{{ t('Connecting to the desk','正在连接工作台') }}</strong>
       <span id="nxIntelUpdated"></span>
     </div>
@@ -921,7 +922,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
   <div class="nxi-list" id="nxIntelList" hidden></div>
   <div class="nxi-state" id="nxIntelState" hidden></div>
   <div class="nxi-footer" id="nxIntelFooter" hidden>
-    <span>{{ t('Ranked continuously · evidence attached','持续排序 · 附带证据') }}</span>
+    <span id="nxIntelCadence">{{ t('Ranked continuously · evidence attached','持续排序 · 附带证据') }}</span>
     <button class="nxi-showmore" id="nxIntelMore" hidden>{{ t('View full stream','查看完整事件流') }}</button>
   </div>
 
@@ -1340,6 +1341,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
     var resultCountEl=document.getElementById('nxIntelCount'), intelClear=document.getElementById('nxIntelClear');
     var healthEl=document.getElementById('nxIntelHealth');
     var updatedEl=document.getElementById('nxIntelUpdated');
+    var cadenceEl=document.getElementById('nxIntelCadence');
     var drawer=document.getElementById('nxIntelDrawer');
     var drawerBody=document.getElementById('nxIntelDrawerBody');
     var drawerClose=document.getElementById('nxIntelClose');
@@ -1349,7 +1351,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
     var URL_='live/intelligence.json', POLL=(window.LIVE_POLL_SEC||60)*1000;
     var TIMEOUT=10000, CAP=6, stories=[], health={}, updatedAt='', filter='all';
     var expanded=false, mode='loading', inflight=false, timerId=null;
-    var selectedStory=null, lastTrigger=null;
+    var selectedStory=null, lastTrigger=null, degraded=false;
     // The payload carries up to 12 timeline rows; the fold shows the newest few
     // and counts the rest. The receipts above it must stay the bigger group.
     var TL_SHOWN=6, FACTS_SHOWN=3, SHAPE_ORDER=['wire','analysis','long_post'];
@@ -1743,14 +1745,16 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
         return s && s.id && s.headline;
       }):[];
       updatedAt=payload.updated_at||'';
-      mode='ok'; box.hidden=false; box.setAttribute('data-state',health.state||'quiet');
+      mode='ok'; degraded=false;
+      if(cadenceEl) text(cadenceEl,tx('Ranked continuously · evidence attached','持续排序 · 附带证据'));
+      box.hidden=false; box.setAttribute('data-state',health.state||'quiet');
       if(metricsEl) metricsEl.hidden=false; if(toolbarEl) toolbarEl.hidden=false;
       setMetric('nxiActive',health.active_stories);
       setMetric('nxiConfirmed',health.confirmed);
       setMetric('nxiDeveloping',Math.max(0,Number(health.active_stories||0)-Number(health.confirmed||0)));
       setMetric('nxiSources',health.sources_online);
       if(healthEl) text(healthEl,health.state==='live'?tx('Desk is ingesting','工作台正在接收数据'):tx('Desk is quiet','工作台当前平静'));
-      if(updatedEl) text(updatedEl,tx('Updated ','更新于 ')+age(updatedAt));
+      if(updatedEl) text(updatedEl,deskUpdateLabel());
       expanded=false; render();
       if(selectedId && !drawer.hidden){
         var fresh=stories.find(function(story){return String(story.id||'')===selectedId;});
@@ -1762,6 +1766,24 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
           openDrawer(fresh,null,true);
         }else closeDrawer(false);
       }
+    }
+    // Keep last-good evidence and source clocks while a transient refresh fails.
+    // Access refusals and first-load failures retain their separate state paths.
+    function deskUpdateLabel(){
+      var sourceTime=Date.parse(String(updatedAt||''));
+      return isFinite(sourceTime)
+        ? (degraded ? tx('Last good update ','最后成功更新 ') : tx('Updated ','更新于 '))+age(updatedAt)
+        : tx('Source update time unavailable','来源更新时间不可用');
+    }
+    function degradedHealth(){
+      if(healthEl) text(healthEl,tx('Refresh failed — showing the last loaded desk','刷新失败——显示最后加载的工作台'));
+      if(updatedEl) text(updatedEl,deskUpdateLabel());
+      if(cadenceEl) text(cadenceEl,tx('Last loaded ranking · evidence attached','上次载入的排序 · 附带依据'));
+    }
+    function showDegraded(){
+      degraded=true;
+      box.setAttribute('data-state','degraded');
+      degradedHealth();
     }
     function stateCopy(kind){
       return ({
@@ -1808,7 +1830,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
           if(!Array.isArray(payload.stories)||!payload.stories.length){showState('quiet');return;}
           showDesk(payload);
         })
-        .catch(function(){ if(mode!=='ok'&&mode!=='absent') showState('down'); })
+        .catch(function(){ if(mode==='ok') showDegraded(); else if(mode!=='absent') showState('down'); })
         .then(function(){ if(timeout)clearTimeout(timeout); inflight=false; });
     }
     if(toolbarEl) toolbarEl.addEventListener('click',function(e){
@@ -1838,8 +1860,12 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
     });
     document.addEventListener('langchange',function(){
       if(mode==='ok'){
-        if(healthEl) text(healthEl,health.state==='live'?tx('Desk is ingesting','工作台正在接收数据'):tx('Desk is quiet','工作台当前平静'));
-        if(updatedEl) text(updatedEl,tx('Updated ','更新于 ')+age(updatedAt));
+        if(degraded) degradedHealth();
+        else{
+          if(healthEl) text(healthEl,health.state==='live'?tx('Desk is ingesting','工作台正在接收数据'):tx('Desk is quiet','工作台当前平静'));
+          if(updatedEl) text(updatedEl,deskUpdateLabel());
+          if(cadenceEl) text(cadenceEl,tx('Ranked continuously · evidence attached','持续排序 · 附带证据'));
+        }
         render();
         if(selectedStory && !drawer.hidden) openDrawer(selectedStory,null,true);
       }else if(stateCopy(mode)) showState(mode);

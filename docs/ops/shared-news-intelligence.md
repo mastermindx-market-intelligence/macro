@@ -155,6 +155,18 @@ masked before ranking. Snapshot, grouped detail and change events use the same
 current representative. Benzinga over multiple transports counts as one publisher;
 the separate source grants remain intact.
 
+`source_count` is the number of distinct information origins among a story's
+current members; `publisher_count` is the number of distinct publishers. A
+publisher is always at least one origin. Two publishers join one origin only when
+both show the same rights-visible normalized headline, which is how syndicated
+wire copy appears under two outlets. A withheld or empty headline never joins, so
+the origin count reveals nothing about hidden text and falls back to the publisher
+count. An edited syndicated headline is not detected and stays counted per
+publisher; identical generic headlines from two independent outlets are counted
+once, which undercounts and never inflates independence. Cluster identifiers are
+never read for this count. For a non-empty story,
+`1 <= source_count <= publisher_count <= item_count`.
+
 The UI's High signal view excludes narrowly identified routine Benzinga
 whale-alert/peer-profile templates. All reporting preserves those reports.
 The additional flag does not broaden ingestion drops. All underlying eligible
@@ -300,7 +312,7 @@ The continuation fixes two reproduced correctness defects:
   Consumers must purge previously delivered rows, annotations and expanded reports.
 
 Snapshot, detail and live projection now carry the same report counts and display
-clocks. Upsert events include `source_count`, `item_count`, `published_at`,
+clocks. Upsert events include `source_count`, `publisher_count`, `item_count`, `published_at`,
 `updated_at` and `received_at`, so a consumer can apply a validated live row
 without a second snapshot request. Older or incomplete events still require
 authoritative reconciliation. The journal sequence remains the stream cursor;

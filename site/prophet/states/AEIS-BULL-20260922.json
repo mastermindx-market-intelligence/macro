@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AEIS-BULL-20260922",
-  "asof": "2026-10-30",
+  "asof": "2026-11-06",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 56.0
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": -0.721,
+    "dist_to_stop_r": -1.566,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 77.8,
-    "p1": -1.1472,
-    "p2": -0.5736,
+    "horizon_pct_used": 93.3,
+    "p1": -1.7106,
+    "p2": -0.8553,
     "p3": null,
-    "move_r": -1.721,
+    "move_r": -2.566,
     "mfe_r": 0.671,
-    "mae_r": -1.725
+    "mae_r": -2.566
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,21 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 24.579998779296886,
-  "_mae": -63.224993896484364,
+  "_mae": -94.03999633789061,
   "_max_p1": 0.4471123015788427,
   "_first_trigger_ts": "2026-10-01",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 35,
-  "tau": 0.7778,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  },
+  "days_elapsed": 42,
+  "tau": 0.9333,
   "closed": true,
   "outcome": "INVALIDATED"
 }

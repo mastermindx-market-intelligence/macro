@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T20:30:31Z",
+ "accession": "0001104659-26-032111",
+ "cik": "0000839470",
+ "doc_byte_length": 1899591,
+ "doc_sha256": "985f175cdcbfc8630668556ac9ee65ffe70b2cb9ebbeea54b6aa72baaaefc5ee",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "wwr-20251231x10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 595581,
+  "byte_start": 595220,
+  "normalized": "The global landscape for the U.S. supply of critical minerals, including natural graphite, continues to evolve. On November 3, 2025, FCA, which is part of the Stellantis group of companies, unexpectedly terminated its Offtake Agreement with the Company. FCA was one of three companies, including SK On and Hiller Carbon, with offtake agreements with Westwater.",
+  "normalized_sha256": "d3b9f470540a10be5e2d2d1e22818cb01ac057cefeb8adbc644ab22d715e8a60",
+  "raw": "The global landscape for the U.S. supply of critical minerals, including natural graphite, continues to evolve. On November 3, 2025, FCA, which is part of the Stellantis group of companies, unexpectedly terminated its Offtake Agreement with the Company. FCA was one of three companies, including SK On and Hiller Carbon, with offtake agreements with Westwater. ",
+  "raw_sha256": "23feee1de0af189103cbcf4325ed44aff6da3a96098a4a74ec2d1ebf8e0c7933"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/839470/000110465926032111/wwr-20251231x10k.htm",
+ "xbrl_contexts": []
+}

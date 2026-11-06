@@ -1,17 +1,17 @@
 {
-"applied": "2026-10-20T04:39:49.729102+00:00",
-"rows_flagged": 1101,
-"tickers_flagged": 677,
+"applied": "2026-11-02T07:25:17.941286+00:00",
+"rows_flagged": 1103,
+"tickers_flagged": 678,
 "by_flag": {
 "placeholder": 80,
-"pre_public": 862,
+"pre_public": 864,
 "pre_public_tiny": 56,
 "unit_extreme": 27,
 "unit_level": 12,
 "unit_scale": 64
 },
 "repaired": 128,
-"nulled": 973,
+"nulled": 975,
 "rows": [
 {
 "ticker": "AADX",
@@ -6620,6 +6620,22 @@
 "shares_raw": 281211630.0,
 "repair": null,
 "note": "period_end<2024-09-01"
+},
+{
+"ticker": "SATS",
+"fy": 2022,
+"flag": "pre_public",
+"shares_raw": 8385276.0,
+"repair": null,
+"note": "period_end<2026-09-01"
+},
+{
+"ticker": "SATS",
+"fy": 2023,
+"flag": "pre_public",
+"shares_raw": 1677056.0,
+"repair": null,
+"note": "period_end<2026-09-01"
 },
 {
 "ticker": "SBET",

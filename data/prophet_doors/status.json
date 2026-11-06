@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-10-23",
+  "asof": "2026-11-05",
   "candidates": {
     "R": 0,
-    "T": 24,
-    "W": 36
+    "T": 17,
+    "W": 38
   },
   "deduped": {
     "R": 0,
-    "T": 24,
-    "W": 36
+    "T": 17,
+    "W": 38
   },
   "dry_run": false,
   "feature_source": {
@@ -80,47 +80,47 @@
     "T": [],
     "W": []
   },
-  "n_universe": 1491,
+  "n_universe": 1489,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-30 10:51:02",
-  "runtime_s": 94.4,
+  "run_utc": "2026-11-06 14:12:21",
+  "runtime_s": 99.5,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": -3,
-    "asof": "2026-10-26",
-    "n_members": 138,
+    "age_days": -1,
+    "asof": "2026-11-06",
+    "n_members": 136,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.775,
+        "emerging_score": 2.443,
         "rank": 1,
-        "theme": "Biometrics"
+        "theme": "Healthy Food & Nutrition"
       },
       {
-        "emerging_score": 1.702,
+        "emerging_score": 2.114,
         "rank": 2,
-        "theme": "Cybersecurity"
+        "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 1.336,
+        "emerging_score": 1.981,
         "rank": 3,
-        "theme": "Real Estate & REITs"
+        "theme": "Commodities Agriculture"
       },
       {
-        "emerging_score": 1.188,
+        "emerging_score": 1.813,
         "rank": 4,
-        "theme": "Environmental Sustainability"
+        "theme": "Digital Entertainment"
       },
       {
-        "emerging_score": 1.127,
+        "emerging_score": 1.8,
         "rank": 5,
-        "theme": "Defense & Aerospace"
+        "theme": "Aging Population & Longevity"
       }
     ]
   },
@@ -129,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 36,
-    "asof_max": "2026-10-23",
+    "aligned": 38,
+    "asof_max": "2026-11-05",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-23",
-    "evaluated": 712,
-    "fresh": 38,
+    "asof_run": "2026-11-05",
+    "evaluated": 713,
+    "fresh": 39,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 18.5,
-    "skipped": 5,
+    "runtime_s": 17.9,
+    "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 66,
+    "state_turn": 56,
     "universe_n": 717
   }
 }
