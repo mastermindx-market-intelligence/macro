@@ -247,3 +247,97 @@ def test_pressure_watch_research_action_uses_full_row_measure(browser, width, th
         assert all('/api/' not in url for url in requests)
     finally:
         context.close()
+
+
+@pytest.mark.parametrize('mutation', ['case_cutoff', 'case_grain', 'source_day', 'capture_day', 'capture_rollover', 'capture_offset'])
+def test_research_rejects_incoherent_or_impossible_capture_clocks(browser, mutation):
+    value = packet()
+    if mutation == 'case_cutoff':
+        value['case']['asof']['value'] = '2026-01-04T10:00:00Z'
+    elif mutation == 'case_grain':
+        value['case']['asof']['grain'] = 'date'
+    else:
+        stamp = '2026-03-02T10:00:00Z'
+        if mutation == 'capture_day':
+            stamp = '2026-02-30T10:00:00Z'
+        elif mutation == 'capture_rollover':
+            stamp = '2026-03-01T24:00:00Z'
+        elif mutation == 'capture_offset':
+            # Written Jan2 is UTC Jan1, before the selected Jan2 event.
+            stamp = '2026-01-02T00:30:00+14:00'
+            value['capture']['source']['generated_utc'] = '2026-01-01T08:00:00Z'
+        value['capture']['capture']['captured_at'] = stamp
+        value['case']['asof']['value'] = stamp
+        value['case']['asof']['t0_evidence_ref']['recorded_clock']['value'] = stamp
+        if mutation == 'source_day':
+            value['capture']['source']['generated_utc'] = '2026-02-30T09:00:00Z'
+    context, page, seen, errors = start(browser, value=value)
+    try:
+        inspect(page)
+        page.wait_for_function("!['idle','loading'].includes(document.querySelector('[data-research-result]').dataset.state)")
+        assert page.locator('[data-research-result]').get_attribute('data-state') == 'unavailable'
+        assert 'opc_' not in page.locator('[data-research-result]').text_content()
+        assert len(seen) == 1 and not errors
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize('stamp', ['2024-02-29T10:00:00.123456Z', '2026-01-03T11:00:00.123456+01:00', '2026-01-03T11:00+01:00'])
+def test_research_preserves_valid_native_clock_precision(browser, stamp):
+    value = packet()
+    if stamp.startswith('2024'):
+        value['capture']['source']['generated_utc'] = stamp
+        for identity in [value['capture']['native_identity'], value['case']['asof']['t0_evidence_ref']['native_identity']]:
+            identity['date'] = '2024-02-28'
+    else:
+        value['capture']['source']['generated_utc'] = stamp
+        stamp = '2026-01-03T10:00:00.123456Z'
+    value['capture']['capture']['captured_at'] = stamp
+    value['case']['asof']['value'] = stamp
+    value['case']['asof']['t0_evidence_ref']['recorded_clock']['value'] = stamp
+    context, page, seen, errors = start(browser, value=value)
+    try:
+        page.locator('#ox-research [name=date]').fill(value['capture']['native_identity']['date'])
+        page.locator('#ox-research [name=ticker]').fill('TEST')
+        page.locator('#ox-research button[type=submit]').click()
+        settled(page, 'ready')
+        assert stamp in page.locator('[data-research-result]').text_content()
+        assert len(seen) == 1 and not errors
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize('source,captured,accepted', [
+    ("2026-01-03T10:00:00.123999Z", "2026-01-03T10:00:00.123000Z", False),
+    ("2026-01-03T10:00:00.123000Z", "2026-01-03T10:00:00.123999Z", True),
+    ("2026-01-03T10:00:00.123000Z", "2026-01-03T10:00:00.123Z", True),
+    ("2026-01-03T11:00:00.123456+01:00", "2026-01-03T10:00:00.123456Z", True),
+    ("2026-01-03T11:00:00.123457+01:00", "2026-01-03T10:00:00.123456Z", False),
+    ("2026-01-04T00:00:00.000001+14:00", "2026-01-03T10:00:00.000000Z", False),
+    ("2026-01-02T23:30:00.000001-10:30", "2026-01-03T10:00:00.000000Z", False),
+    ("2026-01-03T10:00:00.123456789012345678901Z", "2026-01-03T10:00:00.123456789012345678900Z", False),
+    ("2026-01-03T10:00:00.123456789012345678900Z", "2026-01-03T10:00:00.123456789012345678901Z", True),
+    ("2026-01-03T09:59:59.999999999999999999999Z", "2026-01-03T10:00:00Z", True),
+    ("2026-01-03T10:00:01Z", "2026-01-03T10:00:00.999999Z", False),
+    ("2026-01-03T11:00+01:00", "2026-01-03T10:00:00Z", True),
+    ("2026-01-03T11:00:00+01:00", "2026-01-03T10:00Z", True),
+    ("2026-01-03T10:00:00.000000000000000001Z", "2026-01-03T10:00:00Z", False),
+], ids=["later_by_999_microseconds", "earlier_by_999_microseconds", "equal_trailing_zeroes", "equal_source_offset", "source_offset_later", "positive_offset_rollover_later", "negative_offset_rollover_later", "beyond_double_precision_later", "beyond_double_precision_earlier", "previous_second_fraction", "later_whole_second", "source_without_seconds", "capture_without_seconds", "fraction_after_zero_later"])
+def test_research_compares_native_clock_fractions_without_rounding(browser, source, captured, accepted):
+    value = packet()
+    value['capture']['source']['generated_utc'] = source
+    value['capture']['capture']['captured_at'] = captured
+    value['case']['asof']['value'] = captured
+    value['case']['asof']['t0_evidence_ref']['recorded_clock']['value'] = captured
+    context, page, seen, errors = start(browser, value=value)
+    try:
+        inspect(page)
+        settled(page, 'ready' if accepted else 'unavailable')
+        rendered = page.locator('[data-research-result]').text_content()
+        if accepted:
+            assert captured in rendered
+        else:
+            assert 'opc_' not in rendered
+        assert len(seen) == 1 and not errors
+    finally:
+        context.close()
