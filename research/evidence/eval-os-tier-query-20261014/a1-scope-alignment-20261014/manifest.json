@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-14T14:50:19.725539+00:00",
+  "records": [
+    {
+      "file": "followon-a1-scope-alignment.json",
+      "sha256": "4ec1ee3094dde29c88cdca18d612116918c19b63f1cced67ded3aa38214511ca",
+      "bytes": 615
+    },
+    {
+      "file": "followon-aligned-ci-controls.log",
+      "sha256": "2fb0e51bf1138d4b092f70eb243e99e1b8101236b1b30f4b772a789c598837f0",
+      "bytes": 11143
+    },
+    {
+      "file": "aligned-a1-current-main-preview.json",
+      "sha256": "8121433f8155295f7e7471fee852d7ed2e1f721fbb74622a9fd296ab1e98cf7e",
+      "bytes": 345
+    },
+    {
+      "file": "aligned-a1-current-main-preview.log",
+      "sha256": "0538a44b505082a114bb02353c0bac046ff551b5442069451622fab17f36ff9e",
+      "bytes": 478
+    },
+    {
+      "file": "incumbent-remote-refresh-preview.json",
+      "sha256": "8ed0be2f4df46e9f78109299e3796c00071c0dc0ec96a5aa8f6de39c9e863e9c",
+      "bytes": 347
+    },
+    {
+      "file": "incumbent-remote-refresh-preview.log",
+      "sha256": "e80052413e278443ada81db4af27726c4ad116fff01aa1125cb01aa21c3b6ee4",
+      "bytes": 41
+    },
+    {
+      "file": "tested-merge-scope-measurements.json",
+      "sha256": "af8f2b976c5b8f53e3ddabdb2de1571818c2738bfab92b13530ec3a9c0b90e68",
+      "bytes": 14866
+    },
+    {
+      "file": "constant-alignment-proof.json",
+      "sha256": "4d22b1cf461e8b47fde3c01c03f4e54d841aee945aebf6d5b7c40f1e17160415",
+      "bytes": 1242
+    },
+    {
+      "file": "packing-ruling-parent-adjudication.json",
+      "sha256": "ed66eaded96e46de1bee0407f8411dc3d3fa065376cc37ad800512645ebfecc1",
+      "bytes": 2991
+    }
+  ],
+  "source_parent": "dc9f1e309a1c0701afd1de93fd075c9200b9a286",
+  "scope": "Two positive A1 dependency additions, all314 execution definitions/order/prior paths/limits unchanged. Three affected controls pass. Prior immutable runtime/probe proof reused. No hosted CI, release, adoption or new publication admission claim.",
+  "a1_unpublished_candidate": "26bfb6a0b9928e0463efef9e5904e6cdaeb6e581",
+  "a1_remote_head": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "a1_next": "Incumbent must perform admitted base refresh of published1b (previewPASS); retain local correction26b and apply source-only correction onto that refreshed carrier. Do not push26b directly: current-main preview remainsRED at shared packing literals. No manual base merge or second controller."
+}

@@ -1,0 +1,670 @@
+{
+  "asof": "2026-09-21",
+  "authority_ceiling": "research_internal_only",
+  "availability": {
+    "reason": null,
+    "state": "OK"
+  },
+  "canonical_mapping": {
+    "state": "SUBJECT_IS_CANONICAL",
+    "theme_node_ids": [
+      "theme:solar"
+    ]
+  },
+  "counts": {
+    "future_beliefs_excluded": 0,
+    "proposals": 0,
+    "relations": 13
+  },
+  "curation": {
+    "counts": {
+      "proposed": 0,
+      "ratified": 0,
+      "rejected": 0
+    },
+    "proposal_ids": [],
+    "state": "NONE"
+  },
+  "knowledge_cutoff": "2026-09-21",
+  "limitations": [
+    "exact node_id only; labels are never fuzzy-matched",
+    "probation proposals have zero graph authority",
+    "internal research projection; public display still requires the cited rights receipts",
+    "no ranking, scoring, selection, trade, or ThemeState authority"
+  ],
+  "node_id": "theme:solar",
+  "ordering": "type,direction,peer_node_id,edge_id; never score",
+  "proposals": [],
+  "relations": [
+    {
+      "belief_time": "2026-08-11",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china:cn_solar->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "cn_solar",
+          "suite": "baskets_china"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Solar / Photovoltaics",
+        "name_zh": "光伏",
+        "node_id": "basket:baskets_china:cn_solar",
+        "provenance": "membership_doc:baskets_china",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china:cn_solar",
+      "rights": [
+        {
+          "family": "mastermind_curated",
+          "public_display_allowed": true,
+          "rights_class": "direct_display_ok"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:ths_solar->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "ths_solar",
+          "suite": "baskets_china_ths",
+          "ths_code": "301079"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Solar PV",
+        "name_zh": "光伏概念",
+        "node_id": "basket:baskets_china_ths:ths_solar",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:ths_solar",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc300223->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc300223",
+          "suite": "baskets_china_ths",
+          "ths_code": "300223"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Solar Thermal Power",
+        "name_zh": "光热发电",
+        "node_id": "basket:baskets_china_ths:thsc300223",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc300223",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc308991->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc308991",
+          "suite": "baskets_china_ths",
+          "ths_code": "308991"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Perovskite Batteries",
+        "name_zh": "钙钛矿电池",
+        "node_id": "basket:baskets_china_ths:thsc308991",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc308991",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc308992->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc308992",
+          "suite": "baskets_china_ths",
+          "ths_code": "308992"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "TOPCON Solar Cells",
+        "name_zh": "TOPCON电池",
+        "node_id": "basket:baskets_china_ths:thsc308992",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc308992",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:basket:baskets_china_ths:thsc309084->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "basket_id": "thsc309084",
+          "suite": "baskets_china_ths",
+          "ths_code": "309084"
+        },
+        "kind": "basket",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": "Back Contact Cells",
+        "name_zh": "BC电池",
+        "node_id": "basket:baskets_china_ths:thsc309084",
+        "provenance": "membership_doc:baskets_china_ths",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "basket:baskets_china_ths:thsc309084",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:300223->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "300223"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "光热发电",
+        "node_id": "ltheme:ths:300223",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "光热发电",
+          "source_local_id": "300223",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:300223",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:301079->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "301079"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "光伏概念",
+        "node_id": "ltheme:ths:301079",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "光伏概念",
+          "source_local_id": "301079",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:301079",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:308829->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "308829"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "硅能源",
+        "node_id": "ltheme:ths:308829",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "硅能源",
+          "source_local_id": "308829",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:308829",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:308991->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "308991"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "钙钛矿电池",
+        "node_id": "ltheme:ths:308991",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "钙钛矿电池",
+          "source_local_id": "308991",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:308991",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:308992->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "308992"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "TOPCON电池",
+        "node_id": "ltheme:ths:308992",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "TOPCON电池",
+          "source_local_id": "308992",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:308992",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:309040->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "309040"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "POE胶膜",
+        "node_id": "ltheme:ths:309040",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "POE胶膜",
+          "source_local_id": "309040",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:309040",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    },
+    {
+      "belief_time": "2026-09-06",
+      "confidence_basis": "membership_doc.v1",
+      "date_provenance": "crosswalk",
+      "direction": "INCOMING",
+      "edge_id": "expresses:ltheme:ths:309084->theme:solar@2026-07-09",
+      "evidence_refs": [
+        "ev:7e043e2a120a8689",
+        "ev:93906972aca25852"
+      ],
+      "evidence_time": "2026-07-09",
+      "peer": {
+        "external_ids": {
+          "ths_code": "309084"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "BC电池",
+        "node_id": "ltheme:ths:309084",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "BC电池",
+          "source_local_id": "309084",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      "peer_node_id": "ltheme:ths:309084",
+      "rights": [
+        {
+          "family": "ths_concepts",
+          "public_display_allowed": false,
+          "rights_class": "unresolved"
+        }
+      ],
+      "source_class": "curated",
+      "truth_status": "GRAPH_TRUTH",
+      "type": "EXPRESSES",
+      "valid_from": "2026-07-09",
+      "valid_to": null
+    }
+  ],
+  "schema": "gmi.theme_ontology_neighborhood/v1",
+  "subject": {
+    "external_ids": {
+      "foresight_id": "solar"
+    },
+    "kind": "theme",
+    "market_scope": "global",
+    "merged_into": null,
+    "name_en": "Solar",
+    "name_zh": "太阳能",
+    "node_id": "theme:solar",
+    "provenance": "crosswalk:config/theme_crosswalk.yml",
+    "source_meta": null,
+    "status": "canonical",
+    "tier": "theme"
+  }
+}

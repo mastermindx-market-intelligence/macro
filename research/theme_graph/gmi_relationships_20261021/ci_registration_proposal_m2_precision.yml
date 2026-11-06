@@ -1,0 +1,22 @@
+# CI registration PROPOSAL FRAGMENT — GMI ORCH-REL M2 precision (REL-M2-PREC-BUILD
+# lane, 2026-10-22).
+#
+# A fragment the GMI COMPLETION seat folds into job company-intelligence-relationships
+# of ci_registration_proposal.yml (same gate/scope/runs-on/timeout; no .github/ or
+# config/ path is touched here — registration stays a seat-owned CI-authority
+# change).  `paths_add:` lists the closure paths this lane adds that are NOT
+# already in the M1 `paths:` or the m2_harvest / m2_keys fragments: the suite's
+# full import/read closure is otherwise unchanged (the producer script, the
+# package_v2/replay/clock engine modules, lib/dataos/temporal, the two
+# relationship contracts, the pinned extraction/sources inputs, leaves_v1.json,
+# conftest.py, scripts/__init__.py and the earlier suites are all already
+# listed).  `steps_add:` runs the new suite.  Proven by exporting exactly the
+# union of the M1 paths + all fragments' paths_add at the lane commit and
+# running the suite inside that export (see the lane return).
+paths_add:
+  - "engine/company_intelligence/relationships/precision.py"
+  - "scripts/relationship_m2_precision.py"
+  - "tests/test_relationship_m2_precision.py"
+steps_add:
+  - name: Relationship M2 precision sample and scorer
+    run: python -m pytest tests/test_relationship_m2_precision.py -q

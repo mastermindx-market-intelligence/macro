@@ -1,0 +1,58 @@
+{
+  "observedAt": "2026-10-11T19:17:51.785546+00:00",
+  "head": "78776a0a165e0a0e8672bdc8945357b11b01f285",
+  "cronSchedules": [
+    "*/3 * * * *"
+  ],
+  "recentCompletions": [
+    [
+      "2026-10-11T08:21:23Z",
+      "9ebe0fe0",
+      "91e3a379a0f"
+    ],
+    [
+      "2026-10-11T08:27:22Z",
+      "91e3a379",
+      "3f5e0307b88"
+    ],
+    [
+      "2026-10-11T08:39:29Z",
+      "3f5e0307",
+      "ea7fa5bbb44"
+    ],
+    [
+      "2026-10-11T08:54:21Z",
+      "ea7fa5bb",
+      "1f3b82a01ea"
+    ],
+    [
+      "2026-10-11T08:57:43Z",
+      "1f3b82a0",
+      "9210754b204"
+    ]
+  ],
+  "updaterSha256": {
+    "/usr/local/bin/macro-update": "67a20135b3f61cdf11d0cc24fdc59fee6027c0b74568c15ba34800acb98baa26",
+    "/opt/macro/app/deploy/update.sh": "67a20135b3f61cdf11d0cc24fdc59fee6027c0b74568c15ba34800acb98baa26"
+  },
+  "logModifiedAt": "2026-10-11T19:15:42.675809+00:00",
+  "inspectorInstalled": false,
+  "diagnostics": {
+    "observedAt": "2026-10-11T19:18:16.693948+00:00",
+    "recentUpdaterDiagnostics": [
+      "macro-update: W2C owner replay failed: technicals",
+      "macro-update: refusing W2C activation before owner replay completion",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: W2C owner replay failed: technicals",
+      "macro-update: refusing W2C activation before owner replay completion",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: W2C owner replay failed: technicals",
+      "macro-update: refusing W2C activation before owner replay completion",
+      "macro-update: project active-build source publication deferred",
+      "macro-update: W2C owner replay failed: technicals",
+      "macro-update: refusing W2C activation before owner replay completion",
+      "macro-update: project active-build source publication deferred"
+    ]
+  },
+  "interpretation": "Main source advances and static rsync precedes later runtime reconciliation. W2C replay diagnostics do not prove Press installation failure or success. Verify candidate source and served hashes after protected landing; no updater was invoked manually."
+}
