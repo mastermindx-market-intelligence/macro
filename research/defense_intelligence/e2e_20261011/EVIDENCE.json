@@ -1,0 +1,78 @@
+{
+  "document_type": "executed_research_evidence_summary",
+  "source_pin": "5267c66846e7733bc1eb30edc1524daff51598ca",
+  "workflow_path": ".github/workflows/government-revenue-live.yml",
+  "workflow_git_blob": "33e09e0a5ad62d5b2ff3316e36992d20059b9681",
+  "method": "Exact extracted shell branches, local stubs, fatal=1, bash subprocess; no source/workflow/network/product publication.",
+  "probes": [
+    {
+      "case": "pytest_unavailable",
+      "source_lines": [
+        583,
+        586
+      ],
+      "exit_code": 0,
+      "stdout_contains": "publishing UNPROVEN",
+      "excerpt_sha256": "6cd8f1ab415882e73de18c00f359bb5b8f3fd9234ce6e359eabd251d63732bce"
+    },
+    {
+      "case": "prover_mutates_candidate_tree",
+      "source_lines": [
+        611,
+        618
+      ],
+      "exit_code": 0,
+      "summary_contains": "PASSED against the artifacts about to be committed",
+      "excerpt_sha256": "730f152054a219f8656a493e07771d8c7ce5d521dc5f923c1af8a4c317d51af2"
+    }
+  ],
+  "run_observations": {
+    "fms": {
+      "run_id": 38155385453,
+      "acquire_job": 114517183032,
+      "publish_job": 114518399318,
+      "actual_checkout_short": "b8568e3f33",
+      "test_summary": {
+        "failed": 2,
+        "passed": 101,
+        "skipped": 1,
+        "seconds": 494.05
+      },
+      "failed_test_names": "not_in_inspected_log",
+      "publication": "skipped",
+      "convergence": "skipped"
+    },
+    "govrev": {
+      "run_id": 38192933592,
+      "job_id": 114629377229,
+      "conclusion": "success",
+      "build": "skipped",
+      "proof": "skipped",
+      "commit": "skipped"
+    }
+  },
+  "committed_artifacts": {
+    "candidate_count": 173,
+    "candidate_ledger_lines": 235,
+    "mapping_entries": 21,
+    "candidate_asof": "2026-09-01T23:59:59.999999+00:00",
+    "candidate_content_id": "grcq1-06a7c020729b3b207d0322b2",
+    "fms_case_count": 68,
+    "fms_observations": 94,
+    "fms_receipts": 94,
+    "fms_generated_at": "2026-10-11T16:29:02.044466+00:00"
+  },
+  "interpretation": "Independent fail-open branches demonstrated; neither establishes the root cause of the observed two pytest failures. Source generation counts are not production freshness proof.",
+  "product_tests_run": false,
+  "product_code_changed": false,
+  "production_calls": false,
+  "fleet_dispatched": false,
+  "packaged_probe_verification": {
+    "script_git_blob": "7692f03926fcf51124ffaa6614bdcc22a58259b4",
+    "exit_code": 0,
+    "documented_fail_open_reproduced": true,
+    "result_sha256": "5a64643d7cf655b0bf4a0360689005ad0f38598472ad25100bc979f9a33978ad",
+    "full_workflow_run": false,
+    "product_acceptance": false
+  }
+}
