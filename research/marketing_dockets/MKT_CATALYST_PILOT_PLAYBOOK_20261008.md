@@ -1,3 +1,7 @@
+> **Historical research archive — 2026-11-06.** This is the October 8–9 research and preparation record, not a current launch plan or an updated contact census.
+> Its publisher activity, contact policies, audience claims, event dates, conditional October 9–22 calendar, source-owner statuses and draft handoffs are historical observations; they have not been revalidated by this archival integration.
+> Repository preservation authorizes no contact, distribution, branding, agreement, spend, source access, product activation or marketing measurement. All publisher-permission, rights, consent/sender, browser, Sessions 00–04 and operator release gates below remain separate requirements for any future authorized work.
+
 # Catalyst Loop — First Distribution Pilot, Oct 9–22 2026 (DRAFT/HOLD)
 
 **Operation:** MMX-ACQ-CATALYST-DIST-20261008 / Session 05; **as of:** 2026-10-08 America/New_York.  

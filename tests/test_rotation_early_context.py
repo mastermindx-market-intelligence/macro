@@ -312,7 +312,7 @@ def test_us_nightly_context_preserves_confirmed_payload_and_ledger(tmp_path, mon
     monkeypatch.setattr(RL, "registered_short_horizon_context",
                         lambda root, *, as_of: batch(receipt()))
     with_context = RE.run_nightly(
-        sectors, tmp_path / "with", generated_utc="2026-10-07T01:00:00Z",
+        sectors, tmp_path / "with", generated_utc="2026-10-07 01:00 UTC",
         universe=universe, closes=closes,
     )
     assert with_context["early_context"]["as_of"] == ASOF
@@ -321,7 +321,7 @@ def test_us_nightly_context_preserves_confirmed_payload_and_ledger(tmp_path, mon
     monkeypatch.setattr(RL, "registered_short_horizon_context",
                         lambda root, *, as_of: batch())
     without = RE.run_nightly(
-        sectors, tmp_path / "without", generated_utc="2026-10-07T01:00:00Z",
+        sectors, tmp_path / "without", generated_utc="2026-10-07 01:00 UTC",
         universe=universe, closes=closes,
     )
     assert {k: v for k, v in with_context.items() if k != "early_context"} == {
@@ -392,3 +392,343 @@ def test_malformed_reason_codes_are_rejected_without_crashing():
     out = RE.early_rotation_context(envelope, as_of=ASOF)
     assert out["state"] is None
     assert out["reason_codes"] == ["INVALID_SHORT_HORIZON_ENVELOPE"]
+
+
+# ------------------------------------------------------------------ T07 ----
+# Early-context receipt completion: unknown donor breadth is never reported as
+# "receiver above donor" (A21), ticker aliases never double-count a pair (A20),
+# absolute legs and measured-sign interpretation (A18), valid-empty never revives
+# a prior positive (A24). Admission is pinned: the case-table "none" rows below
+# must keep returning None and the "event" rows must keep firing.
+
+from tests.test_rotation_events_v2 import (  # noqa: E402
+    _build_cross_universe,
+    _make_xlk_donor_for_recv,
+    _make_xlv_like_recv,
+    _series,
+)
+
+
+def _t07_breadth_firing_inputs():
+    """Receiver/donor/bench/breadth copied from test_rotation_events_v2::
+    test_3_into_strength_xlv_shape_fires — receiver breadth ~0.867 and rising."""
+    from engine.rotation_universe import PARAMS_V2
+    recv = _make_xlv_like_recv()
+    n = len(recv)
+    donor = _make_xlk_donor_for_recv(n)
+    spy = _series([100.0] * n)
+    brd_series = _series([0.70 + i * 0.0005 for i in range(n)])
+    brd_recv = float(brd_series.iloc[-1])  # ≈ 0.867, above into_breadth_min
+    return recv, donor, spy, brd_recv, brd_series, PARAMS_V2
+
+
+@pytest.mark.parametrize("case", [
+    "donor_absent", "donor_lower", "donor_equal", "donor_higher",
+    "receiver_breadth_absent", "receiver_below_threshold",
+    "history_absent", "history_flat", "no_price_strength",
+])
+def test_t07_a21_into_strength_donor_case_table(case):
+    recv, donor, spy, brd_recv, brd_series, p2 = _t07_breadth_firing_inputs()
+    kwargs = {"breadth_recv": brd_recv, "breadth_donor": 0.45,
+              "breadth_recv_series": brd_series}
+    receiver = recv
+    if case == "donor_absent":
+        kwargs["breadth_donor"] = None
+    elif case == "donor_lower":
+        kwargs["breadth_donor"] = 0.45
+    elif case == "donor_equal":
+        kwargs["breadth_donor"] = brd_recv
+    elif case == "donor_higher":
+        kwargs["breadth_donor"] = brd_recv + 0.05
+    elif case == "receiver_breadth_absent":
+        kwargs["breadth_recv"] = None
+    elif case == "receiver_below_threshold":
+        kwargs["breadth_recv"] = p2["into_breadth_min"] - 0.05
+    elif case == "history_absent":
+        kwargs["breadth_recv_series"] = None
+    elif case == "history_flat":
+        kwargs["breadth_recv_series"] = _series([brd_recv] * len(recv))
+    elif case == "no_price_strength":
+        receiver = _series([100.0] * len(recv))
+
+    result = RE.into_strength(receiver, donor, spy, **kwargs)
+
+    if case == "donor_absent":
+        assert result is not None
+        assert result["breadth_above_donor"] is None  # not compared, never "True"
+        assert result["donor_breadth_state"] == "UNMEASURED"
+        assert result["donor_breadth_above50"] is None
+    elif case == "donor_lower":
+        assert result is not None
+        assert result["breadth_above_donor"] is True
+        assert result["donor_breadth_state"] == "MEASURED"
+        assert result["donor_breadth_above50"] == 45.0
+    else:
+        assert result is None
+
+
+def test_t07_a21_evaluate_cross_changes_only_receipt(monkeypatch):
+    recv, donor, spy, brd_recv, brd_series, _ = _t07_breadth_firing_inputs()
+    monkeypatch.setattr(RE, "donor_state", lambda *a, **k: "contagion_bleed")
+
+    ev = RE.evaluate_cross(donor, recv, spy, breadth_recv=brd_recv,
+                           breadth_donor=None, breadth_recv_series=brd_series)
+    assert ev is not None and ev["event_type"] == "into_strength"
+    assert ev["receiver"]["breadth_above_donor"] is None
+    assert ev["receiver"]["donor_breadth_state"] == "UNMEASURED"
+
+    ev = RE.evaluate_cross(donor, recv, spy, breadth_recv=brd_recv,
+                           breadth_donor=0.45, breadth_recv_series=brd_series)
+    assert ev is not None
+    assert ev["receiver"]["breadth_above_donor"] is True
+    assert ev["receiver"]["donor_breadth_state"] == "MEASURED"
+
+    # equal and higher donor breadth never admit (unchanged gate)
+    for bd in (brd_recv, brd_recv + 0.05):
+        assert RE.evaluate_cross(donor, recv, spy, breadth_recv=brd_recv,
+                                 breadth_donor=bd,
+                                 breadth_recv_series=brd_series) is None
+
+
+def test_t07_a21_step_cross_pairs_actual_caller_passes_unknown_donor(monkeypatch):
+    universe, closes = _build_cross_universe()
+    bench = closes[universe["bench"]["key"]]
+    n = len(closes["xlu_etf"])
+    brd_series = _series([0.70 + i * 0.0005 for i in range(n)])
+    real = RE.evaluate_cross
+    seen = []
+
+    def spy(donor_close, receiver_close, bench_close, breadth_recv=None,
+            breadth_donor=None, breadth_recv_series=None, p=None):
+        seen.append(breadth_donor)
+        args = (donor_close, receiver_close, bench_close,
+                breadth_recv, breadth_donor, breadth_recv_series)
+        return real(*args, p) if p is not None else real(*args)
+
+    monkeypatch.setattr(RE, "evaluate_cross", spy)
+    state, events, created, closed = RE.step_cross_pairs(
+        universe, closes, bench, {},
+        breadth_by_sector={"xlu": float(brd_series.iloc[-1])},
+        breadth_series_by_sector={"xlu": brd_series},
+    )
+    assert seen == [None]  # the actual caller passes an unknown xlk donor breadth
+    for ev in events:
+        assert ev["receipts"]["receiver"]["breadth_above_donor"] is None
+    cand = (state.get("candidates") or {}).get("xlk_etf->xlu_etf")
+    assert cand is not None  # this donor/receiver shape does fire tonight
+    assert cand["last_receipts"]["receiver"]["breadth_above_donor"] is None
+
+
+def test_t07_a20_alias_canonicalised_not_double_counted():
+    a = receipt()  # pair_id xlp_vs_xlk, num XLP, den XLK
+    alias = copy.deepcopy(a)
+    alias["num"], alias["den"] = " xlp", "xlk "
+    alias["pair_id"] = "aaa_alias_xlp"
+    out = context(a, alias)
+    assert out["coverage"]["registered_pairs"] == 1
+    assert out["coverage"]["positive_2s"] == 1
+    assert len(out["pairs"]) == 1
+    assert out["pairs"][0]["pair_id"] == "aaa_alias_xlp"  # smaller pair_id kept
+    assert out["pairs"][0]["num"] == " xlp"               # original strings kept
+    assert out["state"] == "DEFENSIVE_RELATIVE_STRENGTH"
+
+    conflicting = copy.deepcopy(alias)
+    conflicting["pair_id"] = "zzz_alias_conflict"
+    conflicting["horizons"]["2s"]["ratio_return_pct"] += 0.5
+    out2 = context(a, conflicting)
+    assert "CONFLICTING_PAIR_OBSERVATIONS" in out2["reason_codes"]
+    assert out2["coverage"]["registered_pairs"] == 1
+    assert out2["coverage"]["positive_2s"] == 0
+    assert "CONFLICTING_PAIR_OBSERVATIONS" in out2["pairs"][0]["reason_codes"]
+
+
+@pytest.mark.parametrize("mismatch_expected", [False, True])
+def test_t07_a18_both_down_never_labelled_strength_or_recovery(mismatch_expected):
+    rec = receipt(num_daily=-.001, den_daily=-.003)  # both legs down, ratio positive
+    assert rec["horizons"]["2s"]["ratio_return_pct"] > 0
+    if mismatch_expected:
+        rec["horizons"]["2s"]["shape"] = "BOTH_UP"  # wrong upstream label
+    else:
+        del rec["horizons"]["2s"]["shape"]  # label missing entirely
+
+    out = context(rec)
+    row = out["pairs"][0]
+    assert row["interpretation"] == "RELATIVE_RESILIENCE"
+    assert row["interpretation"] != "EARLY_RELATIVE_STRENGTH"
+    assert row["absolute_2s"]["absolute_direction"] == "both_down"
+    assert "absolute_recovery" in row["absolute_2s"]["not_claimed"]
+    if mismatch_expected:
+        assert "SHAPE_SIGN_MISMATCH" in row["reason_codes"]
+    else:
+        assert "SHAPE_SIGN_MISMATCH" not in row["reason_codes"]
+
+
+def test_t07_absolute_legs_and_missingness():
+    unmeasured = receipt(num="XLU", den="XLK")
+    unmeasured["horizons"]["2s"]["denominator_return_pct"] = None
+    out = context(unmeasured, receipt())
+    by_pid = {p["pair_id"]: p for p in out["pairs"]}
+
+    donor_missing = by_pid["xlu_vs_xlk"]
+    assert donor_missing["eligible_2s"] is False
+    assert donor_missing["absolute_2s"]["donor_state"] == "UNMEASURED"
+    assert donor_missing["absolute_2s"]["receiver_state"] == "UP"
+    assert donor_missing["absolute_2s"]["absolute_direction"] is None
+    assert out["coverage"]["missingness"]["donor_unmeasured_pair_ids"] == ["xlu_vs_xlk"]
+    assert out["coverage"]["missingness"]["receiver_unmeasured_pair_ids"] == []
+
+    measured = by_pid["xlp_vs_xlk"]
+    assert measured["absolute_2s"]["receiver_state"] == "UP"
+    assert measured["absolute_2s"]["donor_state"] == "UP"
+    assert measured["absolute_2s"]["absolute_direction"] == "both_up"
+
+    # Parity: pre-existing fields on an unmodified real-path row keep their
+    # pre-change values (explicit literals, never recomputed from the function).
+    assert measured["interpretation"] == "EARLY_RELATIVE_STRENGTH"
+    assert measured["eligible_2s"] is True
+    assert measured["reason_codes"] == []
+    assert measured["num"] == "XLP" and measured["den"] == "XLK"
+    w = measured["horizons"]["2s"]
+    assert w["shape"] == "BOTH_UP"
+    assert w["sessions"] == 2
+    assert w["start"] == "2026-10-02" and w["end"] == ASOF
+    assert w["numerator_return_pct"] == pytest.approx(((1.003) ** 2 - 1) * 100)
+    assert w["denominator_return_pct"] == pytest.approx(((1.001) ** 2 - 1) * 100)
+    assert w["ratio_return_pct"] == pytest.approx(((1.003 / 1.001) ** 2 - 1) * 100)
+    assert out["state"] == "DEFENSIVE_RELATIVE_STRENGTH"
+    assert out["coverage"]["registered_pairs"] == 2
+    assert out["coverage"]["positive_2s"] == 1
+
+
+def test_t07_a24_valid_empty_never_revives_prior_positive(tmp_path, monkeypatch):
+    assert context(receipt())["state"] == "DEFENSIVE_RELATIVE_STRENGTH"
+    empty = context()
+    assert empty["state"] is None
+    assert "NO_REGISTERED_PAIR_COVERAGE" in empty["reason_codes"]
+    assert empty["pairs"] == []
+
+    envelope = batch(receipt())
+    snapshot = copy.deepcopy(envelope)
+    RE.early_rotation_context(envelope, as_of=ASOF)
+    assert envelope == snapshot  # the input batch is never mutated
+
+    from tests.test_rotation_events_v2 import _make_minimal_sectors
+    sectors = _make_minimal_sectors()
+    for spec in sectors.values():
+        for s in [spec["etf_close"], *spec["legs"].values()]:
+            s.index = levels(end="2026-10-05", n=len(s)).index
+    universe = {"bench": {"key": "spy"}, "series": [], "pairs": [],
+                "velocity_series": [], "contagion_pairs": []}
+    closes = {"spy": levels(n=400)}
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    monkeypatch.setattr(RL, "registered_short_horizon_context",
+                        lambda root, *, as_of: batch(receipt()))
+    first = RE.run_nightly(sectors, tmp_path / "twice",
+                           generated_utc="2026-10-07 01:00 UTC",
+                           universe=universe, closes=closes)
+    assert first["early_context"]["state"] == "DEFENSIVE_RELATIVE_STRENGTH"
+    monkeypatch.setattr(RL, "registered_short_horizon_context",
+                        lambda root, *, as_of: batch())
+    second = RE.run_nightly(sectors, tmp_path / "twice",
+                            generated_utc="2026-10-07 02:00 UTC",
+                            universe=universe, closes=closes)
+    assert second["early_context"]["state"] is None
+    assert second["early_context"]["pairs"] == []
+
+
+# ---------------------------------------------------------------- T07 r2 ----
+# Group-level absolute-direction census of the counted positive 2-session
+# pairs: a group reader must be able to see that a "broadening" verdict was
+# carried entirely by pairs that fell less than the donor, without walking the
+# rows. Mirrors the published incidence measured on origin/main
+# (2026-10-09): four of nine positives both_down, all three broadening_proxy
+# pairs among them. Descriptive context only — never a state input.
+
+
+def test_t07r2_group_absolute_counts_mirror_published_incidence():
+    out = context(
+        receipt(num="XLU", den="XLK", num_daily=-.0011, den_daily=-.0105),  # both down, ratio up
+        receipt(num="XLP", den="XLK", num_daily=.0098, den_daily=-.0105),   # receiver up, donor down
+        receipt("broadening_proxy", -.0028, -.008, "DIA", "QQQ"),
+        receipt("broadening_proxy", -.0067, -.008, "IWM", "QQQ"),
+        receipt("broadening_proxy", -.0011, -.008, "RSP", "QQQ"),
+    )
+    assert out["state"] == "MIXED_ROTATION"  # parity — unchanged
+    groups = out["coverage"]["groups"]
+    assert groups["broadening_proxy"]["positive_2s_by_absolute"] == {
+        "both_up": 0, "both_down": 3, "mixed": 0}
+    assert groups["defensive_sector"]["positive_2s_by_absolute"] == {
+        "both_up": 0, "both_down": 1, "mixed": 1}
+    assert groups["retailer_context"]["positive_2s_by_absolute"] == {
+        "both_up": 0, "both_down": 0, "mixed": 0}
+    assert out["coverage"]["positive_2s_by_absolute"] == {
+        "both_up": 0, "both_down": 4, "mixed": 1}
+    for g, counts in groups.items():
+        assert sum(counts["positive_2s_by_absolute"].values()) == counts["positive_2s"]
+    assert sum(out["coverage"]["positive_2s_by_absolute"].values()) == out["coverage"]["positive_2s"] == 5
+
+
+def test_t07r2_valid_empty_reports_zero_maps():
+    out = context()
+    assert out["state"] is None  # unchanged
+    zero = {"both_up": 0, "both_down": 0, "mixed": 0}
+    for g, counts in out["coverage"]["groups"].items():
+        assert counts["positive_2s_by_absolute"] == zero
+        assert sum(counts["positive_2s_by_absolute"].values()) == counts["positive_2s"] == 0
+    assert out["coverage"]["positive_2s_by_absolute"] == zero
+    assert sum(out["coverage"]["positive_2s_by_absolute"].values()) == out["coverage"]["positive_2s"]
+
+
+def test_t07r2_nonpositive_rows_not_counted():
+    out = context(receipt(num_daily=.001, den_daily=.003))  # eligible, ratio < 0
+    assert out["pairs"][0]["eligible_2s"] is True
+    assert out["coverage"]["positive_2s"] == 0
+    zero = {"both_up": 0, "both_down": 0, "mixed": 0}
+    for g, counts in out["coverage"]["groups"].items():
+        assert counts["positive_2s_by_absolute"] == zero
+        assert sum(counts["positive_2s_by_absolute"].values()) == counts["positive_2s"]
+    assert out["coverage"]["positive_2s_by_absolute"] == zero
+
+
+def test_preregistered_etf_rotation_legs_are_in_active_yahoo_collection():
+    """The existing Yahoo config must request BOTH sides of every named ETF pair.
+
+    Registered Ratio Lens EOD dates are source observations, not authorisation
+    to infer an uncollected Dow ETF from ^DJI. Avoid importing the network-
+    enabled Yahoo provider into the thin, CI-registered ratio-lens test pack:
+    this is a pure registry/config-roster contract.
+    """
+    from lib import config
+
+    # Reuse the already-owned Ratio Lens registry and its typed context groups;
+    # neither a copied ticker list nor a second candidate universe is allowed.
+    registry = RL._load_registry(Path(__file__).resolve().parents[1] / "data")
+    pairs = [row for row in registry["pairs"]
+             if row.get("kind") == "etf" and row.get("context_group")
+             in ("defensive_sector", "broadening_proxy")]
+    assert any(row.get("id") == "dia_vs_qqq" and row.get("num") == "DIA"
+               and row.get("den") == "QQQ" for row in pairs)
+    required = {str(t) for row in pairs for t in (row["num"], row["den"])}
+    roster = [str(t) for members in config.load()["yahoo"]["tickers"].values()
+              for t in members]
+    missing = sorted(required - set(roster))
+    assert missing == [], (
+        "source-clocked, preregistered ETF pairs cannot be evaluated if "
+        f"the incumbent nightly Yahoo configuration omits their legs: {missing}"
+    )
+    assert roster.count("DIA") == 1  # do not silently substitute ^DJI
+
+
+def test_early_context_frontend_executable_contract():
+    """Keep the real pair renderer in this already-registered CI test pack."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node is not None, "Node is required for the rotation UI contract tests"
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [node, str(root / "tests" / "rotation_early_context_ui.test.cjs")],
+        cwd=root, capture_output=True, text=True, timeout=30, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

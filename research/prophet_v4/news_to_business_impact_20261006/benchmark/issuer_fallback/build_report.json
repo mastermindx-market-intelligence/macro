@@ -1,0 +1,9 @@
+{
+ "ledger_ambiguous_tickers": 0,
+ "ledger_sha256": "b046d8515b2a5ea9e26680011a3afd8d46c15689e2ea82ffb32b7be6a956494c",
+ "ledger_tickers": 10459,
+ "sec_blank_tickers": 0,
+ "sec_rows": 10459,
+ "sec_snapshot_sha256": "844dfd1bb79fb8ddfb277d7d59250cb9d909d49dc06ad5d56fc29d0438ef68f0",
+ "tool": "build_fallback_ledger.py"
+}

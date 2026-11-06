@@ -1,0 +1,259 @@
+{
+  "started_at": "2026-10-20T18:53:25.064790+00:00",
+  "state": "ACCEPTED_A_RECOVERED_AFTER_FAILED_PROOF",
+  "accepted_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "prior_proof_pass": false,
+  "reconciliation": "beta-same-a-failed-reconciliation.json",
+  "before_health": {
+    "started_at": "2026-10-20T18:53:22.230202+00:00",
+    "source": "macro-b312-prearm-health-remote-v3.py",
+    "source_sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+    "command": [
+      "ssh",
+      "-i",
+      "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+      "-o",
+      "BatchMode=yes",
+      "-o",
+      "IdentitiesOnly=yes",
+      "-o",
+      "IdentityAgent=none",
+      "-o",
+      "StrictHostKeyChecking=yes",
+      "-o",
+      "ConnectTimeout=8",
+      "root@146.190.142.17",
+      "python3 -I -B -"
+    ],
+    "scope": "Read-only action-boundary observation; no reservation or service effect",
+    "exit": 0,
+    "finished_at": "2026-10-20T18:53:23.531976+00:00",
+    "stdout": {
+      "bytes": 22899,
+      "sha256": "a7df4bf8f710397c8ee2f36be3e72d8157a8dd27d95b6cebde4ef2ccae2fdb90"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "before_unit": {
+    "started_at": "2026-10-20T18:53:23.535466+00:00",
+    "source": "beta-loaded-unit-root-observer-v2.py",
+    "source_sha256": "09568929c4e580b9a40e71d1ef936c69beed0ac0feafb1b01bbaf4f953c8221c",
+    "command": [
+      "ssh",
+      "-i",
+      "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+      "-o",
+      "BatchMode=yes",
+      "-o",
+      "IdentitiesOnly=yes",
+      "-o",
+      "IdentityAgent=none",
+      "-o",
+      "StrictHostKeyChecking=yes",
+      "-o",
+      "ConnectTimeout=8",
+      "root@146.190.142.17",
+      "python3 -I -B -"
+    ],
+    "scope": "Read-only action-boundary observation; no reservation or service effect",
+    "exit": 0,
+    "finished_at": "2026-10-20T18:53:24.367968+00:00",
+    "stdout": {
+      "bytes": 5891,
+      "sha256": "76945d743d60b9e4f256ad4be2be5cc61d3e4540af0b43c4d172fd88b10916e2"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "before_diagnostic": {
+    "observed_at": "2026-10-20T18:53:25.100721+00:00",
+    "command_exit": 0,
+    "stdout": "MainPID=0\nControlPID=0\nStatusErrno=0\nResult=exit-code\nNRestarts=0\nExecMainStartTimestampMonotonic=7560285026653\nExecMainExitTimestampMonotonic=7622513495147\nExecMainCode=1\nExecMainStatus=143\nControlGroup=\nActiveState=failed\nSubState=failed\nJob=\n",
+    "stderr": "",
+    "connection": {
+      "connected": false,
+      "errno": 111,
+      "type": "ConnectionRefusedError",
+      "connection_refused": true
+    }
+  },
+  "operations": [
+    {
+      "action": "start",
+      "intent_at": "2026-10-20T18:53:25.064836+00:00",
+      "command": [
+        "ssh",
+        "-i",
+        "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "IdentityAgent=none",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "ConnectTimeout=8",
+        "root@146.190.142.17",
+        "systemctl start terminal-beta.service"
+      ],
+      "exit": 0,
+      "finished_at": "2026-10-20T18:53:25.930103+00:00",
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "observations": [
+    {
+      "started_at": "2026-10-20T18:53:25.932399+00:00",
+      "source": "macro-b312-prearm-health-remote-v3.py",
+      "source_sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+      "command": [
+        "ssh",
+        "-i",
+        "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "IdentityAgent=none",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "ConnectTimeout=8",
+        "root@146.190.142.17",
+        "python3 -I -B -"
+      ],
+      "scope": "Read-only action-boundary observation; no reservation or service effect",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:53:27.188658+00:00",
+      "stdout": {
+        "bytes": 22913,
+        "sha256": "de07761d4c3da818f87feb0ef07be015375f1f4227d4558990f95ed936fbc511"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "started_at": "2026-10-20T18:53:28.193549+00:00",
+      "source": "macro-b312-prearm-health-remote-v3.py",
+      "source_sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+      "command": [
+        "ssh",
+        "-i",
+        "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "IdentityAgent=none",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "ConnectTimeout=8",
+        "root@146.190.142.17",
+        "python3 -I -B -"
+      ],
+      "scope": "Read-only action-boundary observation; no reservation or service effect",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:53:31.047217+00:00",
+      "stdout": {
+        "bytes": 23464,
+        "sha256": "3d841baff3071fc10f40039f59613539f08ded5fd34842878920ecfc886fb6c3"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "pass": true,
+  "reservation": false,
+  "public_acceptance": false,
+  "full_hostname_withdrawal": false,
+  "A_to_B_to_A": false,
+  "unit_after": {
+    "started_at": "2026-10-20T18:53:31.049839+00:00",
+    "source": "beta-loaded-unit-root-observer-v2.py",
+    "source_sha256": "09568929c4e580b9a40e71d1ef936c69beed0ac0feafb1b01bbaf4f953c8221c",
+    "command": [
+      "ssh",
+      "-i",
+      "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+      "-o",
+      "BatchMode=yes",
+      "-o",
+      "IdentitiesOnly=yes",
+      "-o",
+      "IdentityAgent=none",
+      "-o",
+      "StrictHostKeyChecking=yes",
+      "-o",
+      "ConnectTimeout=8",
+      "root@146.190.142.17",
+      "python3 -I -B -"
+    ],
+    "scope": "Read-only action-boundary observation; no reservation or service effect",
+    "exit": 0,
+    "finished_at": "2026-10-20T18:53:31.876674+00:00",
+    "stdout": {
+      "bytes": 5905,
+      "sha256": "4b4bb05a28c86a78b365fa165aaefdb86bbd1a4ba45f1acd3df0b6809cbc4a05"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "pass_recovery": true,
+  "service": {
+    "MainPID": "3306695",
+    "ExecMainStartTimestampMonotonic": "7622818757695",
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled"
+  },
+  "status": {
+    "status": 200,
+    "headers": {
+      "cache-control": "private, no-store, max-age=0",
+      "content-type": "application/json"
+    },
+    "bytes": 246,
+    "raw_sha256": "1ba3581e1c5cbe82393b587b8a9ce70569872911a2ab0e9a91f8799d1b8170d1",
+    "truncated": false,
+    "proxy_disabled": true,
+    "redirects_disabled": true,
+    "body": {
+      "enabled": true,
+      "protocol": "mmx.shared-shell.v1",
+      "buildId": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+      "bridgeVersion": "20261018.1",
+      "documentVersion": "20261018.1",
+      "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+    }
+  },
+  "same_identity": true,
+  "same_unit": true,
+  "production_unchanged": true,
+  "withdrawal_connection_refused": {
+    "connected": false,
+    "errno": 111,
+    "type": "ConnectionRefusedError",
+    "connection_refused": true
+  },
+  "original_proof_pass": false,
+  "finished_at": "2026-10-20T18:53:31.878483+00:00",
+  "executed_source_sha256": "fde71c37e61c50501246ac2cbbf82b14b8ed37a1f7dd74861e9c76d2c68ce7e9",
+  "boundary_source_unchanged": true
+}

@@ -1,0 +1,93 @@
+{
+  "schema": "macro_shock_fanout.v1",
+  "authority": "context_only",
+  "prophet_flags": {
+    "may_rank": false,
+    "may_size": false,
+    "may_gate": false,
+    "prophet_authority": false
+  },
+  "shock_id": "shock_8c92aec324c8f70fa3ba98ba",
+  "source_fact_id": "fact_678e8bf5a1906cc701210c40",
+  "shock_span": {
+    "claimed_quote": "A regional power curtailment hit several Taiwan foundry campuses on the same morning.",
+    "span": {
+      "schema": "source_span.v1",
+      "authority": "context_only",
+      "span_id": "span_b1c5944e5e06f7300a8d",
+      "document_id": "doc_power_curtail_20260928",
+      "document_version": 1,
+      "locator": {
+        "kind": "text_span",
+        "sub_kind": "transcript_segment",
+        "segment_index": 0,
+        "span_start_byte": 0,
+        "span_end_byte": 85
+      },
+      "text_sha256": "2cf2958582c6ed6baa3f3fe437c8d32e6fd11a56108656914b895ee8532d2ab8",
+      "display_excerpt": "A regional power curtailment hit several Taiwan foundry campuses on the same morning.",
+      "rights_profile": "rp_unknown_v1",
+      "receipt_state": "byte_replayed",
+      "receipt": {
+        "source_sha256": "3f56cb140cc12433c5b9890ead69de78f656f2bb841236d551631bc446cc4215",
+        "segment_index": 0,
+        "segment_sha256": "2cf2958582c6ed6baa3f3fe437c8d32e6fd11a56108656914b895ee8532d2ab8",
+        "segment_bytes": 85,
+        "span_start_byte": 0,
+        "span_end_byte": 85,
+        "text_sha256": "2cf2958582c6ed6baa3f3fe437c8d32e6fd11a56108656914b895ee8532d2ab8"
+      },
+      "unreplayable_reason": null
+    }
+  },
+  "analysed_once": true,
+  "exposure_roster": [
+    {
+      "company_id": "cik:0001046179",
+      "exposure": {
+        "form": "unknown",
+        "absence": {
+          "schema": "field_absence.v1",
+          "authority": "context_only",
+          "reason": "not_stated",
+          "subject": "exposure",
+          "detail": "",
+          "missing_fields": []
+        }
+      },
+      "transfer_ref": {
+        "schema": "field_absence.v1",
+        "authority": "context_only",
+        "reason": "not_stated",
+        "subject": "transfer_ref",
+        "detail": "no two-party span from this shock text to TSMC",
+        "missing_fields": []
+      }
+    },
+    {
+      "company_id": "cik:0000937966",
+      "exposure": {
+        "form": "unknown",
+        "absence": {
+          "schema": "field_absence.v1",
+          "authority": "context_only",
+          "reason": "not_stated",
+          "subject": "exposure",
+          "detail": "",
+          "missing_fields": []
+        }
+      },
+      "transfer_ref": {
+        "schema": "field_absence.v1",
+        "authority": "context_only",
+        "reason": "not_stated",
+        "subject": "transfer_ref",
+        "detail": "no two-party span from this shock text to ASML",
+        "missing_fields": []
+      }
+    }
+  ],
+  "observed_at": "2026-09-28T13:35:00Z",
+  "source_available_at": "2026-09-28T13:32:14Z",
+  "display_summary": "The power-curtailment item is analysed once. Issuer rows are filled only from documented exposure; this roster records two foundry names without emitting edges because the shock text does not name them."
+}

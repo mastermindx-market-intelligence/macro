@@ -1,3 +1,7 @@
+> **Historical research archive — 2026-11-06.** This is the October 8–9 research and preparation record, not a current launch plan or an updated contact census.
+> Its publisher activity, contact policies, audience claims, event dates, conditional October 9–22 calendar, source-owner statuses and draft handoffs are historical observations; they have not been revalidated by this archival integration.
+> Repository preservation authorizes no contact, distribution, branding, agreement, spend, source access, product activation or marketing measurement. All publisher-permission, rights, consent/sender, browser, Sessions 00–04 and operator release gates below remain separate requirements for any future authorized work.
+
 # Catalyst Loop — Distributor Prospect Refresh and Session 04 Partner Briefs
 
 **Operation:** MMX-ACQ-CATALYST-DIST-20261008 (Session 05)  
@@ -58,7 +62,9 @@ Dates in the "activity" column are publisher-visible dates observed or archives 
 
 **Additional removed historical leads for insufficient Oct 9 business contact or current activity proof:** Stock Market Nerd (Oct 8 editorial active, but its old FAQ contact fails/redirects and the current Beehiiv landing page has no confirmed professional inquiry endpoint); Blossom Social (active investor community, partnership contact and acceptable commercial-messaging policy not evidenced); Investing Unscripted (audio feed exists, official independently working business-inquiry path not observed); Fabricated Knowledge (latest publicly verifiable issue activity in this audit remained August). All four stay research leads, **not forecastable bookable distribution**. Existing Session 04 profiles and top-five ranks are unchanged.
 
-**Reserve, not included as independent main-book relationships:** [Chit Chat Stocks](https://podcasts.apple.com/sg/podcast/chit-chat-stocks/id1437766060) overlaps Emerging Moats/Brett Schafer; do not double count an audience. [Trading Justice](https://tradingjustice.com/contact-us/) has a guest form but current Oct 2026 podcast publishing couldn't be verified; [Excess Returns](https://www.excessreturns.co/) had a current-ish show archive but professional inquiry endpoint was not independently validated; [Stock Events](https://stockevents.app/en/partner-program), [Koyfin](https://www.koyfin.com/affiliate-program/), and [OptionStrat](https://optionstrat.com/affiliates) recruit others to promote **them**; their affiliate applications do not provide distribution **to their own users**.
+**Reserve, not included as independent main-book relationships:** [Chit Chat Stocks](https://podcasts.apple.com/sg/podcast/chit-chat-stocks/id1437766060) overlaps Emerging Moats/Brett Schafer; do not double count an audience. [Trading Justice](https://tradingjustice.com/contact-us/) has a guest form but current Oct 2026 podcast publishing couldn't be verified; [Stock Events](https://stockevents.app/en/partner-program), [Koyfin](https://www.koyfin.com/affiliate-program/), and [OptionStrat](https://optionstrat.com/affiliates) recruit others to promote **them**; their affiliate applications do not provide distribution **to their own users**.
+
+**Superseded reserve observation — Excess Returns:** An earlier check had not independently validated its professional inquiry endpoint. Within this dated record, main-book row 15 and the October 9 re-audit below supersede that reserve observation with the recorded organization-contact finding. Excess Returns is included once in the 25-row historical main book, not as an additional reserve relationship. This chronology correction does not revalidate a current contact route, grant promotional permission or authorize outreach.
 
 ### Refresh versus July: material changes and exclusions
 
