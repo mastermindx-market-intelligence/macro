@@ -4307,34 +4307,70 @@ class SweepBudget:
         ):
             return False
         if self.refreshes_used >= self.max_refreshes:
-            return self._take_repair_reserve(repair_candidate)
+            return self._take_repair_reserve(repair_candidate, pull)
         if self.requires_refresh_lease:
-            if (
-                pull is None
-                or self.refresh_lease is None
-                or not self.refresh_lease.claim(pull)
-            ):
-                return self._take_repair_reserve(repair_candidate)
+            lease = self.refresh_lease
+            if pull is None or lease is None:
+                return False
+            if lease.owner_number is not None and not lease.owns(pull):
+                # A known, still-current foreign owner cannot be claimed. The
+                # reserved repair may coexist only after authenticating that
+                # pre-existing generation without issuing a lease write.
+                return self._take_repair_reserve(repair_candidate, pull)
+            if not lease.claim(pull):
+                # claim() sets claim_attempted before any generation/label write.
+                # A false result may be EFFECT_UNKNOWN: never turn it into an
+                # independent reserved update-branch without reconciliation.
+                return False
         self.refreshes_used += 1
         self.refresh_attempts_used += 1
         return True
 
-    def _take_repair_reserve(self, repair_candidate: bool) -> bool:
-        if not self.repair_reserve_available(repair_candidate):
+    def _take_repair_reserve(
+        self, repair_candidate: bool, pull: dict[str, Any] | None = None
+    ) -> bool:
+        if not self.repair_reserve_available(repair_candidate, pull):
             return False
         self.repair_reserve_used += 1
         self.refresh_attempts_used += 1
         self.last_take_used_reserve = True
         return True
 
-    def repair_reserve_available(self, repair_candidate: bool) -> bool:
-        """True when the pull is the labelled repair, the sweep established a red
-        baseline, and this sweep's reserved repair refresh is still unused."""
-        return (
-            bool(repair_candidate)
+    def repair_reserve_available(
+        self, repair_candidate: bool, pull: dict[str, Any] | None = None
+    ) -> bool:
+        """The red-baseline repair gets one reserve only without an uncertain
+        lease effect. A foreign owner must have a complete, current generation;
+        a failed claim, same-owner reuse or unreadable record never qualifies."""
+        if not (
+            repair_candidate
             and self.repair_reserve_authorized
             and self.repair_reserve_used < self.repair_reserve
-        )
+        ):
+            return False
+        lease = self.refresh_lease
+        if lease is None:
+            return True
+        if not lease.readable or lease.claim_attempted:
+            return False
+        if lease.owner_number is None:
+            # A clean, unclaimed lease has no generation to compete with the
+            # capped repair. Partial/ambiguous ownership fails closed.
+            return not (
+                lease.generation_head_sha or lease.generation_id or lease.owner_acquired_at
+            )
+        if (
+            pull is None
+            or lease.owns(pull)
+            or lease.generation_record is None
+            or lease.owner_exceeded_max_age()
+        ):
+            return False
+        try:
+            return lease.record_is_current()
+        except Exception:
+            # A failing read is not evidence that the foreign owner disappeared.
+            return False
 
     def refund_refresh(self) -> None:
         """Return workload capacity after a definitive no-op; keep attempt charged."""
