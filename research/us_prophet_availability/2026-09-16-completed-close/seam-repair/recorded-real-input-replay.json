@@ -1,0 +1,40 @@
+{
+  "proof_class": "real_native_fetch_on_preserved_provider_output_matrices",
+  "not_new_provider_collection": true,
+  "seed_commit": "55c82c1249f3927f81d7df40b1fbd96eea7ba4c5",
+  "prior_provider_source_head": "2ecf3db94d131cf8c59fe685ce7d1aca2e3509c2",
+  "candidate_source_hash": "371a1cc464ef17c58d9d41db315de0d26828dcbb32861adc44daad24f4046e84",
+  "expected_session": "2026-09-15",
+  "groups": [
+    {
+      "group": "breadth",
+      "status": "ok",
+      "computed_through": "2026-09-15",
+      "completed_price_count": 500,
+      "expected_previous_count": 500,
+      "recorded_response_batches": 8,
+      "seconds": 1.78
+    },
+    {
+      "group": "smallcap_breadth",
+      "status": "ok",
+      "computed_through": "2026-09-15",
+      "completed_price_count": 599,
+      "expected_previous_count": 599,
+      "recorded_response_batches": 9,
+      "seconds": 2.3
+    },
+    {
+      "group": "midcap_breadth",
+      "status": "ok",
+      "computed_through": "2026-09-15",
+      "completed_price_count": 400,
+      "expected_previous_count": 400,
+      "recorded_response_batches": 6,
+      "seconds": 1.44
+    }
+  ],
+  "unchanged_original_files": 18,
+  "provider_calls": 0,
+  "production": false
+}

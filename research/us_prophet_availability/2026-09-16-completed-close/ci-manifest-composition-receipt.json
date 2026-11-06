@@ -1,0 +1,31 @@
+{
+  "schema": "prophet.us_completed_close_ci_composition.v1",
+  "observed_at": "2026-09-16T10:16:12Z",
+  "carrier": {
+    "pr": 7200,
+    "head_before": "63395876a002c5ca6c45d86abd59e37f72ee5f89"
+  },
+  "peer": {
+    "pr": 7206,
+    "head": "6159410678619d148531ba3e2ecbb1ad7a537d04"
+  },
+  "red": {
+    "command": "git merge-tree --write-tree refs/remotes/origin/pr-7200 refs/remotes/origin/pr-7206",
+    "returncode": 1,
+    "conflict_paths": [".github/ci/legacy-jobs.yml"],
+    "cause": "Both independent jobs were appended at end of file."
+  },
+  "repair": "Move the unchanged us-breadth-completed-close job beside the existing breadth collector owner and preserve exactly one newline at EOF.",
+  "green": {
+    "three_way_merge_file_returncode": 0,
+    "composed_jobs_present": ["us-breadth-completed-close", "us-deep-stock-completed-close"],
+    "composed_job_count": 216,
+    "manifest_validate": "Validated 142 legacy jobs; 142 in scope; pack weights computed successfully."
+  },
+  "effects": {
+    "peer_branch_modified": false,
+    "runner_or_workflow_dispatch": false,
+    "production_effect": false
+  },
+  "acceptance_boundary": "Exact committed-head merge-tree, CI/security and independent review remain required before release."
+}

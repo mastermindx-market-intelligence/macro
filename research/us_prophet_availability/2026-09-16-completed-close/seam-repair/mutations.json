@@ -1,0 +1,26 @@
+{
+  "proof_class": "native_source_forbidden_mutation_controls",
+  "preimage_head": "f6d1b8632aa353c213b1f39cda63a38d30949e79",
+  "collector_source_sha256": "371a1cc464ef17c58d9d41db315de0d26828dcbb32861adc44daad24f4046e84",
+  "mutations": [
+    {
+      "mutation": "seam_drops_captured_session",
+      "returncode": 1,
+      "summary": "3 failed, 69 deselected, 6 warnings in 2.43s"
+    },
+    {
+      "mutation": "seam_ignores_missing_companion",
+      "returncode": 1,
+      "summary": "12 failed, 3 passed, 57 deselected, 27 warnings in 1.93s"
+    },
+    {
+      "mutation": "final_selection_not_resealed",
+      "returncode": 1,
+      "summary": "1 failed, 71 deselected, 2 warnings in 1.06s"
+    }
+  ],
+  "restored_returncode": 0,
+  "restored_summary": "105 passed, 67 warnings in 4.97s",
+  "provider_calls": 0,
+  "production": false
+}

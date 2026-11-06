@@ -1,0 +1,27 @@
+{
+  "schema": "prophet.us_breadth_same_session_cache_quarantine.v1",
+  "observed_at": "2026-09-16T10:07:45Z",
+  "preimage_head": "e3c87afae3e42e79f615d3219092c8869305d4e6",
+  "expected_session": "2026-09-15",
+  "production": false,
+  "provider_calls": 0,
+  "production_writes": 0,
+  "planted_shape": {
+    "fresh_valid_closes": 4,
+    "fresh_missing_closes": 1,
+    "coverage_floor": 0.8,
+    "cached_same_session_value": 102.0
+  },
+  "red": {
+    "test": "test_cached_current_session_value_cannot_fill_a_missing_fresh_close",
+    "returncode": 1,
+    "failure": "cached EEE=102.0 survived fresh.combine_first(cached)"
+  },
+  "repair": "Mask requested names on the expected-session cache row before historical merge; fresh response bytes exclusively own that row.",
+  "green": {
+    "focused": "1 passed, 2 warnings in 3.12s",
+    "owning_suites": "75 passed, 31 warnings in 19.12s"
+  },
+  "preserved": ["prior history", "80 percent floor", "retry budget", "regional calendars", "Russell behavior", "rank rules"],
+  "acceptance_boundary": "Source correctness only; exact-head CI, independent review, merge and real source-to-browser production proof remain open."
+}

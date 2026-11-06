@@ -1,0 +1,35 @@
+{
+  "schema": "prophet.us_breadth_same_response_ohlcv_coherence.v1",
+  "observed_at": "2026-09-16T10:45:17Z",
+  "preimage_head": "1a64c60bd64c41568cb51bb69fe5093630094fe2",
+  "expected_session": "2026-09-15",
+  "production": false,
+  "provider_calls": 0,
+  "production_writes": 0,
+  "planted_shape": {
+    "fresh_valid_closes": 4,
+    "fresh_missing_closes": ["EEE"],
+    "fresh_populated_extras_for_missing_close": ["High", "Low", "Volume"],
+    "coverage_floor": 0.8
+  },
+  "red": {
+    "test": "test_missing_completed_close_masks_same_response_high_low_and_volume",
+    "returncode": 1,
+    "failure": "EEE had no completed close but persisted current-session High=104.0 (and companion Low/Volume)."
+  },
+  "repair": "Before a provider attempt becomes accepted, mask expected-session High, Low and Volume for every requested name whose completed close is absent or invalid.",
+  "green": {
+    "focused": "1 passed, 1 warning in 12.58s",
+    "owning_suites": "79 passed, 35 warnings in 34.48s"
+  },
+  "preserved": [
+    "valid partial 80 percent close coverage",
+    "fresh historical OHLCV rows",
+    "other names on the completed session",
+    "regional calendar behavior",
+    "Russell behavior",
+    "retry budget",
+    "ranking rules"
+  ],
+  "acceptance_boundary": "Source correctness only; exact-head CI, independent review, current-base composition, merge, and real source-to-browser production proof remain open."
+}

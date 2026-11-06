@@ -1,0 +1,87 @@
+{
+  "proof_class": "requested_session_field_coherence_on_native_recorded_input_replay",
+  "observed_session": "2026-09-15",
+  "candidate_source_sha256": "371a1cc464ef17c58d9d41db315de0d26828dcbb32861adc44daad24f4046e84",
+  "groups": [
+    {
+      "group": "breadth",
+      "requested": 503,
+      "fields": {
+        "closes": {
+          "valid_values": 500,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        },
+        "high": {
+          "valid_values": 500,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        },
+        "low": {
+          "valid_values": 500,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        },
+        "volume": {
+          "valid_values": 500,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        }
+      }
+    },
+    {
+      "group": "smallcap_breadth",
+      "requested": 602,
+      "fields": {
+        "closes": {
+          "valid_values": 599,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        },
+        "high": {
+          "valid_values": 599,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        },
+        "low": {
+          "valid_values": 599,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        },
+        "volume": {
+          "valid_values": 599,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        }
+      }
+    },
+    {
+      "group": "midcap_breadth",
+      "requested": 400,
+      "fields": {
+        "closes": {
+          "valid_values": 400,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        },
+        "high": {
+          "valid_values": 400,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        },
+        "low": {
+          "valid_values": 400,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        },
+        "volume": {
+          "valid_values": 400,
+          "matches_selected_recorded_response": true,
+          "no_unsupported_cached_fill": true
+        }
+      }
+    }
+  ],
+  "provider_calls": 0,
+  "production": false
+}

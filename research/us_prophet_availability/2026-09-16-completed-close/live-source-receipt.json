@@ -1,0 +1,111 @@
+{
+  "proof_class": "isolated_real_provider_to_real_alpha",
+  "production": false,
+  "source_head": "2ecf3db94d131cf8c59fe685ce7d1aca2e3509c2",
+  "seed_commit": "55c82c1249f3927f81d7df40b1fbd96eea7ba4c5",
+  "collector_source_sha256": "c014891b981266590f12b5f6c27aea8c6f9fa9046250ac9910e64b86bea1f172",
+  "expected_session": "2026-09-15",
+  "groups": [
+    {
+      "group": "breadth",
+      "requested_members": 503,
+      "before_completed_price_count": 0,
+      "completed_price_count": 500,
+      "computed_through": "2026-09-15",
+      "elapsed_seconds": 32.41,
+      "seed_inputs": [
+        {
+          "path": "data/breadth/_closes_cache.parquet",
+          "sha256": "b4d8dda4f53e7b8d369ced8fbf0f02fb09a0cf443fe81bcde6297cc0069af65f"
+        },
+        {
+          "path": "data/breadth/_high_cache.parquet",
+          "sha256": "6b322e2b2f6a8f2cd9564bee4dcdfb413778e991e7c0501b63da9564154222ce"
+        },
+        {
+          "path": "data/breadth/_low_cache.parquet",
+          "sha256": "bd94f48bd1585b1a4d65f3f01459d8b07a068e176ef9e90b702670c2611d032d"
+        },
+        {
+          "path": "data/breadth/_volume_cache.parquet",
+          "sha256": "8132eedc6b3fd8e64ff8076c947f65cd246181f8db378ba6cdb415e489adb69f"
+        },
+        {
+          "path": "data/breadth/constituents.parquet",
+          "sha256": "58bbb0268564fe8069fc940f5dc481b9598062366e496d82441c99658e45265e"
+        }
+      ],
+      "output_sha256": "eb4438b7259554855b99d471b4d5182bd06b09facc60f792b08169d2b9c8267b"
+    },
+    {
+      "group": "smallcap_breadth",
+      "requested_members": 602,
+      "before_completed_price_count": 0,
+      "completed_price_count": 599,
+      "computed_through": "2026-09-15",
+      "elapsed_seconds": 30.07,
+      "seed_inputs": [
+        {
+          "path": "data/smallcap_breadth/_closes_cache.parquet",
+          "sha256": "1108246c57e884fa57869221bb544c35f7177984c6a87acbbf89ea707d9ebbb2"
+        },
+        {
+          "path": "data/smallcap_breadth/_high_cache.parquet",
+          "sha256": "7972a327278f7f84b07e6b4ba04f26a52382e86b978e566442276de86c89c012"
+        },
+        {
+          "path": "data/smallcap_breadth/_low_cache.parquet",
+          "sha256": "af7694b97203732e18d2c498972b97b921597425f71780fe7b88b566364e44f1"
+        },
+        {
+          "path": "data/smallcap_breadth/_volume_cache.parquet",
+          "sha256": "f6db3dd13de139a02edfa748986a4bbc7ca0160f127992f1d5bac716d9c3f4fd"
+        },
+        {
+          "path": "data/smallcap_breadth/constituents.parquet",
+          "sha256": "4c74f2773cf1b7089e6709023209e8f9be5d2a791a161c44d355278b5d6abc26"
+        }
+      ],
+      "output_sha256": "502002a9e73a0b16b6776d7ce43809d8b6bf888b19a8a2fa7d18910144a55dc3"
+    },
+    {
+      "group": "midcap_breadth",
+      "requested_members": 400,
+      "before_completed_price_count": 0,
+      "completed_price_count": 400,
+      "computed_through": "2026-09-15",
+      "elapsed_seconds": 19.65,
+      "seed_inputs": [
+        {
+          "path": "data/midcap_breadth/_closes_cache.parquet",
+          "sha256": "98e44b4d5f941d213b223651e738f30c5675fabcf26d4710b0aceb46b64e1ead"
+        },
+        {
+          "path": "data/midcap_breadth/_high_cache.parquet",
+          "sha256": "3bde353d3d8e127a2dad827ab2ca6a8fbf02a6d589e3d001597e69f7c3f4a286"
+        },
+        {
+          "path": "data/midcap_breadth/_low_cache.parquet",
+          "sha256": "62537400c1c70b5e3a8014c0393b6a5581c189f1de6a8504ca46d9fe5c452580"
+        },
+        {
+          "path": "data/midcap_breadth/_volume_cache.parquet",
+          "sha256": "47aebf7d63d4c317f3ca048a20167fd8e6dec8b0a77df38a20ed032e597ddf41"
+        },
+        {
+          "path": "data/midcap_breadth/constituents.parquet",
+          "sha256": "31cfa0d67dbcaedc9f35d382af54766f0b5056227c4a15060ff4313f705e8207"
+        }
+      ],
+      "output_sha256": "eb650697b934467c9f7000e831b5a4397c1e5eb94cbb36471740a0edfd4fff39"
+    }
+  ],
+  "spy_sha256": "ed109d720a2d611a33d05c34c1f90bd5db97410bb5a3ad69b8e6b88986de63e2",
+  "alpha": {
+    "as_of": "2026-09-15",
+    "n": 1460,
+    "sectors": 11,
+    "sha256": "23e7e177bea57858dfb0bca7d6540326d4b51134c175d1125941ac285c55086c"
+  },
+  "published_to_production": false
+}
