@@ -289,7 +289,7 @@ push_staged_clean \
   site/government-revenue-dossiers.js \
   site/government-revenue-candidate-radar.js \
   site/government_revenue.html
-git commit -m "govrev: SAM opportunity evidence $(date -u +%FT%H:%MZ)"
+push_native_commit -m "govrev: SAM opportunity evidence $(date -u +%FT%H:%MZ)"
 
 GOVREV_REPROOFS=0
 PUSH_MAX_ATTEMPTS=2
@@ -468,7 +468,7 @@ while push_attempt; do
       site/government-revenue-candidate-radar.js \
       site/government_revenue.html
     if ! git diff --cached --quiet; then
-      git commit --amend --no-edit
+      push_native_commit --amend --no-edit
     fi
     PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$native_code_root" python3 -P -m scripts.ci.govrev_candidate_proof verify --committed \
       --root . --receipt "$RUNNER_TEMP/govrev-candidate-proof.receipt.json"
