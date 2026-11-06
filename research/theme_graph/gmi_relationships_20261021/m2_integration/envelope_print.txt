@@ -1,0 +1,348 @@
+GMI ORCH-REL M2 relationship envelope — §8.2 measures (measurement only)
+as_of: 2026-10-21T00:00:00Z
+panel_sha256: 108866ecea287cfda09ef536a9f0939fa0188ab41697c080f24174436119a3ca
+
+M0 record counts by species (the M2 NOT-DONE line)
+  join: index_rows=1597 extraction_rows=1597 joined=1597 extraction_only=0
+  observations D1: supplier_customer=530 contract_manufacturing=233 licensing=243 distribution=156 component_dependency=10
+  observations D2: supplier_customer=381 contract_manufacturing=1 licensing=29 distribution=3 component_dependency=3
+  observations ALL: supplier_customer=911 contract_manufacturing=234 licensing=272 distribution=159 component_dependency=13
+  edges D1: supplier_customer=70 contract_manufacturing=51 licensing=43 distribution=20 component_dependency=8
+  edges D2: supplier_customer=49 contract_manufacturing=0 licensing=7 distribution=0 component_dependency=2
+  edges ALL: supplier_customer=117 contract_manufacturing=51 licensing=50 distribution=20 component_dependency=10
+  non_edges D1: supplier_customer=398 contract_manufacturing=107 licensing=166 distribution=118 component_dependency=0
+  non_edges D2: supplier_customer=298 contract_manufacturing=1 licensing=16 distribution=3 component_dependency=0
+  non_edges ALL: supplier_customer=696 contract_manufacturing=108 licensing=182 distribution=121 component_dependency=0
+  excluded dispositions: refused=8
+  coverage D1: assessed=114, no_supported_result=31, not_assessed=1
+  coverage D2: assessed=72, no_supported_result=64, not_assessed=1
+  coverage ALL: assessed=186, no_supported_result=95, not_assessed=2
+
+E1 issuer relation coverage (every eligible issuer accounted)
+  D1: total=146 states=assessed=114, no_supported_result=31, not_assessed=1
+  D1: §8.2 reading supported=114, unsupported=31, pending=1  (sum=146 == 146)
+  D2: total=137 states=assessed=72, no_supported_result=64, not_assessed=1
+  D2: §8.2 reading supported=72, unsupported=64, pending=1  (sum=137 == 137)
+
+E2 role/species coverage cells (ELIGIBLE x species x from/to role)
+  D1:
+    supplier_customer/supplier: known_fresh=43, known_anonymous=26, searched_no_supported_result=76, not_assessed=1 [own=36 counterparty=7]
+    supplier_customer/customer: known_fresh=16, known_anonymous=1, searched_no_supported_result=128, not_assessed=1 [own=5 counterparty=11]
+    contract_manufacturing/manufacturer: known_fresh=8, known_anonymous=1, searched_no_supported_result=136, not_assessed=1 [own=1 counterparty=7]
+    contract_manufacturing/client: known_fresh=25, known_anonymous=1, searched_no_supported_result=119, not_assessed=1 [own=24 counterparty=1]
+    licensing/licensor: known_fresh=18, searched_no_supported_result=127, not_assessed=1 [own=17 counterparty=1]
+    licensing/licensee: known_fresh=18, searched_no_supported_result=127, not_assessed=1 [own=3 counterparty=15]
+    distribution/manufacturer: known_fresh=10, known_anonymous=7, searched_no_supported_result=128, not_assessed=1 [own=10 counterparty=0]
+    distribution/distributor: known_fresh=1, searched_no_supported_result=144, not_assessed=1 [own=1 counterparty=0]
+    component_dependency/provider: known_fresh=3, searched_no_supported_result=142, not_assessed=1 [own=0 counterparty=3]
+    component_dependency/dependent: known_fresh=6, searched_no_supported_result=139, not_assessed=1 [own=6 counterparty=0]
+  D2:
+    supplier_customer/supplier: known_fresh=26, known_anonymous=9, searched_no_supported_result=101, not_assessed=1 [own=24 counterparty=2]
+    supplier_customer/customer: known_fresh=13, searched_no_supported_result=124 [own=7 counterparty=6]
+    contract_manufacturing/manufacturer: searched_no_supported_result=136, not_assessed=1
+    contract_manufacturing/client: searched_no_supported_result=136, not_assessed=1
+    licensing/licensor: known_fresh=7, searched_no_supported_result=129, not_assessed=1 [own=6 counterparty=1]
+    licensing/licensee: known_fresh=6, known_anonymous=1, searched_no_supported_result=129, not_assessed=1 [own=1 counterparty=5]
+    distribution/manufacturer: searched_no_supported_result=136, not_assessed=1
+    distribution/distributor: searched_no_supported_result=136, not_assessed=1
+    component_dependency/provider: known_fresh=1, searched_no_supported_result=135, not_assessed=1 [own=0 counterparty=1]
+    component_dependency/dependent: known_fresh=1, searched_no_supported_result=135, not_assessed=1 [own=1 counterparty=0]
+  cells_total=2830
+  caveat: searched = cue-candidate search of the assessed documents; extraction recall is reported in E4 and is bounded by the cue patterns and the recall lexicon; a searched cell is not proof of absence.
+
+E3 source processing (§8.2 vocabulary)
+  judging ledger: PRESENT
+  D1: issuers collected=145, unavailable=1
+  D1: m1_pinned_documents=0
+  D1: filings_by_state collected=155, unavailable=1
+  D1: documents_by_state cached=2, fetched=153
+  D1: parse_outcomes excerpt_self_check_failed=0
+  D2: issuers collected=136, unavailable=1
+  D2: m1_pinned_documents=0
+  D2: filings_by_state collected=142, unavailable=1
+  D2: documents_by_state cached=11, fetched=377
+  D2: parse_outcomes ABSENT
+  OTHER: issuers none
+  OTHER: filings_by_state none
+  OTHER: documents_by_state none
+  OTHER: parse_outcomes ABSENT
+
+E4 extraction recall
+  value=0.3487 state=MEASURED
+  reference=238 hits=83 misses=155 pipeline=117
+  wilson_95=[0.291, 0.4113] jackknife_95=[0.2429, 0.4545] jackknife_issuers=31
+  D1 recall=0.4423 hit=69 ref=156 wilson_95=[0.3667, 0.5207]
+  D2 recall=0.1707 hit=14 ref=82 wilson_95=[0.1045, 0.2664]
+  component_dependency recall=0.3889 hit=7 ref=18 wilson_95=[0.2031, 0.6138]
+  contract_manufacturing recall=0.5862 hit=17 ref=29 wilson_95=[0.4074, 0.7449]
+  distribution recall=0.2778 hit=5 ref=18 wilson_95=[0.125, 0.5087]
+  licensing recall=0.2432 hit=18 ref=74 wilson_95=[0.1598, 0.3521]
+  supplier_customer recall=0.3636 hit=36 ref=99 wilson_95=[0.2756, 0.4618]
+  report: research/theme_graph/gmi_relationships_20261021/m2_recall/recall_report_v1.json sha256=915de3481ec77f4702d0dad0d842862809491b6f024a409598b6ba690a2237a8
+  corpus_sha256=96e860d45c83d7d467e0a55abff6335ee8c05973b094038e9e504ea42aa2daed lexicon_sha256=bb0add40bc10d88a6891eef2c4b7a339c321ec19bad2a536461f6e9d5157cc70
+  caveat: Misses outside both the harvester cue patterns and the recall lexicon are not measured.
+  note: precision is never used as a recall proxy
+
+E5 positive precision
+  overall accepted=67/100 precision=0.67
+  overall wilson95=[0.5731, 0.7544]
+  stratum D1|component_dependency: reviewed=8 accepted=8 precision=1.0 wilson95=[0.6756, 1.0]
+  stratum D1|contract_manufacturing: reviewed=13 accepted=11 precision=0.8461538461538461 wilson95=[0.5777, 0.9567]
+  stratum D1|distribution: reviewed=11 accepted=5 precision=0.45454545454545453 wilson95=[0.2127, 0.7199]
+  stratum D1|licensing: reviewed=13 accepted=8 precision=0.6153846153846154 wilson95=[0.3552, 0.8229]
+  stratum D1|supplier_customer: reviewed=20 accepted=13 precision=0.65 wilson95=[0.4329, 0.8188]
+  stratum D2|component_dependency: reviewed=3 accepted=3 precision=1.0 wilson95=[0.4385, 1.0]
+  stratum D2|contract_manufacturing: reviewed=1 accepted=1 precision=1.0 wilson95=[0.2065, 1.0]
+  stratum D2|distribution: reviewed=3 accepted=2 precision=0.6666666666666666 wilson95=[0.2077, 0.9385]
+  stratum D2|licensing: reviewed=8 accepted=2 precision=0.25 wilson95=[0.0715, 0.5907]
+  stratum D2|supplier_customer: reviewed=20 accepted=14 precision=0.7 wilson95=[0.481, 0.8545]
+  overall_weighted precision=0.6621 ci=[0.5596, 0.7646]
+  decoys reviewed=25 accepted=0 acceptance_rate=0.0
+  reviewer_reliable=True
+
+E6 natural operations latency (hours, ingested - published, UTC)
+  D1: n=1172 p50=5722.39 p90=6248.68 max=16909.17 clock_violations=0
+  D2: n=417 p50=5697.3 p90=6085.4 max=8536.52 clock_violations=0
+  ALL: n=1589 p50=5707.39 p90=6178.63 max=16909.17 clock_violations=0
+  package_lag: state=NOT_MEASURABLE reason: P.computed_at is set to P.as_of by construction (deterministic package clock)
+
+E7 investor usefulness — machine answerability of the predeclared panel
+  D1 ISS:US-XNAS-ERIC (ERICSSON LM TELEPHONE CO) Q1 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-ERIC (ERICSSON LM TELEPHONE CO) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-ERIC (ERICSSON LM TELEPHONE CO) Q3 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-ERIC (ERICSSON LM TELEPHONE CO) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-ERIC (ERICSSON LM TELEPHONE CO) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0001193125-26-104149
+  D1 ISS:US-XNAS-ERIC (ERICSSON LM TELEPHONE CO) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNYS-CIEN (CIENA CORP) Q1 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: rel:ddfcf7350c3d569debb0
+  D1 ISS:US-XNYS-CIEN (CIENA CORP) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNYS-CIEN (CIENA CORP) Q3 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNYS-CIEN (CIENA CORP) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNYS-CIEN (CIENA CORP) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0001628280-25-056698 (edges: fresh)
+  D1 ISS:US-XNYS-CIEN (CIENA CORP) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q1 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q3 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: rel:7fee1b37883fb2429ab3
+  D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0001193125-26-233537 (edges: fresh)
+  D1 ISS:US-XNAS-ALGM (ALLEGRO MICROSYSTEMS, INC.) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-KLIC (KULICKE & SOFFA INDUSTRIES INC) Q1 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-KLIC (KULICKE & SOFFA INDUSTRIES INC) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-KLIC (KULICKE & SOFFA INDUSTRIES INC) Q3 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-KLIC (KULICKE & SOFFA INDUSTRIES INC) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNAS-KLIC (KULICKE & SOFFA INDUSTRIES INC) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0000056978-25-000081
+  D1 ISS:US-XNAS-KLIC (KULICKE & SOFFA INDUSTRIES INC) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNYS-BHE (BENCHMARK ELECTRONICS INC) Q1 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNYS-BHE (BENCHMARK ELECTRONICS INC) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNYS-BHE (BENCHMARK ELECTRONICS INC) Q3 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNYS-BHE (BENCHMARK ELECTRONICS INC) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1 ISS:US-XNYS-BHE (BENCHMARK ELECTRONICS INC) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0001193125-26-064849
+  D1 ISS:US-XNYS-BHE (BENCHMARK ELECTRONICS INC) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-CDE (Coeur Mining, Inc.) Q1 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: rel:263fa2d4ff98f040ba04
+  D2 ISS:US-XNYS-CDE (Coeur Mining, Inc.) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-CDE (Coeur Mining, Inc.) Q3 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-CDE (Coeur Mining, Inc.) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-CDE (Coeur Mining, Inc.) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0000215466-26-000004 (edges: fresh)
+  D2 ISS:US-XNYS-CDE (Coeur Mining, Inc.) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-NMG (Nouveau Monde Graphite Inc.) Q1 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-NMG (Nouveau Monde Graphite Inc.) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-NMG (Nouveau Monde Graphite Inc.) Q3 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-NMG (Nouveau Monde Graphite Inc.) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-NMG (Nouveau Monde Graphite Inc.) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0001104659-26-034697 (edges: fresh)
+  D2 ISS:US-XNYS-NMG (Nouveau Monde Graphite Inc.) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KWR (QUAKER CHEMICAL CORP) Q1 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KWR (QUAKER CHEMICAL CORP) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KWR (QUAKER CHEMICAL CORP) Q3 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KWR (QUAKER CHEMICAL CORP) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KWR (QUAKER CHEMICAL CORP) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0001628280-26-010694
+  D2 ISS:US-XNYS-KWR (QUAKER CHEMICAL CORP) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-MGY (Magnolia Oil & Gas Corp) Q1 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-MGY (Magnolia Oil & Gas Corp) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-MGY (Magnolia Oil & Gas Corp) Q3 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-MGY (Magnolia Oil & Gas Corp) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-MGY (Magnolia Oil & Gas Corp) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0001698990-26-000005
+  D2 ISS:US-XNYS-MGY (Magnolia Oil & Gas Corp) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KNF (Knife River Corp) Q1 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KNF (Knife River Corp) Q2 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KNF (Knife River Corp) Q3 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KNF (Knife River Corp) Q4 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D2 ISS:US-XNYS-KNF (Knife River Corp) Q5 ANSWERED_FACT
+    en: Answered from a cited filing
+    zh: 已根据所引申报文件作答
+    cite: 0001955520-26-000003
+  D2 ISS:US-XNYS-KNF (Knife River Corp) Q6 ANSWERED_NONE_FOUND
+    en: The filings we read disclose none
+    zh: 我们阅读的申报文件中未披露
+  D1: answered 30/30
+  D2: answered 30/30
+  usefulness to an investor is judged by people; this is answerability only — rating OWED.
+
+E8 release evidence (preregistered hash-min selection; ABSENT is a result)
+  D1 outgoing_query: candidates=191 selected=rel:919c528fcb8584c1c77b@ISS:US-XNAS-SITM
+    contract_manufacturing UNITED MICROELECTRONICS CORP -> SITIME Corp; accessions 0001451809-26-000012; party SITIME Corp (own filing)
+  D1 incoming_query: candidates=125 selected=rel:042d5524f078357e6613@ISS:US-XNAS-AMKR
+    contract_manufacturing AMKOR TECHNOLOGY, INC. -> QUALCOMM INC/DE; accessions 0000804328-25-000085; party AMKOR TECHNOLOGY, INC. (counterparty filing)
+  D1 quantitative_fact: candidates=29 selected=rel:51dd8a5a261cd14cac1d
+    supplier_customer Turtle Beach Corp -> AMAZON COM INC; magnitude seller_revenue_share=0.14 ratio (range); accessions 0001193125-26-104436
+  D1 unknown_magnitude: candidates=163 selected=rel:ab921db7bfc7a6b8412b
+    licensing NCR Atleos Corp -> NCR Voyix Corp; accessions 0001628280-26-012576
+  D1 anonymous_counterparty: candidates=125 selected=nonedge:641a816557fa1ac9ed86
+    supplier_customer Lumentum Holdings Inc. -> anonymous (ANONYMOUS_ALIAS); accession 0001628280-26-057358
+  D1 contradiction: ABSENT (candidates=0)
+  D1 stale_evidence: ABSENT (candidates=0)
+  D1 correction: candidates=3 selected=rev:265ad9e1bd1ead799875
+    restatement rev:265ad9e1bd1ead799875 on rel:3d083ed058f46f028ce9 (supplier_customer MERCURY SYSTEMS INC -> RTX Corp); accession 0001049521-26-000045
+  D1 next_publication_reassertion: candidates=14 selected=rev:2b637ac04563e8cdb1bc
+    reassertion rev:2b637ac04563e8cdb1bc on rel:90cc1ba94a05cd8e01cc (distribution MICROCHIP TECHNOLOGY INC -> ARROW ELECTRONICS, INC.); accession 0000827054-26-000016
+  D1 valid_multi_hop: candidates=71 selected=rel:5be7af967fd9108a9088|rel:78040c2dd81fa22a385a
+    supplier_customer Broadcom Inc. -> Fortinet, Inc. | distribution Fortinet, Inc. -> TD SYNNEX CORP
+  D1 invalid_multi_hop: candidates=249 selected=rel:e3cac3becd5f46ad1e32|rel:342c5fe6364347ec0095
+    contract_manufacturing AMKOR TECHNOLOGY, INC. -> Broadcom Inc. | licensing Broadcom Inc. -> SYNAPTICS Inc; reason product_key_mismatch
+  D2 outgoing_query: candidates=58 selected=rel:aea6422e37ada843e8b6@ISS:US-XNYS-SHEL
+    supplier_customer KINDER MORGAN, INC. -> Shell plc; accessions 0001628280-26-017024; party Shell plc (own filing)
+  D2 incoming_query: candidates=35 selected=rel:e03b1127015c74812e0b@ISS:US-XNYS-PSX
+    supplier_customer Phillips 66 -> Calumet, Inc. /DE; accessions 0002013745-26-000007; party Phillips 66 (counterparty filing)
+  D2 quantitative_fact: candidates=17 selected=rel:49ecbef55daa895befc7
+    supplier_customer Noble Corp plc -> Shell plc; magnitude seller_revenue_share=0.123 ratio (exact); accessions 0001895262-26-000076
+  D2 unknown_magnitude: candidates=41 selected=rel:a41cca715060b99b7e03
+    supplier_customer Chemours Co -> ENERGY FUELS INC; accessions 0001385849-26-000009
+  D2 anonymous_counterparty: candidates=35 selected=nonedge:82b789960b650e75cf04
+    supplier_customer MP Materials Corp. / DE -> anonymous (ANONYMOUS_ALIAS); accession 0001801368-26-000008
+  D2 contradiction: ABSENT (candidates=0)
+  D2 stale_evidence: ABSENT (candidates=0)
+  D2 correction: candidates=3 selected=rev:7bb9553e8abd90dce08a
+    restatement rev:7bb9553e8abd90dce08a on rel:d346f999dfe28cfc7dda (supplier_customer Valaris Ltd -> BP PLC); accession 0000314808-26-000029
+  D2 next_publication_reassertion: ABSENT (candidates=0)
+  D2 valid_multi_hop: candidates=10 selected=rel:e4bd61b9f0091208a3dd|rel:1ab12373e3e0fca0fde2
+    supplier_customer Crescent Energy Co -> CONOCOPHILLIPS | licensing CONOCOPHILLIPS -> Phillips 66
+  D2 invalid_multi_hop: candidates=12 selected=rel:51fdb318b31c9001e886|rel:e03b1127015c74812e0b
+    supplier_customer MURPHY OIL CORP -> Phillips 66 | supplier_customer Phillips 66 -> Calumet, Inc. /DE; reason product_key_mismatch
+  selection: sha256('gmi-rel-envelope-evidence-v1:'+kind+':'+item_id), minimum hex
+

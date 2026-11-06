@@ -492,15 +492,70 @@ def test_unknown_or_phantom_parser_correction_fails_closed_against_retained_byte
 
 
 @pytest.mark.parametrize(
-    "target",
+    ("target", "exercised_parser"),
     [
-        "_canonical_json", "_digest_id", "_clone_json_value", "_parse_time", "_iso",
-        "_unique_spans", "make_stable_span", "_base_record",
-        "_records_for_manifest_v1_1_0",
+        pytest.param("_canonical_json", None, id="_canonical_json"),
+        pytest.param("_digest_id", None, id="_digest_id"),
+        pytest.param("_clone_json_value", None, id="_clone_json_value"),
+        pytest.param("_parse_time", None, id="_parse_time"),
+        pytest.param("_iso", None, id="_iso"),
+        pytest.param("_unique_spans", None, id="_unique_spans"),
+        pytest.param("make_stable_span", None, id="make_stable_span"),
+        # Released 1.2.0 graph: still registered, still sealed, exercised
+        # through its own released resolver rather than the active compile.
+        pytest.param(
+            "_base_record_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_base_record_v1_2_0",
+        ),
+        pytest.param(
+            "_records_for_manifest_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_records_for_manifest_v1_2_0",
+        ),
+        pytest.param(
+            "_parse_fee_tables_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_parse_fee_tables_v1_2_0",
+        ),
+        pytest.param(
+            "_security_header_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_security_header_v1_2_0",
+        ),
+        pytest.param(
+            "_term_for_header_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_term_for_header_v1_2_0",
+        ),
+        pytest.param(
+            "_total_row_record_v1_2_0", "capital-structure-document-terms/1.2.0",
+            id="_total_row_record_v1_2_0",
+        ),
+        # Active 1.3.0 extractor graph.
+        pytest.param("_total_row_value_cell_v1_3_0", None, id="_total_row_value_cell_v1_3_0"),
+        pytest.param("_total_row_record_v1_3_0", None, id="_total_row_record_v1_3_0"),
+        pytest.param("_records_for_manifest_v1_3_0", None, id="_records_for_manifest_v1_3_0"),
+        pytest.param("_parse_fee_tables_v1_3_0", None, id="_parse_fee_tables_v1_3_0"),
+        pytest.param("_security_header_v1_3_0", None, id="_security_header_v1_3_0"),
+        pytest.param("_term_for_header_v1_3_0", None, id="_term_for_header_v1_3_0"),
+        # Released 1.1.0 graph: still registered, still sealed, exercised
+        # through its own released resolver rather than the active compile.
+        pytest.param(
+            "_base_record", "capital-structure-document-terms/1.1.0",
+            id="_base_record-v1_1_0",
+        ),
+        pytest.param(
+            "_records_for_manifest_v1_1_0", "capital-structure-document-terms/1.1.0",
+            id="_records_for_manifest_v1_1_0",
+        ),
+        pytest.param(
+            "_security_header", "capital-structure-document-terms/1.1.0",
+            id="_security_header-v1_1_0",
+        ),
+        pytest.param(
+            "_parse_fee_tables", "capital-structure-document-terms/1.1.0",
+            id="_parse_fee_tables-v1_1_0",
+        ),
     ],
 )
 def test_registered_parser_closure_rejects_every_mutated_semantic_helper(
-    monkeypatch, target,
+    monkeypatch, target, exercised_parser,
 ):
     raw = FIXTURE.read_bytes()
     manifest = _manifest(raw)
@@ -513,6 +568,16 @@ def test_registered_parser_closure_rejects_every_mutated_semantic_helper(
         return original(*args, **kwargs)
 
     monkeypatch.setattr(document_terms, target, altered_semantic_helper)
+    if exercised_parser is not None:
+        # A released-but-inactive parser must fail closed through the exact
+        # resolver every historical consumer uses, never merely via the compile.
+        with pytest.raises(ValueError, match="closure mismatch"):
+            document_terms._registered_parser(exercised_parser)
+        with pytest.raises(ValueError, match="closure mismatch"):
+            document_terms._records_for_manifest(
+                manifest, raw, parser_version=exercised_parser,
+            )
+        return
     with pytest.raises(ValueError, match="closure mismatch"):
         compile_document_term_records(
             [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
@@ -572,6 +637,8 @@ def test_registered_parser_closure_rejects_mutated_module_attribute(
 def test_released_parser_registry_has_closed_golden_semantic_bundle():
     assert tuple(document_terms._PARSER_REGISTRY) == (
         "capital-structure-document-terms/1.1.0",
+        "capital-structure-document-terms/1.2.0",
+        "capital-structure-document-terms/1.3.0",
     )
     registration = document_terms._PARSER_REGISTRY[
         "capital-structure-document-terms/1.1.0"
@@ -590,6 +657,70 @@ def test_released_parser_registry_has_closed_golden_semantic_bundle():
     assert len(manifest) == registration.semantic_bundle.dependency_count
     assert manifest_sha256 == registration.semantic_bundle.dependency_manifest_sha256
     assert implementation_sha256 == registration.implementation_sha256
+    # 1.2.0 shares the 1.1.0 dispatch roots and runtime allowlist; only its own
+    # extractor graph moves, so the runtime seal below is asserted once.
+    v1_2_0 = document_terms._PARSER_REGISTRY["capital-structure-document-terms/1.2.0"]
+    assert v1_2_0.semantic_bundle.dispatch_roots is (
+        registration.semantic_bundle.dispatch_roots
+    )
+    manifest_1_2_0, manifest_sha256_1_2_0, implementation_sha256_1_2_0 = (
+        document_terms._semantic_closure(
+            v1_2_0.semantic_bundle.entrypoints,
+            v1_2_0.semantic_bundle.dispatch_roots,
+        )
+    )
+    assert len(manifest_1_2_0) == 298
+    assert manifest_sha256_1_2_0 == (
+        "ca0c0bc8a061739ed91c10988dcb45517e5060bfd787b9967fbbb1b92ca097f9"
+    )
+    assert implementation_sha256_1_2_0 == (
+        "939fb266ac7b94483ba08b54153fbd5f45c49e261cffaaaf6bd2a80eb0fade7a"
+    )
+    assert len(manifest_1_2_0) == v1_2_0.semantic_bundle.dependency_count
+    assert manifest_sha256_1_2_0 == v1_2_0.semantic_bundle.dependency_manifest_sha256
+    assert implementation_sha256_1_2_0 == v1_2_0.implementation_sha256
+    # The 1.1.0 closure graph is untouched by the 1.2.0 additions: none of the
+    # 1.2.0-only private copies may appear in it.
+    for node in manifest:
+        assert "v1_2_0" not in node and "V1_2_0" not in node, node
+        assert "v1_3_0" not in node and "V1_3_0" not in node, node
+    assert any("._records_for_manifest_v1_2_0" in node for node in manifest_1_2_0)
+    # The 1.3.0 registration mirrors the 1.2.0 entry's shape: same dispatch
+    # roots, its own extractor, its own pins, appended last.
+    v1_3_0 = document_terms._PARSER_REGISTRY["capital-structure-document-terms/1.3.0"]
+    assert v1_3_0.semantic_bundle.dispatch_roots is (
+        registration.semantic_bundle.dispatch_roots
+    )
+    assert v1_3_0.implementation_sha256 == (
+        document_terms._PARSER_V1_3_0_IMPLEMENTATION_SHA256
+    )
+    assert v1_3_0.semantic_bundle.dependency_count == (
+        document_terms._PARSER_V1_3_0_DEPENDENCY_COUNT
+    )
+    assert v1_3_0.semantic_bundle.dependency_manifest_sha256 == (
+        document_terms._PARSER_V1_3_0_DEPENDENCY_MANIFEST_SHA256
+    )
+    assert v1_3_0.extractor is document_terms._records_for_manifest_v1_3_0
+    manifest_1_3_0, manifest_sha256_1_3_0, implementation_sha256_1_3_0 = (
+        document_terms._semantic_closure(
+            v1_3_0.semantic_bundle.entrypoints,
+            v1_3_0.semantic_bundle.dispatch_roots,
+        )
+    )
+    assert len(manifest_1_3_0) == 315
+    assert manifest_sha256_1_3_0 == (
+        "3d6438f0e354cc4001e17611ee88932acd6c65bfde14af3ce75fff81a0b07d4e"
+    )
+    assert implementation_sha256_1_3_0 == (
+        "ea1a9f820d918ebe47633ad52a88b240c6cda2882087bc784a942783b0e50823"
+    )
+    assert len(manifest_1_3_0) == v1_3_0.semantic_bundle.dependency_count
+    assert manifest_sha256_1_3_0 == v1_3_0.semantic_bundle.dependency_manifest_sha256
+    assert implementation_sha256_1_3_0 == v1_3_0.implementation_sha256
+    # Neither released predecessor's graph may contain a 1.3.0-only copy.
+    for node in manifest_1_2_0:
+        assert "v1_3_0" not in node and "V1_3_0" not in node, node
+    assert any("._records_for_manifest_v1_3_0" in node for node in manifest_1_3_0)
     runtime_manifest, runtime_manifest_sha256, runtime_implementation_sha256 = (
         document_terms._runtime_dispatch_closure(
             registration.semantic_bundle.dispatch_roots,
@@ -613,6 +744,7 @@ def test_released_parser_registry_has_closed_golden_semantic_bundle():
         "CDATA_CONTENT_ELEMENTS",
     ):
         assert any(required in node for node in manifest), required
+        assert any(required in node for node in manifest_1_2_0), required
 
 
 def test_parser_runtime_dispatch_seal_recovers_after_in_process_monkeypatch(monkeypatch):
@@ -952,8 +1084,8 @@ def test_cold_tracked_source_export_import_is_repeatable_without_bytecode(tmp_pa
     ]
     assert outputs == [outputs[0]] * 3
     assert outputs[0] == (
-        "263 d47515272069bfc3f3f768b84b94a218f7f66e7c746e36a8702efd97c26af645 "
-        "b08d50df113550f4faea3ff676e48718355e04b95c89b5b1a7ff53ae4e09b32f "
+        "315 ea1a9f820d918ebe47633ad52a88b240c6cda2882087bc784a942783b0e50823 "
+        "35ed9840daf86793736bf62c50a574e2c9005f3a1bd4bd8e3d7cf70c27e24df5 "
         "7adefd79136224d8c0ca0c84cd4ef41bd206690f9ec28622cdf95f682c811b28"
     )
     assert not list(export_root.rglob("__pycache__"))
@@ -964,12 +1096,12 @@ def test_released_authority_policy_has_independent_golden_closure():
     manifest, manifest_sha256, implementation_sha256 = document_terms._semantic_closure(
         policy.entrypoints,
     )
-    assert len(manifest) == 432
+    assert len(manifest) == 468
     assert manifest_sha256 == (
-        "ce4537defd873c1f1406ea8b4e3709ef0e33c8e034c9d6c2b632b3af546c0425"
+        "5f455b19c38aad2f1460a2c4122548176e4bf2f6192a241ef29c01493ccd95b7"
     )
     assert implementation_sha256 == (
-        "b08d50df113550f4faea3ff676e48718355e04b95c89b5b1a7ff53ae4e09b32f"
+        "35ed9840daf86793736bf62c50a574e2c9005f3a1bd4bd8e3d7cf70c27e24df5"
     )
     assert len(manifest) == policy.dependency_count
     assert manifest_sha256 == policy.dependency_manifest_sha256
@@ -2276,3 +2408,763 @@ def test_daily_compiler_has_namespace_parity_with_collector():
         "R2_RESEARCH_SECRET_ACCESS_KEY", "R2_RESEARCH_BUCKET",
     ):
         assert f"{variable}:" in step
+
+
+# ---------------------------------------------------------------------------
+# capital-structure-document-terms/1.2.0 — real Exhibit 107 Table 1 fixtures
+#
+# Every expected value below is a cell quoted from a committed fixture whose
+# exhibit bytes were served by SEC EDGAR for the named accession.
+# ---------------------------------------------------------------------------
+
+EX107_QUOTED_TOTALS = {
+    # accession: (fixture glob fragment, quoted "Total Offering Amounts" value
+    #             cell, parsed decimal, observed security aggregate rows)
+    "0001493152-26-034585": ("ex107_S-3_", "$ 1,009,975.00", "1009975", 1),
+    # This exhibit renders the currency glyph as its own cell beside the
+    # amount, both inside the one "Maximum Aggregate Offering Price" header
+    # span; the quoted cell is the amount cell of that span.
+    "0001213900-26-081199": ("ex107_S-1A_", "27,686,250.00", "27686250", 0),
+    "0001193125-26-312562": ("ex107_F-1_", "$ 13,800,000.00", "13800000", 2),
+    "0001493152-26-034502": ("ex107_S-3A_", "$ 47,116,264.06", "47116264.06", 8),
+    "0001193125-26-326375": ("ex107_S-3ASR_0001193125", "$ 0.00", "0", 0),
+}
+
+EX107_FIXTURES = sorted(
+    (ROOT / "tests/fixtures/capital_structure/document_terms").glob("ex107_*.txt")
+)
+
+
+def _ex107_identity(raw: bytes) -> tuple[str, str, str]:
+    """The accession, form, and CIK pinned inside one committed envelope."""
+    accession = re.search(
+        rb"^<SEC-DOCUMENT>([0-9]{10}-[0-9]{2}-[0-9]{6})\.txt", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    form = re.search(
+        rb"^CONFORMED SUBMISSION TYPE:\s*(\S+)", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    cik = re.search(
+        rb"^[ \t]*CENTRAL INDEX KEY:[ \t]*([0-9]+)", raw, re.MULTILINE,
+    ).group(1).decode("ascii")
+    return accession, form, cik
+
+
+def _ex107_manifest(raw: bytes) -> dict:
+    accession, form, cik = _ex107_identity(raw)
+    digest = sha256(raw).hexdigest()
+    record = {
+        "schema": "capital_structure.source_manifest/v1",
+        "source_system": "sec_edgar",
+        "source_id": f"{accession}:0:complete-submission.txt",
+        "issuer": {
+            "issuer_id": f"sec:cik:{cik}", "cik": cik, "ticker": "ABC",
+            "aliases": ["ABC Corp"],
+        },
+        "filing": {
+            "accession": accession, "form": form,
+            "filing_date": "2026-08-01", "accepted_at": "2026-08-01T11:00:00Z",
+            "file_number": "333-123456",
+        },
+        "document": {
+            "canonical_url": f"https://www.sec.gov/Archives/edgar/data/{accession}.txt",
+            "document_name": "complete-submission.txt", "document_type": form,
+            "document_role": "complete_submission", "sequence": "0", "media_type": "text/plain",
+            "byte_length": len(raw), "document_version": 1, "content_sha256": digest,
+            "parent_manifest_id": None, "root_locator": f"sha256:{digest}",
+        },
+        "retrieval": {
+            "retrieved_at": "2026-08-02T12:00:00Z", "first_seen_at": "2026-08-02T12:00:00Z",
+            "transport_status": "retrieved",
+        },
+        "storage": {
+            "backend": "r2", "store_id": "r2_shared",
+            "object_key": f"capital_structure/sec/sha256/{digest[:2]}/{digest}",
+            "content_addressed": True, "retention_state": "retained",
+        },
+        "rights": {
+            "redistribution_class": "public_source_link", "attribution_required": True,
+            "license_note": "United States SEC EDGAR public filing",
+        },
+        "privacy": {"classification": "public", "contains_personal_data": False},
+        "parser": {
+            "eligibility": "eligible", "corruption_state": "clean",
+            "parser_version": "sec-source-inspector/1.0.0",
+        },
+        "spans": [{
+            "span_id": f"root:{digest}", "locator_type": "document",
+            "locator": f"bytes:0-{len(raw)}", "text_sha256": digest,
+        }],
+    }
+    record["manifest_id"] = manifest_id_for(record)
+    return record
+
+
+def test_ex107_table_1_yields_security_rows_and_exactly_one_total_under_1_2_0():
+    assert len(EX107_FIXTURES) == 6
+    # These goldens pin the released 1.2.0 output: they run through the
+    # registered released parser exactly the way every historical consumer
+    # re-derives a 1.2.0 row (the private compile resolves released versions
+    # through the closed registry), so the active parser version can move
+    # without moving what 1.2.0 means here.
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
+    for path in EX107_FIXTURES:
+        raw = path.read_bytes()
+        accession = _ex107_identity(raw)[0]
+        manifest = _ex107_manifest(raw)
+        rows = document_terms._compile_document_term_records_test_lane(
+            [manifest], source_reader=_reader(raw),
+            generated_at="2026-08-03T00:00:00Z",
+            parser_lane=lane,
+            parser_version="capital-structure-document-terms/1.2.0",
+            capability=capability,
+        )["observations"]
+        _schema_validate(rows)
+        totals = [
+            row for row in rows
+            if row["term"]["scope"] == "registration_fee_table_total"
+        ]
+        if accession in EX107_QUOTED_TOTALS:
+            _, cell, expected, security_aggregates = EX107_QUOTED_TOTALS[accession]
+            assert len(totals) == 1, path.name
+            total = totals[0]
+            assert total["term"]["name"] == "proposed_maximum_aggregate_offering_price"
+            assert total["term"]["term_type"] == "amount"
+            assert total["reported"]["raw_text"] == cell
+            assert total["reported"]["value"] == expected
+            assert total["normalized"]["value"] == expected
+            assert total["reported"]["unit"] == "USD"
+            assert total["reported"]["currency"] == "USD"
+            assert total["reported"]["scale"] == "1"
+            assert total["state"] == {
+                "disposition": "observed", "reason": "direct_table_value",
+            }
+            assert total["security"]["title_raw"] == "Total Offering Amounts:"
+            span_roles = [span["locator"] for span in total["evidence"]["spans"]]
+            assert any("role=proposed_maximum_aggregate_offering_price" in item for item in span_roles)
+            assert any("role=security_title" in item for item in span_roles)
+            aggregates = [
+                row for row in rows
+                if row["term"]["name"] == "proposed_maximum_aggregate_offering_price"
+                and row["term"]["scope"] == "registration_fee_table_row"
+                and row["state"]["disposition"] == "observed"
+            ]
+            assert len(aggregates) == security_aggregates, path.name
+            for row in rows:
+                assert row["extraction"]["parser_version"] == (
+                    "capital-structure-document-terms/1.2.0"
+                )
+        else:
+            # The committed S-3ASR whose totals live in a separate header-less
+            # table: the detected fee table has no total row at all.
+            assert accession == "0000097216-26-000127", path.name
+            assert totals == [], path.name
+            assert any(
+                row["term"]["scope"] == "registration_fee_table_row"
+                and row["state"]["disposition"] == "observed"
+                for row in rows
+            ), path.name
+
+
+def test_ex107_fixtures_still_refuse_under_the_released_1_1_0_parser():
+    for path in EX107_FIXTURES:
+        raw = path.read_bytes()
+        manifest = _ex107_manifest(raw)
+        rows = document_terms._records_for_manifest(
+            manifest, raw, parser_version="capital-structure-document-terms/1.1.0",
+        )
+        assert len(rows) == len(document_terms.TERM_NAMES), path.name
+        for row in rows:
+            assert row["state"] == {
+                "disposition": "ambiguous", "reason": "duplicate_header_mapping",
+            }, path.name
+            assert row["term"]["scope"] == "registration_fee_table_row"
+            assert row["extraction"]["parser_version"] == (
+                "capital-structure-document-terms/1.1.0"
+            )
+
+
+def _ex107_table_html(header_cells: bytes, body_rows: bytes) -> bytes:
+    envelope = b"""<SEC-DOCUMENT>0000000001-26-000001.txt
+<SEC-HEADER>0000000001-26-000001.hdr.sgml : 20260801
+<ACCEPTANCE-DATETIME>20260801112314
+ACCESSION NUMBER:\t\t0000000001-26-000001
+CONFORMED SUBMISSION TYPE:\tS-3
+PUBLIC DOCUMENT COUNT:\t\t1
+FILED AS OF DATE:\t\t20260801
+
+FILER:
+
+\tCOMPANY DATA:\t
+\t\tCOMPANY CONFORMED NAME:\t\t\tABC Corp
+\t\tCENTRAL INDEX KEY:\t\t\t0000000001
+
+\tFILING VALUES:
+\t\tFORM TYPE:\tS-3
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>EX-FILING FEES
+<SEQUENCE>1
+<FILENAME>ex107.htm
+<TEXT>
+<html><body><table>%s%s</table></body></html>
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>
+"""
+    return envelope % (header_cells, body_rows)
+
+
+_EX107_HEADER = (
+    "<tr><td>Security Type</td><td>Security Class Title</td>"
+    "<td>Proposed Maximum Offering Price Per Unit</td>"
+    "<td>Maximum Aggregate Offering Price</td><td>Fee Rate</td>"
+    "<td>Amount of Registration Fee</td></tr>"
+)
+
+
+def test_ex107_two_genuine_title_columns_stay_duplicate_header_mapping():
+    header = (
+        "<tr><td>Security Class Title</td><td>Security Class Title</td>"
+        "<td>Proposed Maximum Offering Price Per Unit</td>"
+        "<td>Maximum Aggregate Offering Price</td><td>Fee Rate</td>"
+        "<td>Amount of Registration Fee</td></tr>"
+    )
+    body = (
+        "<tr><td>Common Stock</td><td>Class A Common Stock</td>"
+        "<td>$10.00</td><td>$ 5,000,000.00</td><td>0.0001381</td><td>$ 690.50</td></tr>"
+    )
+    raw = _ex107_table_html(header.encode(), body.encode())
+    manifest = _manifest(raw)
+    rows = document_terms._records_for_manifest(manifest, raw, parser_version=None)
+    assert rows == document_terms._records_for_manifest_v1_2_0(
+        manifest, raw, document_terms.PARSER_VERSION,
+    )
+    assert len(rows) == len(document_terms.TERM_NAMES)
+    for row in rows:
+        assert row["state"] == {
+            "disposition": "ambiguous", "reason": "duplicate_header_mapping",
+        }
+
+
+def test_ex107_security_type_column_alone_never_blocks_the_table():
+    body = (
+        "<tr><td>Fees to be Paid</td><td>Common Stock, par value $0.01</td>"
+        "<td>$10.00</td><td>$ 5,000,000.00</td><td>0.0001381</td><td>$ 690.50</td></tr>"
+        "<tr><td colspan=\"3\">Total Offering Amounts:</td>"
+        "<td>$ 5,000,000.00</td><td></td><td></td></tr>"
+        "<tr><td colspan=\"6\">Total Fees Previously Paid:</td></tr>"
+        "<tr><td colspan=\"6\">Total Fee Offsets:</td></tr>"
+        "<tr><td colspan=\"6\">Net Fee Due:</td></tr>"
+    )
+    raw = _ex107_table_html(_EX107_HEADER.encode(), body.encode())
+    manifest = _manifest(raw)
+    rows = document_terms._records_for_manifest_v1_2_0(
+        manifest, raw, document_terms.PARSER_VERSION,
+    )
+    aggregates = [
+        row for row in rows
+        if row["term"]["name"] == "proposed_maximum_aggregate_offering_price"
+    ]
+    # One security row of five terms plus exactly one total row.
+    assert len(rows) == len(document_terms.TERM_NAMES) + 1
+    assert [row["term"]["scope"] for row in aggregates] == [
+        "registration_fee_table_row", "registration_fee_table_total",
+    ]
+    security_row, total_row = aggregates
+    assert security_row["state"] == {
+        "disposition": "observed", "reason": "direct_table_value",
+    }
+    assert security_row["reported"]["value"] == "5000000"
+    assert security_row["security"]["title_raw"] == "Common Stock, par value $0.01"
+    assert total_row["state"] == {
+        "disposition": "observed", "reason": "direct_table_value",
+    }
+    assert total_row["reported"]["raw_text"] == "$ 5,000,000.00"
+    assert total_row["reported"]["value"] == "5000000"
+    assert total_row["security"]["title_raw"] == "Total Offering Amounts:"
+    # The other summary rows produce no observation at all, under any label.
+    titles = {row["security"]["title_normalized"] for row in rows}
+    assert "net fee due" not in titles
+    assert "total fees previously paid" not in titles
+    assert "total fee offsets" not in titles
+
+
+def test_ex107_blank_total_cell_is_unavailable_never_a_guess():
+    body = (
+        "<tr><td>Fees to be Paid</td><td>Common Stock</td>"
+        "<td>$10.00</td><td>$ 5,000,000.00</td><td>0.0001381</td><td>$ 690.50</td></tr>"
+        "<tr><td colspan=\"6\">Total Offering Amounts:</td></tr>"
+    )
+    raw = _ex107_table_html(_EX107_HEADER.encode(), body.encode())
+    manifest = _manifest(raw)
+    rows = document_terms._records_for_manifest_v1_2_0(
+        manifest, raw, document_terms.PARSER_VERSION,
+    )
+    totals = [
+        row for row in rows if row["term"]["scope"] == "registration_fee_table_total"
+    ]
+    assert len(totals) == 1
+    assert totals[0]["state"] == {
+        "disposition": "unavailable", "reason": "header_without_direct_value",
+    }
+    assert totals[0]["reported"] == document_terms._empty_value()
+    assert totals[0]["security"]["title_raw"] == "Total Offering Amounts:"
+
+
+def test_ex107_total_row_split_currency_cells_stay_inside_the_header_span():
+    header = (
+        "<tr><td>Security Type</td><td>Security Class Title</td>"
+        "<td colspan=\"2\">Maximum Aggregate Offering Price</td>"
+        "<td>Amount of Registration Fee</td><td>Fee Rate</td>"
+        "<td>Proposed Maximum Offering Price Per Unit</td></tr>"
+    )
+    body = (
+        "<tr><td>Fees to be Paid</td><td>Common Stock</td>"
+        "<td>$</td><td>2,750,000.00</td><td>$ 379.53</td><td>0.0001381</td><td></td></tr>"
+        "<tr><td colspan=\"2\">Total Offering Amounts:</td>"
+        "<td>$</td><td>2,750,000.00</td><td></td><td></td><td></td></tr>"
+    )
+    raw = _ex107_table_html(header.encode(), body.encode())
+    manifest = _manifest(raw)
+    rows = document_terms._records_for_manifest_v1_2_0(
+        manifest, raw, document_terms.PARSER_VERSION,
+    )
+    totals = [
+        row for row in rows if row["term"]["scope"] == "registration_fee_table_total"
+    ]
+    assert len(totals) == 1
+    assert totals[0]["state"] == {
+        "disposition": "observed", "reason": "direct_table_value",
+    }
+    assert totals[0]["reported"]["raw_text"] == "2,750,000.00"
+    assert totals[0]["reported"]["value"] == "2750000"
+
+
+# ---------------------------------------------------------------------------
+# Durable parse receipts: a parser version bump must re-read each filing once,
+# never every night. Receipts are operational evidence of a completed parse,
+# never facts; the observation ledger stays append-only and untouched by them.
+# ---------------------------------------------------------------------------
+
+_PARSE_RECEIPT_SCHEMA = json.loads(
+    (
+        ROOT
+        / "contracts/capital_structure_document_term_parse_receipt.schema.json"
+    ).read_text()
+)
+
+
+def _receipt_identity(
+    source_manifest_id: str, content_sha256: str, parser_version: str,
+) -> str:
+    return sha256(json.dumps(
+        [source_manifest_id, content_sha256, parser_version],
+        sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    ).encode("utf-8")).hexdigest()
+
+
+def _validate_parse_receipts(receipts: list[dict]) -> None:
+    validator = Draft202012Validator(
+        _PARSE_RECEIPT_SCHEMA, format_checker=FormatChecker(),
+    )
+    for receipt in receipts:
+        errors = list(validator.iter_errors(receipt))
+        assert not errors, errors[0].message
+
+
+def test_active_parse_receipt_ends_the_every_night_reread_of_an_unchanged_filing():
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
+    # Night 0: the released 1.1.0 parser produced this filing's whole history.
+    night0 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.1.0",
+        capability=capability,
+    )["observations"]
+
+    night1_reads: list[str] = []
+
+    def night1_reader(row):
+        night1_reads.append(str(row["manifest_id"]))
+        return raw
+
+    night1 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=night1_reader, existing_observations=night0,
+        generated_at="2026-08-04T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability,
+    )
+    # The defect: the active parse leaves every row semantically unchanged, yet
+    # the stale 1.1.0 rows keep the manifest invalidated and re-read nightly.
+    assert night1_reads == [manifest["manifest_id"]]
+    assert night1["counts"]["parser_version_invalidations"] == 1
+    assert night1["counts"]["new_observations"] == 0
+    assert night1["counts"]["unchanged_observations"] == 5
+    assert night1["counts"]["parse_receipts"] == 1
+    assert night1["counts"]["new_parse_receipts"] == 1
+    assert night1["counts"]["receipt_exempt_manifests"] == 0
+    receipts = night1["receipts"]
+    assert len(receipts) == 1
+    _validate_parse_receipts(receipts)
+    receipt = receipts[0]
+    assert receipt["schema_version"] == (
+        "capital_structure.document_term_parse_receipt.v1"
+    )
+    assert receipt["source_manifest_id"] == manifest["manifest_id"]
+    assert receipt["accession"] == manifest["filing"]["accession"]
+    assert receipt["content_sha256"] == manifest["document"]["content_sha256"]
+    assert receipt["parser_version"] == "capital-structure-document-terms/1.2.0"
+    assert receipt["parser_implementation_sha256"] == (
+        document_terms._registered_parser(
+            "capital-structure-document-terms/1.2.0",
+        ).implementation_sha256
+    )
+    assert receipt["candidate_count"] == 5
+    assert receipt["candidate_logical_ids_sha256"] == sha256(json.dumps(
+        sorted(row["logical_observation_id"] for row in night0),
+        sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    ).encode("utf-8")).hexdigest()
+    assert receipt["generated_at"] == "2026-08-04T00:00:00Z"
+    assert receipt["receipt_id"] == _receipt_identity(
+        manifest["manifest_id"],
+        manifest["document"]["content_sha256"],
+        "capital-structure-document-terms/1.2.0",
+    )
+
+    night2_reads: list[str] = []
+
+    def night2_reader(row):
+        night2_reads.append(str(row["manifest_id"]))
+        return raw
+
+    night2 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=night2_reader,
+        existing_observations=night1["observations"],
+        generated_at="2026-08-05T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability, parse_receipts=receipts,
+    )
+    # Night 2 with the durable receipt: zero source reads, zero invalidations.
+    assert night2_reads == []
+    assert night2["counts"]["source_reads"] == 0
+    assert night2["counts"]["parser_version_invalidations"] == 0
+    assert night2["counts"]["receipt_exempt_manifests"] == 1
+    assert night2["counts"]["parse_receipts"] == 1
+    assert night2["counts"]["new_parse_receipts"] == 0
+    assert night2["observations"] == night1["observations"]
+    assert night2["receipts"] == receipts
+
+    # The regression this fix removes: without the receipt, night 2 re-reads.
+    regression_reads: list[str] = []
+
+    def regression_reader(row):
+        regression_reads.append(str(row["manifest_id"]))
+        return raw
+
+    regression = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=regression_reader,
+        existing_observations=night1["observations"],
+        generated_at="2026-08-05T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability,
+    )
+    assert regression_reads == [manifest["manifest_id"]]
+    assert regression["counts"]["parser_version_invalidations"] == 1
+    assert regression["counts"]["receipt_exempt_manifests"] == 0
+
+
+def test_parse_receipt_never_exempts_a_filing_without_prior_rows():
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
+    # Night 0: a stale 1.1.0 history for the first filing only.
+    night0 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.1.0",
+        capability=capability,
+    )["observations"]
+    night1 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), existing_observations=night0,
+        generated_at="2026-08-04T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability,
+    )
+    receipts = night1["receipts"]
+
+    new_raw = raw.replace(b"1,250,000", b"1,260,000")
+    new_manifest = _manifest(new_raw)
+    new_manifest["document"]["document_version"] = 2
+    new_manifest["retrieval"]["retrieved_at"] = "2026-08-04T12:00:00Z"
+    new_manifest["retrieval"]["first_seen_at"] = "2026-08-04T12:00:00Z"
+    new_manifest["manifest_id"] = manifest_id_for(new_manifest)
+    payloads = {
+        manifest["manifest_id"]: raw,
+        new_manifest["manifest_id"]: new_raw,
+    }
+
+    reads: list[str] = []
+
+    def reader(row):
+        manifest_id = str(row["manifest_id"])
+        reads.append(manifest_id)
+        return payloads[manifest_id]
+
+    result = document_terms._compile_document_term_records_test_lane(
+        [manifest, new_manifest], source_reader=reader,
+        existing_observations=night1["observations"],
+        generated_at="2026-08-05T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability, parse_receipts=receipts,
+    )
+    # The receipt exempts the already-parsed filing, but the brand-new filing
+    # with no prior rows is still read.
+    assert reads == [new_manifest["manifest_id"]]
+    assert result["counts"]["receipt_exempt_manifests"] == 1
+    assert result["counts"]["source_reads"] == 1
+    assert result["counts"]["parse_receipts"] == 2
+    assert result["counts"]["new_parse_receipts"] == 1
+    _validate_parse_receipts(result["receipts"])
+    kept = next(
+        item for item in result["receipts"]
+        if item["source_manifest_id"] == manifest["manifest_id"]
+    )
+    assert kept == receipts[0]
+    new_receipt = next(
+        item for item in result["receipts"]
+        if item["source_manifest_id"] == new_manifest["manifest_id"]
+    )
+    assert new_receipt["candidate_count"] == 5
+    assert new_receipt["parser_version"] == "capital-structure-document-terms/1.2.0"
+    assert new_receipt["generated_at"] == "2026-08-05T00:00:00Z"
+
+
+def test_rebuild_with_the_supplied_receipt_reproduces_it_and_keeps_its_generated_at():
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    night1 = compile_document_term_records(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-04T00:00:00Z",
+    )
+    receipt = night1["receipts"][0]
+    result = compile_document_term_records(
+        [manifest], source_reader=_reader(raw),
+        existing_observations=night1["observations"],
+        generated_at="2026-08-05T00:00:00Z", rebuild=True,
+        parse_receipts=night1["receipts"],
+    )
+    assert result["counts"]["source_reads"] == 1
+    assert result["new_observations"] == []
+    assert result["counts"]["parse_receipts"] == 1
+    assert result["counts"]["new_parse_receipts"] == 0
+    assert result["receipts"][0] == receipt
+    assert result["receipts"][0]["receipt_id"] == receipt["receipt_id"]
+    assert result["receipts"][0]["generated_at"] == "2026-08-04T00:00:00Z"
+
+
+def test_supplied_parse_receipts_fail_closed_before_any_source_read():
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    active_version = document_terms.PARSER_VERSION
+    night1 = compile_document_term_records(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-04T00:00:00Z",
+    )
+    valid = night1["receipts"][0]
+    content = manifest["document"]["content_sha256"]
+
+    def compile_with(receipts, *, rebuild=False):
+        reads: list[str] = []
+
+        def reader(row):
+            reads.append(str(row["manifest_id"]))
+            return raw
+
+        error = None
+        try:
+            compile_document_term_records(
+                [manifest], source_reader=reader,
+                existing_observations=night1["observations"],
+                generated_at="2026-08-05T00:00:00Z", rebuild=rebuild,
+                parse_receipts=receipts,
+            )
+        except ValueError as exc:
+            error = exc
+        return reads, error
+
+    unreleased = dict(valid)
+    unreleased["parser_version"] = "forged-document-terms/9.9.9"
+    unreleased["receipt_id"] = _receipt_identity(
+        valid["source_manifest_id"], content, unreleased["parser_version"],
+    )
+    reads, error = compile_with([unreleased])
+    assert error is not None and "parser_version is not registered" in str(error)
+    assert reads == []
+
+    wrong_content = dict(valid)
+    wrong_content["content_sha256"] = "b" * 64
+    wrong_content["receipt_id"] = _receipt_identity(
+        valid["source_manifest_id"], "b" * 64, active_version,
+    )
+    reads, error = compile_with([wrong_content])
+    assert error is not None and "content_sha256" in str(error)
+    assert reads == []
+
+    unknown_manifest = dict(valid)
+    unknown_manifest["source_manifest_id"] = "manifest:cs:" + "e" * 64
+    unknown_manifest["receipt_id"] = _receipt_identity(
+        unknown_manifest["source_manifest_id"], content, active_version,
+    )
+    reads, error = compile_with([unknown_manifest])
+    assert error is not None and "source manifest is absent" in str(error)
+    assert reads == []
+
+    tampered_id = dict(valid)
+    tampered_id["receipt_id"] = "f" * 64
+    reads, error = compile_with([tampered_id])
+    assert error is not None and "recomputed receipt_id" in str(error)
+    assert reads == []
+
+    wrong_impl = dict(valid)
+    wrong_impl["parser_implementation_sha256"] = "a" * 64
+    reads, error = compile_with([wrong_impl])
+    assert error is not None and "implementation digest mismatch" in str(error)
+    assert reads == []
+
+    altered = dict(valid)
+    altered["candidate_semantic_sha256"] = "c" * 64
+    reads, error = compile_with([altered], rebuild=True)
+    assert error is not None
+    assert "document-term parse receipt is not reproducible" in str(error)
+    assert manifest["manifest_id"] in str(error)
+    assert reads == [manifest["manifest_id"]]
+
+
+def test_no_longer_emitted_prior_logical_ids_are_counted_as_orphans_and_untouched():
+    raw = EX107_FIXTURES[0].read_bytes()
+    manifest = _ex107_manifest(raw)
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
+    # The released 1.1.0 parser refuses this exhibit into document-level slots
+    # that the active 1.2.0 parse no longer emits.
+    night0 = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.1.0",
+        capability=capability,
+    )["observations"]
+    prior_logicals = {row["logical_observation_id"] for row in night0}
+
+    reads: list[str] = []
+
+    def reader(row):
+        reads.append(str(row["manifest_id"]))
+        return raw
+
+    result = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=reader, existing_observations=night0,
+        generated_at="2026-08-04T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.2.0",
+        capability=capability,
+    )
+    assert reads == [manifest["manifest_id"]]
+    assert result["counts"]["orphaned_prior_observations"] == len(night0)
+    examples = result["orphaned_examples"]
+    assert {item["logical_observation_id"] for item in examples} == prior_logicals
+    assert all(
+        item["source_manifest_id"] == manifest["manifest_id"] for item in examples
+    )
+    # The orphaned 1.1.0 rows are unchanged in the output, never retracted.
+    assert result["observations"][: len(night0)] == night0
+    for row in result["observations"][: len(night0)]:
+        assert row["extraction"]["parser_version"] == (
+            "capital-structure-document-terms/1.1.0"
+        )
+    # The active parse emits none of those slots; every candidate is a new row.
+    new_logicals = {
+        row["logical_observation_id"] for row in result["new_observations"]
+    }
+    assert prior_logicals.isdisjoint(new_logicals)
+    assert result["counts"]["new_observations"] == len(result["new_observations"])
+    receipt = result["new_receipts"][0]
+    assert receipt["candidate_count"] == len(result["new_observations"])
+    assert receipt["candidate_logical_ids_sha256"] == sha256(json.dumps(
+        sorted(new_logicals), sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")).hexdigest()
+
+
+def test_disk_compile_writes_durable_parse_receipts_and_a_corrupt_line_fails_closed(tmp_path):
+    raw = FIXTURE.read_bytes()
+    manifest = _manifest(raw)
+    _write_ledger(source_ledger_path(tmp_path), [manifest])
+    # Seed the committed defect shape: a 1.1.0-parsed ledger that the active
+    # parse leaves semantically unchanged, so only a receipt can stop the
+    # nightly re-read.
+    _prior_version, lane, capability = _fixture_prior_parser_lane()
+    seeded = document_terms._compile_document_term_records_test_lane(
+        [manifest], source_reader=_reader(raw), generated_at="2026-08-03T00:00:00Z",
+        parser_lane=lane, parser_version="capital-structure-document-terms/1.1.0",
+        capability=capability,
+    )["observations"]
+    compile_capital_structure_document_terms._atomic_write(
+        compile_capital_structure_document_terms._to_frame(seeded),
+        tmp_path / "document_term_observations.parquet",
+    )
+
+    class CountingStore:
+        store_id = "r2_shared"
+
+        def __init__(self):
+            self.reads = 0
+
+        def get_verified(self, object_key: str, expected_sha256: str) -> bytes | None:
+            self.reads += 1
+            return raw
+
+    class NoReadStore:
+        store_id = "r2_shared"
+
+        def get_verified(self, object_key: str, expected_sha256: str) -> bytes | None:
+            raise AssertionError(
+                "a receipt-exempt manifest must not read retained source bytes"
+            )
+
+    first = compile_from_disk(
+        root=tmp_path, generated_at="2026-08-04T00:00:00Z", source_store=CountingStore(),
+    )
+    assert first["source_reads"] == 1
+    assert first["parser_version_invalidations"] == 1
+    assert first["new_observations"] == 0
+    assert first["new_parse_receipts"] == 1
+    receipts_path = tmp_path / "document_term_parse_receipts.jsonl"
+    first_receipts_text = receipts_path.read_text(encoding="utf-8")
+    assert first_receipts_text.endswith("\n")
+    lines = first_receipts_text.splitlines()
+    assert len(lines) == 1
+    receipt = json.loads(lines[0])
+    assert lines[0] == json.dumps(
+        receipt, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    )
+    assert receipt["parser_version"] == document_terms.PARSER_VERSION
+    ledger_path = tmp_path / "document_term_observations.parquet"
+    first_ledger_bytes = ledger_path.read_bytes()
+
+    second = compile_from_disk(
+        root=tmp_path, generated_at="2026-08-05T00:00:00Z", source_store=NoReadStore(),
+    )
+    assert second["source_reads"] == 0
+    assert second["receipt_exempt_manifests"] == 1
+    assert second["new_parse_receipts"] == 0
+    assert receipts_path.read_text(encoding="utf-8") == first_receipts_text
+    assert ledger_path.read_bytes() == first_ledger_bytes
+
+    tampered = dict(receipt)
+    tampered["receipt_id"] = "f" * 64
+    corrupted_text = json.dumps(
+        tampered, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    ) + "\n"
+    receipts_path.write_text(corrupted_text, encoding="utf-8")
+    with pytest.raises(ValueError, match="recomputed receipt_id"):
+        compile_from_disk(
+            root=tmp_path, generated_at="2026-08-05T00:00:00Z",
+            source_store=NoReadStore(),
+        )
+    assert receipts_path.read_text(encoding="utf-8") == corrupted_text
+    assert ledger_path.read_bytes() == first_ledger_bytes

@@ -1,0 +1,6 @@
+ci-pack-0	validate and run legacy CI pack	2026-10-11T23:34:03.0298427Z             "curated exclusive scope(s) no longer cover their own import closure:\n  "
+ci-pack-0	validate and run legacy CI pack	2026-10-11T23:34:03.0304332Z E       AssertionError: curated exclusive scope(s) no longer cover their own import closure:
+ci-pack-0	validate and run legacy CI pack	2026-10-11T23:34:03.0305304Z E           dataos-prospective-reference: ['lib/nyse_calendar.py']
+ci-pack-0	validate and run legacy CI pack	2026-10-11T23:34:03.0313228Z FAILED tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure - AssertionError: curated exclusive scope(s) no longer cover their own import closure:
+ci-pack-0	validate and run legacy CI pack	2026-10-11T23:34:03.0314595Z     dataos-prospective-reference: ['lib/nyse_calendar.py']
+ci-pack-0	validate and run legacy CI pack	2026-10-11T23:49:03.9047269Z ........................................................F...CI_PACK_FAILED_JOBS=["ci-control-plane-contracts"]

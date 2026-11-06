@@ -1,0 +1,8 @@
+{
+  "observed_at": "2026-10-15T06:55:39.245727+00:00",
+  "pr": 6651,
+  "state": "open",
+  "head": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+  "body_updated_at": "2026-10-15T06:55:38Z",
+  "mutation": "body only; no labels/base/merge/check change"
+}

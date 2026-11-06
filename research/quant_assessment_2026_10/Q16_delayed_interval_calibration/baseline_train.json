@@ -1,0 +1,47 @@
+{
+  "assets": {
+    "GLD": {
+      "honest_train_blocks": 114,
+      "n_test_origins_available": 2937,
+      "n_train_origins": 2523,
+      "naive_gauss80_coverage_train": 0.6904,
+      "train_abs_score_q80": 1.6212
+    },
+    "IWM": {
+      "honest_train_blocks": 114,
+      "n_test_origins_available": 2937,
+      "n_train_origins": 2523,
+      "naive_gauss80_coverage_train": 0.7594,
+      "train_abs_score_q80": 1.3839
+    },
+    "QQQ": {
+      "honest_train_blocks": 114,
+      "n_test_origins_available": 2937,
+      "n_train_origins": 2523,
+      "naive_gauss80_coverage_train": 0.6849,
+      "train_abs_score_q80": 1.5785
+    },
+    "SPY": {
+      "honest_train_blocks": 114,
+      "n_test_origins_available": 2937,
+      "n_train_origins": 2523,
+      "naive_gauss80_coverage_train": 0.7277,
+      "train_abs_score_q80": 1.4485
+    },
+    "TLT": {
+      "honest_train_blocks": 114,
+      "n_test_origins_available": 2937,
+      "n_train_origins": 2523,
+      "naive_gauss80_coverage_train": 0.738,
+      "train_abs_score_q80": 1.4832
+    }
+  },
+  "axis_first": "2004-11-18",
+  "axis_last": "2026-10-08",
+  "horizon": 22,
+  "n_axis": 5506,
+  "nominal": 0.8,
+  "train_end_date": "2014-12-31",
+  "train_end_pos": 2546,
+  "window": "training only (labels matured <= train_end)"
+}

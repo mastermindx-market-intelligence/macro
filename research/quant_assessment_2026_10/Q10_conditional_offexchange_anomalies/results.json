@@ -1,0 +1,195 @@
+{
+ "B1_train_quantiles_z": {
+  "50": [
+   -0.4983700924975062,
+   0.9497255382943983
+  ],
+  "90": [
+   -1.7600157831605785,
+   2.071923597458712
+  ],
+  "98": [
+   -3.1715772530173716,
+   3.2148810479479635
+  ]
+ },
+ "ablation_no_market": {
+  "coef_no_market": [
+   0.048652874129680126,
+   -3.469446951953614e-18,
+   0.03793088507159455,
+   0.02090330923500837
+  ],
+  "cov90_no_market": 0.9062727970365037,
+  "mean_is_model": 0.25836830343573103,
+  "mean_is_no_market": 0.2987943998565541,
+  "relative_reduction_model_vs_no_market": 0.13529736983099738,
+  "rows": 105551
+ },
+ "attrition_all": {
+  "ABSTAIN_NO_MARKET": 9630,
+  "ABSTAIN_NO_SUPPORT": 3731,
+  "EXCLUDED_SPLIT": 13943,
+  "INVALID_DENOMINATOR": 1,
+  "INVALID_RATIO": 1320,
+  "SCORED_FULL": 252671,
+  "SCORED_POOLED": 1530
+ },
+ "attrition_test": {
+  "ABSTAIN_NO_SUPPORT": 200,
+  "EXCLUDED_SPLIT": 2421,
+  "INVALID_DENOMINATOR": 1,
+  "INVALID_RATIO": 277,
+  "SCORED_FULL": 105551,
+  "SCORED_POOLED": 603
+ },
+ "bootstrap": {
+  "block": 20,
+  "reps": 2000,
+  "seed": 20261008,
+  "sensitivity": [
+   10,
+   40
+  ]
+ },
+ "coef": {
+  "names": [
+   "intercept",
+   "market",
+   "rel_volume",
+   "rel_volume_pos"
+  ],
+  "values": [
+   -0.0064755421101982515,
+   1.0201059393176273,
+   0.06696883091165544,
+   0.01997739887267065
+  ]
+ },
+ "cov90_model_ci95_block20": [
+  0.8995978143059435,
+  0.9115238804300702
+ ],
+ "cov90_model_common": 0.9057990923818817,
+ "coverage": {
+  "50": {
+   "B0": 0.4760447556157687,
+   "B1": 0.5027711722295384,
+   "model": 0.5050165322924463
+  },
+  "90": {
+   "B0": 0.8598971113490161,
+   "B1": 0.9029852867334275,
+   "model": 0.9057990923818817
+  },
+  "98": {
+   "B0": 0.9456755502079564,
+   "B1": 0.9797728112476434,
+   "model": 0.982075015869106
+  }
+ },
+ "coverage_within_tol": true,
+ "flags": {
+  "heavy_flags_model_pit_below_0.95": 0.5211531700457049,
+  "heavy_flags_on_shift_sessions_model_pit_below_0.95": 0.5116279069767442,
+  "n_test_shift_sessions": 13,
+  "rate_B0_z_ge_1.645": 0.06378906879138994,
+  "rate_incumbent_heavy_z_ge_1.5": 0.08084243635777966,
+  "rate_model_pit_ge_0.95": 0.044736667582495664,
+  "rows_common": 105551,
+  "share_common_rows_on_shift_sessions": 0.03925116768197364,
+  "share_on_shift_sessions_B0": 0.021832763998217732,
+  "share_on_shift_sessions_heavy": 0.020157037384272825,
+  "share_on_shift_sessions_model": 0.10885218127911901,
+  "shift_threshold_abs_session_median_d": 0.19163280445872544
+ },
+ "honest_n": {
+  "issuers_common": 372,
+  "median_issuers_per_session": 355.0,
+  "nonoverlapping_blocks_20": 17,
+  "rows_common": 105551,
+  "test_sessions": 321
+ },
+ "n_train_rows_full": 147120,
+ "primary": {
+  "H1_vs_B0": {
+   "ci95_by_block": {
+    "10": [
+     0.07989848134836283,
+     0.19559546233563985
+    ],
+    "20": [
+     0.07820233379424373,
+     0.18227739183447675
+    ],
+    "40": [
+     0.08697609898505093,
+     0.17235279881489865
+    ]
+   },
+   "mean_is_competitor": 0.3002440234295956,
+   "mean_is_model": 0.2585949178456626,
+   "pass": true,
+   "relative_reduction": 0.13871751753186634
+  },
+  "H2_vs_B1": {
+   "ci95_by_block": {
+    "10": [
+     0.08321164465872584,
+     0.1928062271080624
+    ],
+    "20": [
+     0.08173329751641248,
+     0.1819403603957166
+    ],
+    "40": [
+     0.08793200740951843,
+     0.17435790221611372
+    ]
+   },
+   "mean_is_competitor": 0.30019205803474464,
+   "mean_is_model": 0.2585949178456626,
+   "pass": true,
+   "relative_reduction": 0.1385684233667086
+  }
+ },
+ "rows_invalid_denominator": 1,
+ "rows_invalid_ratio": 1320,
+ "rows_split_excluded": 13943,
+ "rows_total": 282826,
+ "rows_valid_p_eq_0": 0,
+ "rows_valid_p_eq_1": 0,
+ "split": {
+  "test": [
+   "2025-07-01",
+   "2026-10-08"
+  ],
+  "train_end": "2025-06-30"
+ },
+ "thin_tier": {
+  "coverage": {
+   "50": 0.5190713101160862,
+   "90": 0.8922056384742952,
+   "98": 0.978441127694859
+  },
+  "issuers": 21,
+  "rows": 603,
+  "rows_where_B0_defined": 0
+ },
+ "train_quantiles_u": {
+  "0.005": -3.867431616376068,
+  "0.01": -3.2117880737341804,
+  "0.025": -2.454105054083716,
+  "0.05": -1.93268323208799,
+  "0.1": -1.4331638588801243,
+  "0.25": -0.7126711850778266,
+  "0.5": -0.0003282802419613474,
+  "0.75": 0.6970705791947429,
+  "0.9": 1.3510680760189115,
+  "0.95": 1.793182273585227,
+  "0.975": 2.249303945427572,
+  "0.99": 2.9000643885725155,
+  "0.995": 3.428481602223544
+ },
+ "verdict": "KEEP"
+}

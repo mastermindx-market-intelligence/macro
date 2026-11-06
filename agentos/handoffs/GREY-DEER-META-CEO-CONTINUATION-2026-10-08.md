@@ -1,3 +1,72 @@
+---
+workstream: WS:GREY-DEER-RISK-INTELLIGENCE
+session: sol/grey-deer-oct8-pivot-audit-20261008
+model: sol
+ended_because: blocked
+mission: Preserve the October 8–9, 2026 Grey Deer Meta-CEO checkpoint in the incumbent Agent OS schema.
+  This is archival source maintenance only; the Grey Deer mission remains incomplete.
+state_before: 'Original PR #8648 head 8473e82a67c90823e8912a7bdf7219464246d11c contains a 107-line handoff
+  without required YAML frontmatter. Its blocked source/review frontier is dated historical evidence,
+  not a current runtime census.'
+changed:
+- path: agentos/handoffs/GREY-DEER-META-CEO-CONTINUATION-2026-10-08.md
+  what: Add required metadata and archival qualification; preserve the complete original body, its exact
+    refusal/effect/custody limits, and all five accompanying research artifacts.
+verified:
+- claim: Read the already-published handoff and identify the existing workstream join.
+  command: GitHub source read at original PR head 8473e82a67c90823e8912a7bdf7219464246d11c; reuse the
+    source-bound current workstream record unchanged by subsequent inspected main commits.
+  result: Handoff blob bf2bc4d2236935ba67ac853a383956a97ca4ad06, 107 lines. Existing workstream blob 67d333db7a4a43732b1169f078a81a7f28b17f80
+    retains owner coo-fable and active status. This is source evidence, not a receiver/START or live-state
+    claim.
+unverified:
+- claim: Current Grey Deer/QLedger/nightly/heartbeat/Terminal state, source leases, denied actions, review
+    effects, production delivery and scientific acceptance.
+  what_would_verify: A separately authorized continuation reconciles current canonical owners and original
+    effect targets without retrying or proxying any refused action.
+unresolved:
+- The parent Grey Deer mission remains PARTIAL and mission_complete:false; archival landing cannot close
+  it.
+- 'Terminal #849/#852, Macro #8132, the preserved diagnostic workspaces, and later #8721/C4/#8188 integration
+  retain their own current custody and applicable action-specific holds.'
+- The historical fence's independent generated-header mismatch needs actual fresh CI disposition; it is
+  not declared inherited, flaky or fixed here.
+next_actions:
+- Complete this original-carrier archival metadata repair and required current delivery checks through
+  the incumbent controller.
+- Before any future operational continuation, establish current assigned intent, protected procedure,
+  live source/writer/effect and actual acceptance requirements; do not dispatch the archived plans from
+  this record alone.
+do_not_redo:
+- Do not republish, proxy, clean or release gd-issued-warning-artifact-audit-20261008 or gd-risk-consumer-census-20261008;
+  preserve their source custody and unfinished candidates.
+- 'Preserve Terminal #852''s exact publication refusal/NOT_APPLIED and #849''s denied diagnostic; do not
+  retrieve or execute equivalents through another carrier.'
+- 'Preserve #8132''s three safety findings and all other ten standing action-specific refusals in the
+  original body.'
+- Do not create a parallel warning engine, QLedger store, event/episode ledger, source owner, scheduler,
+  reviewer watcher or financial authority.
+danger_areas:
+- Treating October 8–9 tests, law pins, CI state, no-unknown-effect statements, current-order plans or
+  reviewer placement as present facts.
+- Confusing records landing with implementation/production acceptance or a new Terminal/Grey Deer/Paper/Fable
+  commission.
+- Using historical code hashes or proposed corrections as authorization to retry the original denied source
+  publication or diagnostics.
+prs:
+- 8648
+---
+
+## Archival qualification — 2026-11-06
+
+The complete body below is the October 8–9, 2026 checkpoint. Its current-state wording, procedure pins, source/CI/test receipts, no-unknown-effect statements, review placements and next-action order are historical evidence. They are not today's runtime census, receiver/START, source lease or a new execution instruction. The metadata describes that blocked historical handoff and this archival schema correction; `model: sol` is the record's schema identity, not a new served-model receipt.
+
+This change preserves the existing `WS:GREY-DEER-RISK-INTELLIGENCE` owner and all original refusals, effect determinations, safety findings and source custody. In particular, it does not republish the refused local QLedger audit, retry Terminal #852's publication or #849's diagnostic, execute #8132, release either preserved workspace, or take over #8721/C4, #8188, Paper or Fable operations. Archived implementation commissions and proposed ledger/heartbeat repairs remain unissued by this records action. Applicable current protected review rules govern any later release; historical review-placement prose does not create a new blanket review prerequisite for this archival edit.
+
+All original tests and incident conclusions remain dated claims, not newly executed research, provider/runtime inspection, warning delivery, deployed proof or acceptance. The entire original 107-line body and five research siblings remain preserved; the Grey Deer mission remains incomplete and all financial/predictive authority remains bounded by its existing owners.
+
+---
+
 # Grey Deer Meta-CEO continuation — 2026-10-08, 22:59 UTC
 
 Program: `WS:GREY-DEER-RISK-INTELLIGENCE` / `MAS-258` / Macro #8128.

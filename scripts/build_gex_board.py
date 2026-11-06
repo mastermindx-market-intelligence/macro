@@ -374,7 +374,29 @@ def _merge_gex_state_fields(model: dict, state: dict | None) -> dict:
     return model
 
 
-def main(as_of: datetime | None = None) -> int:
+def _write_redirect_stub(site: Path) -> None:
+    """Render the fixed gex.html.j2 redirect stub through this builder's own
+    Environment + lib.pages.write_page — the exact HTML tail step of a full
+    build. The stub is a zero-context render (OIP W1.6-B: no `built`, no i18n
+    globals, no group/default-key derivation), so this same step is also the
+    whole job of main(page_only=True): refresh ONLY the shell, with no Cboe
+    fetch / payload / manifest / archive / gex_state work behind it.
+    """
+    env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
+    write_page(site / "gex.html", env.get_template("gex.html.j2").render())
+
+
+def main(as_of: datetime | None = None, page_only: bool = False) -> int:
+    if page_only:
+        # --page-only: refresh ONLY the fixed gex.html redirect stub — no Cboe
+        # chain fetch, no payload/manifest/gex_state write, no archive snapshot,
+        # and no session/as-of resolution. Source-only stub updates (template
+        # copy fixes etc.) re-emit the existing shell without a market refresh.
+        site = config.ROOT / config.load()["storage"]["site_dir"]
+        site.mkdir(parents=True, exist_ok=True)  # stub parent only — no payload dirs
+        _write_redirect_stub(site)
+        log.info("gex: --page-only wrote %s/gex.html (redirect stub only)", site)
+        return 0
     from concurrent.futures import ThreadPoolExecutor
     from collectors.cboe import GexAdapter
     adapter = GexAdapter()
@@ -480,8 +502,7 @@ def main(as_of: datetime | None = None) -> int:
     # now: tests/test_options_coverage_object.py pins its construction by source
     # text (coverage["__all__"], coverage["coverage_v1"]) as this builder's half
     # of the options family's shared coverage schema.
-    env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
-    write_page(site / "gex.html", env.get_template("gex.html.j2").render())
+    _write_redirect_stub(site)
     log.info("gex: wrote %s/gex.html (redirect stub) + %d payloads "
              "(%d of %d symbols had liquid options)",
              site, len(manifest), len(manifest), len(rows))
@@ -489,4 +510,8 @@ def main(as_of: datetime | None = None) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    import argparse
+    _ap = argparse.ArgumentParser(description="Build the Options Desk board (site/gex.html + payloads).")
+    _ap.add_argument("--page-only", action="store_true",
+                     help="write only the fixed gex.html redirect stub; skip every fetch/compute/write")
+    sys.exit(main(page_only=_ap.parse_args().page_only))

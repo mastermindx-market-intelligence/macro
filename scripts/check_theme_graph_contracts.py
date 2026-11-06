@@ -70,6 +70,10 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine.theme_graph import identity, rights, store  # noqa: E402
+from engine.theme_graph.curation_assertion import (  # noqa: E402
+    CurationAssertionError,
+    decode_assertion,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("check_theme_graph_contracts")
@@ -151,7 +155,7 @@ EDGE_ENUMS: dict[str, set[str]] = {
     "source_class": {"curated", "scrape", "filing", "co_movement",
                      "llm_proposed_ratified"},
     "date_provenance": {"curated_changelog", "seed_constant", "raw_snapshot",
-                        "crosswalk", "membership_pit"},
+                        "crosswalk", "membership_pit", "activity_history"},
     "economic_share_display": {"none", "weak", "core"},
     "trading_beta_display": {"none", "weak", "core"},
     "attention_share_display": {"none", "weak", "core"},
@@ -186,7 +190,10 @@ LIFECYCLE_ENUMS: dict[str, set[str]] = {
 #: Which node kinds each edge type may connect. The pairing table is the structural
 #: answer to "did somebody quietly compose a new path": a MEMBER_OF from a company to a
 #: canonical theme, or an EXPRESSES from a local theme to a basket, would be a new
-#: semantics smuggled in as data.
+#: semantics smuggled in as data. The ONE exception is the curated activity-history
+#: fold: ACTIVITY_HISTORY_PAIRING below admits a company -> canonical theme MEMBER_OF
+#: per ROW, by its exact provenance triple — never by pair, so the pair itself stays
+#: out of this table and any other company -> theme MEMBER_OF still breaches.
 EDGE_PAIRING: dict[str, set[tuple[str, str]]] = {
     "MEMBER_OF": {("company", "basket"), ("company", "local_theme")},
     "EXPRESSES": {("basket", "theme"), ("basket", "local_theme"),
@@ -194,12 +201,44 @@ EDGE_PAIRING: dict[str, set[tuple[str, str]]] = {
     "TRACKS": {("etf", "basket")},
 }
 
+#: The curated activity-history fold (engine.theme_graph.materialize,
+#: ACTIVITY_HISTORY_CONFIDENCE_BASIS) is the ONE owned path that may emit a
+#: company -> canonical theme MEMBER_OF; admission is per ROW by its exact
+#: provenance triple, never by pair, so any other company -> theme MEMBER_OF still
+#: breaches. Both refusal sites that see (src kind, dst kind) — the EDGE_PAIRING
+#: loop and the §9.6 per-ticker-tags check — consult _activity_history_admitted()
+#: so they cannot drift apart on which rows the fold owns.
+ACTIVITY_HISTORY_PAIRING: dict[str, tuple] = {
+    "MEMBER_OF": (("company", "theme"),
+                  {"source_class": "curated", "date_provenance": "activity_history",
+                   "confidence_basis": "activity_history.v1"}),
+}
+
+
+def _activity_history_admitted(etype: str, pair: tuple[str, str], row: dict) -> bool:
+    """True iff this exact ROW carries the activity-history fold's provenance triple.
+
+    A row whose type has no admission entry, whose kinds differ from the admitted
+    pair, or that is missing ANY provenance column is never admitted — absence is
+    not equality."""
+    admission = ACTIVITY_HISTORY_PAIRING.get(etype)
+    if admission is None or pair != admission[0]:
+        return False
+    return all(col in row and str(row[col]) == want
+               for col, want in admission[1].items())
+
+
 #: GMI theme hierarchy (W-C1, DEC:GMI-THEME-HIERARCHY-ON-CROSSWALK).
-THEME_TIERS: frozenset[str] = frozenset({"macro_category", "theme", "micro_theme"})
+THEME_TIERS: frozenset[str] = frozenset(
+    {"macro_category", "theme", "sub_theme", "micro_theme"})
 THEME_NODE_ID_RE = re.compile(r"^theme:[a-z0-9][a-z0-9_]{1,62}$")
 CROSSWALK_NODE_PROVENANCE = "crosswalk:config/theme_crosswalk.yml"
-PARENT_OF_ADJACENT: frozenset[tuple[str, str]] = frozenset(
-    {("macro_category", "theme"), ("theme", "micro_theme")})
+PARENT_OF_ADJACENT: frozenset[tuple[str, str]] = frozenset({
+    ("macro_category", "theme"),
+    ("theme", "sub_theme"),
+    ("sub_theme", "micro_theme"),
+    ("theme", "micro_theme"),
+})
 
 
 # ---------------------------------------------------------------------------
@@ -369,6 +408,31 @@ def _check_schema(df: pd.DataFrame, schema_name: str, label: str) -> list[str]:
     return out
 
 
+def curation_assertion_breaches(evidence_id: str, value: object) -> list[str]:
+    """T02 — decode/validate ONE evidence row's ``curation_assertion`` cell.
+
+    Importable per-row so tests (and later waves) can call the exact check the
+    audit runs without building a whole store. Null/empty is never a violation —
+    an assertion is optional per receipt; a row source that lacks the column
+    entirely (today's parquet) reads as null. Everything else must decode AND
+    fully validate: malformed JSON, a tampered stamp, an unknown key or any
+    schema/semantic breach is one breach naming the evidence row.
+    """
+    if _is_null(value) or (isinstance(value, str) and not value.strip()):
+        return []
+    try:
+        from jsonschema import ValidationError  # noqa: PLC0415
+        catchable: tuple[type[BaseException], ...] = (
+            CurationAssertionError, json.JSONDecodeError, ValidationError)
+    except ImportError:  # pragma: no cover — CI installs it
+        catchable = (CurationAssertionError, json.JSONDecodeError)
+    try:
+        decode_assertion(value)
+    except catchable as exc:
+        return [f"evidence {evidence_id} curation_assertion invalid: {exc}"]
+    return []
+
+
 # ---------------------------------------------------------------------------
 # Audit
 # ---------------------------------------------------------------------------
@@ -414,6 +478,13 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
     breaches += _check_schema(edges, "edges", "edges")
     breaches += _check_schema(evidence, "evidence", "evidence")
 
+    # --- T02: curation_assertion cells decode, when present -------------------
+    # A row source without the column (today's parquet, pre-#7462) reads as null
+    # everywhere here, so the audit's verdict on the current store is unchanged.
+    for row in evidence.to_dict("records"):
+        breaches += curation_assertion_breaches(str(row.get("evidence_id")),
+                                                row.get("curation_assertion"))
+
     # --- company id grammar, full scan --------------------------------------
     if "kind" in nodes.columns and "node_id" in nodes.columns:
         co = nodes[nodes["kind"].astype(str) == "company"]["node_id"].astype(str)
@@ -451,6 +522,8 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
             etype = str(row.get("type"))
             pair = (kinds.get(str(row.get("src")), "?"),
                     kinds.get(str(row.get("dst")), "?"))
+            if _activity_history_admitted(etype, pair, row):
+                continue  # the curated activity-history fold's own row, per row
             seen_pairs.setdefault(etype, set()).add(pair)
             example.setdefault((etype, *pair), str(row.get("edge_id")))
         for etype, pairs in sorted(seen_pairs.items()):
@@ -1151,15 +1224,38 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                        else pd.Series([""] * len(nodes), index=nodes.index))
         tier_series = (nodes["tier"] if "tier" in nodes.columns
                        else pd.Series([None] * len(nodes), index=nodes.index))
-        for nid, kind, tier, prov in zip(nodes["node_id"], nodes["kind"],
-                                         tier_series, prov_series):
+        meta_series = (nodes["source_meta"] if "source_meta" in nodes.columns
+                       else pd.Series([None] * len(nodes), index=nodes.index))
+        for nid, kind, tier, prov, meta in zip(
+                nodes["node_id"], nodes["kind"], tier_series, prov_series,
+                meta_series):
             nid_s, kind_s = str(nid), str(kind)
             tier_s = None if _is_null(tier) else str(tier)
             if kind_s == "theme":
                 if tier_s not in THEME_TIERS:
                     breaches.append(
                         f"hierarchy: node {nid_s!r} kind=theme requires tier "
-                        f"macro_category|theme|micro_theme (got {tier_s!r})")
+                        f"macro_category|theme|sub_theme|micro_theme "
+                        f"(got {tier_s!r})")
+                if not _is_null(meta):
+                    try:
+                        parsed_meta = json.loads(str(meta))
+                    except Exception:  # noqa: BLE001 — unreadable JSON is the rights check
+                        parsed_meta = None
+                    if (isinstance(parsed_meta, dict)
+                            and "value_chain_position" in parsed_meta):
+                        pos = parsed_meta["value_chain_position"]
+                        if pos not in ("upstream", "midstream", "downstream",
+                                       "enabler"):
+                            breaches.append(
+                                f"hierarchy: node {nid_s!r} value_chain_position "
+                                f"{pos!r} is not one of "
+                                f"upstream|midstream|downstream|enabler")
+                        if tier_s not in ("sub_theme", "micro_theme"):
+                            breaches.append(
+                                f"hierarchy: node {nid_s!r} value_chain_position "
+                                f"is a display attribute of tier "
+                                f"sub_theme|micro_theme only (got {tier_s!r})")
             elif tier_s is not None:
                 breaches.append(
                     f"hierarchy: node {nid_s!r} kind={kind_s!r} must have tier null "
@@ -1229,13 +1325,18 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
                     breaches.append(
                         f"hierarchy: PARENT_OF endpoint {endpoint!r} provenance must "
                         f"be {CROSSWALK_NODE_PROVENANCE!r} (got {prov!r})")
+                if not THEME_NODE_ID_RE.match(endpoint):
+                    breaches.append(
+                        f"hierarchy: PARENT_OF edge {eid!r} endpoint {endpoint!r} "
+                        f"violates theme id grammar theme:<slug>")
             src_tier = tiers_by_node.get(src)
             dst_tier = tiers_by_node.get(dst)
             if (src_tier, dst_tier) not in PARENT_OF_ADJACENT:
                 breaches.append(
                     f"hierarchy: PARENT_OF edge {eid!r} tier adjacency "
                     f"({src_tier!r}→{dst_tier!r}) not in "
-                    f"macro_category→theme or theme→micro_theme")
+                    f"macro_category→theme, theme→sub_theme, "
+                    f"sub_theme→micro_theme, or theme→micro_theme")
             if _is_null(row.get("valid_to")):
                 open_parent_of.append((src, dst))
                 parent_count.setdefault(dst, set()).add(src)
@@ -1253,6 +1354,10 @@ def audit(store_dir: Path, breaks_file: Path) -> tuple[list[str], list[str]]:
     if kinds and {"type", "src", "dst"} <= set(edges.columns):
         for row in edges.to_dict("records"):
             src, dst = str(row.get("src")), str(row.get("dst"))
+            if _activity_history_admitted(
+                    str(row.get("type")),
+                    (kinds.get(src, "?"), kinds.get(dst, "?")), row):
+                continue  # the curated activity-history fold's own row, per row
             if kinds.get(src) == "company" and kinds.get(dst) == "theme":
                 breaches.append(
                     f"hierarchy: edge {str(row.get('edge_id'))!r} is company→theme "
@@ -1556,6 +1661,21 @@ def selftest(tmp_root: Path | None = None) -> int:
     checks.append((any("not a pairing this type may carry" in x
                        for x in audit(d, empty_breaks)[0]),
                    "a company→theme MEMBER_OF is the refused derived edge and must breach"))
+
+    # The activity-history admission is per ROW, never per pair: the same
+    # company→theme MEMBER_OF with a crosswalk provenance is still a smuggle.
+    nodes, edges, ev = _clean_rows()
+    nodes.append({**nodes[0], "node_id": "theme:crosswalk_fixture", "kind": "theme",
+                  "tier": "theme"})
+    crosswalked = {**edges[0], "dst": "theme:crosswalk_fixture",
+                   "edge_id": "member_of:co:us:AAA->theme:crosswalk_fixture@2024-01-01",
+                   "date_provenance": "crosswalk"}
+    d = _fixture(tmp_root / "pairing_crosswalk", nodes=nodes,
+                 edges=[*edges, crosswalked], evidence=ev)
+    checks.append((any("not a pairing this type may carry" in x
+                       for x in audit(d, empty_breaks)[0]),
+                   "a company→theme MEMBER_OF outside the activity-history provenance "
+                   "triple (e.g. crosswalk) must still breach"))
 
     # A store written before the additive columns existed: a NOTICE, never a breach —
     # v1 is additive-only, so that shape was valid when it was written.

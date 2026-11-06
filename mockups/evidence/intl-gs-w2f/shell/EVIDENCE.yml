@@ -1,0 +1,15 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/intl_workspace/shell.html.j2
+  - templates/intl.html.j2
+  - templates/intl_workspace_state.js
+  - templates/intl_workspace.js
+  - templates/intl_workspace/_gs_macros.html.j2
+  - templates/intl_workspace_surveillance.css
+  - site/intl_workspace_surveillance.css
+  - lib/intl_surveillance_mount.py
+  - lib/intl_gs_observations.py
+  - lib/intl_gs_display.py
+  - scripts/build_intl.py
+  - tests/intl_gs_fixture_site.py
+manifest: mockups/evidence/intl-gs-w2f/shell/manifest.json

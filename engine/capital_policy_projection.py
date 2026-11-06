@@ -492,8 +492,10 @@ def _collapse_comment_close(rows: list[dict]) -> list[dict]:
     return kept
 
 
-def _clip_per_window(collected: list[dict]) -> tuple[dict[str, list[dict]], bool, dict[str, int]]:
-    """Keep MAX_ROWS across the section; never clip a window with rows to zero."""
+def _clip_per_window(
+    collected: list[dict], max_rows: int = MAX_ROWS,
+) -> tuple[dict[str, list[dict]], bool, dict[str, int]]:
+    """Keep `max_rows` across the section; never clip a window with rows to zero."""
     by_window: dict[str, list[dict]] = {wid: [] for wid in WINDOWS}
     for row in collected:
         by_window[row["window_id"]].append(row)
@@ -502,11 +504,11 @@ def _clip_per_window(collected: list[dict]) -> tuple[dict[str, list[dict]], bool
 
     total = sum(len(rows) for rows in by_window.values())
     hidden = {wid: 0 for wid in WINDOWS}
-    if total <= MAX_ROWS:
+    if total <= max_rows:
         return by_window, False, hidden
 
     occupied = [wid for wid in WINDOWS if by_window[wid]]
-    remaining_slots = MAX_ROWS - len(occupied)
+    remaining_slots = max_rows - len(occupied)
     extras: list[dict] = []
     firsts: dict[str, dict] = {}
     for wid in occupied:
@@ -586,10 +588,20 @@ def typed_unavailable(today: date | None = None) -> dict:
     }
 
 
-def project(today: date | None = None, horizon_days: int | None = None) -> dict:
-    """Return the frozen v1 payload. Never raises into a build. Never networks."""
+def project(
+    today: date | None = None,
+    horizon_days: int | None = None,
+    max_rows: int | None = None,
+) -> dict:
+    """Return the frozen v1 payload. Never raises into a build. Never networks.
+
+    `max_rows` lowers the row cap below MAX_ROWS (never above it). The page
+    builder uses it to shed dated steps when the rendered section would
+    overrun SECTION_BUDGET_BYTES; the payload's keys do not change.
+    """
     asof = _as_date(today) or date.today()
     horizon = HORIZON_DAYS if horizon_days is None else int(horizon_days)
+    cap = MAX_ROWS if max_rows is None else max(1, min(MAX_ROWS, int(max_rows)))
 
     event_unavailable = False
     events: list = []
@@ -666,7 +678,7 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
 
     collected = _collapse_comment_close(collected)
     collected.sort(key=lambda r: (r["date"], r["_etype"], r["source_url"]))
-    by_window, truncated, hidden = _clip_per_window(collected)
+    by_window, truncated, hidden = _clip_per_window(collected, cap)
 
     windows = []
     for window_id in WINDOWS:
@@ -706,10 +718,14 @@ def project(today: date | None = None, horizon_days: int | None = None) -> dict:
         windows.append(_window_entry(window_id, state, reason, rows, more))
 
     row_count = sum(len(w["rows"]) for w in windows)
+    # The banner names the rows the reader can actually see. The cap can sit
+    # below MAX_ROWS (a budget shed) or below the occupied-window count (the
+    # clip never empties a window), so neither constant is the shown count.
+    steps_en = "dated step" if row_count == 1 else "dated steps"
     truncation = (
         (
-            f"Showing the next {MAX_ROWS} dated steps; more are scheduled.",
-            f"仅显示接下来的 {MAX_ROWS} 个既定日期节点，后续仍有安排。",
+            f"Showing the next {row_count} {steps_en}; more are scheduled.",
+            f"仅显示接下来的 {row_count} 个既定日期节点，后续仍有安排。",
         )
         if truncated else ("", "")
     )

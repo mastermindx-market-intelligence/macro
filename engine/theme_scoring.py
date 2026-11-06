@@ -538,17 +538,21 @@ def _macro_leg(bid: str, mc: dict) -> tuple[float | None, list[str]]:
 
 # ----------------------------------------------------------------- per-basket legs
 def _breadth_leg(mc_closes: pd.DataFrame, i: int, fp: dict) -> tuple[float, dict]:
-    """% members above 50d / 200d MA + net new-highs−lows over the live members."""
+    """% eligible priced members above 50d / 200d MA + net new-highs−lows over live members."""
     win = mc_closes.iloc[: i + 1]
     last = win.iloc[-1]
     live = last.dropna().index
     n = len(live)
     if n == 0:
-        return 0.0, {"pct50": None, "pct200": None, "nh": 0, "nl": 0, "n": 0}
+        return 0.0, {"pct50": None, "pct200": None, "nh": 0, "nl": 0,
+                     "n": 0, "n50": 0, "n200": 0}
     ma50 = win[live].rolling(50, min_periods=25).mean().iloc[-1]
     ma200 = win[live].rolling(200, min_periods=100).mean().iloc[-1]
-    pct50 = float((last[live] > ma50).mean())
-    pct200 = float((last[live] > ma200).mean())
+    valid50 = last[live].notna() & ma50.notna()
+    valid200 = last[live].notna() & ma200.notna()
+    n50, n200 = int(valid50.sum()), int(valid200.sum())
+    pct50 = float((last[live][valid50] > ma50[valid50]).mean()) if n50 else None
+    pct200 = float((last[live][valid200] > ma200[valid200]).mean()) if n200 else None
     w = min(HI_LO_WINDOW, len(win))
     roll = win[live].iloc[-w:]
     hi, lo = roll.max(), roll.min()
@@ -556,10 +560,12 @@ def _breadth_leg(mc_closes: pd.DataFrame, i: int, fp: dict) -> tuple[float, dict
     nl = int((last[live] <= lo * (1 + NEAR)).sum())
     net_nh = (nh - nl) / n
     bz = fp.get("broadening_z")
-    leg = float(np.clip(0.45 * (2 * pct50 - 1) + 0.25 * (2 * pct200 - 1)
+    # Unavailable MA measurements contribute no directional term; weights stay fixed.
+    leg = float(np.clip(0.45 * (2 * pct50 - 1 if pct50 is not None else 0.0)
+                        + 0.25 * (2 * pct200 - 1 if pct200 is not None else 0.0)
                         + 0.20 * net_nh + 0.10 * _tanh(bz or 0.0, 0.8), -1, 1))
     return leg, {"pct50": _r(pct50, 3), "pct200": _r(pct200, 3),
-                 "nh": nh, "nl": nl, "n": n}
+                 "nh": nh, "nl": nl, "n": n, "n50": n50, "n200": n200}
 
 
 def _impulse_leg(rets: pd.DataFrame, mc_closes: pd.DataFrame, i: int) -> tuple[float, dict]:

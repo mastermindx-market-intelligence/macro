@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-10-14T10:31:54.532911+00:00",
+  "counts": {
+    "queued": 0,
+    "in_progress": 10,
+    "waiting": 0,
+    "pending": 0,
+    "requested": 0
+  },
+  "active_proofs": 10,
+  "cap": 8,
+  "lease_prs": [],
+  "pr": {
+    "autoMergeRequest": null,
+    "headRefOid": "8f705cb32a77987f7e5c025e99194f3b479a6382",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "number": 9209,
+    "state": "OPEN"
+  }
+}

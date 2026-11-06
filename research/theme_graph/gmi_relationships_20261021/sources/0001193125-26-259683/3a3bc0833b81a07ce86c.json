@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-05T20:30:28Z",
+ "accession": "0001193125-26-259683",
+ "cik": "0001002047",
+ "doc_byte_length": 5076904,
+ "doc_sha256": "6a6f766a29758072233c63b60d2ffdf34252aa28ab628ddcd6b24da6d8d0fd80",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-05",
+ "form": "10-K",
+ "period_of_report": "2026-04-24",
+ "primary_document": "ntap-20260424.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 549633,
+  "byte_start": 548846,
+  "normalized": "The U.S. government is an important customer for us, but its demand is uncertain due to political and budgetary fluctuations and constraints. In each of fiscal 2024, 2025 and 2026, revenues from the U.S. public sector markets (including the U.S. federal government and U.S. state governments, local municipalities and educational institutions) represented 11%, 11% and 10% of our net revenues, respectively. Uncertainty related to the U.S. government budget and debt levels, changes to governmental agency structure, compliance with new initiatives and executive orders, and reductions in force have increased demand uncertainty for our products.",
+  "normalized_sha256": "c77736c00f7b125b1987c5872e88e5badea8d8bb452d0a9c7e075dfe6eff09ec",
+  "raw": "The U.S. government is an important customer for us, but its demand is uncertain due to political and budgetary fluctuations and constraints. In each of fiscal 2024, 2025 and 2026, revenues from the U.S. public sector markets (including the U.S. federal government and U.S. state governments, local municipalities and educational institutions) represented 11%, 11% and 10% of our net revenues, respectively. Uncertainty related to the U.S. government budget and debt levels, changes to governmental agency structure, compliance with new initiatives and executive orders, and reductions in force have increased demand uncertainty for our products.</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "3a3bc0833b81a07ce86cdd492d73f996e8eed88cf36a2fc0d3ece7362c0beb3e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1002047/000119312526259683/ntap-20260424.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,78 @@
+{
+  "A01_A02_A03_adopted_meanings_exact": true,
+  "P1_count": 0,
+  "P2_count": 0,
+  "admission": "NOT_ADMITTED",
+  "adoption_manifest_sha256": "82839b3edfb68baf03ebbc8e435d9c9b63dd7bea50e0c8eb3b17bd52e9194e7e",
+  "adoption_memo_sha256": "1c2d9c72ad7ea969a5b41294845bb55d4fcb0158802b74e5ccff815e36264783",
+  "adoption_sha256": "645a20a39842d9c5a03b4ff39a37280d1aa02c32ef545c061d0aa959f06e0016",
+  "all_other_policy_values_equal": true,
+  "authority": {
+    "history": false,
+    "prediction": false,
+    "production": false,
+    "rank": false,
+    "rights": false,
+    "size": false,
+    "source": false,
+    "trade": false
+  },
+  "base_policy_sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522",
+  "canonical_content_is_not_raw_bytes_or_authentication": true,
+  "canonical_effective_content": {
+    "byte_length": 53677,
+    "sha256": "90bec6078348af6e41c9538e12e0443dd37d671c85a7089c64c547f5ce5e7714"
+  },
+  "checks": {
+    "actual_parser_or_selector_tested": false,
+    "all_source_bindings_match": true,
+    "negative_and_zero_delta_arithmetic_recomputed": true,
+    "observed_exit_code": 0,
+    "one_override_expected_original_checked": true,
+    "stderr_bytes": 0
+  },
+  "commissioning_sol_ceo_architectural_adjudication": "NOT_ASSERTED",
+  "created_at_utc": "2026-10-09T12:11:12.139003+00:00",
+  "current_principal_implementation_adoption": "OBSERVED_IN_BOUND_SIDECAR_AND_PARENT_ASSIGNMENT",
+  "effective_normative_changed_pointers": [
+    "/capitalization/numeric_rule"
+  ],
+  "first_kernel": {
+    "holds_unconditional": true,
+    "mode": "STRUCTURAL_ONLY",
+    "real_caps": null,
+    "real_cohort": null,
+    "real_history": "FRAME_HISTORY_UNPROVEN",
+    "real_quantiles": null,
+    "real_source_authority": "SOURCE_AUTHORITY_UNVERIFIED",
+    "real_source_rights": "SOURCE_RIGHTS_UNVERIFIED",
+    "synthetic_label_or_receipt_flags_authenticate_inputs": false
+  },
+  "limits": {
+    "flow_matrix_research_repeated": false,
+    "native_Git_application_provider_store_capture_effects": false,
+    "new_primary_source_retrieval": false,
+    "real_population_or_frame_verified": false,
+    "source_files_changed": false
+  },
+  "missing_external_prerequisite": "Existing trusted owner-review/admission reader and actual applicable evidence; complete lawful historical 42-pool frame and later actual F still separately required.",
+  "prior_v2_only_review_remains_unchanged_with_its_then_open_R3": true,
+  "resolved_finding": {
+    "id": "R3",
+    "reasons": [
+      "Signed negative/zero/positive additive corporate-action deltas retain event identity, units, order and source dependency.",
+      "Explicitly evidenced zero delta and separately typed zero/ceased-class facts cannot stand for missing inputs or disappear into a partial cap.",
+      "Positive measurement/product-factor and final-shares/cap requirements remain explicit.",
+      "Finite decimal strings and exact rational comparison exclude nonfinite values, booleans and binary floating inputs; cardinality integers exclude bool.",
+      "Absolute values, clipping, partial-class omission, imputation and display rounding cannot make an invalid value pass."
+    ],
+    "state": "RESOLVED_IN_COMPOSITE_SOURCE_CONTRACT"
+  },
+  "reviewer": "/root/native_adoption_frontier",
+  "schema": "research.gmi.wp02.independent_principal_adoption_review/v1",
+  "scope": "Exact frozen v2 plus the single normative override in the principal adoption sidecar; no re-review of original source research or selection-kernel implementation.",
+  "sidecar_bytes": 19510,
+  "sidecar_files_read": 5,
+  "status": "FROZEN_INDEPENDENT_NARROW_REVIEW",
+  "verdict": "PASS_R3_RESOLVED_FOR_EXACT_COMPOSITE_CONTRACT"
+}

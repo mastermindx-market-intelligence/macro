@@ -1,0 +1,38 @@
+{
+  "schema": "tiingo.actual_observer_and_collector_control_checks/v1",
+  "candidate_sha256": "5354cc084fb6a8e65653894b0306c9bf89dd940dcfa19cfa779523f5a648933d",
+  "unchanged_ingest_sha256": "ef52fd2f90842c85a362254dae219a2593fed024b340a38fa5333a50e06981e6",
+  "checks": [
+    {
+      "case": "first_transport_gap_or_handshake_refusal",
+      "stop_exceptions": 1,
+      "cleanup_archive_accounting_retained": true
+    },
+    {
+      "case": "archived_byte_stop_threshold",
+      "stop_exceptions": 1,
+      "cleanup_archive_accounting_retained": true
+    },
+    {
+      "case": "resource_floor",
+      "stopped": true
+    },
+    {
+      "case": "actual_collector_rejected_handshake",
+      "connection_attempts": 1,
+      "buffered_raw_preserved": false,
+      "provider_requests": 0
+    },
+    {
+      "case": "actual_collector_buffered_gap",
+      "connection_attempts": 1,
+      "buffered_raw_preserved": true,
+      "provider_requests": 0
+    }
+  ],
+  "all_passed": true,
+  "actual_function_nodes_executed_with_no_network_fixtures": true,
+  "provider_requests": 0,
+  "real_credentials_read": false,
+  "production_acceptance_claimed": false
+}

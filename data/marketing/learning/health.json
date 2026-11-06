@@ -12,27 +12,25 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 1,
+          "n_baseline": 3,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=1 — need 5 of each",
+          "reason": "recent n=0, baseline n=3 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
         "last_nine": {
           "metric": "last_nine",
-          "n": 8,
-          "problems": [
-            "2 near-repeat(s) in the visible grid"
-          ],
-          "repeats": 2,
+          "n": 9,
+          "problems": [],
+          "repeats": 0,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 6,
-          "value": 8,
-          "verdict": "warn",
-          "with_receipt": 7
+          "unmeasured": 3,
+          "value": 9,
+          "verdict": "ok",
+          "with_receipt": 8
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -43,16 +41,14 @@
           "verdict": "null"
         }
       },
-      "n_rows": 8,
+      "n_rows": 12,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
         "engagement_trend"
       ],
-      "verdict": "warn",
-      "warns": [
-        "last_nine"
-      ]
+      "verdict": "ok",
+      "warns": []
     },
     {
       "account": "flagship",
@@ -66,9 +62,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 33,
-          "n_recent": 4,
-          "reason": "recent n=4, baseline n=33 — need 5 of each",
+          "n_baseline": 35,
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=35 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -76,7 +72,7 @@
           "metric": "last_nine",
           "n": 9,
           "problems": [
-            "only 1/9 of the visible grid carries a receipt (floor 3)",
+            "only 2/9 of the visible grid carries a receipt (floor 3)",
             "5 near-repeat(s) in the visible grid"
           ],
           "repeats": 5,
@@ -84,10 +80,10 @@
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 1,
+          "unmeasured": 0,
           "value": 9,
           "verdict": "warn",
-          "with_receipt": 1
+          "with_receipt": 2
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -98,7 +94,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 113,
+      "n_rows": 163,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -121,26 +117,24 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 7,
+          "n_baseline": 12,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=7 — need 5 of each",
+          "reason": "recent n=0, baseline n=12 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
         "last_nine": {
           "metric": "last_nine",
           "n": 9,
-          "problems": [
-            "1 near-repeat(s) in the visible grid"
-          ],
-          "repeats": 1,
+          "problems": [],
+          "repeats": 0,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 2,
+          "unmeasured": 0,
           "value": 9,
-          "verdict": "warn",
+          "verdict": "ok",
           "with_receipt": 9
         },
         "rejection_reason_mix": {
@@ -152,16 +146,14 @@
           "verdict": "null"
         }
       },
-      "n_rows": 21,
+      "n_rows": 38,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
         "engagement_trend"
       ],
-      "verdict": "warn",
-      "warns": [
-        "last_nine"
-      ]
+      "verdict": "ok",
+      "warns": []
     },
     {
       "account": "kelly",
@@ -175,25 +167,25 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 5,
+          "n_baseline": 7,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=5 — need 5 of each",
+          "reason": "recent n=0, baseline n=7 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
         "last_nine": {
           "metric": "last_nine",
-          "n": 6,
+          "n": 9,
           "problems": [],
           "repeats": 0,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 1,
-          "value": 6,
+          "unmeasured": 0,
+          "value": 9,
           "verdict": "ok",
-          "with_receipt": 6
+          "with_receipt": 9
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -204,7 +196,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 6,
+      "n_rows": 15,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -225,9 +217,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 43,
-          "n_recent": 1,
-          "reason": "recent n=1, baseline n=43 — need 5 of each",
+          "n_baseline": 67,
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=67 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -235,19 +227,17 @@
           "metric": "last_nine",
           "n": 9,
           "problems": [
-            "only 0/9 of the visible grid carries a receipt (floor 3)",
-            "7/9 posts have no measurement yet (ceiling 6)",
-            "6 near-repeat(s) in the visible grid"
+            "7 near-repeat(s) in the visible grid"
           ],
-          "repeats": 6,
+          "repeats": 7,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 7,
+          "unmeasured": 1,
           "value": 9,
           "verdict": "warn",
-          "with_receipt": 0
+          "with_receipt": 6
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -258,7 +248,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 95,
+      "n_rows": 175,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -281,26 +271,24 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 7,
+          "n_baseline": 13,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=7 — need 5 of each",
+          "reason": "recent n=0, baseline n=13 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
         "last_nine": {
           "metric": "last_nine",
           "n": 9,
-          "problems": [
-            "3 near-repeat(s) in the visible grid"
-          ],
-          "repeats": 3,
+          "problems": [],
+          "repeats": 0,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 2,
+          "unmeasured": 0,
           "value": 9,
-          "verdict": "warn",
+          "verdict": "ok",
           "with_receipt": 9
         },
         "rejection_reason_mix": {
@@ -312,16 +300,14 @@
           "verdict": "null"
         }
       },
-      "n_rows": 13,
+      "n_rows": 30,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
         "engagement_trend"
       ],
-      "verdict": "warn",
-      "warns": [
-        "last_nine"
-      ]
+      "verdict": "ok",
+      "warns": []
     },
     {
       "account": "sophia",
@@ -335,27 +321,25 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 3,
+          "n_baseline": 11,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=3 — need 5 of each",
+          "reason": "recent n=0, baseline n=11 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
         "last_nine": {
           "metric": "last_nine",
-          "n": 8,
-          "problems": [
-            "2 near-repeat(s) in the visible grid"
-          ],
-          "repeats": 2,
+          "n": 9,
+          "problems": [],
+          "repeats": 0,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
           },
-          "unmeasured": 4,
-          "value": 8,
-          "verdict": "warn",
-          "with_receipt": 7
+          "unmeasured": 0,
+          "value": 9,
+          "verdict": "ok",
+          "with_receipt": 9
         },
         "rejection_reason_mix": {
           "metric": "rejection_reason_mix",
@@ -366,20 +350,18 @@
           "verdict": "null"
         }
       },
-      "n_rows": 8,
+      "n_rows": 23,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
         "engagement_trend"
       ],
-      "verdict": "warn",
-      "warns": [
-        "last_nine"
-      ]
+      "verdict": "ok",
+      "warns": []
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-10-08T16:51:05Z",
+  "as_of": "2026-11-05T15:47:55Z",
   "halted": [],
   "metrics": [
     "approval_rate",

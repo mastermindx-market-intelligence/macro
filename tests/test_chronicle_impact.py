@@ -1385,3 +1385,59 @@ def test_glance_flip_collapse_neither_ticker_yields_zero_rows():
     assert surface["empty_kind"] == "no_named_exposure"
     assert surface["reason_en"] == impact.EMPTY_NO_EXPOSURE_EN
     assert surface["reason_zh"] == impact.EMPTY_NO_EXPOSURE_ZH
+
+
+# F05 per-family inspection keeps the existing overview selection independent.
+def test_family_views_are_bounded_and_independent_of_overview_cap():
+    events = [_ev(f"family-{i}", "2026-09-07", source="earnings", tickers=[f"E{i}"])
+              for i in range(7)]
+    call = _ev("family-call", "2026-09-07", source="earnings_call", tickers=["CALL"])
+    call["title"] = "Earnings call: CALL Q3 FY2026 — neutral"
+    events.append(call)
+    surface = impact.glance_consequence_surface(events, limit=1)
+    views = surface["family_views"]
+    assert len(surface["rows"]) == 1
+    assert [v["family"] for v in views] == [
+        f for f in schema.SOURCES if f in impact.GLANCE_ELIGIBLE_FAMILIES]
+    earnings = next(v for v in views if v["family"] == "earnings")
+    assert earnings["available_count"] == 7
+    assert earnings["in_window"] == 7
+    assert len(earnings["rows"]) == 4
+    assert len(next(v for v in views if v["family"] == "earnings_call")["rows"]) == 1
+    assert views == impact.glance_consequence_surface(list(reversed(events)), limit=8)["family_views"]
+    all_rows = impact.glance_consequence_surface(events, limit=99)["rows"]
+    assert earnings["rows"] == [r for r in all_rows if r["family"] == "earnings"][:4]
+    assert all(set(r) == set(all_rows[0]) for v in views for r in v["rows"])
+
+
+def test_family_views_distinguish_no_events_from_no_named_exposure():
+    event = _ev("family-macro", "2026-09-07", source="macro_release", tickers=[])
+    event["title"] = "Macro print: claims = +206 (2026-09-03)"
+    surface = impact.glance_consequence_surface([event])
+    views = {v["family"]: v for v in surface["family_views"]}
+    assert surface["rows"] == []
+    assert views["macro_release"]["in_window"] == 1
+    assert views["macro_release"]["available_count"] == 0
+    assert views["macro_release"]["state"] == "none_named"
+    assert views["earnings"]["in_window"] == 0
+    assert views["earnings"]["state"] == "no_events"
+    assert "prophet_ledger" not in views
+    assert impact.glance_consequence_surface([])["family_views"] == []
+
+
+def test_family_views_use_window_and_collapsed_latest_series():
+    old = _ev("family-old", "2026-08-01", source="earnings", tickers=["OLD"])
+    first = _ev("family-first", "2026-09-06", source="regime_flip", tickers=["SPY"])
+    first["title"] = "US regime: Q1 Goldilocks → Q3 Stagflation"
+    latest = _ev("family-latest", "2026-09-07", source="regime_flip", tickers=[])
+    latest["title"] = "US regime: Q3 Stagflation → Q2 Reflation"
+    surface = impact.glance_consequence_surface([old, first, latest])
+    views = {v["family"]: v for v in surface["family_views"]}
+    assert views["earnings"]["available_count"] == 0
+    regime = views["regime_flip"]
+    assert regime["in_window"] == 2
+    assert regime["available_count"] == 1
+    assert regime["rows"] == surface["rows"]
+    assert regime["rows"][0]["event_time"] == "2026-09-07"
+    assert regime["rows"][0]["direct_tickers"] == ["SPY"]
+    assert regime["rows"][0]["note_en"] == impact.FLIP_UNSTABLE_EN

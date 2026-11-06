@@ -1,0 +1,299 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "government_program_theme_public_disclosure.v1"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "theme_content_id": {
+      "type": "string",
+      "pattern": "^gptc1-[a-f0-9]{24}$"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "authority": {
+      "const": {
+        "tier": "display",
+        "context_only": true,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_originate_signal": false,
+        "can_add_candidates": false,
+        "can_escalate": false
+      }
+    },
+    "themes": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "theme_id": {
+            "enum": [
+              "golden_dome",
+              "munitions_replenishment",
+              "space",
+              "nato_fms_demand",
+              "fleet_sustainment_upgrades",
+              "shipbuilding"
+            ]
+          },
+          "rail_states": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "funding_stage": {
+                "enum": [
+                  "supported",
+                  "partial",
+                  "stale",
+                  "unreviewed",
+                  "not_asserted",
+                  "projection_missing",
+                  "source_unavailable",
+                  "blocked"
+                ]
+              },
+              "exposure": {
+                "enum": [
+                  "supported",
+                  "partial",
+                  "stale",
+                  "unreviewed",
+                  "not_asserted",
+                  "projection_missing",
+                  "source_unavailable",
+                  "blocked"
+                ]
+              },
+              "economics": {
+                "enum": [
+                  "supported",
+                  "partial",
+                  "stale",
+                  "unreviewed",
+                  "not_asserted",
+                  "projection_missing",
+                  "source_unavailable",
+                  "blocked"
+                ]
+              },
+              "market_context": {
+                "enum": [
+                  "supported",
+                  "partial",
+                  "stale",
+                  "unreviewed",
+                  "not_asserted",
+                  "projection_missing",
+                  "source_unavailable",
+                  "blocked"
+                ]
+              },
+              "contrary_case": {
+                "enum": [
+                  "supported",
+                  "partial",
+                  "stale",
+                  "unreviewed",
+                  "not_asserted",
+                  "projection_missing",
+                  "source_unavailable",
+                  "blocked"
+                ]
+              },
+              "next_event": {
+                "enum": [
+                  "supported",
+                  "partial",
+                  "stale",
+                  "unreviewed",
+                  "not_asserted",
+                  "projection_missing",
+                  "source_unavailable",
+                  "blocked"
+                ]
+              }
+            },
+            "required": [
+              "funding_stage",
+              "exposure",
+              "economics",
+              "market_context",
+              "contrary_case",
+              "next_event"
+            ]
+          },
+          "known_en": {
+            "type": "string",
+            "maxLength": 12000
+          },
+          "known_zh": {
+            "type": "string",
+            "maxLength": 12000
+          },
+          "missing_en": {
+            "type": "string",
+            "maxLength": 12000
+          },
+          "missing_zh": {
+            "type": "string",
+            "maxLength": 12000
+          },
+          "next_en": {
+            "type": "string",
+            "maxLength": 12000
+          },
+          "next_zh": {
+            "type": "string",
+            "maxLength": 12000
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "owner_key": {
+                  "type": "string",
+                  "maxLength": 12000
+                },
+                "row_id": {
+                  "type": "string",
+                  "maxLength": 12000
+                },
+                "pointer": {
+                  "type": "string",
+                  "maxLength": 12000
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "pattern": "^https://"
+                },
+                "title": {
+                  "type": "string",
+                  "maxLength": 12000
+                },
+                "program_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 2000
+                },
+                "issuer_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 2000
+                },
+                "security_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 2000
+                },
+                "source_publication_date": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date"
+                },
+                "source_available_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "house_known_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "documentary_class": {
+                  "enum": [
+                    null,
+                    "congressional_notification",
+                    "alliance_policy",
+                    "allocation_plan"
+                  ]
+                },
+                "native_reason_code": {
+                  "enum": [
+                    null,
+                    "congressional_notification_only",
+                    "policy_commitment_only",
+                    "allocation_plan_only"
+                  ]
+                }
+              },
+              "required": [
+                "owner_key",
+                "row_id",
+                "pointer",
+                "url",
+                "title",
+                "program_id",
+                "issuer_id",
+                "security_id",
+                "source_publication_date",
+                "source_available_at",
+                "house_known_at",
+                "documentary_class",
+                "native_reason_code"
+              ]
+            }
+          },
+          "research_state": {
+            "enum": [
+              "SOURCE_CONTEXT_COMPLETE",
+              "EVIDENCE_INSUFFICIENT"
+            ]
+          }
+        },
+        "required": [
+          "theme_id",
+          "rail_states",
+          "known_en",
+          "known_zh",
+          "missing_en",
+          "missing_zh",
+          "next_en",
+          "next_zh",
+          "sources",
+          "research_state"
+        ]
+      }
+    },
+    "content_id": {
+      "type": "string",
+      "pattern": "^gptd1-[a-f0-9]{24}$"
+    }
+  },
+  "required": [
+    "contract",
+    "schema_version",
+    "theme_content_id",
+    "as_of",
+    "authority",
+    "themes",
+    "content_id"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "government_program_theme_public_disclosure.v1.schema.json"
+}

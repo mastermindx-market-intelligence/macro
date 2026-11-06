@@ -1,0 +1,91 @@
+{
+  "activate": true,
+  "importance": 68,
+  "banner_days": 3,
+  "tone": "mixed",
+  "banner_title": "Alaska energy unlock accelerates — ANWR, NPR-A, Ambler Road & $54B gas pipeline",
+  "banner_title_zh": "阿拉斯加能源开发加速——ANWR、NPR-A、Ambler Road及540亿美元天然气管线",
+  "summary": "A White House roundup of Alaska policy confirms sweeping federal actions to reopen ANWR, most of NPR-A, the Ambler mining corridor, and advance a $54B Alaska LNG pipeline. Direct beneficiaries include critical-mineral developers, oilfield services, defense contractors, and Alaska utilities; headwinds for environmental-constrained peers and potential supply-lengthening pressure on copper/cobalt later in the decade.",
+  "summary_zh": "白宫关于阿拉斯加政策的综述确认，联邦层面已大规模重启ANWR、大部分NPR-A、Ambler矿业走廊，并推进540亿美元阿拉斯加LNG管道。直接受益方包括关键矿产开发商、油田服务、国防承包商和阿拉斯加公用事业；对受环境约束的同行构成压力，并可能在十年内对铜钴形成供给增加压力。",
+  "analysis": "This release is a consolidated policy scorecard for Alaska resource development, not a new executive order. Its market significance comes from confirmation that multiple previously announced actions — ANWR leasing (Oct 2025), 82% of NPR-A reopened (Dec 2025), Ambler Road approval (Oct 2025), and a $54B South Korea-linked Alaska LNG pipeline (Sept 2026) — remain in force and are being executed together as a deliberate Arctic resource strategy.\n\nThe transmission mechanism is primarily long-dated supply and capex. Reopening ANWR and NPR-A adds prospective barrels to US supply over a multi-year horizon, reinforcing the reflation-era 'drill' narrative and underpinning demand for oilfield services, seismic, logistics, and Arctic-capable infrastructure. The Ambler Road is more immediately investable: it unlocks known deposits of copper, cobalt, gallium, and germanium — directly relevant to the critical-minerals scarcity theme driving Western supply-chain security spending.\n\nThe $54B Alaska LNG pipeline component is the largest single capital item. If financed and built, it represents a multi-year construction cycle benefiting EPC contractors, steel, compressors, and shipping, while also signaling that US LNG export capacity ambitions extend beyond the Gulf Coast. The $150M Defense Production Act power line adds a smaller but direct utility/infrastructure angle.\n\nThe key uncertainty is timing and execution risk. ANWR and NPR-A leasing faces legal challenges and a multi-year permitting-to-production lag; the $54B pipeline is an investment framework, not a final investment decision. The market impact is therefore real but back-loaded — positive for the energy-services and critical-minerals complex now, with limited near-term cash-flow effect on the majors.",
+  "sectors": [
+    {
+      "name": "Oilfield services & Arctic logistics",
+      "impact": "tailwind",
+      "rationale": "Reopened NPR-A and ANWR leasing expands addressable exploration and development activity in Alaska over the medium term."
+    },
+    {
+      "name": "Critical minerals & copper/cobalt developers",
+      "impact": "tailwind",
+      "rationale": "Ambler Road approval unlocks access to Ambler Mining District deposits of copper, cobalt, gallium, and germanium."
+    },
+    {
+      "name": "Defense & military construction",
+      "impact": "tailwind",
+      "rationale": "Billions in Alaska base construction, the JBER 'Fighter Town USA' recapitalization, and Arctic security infrastructure create a multi-year federal capex stream."
+    },
+    {
+      "name": "Natural gas / LNG infrastructure & EPC",
+      "impact": "tailwind",
+      "rationale": "The $54B Alaska LNG pipeline framework signals a large, multi-year construction opportunity if it reaches FID."
+    },
+    {
+      "name": "Alaska utilities & power infrastructure",
+      "impact": "tailwind",
+      "rationale": "$150M in Defense Production Act funding for a major power line lowers costs and directs capital into grid buildout."
+    },
+    {
+      "name": "Copper/cobalt price-sensitive producers outside Alaska",
+      "impact": "headwind",
+      "rationale": "Long-dated new supply from Ambler could pressure global copper/cobalt fundamentals if projects advance."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "SLB",
+      "direction": "benefit",
+      "rationale": "Global oilfield services leader with Arctic and frontier-basin capabilities; expanded Alaska leasing supports long-dated activity."
+    },
+    {
+      "symbol": "HAL",
+      "direction": "benefit",
+      "rationale": "Direct exposure to North American onshore/offshore services; NPR-A and North Slope development broaden its addressable market."
+    },
+    {
+      "symbol": "NOV",
+      "direction": "benefit",
+      "rationale": "Rig and equipment supplier leveraged to increased Arctic drilling and infrastructure capex."
+    },
+    {
+      "symbol": "FCX",
+      "direction": "benefit",
+      "rationale": "Major copper producer with US exposure; broader domestic critical-minerals push supports the copper investment thesis, though Ambler itself is a long-dated competitor."
+    },
+    {
+      "symbol": "TECK",
+      "direction": "mixed",
+      "rationale": "North American copper/zinc producer; benefits from critical-minerals momentum but Ambler copper could eventually add supply."
+    },
+    {
+      "symbol": "KBR",
+      "direction": "benefit",
+      "rationale": "Defense and infrastructure contractor with Arctic logistics and military construction exposure; JBER and Fort Wainwright projects fit its footprint."
+    },
+    {
+      "symbol": "FLR",
+      "direction": "benefit",
+      "rationale": "EPC contractor positioned for large energy infrastructure; a $54B Alaska LNG project would be squarely in its wheelhouse if it proceeds."
+    },
+    {
+      "symbol": "LNG",
+      "direction": "benefit",
+      "rationale": "US LNG export developer; Alaska LNG expansion reinforces the structural US export-capacity growth narrative."
+    },
+    {
+      "symbol": "TDG",
+      "direction": "benefit",
+      "rationale": "Aerospace/defense supplier tied to military modernization; JBER recapitalization and F-35/Arctic posture sustain demand."
+    }
+  ],
+  "confidence": "medium"
+}

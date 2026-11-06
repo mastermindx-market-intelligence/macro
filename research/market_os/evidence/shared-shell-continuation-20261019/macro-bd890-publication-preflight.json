@@ -1,0 +1,27 @@
+{
+  "started_at": "2026-10-20T19:57:35.103421+00:00",
+  "command": [
+    "ssh",
+    "-i",
+    "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "IdentitiesOnly=yes",
+    "-o",
+    "IdentityAgent=none",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "root@146.190.142.17",
+    "python3 -I -B -"
+  ],
+  "remote_source_sha256": "da6cd846afa1471b410a8060e770089fd25cb4a43f6575dd73631aae4b3614f9",
+  "scope": "Read-only existing publication prerequisite observation",
+  "exit": 0,
+  "stdout_sha256": "f263e08a4411bb02db76914183b608178bdfb53100e85b787cdf20a1e5fbc00f",
+  "stdout_bytes": 4685,
+  "stderr_bytes": 0,
+  "finished_at": "2026-10-20T19:57:37.072527+00:00"
+}

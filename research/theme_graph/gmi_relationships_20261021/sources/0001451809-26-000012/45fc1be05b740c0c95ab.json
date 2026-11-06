@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-11T21:06:57Z",
+ "accession": "0001451809-26-000012",
+ "cik": "0001451809",
+ "doc_byte_length": 1797085,
+ "doc_sha256": "568771611c495d5ee81c5aa62e4061177df08c685c30ad77b993be6c0a20008b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sitm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 362766,
+  "byte_start": 362289,
+  "normalized": "If we engage alternative supply sources, we may incur additional costs and encounter difficulties and/or delays in qualifying the supply sources. For example, we had a license agreement with Bosch under which Bosch granted us a license to use certain patents. Under this agreement, we were required to pay a royalty fee to Bosch if we engaged third parties to manufacture, or if we decided to manufacture ourselves, certain generations of our MEMS wafers until March 31, 2024.",
+  "normalized_sha256": "9488e8914b1ce1d30ce338d604aa04ef82e47c07fe9b43dfd00205d13f2df894",
+  "raw": " If we engage alternative supply sources, we may incur additional costs and encounter difficulties and/or delays in qualifying the supply sources. For example, we had a license agreement with Bosch under which Bosch granted us a license to use certain patents. Under this agreement, we were required to pay a royalty fee to Bosch if we engaged third parties to manufacture, or if we decided to manufacture ourselves, certain generations of our MEMS wafers until March 31, 2024.",
+  "raw_sha256": "45fc1be05b740c0c95ab79ba4dabe691cb9f721bc0b4235d4e986a0a22dd61dd"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1451809/000145180926000012/sitm-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,7 @@
+suites run by a path-filtered PR gate : 2580
+  closure fully reachable             : 2580
+  TRIGGER GAP                         : 0
+  (test half unreachable, not gated)  : 0
+  marked `data`, excluded from closure: 131 in 9 suite(s)
+
+OK — every module a gated suite reads can start the job that runs it.

@@ -46,7 +46,9 @@ def _row_keys(html: str) -> list[str]:
     """Whitespace-normalised identity of every named row in `html`."""
     keys = []
     for chunk in ROW_SPLIT_RE.split(html)[1:]:
-        if "<th" in chunk.split("</tr>")[0]:
+        # <th\b, not a bare "<th": a card row followed by a table runs up to that
+        # table's first <tr>, so its chunk holds "<thead" and is still a situation.
+        if re.search(r"<th\b", chunk.split("</tr>")[0]):
             continue                        # table header, not a situation
         key = " ".join(chunk.split())
         if "ssx-tkr" in key:                # only named rows are paid content
@@ -334,6 +336,31 @@ def test_row_identity_reads_table_planes_and_skips_their_headers():
     assert len(_row_keys(table)) == 2
 
 
+def test_row_identity_covers_every_name_on_the_multi_name_risk_rows():
+    """`st_named` prints additions and removals as one row each, many pills per row.
+
+    The removals row sits directly above a table, so its chunk holds "<thead". It
+    is a paid row and must be keyed, and every name on it must count as covered.
+    """
+    module = _env().get_template("_china_special_situations_rows.html.j2").module
+    html = str(module.st_named({
+        "additions": [_named(f"A{i}.SS") for i in range(8)],
+        "removals": [_named(f"R{i}.SS") for i in range(4)],
+        "top_current": [_named(f"T{i}.SS") for i in range(8)],
+    }))
+    keys = _row_keys(html)
+    assert len(keys) == 1 + 1 + 8                       # the header row stays out
+    assert sum(len(TICKER_RE.findall(key)) for key in keys) == 8 + 4 + 8
+    assert not [key for key in keys if "<th>" in key]
+    removals = [key for key in keys if "R0.SS" in key]
+    assert len(removals) == 1 and "<thead" in removals[0]
+    assert set(TICKER_RE.findall(removals[0])) == {f"R{i}.SS" for i in range(4)}
+    # a real header cell, bare or classed, still keeps its row out of the identities
+    for cell in ("<th>", '<th class="r">'):
+        assert _row_keys(f'<table><thead><tr>{cell}<span class="ssx-tkr">H.SS</span></th>'
+                         "</tr></thead></table>") == []
+
+
 # ------------------------------------------------------------ shipped artifacts
 
 
@@ -350,9 +377,12 @@ def test_shipped_shell_leaks_no_paid_row():
         if k.endswith("_html") and isinstance(v, str):
             locked += _row_keys(v)
     assert locked, "a gated payload with no rows is a vacuous pass"
-    assert len(locked) == payload["locked"], (
+    # payload["locked"] counts NAMES (_split sums the withheld lists), and one row
+    # can hold many of them, so the coverage check counts the names in keyed rows.
+    keyed_names = sum(len(TICKER_RE.findall(key)) for key in locked)
+    assert keyed_names == payload["locked"], (
         "row identities must cover every plane's rows or this check is "
-        f"vacuous: keyed {len(locked)} of {payload['locked']} locked rows")
+        f"vacuous: keyed {keyed_names} of {payload['locked']} locked names")
     shell_rows = _row_keys(shell)
     leaked = sorted(set(locked) & set(shell_rows))
     assert leaked == [], ("paid rows readable in the free shell: "

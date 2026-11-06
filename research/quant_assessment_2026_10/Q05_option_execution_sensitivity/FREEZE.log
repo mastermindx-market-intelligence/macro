@@ -1,0 +1,6 @@
+frozen_at_utc=2026-10-09T09:33:16Z source=date-u
+file=PREREG.md sha256=f628aa875a95a22972142f26f6891d698c4397c705268ccbaecb7ee668d7e78c
+note=frozen before evaluate.py read any evaluation outcome; PREREG.md is never edited after this line; amendments go to PREREG_AMENDMENT.md
+amended_at_utc=2026-10-09T09:52:35Z source=date-u
+file=PREREG_AMENDMENT.md sha256=8c320a3e20ad1f058b5ee1fb9ce36c9433c3760cdf2c6842d740f86075ffaef6
+note=amendment 1 (independent-audit fixes) written before any new outcome was read; PREREG.md unchanged

@@ -140,24 +140,98 @@ def test_one_session_lead_still_heals(data_root):
         "1-session lead must trigger splice"
 
 
-def test_first_existing_fallback_only(data_root):
-    """bp stale, sp exists but equally stale as bp, yp is fresh.
-    Only sp (the first existing fallback) is consulted; yp is NOT spliced.
-    Pins the break-after-first-existing design."""
-    bp_idx = pd.bdate_range("2024-01-02", periods=20)
+def test_newer_yahoo_tail_is_not_masked_by_older_stock_file(data_root, caplog):
+    """A first existing, but stale, stocks file cannot hide a newer Yahoo bar.
+
+    Observed on the 2026-10-16 runner: 151/713 basket members had this exact
+    stock-vs-Yahoo lag.  Stitch the chosen tail at the last shared bar and keep
+    every deep observation instead of relabeling the whole vintage as fresh.
+    """
     bp_df = _make_ohlcv(20, close_base=100.0, start="2024-01-02")
-    sp_df = _make_ohlcv(20, close_base=80.0, start="2024-01-02")  # same length as bp
-    yp_idx = pd.bdate_range("2024-01-02", periods=30)             # 10 days fresher
-    yp_close = pd.Series(70.0, index=yp_idx)
-    yp_df = pd.DataFrame({"close": yp_close, "volume": 1e6}, index=yp_idx)
+    sp_df = _make_ohlcv(20, close_base=80.0, start="2024-01-02")
+    yp_idx = pd.bdate_range("2024-01-02", periods=30)
+    yp_df = pd.DataFrame({"close": 70.0, "volume": 1e6}, index=yp_idx)
     _write(data_root / "baskets/ohlcv/QQQ.parquet", bp_df)
     _write(data_root / "stocks/QQQ.parquet", sp_df)
     _write(data_root / "yahoo/QQQ.parquet", yp_df)
-    result = bi._load_member_ohlcv("QQQ")
+    with caplog.at_level("WARNING", logger="engine.basket_index"):
+        result = bi._load_member_ohlcv("QQQ")
     assert result is not None
-    # yp ends 30 bdays out; if it were spliced, result would be longer than 20
-    assert len(result) == 20, "yp must NOT be spliced; only the first existing fallback (sp) is checked"
-    assert pd.DatetimeIndex(result.index).max() == bp_idx[-1]
+    assert len(result) == 30
+    assert pd.DatetimeIndex(result.index).max() == yp_idx[-1]
+    assert (result.loc[bp_df.index, "close"] == bp_df["close"]).all()
+    assert any("from data/yahoo" in r.message for r in caplog.records)
+
+
+def test_two_fresher_fallbacks_choose_latest_without_full_read_of_older(data_root, monkeypatch):
+    bp_df = _make_ohlcv(20, close_base=200.0)
+    sp_df = _make_ohlcv(21, close_base=100.0)
+    yp_df = _make_ohlcv(22, close_base=150.0)
+    _write(data_root / "baskets/ohlcv/NVDA.parquet", bp_df)
+    _write(data_root / "stocks/NVDA.parquet", sp_df)
+    _write(data_root / "yahoo/NVDA.parquet", yp_df)
+    real_read = pd.read_parquet
+    reads = []
+    def observed(path, **kw):
+        reads.append((str(path), kw.get("columns")))
+        return real_read(path, **kw)
+    monkeypatch.setattr(pd, "read_parquet", observed)
+    result = bi._load_member_ohlcv("NVDA")
+    assert result is not None and result.index.max() == yp_df.index.max()
+    assert all(columns == [] for path, columns in reads
+               if path == str(data_root / "stocks/NVDA.parquet"))
+
+
+def test_unreadable_latest_fallback_recovers_next_newest(data_root, monkeypatch):
+    bp_df = _make_ohlcv(20)
+    sp_df = _make_ohlcv(21)
+    yp_df = _make_ohlcv(22)
+    for folder, df in (("baskets/ohlcv", bp_df), ("stocks", sp_df), ("yahoo", yp_df)):
+        _write(data_root / folder / "MSFT.parquet", df)
+    real_read = pd.read_parquet
+    def broken_full_yahoo(path, **kw):
+        if path == data_root / "yahoo/MSFT.parquet" and kw.get("columns") is None:
+            raise OSError("source unreadable after timestamp probe")
+        return real_read(path, **kw)
+    monkeypatch.setattr(pd, "read_parquet", broken_full_yahoo)
+    result = bi._load_member_ohlcv("MSFT")
+    assert result is not None
+    assert result.index.max() == sp_df.index.max()
+
+
+def test_latest_source_without_common_price_anchor_is_refused(data_root):
+    deep = _make_ohlcv(20, start="2024-01-02", close_base=200.0)
+    fresh = _make_ohlcv(20, start="2026-01-02", close_base=20.0)
+    _write(data_root / "baskets/ohlcv/BA.parquet", deep)
+    _write(data_root / "yahoo/BA.parquet", fresh)
+    result = bi._load_member_ohlcv("BA")
+    assert result is not None and result.index.max() == deep.index.max()
+    assert (result["close"] == deep["close"]).all()
+
+
+def test_invalid_shared_anchor_does_not_invent_a_price_basis(data_root):
+    deep = _make_ohlcv(20, start="2024-01-02", close_base=200.0)
+    fresh = _make_ohlcv(24, start="2024-01-02", close_base=80.0)
+    fresh.loc[deep.index[-1], "close"] = 0.0
+    _write(data_root / "baskets/ohlcv/NFLX.parquet", deep)
+    _write(data_root / "yahoo/NFLX.parquet", fresh)
+    result = bi._load_member_ohlcv("NFLX")
+    assert result is not None and result.index.max() == deep.index.max()
+    assert (result["close"] == deep["close"]).all()
+
+
+def test_equal_fallback_dates_preserve_stocks_priority(data_root, caplog):
+    bp_df = _make_ohlcv(20, close_base=200.0)
+    sp_df = _make_ohlcv(22, close_base=100.0)
+    yp_df = _make_ohlcv(22, close_base=150.0)
+    _write(data_root / "baskets/ohlcv/AMD.parquet", bp_df)
+    _write(data_root / "stocks/AMD.parquet", sp_df)
+    _write(data_root / "yahoo/AMD.parquet", yp_df)
+    with caplog.at_level("WARNING", logger="engine.basket_index"):
+        result = bi._load_member_ohlcv("AMD")
+    assert result is not None and result.index.max() == sp_df.index.max()
+    assert any("from data/stocks" in r.message for r in caplog.records)
+    assert result.iloc[-1]["open"] != result.iloc[-1]["close"]
 
 
 def test_china_fallback_probed(data_root):

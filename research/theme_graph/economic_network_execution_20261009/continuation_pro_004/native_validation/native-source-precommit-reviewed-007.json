@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-09T15:54:11.628323+00:00",
+  "basis": "Exact frozen originals retain their terminal blank lines; all other paths must pass the standard diagnostic. No source bytes are normalized.",
+  "commit_or_push_at_this_receipt": false,
+  "exception_scope": [
+    {
+      "byte_length": 8368,
+      "line": 84,
+      "original_manifest_binding": "lanes/native_mu_capture_review_v1/actual_result_001/ACTUAL_RESULT_REVIEW.md",
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/FIRST_REFUSAL_INDEPENDENT_REVIEW_001.md",
+      "sha256": "9dd1786c225af5740e1eec8c2b15ffb11caac5212944258535b21cf613f3a249",
+      "terminal_newline_count": 2
+    },
+    {
+      "byte_length": 18962,
+      "line": 133,
+      "original_manifest_binding": "lanes/native_massive_us_feasibility_v1/FINDINGS.md",
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/INCUMBENT_SOURCE_FEASIBILITY.md",
+      "sha256": "f08b3fe6d78b3ee298f7ee574995519e87b596e4ac6b1f9a90af1d4bf1019d68",
+      "terminal_newline_count": 2
+    },
+    {
+      "byte_length": 9704,
+      "line": 93,
+      "original_manifest_binding": "lanes/native_mu_owner_bootstrap_review_v1/REVIEW.md",
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/OWNER_BOOTSTRAP_SOURCE_REVIEW.md",
+      "sha256": "919a6f483ce8ab5ca428a5bf79180d08566fe5a3ee0b62a78caa3133125324ca",
+      "terminal_newline_count": 2
+    },
+    {
+      "byte_length": 15589,
+      "line": 288,
+      "original_manifest_binding": "lanes/native_massive_us_feasibility_v1/SOURCE_PINS.json",
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/SOURCE_PINS.json",
+      "sha256": "a4846212a1c7c6ea73f2be59e8dd8dc07a21232db8e99b8cc32b2c9be905ff8f",
+      "terminal_newline_count": 2
+    },
+    {
+      "byte_length": 9066,
+      "line": 51,
+      "original_manifest_binding": "checkpoint_review_006/MANIFEST.json:REVIEW.md",
+      "path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/checkpoint_review_006/REVIEW.md",
+      "sha256": "74add9cd696934c260a4d0032e4321b6eae5cca832c7473b979c9907202d3b16",
+      "terminal_newline_count": 2
+    }
+  ],
+  "git_whitespace_configuration_changed": false,
+  "head": "7af7a9785d74c1b420b23de3be0eac6946cc2200",
+  "hook_or_ci_policy_override": false,
+  "kernel_ci_controls_instructions_and_producers_unchanged": true,
+  "normal_hooks_required": true,
+  "original_diagnostic_sha256": "f532510f3f9b792ddfa2ffc4c0ac567bb06cf69f8d4ea58d9a7ce7daf2b2c149",
+  "original_exit2_and_five_findings_preserved": true,
+  "schema": "economic_network.frozen_evidence_formatting_adjudication/v1",
+  "strict_other_paths_command": [
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/FIRST_REFUSAL_INDEPENDENT_REVIEW_001.md",
+    ":(exclude)research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/INCUMBENT_SOURCE_FEASIBILITY.md",
+    ":(exclude)research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/OWNER_BOOTSTRAP_SOURCE_REVIEW.md",
+    ":(exclude)research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/SOURCE_PINS.json",
+    ":(exclude)research/theme_graph/economic_network_execution_20261009/continuation_pro_004/native_source_execution_006/checkpoint_review_006/REVIEW.md"
+  ],
+  "strict_other_paths_exit_code": 0,
+  "strict_stderr": "",
+  "strict_stdout": ""
+}

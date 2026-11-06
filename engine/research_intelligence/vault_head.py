@@ -15,6 +15,8 @@ from typing import Any, Callable, Iterable
 from engine.press import research_triage
 from engine.research_vault import corpus as corpus_mod
 from engine.research_vault import probe as vault_probe
+from engine.research_vault import ingest as vault_ingest
+from engine.research_vault import fulltext
 from engine.research_vault.fulltext import build_extracted_text
 from engine.research_vault.ingest import VAULT_PREFIX, extract_pdf_text
 
@@ -67,6 +69,15 @@ def _head_size(value: int) -> int:
     if value < 1 or value > MAX_HEAD_SIZE:
         raise ValueError(f"deep-read head size must be in [1,{MAX_HEAD_SIZE}]")
     return value
+
+
+def _incumbent_extractor(version: str) -> Callable[[bytes], str | None]:
+    """Resolve only the two known ingest implementations, without fallback."""
+    if version == fulltext.EXTRACTOR_VERSION_V1:
+        return extract_pdf_text
+    if version == fulltext.EXTRACTOR_VERSION_READING_ORDER_V2:
+        return vault_ingest.extract_pdf_text_reading_order_v2
+    raise ValueError("unsupported extractor_version")
 
 
 def select_ranked_head(
@@ -134,13 +145,44 @@ def read_canonical_text(
     *,
     pdf_max_bytes: int = MAX_PDF_BYTES,
     body_max_bytes: int = SOURCE_BODY_MAX_BYTES,
-    extractor: Callable[[bytes], str | None] = extract_pdf_text,
+    extractor: Callable[[bytes], str | None] | None = None,
     expected_pdf_sha256: str | None = None,
+    extractor_version: str = EXTRACTOR_VERSION,
 ) -> dict[str, Any]:
-    """Read one canonical PDF and bind its F5 extracted text, or an explicit miss."""
+    """Read one canonical PDF and bind its F5 extracted text, or an explicit miss.
+
+    ``extractor_version`` is an explicit opt-in against the closed supported
+    vocabulary and defaults to the incumbent v1 contract. It is validated
+    BEFORE any store I/O. An omitted ``extractor`` selects the incumbent ingest
+    function bound to that resolved version, so the requested version is the
+    code that actually runs, with no fallback to a different version. An
+    explicit ``extractor`` callable stays the hermetic test seam: it runs
+    verbatim and the built record is stamped with exactly the requested
+    version.
+    """
     rid = str(report_id or "").strip()
     if not corpus_mod.valid_doc_id(rid):
         return {"state": "invalid_report_id", "report_id": rid}
+    try:
+        version = fulltext.resolve_extractor_version(extractor_version)
+    except (ValueError, TypeError):
+        return {
+            "state": "unsupported_extractor_version",
+            "report_id": rid,
+            "extractor_version": extractor_version
+            if isinstance(extractor_version, str)
+            else "",
+        }
+
+    if extractor is None:
+        try:
+            extractor = _incumbent_extractor(version)
+        except (ValueError, TypeError):
+            return {
+                "state": "unsupported_extractor_version",
+                "report_id": rid,
+                "extractor_version": version,
+            }
 
     reader = getattr(store, "get_bytes_strict_bounded", None)
     if not callable(reader):
@@ -206,6 +248,7 @@ def read_canonical_text(
             "source_pdf_sha256": pdf_sha,
             "text_layer_state": layer,
             "page_count": page_count,
+            "extractor_version": version,
         }
 
     encoded = text.encode("utf-8")
@@ -224,7 +267,7 @@ def read_canonical_text(
             source_pdf_sha256=pdf_sha,
             text=text,
             extractor_name=EXTRACTOR_NAME,
-            extractor_version=EXTRACTOR_VERSION,
+            extractor_version=version,
             page_count=page_count,
             text_layer_state=layer,
         )

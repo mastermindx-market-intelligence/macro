@@ -1,0 +1,15 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "source_base": "73669c7df21485fa3299df0a982ff10c5e25c87c",
+  "current_state": "Local repair accepted; complete failed baseline job824pass/2sparse skips, final contract0/0. Ready for one protected main-red-repair PR.",
+  "full_job_log": "/tmp/mmx-ci-scope-final-full-job-0805.log",
+  "fabric_run": "mmx-press-ci-scope-review-20261014-001",
+  "fabric_root": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "fabric_do_not_retry": true,
+  "passed": "824 full-job tests,68 rotation suite tests,160 positive dependency paths/6 negative probes,contract0/0",
+  "original_9209": "unchanged8f705cb3,main-red blocked;no refresh or release effect",
+  "followon": "original8eb467112b83 unchanged,frontier8895ce16541a",
+  "next": "consume same retained review and full-job result, then one main-red-repair PR if no incumbent repair exists; do not push this unrelated manifest repair into9209 or the reviewed Press follow-on",
+  "final_contract_log": "/tmp/mmx-ci-scope-final-contract-delta-0805.log",
+  "fabric_state": "TERMINAL and review findings ACCEPTED; not a final-code worker PASS"
+}

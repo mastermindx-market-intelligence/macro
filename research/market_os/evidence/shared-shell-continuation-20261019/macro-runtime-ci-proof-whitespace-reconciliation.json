@@ -1,0 +1,41 @@
+{
+  "schema": "mastermind.attended.evidence_representation_reconciliation.v1",
+  "observed_at": "2026-10-20T03:34:49.052910+00:00",
+  "reason": "Raw unified-diff context lines contain one required space. Preserve exact proof bytes in deterministic gzip instead of editing evidence or suppressing the whitespace guard.",
+  "original_failed_validation": "macro-runtime-ci-proof-validation.json",
+  "original_failed_validation_sha256": "5f43b3bf17b6af91c4934928d7605bffbd363c22d9919cae3020313a873fdd3c",
+  "converted": [
+    {
+      "file": "macro-d528-minimal-ci-repair.patch.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-minimal-ci-repair.patch",
+      "bytes": 1198,
+      "sha256": "f4edda05e28705fe068dbba596936a4bdb3fccf9c72bc792e0a1bb8cf785aa60",
+      "encoding": "gzip",
+      "original_bytes": 2557,
+      "original_sha256": "b0daebe5c60a125bc8c2a89afddef9bdb68e143f1602ab450762cd8e3f79a224"
+    },
+    {
+      "file": "macro-d528-minimal-ci-repair-v2.patch.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-minimal-ci-repair-v2.patch",
+      "bytes": 1199,
+      "sha256": "50b05c2119f2b1af86095386d1b41c2cbbb1215f2fab863c2b86a2eac368e4f5",
+      "encoding": "gzip",
+      "original_bytes": 2556,
+      "original_sha256": "42dec7c9a86bdd21ae12732213341cb77c763ee0a25174edc4dd2636e9ed169b"
+    }
+  ],
+  "index_before_targeted_gate": "314ca379503f1211f4f02f37a36981f4ce311c4c",
+  "index_after": "314ca379503f1211f4f02f37a36981f4ce311c4c",
+  "targeted_whitespace_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "d52827f26b062f67d594350a65becf406710d4d1"
+  ],
+  "targeted_whitespace_exit": 0,
+  "targeted_whitespace_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "agentos_repeated": false,
+  "raw_native_patch_bytes_unchanged": true,
+  "application_source_edited": false
+}

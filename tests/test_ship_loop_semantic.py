@@ -141,7 +141,9 @@ def test_admitted_worktree_does_not_intercept_bash(tmp_path, capsys):
 def test_quarantined_root_lets_enterworktree_repair_itself(tmp_path, capsys):
     primary = _root_fixture(tmp_path)
 
-    for tool in ("EnterWorktree", "Read", "Grep"):
+    # ExitWorktree (keeping the tree) is step 2 of the remedy when the conversation
+    # sits in a native .claude/worktrees tree, so it is a repair tool too (2026-10-10).
+    for tool in ("EnterWorktree", "ExitWorktree", "Read", "Grep"):
         GUARD._pre_tool_use(
             primary,
             tmp_path / "state.json",
@@ -149,7 +151,7 @@ def test_quarantined_root_lets_enterworktree_repair_itself(tmp_path, capsys):
         )
         assert capsys.readouterr().out.strip() == "", tool
 
-    for tool in ("Bash", "Edit", "Write", "Agent", "ExitWorktree", "mcp__x__y"):
+    for tool in ("Bash", "Edit", "Write", "Agent", "mcp__x__y"):
         GUARD._pre_tool_use(
             primary,
             tmp_path / "state.json",
@@ -158,6 +160,204 @@ def test_quarantined_root_lets_enterworktree_repair_itself(tmp_path, capsys):
         out = json.loads(capsys.readouterr().out.strip())
         assert out["hookSpecificOutput"]["permissionDecision"] == "deny", tool
         assert "EnterWorktree" in out["hookSpecificOutput"]["permissionDecisionReason"]
+
+
+# ── the quarantine's own remedy is an in-session act (Chairman 2026-10-10) ──────
+#
+# DEC:ADMIN-BLOCKERS-ARE-SELF-REMEDIED-NEVER-HANDED-TO-THE-OPERATOR. A Meta-CEO
+# seat ended on EXACT_HUMAN_GATE handing the operator the worktree-mint command,
+# because the guard denied every execution tool — including the mint its own
+# remedy needs — and its text read as "start a fresh session". The guard now
+# prints the filled-in remedy and admits exactly that Bash shape.
+
+_REMEDY_REQUEST = json.dumps({"cwd": "/r/primary", "name": "seat", "session_id": "s-1"})
+
+REMEDY_SHAPES = (
+    "printf '%s' '" + _REMEDY_REQUEST
+    + "' | python3 /Users/x/.local/lib/mastermind/worktree-storage/worktree_storage.py create",
+    "printf '%s' '{\"cwd\":\"/r\",\"name\":\"n\"}' | python3 "
+    "~/.local/lib/mastermind/worktree-storage/worktree_storage.py "
+    "--config /Users/x/.config/mastermind/worktree-storage.json create",
+    "python3 ~/.local/lib/mastermind/worktree-storage/worktree_storage.py check",
+    "echo '{\"cwd\":\"/r\",\"name\":\"n\"}' | python3 /repo/.claude/hooks/worktree_create_sparse.py",
+    "python \"/Users/x y/.claude/hooks/worktree_create_sparse.py\"",
+    "git worktree list --porcelain",
+    "git worktree unlock /Volumes/Mastermind/agent-workspaces/claude/abc/seat-abc",
+    "git fetch origin",
+    "git branch --show-current",
+    "git rev-parse --show-toplevel",
+    "git status --porcelain",
+    "  df -h /Volumes/Mastermind  ",
+    "ls -la /Volumes/Mastermind/agent-workspaces/claude",
+    "cat ~/.config/mastermind/worktree-storage.json",
+    "test -d /Volumes/Mastermind",
+    "grep -n root ~/.config/mastermind/worktree-storage.json",
+)
+
+NON_REMEDY_SHAPES = (
+    "",
+    "git worktree list; rm -rf /tmp/x",
+    "python3 ~/.local/lib/mastermind/worktree-storage/worktree_storage.py create && git push",
+    "printf '%s' '{}' | python3 /x/worktree_storage.py create > /tmp/out",
+    "printf '%s' '{}' | python3 /x/worktree_storage.py create | tee /tmp/log",
+    "python3 /x/worktree_storage.py create\ngit push origin main",
+    "ls $(cat secret)",
+    "cat `whoami`",
+    "echo \"$HOME\"",
+    "git push origin main",
+    "git worktree remove /x",
+    "git checkout -b claude/x",
+    "git commit -m x",
+    "python3 other_script.py create",
+    "python3 /x/worktree_storage.py",
+    "python3 /x/worktree_storage.py delete",
+    "rm -rf /Volumes/Mastermind",
+    "lsblk",
+    "testing",
+    "cd /x && ls",
+)
+
+
+@pytest.mark.parametrize("command", REMEDY_SHAPES)
+def test_remedy_shaped_bash_is_recognised(command):
+    assert GUARD._is_quarantine_remedy_command(command), command
+
+
+@pytest.mark.parametrize("command", NON_REMEDY_SHAPES)
+def test_non_remedy_bash_is_not_recognised(command):
+    assert not GUARD._is_quarantine_remedy_command(command), command
+
+
+def test_quarantined_root_allows_the_remedy_mint_and_denies_other_bash(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    state = tmp_path / "state.json"
+
+    for command in REMEDY_SHAPES:
+        GUARD._pre_tool_use(
+            primary,
+            state,
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Bash",
+                "tool_input": {"command": command},
+            },
+        )
+        assert capsys.readouterr().out.strip() == "", command
+
+    for command in NON_REMEDY_SHAPES:
+        GUARD._pre_tool_use(
+            primary,
+            state,
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Bash",
+                "tool_input": {"command": command},
+            },
+        )
+        out = json.loads(capsys.readouterr().out.strip())
+        assert out["hookSpecificOutput"]["permissionDecision"] == "deny", command
+
+    # A Bash call without tool_input (older payloads) is still denied.
+    GUARD._pre_tool_use(
+        primary, state, {"hook_event_name": "PreToolUse", "tool_name": "Bash"}
+    )
+    assert json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "permissionDecision"
+    ] == "deny"
+    # The remedy shape never opens a non-Bash tool.
+    GUARD._pre_tool_use(
+        primary,
+        state,
+        {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "Edit",
+            "tool_input": {"command": REMEDY_SHAPES[0]},
+        },
+    )
+    assert json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "permissionDecision"
+    ] == "deny"
+
+
+def _assert_remedy_text(text: str, root: Path) -> None:
+    assert "never hand it to the operator" in text
+    assert "never end the session on this blocker" in text
+    assert "EnterWorktree" in text
+    assert "printf '%s'" in text
+    assert str(root) in text
+    assert "worktree_storage.py" in text or "worktree_create_sparse.py" in text
+    # The printed mint is a shape the guard itself admits while quarantined.
+    mint = text.split("with `", 1)[1].split("`", 1)[0]
+    assert GUARD._is_quarantine_remedy_command(mint), mint
+    assert "fresh worktree-backed Claude session" in text
+
+
+def test_quarantine_denial_prints_the_filled_in_remedy(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    GUARD._pre_tool_use(
+        primary,
+        tmp_path / "state.json",
+        {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "Edit",
+            "session_id": "sess-123",
+        },
+    )
+    reason = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "permissionDecisionReason"
+    ]
+    _assert_remedy_text(reason, primary)
+    assert "sess-123" in reason
+    # Not a native session tree: no ExitWorktree step is demanded.
+    assert "ExitWorktree" not in reason
+
+
+def test_quarantine_context_prints_the_filled_in_remedy(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    GUARD._session_start(
+        primary,
+        tmp_path / "state.json",
+        {"hook_event_name": "SessionStart", "source": "startup", "session_id": "sess-9"},
+    )
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "SESSION ROOT QUARANTINE" in context
+    _assert_remedy_text(context, primary)
+    assert "sess-9" in context
+    assert "MANDATORY SHIP LOOP" in context
+
+
+def test_native_session_tree_remedy_adds_the_exitworktree_step(tmp_path, capsys):
+    """A conversation in `.claude/worktrees/<name>` must leave that tree first."""
+    primary = _root_fixture(tmp_path)
+    tree = primary / ".claude" / "worktrees" / "worktree-handoff-seat"
+    tree.parent.mkdir(parents=True)
+    _git(primary, "worktree", "add", "-b", "handoff/not-admitted", str(tree))
+    admitted, _reason = GUARD._delivery_root_admission(tree)
+    assert admitted is False
+
+    GUARD._pre_tool_use(
+        tree,
+        tmp_path / "state.json",
+        {"hook_event_name": "PreToolUse", "tool_name": "Write", "session_id": "s"},
+    )
+    reason = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "permissionDecisionReason"
+    ]
+    _assert_remedy_text(reason, tree)
+    assert "call ExitWorktree keeping the tree" in reason
+    # The suggested name drops the legacy prefix and stays branch-safe.
+    assert '"name": "handoff-seat"' in reason
+
+
+def test_quarantine_suggested_name_is_branch_safe():
+    assert GUARD._quarantine_suggested_name(Path("/x/worktree-rs leader(1)")) == "rs-leader-1"
+    assert GUARD._quarantine_suggested_name(Path("/x/.hidden")) == "hidden"
+    assert GUARD._quarantine_suggested_name(Path("/x/---")) == "seat"
+    assert len(GUARD._quarantine_suggested_name(Path("/x/" + "a" * 200))) == 80
 
 
 def test_quarantine_context_names_the_in_session_repair(tmp_path, capsys):
@@ -218,6 +418,274 @@ def test_quarantined_root_never_seeds_completion_state(tmp_path, capsys):
 
     assert capsys.readouterr().out.strip() == ""
     assert GUARD._load(state_path) is None
+
+
+def _native_session_tree(tmp_path: Path, name: str = "seat") -> tuple[Path, Path]:
+    """A tree shaped like Claude Code's native mint: .claude/worktrees/<n> on worktree-<n>."""
+    primary = _root_fixture(tmp_path)
+    worktree = primary / ".claude" / "worktrees" / name
+    _git(primary, "worktree", "add", "-b", f"worktree-{name}", str(worktree))
+    return primary, worktree
+
+
+def _assert_bash_denied(worktree: Path, state_path: Path, capsys) -> None:
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+    out = json.loads(capsys.readouterr().out.strip())
+    assert out["hookSpecificOutput"]["permissionDecision"] == "deny"
+
+
+def test_native_session_tree_is_adopted_at_first_effectful_call(tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+    state_path = tmp_path / "native-state.json"
+
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    assert _git(worktree, "branch", "--show-current") == "claude/seat"
+    assert GUARD._delivery_root_admission(worktree) == (True, "")
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is True
+    assert state["seeded_by"] == "pre_tool_use_relocation"
+
+
+def test_native_session_tree_is_adopted_at_session_start(tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+    state_path = tmp_path / "native-start.json"
+
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "SESSION BRANCH ADOPTED" in context
+    assert "claude/seat" in context
+    assert "SESSION ROOT QUARANTINE" not in context
+    assert "MANDATORY SHIP LOOP" in context
+    assert _git(worktree, "branch", "--show-current") == "claude/seat"
+    assert GUARD._load(state_path)["root_admitted"] is True
+
+
+def test_adoption_refuses_a_tree_outside_claude_worktrees(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "seat"
+    _git(primary, "worktree", "add", "-b", "worktree-seat", str(worktree))
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+
+
+def test_adoption_refuses_a_branch_that_does_not_match_its_directory(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = primary / ".claude" / "worktrees" / "seat"
+    _git(primary, "worktree", "add", "-b", "worktree-other", str(worktree))
+    # A `worktree-seat` that exists but is NOT checked out here: without the
+    # current-branch check, `git branch -m worktree-seat claude/seat` would succeed
+    # and rename a branch this tree does not own.
+    _git(primary, "branch", "worktree-seat")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-other"
+    assert _git(primary, "for-each-ref", "--format=%(refname)", "refs/heads/claude/") == ""
+    assert _git(primary, "rev-parse", "--verify", "refs/heads/worktree-seat")
+
+
+def test_adoption_refuses_a_branch_with_an_upstream(tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+    _git(worktree, "config", "branch.worktree-seat.remote", "origin")
+    _git(worktree, "config", "branch.worktree-seat.merge", "refs/heads/worktree-seat")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+
+
+def test_adoption_refuses_a_branch_with_a_remote_tracking_copy(tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+    _git(worktree, "update-ref", "refs/remotes/origin/worktree-seat", "HEAD")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+
+
+def test_adoption_never_clobbers_an_existing_claude_branch(tmp_path, capsys):
+    primary, worktree = _native_session_tree(tmp_path)
+    _git(primary, "branch", "claude/seat")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+    assert _git(primary, "rev-parse", "--verify", "refs/heads/claude/seat")
+
+
+def test_adoption_refuses_a_packed_case_variant_of_its_target(tmp_path, capsys):
+    primary, worktree = _native_session_tree(tmp_path)
+    _git(primary, "branch", "claude/SEAT")
+    _git(primary, "pack-refs", "--all")
+
+    _assert_bash_denied(worktree, tmp_path / "state.json", capsys)
+    assert _git(worktree, "branch", "--show-current") == "worktree-seat"
+    assert (
+        _git(primary, "for-each-ref", "--format=%(refname)", "refs/heads/claude/")
+        == "refs/heads/claude/SEAT"
+    )
+
+
+def test_a_lost_adoption_race_still_admits_the_tree(monkeypatch, tmp_path, capsys):
+    _primary, worktree = _native_session_tree(tmp_path)
+
+    def sibling_hook_won(_root):
+        # A concurrent PreToolUse process renamed the branch first; this one's
+        # own attempt therefore adopts nothing.
+        _git(worktree, "branch", "-m", "worktree-seat", "claude/seat")
+        return ""
+
+    monkeypatch.setattr(GUARD, "_adopt_native_session_branch", sibling_hook_won)
+    GUARD._pre_tool_use(
+        worktree,
+        tmp_path / "race.json",
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    assert GUARD._load(tmp_path / "race.json")["root_admitted"] is True
+
+
+def test_adoption_refuses_a_primary_checkout_in_native_shape(tmp_path, capsys):
+    primary = tmp_path / ".claude" / "worktrees" / "host"
+    primary.mkdir(parents=True)
+    _git(primary, "init", "-b", "worktree-host")
+    _git(primary, "config", "user.name", "Test")
+    _git(primary, "config", "user.email", "test@example.com")
+    (primary / "kept.txt").write_text("baseline\n", encoding="utf-8")
+    _git(primary, "add", "kept.txt")
+    _git(primary, "commit", "-m", "initial")
+
+    _assert_bash_denied(primary, tmp_path / "state.json", capsys)
+    assert _git(primary, "branch", "--show-current") == "worktree-host"
+
+
+def test_root_admitted_in_place_readmits_its_quarantined_record(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "handoff-seat"
+    _git(primary, "worktree", "add", "-b", "handoff/seat", str(worktree))
+    state_path = tmp_path / "in-place.json"
+
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    capsys.readouterr()
+    born = GUARD._load(state_path)
+    assert born["root_admitted"] is False
+    assert born["baseline_captured"] is False
+
+    _git(worktree, "branch", "-m", "handoff/seat", "claude/seat")
+    (worktree / "kept.txt").write_text("dirty before the first admitted call\n")
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is True
+    assert state["seeded_by"] == "pre_tool_use_admission"
+    assert state["baseline_captured"] is True
+    assert state["start_head"] == _git(worktree, "rev-parse", "HEAD")
+    assert "kept.txt" in json.dumps(state["baseline"])
+
+
+def test_resume_admitting_a_born_quarantined_root_captures_its_baseline(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "handoff-seat"
+    _git(primary, "worktree", "add", "-b", "handoff/seat", str(worktree))
+    state_path = tmp_path / "resume.json"
+
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    capsys.readouterr()
+    _git(worktree, "branch", "-m", "handoff/seat", "claude/seat")
+    (worktree / "kept.txt").write_text("dirty before admission\n")
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "resume"},
+    )
+    capsys.readouterr()
+
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is True
+    assert state["baseline_captured"] is True
+    assert "kept.txt" in json.dumps(state["baseline"])
+
+
+def test_readmission_after_a_quarantined_compact_keeps_the_sessions_work(tmp_path, capsys):
+    """Admitted -> work -> compact while not admissible -> re-admitted -> Stop blocks.
+
+    Re-seeding a fresh record at re-admission would absorb the session's commit
+    into start_head and its dirt into the baseline, releasing unshipped work.
+    """
+    _primary, worktree = _linked_root_fixture(tmp_path)
+    state_path = tmp_path / "compact.json"
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    capsys.readouterr()
+    born = GUARD._load(state_path)
+    assert born["root_admitted"] is True
+
+    (worktree / "work.txt").write_text("committed by the session\n", encoding="utf-8")
+    _git(worktree, "add", "work.txt")
+    _git(worktree, "commit", "-m", "session work")
+    (worktree / "kept.txt").write_text("edited by the session\n", encoding="utf-8")
+
+    _git(worktree, "checkout", "--detach")
+    GUARD._session_start(
+        worktree,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "compact"},
+    )
+    capsys.readouterr()
+    assert GUARD._load(state_path)["root_admitted"] is False
+
+    _git(worktree, "checkout", "claude/delivery-root")
+    GUARD._pre_tool_use(
+        worktree,
+        state_path,
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+    assert capsys.readouterr().out.strip() == ""
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is True
+    assert state["seeded_by"] == "pre_tool_use_admission"
+    assert state["start_head"] == born["start_head"]
+    assert state["baseline"] == born["baseline"]
+
+    GUARD._stop(
+        worktree,
+        state_path,
+        {"hook_event_name": "Stop", "last_assistant_message": "SESSION END: PROVEN_OUTCOME"},
+    )
+    out = json.loads(capsys.readouterr().out.strip())
+    assert out["decision"] == "block"
+    assert "kept.txt" in out["reason"]
 
 
 def test_quarantined_session_stops_cleanly_when_shared_main_moves(
@@ -1091,7 +1559,14 @@ def test_ship_loop_linked_red_call_delta_is_three_json_plus_one_archive(monkeypa
     archive_calls = []
     loader_kwargs = {}
     loaded = SimpleNamespace(
-        mode="semantic", evidence={"fixture": True, "tested_tree_sha": MERGE}
+        mode="semantic",
+        evidence={
+            "fixture": True,
+            "role": "pr_head",
+            "subject_head_sha": HEAD,
+            "base_sha": BASE,
+            "tested_tree_sha": MERGE,
+        },
     )
     artifact = {
         "name": "ci-semantic-evidence-77",
@@ -1188,7 +1663,13 @@ def test_ship_loop_artifact_cannot_self_claim_tested_merge_tree(
         GUARD.semantic_proof,
         "load_semantic_evidence",
         lambda *_a, **_k: SimpleNamespace(
-            mode="semantic", evidence={"tested_tree_sha": MERGE}
+            mode="semantic",
+            evidence={
+                "role": "pr_head",
+                "subject_head_sha": HEAD,
+                "base_sha": BASE,
+                "tested_tree_sha": MERGE,
+            },
         ),
     )
 
@@ -1206,6 +1687,149 @@ def test_ship_loop_artifact_cannot_self_claim_tested_merge_tree(
             },
             role="pr_head",
             expected_base_sha=BASE,
+        )
+
+
+TESTED_BASE = "e" * 40
+
+
+def _stale_base_run() -> dict:
+    return {
+        "id": 77,
+        "name": "ci",
+        "path": ".github/workflows/ci.yml",
+        "event": "pull_request",
+        "head_sha": HEAD,
+        "pull_requests": _check("ci-gate", "failure")["pull_requests"],
+    }
+
+
+def _faithful_loader(evidence: dict):
+    """Mirror the real loader's exact-string identity check on ``base_sha``."""
+
+    def load(_source, *, advertised, **expected):
+        assert advertised is True
+        bound = expected.get("expected_base_sha")
+        if bound is not None and str(evidence.get("base_sha")) != str(bound):
+            raise GUARD.semantic_proof.SemanticProofError(
+                "semantic evidence base_sha mismatch"
+            )
+        return SimpleNamespace(mode="semantic", evidence=evidence)
+
+    return load
+
+
+def test_ship_loop_accepts_stale_advertised_base_that_is_an_ancestor(monkeypatch):
+    """Guard mirror of the PR #8844 stale-base defect (2026-10-11)."""
+    api_calls = []
+    artifact = {
+        "name": "ci-semantic-evidence-77",
+        "archive_download_url": "https://api.github.com/artifact.zip",
+        "expired": False,
+    }
+    evidence = {
+        "role": "pr_head",
+        "subject_head_sha": HEAD,
+        "base_sha": TESTED_BASE,
+        "tested_tree_sha": MERGE,
+    }
+
+    def get(url):
+        api_calls.append(url)
+        if url.endswith("/actions/runs/77/artifacts?per_page=100"):
+            return {"total_count": 1, "artifacts": [artifact]}
+        if url.endswith(f"/compare/{BASE}...{TESTED_BASE}?per_page=1"):
+            return {"status": "ahead", "ahead_by": 12, "behind_by": 0}
+        if url.endswith(f"/git/commits/{MERGE}"):
+            return {"sha": MERGE, "parents": [{"sha": TESTED_BASE}, {"sha": HEAD}]}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(GUARD, "_get_json", get)
+    monkeypatch.setattr(GUARD, "_get_artifact_bytes", lambda _url: b"archive")
+    monkeypatch.setattr(GUARD, "_semantic_json_from_archive", lambda _raw: {"v": 1})
+    monkeypatch.setattr(
+        GUARD.semantic_proof, "load_semantic_evidence", _faithful_loader(evidence)
+    )
+
+    loaded = GUARD._semantic_evidence_for_run(
+        "acme", "widgets", _stale_base_run(), role="pr_head", expected_base_sha=BASE
+    )
+    assert loaded.mode == "semantic"
+    assert loaded.evidence is evidence
+    assert [url.rsplit("/repos/acme/widgets/", 1)[1] for url in api_calls] == [
+        "actions/runs/77/artifacts?per_page=100",
+        f"compare/{BASE}...{TESTED_BASE}?per_page=1",
+        f"git/commits/{MERGE}",
+    ]
+
+
+@pytest.mark.parametrize("relation", ["diverged", "behind"])
+def test_ship_loop_refuses_a_non_ancestor_advertised_base(monkeypatch, relation):
+    api_calls = []
+    artifact = {
+        "name": "ci-semantic-evidence-77",
+        "archive_download_url": "https://api.github.com/artifact.zip",
+        "expired": False,
+    }
+    evidence = {
+        "role": "pr_head",
+        "subject_head_sha": HEAD,
+        "base_sha": TESTED_BASE,
+        "tested_tree_sha": MERGE,
+    }
+
+    def get(url):
+        api_calls.append(url)
+        if url.endswith("/actions/runs/77/artifacts?per_page=100"):
+            return {"total_count": 1, "artifacts": [artifact]}
+        if url.endswith(f"/compare/{BASE}...{TESTED_BASE}?per_page=1"):
+            return {"status": relation}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(GUARD, "_get_json", get)
+    monkeypatch.setattr(GUARD, "_get_artifact_bytes", lambda _url: b"archive")
+    monkeypatch.setattr(GUARD, "_semantic_json_from_archive", lambda _raw: {"v": 1})
+    monkeypatch.setattr(
+        GUARD.semantic_proof, "load_semantic_evidence", _faithful_loader(evidence)
+    )
+
+    with pytest.raises(GUARD.semantic_proof.SemanticProofError, match="base_sha mismatch"):
+        GUARD._semantic_evidence_for_run(
+            "acme", "widgets", _stale_base_run(), role="pr_head", expected_base_sha=BASE
+        )
+    assert not any("/git/commits/" in url for url in api_calls)
+
+
+def test_ship_loop_refuses_a_stale_base_with_a_different_head(monkeypatch):
+    artifact = {
+        "name": "ci-semantic-evidence-77",
+        "archive_download_url": "https://api.github.com/artifact.zip",
+        "expired": False,
+    }
+    evidence = {
+        "role": "pr_head",
+        "subject_head_sha": "f" * 40,
+        "base_sha": TESTED_BASE,
+        "tested_tree_sha": MERGE,
+    }
+
+    def get(url):
+        if url.endswith("/actions/runs/77/artifacts?per_page=100"):
+            return {"total_count": 1, "artifacts": [artifact]}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(GUARD, "_get_json", get)
+    monkeypatch.setattr(GUARD, "_get_artifact_bytes", lambda _url: b"archive")
+    monkeypatch.setattr(GUARD, "_semantic_json_from_archive", lambda _raw: {"v": 1})
+    monkeypatch.setattr(
+        GUARD.semantic_proof, "load_semantic_evidence", _faithful_loader(evidence)
+    )
+
+    with pytest.raises(
+        GUARD.semantic_proof.SemanticProofError, match="subject_head_sha mismatch"
+    ):
+        GUARD._semantic_evidence_for_run(
+            "acme", "widgets", _stale_base_run(), role="pr_head", expected_base_sha=BASE
         )
 
 
@@ -1473,3 +2097,203 @@ def test_unreadable_inventory_leaves_the_old_refusal_intact(monkeypatch, tmp_pat
     )
     assert ok is False
     assert "No ancestry-valid descendant PASS" in detail
+
+
+def _fabric_lane_fixture(tmp_path, monkeypatch, *, run_id="opus-sparse-w9", branch=None):
+    home = tmp_path / "home"
+    (home / "lanes" / "wt").mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    primary = _root_fixture(tmp_path)
+    lane = home / "lanes" / "wt" / run_id
+    _git(primary, "worktree", "add", "-b", branch or f"lane/{run_id}", str(lane))
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", run_id)
+    return primary, lane
+
+
+def _bash_decision(root, state_path, capsys):
+    GUARD._pre_tool_use(
+        root, state_path, {"hook_event_name": "PreToolUse", "tool_name": "Bash"}
+    )
+    out = capsys.readouterr().out.strip()
+    if not out:
+        return "allow"
+    return json.loads(out)["hookSpecificOutput"]["permissionDecision"]
+
+
+def test_minted_fabric_lane_admits_tools_without_completion_state(
+    tmp_path, monkeypatch, capsys
+):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    state_path = tmp_path / "lane-state.json"
+
+    assert GUARD._delivery_root_admission(lane)[0] is False
+    assert GUARD._fabric_lane_admission(lane) == "opus-sparse-w9"
+    assert _bash_decision(lane, state_path, capsys) == "allow"
+    assert GUARD._load(state_path) is None
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda mp: mp.delenv("FABRIC_WORKSPACE_READY"),
+        lambda mp: mp.setenv("FABRIC_WORKSPACE_READY", "0"),
+        lambda mp: mp.setenv("FABRIC_WORKSPACE_RUN_ID", "other-run"),
+        lambda mp: mp.setenv("FABRIC_WORKSPACE_RUN_ID", "../wt/opus-sparse-w9"),
+        # Accepted by the run-id charset, so this one exercises the path check.
+        lambda mp: mp.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9.."),
+    ],
+)
+def test_fabric_lane_requires_matching_readiness_env(tmp_path, monkeypatch, capsys, mutate):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    mutate(monkeypatch)
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_rejects_branch_that_does_not_name_the_run(
+    tmp_path, monkeypatch, capsys
+):
+    _primary, lane = _fabric_lane_fixture(
+        tmp_path, monkeypatch, branch="lane/some-other-run"
+    )
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_env_does_not_admit_other_roots(tmp_path, monkeypatch, capsys):
+    primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    # The primary checkout stays quarantined even with the lane's readiness env
+    # inherited. Admission is decided for the lane top level only: a direct
+    # subdirectory path is not a lane (the hook's _repo_root normalises a
+    # subdirectory cwd to the top level first, so the whole tree is one unit).
+    assert GUARD._fabric_lane_admission(primary) == ""
+    assert _bash_decision(primary, tmp_path / "s.json", capsys) == "deny"
+    (lane / "sub").mkdir()
+    assert GUARD._fabric_lane_admission(lane / "sub") == ""
+
+
+def test_fabric_lane_rejects_detached_head(tmp_path, monkeypatch, capsys):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    _git(lane, "checkout", "--detach")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_rejects_symlinked_lane_path(tmp_path, monkeypatch, capsys):
+    home = tmp_path / "home"
+    (home / "lanes" / "wt").mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    primary = _root_fixture(tmp_path)
+    elsewhere = tmp_path / "elsewhere"
+    # A real linked worktree on the right branch, reached through a symlink.
+    _git(primary, "worktree", "add", "-b", "lane/opus-sparse-w9", str(elsewhere))
+    lane = home / "lanes" / "wt" / "opus-sparse-w9"
+    lane.symlink_to(elsewhere, target_is_directory=True)
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_unreadable_git_identity_is_not_a_lane(
+    tmp_path, monkeypatch, capsys
+):
+    home = tmp_path / "home"
+    lane = home / "lanes" / "wt" / "opus-sparse-w9"
+    lane.mkdir(parents=True)
+    (lane / ".git").write_text("gitdir: /nonexistent/worktrees/x\n", encoding="utf-8")
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+
+
+def test_fabric_lane_cannot_promote_itself_into_the_ship_loop(
+    tmp_path, monkeypatch, capsys
+):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    state_path = tmp_path / "lane-state.json"
+    GUARD._session_start(
+        lane, state_path, {"hook_event_name": "SessionStart", "source": "startup"}
+    )
+    capsys.readouterr()
+    assert GUARD._load(state_path)["fabric_lane_run_id"] == "opus-sparse-w9"
+
+    # The worker renames its own branch into the delivery namespace.
+    _git(lane, "branch", "-m", "lane/opus-sparse-w9", "claude/escape")
+
+    admitted, reason = GUARD._delivery_root_admission(lane)
+    assert admitted is False
+    assert "never a delivery root" in reason
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, state_path, capsys) == "deny"
+
+    GUARD._session_start(
+        lane, state_path, {"hook_event_name": "SessionStart", "source": "compact"}
+    )
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "SESSION ROOT QUARANTINE" in context
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is False
+    assert "fabric_lane_run_id" not in state
+    GUARD._stop(
+        lane,
+        state_path,
+        {"hook_event_name": "Stop", "last_assistant_message": "done"},
+    )
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_fabric_lane_path_on_primary_checkout_is_not_a_lane(
+    tmp_path, monkeypatch, capsys
+):
+    home = tmp_path / "home"
+    lane = home / "lanes" / "wt" / "opus-sparse-w9"
+    lane.mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    _git(lane, "init", "-b", "lane/opus-sparse-w9")
+    _git(lane, "config", "user.name", "Test")
+    _git(lane, "config", "user.email", "test@example.com")
+    (lane / "f.txt").write_text("x", encoding="utf-8")
+    _git(lane, "add", "f.txt")
+    _git(lane, "commit", "-m", "initial")
+    monkeypatch.setenv("FABRIC_WORKSPACE_READY", "1")
+    monkeypatch.setenv("FABRIC_WORKSPACE_RUN_ID", "opus-sparse-w9")
+
+    assert GUARD._fabric_lane_admission(lane) == ""
+    assert _bash_decision(lane, tmp_path / "s.json", capsys) == "deny"
+
+
+def test_fabric_lane_session_gets_lane_context_and_stop_stays_out(
+    tmp_path, monkeypatch, capsys
+):
+    _primary, lane = _fabric_lane_fixture(tmp_path, monkeypatch)
+    state_path = tmp_path / "lane-state.json"
+
+    GUARD._session_start(
+        lane, state_path, {"hook_event_name": "SessionStart", "source": "startup"}
+    )
+    context = json.loads(capsys.readouterr().out.strip())["hookSpecificOutput"][
+        "additionalContext"
+    ]
+    assert "FABRIC LANE WORKER" in context
+    assert "SESSION ROOT QUARANTINE" not in context
+    assert "MANDATORY SHIP LOOP" not in context
+    state = GUARD._load(state_path)
+    assert state["root_admitted"] is False
+    assert state["fabric_lane_run_id"] == "opus-sparse-w9"
+
+    assert _bash_decision(lane, state_path, capsys) == "allow"
+    GUARD._stop(
+        lane,
+        state_path,
+        {"hook_event_name": "Stop", "last_assistant_message": "SPARSE_CENSUS_RESULT {}"},
+    )
+    assert capsys.readouterr().out.strip() == ""

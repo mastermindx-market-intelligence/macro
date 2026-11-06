@@ -1,0 +1,57 @@
+{
+  "addendum": "Current source incorporates protected base, restores global i18n to that base, and uses independently accepted feature-copy helper. All other15 accepted files retain their hashes; unchanged canonical copy guard,554files/9141tests and6EN/ZH browser cases pass. Hosted CI and actual installed/live behavior remain pending.",
+  "anchor_relocation": {
+    "current": "terminal:terminal/components/TerminalShell.tsx:2520",
+    "prior": "terminal:terminal/components/TerminalShell.tsx:2518",
+    "same_source_statement": true
+  },
+  "census_identity_unchanged": {
+    "macro": "772c8b36d2a70e9e72f870e76db73cf30c7dfed0",
+    "mastermind": "42ba5c76eb7ce1fdf44f3b44f332928668939df4",
+    "terminal": "b383d8c3579faeca1cdbcd29063535081aabf35b"
+  },
+  "committed_terminal_source": "3e8fe8adad84a043a3454c1214bc886c42e872b1",
+  "current_receipts": {
+    "terminal:hub/lib/extfeed.js": {
+      "line_count": 1202,
+      "sha256": "d1d37df326828e3040ce82ab577fc6e904587ab3caacbdc90ba1d43a8b243277"
+    },
+    "terminal:terminal/app/api/ext-quote/route.ts": {
+      "line_count": 107,
+      "sha256": "bd4e2ad9509d1006775c83c22b051ed1376204b337ad77a71220536b30b64ebc"
+    },
+    "terminal:terminal/app/api/quote/route.ts": {
+      "line_count": 183,
+      "sha256": "289c3ac0d0d1932d8d3e565fd8da9a6be7fd8a6d9b42cbcb2ea37075efd42bd0"
+    },
+    "terminal:terminal/components/TerminalShell.tsx": {
+      "line_count": 6490,
+      "sha256": "58840d35751af8cc0e47bf9259193e5dd9652375dfb53be778c7678cf5c6580d"
+    },
+    "terminal:terminal/lib/extQuoteFreshness.ts": {
+      "line_count": 46,
+      "sha256": "f860c445bdb9c9a42629c9f44a9fc3908ee4d31b9cd0ae810ff5a9c032595d76"
+    }
+  },
+  "previous_qualified_source": "07c777035b132e376b905a793065d1d611cc8918",
+  "prior_receipts": {
+    "terminal:hub/lib/extfeed.js": {
+      "line_count": 1041,
+      "sha256": "8af0fa73d0ec24d7a547ccf4b272739938ad3b2daa3be4cc86ccefa2eb43a374"
+    },
+    "terminal:terminal/app/api/ext-quote/route.ts": {
+      "line_count": 71,
+      "sha256": "f7c9688ce64eaf6ed5f5d6fc938fa8a01436275f2305e1699856833b3dec1a2d"
+    },
+    "terminal:terminal/app/api/quote/route.ts": {
+      "line_count": 134,
+      "sha256": "87702d98ee63fb961420aec04630a5eefde8bb9285be793ae52b7724b1c867c4"
+    },
+    "terminal:terminal/components/TerminalShell.tsx": {
+      "line_count": 3766,
+      "sha256": "38839b4c08dd5f39cdd0e1cf443b39428e9cc986b37ef0d118159b1cc5c6ca25"
+    },
+    "terminal:terminal/lib/extQuoteFreshness.ts": null
+  },
+  "source_qualification_only": true
+}

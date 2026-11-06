@@ -1,0 +1,17 @@
+{
+  "why": "The Treasury cash card now states its reserve effect, which the golden page does not.",
+  "pairs": [
+    [
+      "<p class=\"mq-metric-direction mq-metric-sample\">",
+      ""
+    ],
+    [
+      "<span class=\"l-en\">When this balance rises, Treasury is pulling cash into its own account and bank reserves fall. When it falls, Treasury is spending it down and reserves rise.</span>",
+      ""
+    ],
+    [
+      "<span class=\"l-zh\">余额上升时，财政部把现金抽入自有账户，银行准备金随之减少；余额下降时，财政部花出这笔现金，银行准备金随之增加。</span></p>",
+      ""
+    ]
+  ]
+}

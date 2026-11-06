@@ -1,0 +1,13 @@
+{
+  "compressed_bytes": 91543,
+  "compressed_sha256": "704be3c11df175284afdda79918ff0963fdfa6f56cdd2c9291492c0326e16386",
+  "considered_n": 173,
+  "contract": "defense.q3.frozen_historical_test_fixture.v1",
+  "known_semantics": "Existing public historical display queue. Never prospective issuance; no equity outcomes.",
+  "owner_admitted_input_shape_n": 12,
+  "source_commit": "984ed6e16cca71bed534e39d707883fee87bd673",
+  "source_git_blob": "d990b14d054778bd686f8332779315ceb86e57b7",
+  "source_path": "data/government_revenue/candidate_queue.json",
+  "source_sha256": "2187ece0c0070b61b1943686d6a0946db0cad86ebf4d35c081f497cfc839b69d",
+  "uncompressed_bytes": 1205500
+}

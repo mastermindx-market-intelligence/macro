@@ -701,7 +701,11 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     # W9 stage 1 D73-D74 (O32 natural-run publication proof; Sol 5966828357 scheduler owner).
     am_edition = r["MO-PAID-011"]
     assert am_edition["capability_state_c2"] == "PARTIAL"
-    assert am_edition["state_delta"].startswith("UPDATED 2026-10-03 D73")
+    # W17 records the later source merge without replacing D73's narrower
+    # natural-run publication proof or promoting the incomplete AM Edition.
+    assert am_edition["state_delta"].startswith("UPDATED 2026-10-11 W17")
+    assert "UPDATED 2026-10-03 D73" in am_edition["state_delta"]
+    assert "#8771" in am_edition["state_delta"]
     assert "96db8a19f9f5" in am_edition["state_delta"]
     assert "NOT a weekday premarket producer-build proof" in am_edition["state_delta"]
     assert "natural-run PUBLICATION proof READ 2026-10-03 08:12:01Z" in am_edition["next_bounded_child"]
@@ -731,7 +735,9 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert "stroke-dasharray:none" in sanctions["state_delta"]
     catalyst = r["MO-PAID-077"]
     assert catalyst["capability_state_c2"] == "BUILT_NOT_PROVEN"
-    assert catalyst["next_bounded_child"].startswith("W3-1b consumer ruling NOT RIPE 2026-10-03")
+    assert catalyst["next_bounded_child"].startswith("NOT_RIPE 2026-10-11")
+    assert "three DISTINCT natural session_dates" in catalyst["next_bounded_child"]
+    assert "W3-1b consumer ruling NOT RIPE 2026-10-03" in catalyst["next_bounded_child"]
     assert "session_date 2026-09-25" in catalyst["next_bounded_child"]
 
     f07 = r["MO-DELTA-017"]

@@ -1,0 +1,132 @@
+{
+  "actual_cli": {
+    "actual_decision_preserved": true,
+    "all_authority_false": true,
+    "available": 1,
+    "bad_candidate_retained": true,
+    "input_kind": "SYNTHETIC_CONFORMANCE",
+    "input_sha256": "81bd958d64b14d6cabc7558909b006f444a0330bb1bced779e7fb69349e126d2",
+    "native_cli": "scripts/entry_radar_rs_pullback_phase1.py",
+    "outcomes_computed": false,
+    "population": 2,
+    "process_returncode": 0,
+    "python": "3.12.13",
+    "retained": 2,
+    "stdout_sha256": "7bcc45805d07ef94d37f074714160afd201a69b4dc9f1b72bb22e6aafd60c7e0"
+  },
+  "authority": {
+    "alert": false,
+    "market_admitted": false,
+    "outcomes_computed": false,
+    "rank": false,
+    "trade": false
+  },
+  "base_head": "d0beadc4043624f2e3e7cc9fd6450db1c754f9a0",
+  "ci_scope": {
+    "after_uncovered": [],
+    "before_uncovered": [
+      "engine/entry_radar/replay/first_green_reversal_descriptor.py",
+      "engine/entry_radar/replay/leader_pivot_descriptor.py",
+      "tests/test_entry_radar_first_green_descriptor.py",
+      "tests/test_entry_radar_leader_pivot_descriptor.py",
+      "tests/test_entry_radar_leader_pivot_progress.py",
+      "tests/test_entry_radar_leader_pivot_progress_edges.py"
+    ],
+    "declared": 24,
+    "full_differential_gate": false,
+    "inference_note": "derived scopes for 1/1 jobs",
+    "inferred_literal": 24,
+    "job": "entry-radar-rs-pullback-calendar",
+    "manifest_sha256": "6a8bed5fa0f8958da2ba4a7eeb40bf4dc230e842ab69d0211f0f81bd4655e07a"
+  },
+  "evidence_root": "/Users/chriswong/agent-evidence/rs-pullback-native-r7-20261012-c1",
+  "hosted_ci": "NOT_YET_RUN_FOR_THIS_CANDIDATE",
+  "independent_review": "NOT_CLAIMED",
+  "legacy_replay": {
+    "candidate_source_sha256": "81c46365c9dc805f2520bf991d58e112a73fb4bbdae0096b4dfd49a978a16415",
+    "mismatches": 0,
+    "old_test_prefix_byte_exact": true,
+    "original_source_blob": "25b03eba5d3a80c2e7d5fdaf2c0dc139f10d52f3",
+    "scope": "synthetic compatibility and source integrity, NOT market efficacy",
+    "unchanged_descriptor_blobs": {
+      "engine/entry_radar/replay/first_green_reversal_descriptor.py": "587635d9981a8553481254f5fd9248d16b874d78",
+      "engine/entry_radar/replay/leader_pivot_descriptor.py": "2f5670a83959256b7c7f151acef0b541690e382e"
+    },
+    "unchanged_native_functions_and_classes": [
+      "InputContractError",
+      "canonical",
+      "digest",
+      "_clock",
+      "_iso",
+      "_sha",
+      "_has_receipt",
+      "bind_calendar_projection",
+      "_epoch_ns",
+      "_calendar_at",
+      "_known_label",
+      "assess_source_census",
+      "_latest_context",
+      "_metadata_errors",
+      "_aggregate"
+    ],
+    "v1_differential_cases": 44,
+    "whole_panels_identical": true
+  },
+  "mission_complete": false,
+  "native_test_runs": [
+    {
+      "exit_code": 0,
+      "junit": [
+        {
+          "errors": "0",
+          "failures": "0",
+          "name": "pytest",
+          "skipped": "0",
+          "tests": "405",
+          "time": "14.940",
+          "timestamp": "2026-10-12T20:45:53.680292-07:00"
+        }
+      ],
+      "junit_sha256": "25f96c701b70bc052d23b68fdd9697c0df68fd0e6a10c84a9e3150ebc472438f",
+      "log_sha256": "e1dbe3f2a4c113f7b09f97ed98756355b7c420b1dcaf497d09d649bb0ba5342f",
+      "passed_subtests": 113,
+      "passed_test_functions": 292,
+      "process_id": 67084,
+      "python": "3.14"
+    },
+    {
+      "exit_code": 0,
+      "junit": [
+        {
+          "errors": "0",
+          "failures": "0",
+          "name": "pytest",
+          "skipped": "0",
+          "tests": "405",
+          "time": "12.343",
+          "timestamp": "2026-10-12T21:06:55.528114-07:00"
+        }
+      ],
+      "junit_sha256": "bb34e5e8f757bf4be156c7d8ccf19615f0050d90a4f5738051b4cc6e7c8e3634",
+      "log_sha256": "08d6c1248c6fa65553cc527804273307182d3b1df0152c9b9eab4844b453e5da",
+      "passed_subtests": 113,
+      "passed_test_functions": 292,
+      "process_id": 6739,
+      "python": "3.12.13"
+    }
+  ],
+  "new_tests": {
+    "functions": 39,
+    "green_exit": 0,
+    "red_observed": true,
+    "subtests": 20
+  },
+  "protected_procedure_pin": "25c4b7923734392b1013afae179966985819d847",
+  "recorded_at": "2026-10-13T04:09:18.163176+00:00",
+  "schema": "mastermind.rs_pullback_launch.r7_native_event_anchor_verification.v1",
+  "source_hashes": {
+    ".github/ci/legacy-jobs.yml": "6a8bed5fa0f8958da2ba4a7eeb40bf4dc230e842ab69d0211f0f81bd4655e07a",
+    "engine/entry_radar/replay/rs_pullback_launch_data.py": "81c46365c9dc805f2520bf991d58e112a73fb4bbdae0096b4dfd49a978a16415",
+    "tests/test_entry_radar_rs_pullback_phase1.py": "43e544230b603503a6f915741314d3fea02926fd1c961245f08a31e446fcc6de"
+  }
+}

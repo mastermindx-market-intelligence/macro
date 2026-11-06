@@ -527,7 +527,13 @@ document.querySelectorAll = () => [];
     harness += r"""
 document.querySelector = selector => selector.includes('landing.css') ? landing : themed;
 """
-    program = harness + guard + "\n" + _extract_fn(theme, "setTheme") + r"""
+    # setTheme consults the shipping Shared Shell helpers even on a standalone
+    # landing. Execute that dependency chain instead of stubbing its result.
+    shared_theme = "\n".join(
+        _extract_fn(theme, name)
+        for name in ("_mmShellBridge", "_mmShellApplying", "setTheme")
+    )
+    program = harness + guard + "\n" + shared_theme + r"""
 setTheme('dark');
 console.log(JSON.stringify({theme:attrs['data-theme'], saved:storage.get('theme'),
                            soft:classes.has('soft-contrast')}));

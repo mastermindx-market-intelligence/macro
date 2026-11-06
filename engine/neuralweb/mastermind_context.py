@@ -357,7 +357,7 @@ def _summarize_market(repo: Path) -> tuple[dict, str | None]:
     # liquidity_plumbing: RRP/TGA/netliq quality numbers so bot/ask surfaces
     # can cite them (already display-only labels upstream — no recompute here).
     for key in ("verdict", "radar", "vol", "breadth", "rotation", "rotation_events",
-                "liquidity", "liquidity_plumbing",
+                "liquidity", "liquidity_plumbing", "risk_envelope",
                 "alerts", "data_health", "contradictions", "live_overlay", "sources"):
         v = ws.get(key)
         if v is not None:
@@ -551,7 +551,7 @@ def _summarize_macro_weather(repo: Path) -> tuple[dict, str | None]:
             # v2 compact delta fields for LLM context
             # calendar days from streak start to latest ledger asof (inclusive)
             "usd_trend_days": (fx_deltas.get("usd_trend") or {}).get("days_in_state"),
-            "regime_since": (fx_deltas.get("usd_regime") or {}).get("since"),
+            "regime_since": (fx_deltas.get("usd_regime") or {}).get("since") if fx_ws.get("regime") is not None else None,
             "top_scenario": (
                 (fx_ws.get("scenario_intensity") or [{}])[0].get("name")
                 if fx_ws.get("scenario_intensity") else None

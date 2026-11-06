@@ -1,0 +1,536 @@
+{
+  "advanced_estimates": {
+    "best_entry_policy": {
+      "state": "NOT_QUALIFIED",
+      "value": null
+    },
+    "causal_theme_spillover": {
+      "state": "NOT_ESTIMABLE",
+      "value": null
+    },
+    "clinical_outcome_probability": {
+      "state": "NOT_QUALIFIED",
+      "value": null
+    },
+    "fundamental_value_priced_in": {
+      "state": "NOT_ESTIMABLE",
+      "value": null
+    },
+    "predictive_lead_lag": {
+      "state": "NOT_QUALIFIED",
+      "value": null
+    }
+  },
+  "assessment_id": "sha256:ce320cf390cc0b88e3030106a1f28d42caf236de31246c04f4fd2d407fea275e",
+  "authority": {
+    "may_admit_membership": false,
+    "may_change_entry": false,
+    "may_claim_causality": false,
+    "may_execute": false,
+    "may_gate": false,
+    "may_publish": false,
+    "may_rank": false,
+    "may_size": false
+  },
+  "composition_rule": "SEPARATE_OWNER_FACETS_NO_FUSION_SCORE_OR_GATE_OVERRIDE",
+  "decision_at": "2026-09-28T20:00:08Z",
+  "entry_context": {
+    "owner_projection": {
+      "availability_id": "pea:b7f23916e545e21c9559ed1839863328e3574163b7b0961f0d0ec7c7dd037257",
+      "blockers": [
+        "PAST_OWNER_CHASE_BOUNDARY"
+      ],
+      "candidate_generation_id": "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "candidate_state_projection_id": "pcs:f33fa40aef936091f54fdd5e547e5a5b6791bd43cbbc8b5b4b460b6ac705cae8",
+      "chase_state": "past_boundary",
+      "current_price": 44.0,
+      "current_price_basis": "adjusted:v7",
+      "definition": "availability-v1-2026-08-17",
+      "distance_to_zone_pct": 1.734104,
+      "entry_open": false,
+      "entry_policy_version": "early-leadership-sector-rotation-entry-v1",
+      "episode_id": "pe:SEC:US-XNAS-NVDA:epoch_0:sa:310000000000000000000000:1",
+      "evaluated_at": "2026-09-28T20:00:08Z",
+      "extension_atr": 0.652174,
+      "horizon": "2_15_SESSIONS",
+      "horizon_role": "new_entry",
+      "identity_epoch": "epoch_0",
+      "invalidation": {
+        "basis": "adjusted:v7",
+        "kind": "structural",
+        "price": 40.95
+      },
+      "market_session": "2026-09-28",
+      "move_since_anchor_pct": 4.513064,
+      "move_since_first_trigger_pct": 5.465005,
+      "owner_status": "buy_now",
+      "quote_age_seconds": 8,
+      "quote_asof": "2026-09-28T20:00:00Z",
+      "reasons": [],
+      "risk_to_invalidation_pct": 6.931818,
+      "schema": "prophet.entry_availability/v1",
+      "security_id": "SEC:US-XNAS-NVDA",
+      "source_receipts": [
+        "b3:source-owner-v1",
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+      ],
+      "state": "RAN_DONT_CHASE",
+      "strategy_definition_id": "psd:b89769f1cd7b264f8899c6559f3ccb5f87dc267349c54a9116f5db563ad338ec",
+      "strategy_id": "EARLY_LEADERSHIP_SECTOR_ROTATION",
+      "strategy_version": "1",
+      "zone": {
+        "basis": "adjusted:v7",
+        "high": 43.25,
+        "low": 41.8
+      }
+    },
+    "scope": "EXISTING_STRATEGY_AND_HORIZON_ONLY",
+    "source_cut": {
+      "as_of": "2026-09-28T20:00:08Z",
+      "known_at": "2026-09-28T20:00:08Z",
+      "owner": "prophet_b4",
+      "payload_digest": "sha256:fda26f9e94698bbdc83b9af1481961daf649f01936e8211bd21208376f07c9db",
+      "source_ref": "fixture:b4-owner-contract"
+    },
+    "state": "OWNER_PROJECTION_ATTACHED",
+    "strategy_authority_tier": "SHADOW_ONLY",
+    "strategy_scientific_status": "CONTROL_ONLY"
+  },
+  "focal": {
+    "company_id": "cik:0001045810",
+    "identity_epoch": "epoch_0",
+    "identity_source_ref": "fixture:identity-cut-1",
+    "security_id": "SEC:US-XNAS-NVDA"
+  },
+  "input_digest": "sha256:f3ebea7c9dfb338ab463e7960a59b92fad1c618d01b0a7a9f835057a645a2c7a",
+  "news_context": {
+    "comparison": {
+      "pairs": [
+        {
+          "material_delta_triggers": [
+            "changed_numeric_terms",
+            "new_independent_source",
+            "source_correction"
+          ],
+          "presence": "BOTH_CUTS",
+          "view_key": {
+            "company_id": "cik:0001045810",
+            "original_proposition_fact_id": "fact_a11c0e000000000000000001"
+          }
+        }
+      ],
+      "prior_views": [
+        {
+          "as_of_utc": "2026-09-28T14:10:00Z",
+          "authority": "context_only",
+          "cluster_ids": [
+            "ev2_a11c0e0000000001"
+          ],
+          "company_id": "cik:0001045810",
+          "contrary_claim_ids": [],
+          "current_milestone_evidence": [
+            {
+              "fact_id": "fact_a11c0e000000000000000001",
+              "milestone_name": "announcement",
+              "observed_at": "2026-09-28T14:05:00Z",
+              "provenance_group_id": "doc_nvda_pr_20260928"
+            }
+          ],
+          "deadline": "2028-01-30T00:00:00Z",
+          "decision_cut": "2026-09-28T14:10:00Z",
+          "display": {
+            "plain_status": "the source states an authorization. completed purchases are not yet in this store. operating revenue impact is not established. surprise is unmeasured without a baseline.",
+            "what_we_are_watching": "actual repurchases and net dilution through the fiscal 2028 window, not further reprints of the authorization",
+            "windows": [
+              {
+                "end": "2028-01-30T00:00:00Z",
+                "label": "stated execution horizon through fiscal 2028",
+                "start": "2026-09-28T14:00:00Z"
+              }
+            ]
+          },
+          "exposure_paths": {
+            "authority": "context_only",
+            "detail": "no relationship_candidate row and PR 6514 remains blocked",
+            "missing_fields": [
+              "exposure_paths"
+            ],
+            "reason": "not_stated",
+            "schema": "field_absence.v1",
+            "subject": "exposure_paths"
+          },
+          "live_fact_ids": [
+            "fact_a11c0e000000000000000001"
+          ],
+          "log_sha256": "18d09c283d709e42e2e17bc86c7b38c1289a28a87556883fb27b1286bbcece70",
+          "material_delta_triggers": [],
+          "next_expected_observation": {
+            "milestone_name": "executed_repurchase",
+            "window_end": "2028-01-30T00:00:00Z",
+            "window_start": "2026-09-28T14:00:00Z"
+          },
+          "original_proposition": {
+            "channel_hint": "capital_allocation",
+            "commitment_status": "authorized",
+            "negated": false,
+            "payload_schema": "capital_allocation_event.v1",
+            "plain_statement": "Issuer authorized a capital allocation action. Authorization is not execution."
+          },
+          "original_proposition_fact_id": "fact_a11c0e000000000000000001",
+          "owners_sha256": "4ad0911ced05e18ee10e84b8b7634baf05448efcb2a7cbc4cebd8e7a9da590c9",
+          "prophet_flags": {
+            "may_gate": false,
+            "may_rank": false,
+            "may_size": false,
+            "prophet_authority": false
+          },
+          "provenance_group_ids": [
+            "doc_nvda_pr_20260928"
+          ],
+          "required_assumptions": [
+            {
+              "authority": "context_only",
+              "detail": "authorization packet does not state completed purchases",
+              "missing_fields": [
+                "executed_amount"
+              ],
+              "reason": "not_stated",
+              "schema": "field_absence.v1",
+              "subject": "executed_amount"
+            }
+          ],
+          "root_source_families": [
+            {
+              "member_count": 1,
+              "origin_document_id": "doc_nvda_pr_20260928",
+              "root_family_id": "root_nvda_auth_20260928",
+              "source_family": "issuer_primary"
+            }
+          ],
+          "schema": "thesis_view.v1",
+          "supporting_claim_ids": [
+            "claim_nvda_auth_150b",
+            "fact_a11c0e000000000000000001"
+          ],
+          "unsolicited_instruction_detected": false,
+          "weakening_conditions": [
+            {
+              "armed": false,
+              "code": "missed_stated_deadline",
+              "evidence_fact_ids": []
+            },
+            {
+              "armed": false,
+              "code": "expected_observation_absent",
+              "evidence_fact_ids": []
+            }
+          ]
+        }
+      ],
+      "reason_code": null,
+      "since_at": "2026-09-28T14:10:00Z",
+      "source_cuts": {
+        "current": {
+          "as_of": "2026-09-28T20:00:08Z",
+          "known_at": "2026-09-28T20:00:08Z",
+          "owner": "news_impact",
+          "payload_digest": "sha256:0f70316144642feb50dd5dc6fc06d7d345f53d521eb7ed7e63ff78d5d55b166e",
+          "source_ref": "fixture:news-current"
+        },
+        "prior": {
+          "as_of": "2026-09-28T14:10:00Z",
+          "known_at": "2026-09-28T14:10:00Z",
+          "owner": "news_impact",
+          "payload_digest": "sha256:4ad0911ced05e18ee10e84b8b7634baf05448efcb2a7cbc4cebd8e7a9da590c9",
+          "source_ref": "fixture:news-prior"
+        }
+      },
+      "state": "PROJECTED"
+    },
+    "current": {
+      "as_of": "2026-09-28T20:00:08Z",
+      "reason_code": null,
+      "source_cut": {
+        "as_of": "2026-09-28T20:00:08Z",
+        "known_at": "2026-09-28T20:00:08Z",
+        "owner": "news_impact",
+        "payload_digest": "sha256:0f70316144642feb50dd5dc6fc06d7d345f53d521eb7ed7e63ff78d5d55b166e",
+        "source_ref": "fixture:news-current"
+      },
+      "state": "PROJECTED",
+      "views": [
+        {
+          "as_of_utc": "2026-09-28T20:00:08Z",
+          "authority": "context_only",
+          "cluster_ids": [
+            "ev2_a11c0e0000000001"
+          ],
+          "company_id": "cik:0001045810",
+          "contrary_claim_ids": [],
+          "current_milestone_evidence": [
+            {
+              "fact_id": "fact_a11c0e000000000000000001",
+              "milestone_name": "announcement",
+              "observed_at": "2026-09-28T14:05:00Z",
+              "provenance_group_id": "doc_nvda_pr_20260928"
+            }
+          ],
+          "deadline": "2028-01-30T00:00:00Z",
+          "decision_cut": "2026-09-28T20:00:08Z",
+          "display": {
+            "plain_status": "A source correction is available for the repurchase disclosure.",
+            "what_we_are_watching": "Review the corrected terms and their supporting source records.",
+            "windows": [
+              {
+                "end": "2028-01-30T00:00:00Z",
+                "label": "stated execution horizon through fiscal 2028",
+                "start": "2026-09-28T14:00:00Z"
+              }
+            ]
+          },
+          "exposure_paths": {
+            "authority": "context_only",
+            "detail": "no relationship_candidate row and PR 6514 remains blocked",
+            "missing_fields": [
+              "exposure_paths"
+            ],
+            "reason": "not_stated",
+            "schema": "field_absence.v1",
+            "subject": "exposure_paths"
+          },
+          "live_fact_ids": [
+            "fact_cccccccccccccccccccccccc"
+          ],
+          "log_sha256": "18d09c283d709e42e2e17bc86c7b38c1289a28a87556883fb27b1286bbcece70",
+          "material_delta_triggers": [],
+          "next_expected_observation": {
+            "milestone_name": "executed_repurchase",
+            "window_end": "2028-01-30T00:00:00Z",
+            "window_start": "2026-09-28T14:00:00Z"
+          },
+          "original_proposition": {
+            "channel_hint": "capital_allocation",
+            "commitment_status": "authorized",
+            "negated": false,
+            "payload_schema": "capital_allocation_event.v1",
+            "plain_statement": "Issuer authorized a capital allocation action. Authorization is not execution."
+          },
+          "original_proposition_fact_id": "fact_a11c0e000000000000000001",
+          "owners_sha256": "0f70316144642feb50dd5dc6fc06d7d345f53d521eb7ed7e63ff78d5d55b166e",
+          "prophet_flags": {
+            "may_gate": false,
+            "may_rank": false,
+            "may_size": false,
+            "prophet_authority": false
+          },
+          "provenance_group_ids": [
+            "doc_nvda_pr_20260928",
+            "doc_synthetic_correction"
+          ],
+          "required_assumptions": [
+            {
+              "authority": "context_only",
+              "detail": "authorization packet does not state completed purchases",
+              "missing_fields": [
+                "executed_amount"
+              ],
+              "reason": "not_stated",
+              "schema": "field_absence.v1",
+              "subject": "executed_amount"
+            }
+          ],
+          "root_source_families": [
+            {
+              "member_count": 4,
+              "origin_document_id": "doc_nvda_pr_20260928",
+              "root_family_id": "root_nvda_auth_20260928",
+              "source_family": "issuer_primary"
+            },
+            {
+              "member_count": 1,
+              "origin_document_id": "doc_synthetic_correction",
+              "root_family_id": "root_synthetic_correction",
+              "source_family": "regulator_filing"
+            }
+          ],
+          "schema": "thesis_view.v1",
+          "supporting_claim_ids": [
+            "claim_synthetic_correction",
+            "fact_cccccccccccccccccccccccc"
+          ],
+          "unsolicited_instruction_detected": false,
+          "weakening_conditions": [
+            {
+              "armed": false,
+              "code": "missed_stated_deadline",
+              "evidence_fact_ids": []
+            },
+            {
+              "armed": false,
+              "code": "expected_observation_absent",
+              "evidence_fact_ids": []
+            },
+            {
+              "armed": false,
+              "code": "source_correction_reduces_magnitude",
+              "evidence_fact_ids": []
+            }
+          ]
+        }
+      ]
+    },
+    "interpretation": "EMPTY_TRIGGERS_ARE_NOT_PROOF_OF_NO_ECONOMIC_CHANGE",
+    "semantics": "UNCHANGED_NEWS_IMPACT_THESIS_AND_MATERIAL_DELTA_TRIGGERS"
+  },
+  "peer_context": {
+    "context": {
+      "authority": {
+        "may_admit_membership": false,
+        "may_change_entry": false,
+        "may_claim_causality": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_publish": false,
+        "may_rank": false,
+        "may_size": false
+      },
+      "catalyst_context": {
+        "comparison_basis": "EXPLICIT_OWNER_COMPARISON_KEYS",
+        "focal_event_ids": [],
+        "late_observation_count": 0,
+        "peers": [
+          {
+            "company_id": "ISSUER-1",
+            "coverage_state": "COVERAGE_UNKNOWN",
+            "distinct_comparable_event_ids": [],
+            "evidence_refs": [],
+            "no_event_observed_in_covered_sources": false,
+            "observed_event_revisions": [],
+            "other_observed_event_ids": [],
+            "same_underlying_event_ids": [],
+            "security_id": "P1"
+          },
+          {
+            "company_id": "ISSUER-2",
+            "coverage_state": "COVERAGE_UNKNOWN",
+            "distinct_comparable_event_ids": [],
+            "evidence_refs": [],
+            "no_event_observed_in_covered_sources": false,
+            "observed_event_revisions": [],
+            "other_observed_event_ids": [],
+            "same_underlying_event_ids": [],
+            "security_id": "P2"
+          },
+          {
+            "company_id": "ISSUER-3",
+            "coverage_state": "COVERAGE_UNKNOWN",
+            "distinct_comparable_event_ids": [],
+            "evidence_refs": [],
+            "no_event_observed_in_covered_sources": false,
+            "observed_event_revisions": [],
+            "other_observed_event_ids": [],
+            "same_underlying_event_ids": [],
+            "security_id": "P3"
+          }
+        ],
+        "superseded_revision_count": 0,
+        "withdrawn_or_cancelled_count": 0
+      },
+      "cohort": {
+        "definition_ref": "fixture:definition-1",
+        "formed_at": "2026-09-28T13:00:00Z",
+        "membership_ref": "fixture:membership-cut",
+        "purpose": "supplied_research_cohort",
+        "rights_ref": "fixture:synthetic-no-vendor-data",
+        "subtheme_id": "fixture:subtheme-1",
+        "universe_description": "Synthetic contract fixture: invented peer cohort and prices, with NewsImpact and Prophet owner test contracts; no live market interpretation"
+      },
+      "context_id": "sha256:c397bbd6436b6f53b53dac4ae1ce0bbc3794a9350d892ed07d2577a3d4cfe9d6",
+      "coverage": {
+        "ambiguous_peer_issuers": 0,
+        "eligible_peer_issuers": 3,
+        "fraction": 1.0,
+        "observed_peer_issuers": 3
+      },
+      "decision_at": "2026-09-28T20:00:08Z",
+      "excluded": [
+        {
+          "reason": "FOCAL_ISSUER_EXCLUDED",
+          "security_id": "SEC:US-XNAS-NVDA"
+        }
+      ],
+      "focal": {
+        "company_id": "cik:0001045810",
+        "identity_epoch": "epoch_0",
+        "identity_source_ref": "fixture:identity-cut-1",
+        "security_id": "SEC:US-XNAS-NVDA"
+      },
+      "focal_observation": {
+        "company_id": "cik:0001045810",
+        "known_at": "2026-09-28T20:00:08Z",
+        "return_pct": 12.00000000000001,
+        "security_id": "SEC:US-XNAS-NVDA",
+        "source_ref": "fixture:price:FOCAL"
+      },
+      "input_digest": "sha256:658db8d23fde695a43f28c4aed13bdeabe4abc72de9602767c4e2f0099616568",
+      "interpretation_limits": [
+        "RELATIVE_RETURN_IS_NOT_FACTOR_RESIDUAL",
+        "PARTICIPATION_IS_NOT_CAUSAL_SPILLOVER",
+        "NO_INTRADAY_LEAD_LAG_FROM_WINDOW_RETURNS",
+        "COHORT_IS_NOT_ALL_SUBTHEME_SECURITIES",
+        "NO_SOURCE_OR_DISPLAY_ADMISSION"
+      ],
+      "observed_peers": [
+        {
+          "company_id": "ISSUER-1",
+          "known_at": "2026-09-28T20:00:08Z",
+          "return_pct": 4.0000000000000036,
+          "security_id": "P1",
+          "source_ref": "fixture:price:P1"
+        },
+        {
+          "company_id": "ISSUER-2",
+          "known_at": "2026-09-28T20:00:08Z",
+          "return_pct": 2.0000000000000018,
+          "security_id": "P2",
+          "source_ref": "fixture:price:P2"
+        },
+        {
+          "company_id": "ISSUER-3",
+          "known_at": "2026-09-28T20:00:08Z",
+          "return_pct": -3.0000000000000027,
+          "security_id": "P3",
+          "source_ref": "fixture:price:P3"
+        }
+      ],
+      "qualification": "SUPPLIED_RESEARCH_COHORT_ONLY",
+      "schema": "catalyst.peer_research_context.v1",
+      "source_admission_established": false,
+      "state": "COMPLETE",
+      "statistics": {
+        "advancing": 2,
+        "complete_cohort_equal_weight_return_pct": 1.0000000000000009,
+        "declining": 1,
+        "effective_observed_issuer_count": 3,
+        "focal_minus_observed_peers_pp": 11.00000000000001,
+        "observed_subset_dispersion_pp": 2.9439202887759515,
+        "observed_subset_equal_weight_return_pct": 1.0000000000000009,
+        "observed_subset_median_return_pct": 2.0000000000000018,
+        "unchanged": 0
+      },
+      "window": {
+        "currency": "USD",
+        "end_at": "2026-09-28T20:00:00Z",
+        "max_age_seconds": 60,
+        "return_basis": "total_return_index_v1",
+        "start_at": "2026-09-28T13:30:00Z"
+      }
+    },
+    "reason_code": null,
+    "state": "PROJECTED"
+  },
+  "qualification": "NONACTIVATED_RESEARCH_CONSUMER",
+  "schema": "catalyst.stock_research_assessment.v2",
+  "source_admission_established": false
+}

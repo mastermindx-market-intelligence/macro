@@ -1,0 +1,59 @@
+{# The Brief uses Macro's existing leadership context and comparison series.
+   No Paper illustration values, new ranking, or stock-entry verdict are seeded. #}
+{% set _brief_lead = theme_context.leadership if theme_context is defined and theme_context else none %}
+{% set _brief_groups = (_brief_lead.strength or []) if _brief_lead else [] %}
+{% set _brief_subject = _brief_groups[0] if _brief_groups else none %}
+<section class="si-brief-evidence" aria-labelledby="si-brief-evidence-title">
+  <figure class="si-brief-figure">
+    <h2 id="si-brief-evidence-title">{{ t('Follow the leadership', '追踪领涨变化') }}</h2>
+    <figcaption>
+      {% if _brief_subject %}{{ t(_brief_subject.name, _brief_subject.name_zh or _brief_subject.name) }} · {% endif %}
+      {{ t('20-session relative wealth · S&P 500', '20个交易日相对财富变化 · 标普500') }}
+    </figcaption>
+    {% if _brief_subject %}<p class="si-brief-status">{% if _brief_subject.id and _brief_subject.id.startswith('us_sector_') %}{{ t('Equal-weight sector basket · not the sector ETF', '等权重板块篮子 · 并非板块ETF') }}{% else %}{{ t('Theme basket', '主题篮子') }}{% endif %}</p>{% endif %}
+    <div id="si-brief-series"{% if _brief_subject %} data-id="{{ _brief_subject.id | e }}" data-name-en="{{ _brief_subject.name | e }}" data-name-zh="{{ (_brief_subject.name_zh or _brief_subject.name) | e }}"{% endif %} aria-live="polite">
+      <p class="si-brief-status">{{ t('The comparison appears when matching group and benchmark closes are available.', '取得同日期的板块与基准收盘数据后显示对比。') }}</p>
+    </div>
+    <div class="si-brief-coverage" id="si-brief-coverage" role="status" aria-live="polite">
+      <div>
+        <p id="si-brief-coverage-title">{{ t('Sector measurement coverage unavailable', '板块测量覆盖暂不可用') }}</p>
+        <p id="si-brief-coverage-note">{{ t('Coverage and its evidence date appear with the measured-sector read.', '覆盖情况与证据日期随板块实测数据一同显示。') }}</p>
+      </div>
+      <a class="si-paper-text-link" href="#si-measured">{{ t('Review sector evidence →', '查看板块证据 →') }}</a>
+    </div>
+    <a class="si-paper-text-link" href="#chart-section">{{ t('Compare groups and windows →', '比较板块与时间区间 →') }}</a>
+    {% if _brief_lead and _brief_lead.trailing_leader %}
+    {% set _brief_trailing = _brief_lead.trailing_leader %}
+    <div class="rvx-hocard">
+      <div class="cap">{{ t('Leadership handoff', '领涨交接') }}</div>
+      <div class="rvx-handoff">
+        <div class="rvx-hocol out">
+          <div class="lbl">{{ t('Trailing leader', '前期领涨') }}</div>
+          <div class="nm">{{ t(_brief_trailing.name, _brief_trailing.name_zh or _brief_trailing.name) }}</div>
+          <div class="meta" id="hero-out-meta" data-id="{{ _brief_trailing.id | e }}"></div>
+        </div>
+        <span class="rvx-mut" aria-hidden="true">→</span>
+        <div class="rvx-hocol in">
+          <div class="lbl">{{ t('Current strength', '当前强势') }}</div>
+          <div class="nm">{% if _brief_subject %}{{ t(_brief_subject.name, _brief_subject.name_zh or _brief_subject.name) }}{% else %}{{ t('Not measured', '暂无实测') }}{% endif %}</div>
+          <div class="meta" id="hero-in-meta"{% if _brief_subject %} data-id="{{ _brief_subject.id | e }}"{% endif %}></div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </figure>
+  <aside aria-labelledby="si-next-title">
+    <h2 id="si-next-title">{{ t('Where to look next', '下一步看哪里') }}</h2>
+    <ol class="si-brief-list">
+      <li><span class="cap">{{ t('01 · Rotation', '01 · 轮动') }}</span>
+        <a href="#moving">{{ t('Find the changing leaders →', '寻找领涨变化 →') }}</a>
+        <p>{{ t('Track emerging turns, relative moves and changes across industries.', '追踪早期拐点、相对走势与行业变化。') }}</p></li>
+      <li><span class="cap">{{ t('02 · Participation', '02 · 参与度') }}</span>
+        <a href="#money">{{ t('Check who is participating →', '确认上涨是否扩散 →') }}</a>
+        <p>{{ t('Check breadth and money flow before drawing a market-wide conclusion.', '结合市场广度与资金流，判断变化是否普遍。') }}</p></li>
+      <li><span class="cap">{{ t('03 · Stock evidence', '03 · 个股证据') }}</span>
+        <a href="#confluence">{{ t('Inspect the companies →', '查看成分股 →') }}</a>
+        <p>{{ t('Compare stock-level evidence and the existing entry conditions.', '比较个股证据与既有入场条件。') }}</p></li>
+    </ol>
+  </aside>
+</section>
