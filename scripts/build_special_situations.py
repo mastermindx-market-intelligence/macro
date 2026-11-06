@@ -194,7 +194,7 @@ def _usd_m(mc) -> str:
         mc = float(mc)
     except (TypeError, ValueError):
         return "—"
-    if mc != mc:  # NaN
+    if not math.isfinite(mc):  # NaN / +/-Inf
         return "—"
     return f"${mc / 1000:.1f}B" if mc >= 1000 else f"${mc:.0f}M"
 
@@ -348,6 +348,23 @@ def _gate_cfg() -> tuple[bool, int]:
     return bool(ss.get("gated", False)), preview
 
 
+def _write_premium_receipt() -> "Path | None":
+    """Nightly-only (refresh=True): persist the featured deal-premium receipt that
+    scripts/build_capital_structure_page.py reads. render.yml --no-refresh and
+    special-sits-backfill build(refresh=False) never write this."""
+    try:
+        from engine import special_situations_premium as prem  # noqa: PLC0415 — engine/special_situations.py:1023 does the same
+        out = prem.write_receipt()
+    except Exception as e:  # noqa: BLE001 — the desk build must never fail because of the receipt
+        log.warning("special_situations premium receipt write failed: %s", e)
+        return None
+    if out:
+        print(f"[premium-receipt] wrote {out}", flush=True)
+    else:
+        print("[premium-receipt] not written — see warning above", flush=True)
+    return out
+
+
 def build(refresh: bool = True) -> str:
     if refresh:
         from collectors import special_situations as col
@@ -373,6 +390,8 @@ def build(refresh: bool = True) -> str:
             log.warning("special_situations refresh failed (rendering last-known): %s", e)
 
     snap = sse.desk_payload()
+    if refresh:
+        _write_premium_receipt()
 
     # A pure re-render (refresh=False, e.g. the render.yml express lane after a
     # template fix) must not claim fresher data than it has: reuse the stamp the
@@ -674,7 +693,7 @@ def _mc_bucket(mc_musd) -> str:
         mc = float(mc_musd)
     except (TypeError, ValueError):
         return "unknown"
-    if mc != mc:
+    if not math.isfinite(mc):
         return "unknown"
     if mc >= 10_000:
         return "large"

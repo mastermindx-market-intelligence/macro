@@ -5220,3 +5220,332 @@ def test_future_v2_acceptance_must_reload_every_v1_ref_and_never_claim_indefinit
     ).lower()
     assert "indefinite_v1_auditability\":false" in corpus.replace(" ", "")
     assert "v1 ensures indefinite" not in corpus
+
+
+_TORN_ARTIFACT_DIRECTORIES = {
+    "technical_view": "technical_views",
+    "opportunity": "opportunities",
+    "prepared_object": "prepared_objects",
+}
+
+
+def _torn_pending_name_parts(pending: Path) -> tuple[str, str]:
+    stripped = pending.name[1 : -len(".pending")]
+    return stripped[: stripped.rfind(".")], stripped[stripped.rfind(".") + 1 :]
+
+
+@pytest.mark.parametrize(
+    ("artifact", "torn"),
+    [
+        (artifact, torn)
+        for artifact in ("technical_view", "opportunity", "prepared_object")
+        for torn in ("empty", "half")
+    ],
+)
+def test_torn_prepublication_pending_is_discarded_with_receipt(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    artifact: str,
+    torn: str,
+) -> None:
+    _unused, trusted_root, technical_root = _initialize_sources(
+        tmp_path, monkeypatch
+    )
+    experience = (
+        tmp_path / artifact / torn / "market-memory" / "state" / "experience-v1"
+    )
+    _install(
+        tmp_path,
+        experience=experience,
+        trusted_root=trusted_root,
+        technical_root=technical_root,
+    )
+    original_boundary = accrual._publish_boundary
+    injected = False
+
+    def matches(path: Path) -> bool:
+        return {
+            "technical_view": path.parent.name == "technical_views",
+            "prepared_object": path.parent.name == "prepared_objects",
+            "opportunity": path.parent.name == "opportunities",
+        }[artifact]
+
+    def crash_at_boundary(observed_stage: str, path: Path) -> None:
+        nonlocal injected
+        if not injected and observed_stage == "temporary_fsynced" and matches(path):
+            injected = True
+            raise InjectedDurabilityCrash(f"injected {artifact} temporary_fsynced")
+
+    monkeypatch.setattr(accrual, "_publish_boundary", crash_at_boundary)
+    with pytest.raises(InjectedDurabilityCrash, match="injected"):
+        _run(
+            tmp_path,
+            experience=experience,
+            trusted_root=trusted_root,
+            technical_root=technical_root,
+            clock="2026-08-18T04:35:00Z",
+        )
+    assert injected
+    monkeypatch.setattr(accrual, "_publish_boundary", original_boundary)
+
+    directory = experience / _TORN_ARTIFACT_DIRECTORIES[artifact]
+    pendings = list(directory.glob("*.pending"))
+    assert len(pendings) == 1
+    torn_pending = pendings[0]
+    final_name, bound_digest = _torn_pending_name_parts(torn_pending)
+    final = directory / final_name
+    assert not final.exists() and not final.is_symlink()
+    intact = torn_pending.read_bytes()
+    assert intact
+    torn_body = b"" if torn == "empty" else intact[: len(intact) // 2]
+    torn_pending.write_bytes(torn_body)
+
+    capsys.readouterr()
+    _run(
+        tmp_path,
+        experience=experience,
+        trusted_root=trusted_root,
+        technical_root=technical_root,
+        clock="2026-08-18T04:36:00Z",
+    )
+    opportunity = _read(experience / "opportunities" / "2026-08-17.json")
+    assert opportunity["disposition"] == "admitted"
+    assert not list(experience.rglob("*.pending"))
+    discarded = [
+        line
+        for line in capsys.readouterr().err.splitlines()
+        if line.startswith("W2C_TORN_PENDING_DISCARDED ")
+    ]
+    assert len(discarded) == 1
+    receipt = json.loads(discarded[0][len("W2C_TORN_PENDING_DISCARDED "):])
+    assert receipt["bound_sha256"] == bound_digest
+    assert receipt["bytes"] == len(torn_body)
+    assert receipt["observed_sha256"] == accrual._digest(torn_body)
+    assert accrual._WRITER_LOCK_HELD.get() is False
+
+
+def test_torn_pending_beside_a_final_still_fails_closed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _unused, trusted_root, technical_root = _initialize_sources(
+        tmp_path, monkeypatch
+    )
+    experience = (
+        tmp_path / "torn-beside-final" / "market-memory" / "state" / "experience-v1"
+    )
+    _install(
+        tmp_path,
+        experience=experience,
+        trusted_root=trusted_root,
+        technical_root=technical_root,
+    )
+    original_boundary = accrual._publish_boundary
+    injected = False
+
+    def crash_at_boundary(observed_stage: str, path: Path) -> None:
+        nonlocal injected
+        if (
+            not injected
+            and observed_stage == "final_linked"
+            and path.parent.name == "opportunities"
+        ):
+            injected = True
+            raise InjectedDurabilityCrash("injected opportunity final_linked")
+
+    monkeypatch.setattr(accrual, "_publish_boundary", crash_at_boundary)
+    with pytest.raises(InjectedDurabilityCrash, match="injected"):
+        _run(
+            tmp_path,
+            experience=experience,
+            trusted_root=trusted_root,
+            technical_root=technical_root,
+            clock="2026-08-18T04:35:00Z",
+        )
+    assert injected
+    monkeypatch.setattr(accrual, "_publish_boundary", original_boundary)
+    final = experience / "opportunities" / "2026-08-17.json"
+    pendings = list((experience / "opportunities").glob("*.pending"))
+    assert final.is_file()
+    assert len(pendings) == 1
+    intact_final = final.read_bytes()
+    # The crashed publication's pending and final are hard links to one inode;
+    # replacing the pending with a fresh empty file keeps the final intact
+    # while the pending name no longer binds its bytes.
+    pendings[0].unlink()
+    pendings[0].write_bytes(b"")
+    assert final.read_bytes() == intact_final
+    capsys.readouterr()
+    with pytest.raises(
+        accrual.MarketMemoryExperienceStoreError,
+        match="does not bind its bytes",
+    ):
+        _run(
+            tmp_path,
+            experience=experience,
+            trusted_root=trusted_root,
+            technical_root=technical_root,
+            clock="2026-08-18T04:36:00Z",
+        )
+    assert pendings[0].exists()
+    assert "W2C_TORN_PENDING_DISCARDED" not in capsys.readouterr().err
+
+
+def test_digest_bound_non_json_pending_still_fails_closed(
+    tmp_path: Path,
+) -> None:
+    final = tmp_path / "probe.json"
+    body = b"not json"
+    accrual._pending_create_path(final, body).write_bytes(body)
+    token = accrual._WRITER_LOCK_HELD.set(True)
+    try:
+        with pytest.raises(
+            accrual.MarketMemoryExperienceStoreError,
+            match="not strict JSON",
+        ):
+            accrual._recover_immutable_json(
+                final, limit=1024, label="W2C probe", validator=lambda raw, body: raw
+            )
+    finally:
+        accrual._WRITER_LOCK_HELD.reset(token)
+    assert accrual._pending_create_path(final, body).exists()
+
+
+def test_lock_free_reader_never_discards_a_torn_pending(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    final = tmp_path / "probe.json"
+    pending = accrual._pending_create_path(final, b'{"a": 1}')
+    pending.write_bytes(b"")
+
+    with pytest.raises(
+        accrual.MarketMemoryExperienceStoreError,
+        match="not strict JSON",
+    ):
+        accrual._recover_immutable_json(
+            final, limit=1024, label="W2C probe", validator=lambda raw, body: raw
+        )
+    assert pending.exists() and pending.read_bytes() == b""
+    assert "W2C_TORN_PENDING_DISCARDED" not in capsys.readouterr().err
+
+    token = accrual._WRITER_LOCK_HELD.set(True)
+    try:
+        recovered = accrual._recover_immutable_json(
+            final, limit=1024, label="W2C probe", validator=lambda raw, body: raw
+        )
+    finally:
+        accrual._WRITER_LOCK_HELD.reset(token)
+    assert recovered is None
+    assert not pending.exists()
+    assert not final.exists()
+    discarded = [
+        line
+        for line in capsys.readouterr().err.splitlines()
+        if line.startswith("W2C_TORN_PENDING_DISCARDED ")
+    ]
+    assert len(discarded) == 1
+
+
+def test_completed_pilot_fast_path_does_not_discard_a_torn_pending(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    experience, trusted_root, technical_root = _initialize_sources(
+        tmp_path, monkeypatch
+    )
+    _install(
+        tmp_path,
+        experience=experience,
+        trusted_root=trusted_root,
+        technical_root=technical_root,
+    )
+    registration = accrual.load_registration(ROOT)
+    _reader, pins = accrual._pin_owners(trusted_root, technical_root)
+    sessions = nyse_calendar.sessions_between(
+        accrual.ACTIVATION_SESSION, accrual.SUNSET_SESSION
+    )
+    opportunities = [
+        accrual._missed_opportunity(
+            registration,
+            session=session,
+            reconciled_at=accrual._window(session)[1] + timedelta(seconds=1),
+            writer_commit=COMMIT,
+        )
+        for session in sessions
+    ]
+    for opportunity in opportunities:
+        accrual._write_opportunity(experience, opportunity)
+    terminal_clock = "2027-03-03T04:35:00Z"
+    technical_generation_pin = {
+        **accrual._generation_ref(pins.technical, technical=True),
+        "pin_observed_at": terminal_clock,
+        "selection": "owner_observed_revision_chain.v1",
+        "subject": copy.deepcopy(accrual._SUBJECT),
+        "calendar": copy.deepcopy(accrual._CALENDAR),
+    }
+    receipt = accrual._new_population_receipt(
+        registration,
+        root=experience,
+        expected_sessions=sessions,
+        opportunities=opportunities,
+        owner_pins=pins,
+        owner_pin_observed_at=terminal_clock,
+        terminal_receipt={
+            "disposition": "stable_terminal_generation_observed",
+            "observed_at": terminal_clock,
+            "technical_generation_pin": technical_generation_pin,
+        },
+        observed_at=terminal_clock,
+        writer_commit=COMMIT,
+    )
+    assert receipt["complete"] is True
+    assert receipt["terminal"]["status"] == "sealed"
+    accrual._write_population_receipt(experience, receipt)
+    accrual._write_terminal_marker(
+        experience,
+        registration=registration,
+        population_receipt=receipt,
+    )
+    _technical_rows, technical_view = accrual._prepare_technical_view(
+        experience,
+        registration=registration,
+        trusted_reader=trusted.TrustedFileAsKnownAtReader(trusted_root),
+        technical_root=technical_root,
+        pin=pins.technical,
+        trusted_pin=pins.trusted,
+        pair_observed_at=terminal_clock,
+    )
+    assert technical_view is not None
+    accrual._publish_technical_view(experience, technical_view)
+    assert (experience / "TERMINAL.json").is_file()
+
+    final = experience / "opportunities" / f"{ACTIVATION.isoformat()}.json"
+    assert final.is_file()
+    final.rename(tmp_path / "renamed-opportunity.json")
+    torn = accrual._pending_create_path(final, b"x")
+    torn.write_bytes(b"")
+
+    def forbidden_flock(*_args, **_kwargs):  # pragma: no cover - contract guard
+        raise AssertionError("fast path crossed the pre-owner no-write fence")
+
+    monkeypatch.setattr(accrual.fcntl, "flock", forbidden_flock)
+    capsys.readouterr()
+    with pytest.raises(
+        (
+            accrual.MarketMemoryExperienceStoreError,
+            accrual.MarketMemoryExperienceAccrualError,
+        )
+    ):
+        _run(
+            tmp_path,
+            experience=experience,
+            trusted_root=trusted_root,
+            technical_root=technical_root,
+            clock=terminal_clock,
+        )
+    assert torn.exists() and torn.read_bytes() == b""
+    assert "W2C_TORN_PENDING_DISCARDED" not in capsys.readouterr().err

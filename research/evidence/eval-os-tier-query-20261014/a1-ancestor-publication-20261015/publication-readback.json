@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-10-15T06:54:47.222030+00:00",
+  "head": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+  "remote_before": "fea04c414282a29f8f757430c7e1e1b3c52998fe",
+  "main": "3f62e87835b22a2239f031f4fd6253d9e3aff7fa",
+  "preview_tree": "1e6ba68177e4a60af5e5d3c0f6071ee693262043",
+  "admission_receipt": "canonical-admission-065217.json",
+  "effect": "ordinary source-only push; no main merge/force/controller dispatch",
+  "published_at": "2026-10-15T06:54:57.996593+00:00",
+  "remote_after": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+  "clean": true
+}

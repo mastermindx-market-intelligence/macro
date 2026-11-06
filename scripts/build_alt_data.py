@@ -9,6 +9,7 @@ daily build.
 """
 from __future__ import annotations
 
+import json
 import logging
 import sys
 from datetime import datetime, timezone
@@ -28,6 +29,96 @@ from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 log = logging.getLogger("build_alt_data")
+
+
+# The card's "Nd vs prior Nd" window. tests/test_altdata_intel.py pins this
+# to the collectors' RECENT_D/PRIOR_D and FOA_RECENT_D/FOA_PRIOR_D
+# (collectors/sam_gov.py:45-46, collectors/grants_gov.py:34-35) so the label
+# is data, not a hardcoded 90 that can silently drift from the producers.
+PIPELINE_WINDOW_DAYS = 90
+
+
+def theme_pipeline_counts(root: Path | None = None) -> dict:
+    """Display-only federal pipeline counts per theme basket (W16-B-FOA).
+
+    Reads the two committed per-theme velocity frames —
+    ``data/sam_gov/opp_velocity.parquet`` (producer ``collectors/sam_gov.py``,
+    RECENT_D/PRIOR_D) and ``data/grants_gov/foa_velocity.parquet`` (producer
+    ``collectors/grants_gov.py``, FOA_RECENT_D/FOA_PRIOR_D), each 90d recent vs
+    the prior 90d — plus SAM's per-basket as-of sidecar
+    ``data/sam_gov/opp_velocity_meta.json``. A missing or unreadable input is an
+    empty frame / empty meta (log.warning, never raise). A count absent from one
+    frame stays ``None`` — never 0 — so a one-notice blip can't masquerade as a
+    surge or a silence. FOA publishes no as-of; none is invented.
+
+    Numbers for the page ONLY: no z, ratio or rank is computed here, and the
+    result never feeds altdata_*, emit, picks or the ledger.
+
+    Returns ``rows`` capped at 15 plus ``total`` (the pre-cap count) so the
+    card can say honestly when it truncates; ``window_days`` comes from
+    ``PIPELINE_WINDOW_DAYS``. Never raise: a non-dict as-of sidecar costs the
+    as-of column, a poison count cell costs that cell — never the card.
+    """
+    import pandas as pd
+
+    root = root or config.ROOT
+
+    def _velocity(rel: str) -> pd.DataFrame:
+        path = root / "data" / rel
+        try:
+            if not path.exists():
+                log.warning("pipeline counts: %s missing — treating as empty", path)
+                return pd.DataFrame()
+            df = pd.read_parquet(path)
+        except Exception as e:  # noqa: BLE001 — display-only, never fatal
+            log.warning("pipeline counts: %s unreadable (%s) — treating as empty", path, e)
+            return pd.DataFrame()
+        if not df.empty and "basket_id" not in df.columns:
+            df = df.reset_index()   # producers store basket_id as the index
+        return df
+
+    sam = _velocity("sam_gov/opp_velocity.parquet")
+    foa = _velocity("grants_gov/foa_velocity.parquet")
+
+    def _by_id(df: pd.DataFrame) -> dict:
+        if df.empty or "basket_id" not in df.columns:
+            return {}
+        return {str(b): rec for b, rec in zip(df["basket_id"], df.to_dict("records"))}
+
+    sam_rows, foa_rows = _by_id(sam), _by_id(foa)
+
+    as_of: dict = {}
+    try:
+        meta_path = root / "data" / "sam_gov" / "opp_velocity_meta.json"
+        if meta_path.exists():
+            raw_as_of = json.loads(meta_path.read_text()).get("as_of")
+            if isinstance(raw_as_of, dict):
+                as_of = raw_as_of     # truthy non-dict (list/str/int) would
+            else:                     # escape as AttributeError on .get(b)
+                log.warning("pipeline counts: SAM as-of meta is %s, not a "
+                            "dict — no as-of", type(raw_as_of).__name__)
+    except Exception as e:  # noqa: BLE001
+        log.warning("pipeline counts: SAM as-of meta unreadable (%s) — no as-of", e)
+
+    def _count(rec: dict | None, col: str) -> int | None:
+        v = (rec or {}).get(col)
+        try:      # total: NaN/None -> None; "abc"/inf -> None; never fatal
+            if v is None or pd.isna(v):
+                return None
+            return int(v)
+        except (TypeError, ValueError, OverflowError):
+            return None
+
+    ids = list(dict.fromkeys([*sam_rows, *foa_rows]))   # union, deterministic order
+    rows = [{"basket_id": b,
+             "sam_recent": _count(sam_rows.get(b), "recent_count"),
+             "sam_prior": _count(sam_rows.get(b), "prior_count"),
+             "foa_recent": _count(foa_rows.get(b), "recent_count"),
+             "foa_prior": _count(foa_rows.get(b), "prior_count"),
+             "sam_as_of": as_of.get(b)} for b in ids]
+    rows.sort(key=lambda r: (-(max(r["sam_recent"] or 0, r["foa_recent"] or 0)), r["basket_id"]))
+    return {"rows": rows[:15], "total": len(rows),
+            "window_days": PIPELINE_WINDOW_DAYS}
 
 
 def main() -> int:
@@ -118,11 +209,18 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         log.debug("qledger chips skipped (%s)", e)
 
+    pipeline_counts: dict = {}
+    try:
+        pipeline_counts = theme_pipeline_counts()
+    except Exception as e:  # noqa: BLE001 — display-only card, never fatal
+        log.warning("theme pipeline counts step failed (non-fatal): %s", e)
+
     try:
         html = env.get_template("alt_data.html.j2").render(
             feed=feed, alerts=alerts, track=track, influence=influence, picks=picks,
             brain=brain, mastermind=mastermind, generated_utc=built,
             qledger_chips=qledger_chips, desk_grader=grader,
+            pipeline_counts=pipeline_counts,
             active_section="research", active_page="alt_data",
         )
     except Exception as e:  # noqa: BLE001
