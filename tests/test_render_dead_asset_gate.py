@@ -31,7 +31,11 @@ def _porcelain_rebase_at(lane: Path, text: str) -> int:
         rebase = text.index("git rebase --autostash -X theirs origin/main")
         assert text.index("push_fetch_main_for_rebase") < rebase
         return rebase
-    return text.index("git pull --rebase --autostash -X theirs origin main")
+    rebase = text.index('git rebase --autostash -X theirs "$COMMODITY_ACCEPTED"')
+    fetch = text.index("if ! push_fetch_main_for_rebase; then")
+    pin = text.index("COMMODITY_ACCEPTED=$(git rev-parse", fetch)
+    assert fetch < pin < rebase
+    return rebase
 
 
 #: The dangling reference the incident actually published: site/crypto.html

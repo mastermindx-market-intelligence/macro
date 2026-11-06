@@ -265,3 +265,61 @@ Not in this guard: an ETag `If-Match` compare-and-swap. R2 support for that
 precondition is unverified, so a concurrent writer between the head GET and
 PUT can still race. The build clock (`asof`) inside the digest is a separate
 matter (R3) and is not compared here.
+
+## Fresh source-use decision consumer
+
+`engine.intelligence_workspace.options_use.resolve_authorized_option_selection`
+composes the existing captured identity/selection reader with two required trusted
+server callbacks. It first validates the exact Matrix, canonical underlying and
+selection, then checks fresh product entitlement and an independent source-use
+decision. No backend is configured by this module. Missing callbacks, malformed
+responses, denied/unavailable decisions and inconsistent clocks refuse with
+`OptionUseRefused`; validated values are returned only after both checks succeed.
+
+Each call creates a fresh request ID and binds the principal, issuer, authentication
+epoch, producer/schema, root, digest, byte length, source session, vendor, canonical
+underlying, selection digest and exact `display` or `export` action. The response
+must echo the complete binding with exact types, include source-family and policy/
+registry provenance, and have a decision timestamp inside that call's observed
+rights-callback interval. Display permission cannot authorize export, and an earlier
+allow cannot be reused, even with a frozen clock. Timestamp precision is limited to
+microseconds; invalid offsets and unrepresentable UTC instants refuse.
+
+The caller remains responsible for authenticating the principal and configuring
+genuine server callbacks. Supplied labels are not proof of credentials, source
+family or licensing. The immutable return is short-lived in-process; it must not be
+persisted as a grant or treated as Save authorization. Existing cohort policy,
+rights registries, v1/v2 manifests, SQL, runtime installation and Save are unchanged.
+The unit tests use synthetic decisions and establish no live permission.
+
+
+### Fresh server principal and product access
+
+`app.options_auth.resolve_authenticated_option_selection` composes the existing
+exact selection/source-use consumer with Macro's uncached Auth and billing readers.
+Its caller supplies the current access token and a genuine server source-use
+callback. There is no HTTP route, rights backend or Save grant in this addition.
+
+The adapter verifies the token with the configured Supabase Auth service before
+reading its subject, issuer and session ID. `auth_epoch` binds that accepted
+`session_id`; it is not a fabricated clock. Authentication is repeated after
+selection validation and must match the initial user/issuer/session. Billing is
+read without the paywall positive cache or outage grace, preserving Terminal's
+existing exact `terminal_live_options` feature or private unlimited predicate.
+An expired token after the billing read, failed authentication or a mismatched
+session refuses. A billing outage supplies the existing free default; the current
+operator allowlist remains its separate, explicit product-access exception.
+Existing website authentication/cache behavior is unchanged. Credentials are not
+returned or persisted by the adapter.
+
+These are sequential observations, not atomic or perpetual authorization. Supabase
+[getUser](https://supabase.com/docs/reference/python/auth-getuser) authenticates a
+user; immediate sign-out revocation additionally needs the documented
+[auth.sessions check](https://supabase.com/docs/guides/auth/sessions). This adapter
+does not claim that stronger guarantee. It does not refresh tokens, accept
+browser-supplied rights decisions, establish a data license or enable Save.
+
+Focused tests exercise the actual local Auth/billing readers with synthetic
+HTTP/store responses and real identity/selection validation. They are not live
+Supabase, account, source-use or production proof. The required real Options
+source-use policy and authenticated release remain separate gates.

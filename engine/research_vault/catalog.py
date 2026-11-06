@@ -631,8 +631,14 @@ def ensure_generation_write_allowed(store) -> None:
         raise RuntimeError("generation-bearing catalog requires adopted writer session")
 
 
-def publish(store, catalog: dict, now: datetime | None = None) -> CatalogPublishResult:
-    """Stamp ``generated_at``, serialize, and atomically put to the store.
+def prepare_publication(catalog: dict, now: datetime | None = None) -> bytes:
+    """Freeze the ordinary publication fields before a generation's batch starts."""
+    return serialize(catalog, now=now)
+
+
+def publish(store, catalog: dict, now: datetime | None = None, *,
+            prepared_bytes: bytes | None = None) -> CatalogPublishResult:
+    """Publish a normal stamped catalog, or preserve an already captured stamp.
 
     Serialization mirrors the atomic-JSON idiom (indent=2, ensure_ascii=False,
     trailing newline) and happens whether or not the put succeeds, so a caller can
@@ -644,13 +650,21 @@ def publish(store, catalog: dict, now: datetime | None = None) -> CatalogPublish
     Never raises: a store that throws is reported as a failed publish, because the
     caller's correct response is identical either way (do not advance anything).
     """
-    _reindex(catalog)
-    catalog["generated_at"] = _now_iso(now)
     session = getattr(store, "generation_session", None)
-    data = (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+    # A captured generation batch already froze its stamp and normalized body.
+    # Preserve it across corpus publication; never invent a later visibility cut.
+    data = (prepare_publication(catalog, now) if prepared_bytes is None else
+            prepared_bytes if type(prepared_bytes) is bytes else b"")
     try:
         ensure_generation_write_allowed(store)
-        if session is not None:
+        if prepared_bytes is not None:
+            if session is None:
+                raise RuntimeError("prepared catalog requires an adopted writer session")
+            if type(prepared_bytes) is not bytes:
+                raise RuntimeError("prepared catalog must be bytes")
+            if session.prepare_catalog(catalog) != prepared_bytes:
+                raise RuntimeError("prepared catalog changed before publication")
+        elif session is not None:
             data = session.prepare_catalog(catalog)
         elif "producer_generation" in catalog:
             raise RuntimeError("generation-bearing catalog requires adopted writer session")
@@ -676,3 +690,36 @@ def serialize(catalog: dict, now: datetime | None = None) -> bytes:
     _reindex(catalog)
     catalog["generated_at"] = _now_iso(now)
     return (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+# Dedicated-read preview matches the historical public app rule. Ordinary app
+# delegation remains in the held full F11 consumer slice.
+PUBLIC_PREVIEW_COUNT = 3
+
+
+def preview_items(catalog, limit: int = PUBLIC_PREVIEW_COUNT) -> list:
+    """Item slice of the public preview. Same rule as the historical app helper.
+
+    Summary-ready rows come first, in catalog order. When fewer than ``limit``
+    are ready, the rest of the catalog fills the slice, including duplicate ids,
+    blank ids and None items, and is not deduped. A non-dict item still raises,
+    matching the previous helper.
+    """
+    items = list(catalog.get("items") or [])
+    ready = [
+        item for item in items
+        if any(str(point or "").strip() for point in ((item or {}).get("summary_points") or []))
+    ]
+    preview = ready[:limit]
+    selected = {str((item or {}).get("id") or "") for item in preview}
+    if len(preview) < limit:
+        preview.extend(
+            item for item in items
+            if str((item or {}).get("id") or "") not in selected
+        )
+    return preview[:limit]
+
+
+def preview_ids(catalog, limit: int = PUBLIC_PREVIEW_COUNT) -> list[str]:
+    """Ids of :func:`preview_items`, in the same order. Blank ids stay blank."""
+    return [str((item or {}).get("id") or "") for item in preview_items(catalog, limit)]

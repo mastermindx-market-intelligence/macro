@@ -17,7 +17,7 @@ import zlib
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from collectors.tiingo_archive import DEFAULT_ARCHIVE, require_external_root, request_path
+from collectors.tiingo_archive import DEFAULT_ARCHIVE, require_external_root, recorded_request_path
 from lib.dataos.temporal import utc
 from lib.dataos.tiingo_views import _date as _view_date_label
 from scripts.tiingo_ingest import Task, load_symbols, plan, plan_page
@@ -104,7 +104,7 @@ def audit_corpus(tasks: list[Task], *, root: Path = DEFAULT_ARCHIVE,
     cutoff = utc(observed_before)
     expected = {}
     for task in tasks:
-        path = request_path(task.source, task.symbol, task.params)
+        path = recorded_request_path(task.source, task.symbol, task.params)
         if path in expected:
             raise ValueError("duplicate expected request")
         expected[path] = task

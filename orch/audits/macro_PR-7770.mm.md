@@ -1,3 +1,21 @@
+## 2026-11-06 preservation and source qualification
+
+The accepted narrative below is retained with four narrow source corrections. It was present on protected main as blob `6e7966966bdb520b6b42bf455c060187e0da204d`. The companion [original #7775 audit](https://github.com/mastermindx-market-intelligence/macro/blob/5d574d4e37cc1f588dfc08c5e20f0cdb46acc51a/orch/audits/macro_PR-7770.mm.md), blob `aff9a846c1a560e1930347ba0dac561302469aa3`, remains recoverable. Their historical PASS results, probe transcripts and estate counts are attributed records, not fresh test or production proof.
+
+Native [#7770](https://github.com/mastermindx-market-intelligence/macro/pull/7770) identifies source `5db16fb334fdc76fdccd45352e64e20aae27e66e`, merge `d857f4568a7e0f4eb7c30d4ca6aabd69003f5d40`, at2026-09-23T07:42:47Z; six files, +606/-26. The inspected engine and CLI patches distinguish the backfill receipt from the emit display payload. Weekend rows are excluded from emit only when a weekday row remains. A weekend-only ledger is retained by that source implementation.
+
+Useful companion observations are preserved at their proper scope:
+- The one-time production backfill, retained operation receipt and downstream source-break disclosure were separate owner obligations. Source merge or a unit-test idempotence claim does not prove that the production ledger was rehearsed or changed. No backfill, provider access or ledger write is authorized or performed by this record.
+- `main(argv)` still accepts its argv list; the new parsed Namespace is internal. Bare argv retains accrue+emit behavior. The new backfill function did not have legacy positional callers before it existed.
+- `--ledger` temporarily rebinds module-global `S._snap_path` and restores it in `finally`. Restoration protects ordinary sequential use; it does **not** establish isolation for overlapping calls in one process. The original concurrency assurance is not adopted. Existing controlled invocation ownership remains responsible; no new runner or retry plane is added.
+- The companion's old unwired-test notice and parity-suite filename correction are historical diagnostics, not current-main findings or new tasks. Bilingual CLI errors are operator messages. None of these records establishes return-prediction or trading authority.
+
+Original implementation remains DO_NOT_REDO. No new pytest, render, browser, production execution or acceptance receipt is claimed.
+
+---
+
+## Retained September23 audit
+
 # PR audit — mastermindx-market-intelligence/macro#7770
 
 **Auditor:** meta-ceo-b-2026-09-08 (one-pass remote useful-idle, no retries, no scope expansion)
@@ -5,7 +23,7 @@
 **Repo / PR:** mastermindx-market-intelligence/macro #7770
 **PR title:** [MO-A3] A-F03-W2-4b: Skew ledger backfill leg — recompute the covered legacy history from the ThetaData store (canonical-wins), exclude weekend as-of rows from emit, DEC record
 **Merged at:** 2026-09-23T07:42:47Z (within the 24 h audit window)
-**Head sha (body-disclosed, post seat-ratification #3 merge):** `5db16fb334fdc76fdccd45352e64e20aae27e66e` (Meta-CEO A seat ratification; merge commit of `claude/mo-a-3-a-f03-w2-4b-skew-backfill` into main)
+**Head sha (body-disclosed, post seat-ratification #3 merge):** `5db16fb334fdc76fdccd45352e64e20aae27e66e` (PR source head after the historical seat ratification; the protected squash merge is `d857f4568a7e0f4eb7c30d4ca6aabd69003f5d40`)
 **Author:** chriswong6031-creator (Meta-CEO A seat)
 **Repo root verified:** `/Volumes/STORAGE/Offloaded/m1-20260917/lanes/repos/macro` on this session's working tree; sparse-checkout at 75%, `git ls-files orch/audits/` confirms index is current with `origin/claude/orch-audit-pr97154-20260920`; merge confirmed in `origin/main` log via `git log --all --oneline | grep "#7770"` → `d857f4568a [MO-A3] A-F03-W2-4b: ... (#7770)`.
 
@@ -32,7 +50,7 @@
 
 **Nature of change (skew-lane half-B backfill — engine ledger reconciliation against the ThetaData store, no user-facing surface):** the PR has three intertwined deliverables, all of which the body declares together:
 
-1. **Engine backfill leg.** `engine/options_skew.py::backfill_from_store(dates, *, store=None, roots=None, dry_run=False)` recomputes an explicit list of ISO dates from the ThetaData store and upserts them into the canonical-wins ledger (the same `snapshot()` rules that accrue uses today). Weekend dates are counted and skipped. Dates the store does not cover are counted and skipped — neither case is filled from a neighbouring session. `_backfill_row_counts` is a dry-run pure function: counts `rows_replaced` / `rows_added` / `rows_unchanged` against the ledger as it sits, never writes. The receipt shape is one dict: `{dates_requested, dates_weekend_skipped, dates_not_in_store, dates_backfilled, rows_replaced, rows_added, rows_unchanged, per_date:[{date,status,state?,skew?,source?}, ...]}` — the **same keys** the `--emit` payload now carries.
+1. **Engine backfill leg.** `engine/options_skew.py::backfill_from_store(dates, *, store=None, roots=None, dry_run=False)` recomputes an explicit list of ISO dates from the ThetaData store and upserts them into the canonical-wins ledger (the same `snapshot()` rules that accrue uses today). Weekend dates are counted and skipped. Dates the store does not cover are counted and skipped — neither case is filled from a neighbouring session. `_backfill_row_counts` is a read-only count helper that reads the ledger: it counts `rows_replaced` / `rows_added` / `rows_unchanged` against the ledger as it sits, never writes. The receipt shape is one dict: `{dates_requested, dates_weekend_skipped, dates_not_in_store, dates_backfilled, rows_replaced, rows_added, rows_unchanged, per_date:[{date,status,state?,skew?,source?}, ...]}` — a backfill-operation receipt, distinct from the display payload returned by `emit_from_ledger`. The emit change adds `n_weekend_rows_excluded` and `history_sources`.
 2. **Engine `emit_from_ledger` weekend filter.** `engine/options_skew.py::emit_from_ledger` drops weekend-dated rows before it picks the latest per-name snapshot **when a weekday row remains**, and adds two new payload keys: `n_weekend_rows_excluded` (int) and `history_sources` (sorted unique list of source values, e.g. `["polygon_gex","thetadata"]`). A ledger whose every row is a weekend date still emits that latest row (the existing fixture uses Saturday 2026-06-20 + Sunday 2026-06-21 and expects the Sunday row); the exclusion count is 0 in that case because nothing was removed. **`compute_skew`, `_nearest_expiry`, `_iv_at_delta`, `skew_map`, `snapshot` (including canonical-wins), and `_atomic_write_parquet` are byte-unchanged against `origin/main`** — body declares this with the receipt `git diff origin/main...2499d627 -- engine/options_skew.py | grep -c '^-[^-]'` = 0.
 3. **CLI leg.** `scripts/build_options_skew.py` gains `--backfill FROM TO` (nargs=2, metavar), `--dry-run`, `--roots`, `--ledger PATH`. Bare argv still runs accrue+emit (the existing default for today's callers). `--backfill` alone prints one JSON line and exits 0. `--accrue` + `--backfill` accrues AND backfills. An unresolved store prints the existing `::warning title=options-skew-source::` line (not raised), and exits 0. The two new error messages are bilingual EN/ZH operator-facing strings (`_inclusive_iso_dates` raises `ValueError`).
 
@@ -145,7 +163,7 @@
 | Validated-claims | **PASS** | Zero new claim-class tokens; the engine fields added (`history_sources`, `n_weekend_rows_excluded`) are factual display metadata, not "validated" claims; the inter-packet follow-on sentence is correctly deferred. |
 
 **Positive sub-findings (one-pass, non-blocking):**
-- **Engine receipt structure is parsimonious.** The receipt shape `{dates_requested, dates_weekend_skipped, dates_not_in_store, dates_backfilled, rows_replaced, rows_added, rows_unchanged, per_date:[...]}` is the same keys the `--emit` payload carries — making backfill and emit pay the same per-key contract cost and making a future audit ("did the backfill actually run? what did it touch?") a one-grep away.
+- **Engine receipt structure is parsimonious.** The receipt shape `{dates_requested, dates_weekend_skipped, dates_not_in_store, dates_backfilled, rows_replaced, rows_added, rows_unchanged, per_date:[...]}` belongs to the backfill operation. The separate emit payload adds `n_weekend_rows_excluded` and `history_sources`; it must not be treated as an execution receipt for a production backfill.
 - **Idempotence is test-pinned.** `tests/test_options_skew_backfill.py::test_backfill_replaces_the_weekday_and_leaves_weekend_and_uncovered` asserts `again["rows_replaced"] == 0` and `again["rows_added"] == 0` on a second call against the same fake ledger — a structural idempotence proof that protects the one-time seat-act runbook §3.7 from accidental re-application on a follow-up shift.
 - **Canonical-wins is preserved unchanged.** `compute_skew`, `_nearest_expiry`, `_iv_at_delta`, `skew_map`, `snapshot` (incl. canonical-wins), and `_atomic_write_parquet` are byte-unchanged against `origin/main` (`git diff origin/main...HEAD -- engine/options_skew.py | grep -c '^-[^-]'` = 0). The weekend filter is an **insertion** inside `emit_from_ledger`, never a modification of an existing line that the parity audit (PR #7756, W2-4 read-only leg) attested.
 - **DEC citation chain is consistent.** The DEC record `DEC:SKEW-PARITY-RULING-BACKFILL-COVERED-HISTORY` cites `DSC:SKEW-THETADATA-RECOMPUTE-DIVERGES-FROM-POLYGON-LEDGER` (60% sign agreement, 2,392 match / 1,563 flip) and the W2-4 parity receipt (spot mismatch 46.4% on 1,680 keys; both IV legs move; tenor never moves). Both are pre-existing artifacts; the DEC does not invent a discovery or a number.
