@@ -705,8 +705,77 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         application_allowed=False,
         metadata_read=True,
     ),
+    "native_go_mastermind_text_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1",
+        secret_ref="MASTERMIND_FABRIC_APPLICATION_TOKEN",
+        provider_id="go",
+        model="deepseek-v4.1-flash",
+        cost_basis="unknown",
+        cap_id="fabric:go_mastermind_text",
+        capability_id="fabric_application_go_mastermind_text",
+        protocol="native_application_v1",
+        qualified=False,
+        application_allowed=False,
+        metadata_read=False,
+    ),
+    "native_go_mastermind_chat_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1",
+        secret_ref="MASTERMIND_FABRIC_CHAT_TOKEN",
+        provider_id="go",
+        model="deepseek-v4.1-flash",
+        cost_basis="unknown",
+        cap_id="fabric:go_mastermind_chat",
+        capability_id="fabric_application_go_mastermind_chat",
+        protocol="native_application_v1",
+        qualified=False,
+        application_allowed=False,
+        metadata_read=False,
+    ),
+    "native_go_macro_brain_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1",
+        secret_ref="MACRO_BRAIN_FABRIC_APPLICATION_TOKEN",
+        provider_id="go",
+        model="deepseek-v4.1-flash",
+        cost_basis="unknown",
+        cap_id="fabric:go_macro_brain",
+        capability_id="fabric_application_go_macro_brain",
+        protocol="native_application_v1",
+        qualified=False,
+        application_allowed=False,
+        metadata_read=False,
+    ),
+    "native_go_macro_ask_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1",
+        secret_ref="MACRO_ASK_FABRIC_APPLICATION_TOKEN",
+        provider_id="go",
+        model="deepseek-v4.1-flash",
+        cost_basis="unknown",
+        cap_id="fabric:go_macro_ask",
+        capability_id="fabric_application_go_macro_ask",
+        protocol="native_application_v1",
+        qualified=False,
+        application_allowed=False,
+        metadata_read=False,
+    ),
 }
 _APPLICATION_MODE_IDS = frozenset({"shared_fabric"})
+@dataclass(frozen=True)
+class _ServiceFabricRelation:
+    lane: str
+    workload: str
+    transport_id: str
+
+_SERVICE_FABRIC_RELATIONS = {
+    "mastermind_text_fabric": _ServiceFabricRelation(
+        "mastermind-text", "site_batch", "native_go_mastermind_text_v1"),
+    "mastermind_chat_fabric": _ServiceFabricRelation(
+        "mastermind-chat", "site_interactive", "native_go_mastermind_chat_v1"),
+    "macro_brain_fabric": _ServiceFabricRelation(
+        "brain", "site_interactive", "native_go_macro_brain_v1"),
+    "macro_ask_fabric": _ServiceFabricRelation(
+        "ask-brain", "site_interactive", "native_go_macro_ask_v1"),
+}
+_APPLICATION_RECORD_KEYS = _APPLICATION_MODE_IDS | frozenset(_SERVICE_FABRIC_RELATIONS)
 _APPLICATION_ID = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}\Z")
 _APPLICATION_IDENTITY_FIELDS = (
     "base_url", "secret_ref", "provider_id", "model", "cost_basis",
@@ -739,14 +808,14 @@ class _ApplicationFabricMode:
 
 def _application_fabric_mode(mode_id: str, root: Path) -> _ApplicationFabricMode:
     """Read the incumbent owner document; no secret, client, ledger or claim."""
-    if mode_id not in _APPLICATION_MODE_IDS:
+    if mode_id not in _APPLICATION_RECORD_KEYS:
         _application_refuse("fabric_application_mode_unknown")
     try:
         document = _load_owner_document(root / "config/provider_production_modes.v1.json")
     except Exception:
         raise ApplicationFabricBindingError("fabric_owner_config_invalid") from None
     records = document.get("application_fabric_modes", {})
-    if not isinstance(records, dict) or set(records) - _APPLICATION_MODE_IDS:
+    if not isinstance(records, dict) or set(records) - _APPLICATION_RECORD_KEYS:
         _application_refuse("fabric_application_modes_invalid")
     raw = records.get(mode_id)
     if raw is None:
@@ -758,6 +827,12 @@ def _application_fabric_mode(mode_id: str, root: Path) -> _ApplicationFabricMode
         _application_refuse("fabric_application_metadata_permission_invalid")
     transport_id = raw["transport_id"]
     if not isinstance(transport_id, str):
+        _application_refuse("fabric_application_transport_invalid")
+    relation = _SERVICE_FABRIC_RELATIONS.get(mode_id)
+    if relation is not None and transport_id != relation.transport_id:
+        _application_refuse("fabric_application_transport_invalid")
+    if relation is None and mode_id in _APPLICATION_MODE_IDS and transport_id in {
+            rel.transport_id for rel in _SERVICE_FABRIC_RELATIONS.values()}:
         _application_refuse("fabric_application_transport_invalid")
     transport = _APPLICATION_FABRIC_TRANSPORTS.get(transport_id)
     if type(transport) is not _ApplicationFabricTransport:
@@ -790,6 +865,22 @@ def _application_timeout_cap(value):
     return float(value)
 
 
+def _validate_service_fabric_relation(
+    mode_id: str, lane: str, service_mode_id: str | None,
+    profile_present: bool, profile: Any,
+) -> None:
+    """Host mode stays shared_fabric; child service IDs are record keys only."""
+    if mode_id not in _APPLICATION_MODE_IDS:
+        _application_refuse("fabric_application_selection_invalid")
+    if service_mode_id is None:
+        return
+    relation = _SERVICE_FABRIC_RELATIONS.get(service_mode_id)
+    if type(relation) is not _ServiceFabricRelation:
+        _application_refuse("fabric_application_selection_invalid")
+    if lane != relation.lane or not profile_present or profile != relation.workload:
+        _application_refuse("fabric_application_selection_invalid")
+
+
 @dataclass(frozen=True)
 class ApplicationFabricFactory:
     """Trusted startup composition; fresh configuration, workload and capability checks.
@@ -805,8 +896,20 @@ class ApplicationFabricFactory:
     _profile_present: bool
     _profile: Any
     _provider_order: tuple[str, ...]
+    service_mode_id: str | None = None
     _inspection_commitment: str | None = None
     _timeout_cap: float | None = None
+
+    def __post_init__(self):
+        _validate_service_fabric_relation(
+            self.mode_id, self.lane, self.service_mode_id,
+            self._profile_present, self._profile)
+
+    def _effective_record_id(self) -> str:
+        _validate_service_fabric_relation(
+            self.mode_id, self.lane, self.service_mode_id,
+            self._profile_present, self._profile)
+        return self.mode_id if self.service_mode_id is None else self.service_mode_id
 
     def _request_timeout(self, caller_cfg: Mapping[str, Any] | None = None):
         """A caller may narrow the immutable startup budget, never widen it.
@@ -857,7 +960,7 @@ class ApplicationFabricFactory:
         _bind_with_workload() spends it.
         """
         self._request_timeout(caller_cfg)
-        mode = _application_fabric_mode(self.mode_id, self.root)
+        mode = _application_fabric_mode(self._effective_record_id(), self.root)
         decision = self.workload_decision()
         if caller_cfg is not None:
             if not isinstance(caller_cfg, Mapping):
@@ -917,7 +1020,7 @@ class ApplicationFabricFactory:
 
     def _metadata_identity(self):
         """Separate explicit read permission; it cannot relax inference gates."""
-        mode = _application_fabric_mode(self.mode_id, self.root)
+        mode = _application_fabric_mode(self._effective_record_id(), self.root)
         transport = mode.transport
         if (self.lane != "admin-orchestrator" or mode.enabled is not True
                 or mode.admin_pool_view is not True or transport.metadata_read is not True
@@ -1056,6 +1159,12 @@ def describe_application_fabric_selection(mode_id, *, root):
     """Local configuration evidence only; never readiness or admission proof."""
     if mode_id is None:
         return {"selected": False, "state": "legacy", "provider": None, "model": None, "blocker": None}
+    # The environment/config selector is a HOST, never a child record key.
+    # Keep a present child/invalid value selected+held before any record lookup,
+    # credential boundary or client/network construction can be approached.
+    if not isinstance(mode_id, str) or mode_id not in _APPLICATION_MODE_IDS:
+        return {"selected": True, "state": "held", "provider": None, "model": None,
+            "blocker": "fabric_application_selection_invalid"}
     try:
         mode = _application_fabric_mode(mode_id, Path(root))
         transport = mode.transport
@@ -1073,24 +1182,31 @@ def describe_application_fabric_selection(mode_id, *, root):
 
 def make_application_fabric_factory(
     *, mode_id: str, lane: str, workload_cfg: Mapping[str, Any], root: Path,
+    service_mode_id: str | None = None,
 ) -> ApplicationFabricFactory:
     """Select by trusted owner mode; keep absent/invalid workload selectors distinct."""
     if (not isinstance(mode_id, str) or mode_id not in _APPLICATION_MODE_IDS
             or not isinstance(lane, str) or not _APPLICATION_ID.fullmatch(lane)
             or not isinstance(root, Path) or not root.is_absolute()
-            or not isinstance(workload_cfg, Mapping)):
+            or not isinstance(workload_cfg, Mapping)
+            or not (service_mode_id is None or isinstance(service_mode_id, str))):
         _application_refuse("fabric_application_selection_invalid")
     order = workload_cfg.get("provider_order")
     if not isinstance(order, list) or order != ["fabric"]:
         _application_refuse("fabric_application_provider_order_invalid")
+    profile_present = "workload_profile" in workload_cfg
+    profile = workload_cfg.get("workload_profile")
+    _validate_service_fabric_relation(mode_id, lane, service_mode_id, profile_present, profile)
     return ApplicationFabricFactory(
-        mode_id, lane, root, "workload_profile" in workload_cfg,
-        workload_cfg.get("workload_profile"), tuple(order),
+        mode_id, lane, root, profile_present, profile, tuple(order),
+        service_mode_id=service_mode_id,
         _timeout_cap=_application_timeout_cap(workload_cfg.get("client_timeout_s")),
     )
 
 
-def configured_application_fabric(*, lane: str, workload_profile: str, root: Path):
+def configured_application_fabric(
+    *, lane: str, workload_profile: str, root: Path, service_mode_id: str | None = None,
+):
     """Compose a service's trusted startup selection without opening credentials.
 
     Absence preserves legacy startup. Any present invalid selection remains
@@ -1103,6 +1219,7 @@ def configured_application_fabric(*, lane: str, workload_profile: str, root: Pat
         factory = make_application_fabric_factory(
             mode_id=os.environ["MM_PROVIDER_APPLICATION_MODE"], lane=lane, root=root,
             workload_cfg={"workload_profile": workload_profile, "provider_order": ["fabric"]},
+            service_mode_id=service_mode_id,
         )
     except ApplicationFabricBindingError:
         return True, None

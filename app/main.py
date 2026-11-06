@@ -138,11 +138,13 @@ def _configure_brain_fabric() -> None:
     from engine.provider_production_modes import configured_application_fabric
 
     selected, factory = configured_application_fabric(
-        lane="brain", workload_profile="site_interactive", root=REPO)
+        lane="brain", workload_profile="site_interactive", root=REPO,
+        service_mode_id="macro_brain_fabric")
     app.state.fabric_selected = selected
     app.state.fabric_provider_factory = factory
     ask_selected, ask_factory = configured_application_fabric(
-        lane="ask-brain", workload_profile="site_interactive", root=REPO)
+        lane="ask-brain", workload_profile="site_interactive", root=REPO,
+        service_mode_id="macro_ask_fabric")
     app.state.ask_fabric_selected = ask_selected
     app.state.ask_fabric_provider_factory = ask_factory
 
