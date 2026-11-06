@@ -4,8 +4,8 @@ claim: Mastermind can construct a reproducible DIX-style observation from its ex
 falsifier: Run the arithmetic, source-vintage, source-clock, render-only and canonical-public-asset tests in tests/test_darkflow_index.py and tests/test_darkflow_publish.py, then the real shared-component browser checks in tests/darkflow_browser.py.
 so_what: Reuse the existing data, ledger, access and publication owners. Keep the expected source session separate from the last fully covered display date; expose ratio, weight and coverage contributions rather than institutional-intent claims.
 kind: landmine
-verified_at: '2026-10-17'
-verified_by: source-backed calculations, canonical asset-emitter tests and responsive real-component browser evidence
+verified_at: '2026-11-06'
+verified_by: 'python -m pytest tests/test_darkflow_index.py tests/test_darkflow_publish.py -q; #9574; research/evidence/darkflow_20261106/source-qualification.json'
 scope:
 - mastermindx-market-intelligence/macro
 - engine/darkflow_index.py
@@ -40,10 +40,14 @@ observed input record. Historical reconstruction never becomes a backdated live
 observation. Exact source-byte hashes and summary/history generation identity are
 part of the read contract, not merely decorative provenance.
 
-Operational capability: Studio's typed Git publisher currently resolves only its
-configured Mastermind repository, not the separately registered Macro workspace.
-Its Macro attempt was reconciled NOT_APPLIED with the default-repository lookup
-failure. The correct existing Macro workspace was then committed and published
-through normal Git on the same authorized Studio carrier, preserving hooks and
-branch fencing. No typed-publisher allowlist, repository identity or operation
-registration was changed to force the wrong tool to accept the target.
+Historical capability on 2026-10-17: the attempted typed publication resolved the
+default Mastermind repository and was reconciled NOT_APPLIED. The original Macro
+branch was then published on its authorized Studio carrier without changing the
+publisher allowlist or repository identity. That dated failure is not a present
+capability restriction.
+
+On 2026-11-06 the existing Macro operation was recovered, qualified and published
+through the installed typed commit and push owners. Native readback confirmed
+head daec89b8a41adc8dc05263784d14eb10bce5c55e and its exact qualified merge tree.
+The current source and browser receipts are under
+research/evidence/darkflow_20261106/ and the source-linked return on #9574.
