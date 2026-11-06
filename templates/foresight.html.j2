@@ -5,6 +5,10 @@
 
 {% block title %}Thematic Foresight Desk — Macro Dashboard{% endblock %}
 
+{# Current health qualifies live presentation only; historical flags keep their
+   recorded stance. Scores, source ordering and producer stages stay unchanged. #}
+{% set confirmer_only = health and health.mode == 'CONFIRMER-ONLY' %}
+
 {# ============================================================================
    PLAIN-WORD STAGE SYSTEM (DESIGN_DOCTRINE Law 1 + Law 2)
    The engine stages (PRECIPICE / BROADENING / RE-RATING / GLUT-RISK / WATCH) are
@@ -16,8 +20,9 @@
    do NOT swap in zh (same rule transmission uses for health/validation colours).
    ============================================================================ #}
 {% macro sbase(stage) -%}{{ (stage or 'UNKNOWN').split(' (')[0] }}{%- endmacro %}
-{% macro stance_word(sb) -%}
-{%- if sb == 'PRECIPICE' -%}{{ t('Early','早期') }}
+{% macro stance_word(sb, current=false) -%}
+{%- if current and confirmer_only and sb == 'PRECIPICE' -%}{{ t('Supply unconfirmed','供给待确认') }}
+{%- elif sb == 'PRECIPICE' -%}{{ t('Early','早期') }}
 {%- elif sb == 'BROADENING' -%}{{ t('Confirming','确认中') }}
 {%- elif sb == 'RE-RATING' -%}{{ t('Late','偏晚') }}
 {%- elif sb == 'GLUT-RISK' -%}{{ t('Fading','退潮') }}
@@ -25,7 +30,8 @@
 {%- else -%}{{ t('No read','暂无读数') }}{%- endif -%}
 {%- endmacro %}
 {% macro stance_line(sb) -%}
-{%- if sb == 'PRECIPICE' -%}{{ t('Supply is tight before estimates have moved — the biggest head start. The buy still waits for a dip.','供给已紧、预期未动——先机最大。买点仍等待回调。') }}
+{%- if confirmer_only and sb == 'PRECIPICE' -%}{{ t('Leading supply evidence is unavailable — an early thesis is not confirmed. Keep this read provisional.','领先供给证据不可用——早期判断尚未确认。此读数仍为暂定。') }}
+{%- elif sb == 'PRECIPICE' -%}{{ t('Supply is tight before estimates have moved — the biggest head start. The buy still waits for a dip.','供给已紧、预期未动——先机最大。买点仍等待回调。') }}
 {%- elif sb == 'BROADENING' -%}{{ t('Estimates are starting to catch up — runway confirmed. Don’t chase the spikes.','预期开始跟上——跑道确认。勿追高。') }}
 {%- elif sb == 'RE-RATING' -%}{{ t('The crowd has arrived — estimates are already broad. Don’t chase.','人群已到——预期普遍上修。勿追高。') }}
 {%- elif sb == 'GLUT-RISK' -%}{{ t('Supply is catching up while estimates stay high — trim / exit clock.','供给赶上而预期仍高——减仓／退出倒计时。') }}
@@ -62,7 +68,7 @@ FY{{ leg.latest_fy }}{% endif -%}
 {%- set fp = r.fingerprint -%}
 {%- if fp and fp.components -%}
 {%- set _c = fp.components -%}
-<p class="fx-note">{{ t('Filing depth', '年报深度') }}
+<p class="fx-note fx-filing-depth">{{ t('Filing depth', '年报深度') }}
 {{ fxq('Members that reported, and the fiscal year of the read.'
        ~ ' A suppressed leg shows its count, not a number.',
        '披露的成员家数与读数所属财年。被舍去的腿只显示家数，不显示数值。') }}
@@ -232,10 +238,9 @@ FY{{ leg.latest_fy }}{% endif -%}
   .fx-heat-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(232px,1fr)); gap:12px; }
   .fx-heat{ position:relative; border:1px solid var(--line); border-radius:14px; background:var(--panel);
             padding:14px 15px 13px; overflow:hidden; animation:fxUp .5s cubic-bezier(.2,.7,.3,1) both; }
-  .fx-heat::before{ content:""; position:absolute; inset:0 0 auto 0; height:3px; background:var(--st,var(--fx-dawn1)); }
-  .fx-heat-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .fx-heat-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap; }
   .fx-heat-nm{ font-size:14.5px; font-weight:800; color:var(--text); line-height:1.2; }
-  .fx-heat-badge{ font-size:9.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:3px 8px;
+  .fx-heat-badge{ font-size:12px; line-height:1.5; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:3px 8px;
                   border-radius:7px; white-space:nowrap; color:var(--st,var(--muted));
                   background:color-mix(in srgb,var(--st,var(--muted)) 14%,var(--panel));
                   border:1px solid color-mix(in srgb,var(--st,var(--muted)) 30%,transparent); }
@@ -246,11 +251,10 @@ FY{{ leg.latest_fy }}{% endif -%}
   .fx-heat-src{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }
   .fx-src{ font-size:10px; font-weight:700; padding:2px 7px; border-radius:6px; color:var(--fx-dawn1);
            background:color-mix(in srgb,var(--fx-dawn1) 11%,transparent); text-transform:capitalize; }
-  .fx-heat-meta{ font-size:11px; color:var(--muted); line-height:1.4; }
+  .fx-heat-meta{ font-size:12px; color:var(--muted); line-height:1.5; }
   .fx-heat-meta b{ color:var(--text); font-weight:700; }
   .fx-heat-conf{ color:var(--ink-up, var(--up)); font-weight:700; }
-  .fx-meta-card{ grid-column:1/-1; border-left:4px solid var(--warn); background:color-mix(in srgb,var(--warn) 6%,var(--panel)); }
-  .fx-meta-card::before{ background:var(--warn); }
+  .fx-meta-card{ grid-column:1/-1; border:1px solid var(--line); background:var(--panel2); }
   .fx-empty{ border:1px dashed var(--line); border-radius:14px; background:var(--panel); padding:16px 18px;
              font-size:13px; color:var(--muted); line-height:1.55; }
   .fx-empty b{ color:var(--text); }
@@ -263,9 +267,8 @@ FY{{ leg.latest_fy }}{% endif -%}
   .fx-card{ position:relative; border:1px solid var(--line); border-radius:16px; background:var(--panel);
             padding:17px 19px 15px; overflow:hidden; animation:fxUp .5s cubic-bezier(.2,.7,.3,1) both;
             transition:transform .18s ease, box-shadow .2s ease, border-color .2s ease; }
-  .fx-card::before{ content:""; position:absolute; inset:0 0 auto 0; height:3px; background:var(--st,var(--muted)); }
   .fx-card:hover{ transform:translateY(-2px); box-shadow:0 12px 30px -18px rgba(10,15,40,.4);
-                  border-color:color-mix(in srgb,var(--st,var(--line)) 30%,var(--line)); }
+                  border-color:var(--line); }
   .fx-card.fx-t-PRECIPICE{ --st:var(--fx-early); } .fx-card.fx-t-BROADENING{ --st:var(--fx-confirm); }
   .fx-card.fx-t-RE-RATING{ --st:var(--fx-late); }  .fx-card.fx-t-GLUT-RISK{ --st:var(--fx-fade); }
   .fx-card.fx-t-WATCH,.fx-card.fx-t-UNKNOWN{ --st:var(--muted); }
@@ -277,13 +280,13 @@ FY{{ leg.latest_fy }}{% endif -%}
   .fx-score .s{ font-size:21px; font-weight:800; line-height:1; color:var(--st,var(--text)); font-variant-numeric:tabular-nums; }
   .fx-score .l{ font-size:8px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
   .fx-nm{ font-size:17px; font-weight:800; color:var(--text); letter-spacing:-.01em; line-height:1.15; }
-  .fx-badge{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:800; letter-spacing:.04em;
+  .fx-badge{ display:inline-flex; align-items:center; gap:5px; font-size:12px; line-height:1.5; font-weight:800; letter-spacing:.04em;
              text-transform:uppercase; padding:4px 11px; border-radius:999px; white-space:nowrap; color:var(--st,var(--muted));
              background:color-mix(in srgb,var(--st,var(--muted)) 13%,var(--panel));
              border:1px solid color-mix(in srgb,var(--st,var(--muted)) 30%,transparent); }
   .fx-badge .fxdot{ width:6px; height:6px; border-radius:50%; background:currentColor;
                     animation:fxBreathe 2.4s ease-in-out infinite; flex:none; }
-  .fx-prov{ font-size:9.5px; font-weight:700; color:var(--muted); padding:2px 6px; border-radius:5px;
+  .fx-prov{ font-size:12px; line-height:1.5; font-weight:700; color:var(--muted); padding:2px 6px; border-radius:var(--r-ctl,8px);
             background:var(--panel2); border:1px dashed var(--line); cursor:help; position:relative; text-transform:none; letter-spacing:0; }
   .fx-tagline{ font-size:11.5px; color:var(--muted); margin-left:auto; }
   .fx-stance-line{ font-size:12.5px; color:var(--st,var(--muted)); font-weight:600; margin:11px 0 2px; line-height:1.45; }
@@ -443,6 +446,20 @@ FY{{ leg.latest_fy }}{% endif -%}
   @keyframes fxBreathe{ 0%,100%{ opacity:.45; transform:scale(.85); } 50%{ opacity:1; transform:scale(1.1); } }
   @keyframes fxGrow{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
   @keyframes fxTravel{ 0%{ left:0; opacity:0; } 12%{ opacity:.95; } 88%{ opacity:.95; } 100%{ left:calc(var(--reach,0%) - 22px); opacity:0; } }
+  /* D03 T36: current source uncertainty; historical records retain their styling. */
+  .fx-brand{ text-wrap:balance; }
+  /* Retain lifecycle hue in the fill/dot; use readable ink for its label. */
+  .fx-heat-badge,.fx-badge{ color:var(--text); }
+  .fx-filing-depth{ font-size:12px; line-height:1.5; }
+  .fx-heat{ overflow:visible; }
+  .fx-heat .fx-prov{ position:static; }
+  .fx-heat .fx-prov .fxq-tip{ top:100%; left:0; transform:none; max-width:100%; box-sizing:border-box; }
+  .fx-heat:focus-within,.fx-heat:hover{ z-index:4; }
+  .fx-confirmers-only .fx-heat-conf{ color:var(--muted); }
+  .fx-badge.fx-unconfirmed,.fx-heat-badge.fx-unconfirmed,.wbadge.fx-unconfirmed,.fx-rstage.fx-unconfirmed{
+    --st:var(--muted); color:var(--text); background:var(--panel2); font-size:12px; line-height:1.5; white-space:normal; }
+  .fx-stance-line.fx-unconfirmed{ color:var(--muted); font-size:14px; line-height:1.5; }
+
   @media (prefers-reduced-motion: reduce){
     .fx-hero,.fx-concept,.fx-gate,.fx-heat,.fx-card,.fx-rail-fill,.fx-heat-meter i{ animation:none; }
     .fxdot,.fx-rail-pulse,.fx-badge .fxdot{ animation:none; }
@@ -452,7 +469,7 @@ FY{{ leg.latest_fy }}{% endif -%}
 {% endblock %}
 
 {% block content %}
-<div class="fx-wrap">
+<div class="fx-wrap{{ ' fx-confirmers-only' if confirmer_only else '' }}">
 
   {# ===================== HERO ===================== #}
   {%- set ns = namespace(early=[], confirm=[], late=0, fade=0) -%}
@@ -470,10 +487,12 @@ FY{{ leg.latest_fy }}{% endif -%}
   <header class="fx-hero">
     <div class="fx-eyebrow">🔮 {{ t('Thematic Foresight Desk', '主题前瞻台') }}</div>
     <h1 class="fx-brand"><span class="gn">{{ t('Catch the theme early', '在主题成为共识前抓住它') }}</span></h1>
-    <p class="fx-tag">{{ t('Where supply is tightening before Wall Street’s estimates catch up — ranked earliest first.', '在华尔街盈利预期跟上之前，找出供给正在收紧之处——按最早期优先排序。') }} {{ fxq('The desk catches a theme at its earliest — supply tightness leads, demand and guidance pre-signal, analyst estimates confirm — then defers the buy to a market dislocation (buy the flush, not the pop). Worked case: the mid-2024 memory / HBM call, right and ~9 months early.', '本台在主题最早期捕捉——供给紧张领先，需求与指引预示，分析师预期确认——再将买点交由市场错位（买回调，不买冲高）。范例：2024年年中的存储/HBM判断，正确且早约9个月。') }}</p>
+    <p class="fx-tag">{{ t('The desk shows confirmations only. Leading supply inputs are unavailable.', '本台仅显示确认信号，领先供给输入不可用。') if confirmer_only else t('Where supply is tightening before Wall Street’s estimates catch up — ranked earliest first.', '在华尔街盈利预期跟上之前，找出供给正在收紧之处——按最早期优先排序。') }} {{ fxq('The desk catches a theme at its earliest — supply tightness leads, demand and guidance pre-signal, analyst estimates confirm — then defers the buy to a market dislocation (buy the flush, not the pop). Worked case: the mid-2024 memory / HBM call, right and ~9 months early.', '本台在主题最早期捕捉——供给紧张领先，需求与指引预示，分析师预期确认——再将买点交由市场错位（买回调，不买冲高）。范例：2024年年中的存储/HBM判断，正确且早约9个月。') }}</p>
 
     <div class="fx-verdict">
-      {%- if n_edge -%}
+      {%- if confirmer_only -%}
+        {{ t('Early status is unconfirmed.', '早期状态尚未确认。') }}
+      {%- elif n_edge -%}
         <span class="l-en"><b>{{ n_edge }} theme{{ 's' if n_edge != 1 }}</b> sit early in the cycle right now — supply is tightening before estimates have moved.</span>
         <span class="l-zh">当前有 <b>{{ n_edge }} 个主题</b>处于周期早段——供给收紧、预期未动。</span>
       {%- elif hot_names -%}
@@ -486,9 +505,6 @@ FY{{ leg.latest_fy }}{% endif -%}
     </div>
     <div class="fx-asof"><span class="fxdot"></span>{{ t('As of', '截至') }} {{ asof or '—' }} · {{ t('context, not trade calls', '仅供参考，非交易信号') }}</div>
 
-    {%- if health and health.mode == 'CONFIRMER-ONLY' %}
-    <div class="fx-mode"><span class="fxdot"></span>{{ t('Leading signals are dark right now — the desk is showing confirmations only, so no theme can be called truly early until a supply signal lights.', '领先信号当前暗淡——本台仅显示确认信号；在供给信号点亮前，任何主题都无法被判定为真正早期。') }}</div>
-    {%- endif %}
   </header>
 
   {# ===================== CONCEPT RELAY (signature + legend, folds in the old "how to read") ===================== #}
@@ -526,9 +542,13 @@ FY{{ leg.latest_fy }}{% endif -%}
 
   {# ===================== WHAT'S HEATING UP EARLY (convergence, redesigned) ===================== #}
   {% if convergence and convergence.ranked %}
-  <div class="fx-sec"><span class="sh-dot"></span><h2>{{ t('Heating up early', '正在早期升温') }}</h2>
+  <div class="fx-sec"><span class="sh-dot"></span><h2>{{ t('Signals converging', '信号共振') if confirmer_only else t('Heating up early', '正在早期升温') }}</h2>
     <span class="n">{{ t('up to', '最多') }} {{ convergence.max_sources or convergence.max_signals }} {{ t('independent sources', '个独立数据源') }}</span></div>
+  {% if confirmer_only %}
+  <p class="fx-ssub">{{ t('Leading supply inputs are unavailable. These are confirmation signals, not a verified early thesis.', '领先供给输入不可用。当前仅有确认信号，尚不能认定为早期机会。') }} {{ fxq('Available sources, heat and raw source stages remain visible. Dark sources are dropped, not filled in. Coverage differs by theme; heat is not perfectly comparable. Threshold provisional, pending calibration.', '可用数据源、热度与原始来源阶段仍可查看。暗源直接舍弃，不作填补。各主题覆盖不同，热度不完全可比。阈值暂定，待校准。') }}</p>
+  {% else %}
   <p class="fx-ssub">{{ t('Themes where several independent signals are stacking up at once — the earliest heads-up, before any single number is loud.', '多个独立信号同时叠加的主题——在任何单一数据变响之前，最早的提示。') }} {{ fxq('Sources = supply · demand · guidance · alt-data · filings. A theme surfaces when several agree at once while it is still early. Dark sources are dropped, not penalised. A heads-up, not a buy signal — coverage differs by theme, so heat is not perfectly comparable across themes. Threshold provisional, pending calibration.', '数据源＝供给·需求·指引·另类数据·备案。当多个源在早期同时一致时，主题浮现。暗源直接舍弃，不惩罚。这是提示，非买入信号——各主题覆盖不同，热度不完全可比。阈值暂定，待校准。') }}</p>
+  {% endif %}
 
   {% if convergence.heating_up %}
   <div class="fx-heat-grid">
@@ -547,26 +567,28 @@ FY{{ leg.latest_fy }}{% endif -%}
     {% for it in convergence.heating_up %}
     {%- set hsb = sbase(it.stage) -%}
     {%- set hpct = (it.heat*100)|round|int -%}
-    <div class="fx-heat fx-t-{{ hsb }}" title="convergence heat {{ '%.2f'|format(it.heat) }} · {{ it.n_lit or it.n_signals }}/{{ it.n_available or convergence.max_sources }} sources">
+    <div class="fx-heat fx-t-{{ hsb }}" title="convergence heat {{ '%.2f'|format(it.heat) }} · {{ it.n_lit or it.n_signals }}/{{ it.n_available or convergence.max_sources }} sources · source stage {{ it.stage }} · source supply-confirmed: {{ it.physical_confirmed }}">
       <div class="fx-heat-top">
         <span class="fx-heat-nm">{{ it.name }}</span>
-        <span class="fx-heat-badge">{{ stance_word(hsb) }}</span>
+        <span class="fx-heat-badge{{ ' fx-unconfirmed' if confirmer_only and hsb == 'PRECIPICE' else '' }}" title="{{ it.stage }}">{{ stance_word(hsb, current=true) }}</span>
+        {{ prov_mark(it.stage) }}
       </div>
       <div class="fx-heat-meter"><i style="width:{{ hpct }}%"></i></div>
       <div class="fx-heat-src">{% for s in (it.lit_sources or it.signals) %}<span class="fx-src">{{ {'physical':'supply','edgar_scarcity':'filings','altdata':'alt-data'}.get(s, s.replace('_',' ')) }}</span>{% endfor %}</div>
       <div class="fx-heat-meta">
         <b>{{ it.n_lit or it.n_signals }} {{ t('of', '/') }} {{ it.n_available or convergence.max_sources }} {{ t('sources agree', '个数据源一致') }}</b>
-        {%- if it.earliness is not none %} · {{ t('still early', '仍属早期') if it.earliness >= 0.5 else t('mid-cycle', '周期中段') }}
+        {%- if confirmer_only and (it.earliness is none or it.earliness >= 0.5) %} · {{ t('Early status unconfirmed', '早期状态待确认') }}
+        {%- elif it.earliness is not none %} · {{ t('still early', '仍属早期') if it.earliness >= 0.5 else t('mid-cycle', '周期中段') }}
         {%- elif it.earliness_absent %} · {{ t('early read pending', '早期度待定') }}{% endif %}
-        {%- if it.physical_confirmed %} · <span class="fx-heat-conf">✓ {{ t('supply-confirmed', '供给确认') }}</span>{% endif %}
+        {%- if it.physical_confirmed %} · <span class="fx-heat-conf">{% if confirmer_only %}{{ t('Supply read unconfirmed', '供给读数待确认') }}{% else %}✓ {{ t('supply-confirmed', '供给确认') }}{% endif %}</span>{% endif %}
       </div>
     </div>
     {% endfor %}
   </div>
   {% else %}
-  <div class="fx-empty">{{ t(
+  <div class="fx-empty">{% if confirmer_only %}{{ t('No strong convergence among the available confirmation signals. Leading supply inputs are unavailable; an early thesis cannot be confirmed.', '可用确认信号尚未形成强共振。领先供给输入不可用，早期判断尚不能确认。') }}{% else %}{{ t(
     'Nothing is converging hot right now — no theme has several independent sources stacking up early. That’s an honest read: when leading signals genuinely line up before the crowd, they surface here first.',
-    '目前没有强共振——没有主题在早期叠加多个独立数据源。这是诚实读数：当领先信号在人群之前真正对齐时，会首先出现在此。') }}
+    '目前没有强共振——没有主题在早期叠加多个独立数据源。这是诚实读数：当领先信号在人群之前真正对齐时，会首先出现在此。') }}{% endif %}
     {% set partials = convergence.ranked[:6] | selectattr('n_lit', 'defined') | list %}
     {% if convergence.ranked %}
     <div class="fx-partial">
@@ -584,7 +606,7 @@ FY{{ leg.latest_fy }}{% endif -%}
   {%- set _tier_w = themes | rejectattr('tier', 'equalto', 'P') | list -%}
   <div class="fx-sec"><span class="sh-dot" style="--sh-c:var(--fx-early)"></span><h2>{{ t('The themes, ranked', '主题排名') }}</h2>
     <span class="n">{{ _tier_p|length }} {{ t('on the physical desk', '在物理台') }}</span></div>
-  <p class="fx-ssub">{{ t('Each theme’s lead-time relay — how far its signal has travelled, and how much runway is left. Earliest first.', '每个主题的领先时间接力——信号已传导多远、还剩多少跑道。最早期优先。') }}</p>
+  <p class="fx-ssub">{{ t('Source ordering and relay observations are retained. Leading supply inputs are unavailable, so early status remains unconfirmed.', '保留来源排序与接力观测。领先供给输入不可用，早期状态仍待确认。') if confirmer_only else t('Each theme’s lead-time relay — how far its signal has travelled, and how much runway is left. Earliest first.', '每个主题的领先时间接力——信号已传导多远、还剩多少跑道。最早期优先。') }}</p>
 
   <div class="fx-legend-inline">
     <span class="fx-lchip e"><i></i>{{ t('Early','早期') }}</span>
@@ -613,14 +635,14 @@ FY{{ leg.latest_fy }}{% endif -%}
           <span class="s">{{ r.score|round|int }}</span><span class="l">{{ t('score', '评分') }}</span>
         </span>{% endif %}
         <span class="fx-nm">{{ r.name }}</span>
-        <span class="fx-badge"><span class="fxdot"></span>{{ stance_word(sb) }}</span>
+        <span class="fx-badge{{ ' fx-unconfirmed' if confirmer_only and sb == 'PRECIPICE' else '' }}" title="{{ r.stage }}"><span class="fxdot"></span>{{ stance_word(sb, current=true) }}</span>
         {{ prov_mark(r.stage) }}
         {% if r.demand_strength %}<span class="fx-tagline">{{ t('AI-capex beneficiary', 'AI 资本开支受益') }} · {{ r.demand_strength }}</span>{% endif %}
       </div>
 
       {{ relay(r) }}
 
-      <p class="fx-stance-line">{{ stance_line(sb) }}</p>
+      <p class="fx-stance-line{{ ' fx-unconfirmed' if confirmer_only and sb == 'PRECIPICE' else '' }}">{{ stance_line(sb) }}</p>
       <p class="fx-why">{{ r.rationale }}</p>
       {%- set _pol = r.policy_reg_chip or {} -%}
       {% if _pol.next_comment_close_title %}
@@ -680,7 +702,7 @@ FY{{ leg.latest_fy }}{% endif -%}
     {%- set sb = sbase(r.stage) -%}
     <div class="fx-wrow fx-t-{{ sb }}">
       <span class="wname">{{ r.name }} {{ prov_mark(r.stage) }}</span>
-      <span class="wbadge">{{ stance_word(sb) }}</span>
+      <span class="wbadge{{ ' fx-unconfirmed' if confirmer_only and sb == 'PRECIPICE' else '' }}" title="{{ r.stage }}">{{ stance_word(sb, current=true) }}</span>
       <span class="wbreadth">{% if r.revision_breadth is not none %}{{ t('estimates', '预期') }} {{ '%+.2f'|format(r.revision_breadth) }}{% endif %}</span>
       <span class="wwhy">{{ r.rationale }}</span>
     </div>
@@ -764,7 +786,7 @@ FY{{ leg.latest_fy }}{% endif -%}
           <tbody>
           {% for r in subsectors.subsectors %}
           <tr>
-            <td><span class="fx-rstage fx-t-{{ sbase(r.stage) }}">{{ stance_word(sbase(r.stage)) }}</span></td>
+            <td><span class="fx-rstage fx-t-{{ sbase(r.stage) }}{{ ' fx-unconfirmed' if confirmer_only and sbase(r.stage) == 'PRECIPICE' else '' }}" title="{{ r.stage }}">{{ stance_word(sbase(r.stage), current=true) }}</span></td>
             <td><b>{{ r.sub_industry }}</b> <span style="color:var(--muted);font-size:10px">{{ r.sector }}</span></td>
             <td class="num">{% if r.breadth is not none %}{{ '%+.2f'|format(r.breadth) }}{% else %}—{% endif %}</td>
             <td class="num">{% if r.est_drift_90d is not none %}{{ '%+.0f'|format(r.est_drift_90d) }}%{% else %}—{% endif %}</td>

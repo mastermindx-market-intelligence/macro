@@ -1,0 +1,157 @@
+Source base: 51c35090a624de1e977920e98def2c64488751b3
+Actual template; synthetic rows only; no builder/data/site write.
+
+.....FFFFFFFFFFFF....                                                    [100%]
+=================================== FAILURES ===================================
+_ test_t36_current_summary_cannot_promote_an_early_thesis[PRECIPICE (fingerprint)] _
+tests/test_foresight_page_fingerprint_depth.py:242: in test_t36_current_summary_cannot_promote_an_early_thesis
+    assert "sit early in the cycle right now" not in hero
+E   assert 'sit early i...le right now' not in '<header cla...n></div>\n  '
+E
+E     'sit early in the cycle right now' is contained here:
+E       theme</b> sit early in the cycle right now — supply is tightening before estimates have moved.</span>
+E     ?           ++++++++++++++++++++++++++++++++
+E               <span class="l-zh">当前有 <b>1 个主题</b>处于周期早段——供给收紧、预期未动。</span></div>
+E           <div class="fx-asof"><span class="fxdot"></span><span class="l-en">As of</span><span class="l-zh">截至</span> 2026-10-20 · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></div>
+E           <div class="fx-mode"><span class="fxdot"></span><span class="l-en">Leading ...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+__ test_t36_current_summary_cannot_promote_an_early_thesis[PRECIPICE (text)] ___
+tests/test_foresight_page_fingerprint_depth.py:242: in test_t36_current_summary_cannot_promote_an_early_thesis
+    assert "sit early in the cycle right now" not in hero
+E   assert 'sit early i...le right now' not in '<header cla...n></div>\n  '
+E
+E     'sit early in the cycle right now' is contained here:
+E       theme</b> sit early in the cycle right now — supply is tightening before estimates have moved.</span>
+E     ?           ++++++++++++++++++++++++++++++++
+E               <span class="l-zh">当前有 <b>1 个主题</b>处于周期早段——供给收紧、预期未动。</span></div>
+E           <div class="fx-asof"><span class="fxdot"></span><span class="l-en">As of</span><span class="l-zh">截至</span> 2026-10-20 · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></div>
+E           <div class="fx-mode"><span class="fxdot"></span><span class="l-en">Leading ...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+_ test_t36_current_summary_cannot_promote_an_early_thesis[BROADENING (fingerprint)] _
+tests/test_foresight_page_fingerprint_depth.py:242: in test_t36_current_summary_cannot_promote_an_early_thesis
+    assert "sit early in the cycle right now" not in hero
+E   assert 'sit early i...le right now' not in '<header cla...n></div>\n  '
+E
+E     'sit early in the cycle right now' is contained here:
+E       theme</b> sit early in the cycle right now — supply is tightening before estimates have moved.</span>
+E     ?           ++++++++++++++++++++++++++++++++
+E               <span class="l-zh">当前有 <b>1 个主题</b>处于周期早段——供给收紧、预期未动。</span></div>
+E           <div class="fx-asof"><span class="fxdot"></span><span class="l-en">As of</span><span class="l-zh">截至</span> 2026-10-20 · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></div>
+E           <div class="fx-mode"><span class="fxdot"></span><span class="l-en">Leading ...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+_____ test_t36_convergence_and_empty_state_explain_the_missing_lead[True] ______
+tests/test_foresight_page_fingerprint_depth.py:258: in test_t36_convergence_and_empty_state_explain_the_missing_lead
+    assert unsupported not in section
+E   assert 'Heating up early' not in '<div class=...  \n  \n\n  '
+E
+E     'Heating up early' is contained here:
+E       ss="l-en">Heating up early</span><span class="l-zh">正在早期升温</span></h2>
+E     ?           ++++++++++++++++
+E           <span class="n"><span class="l-en">up to</span><span class="l-zh">最多</span> 5 <span class="l-en">independent sources</span><span class="l-zh">个独立数据源</span></span></div>
+E         <p class="fx-ssub"><span class="l-en">Themes where several independent signals are stacking up at once — the earliest heads-up, before any single number is loud.</span><span class="l-zh">多个独立信号同时叠加的主题——在任何单一数据变响之前，最早的提示。</span> <span class="fxq" tabindex="0">?<span class...
+E
+E     ...Full output truncated (24 lines hidden), use '-vv' to show
+_____ test_t36_convergence_and_empty_state_explain_the_missing_lead[False] _____
+tests/test_foresight_page_fingerprint_depth.py:258: in test_t36_convergence_and_empty_state_explain_the_missing_lead
+    assert unsupported not in section
+E   assert 'Heating up early' not in '<div class=...  \n  \n\n  '
+E
+E     'Heating up early' is contained here:
+E       ss="l-en">Heating up early</span><span class="l-zh">正在早期升温</span></h2>
+E     ?           ++++++++++++++++
+E           <span class="n"><span class="l-en">up to</span><span class="l-zh">最多</span> 5 <span class="l-en">independent sources</span><span class="l-zh">个独立数据源</span></span></div>
+E         <p class="fx-ssub"><span class="l-en">Themes where several independent signals are stacking up at once — the earliest heads-up, before any single number is loud.</span><span class="l-zh">多个独立信号同时叠加的主题——在任何单一数据变响之前，最早的提示。</span> <span class="fxq" tabindex="0">?<span class...
+E
+E     ...Full output truncated (17 lines hidden), use '-vv' to show
+_ test_t36_current_convergence_keeps_source_counts_without_early_certification[0.8] _
+tests/test_foresight_page_fingerprint_depth.py:271: in test_t36_current_convergence_keeps_source_counts_without_early_certification
+    assert "still early" not in section and "仍属早期" not in section
+E   assert ('still early' not in '<div class=...  \n  \n\n  '
+E
+E     'still early' is contained here:
+E       ile it is still early. Dark sources are dropped, not penalised. A heads-up, not a buy signal — coverage differs by theme, so heat is not perfectly comparable across themes. Threshold provisional, pending calibration.</span><span class="l-zh">数据源＝供给·需求·指引·另类数据·备案。当多个源在早期同时一致时，主题浮现。暗源直接舍弃，不惩罚。这是提示，非买入信号——各主题覆盖不同，热度不完全可比。阈值暂定，待校准。</span></span></span></p>
+E     ?           +++++++++++
+E
+E
+E         <div class="fx-heat-grid">...
+E
+E     ...Full output truncated (20 lines hidden), use '-vv' to show)
+_ test_t36_current_convergence_keeps_source_counts_without_early_certification[0.5] _
+tests/test_foresight_page_fingerprint_depth.py:271: in test_t36_current_convergence_keeps_source_counts_without_early_certification
+    assert "still early" not in section and "仍属早期" not in section
+E   assert ('still early' not in '<div class=...  \n  \n\n  '
+E
+E     'still early' is contained here:
+E       ile it is still early. Dark sources are dropped, not penalised. A heads-up, not a buy signal — coverage differs by theme, so heat is not perfectly comparable across themes. Threshold provisional, pending calibration.</span><span class="l-zh">数据源＝供给·需求·指引·另类数据·备案。当多个源在早期同时一致时，主题浮现。暗源直接舍弃，不惩罚。这是提示，非买入信号——各主题覆盖不同，热度不完全可比。阈值暂定，待校准。</span></span></span></p>
+E     ?           +++++++++++
+E
+E
+E         <div class="fx-heat-grid">...
+E
+E     ...Full output truncated (20 lines hidden), use '-vv' to show)
+_ test_t36_current_convergence_keeps_source_counts_without_early_certification[0.2] _
+tests/test_foresight_page_fingerprint_depth.py:271: in test_t36_current_convergence_keeps_source_counts_without_early_certification
+    assert "still early" not in section and "仍属早期" not in section
+E   assert ('still early' not in '<div class=...  \n  \n\n  '
+E
+E     'still early' is contained here:
+E       ile it is still early. Dark sources are dropped, not penalised. A heads-up, not a buy signal — coverage differs by theme, so heat is not perfectly comparable across themes. Threshold provisional, pending calibration.</span><span class="l-zh">数据源＝供给·需求·指引·另类数据·备案。当多个源在早期同时一致时，主题浮现。暗源直接舍弃，不惩罚。这是提示，非买入信号——各主题覆盖不同，热度不完全可比。阈值暂定，待校准。</span></span></span></p>
+E     ?           +++++++++++
+E
+E
+E         <div class="fx-heat-grid">...
+E
+E     ...Full output truncated (20 lines hidden), use '-vv' to show)
+_ test_t36_current_convergence_keeps_source_counts_without_early_certification[None] _
+tests/test_foresight_page_fingerprint_depth.py:271: in test_t36_current_convergence_keeps_source_counts_without_early_certification
+    assert "still early" not in section and "仍属早期" not in section
+E   assert ('still early' not in '<div class=...  \n  \n\n  '
+E
+E     'still early' is contained here:
+E       ile it is still early. Dark sources are dropped, not penalised. A heads-up, not a buy signal — coverage differs by theme, so heat is not perfectly comparable across themes. Threshold provisional, pending calibration.</span><span class="l-zh">数据源＝供给·需求·指引·另类数据·备案。当多个源在早期同时一致时，主题浮现。暗源直接舍弃，不惩罚。这是提示，非买入信号——各主题覆盖不同，热度不完全可比。阈值暂定，待校准。</span></span></span></p>
+E     ?           +++++++++++
+E
+E
+E         <div class="fx-heat-grid">...
+E
+E     ...Full output truncated (20 lines hidden), use '-vv' to show)
+______ test_t36_conflicting_supply_flag_does_not_override_current_health _______
+tests/test_foresight_page_fingerprint_depth.py:283: in test_t36_conflicting_supply_flag_does_not_override_current_health
+    assert "✓" not in section
+E   assert '✓' not in '<div class=...  \n  \n\n  '
+E
+E     '✓' is contained here:
+E       eat-conf">✓ <span class="l-en">supply-confirmed</span><span class="l-zh">供给确认</span></span>
+E     ?           +
+E             </div>
+E           </div>
+E           ...
+E
+E     ...Full output truncated (5 lines hidden), use '-vv' to show
+___ test_t36_current_card_keeps_filing_qualifiers_member_floor_and_raw_stage ___
+tests/test_foresight_page_fingerprint_depth.py:291: in test_t36_current_card_keeps_filing_qualifiers_member_floor_and_raw_stage
+    assert "Supply unconfirmed" in card and "供给待确认" in card
+E   assert ('Supply unconfirmed' in '<article class="fx-card fx-t-PRECIPICE">\n      <div class="fx-crow">\n        <span class="fx-score" title="">\n    ...n class="l-en">value withheld — too few members</span><span class="l-zh">成员过少——数值不予给出</span></p>\n      \n      \n    ')
+__ test_t36_text_basis_qualifier_still_explains_pending_numeric_confirmation ___
+tests/test_foresight_page_fingerprint_depth.py:307: in test_t36_text_basis_qualifier_still_explains_pending_numeric_confirmation
+    assert "Supply unconfirmed" in card
+E   assert 'Supply unconfirmed' in '<article class="fx-card fx-t-PRECIPICE">\n      <div class="fx-crow">\n        <span class="fx-score" title="">\n    ...n class="l-en">value withheld — too few members</span><span class="l-zh">成员过少——数值不予给出</span></p>\n      \n      \n    '
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_current_summary_cannot_promote_an_early_thesis[PRECIPICE (fingerprint)]
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_current_summary_cannot_promote_an_early_thesis[PRECIPICE (text)]
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_current_summary_cannot_promote_an_early_thesis[BROADENING (fingerprint)]
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_convergence_and_empty_state_explain_the_missing_lead[True]
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_convergence_and_empty_state_explain_the_missing_lead[False]
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_current_convergence_keeps_source_counts_without_early_certification[0.8]
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_current_convergence_keeps_source_counts_without_early_certification[0.5]
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_current_convergence_keeps_source_counts_without_early_certification[0.2]
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_current_convergence_keeps_source_counts_without_early_certification[None]
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_conflicting_supply_flag_does_not_override_current_health
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_current_card_keeps_filing_qualifiers_member_floor_and_raw_stage
+FAILED tests/test_foresight_page_fingerprint_depth.py::test_t36_text_basis_qualifier_still_explains_pending_numeric_confirmation
+12 failed, 9 passed in 5.42s

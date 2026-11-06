@@ -1,0 +1,5 @@
+Final source, existing declared CI page-reader command.
+python3 -m pytest tests/test_foresight_page_analyst_zh.py tests/test_foresight_page_fingerprint_depth.py tests/test_foresight_page_flag_ledger.py tests/test_foresight_page_score_base.py tests/test_foresight_page_trend_state.py -q --tb=short
+
+.....................................                                    [100%]
+37 passed in 19.30s
