@@ -1,0 +1,43 @@
+{
+  "dispositions": {
+    "arrow_invalid_exception": "NOT_A_DEFECT: actual Arrow25 MRO includes ValueError, already caught; no duplicate catch introduced",
+    "benchmark_type": "DIRECT_HELPER_HARDENING_DEFERRED: alleged CLI reachability false; assemble_history validates type and membership before this call; no admitted wrong-data output",
+    "browser_block_bindings": "NOT_A_SECURITY_DEFECT: accidental cross-archive mixing checks remain useful alongside per-block hashes; offline HTML is explicitly not an independent trust or evaluation sandbox",
+    "cli_import_guard": "REPRODUCED_FIXED: optional imports share guarded boundary; all consumers reach compact error contract",
+    "digest_case": "REPRODUCED_FIXED: CLI normalizes accepted hex case, engines retain lowercase contract",
+    "export_error_diagnostics": "REPRODUCED_FIXED: preserve HistoricalExperienceError and close Arrow file even on metadata refusal",
+    "future_revision_metadata": "REPRODUCED_FIXED: uniformly omitted from default daily and offline macro projections, not conditionally masked; exact retained chronology unchanged",
+    "macro_composition_qualification": "REPRODUCED_FIXED: same source-owner flags plus units/date basis at composition boundary",
+    "macro_coverage": "REPRODUCED_FIXED: explicit declared archive window and within-window boolean; no calendar-completeness claim or signal-zero imputation",
+    "utf8_assets": "REPRODUCED_FIXED: explicit UTF-8 for every CSS/JS asset read"
+  },
+  "effect_reconciliation": "Nine observed commands are filesystem listing/search and in-memory here-doc grep/hash operations. The sole ssh token is a .ssh directory listing, not an SSH invocation. No observed source write, provider call, credential content access or launch effect; no new work delegated through this run.",
+  "formal_result_accepted": false,
+  "next": "Independent targeted review of actual code delta; no repeat or acceptance of this protocol-invalid raw return.",
+  "parent_run_id": "market-time-machine-20261015",
+  "reproducers": {
+    "affected_tests_passed": 87,
+    "new_failing_before": 12,
+    "passed_after": 12
+  },
+  "result_contract_failures": [
+    "Response contains unescaped quotes and is not valid JSON.",
+    "Packet-only/no-host instructions were not followed: unnecessary read-only filesystem searches and shell line-number/hash calculations."
+  ],
+  "retained_response_bytes": 78533,
+  "retained_response_sha256": "22a01fca5136e86072a84603bd9ddf5ad1057598811fca9e133cf2eb63331b3a",
+  "returned_verdict": "PASS_WITH_FINDINGS",
+  "reviewed_source_sha256": {
+    "engine/neuralweb/market_memory_history.py": "5108cd9401f58dd4a2dbb60832c296601da488791cf1e98b953135ffba009574",
+    "engine/neuralweb/market_memory_history_dossier.py": "fd4455c30096ce4c8a6b1a9c73f9df849c2e3a4bebe5000372cacc673c1c8f3a",
+    "engine/neuralweb/market_memory_history_macro.py": "be4c0ceb41f5baffcf17f5de8df481937d6440672516f1cb08a0fe62b537b0ea",
+    "engine/neuralweb/market_memory_history_view.py": "dc8dad840e985746d07c3a18a957c6dbabcc137f4da9c43cbafcfce2bc4e2ef7",
+    "scripts/market_memory_history.py": "df9de1ca8adcf9c1a127e2600cc24c2c9006df5c7910387f2a5ed9107d0d95cd",
+    "templates/market_memory_history.html.j2": "0330f430d67f57c3afd8014af745f00c19b7fc958771e00c08b0ed9088901b98",
+    "templates/market_memory_history.js": "a6a1fcd4d8279e83f8199dbbd7cab55a84f976a1da9d90743c9dd68ffec2c663"
+  },
+  "root_id": "market-time-machine-20261015",
+  "run_id": "market-time-machine-20261015-semantics-review-02",
+  "schema": "market_memory.history_semantic_review_adjudication.v1",
+  "terminal_exit": 0
+}

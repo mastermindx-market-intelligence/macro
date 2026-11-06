@@ -40,6 +40,7 @@ FORCED DE-RISK (verified):
 from __future__ import annotations
 
 import logging
+import math
 
 log = logging.getLogger(__name__)
 
@@ -130,7 +131,10 @@ def _earliness_tilt(earliness: float | None) -> float:
     """
     if earliness is None:
         return 1.0
-    e = max(0.0, min(1.0, float(earliness)))
+    e = float(earliness)
+    if not math.isfinite(e):   # W17-B: NaN/inf earliness reads as absent, not earliest
+        return 1.0
+    e = max(0.0, min(1.0, e))
     return round(EARLINESS_TILT_MIN + e * (EARLINESS_TILT_MAX - EARLINESS_TILT_MIN), 4)
 
 
@@ -273,7 +277,8 @@ def _size_mult(r: dict, posture: dict,
     if posture["derisk"]:
         return 0.0
     score = r.get("score")
-    base = (score / 100.0) if score is not None else 0.4
+    base = (score / 100.0) if (score is not None and math.isfinite(score)) else 0.4
+    # W17-B: a non-finite score falls to the same 0.4 base as score=None, never 1.0.
     if r.get("entry_ready"):
         stage_cap = base                      # the flush -> full conviction allowed
     else:

@@ -146,3 +146,92 @@ After C0 is on main:
 5. Any OA downstream candidate/calibration/outcome work follows current OA dependencies and separate promotion law.
 
 The four current workstream records on Macro main are the live-status index. This masterplan is the architecture/no-rebuild/dependency law that lets those owners cooperate without becoming one giant duplicated system.
+
+## 10. Cash-pressure integration through incumbent TP1 and R0 — proposed continuation, 2026-10-09
+
+**Status: records-only proposal for root decision.** This continuation reuses the existing
+equity source/signing and pressure-response work. It does not create a new acquisition
+owner, source store, classifier, event ledger, scheduler or business authority, and does
+not grant a native effect, private/public delivery or predictive promotion.
+
+The source anchors are Macro PR #8660 at
+`0c65ff24820eade42e09265dbe627c027480bda5` and PR #8659 at
+`f7d5e05705023912bd87cce17f10638b8bea9218`. Main-tree absence did not establish
+absence of these published implementations. Reuse `engine/flow_signing.py::classify_print`,
+the `engine/tick_plane/` source/minute/private-artifact chain, and
+`engine/market_microstructure/tp1_context.py::project_tp1_pressure_context`.
+The latter consumes the existing signed minute totals without a second signer.
+The original historical R0 `measure_window` and options-signing contracts remain intact.
+
+### 10.1 Method and interpretation
+
+The incumbent live source is a **lit SIP quote-location proxy**, not an execution-time
+aggressor measurement. Preserve its method/version, SIP clock and original-receipt
+cutoffs, quote-age policy, conditions/venue lineage, TRF abstention and historical
+fixtures. A later execution-referenced method belongs in the same canonical home as
+an explicitly versioned addition: trade participant `pt`, consolidated quote SIP `t`
+strictly before it, and original knowledge/receipt qualification. TRF `trft` is a
+receipt clock, not documented execution time. No historical output is retroactively
+relabelled or upgraded.
+
+Pressure, its midpoint response and its later forward label share source lineage.
+Existing price-derived Rotation/risk context can overlap that lineage as well.
+Carry these dependencies into the current confluence audit; copying one observation
+into risk and rotation cannot create independent votes or mechanically amplify both.
+Capture coverage, lit eligibility, classification coverage and observed volume are
+separate denominators. Missing evidence remains unknown. None of these observations
+identifies a participant, proves institutional distribution, measures order-level
+replenishment, or grants a predictive absorption/rotation signal.
+
+### 10.2 Smallest implementation sequence
+
+1. Resolve the existing #8659 test-only correction through its actual source carrier.
+   Root's source diagnosis and independent proposal review accept that the fixture
+   bid 100→90→110 at unchanged price/venue produces measured depletion/recovery;
+   the line-919 UNKNOWN assertion is wrong. Change only that test file with exact
+   measured decimal-string assertions and a genuine no-depletion UNKNOWN control.
+   The correction is not applied; current writer/custody must be reconciled first.
+2. Extend the existing Quote Hub/TP1 source interfaces for original-byte mixed-frame
+   selection, original receipt clocks, bounded nonblocking capture, cross-part native
+   event deduplication and explicit discontinuity/warmup. Keep T/Q admission failures
+   separate from valid A/AM. Preserve the existing quote-clock implementation.
+3. Reuse TP1 minutes, R0 TP1 context and existing private projections; add explicit
+   private transport/readback/manifest/retention bindings and the later matured-label
+   caller. Raw Q remains bounded memory-only in the minimum. Restart or expiry may
+   censor an unfinished label; it cannot manufacture replay.
+4. Add a compact, independently qualified contextual child through the existing live
+   RiskEnvelope producer/readers and the existing settled Rotation producer/renderer.
+   Complete the strict-field, expiry, entitlement and visible prompt/UI chain through
+   NeuralWeb, Brain and Terminal/Portfolio-facing readers. Do not add a second writer
+   to Rotation or a competing reader poller.
+5. After exact source acceptance, separately qualify native capture/custody/resources,
+   retention and the specific permitted delivery route. Incremental predictive utility
+   and policy/sizing changes remain later outcome/admission work.
+
+Five-minute derivation feeding only nightly Rotation is not current-day delivery.
+The existing live RiskEnvelope producer is the proposed advisory route; actual source
+placement, private handoff, live reader binding and end-to-end latency remain to be
+proved. Public/private projection permission is specific: existing TP1/R0 private
+schemas explicitly forbid public delivery. Do not copy those bytes into public
+RiskEnvelope or Rotation artifacts.
+
+### 10.3 Source work and effect gates remain separate
+
+Both supplied incumbent CI heads remain red. #8660 has an introduced unenrolled
+`tests/test_tp1_qualified_print_classifier.py`; #8659's accepted test correction
+does not itself produce a new green run. Preserve the shared Hub canonical UNKNOWNs
+and the exact current CI owner's judgment.
+
+TP1 operation `massive-tp1-canonical-equity-print-classifier-20261008-sol-001`
+records a platform refusal of CI-manifest enrollment, no-change readback and no
+alternate carrier/retry. Its original raw rejection receipt is not present in the
+bounded inspected source. The original effect/permission owner must recover/adjudicate
+that record before the refused action. Preserve the separately recorded SSH
+`Permission denied (publickey)` and unknown current RT-slot custody. Another source
+release or Quote Hub deployment grants neither action.
+
+Exact source admission may proceed for independent inactive work; there is no global
+host-health prerequisite or universal file freeze. Coordinate `hub/hub.js` with
+Terminal #814 and `ingest/pull_macro_risk.py` with #849. Keep unrelated registry/private
+classification hunks and their specific holds intact; published path review is not
+proof of no unpublished leases.

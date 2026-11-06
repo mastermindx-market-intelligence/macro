@@ -1,0 +1,468 @@
+{
+  "schema": "marketontology.market_os_adoption_qualification.v1",
+  "canonical_workstream": "WS:MARKET-OS",
+  "source_before": "5583f9df9fa7a1e2a0c27508d84d326d4a6fd572",
+  "census_base": "11f88c730c2d5f25569d5c5508ff46ce71e14eb8",
+  "canonical_original_blob": "d9d4f33e0dddf0818f92850e82f0098411be8930",
+  "candidate_frontmatter_sha256": "031044ef12e8fd946cbfceb451fc3a8317173e35a929a3e0567bdd71844b5942",
+  "original_body_sha256": "6c449290ad426ebc688150d704d97269d4dc89ca37ddfa231fc72913c23141c6",
+  "new_wave_ids": [
+    "masterplan-adoption",
+    "b-delivery-continuation",
+    "codex-session-plan",
+    "a-f04-completion",
+    "b-p052-continuity",
+    "a-family-residuals",
+    "b-family-residuals",
+    "f00-coverage-reconciliation",
+    "joined-journey",
+    "parity-acceptance",
+    "beyond-parity-ratchet"
+  ],
+  "implementation_invariants": {
+    "original_ten_wave_objects_and_order_unchanged": true,
+    "original_body_exact_prefix": true,
+    "original_identity_and_metadata_unchanged": true,
+    "original_collections_preserved_as_prefixes": true,
+    "older_decisions_restored_to_protected_bytes": true,
+    "second_workstream_proposal_files_removed": true
+  },
+  "authorized_live_task_start": {
+    "at": "2026-10-24T18:30:52.769507+00:00",
+    "root": "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k",
+    "command": "mmtask --dir ~/gwcap/project-charters/marketontology start P1.T1 --parallel",
+    "rc": 0,
+    "output": "start P1.T1 -> in_progress\n",
+    "before_status": "ready",
+    "after_status": "in_progress",
+    "unchanged_other_tasks": true,
+    "protected_states": {
+      "T002": "accepted",
+      "T004": "in_progress",
+      "P2.T1": "accepted",
+      "P2.T2": "in_progress"
+    },
+    "mmtask_sha256": "c417a2fddc2ebb8f9c5000289ab9defd72805e35765a3d3947bc0cb1856a0484",
+    "snapshot_sha256": "2bdb92f27ef846bffe6712dcdf8e03eec9bd05b8ae29b1fd5382b9d8dbcda0a3"
+  },
+  "qualification_status": "PASS",
+  "live_source_imported": false,
+  "commands": [
+    {
+      "label": "same-workstream-import",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case",
+        "import",
+        "--mirror",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/marketontology-census-20261024-c2",
+        "--no-fetch"
+      ],
+      "rc": 0,
+      "output_tail": "imported (merge) WS:MARKET-OS: status active, 21 waves @ 5583f9df9f\nlive writer sol/web-marketontology-census-20261024-c2 wrote 572s ago: merge-only (no local task touched)\n"
+    },
+    {
+      "label": "repeat-same-workstream-import",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case",
+        "import",
+        "--mirror",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/marketontology-census-20261024-c2",
+        "--no-fetch"
+      ],
+      "rc": 0,
+      "output_tail": "imported (merge) WS:MARKET-OS: status active, 21 waves @ 5583f9df9f\nlive writer sol/web-marketontology-census-20261024-c2 wrote 572s ago: merge-only (no local task touched)\n"
+    },
+    {
+      "label": "same-workstream-export-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case",
+        "export",
+        "--session",
+        "sol/marketontology-market-os-qualification",
+        "--mission",
+        "Disposable same-workstream preservation qualification for Draft Macro 10165"
+      ],
+      "rc": 0,
+      "output_tail": "handoff: /tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case/export/2026-10-24/MARKET-OS-2026-10-24.md\nwave patch: /tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case/export/2026-10-24/WS-MARKET-OS.waves.patch\nagentos validate: rc=0\nagentos: 2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 0 error(s), 0 warning(s)\nverified entries: 3\nlast_export: 2026-10-24T18:40:25Z (advanced)\n(PREPARED ONLY — not published)\n"
+    },
+    {
+      "label": "same-workstream-export-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case",
+        "export",
+        "--session",
+        "sol/marketontology-market-os-qualification",
+        "--mission",
+        "Disposable same-workstream preservation qualification for Draft Macro 10165"
+      ],
+      "rc": 0,
+      "output_tail": "handoff: /tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case/export/2026-10-24/MARKET-OS-2026-10-24.md\nwave patch: /tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case/export/2026-10-24/WS-MARKET-OS.waves.patch\nagentos validate: rc=0\nagentos: 2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 0 error(s), 0 warning(s)\nverified entries: 3\nlast_export: 2026-10-24T18:40:26Z (advanced)\n(PREPARED ONLY — not published)\n"
+    },
+    {
+      "label": "same-workstream-failed-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/mmtask.frozen.py",
+        "--dir",
+        "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/same-workstream-final-failure-fixture",
+        "export",
+        "--session",
+        "sol/marketontology-market-os-qualification",
+        "--mission",
+        "Deliberate missing-record fixture for export watermark test"
+      ],
+      "rc": 0,
+      "output_tail": "handoff: /tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/same-workstream-final-failure-fixture/export/2026-10-24/MARKET-OS-QUALIFICATION-MISSING-2026-10-24.md\nwave patch: /tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/same-workstream-final-failure-fixture/export/2026-10-24/WS-MARKET-OS-QUALIFICATION-MISSING.waves.patch\nagentos validate: rc=1 (expected: WS record pending — author it in the same PR)\n::error title=agentos-dangling-ref::/tmp/mmtask-validate-08dquh7y/agentos/handoffs/MARKET-OS-QUALIFICATION-MISSING-2026-10-24.md: [dangling-ref] workstream references unknown WS:MARKET-OS-QUALIFICATION-MISSING\nagentos: 1 records (0 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 1 error(s), 0 warning(s)\nverified entries: 3\nlast_export: 2026-10-24T18:40:26Z (NOT advanced: validation failed)\n(PREPARED ONLY — not published)\n"
+    }
+  ],
+  "qualified_at": "2026-10-24T18:40:24.308132+00:00",
+  "mmtask_sha256": "c417a2fddc2ebb8f9c5000289ab9defd72805e35765a3d3947bc0cb1856a0484",
+  "snapshot_files": {
+    "NORTH_STAR.md": {
+      "bytes": 3297,
+      "sha256": "6074a8bdf2ba683a3a6de0792c5a33b53dfe1a0d68b52e845c1624ad403746d2"
+    },
+    "STATE.md": {
+      "bytes": 9486,
+      "sha256": "98ebd07dea6b1fae4d6bac717103194e1af0f207e3b96db699fa732e63d49a8c"
+    },
+    "TASKS.md": {
+      "bytes": 11097,
+      "sha256": "67d703eae853f16eecae197223a365bf1b9539b7c9dc76169ce22622ccc4d152"
+    },
+    "PLAN.md": {
+      "bytes": 5996,
+      "sha256": "0e8573f9982ba7188a977f162c379b838cb8a9aa0cc447bd3f0f99fa6dc5ce65"
+    },
+    "TASKS.json": {
+      "bytes": 53419,
+      "sha256": "2bdb92f27ef846bffe6712dcdf8e03eec9bd05b8ae29b1fd5382b9d8dbcda0a3"
+    },
+    "PROGRESS.log": {
+      "bytes": 9778,
+      "sha256": "579b2664db6a145dd012dd6e563a65ace36f0aedbc17198022e1019fd255d6bb"
+    },
+    "HANDOFF.md": {
+      "bytes": 7071,
+      "sha256": "e470a21935490bd7b21a214efacda75e658d61d08637da1b1f08798a1220abbf"
+    },
+    "DECISIONS.md": {
+      "bytes": 6433,
+      "sha256": "a98601499da5582dd77b5a260737c1de9338a393e2d74ee015fa1e17daed959b"
+    },
+    "export/EXPORTS.jsonl": {
+      "bytes": 720,
+      "sha256": "da7d4e38585440f6d5b9b47d5de749428660cea6bff572c3eced51a06974b2fe"
+    },
+    "export/2026-10-24/EXPORT.json": {
+      "bytes": 1959,
+      "sha256": "aa6bf1e3e3de544f6b03f029918ba8acbeea18700a87142546c3c7b50ea419bc"
+    }
+  },
+  "before": {
+    "task_count": 13,
+    "wave_count": 13,
+    "workstream": "WS:MARKET-OS"
+  },
+  "after": {
+    "task_count": 13,
+    "wave_count": 21,
+    "workstream": "WS:MARKET-OS",
+    "latest_handoff": "agentos/handoffs/WS-MARKET-OS-2026-10-24-marketontology-census.md"
+  },
+  "protected_task_states": {
+    "T002": "accepted",
+    "T004": "in_progress",
+    "P2.T1": "accepted",
+    "P2.T2": "in_progress"
+  },
+  "wave_aliases": [
+    {
+      "p": "P1",
+      "id": "masterplan-adoption",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P2",
+      "id": "b-delivery-continuation",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P3",
+      "id": "codex-session-plan",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P4",
+      "id": "M0",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P5",
+      "id": "A1A",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P6",
+      "id": "A1B",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P7",
+      "id": "A2-A6",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P8",
+      "id": "B1A",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P9",
+      "id": "B1B-B6",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P10",
+      "id": "C1-C6",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P11",
+      "id": "D1-D9",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P12",
+      "id": "E1-E3",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P13",
+      "id": "F0-F5",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P14",
+      "id": "a-f04-completion",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P15",
+      "id": "b-p052-continuity",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P16",
+      "id": "a-family-residuals",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P17",
+      "id": "b-family-residuals",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P18",
+      "id": "f00-coverage-reconciliation",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P19",
+      "id": "joined-journey",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P20",
+      "id": "parity-acceptance",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    },
+    {
+      "p": "P21",
+      "id": "beyond-parity-ratchet",
+      "workstream": "WS:MARKET-OS",
+      "source": "agentos"
+    }
+  ],
+  "checks": {
+    "same_workstream_binding": true,
+    "all_task_payloads_unchanged": true,
+    "protected_four_states_preserved": true,
+    "original_p1_p13_aliases_preserved": true,
+    "original_ten_component_buffer_objects_unchanged": true,
+    "three_local_waves_adopted_without_renumbering": true,
+    "exactly_twenty_one_unique_canonical_waves": true,
+    "no_missing_or_foreign_component_identity": true,
+    "new_cumulative_handoff_selected": true,
+    "repeated_import_task_and_wave_payloads_identical": true,
+    "both_exports_validate": true,
+    "all_accepted_evidence_retained_on_repeated_export": true,
+    "no_generated_wave_regression_or_duplicate_wave": true,
+    "failed_validation_preserves_successful_export_watermark": true,
+    "installed_tool_unchanged": true,
+    "all_qualification_commands_use_disposable_dirs": true
+  },
+  "accepted_evidence_ids": [
+    "P2.T1",
+    "P2.T2.S1",
+    "T002"
+  ],
+  "export_receipts": [
+    {
+      "schema": "mm.harness.export",
+      "schema_version": "2.0.0",
+      "at": "2026-10-24T18:40:25Z",
+      "workstream": "WS:MARKET-OS",
+      "handoff": "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case/export/2026-10-24/MARKET-OS-2026-10-24.md",
+      "wave_patch": "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case/export/2026-10-24/WS-MARKET-OS.waves.patch",
+      "wave_edits": [],
+      "new_waves": [],
+      "validate": {
+        "ran": true,
+        "rc": 0,
+        "output": "agentos: 2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 0 error(s), 0 warning(s)"
+      },
+      "validated": true,
+      "dry_run": false,
+      "verified_count": 3,
+      "verified_ids": [
+        "P2.T1",
+        "P2.T2.S1",
+        "T002"
+      ],
+      "since_last_successful_export": "2026-10-24T18:30:41Z",
+      "pending_record": false,
+      "published": false,
+      "note": "PREPARED ONLY — not published or accepted; publish through a normal Macro PR by the record owner; mmtask never pushes. Validation passed; last_export advanced."
+    },
+    {
+      "schema": "mm.harness.export",
+      "schema_version": "2.0.0",
+      "at": "2026-10-24T18:40:26Z",
+      "workstream": "WS:MARKET-OS",
+      "handoff": "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case/export/2026-10-24/MARKET-OS-2026-10-24.md",
+      "wave_patch": "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/merge-import-final-case/export/2026-10-24/WS-MARKET-OS.waves.patch",
+      "wave_edits": [],
+      "new_waves": [],
+      "validate": {
+        "ran": true,
+        "rc": 0,
+        "output": "agentos: 2 records (1 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 0 error(s), 0 warning(s)"
+      },
+      "validated": true,
+      "dry_run": false,
+      "verified_count": 3,
+      "verified_ids": [
+        "P2.T1",
+        "P2.T2.S1",
+        "T002"
+      ],
+      "since_last_successful_export": "2026-10-24T18:40:25Z",
+      "pending_record": false,
+      "published": false,
+      "note": "PREPARED ONLY — not published or accepted; publish through a normal Macro PR by the record owner; mmtask never pushes. Validation passed; last_export advanced."
+    }
+  ],
+  "failure_receipt": {
+    "schema": "mm.harness.export",
+    "schema_version": "2.0.0",
+    "at": "2026-10-24T18:40:28Z",
+    "workstream": "WS:MARKET-OS-QUALIFICATION-MISSING",
+    "handoff": "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/same-workstream-final-failure-fixture/export/2026-10-24/MARKET-OS-QUALIFICATION-MISSING-2026-10-24.md",
+    "wave_patch": "/tmp/marketontology-market-os-adoption-20261024-6ww_4v8k/same-workstream-final-failure-fixture/export/2026-10-24/WS-MARKET-OS-QUALIFICATION-MISSING.waves.patch",
+    "wave_edits": [],
+    "new_waves": [],
+    "validate": {
+      "ran": true,
+      "rc": 1,
+      "output": "::error title=agentos-dangling-ref::/tmp/mmtask-validate-08dquh7y/agentos/handoffs/MARKET-OS-QUALIFICATION-MISSING-2026-10-24.md: [dangling-ref] workstream references unknown WS:MARKET-OS-QUALIFICATION-MISSING\nagentos: 1 records (0 workstreams, 0 decisions, 0 discoveries, 1 handoffs) — 1 error(s), 0 warning(s)"
+    },
+    "validated": false,
+    "dry_run": false,
+    "verified_count": 3,
+    "verified_ids": [
+      "P2.T1",
+      "P2.T2.S1",
+      "T002"
+    ],
+    "since_last_successful_export": "2026-10-24T18:40:26Z",
+    "pending_record": true,
+    "published": false,
+    "note": "PREPARED ONLY — not published or accepted; publish through a normal Macro PR by the record owner; mmtask never pushes. last_export NOT advanced (validation failed). Workstream record does not exist yet: validate rc=1 (dangling WS ref) is EXPECTED until the WS record is authored in the same PR."
+  },
+  "live_readback": {
+    "NORTH_STAR.md": {
+      "same_as_snapshot": true,
+      "sha256": "6074a8bdf2ba683a3a6de0792c5a33b53dfe1a0d68b52e845c1624ad403746d2"
+    },
+    "STATE.md": {
+      "same_as_snapshot": false,
+      "sha256": "34865663c4aeda10a197b844829d26e3ad201962ab3b8f7d2dcce690a11d0d9c"
+    },
+    "TASKS.md": {
+      "same_as_snapshot": false,
+      "sha256": "d02c5f3e6e5c9e80be1d064caf2b9d0ae0bb2098825f30c2e6055bfa237f1e36"
+    },
+    "PLAN.md": {
+      "same_as_snapshot": true,
+      "sha256": "0e8573f9982ba7188a977f162c379b838cb8a9aa0cc447bd3f0f99fa6dc5ce65"
+    },
+    "TASKS.json": {
+      "same_as_snapshot": false,
+      "sha256": "a535cbb32d3c3042b672e1673e9641af641212fef019027c01ede3245479e49b"
+    },
+    "PROGRESS.log": {
+      "same_as_snapshot": false,
+      "sha256": "69e3f1a5dd9d627ab4829c56734fd018f57c36a37204e260c915290b37599b66"
+    },
+    "HANDOFF.md": {
+      "same_as_snapshot": false,
+      "sha256": "fe982a6cd8877a1d3035f7cbaadd8617509fdbd257591eb679a410c90d93b482"
+    },
+    "DECISIONS.md": {
+      "same_as_snapshot": true,
+      "sha256": "a98601499da5582dd77b5a260737c1de9338a393e2d74ee015fa1e17daed959b"
+    },
+    "export/EXPORTS.jsonl": {
+      "same_as_snapshot": false,
+      "sha256": "937333626afe625c6e92f4279ee2273afdc40f80e84cd7c4ccad18276644e8d4"
+    },
+    "export/2026-10-24/EXPORT.json": {
+      "same_as_snapshot": false,
+      "sha256": "e18bb4a56a3d134e71aa8a6cd41fda17e2a11c5f76d844ee67ca181cf68324ff"
+    }
+  },
+  "interpretation": "Qualification concerns a disposable candidate under the existing MARKET-OS identity. The only live task mutation by this operation before testing was the authorized P1.T1 start recorded separately. No live source import, rebind, platform repair or A/B task rewrite occurred."
+}
