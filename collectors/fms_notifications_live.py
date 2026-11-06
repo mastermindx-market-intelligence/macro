@@ -19,6 +19,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import tempfile
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
@@ -36,6 +37,7 @@ from engine.research_vault.r2_store import BoundedStrictReadStore, R2Store, Stor
 
 STATE_HOST = "www.state.gov"
 FR_HOST = "www.federalregister.gov"
+GOVINFO_HOST = "www.govinfo.gov"
 STATE_LISTING_URL = "https://www.state.gov/arms-sales-congressional-notifications"
 FR_API_DOCUMENTS_URL = "https://www.federalregister.gov/api/v1/documents.json"
 
@@ -63,6 +65,10 @@ _STAGED_OBJECTS_DIRNAME = "fms_staged_objects"
 
 class FmsFetchRefused(RuntimeError):
     """One acquisition fetch failed a hermetic fail-closed check."""
+
+
+class FmsRedirectRefused(FmsFetchRefused):
+    """An official source returned a redirect that production refuses to follow."""
 
 
 class FmsStoreUnavailable(RuntimeError):
@@ -141,7 +147,7 @@ def fetch_official_resource(
         if isinstance(status, bool) or not isinstance(status, int):
             raise FmsFetchRefused("FMS resource fetch returned no usable status code")
         if 300 <= status < 400:
-            raise FmsFetchRefused(f"FMS resource fetch refused a redirect (status {status})")
+            raise FmsRedirectRefused(f"FMS resource fetch refused a redirect (status {status})")
         if status != 200:
             raise FmsFetchRefused(f"FMS resource fetch returned status {status}")
         final_url = str(getattr(response, "url", None) or checked_url)
@@ -574,7 +580,14 @@ def fetch_fr_document_index(
         "conditions[publication_date][gte]": publication_from,
         "conditions[publication_date][lte]": publication_through,
         "per_page": per_page,
-        "fields[]": ["document_number", "raw_text_url", "publication_date", "title", "citation"],
+        "fields[]": [
+            "document_number",
+            "raw_text_url",
+            "pdf_url",
+            "publication_date",
+            "title",
+            "citation",
+        ],
     }
     transport = session
     if transport is None:
@@ -592,6 +605,117 @@ def fetch_fr_raw_text(url: str, *, session: Any = None) -> FetchedResource:
     return fetch_official_resource(
         url, allowed_hosts=(FR_HOST,), expected_content_types=("text/plain",), session=session,
     )
+
+
+# Federal Register correction notices preserve the corrected document's official
+# identifier behind a correction ordinal, e.g. C1-2025-22754.  Keep that
+# prefix in the identity and bind it through the official raw/GovInfo paths;
+# never normalize a correction into the original document number.
+_FR_DOCUMENT_NUMBER_RE = re.compile(r"^(?:C[1-9][0-9]*-)?[0-9]{4}-[0-9]{5}$")
+_FR_DOCUMENT_SOURCE_RE = re.compile(
+    r"/(?P<document>(?:C[1-9][0-9]*-)?[0-9]{4}-[0-9]{5})(?:\.(?:txt|htm|html|pdf))?$"
+)
+
+
+def _fr_document_number(value: object) -> str:
+    text = str(value or "").strip()
+    if _FR_DOCUMENT_NUMBER_RE.fullmatch(text) is None:
+        raise FmsFetchRefused("FR API row has an invalid document_number")
+    return text
+
+
+def _fr_document_number_from_source_url(url: object) -> str | None:
+    try:
+        path = urlsplit(str(url or "").strip()).path
+    except Exception:
+        return None
+    match = _FR_DOCUMENT_SOURCE_RE.search(path)
+    return match.group("document") if match else None
+
+
+def _fr_raw_text_url(row: Mapping[str, Any]) -> str:
+    document_number = _fr_document_number(row.get("document_number"))
+    raw_url = _checked_https_url(str(row.get("raw_text_url") or ""), allowed_hosts=(FR_HOST,))
+    parsed = urlsplit(raw_url)
+    publication_date = str(row.get("publication_date") or "").strip()
+    if publication_date:
+        try:
+            parsed_date = date.fromisoformat(publication_date)
+        except ValueError as exc:
+            raise FmsFetchRefused("FR API row has an invalid publication_date") from exc
+        expected_path = (
+            f"/documents/full_text/text/{parsed_date.year:04d}/{parsed_date.month:02d}/"
+            f"{parsed_date.day:02d}/{document_number}.txt"
+        )
+        if parsed.path != expected_path:
+            raise FmsFetchRefused("FR API raw_text_url is not bound to its document/date")
+    elif _fr_document_number_from_source_url(raw_url) != document_number:
+        raise FmsFetchRefused("FR API raw_text_url is not bound to its document")
+    if parsed.query or parsed.fragment:
+        raise FmsFetchRefused("FR API raw_text_url contains an unexpected query or fragment")
+    return raw_url
+
+
+def fr_govinfo_html_url(row: Mapping[str, Any]) -> str:
+    """Derive the one admitted GPO HTML alternate from an exact FR API row."""
+    if not isinstance(row, Mapping):
+        raise FmsFetchRefused("FR API row is not an object")
+    document_number = _fr_document_number(row.get("document_number"))
+    publication_date = str(row.get("publication_date") or "").strip()
+    try:
+        date.fromisoformat(publication_date)
+    except ValueError as exc:
+        raise FmsFetchRefused("FR API row has an invalid publication_date") from exc
+    pdf_url = _checked_https_url(str(row.get("pdf_url") or ""), allowed_hosts=(GOVINFO_HOST,))
+    parsed = urlsplit(pdf_url)
+    expected_path = f"/content/pkg/FR-{publication_date}/pdf/{document_number}.pdf"
+    if parsed.path != expected_path or parsed.query or parsed.fragment:
+        raise FmsFetchRefused("FR API pdf_url is not bound to its document/date")
+    return f"https://{GOVINFO_HOST}/content/pkg/FR-{publication_date}/html/{document_number}.htm"
+
+
+def fetch_fr_document_resource(row: Mapping[str, Any], *, session: Any = None) -> FetchedResource:
+    """Fetch one FR document, using only an API-bound GPO HTML alternate on redirect."""
+    raw_url = _fr_raw_text_url(row)
+    try:
+        return fetch_fr_raw_text(raw_url, session=session)
+    except FmsRedirectRefused:
+        alternate = fr_govinfo_html_url(row)
+        return fetch_official_resource(
+            alternate,
+            allowed_hosts=(GOVINFO_HOST,),
+            expected_content_types=("text/html",),
+            session=session,
+        )
+
+
+def _retained_fr_by_document(
+    observations: Sequence[Mapping[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Return the latest retained FR observation per official document number."""
+    retained: dict[str, dict[str, Any]] = {}
+    for raw in observations:
+        if raw.get("source_surface") != "federal_register":
+            continue
+        if raw.get("kind") not in {"fr_raw_text", "fr_correction"}:
+            continue
+        fms.validate_observation(raw)
+        document_number = _fr_document_number_from_source_url(raw.get("source_url"))
+        if document_number is None:
+            continue
+        candidate = dict(raw)
+        prior = retained.get(document_number)
+        if prior is None or (
+            int(candidate.get("version", 0)),
+            str(candidate.get("known_at") or ""),
+            str(candidate.get("observed_at") or ""),
+        ) > (
+            int(prior.get("version", 0)),
+            str(prior.get("known_at") or ""),
+            str(prior.get("observed_at") or ""),
+        ):
+            retained[document_number] = candidate
+    return retained
 
 
 # ---------------------------------------------------------------------------
@@ -784,17 +908,35 @@ def run_fms_acquisition(
         )
         results = index.get("results", [])
         fr_docs_scanned = len(results)
+        retained_fr = _retained_fr_by_document(existing_observations)
         for row in results:
-            fetched = fetch_fr_raw_text(row["raw_text_url"], session=session)
-            text = fetched.content.decode("utf-8", errors="replace")
-            classification = fms.classify_fr_document(text)
-            receipt = fms.build_receipt(
-                source_url=fetched.source_url, final_url=fetched.final_url, content=fetched.content,
-                publisher=FR_PUBLISHER, transport="cli", content_type=fetched.content_type,
-                http_status=fetched.http_status, observed_at=observed_at,
-                extractor_version=FMS_FR_EXTRACTOR_VERSION, parser_version=FMS_FR_PARSER_VERSION,
-                r2_object_key=None,
-            )
+            if not isinstance(row, Mapping):
+                raise FmsFetchRefused("FR API results contains a non-object row")
+            document_number = _fr_document_number(row.get("document_number"))
+            retained = retained_fr.get(document_number)
+            receipt = None
+            fields = None
+            if retained is not None:
+                fields = dict(retained.get("fields") or {})
+                classification = {
+                    "classification": fields.get("classification"),
+                    "bracket": fields.get("bracket"),
+                }
+                if classification["classification"] not in {"original", "correction"}:
+                    raise FmsFetchRefused(
+                        "retained FR observation has an unsupported classification"
+                    )
+            else:
+                fetched = fetch_fr_document_resource(row, session=session)
+                text = fetched.content.decode("utf-8", errors="replace")
+                classification = fms.classify_fr_document(text)
+                receipt = fms.build_receipt(
+                    source_url=fetched.source_url, final_url=fetched.final_url, content=fetched.content,
+                    publisher=FR_PUBLISHER, transport="cli", content_type=fetched.content_type,
+                    http_status=fetched.http_status, observed_at=observed_at,
+                    extractor_version=FMS_FR_EXTRACTOR_VERSION, parser_version=FMS_FR_PARSER_VERSION,
+                    r2_object_key=None,
+                )
             if classification["classification"] == "amendment":
                 fr_amendments_excluded += 1
                 continue
@@ -818,14 +960,16 @@ def run_fms_acquisition(
                 year, seq = bracket.split("-", 1)
                 target_transmittal = fms.normalize_transmittal(year, seq)
                 case_key = fms.case_key_for_transmittal(target_transmittal)
-                _append_new_receipt(new_receipts, existing_receipts, receipt)
-                new_observations.append(fms.build_observation(
-                    case_key=case_key, source_surface="federal_register", kind="fr_correction",
-                    receipt=receipt, known_at=observed_at, version=1,
-                    fields={"classification": "correction", "bracket": bracket},
-                ))
+                if receipt is not None:
+                    _append_new_receipt(new_receipts, existing_receipts, receipt)
+                    new_observations.append(fms.build_observation(
+                        case_key=case_key, source_surface="federal_register", kind="fr_correction",
+                        receipt=receipt, known_at=observed_at, version=1,
+                        fields={"classification": "correction", "bracket": bracket},
+                    ))
                 continue
-            fields = fms.parse_fr_document(text, source_url=fetched.source_url)
+            if fields is None:
+                fields = fms.parse_fr_document(text, source_url=fetched.source_url)
             # Shared membership predicate (spec §2/§11b.4): the denominator
             # and the engine's population filter must agree on the SAME
             # test -- an original DELIVERED outside [population start,
@@ -858,11 +1002,12 @@ def run_fms_acquisition(
                 continue
             fr_denominator.append(fields["transmittal_number"])
             case_key = fms.case_key_for_transmittal(fields["transmittal_number"])
-            _append_new_receipt(new_receipts, existing_receipts, receipt)
-            new_observations.append(fms.build_observation(
-                case_key=case_key, source_surface="federal_register", kind="fr_raw_text",
-                receipt=receipt, known_at=observed_at, version=1, fields=fields,
-            ))
+            if receipt is not None:
+                _append_new_receipt(new_receipts, existing_receipts, receipt)
+                new_observations.append(fms.build_observation(
+                    case_key=case_key, source_surface="federal_register", kind="fr_raw_text",
+                    receipt=receipt, known_at=observed_at, version=1, fields=fields,
+                ))
         fr_status = "ok"
     except FmsFetchRefused as exc:
         print(f"::error title=fms-fr-source-unavailable::{exc}", flush=True)

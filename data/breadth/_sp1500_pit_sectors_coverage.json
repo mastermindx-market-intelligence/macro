@@ -1,0 +1,34 @@
+{
+  "basis_counts_all": {
+    "gics_current": 1492,
+    "sic_current": 12,
+    "sic_derived": 282,
+    "unlabeled": 803
+  },
+  "basis_counts_leavers": {
+    "gics_current": 0,
+    "sic_current": 0,
+    "sic_derived": 281,
+    "unlabeled": 802
+  },
+  "denominator_all": 2589,
+  "denominator_leavers": 1083,
+  "era_correct_count": 0,
+  "generated_utc": "2026-10-04T03:07:22.182920+00:00",
+  "label_asof": "2026-10-04",
+  "labeled_by_cik_all": 281,
+  "labeled_by_ticker_string_all": 1505,
+  "leavers_cik_untrusted_method": 0,
+  "leavers_labeled_by_cik": 281,
+  "leavers_labeled_by_ticker_string": 0,
+  "leavers_sic_on_disk_before_run": 8,
+  "leavers_with_cik": 282,
+  "membership_rows_null_ticker_dropped": 0,
+  "network_disabled": false,
+  "network_lookups_failed": 0,
+  "network_lookups_performed": 273,
+  "network_lookups_skipped_cap": 0,
+  "note": "All labels are as-of-now (current GICS map or the filer's CURRENT SEC SIC mapped to GICS-style sectors). None is the membership-era GICS sector; era_correct is False for every row. Leavers are labeled through the filer CIK bridge only (label_join='cik'); ticker-string channels are never consulted for a leaver because the ticker may now belong to a different listing (ticker reuse), and a leaver CIK is bridged only when resolved by edgar_fts or seed (never a current-map lookup). label_join='ticker' appears only on current members and is matched by ticker string alone.",
+  "sic_blank_after_fetch": 0,
+  "unlabeled_leavers": 802
+}

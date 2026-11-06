@@ -42,7 +42,10 @@ that justifies it existed.  That is the "nomination postdate test" row of the
 """
 from __future__ import annotations
 
+import numbers
+
 import logging
+import math
 import re
 from dataclasses import asdict, dataclass, field, fields
 from datetime import datetime, timezone
@@ -153,6 +156,26 @@ def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def finite_or_none(value: Any) -> float | None:
+    """A finite float, or None for anything else.  Never raises.
+
+    It lives here, not in ``producers/base.py``, because the spool imports it and other
+    lanes import the spool: a helper in the producer package would pull that package into
+    every one of those lanes' import closure.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if getattr(getattr(value, "dtype", None), "kind", None) == "b":
+        return None
+    try:
+        out = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(out):
+        return None
+    return out
+
+
 def iso(ts: datetime | None) -> str | None:
     """Serialise a tz-aware datetime as ``...Z`` (the house live-plane form)."""
     if ts is None:
@@ -214,6 +237,10 @@ class Nomination:
         if self.ttl_until is not None:
             object.__setattr__(self, "ttl_until", _require_aware("ttl_until", self.ttl_until))
         self._validate()
+        value = self.source_value
+        if value is not None and type(value) not in (int, float):
+            plain = int(value) if isinstance(value, numbers.Integral) else float(value)
+            object.__setattr__(self, "source_value", plain)
 
     def _validate(self) -> None:
         if not _TICKER_RE.match(self.ticker):
@@ -252,6 +279,26 @@ class Nomination:
                 f"nomination for {self.ticker} observed_at {iso(self.observed_at)} predates "
                 f"source_asof {iso(self.source_asof)} — a nomination may not be consumed "
                 f"before the artifact that justifies it existed")
+
+        if self.source_value is not None:
+            if isinstance(self.source_value, bool) or not isinstance(
+                self.source_value, numbers.Real
+            ):
+                raise NominationError(
+                    f"nomination for {self.ticker} carries a non-finite or non-numeric "
+                    f"source_value {self.source_value!r}")
+            try:
+                finite = math.isfinite(float(self.source_value))
+            except OverflowError:
+                finite = False
+            if not finite:
+                raise NominationError(
+                    f"nomination for {self.ticker} carries a non-finite or non-numeric "
+                    f"source_value {self.source_value!r}")
+        if isinstance(self.source_rank, float) and not math.isfinite(self.source_rank):
+            raise NominationError(
+                f"nomination for {self.ticker} carries a non-finite source_rank "
+                f"{self.source_rank!r}")
 
     # -- identity ---------------------------------------------------------
     @property

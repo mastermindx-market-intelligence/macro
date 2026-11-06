@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="5.205" timestamp="2026-10-13T21:03:40.990854-07:00" hostname="m2studio"><testcase classname="Mastermind.evidence.intelligence-evaluation-os-20261012-01a1333d.science.t6-next-tranche.test_next_tranche_admission" name="test_new_source_is_admitted[benchmark_mag7_forced_override_2026-07-11.json]" time="0.028"><failure message="AssertionError: assert 'historical_case_source_not_admitted' is None&#10; +  where 'historical_case_source_not_admitted' = &lt;function _historical_text_case_error at 0x1080ae7a0&gt;({'benchmark_id': 'mag7_forced_override_2026-07-11', 'frozen': True, 'source': 'research/POSTMORTEM_20260723_MAG7_FORCE...pe': 'supplied_adjudication_text', 'doctrine_scope': 'current_doctrine_replay', 'cutoff_date': '2026-07-11', ...}, ...}, PosixPath('/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-tier-query-20261014-57fd7cc5c269b449'))&#10; +    where &lt;function _historical_text_case_error at 0x1080ae7a0&gt; = ev._historical_text_case_error">name = 'benchmark_mag7_forced_override_2026-07-11.json'
+
+    @pytest.mark.parametrize("name", NAMES)
+    def test_new_source_is_admitted(name):
+        case = json.loads((DRAFTS / name).read_text())
+&gt;       assert ev._historical_text_case_error(case, ROOT) is None
+E       AssertionError: assert 'historical_case_source_not_admitted' is None
+E        +  where 'historical_case_source_not_admitted' = &lt;function _historical_text_case_error at 0x1080ae7a0&gt;({'benchmark_id': 'mag7_forced_override_2026-07-11', 'frozen': True, 'source': 'research/POSTMORTEM_20260723_MAG7_FORCE...pe': 'supplied_adjudication_text', 'doctrine_scope': 'current_doctrine_replay', 'cutoff_date': '2026-07-11', ...}, ...}, PosixPath('/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-tier-query-20261014-57fd7cc5c269b449'))
+E        +    where &lt;function _historical_text_case_error at 0x1080ae7a0&gt; = ev._historical_text_case_error
+
+/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/t6-next-tranche/test_next_tranche_admission.py:11: AssertionError</failure></testcase><testcase classname="Mastermind.evidence.intelligence-evaluation-os-20261012-01a1333d.science.t6-next-tranche.test_next_tranche_admission" name="test_new_source_is_admitted[benchmark_mag7_narration_2026-08-03.json]" time="0.001"><failure message="AssertionError: assert 'historical_case_source_not_admitted' is None&#10; +  where 'historical_case_source_not_admitted' = &lt;function _historical_text_case_error at 0x1080ae7a0&gt;({'benchmark_id': 'mag7_narration_2026-08-03', 'frozen': True, 'source': 'research/POSTMORTEM_20260803_MAG7_RALLY_SILEN...pe': 'supplied_adjudication_text', 'doctrine_scope': 'current_doctrine_replay', 'cutoff_date': '2026-08-03', ...}, ...}, PosixPath('/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-tier-query-20261014-57fd7cc5c269b449'))&#10; +    where &lt;function _historical_text_case_error at 0x1080ae7a0&gt; = ev._historical_text_case_error">name = 'benchmark_mag7_narration_2026-08-03.json'
+
+    @pytest.mark.parametrize("name", NAMES)
+    def test_new_source_is_admitted(name):
+        case = json.loads((DRAFTS / name).read_text())
+&gt;       assert ev._historical_text_case_error(case, ROOT) is None
+E       AssertionError: assert 'historical_case_source_not_admitted' is None
+E        +  where 'historical_case_source_not_admitted' = &lt;function _historical_text_case_error at 0x1080ae7a0&gt;({'benchmark_id': 'mag7_narration_2026-08-03', 'frozen': True, 'source': 'research/POSTMORTEM_20260803_MAG7_RALLY_SILEN...pe': 'supplied_adjudication_text', 'doctrine_scope': 'current_doctrine_replay', 'cutoff_date': '2026-08-03', ...}, ...}, PosixPath('/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-tier-query-20261014-57fd7cc5c269b449'))
+E        +    where &lt;function _historical_text_case_error at 0x1080ae7a0&gt; = ev._historical_text_case_error
+
+/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/t6-next-tranche/test_next_tranche_admission.py:11: AssertionError</failure></testcase><testcase classname="Mastermind.evidence.intelligence-evaluation-os-20261012-01a1333d.science.t6-next-tranche.test_next_tranche_admission" name="test_new_identity_requires_metadata_before_model_defaults[benchmark_mag7_forced_override_2026-07-11.json]" time="0.003"><failure message="Failed: new known historical fixture reached a model or doctrine default">name = 'benchmark_mag7_forced_override_2026-07-11.json'
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x1081116d0&gt;
+
+    @pytest.mark.parametrize("name", NAMES)
+    def test_new_identity_requires_metadata_before_model_defaults(name, monkeypatch):
+        case = json.loads((DRAFTS / name).read_text())
+        del case["historical_case"]
+        monkeypatch.setattr(ev, "load_benchmark", lambda _: case)
+        def forbidden(*args):
+            pytest.fail("new known historical fixture reached a model or doctrine default")
+        monkeypatch.setattr(ev, "answer_via_llm_auth", forbidden)
+        monkeypatch.setattr(ev, "judge_via_llm_auth", forbidden)
+        monkeypatch.setattr(ev, "benchmark_system_prompt", forbidden)
+&gt;       result = ev.run_benchmark(ROOT, name=name)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/t6-next-tranche/test_next_tranche_admission.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+engine/neuralweb/response_eval.py:1197: in run_benchmark
+    system = benchmark_system_prompt(question, lane)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('Given the supplied July 11 observations and operator request, what may the system lawfully infer and display, and which proposed rule still needs testing?', 'fast')
+
+    def forbidden(*args):
+&gt;       pytest.fail("new known historical fixture reached a model or doctrine default")
+E       Failed: new known historical fixture reached a model or doctrine default
+
+/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/t6-next-tranche/test_next_tranche_admission.py:18: Failed</failure></testcase><testcase classname="Mastermind.evidence.intelligence-evaluation-os-20261012-01a1333d.science.t6-next-tranche.test_next_tranche_admission" name="test_new_identity_requires_metadata_before_model_defaults[benchmark_mag7_narration_2026-08-03.json]" time="0.001"><failure message="Failed: new known historical fixture reached a model or doctrine default">name = 'benchmark_mag7_narration_2026-08-03.json'
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x1081117c0&gt;
+
+    @pytest.mark.parametrize("name", NAMES)
+    def test_new_identity_requires_metadata_before_model_defaults(name, monkeypatch):
+        case = json.loads((DRAFTS / name).read_text())
+        del case["historical_case"]
+        monkeypatch.setattr(ev, "load_benchmark", lambda _: case)
+        def forbidden(*args):
+            pytest.fail("new known historical fixture reached a model or doctrine default")
+        monkeypatch.setattr(ev, "answer_via_llm_auth", forbidden)
+        monkeypatch.setattr(ev, "judge_via_llm_auth", forbidden)
+        monkeypatch.setattr(ev, "benchmark_system_prompt", forbidden)
+&gt;       result = ev.run_benchmark(ROOT, name=name)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/t6-next-tranche/test_next_tranche_admission.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+engine/neuralweb/response_eval.py:1197: in run_benchmark
+    system = benchmark_system_prompt(question, lane)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('Based on the observations reported in the supplied August 3 adjudication, where did detection, aggregation and narration differ, and what display change is supported without changing authority?', 'fast')
+
+    def forbidden(*args):
+&gt;       pytest.fail("new known historical fixture reached a model or doctrine default")
+E       Failed: new known historical fixture reached a model or doctrine default
+
+/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/science/t6-next-tranche/test_next_tranche_admission.py:18: Failed</failure></testcase></testsuite></testsuites>

@@ -1189,3 +1189,219 @@ def test_cw_force_hook_comment_names_body_not_html():
             "Hook comment must not say [data-credit='null'] is set on <html> — "
             "capture_page_evidence.py sets it on <body>"
         )
+
+
+# --------------------------------------------------------------------------- #
+# W20-L6 — put the numbers we already hold on the IPO page (items 1-5)
+# --------------------------------------------------------------------------- #
+def _w20d_phase0():
+    """Inline copy of the committed phase-0 receipt (data/ipo/lockup_phase0.json)."""
+    return {
+        "verdict": "DISPLAY-ONLY · no measurable edge on our sample",
+        "tier": "none", "focus": "event[-1,+3]", "n_names": 77, "as_of": "2026-06-16",
+        "stat": {"n": 77, "mean_pct": 0.88, "median_pct": 1.04,
+                 "pct_negative": 44.2, "t": 0.812, "p": 0.4168},
+    }
+
+
+def _w20d_cliff_vm(confirmed=3, n=9, phase0="keep"):
+    """lockvm stub whose raw rows have -30<=days_to<=120 so the cliff card renders
+    (shape per test_lockup_timeline_shape_and_clamp). phase0='keep' -> fresh dict."""
+    raw = [
+        {"ticker": "EQPT", "company": "Eq Co", "expiry_date": "2026-07-22",
+         "days_to": 15, "size_usd": 7.47e8, "status": "approaching",
+         "source": "confirmed"},
+        {"ticker": "ESTM", "company": "Est Co", "expiry_date": "2026-09-01",
+         "days_to": 70, "size_usd": float("nan"), "status": "locked",
+         "source": "estimate"},
+    ]
+    summary = {"n": n, "approaching": 1, "just_expired": 0, "confirmed": confirmed,
+               "next_ticker": "EQPT", "next_date": "2026-07-22", "next_days": 15,
+               "next_size_usd": 7.47e8}
+    if phase0 == "keep":
+        phase0 = _w20d_phase0()
+    return {"rows": [], "summary": summary, "raw": raw, "phase0": phase0}
+
+
+def _w20d_render(monkeypatch, tmp_path, *, pipe_over=None, upcoming=None, lockvm=None):
+    """Same stubs as _render_ipo_html (copied, not modified) + W20-L6 overrides:
+    pipe_over updates snap['pipeline'], upcoming replaces snap['upcoming'] when not
+    None, lockvm stubs _lockup_vm when given."""
+    import copy
+    snap = copy.deepcopy(_synthetic_snap())
+    if pipe_over is not None:
+        snap["pipeline"].update(pipe_over)
+    if upcoming is not None:
+        snap["upcoming"] = upcoming
+    monkeypatch.setattr(bi.ir, "radar_snapshot", lambda **kw: snap)
+    monkeypatch.setattr(bi, "_risk_score_from_spvector", lambda: None)
+    monkeypatch.setattr(bi, "_lockup_vm", lambda: lockvm if lockvm is not None
+                        else {"rows": [], "summary": {}, "raw": []})
+    monkeypatch.setattr(bi, "_hk_vm", lambda: {"available": False})
+    monkeypatch.setattr(bi, "_chart_aftermarket", lambda: None)
+    monkeypatch.setattr("collectors.ipo_calendar.fetch_ipo_calendar", lambda: None)
+    monkeypatch.setattr(bi.config, "data_dir", lambda: tmp_path)
+    captured = {}
+
+    def _w20d_write_page(path, html, **kw):
+        captured["html"] = html
+        return tmp_path / "ipo.html"
+
+    monkeypatch.setattr(bi, "write_page", _w20d_write_page)
+    bi.build()
+    return captured["html"]
+
+
+def _w20d_cliff_section(html):
+    i = html.index('<span class="l-en">Lock-up cliff</span>')
+    j = html.index("The aftermarket trade")
+    return html[i:j]
+
+
+def _w20d_froth_size_disp(html):
+    """The rendered value printed by the Item-3 froth mini, or None if absent."""
+    i = html.index("Issuance froth")
+    j = html.index("CREDIT ISSUANCE WINDOW")
+    m = re.search(r'<span class="l-en">Median operating-company deal size · 90d</span>'
+                  r'<span class="l-zh">90天经营公司交易规模中位数</span>\s*:\s*'
+                  r'(.*?)</div>', html[i:j], re.DOTALL)
+    return m.group(1) if m else None
+
+
+def test_w20d_phase0_receipt_vm_formats():
+    p0 = _w20d_phase0()
+    vm = bi._phase0_receipt_vm(p0)
+    assert vm is not None
+    assert vm["as_of"] == "2026-06-16" and vm["n_names"] == 77
+    assert vm["mean_disp"] == "+0.88%"
+    assert vm["pct_negative"] == "44.2"
+    assert vm["window_en"] == "from 1 day before to 3 days after the un-lock"
+    assert vm["window_zh"] == "解禁前1日至后3日"
+    assert vm["verdict_en"] == "DISPLAY-ONLY · no measurable edge on our sample"
+    assert vm["verdict_zh"] == "仅供展示 · 在我们的样本上无可测量的优势"
+    neg = bi._phase0_receipt_vm({**p0, "stat": dict(p0["stat"], mean_pct=-0.5)})
+    assert neg["mean_disp"] == "−0.50%"          # U+2212, never an ASCII hyphen
+    assert "-" not in neg["mean_disp"]
+    d2 = bi._phase0_receipt_vm({**p0, "focus": "event[-2,+5]"})
+    assert d2["window_en"] == "from 2 days before to 5 days after the un-lock"
+    assert d2["window_zh"] == "解禁前2日至后5日"
+    b1 = bi._phase0_receipt_vm({**p0, "focus": "event[-2,+1]"})
+    assert b1["window_en"] == "from 2 days before to 1 day after the un-lock"
+    for focus in ("event[0,+3]", "event[+1,+3]", "calendar[+1]", None):
+        around = bi._phase0_receipt_vm({**p0, "focus": focus})
+        assert around["window_en"] == "around the un-lock"
+        assert around["window_zh"] == "解禁前后"
+    unk = bi._phase0_receipt_vm({**p0, "verdict": "SOMETHING-ELSE"})
+    assert unk["verdict_en"] == "SOMETHING-ELSE" and unk["verdict_zh"] == "SOMETHING-ELSE"
+    assert bi._phase0_receipt_vm(None) is None
+    assert bi._phase0_receipt_vm({}) is None
+    assert bi._phase0_receipt_vm({**p0, "stat": None}) is None
+    assert bi._phase0_receipt_vm({"stat": {"mean_pct": 0.1, "pct_negative": 1.0}}) is None
+    assert bi._phase0_receipt_vm({**p0, "stat": dict(p0["stat"],
+                                                     mean_pct=float("nan"))}) is None
+
+
+def test_w20d_lockup_phase0_receipt_renders(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm())
+    sec = _w20d_cliff_section(html)
+    m = re.search(r'<div class="mini"><span class="l-en">(Our event study of .*?)</span>'
+                  r'<span class="l-zh">(.*?)</span></div>', sec)
+    assert m, "phase-0 receipt mini not found in the cliff card"
+    en, zh = m.group(1), m.group(2)
+    assert "77 recent un-locks (to 2026-06-16)" in en
+    assert "+0.88%" in en and "44.2% of names fell behind" in en
+    assert "S&P 500" in en.replace("&amp;", "&")
+    assert "DISPLAY-ONLY · no measurable edge on our sample" in en
+    assert "仅供展示 · 在我们的样本上无可测量的优势" in zh
+    assert "DISPLAY-ONLY" not in zh and "event study" not in en.replace("Our event study", "")
+    html2 = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(phase0=None))
+    sec2 = _w20d_cliff_section(html2)
+    assert "fell behind" not in sec2 and "(to 2026-06-16)" not in sec2
+
+
+def test_w20d_empty_upcoming_prints_filed_n_not_quiet(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, upcoming=[], pipe_over={"filed_n": 12})
+    m = re.search(r'<div class="empty">(.*?)</div>', html, re.DOTALL)
+    assert m, "the empty-upcoming div did not render"
+    body = m.group(1)
+    assert "No deals are expected to price in the near term." in body
+    assert "12 more filed but have no price date yet." in body
+    assert "另有12家已披露未定价。" in body
+    assert "pipeline is quiet" not in html and "发行管道清淡" not in html
+
+
+def test_w20d_filed_n_zero_is_honest(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, upcoming=[], pipe_over={"filed_n": 0})
+    body = re.search(r'<div class="empty">(.*?)</div>', html, re.DOTALL).group(1)
+    assert "0 more filed but have no price date yet." in body
+    assert "另有0家已披露未定价。" in body
+
+
+def test_w20d_filed_n_absent_prints_first_sentence_only(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, upcoming=[])   # snap pipeline has no filed_n
+    body = re.search(r'<div class="empty">(.*?)</div>', html, re.DOTALL).group(1)
+    assert "No deals are expected to price in the near term." in body
+    assert "more filed" not in body and "已披露未定价" not in body
+
+
+def test_w20d_median_op_size_on_froth_card(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, pipe_over={"median_op_size_90d": 1.5e8})
+    assert _w20d_froth_size_disp(html) == "$150M"
+
+
+def test_w20d_median_op_size_nan_is_dash(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path)   # _synthetic_snap plants a NaN median
+    assert _w20d_froth_size_disp(html) == "—"
+
+
+def test_w20d_cliff_meta_prints_confirmed(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(confirmed=3, n=9))
+    sec = _w20d_cliff_section(html)
+    assert "3 of 9 modeled dates use a prospectus-derived day count;" in sec
+    assert "the rest assume 180 days." in sec
+    assert "在跟踪的9个估算日期中，3个采用招股书中的期限；其余假设180天。实际解禁可能附带条件或获豁免。" in sec
+
+
+def test_w20d_cliff_meta_confirmed_zero_is_honest(monkeypatch, tmp_path):
+    html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(confirmed=0, n=9))
+    assert "0 of 9 modeled dates" in _w20d_cliff_section(html)
+
+
+def test_w20d_no_false_per_name_return_claim(monkeypatch, tmp_path):
+    src = (bi.config.ROOT / "templates" / "ipo.html.j2").read_text(encoding="utf-8")
+    assert "Per-name price return" not in src
+    assert "相对发行价的个股回报" not in src
+    html = _w20d_render(monkeypatch, tmp_path)
+    assert "Per-name price return" not in html
+    assert "相对发行价的个股回报" not in html
+    assert "SPACs are flagged, never dropped" in html
+    assert "会扭曲新股基准比率。" in html
+
+
+def test_w20d_phase0_receipt_vm_non_string_fields():
+    """A producer that writes a non-string focus or verdict must not crash the page build."""
+    p0 = _w20d_phase0()
+    p0["focus"], p0["verdict"] = 3, {"en": "x"}
+    vm = bi._phase0_receipt_vm(p0)
+    assert vm["window_en"] == "around the un-lock" and vm["window_zh"] == "解禁前后"
+    assert vm["verdict_en"] == "" and vm["verdict_zh"] == ""
+
+
+def test_published_view_includes_both_languages_and_actual_dates(monkeypatch):
+    from jinja2 import Environment
+    ROOT = pathlib.Path(__file__).resolve().parents[1]
+    from scripts import build_ipo
+    rows = build_ipo._prospectus_deals_vm()
+    deal = next(row for row in rows if row["ticker"] == "CRCL")
+    assert deal["first_close_date"] == "2025-06-05"
+    assert len(deal["path_points"].split()) > 200
+    # The actual page is rendered by existing builder tests; isolate the new
+    # article so copy/clock/source assertions do not need market collectors.
+    text = (ROOT / "templates/ipo.html.j2").read_text()
+    start = text.index("  {% if prospectus_deals %}")
+    end = text.index("  <div class=\"sec\">{{ t('The aftermarket trade'", start)
+    env = Environment(autoescape=True)
+    for language in (0, 1):
+        html = env.from_string(text[start:end]).render(prospectus_deals=[deal], t=lambda en, zh: (en, zh)[language])
+        assert "2025-06-04" in html and "2025-06-05" in html and "2025-09-30" in html
+        assert "5,100,000" in html and deal["source_url"] in html
