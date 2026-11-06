@@ -1,0 +1,407 @@
+{
+  "schema": "multi_asset.source_component_qualification.v1",
+  "source_revision": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
+  "captured_at": "2026-11-06T02:03:20.488178+00:00",
+  "input_artifacts": [
+    {
+      "path": "data/yahoo/SPY.parquet",
+      "status": "READ",
+      "sha256": "d0a8d337629f8aa9db4c86d3b5aa28b3dc5901b13c4348874cc02acacc484f3c",
+      "bytes": 245046
+    },
+    {
+      "path": "data/yahoo/EFA.parquet",
+      "status": "READ",
+      "sha256": "20b92cb5f0474f1b4dad06c3fe0a3c68030397ebbee0ef4b5e7040e9329bac65",
+      "bytes": 172808
+    },
+    {
+      "path": "data/yahoo/EEM.parquet",
+      "status": "READ",
+      "sha256": "9b46e798b8f99420ea67703f8e2752e2890e851ab2cc824bcca11abe2c94bd63",
+      "bytes": 161166
+    },
+    {
+      "path": "data/yahoo/FXI.parquet",
+      "status": "READ",
+      "sha256": "d03bf2d8f165c8f8bf580dd6843ea30b1e1b58c64797d75e8de10924063588d8",
+      "bytes": 149823
+    },
+    {
+      "path": "data/yahoo/KWEB.parquet",
+      "status": "READ",
+      "sha256": "f9290814863934c22b01a5bb0847772665db8db994364040c8412376da754545",
+      "bytes": 90788
+    },
+    {
+      "path": "data/yahoo/GLD.parquet",
+      "status": "READ",
+      "sha256": "9e96b0fb4afbee1437824b4da56105fc704111ef0cd07ca2d496b5d39e03acf8",
+      "bytes": 154161
+    },
+    {
+      "path": "data/yahoo/HYG.parquet",
+      "status": "READ",
+      "sha256": "7ebce35bbfd3fb8f6df140523d7be92e39cda2cbc919431ed94e9675a19fd0e9",
+      "bytes": 129007
+    },
+    {
+      "path": "data/yahoo/TLT.parquet",
+      "status": "READ",
+      "sha256": "40d59742f4af112c6d6aa7c6050b13b72e251b37e7d2ded59ea266645c675906",
+      "bytes": 166273
+    },
+    {
+      "path": "data/yahoo/SHY.parquet",
+      "status": "READ",
+      "sha256": "e86b90b82e10b66f613147c4804da1824ed727c4761f99fc7553b65c8bffa574",
+      "bytes": 132976
+    },
+    {
+      "path": "data/yahoo/USO.parquet",
+      "status": "READ",
+      "sha256": "442aa9a070197d9e1f35a46645c8d62271df60e7fb24b853acdc3c27447139f6",
+      "bytes": 135193
+    },
+    {
+      "path": "data/yahoo/IBIT.parquet",
+      "status": "READ",
+      "sha256": "040611ad7be1a34af2547cee0f3864317c7e81c2e5abfbf80d21696d970aa1e6",
+      "bytes": 22804
+    },
+    {
+      "path": "data/market_state/latest.json",
+      "status": "READ",
+      "sha256": "839b21f86953b40916b4222f04f240e6b093c610d0a628ef736ce3dfa5460eb0",
+      "bytes": 31201
+    },
+    {
+      "path": "data/leadership_crack/latest.json",
+      "status": "READ",
+      "sha256": "6854e30e598322fedf3390fff522210c76248ff9a26a5336bafb17826cda9ad8",
+      "bytes": 673
+    },
+    {
+      "path": "site/marketdata/rotation_events.json",
+      "status": "READ",
+      "sha256": "a51fb4988759ed83b660807d51f90b9db55cf86adcd07e62a116f3c68a4f64b1",
+      "bytes": 119080
+    }
+  ],
+  "context_status": "STALE",
+  "window": {
+    "start_session": "2026-10-28",
+    "end_session": "2026-11-04",
+    "expected_session": "2026-11-05",
+    "horizon_sessions": 5,
+    "calendar_owner": "lib.nyse_calendar",
+    "listing_timezone": "America/New_York"
+  },
+  "coverage": {
+    "requested": 11,
+    "observed": 10,
+    "comparable": 9,
+    "invalid_sources": 0
+  },
+  "context_digest": "e628264defe7511fd61e0ec255c565c339670d6cb2151432820c85da0ccc3816",
+  "envelope_bundle_id": "f033fcf36bb3ae95",
+  "render_source_sha256": {
+    "engine/multi_asset_context.py": "3d0213fa527ce1d4361e8af65efb2eb4b6760cffdf60796866aa2a4b233a948c",
+    "engine/multi_asset_daily.py": "b76a145e0556a9b9cee3ab1271fade274f4600206a86f1581f7319af483ef802",
+    "engine/risk_envelope.py": "8fa87ed4a7aa366116775ed1a557aeee8bccd7e05116989a6b67c30f9707d25a",
+    "scripts/risk_envelope_multi_asset.py": "1724dec4689906cca7276ddf7145392bfeef44056e117fc714c61ca3bc6a7657",
+    "scripts/build_risk_envelope.py": "3b69eda23b8af438ba123a13c5e21594e5e00b16f9c54018d3178517df0c17b7",
+    "templates/risk_envelope/_multi_asset_context.html.j2": "9993a9ec753b4e689bdad6a76c645a32716d38e38035931acf28e946937db08a",
+    "templates/_risk_envelope_band.html.j2": "a442cf9e4d790aae4734ba4c18ecab42aa5852b97bde2896cc841ec99ba213e0",
+    "templates/_risk_envelope_band.css.j2": "711d2c81532802867f5948f91745a9d8e73f5cab808c96a7d0130af6051e5521",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "contracts/risk_envelope.schema.json": "2424504dc84053bfe2dea1482a7f94a3360d652f35bb844f792d6e06b6b72c3c",
+    "research/grey_deer/multi_asset_20261105/qualify_snapshot.py": "73cec03c120db063e5490a13bd27d2eec92c71671b8831e6252552c64fd4a9e7"
+  },
+  "browser_cases": [
+    {
+      "width": 320,
+      "theme": "dark",
+      "language": "en",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 320,
+        "scroll": 320,
+        "component": 226
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 320,
+        "scroll": 320,
+        "component": 226
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "language": "en",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 320,
+        "scroll": 320,
+        "component": 226
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 320,
+        "scroll": 320,
+        "component": 226
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 390,
+        "scroll": 390,
+        "component": 296
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 390,
+        "scroll": 390,
+        "component": 296
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 390,
+        "scroll": 390,
+        "component": 296
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 390,
+        "scroll": 390,
+        "component": 296
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "language": "en",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 768,
+        "scroll": 768,
+        "component": 666
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 768,
+        "scroll": 768,
+        "component": 666
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "language": "en",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 768,
+        "scroll": 768,
+        "component": 666
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 768,
+        "scroll": 768,
+        "component": 666
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 1440,
+        "scroll": 1440,
+        "component": 1294
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 1440,
+        "scroll": 1440,
+        "component": 1294
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 1440,
+        "scroll": 1440,
+        "component": 1294
+      },
+      "disclosure_gap_px": 4
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "horizontal_overflow": false,
+      "keyboard_expand_collapse": true,
+      "rows": 11,
+      "metrics": {
+        "viewport": 1440,
+        "scroll": 1440,
+        "component": 1294
+      },
+      "disclosure_gap_px": 4
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "390-dark-en.png",
+      "sha256": "4a08067028ca57624939f233c0f8ab2828df592fd706a79f5c32c4ac1579e873",
+      "bytes": 157225
+    },
+    {
+      "path": "390-light-zh.png",
+      "sha256": "2ae6bbe22233244a6dde18094890bb1bae7aed97ec7a82a7470bad93a46197c7",
+      "bytes": 150804
+    },
+    {
+      "path": "1440-dark-en.png",
+      "sha256": "72a531e7bed6ce9a6a45179af6d631bb8f69fafc709f3479a8470315d31a2731",
+      "bytes": 106447
+    },
+    {
+      "path": "1440-light-zh.png",
+      "sha256": "93df35bfe363fa4303591e39974195158baad2536b8b29591de280e88625e556",
+      "bytes": 123130
+    }
+  ],
+  "page_errors": [],
+  "browser_channel": "chrome",
+  "proof_scope": "pinned_source_snapshot_to_existing_builder_and_radar_component",
+  "full_page_or_production_acceptance": false,
+  "historical_forecast_validation": false,
+  "fonts": "actual Macro host CSS with system fallback; external network disabled",
+  "host_template_inputs_sha256": {
+    "templates/dashboard.html.j2": "dbf09cf36597349029cbd40b1b4387dbb2c2c64483aed03c2bf515251a2b6b49",
+    "templates/_prophet_card.html.j2": "e8d875372e984f8f6b2da7ce5a19e7378b38697ba039c23e051c4d8447fa6e27",
+    "templates/_prophet_receipts.html.j2": "bd3fecb1f79770299d902b69fb16a1d3314faf616de9c9e27982701cdc8a232c",
+    "templates/_decision_card.html.j2": "2c67a16a868f40bfced08d96be88571f0a235ca948169c8e9a44de827442ca76",
+    "templates/_risk_envelope_band.html.j2": "a442cf9e4d790aae4734ba4c18ecab42aa5852b97bde2896cc841ec99ba213e0",
+    "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d",
+    "templates/_aibrief_body.html.j2": "bde4c19d5f511f478bea3b725626d1fe6bc6e3054755504171fcd4fd3534eadd",
+    "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+    "templates/_lazy_heatmap_loader.html.j2": "bc85387feef5062185ab5f1cccd1f2d1a3901af039c83ac1865008a03d86c391",
+    "templates/_risk_radar_card.css.j2": "203f682068ae42ae254a857cc572e962198623ba84123ba3a6527b373feedaa5",
+    "templates/_aibrief_css.j2": "1c341bc8204ba2203cd6f1953419a58ace9ccc8c3048767658d276072cde5d81",
+    "templates/_macro_attio_type.css.j2": "80c151b8bf19c0020c06f0de638879465db2dded770e2f02a31cbc2e25fd3c01",
+    "templates/_risk_envelope_band.css.j2": "711d2c81532802867f5948f91745a9d8e73f5cab808c96a7d0130af6051e5521",
+    "templates/_site_nav.html.j2": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+    "templates/_navlinks.html.j2": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+    "templates/_all_tools_menu.html.j2": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17",
+    "templates/_regime_read_panel.html.j2": "5614c63fff4afc68c8a44402bd3614193ae39933a645e2624a20d78fb8d8b5e7",
+    "templates/_us_act_now_board.html.j2": "a9a18ba46378b165b3d95bac27638b7b0f6e46b993a959c6d142623a692bfd01",
+    "templates/_icons.html.j2": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab",
+    "templates/_us_bottoming_watch.html.j2": "5583d9011156f440afa2358fa2f4740123ca86933dac30f5ce94a27df058a15f",
+    "templates/_prophet_workspace.css.j2": "50fe0ec6eb8c0db2d921be73d0521220cd39c18d04e9c3f53be6f9681159327e",
+    "templates/_us_candidate_pool.html.j2": "2c269485b6aa117de912586ce57b066ae322701419217366f2b6415b86597071",
+    "templates/_us_early_observations.html.j2": "fa16495a1b54bb97f05ecb3fc64c82084ea9efef042bc9039029100d0f4d95c0",
+    "templates/_us_early_observations_client.js": "f7c9e7ffb4e949e7ec0106698977535d259e10dc0b3feda4fef271b42041cadb",
+    "templates/_prophet_setup_detail.html.j2": "5301d512aa339d66395f4b0dd1a253dba6124ef56567ce2655a65b97cdce35c9",
+    "templates/_us_prophet_plan_cards.html.j2": "63bed913fbda6e5c35f17a10d75d6a06717c9e0c9f9256282290436b283899e9",
+    "templates/_us_board_cards.html.j2": "fea8a108e714c1f8ef881f3b208b6861c9ea0d1ec194328227f3784d8dc0173d"
+  },
+  "rendered_css_sha256": "88474db66b29b5d75e8480b7078839ad009848cefe8afeb57821eeaa63fd8baf",
+  "raw_price_data_committed": false,
+  "orders_or_policy_changes": false
+}

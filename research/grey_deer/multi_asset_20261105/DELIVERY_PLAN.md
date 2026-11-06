@@ -62,3 +62,13 @@ Extend existing Risk Radar hierarchy/design tokens, not a standalone dashboard. 
 Principal retains architecture/integration/acceptance (PRINCIPAL_JUDGMENT). Bounded semantic-core labor uses paid Fabric AUTO routing, C2_COMPLEX_BOUNDED: coupled timestamp/currency/lineage invariants require adversarial tests. WHY NOT FABLE: objective/architecture/tests are frozen. A leaf may return self-contained code/tests in its result without shared-workspace mutation; parent integrates reviewed artifacts. No native substitute, descendant fanout or provider override.
 
 Next: commit/push/read back this plan; dispatch one bounded core implementation; independently qualify existing adapters/consumer integration. No worker START, background execution or watcher is claimed by this document. Full parent outcome remains incomplete.
+
+## Implementation milestone - 2026-11-05 Vancouver
+
+MA-1A strict clock/currency core and MA-1B/C daily existing-store -> envelope -> Radar source slice are implemented locally. This is BUILT_NOT_PROVEN, not a finished allocation system. 594 tests + 51 subtests passed (2 skipped); 56 targeted tests passed after schema tightening; 16 real-source component browser cases passed. Current-cache input is correctly STALE (expected Nov5, latest matching window ends Nov4), 10 observed/9 comparable of 11 proxies; oil endpoint is absent. The strict event-time core is not fed invented daily timestamps.
+
+Existing EW-P4 screenshot binding correctly failed after the additive template edit. Next source qualification: commit exact render source, recapture its existing 68-case harness with explicit installed Chrome channel, preserve unchanged screenshots, update only actual source-bound evidence and rerun the guard. No immutable scientific result, guard or threshold is relaxed. The parent #10219 stays held and untouched.
+
+MA-0 source reconciliation is recorded in CALIBRATION_SOURCE_AUDIT.json. No tracked calibration overlay exists at the base; runtime overlay remains uninspected. Historical probability evidence is explicitly reconstructed/non-precision and its referenced artifact hash was checked. No study rerun or recalibration.
+
+Fabric run multiasset-core-20261105-a returned terminal admission refusal (host temperature); no code returned, no retry, no replacement worker or alternate host. Current lead continues direct source integration. Required CI, normal protected release, live delivery, cross-repository consumers, fast evidence, forecast qualification and portfolio shadow work remain open.

@@ -14712,7 +14712,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse owning contracts in one pytest session
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_multi_asset_context.py tests/test_multi_asset_daily.py tests/test_risk_envelope_multi_asset.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
       # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
@@ -46868,6 +46868,11 @@ jobs:
       - "tests/test_vsb_surface.py"
       - "tests/test_macro_risk_dialog.py"
       - "tests/test_risk_envelope_radar_integration.py"
+      - "tests/test_multi_asset_radar_ui.py"
+      - "contracts/risk_envelope.schema.json"
+      - "tests/test_risk_envelope_multi_asset.py"
+      - "scripts/risk_envelope_multi_asset.py"
+      - "templates/risk_envelope/_multi_asset_context.html.j2"
       - "tests/test_us_stocks_s2_compression.py"
       - "tests/test_unified_dashboard_b2w2.py"
       - "tests/test_macro_mtf_sort_key.py"
@@ -47085,7 +47090,7 @@ jobs:
       # persisted-view fixture). markupsafe arrives with jinja2, numpy with
       # pandas. Never importorskip.
       - name: install dashboard render-contract test dependencies
-        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests
+        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests jsonschema
       - name: dashboard.html.j2 rendered-HTML contract + volatility detail + UD-B2-W2 spine bindings
         run: >-
           python -m pytest
@@ -47093,6 +47098,7 @@ jobs:
           tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
+          tests/test_multi_asset_radar_ui.py
           tests/test_risk_radar_workspace.py
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py

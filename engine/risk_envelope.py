@@ -793,6 +793,7 @@ def compose_envelope(
     revision: str = "settled",
     definition_id: str = DEFINITION_ID,
     correction: Mapping[str, Any] | None = None,
+    multi_asset_context: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Compose one `mastermind.risk_envelope/v1` envelope.  PURE.
 
@@ -869,9 +870,26 @@ def compose_envelope(
         semantic["confluence"] = _confluence(ordered, measured, rotation)
         semantic["market_transition"] = dict(transition) if isinstance(transition, Mapping) else None
 
+    # Optional, non-voting daily context. Its capture clock is a read receipt,
+    # not a new observation; corrections/window/freshness still change identity.
+    qualified_multi_asset = None
+    if multi_asset_context is not None:
+        from engine.multi_asset_context import instant
+        from engine.multi_asset_daily import semantic_context, validate_daily_context
+
+        try:
+            qualified_multi_asset = validate_daily_context(multi_asset_context)
+            if instant(qualified_multi_asset["captured_at"]) > instant(produced_at):
+                raise ValueError("multi_asset_capture_after_envelope")
+        except ValueError as exc:
+            raise EnvelopeContractError(str(exc)) from exc
+        semantic["multi_asset_context"] = semantic_context(qualified_multi_asset)
+
     bundle_id = hashlib.sha256(canonical_json(semantic).encode("utf-8")).hexdigest()[:16]
 
     envelope = dict(semantic)
+    if qualified_multi_asset is not None:
+        envelope["multi_asset_context"] = qualified_multi_asset
     envelope["bundle_id"] = bundle_id
     envelope["observed_at"] = observed_at
     envelope["produced_at"] = produced_at

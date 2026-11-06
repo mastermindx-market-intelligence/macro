@@ -1,0 +1,57 @@
+{# Owner-validated daily snapshot. No risk vote, forecast, rank or portfolio control. #}
+{% set ma = multi_asset_context if multi_asset_context is mapping else {} %}
+{% set ma_auth = ma.get('authority') if ma.get('authority') is mapping else {} %}
+{% set ma_ok = ma.get('schema') == 'mastermind.multi_asset_daily_context/v1'
+    and ma.get('display_only') is sameas true and ma.get('no_predictive_claim') is sameas true
+    and ma_auth.get('can_rank') is sameas false and ma_auth.get('can_gate') is sameas false
+    and ma_auth.get('can_size') is sameas false and ma_auth.get('can_trade') is sameas false
+    and ma.get('window') is mapping and ma.get('coverage') is mapping
+    and ma.get('rows') is sequence and ma.get('rows') is not string and ma.get('rows') is not mapping %}
+<section id="gde-multi-asset-context" aria-labelledby="gde-multi-asset-title">
+  <h3 class="gde-disc-h" id="gde-multi-asset-title"><span class="l-en">Cross-asset context</span><span class="l-zh">跨资产背景</span></h3>
+  {% if ma_ok %}
+  {% set mw = ma.get('window') or {} %}
+  {% set mc = ma.get('coverage') or {} %}
+  {% set status_labels = {'AVAILABLE': ('Covered snapshot', '覆盖完整的快照'), 'PARTIAL': ('Partial coverage', '部分覆盖'), 'STALE': ('Older snapshot', '较早快照'), 'UNAVAILABLE': ('Comparison unavailable', '暂无可比数据')} %}
+  {% set status = status_labels.get(ma.get('status'), status_labels['UNAVAILABLE']) %}
+  <p class="gde-receipt"><strong><span class="l-en">{{ status[0] }}</span><span class="l-zh">{{ status[1] }}</span></strong> · <span class="l-en">{{ mc.get('observed', 0)|e }} of {{ mc.get('requested', 11)|e }} proxies observed; {{ mc.get('comparable', 0)|e }} comparable with SPY.</span><span class="l-zh">{{ mc.get('requested', 11)|e }} 个代理中，{{ mc.get('observed', 0)|e }} 个有观察值，{{ mc.get('comparable', 0)|e }} 个可与 SPY 比较。</span></p>
+  <p class="gde-receipt"><span class="l-en">{{ mw.get('horizon_sessions')|e }} US cash sessions: <time>{{ mw.get('start_session')|e }}</time> → <time>{{ mw.get('end_session')|e }}</time>. USD adjusted returns. Daily snapshot, not live signals or measured fund flows.</span><span class="l-zh">{{ mw.get('horizon_sessions')|e }} 个美国现金市场交易日：<time>{{ mw.get('start_session')|e }}</time> → <time>{{ mw.get('end_session')|e }}</time>。美元调整后收益。日频快照，并非实时信号或实测资金流。</span></p>
+  {% if ma.get('status') == 'STALE' %}<p class="gde-warn"><span class="l-en">The latest expected session is {{ mw.get('expected_session')|e }}. These older returns do not describe the current market.</span><span class="l-zh">最新预期交易日为 {{ mw.get('expected_session')|e }}。这些较早收益不代表当前市场。</span></p>{% endif %}
+  <div class="gde-tblwrap">
+    <table class="gde-tbl" role="table" aria-describedby="gde-multi-asset-limits">
+      <thead role="rowgroup"><tr role="row">
+        <th scope="col" role="columnheader"><span class="l-en">Exposure proxy</span><span class="l-zh">敞口代理</span></th>
+        <th scope="col" role="columnheader"><span class="l-en">Absolute return</span><span class="l-zh">绝对收益</span></th>
+        <th scope="col" role="columnheader"><span class="l-en">Relative to SPY</span><span class="l-zh">相对 SPY</span></th>
+        <th scope="col" role="columnheader"><span class="l-en">Interpretation</span><span class="l-zh">解读</span></th>
+      </tr></thead>
+      <tbody role="rowgroup">
+      {% for row in ma.get('rows', []) if row is mapping %}
+        <tr role="row" data-multi-asset-instrument="{{ row.get('instrument_id')|e }}">
+          <td role="cell" data-label-en="Exposure proxy" data-label-zh="敞口代理"><span><b>{{ row.get('instrument_id')|e }}</b><br><span class="l-en">{{ row.get('label_en')|e }}</span><span class="l-zh">{{ row.get('label_zh')|e }}</span></span></td>
+          <td role="cell" data-label-en="Absolute return" data-label-zh="绝对收益"><span class="tnum">{% if row.get('absolute_return') is number and row.get('absolute_return') is not sameas true and row.get('absolute_return') is not sameas false %}{{ '%+.2f%%'|format(row.get('absolute_return') * 100) }}{% else %}<span class="l-en">Unavailable</span><span class="l-zh">暂无</span>{% endif %}</span></td>
+          <td role="cell" data-label-en="Relative to SPY" data-label-zh="相对 SPY"><span class="tnum">{% if row.get('instrument_id') == 'SPY' %}<span class="l-en">Benchmark</span><span class="l-zh">基准</span>{% elif row.get('relative_return') is number and row.get('relative_return') is not sameas true and row.get('relative_return') is not sameas false %}{{ '%+.2f%%'|format(row.get('relative_return') * 100) }}{% else %}<span class="l-en">Not comparable</span><span class="l-zh">不可比</span>{% endif %}</span></td>
+          <td role="cell" data-label-en="Interpretation" data-label-zh="解读"><span>
+          {% if row.get('classification') == 'RELATIVE_RESILIENCE_ONLY' %}<span class="l-en">Lost less, or flat; not a positive gain.</span><span class="l-zh">跌幅较小或持平，并非正收益。</span>
+          {% elif row.get('classification') == 'POSITIVE_AND_OUTPERFORMING' %}<span class="l-en">Positive and outperforming in this window.</span><span class="l-zh">本窗口收益为正且跑赢基准。</span>
+          {% elif row.get('classification') == 'UNDERPERFORMING' %}<span class="l-en">Underperformed in this window.</span><span class="l-zh">本窗口跑输基准。</span>
+          {% elif row.get('classification') == 'IN_LINE' %}<span class="l-en">In line with the benchmark.</span><span class="l-zh">与基准一致。</span>
+          {% elif row.get('instrument_id') == 'SPY' and row.get('status') == 'OBSERVED' %}<span class="l-en">Comparison anchor, not a preferred holding.</span><span class="l-zh">比较基准，并非优选持仓。</span>
+          {% else %}<span class="l-en">Evidence withheld: {{ row.get('reasons', [])|join(', ')|e }}.</span><span class="l-zh">证据暂不采用：{{ row.get('reasons', [])|join(', ')|e }}。</span>{% endif %}
+          </span></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="gde-receipt" id="gde-multi-asset-limits"><span class="l-en">US-listed proxies, not synchronized native foreign markets. Relative return uses a wealth ratio, not a percentage-point subtraction. Holdings may overlap. Cash is not represented by a bond fund. No prediction, destination ranking or allocation instruction.</span><span class="l-zh">使用美国上市代理，并非同步的海外本土市场。相对收益使用财富比率，而非百分点相减。持仓可能重叠。债券基金不代表现金。此处不提供预测、投资目的地排名或配置指令。</span></p>
+  <details class="gde-disc">
+    <summary><span class="l-en">Source identity and limitations</span><span class="l-zh">来源身份与局限</span></summary>
+    <p class="gde-receipt"><span class="l-en">Captured {{ ma.get('captured_at')|e }}. This proves the snapshot was read, not when the provider first published its history. Individual file hashes do not prove an atomic cross-asset capture.</span><span class="l-zh">读取时间 {{ ma.get('captured_at')|e }}。这仅证明快照已被读取，不证明提供方最初发布历史的时间。各文件哈希不证明跨资产原子快照。</span></p>
+    <p class="gde-receipt tnum">{{ ma.get('context_digest')|e }}</p>
+    {% for row in ma.get('rows', []) if row is mapping %}<p class="gde-receipt"><b>{{ row.get('instrument_id')|e }}</b> · {{ row.get('source_ref')|e }} · <span class="tnum">{{ (row.get('source_digest') or 'unavailable')|e }}</span> · <span class="l-en">latest source session</span><span class="l-zh">最新来源交易日</span> {{ (row.get('last_source_session') or 'unavailable')|e }}</p>{% endfor %}
+  </details>
+  {% else %}
+  <p class="gde-warn"><span class="l-en">Cross-asset evidence is unavailable or does not meet the descriptive-only contract.</span><span class="l-zh">跨资产证据不可用，或不符合仅作描述的约定。</span></p>
+  {% endif %}
+</section>
