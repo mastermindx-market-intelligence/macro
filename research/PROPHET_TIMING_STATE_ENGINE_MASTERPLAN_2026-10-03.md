@@ -1,3 +1,19 @@
+## Archival status — 2026-11-06
+
+This file preserves the original 2026-10-03 proposal from PR #8325. The historical text below is retained unchanged. Its architecture/research “freeze,” implementation frontier, and Astra handoff describe that proposal; they do not establish a current accepted execution specification, authorize runtime work, or demonstrate completion of the PTSE programme.
+
+Later reviews materially corrected the proposal:
+
+- The [2026-10-03 execution-specification review](https://github.com/mastermindx-market-intelligence/macro/pull/8325#issuecomment-5968075161) requested changes, including event-independent B0 versus event-qualified C1, all six action contracts, namespace reconciliation, and explicit ratification of proposed statistical gates.
+- The [W7 relation correction](https://github.com/mastermindx-market-intelligence/macro/pull/8325#issuecomment-5983415480) requires the exact candidate source-event → B1 relation after B1 intake. It rejects post-B1 rewriting of keep-FIRST candidate rows and ticker fallbacks. The [W3 owner clarification](https://github.com/mastermindx-market-intelligence/macro/pull/8325#issuecomment-5983511691) preserves the incumbent physical owner and closed existing schemas; any PTSE sub-grain requires that owner's explicit acceptance.
+- The [W8 plan-relation correction](https://github.com/mastermindx-market-intelligence/macro/pull/8325#issuecomment-5985301988) records an exact owner-proven plan → B1 subset at its dated census, rather than a universal missing relation. The [prior-exit clarification](https://github.com/mastermindx-market-intelligence/macro/pull/8325#issuecomment-5985328486) records the separate position/exit-owner gaps and fail-closed REENTRY boundary. Candidate re-arm, model-plan closure and a closed portfolio row are not interchangeable with an attributable prior-exit receipt.
+
+These links preserve the dated review record; they do not certify today's runtime state or accept a new implementation. Archiving this proposal does not release any existing #7929 hold or unresolved effect, satisfy outstanding source/review/CI/owner gates, create a second shadow/outcome/exit ledger, or grant predictive, sizing, trading or production authority. Subsequent work must use current protected source and accepted owner contracts.
+
+### Original proposal — preserved below
+
+---
+
 # Prophet Timing State Engine — Research Audit and Implementation Masterplan
 
 Status: architecture/research freeze; zero runtime authority  

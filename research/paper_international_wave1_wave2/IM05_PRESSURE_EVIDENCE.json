@@ -1,0 +1,24 @@
+{
+  "status": "ACCEPTED_SCOPED_SOURCE",
+  "run_id": "paper-01a1101f-im05-pressure-review-r1",
+  "source_hashes": {
+    "lib/intl_workspace_risk_pressure.py": "a2946557760294c066c35651931126b0eb70be9374355805da0cded3b488ff79",
+    "tests/test_intl_workspace_risk_pressure.py": "558d17c06ce3dafbe22ac33b4c05457f143a70ecd496e87e0d260b6cc17c37f1",
+    "tests/test_intl_workspace_risk_pressure_independent.py": "21b2d7a13dabdb812732f3dbbed1fbf835e4863f2cbaae70a2d426396536d3e4"
+  },
+  "review": "Grok 4.6 PASS_SCOPED with no findings; parent reviewed exact source and independent countercases",
+  "parent_validation": {
+    "author": 41,
+    "independent": 99,
+    "combined": 140,
+    "genuine_red_to_green": "39 initial stub failures; additional huge finite int and future annual actual failures fixed"
+  },
+  "integration": {
+    "ci_owner": "international-workspace-foundation",
+    "test_packaging": "97 behavioral independent tests copied unchanged; two immutable snapshot/static-import review checks retained in external evidence only",
+    "repository_cases_passed": 138,
+    "ci_scope_and_packing_cases_passed": 3,
+    "ci_scope_and_packing_seconds": 96.74
+  },
+  "limits": "Typed pressure projection requires already admitted owner fields and exact support. No acquisition, eligibility grant, root, UI or live data acceptance."
+}
