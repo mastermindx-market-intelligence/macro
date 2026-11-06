@@ -3,7 +3,7 @@
   "root_id": "macro-always-on-shared-shell-20261105-c3",
   "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T04:33:32.014433+00:00",
+  "recorded_at": "2026-11-06T05:20:23.727955+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -36,10 +36,15 @@
       "returned_response": {
         "sha256": "1d93f71dc4a818264243dea6cc52a945628dc9bd1ddb39fcddafd89f2288e63d",
         "bytes": 3707,
-        "text": "Done. The bounded slice is implemented, verified, and committed locally.\n\n## Deliverable\n\n| | |\n|---|---|\n| **Commit** | `bd7c4437992cca7db8d9fbacbd9fcf532baa590e` |\n| **Base (parent)** | `bd11984e445209f79248951d773f2a4cdb3f18d1` (= PR #10780 head) |\n| **Branch** | `claude/ssd-pr-10780-713c29b3e7c8eefe` (local only, not pushed) |\n| **Workspace** | `/Volumes/STORAGE/agent-workspaces/claude/8ed429a11612cd7b/pr-10780-713c29b3e7c8eefe` (managed external SSD worktree, tree clean) |\n| **Files** | `app/sector_generation.py` (423), `tests/test_sector_generation_api.py` (647), `docs/SECTOR_GENERATION_API_CONTRACT.md` (300) — 1370 insertions, 3 new files, nothing else touched |\n\n## Interface\n\n```python\nreader.read_selected_generation(SectorGenerationRequest(audience=\"preview\"|\"entitled\"))\n    -> SectorGeneration(payload: Mapping, source_session: str, published_at: str, qualification: str)\n```\nRouter factory: `create_router(reader)` → `GET /api/sector-generation?audience=preview|entitled`. One resolution rule: injected reader wins, else `app.state.sector_generation_reader`.\n\n## How access is decided\n\n`app.regwall.regwall_check` then `app.paywall.paywall_check`, in Caddy's order, over a **controlled request view**: cookie preserved; `x-original-uri`/`x-original-kind` overwritten with the server-owned resource and `asset`; every `sec-fetch-*` dropped. Reader is called exactly once, after every required gate is affirmative. `preview` requires the four `/sectordata`+`/basketdata` resources (policy leaves them premium — not a free tier); `entitled` adds `/premiumdata/sector_central.json` (enforced early, so `PAYWALL_ENABLED=0` cannot open it). `config/site_access.yml` untouched.\n\nErrors are closed codes only (`400 REQUEST_INVALID`, `401 AUTHENTICATION_REQUIRED`, `403 ENTITLEMENT_REQUIRED`, `404 RESOURCE_NOT_AVAILABLE`, `503 SERVICE_UNAVAILABLE | SECTOR_GENERATION_UNAVAILABLE | SECTOR_GENERATION_TOO_LARGE`); `private, no-store` + `Vary: Cookie` on success and every failure; ≤4 MiB encoded, finite values only; source session/publication/qualification copied verbatim.\n\n## Receipts\n\n- New suite: **31 passed**; new + incumbent auth suites: **351 passed** (`test_regwall`, `test_regwall_json_gate`, `test_api_paywall`, `test_auth_cache_outage`, `test_paywall`, `test_paywall_pro_gate`, `test_api_no_store`) — existing auth tests unchanged.\n- CI guard suites on this head: **365 passed, 2 skipped** (`test_ci_pack`, `test_ci_trigger_closure`, `test_contract_delta`).\n- `ruff check` clean (E,F,B,PLE,PLW,PLC,SIM,UP); `PLR0911` is repo-idiomatic — `app/paywall.py` trips it too.\n- The 31 tests are **transport proofs over a qualified-reader fixture**. They prove nothing about generation coherence or freshness.\n\n## Integration limitations (parent's to close)\n\n1. **Router wiring** — `app/main.py` deliberately untouched; a test asserts it stays unwired.\n2. **CI home for the new suite.** `scripts/check_contract_delta.py --base bd11984e4452` exits **1** with `1 introduced, 0 inherited`; the single finding is `tests/test_sector_generation_api.py is a new pytest suite named by no run: step in any workflow`. No import-closure findings, no trigger gaps. Fix = a `run:` step in the `paywall-contracts` job (`.github/ci/legacy-jobs.yml` + its `ci-main-heartbeat.yml` mirror, which already carry the `fastapi`/`httpx` line) plus `app/sector_generation.py` and the test file in that job's `paths:`. CI edits were out of scope here.\n3. **No reader exists yet** — until the corrected publisher + pure projection land, the route answers 503 with no legacy fallback.\n\nNo push, PR, merge, deploy, provider call, Slack or email. Original root/grants preserved; no delegation performed.\n",
+        "text": "Done. The bounded slice is implemented, verified, and committed locally.\n\n## Deliverable\n\n| | |\n|---|---|\n| **Commit** | `bd7c4437992cca7db8d9fbacbd9fcf532baa590e` |\n| **Base (parent)** | `bd11984e445209f79248951d773f2a4cdb3f18d1` (= PR #10780 head) |\n| **Branch** | `claude/ssd-pr-10780-713c29b3e7c8eefe` (local only, not pushed) |\n| **Workspace** | `/Volumes/STORAGE/agent-workspaces/claude/8ed429a11612cd7b/pr-10780-713c29b3e7c8eefe` (managed external SSD worktree, tree clean) |\n| **Files** | `app/sector_generation.py` (423), `tests/test_sector_generation_api.py` (647), `docs/SECTOR_GENERATION_API_CONTRACT.md` (300) \u2014 1370 insertions, 3 new files, nothing else touched |\n\n## Interface\n\n```python\nreader.read_selected_generation(SectorGenerationRequest(audience=\"preview\"|\"entitled\"))\n    -> SectorGeneration(payload: Mapping, source_session: str, published_at: str, qualification: str)\n```\nRouter factory: `create_router(reader)` \u2192 `GET /api/sector-generation?audience=preview|entitled`. One resolution rule: injected reader wins, else `app.state.sector_generation_reader`.\n\n## How access is decided\n\n`app.regwall.regwall_check` then `app.paywall.paywall_check`, in Caddy's order, over a **controlled request view**: cookie preserved; `x-original-uri`/`x-original-kind` overwritten with the server-owned resource and `asset`; every `sec-fetch-*` dropped. Reader is called exactly once, after every required gate is affirmative. `preview` requires the four `/sectordata`+`/basketdata` resources (policy leaves them premium \u2014 not a free tier); `entitled` adds `/premiumdata/sector_central.json` (enforced early, so `PAYWALL_ENABLED=0` cannot open it). `config/site_access.yml` untouched.\n\nErrors are closed codes only (`400 REQUEST_INVALID`, `401 AUTHENTICATION_REQUIRED`, `403 ENTITLEMENT_REQUIRED`, `404 RESOURCE_NOT_AVAILABLE`, `503 SERVICE_UNAVAILABLE | SECTOR_GENERATION_UNAVAILABLE | SECTOR_GENERATION_TOO_LARGE`); `private, no-store` + `Vary: Cookie` on success and every failure; \u22644 MiB encoded, finite values only; source session/publication/qualification copied verbatim.\n\n## Receipts\n\n- New suite: **31 passed**; new + incumbent auth suites: **351 passed** (`test_regwall`, `test_regwall_json_gate`, `test_api_paywall`, `test_auth_cache_outage`, `test_paywall`, `test_paywall_pro_gate`, `test_api_no_store`) \u2014 existing auth tests unchanged.\n- CI guard suites on this head: **365 passed, 2 skipped** (`test_ci_pack`, `test_ci_trigger_closure`, `test_contract_delta`).\n- `ruff check` clean (E,F,B,PLE,PLW,PLC,SIM,UP); `PLR0911` is repo-idiomatic \u2014 `app/paywall.py` trips it too.\n- The 31 tests are **transport proofs over a qualified-reader fixture**. They prove nothing about generation coherence or freshness.\n\n## Integration limitations (parent's to close)\n\n1. **Router wiring** \u2014 `app/main.py` deliberately untouched; a test asserts it stays unwired.\n2. **CI home for the new suite.** `scripts/check_contract_delta.py --base bd11984e4452` exits **1** with `1 introduced, 0 inherited`; the single finding is `tests/test_sector_generation_api.py is a new pytest suite named by no run: step in any workflow`. No import-closure findings, no trigger gaps. Fix = a `run:` step in the `paywall-contracts` job (`.github/ci/legacy-jobs.yml` + its `ci-main-heartbeat.yml` mirror, which already carry the `fastapi`/`httpx` line) plus `app/sector_generation.py` and the test file in that job's `paths:`. CI edits were out of scope here.\n3. **No reader exists yet** \u2014 until the corrected publisher + pure projection land, the route answers 503 with no legacy fallback.\n\nNo push, PR, merge, deploy, provider call, Slack or email. Original root/grants preserved; no delegation performed.\n",
         "accepted": false
       },
-      "parent_disposition": "RETURNED_SOURCE_REVIEW_PENDING"
+      "parent_disposition": "RETURNED_SOURCE_REVIEW_PENDING",
+      "parent_source_checkpoint": {
+        "commit": "3de008a43b17811cb048b1f0f65e145e8bb2cd6f",
+        "state": "PUBLISHED_INACTIVE",
+        "proof": "84 API and projection tests passed; router unmounted; no concrete reader yet"
+      }
     },
     {
       "name": "bundle-final",
@@ -74,7 +79,12 @@
         "worker_start_proven": false,
         "result_available": false
       },
-      "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY"
+      "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY",
+      "parent_source_checkpoint": {
+        "commit": "a2f4cf382f3368381872d6d068acf4caa4c6b8ca",
+        "state": "PUBLISHED_INACTIVE",
+        "proof": "Original publisher integrated with parent corrections; verified one-snapshot read facade; no active producer"
+      }
     },
     {
       "name": "source-barrier",
@@ -156,7 +166,43 @@
         "owned_cleanup_residual_count": 0,
         "parent_disposition": "NO_QUALIFIED_NEW_RESULT_PRIVATE_EFFECT_ABSENCE_NOT_CLAIMED_NO_REPLAY"
       },
-      "parent_disposition": "NO_QUALIFIED_NEW_RESULT_PRIVATE_EFFECT_ABSENCE_NOT_CLAIMED_NO_REPLAY"
+      "parent_disposition": "NO_QUALIFIED_NEW_RESULT_PRIVATE_EFFECT_ABSENCE_NOT_CLAIMED_NO_REPLAY",
+      "parent_source_checkpoint": {
+        "base_sha": "57f6bff220a71f3c2376d394bceff45131addc1d",
+        "candidate_recovered": "077fb1e8208b5619d40ee73bae1705a9fe686229",
+        "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+        "contract": "research/market_os/SECTOR_CYCLE_EXPLICIT_INPUT_CONTRACT_2026-11-06.md",
+        "proof": {
+          "passed": 297,
+          "skipped": 4,
+          "warnings": 6,
+          "pytest_exit": 0,
+          "log_sha256": "f1cd30f52966665d083826c5521d949db9e333de2661b720d0476e78741f0900",
+          "suite_files": [
+            "tests/test_sector_cycles_explicit_inputs.py",
+            "tests/test_hazard_score.py",
+            "tests/test_cycles.py",
+            "tests/test_cycle_proxies.py",
+            "tests/test_cycle_phase_age.py",
+            "tests/test_entry_gate.py",
+            "tests/test_session_anchor_invariance.py",
+            "tests/test_cycle_rhythm_disclosure.py",
+            "tests/test_hazard_parity.py",
+            "tests/test_sector_metric_definitions.py"
+          ],
+          "actual_base_sector_blob": "0ee680d46574723cd9bff07fff777b8005529186",
+          "hazard_fixture_blobs": [
+            "54530e57b4030cc04c432243008db7522a738472",
+            "38221010a2d6c51adfe48209e73bf9cc240e3b6d"
+          ]
+        },
+        "limits": [
+          "Runtime producer inputs not yet wired",
+          "No deployment or data ownership activation",
+          "CI registration action remains policy-blocked",
+          "Historical legacy member-tail behavior retained; strict core refuses future tails"
+        ]
+      }
     },
     {
       "name": "terminal-native",
@@ -183,10 +229,10 @@
           "contract-faithful fixtures under terminal/e2e/fixtures and focused browser proof/evidence if incumbent test conventions require"
         ],
         "contract": "Decode exactly published data.schema sector_native_view.v1, audience preview/entitled, brief and board dates/fields, and receipt schema sector_native_view.receipt.v1/source macro.sector/generation_id/source_session/published_at/qualification/input_version/baseline_session/content_sha256. Strict dates/enums/finite points and visible count consistency. Brief/board dates must match receipt baseline or source session. Render supplied21point comparison, labels/order/budgets; never recompute wealth, rank or invent entry authority. Keep source construction/history notes and not_declared_by_chart basis. Missing comparison is unavailable, not zero. A typed API wrapper is not finalized; do not invent one.",
-        "placement": "Insert market-wide Brief and board inside existing Discover→Sectors, before or beside existing discovery content. Clearly distinguish market-wide leadership from the selected sector. Preserve Rotation/Discover/Breadth, research depth, source panel, Back/Forward, selection, scroll, focus and original current tools. Use existing callbacks for Review rotation/Check participation and only unambiguous native subject mappings. Do not map equal-weight basket IDs to ETFs. Preserve validated safe owner links otherwise. Use existing visual tokens, original working product conventions and coherent responsive spacing; avoid implementation jargon in the main user flow. Put necessary provenance detail in source/evidence disclosure.",
+        "placement": "Insert market-wide Brief and board inside existing Discover\u2192Sectors, before or beside existing discovery content. Clearly distinguish market-wide leadership from the selected sector. Preserve Rotation/Discover/Breadth, research depth, source panel, Back/Forward, selection, scroll, focus and original current tools. Use existing callbacks for Review rotation/Check participation and only unambiguous native subject mappings. Do not map equal-weight basket IDs to ETFs. Preserve validated safe owner links otherwise. Use existing visual tokens, original working product conventions and coherent responsive spacing; avoid implementation jargon in the main user flow. Put necessary provenance detail in source/evidence disclosure.",
         "lifecycle": "Extend the ONE existing SectorIntelligenceWorkspace request owner/effect and60s foreground/visibility-resume lifecycle with an optional injectable native reader. Reader gets the existing cancellation signal. Store the whole native envelope as ONE owner-scoped value; brief/board/receipt adopt atomically. Newgeneration/qualification/publication must update even with unchanged visible hash. Account/access changes clear prior privileged data and late prior-owner results never apply. Reuse existing failure-clearing/retention policy; do not weaken fail-closed access behavior or add a privileged-content cache. An accepted server rollback can have an earlier date/opaque ID. Unbound reader makes NO network request. No new timer/poller/proxy/endpoint/auth/watch store; do not synthesize fallback Brief from independent feeds.",
         "exclusions": "Do not touch terminal/app/api/sector-intelligence/route.ts, heatmap transport, upstreams, auth, Supabase/watch services, global shell, deployment,CI/package manifests, or the frozen queued workspace. Do not expand SectorFeed union to force a dormant handler change. Separate native transport typing until parent binding. No source collection, publisher, new calculation, write-capable watch evaluator, or custom login.",
-        "tests": "Actual decoder+render+owner lifecycle tests: A→B swaps all panels/receipt together; internaldate mismatch rejected as a whole; explicit olderbaseline visible; samehash newreceipt/qualification shown; preview hiddenrows neverDOM; approvedcounts and sharedhold/avoid preserved fromserver; missingevidence honest; identity/accessrevocation clears and delayedparse cannotrestore; onepereligiblecycle, nohiddenpolling, coalescedresume/timeout; nav/returncontext intact; English/Chinese andlight/dark, keyboard, desktop/tablet/mobile. Run existing relevant refresh/depth/exposure/discovery suites, not fullestate. Useexistingdependencies. Capture real local browser screenshots and report actual test commands/receipts; do not call fixtures authenticatedbeta proof.",
+        "tests": "Actual decoder+render+owner lifecycle tests: A\u2192B swaps all panels/receipt together; internaldate mismatch rejected as a whole; explicit olderbaseline visible; samehash newreceipt/qualification shown; preview hiddenrows neverDOM; approvedcounts and sharedhold/avoid preserved fromserver; missingevidence honest; identity/accessrevocation clears and delayedparse cannotrestore; onepereligiblecycle, nohiddenpolling, coalescedresume/timeout; nav/returncontext intact; English/Chinese andlight/dark, keyboard, desktop/tablet/mobile. Run existing relevant refresh/depth/exposure/discovery suites, not fullestate. Useexistingdependencies. Capture real local browser screenshots and report actual test commands/receipts; do not call fixtures authenticatedbeta proof.",
         "acceptance": "Local commit only, return immutable head/base/tree/workspace/changedfiles and accessible patch/evidence. Completion claim limited to native Brief/action-board fixture qualification. Production BFF/readbinding/API, core/history coherence, Watches and entire userjourney/wholeestate acceptance remain parent integration obligations. If a source ambiguity blocks safe implementation, reportexact source and bounded decision. No push/PR/merge/deploy/Slack/email, no duplicate existingreleaseeffect."
       },
       "observed_status": {
@@ -310,7 +356,12 @@
         "text": "REMOTE_SUB_ADMISSION_REFUSED {\"active_count\":6,\"allowed\":false,\"cpu_count\":24,\"json_locked_count\":6,\"legacy_count\":0,\"load1\":8.208,\"load_ratio_limit\":0.4167,\"max_active\":18,\"reasons\":[\"host_temperature_at_or_above_limit\"],\"stale_reaped\":[]}\n",
         "accepted": false
       },
-      "parent_disposition": "PRETASK_THERMAL_REFUSAL_NO_REPLAY_PARENT_RECOVERY"
+      "parent_disposition": "PRETASK_THERMAL_REFUSAL_NO_REPLAY_PARENT_RECOVERY",
+      "parent_source_checkpoint": {
+        "commit": "2b1ee3c6ec55ab8d47d4f61d38136834a5754cef",
+        "state": "PUBLISHED_INACTIVE",
+        "proof": "96 focused tests and16 actual-base/adapter/core comparisons with12 digests"
+      }
     },
     {
       "name": "theme-allocation",
@@ -330,7 +381,7 @@
           "engine/group_flow.py (only the existing setup acquisition seam needed by these consumers)",
           "focused explicit-input tests and concise source contract document"
         ],
-        "context": "Parent inspected build_baskets→baskets/theme_scoring/narrative_rotation/theme_context. Separate worker basket-context owns engine/baskets.py and engine/theme_context.py; do not edit those. Its context core will receive current allocation, current theme intelligence, history and alignment explicitly. New14-name Yahoo cohort alone is insufficient because original Brief leaders/chart also use broad panels and extras. Existing builders write history/snapshots/HTML and cannot serve as runtime pure cores. Prior audit research/market_os/ALWAYS_ON_MACRO_INPUT_RUNTIME_AUDIT_2026-11-05.md is evidence with parent qualifications.",
+        "context": "Parent inspected build_baskets\u2192baskets/theme_scoring/narrative_rotation/theme_context. Separate worker basket-context owns engine/baskets.py and engine/theme_context.py; do not edit those. Its context core will receive current allocation, current theme intelligence, history and alignment explicitly. New14-name Yahoo cohort alone is insufficient because original Brief leaders/chart also use broad panels and extras. Existing builders write history/snapshots/HTML and cannot serve as runtime pure cores. Prior audit research/market_os/ALWAYS_ON_MACRO_INPUT_RUNTIME_AUDIT_2026-11-05.md is evidence with parent qualifications.",
         "requirements": "Retain existing compute_theme_intel and compute_narrative_rotation acquisition adapters/signatures/default behavior. Add explicit captured value bundles and core functions for the actual accepted algorithms. Audit their transitive helper inputs before claiming closure. Theme scoring uses group_flow._setup panel, macro context, signal calibration, volatility snapshot/configuration and prior Sector artifact conflict demotion with an existing freshness rule. Capture that PRIOR-generation dependency; never substitute an in-progress current Sector output and create a calculation cycle. Narrative allocation depends on theme/basket inputs and calibration/context; expose actual inputs, do not copy another implementation. No loader callbacks masquerading as values, global cache/config replacement, or environment patching.",
         "semantics": "All source dates, coverage/adjustment semantics, allocation ranks, labels, stance, scoring, eligibility and authority remain unchanged. Current allocation and theme intelligence must share the accepted session before context is called; do not relabel yesterday's allocation. Empty/missing supplied inputs are explicit absence, no fallback loaders. Calculation must not mutate inputs or return aliases. Evaluation time must be explicit wherever the current code uses a clock. Existing canonical ledger/grade/snapshot/alert owners remain separate; do not advance them or add a new writer.",
         "tests": "Compare complete outputs to actual base implementation over the same controlled acquired inputs. Include missing/partial panels, explicit absent calibrations/context, prior Sector current/stale/missing demotion, normal allocation and meaningful score/rank transitions. Trap undeclared data/config/file/clock/provider reads across the relevant calculation chain and all ledger/snapshot/notification/HTML writes after acquisition. Distinct explicit contexts must remain isolated from ambient caches; altering a supplied input must change the expected observable field. Preserve legacy failure isolation. Run focused existing direct-neighbor suites, not full estate. Report any remaining transitive dependency honestly rather than narrowing read traps.",
@@ -535,19 +586,149 @@
           "Replace optional reader-only injection with explicit optional nativeBinding{readonly key:string,readonly audience:SectorNativeAudience,readonly read:SectorNativeReader}. Owner includes existing shellidentity/revision/activefeeds and stable bindingkey+audience. Sameaccount bindingkey/audience change immediately hidesolddata/cancelsread; lateentitledresult cannotrestorepreview. Ref latestreadclosure so unchangedsemanticbinding/newclosure doesn'trestart. Missing/invalidbindingfailclosed, unboundno native request. No extraauthsubscription.",
           "10s native timeout currently only aborts signal, leaves nativePending forever for noncooperativepromise. Race owner-controlleddeadline/cancellationsettlement withread; timeout releases slot, followsfailureclearpolicy, nexteligiblecyclecanstart. Guard queuedupdates withowner ANDattemptidentity; late resolve/reject cannotmutate newerstate orclearnewerattempt orcauseunhandledrejection. Clear timers/listeners onsettle/dispose; ownerexit immediatecancel. RetainONEexisting60sforegound/visibilityresumeeffect, coalescing, nohiddeninterval/newpoller orlegacyfeedchanges.",
           "Publication time regex currently admits impossibledate/time and rejects producerallowedspace separator. Validate realcalendar,time,awareoffset; acceptordinaryT/space awareforms supportedby pinnedAPI, preserveoriginaltext, discloseanyremainingparsermismatch. Enforce previewcap0..100 BOTH exact/lowerboundinference branches; reject101, preserve0/100/sharedholdavoid. finite safeintegercounts,10krows/lane,1kgroups,exact21points, sixlanes/count equality remain. No truncationrepair ofmalformedinput.",
-          "readSafeHref currently accepts whitespace-prefixedprotocolrelative external (' //outside.example/page.html'). Reject whitespace/controlprefixes and validateparsedURLsemantics, preservevalidrelativeownerpages, omitbadlinkwithoutrowloss. Render via incumbentresolveSharedShellLink/catalog; no newroutecatalog, unknownpaths mustnotappearworking. Change siNativeBaselineCurrent EN 'Same as source session', ZH '与来源交易日相同'. Nullbaseline equality≠freshmarket."
+          "readSafeHref currently accepts whitespace-prefixedprotocolrelative external (' //outside.example/page.html'). Reject whitespace/controlprefixes and validateparsedURLsemantics, preservevalidrelativeownerpages, omitbadlinkwithoutrowloss. Render via incumbentresolveSharedShellLink/catalog; no newroutecatalog, unknownpaths mustnotappearworking. Change siNativeBaselineCurrent EN 'Same as source session', ZH '\u4e0e\u6765\u6e90\u4ea4\u6613\u65e5\u76f8\u540c'. Nullbaseline equality\u2260freshmarket."
         ],
-        "preserve": "Singleatomicdata+receiptadoption; samehash/newreceiptqualificationsupdates; acceptedrollbackolderdate/opaqueid; accepted|stale|degraded comesfromservernotpolltime; failureclearsprivilegeddata withoutindependentlegacyfallback; contenthashformatchecknotcryptographicverification. Preserve Rotation/Discover/Breadth, researchdepth, sourcepanel, BackForward, selection/scroll/focus, ENZH, themeskeyboardand3viewports. Literal capturedproducer preview/entitled/olderbaselinefixtures unchangedexceptwrappers. NoCSSredesign/dependency/package/lockfile/CI/globalshellchange. DevharnessproductionnotFound guard stays, fixtureevidence≠production404proof.",
-        "tests": "Regression againstunmodifiedb441: real3dewrapper success, raw/error/wrongschema/facts/audiencefail; bindingA→B/entitled→preview sameaccount immediatehideandlateisolation; closureidentitynostart; noncooperativepromisetimeoutthennewrefreshlatefulfill/rejectsafe; impossible/leapdates/times/offsets/naive+validawareforms; preview101bothbranches reject,0/100budgetpass; unsafehrefprefixreject,actualcatalogownerlinkpreserveunknownomitted. Original atomicadoption/stale/olderbaseline/samehash/rollback/hiddenresume/unbound/nav testsretain. Run3native suites+relevantincumbentrefresh/depth/exposure/discovery, existingtsc/lint, focusedlocalbrowser proof ENZH lightdark responsive. Do not rerunwhole18875estatewithoutconcreteneed orweakenassertions. Recordexisting2fulltree inheritedfailuresseparately.",
+        "preserve": "Singleatomicdata+receiptadoption; samehash/newreceiptqualificationsupdates; acceptedrollbackolderdate/opaqueid; accepted|stale|degraded comesfromservernotpolltime; failureclearsprivilegeddata withoutindependentlegacyfallback; contenthashformatchecknotcryptographicverification. Preserve Rotation/Discover/Breadth, researchdepth, sourcepanel, BackForward, selection/scroll/focus, ENZH, themeskeyboardand3viewports. Literal capturedproducer preview/entitled/olderbaselinefixtures unchangedexceptwrappers. NoCSSredesign/dependency/package/lockfile/CI/globalshellchange. DevharnessproductionnotFound guard stays, fixtureevidence\u2260production404proof.",
+        "tests": "Regression againstunmodifiedb441: real3dewrapper success, raw/error/wrongschema/facts/audiencefail; bindingA\u2192B/entitled\u2192preview sameaccount immediatehideandlateisolation; closureidentitynostart; noncooperativepromisetimeoutthennewrefreshlatefulfill/rejectsafe; impossible/leapdates/times/offsets/naive+validawareforms; preview101bothbranches reject,0/100budgetpass; unsafehrefprefixreject,actualcatalogownerlinkpreserveunknownomitted. Original atomicadoption/stale/olderbaseline/samehash/rollback/hiddenresume/unbound/nav testsretain. Run3native suites+relevantincumbentrefresh/depth/exposure/discovery, existingtsc/lint, focusedlocalbrowser proof ENZH lightdark responsive. Do not rerunwhole18875estatewithoutconcreteneed orweakenassertions. Recordexisting2fulltree inheritedfailuresseparately.",
         "return_contract": "Localcommitonly exactbase/head/tree/workspacechangedfilescleanstatus; repaironlyb441..head ANDcumulative847..headpatches withbytesSHA256, actualcommands/results/discriminatingbaselineevidence/screenshots/prooflimits. Scope stillunboundnativefoundation; parentownsBFF/runtimefreshness/corehistory/Watches/beta/fullestate.",
         "exclusions": "No terminal/app/api/** or existingBFFPR1285handler/upstreams/auth, noPR1311workspace/branch, nofetch/config/transportbinding, noqueue/deploy/providers/liveproductionrequests/Slack/email/childfanout. No push/PR/merge. On custodyconflict/explicitdenial/missingimmutableinput/outofscopeneed reportexactblocker retainoriginaleffect; no carrier/host/model replay."
       },
       "observed_status": {
-        "state": "CONTROLLER_CREATED",
+        "state": "VERIFIED_TERMINAL",
         "controller_pid": 2113,
-        "worker_start_proven": false
+        "worker_start_proven": false,
+        "rc": 1,
+        "root_verified": true,
+        "reason": "provider_rate_limit",
+        "signal": "quota",
+        "result_consumption_authorized": false,
+        "retry_authorized": false,
+        "owned_remote_process": {
+          "pid": 2573796,
+          "pgid": 2573796,
+          "started_at": "2026-11-06T04:31:01.947Z",
+          "ended_at": "2026-11-06T04:58:02.295Z",
+          "cleanup_identity_verified": true,
+          "cleanup_census_proven": true,
+          "cleanup_residual_count": 0,
+          "cleanup_status": "not_needed",
+          "cleanup_reason": "normal_completion"
+        },
+        "qualified_candidate_proven": false
       },
-      "parent_disposition": "ORIGINAL_NEW_EFFECT_RETAINED_NO_REPLAY"
+      "parent_disposition": "ORIGINAL_PROCESS_EFFECT_RECONCILED_NO_RESULT_CONSUMPTION_OR_RETRY_PRIVATE_SOURCE_NOT_ADOPTED_PARENT_RESERVED_SOURCE_RECOVERY"
+    },
+    {
+      "name": "source-barrier-repair",
+      "run_id": "macro-always-on-20261106-c3-source-barrier-repair-01",
+      "work_packet": {
+        "objective": "Repair the retained, unaccepted source-barrier candidate under the existing Macro updater and three live service owners. Implement crash-safe source admission, loaded-unit recovery, and per-timer activity preservation; do not activate anything.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "57f6bff220a71f3c2376d394bceff45131addc1d",
+          "candidate_base": "bd11984e445209f79248951d773f2a4cdb3f18d1",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "custody": "This is a new bounded repair after parent reconciliation, not replay/resume of timed-out source-barrier-01. That original run ended rc124 at04:07:50Z; owned ubuntu1 PID/session594209 cleanup identity+census proven, residual0. Exact private workspace remains untouched at bd11984e, branch lane/macro-always-on-20261106-c3-source-barrier-01. Original 4-file partial diff and separate untracked test have verified immutable content. No successful worker return/acceptance claimed. Use AUTO routing, one new isolated managed workspace. Parent canonical PR10780 workspace is reserved; never edit it. No host/model override. If 57f source unavailable, exact published3de008a43b17811cb048b1f0f65e145e8bb2cd6f is permitted as isolated repair base ONLY after verifying the five scope paths match; report actual base. Parent will integrate. Never mutate original private carrier.",
+        "inputs": {
+          "patch": "/tmp/mmx-source-barrier-candidate-20261106.patch on M2, 23980 bytes SHA256 bae0e2feb320084815dd707b635397e55e301014355743acd746fc9e733d1aba; remote /home/longr/lanes/tmp/macro-always-on-20261106-c3-source-barrier-01/candidate.diff",
+          "test": "/tmp/mmx-source-barrier-test-20261106.py on M2, 42687 bytes SHA256 62e226c221771191096b635dcd9f6f7e3c0ce0fc1d20f401c7ad81c7d8f0b05a; remote /home/longr/lanes/macro-always-on-20261106-c3-source-barrier-01/wt/tests/test_macro_live_source_barrier.py. Diff omits this untracked file.",
+          "findings": "Shared nonblocking flock before Python and exclusive updater mutation lock are useful. Current defects: failed daemon-reload leaves matching installed files so no unchanged-tick retry; invalid staging/verify still resets checkout and exits0; failed reset can leave mixed source after lock release; first-install pauses cron but not existing updater; timer restart starts all3 then asks to stop unadmitted ones. Retained31 tests pass but omit these failures. Retained affected suite2354 pass/1 fail test_market_memory_options_deploy::test_legacy_api_dropin_migration_is_exact_and_fail_closed; log wrapper exit0 does NOT prove pytest green. Static source shows no direct candidate change causing it, but baseline not proven."
+        },
+        "write_scope": [
+          "app/deploy/update.sh",
+          "app/deploy/macro-live-fast.service",
+          "app/deploy/macro-live-snapshot.service",
+          "app/deploy/macro-live-bars.service",
+          "tests/test_macro_live_source_barrier.py",
+          "research/market_os/LIVE_SOURCE_BARRIER_RECOVERY_2026-11-06.md (source contract and exact proof only)"
+        ],
+        "design": [
+          "Keep existing updater fd9 /var/lock/macro-update.lock and one new narrow shared/exclusive source barrier /var/lock/macro-live-source.lock. Never unlink lock. Fetch/candidate staging/verify outside source lock. This covers only3 short-lived live-orchestrator services, not estate-wide source safety.",
+          "Use one fixed persistent updater-owned pending transaction record under EXISTING /var/lib/macro-live/state, e.g. source-update.pending. This is source-deploy recovery under incumbent updater, no new scheduler/watcher/control owner. Record schema, exact target SHA, prior SHA, per-timer enabled+active state; no TTL/expiry unlock. Durably write temp+file fsync+same-directory rename+parent fsync BEFORE reset. Leave record after any failure; success must make repaired source/unit state durable before removing record and fsync parent, all under exclusive source lock.",
+          "Reader order installed unit: shared flock -> fail-closed pending/state-directory check -> exec Python, lock held throughout. Gate must be inline stable shell or already-installed stable helper OUTSIDE mutable checkout; do not import any /opt/macro Python or source helper to decide source safety. Missing/inaccessible/unexpected state directory, dangling symlink or present/malformed pending path defers/fails closed. Bare test ! -e is insufficient. No fake task/publication/freshness receipt on deferral. Preserve real process failure classification;75 remains intentional defer.",
+          "EARLY RECOVERY in installed /usr/local/bin/macro-update immediately after stable init/fd9, BEFORE source of market-memory-options-unit-boundary.sh/runtime-fence.sh/dropin-migration.sh or any repository import. Parse pending as data using stable host facilities, never shell source. Recover ORIGINAL exact recorded target from local git objects BEFORE any fetch/newmain; no network while source lock held. Acquire exclusive nonblocking. Reset exact SHA and verify working source coherence, not HEAD equality alone. Then use existing trusted source helper and unit installer. Pending path must run even HEAD==target/all files match. Invalid pending/target missing/qualification failure retains fence and returns distinct failure; no ordinary fallthrough against damagedsource.",
+          "Stage/verify candidate covered units before source mutation. Invalid or incomplete staging when change/repair required leaves old coherent source, installed/loaded units and readers untouched, documented non-success. With pending recovery, failures keep existing fence. Reuse existing mm_reviewed_unit_file_ready/mm_loaded_unit_ready in app/deploy/market-memory-options-unit-boundary.sh where contract fits: file bytes/ownership/mode/FragmentPath/no dropins/NeedDaemonReload=no. No second attestation implementation. Loaded-manager drift must trigger reload/retry even when installed files match. Later updater reload blocks cannot accidentally admit readers while pending.",
+          "Capture each covered timer's enabled AND active state independently; no blanket fast-enabled means restartall. Never change enablement in ordinary reconciliation. Enabled-but-stopped stays stopped, disabled-but-active not enabled, masked stays masked. Resume only activity legitimately paused; after crash reobserve restrictions so old record does not override a later operator mask/disable. First-install procedure pauses future cron AND settles existing updater, pauses intendedtimers, drains oldunwrappedservice MainPID/ControlPID, installs+attests wrappers, resumes only recorded/permittedstate. Source package alone is not activation.",
+          "Keep actual incumbent updater checkout/site/mirror/API/options behavior outside source transaction. Deferred read lock must preserve real OLD/NEW/CHANGED truth; do not claim candidatecommit applied when no reset. No unrelated API/dropin repair unless exact failure proven introduced; otherwise report base classification. No weakening test/release fences."
+        ],
+        "tests": "Focused real git/tempdir/subprocess tests, use existing stubs plus new failure injection: partial reset AFTER a source file changes cannot allow next reader to import mixed code; terminate updater after durablepending before/duringreset and recover originaltarget without GitHub; reset succeeds/installfails -> pending and no-change recovery; install succeeds/reloadfails -> retry attestation whenfilesmatch; durable removal onlyaftercoherence; invalidcandidate leavesoldHEAD/loadedstate and oldreaders running; earlyrecovery before mutablehelper sourcing; all3timerstates includingenabledstopped/masked/disabledactive; existing basic lock/contention/failuretests preserved. Retained tests' expectations that invalidcandidate stilladvances or partialfailureunlock meanssafe must be corrected to strongeractualcontract, not assertions removed. Run focused suite and exact options failing test; baseline discriminate that failure in sameconditions. Do not rerun2354estate withoutnewconcreterisk. No provider/runtime commands.",
+        "return_contract": "Local commit only, exact base/head/tree/workspace/changedfiles; cumulative source patch including recoveredtest and repair-only comparison ifpossible, bytecounts SHA256; actual tests/logs and honest baseline failures; docs first-install activation steps with explicitremaining other-service coverage. No activation claim.",
+        "exclusions": "No canonical parent edits, no original private workspace changes, no unrelatedunits/timers/config/profile/CI/package/credentials, no live systemctl/cron/provider/production writes, no publish/push/PR/merge/deploy/Slack/email/childfanout. On denial/custody uncertainty/out-of-scope requirement report exact blocker, preserve original effect, no carrier/model/host replay."
+      },
+      "observed_status": {
+        "controller_pid": 17817,
+        "state": "VERIFIED_TERMINAL",
+        "rc": 1,
+        "root_verified": true,
+        "reason": "provider_rate_limit",
+        "signal": "quota",
+        "result_consumption_authorized": false,
+        "retry_authorized": false,
+        "owned_remote_process": {
+          "pid": 2582814,
+          "pgid": 2582814,
+          "started_at": "2026-11-06T04:36:06.622Z",
+          "ended_at": "2026-11-06T04:55:01.781Z",
+          "cleanup_identity_verified": true,
+          "cleanup_census_proven": true,
+          "cleanup_residual_count": 0,
+          "cleanup_status": "not_needed",
+          "cleanup_reason": "normal_completion"
+        },
+        "qualified_candidate_proven": false
+      },
+      "parent_disposition": "ORIGINAL_PROCESS_EFFECT_RECONCILED_NO_RESULT_CONSUMPTION_OR_RETRY_PRIVATE_SOURCE_NOT_ADOPTED_PARENT_RESERVED_SOURCE_RECOVERY"
+    },
+    {
+      "name": "generation-reader",
+      "run_id": "macro-always-on-20261106-c3-generation-reader-01",
+      "work_packet": {
+        "objective": "Implement the concrete, stateless bridge from the existing verified Sector generation reader to the published private Sector API, including native freshness qualification and a shared full-response encoder. Keep production binding inactive. Reuse existing publication, calendar, freshness and authorization owners.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "57f6bff220a71f3c2376d394bceff45131addc1d",
+          "publisher_sha": "a2f4cf382f3368381872d6d068acf4caa4c6b8ca",
+          "api_sha": "3de008a43b17811cb048b1f0f65e145e8bb2cd6f",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "custody": "AUTO routing; one new isolated managed workspace at published57f. Parent canonical PR10780 workspace is reserved for cycle/acquisition integration. Source-barrier repair and native Terminal repair have separate active scopes; do not overlap. No child fan-out, host/model override, or changes to live deployment.",
+        "write_scope": [
+          "app/sector_generation_reader.py (new stateless adapter)",
+          "app/sector_generation.py (reuse shared response encoding only; preserve all authorization and failure behavior)",
+          "lib/sector_generation_wire.py (new import-light encoder, no HTTP/auth/storage state)",
+          "scripts/check_sector_intelligence_freshness.py (add native captured-member qualification in existing owner; preserve legacy evaluate)",
+          "tests/test_sector_generation_api.py",
+          "tests/test_sector_generation_reader.py (new)",
+          "tests/test_sector_intelligence_freshness.py (only relevant native cases if this is actual incumbent test path)",
+          "docs/SECTOR_GENERATION_API_CONTRACT.md",
+          "research/market_os/SECTOR_GENERATION_READER_CONTRACT_2026-11-06.md"
+        ],
+        "reader": "Implement SectorSelectedGenerationReader with explicit generations_root, domain, aware clock and preview_rows=3, plus test-injectable read_snapshot. Its read_selected_generation(request) calls scripts.vps_live_orchestrator.read_selected_generation(generations_root=...,domain=...,members=...) EXACTLY ONCE for the fixed five output members: sectordata/sector_central.json, sectordata/sector_cycles.json, basketdata/baskets.json, basketdata/si_handoff.json, basketdata/action_board.json. Decode only returned verified bytes. Never reopen paths/current.json, consult site/site.served/Git/R2, mkdir, lock, select or fallback. No raw historical input members in this API-facing set. Return existing SectorGeneration via canonical project_sector_view and SectorViewReceipt. Request contains only closed audience. Existing API authorizes all required resources before reader call.",
+        "identity_contract": "Define one small Sector-specific contract within existing generic manifest.input_identity: sector_view={schema:'sector.view_inputs.v1',source_session:'YYYY-MM-DD',input_version:'approved opaque version',baseline_session:null|date,source_qualification:'accepted'|'stale'|'degraded'}. Validate exact known shape/real dates/nonblank bounded opaque version and qualified enums; reject absent/malformed identity. It is bound by existing publisher content identity. Do not infer version from private hashes, infer baseline from oldest file, or claim equal dates prove calculation provenance. Preserve private dependency identities. Public generation_id=snapshot.generation_id; published_at=snapshot.published_at ORIGINAL manifest clock, never selected_at; source/baseline/version from this validated identity; current qualification from same captured native inputs and one captured now. Do not expose content_id, manifest, generation_dir or private hashes.",
+        "freshness": "Add a narrow entry in existing check_sector_intelligence_freshness owner for five captured bytes plus typed identity and explicit aware now. Validate finite JSON objects, central/cycles source date, baskets/handoff/action_board explicitly declared baseline (null means source), and action_board.baskets_sha256 against the EXACT captured basket bytes. Use canonical projector validation rather than duplicate its field policy. Structural/hash/schema contradictions are unavailable/503, not degraded. Valid retained source can age to stale/degraded on read without republish; preserve source and publication clocks. Reuse existing expected_last_session(now) completed daily-bar/settlement policy and calendar verdict discipline; nyse_calendar.session_date can be developing and cannot bless a completed daily bar. Preserve incumbent one-session gate/alert budget, distinguish breach from calendar uncertainty, qualify source and baseline separately. No invented HTML/premium input to call legacy evaluate, no HTTP success/liveness status as freshness. If pure no-I/O evaluation requires a supplied existing-owner calendar result, make that capture explicit and document it; no new calendar or fallback.",
+        "wire": "Extract existing 3de success envelope construction/finite UTF-8 JSON encoding into lib/sector_generation_wire.py, shared by API and future producer qualification. Same sector_generation.read/v1 schema, outer/inner three facts and audience checks, exact full encoded response ceiling4MiB, private failure boundary unchanged. Add an explicit helper which qualifies/project-encodes BOTH preview and entitled from the same five captured inputs and planned public receipt, so the future producer can call it before selection. Do not alter generic publisher. It validates an in-memory candidate set; metadata must conservatively cover timestamp/generation/qualification widths or require exact immutable receipt and document reuse/rollback preflight obligations. No artificial truncation or limit increase.",
+        "mounting": "Do not edit app/main.py, runtime config or systemd in this slice. Return the exact constructor/startup binding needed by parent. With no configured root/domain, the current API remains unbound. Root source facts: macro-api.service documents root and has no User=; no demonstrated permission defect. API read-only namespace access will be provisioned by existing deployment owner, not guessed by this adapter. No BFF changes; TerminalPR1285 retains transport/auth ownership.",
+        "tests": "Real temporary generation fixture through the ACTUAL existing publisher and read facade, captured action-board hash binding and canonical projector. Verify one pointer capture across selection change, no independent file reads/fallback, rollback preserves old published_at, audience projection isolation, same visible hash/new receipt changes, missing/wrong identity, invalid/NaN/oversized JSON, all source/baseline/hash contradictions, stopped source ages according to existing completed-session policy, valid older baseline disclosed, developing/future sessions and calendar uncertainty closed honestly. API existing84 combined tests must preserve authorization-before-reader, all five resource gates, paid extra gate, chunked cookie handling and safe503. Full-response near-boundary tests must distinguish a projector-sized success from wrapper-over-limit; both audiences preflighted. Use existing dependencies and focused suites, no whole estate run or CI edits. Capture actual commands/results and exact baseline failures separately.",
+        "return_contract": "Local commit only with exact base/head/tree/workspace/changed files; patch bytes/SHA256; actual focused tests and real temporary generation proof; API/qualifier contract and remaining producer/startup/BFF/beta obligations. Source fixture proof is not runtime activation or authenticated beta acceptance.",
+        "exclusions": "No canonical parent workspace or foreign writer edits, no generic publisher changes, no source collection/producer activation, no new scheduler/watcher/auth/data/publication owner, no private store writes from API, no app/main/config/systemd/CI/package edits, no provider/production commands, no push/PR/merge/deploy/Slack/email. If exact source requires outside-scope changes or a gate refuses, stop that action and report concrete evidence without replay/alternate carrier."
+      },
+      "observed_status": {
+        "controller_pid": 49388,
+        "state": "REQUEST_REFUSED_BEFORE_LAUNCH",
+        "controller_exit": 75,
+        "root_verified": false,
+        "worker_start_proven": false,
+        "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+        "result_read_reason": "ROOT_UNVERIFIED",
+        "nested_execution_absence_proven": true,
+        "outer_execution_absence_proven": false
+      },
+      "parent_disposition": "RESULT_CONSUMPTION_STOPPED_NO_RETRY_NO_PRIVATE_EFFECT_ABSENCE_CLAIM_PARENT_RESERVED_SOURCE_RECOVERY"
     }
   ],
   "additional_reconciliation": {
@@ -565,7 +746,16 @@
       "run_id": "macro-always-on-20261106-c3-ci-copy-01",
       "commit": "b92ad6d2a6abf6db3c1c8a5446e42ed7f1208912",
       "accepted": false,
-      "ruling": "Duplicates original active PR10759. Do not integrate or publish this duplicate. Preserve original head96a6016778ae8ee98925d35f16bd070a79ad152f and incumbent merge-on-green decision."
+      "ruling": "DO_NOT_ADOPT_DUPLICATE. Original PR10759 belongs to RF under issuecomment6676754411; merge-on-green was removed, merge-blocked/main-red-repair retained. External local1859977f9f71f088f52caef81f29c1cd5bc796d0 is not parent-authored or adopted. Preserve original carrier and active RF custody; no rearm/push/reset."
+    },
+    "ci_policy_gate": {
+      "state": "ACTION_BLOCKED_NO_REPLAY",
+      "observation": "Studio start_process returned Command not allowed before process startup for counterfactual packing and attempted CI registration. No PID and exact targets unchanged. One bounded installed-owner diagnosis traced the message to commandManager.validateCommand false; the blocked token versus config exception is not established.",
+      "required_control": "Legitimate policy/session resolution by the capability owner before this action can be retried. No alternate carrier, allowlist change, shortened payload or hidden test-registration workaround.",
+      "source_targets_unchanged": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ]
     }
   }
 }

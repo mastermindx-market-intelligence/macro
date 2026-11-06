@@ -226,7 +226,8 @@ def test_post_base_writer_pins():
         '"rhythm_version": 1',
         '"correction_contract": {',
         'rec["rhythm"] = rhythm',
-        'rec["estimate_kinds"] = estimate_kinds(rec.get("now") or {}, rhythm)',
+        'rec["estimate_kinds"] = (',
+        'live_hazard_parity=live_hazard_parity)',
         'nw["hazard"] = hz',
     ):
         assert literal in cycles, f"post-base cycles writer drifted: {literal!r}"
