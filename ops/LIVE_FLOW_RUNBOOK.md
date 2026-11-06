@@ -1073,6 +1073,19 @@ poller: day_state size N MB exceeds 50 MB threshold
 ```
 If this fires regularly, reduce `top_names` or `retention_hours` in config.yml.
 
+### Per-root fetch latency (read-only diagnostics)
+
+The live poller logs one `root_fetch_completed root=… state=complete|partial|failed
+worker_elapsed_sec=…` entry for each scheduled worker. The time includes
+ThetaData requests, contention, retries, and local parsing, **not just wire
+round-trip time**. It is not a feed/quote timestamp or evidence that R2
+published the root. The provider's per-expiration timing experiment remains
+owned by its original source lane; this producer log adds only root-level
+attribution. The concurrency cap is enforced at **two workers** even when
+launchd environment or config asks for more. A configured limit of one is
+still honored. Never increase capacity solely to improve a CI timing number:
+the Theta terminal is shared with independent option-data writers.
+
 ## API endpoints
 
 All unauthenticated, 30s TTL cache, stale fallback on R2 failure:

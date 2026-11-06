@@ -38,16 +38,29 @@ def _import_poller():
 
 class TestMaxConcurrent:
     def test_env_override(self, monkeypatch):
-        """LIVE_FLOW_MAX_CONCURRENT env overrides config/default."""
+        """The environment overrides the request, not the two-slot safety ceiling."""
         lf = _import_poller()
         monkeypatch.setenv(lf.MAX_CONCURRENT_ENV, "5")
-        assert lf._max_concurrent({}) == 5
+        assert lf._max_concurrent({}) == 2
+        monkeypatch.setenv(lf.MAX_CONCURRENT_ENV, "1")
+        assert lf._max_concurrent({"max_concurrent": 2}) == 1
+
+    def test_provider_concurrency_is_hard_capped_even_under_env_override(self, monkeypatch):
+        """A misconfigured launchd environment must never exceed Theta's 2 slots."""
+        lf = _import_poller()
+        monkeypatch.setenv(lf.MAX_CONCURRENT_ENV, "48")
+        assert lf._max_concurrent({"max_concurrent": 30}) == 2
+        monkeypatch.delenv(lf.MAX_CONCURRENT_ENV, raising=False)
+        assert lf._max_concurrent({"max_concurrent": 30}) == 2
+        monkeypatch.setenv(lf.MAX_CONCURRENT_ENV, "-3")
+        assert lf._max_concurrent({}) == 1
 
     def test_config_fallback(self, monkeypatch):
-        """When env is absent, config is used."""
+        """Config can lower the budget, but cannot override the ceiling."""
         lf = _import_poller()
         monkeypatch.delenv(lf.MAX_CONCURRENT_ENV, raising=False)
-        assert lf._max_concurrent({"max_concurrent": 3}) == 3
+        assert lf._max_concurrent({"max_concurrent": 3}) == 2
+        assert lf._max_concurrent({"max_concurrent": 1}) == 1
 
     def test_default_when_both_absent(self, monkeypatch):
         """When neither env nor config present, default is 2."""
@@ -63,6 +76,38 @@ class TestMaxConcurrent:
         result = lf._max_concurrent({"max_concurrent": 2})
         assert result == 2
 
+
+class TestRootFetchTiming:
+    def test_root_duration_reports_success_partial_and_failure_without_changing_results(
+        self, monkeypatch, caplog,
+    ):
+        """Measured worker duration is never represented as wire RTT or a source receipt."""
+        import logging
+
+        poller = _import_poller()
+        observed = []
+        complete = ("GOOG", object(), object())
+        partial = ("GOOGL", object(), None)
+        failed = ("AMD", None, None)
+        outcomes = {"GOOG": complete, "GOOGL": partial, "AMD": failed}
+
+        def fetch(root, session_date, start, end):
+            observed.append((root, session_date, start, end))
+            return outcomes[root]
+
+        monkeypatch.setattr(poller, "_fetch_root", fetch)
+        with caplog.at_level(logging.INFO):
+            for root, expected in outcomes.items():
+                assert poller._timed_fetch_root(root, "2026-11-02", "09:30:00", None) is expected
+        assert len(observed) == 3
+        messages = [r.getMessage() for r in caplog.records if "root_fetch_completed" in r.getMessage()]
+        assert len(messages) == 3
+        for root, state in (("GOOG", "complete"), ("GOOGL", "partial"), ("AMD", "failed")):
+            assert any(
+                f"root={root}" in msg and f"state={state}" in msg
+                and "worker_elapsed_sec=" in msg
+                for msg in messages
+            )
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 4–5. two_tier_enabled

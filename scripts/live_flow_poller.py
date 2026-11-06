@@ -194,18 +194,28 @@ def _r2_public_base() -> str:
 # ── FC-R6: two-tier cadence helpers ──────────────────────────────────────────
 
 def _max_concurrent(cfg: dict) -> int:
-    """Resolve max_concurrent: LIVE_FLOW_MAX_CONCURRENT env > config > default 2.
+    """Honor a lower worker budget but never exceed Theta's two shared slots.
 
-    HARD LAW: ThetaData T1 backfill shares the 8-request cap.  Default is 2
-    and must not be raised without explicit Fable adjudication.
+    The live poller shares ThetaData's eight-slot terminal with independent T1
+    writers.  An operator-controlled environment variable or config value is
+    not a provider-capacity adjudication.  Keep the accepted two-worker ceiling
+    here until a reviewed source change explicitly revises the budget.
     """
     env_val = os.environ.get(MAX_CONCURRENT_ENV)
     if env_val is not None:
         try:
-            return max(1, int(env_val))
-        except ValueError:
+            requested = int(env_val)
+        except (TypeError, ValueError):
             log.warning("poller: invalid %s=%r — using config/default", MAX_CONCURRENT_ENV, env_val)
-    return int(cfg.get("max_concurrent", 2))
+        else:
+            if requested > 2:
+                log.warning("poller: %s requests %d workers; capping at 2 shared Theta slots",
+                            MAX_CONCURRENT_ENV, requested)
+            return min(2, max(1, requested))
+    requested = int(cfg.get("max_concurrent", 2))
+    if requested > 2:
+        log.warning("poller: config requests %d workers; capping at 2 shared Theta slots", requested)
+    return min(2, max(1, requested))
 
 
 def _two_tier_enabled() -> bool:
@@ -1294,6 +1304,33 @@ def _fetch_root(root: str, session_date: str,
     except Exception as e:  # noqa: BLE001
         log.warning("poller: fetch failed for %s: %s", root, e)
         return root, None, None
+
+
+def _timed_fetch_root(
+    root: str,
+    session_date: str,
+    start_time: str | None,
+    end_time: str | None,
+) -> tuple[str, object | None, object | None]:
+    """Measure one scheduled root worker, including Theta retries and parsing.
+
+    This is local diagnostic telemetry, NOT a network RTT, publication clock,
+    or source success receipt.  The existing per-root response handling remains
+    solely responsible for source validity and ticker-artifact eligibility.
+    """
+    started = time.perf_counter()
+    result = _fetch_root(root, session_date, start_time, end_time)
+    _, calls, puts = result
+    state = (
+        "complete" if calls is not None and puts is not None
+        else "failed" if calls is None and puts is None
+        else "partial"
+    )
+    log.info(
+        "poller: root_fetch_completed root=%s state=%s worker_elapsed_sec=%.3f",
+        root, state, max(0.0, time.perf_counter() - started),
+    )
+    return result
 
 
 # ── OI loader ────────────────────────────────────────────────────────────────
@@ -2885,7 +2922,7 @@ def run_cycle(
     with ThreadPoolExecutor(max_workers=max_w) as pool:
         futs = {
             pool.submit(
-                _fetch_root, root, session_date,
+                _timed_fetch_root, root, session_date,
                 _root_start_time(root),   # per-root watermark start
                 None,                     # end_time always None ("now")
             ): root
