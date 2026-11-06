@@ -1340,3 +1340,68 @@ def test_prospective_self_hash_cannot_authenticate_complete_causal_read_coverage
     rejected = tc.verify_prospective_input_capture(tmp_path, changed)
     assert rejected["status"] == "unavailable"
     assert rejected["causal_lineage_acceptance"] is False
+
+
+@pytest.mark.parametrize("completed_text", [
+    "2026-11-06T12:23:38.621152+00:00",
+    "2026-11-06T12:24:00.000123+00:00",
+])
+def test_native_build_cutoff_follows_capture_completion(tmp_path, monkeypatch, completed_text):
+    from datetime import datetime, timedelta, timezone
+
+    completed = datetime.fromisoformat(completed_text)
+    finalized = completed + timedelta(microseconds=1)
+    clock = {"now": datetime(2026, 11, 6, 12, 23, 30, 123456, tzinfo=timezone.utc)}
+
+    class NativeClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock["now"].astimezone(tz) if tz else clock["now"].replace(tzinfo=None)
+
+    original_finish = tc._InputReadCapture.finish
+
+    def finish_after_evaluation(capture, state, transitions):
+        clock["now"] = completed
+        receipt = original_finish(capture, state, transitions)
+        clock["now"] = finalized
+        return receipt
+
+    monkeypatch.setattr(tc, "datetime", NativeClock)
+    monkeypatch.setattr(tc._InputReadCapture, "finish", finish_after_evaluation)
+    state = _captured_synthetic_run(tmp_path)
+    written = json.loads((tmp_path / "data/transmission/chain_state.json").read_text())
+    receipt = state["input_capture"]
+    assert state["built"] == written["built"] == finalized.isoformat()
+    assert datetime.fromisoformat(state["built"]).utcoffset() == timedelta(0)
+    assert datetime.fromisoformat(receipt["capture_completed_at"]) <= datetime.fromisoformat(state["built"])
+    assert tc.verify_prospective_input_capture(tmp_path, state)["status"] == "listed_input_bytes_match"
+    assert receipt["observation_asof"] == state["asof"] == "2026-03-01"
+    assert receipt["scientific_acceptance"] is False
+    ledger = tc._read_ledger(tmp_path / "data/transmission/chain_episodes.jsonl")
+    assert ledger and all(r["asof"] == state["asof"] for r in ledger)
+    assert all("input_capture" not in r and "known_at" not in r for r in ledger)
+
+
+def test_completion_clock_does_not_qualify_failed_capture(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+
+    finalized = datetime(2026, 11, 6, 12, 24, 0, 654321, tzinfo=timezone.utc)
+
+    class NativeClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return finalized.astimezone(tz) if tz else finalized.replace(tzinfo=None)
+
+    def unavailable_capture(*args):
+        raise ValueError("synthetic capture failure")
+
+    monkeypatch.setattr(tc, "datetime", NativeClock)
+    monkeypatch.setattr(tc._InputReadCapture, "finish", unavailable_capture)
+    state = _captured_synthetic_run(tmp_path)
+    written = json.loads((tmp_path / "data/transmission/chain_state.json").read_text())
+    assert state["built"] == written["built"] == finalized.isoformat()
+    assert state["input_capture"] == {
+        "schema": "txi.prospective_input_read.v1", "status": "unavailable", "reason": "capture_failed",
+    }
+    assert tc.verify_prospective_input_capture(tmp_path, state)["status"] == "unavailable"
+    assert state["asof"] == "2026-03-01" and state["display_only"] is True
