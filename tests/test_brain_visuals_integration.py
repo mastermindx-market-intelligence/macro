@@ -191,3 +191,103 @@ def test_stream_visual_sources_the_matching_applied_receipt(tmp_path):
     charts = [event for event in events if event.get("visual")]
     assert len(charts) == 1 and charts[0]["visual"]["rows"] == [["Chart action", "accepted"]]
     assert events[-1]["charts"] == charts == retained
+
+
+def _candlestick_turn(message, request, tmp_path, streaming, client=None):
+    client = client if client is not None else client_for(request)
+    args = (message, "fast", [], {}, tmp_path, tmp_path, "", client, "test-model", 1000, 4)
+    if streaming:
+        retained = []
+        events = _sse(list(gw._run_brain_loop_stream(
+            *args, meta_event={"type": "meta"}, visuals_out=retained)))
+        charts = [event for event in events if event.get("visual")]
+        assert events[-1]["charts"] == charts == retained
+        return charts
+    return gw._run_brain_loop(*args)[-1]
+
+
+@pytest.mark.parametrize("streaming", [False, True], ids=["nonstream", "stream"])
+def test_candlestick_session_request_cannot_become_numeric_example(tmp_path, streaming):
+    from tests.test_brain_visuals import candle_spec
+    charts = _candlestick_turn(
+        "Draw AAPL's bullish pivot from this morning's candles.",
+        candle_spec(), tmp_path, streaming)
+    assert charts == []
+
+
+@pytest.mark.parametrize("streaming", [False, True], ids=["nonstream", "stream"])
+@pytest.mark.parametrize("message", [
+    pytest.param("Draw a 30-minute bullish pivot: two red closed candles, then the first closed green candle, with entry above pivot high, stop below pivot low and the first later breakout.", id="bullish"),
+    pytest.param("Sketch a 30-minute bearish pivot with entry and stop.", id="bearish"),
+    pytest.param("绘制一个30分钟的看涨转折形态，标明入场、止损和首次突破。", id="bullish-zh"),
+    pytest.param("画一张30分钟看跌转折形态，标明入场和止损。", id="bearish-zh"),
+    pytest.param("Give a fictional AAPL candlestick example.", id="explicit-fictional"),
+    pytest.param("举例说明一组虚构的看涨转折K线。", id="explicit-fictional-zh"),
+])
+def test_candlestick_schematic_teaching_remains_illustrative(tmp_path, streaming, message):
+    from tests.test_brain_visuals import candle_spec
+    charts = _candlestick_turn(message, candle_spec(), tmp_path, streaming)
+    assert len(charts) == 1
+    visual = charts[0]["visual"]
+    assert visual["template"] == "candlestick"
+    assert visual["basis"] == "illustrative"
+    assert visual["provenance"]["sources"] == []
+    assert visual["provenance"]["freshness_verified"] is False
+
+
+@pytest.mark.parametrize("streaming", [False, True], ids=["nonstream", "stream"])
+@pytest.mark.parametrize("message", [
+    pytest.param("Draw AAPL's bullish pivot.", id="named-stock"),
+    pytest.param("Draw a 30-minute bullish pivot: first green after two red candles, with entry and stop, for AAPL from this morning.", id="schematic-with-observed-suffix"),
+    pytest.param("绘制一个30分钟的看涨转折形态，标明入场、止损和首次突破，使用苹果股票今早的价格。", id="schematic-with-observed-suffix-zh"),
+    pytest.param("Draw a bullish pivot for LOW.", id="word-like-ticker"),
+    pytest.param("Draw a bullish pivot from Monday's candles.", id="weekday"),
+    pytest.param("Draw a bullish pivot from this afternoon's candles.", id="session"),
+    pytest.param("Draw a bullish pivot for 11/06.", id="calendar"),
+    pytest.param("Illustrate a bearish pivot for gold.", id="named-asset"),
+    pytest.param("绘制苹果股票今早的看涨转折形态。", id="observed-zh"),
+    pytest.param("画一张周一的看跌转折形态。", id="weekday-zh"),
+    pytest.param("Draw an illustrative bullish pivot from Monday's candles.", id="explicit-weekday"),
+    pytest.param("Draw an illustrative bullish pivot from this morning's candles.", id="explicit-session"),
+])
+def test_candlestick_asset_or_session_request_needs_observations(tmp_path, streaming, message):
+    from tests.test_brain_visuals import candle_spec
+    assert _candlestick_turn(message, candle_spec(), tmp_path, streaming) == []
+
+
+@pytest.mark.parametrize("streaming", [False, True], ids=["nonstream", "stream"])
+def test_candlestick_observed_request_keeps_exact_completed_source(tmp_path, streaming):
+    from tests.test_brain_visuals import candle_spec
+    request = candle_spec(basis="source")
+    bars = [{"open": row[1], "high": row[2], "low": row[3], "close": row[4]}
+            for row in request["rows"]]
+    request["bindings"] = [
+        {"row": i, "column": j + 1, "tool": "get_quote",
+         "pointer": f"/bars/{i}/{key}", "call_id": "candles-1"}
+        for i in range(len(bars))
+        for j, key in enumerate(("open", "high", "low", "close"))
+    ]
+    client = _MockClient([
+        _MockResponse([_MockBlock("tool_use", name="get_quote",
+                                 input_={"symbol": "AAPL"}, id_="candles-1")], "tool_use"),
+        _MockResponse([_MockBlock("tool_use", name="render_inline_visual",
+                                 input_=request, id_="visual-1")], "tool_use"),
+        _MockResponse([_MockBlock("text", "The candles use the completed observations.")]),
+    ])
+    dispatch = gw._dispatch_brain_tool
+
+    def observed(name, params, *args, **kwargs):
+        if name == "get_quote":
+            return {"bars": bars}
+        return dispatch(name, params, *args, **kwargs)
+
+    with patch.object(gw, "_dispatch_brain_tool", side_effect=observed):
+        charts = _candlestick_turn(
+            "Draw AAPL's bullish pivot from this morning's candles.",
+            request, tmp_path, streaming, client)
+    assert len(charts) == 1
+    visual = charts[0]["visual"]
+    assert visual["basis"] == "source"
+    assert visual["rows"] == request["rows"]
+    assert visual["provenance"]["numeric_cells_matched"] == 16
+    assert visual["provenance"]["freshness_verified"] is False
