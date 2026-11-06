@@ -177,8 +177,25 @@ def test_baskets_default_sort_still_uses_20d():
     """Adding fast display windows must not change the default 20d member sort."""
     from engine import baskets
     import inspect
-    src = inspect.getsource(baskets.compute_baskets)
-    assert '"20d"' in src, "expected the 20d sort key to remain in compute_baskets"
+    idx = pd.bdate_range("2025-01-02", periods=80)
+    closes = pd.DataFrame(100.0, index=idx, columns=["A", "B", "C"])
+    closes.iloc[-2] = [140.0, 90.0, 95.0]
+    closes.iloc[-1] = [130.0, 110.0, 90.0]
+    start = idx[0].date().isoformat()
+    membership = {"baskets": {"fixture": {"name": "Fixture", "members": [
+        {"ticker": ticker, "added": start} for ticker in ("C", "B", "A")
+    ]}}}
+    inputs = baskets.BasketInputs(
+        membership, closes, pd.DataFrame({"close": 100.0}, index=idx), None,
+        {ticker: (ticker, "fixture") for ticker in closes}, {},
+    )
+    result = baskets.compute_baskets_from_inputs(inputs)
+    members = result["baskets"][0]["members"]
+    assert [row["symbol"] for row in members] == ["A", "B", "C"]
+    # B leads the latest day, A leads twenty sessions: a fast-window sort fails.
+    assert members[0]["ret_1d"] < members[1]["ret_1d"]
+    assert members[0]["ret_20d"] > members[1]["ret_20d"]
+    assert all("ret_10d" in row for row in members)
     # Theme detail snapshots now carry the fast 1d/10d windows as display context.
     src_ts = inspect.getsource(ts.compute_theme_intel)
     assert '"1d"' in src_ts and '"10d"' in src_ts

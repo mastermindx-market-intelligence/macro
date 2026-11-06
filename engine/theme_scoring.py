@@ -23,7 +23,10 @@ exactly like the Flow Lens, engine.narrative_rotation leans and engine.thematic_
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 import logging
+from dataclasses import dataclass
+from datetime import date as _date
 
 import numpy as np
 import pandas as pd
@@ -208,6 +211,11 @@ def _apply_momentum_cooling_demotion(act_now: dict, themes_by_id: dict) -> None:
 def _apply_sector_conflict_demotion(act_now: dict, site_root: "Path") -> None:
     """MLC-W2b: move buy items whose home sector rates 'Reduce' into the conflicted shelf.
 
+    LEGACY FILE-ADAPTER — unchanged behaviour: it reads the committed Sector artifact
+    from `site_root` and applies the demotion with TODAY as the evaluation date. The
+    arithmetic itself lives in `_apply_sector_conflict_demotion_doc`, which is the
+    explicit-input form used by the pure core.
+
     Mutates act_now in-place.  This is de-escalation ONLY (never escalation).
     Raises AssertionError on invariant violation (logic bug); caller may catch and
     fail-open by restoring original buy and clearing conflicted.
@@ -220,20 +228,42 @@ def _apply_sector_conflict_demotion(act_now: dict, site_root: "Path") -> None:
     (sector_central only carries GICS SPDRs; see _CONVICTION_ETF_FALLBACK).
     Pre-registered-arbitrary (MLC-W2b; frozen — no tuning on observed cases).
     """
-    import json as _json_w2b
-    from datetime import date as _date_w2b
     from pathlib import Path as _Path_w2b
 
+    _sc_path_w2b = _Path_w2b(site_root) / "sectordata" / "sector_central.json"
+    _text_w2b = None
+    if _sc_path_w2b.exists():
+        _text_w2b = _sc_path_w2b.read_text(encoding="utf-8")
+    _apply_sector_conflict_demotion_doc(act_now, _text_w2b, _date.today())
+
+
+def _apply_sector_conflict_demotion_doc(act_now: dict, sector_central_text: str | None,
+                                        evaluation_date) -> None:
+    """MLC-W2b demotion over an ALREADY-CAPTURED Sector artifact.
+
+    `sector_central_text` is the RAW JSON text of the PRIOR committed Sector
+    generation (site/sectordata/sector_central.json) or None when the artifact is
+    absent. `evaluation_date` is the EXPLICIT date the 5-calendar-day freshness rule
+    is measured against — the wall clock is never read here, and the IN-PROGRESS
+    current Sector output is never substituted, so the demotion cannot create a
+    calculation cycle.
+
+    The document is parsed here (not at acquisition) so a corrupt artifact raises
+    exactly where it always did and the caller's fail-open path restores `buy` and
+    leaves `conflicted` empty.
+
+    Mutates act_now in-place.  De-escalation ONLY (never escalation). Raises
+    AssertionError on invariant violation (logic bug).
+    """
     _orig_buy_count = len(act_now["buy"])  # snapshot for the invariant assertion
 
-    _sc_path_w2b = _Path_w2b(site_root) / "sectordata" / "sector_central.json"
     _sc_fresh = False
     _sc_by_etf_w2b: dict[str, str] = {}  # ETF ticker -> label_en
-    if _sc_path_w2b.exists():
-        _sc_doc_w2b = _json_w2b.loads(_sc_path_w2b.read_text(encoding="utf-8"))
+    if sector_central_text is not None:
+        _sc_doc_w2b = json.loads(sector_central_text)
         _sc_as_of_w2b = _sc_doc_w2b.get("as_of") or ""
         try:
-            _sc_age = (_date_w2b.today() - _date_w2b.fromisoformat(str(_sc_as_of_w2b)[:10])).days
+            _sc_age = (evaluation_date - _date.fromisoformat(str(_sc_as_of_w2b)[:10])).days
             _sc_fresh = _sc_age <= 5
         except Exception:  # noqa: BLE001
             _sc_fresh = False
@@ -656,19 +686,26 @@ _REGION_MARKET = {"us": "US", "china": "CN", "hk": "HK", "canada": "CA", "intl":
 
 
 def _basket_signals(members: list[dict], level: pd.Series | None = None,
-                    region: str = "us", conv_map: dict | None = None) -> dict:
+                    region: str = "us", conv_map: dict | None = None,
+                    *, use_cache: bool = True) -> dict:
     """Run MTF/tape on a consolidated member candle, with an all-region close-only fallback.
 
     The preferred path uses member OHLCV and can publish tape/flow. When that store cannot
     resolve a region, the already-computed equal-weight close level still supports the MTF
     engine's D/3D/W/M structure. The fallback is explicitly stamped and never fabricates
     volume, whale or flow fields. Cached by region/membership/as-of for detail-page reuse.
+
+    `use_cache=False` bypasses the process-wide `_SIG_CACHE` for one call. The cache key
+    carries the session date and the membership but NOT the price values, so two distinct
+    snapshots that end on the same session would otherwise share one candle read. The
+    explicit-input acquisition path sets it to False so distinct contexts stay isolated;
+    the default keeps the incumbent behaviour for every existing caller.
     """
     level_last = None
     if level is not None and not level.dropna().empty:
         level_last = str(level.dropna().index[-1])
     key = (region, level_last, tuple(sorted(m.get("ticker", "") for m in members)))
-    if key in _SIG_CACHE:
+    if use_cache and key in _SIG_CACHE:
         return _SIG_CACHE[key]
     out: dict = {}
     try:
@@ -707,7 +744,8 @@ def _basket_signals(members: list[dict], level: pd.Series | None = None,
                                     "flow_available": False, "n_bars": int(len(close))}}
         except Exception as e:  # noqa: BLE001 — additive overlay
             log.warning("basket close-only MTF fallback failed: %s", e)
-    _SIG_CACHE[key] = out
+    if use_cache:
+        _SIG_CACHE[key] = out
     return out
 
 
@@ -1008,12 +1046,241 @@ def _leadership_split_fields(n_members: int, lead: dict, label: str) -> dict:
 
 
 # ------------------------------------------------------------------- main compute
-def compute_theme_intel(region: str = "us") -> dict | None:
-    """Score / label / recommend every basket + 5-day rotation + impulse scorecards.
+# ---------------------------------------------------------------------------
+# EXPLICIT-INPUT SEAM (always-on Sector runtime)
+# ---------------------------------------------------------------------------
+# `compute_theme_intel` is the LEGACY acquisition adapter: its signature, its default
+# behaviour and its output bytes are unchanged. The desk keeps ONE body and gains an
+# explicit-input seam around it:
+#
+#   acquire_theme_score_inputs(region)  — every READ of the theme desk (data, config,
+#                                         file, clock) happens here and the results are
+#                                         captured as VALUES.
+#   compute_theme_intel(region)         — the LEGACY adapter: acquire, score, and
+#                                         replay the desk's one ledger write.
+#   compute_theme_intel(inputs=...)     — the same body over an already-captured bundle:
+#                                         reads nothing, writes nothing, uses no clock.
+#   compute_theme_intel_core(inputs)    — the explicit-input entry point: the same body
+#                                         plus the ledger write RETURNED as deferred data.
+#
+# The value bundle is `ThemeScoreInputs`. It is deliberately NOT a loader callback and
+# NOT a mutable global: every entry is a captured value, so two distinct bundles cannot
+# influence one another and a runtime can recompute the desk from one accepted snapshot
+# without touching the repository.
+#
+# The PRIOR-generation dependency is explicit: `prior_sector_text` carries the raw JSON
+# of the last committed Sector artifact (site/sectordata/sector_central.json) and
+# `evaluation_date` carries the date the freshness rule is measured against. The core
+# NEVER reads the in-progress current Sector output, so there is no calculation cycle.
 
-    region drives the data plane: US uses group_flow._setup; CN/HK/CA reuse
-    engine.narrative_rotation._setup (same regional close/bench/membership loaders).
-    Returns None on shortfall (additive caller)."""
+@dataclass(frozen=True)
+class ThemeScoreInputs:
+    """Captured inputs for `compute_theme_intel_core` — every field is a VALUE.
+
+    region              "us" | "china" | "hk" | "canada" (the data plane selector).
+    panel               the normalised close panel: {closes, rets, idx, bench, mem,
+                        observation, price_resolution}. `closes`/`rets` are the THEMATIC
+                        projection for US and the region panel elsewhere — exactly the
+                        pair the incumbent loop consumed.
+    group_flow_cfg      engine.group_flow._cfg() — the flow-fingerprint parameters.
+    names_sectors       engine.equity_factors._names_sectors() (US only; {} elsewhere).
+    macro_context       the folded macro state: {state, sector_rs, display}.
+    signal_calibration  the backtested signal-precision verdict ({} when absent).
+    regime_snapshot     the published vol-regime snapshot ({} when absent).
+    regime_sizing       the computed vol-regime sizing overlay.
+    regime_caution_scored  whether the regime caution is gated on (validate-before-weight).
+    prior_sector_text   RAW JSON text of the PRIOR committed Sector artifact, or None
+                        when the artifact is absent. Parsed inside the core so a
+                        corrupt artifact fails open exactly as it does today.
+    evaluation_date     the EXPLICIT date the 5-calendar-day Sector freshness rule is
+                        measured against. The core never reads the wall clock.
+    earnings_calendar   ticker -> next earnings date, already freshness-filtered
+                        against the panel session.
+    market_concentration  engine.basket_score.market_concentration(region).
+    basket_rows         the PREPARED per-basket rows, in basket order. Each row carries
+                        the basket's dated live mask, its EW level, its flow fingerprint
+                        and its scoring legs — the pure feature extraction the desk needs.
+                        Prepared ONCE (see `prepare_theme_basket_rows`) so the level and
+                        the fingerprint are never computed twice.
+    basket_enrichments  basket id -> {"signals": <_basket_signals output>,
+                        "textures": <basket_score.theme_textures output>}. These are the
+                        two per-basket reads that cannot be derived from the panel.
+    bench_label / bench_label_zh  the region's benchmark labels.
+    """
+    region: str
+    panel: dict
+    basket_rows: tuple
+    group_flow_cfg: dict
+    names_sectors: dict
+    macro_context: dict
+    signal_calibration: dict
+    regime_snapshot: dict | None
+    regime_sizing: dict
+    regime_caution_scored: bool
+    prior_sector_text: str | None
+    evaluation_date: "_date"
+    earnings_calendar: dict
+    market_concentration: dict
+    basket_enrichments: dict
+    bench_label: str
+    bench_label_zh: str
+
+
+@dataclass(frozen=True)
+class ThemeScoreResult:
+    """The core's output: the payload plus the effects it deliberately did NOT perform.
+
+    `deferred_effects` carries the desk's one write (the breadth-divergence forward-log
+    stamp) as DATA. The legacy adapter replays it; a runtime that must not write simply
+    ignores it. The core itself never writes.
+    """
+    payload: dict | None
+    deferred_effects: tuple
+
+
+@dataclass(frozen=True)
+class _ThemePrepContext:
+    """Derived, PURE per-run context for the per-basket preparation."""
+    region: str
+    closes: pd.DataFrame
+    rets: pd.DataFrame
+    idx: pd.DatetimeIndex
+    bench: pd.Series
+    cfg: dict
+    names: dict
+    resid: pd.DataFrame | None
+    i: int
+    i5: int
+    ytd_anchor: object
+    mtd_anchor: object
+
+
+def _build_prep_context(*, region: str, panel: dict, cfg: dict, names: dict) -> _ThemePrepContext:
+    """PURE derivation of the per-run context from captured values."""
+    idx = panel["idx"]
+    i = len(idx) - 1
+    i5 = max(0, i - 5)
+    ytd_anchor = idx[idx < pd.Timestamp(idx.max().year, 1, 1)].max() \
+        if (idx < pd.Timestamp(idx.max().year, 1, 1)).any() else idx[0]
+    resid = None
+    try:
+        spy_ret = panel["bench"].pct_change(fill_method=None)
+        resid = panel["rets"].sub(spy_ret, axis=0)
+    except Exception:  # noqa: BLE001
+        resid = None
+    return _ThemePrepContext(
+        region=region, closes=panel["closes"], rets=panel["rets"], idx=idx,
+        bench=panel["bench"], cfg=cfg, names=names, resid=resid, i=i, i5=i5,
+        ytd_anchor=ytd_anchor, mtd_anchor=_mtd_anchor(idx))
+
+
+def _theme_prep_context(inputs: ThemeScoreInputs) -> _ThemePrepContext:
+    """PURE derivation of the per-run context from the captured bundle."""
+    return _build_prep_context(
+        region=inputs.region, panel=inputs.panel, cfg=inputs.group_flow_cfg,
+        names=inputs.names_sectors)
+
+
+def _prepare_theme_row(bid: str, b: dict, ctx: _ThemePrepContext) -> dict:
+    """PURE per-basket preparation — the part of the desk that depends on nothing
+    outside the captured panel.
+
+    Returns {"skip": True, "skip_reason": ..., "observation": ...} for a basket the
+    desk refuses (observation coverage / no level / too few live members / no
+    fingerprint), or {"skip": False, ...} with every prepared value the scoring legs
+    need.
+
+    It reads no file, writes nothing and uses no clock. The rows are prepared ONCE by
+    the acquisition and carried in the bundle, so the equal-weight level and the flow
+    fingerprint are never computed twice.
+    """
+    members = b.get("members", [])
+    closes, rets, idx, bench = ctx.closes, ctx.rets, ctx.idx, ctx.bench
+    theme_observation = population_observation(closes, members, idx.max())
+    if not theme_observation["aggregate_eligible"]:
+        return {"skip": True, "bid": bid, "skip_reason": "observation_coverage",
+                "observation": theme_observation}
+    present = [m["ticker"] for m in members if m["ticker"] in rets.columns]
+    lvl = _ew_level(rets, members, idx)
+    if lvl.dropna().empty:
+        return {"skip": True, "bid": bid, "skip_reason": "no_level", "observation": theme_observation}
+    mask = pd.DataFrame(False, index=idx, columns=present)  # dated [added, removed) live mask
+    for m in members:
+        t = m["ticker"]
+        if t not in present:
+            continue
+        act = np.asarray(idx >= pd.Timestamp(m["added"]))
+        if m.get("removed"):
+            act = act & np.asarray(idx < pd.Timestamp(m["removed"]))
+        mask[t] = act
+    if int(mask.iloc[-1].sum()) < 3:
+        return {"skip": True, "bid": bid, "skip_reason": "too_few_live_members",
+                "observation": theme_observation}
+    mc_closes = closes[present].where(mask)
+
+    prep = group_flow.prep_group(mc_closes, lvl, bench, ctx.cfg)
+    fp = group_flow.fingerprint_at(prep, ctx.i, ctx.cfg) if prep else None
+    fp5 = group_flow.fingerprint_at(prep, ctx.i5, ctx.cfg) if prep else None
+    if fp is None:
+        return {"skip": True, "bid": bid, "skip_reason": "no_fingerprint", "observation": theme_observation}
+    # PRICE-ONLY proxies (see EXT_HI doc): an ABSOLUTE stretch (vs the basket's own
+    # history) for the non-US extension gate (US keeps its validated rs_pctile), and a
+    # 200d trend sign for the drawdown gate — ALL regions, because the 200d price gate
+    # is the definition the phase-0 drawdown channel was validated on; US previously
+    # leaned on the mtf confluence long_sign, whose cycle-shape governor mislabels a
+    # basket above a rising 200d with a fresh monthly cross-up (us_sector_health).
+    ld = lvl.dropna()
+    if ctx.region != "us":
+        ma50 = ld.rolling(50, min_periods=25).mean()
+        stretch = ld / ma50 - 1.0
+        sh = stretch.iloc[-252:].dropna() if stretch.notna().sum() > 60 else stretch.dropna()
+        if len(sh) >= 30 and sh.std() and pd.notna(stretch.iloc[-1]):
+            fp["ext_abs"] = float((stretch.iloc[-1] - sh.mean()) / sh.std())
+    m2 = ld.rolling(200, min_periods=100).mean().dropna()
+    if len(m2) > 22 and pd.notna(ld.iloc[-1]):
+        above = bool(ld.iloc[-1] > m2.iloc[-1])
+        slope = float(m2.iloc[-1] - m2.iloc[-22])
+        fp["long_sign"] = 1 if (above and slope > 0) else (-1 if ((not above) and slope <= 0) else 0)
+    lead = group_flow._leadership(mc_closes, {}, ctx.names)
+    perf = _perf(lvl, bench, idx, ctx.ytd_anchor, ctx.mtd_anchor)
+
+    crowd = None
+    if ctx.resid is not None:
+        try:
+            rr = ctx.resid[present].where(mask)
+            crowd = __import__("engine.theme_crowding", fromlist=["basket_crowding"]) \
+                .basket_crowding(rr, lvl / bench, None, None)
+        except Exception:  # noqa: BLE001 — enrichment only
+            crowd = None
+
+    breadth, breadth_d = _breadth_leg(mc_closes, ctx.i, fp)
+    impulse, impulse_d = _impulse_leg(rets, mc_closes, ctx.i)
+    crowd_pen, c_why = _crowding_pen(fp, lead, crowd)
+
+    # The trend and macro legs are NOT baked in here: they read the CAPTURED macro
+    # context and the region's benchmark labels, which are bundle fields a caller may
+    # change without re-preparing the panel. The core computes them.
+    return {"skip": False, "bid": bid, "observation": theme_observation, "members": members,
+            "present": present, "lvl": lvl, "mask": mask, "mc_closes": mc_closes,
+            "fp": fp, "fp5": fp5, "lead": lead, "perf": perf, "crowd": crowd,
+            "breadth": breadth, "breadth_d": breadth_d,
+            "impulse": impulse, "impulse_d": impulse_d,
+            "crowd_pen": crowd_pen, "c_why": c_why}
+
+
+def acquire_theme_score_inputs(region: str = "us") -> ThemeScoreInputs | None:
+    """READ-ONLY acquisition of every value the theme desk consumes.
+
+    This is the ONLY place in the explicit-input path that touches the repository:
+    the close panel, the flow config, the US sector names, the macro snapshots, the
+    signal calibration, the vol-regime snapshot + overlay, the PRIOR committed Sector
+    artifact, the earnings calendar, the market-concentration panel and the two
+    per-basket enrichments (the consolidated-candle signals and the theme textures).
+
+    Returns None on the same shortfalls the incumbent reports (no panel, fewer than
+    60 sessions, an unknown region). The returned bundle is a VALUE — it can be
+    carried, re-used and re-computed without reading anything again.
+    """
     from engine import narrative_rotation as _nr
     rcfg = _nr._region_cfg(region) or {}
     bench_label = rcfg.get("bench_label", "S&P 500")
@@ -1024,12 +1291,20 @@ def compute_theme_intel(region: str = "us") -> dict | None:
         s = _nr._setup(rcfg) if rcfg else None
     if s is None:
         return None
-    closes = s.get("theme_closes", s["closes"]) if region == "us" else s["closes"]
-    rets = s.get("theme_rets", s["rets"]) if region == "us" else s["rets"]
+    if region == "us":
+        closes = s.get("theme_closes", s["closes"])
+        rets = s.get("theme_rets", s["rets"])
+        price_resolution = s.get("theme_price_resolution")
+    else:
+        closes = s["closes"]
+        rets = s["rets"]
+        price_resolution = None
     idx, bench = s["idx"], s["bench"]
-    price_resolution = s.get("theme_price_resolution") if region == "us" else None
     if len(idx) < 60:
         return None
+    panel = {"closes": closes, "rets": rets, "idx": idx, "bench": bench,
+             "mem": s["mem"], "observation": s.get("observation"),
+             "price_resolution": price_resolution}
     cfg = group_flow._cfg()
     nm = _names_sectors() if region == "us" else {}    # US GICS names; regions show tickers
     mc = _macro_context(region)
@@ -1047,106 +1322,233 @@ def compute_theme_intel(region: str = "us") -> dict | None:
     # therefore fires ONLY when the caution leg is gated-on; otherwise it is display-only (the
     # sizing_overlay already refuses to apply the caution to gross_scalar).
     rg_caution_scored = vol_regime.regime_caution_scored()
+
+    # PRIOR-generation Sector artifact (RLT-R6 semantics; the LAST committed generation).
+    # Captured as RAW TEXT so the core can parse it — a corrupt artifact must fail open
+    # exactly as it does today, and the freshness rule needs the document's own as_of.
+    prior_sector_text = None
+    try:
+        _sc_path = config.site_dir() / "sectordata" / "sector_central.json"
+        if _sc_path.exists():
+            prior_sector_text = _sc_path.read_text(encoding="utf-8")
+    except Exception:  # noqa: BLE001 — an unreadable artifact fails open (no demotion)
+        prior_sector_text = None
+
+    # MLC-W5: the earnings calendar behind the near-earnings chip. Freshness is measured
+    # against the PANEL session (not a wall clock), exactly as the incumbent did.
+    earnings_calendar = _acquire_earnings_calendar(panel)
+
+    market_concentration = basket_score.market_concentration(region)
+
+    # The two per-basket enrichments that cannot be derived from the panel: the
+    # consolidated-candle signals (MTF / tape) and the theme textures. Both are
+    # captured per basket id so the core never re-reads them.
+    rows = prepare_theme_basket_rows(panel, region=region, group_flow_cfg=cfg,
+                                     names_sectors=nm)
+    enrichments = _acquire_basket_enrichments(rows, region)
+
+    return ThemeScoreInputs(
+        region=region, panel=panel, basket_rows=rows, group_flow_cfg=cfg, names_sectors=nm,
+        macro_context=mc, signal_calibration=cal, regime_snapshot=rg_snap,
+        regime_sizing=rg_size, regime_caution_scored=rg_caution_scored,
+        prior_sector_text=prior_sector_text, evaluation_date=_date.today(),
+        earnings_calendar=earnings_calendar, market_concentration=market_concentration,
+        basket_enrichments=enrichments, bench_label=bench_label,
+        bench_label_zh=bench_label_zh)
+
+
+def _acquire_earnings_calendar(panel: dict) -> dict:
+    """READ-ONLY acquisition of the near-earnings chip's calendar.
+
+    Display-only (MLC-R10): never gates, orders, or scores any basket. Fail-open: an
+    absent/stale store simply leaves near_earnings_count absent from the payload. The
+    freshness window is measured against the PANEL session, never a wall clock.
+    """
+    out: dict = {}
+    try:
+        idx = panel["idx"]
+        today = idx.max().date()
+        earn_path = config.data_dir() / "earnings" / "earnings.parquet"
+        if earn_path.exists():
+            import pandas as _pd_w5
+            earn_df = _pd_w5.read_parquet(earn_path)
+            # Only use the store if as_of is within 10 trading days (mirrors earn_blackout SLA)
+            earn_as_of_col = earn_df.get("as_of") if hasattr(earn_df, "get") else None
+            earn_fresh = False
+            if earn_as_of_col is not None and not earn_as_of_col.empty:
+                earn_most_recent = _pd_w5.Timestamp(str(earn_as_of_col.dropna().max()))
+                if earn_most_recent.tzinfo is not None:
+                    earn_most_recent = earn_most_recent.tz_convert(None)
+                age_cal = (_pd_w5.Timestamp(today) - earn_most_recent).days
+                earn_fresh = age_cal <= 14  # generous: 2 calendar weeks
+            if earn_fresh:
+                for tk, row in earn_df.iterrows():
+                    nd = row.get("next_date") if hasattr(row, "get") else None
+                    if nd and str(nd) not in ("", "nan", "None"):
+                        out[str(tk).upper()] = str(nd)[:10]
+    except Exception:  # noqa: BLE001 — tripwire-level; earnings chip must never crash the desk
+        out = {}
+    return out
+
+
+def prepare_theme_basket_rows(panel: dict, *, region: str, group_flow_cfg: dict,
+                              names_sectors: dict) -> tuple:
+    """PURE preparation of the per-basket rows — reads nothing, writes nothing, uses no clock.
+
+    The feature extraction the theme desk needs per basket: the dated live mask, the
+    equal-weight level, the flow fingerprint (current and 5 sessions back), the
+    leadership read, the performance table, the crowding read and the breadth / impulse
+    / crowding legs. The TREND and MACRO legs are NOT baked in here — they read the
+    captured benchmark labels and macro context, so the core computes them.
+
+    A row with "skip" True is a basket the desk refuses; the reason says why
+    ("observation_coverage" is the only one the desk reports).
+    """
+    ctx = _build_prep_context(region=region, panel=panel, cfg=group_flow_cfg,
+                               names=names_sectors)
+    bdict = panel["mem"]["baskets"]
+    items = bdict.items() if isinstance(bdict, dict) else [(b["id"], b) for b in bdict]
+    rows = []
+    for bid, b in items:
+        row = _prepare_theme_row(bid, b, ctx)
+        row["basket"] = b
+        rows.append(row)
+    return tuple(rows)
+
+
+def _acquire_basket_enrichments(rows, region: str) -> dict:
+    """READ-ONLY acquisition of the two per-basket values that still need the store.
+
+      signals  — engine.theme_scoring._basket_signals (the consolidated member candle's
+                 MTF / tape read). The candle calendar comes from the member OHLCV store,
+                 not from the captured panel; a snapshot-scoped refresh must therefore
+                 supply this from the snapshot's own member candles.
+      textures — engine.basket_score.theme_textures (bull age / overbought / clean entry /
+                 roll-over risk / breadth divergence). Its calibration weights live in
+                 data/strategies/baskets_calibration.json.
+
+    Both are captured per basket id so the core never re-reads them. The signal cache is
+    bypassed (`use_cache=False`), but underlying member-candle and calibration caches
+    still belong to the legacy acquisition path. Runtime callers supply enrichments
+    from their accepted snapshot instead of using this ambient adapter.
+    """
+    out: dict = {}
+    for row in rows or ():
+        if row["skip"]:
+            continue
+        bid = row["bid"]
+        signals = _basket_signals(row["members"], row["lvl"], region, use_cache=False)
+        textures = basket_score.theme_textures(
+            row["lvl"], row["fp"], row["fp5"], row["crowd"], row["breadth_d"],
+            row["perf"], mc_closes=row["mc_closes"])
+        out[bid] = {"signals": signals, "textures": textures}
+    return out
+
+
+def compute_theme_intel(region: str = "us", *, inputs: ThemeScoreInputs | None = None,
+                        deferred_effects: list | None = None) -> dict | None:
+    """Score / label / recommend every basket + 5-day rotation + impulse scorecards.
+
+    LEGACY ADAPTER AND CORE BODY IN ONE.
+
+    Called the incumbent way — ``compute_theme_intel("us")`` — it acquires every
+    ambient value (the close panel, the flow config, the US sector names, the macro
+    snapshots, the signal calibration, the vol-regime snapshot + overlay, the PRIOR
+    committed Sector artifact, the earnings calendar, the market-concentration panel
+    and the two per-basket enrichments), runs the desk over them, and replays the
+    desk's own ledger write. Same signature, same default behaviour, same output bytes.
+
+    Called with an ALREADY-CAPTURED bundle — ``compute_theme_intel(inputs=...)`` — it
+    reads nothing, writes nothing and uses no clock: every ambient read has become an
+    explicit input and the one ledger write is RETURNED as data instead of being
+    performed. `deferred_effects` is the optional list that receives detached records.
+    Only the legacy acquisition path replays writes when no list is supplied.
+
+    region drives the data plane: US uses group_flow._setup; CN/HK/CA reuse
+    engine.narrative_rotation._setup (same regional close/bench/membership loaders).
+    Returns None on shortfall (additive caller)."""
+    legacy_acquisition = inputs is None
+    if legacy_acquisition:
+        inputs = acquire_theme_score_inputs(region)
+        if inputs is None:
+            return None
+    region = inputs.region
+    panel = inputs.panel
+    closes = panel["closes"]
+    rets = panel["rets"]
+    idx = panel["idx"]
+    bench = panel["bench"]
+    cfg = inputs.group_flow_cfg
+    nm = inputs.names_sectors
+    mc = inputs.macro_context
+    cal = inputs.signal_calibration
+    bench_label = inputs.bench_label
+    bench_label_zh = inputs.bench_label_zh
+    rg_snap = inputs.regime_snapshot
+    rg_size = inputs.regime_sizing
+    rg_caution_scored = inputs.regime_caution_scored
     rg_kill = (bool(rg_snap) and rg_snap.get("regime") == "backwardation-stress"
                and rg_caution_scored)
     rg_kill_shadow = bool(rg_snap) and rg_snap.get("regime") == "backwardation-stress"
-    i = len(idx) - 1
-    i5 = max(0, i - 5)
-    ytd_anchor = idx[idx < pd.Timestamp(idx.max().year, 1, 1)].max() \
-        if (idx < pd.Timestamp(idx.max().year, 1, 1)).any() else idx[0]
-    mtd_anchor = _mtd_anchor(idx)
+
+    ctx = _theme_prep_context(inputs)
 
     # crowding texture (optional enrichment) — residual returns for theme_crowding
-    resid = None
-    try:
-        spy_ret = bench.pct_change(fill_method=None)
-        resid = rets.sub(spy_ret, axis=0)
-    except Exception:  # noqa: BLE001
-        resid = None
+    resid = ctx.resid
 
-    bdict = s["mem"]["baskets"]
-    items = bdict.items() if isinstance(bdict, dict) else [(b["id"], b) for b in bdict]
     themes: list[dict] = []
     observation_refusals: list[dict] = []
     uni_live: set[str] = set()                 # deduped live universe for the aggregate card
     tk_meta: dict[str, dict] = {}              # ticker -> {name, theme, theme_zh, theme_id} for popups
+    deferred: list[dict] = []
 
-    for bid, b in items:
-        members = b.get("members", [])
-        theme_observation = population_observation(closes, members, idx.max())
-        if not theme_observation["aggregate_eligible"]:
-            observation_refusals.append({"basket_id": bid, "observation": theme_observation})
-            print(
-                "::warning title=theme-observation-coverage::"
-                f"{bid} refused aggregate score at {theme_observation['effective_as_of']}: "
-                f"observed {theme_observation['observed_n']}/"
-                f"{theme_observation['configured_n']} live members; minimum "
-                f"{theme_observation['min_members']} and "
-                f"{int(round(theme_observation['min_coverage'] * 100))}% coverage",
-                flush=True,
-            )
+    for row in inputs.basket_rows or ():
+        bid = row["bid"]
+        b = row["basket"]
+        if row["skip"]:
+            if row["skip_reason"] == "observation_coverage":
+                theme_observation = row["observation"]
+                observation_refusals.append({"basket_id": bid, "observation": theme_observation})
+                if legacy_acquisition:
+                    print(
+                        "::warning title=theme-observation-coverage::"
+                        f"{bid} refused aggregate score at {theme_observation['effective_as_of']}: "
+                        f"observed {theme_observation['observed_n']}/"
+                        f"{theme_observation['configured_n']} live members; minimum "
+                        f"{theme_observation['min_members']} and "
+                        f"{int(round(theme_observation['min_coverage'] * 100))}% coverage",
+                        flush=True,
+                    )
             continue
-        present = [m["ticker"] for m in members if m["ticker"] in rets.columns]
-        lvl = _ew_level(rets, members, idx)
-        if lvl.dropna().empty:
-            continue
-        mask = pd.DataFrame(False, index=idx, columns=present)  # dated [added, removed) live mask
-        for m in members:
-            t = m["ticker"]
-            if t not in present:
-                continue
-            act = np.asarray(idx >= pd.Timestamp(m["added"]))
-            if m.get("removed"):
-                act = act & np.asarray(idx < pd.Timestamp(m["removed"]))
-            mask[t] = act
-        if int(mask.iloc[-1].sum()) < 3:
-            continue
-        mc_closes = closes[present].where(mask)
-
-        prep = group_flow.prep_group(mc_closes, lvl, bench, cfg)
-        fp = group_flow.fingerprint_at(prep, i, cfg) if prep else None
-        fp5 = group_flow.fingerprint_at(prep, i5, cfg) if prep else None
-        if fp is None:
-            continue
-        # PRICE-ONLY proxies (see EXT_HI doc): an ABSOLUTE stretch (vs the basket's own
-        # history) for the non-US extension gate (US keeps its validated rs_pctile), and a
-        # 200d trend sign for the drawdown gate — ALL regions, because the 200d price gate
-        # is the definition the phase-0 drawdown channel was validated on; US previously
-        # leaned on the mtf confluence long_sign, whose cycle-shape governor mislabels a
-        # basket above a rising 200d with a fresh monthly cross-up (us_sector_health).
-        ld = lvl.dropna()
-        if region != "us":
-            ma50 = ld.rolling(50, min_periods=25).mean()
-            stretch = ld / ma50 - 1.0
-            sh = stretch.iloc[-252:].dropna() if stretch.notna().sum() > 60 else stretch.dropna()
-            if len(sh) >= 30 and sh.std() and pd.notna(stretch.iloc[-1]):
-                fp["ext_abs"] = float((stretch.iloc[-1] - sh.mean()) / sh.std())
-        m2 = ld.rolling(200, min_periods=100).mean().dropna()
-        if len(m2) > 22 and pd.notna(ld.iloc[-1]):
-            above = bool(ld.iloc[-1] > m2.iloc[-1])
-            slope = float(m2.iloc[-1] - m2.iloc[-22])
-            fp["long_sign"] = 1 if (above and slope > 0) else (-1 if ((not above) and slope <= 0) else 0)
-        lead = group_flow._leadership(mc_closes, {}, nm)
-        perf = _perf(lvl, bench, idx, ytd_anchor, mtd_anchor)
-
-        crowd = None
-        if resid is not None:
-            try:
-                rr = resid[present].where(mask)
-                crowd = __import__("engine.theme_crowding", fromlist=["basket_crowding"]) \
-                    .basket_crowding(rr, lvl / bench, None, None)
-            except Exception:  # noqa: BLE001 — enrichment only
-                crowd = None
-
-        trend, t_why = _trend_leg(perf, fp, bench_label, bench_label_zh)
-        breadth, breadth_d = _breadth_leg(mc_closes, i, fp)
-        impulse, impulse_d = _impulse_leg(rets, mc_closes, i)
+        members = row["members"]
+        present = row["present"]
+        lvl = row["lvl"]
+        mask = row["mask"]
+        mc_closes = row["mc_closes"]
+        fp = row["fp"]
+        fp5 = row["fp5"]
+        lead = row["lead"]
+        perf = row["perf"]
+        crowd = row["crowd"]
+        breadth, breadth_d = row["breadth"], row["breadth_d"]
+        impulse, impulse_d = row["impulse"], row["impulse_d"]
+        crowd_pen, c_why = row["crowd_pen"], row["c_why"]
+        # The trend and macro legs read the CAPTURED benchmark labels and macro context.
+        trend, t_why = _trend_leg(row["perf"], fp, bench_label, bench_label_zh)
         macro, m_why = _macro_leg(bid, mc)
-        crowd_pen, c_why = _crowding_pen(fp, lead, crowd)
+
+        enr = inputs.basket_enrichments.get(bid)
+        if enr is None:
+            raise ValueError(
+                "theme score inputs are missing the captured enrichment for basket "
+                f"{bid!r}; acquire them with acquire_theme_score_inputs() so the "
+                "signals and textures are the same values the desk read."
+            )
+        sig = enr.get("signals") or {}
+        textures = enr.get("textures") or {}
 
         # Multi-timeframe structure prefers a deep consolidated OHLCV candle; all regions
         # fall back to the equal-weight close level. Tape/flow only exists on the OHLCV path.
-        sig = _basket_signals(members, lvl, region)
         mtf = sig.get("mtf") or {}
         tape = sig.get("tape") or {}
         mtf_leg = mtf.get("momentum_score")
@@ -1190,8 +1592,6 @@ def compute_theme_intel(region: str = "us") -> dict | None:
 
         # advanced display-only textures (bull age / overbought / clean entry / roll-over /
         # intra-basket breadth divergence — mc_closes is additive; None-safe in theme_textures)
-        textures = basket_score.theme_textures(lvl, fp, fp5, crowd, breadth_d, perf,
-                                               mc_closes=mc_closes)
         # DON'T-CHASE demotion (continuation VERB only, non-US) — twin of the regime_demoted
         # stand-down above. A DOMINANT leader that is simultaneously (a) OVERBOUGHT, (b)
         # DECELERATING (its 3-day member impulse leg has turned negative — more names rolling
@@ -1213,20 +1613,22 @@ def compute_theme_intel(region: str = "us") -> dict | None:
         # reads keyed (date, basket, region) — keep-first, so intraday rebuilds can't drift
         # the stamp — so a later grader can measure the lead vs the fading/deteriorating
         # label guard + the realized fwd 21d drawdown (T+1 convention). Never fatal.
-        try:
-            from engine import basket_breadth_divergence as _bd
-            _bd.log_stamp(bid, region, textures.get("breadth_divergence"), label, idx[i])
-        except Exception:  # noqa: BLE001 — accountability log is enrichment, never fatal
-            pass
+        # The core does NOT write: the stamp is returned as deferred data.
+        deferred.append({
+            "kind": "breadth_divergence_stamp",
+            "basket_id": bid, "region": region,
+            "divergence": textures.get("breadth_divergence"),
+            "label": label, "as_of": idx[ctx.i],
+        })
         # this theme's advance/decline today (live members) — feeds the breadth-leadership read
-        day_live = rets[present].where(mask).iloc[i].dropna()
+        day_live = rets[present].where(mask).iloc[ctx.i].dropna()
         adv_i = int((day_live > 0).sum())
         dec_i = int((day_live < 0).sum())
 
         # new-high/low already counted in breadth_d; impulse counts in impulse_d.
         # capture ticker -> display meta (name + home theme) for the scorecard popups.
         nm_by_tk = {m["ticker"]: (m.get("name"), m.get("name_zh")) for m in members}
-        for t in mc_closes.iloc[i].dropna().index:
+        for t in mc_closes.iloc[ctx.i].dropna().index:
             uni_live.add(t)
             if t not in tk_meta:
                 nmt = nm_by_tk.get(t) or (None, None)
@@ -1263,8 +1665,8 @@ def compute_theme_intel(region: str = "us") -> dict | None:
             "perf": {k: {"rel": _r((perf.get(k) or {}).get("rel"), 4),
                          "ret": _r((perf.get(k) or {}).get("ret"), 4)} for k in
                      ("1d", "5d", "10d", "20d", "60d", "ytd")},
-            "timing": _timing_snapshot(lvl, bench, i, fp),
-            "observation": theme_observation,
+            "timing": _timing_snapshot(lvl, bench, ctx.i, fp),
+            "observation": row["observation"],
             "breadth": breadth_d,
             "impulse": impulse_d,
             "leadership": {"breadth": lead.get("breadth"), "top": (lead.get("top") or [])[:3]},
@@ -1277,12 +1679,12 @@ def compute_theme_intel(region: str = "us") -> dict | None:
             "adv": adv_i, "dec": dec_i, "net_ad": adv_i - dec_i,
             "parent": b.get("parent", b.get("category", "Other")),
             "tags": b.get("tags", []),
-            "_r20_now": _ret_rel(lvl, bench, i, 20),
-            "_r20_prev": _ret_rel(lvl, bench, i5, 20),
+            "_r20_now": _ret_rel(lvl, bench, ctx.i, 20),
+            "_r20_prev": _ret_rel(lvl, bench, ctx.i5, 20),
             # MLC-W5: live tickers at session i — used by _act() to compute the
             # near_earnings_count display chip. Dropped from the themes list in the
             # act_now clean-up pass below (after _act() has consumed the field).
-            "_live_tickers": list(mc_closes.iloc[i].dropna().index),
+            "_live_tickers": list(mc_closes.iloc[ctx.i].dropna().index),
         })
 
     if not themes:
@@ -1311,12 +1713,12 @@ def compute_theme_intel(region: str = "us") -> dict | None:
 
     # aggregate impulse / new-hi-lo scorecard over the deduped live thematic universe
     live = sorted(uni_live)
-    day = rets[live].iloc[i] if live else pd.Series(dtype=float)
+    day = rets[live].iloc[ctx.i] if live else pd.Series(dtype=float)
     up3 = int((day >= UP_DAY).sum())
     down3 = int((day <= DOWN_DAY).sum())
     w = min(HI_LO_WINDOW, len(idx))
     block = closes[live].iloc[-w:] if live else pd.DataFrame()
-    last = closes[live].iloc[i] if live else pd.Series(dtype=float)
+    last = closes[live].iloc[ctx.i] if live else pd.Series(dtype=float)
     hi_hit = (last >= block.max() * (1 - NEAR)) if live else pd.Series(dtype=bool)
     lo_hit = (last <= block.min() * (1 + NEAR)) if live else pd.Series(dtype=bool)
     nh = int(hi_hit.sum()) if live else 0
@@ -1360,7 +1762,7 @@ def compute_theme_intel(region: str = "us") -> dict | None:
                 "quality": t["textures"]["clean_entry"]["quality"],
                 "reasons": t["textures"]["clean_entry"]["reasons"]} for t in entries[:6]]
     rollover = sorted([t for t in themes if (t["textures"].get("rollover_risk") or {}).get("band") in ("elevated", "high")],
-                      key=lambda x: -(x["textures"]["rollover_risk"]["risk"]))
+                      key=lambda x: -(t["textures"]["rollover_risk"]["risk"]))
     rollover = [{"id": t["id"], "name": t["name"], "name_zh": t["name_zh"], "score": t["score"],
                  "risk": t["textures"]["rollover_risk"]["risk"], "band": t["textures"]["rollover_risk"]["band"],
                  "reasons": t["textures"]["rollover_risk"]["reasons"]} for t in rollover[:6]]
@@ -1374,32 +1776,10 @@ def compute_theme_intel(region: str = "us") -> dict | None:
     # true; the rest move — visibly, never hidden — to "add_on_pullback" (in favour on the
     # desk read, but no clean-entry setup right now). Descriptive presentation, not a signal.
 
-    # MLC-W5: load the earnings calendar once for the basket-level near-earnings chip.
-    # Display-only (MLC-R10): never gates, orders, or scores any basket.
-    # Fail-open: an absent/stale store simply leaves near_earnings_count absent from the payload.
-    _w5_earn_cal: dict = {}
+    # MLC-W5: the near-earnings chip calendar (display-only). The calendar itself was
+    # CAPTURED at acquisition; "today" is the panel session, never a wall clock.
+    _w5_earn_cal: dict = inputs.earnings_calendar
     _w5_today = idx.max().date()
-    try:
-        _earn_path = config.data_dir() / "earnings" / "earnings.parquet"
-        if _earn_path.exists():
-            import pandas as _pd_w5
-            _earn_df = _pd_w5.read_parquet(_earn_path)
-            # Only use the store if as_of is within 10 trading days (mirrors earn_blackout SLA)
-            _earn_as_of_col = _earn_df.get("as_of") if hasattr(_earn_df, "get") else None
-            _earn_fresh = False
-            if _earn_as_of_col is not None and not _earn_as_of_col.empty:
-                _earn_most_recent = _pd_w5.Timestamp(str(_earn_as_of_col.dropna().max()))
-                if _earn_most_recent.tzinfo is not None:
-                    _earn_most_recent = _earn_most_recent.tz_convert(None)
-                _age_cal = (_pd_w5.Timestamp(_w5_today) - _earn_most_recent).days
-                _earn_fresh = _age_cal <= 14  # generous: 2 calendar weeks
-            if _earn_fresh:
-                for _tk, _row in _earn_df.iterrows():
-                    _nd = _row.get("next_date") if hasattr(_row, "get") else None
-                    if _nd and str(_nd) not in ("", "nan", "None"):
-                        _w5_earn_cal[str(_tk).upper()] = str(_nd)[:10]
-    except Exception:  # noqa: BLE001 — tripwire-level; earnings chip must never crash the desk
-        _w5_earn_cal = {}
 
     def _w5_near_earnings_count(tickers: list[str], window_days: int = 5) -> int | None:
         """Count members of the basket that report within window_days calendar days.
@@ -1470,20 +1850,24 @@ def compute_theme_intel(region: str = "us") -> dict | None:
                "add_on_pullback": add_on_pullback, "reduce": reduce_,
                "conflicted": []}   # MLC-W2b: 4th key — always present; populated below
 
-    # MLC-W2b: Sector-conviction demotion — extracted into _apply_sector_conflict_demotion().
-    # T-1 read: site/sectordata/sector_central.json (RLT-R6 semantics; last committed).
+    # MLC-W2b: Sector-conviction demotion — the PRIOR committed Sector generation.
+    # The document is the CAPTURED value (prior_sector_text) and the freshness rule is
+    # measured against the EXPLICIT evaluation date — never the in-progress current
+    # Sector output, so the demotion cannot create a calculation cycle.
     # Freshness gate: > 5 calendar days OR absent/unparseable → fail-open (conflicted=[]).
     # ONLY "Reduce" demotes; SMH-proxied baskets fall back to XLK (see _CONVICTION_ETF_FALLBACK).
     _w2b_orig_buys = list(act_now["buy"])  # snapshot for fail-open restore
     try:
-        _apply_sector_conflict_demotion(act_now, config.site_dir())
+        _apply_sector_conflict_demotion_doc(act_now, inputs.prior_sector_text,
+                                            inputs.evaluation_date)
     except AssertionError:
         raise  # invariant violation — logic bug, must surface
     except Exception as _e_w2b:  # noqa: BLE001 — fail-open: leave conflicted empty, buy intact
-        import logging as _log_w2b
-        _log_w2b.getLogger(__name__).warning(
-            "MLC-W2b demotion failed (fail-open, conflicted=[]) : %s", _e_w2b
-        )
+        if legacy_acquisition:
+            import logging as _log_w2b
+            _log_w2b.getLogger(__name__).warning(
+                "MLC-W2b demotion failed (fail-open, conflicted=[]) : %s", _e_w2b
+            )
         act_now["buy"] = _w2b_orig_buys
         act_now["conflicted"] = []
 
@@ -1498,10 +1882,11 @@ def compute_theme_intel(region: str = "us") -> dict | None:
     except AssertionError:
         raise  # invariant violation — logic bug, must surface
     except Exception as _e_w4:  # noqa: BLE001 — fail-open
-        import logging as _log_w4
-        _log_w4.getLogger(__name__).warning(
-            "MLC-W4 cooling demotion failed (fail-open) : %s", _e_w4
-        )
+        if legacy_acquisition:
+            import logging as _log_w4
+            _log_w4.getLogger(__name__).warning(
+                "MLC-W4 cooling demotion failed (fail-open) : %s", _e_w4
+            )
         act_now["buy"] = _w4_orig_buys
         act_now["conflicted"] = _w4_orig_conflicted
 
@@ -1510,7 +1895,7 @@ def compute_theme_intel(region: str = "us") -> dict | None:
     for _th_w5 in themes:
         _th_w5.pop("_live_tickers", None)
 
-    return {
+    payload = {
         "as_of": idx.max().strftime("%Y-%m-%d"),
         "bench_label": bench_label, "bench_label_zh": bench_label_zh,
         "disclaimer": {
@@ -1531,11 +1916,12 @@ def compute_theme_intel(region: str = "us") -> dict | None:
             "zh": ("波动率仓位：在更困难的环境中，篮子总仓位缩放至约"
                    f"{int(round((rg_size.get('gross_scalar') or 1.0) * 100))}%。只影响仓位，不影响排名。"),
         },
-        "observation": s.get("observation") or {
+        "observation": panel.get("observation") or {
             "effective_as_of": idx.max().strftime("%Y-%m-%d"),
             "status": "legacy_source_without_receipt",
         },
-        **({"price_resolution": price_resolution} if price_resolution is not None else {}),
+        **({"price_resolution": panel["price_resolution"]}
+           if panel.get("price_resolution") is not None else {}),
         "observation_refusals": observation_refusals,
         "themes": themes,
         "rotation_5d": {"climbers": climbers, "fallers": fallers},
@@ -1546,7 +1932,7 @@ def compute_theme_intel(region: str = "us") -> dict | None:
             "up_names": up_names, "down_names": down_names,
             "nh_names": nh_names, "nl_names": nl_names,
         },
-        "market_concentration": basket_score.market_concentration(region),
+        "market_concentration": inputs.market_concentration,
         "breadth_leaders": breadth_leaders,
         "breadth_laggards": breadth_laggards,
         "entries": entries,
@@ -1556,6 +1942,47 @@ def compute_theme_intel(region: str = "us") -> dict | None:
         "n_themes": len(themes),
         "recommendations": recos,
     }
+    # Detach both result channels from supplied values and module constants.
+    detached_effects = deepcopy(deferred)
+    if deferred_effects is not None:
+        deferred_effects.extend(detached_effects)
+    elif legacy_acquisition:
+        _replay_deferred_effects(detached_effects)
+    return deepcopy(payload)
+
+
+def _replay_deferred_effects(effects) -> None:
+    """Perform the deferred ledger writes the theme desk owns.
+
+    The core never writes. The legacy adapter replays the breadth-divergence forward-log
+    stamp here — the same call, the same arguments and the same never-fatal handling the
+    incumbent loop used.
+    """
+    for eff in effects or ():
+        if eff.get("kind") != "breadth_divergence_stamp":
+            continue
+        try:
+            from engine import basket_breadth_divergence as _bd
+            _bd.log_stamp(eff["basket_id"], eff["region"], eff.get("divergence"),
+                          eff.get("label"), eff.get("as_of"))
+        except Exception:  # noqa: BLE001 — accountability log is enrichment, never fatal
+            pass
+
+
+def compute_theme_intel_core(inputs: ThemeScoreInputs) -> ThemeScoreResult:
+    """The theme desk over CAPTURED VALUES — no file read, no clock, no write.
+
+    The explicit-input entry point. It runs the SAME body as `compute_theme_intel`
+    over an already-captured bundle and returns the payload together with the desk's
+    one ledger write as DEFERRED DATA (the caller decides whether to perform it; a
+    runtime that must not write simply ignores it).
+
+    Same algorithm, same thresholds, same labels, same recommendation verbs and the
+    same output bytes as the legacy call.
+    """
+    deferred: list = []
+    payload = compute_theme_intel(inputs=inputs, deferred_effects=deferred)
+    return ThemeScoreResult(payload=payload, deferred_effects=tuple(deferred))
 
 
 def _ret_rel(lvl: pd.Series, bench: pd.Series, i: int, h: int) -> float | None:

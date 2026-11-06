@@ -3,7 +3,7 @@
   "root_id": "macro-always-on-shared-shell-20261105-c3",
   "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T03:01:41Z",
+  "recorded_at": "2026-11-06T04:33:32.014433+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -104,13 +104,15 @@
         "acceptance": "Locally commit qualified source; return full immutable commit/base/files/workspace, exact barrier and deferred status semantics, test receipts and first-install limitation. This is synchronization under the incumbent updater, not entire estate safety. If a source control boundary cannot be preserved, return exact evidence and decision; no bypass."
       },
       "observed_status": {
-        "state": "ACTIVE_OR_WAITING",
-        "rc": null,
-        "root_verified": false,
-        "worker_start_proven": false,
-        "result_available": false
+        "state": "TERMINAL",
+        "rc": 124,
+        "root_verified": true,
+        "owned_cleanup_residual_count": 0,
+        "parent_disposition": "RETAINED_PARTIAL_SOURCE_REQUIRES_REPAIR_NO_REPLAY",
+        "patch_sha256": "bae0e2feb320084815dd707b635397e55e301014355743acd746fc9e733d1aba",
+        "separate_test_sha256": "62e226c221771191096b635dcd9f6f7e3c0ce0fc1d20f401c7ad81c7d8f0b05a"
       },
-      "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY"
+      "parent_disposition": "RETAINED_PARTIAL_SOURCE_REQUIRES_REPAIR_NO_REPLAY"
     },
     {
       "name": "cycle-closure",
@@ -148,13 +150,13 @@
         "acceptance": "Locally commit qualified candidate, return immutable commit/base/tree/files/workspace and full interface/test evidence. Final patch may contain prior extraction plus corrections on exactbase, or an exact descendant of candidate with both refs. A successful source test is not runtime deployment or product acceptance."
       },
       "observed_status": {
-        "state": "ACTIVE_OR_WAITING",
-        "rc": null,
-        "root_verified": false,
-        "worker_start_proven": false,
-        "result_available": false
+        "state": "TERMINAL",
+        "rc": 124,
+        "root_verified": true,
+        "owned_cleanup_residual_count": 0,
+        "parent_disposition": "NO_QUALIFIED_NEW_RESULT_PRIVATE_EFFECT_ABSENCE_NOT_CLAIMED_NO_REPLAY"
       },
-      "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY"
+      "parent_disposition": "NO_QUALIFIED_NEW_RESULT_PRIVATE_EFFECT_ABSENCE_NOT_CLAIMED_NO_REPLAY"
     },
     {
       "name": "terminal-native",
@@ -188,13 +190,13 @@
         "acceptance": "Local commit only, return immutable head/base/tree/workspace/changedfiles and accessible patch/evidence. Completion claim limited to native Brief/action-board fixture qualification. Production BFF/readbinding/API, core/history coherence, Watches and entire userjourney/wholeestate acceptance remain parent integration obligations. If a source ambiguity blocks safe implementation, reportexact source and bounded decision. No push/PR/merge/deploy/Slack/email, no duplicate existingreleaseeffect."
       },
       "observed_status": {
-        "state": "ACTIVE_OR_WAITING",
-        "rc": null,
-        "root_verified": false,
-        "worker_start_proven": false,
-        "result_available": false
+        "state": "TERMINAL",
+        "rc": 0,
+        "root_verified": true,
+        "candidate_head": "b441a9b2c7225df30161ce347c2d069e046cf3c6",
+        "parent_disposition": "REQUEST_REPAIR_SOURCE_NOT_ACCEPTED_OR_ACTIVATED"
       },
-      "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY"
+      "parent_disposition": "REQUEST_REPAIR_SOURCE_NOT_ACCEPTED_OR_ACTIVATED"
     },
     {
       "name": "yahoo-profile",
@@ -336,13 +338,13 @@
         "acceptance": "Locally commit qualified source. Return immutable base/head/tree/workspace/files and full explicit interface plus test receipts, unchanged-legacy evidence and residual limitations. Parent owns integration into original PR10780 and whole-Brief real-path acceptance. A source extraction is not a runtime deployment."
       },
       "observed_status": {
-        "state": "ACTIVE_OR_WAITING",
-        "rc": null,
-        "root_verified": false,
-        "worker_start_proven": false,
-        "result_available": false
+        "state": "TERMINAL",
+        "rc": 0,
+        "root_verified": true,
+        "candidate_head": "45a4f141b53ba6069aea340f37cb6655828797cf",
+        "parent_disposition": "INTEGRATED_WITH_PARENT_REPAIRS_267_PASSED_17_SKIPPED"
       },
-      "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY"
+      "parent_disposition": "INTEGRATED_WITH_PARENT_REPAIRS_267_PASSED_17_SKIPPED"
     },
     {
       "name": "board-data",
@@ -498,6 +500,54 @@
         "worker_start_proven": false
       },
       "parent_disposition": "REPAIR_OF_REVIEWED_TERMINAL_SOURCE_NO_ACTIVATION"
+    },
+    {
+      "name": "terminal-native-repair",
+      "run_id": "macro-always-on-20261106-c3-terminal-native-repair-01",
+      "work_packet": {
+        "objective": "Repair the returned native Sector candidate's concrete decoder and owner/timeout defects and add the pure adapter for the actual published Macro HTTP envelope. This is source implementation, not review/release or production binding.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/mastermind-terminal",
+          "base_sha": "b441a9b2c7225df30161ce347c2d069e046cf3c6",
+          "base_tree": "fb36b6304ceb8273aea9866567dfbd6daccae49e",
+          "original_base": "847af34df5f811fa4a9152936e42d199b8a45b08",
+          "macro_contract_commit": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "macro_api_commit": "3de008a43b17811cb048b1f0f65e145e8bb2cd6f",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "custody": "Original terminal-native-01 returned rc0 and is immutable/read-only. Source /home/ubuntu2/lanes/repos/mastermind-terminal/.claude/worktrees/sector-native-view-brief-20261105; artifacts /home/ubuntu2/lanes/artifacts/sector-native-view-brief-20261105. Exact cumulative patch on M2 /tmp/mmx-terminal-native-b441a9b.patch147022bytes SHAce02b1f1ba339fb2642c360a58779740f93b69ffddbd3773179a5d969774bab0. Use AUTO routing and one new isolated managed workspace from b441 through incumbent custody. Do not modify original/frozen PR1311 or PR1285 or parentMacro workspace. No host/model override, no replay of originalrun.",
+        "write_scope": [
+          "terminal/lib/sectorNativeView.ts",
+          "terminal/components/sector-intelligence/SectorIntelligenceWorkspace.tsx",
+          "terminal/components/sector-intelligence/SectorNativeActionBoard.tsx (safe existing destination handling only)",
+          "terminal/lib/sectorIntelligenceLex.ts",
+          "terminal/app/dev/sector-native/page.tsx",
+          "terminal/lib/__tests__/sectorNativeView.test.ts",
+          "terminal/lib/__tests__/sectorNativeWorkspace.test.tsx",
+          "terminal/lib/__tests__/sectorNativeBrief.test.tsx",
+          "terminal/e2e/fixtures/sector-native-view.ts",
+          "terminal/e2e/sector-native-view.spec.ts"
+        ],
+        "repairs": [
+          "Keep raw projection decoder; add pure decodeSectorGenerationRead(input:unknown,expectedAudience:SectorNativeAudience):SectorNativeDecodeResult. Read exact Macro app/sector_generation.py/docs/SECTOR_GENERATION_API_CONTRACT.md/tests at3de (API source SHA2562d4ab955995df5db259ee8ebd3496553cbedb14223919537ba385080ad41d36c). Success outer schema sector_generation.read/v1, audience,source_session,published_at,qualification and nested projection{data,receipt}; validate expected audience and projection.data.audience, exact3outer/innerreceiptfacts; reject error/raw/malformed/wrongaudience envelope whole. Preserve olderBriefbaseline. Injected reader now returns HTTP shape; harness wraps unchanged literalproducer fixtures, not protocol guessing. NO fetch/endpoint/BFF/auth/cache/manifestreader.",
+          "Replace optional reader-only injection with explicit optional nativeBinding{readonly key:string,readonly audience:SectorNativeAudience,readonly read:SectorNativeReader}. Owner includes existing shellidentity/revision/activefeeds and stable bindingkey+audience. Sameaccount bindingkey/audience change immediately hidesolddata/cancelsread; lateentitledresult cannotrestorepreview. Ref latestreadclosure so unchangedsemanticbinding/newclosure doesn'trestart. Missing/invalidbindingfailclosed, unboundno native request. No extraauthsubscription.",
+          "10s native timeout currently only aborts signal, leaves nativePending forever for noncooperativepromise. Race owner-controlleddeadline/cancellationsettlement withread; timeout releases slot, followsfailureclearpolicy, nexteligiblecyclecanstart. Guard queuedupdates withowner ANDattemptidentity; late resolve/reject cannotmutate newerstate orclearnewerattempt orcauseunhandledrejection. Clear timers/listeners onsettle/dispose; ownerexit immediatecancel. RetainONEexisting60sforegound/visibilityresumeeffect, coalescing, nohiddeninterval/newpoller orlegacyfeedchanges.",
+          "Publication time regex currently admits impossibledate/time and rejects producerallowedspace separator. Validate realcalendar,time,awareoffset; acceptordinaryT/space awareforms supportedby pinnedAPI, preserveoriginaltext, discloseanyremainingparsermismatch. Enforce previewcap0..100 BOTH exact/lowerboundinference branches; reject101, preserve0/100/sharedholdavoid. finite safeintegercounts,10krows/lane,1kgroups,exact21points, sixlanes/count equality remain. No truncationrepair ofmalformedinput.",
+          "readSafeHref currently accepts whitespace-prefixedprotocolrelative external (' //outside.example/page.html'). Reject whitespace/controlprefixes and validateparsedURLsemantics, preservevalidrelativeownerpages, omitbadlinkwithoutrowloss. Render via incumbentresolveSharedShellLink/catalog; no newroutecatalog, unknownpaths mustnotappearworking. Change siNativeBaselineCurrent EN 'Same as source session', ZH '与来源交易日相同'. Nullbaseline equality≠freshmarket."
+        ],
+        "preserve": "Singleatomicdata+receiptadoption; samehash/newreceiptqualificationsupdates; acceptedrollbackolderdate/opaqueid; accepted|stale|degraded comesfromservernotpolltime; failureclearsprivilegeddata withoutindependentlegacyfallback; contenthashformatchecknotcryptographicverification. Preserve Rotation/Discover/Breadth, researchdepth, sourcepanel, BackForward, selection/scroll/focus, ENZH, themeskeyboardand3viewports. Literal capturedproducer preview/entitled/olderbaselinefixtures unchangedexceptwrappers. NoCSSredesign/dependency/package/lockfile/CI/globalshellchange. DevharnessproductionnotFound guard stays, fixtureevidence≠production404proof.",
+        "tests": "Regression againstunmodifiedb441: real3dewrapper success, raw/error/wrongschema/facts/audiencefail; bindingA→B/entitled→preview sameaccount immediatehideandlateisolation; closureidentitynostart; noncooperativepromisetimeoutthennewrefreshlatefulfill/rejectsafe; impossible/leapdates/times/offsets/naive+validawareforms; preview101bothbranches reject,0/100budgetpass; unsafehrefprefixreject,actualcatalogownerlinkpreserveunknownomitted. Original atomicadoption/stale/olderbaseline/samehash/rollback/hiddenresume/unbound/nav testsretain. Run3native suites+relevantincumbentrefresh/depth/exposure/discovery, existingtsc/lint, focusedlocalbrowser proof ENZH lightdark responsive. Do not rerunwhole18875estatewithoutconcreteneed orweakenassertions. Recordexisting2fulltree inheritedfailuresseparately.",
+        "return_contract": "Localcommitonly exactbase/head/tree/workspacechangedfilescleanstatus; repaironlyb441..head ANDcumulative847..headpatches withbytesSHA256, actualcommands/results/discriminatingbaselineevidence/screenshots/prooflimits. Scope stillunboundnativefoundation; parentownsBFF/runtimefreshness/corehistory/Watches/beta/fullestate.",
+        "exclusions": "No terminal/app/api/** or existingBFFPR1285handler/upstreams/auth, noPR1311workspace/branch, nofetch/config/transportbinding, noqueue/deploy/providers/liveproductionrequests/Slack/email/childfanout. No push/PR/merge. On custodyconflict/explicitdenial/missingimmutableinput/outofscopeneed reportexactblocker retainoriginaleffect; no carrier/host/model replay."
+      },
+      "observed_status": {
+        "state": "CONTROLLER_CREATED",
+        "controller_pid": 2113,
+        "worker_start_proven": false
+      },
+      "parent_disposition": "ORIGINAL_NEW_EFFECT_RETAINED_NO_REPLAY"
     }
   ],
   "additional_reconciliation": {
