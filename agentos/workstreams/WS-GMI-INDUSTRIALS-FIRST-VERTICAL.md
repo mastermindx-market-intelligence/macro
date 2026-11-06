@@ -70,7 +70,7 @@ next_action: >
   path widening (1db9cad104437dc0c9bb4b27cf45781040302fb2, pushed 2026-10-11, local closure
   check {} and the two curated-scope tests pass locally); it lands on main first per the #7870
   landing order (comment 6105402719 line 18) once, at 1db9cad1, four conditions are in hand:
-  (1) ALL_CONCLUDED green from the one bound watcher (in hand: 2026-10-11T06:24:44Z, 26 check runs (1 failure; 4 skipped; 21 success; 6106622707 line 26 wrote 15; the 26 is from 6106264920 line 8 and from the 2026-10-11T07:39:39Z check-runs readback recorded in the verified block of handoff GMI-SEMICONDUCTORS-2026-10-11-meta-ceo-consolidation), the only failure ci-authority/codex/merge-queue-pilot, which is not a gate: no check is GitHub-required on main (readback 2026-10-11T07:39:39Z: GET repos/mastermindx-market-intelligence/macro/branches/main/protection/required_status_checks returned 'HTTP 404 Branch not protected' and GET repos/.../rules/branches/main returned rule types (empty list); that is true of all 26 checks, ci-gate included, so it does not single this one out), and merge-queue-pilot concluded failure on the head sha of all 14 PRs merged to main on 2026-10-11 through 08:26:47Z (#8755, #8760, #8758, #8764, #8670, #8767, #7869, #8768, #8769, #8774, #8771, #8775, #8777, #8778; list read 2026-10-11T08:34:57Z, conclusions read 08:35:20Z, recorded in the verified block of handoff GMI-SEMICONDUCTORS-2026-10-11-meta-ceo-consolidation), so the seat's own gates, not that pilot, decide merge readiness); (2) the
+  (1) ALL_CONCLUDED green from the one bound watcher (in hand: 2026-10-11T06:24:44Z, 26 check runs (1 failure; 4 skipped; 21 success; 6106622707 line 26 wrote 15; the 26 is from 6106264920 line 8 and from the 2026-10-11T07:39:39Z check-runs readback recorded in the verified block of handoff GMI-SEMICONDUCTORS-meta-ceo-consolidation-2026-10-11), the only failure ci-authority/codex/merge-queue-pilot, which is not a gate: no check is GitHub-required on main (readback 2026-10-11T07:39:39Z: GET repos/mastermindx-market-intelligence/macro/branches/main/protection/required_status_checks returned 'HTTP 404 Branch not protected' and GET repos/.../rules/branches/main returned rule types (empty list); that is true of all 26 checks, ci-gate included, so it does not single this one out), and merge-queue-pilot concluded failure on the head sha of all 14 PRs merged to main on 2026-10-11 through 08:26:47Z (#8755, #8760, #8758, #8764, #8670, #8767, #7869, #8768, #8769, #8774, #8771, #8775, #8777, #8778; list read 2026-10-11T08:34:57Z, conclusions read 08:35:20Z, recorded in the verified block of handoff GMI-SEMICONDUCTORS-meta-ceo-consolidation-2026-10-11), so the seat's own gates, not that pilot, decide merge readiness); (2) the
   non-author READ_ONLY review chain from Sol's reviewed head e4bce058 (REVIEW 5925055036,
   CONTINUE 5925110889 with REVIEW_REUSE_ALLOWED) to 1db9cad1 (in hand, two legs: the first
   candidate 20b853e2 was adjudicated REPAIR_REQUIRED by the READ_ONLY audit consumed in #8250
@@ -176,6 +176,17 @@ next_action: >
   strongest available Exponent/Pentair journey proof; claim no acceptance until the real user
   path satisfies the whole outcome. Re-arm the approved exact-carrier wait/watch path after the
   next nonterminal return, or report the exact WATCH_UNAVAILABLE condition.
+  2026-10-11 17:49Z: the seat's own reading of #8250's gate (4) against the requested, still
+  unruled five-leg substitute criterion recorded as
+  DSC:SOURCE-CONTINUITY-CENSUS-PASS-CRITERION-FOR-MACRO-CARRIERS-OVER-THE-490-CAP (a request,
+  not a ruling; the non-seat ruling stays owed): 6106395498 at 1db9cad1 satisfies legs (1) head
+  identity, (2) ownership and (5) one substitute per carrier per head; leg (4) fingerprint by
+  shape only (the hashed ls-remote line is paraphrased and the pulls/8250 read summarized
+  there); leg (3) attribution (roster read immediately before and after the run plus the run's
+  wall time against the census budget) is not recorded. The release-head re-run records all
+  five. #8250's head at 17:49Z is unchanged at 1db9cad1 (no #8250 act this window); #7870 was at
+  1eb871d6 at 17:49Z and is at 839bd6a1 (CI repair) at this record, with its own substitute
+  superseded at each head (WS:GMI-SEMICONDUCTORS SB-W1).
 artifacts:
   - agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md

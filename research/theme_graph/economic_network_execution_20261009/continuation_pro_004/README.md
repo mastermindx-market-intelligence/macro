@@ -1,0 +1,15 @@
+# Economic network: actual source witnesses and executable diagnostic
+
+The accepted research, relationship inspector and pure reader remain intact. The incumbent source producer, immutable intake and generation-pinned reader have now completed two real convenience witnesses: a complete-empty MU response and a complete-nonempty NVIDIA response. Both include actual repeated intake of the same acquired artifact and public independent review. They are separate requests with different query ranges; they do not constitute a vendor comparison or a selected research cohort.
+
+Start with [execution status 008](EXECUTION_STATUS_20261009_008.md), the [NVIDIA evidence guide](native_nvda_execution_008/README.md) and the [unchanged independent public-result review](native_nvda_execution_008/INDEPENDENT_ACTUAL_REVIEW_001.md). The [issuer-coordinate note](native_nvda_execution_008/ISSUER_COORDINATES_AND_LIMITS_006.md) distinguishes public issuer facts from the vendor field whose date semantics remain unreconciled.
+
+The [corrected structural diagnostic kernel](source_diagnostic_kernel_v1/README.md) preserves its 117 passing native cases, original failure and corrective evidence, independent public API/output-bound review and existing CI enrollment. Its [36-file source map](KERNEL_SOURCE_MAP_004.json) remains unchanged. This checkpoint saves source execution evidence and alters no producer, kernel, shared CI manifest, curated test inventory, source registry or product authority.
+
+The observation carrier [PR8711](https://github.com/mastermindx-market-intelligence/macro/pull/8711) is currently published at 964a4b36dddff4e2b01eea4e8e8b2d69dfb4b031. Its naturally triggered run 37962235329 and ordinary release are separate from the source captures. Later dated receipts govern their eventual outcome. The kernel carrier will normally integrate accepted observation source before its own hosted release.
+
+The complete [previous source checkpoint](EXECUTION_STATUS_20261009_006.md) and [previous root index](native_nvda_execution_008/README_BEFORE_NVDA_PUBLICATION_007.md) retain their exact bytes and freeze-time statements. The [accepted implementation masterplan](../../economic_network_20261008/IMPLEMENTATION_MASTERPLAN.md) remains the build sequence; these source results advance its evidence without asserting commissioning Sol CEO architectural adjudication.
+
+Individual source acquisition F is observed. Global WP02 cohort F remains null, selected cohort count is zero, and the 42 complete ranking pools and thirty genuine difficult cases remain unacquired. Sources retain context/display authority, zero proposal weight, false basis eligibility and false action capabilities. Graph1 remains null. Share-action evidence supports equity-basis investigation; commercial economic edges still require separate evidence of roles, products, counterparties and temporal scope.
+
+The original named handoff attachment remains unrecovered. The full visible commission has been researched; attachment-specific conformity and production or predictive acceptance are not asserted.

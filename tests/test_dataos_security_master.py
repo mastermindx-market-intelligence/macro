@@ -75,6 +75,8 @@ SATS_ID = "SEC:US-XNAS-SATS"
 
 MMC_RENAME = date(2026, 1, 14)
 SATS_RENAME = date(2026, 6, 24)
+PSKY_ID = "SEC:US-XNAS-PSKY"
+SKYD_RENAME = date(2026, 10, 6)
 
 
 # ── committed artifacts ───────────────────────────────────────────────────────
@@ -104,7 +106,8 @@ def table(aliases: pd.DataFrame) -> VendorAliasTable:
             "security_id": row["security_id"],
             "valid_from": BUILD._normalize_bound(row["valid_from"]),
             "valid_to": BUILD._normalize_bound(row["valid_to"]),
-            **{c: row.get(c) for c in BUILD.REFERENCE_ALIAS_COLUMNS},
+            **{c: row.get(c) for c in BUILD.OPTIONAL_ALIAS_COLUMNS},
+            **{c: row.get(c) for c in ("attempt_id", "alias_family_id", "alias_revision_id")},
         }
         for row in aliases.to_dict("records")
     ]
@@ -181,6 +184,66 @@ def test_the_membership_key_DID_move_for_echostar_and_the_table_says_so(
     # called EchoStar SATS, and a table that answers "ECHO" has re-labelled the past.
     assert table.vendor_symbol_for("membership", SATS_ID, date(2026, 1, 1)) == "SATS"
     assert table.vendor_symbol_for("membership", SATS_ID, SATS_RENAME) == "ECHO"
+
+
+# ── THE PSKY BOUNDARY (Skydance, Nasdaq->NYSE listing transfer 2026-10-06) ────
+def test_psky_and_skyd_are_one_security_across_the_venue_transfer(
+    table: VendorAliasTable,
+) -> None:
+    """The production blocker this rename exists for, expressed as an assertion.
+
+    The 2026-10-09 S&P roster re-fetch (data/breadth/constituents.parquet) lists SKYD
+    while the stored/PIT side still keys PSKY, so the membership space needs BOTH legs
+    of the dated pair or the roster resolve fail-closes as ``membership_alias_unresolved``
+    (scripts/build_qbus_news_universe.py, exit 2).  ONE stable id before and after
+    2026-10-06: the Nasdaq->NYSE listing transfer (SEC EDGAR CIK 0002041610, 8-K
+    accession 0001104659-26-113913, Items 2.01/5.03) is joined onto the EXISTING
+    ``SEC:US-XNAS-PSKY`` row by the exact-listing-key SECURITY_SUPERSESSIONS entry —
+    never a second mint.
+    """
+    assert table.resolve("membership", "PSKY", date(2026, 10, 5)) == PSKY_ID
+    assert table.resolve("membership", "SKYD", SKYD_RENAME) == PSKY_ID
+    assert table.resolve("membership", "SKYD", date(2026, 10, 11)) == PSKY_ID
+
+    # DIFFERENTLY either side — same half-open convention as MMC/SATS: valid_from
+    # INCLUSIVE, valid_to EXCLUSIVE, so the boundary day itself answers SKYD.
+    assert table.resolve("membership", "PSKY", SKYD_RENAME) is None
+    assert table.resolve("membership", "PSKY", date(2026, 10, 11)) is None
+    assert table.resolve("membership", "SKYD", date(2026, 10, 5)) is None
+
+    # `yahoo` is dated because Yahoo follows the exchange spelling.
+    assert table.resolve("yahoo", "PSKY", date(2026, 10, 5)) == PSKY_ID
+    assert table.resolve("yahoo", "SKYD", date(2026, 10, 11)) == PSKY_ID
+    assert table.resolve("yahoo", "PSKY", date(2026, 10, 11)) is None
+
+
+def test_psky_store_and_fetch_keys_did_not_move(table: VendorAliasTable) -> None:
+    """The #4622-protocol store-key migration is a separate act: ``data/stocks/`` and
+    the fetch seam still key PSKY, so the current-catalog spaces keep their committed
+    open PSKY rows for every date and the builder mints no SKYD rows there (the
+    chain-member ratification gate in ``build_alias_rows``)."""
+    for on in (date(2026, 10, 5), SKYD_RENAME, date(2026, 10, 11)):
+        assert table.vendor_symbol_for("store", PSKY_ID, on) == "PSKY"
+        assert table.resolve("store", "PSKY", on) == PSKY_ID
+    assert table.resolve("store", "SKYD", date(2026, 10, 11)) is None
+    assert table.resolve("yahoo_fetch", "SKYD", date(2026, 10, 11)) is None
+
+
+def test_psky_master_keeps_one_row_and_the_registry_joins_the_transfer(
+    master: pd.DataFrame,
+) -> None:
+    rows = master[master["inception_code"].isin(["PSKY", "SKYD"])]
+    assert len(rows) == 1, "never a second stable id for the renamed listing"
+    assert rows.iloc[0]["security_id"] == PSKY_ID
+    entries = {e.listing_key: e for e in BUILD.SECURITY_SUPERSESSIONS}
+    assert entries["US-XNYS-PSKY"].canonical_id == PSKY_ID
+    assert entries["US-XNYS-PSKY"].on == SKYD_RENAME
+    assert "0001104659-26-113913" in entries["US-XNYS-PSKY"].evidence
+
+
+def test_unmodelled_renames_stay_empty_after_the_psky_event() -> None:
+    fixups, migrations = BUILD.load_config_maps()
+    assert BUILD.unmodelled_renames(fixups, migrations) == []
 
 
 # ── THE TWO CLOCKS ────────────────────────────────────────────────────────────
@@ -1016,6 +1079,99 @@ def test_allowlist_never_gates_adoption_of_an_already_established_group() -> Non
     assert by_id["SEC:US-XNAS-JOINER"]["issuer_id"] == "ISS:US-XNAS-ANCHOR"
 
 
+def _refused_row(code: str, cik: str, issuer: str | None) -> dict:
+    """An existing row the FIX 5 gate already refused: EVIDENCE_CONFLICT, CIK stamped."""
+    return {
+        "security_id": f"SEC:US-XNAS-{code}", "issuer_id": issuer,
+        "issuer_state": "EVIDENCE_CONFLICT", "issuer_cik": cik,
+        "issuer_evidence_snapshot": "2026-10-05",
+        "listing_key": f"US-XNAS-{code}", "mic": "XNAS", "inception_code": code,
+        "_existed_before": True,
+    }
+
+
+def test_a_refused_null_issuer_group_forms_once_its_cik_is_ratified() -> None:
+    """#9570: CENT/CENTA were refused into EVIDENCE_CONFLICT with issuer_id NULL.  The
+    allowlist ratification is the review the gate asked for, and with no committed
+    value there is nothing for mint-once to protect, so the group forms."""
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "CENTRAL GARDEN & PET CO"), "CENTA": (cik, "CENTRAL GARDEN & PET CO")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    by_id = {r["security_id"]: r for r in out_rows}
+    assert {r["issuer_state"] for r in out_rows} == {"RESOLVED"}
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] == by_id["SEC:US-XNAS-CENTA"]["issuer_id"]
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] is not None
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_evidence_snapshot"] == "2026-10-15"
+    assert {m["old_issuer_id"] for m in migrations} == {None}
+    # Idempotent: the second pass sees RESOLVED rows and changes nothing.
+    again, again_m = BUILD.apply_issuer_correction(
+        out_rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert again == out_rows and again_m == []
+
+
+def test_the_real_allowlist_ratifies_central_garden() -> None:
+    assert "0000887733" in BUILD._load_issuer_group_allowlist()
+
+
+def test_a_refused_group_stays_conflicted_without_ratification() -> None:
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "X"), "CENTA": (cik, "X")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset())
+    assert {r["issuer_state"] for r in out_rows} == {"EVIDENCE_CONFLICT"}
+    assert all(r["issuer_id"] is None for r in out_rows)
+    assert all(r["issuer_evidence_snapshot"] == "2026-10-05" for r in out_rows), "untouched"
+    assert migrations == []
+
+
+def test_a_conflict_carrying_a_committed_issuer_never_reopens_even_when_ratified() -> None:
+    """Mint-once still binds: a conflict row with a committed issuer_id is never
+    revisited by a ratification, because forming the group would rewrite that value."""
+    cik = "0009999997"
+    rows = [_refused_row("LEGA", cik, "ISS:US-XNAS-LEGA"), _refused_row("LEGB", cik, "ISS:US-XNAS-LEGB")]
+    before = [dict(r) for r in rows]
+    cik_map = {"LEGA": (cik, "X"), "LEGB": (cik, "X")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert out_rows == before
+    assert migrations == []
+
+
+def test_a_mixed_refused_group_never_reopens_partially() -> None:
+    """Review finding 2: when one conflicted sibling carries a committed issuer_id, a
+    reopen of only the null members would mint a SECOND issuer_id for one CIK (the
+    committed sibling is not RESOLVED, so adoption never sees it).  All stay put."""
+    cik = "0009999996"
+    rows = [_refused_row("MIXA", cik, "ISS:US-XNAS-MIXA"),
+            _refused_row("MIXB", cik, None), _refused_row("MIXC", cik, None)]
+    before = [dict(r) for r in rows]
+    cik_map = {c: (cik, "X") for c in ("MIXA", "MIXB", "MIXC")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert out_rows == before
+    assert migrations == []
+
+
+def test_a_ratified_reopen_whose_sibling_left_the_map_resolves_alone() -> None:
+    """Review finding 3: a reopened row missing from the weekly map goes to
+    NO_ISSUER_EVIDENCE (CIK cleared); the remaining member resolves as a single-member
+    group, which the allowlist never gates."""
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "CENTRAL GARDEN & PET CO")}
+    out_rows, _m = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    by_id = {r["security_id"]: r for r in out_rows}
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_state"] == "RESOLVED"
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] is not None
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_state"] == "NO_ISSUER_EVIDENCE"
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_id"] is None
+    assert not by_id["SEC:US-XNAS-CENTA"]["issuer_cik"]
+
+
 # ── V4-D2B1-R1: VMRK duplicate-mint supersession + pending-transition fence ────
 # research/prophet_v4/d2/D2B1_R1_FROZEN_CONTRACT_2026-08-20.md — the EQR->VMRK rename
 # (SEC EDGAR CIK 0000906107, 8-K accession 0001140361-26-033377, Item 5.03) produced a
@@ -1138,14 +1294,33 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
         lost = row["lost_rows"]
         assert lost and len(lost) == len(set(lost))
         assert set(lost) <= set(by_id)
-        assert {by_id[sec]["inception_code"] for sec in lost} == set(plain)
+        # The receipt reports CURRENT symbols while immutable IDs retain their
+        # inception codes (e.g. DOMO→HUCK and YYGH→YFOR). Compare the same
+        # naming domain without removing any member from the lost-row fence.
+        assert {BUILD._current_symbol_of_row(by_id[sec]) for sec in lost} == set(plain)
         assert all(pd.isna(by_id[sec]["security_state"]) for sec in lost)
     for probe in receipt.get("prospective_reference", {}).get("probes", {}).values():
         if probe.get("code") == "canonical_identity_refused":
             assert probe["owner_refusals"]
             # Original dated probe refusals remain evidence even when no new
             # reference mint is attempted on an ordinary rerun.
+            # A later BOUND direct-registrant observation (#9465, SPY) is the
+            # independent evidence the refusal asked for; it may mint the key,
+            # and the dated refusal stays recorded beside it.
+            bound = {
+                obs["listing_key"]: obs.get("observed_on", "")
+                for obs in receipt.get("direct_registrant_intake", {}).get("observations", {}).values()
+                if obs.get("status") == "BOUND"
+            }
             for row in probe["owner_refusals"]:
+                observed_on = bound.get(row["listing_key"], "")
+                if observed_on > row.get("snapshot_date", "9999"):
+                    minted = active[active["listing_key"] == row["listing_key"]]
+                    assert len(minted) == 1
+                    # The mint must come from that observation, not an
+                    # earlier ordinary path.
+                    assert str(minted.iloc[0]["ingested_at"])[:10] >= observed_on
+                    continue
                 assert row["listing_key"] not in set(active["listing_key"])
                 if "lost_rows" in row:
                     assert row["reason"].startswith("pending-transition fence:")
@@ -1154,11 +1329,15 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
                 else:
                     assert row["security_state"] == "SUPERSEDED_DUPLICATE_MINT"
     assert receipt["resurrection_refusals"] == []
-    # AMENDMENT ruling 4 (M3) / ruling 6 (M5) — the two new disclosure blocks are
-    # present and empty in the healthy post-repair state (no unregistered rename
-    # duplicate exists, and no alias row needed pruning this run).
+    # AMENDMENT ruling 4 (M3) / ruling 6 (M5) — the two new disclosure blocks: no
+    # unregistered rename duplicate exists, and the only lawful prune class is the
+    # AMENDMENT §2 same-id refinement (the PSKY->SKYD first regen prunes exactly the
+    # two committed open PSKY rows this way, receipted; idempotent, so the set is
+    # empty again on every later run — the pin below holds either way).
     assert receipt["unregistered_rename_duplicates"] == []
-    assert receipt["vendor_alias_prunes"] == []
+    prunes = receipt["vendor_alias_prunes"]
+    assert all(p["prune_class"] == "same_id_refinement" for p in prunes)
+    assert all(p["security_id"] == PSKY_ID for p in prunes)
 
 
 # H1 — race replay WITHOUT the RenameEvent: the fence refuses the VMRK mint.
@@ -1330,9 +1509,10 @@ def test_h8_a_resolution_hitting_a_tombstone_is_a_typed_refusal_not_a_resurrecti
 # registry; a RenameEvent-implied bare-code match on a DIFFERENT venue must NEVER
 # auto-tombstone (the reviewer's cross-MIC scenario) — it is disclosed instead.
 def test_m3_the_registry_matches_the_committed_vmrk_entry_exactly() -> None:
-    assert len(BUILD.SECURITY_SUPERSESSIONS) == 1
-    entry = BUILD.SECURITY_SUPERSESSIONS[0]
-    assert entry.listing_key == "US-XNYS-VMRK"
+    assert len(BUILD.SECURITY_SUPERSESSIONS) == 4  # + PSKY (10-11), KHC/ET transfers (10-18)
+    entry = next(
+        e for e in BUILD.SECURITY_SUPERSESSIONS if e.listing_key == "US-XNYS-VMRK"
+    )
     assert entry.canonical_id == EQR_ID
     assert "0001140361-26-033377" in entry.evidence
 
@@ -2057,11 +2237,16 @@ def test_every_alias_points_at_a_security_the_master_carries(
 def test_emitted_columns_are_exactly_the_registry_schema(dataset_id: str, path: Path) -> None:
     """The registry is the CONTRACT, not a description of whatever the builder emitted.
 
-    Equality in both directions on purpose: a missing column breaks a consumer, and an
-    extra undeclared one is a field nobody agreed to maintain.
+    Equality in both directions, with one explicit additive migration: existing
+    alias files may omit nullable alias_kind and are then entirely ordinary aliases.
+    New writes emit the full schema (test_dataos_options_root pins that contract).
+    No other missing or extra column is admitted here.
     """
     declared = list(load_registry().get(dataset_id).schema)
     emitted = list(pd.read_parquet(path).columns)
+    if dataset_id == "reference.vendor_aliases" and "alias_kind" not in emitted:
+        assert load_registry().get(dataset_id).schema["alias_kind"]["nullable"] is True
+        declared.remove("alias_kind")
     assert emitted == declared
 
 
@@ -3421,10 +3606,15 @@ def test_us_coverage_scope_holds_through_lawful_admissions(receipt: dict) -> Non
     # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
     # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
     # security row, and QRVO, under the pre-existing KHC pending-transition fence that
-    # the unpatched rebuild also shows).
+    # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
+    # PSKY->SKYD regen): TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (the snapshot lists it on exchange code 'F', which is
+    # not in lib/dataos/identity.KNOWN_MICS) and BLFS because it is ABSENT from the
+    # 2026-10-08 and 2026-10-09 snapshots entirely (listed on Nasdaq through
+    # 2026-10-07), on top of the A8-expected CWEN-A/HLX/QRVO.
     assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
-    assert receipt["coverage"]["unresolved"] <= 13
+    assert receipt["coverage"]["unresolved"] <= 16
     assert receipt["coverage"]["total"] == (
         receipt["coverage"]["resolved"] + receipt["coverage"]["unresolved"])
     assert receipt["issuer"]["state_counts"]["RESOLVED"] >= 699
@@ -3846,11 +4036,14 @@ def test_gmi_us_accounting_completeness_real_data(receipt: dict) -> None:
         )
     # AMENDMENT R13 — every resolved_not_rederivable entry names a code and a
     # real, currently-active security_id (a staleness fact, never a fabricated
-    # or dangling reference); WBS and SATS are the known real-data instances.
+    # or dangling reference); SATS is the known real-data instance. WBS left
+    # this bucket when its 2026-08-20 acquisition exit was ledgered
+    # (config/delisted_symbols.yml): an exited listing is no longer a target.
     not_rederivable_codes = {d["code"] for d in block["resolved_not_rederivable"]}
     for d in block["resolved_not_rederivable"]:
         assert d["code"] and d["security_id"]
-    assert {"WBS", "SATS"} <= not_rederivable_codes
+    assert "SATS" in not_rederivable_codes
+    assert "WBS" not in not_rederivable_codes
     # A code can never appear in more than one of the four buckets.
     refused_codes = {r["symbol"] for r in block["refusals_this_run"]}
     disclosed_codes = {d["symbol"] for d in block["disclosed_exclusions"]}
@@ -3892,10 +4085,15 @@ def test_gmi_us_regression_bands_cn_hk_and_legacy_us(
     # the curated universe gains the S&P 400/600 constituents (A8 dry run: 1620/1633
     # resolved, 13 unresolved; the newly unresolved are CWEN-A and HLX, admitted with no
     # security row, and QRVO, under the pre-existing KHC pending-transition fence that
-    # the unpatched rebuild also shows).
+    # the unpatched rebuild also shows).  Unresolved widened 13 -> 16 (2026-10-11,
+    # PSKY->SKYD regen): TCBI joined the unresolved set through 2026-10-09
+    # symbol-directory drift (the snapshot lists it on exchange code 'F', which is
+    # not in lib/dataos/identity.KNOWN_MICS) and BLFS because it is ABSENT from the
+    # 2026-10-08 and 2026-10-09 snapshots entirely (listed on Nasdaq through
+    # 2026-10-07), on top of the A8-expected CWEN-A/HLX/QRVO.
     assert 713 <= receipt["coverage"]["total"] <= 1633 + 120
     assert receipt["coverage"]["resolved"] >= 703
-    assert receipt["coverage"]["unresolved"] <= 13
+    assert receipt["coverage"]["unresolved"] <= 16
 
 
 # 16: ordinary reruns preserve artifacts and every evidenced refusal. A stable
@@ -4176,3 +4374,101 @@ def test_dated_store_pair_emits_only_for_the_renamed_security() -> None:
     stranger = [r for r in store if r.security_id == "SEC:US-XNAS-EQR2"]
     assert [(r.vendor_symbol, r.valid_from, r.valid_to) for r in stranger] == [
         ("EQR", None, None)]
+
+
+def test_a_notation_variant_key_no_rename_mentions_keeps_its_open_current_catalog_rows() -> None:
+    """F1 (skyd-review-20261011-r1, BLOCKER): the current-catalog chain-member gate
+    must not eat a NOTATION VARIANT.  ``_inception_code`` returns the directory's DOT
+    spelling for any key no rename mentions, so ``MOG-A`` (directory symbol ``MOG.A``)
+    measured ``res.key != res.inception_code`` — a "chain member" by that test alone —
+    and the #8828 gate suppressed its fresh open ``store``/``yahoo_fetch`` rows with
+    nothing in the log reporting it.  MOG-A had no committed rows to carry it (admitted
+    by #8626), so both TRUE rows were dropped from the artifact.  The gate now
+    suppresses only a non-root key a DATED RenameEvent names that no record ratifies
+    (SKYD); a notation variant no rename mentions keeps origin/main's behaviour."""
+    from lib import ticker_aliases
+    from lib.dataos.identity import ListingKey
+
+    resolutions = [
+        # modelled on the real MOG-A row (snapshot 2026-10-09: Moog Inc. Class A,
+        # NYSE, symbol MOG.A): the universe's dash key, the directory's dot code.
+        BUILD.Resolution("MOG-A", ListingKey("US", "XNYS", "MOG.A"), "MOG.A", "MOG.A",
+                         "fixture", date(2026, 10, 9)),
+    ]
+    ids = {"MOG-A": "SEC:US-XNYS-MOG.A"}
+    rows = BUILD.build_alias_rows(resolutions, ids)
+    current = {
+        (r.vendor, r.vendor_symbol): (r.security_id, r.valid_from, r.valid_to)
+        for r in rows
+        if r.vendor in (BUILD.VENDOR_STORE, BUILD.VENDOR_YAHOO_FETCH)
+    }
+    # MOG-A is this security's ONLY resolution — no prior current-catalog row exists —
+    # so both rows must be emitted fresh and OPEN, exactly as origin/main's
+    # `prior is None or is_root` gate emitted them.
+    assert current == {
+        ("store", "MOG-A"): ("SEC:US-XNYS-MOG.A", None, None),
+        ("yahoo_fetch", ticker_aliases.fetch_symbol("MOG-A")): (
+            "SEC:US-XNYS-MOG.A", None, None),
+    }
+    VendorAliasTable(rows)  # and the fixture table is unambiguous
+
+
+# ── SAME-SYMBOL VENUE TRANSFERS (KHC Nasdaq->NYSE 2026-09-14, ET NYSE->TXSE 2026-10-05)
+# A transfer re-derives US-{to}-{sym} while the committed row keeps its inception
+# venue; the exact-key SECURITY_SUPERSESSIONS pair joins it onto the ONE canonical
+# row (no mint, no fence-lost entry), exactly as the PSKY cross-venue rename does.
+def test_txse_exchange_code_f_resolves_to_txse_mic() -> None:
+    assert BUILD.EXCHANGE_MIC["F"] == "TXSE"
+    rows = BUILD.resolve_universe({"TXS": {}}, {}, {"TXS": "F"}, "2026-10-05")
+    assert len(rows) == 1
+    assert rows[0].reason is None
+    assert rows[0].listing_key is not None
+    assert rows[0].listing_key.render() == "US-TXSE-TXS"
+
+
+def _active_row(mic: str, code: str, cik: str) -> dict:
+    return {
+        "security_id": f"SEC:US-{mic}-{code}", "issuer_id": f"ISS:US-{mic}-{code}",
+        "issuer_state": "RESOLVED", "issuer_cik": cik,
+        "issuer_evidence_snapshot": "2026-08-18", "listing_key": f"US-{mic}-{code}",
+        "country": "US", "mic": mic, "inception_code": code,
+        "effective_at": "2023-05-09T00:00:00", "ingested_at": "2026-08-13T00:00:00",
+        "security_state": None, "superseded_by": None,
+    }
+
+
+@pytest.mark.parametrize(
+    ("sym", "from_mic", "to_mic", "cik"),
+    [("ET", "XNYS", "TXSE", "0001276187"), ("KHC", "XNAS", "XNYS", "0001637459")],
+)
+def test_venue_transfer_joins_the_canonical_row_never_mints(
+    sym: str, from_mic: str, to_mic: str, cik: str,
+) -> None:
+    canonical = f"SEC:US-{from_mic}-{sym}"
+    existing = [_active_row(from_mic, sym, cik)]
+    resolutions = [_res(sym, to_mic, sym)]
+    rows, ids, notes, refusals, pending, lost, exc_lost, gmi_refusals = BUILD.mint_master_rows(
+        resolutions, existing, "2026-10-18T00:00:00", cik_map={sym: (cik, sym)},
+    )
+    assert ids.get(sym) == canonical, "the transfer joins the ONE canonical row"
+    assert not any(r["security_id"] == f"SEC:US-{to_mic}-{sym}" for r in rows)
+    assert lost == [] and exc_lost == [] and pending == [] and refusals == []
+    entry = next(e for e in BUILD.SECURITY_SUPERSESSIONS
+                 if e.listing_key == f"US-{to_mic}-{sym}")
+    assert entry.canonical_id == canonical
+
+
+def test_unpaired_venue_transfer_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    bad = BUILD.VenueTransfer(symbol="ZZZT", from_mic="XNYS", to_mic="TXSE",
+                              on=date(2026, 10, 5), evidence="fixture")
+    monkeypatch.setattr(BUILD, "VENUE_TRANSFERS", BUILD.VENUE_TRANSFERS + (bad,))
+    with pytest.raises(ValueError, match="ZZZT"):
+        BUILD._venue_transfer_covered_keys()
+
+
+def test_huck_and_yfor_renames_are_modelled() -> None:
+    pairs = {(e.old, e.new): e.on for e in BUILD.RENAME_EVENTS}
+    assert pairs[("DOMO", "HUCK")] == date(2026, 9, 24)
+    assert pairs[("YYGH", "YFOR")] == date(2026, 9, 2)
+    fixups, migrations = BUILD.load_config_maps()
+    assert BUILD.unmodelled_renames(fixups, migrations) == []

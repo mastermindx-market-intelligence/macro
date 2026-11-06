@@ -10,7 +10,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% include "_interfonts.html.j2" %}
-<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
+<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'light');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <title>Forex Vector — {{ as_of }}</title>
 {% set seo_title = 'Forex Vector — US Dollar Regime and FX Transmission | Mastermind' %}{% set seo_desc = 'An FX hub tracking the US dollar regime, major currency crosses and how currency moves transmit into equities and macro.' %}{% set seo_path = 'forex.html' %}
 {% include "_seo_head.html.j2" %}
@@ -68,6 +68,7 @@ html[data-theme="dark"] .hero-state.tone-usd_up{text-shadow:0 0 32px rgba(40,95,
 html[data-theme="dark"] .hero-state.tone-usd_dn{color:#e06464;text-shadow:0 0 32px rgba(224,100,100,.34),0 0 8px rgba(224,100,100,.2)}
 html[data-theme="dark"] .hero-state.tone-mixed{text-shadow:0 0 32px rgba(200,165,59,.38),0 0 8px rgba(200,165,59,.22)}
 .stance-chip{display:inline-block;padding:4px 14px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.01em;margin:0 6px 0 0}
+.stance-chip.unavailable{background:var(--surface-warn-subtle,var(--card));color:var(--ink-warn,var(--warn))}
 .stance-chip.calm{background:#eef1f6;color:var(--muted)}
 html[data-theme="dark"] .stance-chip.calm{background:#222732}
 .stance-chip.watch{background:rgba(245,173,66,.16);color:#9a6a10}
@@ -108,6 +109,9 @@ html[data-theme="dark"] .stance-chip.calm{background:#222732}
 /* ---- tooltip system (B1.6) ---- */
 [data-tip-en],[data-tip-zh]{position:relative}
 .tip-pop{position:absolute;z-index:99;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%) translateY(4px);background:var(--ink);color:#fff;font-size:11.5px;line-height:1.5;border-radius:8px;padding:7px 11px;min-width:180px;max-width:280px;white-space:normal;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;box-shadow:0 4px 16px rgba(0,0,0,.22)}
+/* The light theme's --ink is a dark surface, but dark theme remaps --ink to
+   foreground text. Keep the same popover contrast by inverting onto --card. */
+html[data-theme="dark"] .tip-pop{background:var(--card);color:var(--ink)}
 [data-tip-en]:hover .tip-pop,[data-tip-en]:focus .tip-pop,
 [data-tip-zh]:hover .tip-pop,[data-tip-zh]:focus .tip-pop{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
 /* ---- §2 transmission ---- */
@@ -258,11 +262,21 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
 </style>
 {% include "_state_inks.html.j2" %}
 {% include "_vector_polish.html.j2" %}
+{% if r26_view is defined %}
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="illus.css">
+<link rel="stylesheet" href="forex_r26.css">
+{% endif %}
 </head>
-<body>
+<body{% if r26_view is defined %} class="page-forex-r26"{% endif %}>
 {% include "_site_nav.html.j2" %}
 
 <div class="wrap">
+  {% if r26_view is defined %}
+  {% include "forex_r26_workspace.html.j2" %}
+  <details id="forex-full-study" class="mx-disc forex-full-study">
+    <summary>{{ t('Full market study · dollar, strength, stress and pair evidence', '完整市场研究 · 美元、强弱、压力与货币对证据') }}</summary>
+  {% endif %}
   <div class="brand">💱 Forex <span class="gn">Vector</span></div>
   <p class="lead">
     <span class="l-en">How the dollar is moving and what it's pushing on — context, not trade calls.</span>
@@ -276,6 +290,15 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
   {% set _tone = _stonce.get('tone', 'calm') if _stonce else 'calm' %}
   {# infer hero tone from dollar direction for glow color #}
   {% set _hero_tone = 'usd_up' if (dollar.dollar_dir or '') in ('strengthening','up') else ('usd_dn' if (dollar.dollar_dir or '') in ('weakening','down') else 'mixed') %}
+
+
+  {% if decision_context is defined and decision_context %}
+  <script id="forex-decision-context" type="application/json">{{ decision_context|tojson }}</script>
+  <details class="card" style="padding:14px 18px;margin:0 0 16px" data-fx-decision-readiness="{{ decision_context.readiness }}">
+    <summary style="cursor:pointer;font-weight:600">{{ t('Current checks', '当前检查') }} · {{ t('Source qualification retained', '保留来源资格状态') }}</summary>
+    <p style="margin:10px 0 0">{{ t('Daily observations remain visible. Automatic 4H confirmation requires finalized literal-price bars and source clocks.', '每日观测仍然可见。自动4小时确认需要最终报价柱和来源时钟。') }}</p>
+  </details>
+  {% endif %}
 
   <div class="hero-glass">
     <div class="hero-grid">
@@ -299,8 +322,8 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
         <div class="hero-kpi-row">
           <div class="hkpi">{{ t('Broad USD', '广义美元') }}<b>{{ dollar.broad or '—' }}</b></div>
           <div class="hkpi">DXY<b class="nb-px" data-sym="DX-Y.NYB" data-mkt="fx">{{ dollar.dxy or '—' }}</b></div>
-          <div class="hkpi">{{ t('63d move', '63日走势') }}<b>{{ (dollar.roc or 0)|round(1) }}%</b></div>
-          <div class="hkpi">{{ t('Risk mood', '风险情绪') }}<b>{{ t(dollar.risk_word, dollar.risk_word_zh) }}</b></div>
+          <div class="hkpi">{{ t('63d move', '63日走势') }}<b>{% if dollar.roc is not none %}{{ dollar.roc|round(1) }}%{% else %}—{% endif %}</b></div>
+          <div class="hkpi">{{ t('Risk mood', '风险情绪') }}<b>{{ t(dollar.risk_word or 'Unavailable', dollar.risk_word_zh or '不可用') }}</b></div>
         </div>
         {% if dollar.dollar_day %}<span class="hero-badge flash">⚡ {{ t('Unusually big dollar move today', '美元今日异常大幅波动') }}</span>{% endif %}
         {% if desk and desk.triple_red %}<span class="hero-badge triple">⚑ {{ t('Dollar not acting as a safe haven today', '美元今日未发挥避险作用') }}</span>{% endif %}
@@ -333,9 +356,9 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
             <circle cx="220" cy="105" r="5" fill="{{ C.green }}" opacity="0.6"/>
             <circle cx="440" cy="20" r="5" fill="{{ C.red }}" opacity="0.6"/>
             {# State dot with breathing animation — sits ON the curve #}
-            <circle class="smile-dot" cx="{{ _dot_x|round(1) }}" cy="{{ _dot_y|round(1) }}"
+            {% if dollar.current_available %}<circle class="smile-dot" cx="{{ _dot_x|round(1) }}" cy="{{ _dot_y|round(1) }}"
               r="7" fill="{{ C.indigo }}"
-              filter="drop-shadow(0 0 6px {{ C.indigo }}88)"/>
+              filter="drop-shadow(0 0 6px {{ C.indigo }}88)"/>{% endif %}
           </svg>
           {# Zone labels as absolute-positioned HTML overlays (NOT svg text — LETHAL) #}
           <div class="smile-labels">
@@ -349,25 +372,47 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
         </div>
         <div class="smile-zone-line">
           {{ t('Why the dollar is here: ', '美元处于此位置的原因：') }}
-          <b><span class="l-en">{{ dollar.zone_en or dollar.regime }}</span><span class="l-zh">{{ dollar.zone_zh or dollar.regime_zh }}</span></b>
+          <b><span class="l-en">{{ dollar.zone_en or dollar.regime or 'Current regime unavailable' }}</span><span class="l-zh">{{ dollar.zone_zh or dollar.regime_zh or '当前格局不可用' }}</span></b>
         </div>
 
-        {# Dollar sparkline (126d, rebased 100) + risk-off series #}
-        {# F2: real polyline from hero_spark float arrays #}
+        {# Dollar sparkline (126 common observation slots) + risk-off series #}
+        {# F2: real polyline from hero_spark float arrays. R26: both series share
+           the dollar window's date slots; each polyline is one gap-free run, so
+           null slots break the line instead of bridging and a 1-point run
+           renders as a dot. Legacy fixtures fall back to dollar_pts/riskoff_pts. #}
         {% set _hs = dollar.hero_spark if dollar and dollar.hero_spark else {} %}
-        {% if _hs and _hs.dollar_pts %}
+        {% set _dsegs = _hs.dollar_segments|default([], true) %}
+        {% set _rsegs = _hs.riskoff_segments|default([], true) %}
+        {% if not _dsegs and _hs.dollar_pts %}{% set _dsegs = [_hs.dollar_pts] %}{% endif %}
+        {% if not _rsegs and _hs.riskoff_pts %}{% set _rsegs = [_hs.riskoff_pts] %}{% endif %}
+        {% if _hs and (_dsegs or _rsegs) %}
         <div class="spark-wrap" style="margin-top:12px">
           <svg class="spark-svg" viewBox="0 0 {{ _hs.w or 440 }} {{ _hs.h or 60 }}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            {# riskoff as faint 1.5px line behind the dollar line #}
-            {% if _hs.riskoff_pts %}
-            <polyline points="{{ _hs.riskoff_pts }}" fill="none" stroke="{{ C.muted }}" stroke-width="1.5" opacity="0.45" stroke-linejoin="round" stroke-linecap="round"/>
-            {% endif %}
-            {# dollar line: 2px indigo #}
-            <polyline points="{{ _hs.dollar_pts }}" fill="none" stroke="{{ C.indigo }}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+            {# riskoff as faint 1.5px segments behind the dollar line #}
+            {% for _seg in _rsegs %}
+              {% set _pt = _seg.split(' ') %}
+              {% if _pt|length > 1 %}
+              <polyline points="{{ _seg }}" fill="none" stroke="{{ C.muted }}" stroke-width="1.5" opacity="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+              {% else %}
+              <circle cx="{{ _pt[0].split(',')[0] }}" cy="{{ _pt[0].split(',')[1] }}" r="2" fill="{{ C.muted }}" opacity="0.6"/>
+              {% endif %}
+            {% endfor %}
+            {# dollar line: 2px indigo segments (gap-free runs) #}
+            {% for _seg in _dsegs %}
+              {% set _pt = _seg.split(' ') %}
+              {% if _pt|length > 1 %}
+              <polyline points="{{ _seg }}" fill="none" stroke="{{ C.indigo }}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+              {% else %}
+              <circle cx="{{ _pt[0].split(',')[0] }}" cy="{{ _pt[0].split(',')[1] }}" r="2.5" fill="{{ C.indigo }}"/>
+              {% endif %}
+            {% endfor %}
           </svg>
           <div class="spark-legend">
-            <span><i style="background:{{ C.indigo }}"></i> {{ t('Broad USD', '广义美元') }}</span>
-            <span><i style="background:{{ C.muted }};opacity:.5"></i> {{ t('Risk-off', '避险') }}</span>
+            {% if _dsegs %}<span><i style="background:{{ C.indigo }}"></i> {% if _hs.dollar_scale == 'reported_index' %}{{ t('Broad USD (unrebased)', '广义美元（原始值）') }}{% else %}{{ t('Broad USD', '广义美元') }}{% endif %}</span>{% endif %}
+            {% if _rsegs %}<span><i style="background:{{ C.muted }};opacity:.5"></i> {{ t('Risk-off', '避险') }}</span>{% endif %}
+            {% if _hs.window_start and _hs.window_end %}
+            <span>{{ t('Same dates, separate scales', '同一日期 · 独立刻度') }} · {{ _hs.window_start }} → {{ _hs.window_end }} · {{ _hs.count }} {{ t('observations', '次观测') }}</span>
+            {% endif %}
           </div>
         </div>
         {% endif %}
@@ -687,7 +732,7 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
   </div>
   <div class="board-grid">
   {% for p in sec.pairs %}{% set c = p.conviction %}
-    <div class="card">
+    <div class="card" id="fx-study-{{ p.key }}" tabindex="-1">
       <div class="pair-head">
         <div>
           <div class="pair-name">{{ t(p.label, p.zh) }}</div>
@@ -697,21 +742,23 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
         </div>
         <div style="text-align:right">
           <div class="quote nb-px" data-sym="{{ p.key }}=X" data-mkt="fx">{{ p.quote }}</div>
-          <div class="chg {{ 'up' if (p.chg or 0)>=0 else 'dn' }}">{{ '%+.1f'|format(p.chg) }}% <span class="faint">/ 1mo</span></div>
+          <div class="chg{% if p.chg is not none %} {{ 'up' if p.chg >= 0 else 'dn' }}{% endif %}">{% if p.chg is not none %}{{ '%+.1f'|format(p.chg) }}%{% else %}—{% endif %} <span class="faint">/ {{ t('1mo', '1个月') }}</span></div>
         </div>
       </div>
 
       {# Plain action chip + less-tested tag #}
       {% if c %}
-      {% set _action_css = 'higher' if c.action in ('STRONG LONG','LONG') else ('lower' if c.action in ('SHORT','STRONG SHORT') else 'flat') %}
-      {% set _action_en = 'Leaning higher' if c.action in ('STRONG LONG','LONG') else ('Leaning lower' if c.action in ('SHORT','STRONG SHORT') else 'No clear lean') %}
-      {% set _action_zh = '倾向走高' if c.action in ('STRONG LONG','LONG') else ('倾向走低' if c.action in ('SHORT','STRONG SHORT') else '无明显倾向') %}
+      {% set _model = r26_by_pair.get(p.key, {}).get('model_direction', {}) if r26_by_pair is defined else {} %}
+      {% set _direction = _model.get('pair_direction') if _model.get('available') else none %}
+      {% set _action_css = _direction or 'flat' %}
+      {% set _action_en = 'Leaning higher' if _direction == 'higher' else ('Leaning lower' if _direction == 'lower' else ('No clear lean' if _direction == 'flat' else 'Current lean unavailable')) %}
+      {% set _action_zh = '倾向走高' if _direction == 'higher' else ('倾向走低' if _direction == 'lower' else ('无明显倾向' if _direction == 'flat' else '当前倾向不可用')) %}
       <div style="margin:8px 0">
         <span class="action-chip {{ _action_css }}" tabindex="0" data-tip-en="." data-tip-zh=".">
           <span class="l-en">{{ _action_en }}</span><span class="l-zh">{{ _action_zh }}</span>
           <div class="tip-pop">
-            <div class="l-en">Model lean {{ c.score|round|int }} of ±100, confidence {{ (c.confidence*100)|round|int }}% — measured on past data, shown for context.</div>
-            <div class="l-zh">模型倾向{{ c.score|round|int }}（±100范围），信心{{ (c.confidence*100)|round|int }}% — 基于历史数据测算，仅供参考。</div>
+            <div class="l-en">{% if _model.get('available') %}Assessed {{ _model.assessed_currency }} model lean, translated to {{ p.key[:3] }}/{{ p.key[3:] }} using the source quote convention.{% else %}A current, qualified model lean and an unambiguous quote convention are required.{% endif %} Source score {{ c.score|round|int }} of ±100; source confidence {{ (c.confidence*100)|round|int }}% is not a forecast probability.</div>
+            <div class="l-zh">{% if _model.get('available') %}受评估货币 {{ _model.assessed_currency }} 的模型倾向，按来源报价约定转换为 {{ p.key[:3] }}/{{ p.key[3:] }}。{% else %}需要有效的当前模型倾向与明确的报价约定。{% endif %}来源评分 {{ c.score|round|int }}（±100范围）；来源信心 {{ (c.confidence*100)|round|int }}% 并非预测概率。</div>
           </div>
         </span>
         {% if not (c.reliable | default(false)) %}<span class="less-tested"><span class="l-en">less tested</span><span class="l-zh">检验不足</span></span>{% endif %}
@@ -938,7 +985,7 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
           | replace('外生压力', '美元与利率无法解释的卖压')
           | replace('COT 空头拥挤', '投机者严重做空')
           | replace('COT 多头拥挤', '投机者严重做多') %}
-        <span class="tl-head"><span class="l-en">{{ _hl_en }}</span><span class="l-zh">{{ _hl_zh }}</span></span>
+        <span class="tl-head"><span class="l-en">{{ _hl_en }}</span><span class="l-zh">{{ _hl_zh }}</span>{% if e.display_basis_en is defined %}<small class="sub">{{ t(e.display_basis_en, e.display_basis_zh) }}</small>{% endif %}</span>
       </div>
       {% endfor %}
     {% endfor %}
@@ -963,6 +1010,7 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
     <div class="meta-foot">{{ t('As of', '截至') }} {{ as_of }} · {{ t('built', '构建于') }} {{ built }} · {{ t('Data', '数据') }} {{ cal_span }}
     {% if not cot_ok %} · <span class="flag info">ℹ {{ t('Futures-market positioning data temporarily unavailable.', '期货市场持仓数据暂不可用。') }}</span>{% endif %}</div>
   </div>
+{% if r26_view is defined %}</details>{% endif %}
 </div>
 
 <script>
@@ -1026,6 +1074,11 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
 })();
 </script>
 <script src="theme.js"></script>
+{% if r26_view is defined %}
+<script defer src="illus.js"></script>
+<script defer src="forex_watch_client.js"></script>
+<script defer src="forex_r26.js"></script>
+{% endif %}
 <footer class="site-footer">
   <span>© 2026 Mastermind Inc</span>
 </footer>

@@ -1,0 +1,32 @@
+{
+  "schema": "tiingo.reusable_two_stage_disposition_repair_review/v1",
+  "recorded_at_utc": "2026-10-13T01:24:46.160484+00:00",
+  "conclusion": "PASS_SOURCE_ONLY",
+  "reviewed_core_sha256": "6e127aa58d1a2609876567e25bb87088d23f7f84de5c26bbd011d9d902cf5786",
+  "reviewed_controller_sha256": "82084990681af2b40e98001b8c87c32873b30540f5072eaa880c98770e4e5f71",
+  "prior_review_sha256": "a6f6529b292158872dd00e3e45c3798832e8f68b5aa5ba8dda8b356585aee1c8",
+  "exact_delta_verified_by_reversing_only_repairs_to_original_hashes": true,
+  "prefix02_all253_diagnosis_receipt_file_identity_raw_and_clock_bindings_before_acceptance": true,
+  "post_consumption_deadline_checked_before_writer_admission": true,
+  "expired_preflight_preserved_no_automatic_writer_or_replay": true,
+  "admitted_writer_and_coverage_settle": true,
+  "scalar_validation_unchanged": true,
+  "retained_19_scalar_checks_sha256": "b5ae8de03733d173c696d96dec62e60099b7af1aa160f3adb69a03d89642c0b5",
+  "scalar_check_reuse_record_sha256": "d7d7a68f3a64802c654d7db228cf1f0fd0f916cfb4e4355501f242a502ec38a6",
+  "prior_accepted_controls_reused": true,
+  "scope": "One original root-owned finite window02, prefix02 exact failed snapshot then03-09; negative JSON-int whole-receipt policy only. Actual writer remains subject to successful consumed preflight, source/input/custody/resource guards. No new capture or provider authority.",
+  "material_falsifiers": [
+    "Source or receipt hash/identity/clock mismatch",
+    "Any non-allowlisted normalization defect",
+    "Orphan, changed or preexisting invalid projection",
+    "Failed preflight, writer or coverage stage",
+    "Missing actual consumed preflight evidence",
+    "Deadline expiry before writer admission"
+  ],
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "pipeline_or_controller_executed": false,
+  "source_mutated": false,
+  "actual_receipts_qualified_by_this_review": false
+}
