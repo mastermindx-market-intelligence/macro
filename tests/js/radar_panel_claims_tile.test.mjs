@@ -190,8 +190,8 @@ test('test_tile_and_split_line_now_agree', async () => {
   assert.equal(tile.value, icFixture().by_horizon[21].episodes.claims.n
     .toLocaleString(), 'tile equals claims.n');
   const para = splitPara(s, 'Split honestly');
-  assert.ok(para.includes('right 53% of the time'), 'accuracy sentence renders');
-  assert.ok(para.includes('against a 53% bar'), 'base_dart bar renders');
+  assert.ok(para.includes('right 53.0% of the time'), 'accuracy sentence renders');
+  assert.ok(para.includes('against a 52.5% bar'), 'base_dart bar renders');
 });
 
 test('test_small_claims_cohort_does_not_blank_the_tile', async () => {
