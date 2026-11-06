@@ -1,0 +1,24 @@
+cd '/Volumes/Mastermind 2/agent-workspaces/macro/web/forex-r26-source-qualification-20261022-sol-001' && python3 - <<'PY'
+from pathlib import Path
+import ast,hashlib,json,math,numbers
+import pandas as pd
+p=Path('engine/forex_alerts.py');raw=p.read_bytes();tree=ast.parse(raw)
+node=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='evaluate_price_condition')
+ns={'pd':pd,'math':math,'numbers':numbers,'json':json,'hashlib':hashlib};exec(compile(ast.Module(body=[node],type_ignores=[]),str(p),'exec'),ns)
+evaluate=ns['evaluate_price_condition']
+rule={'condition_id':'policy-consultation-fixture','revision':1,'kind':'price_close','pair':'EURUSD','feed':'fixture.explicit-close-policy.v1','interval':'4H','calendar':'fx-utc-4h/v1','operator':'gt','threshold':1.0,'consecutive':2,'expires_at':'2026-10-23T00:00:00Z'}
+def bar(label,seq):
+ return {'observation_id':'fixture-'+label,'revision':1,'pair':'EURUSD','feed':rule['feed'],'interval':'4H','calendar':'fx-utc-4h/v1','quote_basis':'literal','status':'final','bar_end':label,'available_at':'2026-10-22T02:38:26Z','expires_at':'2026-10-22T04:00:00Z','bar_sequence':seq,'close':1.1}
+bars=[bar('2026-10-21T20:00:00Z',1),bar('2026-10-22T00:00:00Z',2)]
+cases={
+'explicit_source_assertions':(rule,bars,'2026-10-22T02:42:00Z'),
+'saved_feed_null':({**rule,'feed':None},bars,'2026-10-22T02:42:00Z'),
+'before_verified_availability':(rule,bars,'2026-10-22T02:38:10Z'),
+'duplicate_revision_window':(rule,[bars[0],bars[1],{**bars[1],'observation_id':'fixture-correction','revision':2}],'2026-10-22T02:42:00Z'),
+'gap':(rule,[{**bars[0],'bar_end':'2026-10-21T16:00:00Z'},bars[1]],'2026-10-22T02:42:00Z'),
+'at_expiry':(rule,bars,'2026-10-22T04:00:00Z')}
+print(json.dumps({'schema':'forex_r26.source_policy_consultation.v1','source_sha256':hashlib.sha256(raw).hexdigest(),'method':'isolated execution of exact existing evaluator AST; synthetic values only; no source feed admitted','cases':{k:{f:r[f] for f in ['outcome','withheld_reasons','activation','authority']} for k,(r) in [(k,evaluate(a,b,now=c)) for k,(a,b,c) in cases.items()]}}))
+assert p.read_bytes()==raw
+for f,a,b in [('templates/forex_watch_client.js',65,108),('research/forex_r26_2026-10-20/ACCOUNT_CONDITIONS.md',1,96)]:
+ print(json.dumps({'path':f,'first':a,'content':'\n'.join(Path(f).read_text().splitlines()[a-1:b])}))
+PY

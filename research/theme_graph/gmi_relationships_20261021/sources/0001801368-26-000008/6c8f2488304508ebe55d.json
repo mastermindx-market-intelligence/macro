@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3073240,
+  "byte_start": 3072924,
+  "normalized": "Offtake Agreement between MP Mine Operations LLC, MP International Sales LLC and Shenghe Resources (Singapore) International Trading PTE. LTD. dated January 16, 2024 (incorporated herein by reference to Exhibit 10.2 to the Company’s Quarterly Report on Form 10-Q for the quarterly period ended March 31, 2024).",
+  "normalized_sha256": "64cfe77db86f5a3943f74e185bcb4427ae0c145fc50c09a720e30bfb511f8d41",
+  "raw": "Offtake Agreement between MP Mine Operations LLC, MP International Sales LLC and Shenghe Resources (Singapore) International Trading PTE. LTD. dated January 16, 2024 (incorporated herein by reference to Exhibit 10.2 to the Company&#8217;s Quarterly Report on Form 10-Q for the quarterly period ended March 31, 2024).",
+  "raw_sha256": "6c8f2488304508ebe55dfb74fdd4491d576860a310982697effd4c2e4d93b51e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

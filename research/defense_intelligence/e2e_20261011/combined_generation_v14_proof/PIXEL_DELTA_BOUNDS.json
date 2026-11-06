@@ -1,0 +1,347 @@
+[
+  {
+    "axes": [
+      "desktop",
+      "en",
+      "dark",
+      null
+    ],
+    "same_dimensions": false,
+    "difference_bounds": null
+  },
+  {
+    "axes": [
+      "desktop",
+      "en",
+      "dark",
+      "investor-focus"
+    ],
+    "same_dimensions": false,
+    "difference_bounds": null
+  },
+  {
+    "axes": [
+      "desktop",
+      "en",
+      "light",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      1165,
+      34,
+      1418,
+      886
+    ]
+  },
+  {
+    "axes": [
+      "desktop",
+      "en",
+      "light",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      1211,
+      34,
+      1410,
+      2168
+    ]
+  },
+  {
+    "axes": [
+      "desktop",
+      "zh",
+      "dark",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      95,
+      19,
+      1419,
+      3763
+    ]
+  },
+  {
+    "axes": [
+      "desktop",
+      "zh",
+      "dark",
+      "investor-focus"
+    ],
+    "same_dimensions": false,
+    "difference_bounds": null
+  },
+  {
+    "axes": [
+      "desktop",
+      "zh",
+      "light",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      11,
+      34,
+      1418,
+      3760
+    ]
+  },
+  {
+    "axes": [
+      "desktop",
+      "zh",
+      "light",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      95,
+      34,
+      1418,
+      3760
+    ]
+  },
+  {
+    "axes": [
+      "tablet",
+      "en",
+      "dark",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      30,
+      18,
+      798,
+      1167
+    ]
+  },
+  {
+    "axes": [
+      "tablet",
+      "en",
+      "dark",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      0,
+      82,
+      820,
+      2983
+    ]
+  },
+  {
+    "axes": [
+      "tablet",
+      "en",
+      "light",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      33,
+      82,
+      798,
+      1166
+    ]
+  },
+  {
+    "axes": [
+      "tablet",
+      "en",
+      "light",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      0,
+      82,
+      820,
+      2972
+    ]
+  },
+  {
+    "axes": [
+      "tablet",
+      "zh",
+      "dark",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      33,
+      82,
+      798,
+      1167
+    ]
+  },
+  {
+    "axes": [
+      "tablet",
+      "zh",
+      "dark",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      0,
+      82,
+      820,
+      2654
+    ]
+  },
+  {
+    "axes": [
+      "tablet",
+      "zh",
+      "light",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      33,
+      82,
+      798,
+      1163
+    ]
+  },
+  {
+    "axes": [
+      "tablet",
+      "zh",
+      "light",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      0,
+      82,
+      820,
+      2648
+    ]
+  },
+  {
+    "axes": [
+      "mobile",
+      "en",
+      "dark",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      15,
+      81,
+      376,
+      830
+    ]
+  },
+  {
+    "axes": [
+      "mobile",
+      "en",
+      "dark",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      0,
+      81,
+      390,
+      3205
+    ]
+  },
+  {
+    "axes": [
+      "mobile",
+      "en",
+      "light",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      15,
+      373,
+      379,
+      833
+    ]
+  },
+  {
+    "axes": [
+      "mobile",
+      "en",
+      "light",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      0,
+      81,
+      390,
+      3306
+    ]
+  },
+  {
+    "axes": [
+      "mobile",
+      "zh",
+      "dark",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      15,
+      81,
+      377,
+      832
+    ]
+  },
+  {
+    "axes": [
+      "mobile",
+      "zh",
+      "dark",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      0,
+      329,
+      390,
+      2877
+    ]
+  },
+  {
+    "axes": [
+      "mobile",
+      "zh",
+      "light",
+      null
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      15,
+      81,
+      379,
+      833
+    ]
+  },
+  {
+    "axes": [
+      "mobile",
+      "zh",
+      "light",
+      "investor-focus"
+    ],
+    "same_dimensions": true,
+    "difference_bounds": [
+      0,
+      81,
+      390,
+      2866
+    ]
+  }
+]

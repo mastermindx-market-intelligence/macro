@@ -1,0 +1,15 @@
+{
+  "kind": "bounded_canonical_partial_render",
+  "source_bundle": "78ec0ad274f00a29",
+  "source_session": "2026-09-18",
+  "before_sha256": "cae06badd11737f3aa04b3158fb9b4ec1d9c8c12a51563c1784482e870913c2d",
+  "after_sha256": "574cac5491c29080426211421dbfece7ccee3bf393b918d4996db6002afbb763",
+  "rendered_templates": [
+    "_risk_envelope_band.html.j2",
+    "_risk_envelope_band.css.j2"
+  ],
+  "preserved": "All bytes outside old band, new insertion, scoped CSS and script cache key",
+  "full_builder": "refused: untracked Yahoo store absent; no collectors run",
+  "final_css_note": "Final scoped reset removes inherited standalone-band rails and spacing.",
+  "whitespace_note": "After capture, whitespace-only lines inside the owned section were normalized; rendered DOM and styles unchanged."
+}

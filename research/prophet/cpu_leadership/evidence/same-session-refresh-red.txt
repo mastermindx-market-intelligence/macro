@@ -1,0 +1,24 @@
+FFF.                                                                     [100%]
+=================================== FAILURES ===================================
+____ test_same_session_candidate_correction_triggers_real_rerender[reason] _____
+tests/test_us_board_gate.py:1075: in test_same_session_candidate_correction_triggers_real_rerender
+    assert _actual_fresh_board_condition(prior, fresh)
+E   AssertionError: assert False
+E    +  where False = _actual_fresh_board_condition({'as_of': '2026-09-18', 'buy': [{'ticker': 'AAA'}], 'candidate_pool': {'pool_definition': 'us_candidate_pool_v1', 'as_... ...}, {'ticker': 'AMD', 'name': 'Advanced Micro Devices', 'sector': 'Information Technology', 'pool_rank': 26, ...}]}}, {'as_of': '2026-09-18', 'buy': [{'ticker': 'AAA'}], 'candidate_pool': {'pool_definition': 'us_candidate_pool_v1', 'as_... ...}, {'ticker': 'AMD', 'name': 'Advanced Micro Devices', 'sector': 'Information Technology', 'pool_rank': 26, ...}]}})
+__ test_same_session_candidate_correction_triggers_real_rerender[membership] ___
+tests/test_us_board_gate.py:1075: in test_same_session_candidate_correction_triggers_real_rerender
+    assert _actual_fresh_board_condition(prior, fresh)
+E   AssertionError: assert False
+E    +  where False = _actual_fresh_board_condition({'as_of': '2026-09-18', 'buy': [{'ticker': 'AAA'}], 'candidate_pool': {'pool_definition': 'us_candidate_pool_v1', 'as_... ...}, {'ticker': 'AMD', 'name': 'Advanced Micro Devices', 'sector': 'Information Technology', 'pool_rank': 26, ...}]}}, {'as_of': '2026-09-18', 'buy': [{'ticker': 'AAA'}], 'candidate_pool': {'pool_definition': 'us_candidate_pool_v1', 'as_.....}, {'ticker': 'NEWCO', 'name': 'Advanced Micro Devices', 'sector': 'Information Technology', 'pool_rank': 26, ...}]}})
+__ test_same_session_candidate_correction_triggers_real_rerender[unavailable] __
+tests/test_us_board_gate.py:1075: in test_same_session_candidate_correction_triggers_real_rerender
+    assert _actual_fresh_board_condition(prior, fresh)
+E   AssertionError: assert False
+E    +  where False = _actual_fresh_board_condition({'as_of': '2026-09-18', 'buy': [{'ticker': 'AAA'}], 'candidate_pool': {'pool_definition': 'us_candidate_pool_v1', 'as_... ...}, {'ticker': 'AMD', 'name': 'Advanced Micro Devices', 'sector': 'Information Technology', 'pool_rank': 26, ...}]}}, {'as_of': '2026-09-18', 'buy': [{'ticker': 'AAA'}]})
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_us_board_gate.py::test_same_session_candidate_correction_triggers_real_rerender[reason]
+FAILED tests/test_us_board_gate.py::test_same_session_candidate_correction_triggers_real_rerender[membership]
+FAILED tests/test_us_board_gate.py::test_same_session_candidate_correction_triggers_real_rerender[unavailable]
+3 failed, 1 passed, 41 deselected in 2.36s

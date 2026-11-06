@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-14T02:10:16.369603+00:00",
+  "head": "5d06f81f068aa876743862a1d16b4687adca6422",
+  "slot_id": "press-official-cd2747adeed2",
+  "candidate_id": "press-external-38fd7e103e6f",
+  "qualification_sha256": "3b0745bc924394750c0e5767c5d36656e9bab5a7ec5f0ca426c74add45e26240",
+  "feed_sha256": "16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+  "source_hashes": {
+    "scripts/inspect_press_staging.py": "ad3415d99a7da810ed9f7f87bdcb729956f130a270820381c304709461112262",
+    "scripts/run_press.py": "9a7417be2bd39e2e8c244e791bb99824e89573e68ef8be5916b81865bd2a45e5",
+    "engine/press/validators.py": "fdbae60b9bec3635db2a7732e9a2519a4a600d4f0e9e83ee65e962d11786cc46",
+    "engine/press/desk_planner.py": "8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b",
+    "config/press.yml": "95d87920e15d12131ef40462c7329b1c8076abe7d11c9d48782e98193af9f4bc",
+    "engine/press/earnings_adapter.py": "7a4196561502252584056be7912d4899926cc7bd1d60e1a55adf6569e5e2b163",
+    "engine/earnings_narrative/story_packets.py": "f60bd3daed8d2620c16963632e3644a3833a226c4539f84f36c734ca2ea05e1e",
+    "engine/earnings_narrative/story_store.py": "83037ae9ce5201f8bfca267bfa2f45e7ae7b47e6d3b7287d52bf7620c3c7762b",
+    "engine/earnings_narrative/admission.py": "aee12aff2521d0810e31984cbda7c1f3f1fbcee7ed527069ebe20ca40bfbb5a5",
+    "scripts/stage_earnings_story_press.py": "c6673e8a0bf8ad9dfc411cf159cfe21338c00cab57fc8cb086df5298efc1a60c",
+    "engine/press/writer.py": "0528fc0724c2727372df43e1ee064f84f159de6f54f7381371e6f13dbe13bb09",
+    "scripts/publish_earnings_story_packets_r2.py": "1dea622fd8e045c9831cca9643b84a2018c121c66c476be753e9d2328f037ddf",
+    ".github/workflows/earnings-story-packets.yml": "b7c8dbb670f777ddefcec98ce0f5afbeebc8f020bd67712ac88037b3a51b03bb",
+    "engine/press/external_candidate.py": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497",
+    "engine/press/adjusted_baseline.py": "76dbd36d2754f170e2fb2e1a09f9453f2d19866674a91c9250dd0ea6957f0f16",
+    "engine/whitehouse_feed.py": "1be31eb229a828aa11554fed50c29c51cdd572e5122469673fb866d9b7fd0c7e",
+    "engine/close_pass/massive_close.py": "63b137a6c35a8346e0ed6adfbfd80c17ec3fc0e1e08fcf828c6dcfe1670d209b",
+    "scripts/build_whitehouse.py": "56a4b5f535fafb7ffee0d0df873674e7f0677708d47d6ad968f0af99b31dc534",
+    "scripts/qualify_press_nvda_baseline.py": "b6199b4f5975096a4ccf9246fb37e2b1ba3948a0282700630339a24a5ac38a05",
+    ".github/workflows/press-source-qualification.yml": "9fbb03ece7326998995a0444b05246c6bfef43d5b3a00999ce399b22d8981e79",
+    "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891",
+    "engine/press/official_feed_candidate.py": "f01f28bb20896c59b69ed95339875192d1e724a25078742119d2930e5f0d72f2",
+    "engine/marketing/breaking_feed.py": "da5c92c1b91a40e08d842807d97e656642543146fb2222e5918926b4ff930ec6",
+    "scripts/stage_official_feed_press.py": "6409126cf87e338d7c22f470acfffa8d0ac349ada405ef483c7395456765b7d1"
+  },
+  "cadence_consumed_before": 0,
+  "cadence_ceiling": 2,
+  "budget_configuration": 24000,
+  "circuit_breaker": 1,
+  "single_provider_attempt": true,
+  "max_regenerations": 0,
+  "parent_private_safety_accepted": true,
+  "independent_release_review": "pending; blocks readiness/landing, not this bounded private test",
+  "publication_approved": false,
+  "cutover": false,
+  "accounting_before": {
+    "data/ai_costs/provider_health.jsonl": {
+      "sha256": "f51cfd94c567cf3b205882e0cf916048de58bc07eb8f33165ffe04e8ed784956",
+      "lines": 6186
+    },
+    "data/ai_costs/usage.jsonl": {
+      "sha256": "151b15c0ffe462f6c0b75fb7ba2898704a243f4660bff689e1fd35f2a3506568",
+      "lines": 41232
+    },
+    "data/metabolism/key_ledger.jsonl": {
+      "sha256": "7e5e7c5ea36a34b0932a77fe4d25c2b3ffe1fe67460e93d711405f24c7a02a60",
+      "lines": 3058
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-19T20:42:18Z",
+ "accession": "0001104659-26-032133",
+ "cik": "0001456346",
+ "doc_byte_length": 4756365,
+ "doc_sha256": "87ebb619af5e6fc7f1cd5fa3c351004ae63195a47b0f964c32558e4c9e803b26",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-19",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fnv-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3375637,
+  "byte_start": 3375440,
+  "normalized": "The stream agreement applies to 100% of the property, but only with respect to the ownership interest of Lundin Mining Corporation which indirectly owns 80% of the Candelaria Copper Mining Complex",
+  "normalized_sha256": "5381323c54a9ece98d48f8a93356dd55583602c3b52186e31f972f469aa81703",
+  "raw": "The stream agreement applies to 100% of the property, but only with respect to the ownership interest of Lundin Mining Corporation which indirectly owns 80% of the Candelaria Copper Mining Complex ",
+  "raw_sha256": "76858083d472743751b26aa42380527bf2b0db185737d42f9e8fbb2067182022"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1456346/000110465926032133/fnv-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

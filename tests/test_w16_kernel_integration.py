@@ -456,6 +456,8 @@ def test_forward_log_write_with_w16_fields(tmp_path, monkeypatch):
     import engine.cycle_forward_log as clf
     import lib.config as config_mod
 
+    # B11 forced lane edit: sector_cycles appends are nightly-lane-gated now
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
     monkeypatch.setattr(config_mod, "data_dir", lambda: tmp_path)
 
     data = _fake_cycle_data_w16(asof="2026-07-02")
@@ -486,6 +488,8 @@ def test_forward_log_keep_first_preserves_w16_fields(tmp_path, monkeypatch):
     import engine.cycle_forward_log as clf
     import lib.config as config_mod
 
+    # B11 forced lane edit: sector_cycles appends are nightly-lane-gated now
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
     monkeypatch.setattr(config_mod, "data_dir", lambda: tmp_path)
 
     # First write

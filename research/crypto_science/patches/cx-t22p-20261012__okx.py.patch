@@ -1,0 +1,15 @@
+diff --git a/collectors/okx.py b/collectors/okx.py
+--- a/collectors/okx.py
++++ b/collectors/okx.py
+@@ -63,6 +63,11 @@
+                 out["taker_volume_hourly"] = tkh  # the circuit breaker)
+         except Exception as e:  # noqa: BLE001
+             log.warning("okx taker_volume_hourly fetch failed (non-fatal): %s", e)
++            self.source_capture_status.append({
++                "status": "unavailable",
++                "error_type": type(e).__name__,
++                "source_id": "okx_taker",
++            })
+         sp = self._spot_candles(full_history)
+         if sp is not None:
+             out["spot_usdt_daily"] = sp

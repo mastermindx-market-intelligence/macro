@@ -1,0 +1,37 @@
+{
+  "schema": "tiingo_finite_admission_canonical_source_acceptance/v1",
+  "accepted_at_utc": "2026-10-12T16:38:23.113083+00:00",
+  "source_pr": 9018,
+  "source_url": "https://github.com/mastermindx-market-intelligence/macro/pull/9018",
+  "tested_head": "85914b39d9e9b0c40554f226080390ab934ade6f",
+  "original_source_ci": 38272400147,
+  "source_ci_conclusion": "success",
+  "source_ci_terminal_snapshot_sha256": "e63fdeb53684d4f6b2e7e359e6d5fb46697d608e8b6cd6ac93c2e212f9cfcebf",
+  "actual_merged": true,
+  "actual_merge_commit": "f5d1cec6e56b4f8e07e4ea9038293a3072f4b1dd",
+  "actual_merged_at_utc": "2026-10-12T16:19:13Z",
+  "merge_response_sha256": "6e911c09b4fd8af11357a7941b3011456c806e35ae1bf2260d59c6fcd564279d",
+  "merge_is_ancestor_of_actual_origin_main": true,
+  "canonical_module_and_test_files_sha256": {
+    "lib/dataos/tiingo_capture_admission.py": "3d204f2e7a6ebc5d3693606a7b59b665be8f53546314c0b8053bee2be4154926",
+    "tests/test_tiingo_capture_admission.py": "3fbf7efbf9795bc1551537007d30d04a1681688affa2d0b73b506bbe3094f97a"
+  },
+  "tested_complete_ci_file_sha256": "4aaf7d506f5eed4b4940c22caaf85902b9d1cf27ac544f89006c6311ab25d55f",
+  "canonical_complete_ci_file_sha256": "16bbbe50a9e31648cb3dd77ff133854657466d90b7a46f0744e2f7099c926c8d",
+  "owned_tiingo_ci_job_semantically_unchanged": true,
+  "owned_tiingo_ci_job_projection_sha256": "48257d0937eb292e07d53966bf37232b986a7b7eec4ded559f1493a51bd9b43a",
+  "preserved_unrelated_peer_ci_job_changes": [
+    "company-relationship-candidates",
+    "engine-render-guards",
+    "ticker-news-qbus"
+  ],
+  "module_sha256": "3d204f2e7a6ebc5d3693606a7b59b665be8f53546314c0b8053bee2be4154926",
+  "module_copy_read_only": true,
+  "independent_review_conclusion": "PASS",
+  "independent_review_receipt_sha256": "fc6c354ab8d3fdaf85a6636a4aaab6f4488564f2cf8d70c135b0fc1b1f4d51f0",
+  "future_capture_not_launched_by_this_acceptance": true,
+  "consumer_runtime_release_unchanged": "0b204cde017b88a9fec03ddb583f6b5e02ea4886",
+  "canonical_blobs_verified_locally_with_lazy_network_fetch_disabled": true,
+  "whole_new_main_ci_claimed": false,
+  "full_programme_complete": false
+}

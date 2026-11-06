@@ -1,0 +1,120 @@
+{
+  "operation": "prophet-experience-first-vertical-20260924-sol-001",
+  "carrier": "macro#7237",
+  "parent": "macro#6817",
+  "scope": "R22 F1/F2 and bounded design-copy repair; source qualification only",
+  "protected_skillpack": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
+  "skillpack_version": "1.0.1",
+  "bootstrap_major": 1,
+  "r21_semantic_parent": "e59a7baeaa1ab9542f65e73eda5f43ca13c14f34",
+  "qualification_base": "549215c3f4bf84d4af999302dc64f900971a89b8",
+  "inspected_integration_base": "93b98bf4a4fad08c62ccc6cdb4a19b7c381a0435",
+  "current_protected_base_refresh": "unverified; one tool request refused before execution",
+  "source_sha256": {
+    "templates/theme.js": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504",
+    "site/theme.js": "ce012e86762ab76e30088d7b2324895b1512ea931849dc8e42bffb07878e65f8",
+    "templates/_prophet_setup_detail.html.j2": "5fe6131f2c23e9bd09b7f66a7a795602a28f09f0951cde2db2cca859bb727e9e",
+    "tests/test_prophet_card_shared.py": "505b6e3b74f5e28367deb2896cba2bf869db90b3057b60a2480f67ad86eeb0dd"
+  },
+  "tests": {
+    "shared-tests": {
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "c30c424b1528c76f7fc55ae10f965ae51a97d6763ff8af36152a17b4ac06945c",
+      "log_sha256": "c0c44f01c024f98439106f8942ea7016b558b5a4d9aa68b6482908c42c63d8fd"
+    },
+    "owner-tests": {
+      "tests": 143,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "f92e3711d6878466a792d46cb948b428194bf504c4cb80ec61595cac6bf3d671",
+      "log_sha256": "ec77a58191eb27e580a1c5eeb89bfc3e44c24e72f0f5e4b704f66741e43b9c0b"
+    },
+    "first-frame-tests": {
+      "tests": 144,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit_sha256": "254cc228db8185ba2ceaa69052ab6698f29e7e28ffaa9bbf38296eb368c76c80",
+      "log_sha256": "1e58290e0036c77390a73d19836377af12a3c8b21fceecb41a7d01a3f82b464e"
+    }
+  },
+  "total_passed": 328,
+  "fail_first": {
+    "new_tests": 4,
+    "expected_failures_on_r21": 4,
+    "junit_sha256": "91b7fbb4673ae45ff3675a87243d5c2d97e2209c32ef04adc29f0d2742353db9"
+  },
+  "browser": {
+    "engine": "Chromium",
+    "version": "151.0.7922.34",
+    "f1_f2_baseline_cases": 18,
+    "f1_f2_repaired_cases": 18,
+    "grid_research_plan_cases": 12,
+    "dense_table_cases": 12,
+    "dense_edge_cases": 5,
+    "inert_cases": 4,
+    "adverse_cases": 8,
+    "source_snapshot_cases": 2,
+    "source_counts": {
+      "board": 69,
+      "research": 152,
+      "plans": 448
+    },
+    "same_row_equalities": 69,
+    "exact_field_parity_rows": 221,
+    "network_account_class": "local intercepted responses and synthetic/test-only authentication, not production"
+  },
+  "p0b": {
+    "hk": {
+      "cases": 64,
+      "primary_passed": 48,
+      "degraded_passed": 16,
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "sha256": "3e442f928a72372a6438c8a130087ae5dc91fb8463f298b6a23c03da7814f284"
+    },
+    "ca": {
+      "cases": 64,
+      "primary_passed": 48,
+      "degraded_passed": 16,
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "sha256": "81093a927f5fbde52cce5cc2e4ef904c4055438e0850d00603143d451a08caa2"
+    }
+  },
+  "historical_p0b_targets_baselines_screenshots_preserved": true,
+  "retained_r21_evidence_sha256": {
+    "integration.patch": "ff079e959161c7e6b920b74beeb0f75744b1cc11652beb83344caf788aff8d09",
+    "binding.json": "2375af1fe2aff7bd77b2516e225d890cdbf8b6ba4f1b17c69cf905c6daa12dec",
+    "current-base-tests.xml": "a0099b4e9515530c4cc934c7f5a042eae82ca63fad08881890633b5afd03f597",
+    "current-base-tests.log": "a1aa1c8f1b6e52b332fa9a12b526f88948a0ee69377f4302ef8cfc5d33d540e0",
+    "current-source-browser/verification.json": "9eb45f7b56679a0416000d4315aeae81c47a852d8c33b49f42d88bb4cb4224e2"
+  },
+  "reproduction_sha256": "fba74d1b425cdf93aa11cc93e5e33f74b9931a31774e1d233e502969a9c866f3",
+  "browser_proofs_sha256": "e5dbbba5ac24ab7b1a6cb52f29093816eb3588a994d3a27053b3cca80cefac36",
+  "screenshots": {
+    "source-row-mobile.png": "1624a97785636bd8234ab41d3e5392605c2d81d7f92f9474b0d9bba674ff4d8e",
+    "source-row-mobile-evidence.png": "778afe928482c720fb7d4c0cc7838ca5fcd7f67172697378980b338920901acb",
+    "source-row-desktop.png": "bdd62d28684dfbd68b07ebf3cab7a66a7560f86b4f5ae23bd535f6513cd98480",
+    "source-row-desktop-evidence.png": "7381b917164a65427f8765aea8268be8f4ea6239a865042611628eb45d2d5438"
+  },
+  "scope_invariants": {
+    "no_r20_r21_reapplication": true,
+    "no_workspace_recreation": true,
+    "no_new_fetch_store_entitlement_owner": true,
+    "inert_same_row_table_body": true,
+    "r21_progressive_disclosure_preserved": true,
+    "raw_source_fields_preserved": true,
+    "no_ranking_strategy_trading_or_plan_action_added": true
+  },
+  "required_remaining_gates": [
+    "independent exact-head review",
+    "required hosted CI and security",
+    "fresh protected-base compatibility",
+    "authenticated published-path acceptance"
+  ],
+  "mission_complete": false,
+  "production_proven": false
+}

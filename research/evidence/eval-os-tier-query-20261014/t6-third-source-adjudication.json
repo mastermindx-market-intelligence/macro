@@ -1,0 +1,48 @@
+[
+  {
+    "fixture": "benchmark_healthcare_coherence_2026-07-13.json",
+    "fixture_sha256": "e2e967765b15357879d9a5f7db8d1143466abbedb526fbfaca9f3dadc6c4e10e",
+    "source": {
+      "path": "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+      "sha256": "cd7aca18bf338cd6df688e020487e6d43cb8fc8a8c69d6e462fd87559dca7fd6"
+    },
+    "inputs": [
+      [
+        42,
+        48
+      ]
+    ],
+    "oracle": [
+      102,
+      104
+    ],
+    "date_basis": "first source explicitly labels table as 07-13; second is diagnostic prose in the 07-16 adjudication",
+    "exclusions": "no tape outcomes, raw protected ledgers, generation timestamps or claim of independence",
+    "reviewer": "assigning root source adjudication; not independent review"
+  },
+  {
+    "fixture": "benchmark_rotation_wiring_2026-07-16.json",
+    "fixture_sha256": "876f6ae8032a1f5fd3e83282198f9b241b38ce19c8473cec68790b9de21b74e3",
+    "source": {
+      "path": "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "sha256": "e1e58df473e39d55b6f9215a46873c70dbe7007b0596b8ddc71a245b97c3925c"
+    },
+    "inputs": [
+      [
+        135,
+        138
+      ],
+      [
+        153,
+        161
+      ]
+    ],
+    "oracle": [
+      215,
+      227
+    ],
+    "date_basis": "first source explicitly labels table as 07-13; second is diagnostic prose in the 07-16 adjudication",
+    "exclusions": "no tape outcomes, raw protected ledgers, generation timestamps or claim of independence",
+    "reviewer": "assigning root source adjudication; not independent review"
+  }
+]

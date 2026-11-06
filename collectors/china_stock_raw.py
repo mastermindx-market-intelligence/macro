@@ -31,6 +31,7 @@ from lib import config
 class ChinaStockRawPriceAdapter(Adapter):
     name = "china_stocks_raw"
     group = "china_stocks_raw"
+    session_calendar = "CN"  # observation dates follow the cash/Connect session
     stale_after_days = 5
     # RAW prints are final and never re-adjusted → the default append-only combine_first
     # is correct here (unlike the adjusted plane, which needs overwrite_overlap).

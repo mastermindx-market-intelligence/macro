@@ -1,0 +1,77 @@
+{
+  "base": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "host_head": "d28809ffa9733bac0bc4da7a27cef755f646c935",
+  "status": "ahead",
+  "ahead_by": 16,
+  "behind_by": 0,
+  "total_commits": 16,
+  "commits": [
+    {
+      "sha": "4b6e6ea52676308d0f239bb8e9c74af230e61039",
+      "subject": "earnings-wire: publish current verified records [skip ci]"
+    },
+    {
+      "sha": "0c6ce484d0aabeed184dff4933547a6efeaae222",
+      "subject": "engine-render: regime recompute + re-render 2026-10-20 (scope=all)"
+    },
+    {
+      "sha": "ad6508d2dc106dbbb9e2a47acb8890dbd0ec31cc",
+      "subject": "render-sync: post-rebase guards (re-stamp + template re-copy + ms-board coherence)"
+    },
+    {
+      "sha": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "subject": "fix(options): prevent premature label admission in Q03 study guards (#9178)"
+    },
+    {
+      "sha": "7308bc1dc500645e4629881b7f306f64211cb05d",
+      "subject": "data: daily collection 2026-10-20"
+    },
+    {
+      "sha": "1128758a7a80139f5a59c27998352c58e1bc9680",
+      "subject": "render-public: public pages + asset stamps"
+    },
+    {
+      "sha": "db2cde0a760585972980ea2d08ea4c5bf93c2282",
+      "subject": "data: nightly timings collect 2026-10-20"
+    },
+    {
+      "sha": "c304c027c26b75d0f954a0699ddc56e0a3ec3e61",
+      "subject": "FIF A21: filing observation state on the C0 publish path (zero-write invariant, R-A21-T8B) (#9871)"
+    },
+    {
+      "sha": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738",
+      "subject": "fms-acquire: official 36(b) notification acquisition 2026-10-20T15:25Z"
+    },
+    {
+      "sha": "44c244f05debb1e468b5b635b5234d98b36fb7c3",
+      "subject": "FIF coverage step 6 (b3): served-only draft coverage manifest producer (#9799)"
+    },
+    {
+      "sha": "874418305ec2c4f18871cc132947b58b794d1a49",
+      "subject": "marketing-publish: outbox run 2026-10-20T15:37Z [skip ci]"
+    },
+    {
+      "sha": "6361ea19de87ced1bccfd59896cbbc1a7787618d",
+      "subject": "data: nightly timings collect_tail 2026-10-20"
+    },
+    {
+      "sha": "3b6c7f96d7dfb76efccff2f7c7a438be8281d672",
+      "subject": "factor-series: month-end walk 2026-10-20"
+    },
+    {
+      "sha": "bc6a3b5c4045c95b527436e58615e5102d4b0735",
+      "subject": "data: nightly timings factor_series 2026-10-20"
+    },
+    {
+      "sha": "3bc9100bcfbe6c3837de11595fcdf4298e8a7ddf",
+      "subject": "docs: active build map 2026-10-20"
+    },
+    {
+      "sha": "d28809ffa9733bac0bc4da7a27cef755f646c935",
+      "subject": "data: nightly timings active_build_map 2026-10-20"
+    }
+  ],
+  "returned_file_count": 300,
+  "file_list_is_capped": true,
+  "limit": "GitHub compare returned its300-file cap; no complete owned-path-absence inference. Native main-only mergeability check is separate."
+}

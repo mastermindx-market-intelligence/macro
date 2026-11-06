@@ -1,0 +1,34 @@
+{
+  "schema": "paper.intl.source-snapshot.evidence.v1",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_base": "7257c27e76863961d5b1b985b5d037849c3cd061",
+  "status": "SOURCE_SCOPED_REVIEW_ACCEPTED",
+  "hashes": {
+    "engine/intl_inputs.py": "b7c12789ecad76578a8ff909bd6abe6b5659e49dd105708853d2b8caa54509a1",
+    "tests/test_intl_source_snapshot.py": "91901f4794c9865b99f61d10a98e41c01fba9ae39b81a3ce354fecc6de945601",
+    ".github/ci/legacy-jobs.yml": "c2e4b81bee54eed9831015061e0c106bea7c081e4036aed5e01b91fb02e3d6b8"
+  },
+  "outcome": "Pure deterministic content-addressed snapshot of supplied configured primary-index and FX observations. Existing input functions byte-identical prefix preserved. No store/network/clock reads or production wiring.",
+  "evidence": {
+    "red": "qualification-extension/SNAPSHOT_API_RED.log: absent API failed independent literal digest test",
+    "focused": "47 passed, qualification-extension/SNAPSHOT_47_TESTS.log",
+    "foundation": "190 passed, qualification-extension/SNAPSHOT_SHIPPING_FOUNDATION_TESTS.log",
+    "independent_review": {
+      "baseline_run_id": "paper-01a1101f-source-snapshot-review-r1",
+      "baseline": "PASS with43tests/fourcountercheckgroups; terminal0 cleanresidual0; superseded by exact-label/huge-int parent repairs",
+      "run_id": "paper-01a1101f-final-delta-review-r1",
+      "status": "PASS_SCOPED_PARENT_ACCEPTED",
+      "accepted": true,
+      "worker_verdict": "PASS",
+      "parent_binding": "Exact Python hashes match;47 Linux tests plus edgechecks; full parent190cases",
+      "acceptance_sha256": "2a0fb7bc469d1a816233261e25668467300ad05a8bb474b8f08d58daf61a4322"
+    }
+  },
+  "parent_exception": "No eligible pre-effect worker on explicit C2 build route while Mini2 existing admitted lane occupied; exact refusal and placement saved. Original Qwen prestart failure consumed; no duplicate/replay.",
+  "limits": [
+    "Candidate source and test evidence only",
+    "No calendar/currentness/adjustment-basis/disclosure receipt issuance",
+    "No qualification evaluator or production source binding",
+    "No live/authenticated/publication acceptance"
+  ]
+}

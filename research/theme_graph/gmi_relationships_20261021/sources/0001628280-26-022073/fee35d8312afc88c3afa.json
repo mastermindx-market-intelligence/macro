@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T21:43:24Z",
+ "accession": "0001628280-26-022073",
+ "cik": "0001853860",
+ "doc_byte_length": 1791786,
+ "doc_sha256": "96a6017ee5a37c24991450e68b7e9a2434ad8892ddd9ab7a832bdc57230428f8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ero-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 639536,
+  "byte_start": 638203,
+  "normalized": "Judgment and estimates were required in determining the accounting for the precious metal purchase agreement (\"PMPA\") with RGLD Gold AG, a subsidiary of Royal Gold Inc. (collectively \"Royal Gold\"), which is accounted for as deferred revenue in accordance with IFRS 15 Revenue from Contracts with Customers (“IFRS 15”). As the Company’s obligation under the precious metal purchase agreement will be satisfied through deliveries of a non-financial item (i.e. deliveries of gold ounces), rather than cash or other financial assets, it was determined to be entered into and continued to be held for the purpose of the delivery of a non-financial item in accordance with the Company’s expected sale or usage requirements and thus not within the scope of IFRS 9 Financial Instruments (“own use exemption”).",
+  "normalized_sha256": "789f06ba58715ad74cf88c31b634a01d3eec026eb94acf292f3742532845acdf",
+  "raw": "Judgment and estimates were required in determining the accounting for the precious metal purchase agreement (\"PMPA\") with RGLD Gold AG, a subsidiary of Royal Gold Inc. (collectively \"Royal Gold\"), which is accounted for as deferred revenue in accordance with IFRS 15 </span><span style=\"color:#5c5d54;font-family:'Nunito',sans-serif;font-size:10pt;font-style:italic;font-weight:400;line-height:120%\">Revenue from Contracts with Customers</span><span style=\"color:#5c5d54;font-family:'Nunito',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"> (&#8220;IFRS 15&#8221;). As the Company&#8217;s obligation under the precious metal purchase agreement will be satisfied through deliveries of a non-financial item (i.e. deliveries of gold ounces), rather than cash or other financial assets, it was determined to be entered into and continued to be held for the purpose of the delivery of a non-financial item in accordance with the Company&#8217;s expected sale or usage requirements and thus not within the scope of IFRS 9 </span><span style=\"color:#5c5d54;font-family:'Nunito',sans-serif;font-size:10pt;font-style:italic;font-weight:400;line-height:120%\">Financial Instruments</span><span style=\"color:#5c5d54;font-family:'Nunito',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"> (&#8220;own use exemption&#8221;).",
+  "raw_sha256": "fee35d8312afc88c3afad437c912246e1a16dcb54728ae4bcfcdbb5cc0e461f1"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1853860/000162828026022073/ero-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,70 @@
+{
+  "proof_class": "actual_full_universe_existing_input_runtime_and_semantic_parity",
+  "source_head": "788462d59e60f6ec311b46c0ff23a45f0c186793",
+  "elapsed_seconds": 556.56,
+  "cpu_seconds": 513.936,
+  "stage_seconds": {
+    "price_loading": 19.347330931108445,
+    "relative_strength": 11.899349000072107,
+    "row_evaluation": 523.9002879974432
+  },
+  "previous_observed_runtime_seconds": 1047.25,
+  "within_600s_warning_budget": true,
+  "universe_limit": null,
+  "coverage": {
+    "universe": 6102,
+    "graded": 5635,
+    "skipped_short_history": 467,
+    "min_bars": 200,
+    "triggered": 2901,
+    "deck": 40,
+    "beyond_cap": 2861,
+    "cap": 40,
+    "lane_floor": 5,
+    "triggered_by_trigger": {
+      "dot_1d": 2358,
+      "pre_confluence_2d": 675,
+      "basket_turn": 8,
+      "leader_reset_turn": 89
+    },
+    "deck_by_trigger": {
+      "dot_1d": 29,
+      "pre_confluence_2d": 33,
+      "basket_turn": 6,
+      "leader_reset_turn": 5
+    },
+    "universe_limit": null,
+    "basket_states_read": 49,
+    "benchmark": "SPY",
+    "leader_pullback_sources": {
+      "engine.us_leader_pullback:evaluate": 2901
+    },
+    "leader_rs_cross_section": 5635
+  },
+  "identical_public_except_runtime": true,
+  "identical_all_uncapped_rows": true,
+  "input_hashes_unchanged": true,
+  "previous_public_and_private_bytes_unchanged": true,
+  "source_changes": [],
+  "input_manifest_sha256": "ca62bc73931dd4955abb069e0667bdf23a12058e5b87dabc6c71fab6e24cfc44",
+  "imported_source_digests": {
+    "engine/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "engine/hysteresis.py": "49eeeccf6f02110e11e57a4f5fd6b82de4d1c804157dc9a9605cf40dd5eca6a7",
+    "lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lib/nyse_calendar.py": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+    "engine/session_anchor.py": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "engine/technicals.py": "83e90996d3f6eb58162cc6005ac292116ae784332700ef5323b381d495269739",
+    "engine/confluence_tiers.py": "ac0fda6d5ea30d35ad404c84eb848a176c872af42567937cd00adcdb49a51f65",
+    "engine/us_turn_watch.py": "9bf2fbb2adacd25e04a468708e46dcbc05178b214553b252f47127426c9a7930",
+    "engine/ledger_lane.py": "7462536242fc9563f4037c87927c4e5524fd9b6ecbe0b3275528d8ce67d88bf0",
+    "engine/us_basket_turn.py": "f32048f646d8d48169e00e59c408064b9ef375ca61993b9b37349023ef0f7a66",
+    "engine/us_leader_pullback.py": "4824ad9bd30d3cf832345677c233000f7e1ce3eaa53a0814697dcea00c7917e8"
+  },
+  "actual_public_sha256": "8a538f9f7a52e0e00c36f21d099d34538cac6b230302ac51c724ffc24e433556",
+  "semantic_public_sha256": "ab15fbd055022c17da0644d880502649a81ee03ab13ee66ced0dd41a213d6047",
+  "old_public_sha256": "3bd0ae735619a0bddfcfff565003948ffc8ecc7d42900a236c4b8fb14d538e08",
+  "production": false,
+  "provider_calls": 0,
+  "branch_or_workflow_mutations": 0
+}

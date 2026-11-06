@@ -1,0 +1,44 @@
+{
+  "schema": "tiingo.fourteen_diagnostic_disposition_focused_source_clearance/v1",
+  "recorded_at_utc": "2026-10-14T04:52:55.736424+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "verdict": "PASS_FOCUSED_LINEAGE_CLEARANCE",
+  "source_file": "tiingo-fourteen-diagnostic-disposition-bound02.py",
+  "source_sha256": "a868d0b1a4270ef46a782cf2924b3024b6924e95c323c73cfc8e65d5ddde0062",
+  "prior_review_file": "tiingo-fourteen-diagnostic-disposition-bound01-source-review.json",
+  "prior_review_sha256": "3638d7db479e7cb2469566e3b8c0939d2ef1c11dce75a2ee7ef39b9e4bdecbfc",
+  "cleared_findings": [
+    "H1"
+  ],
+  "verified": [
+    "Exact source hash and AST parse passed; unified diff contains only the requested coverage lineage additions and compatibility comment correction.",
+    "Current later_repair_result_sha256 binds the fourteen-request result through PINS; immediate original_census_file and original_census_sha256 bind BASE and BASE_SHA.",
+    "The former eleven-request result hash is preserved explicitly as historical_predecessor_eleven_later_repair_result_sha256, evaluated from the predecessor before dict.update mutates it.",
+    "Retained predecessor census and current result bytes match c54a2c3c and 6a58cb29 respectively.",
+    "All other source bytes and pipeline logic are unchanged from the prior reviewed source."
+  ],
+  "current_result_sha256": "6a58cb292c0e70108eb52b5020ce9608e7b6e913cb28b5593fe30d515bc25a60",
+  "immediate_predecessor_census_file": "eod-qualified-current-census-after-eleven-later-repair01.json",
+  "immediate_predecessor_census_sha256": "c54a2c3c070d14c2a98ad5bd874de919e1704d177bcf0723ed203af67d03ea96",
+  "historical_eleven_result_sha256": "f2340622f80e4edc1a998943699d749c6e2c5953b7c340cb61b12de9a2bafd7d",
+  "whole_pipeline_conditions": [
+    "Root may deterministically prepare/check each stagepacket underacceptedwrapperc0a630 without another reviewer round ifsource,scope andcontract remainexactlyaccepted; materialchanges or failed/unknown effects require focusedreview/reconciliation.",
+    "Everypacket: exactroot/run/mode/prefix01/sourcehash/wrapperhash; max0provider/creds; noauto retry; distincttrue-lstatabsentoutput/log/intent/identity/wait/validation slots thatcannotcollidewithinputs; frozenhashmap rejects duplicatepath conflicts.",
+    "Freeze allsourcecontext dependencies from recursivepreviousmethods/h.PINS/producerfiles/directPINS and exactacceptedpredecessorQ metadata; wrapperpre/postverify allsuppliedinputs and currentstageoutputs. Sourcefreeze handles its ownrecursiveproducer/context controls.",
+    "Preflightpacket allows onlynewsnapshot+pfcontroloutputs, noarchivewrites. Rootconsumesactualnative+durablewait+validation and verifies14selected,valid/qualitypartition, windows/raw/receiptidentity, expected56selectors or justifieddeduplicatedcount, protectedpartials andsource/ancestor stability. Do notassumeall14valid beforeactualpreflight.",
+    "Qualifierpacket additionally freezesactualpf/snapshot/rootparent/wait/validation; rootparentbindsroot/method/prefix/pfhash/nativeactual0. Allowatmost14preflight-selected materializer calls; finalstrictselector/protectedcustody/fullnewreaderparity remainrequired, with40GiBfloor.",
+    "Coveragepacket additionally freezesactualq/qualifierrootsemanticacceptance/wait/validation pluspf,parent,snapshot; noarchivewrites/provider. Rootconsumesactualcoverageexit/wait/validation/censushash and verifiesprior+qualifiedvalidbars/history/empty/qualitypartition and47689catalogueconservation.",
+    "No individualpacket review isneeded for deterministicbinding ofthisacceptedpipeline; source reviewdoesnotitselfclaim anystageexecuted or grantnewproviderrequests.",
+    "Preserveoriginal90730/22925/91287unknownterminalfacts and oldgenericreasonclasses; no newcausalityimputation. KeepHTTP403/404/quality/R2/Fabric/publisherholds unchanged."
+  ],
+  "scope": "Exact-source clearance only. Root may perform deterministic stage-packet binding under the inherited whole-pipeline conditions. This does not claim a stage invocation, actual return, or semantic acceptance.",
+  "review_effects": {
+    "candidate_executions": 0,
+    "provider_requests": 0,
+    "credential_reads": 0,
+    "archive_writes": 0,
+    "old_raw_reader_rescans": 0,
+    "source_edits": 0,
+    "delegations": 0
+  }
+}

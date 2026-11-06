@@ -1,0 +1,22 @@
+{
+  "candidate": "85625d64a73508d2a9ce94d29d32e76c5ad0701c",
+  "pr": 9041,
+  "ci_run": 38325360762,
+  "source_bindings": 21,
+  "pages": 3,
+  "only_updated_source_hash": "engine/press/external_candidate.py",
+  "actual_protected_merge_required": true,
+  "installation_executed": false,
+  "ancestry_requirement": "After protected merge, fetch origin, observe stable VPS HEAD, prepare ancestry for actual merge and installed HEAD, then run install-check with actual merge. No production Git mutation.",
+  "installed_consumer_command": "Send installed-consumer.py bytes over SSH to /opt/macro/.venv/bin/python -B - /opt/macro; do not execute before expected source is installed. Temporary fixtures only.",
+  "file_hashes": {
+    "prepare-ancestry.py": "1fba8c947eccc602462f1a22d28aab4811e1fea90e6243fd44896a34d7740c27",
+    "mmx-9041-http-check.py": "4a4b506bfc6107a60aa0614b62d7f639a331a05b7fffaae482d655aa2bdfff4b",
+    "mmx-9041-install-check.py": "1ad84925098b61d6c92ab95bfcb66e8c56cd8b536c0a40d0cd48abe446f513ba",
+    "mmx-9041-expected-hashes.json": "bde8311fbb128dcf9d0d716dfcded4d90611e1238c6f9e76d8ef35864d3a85b2",
+    "mmx-9041-runtime-inspect.py": "277778a1206ffa3be6dcee78741439493bfc0a70ec64850a4c94bf0e6378eef1",
+    "installed-consumer.py": "cee23a8d0f501695a3bef19fb7bc0deb4bea90063cd9f4cdaaada81256e96bfb",
+    "mmx-9041-expected-pages.json": "aacb655752064620112cd0db5a66973d88bc3dac3ea33b445ae9b611bf820448",
+    "mmx_ancestry.py": "c40c196cefeffe7140f76c29ad1decdba774802076a73136c0be967b40241e50"
+  }
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-27T23:58:14Z",
+ "accession": "0001062993-26-001662",
+ "cik": "0001277866",
+ "doc_byte_length": 968411,
+ "doc_sha256": "ac076cc061738fa1980a9ea09506724fd378fcb9e16978b6588d8c3ced2101cb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "exhibit99-1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 810407,
+  "byte_start": 809976,
+  "normalized": "The cash consideration will be funded through a combination of a new copper streaming agreement on copper produced from Kolpa (\"Copper Stream\") with Versamet Royalties Inc. (\"Versamet\"), a bought deal financing consisting of subscription receipts for commo n shares of the Company issuable upon closing of the Transaction (the \"Subscription Receipts Financing\") and cash on hand.",
+  "normalized_sha256": "030f3c2db7b9da5481731121685f08a2b9c2f85267eaaa38e421e156b5cb954f",
+  "raw": "The cash consideration will be funded through a combination of a new copper streaming agreement on copper produced from Kolpa (\"Copper Stream\") with Versamet Royalties Inc. (\"Versamet\"), a bought deal financing consisting of subscription receipts for commo n shares of the Company issuable upon closing of the Transaction (the \"Subscription Receipts Financing\") and cash on hand.<font style=\"text-decoration: line-through;\">&#160; ",
+  "raw_sha256": "d486164ccef1d56d4f89d6f93307765fe1639812cf9846a7f2a690500274c3df"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1277866/000106299326001662/exhibit99-1.htm",
+ "xbrl_contexts": []
+}

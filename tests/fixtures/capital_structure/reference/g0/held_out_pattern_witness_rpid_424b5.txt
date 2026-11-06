@@ -1,0 +1,19 @@
+# G0-S reference excerpt. rights class: sec_edgar_public_filing
+# cap: 500 characters per span; personal data redacted (none present in these spans)
+# text_basis: SEC document HTML with tags removed, entities unescaped, whitespace runs collapsed to single spaces;
+#            the start/end offsets below index that rendering of the full document whose sha256 is in the header.
+accession: 0001104659-26-063928
+document_name: tm2614072-1_424b5.htm
+canonical_url: https://www.sec.gov/Archives/edgar/data/1380106/000110465926063928/tm2614072-1_424b5.htm
+full_document_sha256: 6e8b954f96e64e8ad1e1e8ed9b4da643ef4fd2e3021870c6b02e84a0586c2acd
+retrieved_at: 2026-10-19T08:12:08Z
+http_status: 200
+spans:
+span: public_float_ib6 438 153250 153688 824fc1c57976294497c6ff8a67cbb907e10f070d8c000cb781c9e2d0ad379169
+As of December 12, 2023, the aggregate market value of our outstanding common stock held by non-affiliates, or public float, was approximately $11.6 million, based on 42,409,105 shares of outstanding Class A common stock and Class B common stock, of which approximately 33.0 million shares were held by affiliates, and a price of $1.06 per share, which was the price at which our Class A common stock was last sold on Nasdaq on such date.
+span: ib6_trailing_sales 181 153689 153870 b1460ac36ce821623e4980f2b7d43e4d9b23a5543cd39520fcbd9298e2a7e895
+We have not offered any securities pursuant to General Instruction I.B.6 of Form S-3 during the prior 12-calendar-month period that ends on and includes the date of this prospectus.
+span: atm_programme 336 31708 32044 144bfc9fa95785af5e493a38bf713e0023161dbd08de867f5721ea8370061e0e
+Up to $10.0 million of shares of our Class A common stock that may be sold from time to time pursuant to our sales agreement with TD Securities (USA) LLC entered into on December 15, 2023, of which 113,217 shares have been sold as of March 31, 2026, which has resulted in net proceeds of approximately $0.4 million as of March 31, 2026.
+span: registered_direct 185 3219 3404 430ab359321d61548982d0a722b0c2d15562f67c0fcca956cd7a9b3eb2ec9413
+In a concurrent registered direct offering, we entered into a securities purchase agreement (the “Purchase Agreement”) with certain of the Company’s directors and officers (the “D&Os”),

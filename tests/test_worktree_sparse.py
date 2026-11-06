@@ -528,11 +528,12 @@ def test_status_json_shape(repo):
     out = WS.status_json(repo)
 
     assert set(out.keys()) == {
-        "sparse", "missing_dirs", "stale_locks_removed", "full_bytes_estimate",
-        "untracked_survivors",
+        "sparse", "missing_dirs", "partial_dirs", "stale_locks_removed",
+        "full_bytes_estimate", "untracked_survivors",
     }
     assert out["sparse"] is True
     assert out["missing_dirs"] == ["big"]
+    assert out["partial_dirs"] == [], "big/ is omitted whole, not partially materialized"
     assert out["stale_locks_removed"] == []
     assert isinstance(out["full_bytes_estimate"], int)
     assert out["full_bytes_estimate"] >= len(_BIG_CONTENT), (

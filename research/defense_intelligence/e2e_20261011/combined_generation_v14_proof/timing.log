@@ -1,0 +1,11 @@
+{"sample": 1, "ms": 2796.5999999940395, "pass_target": true, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"sample": 2, "ms": 2772.8999999910593, "pass_target": true, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"sample": 3, "ms": 2837.7999999970198, "pass_target": true, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"sample": 4, "ms": 3686.5, "pass_target": false, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"sample": 5, "ms": 2781.2000000029802, "pass_target": true, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"sample": 6, "ms": 2781.199999988079, "pass_target": true, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"sample": 7, "ms": 2801.9000000059605, "pass_target": true, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"sample": 8, "ms": 2814.2000000029802, "pass_target": true, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"sample": 9, "ms": 2795.8999999910593, "pass_target": true, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"sample": 10, "ms": 2794.2999999970198, "pass_target": true, "navigation_status": 200, "http_errors_n": 0, "page_errors_n": 0, "failure": null, "resource_capture_failure": null}
+{"all_pass": false, "median_ms": 2796.2499999925494, "p95_ms": 3686.5, "max_ms": 3686.5}

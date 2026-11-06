@@ -187,6 +187,64 @@ def test_history_chart_prefers_measured_raw_score(tmp_path, monkeypatch):
     assert build_site._ms_history_view()[0]["score"] == 78
 
 
+def test_history_chart_appends_newer_settled_board_endpoint(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    path = data_dir / "market_state" / "forward_log.jsonl"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"asof": "2026-09-11", "score": 66, "raw_score": 66}) + "\n")
+    monkeypatch.setattr(build_site.config, "data_dir", lambda: data_dir)
+
+    out = build_site._ms_history_view(
+        {"asof": "2026-09-14", "score": 56, "raw_score": 56}
+    )
+
+    assert out == [
+        {"asof": "2026-09-11", "score": 66},
+        {"asof": "2026-09-14", "score": 56},
+    ]
+    assert path.read_text().count("2026-09-14") == 0  # display repair never mutates PIT ledger
+
+
+def test_history_chart_does_not_regress_to_older_current_snapshot(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    path = data_dir / "market_state" / "forward_log.jsonl"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"asof": "2026-09-14", "score": 56, "raw_score": 56}) + "\n")
+    monkeypatch.setattr(build_site.config, "data_dir", lambda: data_dir)
+
+    out = build_site._ms_history_view(
+        {"asof": "2026-09-11", "score": 66, "raw_score": 66}
+    )
+
+    assert out[-1] == {"asof": "2026-09-14", "score": 56}
+
+
+def test_sector_heat_view_uses_producer_heating_list_not_hot_rank(monkeypatch):
+    from engine import sector_pulse
+
+    pulse = {
+        "as_of": "2026-09-17",
+        "heating": ["cybersecurity", "mag7", "ai_semiconductors"],
+        "themes": [
+            {"id": "crypto", "name": "Crypto", "heat": "hot", "rank": 1},
+            {"id": "ai_software", "name": "AI Software", "heat": "hot", "rank": 2},
+            {"id": "cybersecurity", "name": "Cybersecurity", "heat": "heating", "rank": 3},
+            {"id": "mag7", "name": "Magnificent Seven", "heat": "heating", "rank": 4},
+            {"id": "ai_semiconductors", "name": "AI Semiconductors", "heat": "heating", "rank": 5},
+        ],
+    }
+    monkeypatch.setattr(sector_pulse, "build_pulse", lambda _region: pulse)
+
+    view = build_site._sector_heat_view()
+
+    assert [row["id"] for row in view["heating"]] == [
+        "cybersecurity", "mag7", "ai_semiconductors",
+    ]
+    assert all(row["heat"] == "heating" for row in view["heating"])
+    assert "crypto" not in {row["id"] for row in view["heating"]}
+    assert "ai_software" not in {row["id"] for row in view["heating"]}
+
+
 def test_rotation_view_separates_current_pulse_from_legacy_damage_cohort(monkeypatch):
     from engine import sector_pulse
 

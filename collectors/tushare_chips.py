@@ -18,6 +18,8 @@ import logging
 
 import pandas as pd
 
+from lib.market_observations import provider_date_matches, snapshot_rejection_reason
+
 from lib import config
 from collectors import tushare_client as tc
 
@@ -31,15 +33,20 @@ def refresh() -> int:
     if not tc.enabled():
         return 0
     today = pd.Timestamp.utcnow().strftime("%Y-%m-%d")
+    previous = None
     if OUT.exists():
         try:
-            if str(pd.read_parquet(OUT, columns=["asof"])["asof"].max()) >= today:
+            previous = pd.read_parquet(OUT)
+            if "asof" in previous and str(previous["asof"].max()) >= today:
                 return 0
         except Exception:  # noqa: BLE001
             pass
     df, trade_date = tc.snapshot_by_date("cyq_perf", fields=_FIELDS)
     if df is None or df.empty:
         log.warning("tushare chips: no cyq_perf snapshot")
+        return 0
+    if not provider_date_matches(df, trade_date):
+        log.warning("%s: provider trade_date disagrees with query date; last-good snapshot retained", OUT.name)
         return 0
     df = df.rename(columns={"ts_code": "ticker"})
     for c in ("his_low", "his_high", "cost_5pct", "cost_50pct", "cost_95pct", "weight_avg", "winner_rate"):
@@ -50,6 +57,10 @@ def refresh() -> int:
     keep = ["ticker", "winner_rate", "weight_avg", "cost_50pct", "cost_5pct", "cost_95pct",
             "his_low", "his_high", "trade_date", "asof"]
     out = df[[c for c in keep if c in df.columns]].dropna(subset=["ticker"])
+    reason = snapshot_rejection_reason(out, previous, "CN", value_cols=('winner_rate', 'weight_avg', 'cost_50pct'))
+    if reason:
+        log.warning("%s: %s; last-good snapshot retained", OUT.name, reason)
+        return 0
     OUT.parent.mkdir(parents=True, exist_ok=True)
     out.to_parquet(OUT, index=False)
     log.info("tushare chips: wrote %s (%d names, %s)", OUT, len(out), trade_date)

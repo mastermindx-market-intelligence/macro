@@ -490,7 +490,8 @@ def test_security_critical_families_cannot_silently_weaken() -> None:
         "terminal_fixture_mode_bypass": ("PRIVATE_OPERATIONAL", "OPERATOR_ONLY"),
         "terminal_intraday_gateway": ("UNRESOLVED", "HOLD_PRIVATE_PENDING_REVIEW"),
         "terminal_quote_gateway": ("UNRESOLVED", "HOLD_PRIVATE_PENDING_REVIEW"),
-        "terminal_extended_quote_gateway": ("UNRESOLVED", "HOLD_PRIVATE_PENDING_REVIEW"),
+        "terminal_extended_quote_gateway": ("PUBLIC_FACT", "ANONYMOUS"),
+        "extended_quotes_current": ("PUBLIC_FACT", "ANONYMOUS"),
         "terminal_washout_state": ("PRIVATE_OPERATIONAL", "PRIVATE_SERVICE"),
         "terminal_transcript_corpus": ("VENDOR_RAW", "OPERATOR_ONLY"),
         "terminal_client_proprietary_source": ("PRIVATE_OPERATIONAL", "PRIVATE_SERVICE"),
@@ -1109,7 +1110,7 @@ def test_terminal_route_controls_preserve_auth_and_cache_truth() -> None:
     assert controls["TERMINAL_ROUTE:/api/ext-quote"]["auth"] == "none"
     assert "after cache miss" in controls["TERMINAL_ROUTE:/api/quote"]["auth"]
     assert "unauthenticated-401" in controls["TERMINAL_ROUTE:/api/quote"]["cache"]
-    assert "omits explicit cache control" in controls["TERMINAL_ROUTE:/api/ext-quote"]["cache"]
+    assert "no-store on every response" in controls["TERMINAL_ROUTE:/api/ext-quote"]["cache"]
 
 
 def test_human_report_and_machine_counts_do_not_drift() -> None:

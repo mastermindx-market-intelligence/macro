@@ -175,7 +175,7 @@ def test_margin_hist_preserves_trade_date_and_rolls_snapshot(monkeypatch, tmp_pa
              "trade_date": trade_date},
         ]), trade_date
 
-    snaps = iter([_snap("20260814", 100.0), _snap("20260815", 999.0)])
+    snaps = iter([_snap("20260814", 100.0), _snap("20260817", 999.0)])
     monkeypatch.setattr(tm.tc, "snapshot_by_date", lambda *a, **kw: next(snaps))
     clock = {"asof": "2026-08-14", "fetched": "2026-08-14T08:00:00+00:00"}
     monkeypatch.setattr(pd.Timestamp, "utcnow", staticmethod(
@@ -195,11 +195,11 @@ def test_margin_hist_preserves_trade_date_and_rolls_snapshot(monkeypatch, tmp_pa
     assert "fin_pctile" in snap1.columns
     assert "fin_pctile" not in hist1.columns
 
-    clock["asof"] = "2026-08-15"
-    clock["fetched"] = "2026-08-15T08:00:00+00:00"
+    clock["asof"] = "2026-08-17"
+    clock["fetched"] = "2026-08-17T08:00:00+00:00"
     assert tm.refresh() == 1
     snap2 = pd.read_parquet(tm.OUT)
-    assert snap2.iloc[0]["trade_date"] == "20260815"
+    assert snap2.iloc[0]["trade_date"] == "20260817"
     assert snap2.iloc[0]["fin_balance"] == 999.0
     hist2 = pd.read_parquet(tm.OUT_HIST)
     assert len(hist2) == 2

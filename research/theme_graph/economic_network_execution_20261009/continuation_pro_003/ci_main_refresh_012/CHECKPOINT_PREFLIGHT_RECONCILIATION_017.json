@@ -1,0 +1,136 @@
+{
+  "all53_source71_owner_pins_preserved": true,
+  "all9_control_bytes_match_both_own_candidate_commits": true,
+  "control_rows": [
+    {
+      "matches_upstream_control_hash": true,
+      "own_branch_bytes": 78660,
+      "own_branch_sha256": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c",
+      "preflight_control": {
+        "byte_length": 78660,
+        "new_sha256": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c",
+        "old_sha256": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c",
+        "path": "AGENTS.md",
+        "same": true
+      },
+      "same_as_prior_candidate": true
+    },
+    {
+      "matches_upstream_control_hash": true,
+      "own_branch_bytes": 85973,
+      "own_branch_sha256": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329",
+      "preflight_control": {
+        "byte_length": 85973,
+        "new_sha256": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329",
+        "old_sha256": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329",
+        "path": "CLAUDE.md",
+        "same": true
+      },
+      "same_as_prior_candidate": true
+    },
+    {
+      "matches_upstream_control_hash": true,
+      "own_branch_bytes": 388037,
+      "own_branch_sha256": "8eac1e841a5508605f4dceec014bffb05fa2a012d830607dfd2a240882bc7423",
+      "preflight_control": {
+        "byte_length": 388037,
+        "new_sha256": "8eac1e841a5508605f4dceec014bffb05fa2a012d830607dfd2a240882bc7423",
+        "old_sha256": "8eac1e841a5508605f4dceec014bffb05fa2a012d830607dfd2a240882bc7423",
+        "path": "scripts/merge_on_green.py",
+        "same": true
+      },
+      "same_as_prior_candidate": true
+    },
+    {
+      "matches_upstream_control_hash": true,
+      "own_branch_bytes": 318629,
+      "own_branch_sha256": "ef9cd98724e4c545e4cb55420d0a6e5c9fc36b9d4efde449416b560cd8d255a9",
+      "preflight_control": {
+        "byte_length": 318629,
+        "new_sha256": "ef9cd98724e4c545e4cb55420d0a6e5c9fc36b9d4efde449416b560cd8d255a9",
+        "old_sha256": "ef9cd98724e4c545e4cb55420d0a6e5c9fc36b9d4efde449416b560cd8d255a9",
+        "path": ".github/workflows/ci.yml",
+        "same": true
+      },
+      "same_as_prior_candidate": true
+    },
+    {
+      "matches_upstream_control_hash": true,
+      "own_branch_bytes": 73298,
+      "own_branch_sha256": "9df4b9a9a8d68f7e9aa34a8eebe99e8d17e27f2ef0560eadcc050f3130359158",
+      "preflight_control": {
+        "byte_length": 73298,
+        "new_sha256": "9df4b9a9a8d68f7e9aa34a8eebe99e8d17e27f2ef0560eadcc050f3130359158",
+        "old_sha256": "9df4b9a9a8d68f7e9aa34a8eebe99e8d17e27f2ef0560eadcc050f3130359158",
+        "path": "scripts/ci_semantic_proof.py",
+        "same": true
+      },
+      "same_as_prior_candidate": true
+    },
+    {
+      "matches_upstream_control_hash": true,
+      "own_branch_bytes": 223426,
+      "own_branch_sha256": "65564916a55eb806d3d9fb0cd4e12726f05fec953f6e47ccd9240f5a141049df",
+      "preflight_control": {
+        "byte_length": 223426,
+        "new_sha256": "65564916a55eb806d3d9fb0cd4e12726f05fec953f6e47ccd9240f5a141049df",
+        "old_sha256": "65564916a55eb806d3d9fb0cd4e12726f05fec953f6e47ccd9240f5a141049df",
+        "path": "scripts/run_ci_pack.py",
+        "same": true
+      },
+      "same_as_prior_candidate": true
+    },
+    {
+      "matches_upstream_control_hash": true,
+      "own_branch_bytes": 62554,
+      "own_branch_sha256": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+      "preflight_control": {
+        "byte_length": 62554,
+        "new_sha256": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+        "old_sha256": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+        "path": "scripts/check_contract_delta.py",
+        "same": true
+      },
+      "same_as_prior_candidate": true
+    },
+    {
+      "matches_upstream_control_hash": true,
+      "own_branch_bytes": 50447,
+      "own_branch_sha256": "e50ba44cb678761d55f1c5bb9828390bd7c21c1672760d6f52781ca194dd7d47",
+      "preflight_control": {
+        "byte_length": 50447,
+        "new_sha256": "e50ba44cb678761d55f1c5bb9828390bd7c21c1672760d6f52781ca194dd7d47",
+        "old_sha256": "e50ba44cb678761d55f1c5bb9828390bd7c21c1672760d6f52781ca194dd7d47",
+        "path": "scripts/audit_unrun_tests.py",
+        "same": true
+      },
+      "same_as_prior_candidate": true
+    },
+    {
+      "matches_upstream_control_hash": false,
+      "own_branch_bytes": 1249336,
+      "own_branch_sha256": "5cc24c46e7c4ed8b0b9525366a7069e86f546b32849c72cb8518320842d860cd",
+      "preflight_control": {
+        "byte_length": 1249172,
+        "new_sha256": "3aa5275a608bb9fe9b4c3b98ee42efdf2b06cfd806949752afc8f53dd5506668",
+        "old_sha256": "3aa5275a608bb9fe9b4c3b98ee42efdf2b06cfd806949752afc8f53dd5506668",
+        "path": ".github/ci/legacy-jobs.yml",
+        "same": true
+      },
+      "same_as_prior_candidate": true
+    }
+  ],
+  "error_cause": "Control new_sha256 pins accepted upstream main, while own existing legacy-jobs manifest intentionally includes the observation enrollment. The correct invariant compares integrated candidate with prior reviewed own candidate, retaining that enrollment.",
+  "exit_code": 1,
+  "failed_before_first_repository_write": true,
+  "failed_runner_sha256": "ead8d9eda63549ffb5bdd2ea68f1842b5d9f39ce8173a8c7e0afb83cbb9de76f",
+  "finished_at": "2026-10-09T16:48:42.831835+00:00",
+  "head": "4caf1e2b1e58e3199ba5d63ebfa6563ef098eeff",
+  "ignored_status": "",
+  "pid": 8024,
+  "prior140_files_exact": true,
+  "runtime_seconds": 14.38,
+  "status": "FAILED_APPLY_PREFLIGHT_RECONCILED_NO_REPOSITORY_EFFECT",
+  "terminal_tool_receipt_sha256": "c419dc1ce2503f54e7bf962db04ac93f57bf3343488e00225184622b8b92712b",
+  "worktree_status": ""
+}

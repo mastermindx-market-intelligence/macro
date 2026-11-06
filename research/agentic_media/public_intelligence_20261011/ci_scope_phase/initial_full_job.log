@@ -1,0 +1,28 @@
+........................................................................ [  8%]
+......................................................F................s [ 17%]
+.s...................................................................... [ 26%]
+........................................................................ [ 34%]
+........................................................................ [ 43%]
+........................................................................ [ 52%]
+........................................................................ [ 61%]
+........................................................................ [ 69%]
+........................................................................ [ 78%]
+........................................................................ [ 87%]
+........................................................................ [ 95%]
+..................................                                       [100%]
+=================================== FAILURES ===================================
+_____________ test_the_curated_exclusive_set_is_actually_declared ______________
+tests/test_ci_pack.py:4812: in test_the_curated_exclusive_set_is_actually_declared
+    assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+E   AssertionError: ['leadership-rotation-contract', 'lr-rotation-evidence-modes']
+E   assert {'agentos-kno...niverse', ...} == {'agentos-kno...niverse', ...}
+E     
+E     Extra items in the left set:
+E     'leadership-rotation-contract'
+E     'lr-rotation-evidence-modes'
+E     Use -v to get more diff
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared
+1 failed, 823 passed, 2 skipped in 540.02s (0:09:00)

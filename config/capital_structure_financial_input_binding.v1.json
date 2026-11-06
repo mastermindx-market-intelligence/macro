@@ -1,0 +1,484 @@
+{
+  "schema": "capital_structure.financial_input_binding.v1",
+  "version": "capital-structure-financial-input-binding/1.0.0",
+  "task": "F0",
+  "masterplan": "research/capital_structure/e2e_20261013/MASTERPLAN.md \u00a713 row B0 (seat-held; not on main at write time)",
+  "acceptance_rows": [
+    "A28",
+    "A29",
+    "A30",
+    "A48",
+    "A49"
+  ],
+  "observed_at": "2026-10-14T07:10:00Z",
+  "observed_main_head": "1c8ff99ff7c06dda6482b8ba3a81b4e615a63c52",
+  "contract_status": {
+    "input_family": "financials",
+    "compatible_schemas_today": [],
+    "consequence": "FinancialInputs.facts must be empty: a non-empty record needs a binding whose schema is in COMPATIBLE_INPUT_SCHEMAS['financials'], which is ()",
+    "delta": {
+      "writer": "seat (single writer of C0 deltas)",
+      "pull_request": 9266,
+      "head_at_observation": "2cdbf5d9",
+      "state_at_observation": "open, in CI",
+      "change": "COMPATIBLE_INPUT_SCHEMAS['financials'] = ('capital_structure.financial_item_observation.v1',) and the same name in the state schema input_schema enum; a different schema version and forbidden properties such as runway stay refused; no version bump",
+      "failing_probe": "GenerationBinding('financials','capital_structure.financial_item_observation.v1','partial',generation_id=...) raises ContractViolation: schema is not compatible with []"
+    },
+    "until_delta_lands": "F1 is built against capital_structure.financial_item_observation.v1 but consumes it on main only after #9266 lands; with facts=() F1 binds financials not_built and reports the opening balance as unknown with a named Unknown",
+    "commitment_inputs_note": "CommitmentInputs carries one binding (document_terms or covenant_terms), so one project_funding call consumes one commitment family"
+  },
+  "item_schema": {
+    "schema": "capital_structure.financial_item_observation.v1",
+    "status": "pending_c0_delta_pr_9266",
+    "fields": {
+      "schema": "literal",
+      "item_id": "stable id",
+      "item_kind": "one of items[].item_kind",
+      "availability": "the item's availability from items[]",
+      "amount": {
+        "value": "decimal string",
+        "unit": "usd",
+        "status": "quantity status"
+      },
+      "measured_at": "date, instant items",
+      "period_start": "date, duration items",
+      "period_end": "date, duration items",
+      "due_date": "date or null; required for a contractual_dated use",
+      "gross_net": [
+        "gross",
+        "net",
+        "fee",
+        "not_applicable"
+      ],
+      "condition": "required for conditional_undrawn",
+      "source": {
+        "owner": "owner id",
+        "metric_id": "FIF metric or null",
+        "term_name": "CS term or null",
+        "receipt_sha256": "digest of the owner receipt",
+        "accession": "string or null",
+        "filed": "date or null"
+      },
+      "available_at": "point-in-time timestamp"
+    },
+    "forbidden_fields": [
+      "probability",
+      "score",
+      "rank",
+      "size",
+      "signal",
+      "runway_infinite"
+    ]
+  },
+  "items": [
+    {
+      "item_kind": "unrestricted_cash",
+      "availability": "available_now",
+      "flow_role": "opening_balance_component",
+      "cash_bases": [
+        "unrestricted_cash",
+        "unrestricted_cash_and_marketable_securities",
+        "unrestricted_and_restricted_cash"
+      ],
+      "measure": "instant",
+      "source": {
+        "owner": "fundamental_forensics",
+        "metric_id": "cash_and_cash_equivalents",
+        "concepts": [
+          "us-gaap:CashAndCashEquivalentsAtCarryingValue"
+        ],
+        "fif_confidence": "A"
+      },
+      "owner_state": "fif_cell_exists_cs_binding_blocked",
+      "rules": [
+        "FIF maps only CashAndCashEquivalentsAtCarryingValue, which excludes restricted cash; us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents is not mapped and never substitutes for it"
+      ]
+    },
+    {
+      "item_kind": "restricted_cash",
+      "availability": "restricted",
+      "flow_role": "opening_balance_component",
+      "cash_bases": [
+        "unrestricted_and_restricted_cash"
+      ],
+      "measure": "instant",
+      "source": null,
+      "owner_state": "not_built",
+      "rules": [
+        "no current owner emits this item; F1 must report it as a named Unknown, never a zero",
+        "never derived as a total-cash concept minus cash_and_cash_equivalents"
+      ]
+    },
+    {
+      "item_kind": "marketable_securities",
+      "availability": "available_after_sale",
+      "flow_role": "opening_balance_component",
+      "cash_bases": [
+        "unrestricted_cash_and_marketable_securities"
+      ],
+      "measure": "instant",
+      "source": {
+        "owner": "fundamental_forensics",
+        "metric_id": "short_term_investments",
+        "concepts": [
+          "us-gaap:ShortTermInvestments",
+          "us-gaap:MarketableSecuritiesCurrent"
+        ],
+        "fif_confidence": "B"
+      },
+      "owner_state": "fif_cell_exists_cs_binding_blocked",
+      "rules": [
+        "the FIF alias priority chooses the concept; the CS consumer carries FIF confidence B and the chosen concept, never re-selects"
+      ]
+    },
+    {
+      "item_kind": "receivables",
+      "availability": "collection_dependent",
+      "flow_role": "context_only",
+      "cash_bases": [],
+      "measure": "instant",
+      "source": {
+        "owner": "fundamental_forensics",
+        "metric_id": "accounts_receivable_net",
+        "concepts": [
+          "us-gaap:AccountsReceivableNetCurrent"
+        ],
+        "fif_confidence": "A"
+      },
+      "owner_state": "fif_cell_exists_cs_binding_blocked",
+      "rules": [
+        "never part of any cash basis or opening balance",
+        "may affect a period only through an explicit working_capital_basis assumption, as an assumed flow"
+      ]
+    },
+    {
+      "item_kind": "revolver_availability",
+      "availability": "conditional_undrawn",
+      "flow_role": "conditional_source",
+      "cash_bases": [],
+      "measure": "instant",
+      "source": null,
+      "owner_state": "not_built",
+      "rules": [
+        "no current owner emits this item; F1 must report it as a named Unknown, never a zero",
+        "covenant_terms emits ratios, minimum_liquidity_amount and restricted_payments_basket_amount only; no facility size, draw or availability",
+        "when built: a conditional source Flow naming its draw conditions; never a cash basis member, never in a balance identity"
+      ]
+    },
+    {
+      "item_kind": "accrued_interest",
+      "availability": "obligation",
+      "flow_role": "use",
+      "cash_bases": [],
+      "measure": "instant",
+      "source": null,
+      "owner_state": "not_built",
+      "rules": [
+        "no current owner emits this item; F1 must report it as a named Unknown, never a zero",
+        "a contractual_dated use only when a payment date is evidenced; otherwise a timing Unknown"
+      ]
+    },
+    {
+      "item_kind": "debt_maturity",
+      "availability": "obligation",
+      "flow_role": "use",
+      "cash_bases": [],
+      "measure": "dated",
+      "source": null,
+      "owner_state": "not_built",
+      "rules": [
+        "no current owner emits this item; F1 must report it as a named Unknown, never a zero",
+        "document_terms emits registration-fee-table rows only; FIF debt balances are undated and never become maturities",
+        "when built: a contractual_dated use carrying principal; premiums and fees are separate uses"
+      ]
+    },
+    {
+      "item_kind": "minimum_liquidity_covenant",
+      "availability": "floor",
+      "flow_role": "period_minimum_liquidity",
+      "cash_bases": [],
+      "measure": "instant",
+      "source": {
+        "owner": "covenant_terms",
+        "term_name": "minimum_liquidity_amount",
+        "term_type": "monetary_amount",
+        "schema": "capital_structure.covenant_term_observation.v1"
+      },
+      "owner_state": "term_name_emitted_value_unnormalized",
+      "rules": [
+        "admitted only with state.disposition == direct and a parsed usd value in normalized.value",
+        "the owner currently emits normalized.value = null with raw clause text (and a unit label of 'ratio'), so the floor is unknown; the consumer never parses raw clause text",
+        "an agreement's defined Liquidity may include revolver availability; a gap is compared against the schedule cash basis only when the scenario declares assumption minimum_liquidity_basis equal to that basis, otherwise the gap is unknown",
+        "no observation means minimum_liquidity unknown, never zero",
+        "a management floor may be supplied as scenario assumption minimum_liquidity_floor; it is labeled an assumption and is on the schedule cash basis by definition"
+      ]
+    },
+    {
+      "item_kind": "committed_expenditure",
+      "availability": "obligation",
+      "flow_role": "use",
+      "cash_bases": [],
+      "measure": "dated",
+      "source": null,
+      "owner_state": "not_built",
+      "rules": [
+        "no current owner emits this item; F1 must report it as a named Unknown, never a zero",
+        "FIF capital_expenditures is a historical duration flow, never a commitment"
+      ]
+    },
+    {
+      "item_kind": "financing_cost",
+      "availability": "obligation",
+      "flow_role": "use",
+      "cash_bases": [],
+      "measure": "dated",
+      "source": {
+        "owner": "document_terms",
+        "term_name": "registration_fee",
+        "schema": "capital_structure.document_term_observation.v1"
+      },
+      "owner_state": "fee_table_rows_only",
+      "rules": [
+        "gross proceeds, fees and net proceeds are separate quantities; net is never reported as gross",
+        "a registration fee is dated at its filing date; one dated before the scenario horizon is history, not a projected use",
+        "scenario fee_rate produces an assumed fee, labeled as an assumption"
+      ]
+    }
+  ],
+  "context_items": [
+    {
+      "item_kind": "operating_cash_flow",
+      "source": {
+        "owner": "fundamental_forensics",
+        "metric_id": "net_cash_from_operating_activities",
+        "concepts": [
+          "us-gaap:NetCashProvidedByUsedInOperatingActivities"
+        ]
+      },
+      "measure": "duration",
+      "use": "burn evidence only through an explicit burn_basis assumption that names the period; a positive value is not burn and never implies unlimited runway"
+    },
+    {
+      "item_kind": "net_loss",
+      "source": {
+        "owner": "fundamental_forensics",
+        "metric_id": "net_income_loss",
+        "concepts": [
+          "us-gaap:NetIncomeLoss"
+        ]
+      },
+      "measure": "duration",
+      "use": "never burn (A29): accruals, non-cash charges and working capital separate it from cash use"
+    },
+    {
+      "item_kind": "historical_capital_expenditures",
+      "source": {
+        "owner": "fundamental_forensics",
+        "metric_id": "capital_expenditures"
+      },
+      "measure": "duration",
+      "use": "history only; never a committed expenditure"
+    },
+    {
+      "item_kind": "undated_debt_balance",
+      "source": {
+        "owner": "fundamental_forensics",
+        "metric_ids": [
+          "short_term_debt",
+          "long_term_debt_current",
+          "long_term_debt"
+        ]
+      },
+      "measure": "instant",
+      "use": "never a dated maturity; 'current' is a balance-sheet classification, not a due date; it yields a timing Unknown"
+    },
+    {
+      "item_kind": "registered_offering_capacity",
+      "source": {
+        "owner": "document_terms",
+        "term_name": "proposed_maximum_aggregate_offering_price"
+      },
+      "measure": "instant",
+      "use": "a registration ceiling, not cash and not proceeds; it can only bound a scenario action, never a source flow by itself"
+    }
+  ],
+  "refused_collapsed_metrics": [
+    {
+      "metric_id": "net_debt",
+      "reason": "collapses cash and debt bases into one headline"
+    },
+    {
+      "metric_id": "total_debt",
+      "reason": "undated aggregate; never a maturity schedule"
+    },
+    {
+      "metric_id": "cash_to_total_debt",
+      "reason": "ratio of collapsed bases"
+    },
+    {
+      "metric_id": "working_capital",
+      "reason": "mixes receivables, inventory and payables with cash"
+    },
+    {
+      "metric_id": "current_assets",
+      "reason": "not cash; contains receivables and inventory"
+    },
+    {
+      "metric_id": "free_cash_flow",
+      "reason": "historical derived flow; never burn by substitution"
+    },
+    {
+      "metric_id": "current_ratio",
+      "reason": "ratio; no availability basis"
+    },
+    {
+      "metric_id": "debt_to_equity",
+      "reason": "ratio; no availability basis"
+    }
+  ],
+  "cash_basis_composition": {
+    "unrestricted_cash": [
+      "unrestricted_cash"
+    ],
+    "unrestricted_cash_and_marketable_securities": [
+      "unrestricted_cash",
+      "marketable_securities"
+    ],
+    "unrestricted_and_restricted_cash": [
+      "unrestricted_cash",
+      "restricted_cash"
+    ],
+    "unknown": [],
+    "rules": [
+      "every member must be known at the same measured_at; a missing member makes the opening balance unknown, never a partial sum",
+      "members measured at different dates refuse (unknown with a named Unknown); never pick the newest or the largest",
+      "a non-usd unit refuses",
+      "receivables, revolver availability and registered capacity are members of no basis"
+    ]
+  },
+  "burn_rules": [
+    "net loss is never burn",
+    "burn enters only as an assumed use under the burn_basis assumption, which names its evidence period or states a scenario value",
+    "a negative burn (cash generation) or an unknown burn yields no runway figure; periods stop at the scenario horizon_end",
+    "an unknown burn makes later closing balances unknown and adds a named Unknown"
+  ],
+  "flow_rules": [
+    "obligations enter periods only when dated; an undated obligation is a timing Unknown",
+    "an assumption never adds cash: assumed or scenario financing proceeds are conditional sources naming the action, so they never enter a balance identity; assumed burn is an assumed use and does",
+    "gross proceeds and the fee are separate flows with the same condition; net proceeds are reported, never substituted for gross",
+    "a conversion relieves the matching maturity use and creates no source",
+    "an undrawn conditional commitment is a conditional source, never cash on hand",
+    "gap = max(0, minimum_liquidity - closing_balance) when both are known on the same basis; otherwise unknown"
+  ],
+  "owners": [
+    {
+      "owner_id": "issuer_state_contracts",
+      "path": "engine/capital_structure/issuer_state_contracts.py",
+      "observed_sha256": "5e4b8a0335b516fda7afb523263130f328d3110d11f51d9f423eb446e72c9bf8",
+      "role": "Frozen C0 contract: FinancialInputs, CommitmentInputs, Flow, FundingPeriod, FundingSchedule, CASH_BASES",
+      "state": "frozen_contract"
+    },
+    {
+      "owner_id": "fundamental_forensics_catalog",
+      "path": "config/fundamental_forensics/metrics/v1/metric_catalog.yaml",
+      "observed_sha256": "195f8df1a278e79e63051718c2e491a64bbac2b9425db5fcfe687a3b558b45a0",
+      "role": "FIF metric catalog (50 metrics); the only financial cell owner",
+      "state": "existing_owner_not_rebuilt"
+    },
+    {
+      "owner_id": "fundamental_forensics_mappings",
+      "path": "config/fundamental_forensics/metrics/v1/mappings/core.yaml",
+      "observed_sha256": "ccfceb0f0181877a14992691a410e28ebf53fb6abf24765d0bd820fcbc9d9bc0",
+      "role": "FIF concept alias mapping",
+      "state": "existing_owner_not_rebuilt"
+    },
+    {
+      "owner_id": "fundamental_forensics_query",
+      "path": "engine/fundamental_forensics/query.py",
+      "observed_sha256": "b99fffc9ba2826daceb54514a9944c4da60be5d26452363094edb3d6e587b79c",
+      "role": "FIF metric-cell receipt graph (fundamental_forensics.metric_cell_receipt/v1); its digest becomes source.receipt_sha256",
+      "state": "existing_owner_not_rebuilt"
+    },
+    {
+      "owner_id": "covenant_terms",
+      "path": "engine/capital_structure/covenant_terms.py",
+      "observed_sha256": "39ebe9a9db0c451af78a9aad215dcdb2be93fcbe587f3b274080f90b43d98f4b",
+      "role": "Covenant term observations: 4 ratios, minimum_liquidity_amount, restricted_payments_basket_amount",
+      "state": "code_only"
+    },
+    {
+      "owner_id": "document_terms",
+      "path": "engine/capital_structure/document_terms.py",
+      "observed_sha256": "be4648a2c584f72d68442bdf554c2e67e152c1a56a0d9183254b0cf722359032",
+      "role": "Registration fee table rows: amount_to_be_registered, offering prices, registration_fee, filing_fee_rate",
+      "state": "code_only"
+    }
+  ],
+  "limitations": [
+    {
+      "limit_id": "financials_contract_has_no_schema",
+      "fact": "COMPATIBLE_INPUT_SCHEMAS['financials'] is () on main at observation, so no financial fact can bind until C0 delta #9266 lands",
+      "evidence": "issuer_state_contracts.py COMPATIBLE_INPUT_SCHEMAS; probe ContractViolation"
+    },
+    {
+      "limit_id": "no_restricted_cash_owner",
+      "fact": "No FIF metric or CS term emits restricted cash",
+      "evidence": "metric_catalog.yaml 50 metric ids; covenant_terms COVENANT_TERM_NAMES; document_terms TERM_NAMES"
+    },
+    {
+      "limit_id": "no_maturity_owner",
+      "fact": "No owner emits dated debt maturities, accrued interest or committed expenditures",
+      "evidence": "document_terms TERM_NAMES are fee-table fields only; FIF debt metrics are instant balances"
+    },
+    {
+      "limit_id": "no_revolver_owner",
+      "fact": "No owner emits facility size, draws or availability",
+      "evidence": "COVENANT_TERM_NAMES"
+    },
+    {
+      "limit_id": "covenant_monetary_value_unnormalized",
+      "fact": "covenant_terms emits minimum_liquidity_amount with normalized.value null, raw clause text, unit label 'ratio'",
+      "evidence": "covenant_terms.py reported/normalized construction for non-schedule terms"
+    },
+    {
+      "limit_id": "one_commitment_family_per_call",
+      "fact": "CommitmentInputs takes one binding: document_terms or covenant_terms",
+      "evidence": "CommitmentInputs.__post_init__"
+    },
+    {
+      "limit_id": "unit_test_not_provider_proof",
+      "fact": "A green F1 unit test proves the arithmetic and refusals on constructed inputs, not that any owner produced those inputs",
+      "evidence": "A49"
+    }
+  ],
+  "owner_actions": [
+    {
+      "action": "Land C0 delta #9266 adding 'capital_structure.financial_item_observation.v1' to COMPATIBLE_INPUT_SCHEMAS['financials']",
+      "owner": "seat",
+      "performed_by_f0": false
+    },
+    {
+      "action": "Emit a normalized usd value for monetary covenant terms",
+      "owner": "covenant_terms owner",
+      "performed_by_f0": false
+    },
+    {
+      "action": "Build owners for restricted cash, maturities, accrued interest, committed expenditures and revolver availability",
+      "owner": "future CS task (not FIF)",
+      "performed_by_f0": false
+    },
+    {
+      "action": "An adapter from FIF metric-cell receipts to financial_item_observation.v1 records",
+      "owner": "F1 or a later CS task, after the C0 delta",
+      "performed_by_f0": false
+    }
+  ],
+  "forbidden": [
+    "rebuild FIF or add a financial collector",
+    "collapse items into one headline cash or net-debt figure",
+    "treat net loss as burn or report infinite runway",
+    "count an assumption, a conditional commitment or registered capacity as cash",
+    "parse raw covenant clause text in the consumer",
+    "emit probability, score or sizing"
+  ]
+}

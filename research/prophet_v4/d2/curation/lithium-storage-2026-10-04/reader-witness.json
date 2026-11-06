@@ -1,0 +1,2490 @@
+{
+  "cutoffs": {
+    "admission": "2026-10-04T00:51:55.181207Z",
+    "current_utc_day": "2026-10-04",
+    "previous_utc_day": "2026-10-03"
+  },
+  "daily_cutoff_limit": "A previous UTC day hides both new rows; the admission UTC day exposes rejected decisions. Same-day before/after admission is not expressible by this reader.",
+  "fixture": {
+    "edges": [],
+    "node_lifecycle": [],
+    "node_sources": [
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_301096.json",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/ltheme_ths_301174.json",
+      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/exports/theme_grid_electrification.json"
+    ],
+    "nodes": [
+      {
+        "external_ids": {
+          "ths_code": "301096"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "钠离子电池",
+        "node_id": "ltheme:ths:301096",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "钠离子电池",
+          "source_local_id": "301096",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      {
+        "external_ids": {
+          "ths_code": "301174"
+        },
+        "kind": "local_theme",
+        "market_scope": "cn",
+        "merged_into": null,
+        "name_en": null,
+        "name_zh": "钒电池",
+        "node_id": "ltheme:ths:301174",
+        "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+        "source_meta": {
+          "grain": "ths_concept",
+          "key_aliases": [],
+          "market": "cn",
+          "parent_source_key": null,
+          "parent_source_label": null,
+          "rights_family": "ths_concepts",
+          "source_description": null,
+          "source_family": "ths_concepts",
+          "source_label": "钒电池",
+          "source_local_id": "301174",
+          "supergroup_index": null
+        },
+        "status": "canonical",
+        "tier": null
+      },
+      {
+        "external_ids": {
+          "foresight_id": "grid_electrification"
+        },
+        "kind": "theme",
+        "market_scope": "global",
+        "merged_into": null,
+        "name_en": "Grid & Electrification",
+        "name_zh": "电网与电气化",
+        "node_id": "theme:grid_electrification",
+        "provenance": "crosswalk:config/theme_crosswalk.yml",
+        "source_meta": null,
+        "status": "canonical",
+        "tier": "theme"
+      }
+    ],
+    "warning": "Frozen endpoint projections and empty edge fixture are deliberately isolated. RELATION_ABSENT/UNMAPPED here proves reader behavior only; no current production graph census or natural materialization is claimed."
+  },
+  "observed_at": "2026-10-04T00:53:21.218523Z",
+  "proposal_review_results": [
+    {
+      "asof": "2026-10-04",
+      "authority_ceiling": "research_internal_only",
+      "availability": {
+        "reason": "exact proposal is unavailable at the cutoff",
+        "state": "PROPOSAL_NOT_FOUND"
+      },
+      "endpoints": [],
+      "knowledge_cutoff": "2026-10-03",
+      "limitations": [
+        "read-only evidence review; no adjudication or graph write",
+        "proposal status and relation presence are independent facts",
+        "overlap evidence is not proof of semantic expression",
+        "endpoint rights are current registry receipts, not historical authorization",
+        "unsupported subjects remain unresolved; no label inference"
+      ],
+      "proposal": null,
+      "proposal_id": "prop:de400c2bb566c04c",
+      "relation": {
+        "edge_ids": [],
+        "source_node_id": null,
+        "state": "NOT_EVALUATED",
+        "target_node_id": null,
+        "type": null
+      },
+      "schema": "gmi.theme_ontology_proposal_review/v1"
+    },
+    {
+      "asof": "2026-10-04",
+      "authority_ceiling": "research_internal_only",
+      "availability": {
+        "reason": "exact proposal is unavailable at the cutoff",
+        "state": "PROPOSAL_NOT_FOUND"
+      },
+      "endpoints": [],
+      "knowledge_cutoff": "2026-10-03",
+      "limitations": [
+        "read-only evidence review; no adjudication or graph write",
+        "proposal status and relation presence are independent facts",
+        "overlap evidence is not proof of semantic expression",
+        "endpoint rights are current registry receipts, not historical authorization",
+        "unsupported subjects remain unresolved; no label inference"
+      ],
+      "proposal": null,
+      "proposal_id": "prop:a1b11d839c5d789d",
+      "relation": {
+        "edge_ids": [],
+        "source_node_id": null,
+        "state": "NOT_EVALUATED",
+        "target_node_id": null,
+        "type": null
+      },
+      "schema": "gmi.theme_ontology_proposal_review/v1"
+    },
+    {
+      "asof": "2026-10-04",
+      "authority_ceiling": "research_internal_only",
+      "availability": {
+        "reason": null,
+        "state": "OK"
+      },
+      "endpoints": [
+        {
+          "asof": "2026-10-04",
+          "authority_ceiling": "research_internal_only",
+          "availability": {
+            "reason": null,
+            "state": "OK"
+          },
+          "canonical_mapping": {
+            "state": "UNMAPPED",
+            "theme_node_ids": []
+          },
+          "counts": {
+            "future_beliefs_excluded": 0,
+            "proposals": 1,
+            "relations": 0
+          },
+          "curation": {
+            "counts": {
+              "proposed": 0,
+              "ratified": 0,
+              "rejected": 1
+            },
+            "proposal_ids": [
+              "prop:de400c2bb566c04c"
+            ],
+            "state": "REJECTED"
+          },
+          "knowledge_cutoff": "2026-10-04",
+          "limitations": [
+            "exact node_id only; labels are never fuzzy-matched",
+            "probation proposals have zero graph authority",
+            "internal research projection; public display still requires the cited rights receipts",
+            "no ranking, scoring, selection, trade, or ThemeState authority"
+          ],
+          "node_id": "ltheme:ths:301096",
+          "ordering": "type,direction,peer_node_id,edge_id; never score",
+          "proposals": [
+            {
+              "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+              "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+              "created": "2026-10-04T00:51:55.181207Z",
+              "evidence": {
+                "asof": "2026-09-21",
+                "canonical_queue_admission": true,
+                "control_comparisons": [
+                  {
+                    "control_count": 15,
+                    "control_node_id": "ltheme:ths:306380",
+                    "jaccard": 0.06060606060606061,
+                    "node_id": "ltheme:ths:301096",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [
+                      "co:cn:002407.SZ",
+                      "co:cn:300568.SZ"
+                    ],
+                    "shared_count": 2,
+                    "source_count": 20,
+                    "state": "DESCRIPTIVE_ONLY"
+                  },
+                  {
+                    "control_count": 16,
+                    "control_node_id": "ltheme:ths:308991",
+                    "jaccard": 0.0,
+                    "node_id": "ltheme:ths:301096",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [],
+                    "shared_count": 0,
+                    "source_count": 20,
+                    "state": "DESCRIPTIVE_ONLY"
+                  }
+                ],
+                "curation_admission": {
+                  "applied_curator": "/root/evaluation_capture",
+                  "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+                  "canonical_queue_admission": true,
+                  "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+                  "escalation_authority": false,
+                  "full_d2d_accepted": false,
+                  "gate_authority": false,
+                  "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+                  "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+                  "independent_reviewer": "/root/d2d_curation",
+                  "natural_graph_consumption_proven": false,
+                  "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+                  "origination_authority": false,
+                  "parent_commission": "Astra parent /root",
+                  "parent_decision_at": "2026-10-04T00:38:00Z",
+                  "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+                  "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+                  "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+                  "queue_path": "data/theme_graph/probation/proposals.jsonl",
+                  "rank_authority": false,
+                  "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+                  "rights_ancestry": {
+                    "auth_class": "receipted_scrape",
+                    "family": "ths_concepts",
+                    "house_curation_does_not_erase_source_parents": true,
+                    "public_emission_authorized": false,
+                    "rights_class": "unresolved"
+                  },
+                  "size_authority": false,
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+                  "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+                },
+                "draft_ancestry": {
+                  "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+                  "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+                  "original_record": {
+                    "adjudicated_at": null,
+                    "adjudication_note": null,
+                    "created": "2026-09-21",
+                    "evidence": {
+                      "asof": "2026-09-21",
+                      "canonical_queue_admission": false,
+                      "control_comparisons": [
+                        {
+                          "control_count": 15,
+                          "control_node_id": "ltheme:ths:306380",
+                          "jaccard": 0.06060606060606061,
+                          "node_id": "ltheme:ths:301096",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [
+                            "co:cn:002407.SZ",
+                            "co:cn:300568.SZ"
+                          ],
+                          "shared_count": 2,
+                          "source_count": 20,
+                          "state": "DESCRIPTIVE_ONLY"
+                        },
+                        {
+                          "control_count": 16,
+                          "control_node_id": "ltheme:ths:308991",
+                          "jaccard": 0.0,
+                          "node_id": "ltheme:ths:301096",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [],
+                          "shared_count": 0,
+                          "source_count": 20,
+                          "state": "DESCRIPTIVE_ONLY"
+                        }
+                      ],
+                      "knowledge_cutoff": "2026-09-21",
+                      "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                      "primary_source_ids": [
+                        "THS_DEF_301096",
+                        "DOE_SODIUM_GRID_2017",
+                        "DOE_SODIUM_EV_2023"
+                      ],
+                      "recorded_company_count": 20,
+                      "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                      "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                      "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+                      "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+                    },
+                    "evidence_refs": [
+                      "ev:71d2e310f882057e",
+                      "ev:93906972aca25852",
+                      "ev:a8cd1b7326fe6ff8",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+                    ],
+                    "kind": "mapping",
+                    "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+                    "proposal_id": "prop:de400c2bb566c04c",
+                    "proposed_by": "llm_proposed",
+                    "ratified_by": null,
+                    "status": "proposed",
+                    "subject": {
+                      "canonical_theme": "theme:grid_electrification",
+                      "local_theme": "ltheme:ths:301096"
+                    }
+                  },
+                  "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+                },
+                "draft_created": "2026-09-21",
+                "knowledge_cutoff": "2026-09-21",
+                "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                "primary_source_ids": [
+                  "THS_DEF_301096",
+                  "DOE_SODIUM_GRID_2017",
+                  "DOE_SODIUM_EV_2023"
+                ],
+                "recorded_company_count": 20,
+                "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+                "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+              },
+              "evidence_refs": [
+                "ev:71d2e310f882057e",
+                "ev:93906972aca25852",
+                "ev:a8cd1b7326fe6ff8",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+              ],
+              "kind": "mapping",
+              "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+              "proposal_id": "prop:de400c2bb566c04c",
+              "proposed_by": "llm_proposed",
+              "ratified_by": null,
+              "status": "rejected",
+              "subject": {
+                "canonical_theme": "theme:grid_electrification",
+                "local_theme": "ltheme:ths:301096"
+              },
+              "truth_status": "PROPOSAL_ONLY"
+            }
+          ],
+          "relations": [],
+          "schema": "gmi.theme_ontology_neighborhood/v1",
+          "subject": {
+            "external_ids": {
+              "ths_code": "301096"
+            },
+            "kind": "local_theme",
+            "market_scope": "cn",
+            "merged_into": null,
+            "name_en": null,
+            "name_zh": "钠离子电池",
+            "node_id": "ltheme:ths:301096",
+            "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+            "source_meta": {
+              "grain": "ths_concept",
+              "key_aliases": [],
+              "market": "cn",
+              "parent_source_key": null,
+              "parent_source_label": null,
+              "rights_family": "ths_concepts",
+              "source_description": null,
+              "source_family": "ths_concepts",
+              "source_label": "钠离子电池",
+              "source_local_id": "301096",
+              "supergroup_index": null
+            },
+            "status": "canonical",
+            "tier": null
+          }
+        },
+        {
+          "asof": "2026-10-04",
+          "authority_ceiling": "research_internal_only",
+          "availability": {
+            "reason": null,
+            "state": "OK"
+          },
+          "canonical_mapping": {
+            "state": "SUBJECT_IS_CANONICAL",
+            "theme_node_ids": [
+              "theme:grid_electrification"
+            ]
+          },
+          "counts": {
+            "future_beliefs_excluded": 0,
+            "proposals": 2,
+            "relations": 0
+          },
+          "curation": {
+            "counts": {
+              "proposed": 0,
+              "ratified": 0,
+              "rejected": 2
+            },
+            "proposal_ids": [
+              "prop:a1b11d839c5d789d",
+              "prop:de400c2bb566c04c"
+            ],
+            "state": "REJECTED"
+          },
+          "knowledge_cutoff": "2026-10-04",
+          "limitations": [
+            "exact node_id only; labels are never fuzzy-matched",
+            "probation proposals have zero graph authority",
+            "internal research projection; public display still requires the cited rights receipts",
+            "no ranking, scoring, selection, trade, or ThemeState authority"
+          ],
+          "node_id": "theme:grid_electrification",
+          "ordering": "type,direction,peer_node_id,edge_id; never score",
+          "proposals": [
+            {
+              "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+              "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+              "created": "2026-10-04T00:51:55.181207Z",
+              "evidence": {
+                "asof": "2026-09-21",
+                "canonical_queue_admission": true,
+                "control_comparisons": [
+                  {
+                    "control_count": 15,
+                    "control_node_id": "ltheme:ths:306380",
+                    "jaccard": 0.03333333333333333,
+                    "node_id": "ltheme:ths:301174",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [
+                      "co:cn:603067.SS"
+                    ],
+                    "shared_count": 1,
+                    "source_count": 16,
+                    "state": "DESCRIPTIVE_ONLY"
+                  },
+                  {
+                    "control_count": 16,
+                    "control_node_id": "ltheme:ths:308991",
+                    "jaccard": 0.0,
+                    "node_id": "ltheme:ths:301174",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [],
+                    "shared_count": 0,
+                    "source_count": 16,
+                    "state": "DESCRIPTIVE_ONLY"
+                  }
+                ],
+                "curation_admission": {
+                  "applied_curator": "/root/evaluation_capture",
+                  "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+                  "canonical_queue_admission": true,
+                  "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+                  "escalation_authority": false,
+                  "full_d2d_accepted": false,
+                  "gate_authority": false,
+                  "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+                  "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+                  "independent_reviewer": "/root/d2d_curation",
+                  "natural_graph_consumption_proven": false,
+                  "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+                  "origination_authority": false,
+                  "parent_commission": "Astra parent /root",
+                  "parent_decision_at": "2026-10-04T00:38:00Z",
+                  "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+                  "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+                  "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+                  "queue_path": "data/theme_graph/probation/proposals.jsonl",
+                  "rank_authority": false,
+                  "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+                  "rights_ancestry": {
+                    "auth_class": "receipted_scrape",
+                    "family": "ths_concepts",
+                    "house_curation_does_not_erase_source_parents": true,
+                    "public_emission_authorized": false,
+                    "rights_class": "unresolved"
+                  },
+                  "size_authority": false,
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+                  "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+                },
+                "draft_ancestry": {
+                  "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+                  "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+                  "original_record": {
+                    "adjudicated_at": null,
+                    "adjudication_note": null,
+                    "created": "2026-09-21",
+                    "evidence": {
+                      "asof": "2026-09-21",
+                      "canonical_queue_admission": false,
+                      "control_comparisons": [
+                        {
+                          "control_count": 15,
+                          "control_node_id": "ltheme:ths:306380",
+                          "jaccard": 0.03333333333333333,
+                          "node_id": "ltheme:ths:301174",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [
+                            "co:cn:603067.SS"
+                          ],
+                          "shared_count": 1,
+                          "source_count": 16,
+                          "state": "DESCRIPTIVE_ONLY"
+                        },
+                        {
+                          "control_count": 16,
+                          "control_node_id": "ltheme:ths:308991",
+                          "jaccard": 0.0,
+                          "node_id": "ltheme:ths:301174",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [],
+                          "shared_count": 0,
+                          "source_count": 16,
+                          "state": "DESCRIPTIVE_ONLY"
+                        }
+                      ],
+                      "knowledge_cutoff": "2026-09-21",
+                      "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                      "primary_source_ids": [
+                        "THS_DEF_301174",
+                        "DOE_VANADIUM_GRID_2017"
+                      ],
+                      "recorded_company_count": 16,
+                      "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                      "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                      "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+                      "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+                    },
+                    "evidence_refs": [
+                      "ev:71d2e310f882057e",
+                      "ev:93906972aca25852",
+                      "ev:a8cd1b7326fe6ff8",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+                    ],
+                    "kind": "mapping",
+                    "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+                    "proposal_id": "prop:a1b11d839c5d789d",
+                    "proposed_by": "llm_proposed",
+                    "ratified_by": null,
+                    "status": "proposed",
+                    "subject": {
+                      "canonical_theme": "theme:grid_electrification",
+                      "local_theme": "ltheme:ths:301174"
+                    }
+                  },
+                  "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+                },
+                "draft_created": "2026-09-21",
+                "knowledge_cutoff": "2026-09-21",
+                "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                "primary_source_ids": [
+                  "THS_DEF_301174",
+                  "DOE_VANADIUM_GRID_2017"
+                ],
+                "recorded_company_count": 16,
+                "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+                "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+              },
+              "evidence_refs": [
+                "ev:71d2e310f882057e",
+                "ev:93906972aca25852",
+                "ev:a8cd1b7326fe6ff8",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+              ],
+              "kind": "mapping",
+              "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+              "proposal_id": "prop:a1b11d839c5d789d",
+              "proposed_by": "llm_proposed",
+              "ratified_by": null,
+              "status": "rejected",
+              "subject": {
+                "canonical_theme": "theme:grid_electrification",
+                "local_theme": "ltheme:ths:301174"
+              },
+              "truth_status": "PROPOSAL_ONLY"
+            },
+            {
+              "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+              "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+              "created": "2026-10-04T00:51:55.181207Z",
+              "evidence": {
+                "asof": "2026-09-21",
+                "canonical_queue_admission": true,
+                "control_comparisons": [
+                  {
+                    "control_count": 15,
+                    "control_node_id": "ltheme:ths:306380",
+                    "jaccard": 0.06060606060606061,
+                    "node_id": "ltheme:ths:301096",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [
+                      "co:cn:002407.SZ",
+                      "co:cn:300568.SZ"
+                    ],
+                    "shared_count": 2,
+                    "source_count": 20,
+                    "state": "DESCRIPTIVE_ONLY"
+                  },
+                  {
+                    "control_count": 16,
+                    "control_node_id": "ltheme:ths:308991",
+                    "jaccard": 0.0,
+                    "node_id": "ltheme:ths:301096",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [],
+                    "shared_count": 0,
+                    "source_count": 20,
+                    "state": "DESCRIPTIVE_ONLY"
+                  }
+                ],
+                "curation_admission": {
+                  "applied_curator": "/root/evaluation_capture",
+                  "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+                  "canonical_queue_admission": true,
+                  "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+                  "escalation_authority": false,
+                  "full_d2d_accepted": false,
+                  "gate_authority": false,
+                  "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+                  "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+                  "independent_reviewer": "/root/d2d_curation",
+                  "natural_graph_consumption_proven": false,
+                  "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+                  "origination_authority": false,
+                  "parent_commission": "Astra parent /root",
+                  "parent_decision_at": "2026-10-04T00:38:00Z",
+                  "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+                  "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+                  "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+                  "queue_path": "data/theme_graph/probation/proposals.jsonl",
+                  "rank_authority": false,
+                  "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+                  "rights_ancestry": {
+                    "auth_class": "receipted_scrape",
+                    "family": "ths_concepts",
+                    "house_curation_does_not_erase_source_parents": true,
+                    "public_emission_authorized": false,
+                    "rights_class": "unresolved"
+                  },
+                  "size_authority": false,
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+                  "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+                },
+                "draft_ancestry": {
+                  "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+                  "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+                  "original_record": {
+                    "adjudicated_at": null,
+                    "adjudication_note": null,
+                    "created": "2026-09-21",
+                    "evidence": {
+                      "asof": "2026-09-21",
+                      "canonical_queue_admission": false,
+                      "control_comparisons": [
+                        {
+                          "control_count": 15,
+                          "control_node_id": "ltheme:ths:306380",
+                          "jaccard": 0.06060606060606061,
+                          "node_id": "ltheme:ths:301096",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [
+                            "co:cn:002407.SZ",
+                            "co:cn:300568.SZ"
+                          ],
+                          "shared_count": 2,
+                          "source_count": 20,
+                          "state": "DESCRIPTIVE_ONLY"
+                        },
+                        {
+                          "control_count": 16,
+                          "control_node_id": "ltheme:ths:308991",
+                          "jaccard": 0.0,
+                          "node_id": "ltheme:ths:301096",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [],
+                          "shared_count": 0,
+                          "source_count": 20,
+                          "state": "DESCRIPTIVE_ONLY"
+                        }
+                      ],
+                      "knowledge_cutoff": "2026-09-21",
+                      "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                      "primary_source_ids": [
+                        "THS_DEF_301096",
+                        "DOE_SODIUM_GRID_2017",
+                        "DOE_SODIUM_EV_2023"
+                      ],
+                      "recorded_company_count": 20,
+                      "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                      "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                      "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+                      "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+                    },
+                    "evidence_refs": [
+                      "ev:71d2e310f882057e",
+                      "ev:93906972aca25852",
+                      "ev:a8cd1b7326fe6ff8",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+                    ],
+                    "kind": "mapping",
+                    "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+                    "proposal_id": "prop:de400c2bb566c04c",
+                    "proposed_by": "llm_proposed",
+                    "ratified_by": null,
+                    "status": "proposed",
+                    "subject": {
+                      "canonical_theme": "theme:grid_electrification",
+                      "local_theme": "ltheme:ths:301096"
+                    }
+                  },
+                  "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+                },
+                "draft_created": "2026-09-21",
+                "knowledge_cutoff": "2026-09-21",
+                "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                "primary_source_ids": [
+                  "THS_DEF_301096",
+                  "DOE_SODIUM_GRID_2017",
+                  "DOE_SODIUM_EV_2023"
+                ],
+                "recorded_company_count": 20,
+                "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+                "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+              },
+              "evidence_refs": [
+                "ev:71d2e310f882057e",
+                "ev:93906972aca25852",
+                "ev:a8cd1b7326fe6ff8",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+              ],
+              "kind": "mapping",
+              "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+              "proposal_id": "prop:de400c2bb566c04c",
+              "proposed_by": "llm_proposed",
+              "ratified_by": null,
+              "status": "rejected",
+              "subject": {
+                "canonical_theme": "theme:grid_electrification",
+                "local_theme": "ltheme:ths:301096"
+              },
+              "truth_status": "PROPOSAL_ONLY"
+            }
+          ],
+          "relations": [],
+          "schema": "gmi.theme_ontology_neighborhood/v1",
+          "subject": {
+            "external_ids": {
+              "foresight_id": "grid_electrification"
+            },
+            "kind": "theme",
+            "market_scope": "global",
+            "merged_into": null,
+            "name_en": "Grid & Electrification",
+            "name_zh": "电网与电气化",
+            "node_id": "theme:grid_electrification",
+            "provenance": "crosswalk:config/theme_crosswalk.yml",
+            "source_meta": null,
+            "status": "canonical",
+            "tier": "theme"
+          }
+        }
+      ],
+      "knowledge_cutoff": "2026-10-04",
+      "limitations": [
+        "read-only evidence review; no adjudication or graph write",
+        "proposal status and relation presence are independent facts",
+        "overlap evidence is not proof of semantic expression",
+        "endpoint rights are current registry receipts, not historical authorization",
+        "unsupported subjects remain unresolved; no label inference"
+      ],
+      "proposal": {
+        "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+        "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+        "created": "2026-10-04T00:51:55.181207Z",
+        "evidence": {
+          "asof": "2026-09-21",
+          "canonical_queue_admission": true,
+          "control_comparisons": [
+            {
+              "control_count": 15,
+              "control_node_id": "ltheme:ths:306380",
+              "jaccard": 0.06060606060606061,
+              "node_id": "ltheme:ths:301096",
+              "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+              "semantic_mapping_proven": false,
+              "shared_company_node_ids": [
+                "co:cn:002407.SZ",
+                "co:cn:300568.SZ"
+              ],
+              "shared_count": 2,
+              "source_count": 20,
+              "state": "DESCRIPTIVE_ONLY"
+            },
+            {
+              "control_count": 16,
+              "control_node_id": "ltheme:ths:308991",
+              "jaccard": 0.0,
+              "node_id": "ltheme:ths:301096",
+              "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+              "semantic_mapping_proven": false,
+              "shared_company_node_ids": [],
+              "shared_count": 0,
+              "source_count": 20,
+              "state": "DESCRIPTIVE_ONLY"
+            }
+          ],
+          "curation_admission": {
+            "applied_curator": "/root/evaluation_capture",
+            "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+            "canonical_queue_admission": true,
+            "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+            "escalation_authority": false,
+            "full_d2d_accepted": false,
+            "gate_authority": false,
+            "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+            "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+            "independent_reviewer": "/root/d2d_curation",
+            "natural_graph_consumption_proven": false,
+            "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+            "origination_authority": false,
+            "parent_commission": "Astra parent /root",
+            "parent_decision_at": "2026-10-04T00:38:00Z",
+            "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+            "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+            "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+            "queue_path": "data/theme_graph/probation/proposals.jsonl",
+            "rank_authority": false,
+            "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+            "rights_ancestry": {
+              "auth_class": "receipted_scrape",
+              "family": "ths_concepts",
+              "house_curation_does_not_erase_source_parents": true,
+              "public_emission_authorized": false,
+              "rights_class": "unresolved"
+            },
+            "size_authority": false,
+            "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+            "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+          },
+          "draft_ancestry": {
+            "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+            "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+            "original_record": {
+              "adjudicated_at": null,
+              "adjudication_note": null,
+              "created": "2026-09-21",
+              "evidence": {
+                "asof": "2026-09-21",
+                "canonical_queue_admission": false,
+                "control_comparisons": [
+                  {
+                    "control_count": 15,
+                    "control_node_id": "ltheme:ths:306380",
+                    "jaccard": 0.06060606060606061,
+                    "node_id": "ltheme:ths:301096",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [
+                      "co:cn:002407.SZ",
+                      "co:cn:300568.SZ"
+                    ],
+                    "shared_count": 2,
+                    "source_count": 20,
+                    "state": "DESCRIPTIVE_ONLY"
+                  },
+                  {
+                    "control_count": 16,
+                    "control_node_id": "ltheme:ths:308991",
+                    "jaccard": 0.0,
+                    "node_id": "ltheme:ths:301096",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [],
+                    "shared_count": 0,
+                    "source_count": 20,
+                    "state": "DESCRIPTIVE_ONLY"
+                  }
+                ],
+                "knowledge_cutoff": "2026-09-21",
+                "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                "primary_source_ids": [
+                  "THS_DEF_301096",
+                  "DOE_SODIUM_GRID_2017",
+                  "DOE_SODIUM_EV_2023"
+                ],
+                "recorded_company_count": 20,
+                "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+                "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+              },
+              "evidence_refs": [
+                "ev:71d2e310f882057e",
+                "ev:93906972aca25852",
+                "ev:a8cd1b7326fe6ff8",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+              ],
+              "kind": "mapping",
+              "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+              "proposal_id": "prop:de400c2bb566c04c",
+              "proposed_by": "llm_proposed",
+              "ratified_by": null,
+              "status": "proposed",
+              "subject": {
+                "canonical_theme": "theme:grid_electrification",
+                "local_theme": "ltheme:ths:301096"
+              }
+            },
+            "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+            "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+          },
+          "draft_created": "2026-09-21",
+          "knowledge_cutoff": "2026-09-21",
+          "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+          "primary_source_ids": [
+            "THS_DEF_301096",
+            "DOE_SODIUM_GRID_2017",
+            "DOE_SODIUM_EV_2023"
+          ],
+          "recorded_company_count": 20,
+          "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+          "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+          "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+          "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+        },
+        "evidence_refs": [
+          "ev:71d2e310f882057e",
+          "ev:93906972aca25852",
+          "ev:a8cd1b7326fe6ff8",
+          "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+          "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+        ],
+        "kind": "mapping",
+        "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+        "proposal_id": "prop:de400c2bb566c04c",
+        "proposed_by": "llm_proposed",
+        "ratified_by": null,
+        "status": "rejected",
+        "subject": {
+          "canonical_theme": "theme:grid_electrification",
+          "local_theme": "ltheme:ths:301096"
+        },
+        "truth_status": "PROPOSAL_ONLY"
+      },
+      "proposal_id": "prop:de400c2bb566c04c",
+      "relation": {
+        "edge_ids": [],
+        "source_node_id": "ltheme:ths:301096",
+        "state": "RELATION_ABSENT",
+        "target_node_id": "theme:grid_electrification",
+        "type": "EXPRESSES"
+      },
+      "schema": "gmi.theme_ontology_proposal_review/v1"
+    },
+    {
+      "asof": "2026-10-04",
+      "authority_ceiling": "research_internal_only",
+      "availability": {
+        "reason": null,
+        "state": "OK"
+      },
+      "endpoints": [
+        {
+          "asof": "2026-10-04",
+          "authority_ceiling": "research_internal_only",
+          "availability": {
+            "reason": null,
+            "state": "OK"
+          },
+          "canonical_mapping": {
+            "state": "UNMAPPED",
+            "theme_node_ids": []
+          },
+          "counts": {
+            "future_beliefs_excluded": 0,
+            "proposals": 1,
+            "relations": 0
+          },
+          "curation": {
+            "counts": {
+              "proposed": 0,
+              "ratified": 0,
+              "rejected": 1
+            },
+            "proposal_ids": [
+              "prop:a1b11d839c5d789d"
+            ],
+            "state": "REJECTED"
+          },
+          "knowledge_cutoff": "2026-10-04",
+          "limitations": [
+            "exact node_id only; labels are never fuzzy-matched",
+            "probation proposals have zero graph authority",
+            "internal research projection; public display still requires the cited rights receipts",
+            "no ranking, scoring, selection, trade, or ThemeState authority"
+          ],
+          "node_id": "ltheme:ths:301174",
+          "ordering": "type,direction,peer_node_id,edge_id; never score",
+          "proposals": [
+            {
+              "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+              "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+              "created": "2026-10-04T00:51:55.181207Z",
+              "evidence": {
+                "asof": "2026-09-21",
+                "canonical_queue_admission": true,
+                "control_comparisons": [
+                  {
+                    "control_count": 15,
+                    "control_node_id": "ltheme:ths:306380",
+                    "jaccard": 0.03333333333333333,
+                    "node_id": "ltheme:ths:301174",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [
+                      "co:cn:603067.SS"
+                    ],
+                    "shared_count": 1,
+                    "source_count": 16,
+                    "state": "DESCRIPTIVE_ONLY"
+                  },
+                  {
+                    "control_count": 16,
+                    "control_node_id": "ltheme:ths:308991",
+                    "jaccard": 0.0,
+                    "node_id": "ltheme:ths:301174",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [],
+                    "shared_count": 0,
+                    "source_count": 16,
+                    "state": "DESCRIPTIVE_ONLY"
+                  }
+                ],
+                "curation_admission": {
+                  "applied_curator": "/root/evaluation_capture",
+                  "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+                  "canonical_queue_admission": true,
+                  "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+                  "escalation_authority": false,
+                  "full_d2d_accepted": false,
+                  "gate_authority": false,
+                  "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+                  "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+                  "independent_reviewer": "/root/d2d_curation",
+                  "natural_graph_consumption_proven": false,
+                  "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+                  "origination_authority": false,
+                  "parent_commission": "Astra parent /root",
+                  "parent_decision_at": "2026-10-04T00:38:00Z",
+                  "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+                  "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+                  "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+                  "queue_path": "data/theme_graph/probation/proposals.jsonl",
+                  "rank_authority": false,
+                  "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+                  "rights_ancestry": {
+                    "auth_class": "receipted_scrape",
+                    "family": "ths_concepts",
+                    "house_curation_does_not_erase_source_parents": true,
+                    "public_emission_authorized": false,
+                    "rights_class": "unresolved"
+                  },
+                  "size_authority": false,
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+                  "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+                },
+                "draft_ancestry": {
+                  "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+                  "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+                  "original_record": {
+                    "adjudicated_at": null,
+                    "adjudication_note": null,
+                    "created": "2026-09-21",
+                    "evidence": {
+                      "asof": "2026-09-21",
+                      "canonical_queue_admission": false,
+                      "control_comparisons": [
+                        {
+                          "control_count": 15,
+                          "control_node_id": "ltheme:ths:306380",
+                          "jaccard": 0.03333333333333333,
+                          "node_id": "ltheme:ths:301174",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [
+                            "co:cn:603067.SS"
+                          ],
+                          "shared_count": 1,
+                          "source_count": 16,
+                          "state": "DESCRIPTIVE_ONLY"
+                        },
+                        {
+                          "control_count": 16,
+                          "control_node_id": "ltheme:ths:308991",
+                          "jaccard": 0.0,
+                          "node_id": "ltheme:ths:301174",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [],
+                          "shared_count": 0,
+                          "source_count": 16,
+                          "state": "DESCRIPTIVE_ONLY"
+                        }
+                      ],
+                      "knowledge_cutoff": "2026-09-21",
+                      "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                      "primary_source_ids": [
+                        "THS_DEF_301174",
+                        "DOE_VANADIUM_GRID_2017"
+                      ],
+                      "recorded_company_count": 16,
+                      "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                      "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                      "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+                      "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+                    },
+                    "evidence_refs": [
+                      "ev:71d2e310f882057e",
+                      "ev:93906972aca25852",
+                      "ev:a8cd1b7326fe6ff8",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+                    ],
+                    "kind": "mapping",
+                    "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+                    "proposal_id": "prop:a1b11d839c5d789d",
+                    "proposed_by": "llm_proposed",
+                    "ratified_by": null,
+                    "status": "proposed",
+                    "subject": {
+                      "canonical_theme": "theme:grid_electrification",
+                      "local_theme": "ltheme:ths:301174"
+                    }
+                  },
+                  "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+                },
+                "draft_created": "2026-09-21",
+                "knowledge_cutoff": "2026-09-21",
+                "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                "primary_source_ids": [
+                  "THS_DEF_301174",
+                  "DOE_VANADIUM_GRID_2017"
+                ],
+                "recorded_company_count": 16,
+                "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+                "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+              },
+              "evidence_refs": [
+                "ev:71d2e310f882057e",
+                "ev:93906972aca25852",
+                "ev:a8cd1b7326fe6ff8",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+              ],
+              "kind": "mapping",
+              "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+              "proposal_id": "prop:a1b11d839c5d789d",
+              "proposed_by": "llm_proposed",
+              "ratified_by": null,
+              "status": "rejected",
+              "subject": {
+                "canonical_theme": "theme:grid_electrification",
+                "local_theme": "ltheme:ths:301174"
+              },
+              "truth_status": "PROPOSAL_ONLY"
+            }
+          ],
+          "relations": [],
+          "schema": "gmi.theme_ontology_neighborhood/v1",
+          "subject": {
+            "external_ids": {
+              "ths_code": "301174"
+            },
+            "kind": "local_theme",
+            "market_scope": "cn",
+            "merged_into": null,
+            "name_en": null,
+            "name_zh": "钒电池",
+            "node_id": "ltheme:ths:301174",
+            "provenance": "concept_map:data/baskets_china_ths/concept_map.json",
+            "source_meta": {
+              "grain": "ths_concept",
+              "key_aliases": [],
+              "market": "cn",
+              "parent_source_key": null,
+              "parent_source_label": null,
+              "rights_family": "ths_concepts",
+              "source_description": null,
+              "source_family": "ths_concepts",
+              "source_label": "钒电池",
+              "source_local_id": "301174",
+              "supergroup_index": null
+            },
+            "status": "canonical",
+            "tier": null
+          }
+        },
+        {
+          "asof": "2026-10-04",
+          "authority_ceiling": "research_internal_only",
+          "availability": {
+            "reason": null,
+            "state": "OK"
+          },
+          "canonical_mapping": {
+            "state": "SUBJECT_IS_CANONICAL",
+            "theme_node_ids": [
+              "theme:grid_electrification"
+            ]
+          },
+          "counts": {
+            "future_beliefs_excluded": 0,
+            "proposals": 2,
+            "relations": 0
+          },
+          "curation": {
+            "counts": {
+              "proposed": 0,
+              "ratified": 0,
+              "rejected": 2
+            },
+            "proposal_ids": [
+              "prop:a1b11d839c5d789d",
+              "prop:de400c2bb566c04c"
+            ],
+            "state": "REJECTED"
+          },
+          "knowledge_cutoff": "2026-10-04",
+          "limitations": [
+            "exact node_id only; labels are never fuzzy-matched",
+            "probation proposals have zero graph authority",
+            "internal research projection; public display still requires the cited rights receipts",
+            "no ranking, scoring, selection, trade, or ThemeState authority"
+          ],
+          "node_id": "theme:grid_electrification",
+          "ordering": "type,direction,peer_node_id,edge_id; never score",
+          "proposals": [
+            {
+              "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+              "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+              "created": "2026-10-04T00:51:55.181207Z",
+              "evidence": {
+                "asof": "2026-09-21",
+                "canonical_queue_admission": true,
+                "control_comparisons": [
+                  {
+                    "control_count": 15,
+                    "control_node_id": "ltheme:ths:306380",
+                    "jaccard": 0.03333333333333333,
+                    "node_id": "ltheme:ths:301174",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [
+                      "co:cn:603067.SS"
+                    ],
+                    "shared_count": 1,
+                    "source_count": 16,
+                    "state": "DESCRIPTIVE_ONLY"
+                  },
+                  {
+                    "control_count": 16,
+                    "control_node_id": "ltheme:ths:308991",
+                    "jaccard": 0.0,
+                    "node_id": "ltheme:ths:301174",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [],
+                    "shared_count": 0,
+                    "source_count": 16,
+                    "state": "DESCRIPTIVE_ONLY"
+                  }
+                ],
+                "curation_admission": {
+                  "applied_curator": "/root/evaluation_capture",
+                  "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+                  "canonical_queue_admission": true,
+                  "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+                  "escalation_authority": false,
+                  "full_d2d_accepted": false,
+                  "gate_authority": false,
+                  "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+                  "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+                  "independent_reviewer": "/root/d2d_curation",
+                  "natural_graph_consumption_proven": false,
+                  "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+                  "origination_authority": false,
+                  "parent_commission": "Astra parent /root",
+                  "parent_decision_at": "2026-10-04T00:38:00Z",
+                  "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+                  "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+                  "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+                  "queue_path": "data/theme_graph/probation/proposals.jsonl",
+                  "rank_authority": false,
+                  "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+                  "rights_ancestry": {
+                    "auth_class": "receipted_scrape",
+                    "family": "ths_concepts",
+                    "house_curation_does_not_erase_source_parents": true,
+                    "public_emission_authorized": false,
+                    "rights_class": "unresolved"
+                  },
+                  "size_authority": false,
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+                  "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+                },
+                "draft_ancestry": {
+                  "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+                  "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+                  "original_record": {
+                    "adjudicated_at": null,
+                    "adjudication_note": null,
+                    "created": "2026-09-21",
+                    "evidence": {
+                      "asof": "2026-09-21",
+                      "canonical_queue_admission": false,
+                      "control_comparisons": [
+                        {
+                          "control_count": 15,
+                          "control_node_id": "ltheme:ths:306380",
+                          "jaccard": 0.03333333333333333,
+                          "node_id": "ltheme:ths:301174",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [
+                            "co:cn:603067.SS"
+                          ],
+                          "shared_count": 1,
+                          "source_count": 16,
+                          "state": "DESCRIPTIVE_ONLY"
+                        },
+                        {
+                          "control_count": 16,
+                          "control_node_id": "ltheme:ths:308991",
+                          "jaccard": 0.0,
+                          "node_id": "ltheme:ths:301174",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [],
+                          "shared_count": 0,
+                          "source_count": 16,
+                          "state": "DESCRIPTIVE_ONLY"
+                        }
+                      ],
+                      "knowledge_cutoff": "2026-09-21",
+                      "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                      "primary_source_ids": [
+                        "THS_DEF_301174",
+                        "DOE_VANADIUM_GRID_2017"
+                      ],
+                      "recorded_company_count": 16,
+                      "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                      "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                      "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+                      "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+                    },
+                    "evidence_refs": [
+                      "ev:71d2e310f882057e",
+                      "ev:93906972aca25852",
+                      "ev:a8cd1b7326fe6ff8",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+                    ],
+                    "kind": "mapping",
+                    "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+                    "proposal_id": "prop:a1b11d839c5d789d",
+                    "proposed_by": "llm_proposed",
+                    "ratified_by": null,
+                    "status": "proposed",
+                    "subject": {
+                      "canonical_theme": "theme:grid_electrification",
+                      "local_theme": "ltheme:ths:301174"
+                    }
+                  },
+                  "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+                },
+                "draft_created": "2026-09-21",
+                "knowledge_cutoff": "2026-09-21",
+                "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                "primary_source_ids": [
+                  "THS_DEF_301174",
+                  "DOE_VANADIUM_GRID_2017"
+                ],
+                "recorded_company_count": 16,
+                "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+                "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+              },
+              "evidence_refs": [
+                "ev:71d2e310f882057e",
+                "ev:93906972aca25852",
+                "ev:a8cd1b7326fe6ff8",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+              ],
+              "kind": "mapping",
+              "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+              "proposal_id": "prop:a1b11d839c5d789d",
+              "proposed_by": "llm_proposed",
+              "ratified_by": null,
+              "status": "rejected",
+              "subject": {
+                "canonical_theme": "theme:grid_electrification",
+                "local_theme": "ltheme:ths:301174"
+              },
+              "truth_status": "PROPOSAL_ONLY"
+            },
+            {
+              "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+              "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+              "created": "2026-10-04T00:51:55.181207Z",
+              "evidence": {
+                "asof": "2026-09-21",
+                "canonical_queue_admission": true,
+                "control_comparisons": [
+                  {
+                    "control_count": 15,
+                    "control_node_id": "ltheme:ths:306380",
+                    "jaccard": 0.06060606060606061,
+                    "node_id": "ltheme:ths:301096",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [
+                      "co:cn:002407.SZ",
+                      "co:cn:300568.SZ"
+                    ],
+                    "shared_count": 2,
+                    "source_count": 20,
+                    "state": "DESCRIPTIVE_ONLY"
+                  },
+                  {
+                    "control_count": 16,
+                    "control_node_id": "ltheme:ths:308991",
+                    "jaccard": 0.0,
+                    "node_id": "ltheme:ths:301096",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [],
+                    "shared_count": 0,
+                    "source_count": 20,
+                    "state": "DESCRIPTIVE_ONLY"
+                  }
+                ],
+                "curation_admission": {
+                  "applied_curator": "/root/evaluation_capture",
+                  "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+                  "canonical_queue_admission": true,
+                  "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+                  "escalation_authority": false,
+                  "full_d2d_accepted": false,
+                  "gate_authority": false,
+                  "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+                  "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+                  "independent_reviewer": "/root/d2d_curation",
+                  "natural_graph_consumption_proven": false,
+                  "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+                  "origination_authority": false,
+                  "parent_commission": "Astra parent /root",
+                  "parent_decision_at": "2026-10-04T00:38:00Z",
+                  "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+                  "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+                  "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+                  "queue_path": "data/theme_graph/probation/proposals.jsonl",
+                  "rank_authority": false,
+                  "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+                  "rights_ancestry": {
+                    "auth_class": "receipted_scrape",
+                    "family": "ths_concepts",
+                    "house_curation_does_not_erase_source_parents": true,
+                    "public_emission_authorized": false,
+                    "rights_class": "unresolved"
+                  },
+                  "size_authority": false,
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+                  "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+                },
+                "draft_ancestry": {
+                  "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+                  "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+                  "original_record": {
+                    "adjudicated_at": null,
+                    "adjudication_note": null,
+                    "created": "2026-09-21",
+                    "evidence": {
+                      "asof": "2026-09-21",
+                      "canonical_queue_admission": false,
+                      "control_comparisons": [
+                        {
+                          "control_count": 15,
+                          "control_node_id": "ltheme:ths:306380",
+                          "jaccard": 0.06060606060606061,
+                          "node_id": "ltheme:ths:301096",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [
+                            "co:cn:002407.SZ",
+                            "co:cn:300568.SZ"
+                          ],
+                          "shared_count": 2,
+                          "source_count": 20,
+                          "state": "DESCRIPTIVE_ONLY"
+                        },
+                        {
+                          "control_count": 16,
+                          "control_node_id": "ltheme:ths:308991",
+                          "jaccard": 0.0,
+                          "node_id": "ltheme:ths:301096",
+                          "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                          "semantic_mapping_proven": false,
+                          "shared_company_node_ids": [],
+                          "shared_count": 0,
+                          "source_count": 20,
+                          "state": "DESCRIPTIVE_ONLY"
+                        }
+                      ],
+                      "knowledge_cutoff": "2026-09-21",
+                      "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                      "primary_source_ids": [
+                        "THS_DEF_301096",
+                        "DOE_SODIUM_GRID_2017",
+                        "DOE_SODIUM_EV_2023"
+                      ],
+                      "recorded_company_count": 20,
+                      "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                      "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                      "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+                      "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+                    },
+                    "evidence_refs": [
+                      "ev:71d2e310f882057e",
+                      "ev:93906972aca25852",
+                      "ev:a8cd1b7326fe6ff8",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+                      "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+                    ],
+                    "kind": "mapping",
+                    "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+                    "proposal_id": "prop:de400c2bb566c04c",
+                    "proposed_by": "llm_proposed",
+                    "ratified_by": null,
+                    "status": "proposed",
+                    "subject": {
+                      "canonical_theme": "theme:grid_electrification",
+                      "local_theme": "ltheme:ths:301096"
+                    }
+                  },
+                  "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+                  "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+                },
+                "draft_created": "2026-09-21",
+                "knowledge_cutoff": "2026-09-21",
+                "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                "primary_source_ids": [
+                  "THS_DEF_301096",
+                  "DOE_SODIUM_GRID_2017",
+                  "DOE_SODIUM_EV_2023"
+                ],
+                "recorded_company_count": 20,
+                "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+                "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+              },
+              "evidence_refs": [
+                "ev:71d2e310f882057e",
+                "ev:93906972aca25852",
+                "ev:a8cd1b7326fe6ff8",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+              ],
+              "kind": "mapping",
+              "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+              "proposal_id": "prop:de400c2bb566c04c",
+              "proposed_by": "llm_proposed",
+              "ratified_by": null,
+              "status": "rejected",
+              "subject": {
+                "canonical_theme": "theme:grid_electrification",
+                "local_theme": "ltheme:ths:301096"
+              },
+              "truth_status": "PROPOSAL_ONLY"
+            }
+          ],
+          "relations": [],
+          "schema": "gmi.theme_ontology_neighborhood/v1",
+          "subject": {
+            "external_ids": {
+              "foresight_id": "grid_electrification"
+            },
+            "kind": "theme",
+            "market_scope": "global",
+            "merged_into": null,
+            "name_en": "Grid & Electrification",
+            "name_zh": "电网与电气化",
+            "node_id": "theme:grid_electrification",
+            "provenance": "crosswalk:config/theme_crosswalk.yml",
+            "source_meta": null,
+            "status": "canonical",
+            "tier": "theme"
+          }
+        }
+      ],
+      "knowledge_cutoff": "2026-10-04",
+      "limitations": [
+        "read-only evidence review; no adjudication or graph write",
+        "proposal status and relation presence are independent facts",
+        "overlap evidence is not proof of semantic expression",
+        "endpoint rights are current registry receipts, not historical authorization",
+        "unsupported subjects remain unresolved; no label inference"
+      ],
+      "proposal": {
+        "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+        "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+        "created": "2026-10-04T00:51:55.181207Z",
+        "evidence": {
+          "asof": "2026-09-21",
+          "canonical_queue_admission": true,
+          "control_comparisons": [
+            {
+              "control_count": 15,
+              "control_node_id": "ltheme:ths:306380",
+              "jaccard": 0.03333333333333333,
+              "node_id": "ltheme:ths:301174",
+              "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+              "semantic_mapping_proven": false,
+              "shared_company_node_ids": [
+                "co:cn:603067.SS"
+              ],
+              "shared_count": 1,
+              "source_count": 16,
+              "state": "DESCRIPTIVE_ONLY"
+            },
+            {
+              "control_count": 16,
+              "control_node_id": "ltheme:ths:308991",
+              "jaccard": 0.0,
+              "node_id": "ltheme:ths:301174",
+              "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+              "semantic_mapping_proven": false,
+              "shared_company_node_ids": [],
+              "shared_count": 0,
+              "source_count": 16,
+              "state": "DESCRIPTIVE_ONLY"
+            }
+          ],
+          "curation_admission": {
+            "applied_curator": "/root/evaluation_capture",
+            "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+            "canonical_queue_admission": true,
+            "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+            "escalation_authority": false,
+            "full_d2d_accepted": false,
+            "gate_authority": false,
+            "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+            "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+            "independent_reviewer": "/root/d2d_curation",
+            "natural_graph_consumption_proven": false,
+            "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+            "origination_authority": false,
+            "parent_commission": "Astra parent /root",
+            "parent_decision_at": "2026-10-04T00:38:00Z",
+            "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+            "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+            "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+            "queue_path": "data/theme_graph/probation/proposals.jsonl",
+            "rank_authority": false,
+            "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+            "rights_ancestry": {
+              "auth_class": "receipted_scrape",
+              "family": "ths_concepts",
+              "house_curation_does_not_erase_source_parents": true,
+              "public_emission_authorized": false,
+              "rights_class": "unresolved"
+            },
+            "size_authority": false,
+            "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+            "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+          },
+          "draft_ancestry": {
+            "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+            "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+            "original_record": {
+              "adjudicated_at": null,
+              "adjudication_note": null,
+              "created": "2026-09-21",
+              "evidence": {
+                "asof": "2026-09-21",
+                "canonical_queue_admission": false,
+                "control_comparisons": [
+                  {
+                    "control_count": 15,
+                    "control_node_id": "ltheme:ths:306380",
+                    "jaccard": 0.03333333333333333,
+                    "node_id": "ltheme:ths:301174",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [
+                      "co:cn:603067.SS"
+                    ],
+                    "shared_count": 1,
+                    "source_count": 16,
+                    "state": "DESCRIPTIVE_ONLY"
+                  },
+                  {
+                    "control_count": 16,
+                    "control_node_id": "ltheme:ths:308991",
+                    "jaccard": 0.0,
+                    "node_id": "ltheme:ths:301174",
+                    "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                    "semantic_mapping_proven": false,
+                    "shared_company_node_ids": [],
+                    "shared_count": 0,
+                    "source_count": 16,
+                    "state": "DESCRIPTIVE_ONLY"
+                  }
+                ],
+                "knowledge_cutoff": "2026-09-21",
+                "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                "primary_source_ids": [
+                  "THS_DEF_301174",
+                  "DOE_VANADIUM_GRID_2017"
+                ],
+                "recorded_company_count": 16,
+                "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+                "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+              },
+              "evidence_refs": [
+                "ev:71d2e310f882057e",
+                "ev:93906972aca25852",
+                "ev:a8cd1b7326fe6ff8",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+                "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+              ],
+              "kind": "mapping",
+              "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+              "proposal_id": "prop:a1b11d839c5d789d",
+              "proposed_by": "llm_proposed",
+              "ratified_by": null,
+              "status": "proposed",
+              "subject": {
+                "canonical_theme": "theme:grid_electrification",
+                "local_theme": "ltheme:ths:301174"
+              }
+            },
+            "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+            "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+          },
+          "draft_created": "2026-09-21",
+          "knowledge_cutoff": "2026-09-21",
+          "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+          "primary_source_ids": [
+            "THS_DEF_301174",
+            "DOE_VANADIUM_GRID_2017"
+          ],
+          "recorded_company_count": 16,
+          "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+          "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+          "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+          "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+        },
+        "evidence_refs": [
+          "ev:71d2e310f882057e",
+          "ev:93906972aca25852",
+          "ev:a8cd1b7326fe6ff8",
+          "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+          "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+        ],
+        "kind": "mapping",
+        "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+        "proposal_id": "prop:a1b11d839c5d789d",
+        "proposed_by": "llm_proposed",
+        "ratified_by": null,
+        "status": "rejected",
+        "subject": {
+          "canonical_theme": "theme:grid_electrification",
+          "local_theme": "ltheme:ths:301174"
+        },
+        "truth_status": "PROPOSAL_ONLY"
+      },
+      "proposal_id": "prop:a1b11d839c5d789d",
+      "relation": {
+        "edge_ids": [],
+        "source_node_id": "ltheme:ths:301174",
+        "state": "RELATION_ABSENT",
+        "target_node_id": "theme:grid_electrification",
+        "type": "EXPRESSES"
+      },
+      "schema": "gmi.theme_ontology_proposal_review/v1"
+    }
+  ],
+  "ratified_queue_rows": 0,
+  "runtime_graph_writes": 0,
+  "scope": "CANDIDATE_BRANCH_QUEUE_CLI_AND_ISOLATED_FROZEN_ENDPOINT_READER_FIXTURE_NOT_NATURAL_GRAPH_PROOF",
+  "source_crosswalk": {
+    "path": "config/theme_crosswalk.yml",
+    "sha256": "43450b71f8663c4625d34940cdf15b5cab37eaa52061e118686f89c0d80ae909",
+    "target_codes_absent": [
+      "301096",
+      "301174"
+    ],
+    "unchanged": true
+  },
+  "worklist_cli_commands": [
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "scripts.list_theme_proposals",
+        "--asof",
+        "2026-10-04",
+        "--knowledge-cutoff",
+        "2026-10-03",
+        "--status",
+        "all",
+        "--subject-id",
+        "ltheme:ths:301096"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout_sha256": "005aa418b81406acb10d43640ac80aa021c78041b19a5ab296ff5246af675bfa"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "scripts.list_theme_proposals",
+        "--asof",
+        "2026-10-04",
+        "--knowledge-cutoff",
+        "2026-10-03",
+        "--status",
+        "all",
+        "--subject-id",
+        "ltheme:ths:301174"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout_sha256": "5f1082f715f30f7f63f6bc3c7d2a39f2ca42e2f34d1a6906535c5188003b4f25"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "scripts.list_theme_proposals",
+        "--asof",
+        "2026-10-04",
+        "--knowledge-cutoff",
+        "2026-10-04",
+        "--status",
+        "all",
+        "--subject-id",
+        "ltheme:ths:301096"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout_sha256": "60f4d8ba0a6257fa2194923b34c6a7d94d7a7e26b9c1b45c473a836cdaadeaed"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "scripts.list_theme_proposals",
+        "--asof",
+        "2026-10-04",
+        "--knowledge-cutoff",
+        "2026-10-04",
+        "--status",
+        "all",
+        "--subject-id",
+        "ltheme:ths:301174"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout_sha256": "ca204a3951232963b2b2c1725442f410caa5b5a84c25dc60385e248f4df9101c"
+    }
+  ],
+  "worklist_results": [
+    {
+      "asof": "2026-10-04",
+      "authority_ceiling": "research_internal_only",
+      "availability": {
+        "reason": "no proposals match the exact filters",
+        "state": "NO_MATCH"
+      },
+      "counts": {
+        "matching": 0,
+        "returned": 0,
+        "visible": 234
+      },
+      "facets": {
+        "kind": {
+          "mapping": 234
+        },
+        "proposed_by": {
+          "overlap_stats": 234
+        },
+        "status": {
+          "proposed": 234,
+          "ratified": 0,
+          "rejected": 0
+        }
+      },
+      "filters": {
+        "kind": null,
+        "proposed_by": null,
+        "status": "all",
+        "subject_id": "ltheme:ths:301096"
+      },
+      "items": [],
+      "knowledge_cutoff": "2026-10-03",
+      "limitations": [
+        "Read-only view of the existing probation owner; no new queue or adjudication.",
+        "Proposals are not graph facts, recommendations, rankings or trade signals.",
+        "Oldest creation first is browsing order, not research or investment priority.",
+        "Effective date is carried to drilldown; only the cutoff selects proposal knowledge.",
+        "A snapshot digest binds this visible worklist, not source authenticity or rights."
+      ],
+      "ordering": "CREATED_UTC_THEN_PROPOSAL_ID",
+      "page": {
+        "limit": 25,
+        "next_offset": null,
+        "offset": 0
+      },
+      "schema": "gmi.theme_proposal_worklist/v1",
+      "snapshot_sha256": "034353f62aa5068a0c2d3851bd170d9d379072df975b95f5fe21c352f295cea2"
+    },
+    {
+      "asof": "2026-10-04",
+      "authority_ceiling": "research_internal_only",
+      "availability": {
+        "reason": "no proposals match the exact filters",
+        "state": "NO_MATCH"
+      },
+      "counts": {
+        "matching": 0,
+        "returned": 0,
+        "visible": 234
+      },
+      "facets": {
+        "kind": {
+          "mapping": 234
+        },
+        "proposed_by": {
+          "overlap_stats": 234
+        },
+        "status": {
+          "proposed": 234,
+          "ratified": 0,
+          "rejected": 0
+        }
+      },
+      "filters": {
+        "kind": null,
+        "proposed_by": null,
+        "status": "all",
+        "subject_id": "ltheme:ths:301174"
+      },
+      "items": [],
+      "knowledge_cutoff": "2026-10-03",
+      "limitations": [
+        "Read-only view of the existing probation owner; no new queue or adjudication.",
+        "Proposals are not graph facts, recommendations, rankings or trade signals.",
+        "Oldest creation first is browsing order, not research or investment priority.",
+        "Effective date is carried to drilldown; only the cutoff selects proposal knowledge.",
+        "A snapshot digest binds this visible worklist, not source authenticity or rights."
+      ],
+      "ordering": "CREATED_UTC_THEN_PROPOSAL_ID",
+      "page": {
+        "limit": 25,
+        "next_offset": null,
+        "offset": 0
+      },
+      "schema": "gmi.theme_proposal_worklist/v1",
+      "snapshot_sha256": "eea11665ccac18ef1265a7c210670437970628d388c868f7da2d58cd0eea9cda"
+    },
+    {
+      "asof": "2026-10-04",
+      "authority_ceiling": "research_internal_only",
+      "availability": {
+        "reason": null,
+        "state": "OK"
+      },
+      "counts": {
+        "matching": 1,
+        "returned": 1,
+        "visible": 236
+      },
+      "facets": {
+        "kind": {
+          "mapping": 236
+        },
+        "proposed_by": {
+          "llm_proposed": 2,
+          "overlap_stats": 234
+        },
+        "status": {
+          "proposed": 234,
+          "ratified": 0,
+          "rejected": 2
+        }
+      },
+      "filters": {
+        "kind": null,
+        "proposed_by": null,
+        "status": "all",
+        "subject_id": "ltheme:ths:301096"
+      },
+      "items": [
+        {
+          "proposal": {
+            "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+            "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+            "created": "2026-10-04T00:51:55.181207Z",
+            "evidence": {
+              "asof": "2026-09-21",
+              "canonical_queue_admission": true,
+              "control_comparisons": [
+                {
+                  "control_count": 15,
+                  "control_node_id": "ltheme:ths:306380",
+                  "jaccard": 0.06060606060606061,
+                  "node_id": "ltheme:ths:301096",
+                  "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                  "semantic_mapping_proven": false,
+                  "shared_company_node_ids": [
+                    "co:cn:002407.SZ",
+                    "co:cn:300568.SZ"
+                  ],
+                  "shared_count": 2,
+                  "source_count": 20,
+                  "state": "DESCRIPTIVE_ONLY"
+                },
+                {
+                  "control_count": 16,
+                  "control_node_id": "ltheme:ths:308991",
+                  "jaccard": 0.0,
+                  "node_id": "ltheme:ths:301096",
+                  "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                  "semantic_mapping_proven": false,
+                  "shared_company_node_ids": [],
+                  "shared_count": 0,
+                  "source_count": 20,
+                  "state": "DESCRIPTIVE_ONLY"
+                }
+              ],
+              "curation_admission": {
+                "applied_curator": "/root/evaluation_capture",
+                "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+                "canonical_queue_admission": true,
+                "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+                "escalation_authority": false,
+                "full_d2d_accepted": false,
+                "gate_authority": false,
+                "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+                "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+                "independent_reviewer": "/root/d2d_curation",
+                "natural_graph_consumption_proven": false,
+                "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+                "origination_authority": false,
+                "parent_commission": "Astra parent /root",
+                "parent_decision_at": "2026-10-04T00:38:00Z",
+                "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+                "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+                "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+                "queue_path": "data/theme_graph/probation/proposals.jsonl",
+                "rank_authority": false,
+                "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+                "rights_ancestry": {
+                  "auth_class": "receipted_scrape",
+                  "family": "ths_concepts",
+                  "house_curation_does_not_erase_source_parents": true,
+                  "public_emission_authorized": false,
+                  "rights_class": "unresolved"
+                },
+                "size_authority": false,
+                "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+                "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+              },
+              "draft_ancestry": {
+                "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+                "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+                "original_record": {
+                  "adjudicated_at": null,
+                  "adjudication_note": null,
+                  "created": "2026-09-21",
+                  "evidence": {
+                    "asof": "2026-09-21",
+                    "canonical_queue_admission": false,
+                    "control_comparisons": [
+                      {
+                        "control_count": 15,
+                        "control_node_id": "ltheme:ths:306380",
+                        "jaccard": 0.06060606060606061,
+                        "node_id": "ltheme:ths:301096",
+                        "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                        "semantic_mapping_proven": false,
+                        "shared_company_node_ids": [
+                          "co:cn:002407.SZ",
+                          "co:cn:300568.SZ"
+                        ],
+                        "shared_count": 2,
+                        "source_count": 20,
+                        "state": "DESCRIPTIVE_ONLY"
+                      },
+                      {
+                        "control_count": 16,
+                        "control_node_id": "ltheme:ths:308991",
+                        "jaccard": 0.0,
+                        "node_id": "ltheme:ths:301096",
+                        "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                        "semantic_mapping_proven": false,
+                        "shared_company_node_ids": [],
+                        "shared_count": 0,
+                        "source_count": 20,
+                        "state": "DESCRIPTIVE_ONLY"
+                      }
+                    ],
+                    "knowledge_cutoff": "2026-09-21",
+                    "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                    "primary_source_ids": [
+                      "THS_DEF_301096",
+                      "DOE_SODIUM_GRID_2017",
+                      "DOE_SODIUM_EV_2023"
+                    ],
+                    "recorded_company_count": 20,
+                    "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                    "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                    "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+                    "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+                  },
+                  "evidence_refs": [
+                    "ev:71d2e310f882057e",
+                    "ev:93906972aca25852",
+                    "ev:a8cd1b7326fe6ff8",
+                    "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+                    "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+                  ],
+                  "kind": "mapping",
+                  "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+                  "proposal_id": "prop:de400c2bb566c04c",
+                  "proposed_by": "llm_proposed",
+                  "ratified_by": null,
+                  "status": "proposed",
+                  "subject": {
+                    "canonical_theme": "theme:grid_electrification",
+                    "local_theme": "ltheme:ths:301096"
+                  }
+                },
+                "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+                "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+              },
+              "draft_created": "2026-09-21",
+              "knowledge_cutoff": "2026-09-21",
+              "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+              "primary_source_ids": [
+                "THS_DEF_301096",
+                "DOE_SODIUM_GRID_2017",
+                "DOE_SODIUM_EV_2023"
+              ],
+              "recorded_company_count": 20,
+              "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+              "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+              "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_GRID_AND_TRANSPORT_SCOPE",
+              "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+            },
+            "evidence_refs": [
+              "ev:71d2e310f882057e",
+              "ev:93906972aca25852",
+              "ev:a8cd1b7326fe6ff8",
+              "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301096",
+              "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+            ],
+            "kind": "mapping",
+            "note": "Exact THS definition explicitly spans grid storage, renewable-energy storage and electric transport. This supports a nonexclusive Grid & Electrification EXPRESSES candidate, not equivalence or exclusivity; local-control overlap remains descriptive only. Research draft only: not queued, approved or graph truth.",
+            "proposal_id": "prop:de400c2bb566c04c",
+            "proposed_by": "llm_proposed",
+            "ratified_by": null,
+            "status": "rejected",
+            "subject": {
+              "canonical_theme": "theme:grid_electrification",
+              "local_theme": "ltheme:ths:301096"
+            },
+            "truth_status": "PROPOSAL_ONLY"
+          },
+          "review_query": {
+            "asof": "2026-10-04",
+            "knowledge_cutoff": "2026-10-04",
+            "proposal_id": "prop:de400c2bb566c04c"
+          }
+        }
+      ],
+      "knowledge_cutoff": "2026-10-04",
+      "limitations": [
+        "Read-only view of the existing probation owner; no new queue or adjudication.",
+        "Proposals are not graph facts, recommendations, rankings or trade signals.",
+        "Oldest creation first is browsing order, not research or investment priority.",
+        "Effective date is carried to drilldown; only the cutoff selects proposal knowledge.",
+        "A snapshot digest binds this visible worklist, not source authenticity or rights."
+      ],
+      "ordering": "CREATED_UTC_THEN_PROPOSAL_ID",
+      "page": {
+        "limit": 25,
+        "next_offset": null,
+        "offset": 0
+      },
+      "schema": "gmi.theme_proposal_worklist/v1",
+      "snapshot_sha256": "c40c2f4eae99d569ea48b01ebe4387095fa5db03d2fde56dc52d485b156b637f"
+    },
+    {
+      "asof": "2026-10-04",
+      "authority_ceiling": "research_internal_only",
+      "availability": {
+        "reason": null,
+        "state": "OK"
+      },
+      "counts": {
+        "matching": 1,
+        "returned": 1,
+        "visible": 236
+      },
+      "facets": {
+        "kind": {
+          "mapping": 236
+        },
+        "proposed_by": {
+          "llm_proposed": 2,
+          "overlap_stats": 234
+        },
+        "status": {
+          "proposed": 234,
+          "ratified": 0,
+          "rejected": 2
+        }
+      },
+      "filters": {
+        "kind": null,
+        "proposed_by": null,
+        "status": "all",
+        "subject_id": "ltheme:ths:301174"
+      },
+      "items": [
+        {
+          "proposal": {
+            "adjudicated_at": "2026-10-04T00:51:55.181207Z",
+            "adjudication_note": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+            "created": "2026-10-04T00:51:55.181207Z",
+            "evidence": {
+              "asof": "2026-09-21",
+              "canonical_queue_admission": true,
+              "control_comparisons": [
+                {
+                  "control_count": 15,
+                  "control_node_id": "ltheme:ths:306380",
+                  "jaccard": 0.03333333333333333,
+                  "node_id": "ltheme:ths:301174",
+                  "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                  "semantic_mapping_proven": false,
+                  "shared_company_node_ids": [
+                    "co:cn:603067.SS"
+                  ],
+                  "shared_count": 1,
+                  "source_count": 16,
+                  "state": "DESCRIPTIVE_ONLY"
+                },
+                {
+                  "control_count": 16,
+                  "control_node_id": "ltheme:ths:308991",
+                  "jaccard": 0.0,
+                  "node_id": "ltheme:ths:301174",
+                  "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                  "semantic_mapping_proven": false,
+                  "shared_company_node_ids": [],
+                  "shared_count": 0,
+                  "source_count": 16,
+                  "state": "DESCRIPTIVE_ONLY"
+                }
+              ],
+              "curation_admission": {
+                "applied_curator": "/root/evaluation_capture",
+                "applied_decision_at": "2026-10-04T00:51:55.181207Z",
+                "canonical_queue_admission": true,
+                "daily_reader_limit": "created/adjudicated_at are precise UTC timestamps; the incumbent cutoff compares UTC dates and cannot distinguish intraday knowledge.",
+                "escalation_authority": false,
+                "full_d2d_accepted": false,
+                "gate_authority": false,
+                "independent_review_concluded_at": "2026-10-04T00:33:06Z",
+                "independent_review_sha256": "fc076ee1b52f37d807aa4c41a579bc1674323cad83d6d1abacf7c79dce0bc13c",
+                "independent_reviewer": "/root/d2d_curation",
+                "natural_graph_consumption_proven": false,
+                "operation": "gmi-d2d-curation-decisions-20261004-astra-001",
+                "origination_authority": false,
+                "parent_commission": "Astra parent /root",
+                "parent_decision_at": "2026-10-04T00:38:00Z",
+                "parent_decision_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+                "protected_procedure_pin": "c776f8dc8d3dabb0070b51ad7f04d71987ff6df1",
+                "queue_admitted_at": "2026-10-04T00:51:55.181207Z",
+                "queue_path": "data/theme_graph/probation/proposals.jsonl",
+                "rank_authority": false,
+                "review_evidence_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+                "rights_ancestry": {
+                  "auth_class": "receipted_scrape",
+                  "family": "ths_concepts",
+                  "house_curation_does_not_erase_source_parents": true,
+                  "public_emission_authorized": false,
+                  "rights_class": "unresolved"
+                },
+                "size_authority": false,
+                "source_base": "7593bb1424477a880d24528eece5366b1ec41209",
+                "stage": "SOURCE_BRANCH_CANDIDATE_NOT_MAIN"
+              },
+              "draft_ancestry": {
+                "file_sha256": "107acf92bcae7dccb0b35deab4c1dc6848c3b05eff2d8307aaaed90f57f3cffc",
+                "git_blob_sha": "53891837906be4e4b03d7b1f372bb8a83985be09",
+                "original_record": {
+                  "adjudicated_at": null,
+                  "adjudication_note": null,
+                  "created": "2026-09-21",
+                  "evidence": {
+                    "asof": "2026-09-21",
+                    "canonical_queue_admission": false,
+                    "control_comparisons": [
+                      {
+                        "control_count": 15,
+                        "control_node_id": "ltheme:ths:306380",
+                        "jaccard": 0.03333333333333333,
+                        "node_id": "ltheme:ths:301174",
+                        "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                        "semantic_mapping_proven": false,
+                        "shared_company_node_ids": [
+                          "co:cn:603067.SS"
+                        ],
+                        "shared_count": 1,
+                        "source_count": 16,
+                        "state": "DESCRIPTIVE_ONLY"
+                      },
+                      {
+                        "control_count": 16,
+                        "control_node_id": "ltheme:ths:308991",
+                        "jaccard": 0.0,
+                        "node_id": "ltheme:ths:301174",
+                        "scope": "EXACT_LOCAL_CONTROL_ONLY_NOT_WHOLE_CANONICAL_THEME",
+                        "semantic_mapping_proven": false,
+                        "shared_company_node_ids": [],
+                        "shared_count": 0,
+                        "source_count": 16,
+                        "state": "DESCRIPTIVE_ONLY"
+                      }
+                    ],
+                    "knowledge_cutoff": "2026-09-21",
+                    "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+                    "primary_source_ids": [
+                      "THS_DEF_301174",
+                      "DOE_VANADIUM_GRID_2017"
+                    ],
+                    "recorded_company_count": 16,
+                    "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+                    "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+                    "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+                    "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+                  },
+                  "evidence_refs": [
+                    "ev:71d2e310f882057e",
+                    "ev:93906972aca25852",
+                    "ev:a8cd1b7326fe6ff8",
+                    "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+                    "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+                  ],
+                  "kind": "mapping",
+                  "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+                  "proposal_id": "prop:a1b11d839c5d789d",
+                  "proposed_by": "llm_proposed",
+                  "ratified_by": null,
+                  "status": "proposed",
+                  "subject": {
+                    "canonical_theme": "theme:grid_electrification",
+                    "local_theme": "ltheme:ths:301174"
+                  }
+                },
+                "path": "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/draft-proposals.json",
+                "source_base": "7593bb1424477a880d24528eece5366b1ec41209"
+              },
+              "draft_created": "2026-09-21",
+              "knowledge_cutoff": "2026-09-21",
+              "origin": "UNPUBLISHED_CURATOR_RESEARCH_DRAFT",
+              "primary_source_ids": [
+                "THS_DEF_301174",
+                "DOE_VANADIUM_GRID_2017"
+              ],
+              "recorded_company_count": 16,
+              "recorded_graph_generated_at": "2026-09-18T17:42:29Z",
+              "relation_under_review": "EXPRESSES_NOT_EQUIVALENT_OR_IS_A",
+              "scope_confirmation": "EXACT_THS_DEFINITION_SUPPORTS_NONEXCLUSIVE_LONG_DURATION_STORAGE_SCOPE",
+              "source_head": "d9734be7e9a1c3fbf96b8dbeaefb31bffe651ee3"
+            },
+            "evidence_refs": [
+              "ev:71d2e310f882057e",
+              "ev:93906972aca25852",
+              "ev:a8cd1b7326fe6ff8",
+              "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/facts.json#ltheme:ths:301174",
+              "research/prophet_v4/d2/curation/lithium-storage-2026-09-21/review.json#primary_sources"
+            ],
+            "kind": "mapping",
+            "note": "Exact THS definition places vanadium redox-flow batteries in long-duration/new-energy storage context. This supports a nonexclusive Grid & Electrification EXPRESSES candidate independently of the one-company overlap, not equivalence or issuer-level proof. Research draft only: not queued, approved or graph truth.",
+            "proposal_id": "prop:a1b11d839c5d789d",
+            "proposed_by": "llm_proposed",
+            "ratified_by": null,
+            "status": "rejected",
+            "subject": {
+              "canonical_theme": "theme:grid_electrification",
+              "local_theme": "ltheme:ths:301174"
+            },
+            "truth_status": "PROPOSAL_ONLY"
+          },
+          "review_query": {
+            "asof": "2026-10-04",
+            "knowledge_cutoff": "2026-10-04",
+            "proposal_id": "prop:a1b11d839c5d789d"
+          }
+        }
+      ],
+      "knowledge_cutoff": "2026-10-04",
+      "limitations": [
+        "Read-only view of the existing probation owner; no new queue or adjudication.",
+        "Proposals are not graph facts, recommendations, rankings or trade signals.",
+        "Oldest creation first is browsing order, not research or investment priority.",
+        "Effective date is carried to drilldown; only the cutoff selects proposal knowledge.",
+        "A snapshot digest binds this visible worklist, not source authenticity or rights."
+      ],
+      "ordering": "CREATED_UTC_THEN_PROPOSAL_ID",
+      "page": {
+        "limit": 25,
+        "next_offset": null,
+        "offset": 0
+      },
+      "schema": "gmi.theme_proposal_worklist/v1",
+      "snapshot_sha256": "505ee9375e9240b82f4d71f92d54ccf6bdae72b99df42363a52185dba94e2d67"
+    }
+  ]
+}

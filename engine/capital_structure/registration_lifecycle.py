@@ -29,7 +29,11 @@ from pathlib import Path
 import re
 from typing import Any
 
-from engine.capital_structure.event_spine import normalize_form, route_form
+from engine.capital_structure.event_spine import (
+    compute_event_id,
+    normalize_form,
+    route_form,
+)
 
 
 BUNDLE_SCHEMA = "capital_structure.registration_lifecycle_bundle.v1"
@@ -243,6 +247,73 @@ def _trusted_file_number_provenance(
     }
 
 
+def _file_number_absent(event: Mapping[str, Any] | None) -> bool:
+    """Whether a superseded version genuinely carried no SEC file number.
+
+    Absent means the empty file number is not hiding richer evidence: the
+    filing's provenance must be missing entirely (legacy rows predate the
+    field) or be exactly the collector's typed unavailable-empty shape.  An
+    ambiguous observation — several candidate values that disagreed, so the
+    collector nulled the key and recorded the candidates — is richer
+    evidence, not absence, so a later version that observes a single value
+    is a group change, never an enrichment.
+    """
+    if event is None:
+        return False
+    filing = event.get("filing") or {}
+    if str(filing.get("file_number") or "").strip():
+        return False
+    provenance = filing.get("file_number_provenance")
+    if provenance is None:
+        return True
+    return provenance == {
+        "state": "unavailable",
+        "value": None,
+        "candidate_values": [],
+        "sources": [],
+    }
+
+
+def _is_file_number_enrichment(
+    *,
+    current_event: Mapping[str, Any],
+    current_candidate: bool,
+    target_candidate: bool,
+    current_issuer: str,
+    target_issuer: str,
+    current_file: str,
+    target_file: str,
+    family_proven_same: bool,
+    target_event: Mapping[str, Any] | None,
+) -> bool:
+    """Whether a correction pair only adds a trusted SEC file number.
+
+    The superseded version carries no explicit SEC file number at all while
+    the current version carries exactly one observed, admitted-source value
+    for the same issuer and the same proven registration family.  Anything
+    else that changed — issuer, family, relationship, lifecycle form role,
+    a replaced or removed file number, or a file number without one trusted
+    provenance value — keeps the pair blocked.  A superseded version whose
+    empty file number hides an ambiguous observation (several disagreeing
+    candidates) is not absent either: the pair stays blocked.
+    """
+    return (
+        current_candidate
+        and target_candidate
+        and bool(current_issuer)
+        and bool(target_issuer)
+        and current_issuer == target_issuer
+        and not target_file
+        and _file_number_absent(target_event)
+        and bool(current_file)
+        and family_proven_same
+        and _trusted_file_number_provenance(
+            current_event, current_file
+        )
+        is not None
+    )
+
+
 def _key_object(
     key: tuple[str, str, str] | None = None,
     *,
@@ -427,12 +498,15 @@ def compile_registration_lifecycles(
             raise ValueError(f"event {event_id} has an unsupported schema")
         if (event.get("version") or {}).get("immutable_record") is not True:
             raise ValueError(f"event {event_id} is not immutable")
-        _validate_immutable_identity(
-            event,
-            id_field="event_id",
-            prefix="event:cs:",
-            kind="event",
-        )
+        # Events carry their own identity format (identity_format 2 hashes the
+        # W1 identity preimage, not the full body), so the event spine owns
+        # the check; a full-body hash rejects every post-W1 event.
+        expected_event_id = compute_event_id(event)
+        if event_id != expected_event_id:
+            raise ValueError(
+                "event immutable identity digest mismatch: "
+                f"{event_id!r} != {expected_event_id!r}"
+            )
         _logical_key(event)
         _parse_time(
             (event.get("point_in_time") or {}).get("available_at"),
@@ -727,15 +801,28 @@ def compile_registration_lifecycles(
                     == (target_route.lifecycle_state if target_route else None)
                 )
                 if (current_candidate or target_candidate) and (
-                    not current_candidate
-                    or not target_candidate
-                    or not current_issuer
-                    or not target_issuer
-                    or current_issuer != target_issuer
-                    or not current_file
-                    or not target_file
-                    or current_file != target_file
-                    or not family_proven_same
+                    not _is_file_number_enrichment(
+                        current_event=event,
+                        current_candidate=current_candidate,
+                        target_candidate=target_candidate,
+                        current_issuer=current_issuer,
+                        target_issuer=target_issuer,
+                        current_file=current_file,
+                        target_file=target_file,
+                        family_proven_same=family_proven_same,
+                        target_event=correction_target,
+                    )
+                    and (
+                        not current_candidate
+                        or not target_candidate
+                        or not current_issuer
+                        or not target_issuer
+                        or current_issuer != target_issuer
+                        or not current_file
+                        or not target_file
+                        or current_file != target_file
+                        or not family_proven_same
+                    )
                 ):
                     issue_family = (
                         target_family
@@ -1235,11 +1322,29 @@ def compile_registration_lifecycles(
                     old_file = str(
                         (old_target.get("filing") or {}).get("file_number") or ""
                     ).strip()
+                    # The correction enriched the old immutable version with
+                    # exactly the resolved target's observed SEC file number:
+                    # the omitted value on the old version is not a group
+                    # change, so the locked edge keeps its resolved target.
+                    # An old version whose empty file number hides an
+                    # ambiguous observation is not an enrichment surface.
+                    file_number_enriched = (
+                        not old_file
+                        and _file_number_absent(old_target)
+                        and old_issuer == target_key[0]
+                        and old_route.registration_family == target_key[2]
+                        and _trusted_file_number_provenance(
+                            resolved_target, target_key[1]
+                        )
+                        is not None
+                    )
                     if (
                         not old_issuer
-                        or not old_file
                         or old_issuer != target_key[0]
-                        or old_file != target_key[1]
+                        or (
+                            not file_number_enriched
+                            and old_file != target_key[1]
+                        )
                         or (old_key is not None and old_key != target_key)
                     ):
                         add_issue(

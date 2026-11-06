@@ -703,6 +703,9 @@ def _drive_once_cycle(staged, monkeypatch, *, s3, argv, session_date=SESSION):
     # Pin the session WITHOUT --date: passing --date is itself the manual-run gate, so a
     # live-path smoke must not use it. _probe_delta_mode would hit ThetaData, so stub it.
     monkeypatch.setattr(poller, "_session_date", lambda override=None: override or session_date)
+    monkeypatch.setattr(
+        poller, "_current_session_matches_frozen_run", lambda *_args, **_kwargs: True,
+    )
     monkeypatch.setattr(poller, "_probe_delta_mode", lambda sd: "full_day")
     monkeypatch.setenv("R2_BUCKET", "test-bucket")
 
@@ -826,13 +829,11 @@ def test_once_cycle_heals_the_index_from_r2_truth_and_reuploads_it(staged, monke
         assert on_disk["dates"] == healed["dates"]
 
 
-def test_backdated_manual_run_writes_no_dated_keys(staged, monkeypatch):
-    """`--date` (the runbook's smoke recipe) must never rewrite settled archive history.
+def test_backdated_manual_run_is_rejected_before_writes(staged, monkeypatch):
+    """`--date` must never rewrite settled archive history.
 
-    That run polls a handful of roots, so its tide payload is a valid-looking PARTIAL of a
-    past session — and the archive key is derived from session_date, so an ungated smoke would
-    silently overwrite the settled record with a fragment (schema valid, date correct;
-    roots_polled lives only in meta.json, which the archive does not carry).
+    The legacy diagnostic used to exercise the live path on a past session. It now
+    fails before state loading, fetching, publication, or retention can run.
     """
     past = "2026-07-02"                      # a Thursday session, and the runbook's example
     s3, _ = _seeded_store()
@@ -840,13 +841,10 @@ def test_backdated_manual_run_writes_no_dated_keys(staged, monkeypatch):
     before = set(s3.keys)
 
     assert _drive_once_cycle(staged, monkeypatch, s3=s3, session_date=past,
-                             argv=["--once", "--date", past, "--roots", "SPY"]) == 0
+                             argv=["--once", "--date", past, "--roots", "SPY"]) == 2
 
-    # The current keys still publish (a smoke is still allowed to exercise the live path)…
-    assert "live_flow/tide_current.json" in s3.puts
-    # …but NOTHING dated was written, and NOTHING was pruned.
-    dated = [k for k in s3.puts if "/tide/" in k or "/dte_tide/" in k]
-    assert dated == [], f"a --date run wrote dated archive keys: {dated}"
+    # Nothing was written, overwritten, or pruned.
+    assert s3.puts == [], f"a --date run wrote archive keys: {s3.puts}"
     assert s3.deleted == [], f"a --date run pruned the archive: {s3.deleted}"
     # Every pre-existing archive object survived byte-untouched (nothing was overwritten).
     assert before <= set(s3.keys)

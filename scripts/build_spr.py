@@ -137,17 +137,26 @@ def _us_spr_vm(spr_kbbl: pd.Series, scfg: dict) -> dict:
     cap = scfg["spr_capacity_mb"]
     level_mb = last_kbbl / 1000.0
     peak_kbbl, low_kbbl = float(s.max()), float(s.min())
+
+    def weekly_change_mb(weeks: int) -> float | None:
+        # Require the named dated endpoint, not a clipped row count. Interior
+        # gaps do not invalidate two known endpoints; a missing endpoint does.
+        prior = s[s.index == s.index[-1] - pd.Timedelta(weeks=weeks)]
+        return _r((last_kbbl - float(prior.iloc[0])) / 1000.0, 1) if len(prior) == 1 else None
+
     vm = {
         "level_mb": _r(level_mb, 0),
         "capacity_mb": cap,
         "fill_pct": sr.fill_pct(level_mb, cap),
-        "chg_4w_mb": _r((sr.change(s, 4) or 0) / 1000.0, 1),
-        "chg_52w_mb": _r((sr.change(s, 52) or 0) / 1000.0, 1),
+        "chg_4w_mb": weekly_change_mb(4),
+        "chg_52w_mb": weekly_change_mb(52),
         "peak_mb": _r(peak_kbbl / 1000.0, 0), "peak_date": s.idxmax().strftime("%b %Y"),
         "low_mb": _r(low_kbbl / 1000.0, 0), "low_date": s.idxmin().strftime("%b %Y"),
         "above_low_mb": _r((last_kbbl - low_kbbl) / 1000.0, 0),
         "below_peak_mb": _r((peak_kbbl - last_kbbl) / 1000.0, 0),
         "as_of": s.index.max().strftime("%b %d, %Y"),
+        "days_cover": None, "import_cover_days": None,
+        "imports_mbd": None, "exports_mbd": None, "net_imports_mbd": None,
     }
     # days of US refinery-crude-run cover (SPR alone ÷ refiner net crude inputs, kbbl/d)
     ri = sr.series(store.read("eia", "refinery_inputs"))
@@ -167,7 +176,12 @@ def _us_spr_vm(spr_kbbl: pd.Series, scfg: dict) -> dict:
         vm["imports_mbd"] = round(float(imp.tail(52).mean()) / 1000, 2)
     if exp is not None:
         vm["exports_mbd"] = round(float(exp.tail(52).mean()) / 1000, 2)
-    vm["trade_basis"] = True   # values are 1y averages
+    # Preserve the incumbent trailing-52-observation calculation, but do not
+    # advertise a partial optional feed as a whole year's average.
+    vm["trade_basis"] = all(
+        len(feed) >= 52 and feed.tail(52).index.equals(
+            pd.date_range(end=feed.index[-1], periods=52, freq="7D"))
+        for feed in (ni, imp, exp) if feed is not None)
     return vm
 
 
@@ -209,6 +223,26 @@ def _gold_vm(gcfg: dict) -> dict:
     }
 
 
+def _global_jodi_vm(raw: dict) -> dict:
+    """JODI world total + the vintage its reporters actually show.
+
+    Recency gate (a kept country's last report sits within 6 months of the
+    freshest one) then the aggregate, plus the months the KEPT reporters span and
+    the ISOs dropped as stale. Pure over `raw` (iso -> stored crude frame).
+    """
+    fresh = max((sr.series(d).index.max() for d in raw.values()), default=None)
+    jodi_map = ({iso: d for iso, d in raw.items()
+                 if (sr.series(d).index.max() >= fresh - pd.DateOffset(months=6))}
+                if fresh is not None else {})
+    agg = sr.global_aggregate(jodi_map)
+    agg["as_of"] = fresh.strftime("%Y-%m") if fresh is not None else ""
+    agg["oldest"] = (min(sr.series(d).index.max() for d in jodi_map.values()).strftime("%Y-%m")
+                     if jodi_map else "")
+    agg["excluded"] = sorted(set(raw) - set(jodi_map))
+    agg["n_excluded"] = len(agg["excluded"])
+    return agg
+
+
 def main() -> int:
     scfg = config.load()["strategic_reserves"]
     spr_df = store.read("eia", "spr_stocks")
@@ -229,11 +263,7 @@ def main() -> int:
         d = store.read("jodi", p.stem)
         if d is not None and not d.empty:
             raw[p.stem.replace("crude_", "").upper()] = d
-    fresh = max((sr.series(d).index.max() for d in raw.values()), default=None)
-    jodi_map = ({iso: d for iso, d in raw.items()
-                 if (sr.series(d).index.max() >= fresh - pd.DateOffset(months=6))}
-                if fresh is not None else {})
-    agg = sr.global_aggregate(jodi_map)
+    agg = _global_jodi_vm(raw)
 
     # oil-price overlay (Yahoo front futures, already in the store)
     def _px(t: str) -> pd.Series | None:
@@ -261,7 +291,8 @@ def main() -> int:
     html = env.get_template("spr.html.j2").render(
         C=C, as_of=as_of, built=built, us=us, countries=countries, agg=agg,
         charts=charts, scfg=scfg, caveat=sr.SPR_CAVEAT,
-        assess_word=sr.ASSESS_WORD, gold=gold)
+        assess_word=sr.ASSESS_WORD, assess_word_zh=sr.ASSESS_WORD_ZH,
+        gold=gold)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     write_page(site / "spr.html", html)
     log.info("wrote %s/spr.html (%d KB)", site, len(html) // 1024)

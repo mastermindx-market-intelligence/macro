@@ -371,3 +371,23 @@ def test_build_risk_radar_includes_track_key():
     with mock.patch("engine.market_state._rr_scorecard_track", return_value=None):
         result = _build_risk_radar(None, None)
     assert "track" in result
+
+
+def test_existing_market_state_reader_preserves_probability_evidence(tmp_path):
+    """The real Risk Radar VM reader forwards the additive diagnostic unchanged."""
+    from engine.market_state import _rr_scorecard_track
+    market = _scorecard_market()
+    audit = {"definition": "us_issued_probability_audit.v1",
+             "status": "descriptive_only", "current_model_validated": False,
+             "publication_timing_verified": False,
+             "horizons": {"h5": {"n": 0, "brier": None, "paired_base_brier": None}}}
+    market["probability_audit"] = audit
+    target = tmp_path / "risk_radar/scorecard.json"
+    target.parent.mkdir()
+    target.write_text(json.dumps({"schema": "risk_radar_scorecard.v1", "markets": {"us": market}}))
+    before = target.read_bytes()
+    with mock.patch("lib.config.data_dir", return_value=tmp_path):
+        got = _rr_scorecard_track("us")
+    assert got["probability_audit"] == audit
+    assert got["windows"] == market["windows"]
+    assert target.read_bytes() == before

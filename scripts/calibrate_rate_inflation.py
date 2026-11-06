@@ -3,12 +3,12 @@ and honestly test whether any rate/inflation leg earns a SCORED tier.
 
 The dashboard already SCORES the validated rate/inflation legs that have forward
 content (breakeven direction + TIPS-nominal momentum in the inflation axis; real
-yields for commodities/BTC; the term-premium-adjusted curve in recession-risk). This
+yields for commodities/BTC; the legacy TP10 curve heuristic in recession-risk). This
 calibrator does two NEW things, both leakage-free:
 
   1. TRANSMISSION MATRIX (display-only coefficients). For every rate/inflation DRIVER
      (real-rate level & 63d SPEED, nominal-rate speed, breakeven level & change, 5y5y,
-     the TP-adjusted curve, the us2y-funds policy gap, the core-PCE-vs-2%-target gap,
+     the legacy TP10 curve heuristic, the us2y-funds policy gap, the core-PCE-vs-2%-target gap,
      a 3m-vs-12m inflation re-acceleration read, and a market-vs-model expectations
      wedge) measured against the strictly-FORWARD return of every asset class we track
      (broad equities, growth/duration/financial/energy/defensive sectors, gold, oil,
@@ -53,7 +53,8 @@ warnings.filterwarnings("ignore")
 from lib import config, store  # noqa: E402
 from engine import inputs  # noqa: E402
 from engine.rate_inflation_transmission import (build_drivers, DRIVERS_META,  # noqa: E402
-                                                ASSETS_META)
+                                                ASSETS_META, scenario_cell_metadata,
+                                                scenario_calibration_metadata)
 from engine.validation import (clark_west, oos_r2,  # noqa: E402
                                purged_folds, fold_robust, vif, top_correlated_pairs)
 
@@ -174,7 +175,7 @@ SCORED_CANDIDATES = [
     ("corepce_gap", +1, "Core-PCE-vs-target gap (sticky inflation)"),
     ("infl_accel", +1, "Inflation re-acceleration (3m>12m)"),
     ("exp_wedge", +1, "Expectations unanchoring (market>model)"),
-    ("curve_tp_adj", -1, "TP-adjusted curve inversion (flip: low=stress)"),
+    ("curve_tp_adj", -1, "Legacy TP10 curve heuristic (flip: low=stress; not expectations-only)"),
     ("nom10y_chg63", +1, "Nominal-rate SPEED (63d rise)"),
     # --- yield-curve SHAPE candidates (engine/yield_curve.py) — tested on the same bar
     ("ntfs", -1, "Near-term forward spread inversion (flip: low=stress; Engstrom-Sharpe beats 2s10s)"),
@@ -321,14 +322,17 @@ SCENARIO_UNDERLYING = {
 }
 
 
-def scenario_betas(f: pd.DataFrame) -> dict:
+def scenario_betas(f: pd.DataFrame, *, metadata: dict | None = None,
+                   generated_at: str | None = None) -> dict:
     closes = inputs.yahoo_closes()
     out = {}
+    cells = {}
     for drv, ucol in SCENARIO_UNDERLYING.items():
         if ucol not in f:
             continue
         dch = f[ucol] - f[ucol].shift(H)                 # contemporaneous 63d change ending at t
         row = {}
+        cell_row = {}
         for tkr, _lbl, _kind in ASSETS:
             s = closes.get(tkr)
             if s is None:
@@ -343,7 +347,14 @@ def scenario_betas(f: pd.DataFrame) -> dict:
             if not v:
                 continue
             row[tkr] = round(float(j["x"].cov(j["r"]) / v), 4)
+            if metadata is not None:
+                cell_row[tkr] = scenario_cell_metadata(j, row[tkr])
         out[drv] = row
+        cells[drv] = cell_row
+    if metadata is not None:
+        metadata.clear()
+        metadata.update(scenario_calibration_metadata(f, out, cells, generated_at=generated_at,
+                                                      horizon_sessions=H, minimum_n=MIN_OBS))
     return out
 
 
@@ -381,7 +392,9 @@ def main() -> int:
                 "purged-CV sign robustness + bootstrap-CI tercile edge + Clark-West "
                 "return-forecast bar. No look-ahead."}}
     report["transmission_matrix"] = transmission_matrix(drivers, fwd, split)
-    report["scenario_betas"] = scenario_betas(f)
+    scenario_metadata = {}
+    report["scenario_betas"] = scenario_betas(f, metadata=scenario_metadata)
+    report["scenario_beta_metadata"] = scenario_metadata
     report["scored_gate"] = scored_gate(drivers, eq, fwd_spy, split)
     report["collinearity"] = collinearity(drivers, f)
 

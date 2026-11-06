@@ -1,0 +1,136 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+______ test_same_account_session_confirmation_preserves_draft_and_editor _______
+
+browser_page = <function browser_page.<locals>.open_page at 0x11755a980>
+
+    def test_same_account_session_confirmation_preserves_draft_and_editor(browser_page):
+        owner = AccountOwner()
+        page = browser_page(owner); ready(page); prepare(page)
+        page.locator("#fxr-prepared-list article button").first.click()
+        expect(page.locator("#fxr-watch-dialog")).to_be_visible()
+        before = page.locator("#fxr-rule-json").text_content()
+        epoch = page.evaluate("window.ForexWatchClient.authState().epoch")
+        # The incumbent SDK emits this on visible-tab session recovery without logout.
+        page.evaluate("(id) => window.__fxAuth.emit(id, 'SIGNED_IN')", A)
+>       expect(page.locator("#fxr-prepared-list article")).to_have_count(1)
+E       AssertionError: Locator expected to have count '1'
+E       Actual value: 0 
+E       Call log:
+E         - Expect "to_have_count" with timeout 5000ms
+E         - waiting for locator("#fxr-prepared-list article")
+E           14 × locator resolved to 0 elements
+E              - unexpected value "0"
+
+tests/test_forex_watch_workspace_browser.py:308: AssertionError
+_____ test_same_account_confirmation_keeps_unconfirmed_save_reconciliation _____
+
+browser_page = <function browser_page.<locals>.open_page at 0x11755afb0>
+
+    def test_same_account_confirmation_keeps_unconfirmed_save_reconciliation(browser_page):
+        owner = AccountOwner(); owner.defer_save = True
+        page = browser_page(owner); ready(page); prepare(page)
+        page.locator("#fxr-prepared-list article button").nth(1).click()
+        expect(page.locator("#fxr-pending-list article")).to_have_count(1)
+        page.evaluate("(id) => window.__fxAuth.emit(id, 'SIGNED_IN')", A)
+>       expect(page.locator("#fxr-pending-list article")).to_have_count(1)
+E       AssertionError: Locator expected to have count '1'
+E       Actual value: 0 
+E       Call log:
+E         - Expect "to_have_count" with timeout 5000ms
+E         - waiting for locator("#fxr-pending-list article")
+E           14 × locator resolved to 0 elements
+E              - unexpected value "0"
+
+tests/test_forex_watch_workspace_browser.py:321: AssertionError
+_____________ test_empty_reload_cannot_resolve_an_unconfirmed_save _____________
+
+browser_page = <function browser_page.<locals>.open_page at 0x1178feae0>
+
+    def test_empty_reload_cannot_resolve_an_unconfirmed_save(browser_page):
+        owner = AccountOwner(); owner.defer_save = True
+        page = browser_page(owner); ready(page); prepare(page)
+        page.locator("#fxr-prepared-list article button").nth(1).click()
+        expect(page.locator("#fxr-account-title")).to_have_text("Change awaiting confirmation")
+        page.locator("#fxr-account-refresh").click()
+>       expect(page.locator("#fxr-account-title")).to_have_text("Change awaiting confirmation")
+E       AssertionError: Locator expected to have text 'Change awaiting confirmation'
+E       Actual value: No saved Forex conditions 
+E       Call log:
+E         - Expect "to_have_text" with timeout 5000ms
+E         - waiting for locator("#fxr-account-title")
+E           14 × locator resolved to <h3 id="fxr-account-title" data-account-status="ready">No saved Forex conditions</h3>
+E              - unexpected value "No saved Forex conditions"
+E       
+E       Aria snapshot:
+E       - heading "No saved Forex conditions" [level=3]
+
+tests/test_forex_watch_workspace_browser.py:338: AssertionError
+__________________ test_account_condition_transport_contract ___________________
+
+    def test_account_condition_transport_contract():
+        node = shutil.which("node")
+        assert node, "Node is required for the Forex account transport contract"
+        result = subprocess.run([node, "--test", str(HARNESS)], cwd=ROOT,
+                                capture_output=True, text=True, timeout=45)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: ✔ signed-out state does not construct a client or attempt a write (4.205666ms)
+E         ✔ only an authoritative successful empty read is empty (2.937ms)
+E         ✔ foreign, active and malformed records are never rendered as saved inactive (2.28975ms)
+E         ✔ save sends canonical fields and expected owner; only returned identity is saved (0.968167ms)
+E         ✔ invalid rules and stale local account intents make no mutation (0.398917ms)
+E         ✔ missing or mismatched mutation acknowledgments remain unconfirmed (1.801542ms)
+E         ✔ revision conflict is disclosed without retry or overwrite (0.436041ms)
+E         ✔ lost save response is reconciled by a read of the same identity, without replay (0.75225ms)
+E         ✔ an empty read cannot prove a timed-out save was never applied (11.852708ms)
+E         ✔ a deadline before client acquisition is unavailable and never writes (9.868208ms)
+E         ✔ same-user sign-out/sign-in invalidates a late save result (0.820917ms)
+E         ✔ account changes while loading the client prevent the mutation (1.415959ms)
+E         ✔ late token selection is fenced by expected owner sent to RPC (0.523708ms)
+E         ✔ late account read cannot reveal the preceding user's rows (0.897542ms)
+E         ✔ deletion requires a revision and authoritative acknowledgment (0.566791ms)
+E         ✔ lost delete response is reconciled through absence without another write (0.4105ms)
+E         ✔ newer revision during reconciliation is conflict, never a successful save (0.196625ms)
+E         ✔ an unapplied owner function is unavailable, not saved or an empty account (0.164417ms)
+E         ✖ routine same-account SIGNED_IN preserves the current intent and in-flight acknowledgment (1.316875ms)
+E         ✔ initial signed-out session resolution notifies an already-subscribed view (0.202042ms)
+E         ℹ tests 20
+E         ℹ suites 0
+E         ℹ pass 19
+E         ℹ fail 1
+E         ℹ cancelled 0
+E         ℹ skipped 0
+E         ℹ todo 0
+E         ℹ duration_ms 354.593667
+E         
+E         ✖ failing tests:
+E         
+E         test at tests/js/forex_watch_client.test.cjs:188:1
+E         ✖ routine same-account SIGNED_IN preserves the current intent and in-flight acknowledgment (1.316875ms)
+E           AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E           
+E           2 !== 1
+E           
+E               at TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/forex-r26-owner-adoption-20261020-sol-001/tests/js/forex_watch_client.test.cjs:196:10)
+E               at async Test.run (node:internal/test_runner/test:1389:7)
+E               at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+E             generatedMessage: true,
+E             code: 'ERR_ASSERTION',
+E             actual: 2,
+E             expected: 1,
+E             operator: 'strictEqual',
+E             diff: 'simple'
+E           }
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '--test', '/Volumes/Mastermind 2/agent-workspaces/macro/web/forex-r26...ERR_ASSERTION',\n    actual: 2,\n    expected: 1,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n", stderr='').returncode
+
+tests/test_forex_watch_client_js.py:20: AssertionError
+
+NOTE: sparse worktree — artifacts, data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_forex_watch_workspace_browser.py::test_same_account_session_confirmation_preserves_draft_and_editor
+FAILED tests/test_forex_watch_workspace_browser.py::test_same_account_confirmation_keeps_unconfirmed_save_reconciliation
+FAILED tests/test_forex_watch_workspace_browser.py::test_empty_reload_cannot_resolve_an_unconfirmed_save
+FAILED tests/test_forex_watch_client_js.py::test_account_condition_transport_contract
+4 failed in 34.37s

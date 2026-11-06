@@ -1,0 +1,72 @@
+/* rotation_glance.css: the governed stylesheet for the Sector Central rotation
+   observation glance (.rc-ew*), whose markup rotation_events.js renders
+   (EW-P4.T1). It mirrors the Risk Radar host's .gde-ew* rules in
+   templates/_risk_envelope_band.css.j2, so both hosts read as one component.
+
+   Chairman 2026-10-18 rule: even one-piece borders on all four sides, token
+   surfaces only, no edge stripe, accent rail or inset shadow bar. State is
+   carried by words plus labelled ink, never by colour alone. Sizes come from
+   the --fs-* scale and colours from theme tokens only.
+
+   Dark and light are separate art directions. Dark lifts the card with the
+   soft neutral surface; light sets a white panel on the deeper canvas with the
+   card shadow, so the card reads raised in both themes rather than sunken.
+
+   --ink-1/2/3, --r-card and --r-ctl are scoped to some hosts and are not
+   defined at :root on Sector Central, so every use carries the fallback it
+   resolves to here. */
+
+.rc-ew {--rc-ew-surface:var(--esurf-neutral-soft); margin:14px 0; padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-card,12px); background:var(--rc-ew-surface); color:var(--ink-1,var(--text)); overflow-wrap:anywhere;}
+:root[data-theme="light"] .rc-ew {--rc-ew-surface:var(--panel); box-shadow:var(--card-shadow);}
+.rc-ew[data-ew-state="stale"],
+.rc-ew[data-ew-state="unavailable"],
+.rc-ew[data-ew-state="unreadable"],
+.rc-ew[data-ew-state="withdrawn"],
+.rc-ew[data-ew-state="partial"],
+.rc-ew[data-ew-state="conflicting"] {background:var(--surface-warn-subtle);}
+.rc-ew-head {margin:0; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; font-size:var(--fs-sm); color:var(--ink-1,var(--text));}
+.rc-ew-scope {font-weight:600;}
+.rc-ew-state {font-weight:600; color:var(--text);}
+.rc-ew[data-ew-state="stale"] .rc-ew-state,
+.rc-ew[data-ew-state="unavailable"] .rc-ew-state,
+.rc-ew[data-ew-state="unreadable"] .rc-ew-state,
+.rc-ew[data-ew-state="withdrawn"] .rc-ew-state,
+.rc-ew[data-ew-state="partial"] .rc-ew-state,
+.rc-ew[data-ew-state="conflicting"] .rc-ew-state {color:var(--ink-warn,var(--warn));}
+.rc-ew[data-ew-state="corrected"] .rc-ew-state {color:var(--ink-info,var(--link));}
+.rc-ew-what {margin:6px 0 0; font-size:var(--fs-sm); line-height:1.45; color:var(--ink-1,var(--text));}
+.rc-ew-note {margin:4px 0 0; font-size:var(--fs-label); color:var(--ink-2,var(--text));}
+.rc-ew-when {margin:4px 0 0; font-size:var(--fs-label); color:var(--ink-3,var(--muted));}
+.rc-ew-built {color:var(--muted); font-size:var(--fs-label);}
+.rc-ew-means {margin:4px 0 0; font-size:var(--fs-label); color:var(--ink-3,var(--muted));}
+.rc-ew-next {display:inline-block; margin-top:6px; font-size:var(--fs-label); color:var(--link);}
+.rc-ew-next:focus-visible, .rc-ew-study > summary:focus-visible {outline:2px solid var(--link); outline-offset:2px; border-radius:var(--r-ctl,8px);}
+.rc-ew-h {margin:12px 0 4px; font-size:var(--fs-sm); font-weight:600; color:var(--ink-1,var(--text));}
+.rc-ew-tablewrap {margin-top:8px; max-width:100%;}
+.rc-ew-legs {width:100%; border-collapse:collapse; font-size:var(--fs-label);}
+.rc-ew-legs caption {caption-side:top; text-align:left; padding:0 8px 4px; color:var(--ink-3,var(--muted)); font-size:var(--fs-label);}
+.rc-ew-legs th, .rc-ew-legs td {padding:6px 8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:anywhere;}
+.rc-ew-legs th {color:var(--ink-2,var(--text)); font-weight:600;}
+.rc-ew-legs td {color:var(--ink-1,var(--text)); font-variant-numeric:tabular-nums;}
+.rc-ew-contextline {margin:6px 0 0; font-size:var(--fs-sm); line-height:1.45;}
+.rc-ew-horizons {display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
+.rc-ew-hz {flex:1 1 150px; min-width:0; border:1px solid var(--line); border-radius:var(--r-ctl,8px); padding:8px 10px; font-size:var(--fs-label); color:var(--ink-2,var(--text)); display:flex; gap:6px 10px; align-items:baseline; flex-wrap:wrap;}
+.rc-ew-hz-k {font-weight:600; color:var(--ink-1,var(--text));}
+.rc-ew-hz-v {font-size:var(--fs-md); font-weight:650; color:var(--ink-1,var(--text)); font-variant-numeric:tabular-nums;}
+.rc-ew-hz-q {color:var(--ink-3,var(--muted));}
+.rc-ew-against {padding-left:16px; margin:0; font-size:var(--fs-label); line-height:1.5; color:var(--ink-2,var(--text));}
+.rc-ew-study {margin-top:10px; font-size:var(--fs-label);}
+.rc-ew-study > summary {cursor:pointer; min-height:32px; align-content:center; color:var(--ink-2,var(--text));}
+.rc-ew-dl {margin:4px 0 0;}
+.rc-ew-dl > div {display:flex; gap:4px 12px; flex-wrap:wrap; padding:5px 0; border-bottom:1px solid var(--line);}
+.rc-ew-dl dt {flex:0 0 auto; color:var(--ink-3,var(--muted)); font-weight:600;}
+.rc-ew-dl dd {margin:0; min-width:0; flex:1 1 120px; color:var(--ink-1,var(--text)); overflow-wrap:anywhere;}
+.rc-ew-id {user-select:all; font-family:var(--font-mono);}
+@media (max-width:520px) {
+  .rc-ew {padding:10px;}
+  .rc-ew-horizons {flex-direction:column;}
+  .rc-ew-hz {flex-basis:100%;}
+  .rc-ew-legs th, .rc-ew-legs td {display:block; width:100%; box-sizing:border-box; border-bottom:none; padding:2px 8px;}
+  .rc-ew-legs tr {display:block; border-bottom:1px solid var(--line); padding:4px 0;}
+  .rc-ew-legs {border-bottom:1px solid var(--line);}
+}

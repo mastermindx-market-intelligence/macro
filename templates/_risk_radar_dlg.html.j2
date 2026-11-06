@@ -126,7 +126,7 @@
           every key, possibly None) from a stub: the card computes its odds scale from
           rd.dd21 BEFORE its own `is not none` guard, so a stub would raise there and take
           the whole page render with it. A stub renders the headline and nothing else. -#}
-      {% if r.state and r.dd21 is defined %}{{ rrc.risk_radar_card(r, sc, show_threats=false) }}{% endif %}
+      {% if r.state and r.dd21 is defined %}{{ rrc.risk_radar_card(r, sc, show_threats=false, plain_gross=(mkt=='cn')) }}{% endif %}
 
       {# ── 3. Signal tiles: Leading · Overseas · Track record · Calendar ───── #}
       {%- set _tl_lead = c.leading if c.leading else none -%}

@@ -1,0 +1,454 @@
+{
+  "observed_at_utc": "2026-10-17T14:03:56.748498+00:00",
+  "pr": 9515,
+  "head": "646cc093b4982eabc736862926fe7f1fc458b8a1",
+  "base_used_for_owned_paths": "e8cb76a6cd742690584f7a16b92ca195a151a71a",
+  "merge": "eaf418862bdd2b226617f509a1868cecc7887ed4",
+  "fresh_main": "9b464c9d6ce9db60c7c86b3c6837fe2d5dfc05d6",
+  "separate_main_fetch_exit": 0,
+  "owned_path_count": 52,
+  "paths": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "candidate_blob": "57f41d54decd8a70dbfdebaa703ff9374e9f6b12",
+      "merge_blob": "90e0b019454b51a00ad8fb2304e42ed20d3eb938",
+      "fresh_main_blob": "2321bfa5fed6efd0e023dfe36568ef37d234aec4",
+      "match_at_merge": false,
+      "match_on_main": false
+    },
+    {
+      "path": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+      "candidate_blob": "3ede3f1cb72c07bbac1d88170591d950c9fa6326",
+      "merge_blob": "3ede3f1cb72c07bbac1d88170591d950c9fa6326",
+      "fresh_main_blob": "3ede3f1cb72c07bbac1d88170591d950c9fa6326",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "candidate_blob": "d7ddf97ee21a8a2f8523b9c5a071d155aec370f2",
+      "merge_blob": "d7ddf97ee21a8a2f8523b9c5a071d155aec370f2",
+      "fresh_main_blob": "d7ddf97ee21a8a2f8523b9c5a071d155aec370f2",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+      "candidate_blob": "fce87ee7f43e49256a086f54000cd699f6cce12a",
+      "merge_blob": "fce87ee7f43e49256a086f54000cd699f6cce12a",
+      "fresh_main_blob": "fce87ee7f43e49256a086f54000cd699f6cce12a",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/README.md",
+      "candidate_blob": "96453d0f7dede03c58acd720d1f6e76ecb3b6731",
+      "merge_blob": "96453d0f7dede03c58acd720d1f6e76ecb3b6731",
+      "fresh_main_blob": "96453d0f7dede03c58acd720d1f6e76ecb3b6731",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+      "candidate_blob": "4d3f2ef9026e76e24ef5550638c1305438d28d8c",
+      "merge_blob": "4d3f2ef9026e76e24ef5550638c1305438d28d8c",
+      "fresh_main_blob": "4d3f2ef9026e76e24ef5550638c1305438d28d8c",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/CALENDAR_COVERAGE_ADDENDUM_2026-10-17.json",
+      "candidate_blob": "a6b0a42efced92690c5b293b68c5bdf30509d20f",
+      "merge_blob": "a6b0a42efced92690c5b293b68c5bdf30509d20f",
+      "fresh_main_blob": "a6b0a42efced92690c5b293b68c5bdf30509d20f",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/CI_CURATED_CLOSURE_2026-10-17.json",
+      "candidate_blob": "4c67835f5b5004ceff8bf227405cac26d89d4c71",
+      "merge_blob": "4c67835f5b5004ceff8bf227405cac26d89d4c71",
+      "fresh_main_blob": "4c67835f5b5004ceff8bf227405cac26d89d4c71",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/CI_OWNED_CLOSURE_2026-10-17.json",
+      "candidate_blob": "fb3dfc65f6d0db94bc1f1b43906692f4051fe292",
+      "merge_blob": "fb3dfc65f6d0db94bc1f1b43906692f4051fe292",
+      "fresh_main_blob": "fb3dfc65f6d0db94bc1f1b43906692f4051fe292",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/CURRENT_BASE_COMPATIBILITY_2026-10-17.json",
+      "candidate_blob": "db7a97522b308ef03608f3cb02d723ea8f1c0824",
+      "merge_blob": "db7a97522b308ef03608f3cb02d723ea8f1c0824",
+      "fresh_main_blob": "db7a97522b308ef03608f3cb02d723ea8f1c0824",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/PARENT_REVIEW_2026-10-17.md",
+      "candidate_blob": "05d9819665e6ce344d765844e1bea38f24bcd665",
+      "merge_blob": "05d9819665e6ce344d765844e1bea38f24bcd665",
+      "fresh_main_blob": "05d9819665e6ce344d765844e1bea38f24bcd665",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/PEAK_AGING_ADDENDUM_2026-10-17.json",
+      "candidate_blob": "3639fef2be09459f7c2ad7b9e89a4e6aed0c2872",
+      "merge_blob": "3639fef2be09459f7c2ad7b9e89a4e6aed0c2872",
+      "fresh_main_blob": "3639fef2be09459f7c2ad7b9e89a4e6aed0c2872",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/PEAK_AGING_CALENDAR_QUALIFICATION_2026-10-17.json",
+      "candidate_blob": "ba3c6ceb0080b61d3bced6570434b128174a3fcc",
+      "merge_blob": "ba3c6ceb0080b61d3bced6570434b128174a3fcc",
+      "fresh_main_blob": "ba3c6ceb0080b61d3bced6570434b128174a3fcc",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/PROTOCOL_2026-10-17.json",
+      "candidate_blob": "1aa2eb9fd33801d6be24112aacf32fe165575b16",
+      "merge_blob": "1aa2eb9fd33801d6be24112aacf32fe165575b16",
+      "fresh_main_blob": "1aa2eb9fd33801d6be24112aacf32fe165575b16",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/README.md",
+      "candidate_blob": "5ff38b0d5fc112f832d7ada419596fc902112254",
+      "merge_blob": "5ff38b0d5fc112f832d7ada419596fc902112254",
+      "fresh_main_blob": "5ff38b0d5fc112f832d7ada419596fc902112254",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/RECORDED_FIELDS_ADDENDUM_2026-10-17.json",
+      "candidate_blob": "e1c69dd1c32703701f6a983b7bddfeb7a3b3c913",
+      "merge_blob": "e1c69dd1c32703701f6a983b7bddfeb7a3b3c913",
+      "fresh_main_blob": "e1c69dd1c32703701f6a983b7bddfeb7a3b3c913",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/RECORDED_VERSIONS_2026-10-17.json",
+      "candidate_blob": "64ede355df3819827ffca86611d0d6b9e313a118",
+      "merge_blob": "64ede355df3819827ffca86611d0d6b9e313a118",
+      "fresh_main_blob": "64ede355df3819827ffca86611d0d6b9e313a118",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/T13_METADATA_ADMISSION_2026-10-17.json",
+      "candidate_blob": "47024219d41e207b69afdecbcf860b3741217010",
+      "merge_blob": "47024219d41e207b69afdecbcf860b3741217010",
+      "fresh_main_blob": "47024219d41e207b69afdecbcf860b3741217010",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/T13_METADATA_ADMISSION_2026-10-17.md",
+      "candidate_blob": "74cfd88d93aea6c6e20141671759cb88cc51b6b7",
+      "merge_blob": "74cfd88d93aea6c6e20141671759cb88cc51b6b7",
+      "fresh_main_blob": "74cfd88d93aea6c6e20141671759cb88cc51b6b7",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/plot_census_case.py",
+      "candidate_blob": "b6799f39653bb0f0ebe67de3e421d77396b22c10",
+      "merge_blob": "b6799f39653bb0f0ebe67de3e421d77396b22c10",
+      "fresh_main_blob": "b6799f39653bb0f0ebe67de3e421d77396b22c10",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/qualify_recorded_versions_20261017.py",
+      "candidate_blob": "d1dcd1e1311c133b917c00fe2ca3bc4bcdac24cc",
+      "merge_blob": "d1dcd1e1311c133b917c00fe2ca3bc4bcdac24cc",
+      "fresh_main_blob": "d1dcd1e1311c133b917c00fe2ca3bc4bcdac24cc",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/replay_recorded_versions.py",
+      "candidate_blob": "e629c68eb5eff441f2528ce337c73e999db50966",
+      "merge_blob": "e629c68eb5eff441f2528ce337c73e999db50966",
+      "fresh_main_blob": "e629c68eb5eff441f2528ce337c73e999db50966",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/risk_radar_september_october_2026.png",
+      "candidate_blob": "d0c40c0031ac63feb93db0a9bfc9ea5053466543",
+      "merge_blob": "d0c40c0031ac63feb93db0a9bfc9ea5053466543",
+      "fresh_main_blob": "d0c40c0031ac63feb93db0a9bfc9ea5053466543",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/v1/episodes.json",
+      "candidate_blob": "d78065e16932727e0a9b09a7d210876d5c32a4b6",
+      "merge_blob": "d78065e16932727e0a9b09a7d210876d5c32a4b6",
+      "fresh_main_blob": "d78065e16932727e0a9b09a7d210876d5c32a4b6",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/v1/manifest.json",
+      "candidate_blob": "e5b77d53d30a09009b3d52b7e6ee3edc864a61d6",
+      "merge_blob": "e5b77d53d30a09009b3d52b7e6ee3edc864a61d6",
+      "fresh_main_blob": "e5b77d53d30a09009b3d52b7e6ee3edc864a61d6",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/v1/origins.csv.gz",
+      "candidate_blob": "77dfd0117ad5cd99799f74bfb4d8e49ba24ffc85",
+      "merge_blob": "77dfd0117ad5cd99799f74bfb4d8e49ba24ffc85",
+      "fresh_main_blob": "77dfd0117ad5cd99799f74bfb4d8e49ba24ffc85",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/v1/rotation.csv.gz",
+      "candidate_blob": "c5e1ad18336ca7b5a7848989179ad8f88cec4ec8",
+      "merge_blob": "c5e1ad18336ca7b5a7848989179ad8f88cec4ec8",
+      "fresh_main_blob": "c5e1ad18336ca7b5a7848989179ad8f88cec4ec8",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/v1/september_october_origins.csv",
+      "candidate_blob": "a03aabcb8baab919732de582d0cae031d5957c48",
+      "merge_blob": "a03aabcb8baab919732de582d0cae031d5957c48",
+      "fresh_main_blob": "a03aabcb8baab919732de582d0cae031d5957c48",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/v1/september_october_rotation.csv",
+      "candidate_blob": "c0faf59dede2eb4b14364555046b7202282be852",
+      "merge_blob": "c0faf59dede2eb4b14364555046b7202282be852",
+      "fresh_main_blob": "c0faf59dede2eb4b14364555046b7202282be852",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/all_date_census/v1/summary.json",
+      "candidate_blob": "ed6146ffda86d413159060b903400c25e5bfc1b1",
+      "merge_blob": "ed6146ffda86d413159060b903400c25e5bfc1b1",
+      "fresh_main_blob": "ed6146ffda86d413159060b903400c25e5bfc1b1",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/METHOD_AND_VOCABULARY_ADDENDUM.json",
+      "candidate_blob": "9801dec28a7f0e218ab221064b98cda4cecc763d",
+      "merge_blob": "9801dec28a7f0e218ab221064b98cda4cecc763d",
+      "fresh_main_blob": "9801dec28a7f0e218ab221064b98cda4cecc763d",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/README.md",
+      "candidate_blob": "f4f64918e0488a30bc4f6ede76bf215cef368afd",
+      "merge_blob": "f4f64918e0488a30bc4f6ede76bf215cef368afd",
+      "fresh_main_blob": "f4f64918e0488a30bc4f6ede76bf215cef368afd",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/SOURCE_CLOCK_REPAIR_20261017.json",
+      "candidate_blob": "e783ad29e147e45f8c1ea71d387bb188e938816c",
+      "merge_blob": "e783ad29e147e45f8c1ea71d387bb188e938816c",
+      "fresh_main_blob": "e783ad29e147e45f8c1ea71d387bb188e938816c",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/SOURCE_RELEASE_PREFLIGHT_20261017.json",
+      "candidate_blob": "33ffd4f07aba60a3e9fba68b7381274a30a0cb9a",
+      "merge_blob": "33ffd4f07aba60a3e9fba68b7381274a30a0cb9a",
+      "fresh_main_blob": "33ffd4f07aba60a3e9fba68b7381274a30a0cb9a",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/consumer_repro.py",
+      "candidate_blob": "7d8bb163c0044f8f620eeea61bab8baa4033bf00",
+      "merge_blob": "7d8bb163c0044f8f620eeea61bab8baa4033bf00",
+      "fresh_main_blob": "7d8bb163c0044f8f620eeea61bab8baa4033bf00",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/receipt.json",
+      "candidate_blob": "e94bba0fa935740c2c179106b7597e91bc37e1de",
+      "merge_blob": "e94bba0fa935740c2c179106b7597e91bc37e1de",
+      "fresh_main_blob": "e94bba0fa935740c2c179106b7597e91bc37e1de",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/README.md",
+      "candidate_blob": "f12cc0d8d95390c4dc1073e6563150fa798864b9",
+      "merge_blob": "f12cc0d8d95390c4dc1073e6563150fa798864b9",
+      "fresh_main_blob": "f12cc0d8d95390c4dc1073e6563150fa798864b9",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/capture_manifest.json",
+      "candidate_blob": "66b6c5a1b7ae76ab4d761141905b0ad94a3833df",
+      "merge_blob": "66b6c5a1b7ae76ab4d761141905b0ad94a3833df",
+      "fresh_main_blob": "66b6c5a1b7ae76ab4d761141905b0ad94a3833df",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure.jpg",
+      "candidate_blob": "46e021760df132d8c31925317e9436fce2955f4d",
+      "merge_blob": "46e021760df132d8c31925317e9436fce2955f4d",
+      "fresh_main_blob": "46e021760df132d8c31925317e9436fce2955f4d",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure.txt",
+      "candidate_blob": "e62780122847f8eb0f7134ed8c6b43c77fa714a5",
+      "merge_blob": "e62780122847f8eb0f7134ed8c6b43c77fa714a5",
+      "fresh_main_blob": "e62780122847f8eb0f7134ed8c6b43c77fa714a5",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/radar_evidence.jpg",
+      "candidate_blob": "b5728316eeb58f8cd6326cf1463f5c50c633ae82",
+      "merge_blob": "b5728316eeb58f8cd6326cf1463f5c50c633ae82",
+      "fresh_main_blob": "b5728316eeb58f8cd6326cf1463f5c50c633ae82",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/radar_expanded.txt",
+      "candidate_blob": "111fc3d1b4705cc280d38ca907963b9ddcdb69df",
+      "merge_blob": "111fc3d1b4705cc280d38ca907963b9ddcdb69df",
+      "fresh_main_blob": "111fc3d1b4705cc280d38ca907963b9ddcdb69df",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/radar_incumbent.jpg",
+      "candidate_blob": "9073118556651bf664e4ea51b69df38400e1d204",
+      "merge_blob": "9073118556651bf664e4ea51b69df38400e1d204",
+      "fresh_main_blob": "9073118556651bf664e4ea51b69df38400e1d204",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/radar_initial.txt",
+      "candidate_blob": "3424fbd42b438de1e9a4fff94ba07950e56b7225",
+      "merge_blob": "3424fbd42b438de1e9a4fff94ba07950e56b7225",
+      "fresh_main_blob": "3424fbd42b438de1e9a4fff94ba07950e56b7225",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/runtime_response_record.json",
+      "candidate_blob": "b4005d6bf61ecf4070255c426ece2d7911eac615",
+      "merge_blob": "b4005d6bf61ecf4070255c426ece2d7911eac615",
+      "fresh_main_blob": "b4005d6bf61ecf4070255c426ece2d7911eac615",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/risk_radar_architecture_contract_20261017.md",
+      "candidate_blob": "8106c647707930d74085bcdd120a13032580bb93",
+      "merge_blob": "8106c647707930d74085bcdd120a13032580bb93",
+      "fresh_main_blob": "8106c647707930d74085bcdd120a13032580bb93",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/risk_radar_calendar_qualification_20261017.md",
+      "candidate_blob": "a5606990e058c119aed2985fbce438e51cb344e6",
+      "merge_blob": "a5606990e058c119aed2985fbce438e51cb344e6",
+      "fresh_main_blob": "a5606990e058c119aed2985fbce438e51cb344e6",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/risk_radar_research_protocol_20261017.md",
+      "candidate_blob": "34ea2402bc27eaed007c14bc80034e740f6268ca",
+      "merge_blob": "34ea2402bc27eaed007c14bc80034e740f6268ca",
+      "fresh_main_blob": "34ea2402bc27eaed007c14bc80034e740f6268ca",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/risk_radar_source_consumer_audit_20261017.md",
+      "candidate_blob": "87feebcb2b2e5f56c94eb66153906d62747557d1",
+      "merge_blob": "87feebcb2b2e5f56c94eb66153906d62747557d1",
+      "fresh_main_blob": "87feebcb2b2e5f56c94eb66153906d62747557d1",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "research/grey_deer/risk_radar_turning_point_methods_20261017.md",
+      "candidate_blob": "f2aedb3ec257e44c0ae21e7d5b2abae6ac787d68",
+      "merge_blob": "f2aedb3ec257e44c0ae21e7d5b2abae6ac787d68",
+      "fresh_main_blob": "f2aedb3ec257e44c0ae21e7d5b2abae6ac787d68",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "scripts/research/grey_deer_exposure_census.py",
+      "candidate_blob": "0dae77373b64cdbd1d797f06c2af4cae872d5186",
+      "merge_blob": "0dae77373b64cdbd1d797f06c2af4cae872d5186",
+      "fresh_main_blob": "0dae77373b64cdbd1d797f06c2af4cae872d5186",
+      "match_at_merge": true,
+      "match_on_main": true
+    },
+    {
+      "path": "tests/test_grey_deer_exposure_census.py",
+      "candidate_blob": "6e45bb8b84142dccb29723690d0249fc663132ae",
+      "merge_blob": "6e45bb8b84142dccb29723690d0249fc663132ae",
+      "fresh_main_blob": "6e45bb8b84142dccb29723690d0249fc663132ae",
+      "match_at_merge": true,
+      "match_on_main": true
+    }
+  ],
+  "candidate_matches_at_merge": 51,
+  "candidate_matches_on_main": 51,
+  "shared_ci_file_qualification": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "owned_job": "grey-deer-pullback-stage1",
+    "parsed_job_identical_across_candidate_merge_main": true,
+    "identities": {
+      "candidate": {
+        "sha256": "822b202383ff73f87649248ead50bdd8e674a513006a089a9f79dc014ee19e82",
+        "census_test_present": true,
+        "census_runner_present": true
+      },
+      "merge": {
+        "sha256": "822b202383ff73f87649248ead50bdd8e674a513006a089a9f79dc014ee19e82",
+        "census_test_present": true,
+        "census_runner_present": true
+      },
+      "fresh_main": {
+        "sha256": "822b202383ff73f87649248ead50bdd8e674a513006a089a9f79dc014ee19e82",
+        "census_test_present": true,
+        "census_runner_present": true
+      }
+    },
+    "other_changes": "whole-file byte differences are upstream shared-CI additions; owned job preserved exactly"
+  },
+  "source_landing_accepted": true
+}

@@ -170,11 +170,11 @@ _VOTING_DESK_COPY = {
     "standout": ("buy-board", "买入榜"),
 }
 
-#: an "<N> desks vote" claim in either language. The page must make no such claim at all:
-#: the agreement matrix draws FIVE dots (policy included, as context), so any desk-count
-#: pinned to the word "vote" reads as "policy is one of the voters" no matter which N is used.
-_VOTE_CLAIM_EN = re.compile(r"(?i)\b[a-z0-9]+\s+desks?\s+vote")
-_VOTE_CLAIM_ZH = re.compile(r"[零一二三四五六七八九十\d]+\s*台[^。\"]{0,12}投票")
+#: a vote clause that includes policy. The matrix may show policy as a fifth
+#: context dot, but policy must never appear in the same sentence/clause as a voter.
+#: Truthfully naming the four actual voters is allowed and separately pinned below.
+_VOTE_CLAIM_EN = re.compile(r"(?i)\b[a-z0-9]+\s+desks?\s+vote[^.\"]{0,180}\bpolicy\b")
+_VOTE_CLAIM_ZH = re.compile(r"[零一二三四五六七八九十\d]+[^。\"]{0,20}投票[^。\"]{0,120}政策")
 
 
 def _hub_template_copy() -> str:

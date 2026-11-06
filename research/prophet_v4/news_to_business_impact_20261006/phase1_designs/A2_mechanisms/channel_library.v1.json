@@ -1,0 +1,1682 @@
+{
+  "schema": "channel_library.v1",
+  "library_version": "1",
+  "authority": "context_only",
+  "frozen_contract_sha256_prefix": "3edc7139",
+  "channel_enum": [
+    "revenue_demand",
+    "margin_cost",
+    "capital_allocation",
+    "moat_duration",
+    "strategic_option",
+    "financial_incentives_survival",
+    "market_only"
+  ],
+  "earnings_head_channels": [
+    "revenue_demand",
+    "margin_cost",
+    "capital_allocation",
+    "moat_duration",
+    "strategic_option",
+    "financial_incentives_survival"
+  ],
+  "market_hypothesis_head_channels": [
+    "market_only"
+  ],
+  "market_class_news_event_class": [
+    "rating_change",
+    "analyst_estimate_revision",
+    "macro_release",
+    "mna_rumor"
+  ],
+  "forbidden_field_names": [
+    "confidence",
+    "probability",
+    "score",
+    "price_target",
+    "fair_value",
+    "rating",
+    "likelihood",
+    "contagion",
+    "weight"
+  ],
+  "invariants": [
+    "I-MO-1 market_only disjoint from earnings_head channels on one mapping",
+    "I-MO-2 schema in T1 T2 T3 forbids market_only",
+    "I-HINT-1 mapper does not read channel_hint",
+    "I-ORIG-1 forbidden_field_names absent",
+    "I-DOUBLE-1 at most one of strategic_option or moat_duration is earnings_countable",
+    "I-CORR-1 novelty=corrected_fact implies inherits_from_fact_id=supersedes_fact_id",
+    "I-NEG-1 negated keeps the channel",
+    "I-ROLE-1 issuer_role=incidental yields ineligible_role and empty channels",
+    "I-PRODUCT-1 driver_bridge product is null unless all six terms are sourced point or interval",
+    "I-PRODUCT-2 unlabelled assumption is schema-invalid; labelled assumption withholds product",
+    "I-STICKY-1 ineligible_role and strategic_review from priority<=20 are not overwritten by later set_status or assign"
+  ],
+  "predicate_ops": [
+    "eq",
+    "in",
+    "form_in",
+    "is_company_id",
+    "not",
+    "all",
+    "any",
+    "exists"
+  ],
+  "channels": [
+    {
+      "id": "revenue_demand",
+      "version": "channel.v1",
+      "analytical_question": "Does this create incremental funded demand, pricing, share or capacity utilization?",
+      "earnings_head_eligible": true,
+      "allowed_input_fields": [
+        "/schema",
+        "/demand_stage",
+        "/metric",
+        "/stated_amount",
+        "/commitment_status",
+        "/revision_direction",
+        "/fiscal_period",
+        "/issuer_role",
+        "/novelty",
+        "/negated",
+        "/counterparty_company_id",
+        "/option_ceiling",
+        "/economic_claim_class",
+        "/stated_quantity",
+        "/adoption_proxy_quote"
+      ],
+      "causal_chain": [
+        {
+          "ord": 1,
+          "name": "addressable_or_pipeline",
+          "kind": "named_quantity",
+          "note": "not funded demand"
+        },
+        {
+          "ord": 2,
+          "name": "bookings_or_backlog",
+          "kind": "named_quantity",
+          "note": "commitment before recognition"
+        },
+        {
+          "ord": 3,
+          "name": "eligible_units",
+          "kind": "named_quantity",
+          "note": "driver-bridge term"
+        },
+        {
+          "ord": 4,
+          "name": "realized_revenue_per_unit",
+          "kind": "named_quantity",
+          "note": "driver-bridge term"
+        },
+        {
+          "ord": 5,
+          "name": "recognized_revenue",
+          "kind": "named_quantity",
+          "note": "reported period"
+        }
+      ],
+      "contrary_cases": [
+        {
+          "id": "tam_as_demand",
+          "when": "/demand_stage=addressable_market",
+          "effect": "no_earnings_head"
+        },
+        {
+          "id": "cancellation",
+          "when": "/demand_stage=cancellation or /revision_direction in cut,withdrawn,cancelled",
+          "effect": "downgrade_watch_only"
+        },
+        {
+          "id": "attention_proxy",
+          "when": "adoption_proxy_quote without sourced stated_quantity",
+          "effect": "no_earnings_head"
+        },
+        {
+          "id": "option_ceiling_sum",
+          "when": "option_ceiling added to stated_amount",
+          "effect": "remove_channel"
+        }
+      ],
+      "required_observations": [
+        {
+          "id": "funded_stage",
+          "description": "bookings, backlog or recognized revenue in a stated fiscal period",
+          "named_window": "stated_fiscal_period"
+        },
+        {
+          "id": "cancellations",
+          "description": "cancellation or cannibalization against the same object",
+          "named_window": "next_reported_period"
+        }
+      ],
+      "typical_lag_window": "stated_fiscal_period",
+      "weakening_conditions": [
+        {
+          "id": "pipeline_not_bookings",
+          "when": "/demand_stage=pipeline"
+        },
+        {
+          "id": "demand_cut_or_cancelled",
+          "when": "/revision_direction in cut,withdrawn,cancelled"
+        },
+        {
+          "id": "negated",
+          "when": "/negated=true"
+        }
+      ],
+      "quantity_form_map": [
+        {
+          "contract_path": "/stated_amount",
+          "feeds": "eligible_units",
+          "when": "T2 metric=units and demand_stage in bookings,recognized_revenue and form in point,range"
+        },
+        {
+          "contract_path": "/stated_amount",
+          "feeds": "stated_revenue",
+          "when": "T2 metric=revenue"
+        },
+        {
+          "contract_path": "/stated_amount",
+          "feeds": "stated_bookings",
+          "when": "T2 metric=bookings"
+        },
+        {
+          "contract_path": "/stated_amount",
+          "feeds": "stated_backlog",
+          "when": "T2 metric=backlog"
+        },
+        {
+          "contract_path": "/stated_amount",
+          "feeds": "stated_eps",
+          "when": "T2 metric=eps"
+        },
+        {
+          "contract_path": "/option_ceiling",
+          "feeds": "forbidden",
+          "when": "V_NO_SUM_T2"
+        },
+        {
+          "contract_path": "/stated_quantity",
+          "feeds": "eligible_units",
+          "when": "T3 economic_claim_class=funded_demand and form in point,range"
+        }
+      ],
+      "display_words": "Funded demand uses bookings, backlog or recognized revenue in the stated period. Addressable-market size stays off the earnings head."
+    },
+    {
+      "id": "margin_cost",
+      "version": "channel.v1",
+      "analytical_question": "Does the change improve gross profit or reduce sustainable cost?",
+      "earnings_head_eligible": true,
+      "allowed_input_fields": [
+        "/schema",
+        "/metric",
+        "/stated_amount",
+        "/commitment_status",
+        "/novelty",
+        "/negated",
+        "/conditions_quote"
+      ],
+      "causal_chain": [
+        {
+          "ord": 1,
+          "name": "one_off_accounting",
+          "kind": "condition",
+          "note": "not recurring cash"
+        },
+        {
+          "ord": 2,
+          "name": "recurring_cash_cost_or_gross_profit",
+          "kind": "named_quantity",
+          "note": "span-backed"
+        },
+        {
+          "ord": 3,
+          "name": "integration_or_ramp_cost",
+          "kind": "named_quantity",
+          "note": "include when stated"
+        }
+      ],
+      "contrary_cases": [
+        {
+          "id": "one_off_as_run_rate",
+          "when": "basis=run_rate on a one-off slot",
+          "effect": "hold_nyq"
+        },
+        {
+          "id": "no_cost_field_on_t1t2t3",
+          "when": "no closed cost field on frozen templates",
+          "effect": "hold_nyq"
+        }
+      ],
+      "required_observations": [
+        {
+          "id": "recurring_vs_one_off",
+          "description": "issuer names recurring cash cost or gross profit, not only an accounting item",
+          "named_window": "stated_fiscal_period"
+        }
+      ],
+      "typical_lag_window": "stated_fiscal_period",
+      "weakening_conditions": [
+        {
+          "id": "no_template_slot",
+          "when": "T1/T2/T3 have no dedicated margin field in v1; assignment requires a later template version"
+        }
+      ],
+      "quantity_form_map": [],
+      "display_words": "v1 templates carry no dedicated cost slot. Margin stays unassigned until a sourced cost or gross-profit quantity exists."
+    },
+    {
+      "id": "capital_allocation",
+      "version": "channel.v1",
+      "analytical_question": "Do execution, financing and share-count changes improve per-share economics?",
+      "earnings_head_eligible": true,
+      "allowed_input_fields": [
+        "/schema",
+        "/action_type",
+        "/commitment_status",
+        "/primary_amount_role",
+        "/incremental_amount",
+        "/remaining_authorization",
+        "/executed_amount",
+        "/horizon_period",
+        "/novelty",
+        "/negated",
+        "/issuer_role",
+        "/news_event_class"
+      ],
+      "causal_chain": [
+        {
+          "ord": 1,
+          "name": "authorization_capacity",
+          "kind": "named_quantity",
+          "note": "intention, not execution"
+        },
+        {
+          "ord": 2,
+          "name": "executed_retired_or_issued",
+          "kind": "named_quantity",
+          "note": "required for quantified per-share arithmetic"
+        },
+        {
+          "ord": 3,
+          "name": "price_paid",
+          "kind": "named_quantity",
+          "note": "absent on W1"
+        },
+        {
+          "ord": 4,
+          "name": "share_count_denominator",
+          "kind": "named_quantity",
+          "note": "weighted-average diluted shares"
+        },
+        {
+          "ord": 5,
+          "name": "cash_opportunity_cost",
+          "kind": "named_quantity",
+          "note": "lost cash income or financing"
+        },
+        {
+          "ord": 6,
+          "name": "dilution_from_comp",
+          "kind": "named_quantity",
+          "note": "employee issuance"
+        }
+      ],
+      "contrary_cases": [
+        {
+          "id": "auth_is_execution",
+          "when": "incremental_amount used as executed_retired_or_issued",
+          "effect": "hold_nyq"
+        },
+        {
+          "id": "withdrawn",
+          "when": "/commitment_status=withdrawn",
+          "effect": "downgrade_watch_only"
+        },
+        {
+          "id": "incidental_role",
+          "when": "/issuer_role=incidental",
+          "effect": "remove_channel"
+        }
+      ],
+      "required_observations": [
+        {
+          "id": "execution",
+          "description": "executed_amount point or range with basis total",
+          "named_window": "through_horizon_period"
+        },
+        {
+          "id": "net_dilution",
+          "description": "net share count after repurchase and employee issuance",
+          "named_window": "next_reported_period"
+        }
+      ],
+      "typical_lag_window": "through_horizon_period",
+      "weakening_conditions": [
+        {
+          "id": "authorization_without_execution",
+          "when": "/commitment_status in authorized,announced,planned,conditional and /executed_amount/form=absent"
+        },
+        {
+          "id": "authorization_withdrawn_or_negated",
+          "when": "/commitment_status=withdrawn or /negated=true"
+        }
+      ],
+      "quantity_form_map": [
+        {
+          "contract_path": "/incremental_amount",
+          "feeds": "authorization_capacity",
+          "when": "primary_amount_role=incremental_authorization and form in point,range"
+        },
+        {
+          "contract_path": "/remaining_authorization",
+          "feeds": "remaining_program_capacity",
+          "when": "form in point,range"
+        },
+        {
+          "contract_path": "/executed_amount",
+          "feeds": "executed_retired_or_issued",
+          "when": "form in point,range"
+        }
+      ],
+      "display_words": "Authorization is an intention with a stated horizon. Executed amount and net dilution are the next useful observations. This channel does not state operating revenue."
+    },
+    {
+      "id": "moat_duration",
+      "version": "channel.v1",
+      "analytical_question": "Does evidence change how long excess returns might persist?",
+      "earnings_head_eligible": true,
+      "allowed_input_fields": [
+        "/schema",
+        "/economic_claim_class",
+        "/event_kind",
+        "/object_name",
+        "/stated_quantity",
+        "/license_quote",
+        "/contrary_mechanism_quote",
+        "/novelty",
+        "/commitment_status"
+      ],
+      "causal_chain": [
+        {
+          "ord": 1,
+          "name": "switching_costs_or_distribution",
+          "kind": "observation",
+          "note": "must be span-backed, not an adjective"
+        },
+        {
+          "ord": 2,
+          "name": "complements_or_pricing_power",
+          "kind": "observation",
+          "note": "named"
+        },
+        {
+          "ord": 3,
+          "name": "competitive_response",
+          "kind": "observation",
+          "note": "contrary mechanism"
+        }
+      ],
+      "contrary_cases": [
+        {
+          "id": "adjective_moat",
+          "when": "moat claimed without economic_claim_class=moat_duration_claim",
+          "effect": "remove_channel"
+        },
+        {
+          "id": "option_moat_double",
+          "when": "same claim counted as option cash flows and duration multiple",
+          "effect": "downgrade_watch_only"
+        }
+      ],
+      "required_observations": [
+        {
+          "id": "retention",
+          "description": "competitive retention or switching-cost evidence independent of the announce",
+          "named_window": "until_independent_milestone"
+        }
+      ],
+      "typical_lag_window": "until_independent_milestone",
+      "weakening_conditions": [
+        {
+          "id": "delay_or_withdrawal",
+          "when": "/event_kind in delay,withdrawal"
+        },
+        {
+          "id": "watch_only_under_option_path",
+          "when": "/economic_claim_class=option_path"
+        }
+      ],
+      "quantity_form_map": [],
+      "display_words": "Duration claims wait on switching costs, distribution, complements or competitive response. Adjectives do not assign this channel."
+    },
+    {
+      "id": "strategic_option",
+      "version": "channel.v1",
+      "analytical_question": "Does the company gain a credible, funded path to a previously uncertain market?",
+      "earnings_head_eligible": true,
+      "allowed_input_fields": [
+        "/schema",
+        "/economic_claim_class",
+        "/event_kind",
+        "/object_name",
+        "/stated_quantity",
+        "/commitment_status",
+        "/novelty",
+        "/license_quote",
+        "/contrary_mechanism_quote",
+        "/horizon_period"
+      ],
+      "causal_chain": [
+        {
+          "ord": 1,
+          "name": "announced_path",
+          "kind": "observation",
+          "note": "product or partnership named"
+        },
+        {
+          "ord": 2,
+          "name": "feasibility_and_adoption",
+          "kind": "observation",
+          "note": "independent deployment"
+        },
+        {
+          "ord": 3,
+          "name": "monetization",
+          "kind": "named_quantity",
+          "note": "paid bookings"
+        },
+        {
+          "ord": 4,
+          "name": "retained_economics",
+          "kind": "named_quantity",
+          "note": "issuer share of economics"
+        },
+        {
+          "ord": 5,
+          "name": "resource_constraint_or_deadline",
+          "kind": "condition",
+          "note": "horizon_period"
+        }
+      ],
+      "contrary_cases": [
+        {
+          "id": "efficiency_lowers_compute",
+          "when": "more efficient models lower compute per workload",
+          "effect": "hold_nyq"
+        },
+        {
+          "id": "off_hardware",
+          "when": "deployments shift to non-issuer hardware",
+          "effect": "hold_nyq"
+        },
+        {
+          "id": "attention_not_profit",
+          "when": "downloads or stars as demand",
+          "effect": "no_earnings_head"
+        },
+        {
+          "id": "already_anticipated",
+          "when": "novelty=new_reporting_of_old_fact",
+          "effect": "downgrade_watch_only"
+        }
+      ],
+      "required_observations": [
+        {
+          "id": "independent_deployment",
+          "description": "independently observed customer deployment",
+          "named_window": "until_independent_milestone"
+        },
+        {
+          "id": "paid_bookings",
+          "description": "span-backed paid bookings or support revenue",
+          "named_window": "stated_fiscal_period"
+        }
+      ],
+      "typical_lag_window": "until_independent_milestone",
+      "weakening_conditions": [
+        {
+          "id": "delay_or_withdrawal",
+          "when": "/event_kind in delay,withdrawal"
+        },
+        {
+          "id": "quantity_absent",
+          "when": "/stated_quantity/form=absent"
+        }
+      ],
+      "quantity_form_map": [
+        {
+          "contract_path": "/stated_quantity",
+          "feeds": "eligible_units",
+          "when": "economic_claim_class=funded_demand and form in point,range"
+        }
+      ],
+      "display_words": "An announced product path can be economically interesting while funded demand is not on the packet. Downloads are attention, not profit receipts."
+    },
+    {
+      "id": "financial_incentives_survival",
+      "version": "channel.v1",
+      "analytical_question": "Does an award, subsidy, tax change or refinancing alter cash flow or failure risk?",
+      "earnings_head_eligible": true,
+      "allowed_input_fields": [
+        "/schema",
+        "/action_type",
+        "/news_event_class",
+        "/revision_direction",
+        "/stated_amount",
+        "/option_ceiling",
+        "/commitment_status",
+        "/conditions_quote"
+      ],
+      "causal_chain": [
+        {
+          "ord": 1,
+          "name": "award_ceiling",
+          "kind": "named_quantity",
+          "note": "not obligation"
+        },
+        {
+          "ord": 2,
+          "name": "obligation_or_eligibility",
+          "kind": "condition",
+          "note": "conditions_quote"
+        },
+        {
+          "ord": 3,
+          "name": "disbursement",
+          "kind": "named_quantity",
+          "note": "executed"
+        },
+        {
+          "ord": 4,
+          "name": "clawback",
+          "kind": "condition",
+          "note": "stated"
+        }
+      ],
+      "contrary_cases": [
+        {
+          "id": "ceiling_as_revenue",
+          "when": "option_ceiling or award ceiling booked as recognized revenue",
+          "effect": "remove_channel"
+        },
+        {
+          "id": "issuance_as_survival",
+          "when": "equity_issuance without bankruptcy_restructuring class",
+          "effect": "remove_channel"
+        }
+      ],
+      "required_observations": [
+        {
+          "id": "disbursement",
+          "description": "cash received or refinancing closed, span-backed",
+          "named_window": "stated_fiscal_period"
+        }
+      ],
+      "typical_lag_window": "stated_fiscal_period",
+      "weakening_conditions": [
+        {
+          "id": "conditional",
+          "when": "/commitment_status=conditional"
+        },
+        {
+          "id": "ceiling_only",
+          "when": "option_ceiling present and stated_amount is base only"
+        }
+      ],
+      "quantity_form_map": [
+        {
+          "contract_path": "/stated_amount",
+          "feeds": "award_base",
+          "when": "revision_direction=awarded"
+        },
+        {
+          "contract_path": "/option_ceiling",
+          "feeds": "award_ceiling_not_summed",
+          "when": "V_NO_SUM_T2"
+        }
+      ],
+      "display_words": "An award ceiling is not a disbursement. Eligibility, clawback and cash received stay separate."
+    },
+    {
+      "id": "market_only",
+      "version": "channel.v1",
+      "analytical_question": "Is there common-factor, attention, positioning or index demand without an operating change?",
+      "earnings_head_eligible": false,
+      "allowed_input_fields": [
+        "/schema",
+        "/news_event_class",
+        "/issuer_role",
+        "/novelty"
+      ],
+      "causal_chain": [
+        {
+          "ord": 1,
+          "name": "no_operating_template",
+          "kind": "condition",
+          "note": "no T1/T2/T3 ACCEPT"
+        },
+        {
+          "ord": 2,
+          "name": "market_class_headline",
+          "kind": "observation",
+          "note": "rating_change, analyst_estimate_revision, macro_release, mna_rumor"
+        },
+        {
+          "ord": 3,
+          "name": "market_hypothesis_head",
+          "kind": "condition",
+          "note": "never earnings head"
+        }
+      ],
+      "contrary_cases": [
+        {
+          "id": "template_present",
+          "when": "schema in T1 T2 T3",
+          "effect": "remove_channel"
+        },
+        {
+          "id": "hint_copy",
+          "when": "channel_hint=market_only on a template",
+          "effect": "remove_channel"
+        },
+        {
+          "id": "with_earnings_channel",
+          "when": "any earnings_head channel on the same mapping",
+          "effect": "remove_channel"
+        }
+      ],
+      "required_observations": [
+        {
+          "id": "operating_fact_absent",
+          "description": "no accepted T1/T2/T3 instance for this fact_id",
+          "named_window": "decision_cut_session"
+        }
+      ],
+      "typical_lag_window": "decision_cut_session",
+      "weakening_conditions": [
+        {
+          "id": "later_operating_fact",
+          "when": "a later ACCEPT-ed T1/T2/T3 fact for the same issuer cluster"
+        }
+      ],
+      "quantity_form_map": [],
+      "display_words": "A rating-class or macro headline without an operating template stays on the market-hypothesis head. It does not enter the earnings-impact head."
+    }
+  ],
+  "mapping_rules": [
+    {
+      "rule_id": "T1-ROLE-INC",
+      "priority": 10,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "capital_allocation_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/issuer_role",
+              "incidental"
+            ]
+          }
+        ]
+      },
+      "assign": [],
+      "set_status": "ineligible_role"
+    },
+    {
+      "rule_id": "T1-COMMENTARY",
+      "priority": 20,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "capital_allocation_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/novelty",
+              "commentary"
+            ]
+          }
+        ]
+      },
+      "assign": [],
+      "set_status": "strategic_review"
+    },
+    {
+      "rule_id": "T1-CORR",
+      "priority": 50,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "capital_allocation_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/novelty",
+              "corrected_fact"
+            ]
+          }
+        ]
+      },
+      "set_status": "superseded_inherit",
+      "notes": "inherits_from_fact_id=/supersedes_fact_id"
+    },
+    {
+      "rule_id": "T1-DEFAULT",
+      "priority": 100,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "capital_allocation_event.v1"
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [
+        {
+          "id": "capital_allocation",
+          "role": "earnings_countable"
+        }
+      ],
+      "set_status": "mapped",
+      "set_bridge": "not_applicable_channel"
+    },
+    {
+      "rule_id": "T1-SURVIVAL",
+      "priority": 200,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "capital_allocation_event.v1"
+            ]
+          },
+          {
+            "in": [
+              "/action_type",
+              [
+                "debt_issuance",
+                "equity_issuance"
+              ]
+            ]
+          },
+          {
+            "eq": [
+              "/news_event_class",
+              "bankruptcy_restructuring"
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [
+        {
+          "id": "financial_incentives_survival",
+          "role": "watch_only"
+        }
+      ]
+    },
+    {
+      "rule_id": "T1-AUTH-NYQ",
+      "priority": 210,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "capital_allocation_event.v1"
+            ]
+          },
+          {
+            "in": [
+              "/commitment_status",
+              [
+                "authorized",
+                "announced",
+                "planned",
+                "conditional"
+              ]
+            ]
+          },
+          {
+            "form_in": [
+              "/executed_amount",
+              [
+                "absent"
+              ]
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "set_nyq": "authorization_without_execution"
+    },
+    {
+      "rule_id": "T1-WITHDRAWN",
+      "priority": 220,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "capital_allocation_event.v1"
+            ]
+          },
+          {
+            "any": [
+              {
+                "eq": [
+                  "/commitment_status",
+                  "withdrawn"
+                ]
+              },
+              {
+                "eq": [
+                  "/negated",
+                  true
+                ]
+              }
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "T1-NO-REV",
+      "priority": 300,
+      "when": {
+        "eq": [
+          "/schema",
+          "capital_allocation_event.v1"
+        ]
+      },
+      "remove": [
+        "revenue_demand",
+        "margin_cost",
+        "moat_duration",
+        "strategic_option",
+        "market_only"
+      ]
+    },
+    {
+      "rule_id": "T2-ROLE-INC",
+      "priority": 10,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "demand_guidance_contract_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/issuer_role",
+              "incidental"
+            ]
+          }
+        ]
+      },
+      "assign": [],
+      "set_status": "ineligible_role"
+    },
+    {
+      "rule_id": "T2-COMMENTARY",
+      "priority": 20,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "demand_guidance_contract_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/novelty",
+              "commentary"
+            ]
+          }
+        ]
+      },
+      "assign": [],
+      "set_status": "strategic_review"
+    },
+    {
+      "rule_id": "T2-TAM",
+      "priority": 90,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "demand_guidance_contract_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/demand_stage",
+              "addressable_market"
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [],
+      "set_status": "not_yet_quantifiable",
+      "set_nyq": "addressable_market_not_funded"
+    },
+    {
+      "rule_id": "T2-DEFAULT",
+      "priority": 100,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "demand_guidance_contract_event.v1"
+            ]
+          },
+          {
+            "in": [
+              "/demand_stage",
+              [
+                "pipeline",
+                "backlog",
+                "bookings",
+                "recognized_revenue",
+                "guidance",
+                "cancellation"
+              ]
+            ]
+          },
+          {
+            "in": [
+              "/metric",
+              [
+                "revenue",
+                "bookings",
+                "backlog",
+                "units",
+                "eps"
+              ]
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [
+        {
+          "id": "revenue_demand",
+          "role": "earnings_countable"
+        }
+      ],
+      "set_status": "mapped"
+    },
+    {
+      "rule_id": "T2-AWARD-POLICY",
+      "priority": 200,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "demand_guidance_contract_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/revision_direction",
+              "awarded"
+            ]
+          },
+          {
+            "eq": [
+              "/news_event_class",
+              "policy_trade_control"
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [
+        {
+          "id": "financial_incentives_survival",
+          "role": "watch_only"
+        }
+      ]
+    },
+    {
+      "rule_id": "T2-PIPELINE",
+      "priority": 210,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "demand_guidance_contract_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/demand_stage",
+              "pipeline"
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "T2-CANCEL",
+      "priority": 220,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "demand_guidance_contract_event.v1"
+            ]
+          },
+          {
+            "any": [
+              {
+                "eq": [
+                  "/demand_stage",
+                  "cancellation"
+                ]
+              },
+              {
+                "in": [
+                  "/revision_direction",
+                  [
+                    "cut",
+                    "withdrawn",
+                    "cancelled"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "T2-NO-MO",
+      "priority": 300,
+      "when": {
+        "eq": [
+          "/schema",
+          "demand_guidance_contract_event.v1"
+        ]
+      },
+      "remove": [
+        "market_only"
+      ]
+    },
+    {
+      "rule_id": "T3-ROLE-INC",
+      "priority": 10,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/issuer_role",
+              "incidental"
+            ]
+          }
+        ]
+      },
+      "assign": [],
+      "set_status": "ineligible_role"
+    },
+    {
+      "rule_id": "T3-COMMENTARY",
+      "priority": 20,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/novelty",
+              "commentary"
+            ]
+          }
+        ]
+      },
+      "assign": [],
+      "set_status": "strategic_review"
+    },
+    {
+      "rule_id": "T3-NONE",
+      "priority": 90,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/economic_claim_class",
+              "none_stated"
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [],
+      "set_status": "not_yet_quantifiable",
+      "set_nyq": "claim_class_none_stated"
+    },
+    {
+      "rule_id": "T3-OPTION",
+      "priority": 100,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/economic_claim_class",
+              "option_path"
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [
+        {
+          "id": "strategic_option",
+          "role": "earnings_countable"
+        },
+        {
+          "id": "moat_duration",
+          "role": "watch_only"
+        }
+      ],
+      "set_status": "not_yet_quantifiable"
+    },
+    {
+      "rule_id": "T3-MOAT",
+      "priority": 100,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/economic_claim_class",
+              "moat_duration_claim"
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [
+        {
+          "id": "moat_duration",
+          "role": "earnings_countable"
+        },
+        {
+          "id": "strategic_option",
+          "role": "watch_only"
+        }
+      ],
+      "set_status": "mapped"
+    },
+    {
+      "rule_id": "T3-FUNDED",
+      "priority": 100,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/economic_claim_class",
+              "funded_demand"
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [
+        {
+          "id": "revenue_demand",
+          "role": "earnings_countable"
+        },
+        {
+          "id": "strategic_option",
+          "role": "watch_only"
+        }
+      ],
+      "set_status": "mapped"
+    },
+    {
+      "rule_id": "T3-MILESTONE",
+      "priority": 200,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "eq": [
+              "/novelty",
+              "independently_observed_milestone"
+            ]
+          },
+          {
+            "eq": [
+              "/event_kind",
+              "customer_deployment"
+            ]
+          },
+          {
+            "form_in": [
+              "/stated_quantity",
+              [
+                "point",
+                "range"
+              ]
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "T3-ATTN",
+      "priority": 210,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "form_in": [
+              "/stated_quantity",
+              [
+                "absent"
+              ]
+            ]
+          },
+          {
+            "exists": "/adoption_proxy_quote"
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "set_nyq": "attention_proxy_only",
+      "notes": "do not add revenue_demand from adoption_proxy_quote"
+    },
+    {
+      "rule_id": "T3-DELAY",
+      "priority": 220,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "in": [
+              "/event_kind",
+              [
+                "delay",
+                "withdrawal"
+              ]
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "rule_id": "T3-NO-MO",
+      "priority": 300,
+      "when": {
+        "eq": [
+          "/schema",
+          "strategic_product_partnership_event.v1"
+        ]
+      },
+      "remove": [
+        "market_only"
+      ]
+    },
+    {
+      "rule_id": "T3-SCENARIOS",
+      "priority": 400,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "strategic_product_partnership_event.v1"
+            ]
+          },
+          {
+            "in": [
+              "/economic_claim_class",
+              [
+                "option_path",
+                "moat_duration_claim"
+              ]
+            ]
+          },
+          {
+            "in": [
+              "/issuer_role",
+              [
+                "subject",
+                "counterparty",
+                "supplier",
+                "customer",
+                "competitor"
+              ]
+            ]
+          }
+        ]
+      },
+      "set_scenarios": "duration_scenario_set.v1"
+    },
+    {
+      "rule_id": "UNMAP-MARKET-CLASS",
+      "priority": 100,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "unmapped_event.v1"
+            ]
+          },
+          {
+            "in": [
+              "/news_event_class",
+              [
+                "rating_change",
+                "analyst_estimate_revision",
+                "macro_release",
+                "mna_rumor"
+              ]
+            ]
+          }
+        ]
+      },
+      "assign": [
+        {
+          "id": "market_only",
+          "role": "market_hypothesis"
+        }
+      ],
+      "set_status": "unmapped_novel"
+    },
+    {
+      "rule_id": "UNMAP-STRATEGIC",
+      "priority": 110,
+      "when": {
+        "all": [
+          {
+            "eq": [
+              "/schema",
+              "unmapped_event.v1"
+            ]
+          },
+          {
+            "not": {
+              "in": [
+                "/news_event_class",
+                [
+                  "rating_change",
+                  "analyst_estimate_revision",
+                  "macro_release",
+                  "mna_rumor"
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "assign": [],
+      "set_status": "strategic_review"
+    }
+  ],
+  "who_would_rule_duration_weights": "seat_dec_after_empirical_or_explicit_assumption",
+  "weights_status": "forbidden_in_v1",
+  "algorithm_notes": [
+    "Apply matching rules in ascending priority.",
+    "set_status is first-writer-wins so T1-CORR superseded_inherit is not overwritten by T1-DEFAULT mapped.",
+    "If status is ineligible_role or strategic_review from priority<=20, later rules may only remove channels.",
+    "channel_hint is never read.",
+    "After the sweep enforce I-MO-1 I-MO-2 I-DOUBLE-1 I-ROLE-1 I-CORR-1 I-ORIG-1 I-STICKY-1."
+  ]
+}

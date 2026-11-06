@@ -35,10 +35,11 @@ same construction:
   computed ONCE per run over the graded universe against the SPY close on the same
   adjustment basis — never a per-name RS invented here, which would be a second answer
   to the question that lane measures;
-* the universe is :mod:`engine.us_turn_watch`'s GRADED DECK STORE — the same population
-  that desk's leg (d) ranks over, so the percentile in this artifact and the percentile
-  behind that desk mean the same thing and the two can never disagree about a name.  A
-  cross-section over a different population is a different number wearing the same name,
+* the universe is :mod:`engine.us_turn_watch`'s immutable selection-era population — the
+  same population that desk's leg (d) ranks over, backed by the Yahoo price store but never
+  widened by unrelated files added there. The percentile in this artifact and the percentile
+  behind that desk therefore mean the same thing. A cross-section over a different population
+  is a different number wearing the same name,
   and ``RS_TOP_PCT`` is a pre-registered v0 constant whose quartile was measured against
   THIS population (#5026: leader fires 28 -> 7 once the organ was fed a real PIT
   cross-section).  ``STORE_LADDER`` below is a parameter so a widening is a one-line
@@ -74,6 +75,8 @@ import json
 import logging
 import time
 from collections import Counter
+from copy import deepcopy
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -87,6 +90,7 @@ from engine.us_turn_watch import (
     SELECTION_ERA,
     _safe_stem,
     load_close,
+    source_contract_status,
     universe,
 )
 
@@ -94,7 +98,10 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "SCHEMA", "ARTIFACT", "AUTHORITY", "DISCLOSURE", "DISCLOSURE_ZH",
+    "PROPHET_OBSERVATION_SCHEMA", "PROPHET_ACTIVE_STATES",
     "MIN_BARS", "COVERAGE_SHRINK_WARN", "STORE_LADDER",
+    "project_prophet_observations", "load_prophet_observations",
+    "prophet_observation_summary",
     "load_bars", "rs_cross_section", "compute_coverage", "write_artifact",
     "artifact_path", "run",
 ]
@@ -146,6 +153,338 @@ DISCLOSURE_ZH = (
     "仅供展示，采用 v0 参数、未经检验流程：不参与排序、准入或仓位。"
     "组件无法给出状态的个股会连同原因一并列出，而不是含糊地记为“否”。"
 )
+
+
+# ---------------------------------------------------------------------------
+# Prophet observation projection — display-only consumer of this artifact
+# ---------------------------------------------------------------------------
+
+PROPHET_OBSERVATION_SCHEMA = "prophet.leader_observations/v1"
+PROPHET_ACTIVE_STATES: tuple[str, ...] = (
+    organ.STATE_LEADER,
+    organ.STATE_PULLBACK,
+    organ.STATE_RESET_TURN,
+    organ.STATE_RESUMED,
+)
+_PROPHET_DISPOSITION = {
+    organ.STATE_LEADER: "OBSERVED_LEADER_WAIT",
+    organ.STATE_PULLBACK: "OBSERVED_PULLBACK_WAIT_SIGNATURE",
+    organ.STATE_RESET_TURN: "OBSERVED_RESET_WAIT_SIGNATURE",
+    organ.STATE_RESUMED: "OBSERVED_RESUMED_DO_NOT_CHASE",
+}
+_PROPHET_ROW_FIELDS: tuple[str, ...] = (
+    "rs_pct",
+    "pullback_depth",
+    "zone_low",
+    "zone_high",
+    "reset_low",
+    "pullback_age",
+)
+
+# #7243 freezes the scientific population/freshness source law upstream.  The
+# Prophet projection consumes only a closed, ticker-free receipt from that law:
+# raw member lists (for example source_contract.missing_store) belong to the
+# protected source artifact, never to the public/index projection.
+PROPHET_SOURCE_CONTRACT_SCHEMA = "us_turn_watch.source_contract.v1"
+_PROPHET_SAFE_COVERAGE_FIELDS: tuple[str, ...] = (
+    "universe",
+    "graded",
+    "skipped_short_history",
+    "min_bars",
+    "cross_section_names",
+    "states_published",
+    "state_counts",
+    "null_counts",
+    "context_states",
+    "universe_limit",
+    "publishable",
+)
+_PROPHET_SAFE_SOURCE_CONTRACT_FIELDS: tuple[str, ...] = (
+    "schema",
+    "pass",
+    "universe_id",
+    "selection_era",
+    "population_count",
+    "tickers_sha256",
+    "source_commit",
+    "selected_count",
+    "universe_limit",
+    "missing_store_count",
+    "graded",
+    "selection_era_minimum_graded",
+    "session_counts",
+    "modal_session",
+    "modal_count",
+    "strict_majority",
+    "benchmark_session",
+    "benchmark_covers_session",
+    "freshness_reference",
+    "expected_completed_session",
+    "completed_session_lag",
+    "max_completed_session_lag",
+    "freshness_ok",
+)
+
+
+def _source_relation(source_session: str | None,
+                     reference_session: str | None) -> str:
+    """Name the source/reference clock relation without inventing a calendar."""
+    if not source_session or not reference_session:
+        return "unknown"
+    source = str(source_session)[:10]
+    reference = str(reference_session)[:10]
+    if source == reference:
+        return "aligned"
+    return "behind" if source < reference else "ahead_conflict"
+
+
+def _ticker_free_coverage(raw: Any) -> dict[str, Any]:
+    """Closed aggregate source receipt safe for Prophet/public projection.
+
+    Coverage is an upstream owner payload and can legitimately grow owner-detail
+    fields.  Copying it wholesale would let a future member/ticker census cross
+    the premium/index boundary.  Keep only aggregate fields the observation shelf
+    needs, and project the #7243 source contract through its own closed field set.
+    """
+    coverage = raw if isinstance(raw, Mapping) else {}
+    out = {
+        key: deepcopy(coverage.get(key))
+        for key in _PROPHET_SAFE_COVERAGE_FIELDS
+        if key in coverage
+    }
+    contract = coverage.get("source_contract")
+    if isinstance(contract, Mapping):
+        out["source_contract"] = {
+            key: deepcopy(contract.get(key))
+            for key in _PROPHET_SAFE_SOURCE_CONTRACT_FIELDS
+            if key in contract
+        }
+    return out
+
+
+def _projection_source(payload: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Copy ticker-free source provenance only — never owner member rosters."""
+    doc = payload if isinstance(payload, Mapping) else {}
+    source: dict[str, Any] = {}
+    for key in (
+        "schema",
+        "as_of",
+        "data_session",
+        "max_session",
+        "session_note",
+        "selection_era",
+        "construction_era",
+        "indicator_source",
+        "authority",
+        "disclosure",
+        "disclosure_zh",
+        "organ_disclosure",
+        "benchmark",
+    ):
+        if key in doc:
+            source[key] = deepcopy(doc.get(key))
+    if "coverage" in doc:
+        source["coverage"] = _ticker_free_coverage(doc.get("coverage"))
+    return source
+
+
+def _unavailable_projection(reason_code: str,
+                            payload: Mapping[str, Any] | None = None,
+                            *, reference_session: str | None = None) -> dict[str, Any]:
+    source = _projection_source(payload)
+    source_session = source.get("data_session") or source.get("as_of")
+    return {
+        "schema": PROPHET_OBSERVATION_SCHEMA,
+        "status": "unavailable",
+        "reason_code": reason_code,
+        "source_relation": _source_relation(source_session, reference_session),
+        "source": source,
+        "counts": {
+            "source_rows": 0,
+            "active": 0,
+            "non_active": 0,
+            "nulled": 0,
+            "invalid": 0,
+            "by_state": {state: 0 for state in PROPHET_ACTIVE_STATES},
+        },
+        "ordering": "ticker_asc_no_rank",
+        "rows": [],
+    }
+
+
+def project_prophet_observations(
+    payload: Mapping[str, Any],
+    *,
+    reference_session: str | None,
+) -> dict[str, Any]:
+    """Project the existing leader-pullback coverage into a no-authority roster.
+
+    This is a strict consumer of :data:`SCHEMA`; it does not recompute an indicator,
+    widen a universe, mint a rank, or originate a plan.  Unknown/malformed source rows
+    are counted and named as degradation rather than disappearing into a quiet zero.
+    """
+    if not isinstance(payload, Mapping) or payload.get("schema") != SCHEMA:
+        return _unavailable_projection(
+            "schema_mismatch",
+            payload if isinstance(payload, Mapping) else None,
+            reference_session=reference_session,
+        )
+
+    source_session = payload.get("data_session") or payload.get("as_of")
+    if not source_session:
+        return _unavailable_projection(
+            "source_session_missing", payload, reference_session=reference_session
+        )
+    if payload.get("authority") != AUTHORITY:
+        return _unavailable_projection(
+            "authority_drift", payload, reference_session=reference_session
+        )
+
+    # P1 is downstream of #7243's scientific source contract.  Refuse an old
+    # pre-contract artifact, a failed source qualification, or a run the owner
+    # marked non-publishable.  Keeping a stale last-good source artifact on disk
+    # must not silently turn into a current leader shelf after the source law moves.
+    coverage = payload.get("coverage")
+    source_contract = coverage.get("source_contract") if isinstance(coverage, Mapping) else None
+    if not isinstance(source_contract, Mapping):
+        return _unavailable_projection(
+            "source_contract_missing", payload, reference_session=reference_session
+        )
+    if source_contract.get("schema") != PROPHET_SOURCE_CONTRACT_SCHEMA:
+        return _unavailable_projection(
+            "source_contract_schema_mismatch", payload, reference_session=reference_session
+        )
+    if source_contract.get("pass") is not True or coverage.get("publishable") is not True:
+        return _unavailable_projection(
+            "source_contract_failed", payload, reference_session=reference_session
+        )
+
+    states = payload.get("states")
+    if not isinstance(states, Mapping):
+        projection = _unavailable_projection(
+            "invalid_rows", payload, reference_session=reference_session
+        )
+        projection["counts"]["invalid"] = 1
+        return projection
+
+    rows: list[dict[str, Any]] = []
+    by_state = {state: 0 for state in PROPHET_ACTIVE_STATES}
+    non_active = 0
+    nulled = 0
+    malformed = 0
+    unknown = 0
+    seen_tickers: set[str] = set()
+
+    for raw_ticker, raw_row in states.items():
+        if not isinstance(raw_ticker, str) or not raw_ticker.strip():
+            malformed += 1
+            continue
+        ticker = raw_ticker.strip().upper()
+        if not isinstance(raw_row, Mapping):
+            malformed += 1
+            continue
+        if ticker in seen_tickers:
+            malformed += 1
+            continue
+        seen_tickers.add(ticker)
+
+        state = raw_row.get("state")
+        if state is None:
+            nulled += 1
+            continue
+        if state == organ.STATE_NONE:
+            non_active += 1
+            continue
+        if not isinstance(state, str) or state not in PROPHET_ACTIVE_STATES:
+            unknown += 1
+            continue
+
+        row: dict[str, Any] = {
+            "ticker": ticker,
+            "state": state,
+            "state_asof": raw_row.get("asof"),
+            "data_session": str(source_session)[:10],
+            "disposition": _PROPHET_DISPOSITION[state],
+            "plan_authority": False,
+        }
+        for field in _PROPHET_ROW_FIELDS:
+            value = raw_row.get(field)
+            if value is not None:
+                row[field] = value
+        rows.append(row)
+        by_state[state] += 1
+
+    rows.sort(key=lambda row: row["ticker"])
+    invalid = malformed + unknown
+    if invalid:
+        status = "degraded"
+        reason_code = "invalid_rows" if malformed else "unknown_state_rows"
+    elif rows:
+        status = "available"
+        reason_code = None
+    else:
+        status = "empty"
+        reason_code = "no_active_states"
+
+    return {
+        "schema": PROPHET_OBSERVATION_SCHEMA,
+        "status": status,
+        "reason_code": reason_code,
+        "source_relation": _source_relation(str(source_session), reference_session),
+        "source": _projection_source(payload),
+        "counts": {
+            "source_rows": len(states),
+            "active": len(rows),
+            "non_active": non_active,
+            "nulled": nulled,
+            "invalid": invalid,
+            "by_state": by_state,
+        },
+        "ordering": "ticker_asc_no_rank",
+        "rows": rows,
+    }
+
+
+def load_prophet_observations(
+    site_root: Path | None = None,
+    *,
+    reference_session: str | None,
+) -> dict[str, Any]:
+    """Load and project the real site artifact, naming every availability failure."""
+    path = artifact_path(site_root)
+    if not path.exists():
+        return _unavailable_projection(
+            "artifact_absent", reference_session=reference_session
+        )
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001 — display projection is fail-soft.
+        log.warning("leader observation artifact unreadable (%s): %s", path, exc)
+        return _unavailable_projection(
+            "artifact_unreadable", reference_session=reference_session
+        )
+    return project_prophet_observations(
+        payload, reference_session=reference_session
+    )
+
+
+def prophet_observation_summary(
+    projection: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Return the ticker-free machine receipt safe for the Prophet index."""
+    return {
+        key: deepcopy(value)
+        for key, value in projection.items()
+        if key in {
+            "schema",
+            "status",
+            "reason_code",
+            "source_relation",
+            "source",
+            "counts",
+            "ordering",
+        }
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -213,7 +552,7 @@ def rs_cross_section(closes: dict[str, pd.Series],
     universe: that is the honest "no cross-section" state, and :func:`compute_coverage`
     treats it as a run-wide data failure rather than publishing a board of nulls.
 
-    The percentile is over THIS universe (the graded deck store, ~700 US names).  Its
+    The percentile is over THIS universe (the frozen v1 selection-era population, 697 names). Its
     width rides into the artifact as ``coverage.cross_section_names`` so the number is
     never read as a market-wide rank.
     """
@@ -289,9 +628,10 @@ def compute_coverage(data_root: Path | None = None, *,
                      universe_limit: int | None = None) -> dict[str, Any]:
     """Build the coverage artifact.  Never raises; returns the artifact dict.
 
-    ``coverage.publishable`` is FALSE only on a run-wide data failure (no graded names or
-    no cross-section).  :func:`run` refuses to write in that case so a broken store cannot
-    overwrite a real artifact with a dead one — see the module docstring.
+    ``coverage.publishable`` is FALSE on a run-wide data failure OR when the immutable
+    selection-era source contract fails. :func:`run` refuses to write in either case so
+    raw-store growth, a fractured source session or missing population members cannot
+    silently redefine the RS ruler — see the module docstring.
     """
     t0 = time.time()
     from lib import config as _cfg  # noqa: PLC0415
@@ -303,9 +643,11 @@ def compute_coverage(data_root: Path | None = None, *,
     closes: dict[str, pd.Series] = {}
     volumes: dict[str, pd.Series | None] = {}
     short: list[str] = []
+    missing_store: list[str] = []
     for tk in tickers:
         close, vol, _store = load_bars(tk, root)
         if close is None:
+            missing_store.append(tk)
             continue
         if len(close) < MIN_BARS:
             short.append(tk)
@@ -345,8 +687,12 @@ def compute_coverage(data_root: Path | None = None, *,
         else:
             state_counts[str(st)] += 1
 
+    source_contract = source_contract_status(
+        root, members=tickers, closes=closes, missing_store=missing_store, benchmark=bench,
+        min_bars=MIN_BARS, universe_limit=universe_limit,
+    )
     elapsed = round(time.time() - t0, 2)
-    publishable = bool(states) and bool(rs)
+    publishable = bool(states) and bool(rs) and bool(source_contract.get("pass"))
 
     return {
         "schema": SCHEMA,
@@ -368,6 +714,8 @@ def compute_coverage(data_root: Path | None = None, *,
             "universe": len(tickers),
             "graded": len(closes),
             "skipped_short_history": len(short),
+            "missing_store": len(missing_store),
+            "source_contract": source_contract,
             "min_bars": MIN_BARS,
             "store_ladder": list(STORE_LADDER),
             "cross_section_names": len(rs),
