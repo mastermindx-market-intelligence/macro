@@ -1,0 +1,697 @@
+{
+  "schema": "gmi.theme_research.coverage.v1",
+  "operation": "gmi-theme-research-automation-mobility-deployment-20260924-001",
+  "parent_pr": 7886,
+  "child_pr": 7893,
+  "canonical_charter": {
+    "commit": "c86d015cea03b1b1552f45a71abc2ca0520242dd",
+    "blob": "531bc3ba9c7f27ac79a9cb114a5f0db709ce1451"
+  },
+  "inventory": {
+    "commit": "9573cd4d134804fb4cd8c3801ad62a697c3de6d2",
+    "blob": "51de7142f1efe36eceb64cb74a7eeb3f0ef06306",
+    "note": "archived source-local baseline; not a current membership certification"
+  },
+  "evidence_classes": {
+    "PRIMARY_CASE": "new C primary-source case with operating/economic evidence",
+    "DIRECT_WORKED_REUSE": "substantive incumbent worked research directly addresses the leaf mechanism",
+    "DIRECT_FRAMEWORK_REUSE": "incumbent worked research covers exact-member/commercial archetypes but not the complete leaf",
+    "DIRECT_COMPONENT_REUSE": "incumbent component evidence covers exact-member roles but deployment economics remain open",
+    "FRAMEWORK_REUSE": "reusable economic framework exists; leaf-specific worked evidence remains incomplete",
+    "ADJACENT_REUSE": "related evidence exists but cannot close the source-local leaf",
+    "INVENTORY_ONLY": "no substantive direct/adjacent worked research located in this bounded pass beyond archived inventory"
+  },
+  "entries": [
+    {
+      "key": "evsmanufacturers",
+      "family": "Electric Vehicles / Manufacturers",
+      "evidence_class": "DIRECT_WORKED_REUSE",
+      "sources": [
+        "Consumer Cyclical R3 §2, §3.1 Ford at #7804 head 4079c81ef8222b2f45276f919485f188eb7bcb2b"
+      ],
+      "supported": "Vehicle demand, factory/wholesale, channel, financing and retained-contribution stages are separated; Ford Model e is a worked example showing units, revenue and loss can move differently.",
+      "missing": [
+        "broader EV-manufacturer cohort",
+        "matched deliveries versus end-customer registrations",
+        "price/incentive/mix by product",
+        "dealer/direct inventory",
+        "manufacturing cost and warranty",
+        "financing subsidy and per-share bridge"
+      ],
+      "owner_seams": [
+        "Consumer Cyclical owns vehicle/customer demand and financing; C owns deployment/adoption interpretation"
+      ]
+    },
+    {
+      "key": "evsbatteries",
+      "family": "Electric Vehicles / Batteries",
+      "evidence_class": "INVENTORY_ONLY",
+      "sources": [
+        "Finviz baseline 9573cd4... lines 546-549"
+      ],
+      "supported": "Archived source-local member set only in this bounded C pass.",
+      "missing": [
+        "mine/material/cell/precommercial role separation",
+        "qualification status",
+        "contracted demand",
+        "cell/customer production linkage",
+        "capex/yield/cost and ownership"
+      ],
+      "owner_seams": [
+        "Materials/Mining and Semiconductor incumbents retain mineral, material, cell/process specifics; C should consume rather than rebuild"
+      ]
+    },
+    {
+      "key": "evscharging",
+      "family": "Electric Vehicles / Charging",
+      "evidence_class": "PRIMARY_CASE",
+      "sources": [
+        "EVgo Q2 2026 release 2026-08-05",
+        "EVgo Form 10-Q 2026-06-30"
+      ],
+      "supported": "Operational public stalls, delivered energy, per-stall throughput, charging revenue/cost, capex offsets, DOE financing and contractual availability thresholds are directly observed at portfolio level.",
+      "missing": [
+        "actual matched-cohort availability",
+        "site/vintage kWh and sessions",
+        "site tariff/net realization",
+        "energy/demand charges",
+        "host rent/revenue share",
+        "site maintenance and attributable capital/debt",
+        "site-level return"
+      ],
+      "owner_seams": [
+        "Energy retains power-contract/grid-price semantics; C retains charging deployment/site economics"
+      ]
+    },
+    {
+      "key": "evschips",
+      "family": "Electric Vehicles / Chips",
+      "evidence_class": "DIRECT_WORKED_REUSE",
+      "sources": [
+        "Semiconductor APPLICATIONS_CYCLES_ECONOMIC_CAPTURE at #7780 head b68069b2...",
+        "Semiconductor foundation blob 4d11bf..."
+      ],
+      "supported": "Automotive processing/networking, power, sensing and source-reported design-win relationships are explicitly separated from catalog capability; semiconductor research requires application/configuration qualification.",
+      "missing": [
+        "qualified content per exact vehicle/platform",
+        "units/content value by architecture",
+        "customer production schedule",
+        "share/dual-source terms",
+        "recognized revenue/margin attribution"
+      ],
+      "owner_seams": [
+        "Semiconductors owns device/process/fab specifics; C consumes qualified content to explain deployed vehicle demand"
+      ]
+    },
+    {
+      "key": "evssuppliers",
+      "family": "Electric Vehicles / Suppliers",
+      "evidence_class": "FRAMEWORK_REUSE",
+      "sources": [
+        "Consumer Cyclical R3 vehicle stages",
+        "IND9 W9-J02/J04/J22",
+        "Semiconductor commercial-relationship rules"
+      ],
+      "supported": "Existing research separates announced demand, orders, delivery, ownership, financing and supplier profit capture.",
+      "missing": [
+        "exact source-local platform relationships",
+        "content/vehicle or service unit",
+        "contract terms",
+        "customer production schedule",
+        "supplier revenue/profit/cash attribution"
+      ],
+      "owner_seams": [
+        "Incumbent Industrials/Semiconductor/Consumer owners keep product and customer facts; C links them only when deployed economics are source-qualified"
+      ]
+    },
+    {
+      "key": "evsselfdriving",
+      "family": "Electric Vehicles / Self-Driving",
+      "evidence_class": "ADJACENT_REUSE",
+      "sources": [
+        "ROBOT1 application scope and deployment rules",
+        "Consumer Cyclical vehicle-demand framework"
+      ],
+      "supported": "AVs are explicitly adjacent to robotics and operational evidence must distinguish deployment, productive work and intervention; vehicle demand/financing stages are separately modeled.",
+      "missing": [
+        "specific paid AV fleet/application",
+        "operating-domain/geography",
+        "actual availability/utilization",
+        "safety/approval scope",
+        "paid-mile revenue",
+        "remote assistance and full vehicle/fleet cost"
+      ],
+      "owner_seams": [
+        "C owns commercial deployment economics; legal/safety claims stay source-scoped and no generalized certification is inferred"
+      ]
+    },
+    {
+      "key": "evsfleets",
+      "family": "Electric Vehicles / Fleets",
+      "evidence_class": "FRAMEWORK_REUSE",
+      "sources": [
+        "Technology R2 workflow/consumption economics blob e743967...",
+        "Communications foundation network economics blob f2caaae...",
+        "IND9 customer-economics tasks"
+      ],
+      "supported": "Paid units, usage, renewals, service relationships and cost-to-serve are explicit framework dimensions.",
+      "missing": [
+        "exact fleet payer",
+        "vehicle/asset population",
+        "measured fuel/energy/maintenance/labor savings",
+        "telematics/software attachment",
+        "contract and retention cohort",
+        "support/network cost and retained contribution"
+      ],
+      "owner_seams": [
+        "Technology/Communications own software/connectivity archetypes; C owns fleet deployment and operating-value bridge"
+      ]
+    },
+    {
+      "key": "automationrobotics",
+      "family": "Industrial Automation / Robotics",
+      "evidence_class": "DIRECT_WORKED_REUSE",
+      "sources": [
+        "ROBOT1 blob 9d8f7df... company/application map",
+        "IND9 customer-economics tasks"
+      ],
+      "supported": "Robot OEM, component, integrator and customer roles are source-scoped; deployment must preserve task, uptime, intervention, integration and buyer alternatives.",
+      "missing": [
+        "task-level production cohort",
+        "labor constraint and baseline",
+        "installed/integration cost",
+        "productive utilization",
+        "maintenance/support",
+        "buyer payback and supplier retained margin"
+      ],
+      "owner_seams": [
+        "Robotics physical research is DO_NOT_REDO; C deepens only economic deployment gaps"
+      ]
+    },
+    {
+      "key": "automationautomation",
+      "family": "Industrial Automation / Automation",
+      "evidence_class": "FRAMEWORK_REUSE",
+      "sources": [
+        "ROBOT1 company map including Rockwell/Emerson",
+        "IND9 W9-J04/J07/J12/J20"
+      ],
+      "supported": "Process/hybrid controls, discrete robotics, project integration and recurring service are distinguishable roles; customer productivity savings and vendor conversion need separate evidence.",
+      "missing": [
+        "source-local process vs discrete cohorts",
+        "orders/backlog conversion",
+        "project overrun/integration cost",
+        "installed base/service attachment",
+        "customer productivity and retained supplier contribution"
+      ],
+      "owner_seams": [
+        "Industrials owns broader order/cycle frameworks; C applies them to deployed automation"
+      ]
+    },
+    {
+      "key": "automationmachinevision",
+      "family": "Industrial Automation / Machine Vision",
+      "evidence_class": "DIRECT_WORKED_REUSE",
+      "sources": [
+        "ROBOT1 perception/company map and typed inclusion examples",
+        "COVERAGE.md §6"
+      ],
+      "supported": "Cognex/vision roles and named technical inclusions exist; component presence is not customer ROI or seller economic exposure.",
+      "missing": [
+        "one exact inspection/guidance task",
+        "baseline quality/throughput",
+        "qualified version and attachment",
+        "buyer acceptance",
+        "price/software/service scope",
+        "integration/support cost",
+        "seller revenue/margin denominator"
+      ],
+      "owner_seams": [
+        "Semiconductors owns sensor silicon; C owns factory-task deployment economics"
+      ]
+    },
+    {
+      "key": "automationsoftware",
+      "family": "Industrial Automation / Software",
+      "evidence_class": "DIRECT_FRAMEWORK_REUSE",
+      "sources": [
+        "Technology R2 D01-D04 blob e743967...",
+        "ROBOT1 PTC ownership correction"
+      ],
+      "supported": "Paid deployment, accepted go-live, renewal, usage/seat/runtime units, implementation and customer budget are explicitly modeled; UiPath is a worked automation-economics example.",
+      "missing": [
+        "industrial design/simulation/MES/digital-twin case tied to physical output",
+        "exact paid unit",
+        "migration/implementation cost",
+        "renewal/cohort",
+        "customer productivity value",
+        "vendor cloud/support cost"
+      ],
+      "owner_seams": [
+        "Technology owns software/cloud commercial archetypes; C supplies physical workflow/customer-value evidence"
+      ]
+    },
+    {
+      "key": "automationiot",
+      "family": "Industrial Automation / IoT",
+      "evidence_class": "FRAMEWORK_REUSE",
+      "sources": [
+        "Technology R2 workflow/consumption/security economics",
+        "Communications network economics",
+        "ROBOT1 dated PTC ThingWorx divestiture"
+      ],
+      "supported": "Hardware, software/usage, connectivity and ownership perimeter cannot be collapsed; recurring economics require paid units and retention.",
+      "missing": [
+        "specific connected-asset population",
+        "hardware vs recurring software/service allocation",
+        "data/connectivity volume",
+        "paid entitlement and renewal",
+        "support/cloud/network cost",
+        "customer operating effect"
+      ],
+      "owner_seams": [
+        "Technology/Communications own software/network mechanisms; C owns industrial deployment/value link"
+      ]
+    },
+    {
+      "key": "automationlogistics",
+      "family": "Industrial Automation / Logistics",
+      "evidence_class": "PRIMARY_CASE",
+      "sources": [
+        "Symbotic 2026-06-27 10-Q",
+        "Symbotic Q3 FY2026 release",
+        "Walmart FY26 Q4 presentation/transcript",
+        "SYNTHESIS.md Case 1"
+      ],
+      "supported": "Contracted warehouse automation, deployment cohort, operational systems, software/support and operation-services economics plus buyer-scale automation are directly evidenced.",
+      "missing": [
+        "matched site throughput/uptime",
+        "human intervention",
+        "site integration/support costs",
+        "Walmart site capex/labor savings",
+        "site payback",
+        "site-specific Symbotic margin/cash"
+      ],
+      "owner_seams": [
+        "C owns case synthesis; financial values remain under native financial evidence owners"
+      ]
+    },
+    {
+      "key": "automationdprinting",
+      "family": "Industrial Automation / 3D Printing",
+      "evidence_class": "INVENTORY_ONLY",
+      "sources": [
+        "Finviz baseline 9573cd4... lines 611-615"
+      ],
+      "supported": "Archived source-local member set only in this bounded C pass.",
+      "missing": [
+        "qualified production application",
+        "machine utilization",
+        "prototype vs serial-production split",
+        "material/consumable attachment",
+        "part qualification and yield",
+        "service burden",
+        "customer unit economics and vendor retained margin"
+      ],
+      "owner_seams": [
+        "Industrials/manufacturing incumbents should be checked before any new deep dive"
+      ]
+    },
+    {
+      "key": "roboticsautomation",
+      "family": "Robotics / Automation",
+      "evidence_class": "DIRECT_WORKED_REUSE",
+      "sources": [
+        "ROBOT1 application/company/component maps",
+        "IND9 automation/customer economics"
+      ],
+      "supported": "Robot applications, components and business roles are worked with explicit no-double-counting and deployment requirements.",
+      "missing": [
+        "one matched robot application from order through accepted production",
+        "buyer baseline and payback",
+        "supplier order-to-revenue conversion",
+        "full integration/support cost"
+      ],
+      "owner_seams": [
+        "ROBOT1 foundation is DO_NOT_REDO; C adds deployment economics only"
+      ]
+    },
+    {
+      "key": "roboticslogistics",
+      "family": "Robotics / Logistics",
+      "evidence_class": "DIRECT_WORKED_REUSE",
+      "sources": [
+        "ROBOT1 warehouse roles and typed examples",
+        "COVERAGE.md §6",
+        "Symbotic primary Case 1 as adjacent exact-member deepening"
+      ],
+      "supported": "Warehouse participants, named inclusions and deployment relationships are sourced; Symbotic supplies a stronger operational/economic case for an overlapping exact member.",
+      "missing": [
+        "site-level utilization/uptime",
+        "intervention labor",
+        "full installed/support cost",
+        "buyer payback and site-specific supplier cash"
+      ],
+      "owner_seams": [
+        "C owns warehouse deployment-economics case; Robotics owns physical foundation"
+      ]
+    },
+    {
+      "key": "roboticsavmobility",
+      "family": "Robotics / AV & Mobility",
+      "evidence_class": "ADJACENT_REUSE",
+      "sources": [
+        "ROBOT1 application scope and AV adjacency",
+        "Semiconductor application-scoped relationship rules"
+      ],
+      "supported": "Perception/compute/platform roles can be separated and AV is an explicit adjacent family.",
+      "missing": [
+        "role-by-role paid deployment for source-local members",
+        "vehicle/fleet operator payer",
+        "operating-domain scope",
+        "utilization/paid miles",
+        "human assistance",
+        "revenue/cost attribution"
+      ],
+      "owner_seams": [
+        "C owns commercial deployment; Semis/Technology retain component/software specifics"
+      ]
+    },
+    {
+      "key": "roboticsmachinevision",
+      "family": "Robotics / Machine Vision",
+      "evidence_class": "DIRECT_WORKED_REUSE",
+      "sources": [
+        "ROBOT1 Cognex/Orbbec/Mujin/company map and typed examples"
+      ],
+      "supported": "Specific sensors/perception stacks and named inclusions are demonstrated; source explicitly blocks inference from presence to revenue/share.",
+      "missing": [
+        "qualified customer population",
+        "units/attachment and price",
+        "seller revenue/materiality",
+        "task performance/acceptance",
+        "integration/support costs"
+      ],
+      "owner_seams": [
+        "Robotics physical evidence reused; C qualifies economic exposure"
+      ]
+    },
+    {
+      "key": "roboticsmedical",
+      "family": "Robotics / Medical",
+      "evidence_class": "DIRECT_WORKED_REUSE",
+      "sources": [
+        "HEALTH4 blob 9029a022... §1-3",
+        "ROBOT1 Intuitive role",
+        "COVERAGE.md §6",
+        "GMI B final COVERAGE at 537e29b42fdeed1658cd6f29c690f43e87fe9fff, healthcaredevices assessment"
+      ],
+      "supported": "Placement, nested lease categories, procedures, instruments/service and retained-economics questions are explicitly separated. Lane B independently preserves that use, benefit eligibility, supply billing and manufacturer revenue can concern different populations.",
+      "missing": [
+        "comparable active-system cohort",
+        "physical readiness/uptime where material",
+        "procedure-family utilization",
+        "service/training/replacement burden",
+        "contract/cash timing",
+        "matched care/access/use population must be consumed from B rather than reconstructed by C"
+      ],
+      "owner_seams": [
+        "Lane B/Healthcare owns clinical, patient, access and payer interpretation; C owns complementary physical/commercial deployment"
+      ]
+    },
+    {
+      "key": "roboticsconsumer",
+      "family": "Robotics / Consumer",
+      "evidence_class": "ADJACENT_REUSE",
+      "sources": [
+        "ROBOT1 application scope includes consumer/service"
+      ],
+      "supported": "Consumer/service robotics is recognized as a distinct application family with general deployment/accounting rules.",
+      "missing": [
+        "specific recurring customer task",
+        "paid adoption cohort",
+        "hardware subsidy",
+        "maintenance/replacement/support",
+        "retention/frequency",
+        "customer alternative and full unit economics"
+      ],
+      "owner_seams": [
+        "Consumer owner supplies household/customer economics if selected; C owns physical deployment"
+      ]
+    },
+    {
+      "key": "iotedgedevices",
+      "family": "Internet of Things / Edge Devices",
+      "evidence_class": "DIRECT_COMPONENT_REUSE",
+      "sources": [
+        "Semiconductor application/cycle dossier at #7780",
+        "Semiconductor foundation SC12-SC15"
+      ],
+      "supported": "Exact source-local semiconductor businesses include analog, MCU, power, sensing and connectivity roles; application/configuration qualification and design-win scope are explicit.",
+      "missing": [
+        "specific connected-asset population",
+        "qualified content per asset",
+        "shipment/use replacement cycle",
+        "installed-life and refresh",
+        "price/content share and supplier margin"
+      ],
+      "owner_seams": [
+        "Semiconductors owns device/process facts; C ties them to connected deployed assets"
+      ]
+    },
+    {
+      "key": "iotnetworking",
+      "family": "Internet of Things / Networking",
+      "evidence_class": "FRAMEWORK_REUSE",
+      "sources": [
+        "Communications foundation §§G-H blob f2caaae..."
+      ],
+      "supported": "Connectivity economics require service relationships, realized service revenue, utilization, network operating/maintenance/expansion capital; availability is explicitly not subscription or profit.",
+      "missing": [
+        "connected-device population by contract",
+        "traffic/usage",
+        "pricing and churn",
+        "incremental network cost",
+        "IoT-specific service revenue and contribution"
+      ],
+      "owner_seams": [
+        "Communications owns network/satellite economics; C supplies device/application demand when relevant"
+      ]
+    },
+    {
+      "key": "iothardware",
+      "family": "Internet of Things / Hardware",
+      "evidence_class": "FRAMEWORK_REUSE",
+      "sources": [
+        "Semiconductor foundation/applications",
+        "Technology physical-value-network R3B blob bfd2dcf..."
+      ],
+      "supported": "Component/business role, configuration, qualification and physical-value-network boundaries are established; a general issuer cannot be labeled pure edge hardware.",
+      "missing": [
+        "specific edge workload",
+        "incremental hardware vs reused installed capacity",
+        "unit/configuration and utilization",
+        "deployment cadence/replacement",
+        "system price/cost and retained margin"
+      ],
+      "owner_seams": [
+        "Semis/Technology own device/hardware specifics; C owns deployed workload/value bridge"
+      ]
+    },
+    {
+      "key": "iotsoftware",
+      "family": "Internet of Things / Software",
+      "evidence_class": "DIRECT_FRAMEWORK_REUSE",
+      "sources": [
+        "Technology R2 D01-D04/D06 blob e743967..."
+      ],
+      "supported": "Asset/workload/event/usage units, paid deployment, go-live, renewal, consumption and cost-to-serve are explicitly modeled; several exact source-local issuers have worked software economics.",
+      "missing": [
+        "IoT-specific asset/event population",
+        "entitlement/pricing unit",
+        "production go-live",
+        "retention/renewal",
+        "cloud/data/support cost",
+        "customer operating value"
+      ],
+      "owner_seams": [
+        "Technology owns software economics; C ensures physical-asset linkage and non-double-counting"
+      ]
+    },
+    {
+      "key": "iotenterprise",
+      "family": "Internet of Things / Enterprise",
+      "evidence_class": "FRAMEWORK_REUSE",
+      "sources": [
+        "Technology R2 D01-D04",
+        "IND9 W9-J14/J20"
+      ],
+      "supported": "Pilot/implementation, paid go-live, workflow value, automation savings and vendor cost/risk are distinct framework stages.",
+      "missing": [
+        "one measured pilot-to-production conversion",
+        "eligible asset/site population",
+        "before/after operating value",
+        "contract expansion/renewal",
+        "implementation/support burden"
+      ],
+      "owner_seams": [
+        "Technology/Industrials own software/project archetypes; C owns deployment/customer-value evidence"
+      ]
+    },
+    {
+      "key": "iotsecurity",
+      "family": "Internet of Things / Security",
+      "evidence_class": "DIRECT_FRAMEWORK_REUSE",
+      "sources": [
+        "Technology R2 D05 security economics"
+      ],
+      "supported": "Several exact source-local members (PANW, MSFT, FTNT, CRWD, OKTA) have worked security monetization/perimeter examples; protected units and budget owner must be explicit.",
+      "missing": [
+        "connected-asset-specific protection population",
+        "incremental contract distinct from generic enterprise security",
+        "asset/module attachment",
+        "renewal and realized price",
+        "device/network protection cost-to-serve"
+      ],
+      "owner_seams": [
+        "Technology/security owners keep cyber product/economic scope; C only links incremental connected-asset deployment demand"
+      ]
+    },
+    {
+      "key": "autonomousavmobility",
+      "family": "Autonomous Systems / AV & Mobility",
+      "evidence_class": "ADJACENT_REUSE",
+      "sources": [
+        "ROBOT1 AV adjacency and deployment rules",
+        "Consumer Cyclical vehicle framework",
+        "Semiconductor automotive application rules"
+      ],
+      "supported": "Platform/component/customer roles, vehicle adoption stages and operational evidence requirements are available.",
+      "missing": [
+        "specific paid commercial fleet",
+        "operating-domain/geography",
+        "actual availability/utilization",
+        "interventions",
+        "paid ride/mile/task economics",
+        "vehicle capital/maintenance and operator contribution"
+      ],
+      "owner_seams": [
+        "C owns commercial deployment; no generalized safety/legal conclusion"
+      ]
+    },
+    {
+      "key": "autonomousindustrial",
+      "family": "Autonomous Systems / Industrial",
+      "evidence_class": "PRIMARY_CASE",
+      "sources": [
+        "Caterpillar/Luck Stone primary sources in SYNTHESIS.md Case 3",
+        "Symbotic Case 1 as separate warehouse comparator"
+      ],
+      "supported": "A source-local CAT case has real go-live, >3.5m tons of productive hauling, onsite support and multi-site expansion; warehouse autonomy supplies a second mechanism without being counted as independent proof of the quarry case.",
+      "missing": [
+        "contract price",
+        "automation-specific asset/integration capital",
+        "supervision FTE",
+        "maintenance/fuel delta",
+        "cost per accepted ton",
+        "supplier project revenue/margin"
+      ],
+      "owner_seams": [
+        "C owns industrial-autonomy economics; no tactical/defense extension"
+      ]
+    },
+    {
+      "key": "autonomousdefense",
+      "family": "Autonomous Systems / Defense",
+      "evidence_class": "INVENTORY_ONLY",
+      "sources": [
+        "Finviz baseline 9573cd4... lines 895-898"
+      ],
+      "supported": "Archived source-local member set only in this bounded C pass.",
+      "missing": [
+        "specific funded program",
+        "accepted system/delivery milestone",
+        "contract value and recognition",
+        "sustainment/support obligation",
+        "capital/cost and business materiality"
+      ],
+      "owner_seams": [
+        "Remain industry/product-economics only; no targeting, tactical or weapons-operation analysis"
+      ]
+    },
+    {
+      "key": "autonomousmachinevision",
+      "family": "Autonomous Systems / Machine Vision",
+      "evidence_class": "DIRECT_FRAMEWORK_REUSE",
+      "sources": [
+        "ROBOT1 perception/company/typed-inclusion evidence",
+        "Semiconductor SC15/application evidence"
+      ],
+      "supported": "Perception sensor/component roles and named inclusions exist; platform versus component and qualification boundaries are explicit.",
+      "missing": [
+        "qualified content on exact autonomous platform",
+        "units/price/share",
+        "customer acceptance",
+        "software/compute/support scope",
+        "supplier revenue/materiality"
+      ],
+      "owner_seams": [
+        "Semiconductors/Robotics own component facts; C owns deployed autonomy linkage"
+      ]
+    },
+    {
+      "key": "autonomoussoftware",
+      "family": "Autonomous Systems / Software",
+      "evidence_class": "FRAMEWORK_REUSE",
+      "sources": [
+        "Technology R2 workflow/consumption/cloud economics"
+      ],
+      "supported": "Licensed, subscription, consumption and usage-based monetization plus implementation/cloud cost are well specified as archetypes.",
+      "missing": [
+        "autonomy-specific licensed/hosted/usage function",
+        "paid task/unit",
+        "compute intensity and support",
+        "operating-domain/customer population",
+        "renewal/retention and retained contribution"
+      ],
+      "owner_seams": [
+        "Technology owns software/cloud archetypes; C binds them only to proven autonomous workflows"
+      ]
+    },
+    {
+      "key": "autonomousspecialized",
+      "family": "Autonomous Systems / Specialized",
+      "evidence_class": "PRIMARY_CASE",
+      "sources": [
+        "Caterpillar/Luck Stone primary sources in SYNTHESIS.md Case 3",
+        "ROBOT1 application scope"
+      ],
+      "supported": "CAT is in the source-local leaf and has a defined quarry application, go-live, measured tons hauled, embedded support and expansion after extended operation.",
+      "missing": [
+        "buyer project price",
+        "autonomy-specific capex",
+        "support/supervision hours",
+        "maintenance/fuel",
+        "cost per accepted ton",
+        "supplier revenue/margin"
+      ],
+      "owner_seams": [
+        "Lane A retains grower/customer economics for agricultural autonomy; quarry case avoids duplicating that lane"
+      ]
+    }
+  ],
+  "live_dependency_updates": {
+    "lane_b": {
+      "pr": 7892,
+      "return_commit": "537e29b42fdeed1658cd6f29c690f43e87fe9fff",
+      "coverage_blob": "79e4297d77f02be6286dc74bf80349e08d79ec18",
+      "relevant_reuse": "Healthcare devices preserve version/access/use/payment distinctions; use, benefit eligibility, supply billing and manufacturer revenue can have different populations. C retains physical deployment."
+    },
+    "pro_mode_ruling": {
+      "parent_pr": 7886,
+      "observed_through_comment": 5809487359,
+      "state": "UNRESOLVED",
+      "note": "No controlling Meta-CEO ruling/source-law change observed; Extra High research remains unblocked and no Pro receipt is fabricated."
+    }
+  }
+}
