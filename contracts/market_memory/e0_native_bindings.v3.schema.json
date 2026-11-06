@@ -1,0 +1,615 @@
+{
+  "$defs": {
+    "recipient": {
+      "additionalProperties": false,
+      "properties": {
+        "actions": {
+          "items": {
+            "enum": [
+              "prepare_case",
+              "current_input",
+              "authorize_result_disclosure",
+              "read_original_case",
+              "qualify_current_case"
+            ]
+          },
+          "maxItems": 5,
+          "minItems": 5,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "control_admission_ref": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 4194304,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "object_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "object_id",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "installation_epoch": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        },
+        "installation_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        },
+        "intent": {
+          "additionalProperties": false,
+          "properties": {
+            "child_run_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "operator_run_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "participant_binding_sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "root_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "study_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "study_id",
+            "root_id",
+            "operator_run_id",
+            "child_run_id",
+            "participant_binding_sha256"
+          ],
+          "type": "object"
+        },
+        "object_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        },
+        "operation_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        },
+        "original_recipient": {
+          "additionalProperties": false,
+          "properties": {
+            "principal_ref": {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 4194304,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "object_id": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "schema": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+                  "type": "string"
+                },
+                "sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "schema",
+                "object_id",
+                "sha256",
+                "bytes"
+              ],
+              "type": "object"
+            },
+            "recipient_kind": {
+              "const": "native_broker_service"
+            },
+            "ssh_key_fingerprint": {
+              "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "recipient_kind",
+            "principal_ref",
+            "ssh_key_fingerprint"
+          ],
+          "type": "object"
+        },
+        "owner_principal_ref": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 4194304,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "object_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "object_id",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "protected_mode": {
+          "const": "PROTECTED_MEMORY_EXECUTION"
+        },
+        "protected_owner_ref": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 4194304,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "object_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "object_id",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "publication_ref": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 4194304,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "object_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "object_id",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "purpose": {
+          "const": "read_source_scoped_participant_input"
+        },
+        "recipient_permissions": {
+          "items": {
+            "enum": [
+              "delegate_original_child_input",
+              "read_original_child_result"
+            ]
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "registration_ref": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 4194304,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "object_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "object_id",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "reviewer_principal_ref": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 4194304,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "object_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "object_id",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "schema": {
+          "const": "research_factory.market_memory_e0_native_recipient.v3"
+        },
+        "service_ref": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 4194304,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "object_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "object_id",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "slot": {
+          "maximum": 2,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "source_use": {
+          "additionalProperties": false,
+          "properties": {
+            "corpus": {
+              "additionalProperties": false,
+              "properties": {
+                "generation_id": {
+                  "pattern": "^mmgeneration_[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "generation_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "profile": {
+                  "const": "market_memory.trusted.macro_regime_canary.v1"
+                },
+                "store_id": {
+                  "pattern": "^mmstore_[a-f0-9]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "profile",
+                "store_id",
+                "generation_id",
+                "generation_sha256"
+              ],
+              "type": "object"
+            },
+            "k": {
+              "maximum": 8,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "maximum_looks": {
+              "maximum": 1024,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "method_spec": {
+              "type": "object"
+            },
+            "mode": {
+              "enum": [
+                "historical_hypothetical",
+                "current_contextual_support"
+              ]
+            },
+            "query_cutoff": {
+              "type": "string"
+            },
+            "source_authority_sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "source_registration_sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "subject_id": {
+              "pattern": "^mmsecurity_[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "source_registration_sha256",
+            "source_authority_sha256",
+            "corpus",
+            "subject_id",
+            "query_cutoff",
+            "mode",
+            "method_spec",
+            "k",
+            "maximum_looks"
+          ],
+          "type": "object"
+        },
+        "task_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "object_id",
+        "service_ref",
+        "installation_id",
+        "installation_epoch",
+        "registration_ref",
+        "publication_ref",
+        "owner_principal_ref",
+        "operation_id",
+        "intent",
+        "protected_owner_ref",
+        "control_admission_ref",
+        "protected_mode",
+        "original_recipient",
+        "recipient_permissions",
+        "reviewer_principal_ref",
+        "task_id",
+        "slot",
+        "actions",
+        "purpose",
+        "source_use"
+      ],
+      "type": "object"
+    },
+    "service": {
+      "additionalProperties": false,
+      "properties": {
+        "forced_command": {
+          "const": "/opt/macro-api/.venv/bin/python -I -B /opt/macro/scripts/market_memory_e0_native_issuer.py"
+        },
+        "installation_epoch": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        },
+        "installation_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        },
+        "issuer_id": {
+          "const": "MACRO_LINUX_NATIVE_E0_ISSUER"
+        },
+        "journal_profile": {
+          "const": "memory.e0.openssh_authenticated_key_option_journal.v1"
+        },
+        "native_executable": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "path": {
+              "const": "/usr/sbin/sshd"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "version": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes",
+            "version"
+          ],
+          "type": "object"
+        },
+        "object_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        },
+        "protected_mode": {
+          "const": "PROTECTED_MEMORY_EXECUTION"
+        },
+        "protocol": {
+          "const": "memory.e0.native_issuer.v3"
+        },
+        "publication_ref": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 4194304,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "object_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "object_id",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "registration_ref": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 4194304,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "object_id": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "schema": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "object_id",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "restriction_profile": {
+          "const": "memory.e0.protected_m2_service_ssh.v2"
+        },
+        "schema": {
+          "const": "research_factory.market_memory_e0_native_service.v3"
+        },
+        "source_commit": {
+          "pattern": "^[a-f0-9]{40}$",
+          "type": "string"
+        },
+        "ssh_key_fingerprint": {
+          "pattern": "^SHA256:[A-Za-z0-9+/]{43}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "object_id",
+        "issuer_id",
+        "protocol",
+        "installation_id",
+        "installation_epoch",
+        "registration_ref",
+        "publication_ref",
+        "source_commit",
+        "ssh_key_fingerprint",
+        "restriction_profile",
+        "forced_command",
+        "native_executable",
+        "journal_profile",
+        "protected_mode"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "research_factory.market_memory_e0_native_bindings.v3",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/service"
+    },
+    {
+      "$ref": "#/$defs/recipient"
+    }
+  ]
+}
