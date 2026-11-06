@@ -190,7 +190,7 @@
          root's `hidden`. `opacity:0` is the one hide a descendant can never
          escape — the compositor applies it to the whole subtree. Both are kept,
          and no child may own the closed state. */
-      '#mm-terminal-overlay{--mmto-x:50vw;--mmto-y:18vh;position:fixed;inset:0;z-index:2147483000;',
+      '#mm-terminal-overlay{--mmto-x:50vw;--mmto-y:18vh;position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;',
         'visibility:hidden;opacity:0;pointer-events:none;isolation:isolate;overflow:hidden;background:var(--bg);',
         'font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f7ff}',
       '#mm-terminal-overlay.is-open{visibility:visible;opacity:1;pointer-events:auto}',
@@ -201,7 +201,7 @@
         'opacity:0;transform:scale(1.04);transition:opacity .32s ease,transform .62s cubic-bezier(.16,1,.3,1)}',
       '#mm-terminal-overlay.is-open::before{opacity:1;transform:none}',
       '#mm-terminal-overlay.is-closing::before{opacity:0;transform:scale(1.025)}',
-      '.mmto-stage{position:absolute;inset:72px 0 0;z-index:1;overflow:hidden;background:var(--bg);',
+      '.mmto-stage{position:relative;flex:1 1 0;min-height:0;min-width:0;z-index:1;overflow:hidden;background:var(--bg);',
         'opacity:0;transform:translate3d(0,14px,0) scale(.978);transform-origin:var(--mmto-x) var(--mmto-y);',
         'transition:opacity .22s ease,transform .56s cubic-bezier(.16,1,.3,1),clip-path .62s cubic-bezier(.16,1,.3,1)}',
       '#mm-terminal-overlay.is-open .mmto-stage{opacity:1;transform:none}',
@@ -252,9 +252,12 @@
         'cursor:pointer;transition:background .16s ease,border-color .16s ease,transform .16s ease}',
       '.mmto-loader button:hover,.mmto-loader a:hover{background:rgba(38,50,76,.82);border-color:rgba(77,130,255,.55);transform:translateY(-1px)}',
       /* The host return stays outside the loader/stage: iframe load fallback
-         cannot hide it or place a cross-origin document over it. */
-      '.mmto-back{position:absolute;z-index:6;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));',
-        'min-height:44px;max-width:calc(100vw - 28px);padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-btn,10px);',
+         cannot hide it or place a cross-origin document over it. Normal flow
+         reserves its actual height, including safe insets and wrapped text. */
+      '.mmto-back{position:relative;z-index:6;flex-shrink:0;align-self:flex-start;',
+        'margin:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 14px max(14px,env(safe-area-inset-left));',
+        'min-height:44px;max-width:calc(100% - max(14px,env(safe-area-inset-left)) - max(14px,env(safe-area-inset-right)));',
+        'padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-btn,10px);',
         'background:var(--panel);color:var(--text);font:650 12px/1.4 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}',
       '.mmto-back:hover{background:var(--panel2,var(--panel))}',
       '.mmto-back:focus-visible{outline:2px solid var(--link);outline-offset:3px}',

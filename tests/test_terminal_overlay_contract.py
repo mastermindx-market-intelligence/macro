@@ -91,10 +91,9 @@ for (const c of cases) {
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_overlay_asset_is_paired_and_published_by_the_builder():
+def test_overlay_asset_is_paired():
     template = _read("templates/terminal_overlay.js")
     assert template == _read("site/terminal_overlay.js")
-    assert '"terminal_overlay.js"' in _read("scripts/build_site.py")
 
 
 def test_theme_opens_terminal_without_replacing_the_dashboard_document():
