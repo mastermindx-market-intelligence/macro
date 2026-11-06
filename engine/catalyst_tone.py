@@ -620,7 +620,8 @@ def _fabric_cache_value(state, logical_source):
 def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
                             system, user, input_context, validate,
                             load_cache=None, store_cache=None, cache_root=None,
-                            allow_truncated=False, local_mutex=None):
+                            allow_truncated=False, local_mutex=None,
+                            startup_workload="site_batch"):
     """One caller-owned document operation in its existing cache envelope.
 
     The caller supplies the source key, cache path, task, prompt and validator.
@@ -631,6 +632,8 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
     provider = operation = None
     # Presence must not become native fallback even if the cache is corrupt.
     try:
+        if startup_workload not in ("site_batch", "portfolio_analysis"):
+            raise ValueError("fabric_startup_workload_invalid")
         if type(allow_truncated) is not bool:
             raise ValueError("fabric_output_policy_invalid")
         if ((load_cache is None) != (store_cache is None)
@@ -664,7 +667,7 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
         if mode_id is None:
             return None
         selected_cfg = {**cfg, "provider_order": ["fabric"], "usage_lane": lane}
-        selected_cfg.setdefault("workload_profile", "site_batch")
+        selected_cfg.setdefault("workload_profile", startup_workload)
         bound = cfg.get("max_tokens", 1500)
         if type(bound) is not int or not 1 <= bound <= 32768:
             raise ValueError("fabric_token_bound_invalid")
@@ -672,7 +675,7 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
             raise ValueError("fabric_input_invalid")
         from engine.provider_production_modes import make_application_fabric_factory
         factory = make_application_fabric_factory(mode_id=mode_id, lane=lane,
-            workload_cfg={**selected_cfg, "workload_profile": "site_batch"}, root=Path(root))
+            workload_cfg={**selected_cfg, "workload_profile": startup_workload}, root=Path(root))
         identity = factory.inspect(selected_cfg)
         automatic = identity.get("schema") == "mastermind.fabric_application_inspection.v2"
         commitment = {"system": system, "user": user, "max_tokens": bound, "context": input_context}
