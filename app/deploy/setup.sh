@@ -5,8 +5,11 @@
 # The canonical repo is PRIVATE (DEC:B1-MACRO-PRIVATE-CUTOVER). A fresh box
 # needs a READ-ONLY deploy key installed at /root/.ssh/macro_ro_selfupdate
 # first (provisioned out of band — never embedded in this repo), then bootstrap
-# is a governed authenticated clone, one shot:
-#   install -m 0600 <key> /root/.ssh/macro_ro_selfupdate && git -c core.sshCommand='ssh -i /root/.ssh/macro_ro_selfupdate -o IdentitiesOnly=yes' clone --depth 1 git@github.com:mastermindx-market-intelligence/macro.git /opt/macro && bash /opt/macro/app/deploy/setup.sh
+# is a governed authenticated clone, one shot. The clone is --single-branch
+# with NO --depth (MO-A-F04): bootstrap must land connected selected-branch
+# history, because depth-one tips are severed from the installed HEAD and
+# defeat the native accepts_revision ancestry gate on every later update.
+#   install -m 0600 <key> /root/.ssh/macro_ro_selfupdate && git -c core.sshCommand='ssh -i /root/.ssh/macro_ro_selfupdate -o IdentitiesOnly=yes' clone --single-branch --branch main git@github.com:mastermindx-market-intelligence/macro.git /opt/macro && bash /opt/macro/app/deploy/setup.sh
 # Or, after the repo is already cloned:  bash /opt/macro/app/deploy/setup.sh
 set -euo pipefail
 
@@ -30,7 +33,7 @@ if ! command -v caddy >/dev/null 2>&1; then
 	apt-get install -y caddy
 fi
 
-log "[3/6] clone/refresh repo (depth-1, governed authenticated remote)"
+log "[3/6] clone/refresh repo (connected selected-branch history, governed authenticated remote)"
 mkdir -p "$(dirname "$APP_DIR")"
 BOOTSTRAP_SCRIPT="$(dirname "${BASH_SOURCE[0]}")/bootstrap_repo.sh"
 if [ ! -f "$BOOTSTRAP_SCRIPT" ]; then
@@ -66,18 +69,20 @@ log "[6/6] enable Caddy + fast pull-if-changed cron"
 systemctl enable caddy >/dev/null 2>&1 || true
 systemctl restart caddy
 install -m 0755 "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update
-install -m 0755 "$APP_DIR/app/deploy/git-maintenance.sh" /usr/local/bin/macro-git-maintenance
 # Track main within minutes: pull-if-changed every 3 min (cheap no-op when unchanged),
 # so render.yml's fast template renders AND the nightly data build reach the domain
 # quickly — instead of a once-a-night pull. `|| true`: on a box with no crontab yet,
 # `crontab -l`+`grep -v` both "fail" on empty input and would abort under
 # `set -e -o pipefail` before the echo — keep them harmless.
-{ crontab -l 2>/dev/null | grep -v 'macro-update' | grep -v 'macro-git-maintenance' || true ; \
-  echo "*/3 * * * * /usr/local/bin/macro-update >> /var/log/macro-update.log 2>&1" ; \
-  echo "23 6 * * * /usr/local/bin/macro-git-maintenance >> /var/log/macro-git-maintenance.log 2>&1" ; } | crontab -
+{ crontab -l 2>/dev/null | grep -v 'macro-update' || true ; \
+  echo "*/3 * * * * /usr/local/bin/macro-update >> /var/log/macro-update.log 2>&1" ; } | crontab -
 
 # Rotate the cron + Caddy logs so they can never fill the droplet disk.
 install -m 0644 "$APP_DIR/app/deploy/logrotate-macro-vps" /etc/logrotate.d/macro-vps 2>/dev/null || true
+# Same for the persistent journal (2026-10-19 root-disk incident). The Git store
+# maintenance timer is self-armed by macro-update on the macro-api box.
+install -D -m 0644 "$APP_DIR/app/deploy/journald-macro-vps.conf" /etc/systemd/journald.conf.d/10-macro-vps-cap.conf \
+	&& systemctl restart systemd-journald || log "journald cap not applied (non-fatal)"
 
 # Lock the web origin to Cloudflare IPs only (close the direct-to-origin bypass). Fail-open:
 # a CF-fetch failure leaves provisioning intact rather than blocking the deploy.

@@ -1,0 +1,66 @@
+{
+  "activate": true,
+  "importance": 72,
+  "banner_days": 3,
+  "tone": "mixed",
+  "banner_title": "$15B Mesabi Metallics steel mega-mill announced — US steel capacity surges, importers squeezed",
+  "banner_title_zh": "特朗普宣布150亿美元Mesabi Metallics钢铁超级工厂——美国钢铁产能激增，进口商承压",
+  "summary": "The White House announced a $15 billion Mesabi Metallics steel mill in Iowa, fed by the first new US iron ore mine in 50 years, alongside a sweeping reversal of anti-mining policies. The move deepens the domestic steel capacity build-out and reinforces the reflation/reshoring regime, benefiting US steel producers and mining suppliers while pressuring import-dependent manufacturers.",
+  "summary_zh": "白宫宣布在爱荷华州建设150亿美元的Mesabi Metallics钢铁厂，由美国50年来首个新铁矿供矿，并全面逆转反采矿政策。此举深化了国内钢铁产能扩张，强化了再通胀/制造业回流格局，利好美国钢铁生产商和采矿供应链，同时施压依赖进口的制造商。",
+  "analysis": "This is a capacity announcement with real structural weight. A $15 billion, 7.5 million tons-per-year (rising to ~10M) greenfield steel mill would be one of the largest single steel investments in US history, adding roughly 8-10% to current US finished steel supply at a time when domestic mills already control 84% of the US market, up from 77% in 2024. The announcement ties the mill to Mesabi Metallics' newly opened Minnesota iron ore mine — the first new US iron ore mine in 50 years — creating a fully domestic ore-to-steel vertical chain.\n\nThe market transmission is twofold. First, it reinforces the existing reflation/reshoring regime: tariffs have already pushed US mills to record shipments ($16.9B in July 2026) and the highest domestic market share on record, and this project signals that the administration intends to keep adding domestic capacity rather than normalizing trade. Second, it creates a tension inside the steel complex: existing producers gain from the policy tailwind and the validation of domestic demand, but a massive new entrant — if it actually reaches full run-rate over the next decade — would add supply that pressures pricing power for current incumbents. The $95 billion economic impact claim and the political framing as a reversal of years of anti-mining policy also raise the probability of further permitting liberalization for mining across Minnesota, Alaska, and the Superior National Forest.\n\nThe key uncertainty is execution risk. Mesabi Metallics has a long and troubled history in Minnesota; its predecessors (Essar Steel Minnesota) went bankrupt, and the project has been repeatedly delayed. The announcement does not disclose financing sources, off-take agreements, or a credible construction timeline. The market should heavily discount the announced capacity until steel actually pours. The more durable signal is policy direction: mining permits are being unlocked, tariffs are staying restrictive, and the administration is actively courting capital into primary metals.\n\nThe near-term winners are mining suppliers, construction/EPC firms, and steel producers that can benefit from the policy momentum and tighter import competition; the relative losers are import-exposed steel consumers and incumbent steelmakers facing eventual incremental supply. Net read is mixed — clearly positive for the domestic metals/mining complex in the near term, but ambiguous for long-run steel pricing if the mill delivers.",
+  "sectors": [
+    {
+      "name": "US Steel Producers",
+      "impact": "mixed",
+      "rationale": "Near-term tailwind from continued tariff protection and record market share; long-term headwind if 10M tons of new domestic capacity actually comes online."
+    },
+    {
+      "name": "Iron Ore & Mining",
+      "impact": "tailwind",
+      "rationale": "First new US iron ore mine in 50 years, plus policy reversal opening copper-nickel and cobalt districts; permitting liberalization is a structural positive for domestic miners."
+    },
+    {
+      "name": "Construction & EPC / Industrial Machinery",
+      "impact": "tailwind",
+      "rationale": "A $15B project with 6,000 construction jobs over multiple years drives demand for steel fabrication, heavy equipment, and engineering services."
+    },
+    {
+      "name": "Steel Importers & Downstream Fabricators",
+      "impact": "headwind",
+      "rationale": "Tightening import competition and concentrated domestic supply raise input costs for manufacturers that historically sourced foreign steel."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "NUE",
+      "direction": "benefit",
+      "rationale": "Largest US EAF steelmaker; benefits from tariff regime and domestic market share gains, though a major new entrant is a long-term supply overhang."
+    },
+    {
+      "symbol": "STLD",
+      "direction": "benefit",
+      "rationale": "Diversified domestic steel producer with structural share in flat-rolled and long products; near-term beneficiary of record domestic shipments."
+    },
+    {
+      "symbol": "CLF",
+      "direction": "benefit",
+      "rationale": "Vertically integrated iron ore miner and steelmaker; directly benefits from permitting liberalization and the policy validation of domestic ore-to-steel chains, though new Mesabi supply could compete in iron ore."
+    },
+    {
+      "symbol": "FCX",
+      "direction": "benefit",
+      "rationale": "Major US copper producer; the announcement's reversal of copper-nickel mine blocks and the broader mining policy shift raise the odds of new domestic copper development."
+    },
+    {
+      "symbol": "CAT",
+      "direction": "benefit",
+      "rationale": "Heavy equipment supplier for mining and large-scale construction; a $15B mill and expanded US mining capex cycle drive equipment demand."
+    },
+    {
+      "symbol": "RS",
+      "direction": "hurt",
+      "rationale": "Reliance Steel is the largest US metals service center and significant steel importer/distributor; restricted import supply tightens the market it arbitrages."
+    }
+  ],
+  "confidence": "medium"
+}

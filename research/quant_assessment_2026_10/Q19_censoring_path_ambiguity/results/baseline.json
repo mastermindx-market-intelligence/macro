@@ -1,0 +1,155 @@
+{
+ "checkpoint_sessions": 28,
+ "checkpoint_sessions_matching_episode_counts": 0,
+ "checkpoint_vs_episodes_by_session_date": {
+  "2026-08-10": {
+   "checkpoint_records": 768,
+   "episodes_session_date": 384
+  },
+  "2026-08-11": {
+   "checkpoint_records": 614,
+   "episodes_session_date": 307
+  },
+  "2026-08-12": {
+   "checkpoint_records": 1030,
+   "episodes_session_date": 515
+  },
+  "2026-08-20": {
+   "checkpoint_records": 4394,
+   "episodes_session_date": 2197
+  },
+  "2026-08-21": {
+   "checkpoint_records": 988,
+   "episodes_session_date": 494
+  },
+  "2026-08-24": {
+   "checkpoint_records": 964,
+   "episodes_session_date": 482
+  },
+  "2026-08-25": {
+   "checkpoint_records": 818,
+   "episodes_session_date": 409
+  },
+  "2026-08-26": {
+   "checkpoint_records": 950,
+   "episodes_session_date": 475
+  },
+  "2026-08-27": {
+   "checkpoint_records": 1578,
+   "episodes_session_date": 789
+  },
+  "2026-08-28": {
+   "checkpoint_records": 768,
+   "episodes_session_date": 384
+  },
+  "2026-08-31": {
+   "checkpoint_records": 932,
+   "episodes_session_date": 466
+  },
+  "2026-09-01": {
+   "checkpoint_records": 1078,
+   "episodes_session_date": 539
+  },
+  "2026-09-02": {
+   "checkpoint_records": 1178,
+   "episodes_session_date": 589
+  },
+  "2026-09-03": {
+   "checkpoint_records": 1684,
+   "episodes_session_date": 842
+  },
+  "2026-09-04": {
+   "checkpoint_records": 1538,
+   "episodes_session_date": 769
+  },
+  "2026-09-08": {
+   "checkpoint_records": 1796,
+   "episodes_session_date": 898
+  },
+  "2026-09-09": {
+   "checkpoint_records": 1622,
+   "episodes_session_date": 811
+  },
+  "2026-09-10": {
+   "checkpoint_records": 1140,
+   "episodes_session_date": 570
+  },
+  "2026-09-11": {
+   "checkpoint_records": 1176,
+   "episodes_session_date": 588
+  },
+  "2026-09-14": {
+   "checkpoint_records": 1312,
+   "episodes_session_date": 656
+  },
+  "2026-09-15": {
+   "checkpoint_records": 238,
+   "episodes_session_date": 119
+  },
+  "2026-09-17": {
+   "checkpoint_records": 1478,
+   "episodes_session_date": 739
+  },
+  "2026-09-18": {
+   "checkpoint_records": 1170,
+   "episodes_session_date": 585
+  },
+  "2026-09-21": {
+   "checkpoint_records": 11196,
+   "episodes_session_date": 5598
+  },
+  "2026-09-22": {
+   "checkpoint_records": 4322,
+   "episodes_session_date": 2161
+  },
+  "2026-09-23": {
+   "checkpoint_records": 4560,
+   "episodes_session_date": 2280
+  },
+  "2026-09-24": {
+   "checkpoint_records": 4638,
+   "episodes_session_date": 2319
+  },
+  "2026-09-25": {
+   "checkpoint_records": 5088,
+   "episodes_session_date": 2544
+  }
+ },
+ "duplicate_episode_horizon_pairs": 0,
+ "duplicate_outcome_ids": 0,
+ "episode_attrition_class_10d": {
+  "administrative_pending": 4703,
+  "informative_unknown": 4093,
+  "observed": 20713
+ },
+ "episodes_distinct": 29509,
+ "episodes_with_session_rows": 25416,
+ "episodes_without_session_rows": 4093,
+ "horizon_coverage_sets": {
+  "eod": 59,
+  "eod,1d,3d,5d": 4644,
+  "eod,1d,3d,5d,10d": 20713
+ },
+ "mode": "baseline",
+ "session_rows": 122200,
+ "session_rows_without_episode": 0,
+ "status_reason_mix_by_horizon": {
+  "10d": {
+   "complete|None": 20713
+  },
+  "1d": {
+   "complete|None": 25357
+  },
+  "3d": {
+   "complete|None": 25357
+  },
+  "5d": {
+   "complete|None": 25357
+  },
+  "eod": {
+   "complete|None": 24353,
+   "incomplete|decision_after_target_close": 1063
+  }
+ },
+ "uses_outcome_values": false
+}

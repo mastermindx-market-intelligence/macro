@@ -1,0 +1,100 @@
+{
+  "fixture": "F2",
+  "origin": "adjudicated_gold",
+  "provenance_note": "Hand-built adjudicated gold record for SPEC_X0 \u00a74 fixture F2. Every observation and binding carries origin 'adjudicated_gold' with a decided_at: an owner decision over retained bytes, NOT extracted filing text and NOT a fabricated filing.",
+  "issuer_id": "cik:0001234567",
+  "security_class_id": "class:common:0001234567",
+  "paths": [
+    {
+      "path_id": "path:shelf:2025",
+      "file_number": "333-000001",
+      "sec_accepted_at": "2025-01-02T00:00:00Z"
+    }
+  ],
+  "observations": {
+    "itd": {
+      "transaction_id": "tx:f2-inception-to-date",
+      "kind": "registered_takedown",
+      "reporting_basis": "cumulative",
+      "period_start": null,
+      "period_end": "2026-06-30",
+      "gross_proceeds_usd": "5000000",
+      "form": "424B5",
+      "accepted": "2026-06-30",
+      "target_kind": "registration_path",
+      "target_id": "path:shelf:2025",
+      "usage_class": "shelf_takedown",
+      "programme_key": null,
+      "programme_inception_date": null
+    },
+    "may": {
+      "transaction_id": "tx:f2-2026-05-01",
+      "kind": "registered_takedown",
+      "reporting_basis": "individual",
+      "event_date": "2026-05-01",
+      "gross_proceeds_usd": "1000000",
+      "net_proceeds_usd": null,
+      "shares": null,
+      "instruments": null,
+      "principal_usd": null,
+      "settlement": null,
+      "form": "424B5",
+      "accepted": "2026-05-02",
+      "target_kind": "registration_path",
+      "target_id": "path:shelf:2025",
+      "usage_class": "shelf_takedown",
+      "programme_key": null,
+      "programme_inception_date": null
+    },
+    "aug": {
+      "transaction_id": "tx:f2-2026-08-15",
+      "kind": "registered_takedown",
+      "reporting_basis": "individual",
+      "event_date": "2026-08-15",
+      "gross_proceeds_usd": "2000000",
+      "net_proceeds_usd": null,
+      "shares": null,
+      "instruments": null,
+      "principal_usd": null,
+      "settlement": null,
+      "form": "424B5",
+      "accepted": "2026-08-16",
+      "target_kind": "registration_path",
+      "target_id": "path:shelf:2025",
+      "usage_class": "shelf_takedown",
+      "programme_key": null,
+      "programme_inception_date": null
+    }
+  },
+  "coverage": {},
+  "cases": [
+    {
+      "label": "as_of_2026_09_30",
+      "as_of": "2026-09-30",
+      "observations": [
+        "itd",
+        "may",
+        "aug"
+      ],
+      "coverage": [],
+      "expected_support": "supported",
+      "expected": {
+        "usage_key": "shelf_usage:path:shelf:2025",
+        "status": "unknown",
+        "usage": null,
+        "evidenced_floor": "7000000",
+        "complete_through": "2026-06-30",
+        "usage_through_complete": "5000000",
+        "post_window_additions": "2000000",
+        "roles": {
+          "tx:f2-inception-to-date": "window",
+          "tx:f2-2026-05-01": "covered",
+          "tx:f2-2026-08-15": "added"
+        },
+        "unknown_id": "usage_history_incomplete:shelf_usage:path:shelf:2025",
+        "resolving_fact_contains": "424B final pricing supplements",
+        "note": "Individual events alone never establish completeness."
+      }
+    }
+  ]
+}

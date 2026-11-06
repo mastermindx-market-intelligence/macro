@@ -1,0 +1,53 @@
+{
+  "operation": "terminal-provenance-1905",
+  "recorded_at": "2026-10-20T19:03:15.440478+00:00",
+  "script_sha256": "238ca7252e6c044ba60d660c4dbde3207975d031ef02adb0251c062c0f8ab863",
+  "remote_exit": 0,
+  "remote_stderr_present": false,
+  "remote_stderr_bytes": 0,
+  "scope": "read-only metadata; no provider, stage, queue, configuration, receipt or service writes",
+  "result": {
+    "canonical_checkout_head": "bbc07037aae3e98597945e23448781a091d15281",
+    "dotenv_resolution_proven": false,
+    "files": {
+      ".deployment-id": {
+        "bytes": 41,
+        "identity": "bbc07037aae3e98597945e23448781a091d15281",
+        "mtime_utc": "2026-10-20T17:55:19.556081+00:00",
+        "present": true,
+        "sha256": "37b23db6dea14c0ecf0303669a9542d069738873b31b548f3be3055f4e879a38"
+      },
+      ".next/BUILD_ID": {
+        "bytes": 20,
+        "identity": "build-TfctsWXpff2fKS",
+        "mtime_utc": "2026-10-20T17:55:16.112063+00:00",
+        "present": true,
+        "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230"
+      },
+      ".next/required-server-files.json": {
+        "bytes": 11380,
+        "compiled_deployment_id": "bbc07037aae3e98597945e23448781a091d15281",
+        "mtime_utc": "2026-10-20T17:55:07.509017+00:00",
+        "present": true,
+        "sha256": "b15d44ddcc6981f05982a323948fcb4268763f514f051b3af9bd93254bb1e720"
+      },
+      ".next/server/app/api/news/stream/route.js": {
+        "bytes": 513,
+        "mtime_utc": "2026-10-20T17:42:25.255871+00:00",
+        "present": true,
+        "sha256": "f3469db563adcd474b88a6d82b5e420d389e49c3d45f95326cc1ad65fb0dc55f"
+      }
+    },
+    "observed_at": "2026-10-20T19:03:15.415874+00:00",
+    "origin_note": "Only initial process environment inspected; absent keys do not prove Next dotenv absence.",
+    "phase": "provenance",
+    "process_environment_origins": {},
+    "service": {
+      "ActiveState": "active",
+      "ExecMainStartTimestamp": "Tue 2026-10-20 17:56:50 UTC",
+      "MainPID": "3255147",
+      "SubState": "running",
+      "WorkingDirectory": "/opt/terminal/terminal"
+    }
+  }
+}

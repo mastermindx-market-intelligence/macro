@@ -1,0 +1,295 @@
+{
+  "prior": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/v13-current-main-integration/browser-matrix/mockups/evidence/defense-final-local",
+  "current": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/v14-main-conflict-reconciliation/browser-matrix/mockups/evidence/defense-final-local",
+  "same": [],
+  "changed": [
+    {
+      "key": [
+        "desktop",
+        "en",
+        "dark",
+        "None"
+      ],
+      "old": "d0d2058d8b22399f.png",
+      "new": "0daa9deb9d695e7a.png",
+      "old_sha": "d0d2058d8b22399ffb3edfa9113898e6ce09fed063dca8b9ef2c31f5080a00f0",
+      "new_sha": "0daa9deb9d695e7a9cc8f59135e12b43fc1ca178755944a2c85c524c2a00ca72"
+    },
+    {
+      "key": [
+        "desktop",
+        "en",
+        "dark",
+        "investor-focus"
+      ],
+      "old": "34222e94388f6579--investor-focus.png",
+      "new": "2410525aa97fd564--investor-focus.png",
+      "old_sha": "34222e94388f65790bafabff860066a4cbd1b751210d73aa7fd5f32fa874df69",
+      "new_sha": "2410525aa97fd5640fe459e6b64656170da8aff8ff31576c3959dfa0fc8deb08"
+    },
+    {
+      "key": [
+        "desktop",
+        "en",
+        "light",
+        "None"
+      ],
+      "old": "f7355acbcf6018af.png",
+      "new": "3504a14df6d50815.png",
+      "old_sha": "f7355acbcf6018af0944c9f00273009aa185b29ca3f413595f184de5c210b0d8",
+      "new_sha": "3504a14df6d508157e47cfba18a4020679c3ce923ea0f4d1d3304d256e4fe842"
+    },
+    {
+      "key": [
+        "desktop",
+        "en",
+        "light",
+        "investor-focus"
+      ],
+      "old": "b18ada0847629090--investor-focus.png",
+      "new": "abe7e244e0794695--investor-focus.png",
+      "old_sha": "b18ada0847629090600117f82e0b83beb18032a8521e0f20c736268c9259673a",
+      "new_sha": "abe7e244e0794695e95a4190bf6585e6f7e8ebb15e8ae0a177f6637166123647"
+    },
+    {
+      "key": [
+        "desktop",
+        "zh",
+        "dark",
+        "None"
+      ],
+      "old": "86a6e9c08ef60e33.png",
+      "new": "ae99e51b6bcef126.png",
+      "old_sha": "86a6e9c08ef60e338e77148f12895124db2b657587b62751bb5e217444c6ea52",
+      "new_sha": "ae99e51b6bcef126d7ffaeaac49a233e23740f2f317d1178a9861096befbe1f7"
+    },
+    {
+      "key": [
+        "desktop",
+        "zh",
+        "dark",
+        "investor-focus"
+      ],
+      "old": "b6d9a63b6e016946--investor-focus.png",
+      "new": "385c7e45c2433ca9--investor-focus.png",
+      "old_sha": "b6d9a63b6e0169468980ae22872b73286589edd18b501ec1ebb2b1de3a516b67",
+      "new_sha": "385c7e45c2433ca92870b561bd905cfc024d83a2733b338f65aced7ca86b9ff7"
+    },
+    {
+      "key": [
+        "desktop",
+        "zh",
+        "light",
+        "None"
+      ],
+      "old": "933b12b14ca6a38b.png",
+      "new": "2923a8e10b17409f.png",
+      "old_sha": "933b12b14ca6a38b10c5bd80a4924e374b10d4465e0cd0c017460bb084fde22b",
+      "new_sha": "2923a8e10b17409fe7b0aca9e31d1583a5b8d0868db6ef503875b7158cdb96b0"
+    },
+    {
+      "key": [
+        "desktop",
+        "zh",
+        "light",
+        "investor-focus"
+      ],
+      "old": "aacdb39b910c6efc--investor-focus.png",
+      "new": "c19728a9d49e30a5--investor-focus.png",
+      "old_sha": "aacdb39b910c6efca46aaeaba37a1e21e7456ffab720912c79d43a8cd3a82ad7",
+      "new_sha": "c19728a9d49e30a5914ac13fdded28bbcc2f5e1f29579a7b32411935e8b40e67"
+    },
+    {
+      "key": [
+        "tablet",
+        "en",
+        "dark",
+        "None"
+      ],
+      "old": "c4f9b96816c929d3.png",
+      "new": "eeaf9368707938de.png",
+      "old_sha": "c4f9b96816c929d3431db5c80fb1e1060465f751ac8acca75d6c30f5e431dda8",
+      "new_sha": "eeaf9368707938dea84cef6d66070b5bcc881d6b5d9be4328f9aba611b66e532"
+    },
+    {
+      "key": [
+        "tablet",
+        "en",
+        "dark",
+        "investor-focus"
+      ],
+      "old": "3feb988b4b7e3325--investor-focus.png",
+      "new": "7918345ca540658a--investor-focus.png",
+      "old_sha": "3feb988b4b7e332579a8f42047bc9e6583632d11ddda5330257709aa1d043dde",
+      "new_sha": "7918345ca540658aebd79a66ebcf1bfb2a8ee1eba361207727e22ee53cc0d2fe"
+    },
+    {
+      "key": [
+        "tablet",
+        "en",
+        "light",
+        "None"
+      ],
+      "old": "8c1aacbc0e69f178.png",
+      "new": "0e60252777bc56e4.png",
+      "old_sha": "8c1aacbc0e69f178edf9a094ce67d3200d1dbe54acbc8db3030de4b95bbd0627",
+      "new_sha": "0e60252777bc56e4e8c6b4f689165dfbb9095685bb91c4d8fa1eddd8d0af3d7c"
+    },
+    {
+      "key": [
+        "tablet",
+        "en",
+        "light",
+        "investor-focus"
+      ],
+      "old": "6bbd585ce4ebd329--investor-focus.png",
+      "new": "32796d599cd2637f--investor-focus.png",
+      "old_sha": "6bbd585ce4ebd329979f3afb9d98a75a29e69dab5a1193babd17f1fbcc7388f6",
+      "new_sha": "32796d599cd2637fcc0009d22347118a4ded4d300dbf9e3d5f8ff15074060e10"
+    },
+    {
+      "key": [
+        "tablet",
+        "zh",
+        "dark",
+        "None"
+      ],
+      "old": "7798ff9fdace330d.png",
+      "new": "f0f4fd5f3860c17b.png",
+      "old_sha": "7798ff9fdace330d46dc0c12f91c81d2e7fb6e34c627ea17b4394a55a225e13c",
+      "new_sha": "f0f4fd5f3860c17b454c29c5e30f8aa436f639d97473c29a64df0791c7fb65fd"
+    },
+    {
+      "key": [
+        "tablet",
+        "zh",
+        "dark",
+        "investor-focus"
+      ],
+      "old": "e20fa0451274b781--investor-focus.png",
+      "new": "b12c5f8ff4c140e3--investor-focus.png",
+      "old_sha": "e20fa0451274b78122aed013e01838c74d7491a462cf8cbda9c04cb19efbc387",
+      "new_sha": "b12c5f8ff4c140e31083535176cdc14161f4db1b0952ce361cfec28ce8616ac3"
+    },
+    {
+      "key": [
+        "tablet",
+        "zh",
+        "light",
+        "None"
+      ],
+      "old": "3eb83cd6bbc6a49f.png",
+      "new": "dd32ce5e2e407252.png",
+      "old_sha": "3eb83cd6bbc6a49f075a6728877d7e5f9d8d933d1ccdd79a9b843118fe1926b6",
+      "new_sha": "dd32ce5e2e4072520ef73c747ac6ee5acf178962c27ee199caa9a17a3f76ddb7"
+    },
+    {
+      "key": [
+        "tablet",
+        "zh",
+        "light",
+        "investor-focus"
+      ],
+      "old": "bd35f23c2bf0915f--investor-focus.png",
+      "new": "4d3dd5724b035569--investor-focus.png",
+      "old_sha": "bd35f23c2bf0915fd0fc251abee5806d5d3943ae5b9a0ea73ef9f0d3d35ba05d",
+      "new_sha": "4d3dd5724b035569d4c376de968eae0e2b7ef9d1ac3948b7de75f7741cff65c8"
+    },
+    {
+      "key": [
+        "mobile",
+        "en",
+        "dark",
+        "None"
+      ],
+      "old": "2ddfc79fa04c61d2.png",
+      "new": "64a7bf90e090488d.png",
+      "old_sha": "2ddfc79fa04c61d2cd5ea9faa21d4ddb24c8123ab0c2a1c655399e37864db83b",
+      "new_sha": "64a7bf90e090488da85010ae548cdf606498884259b9c2f94d7e45ec79033d8b"
+    },
+    {
+      "key": [
+        "mobile",
+        "en",
+        "dark",
+        "investor-focus"
+      ],
+      "old": "695d64c8503786ca--investor-focus.png",
+      "new": "45f223c0831f16cf--investor-focus.png",
+      "old_sha": "695d64c8503786ca2e6b49685221297c2ff92117b98c5589c651cd37f1439af6",
+      "new_sha": "45f223c0831f16cfcc24cc357a53534f057a8818401381aac82ae94cfcc59cb6"
+    },
+    {
+      "key": [
+        "mobile",
+        "en",
+        "light",
+        "None"
+      ],
+      "old": "1401c6b15d07d609.png",
+      "new": "d84893b809840c73.png",
+      "old_sha": "1401c6b15d07d609c1273b1be10fe8d7d3a69245feacc20c9916415a541f6504",
+      "new_sha": "d84893b809840c73a663fcd7c9ae02f8b3210fc41eba348b8bdd66da0f2d618c"
+    },
+    {
+      "key": [
+        "mobile",
+        "en",
+        "light",
+        "investor-focus"
+      ],
+      "old": "2a5f8c3729838e8b--investor-focus.png",
+      "new": "e748299716883fb9--investor-focus.png",
+      "old_sha": "2a5f8c3729838e8b3de37f6847498375bb7096a22a6b5ea0cb12be303fdad018",
+      "new_sha": "e748299716883fb978047c179928680d95d851aec155d27bd6f633018a3ab5b5"
+    },
+    {
+      "key": [
+        "mobile",
+        "zh",
+        "dark",
+        "None"
+      ],
+      "old": "be35702713169f16.png",
+      "new": "855ce80229b5134d.png",
+      "old_sha": "be35702713169f16faad4a5a2b3f4bcb7399dbcd70cd5f5a448f300adc8421e3",
+      "new_sha": "855ce80229b5134de951a128cb2ea46495ea67f06b3f8b855655c5a13a328c11"
+    },
+    {
+      "key": [
+        "mobile",
+        "zh",
+        "dark",
+        "investor-focus"
+      ],
+      "old": "227515b36e07ba5a--investor-focus.png",
+      "new": "daae82687557dccf--investor-focus.png",
+      "old_sha": "227515b36e07ba5ac23257020652970e57dfc6d013872df8123a43f21a01ae9a",
+      "new_sha": "daae82687557dccfdf6371464cce6e56962b8da94424e982f95f1a8f2d62e301"
+    },
+    {
+      "key": [
+        "mobile",
+        "zh",
+        "light",
+        "None"
+      ],
+      "old": "405cc038431cee6d.png",
+      "new": "52bcbff7c89d98ef.png",
+      "old_sha": "405cc038431cee6d0e51d7eb03f4b5a45789a522d1442ce60e31864eadb9f992",
+      "new_sha": "52bcbff7c89d98ef397d3ba244f2e3bd7f6df4b1e503192e0de44a7354643c56"
+    },
+    {
+      "key": [
+        "mobile",
+        "zh",
+        "light",
+        "investor-focus"
+      ],
+      "old": "6d1ba17f01346c7d--investor-focus.png",
+      "new": "3f117a9313bc056a--investor-focus.png",
+      "old_sha": "6d1ba17f01346c7d7c3e6fa94d27c6ab02333583b370eb71a43cf2169e9f27bd",
+      "new_sha": "3f117a9313bc056aa596827c21920d8aef3f0b59255fa99050c3c8f078e067ab"
+    }
+  ]
+}

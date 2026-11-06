@@ -65,7 +65,9 @@ def test_leak_sentinels_include_analyst_doctrine():
 # ── 4. Source order in both loops: doctrine → analyst → language ────────────
 
 def _assert_order(src: str) -> None:
-    i_doc = src.index("_doctrine_block_for(safe_page, message)")
+    # The technician call now carries exact chart-origin/revision context, so assert
+    # semantic call order instead of freezing the old two-argument source spelling.
+    i_doc = src.index("chart_doctrine_block = _doctrine_block_for(")
     i_ana = src.index("_analyst_block_for(message, lane)")
     i_lang = src.index("_language_directive(turn_lang)")
     assert i_doc < i_ana < i_lang

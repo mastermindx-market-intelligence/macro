@@ -1,0 +1,169 @@
+{
+  "schema": "eval_os.supplied_text_qualification.v1",
+  "observed_at": "2026-10-15T11:03:32.364776+00:00",
+  "qualified_source": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
+  "source_binding": {
+    "source_sha256": "ddcde453e8c828904670f5a5b1017601dbfea7df23f99261285de559f8966113",
+    "cases": [
+      {
+        "name": "benchmark_boj_ycc_band_2022-12-20.json",
+        "sha256": "3f97f3e86dd4b2df952b0a8f2092be39a8032772a94c3ef88fd5f2c87e129aad",
+        "binding_pass": true
+      },
+      {
+        "name": "benchmark_ecb_rate_clock_2022-07-21.json",
+        "sha256": "ae404979f4e13f6674cc8cd854ff85e577922bb9f8ae1d48a985fe7b1ebb1148",
+        "binding_pass": true
+      },
+      {
+        "name": "benchmark_boe_gilt_objective_2022-09-28.json",
+        "sha256": "238bb0e310f7abbe68d0b397e3c4a702a8d257cb30133bfa1fb5260cd65cfa59",
+        "binding_pass": true
+      },
+      {
+        "name": "benchmark_wti_delivery_scope_2020-04-27.json",
+        "sha256": "f9389602569071a99f1d3ac2ecbc60850da1347010c56f703bc36419889fabc3",
+        "binding_pass": true
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "boj_ycc_band_2022-12-20",
+      "date": "2022-12-20",
+      "group": "japan-ycc-december-2022",
+      "url": "https://www.boj.or.jp/en/mopo/mpmdeci/state_2022/k221220a.htm"
+    },
+    {
+      "id": "ecb_rate_clock_2022-07-21",
+      "date": "2022-07-21",
+      "group": "euro-area-policy-july-2022",
+      "url": "https://www.ecb.europa.eu/press/pr/date/2022/html/ecb.mp220721~53e5bdd317.en.html"
+    },
+    {
+      "id": "boe_gilt_objective_2022-09-28",
+      "date": "2022-09-28",
+      "group": "uk-gilt-dysfunction-september-2022",
+      "url": "https://www.bankofengland.co.uk/news/2022/september/bank-of-england-announces-gilt-market-operation"
+    },
+    {
+      "id": "wti_delivery_scope_2020-04-27",
+      "date": "2020-04-27",
+      "group": "oil-delivery-dislocation-april-2020",
+      "url": "https://www.eia.gov/TODAYINENERGY/detail.php?id=43495"
+    }
+  ],
+  "fixture_inventory": {
+    "supplied_text": 20,
+    "preserved_legacy_bear": 1,
+    "historical_20_15_objective_complete": false
+  },
+  "fabric": {
+    "id": "eval-t6-policy-contracts-01a1333d-c1",
+    "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+    "parent": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+    "host": "ubuntu2",
+    "pool": "glm",
+    "model": "glm-5.3-flash",
+    "retained_stdout_bytes": 2588,
+    "retained_stdout_sha256": "b7ed561f59fe1c39ea497c16dc3958ac9ab4437bd2db17a2f287909c5114cc5f",
+    "same_run_artifacts_exported": true,
+    "accepted_by": "reviewer",
+    "acceptance_state": "ACCEPTED",
+    "content_corrections": [],
+    "independent_or_blind_model_review": false,
+    "usage_receipt": "missing, no cost estimate"
+  },
+  "validation": {
+    "new_case_controls": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "affected_ci_controls": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "preservation": {
+    "baseline": "29fdc58b65dcba632d7be84128ca46232fd779bb",
+    "jobs": 314,
+    "execution_definitions_and_limits_unchanged": true,
+    "existing_path_order_and_memberships_preserved": true,
+    "added_source_memberships": 12,
+    "changed_jobs": [
+      "flow-surface",
+      "fif-kernel-guards",
+      "eval-os-a1",
+      "validated-claims-contract",
+      "biocatalyst-serving",
+      "biocatalyst-history",
+      "crypto-assistant-context",
+      "defense-rail-laws",
+      "unrun-government-revenue-candidate-projection",
+      "unrun-government-revenue-grader",
+      "research-price-panel",
+      "ticker-news-qbus"
+    ],
+    "evaluator_function_class_definitions_unchanged": true
+  },
+  "scope_qualification": {
+    "at": "2026-10-15T11:02:26.923374+00:00",
+    "qualified_source": "3528080cd35fb08d8f4e407e6692d2936a098a7e",
+    "source_sha256": {
+      "engine/neuralweb/response_eval.py": "b48ecd32469104f610620b48a2c80d57c86c2e62e31334cd9373b54b5c0a0fce",
+      "tests/test_response_eval.py": "cff85e0850ecae83b0dc470e67f0e7968106129810e0fbb15bc5bf07922cab13",
+      "engine/neuralweb/eval/benchmark_boj_ycc_band_2022-12-20.json": "3f97f3e86dd4b2df952b0a8f2092be39a8032772a94c3ef88fd5f2c87e129aad",
+      "engine/neuralweb/eval/benchmark_ecb_rate_clock_2022-07-21.json": "ae404979f4e13f6674cc8cd854ff85e577922bb9f8ae1d48a985fe7b1ebb1148",
+      "engine/neuralweb/eval/benchmark_boe_gilt_objective_2022-09-28.json": "238bb0e310f7abbe68d0b397e3c4a702a8d257cb30133bfa1fb5260cd65cfa59",
+      "engine/neuralweb/eval/benchmark_wti_delivery_scope_2020-04-27.json": "f9389602569071a99f1d3ac2ecbc60850da1347010c56f703bc36419889fabc3",
+      "research/POLICY_AND_CONTRACT_CASES_2020_2022.md": "ddcde453e8c828904670f5a5b1017601dbfea7df23f99261285de559f8966113",
+      ".github/ci/legacy-jobs.yml": "de5e017c0c6212c0dad4a96c9aefaf892b1f2f2412b2c658db84ba34ff3e9070"
+    },
+    "closure_misses": {},
+    "packing": [
+      {
+        "probe": "templates/index.html",
+        "jobs": 134,
+        "weight": 5621,
+        "packs": 10,
+        "max_jobs": 136,
+        "max_weight": 5803,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "scripts/build_free_content.py",
+        "jobs": 134,
+        "weight": 5441,
+        "packs": 10,
+        "max_jobs": 134,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/314 jobs (1 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "engine/prophet/plan_book.py",
+        "jobs": 128,
+        "weight": 5384,
+        "packs": 9,
+        "max_jobs": 130,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 128/314 jobs (1 unscoped always-on, 127 scoped matches)"
+      }
+    ],
+    "strict_breaches": []
+  },
+  "prior_proof_reuse": "Prior sixteen fixtures, legacy bear, T11 caller/sink and QLedger proof retained; no broad runtime rerun. No changes to evaluator functions/classes or job execution definitions.",
+  "source_custody": "Official pages read now and paraphrased; hashes bind parent-authored source and fixture bytes, not release-date website bytes. EIA cutoff April27, not April20. FDIC March10 source returned403, no retry or case admission.",
+  "limits": {
+    "historical_byte_availability": "unverified",
+    "model_performance_proved": false,
+    "production_adoption_proved": false,
+    "completion": false
+  }
+}

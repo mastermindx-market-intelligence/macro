@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 366571,
+  "byte_start": 365754,
+  "normalized": "Fanatics operates as Barnes & Noble Education’s service provider, including processing consumer personal information on its behalf, using their cutting-edge e-commerce and technology expertise to offer Barnes & Noble Education’s campus store websites expanded product selection, a world-class online and mobile experience, and a progressive direct-to-consumer platform. Coupled with Lids, the leading standalone brick and mortar retailer focused exclusively on licensed fan and alumni products, Barnes & Noble Education’s campus stores have improved access to trend and sales performance data on licensees, product styles, and design treatments.",
+  "normalized_sha256": "86177c70dbe330c2bf4ba7856bd38295cbcc8f7a30156e85c91e0cf5a90f8ae6",
+  "raw": " Fanatics operates as Barnes &amp; Noble Education&#8217;s service provider, including processing consumer personal information on its behalf, using their cutting-edge e-commerce and technology expertise to offer Barnes &amp; Noble Education&#8217;s campus store websites expanded product selection, a world-class online and mobile experience, and a progressive direct-to-consumer platform. Coupled with Lids, the leading standalone brick and mortar retailer focused exclusively on licensed fan and alumni products, Barnes &amp; Noble Education&#8217;s campus stores have improved access to trend and sales performance data on licensees, product styles, and design treatments.</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "738b24ccdfe9cb697f4168e3fca214b611823fab8d49f703f39973291fefcddf"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

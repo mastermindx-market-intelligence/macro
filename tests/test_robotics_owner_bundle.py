@@ -131,6 +131,15 @@ def test_a_snapshot_without_a_revision_cannot_serve(bad):
         loader.load_robotics_owner_bundle(_query(), rights_snapshot=bad)
 
 
+def test_bundle_unavailable_is_the_shell_class():
+    """The ``try`` import is the live resolution on every base carrying
+    #7870: the loader's 503 IS the shell's shared class, not the mirror.
+    importorskip so a Task-1-only base (shell absent) skips, not lies."""
+    shell = pytest.importorskip(
+        "engine.market_ontology.theme_research_binding")
+    assert loader.BundleUnavailable is shell.BundleUnavailable
+
+
 def test_coverage_absence_is_never_a_refusal():
     """The shared 503's own contract reserves it for a broken owner, never for
     an empty one, so an EMPTY bundle must still serve. Previously this asserted

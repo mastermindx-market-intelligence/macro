@@ -1,0 +1,147 @@
+{
+ "classification": "insufficient_data",
+ "comparison_computed": false,
+ "decision_scenario": "lat5_size1_fee0.65_slip0.01",
+ "eligible_candidate_inputs": {
+  "ledger_rows_complete_with_quote_basis": 0,
+  "oa3_policy_files": [],
+  "quote_endpoint_files": []
+ },
+ "eligible_oa3_episodes": 0,
+ "eligible_session_blocks": 0,
+ "live_selection_parity": {
+  "cases": 18,
+  "cohort_import": "ok",
+  "mismatches": 0,
+  "results": [
+   {
+    "case": "plain_entry",
+    "incumbent": 600.0,
+    "match": true,
+    "module": 600.0
+   },
+   {
+    "case": "crossed_then_valid",
+    "incumbent": 605.0,
+    "match": true,
+    "module": 605.0
+   },
+   {
+    "case": "ask_zero_exit_valid",
+    "incumbent": 600.0,
+    "match": true,
+    "module": 600.0
+   },
+   {
+    "case": "bid_zero_entry_valid",
+    "incumbent": 600.0,
+    "match": true,
+    "module": 600.0
+   },
+   {
+    "case": "bid_zero_exit_invalid",
+    "incumbent": null,
+    "match": true,
+    "module": null
+   },
+   {
+    "case": "exchange_74_traded",
+    "incumbent": 603.0,
+    "match": true,
+    "module": 603.0
+   },
+   {
+    "case": "exchange_74_other",
+    "incumbent": 600.0,
+    "match": true,
+    "module": 600.0
+   },
+   {
+    "case": "condition_2_traded",
+    "incumbent": 610.0,
+    "match": true,
+    "module": 610.0
+   },
+   {
+    "case": "condition_2_other",
+    "incumbent": 600.0,
+    "match": true,
+    "module": 600.0
+   },
+   {
+    "case": "conflicting_duplicate",
+    "incumbent": "invalid",
+    "match": true,
+    "module": "invalid"
+   },
+   {
+    "case": "identical_duplicate",
+    "incumbent": 600.0,
+    "match": true,
+    "module": 600.0
+   },
+   {
+    "case": "malformed_size",
+    "incumbent": "invalid",
+    "match": true,
+    "module": "invalid"
+   },
+   {
+    "case": "malformed_condition_on_crossed_row",
+    "incumbent": 601.0,
+    "match": true,
+    "module": 601.0
+   },
+   {
+    "case": "quote_before_arrival",
+    "incumbent": 620.0,
+    "match": true,
+    "module": 620.0
+   },
+   {
+    "case": "insufficient_then_later_size",
+    "incumbent": 601.0,
+    "match": true,
+    "module": 601.0
+   },
+   {
+    "case": "no_quote",
+    "incumbent": null,
+    "match": true,
+    "module": null
+   },
+   {
+    "case": "near_close_valid",
+    "incumbent": 23390.0,
+    "match": true,
+    "module": 23390.0
+   },
+   {
+    "case": "after_close_only",
+    "incumbent": null,
+    "match": true,
+    "module": null
+   }
+  ],
+  "session_basis": "latest flow-ledger session_date (vintage)"
+ },
+ "manual_review_required": false,
+ "missing_input": "retained exact-contract OPRA NBBO tick quotes (Theta /v3/option/history/quote: bid, ask, bid_size, ask_size, condition, exchange, acquisition clocks) over the OA-3 entry and +60 min exit windows, bound to complete oa3.long_single_leg_h60_nbbo/v1 expression receipts; the OA-3 policy is preregistered_inactive and no such receipt or quote path is retained locally",
+ "population_loss_decision": {
+  "baseline_complete": 0,
+  "became_untradable": 0,
+  "loss_fraction": null,
+  "reasons": {},
+  "scenario_complete": 0,
+  "untradable_episode_ids": []
+ },
+ "req1_ruler_crosscheck": {
+  "cohort_fee_per_side": "0.65",
+  "cohort_import": "ok",
+  "mismatches": 0,
+  "module_research_only": true,
+  "pairs": 182
+ },
+ "scenarios_frozen": 90,
+ "verdict": "INSUFFICIENT_DATA"
+}

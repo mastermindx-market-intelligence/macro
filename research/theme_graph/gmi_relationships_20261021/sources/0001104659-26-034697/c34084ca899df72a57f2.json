@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-25T22:10:23Z",
+ "accession": "0001104659-26-034697",
+ "cik": "0001649752",
+ "doc_byte_length": 1622055,
+ "doc_sha256": "3d935d1d878c18a1384040e4daa11959c4fb8876a4b5efec11218b3f9edd471d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-26",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "nmg-20251231xex99d1.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 373667,
+  "byte_start": 372825,
+  "normalized": "The Corporation and Panasonic agreed, pursuant to the Panasonic Energy Agreement, to advance the production of 13 ktpy of high-capacity active anode material from the First-Stage Bécancour Battery Material Plant over multi-year terms. The Panasonic Energy Agreement contains representations, terms and conditions, conditions precedent, as well as qualification requirements of the product and the commercial operations, and no assurance can be made that such representations, terms and conditions can or will be satisfied, (see “Three-Year History – December 31, 2025 and up to this Annual Information Form “Offtake and commercial Agreements” and “Project Execution Strategy Update”).",
+  "normalized_sha256": "f6630c617260e30608077f9252987fcc4735fb2ff2ee5d04db5632fe20998a4f",
+  "raw": "The Corporation and Panasonic agreed, pursuant to the Panasonic Energy Agreement, to advance the production of 13 ktpy of high-capacity active anode material from the First-Stage B&#233;cancour Battery Material Plant over multi-year terms. The Panasonic Energy Agreement contains representations, terms and conditions, conditions precedent, as well as qualification requirements of the product and the commercial operations, and no assurance can be made that such representations, terms and conditions can or will be satisfied, (see &#8220;<i style=\"font-style:italic;\">Three-Year History</i>&#160;&#8211; December&#160;31, 2025 and up to this Annual Information Form&#160;&#8220;<i style=\"font-style:italic;\">Offtake and commercial Agreements</i>&#8221; and &#8220;<i style=\"font-style:italic;\">Project Execution Strategy Update</i>&#8221;).",
+  "raw_sha256": "c34084ca899df72a57f28b19c6554e07c145a873ba886e54275b810004a7c0f0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1649752/000110465926034697/nmg-20251231xex99d1.htm",
+ "xbrl_contexts": []
+}

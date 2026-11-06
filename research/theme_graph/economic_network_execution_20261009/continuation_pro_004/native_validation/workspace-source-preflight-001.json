@@ -1,0 +1,52 @@
+{
+  "schema": "economic_network.workspace_source_preflight_observation/v1",
+  "representation": "Decoded JSON from completed read-only native source preflight.",
+  "native_pid": 85646,
+  "exit_code": 0,
+  "observation": {
+    "observed_at": "2026-10-09T12:01:38.622865+00:00",
+    "protected_procedure": {
+      "repo": "mastermindx-market-intelligence/Mastermind",
+      "branch": "master",
+      "protected": true,
+      "sha": "7d82b9adb839d54e4ab25378ca333e498dd83fcc"
+    },
+    "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-source-diagnostic-20261009-pro-004",
+    "head": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+    "branch": "sol/web-gmi-economic-source-diagnostic-20261009-pro-004",
+    "status": "",
+    "ignored_count": 0,
+    "instructions": [
+      "AGENTS.md",
+      "CLAUDE.md"
+    ],
+    "source_bindings": [
+      {
+        "path": "AGENTS.md",
+        "byte_length": 78660,
+        "sha256": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c"
+      },
+      {
+        "path": "CLAUDE.md",
+        "byte_length": 85973,
+        "sha256": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329"
+      },
+      {
+        "path": "agentos/workstreams/WS-GMI-THEME-GRAPH.md",
+        "byte_length": 20799,
+        "sha256": "8d9fd214746e26cf1f5719ab9c0bdbbe4f48b8792941d271b3585a0b24642f3b"
+      }
+    ],
+    "scoped_candidate_paths": [
+      "research/theme_graph/W3A_SOURCE_RIGHTS_AND_PROCUREMENT.md",
+      "research/theme_graph/economic_network_20261008/source_rights_register.json",
+      "tests/fixtures/options_sparse_selector/episode_template.json",
+      "tests/test_f01_fx_commodity_source_rights.py",
+      "tests/test_kernel_diagnostics.py",
+      "tests/test_options_sparse_selector_bootstrap.py",
+      "tests/test_options_sparse_selector_prereg.py",
+      "tests/test_options_sparse_selector_runtime.py",
+      "tests/test_run_options_sparse_selector.py"
+    ]
+  }
+}

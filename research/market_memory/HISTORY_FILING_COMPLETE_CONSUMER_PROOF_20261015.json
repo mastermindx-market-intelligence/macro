@@ -1,0 +1,202 @@
+{
+  "busy_date": "2025-11-06",
+  "busy_date_unique_filings": 336,
+  "cases": [
+    {
+      "case": "historical",
+      "date": "2020-03-16",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 27,
+      "filings_total": 27,
+      "logical_source_bytes": 25149534,
+      "market_rows": 25,
+      "offset": 0,
+      "query_receipt_sha256": "ed44e6534ce6c657bc25ff1be47a92eb94c816cf14a69dcc747e31a71be8035e",
+      "response_bytes": 41607,
+      "response_sha256": "c7a7f3f8b66d9f865a304d667ba893eb2ce879d1588c93cab83c6c54e1cacbe0",
+      "seconds": 2.387,
+      "within_filing_range": true
+    },
+    {
+      "case": "beyond_filing_coverage",
+      "date": "2026-10-14",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 0,
+      "filings_total": 0,
+      "logical_source_bytes": 25149534,
+      "market_rows": 25,
+      "offset": 0,
+      "query_receipt_sha256": "743484c893b3511af57e361e1f63a5b9c5d2629a4a9ec724ad072c9343dfcdc4",
+      "response_bytes": 31226,
+      "response_sha256": "b50b0b42f34eaae00e6caa67b1420c2dbfeda1d3547517a0e793278d60958893",
+      "seconds": 2.215,
+      "within_filing_range": false
+    },
+    {
+      "case": "pre_filing_coverage",
+      "date": "1993-01-29",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 0,
+      "filings_total": 0,
+      "logical_source_bytes": 25149534,
+      "market_rows": 1,
+      "offset": 0,
+      "query_receipt_sha256": "2ff500e21ed14c7b04bfbeb55479b7987858269fe20e05a848f0c2c4434856cd",
+      "response_bytes": 17838,
+      "response_sha256": "317e96bd9c398412c916c0af8599a7cd7e7c4beec15cdf7dd745b1ca81c728b6",
+      "seconds": 2.699,
+      "within_filing_range": false
+    },
+    {
+      "case": "busy_0",
+      "date": "2025-11-06",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 50,
+      "filings_total": 336,
+      "logical_source_bytes": 25149534,
+      "market_rows": 25,
+      "offset": 0,
+      "query_receipt_sha256": "279cb4217991ab58cabd291ed898319d95ee9a3b1af05b6cee3f08b391947d42",
+      "response_bytes": 50456,
+      "response_sha256": "db30e1cf9cf7dc5a3865364977d567191b67ecc20242f6bca9605be463ce4689",
+      "seconds": 3.048,
+      "within_filing_range": true
+    },
+    {
+      "case": "busy_50",
+      "date": "2025-11-06",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 50,
+      "filings_total": 336,
+      "logical_source_bytes": 25149534,
+      "market_rows": 25,
+      "offset": 50,
+      "query_receipt_sha256": "652f2652a9f96b53137b658645d0bffc24fb5423c6d840f91e297bdb8c543e9b",
+      "response_bytes": 50481,
+      "response_sha256": "efdcb85052e5b16a5f4dec43800114f5c73318a32d557c4af87c67cb96433f6e",
+      "seconds": 3.174,
+      "within_filing_range": true
+    },
+    {
+      "case": "busy_100",
+      "date": "2025-11-06",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 50,
+      "filings_total": 336,
+      "logical_source_bytes": 25149534,
+      "market_rows": 25,
+      "offset": 100,
+      "query_receipt_sha256": "afabe48d767981e0485bd765dd83809f01bafecd78377df55f88b5a7d17dbf95",
+      "response_bytes": 50577,
+      "response_sha256": "600252c0ae909e31a988c8a129602c4744970d43122287d0cbd76f0bb97aed33",
+      "seconds": 2.674,
+      "within_filing_range": true
+    },
+    {
+      "case": "busy_150",
+      "date": "2025-11-06",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 50,
+      "filings_total": 336,
+      "logical_source_bytes": 25149534,
+      "market_rows": 25,
+      "offset": 150,
+      "query_receipt_sha256": "d5c928f3324d308e400c48da205f85a5cc9f6ee459290a30b965a7ad55919307",
+      "response_bytes": 50543,
+      "response_sha256": "90a9c3abcf850d27d0e34a22aac8515792663da1595c378828fff3fd4aaf6393",
+      "seconds": 3.005,
+      "within_filing_range": true
+    },
+    {
+      "case": "busy_200",
+      "date": "2025-11-06",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 50,
+      "filings_total": 336,
+      "logical_source_bytes": 25149534,
+      "market_rows": 25,
+      "offset": 200,
+      "query_receipt_sha256": "2119ad51d2136b2863390165bc00012e4a657593d2e0e14b2d3ca93717644826",
+      "response_bytes": 50527,
+      "response_sha256": "6d9b8508fb000368ac0a568ae3690c3c308d6832570a8b224f5b43ef11974ee2",
+      "seconds": 2.283,
+      "within_filing_range": true
+    },
+    {
+      "case": "busy_250",
+      "date": "2025-11-06",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 50,
+      "filings_total": 336,
+      "logical_source_bytes": 25149534,
+      "market_rows": 25,
+      "offset": 250,
+      "query_receipt_sha256": "b0dec4f52d21544b58b571b0b59336d05cf98357428aee84e1fcf98f58ab091f",
+      "response_bytes": 50534,
+      "response_sha256": "4eeb3338a8f0bc776cbd25c350b4a0d5dcd3b8f4e0df2dedb98bb31095a97484",
+      "seconds": 2.186,
+      "within_filing_range": true
+    },
+    {
+      "case": "busy_300",
+      "date": "2025-11-06",
+      "default_outcomes_opened": false,
+      "filing_range": {
+        "first": "2004-08-23",
+        "last": "2026-10-02"
+      },
+      "filings": 36,
+      "filings_total": 336,
+      "logical_source_bytes": 25149534,
+      "market_rows": 25,
+      "offset": 300,
+      "query_receipt_sha256": "57c1b2680005ee8cef6320f621787d06cdb1aaa01240b5b9f75f816c446d6005",
+      "response_bytes": 45240,
+      "response_sha256": "2b102223bf25ac45da45b38b23761a782ceecf82c55db961ce6ba87ab236005f",
+      "seconds": 2.084,
+      "within_filing_range": true
+    }
+  ],
+  "prior_historical_filing_values_unchanged": true,
+  "schema": "market_memory.filing_consumer_qualification.v1",
+  "source_not_modified": true,
+  "source_rows": 173495,
+  "source_sha256": "5309ece0cd66b33d69abb8055afa05333d00bcfb43ace87d7997b3655946446f",
+  "source_state": "CANDIDATE_SOURCE_NOT_INSTALLED"
+}

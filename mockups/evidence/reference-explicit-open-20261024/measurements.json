@@ -1,0 +1,268 @@
+[
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(13, 16, 24)",
+    "text": "rgb(200, 208, 220)",
+    "fonts": "loaded",
+    "forceState": null,
+    "cell": "macro:reference|desktop|en|dark|anonymous",
+    "applied": {
+      "theme": "dark",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(232, 235, 241)",
+    "text": "rgb(46, 57, 80)",
+    "fonts": "loaded",
+    "forceState": null,
+    "cell": "macro:reference|desktop|en|light|anonymous",
+    "applied": {
+      "theme": "light",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "\u5e02\u573a\u53c2\u8003",
+    "visibleEntries": 46,
+    "background": "rgb(13, 16, 24)",
+    "text": "rgb(200, 208, 220)",
+    "fonts": "loaded",
+    "forceState": null,
+    "cell": "macro:reference|desktop|zh|dark|anonymous",
+    "applied": {
+      "theme": "dark",
+      "locale": "zh"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "\u5e02\u573a\u53c2\u8003",
+    "visibleEntries": 46,
+    "background": "rgb(232, 235, 241)",
+    "text": "rgb(46, 57, 80)",
+    "fonts": "loaded",
+    "forceState": null,
+    "cell": "macro:reference|desktop|zh|light|anonymous",
+    "applied": {
+      "theme": "light",
+      "locale": "zh"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 844,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(13, 16, 24)",
+    "text": "rgb(200, 208, 220)",
+    "fonts": "loaded",
+    "forceState": null,
+    "cell": "macro:reference|mobile|en|dark|anonymous",
+    "applied": {
+      "theme": "dark",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 844,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(232, 235, 241)",
+    "text": "rgb(46, 57, 80)",
+    "fonts": "loaded",
+    "forceState": null,
+    "cell": "macro:reference|mobile|en|light|anonymous",
+    "applied": {
+      "theme": "light",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 844,
+    "h1": "\u5e02\u573a\u53c2\u8003",
+    "visibleEntries": 46,
+    "background": "rgb(13, 16, 24)",
+    "text": "rgb(200, 208, 220)",
+    "fonts": "loading",
+    "forceState": null,
+    "cell": "macro:reference|mobile|zh|dark|anonymous",
+    "applied": {
+      "theme": "dark",
+      "locale": "zh"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 844,
+    "h1": "\u5e02\u573a\u53c2\u8003",
+    "visibleEntries": 46,
+    "background": "rgb(232, 235, 241)",
+    "text": "rgb(46, 57, 80)",
+    "fonts": "loading",
+    "forceState": null,
+    "cell": "macro:reference|mobile|zh|light|anonymous",
+    "applied": {
+      "theme": "light",
+      "locale": "zh"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(13, 16, 24)",
+    "text": "rgb(200, 208, 220)",
+    "fonts": "loaded",
+    "forceState": null,
+    "cell": "macro:reference|desktop|en|dark|anonymous",
+    "applied": {
+      "theme": "dark",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(13, 16, 24)",
+    "text": "rgb(200, 208, 220)",
+    "fonts": "loaded",
+    "forceState": "summary_hover",
+    "cell": "macro:reference|desktop|en|dark|anonymous|summary_hover",
+    "applied": {
+      "theme": "dark",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(13, 16, 24)",
+    "text": "rgb(200, 208, 220)",
+    "fonts": "loaded",
+    "forceState": "summary_focus",
+    "cell": "macro:reference|desktop|en|dark|anonymous|summary_focus",
+    "applied": {
+      "theme": "dark",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(232, 235, 241)",
+    "text": "rgb(46, 57, 80)",
+    "fonts": "loaded",
+    "forceState": null,
+    "cell": "macro:reference|desktop|en|light|anonymous",
+    "applied": {
+      "theme": "light",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(232, 235, 241)",
+    "text": "rgb(46, 57, 80)",
+    "fonts": "loaded",
+    "forceState": "summary_hover",
+    "cell": "macro:reference|desktop|en|light|anonymous|summary_hover",
+    "applied": {
+      "theme": "light",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  },
+  {
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 900,
+    "h1": "Market Reference",
+    "visibleEntries": 46,
+    "background": "rgb(232, 235, 241)",
+    "text": "rgb(46, 57, 80)",
+    "fonts": "loaded",
+    "forceState": "summary_focus",
+    "cell": "macro:reference|desktop|en|light|anonymous|summary_focus",
+    "applied": {
+      "theme": "light",
+      "locale": "en"
+    },
+    "errors": [],
+    "failedResponses": [],
+    "blockedExternalRequests": []
+  }
+]

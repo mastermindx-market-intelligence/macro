@@ -378,13 +378,13 @@
         "source_product_label": {"anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
         "selector": {
           "anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}],
-          "description": "Source-local subject selector (subject product when labelled, else the subject business)."
+          "description": "Source-local subject selector (subject platform when labelled, else the subject product when labelled, else the subject business). `kind` names which one, with the same value native_subjects and graph nodes carry for that selector."
         },
         "object_selector": {
           "anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}],
           "description": "Source-local object selector, scoped by publisher — two similar labels from different documents never merge."
         },
-        "kind": {"anyOf": [{"type": "null"}, {"enum": ["business", "product"]}]},
+        "kind": {"anyOf": [{"type": "null"}, {"enum": ["business", "product", "platform"]}]},
         "model": {
           "anyOf": [{"type": "null"}, {"type": "string", "minLength": 1}],
           "description": "Always null in Robotics v1: no structured publisher model field exists on the assertion yet."

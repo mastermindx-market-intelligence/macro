@@ -339,7 +339,8 @@
             "string",
             "null"
           ],
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "^src_[a-z0-9_]+$"
         },
         "perimeter": {
           "type": "string",

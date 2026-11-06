@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-11T21:06:57Z",
+ "accession": "0001451809-26-000012",
+ "cik": "0001451809",
+ "doc_byte_length": 1797085,
+ "doc_sha256": "568771611c495d5ee81c5aa62e4061177df08c685c30ad77b993be6c0a20008b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sitm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 310135,
+  "byte_start": 309686,
+  "normalized": "We currently utilize a range of semiconductor process generations to develop and manufacture our products. We use Robert Bosch LLC (“Bosch”) in Germany, Taiwan Semiconductor Manufacturing Company (“TSMC”) and United Microelectronics Corporation (\"UMC\") in Taiwan, and Teledyne Digital Imaging Inc. (\"Teledyne\") in Canada as our primary foundries and suppliers for our MEMS timing devices and analog mixed-signal circuit ICs.",
+  "normalized_sha256": "625868ca7f75f9a6b02755836b9d6e60a101313ba85b9bbcbacf3010e9b5993a",
+  "raw": " We currently utilize a range of semiconductor process generations to develop and manufacture our products. We use Robert Bosch LLC (&#8220;Bosch&#8221;) in Germany, Taiwan Semiconductor Manufacturing Company (&#8220;TSMC&#8221;) and United Microelectronics Corporation (\"UMC\") in Taiwan, and Teledyne Digital Imaging Inc. (\"Teledyne\") in Canada as our primary foundries and suppliers for our MEMS timing devices and analog mixed-signal circuit ICs.",
+  "raw_sha256": "ab0698973d9c9488e46e06e2e368491e268dcc6ace2db9b3d83499068e31cb00"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1451809/000145180926000012/sitm-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,161 @@
+{
+  "archive": {
+    "byte_length": 121020,
+    "filename": "NVDA_PUBLIC_EVIDENCE_002.tar.gz",
+    "sha256": "961c2154687d89a6c4505c2b5df64b4acfa1434bc8ce0a18f7f8b7b0e4194de4"
+  },
+  "format": "gzip+USTAR",
+  "manifest_and_staging_receipt_external": true,
+  "member_count": 27,
+  "members": [
+    {
+      "byte_length": 6818,
+      "path": "FINDINGS.md",
+      "sha256": "77f3f654a0c3817efb89858e6b1e9a864afbd9d4070fedb2e681411735ac8b42"
+    },
+    {
+      "byte_length": 5890,
+      "path": "ORIGIN_INDEX.json",
+      "sha256": "79908c71afdf716ba864ce0be8e9dfd25844c46ad340a8e749dfae77caa35938"
+    },
+    {
+      "byte_length": 4779,
+      "path": "PACKAGE_CONTENTS.json",
+      "sha256": "d46dcbbce94dad99ffac4979476cca82c3d85a43eab0a8ab7432374694dc4bbf"
+    },
+    {
+      "byte_length": 5664,
+      "path": "PRIOR_EVIDENCE_REFERENCES.json",
+      "sha256": "c4883a0d9c7c0f86dc613026c15b44d3fd3badd08e748946be60453f05d48b2d"
+    },
+    {
+      "byte_length": 2514,
+      "path": "PUBLICATION_INDEX.json",
+      "sha256": "b254263646c3ab46f117db6c11f58526533f3316acb22f8f7382ca574de3d857"
+    },
+    {
+      "byte_length": 19659,
+      "path": "capture/ACTION.py.txt",
+      "sha256": "264535ec562043a18e4bc75c92fbbe9b5cba12428422b2a9677e89c0f769f699"
+    },
+    {
+      "byte_length": 29119,
+      "path": "capture/BOOTSTRAP.py.txt",
+      "sha256": "92298f53a839bea81b16556ff71277f461d44f732df88a044a990785c620f0a3"
+    },
+    {
+      "byte_length": 4261,
+      "path": "capture/OUTER_RESULT.json",
+      "sha256": "6ea1031084e6948ee284222201158227ec5cc111874e08ebcd9d6a2b00d56040"
+    },
+    {
+      "byte_length": 26399,
+      "path": "capture/PUBLIC_RESULT.json",
+      "sha256": "3fe5f660d92703e370c716135bd078d57fd281b8f30da611c65b5a6d8346414d"
+    },
+    {
+      "byte_length": 15017,
+      "path": "independent_review/INPUT_INVENTORY.json",
+      "sha256": "1fea60e47bdae5de6e279880840e61213d5502226a1c8fecd2fc384d7a04b05f"
+    },
+    {
+      "byte_length": 1799,
+      "path": "independent_review/MANIFEST.json",
+      "sha256": "63647a1c79b940945450ea4a44cc322a4b102cda8346f57bcecca694270c39a4"
+    },
+    {
+      "byte_length": 2100,
+      "path": "independent_review/PRIOR_EVIDENCE_AND_CARRIER_CHANGE.json",
+      "sha256": "33c576cd0ae1b16a477f3834f52f4dc327285da738a986993543ee4f6c0f70a8"
+    },
+    {
+      "byte_length": 9031,
+      "path": "independent_review/REVIEW.md",
+      "sha256": "870cc8bda77203937519e6fb0a213edad7e15814101a77021a13e63a0558c443"
+    },
+    {
+      "byte_length": 83817,
+      "path": "independent_review/VERIFICATION_RESULT.json",
+      "sha256": "54a550dae367444c77a6ad8793c4d8dca36da567cbd18bb6ca75cc13c5fdc6b5"
+    },
+    {
+      "byte_length": 19659,
+      "path": "independent_review/inputs/ACTION.py.txt",
+      "sha256": "264535ec562043a18e4bc75c92fbbe9b5cba12428422b2a9677e89c0f769f699"
+    },
+    {
+      "byte_length": 29119,
+      "path": "independent_review/inputs/BOOTSTRAP.py.txt",
+      "sha256": "92298f53a839bea81b16556ff71277f461d44f732df88a044a990785c620f0a3"
+    },
+    {
+      "byte_length": 4261,
+      "path": "independent_review/inputs/OUTER_RESULT.json",
+      "sha256": "6ea1031084e6948ee284222201158227ec5cc111874e08ebcd9d6a2b00d56040"
+    },
+    {
+      "byte_length": 26399,
+      "path": "independent_review/inputs/PUBLIC_RESULT.json",
+      "sha256": "3fe5f660d92703e370c716135bd078d57fd281b8f30da611c65b5a6d8346414d"
+    },
+    {
+      "byte_length": 47121,
+      "path": "independent_review/verify_public_result.py",
+      "sha256": "246ab0e0f5a74c92dfbe467cad4380c1d40edcafdd509d9d0edbef40b3b5bf09"
+    },
+    {
+      "byte_length": 120121,
+      "path": "preparation/stage_public_packet_002.py.txt",
+      "sha256": "cdacacb68cb272442bef64f05684bd16d0af39805e28ff49e5e38478cd78fa30"
+    },
+    {
+      "byte_length": 11635,
+      "path": "process_evidence/INDEPENDENT_REVIEW_COMPLETION_TOOL.json",
+      "sha256": "60b59cbe2115b387010806746b39342fa0b3965c80ca92a06f21284a9f6d8987"
+    },
+    {
+      "byte_length": 57054,
+      "path": "process_evidence/INDEPENDENT_REVIEW_REQUEST_ARGUMENTS.json",
+      "sha256": "783d7bce6c1dc48d045bdec1233b87378dc6482f3f7033cc0783fe962ebca251"
+    },
+    {
+      "byte_length": 11603,
+      "path": "process_evidence/INDEPENDENT_REVIEW_START_TOOL.json",
+      "sha256": "1394ad1a91da219f46ebe5d67ffa1b25b3582f5038822d2258b71d65a92270c5"
+    },
+    {
+      "byte_length": 436,
+      "path": "process_evidence/LOCAL_CARRIER_STALL_RECORD.json",
+      "sha256": "242769c55b5d5129e435d850cd4b1aa2a3a959bd0109a5e5a0fe5d84ee632cf7"
+    },
+    {
+      "byte_length": 405,
+      "path": "process_evidence/PREPARATION_SYNTAX_RECEIPT.json",
+      "sha256": "22d549d78198311bb54dbe7d9d0e2750ded00ceeccb617c9253397c96375bba4"
+    },
+    {
+      "byte_length": 2616,
+      "path": "process_evidence/PRINCIPAL_CAPTURE_COMPLETION_ARCHIVE.json",
+      "sha256": "451e2544674c77dd2e1e745e887d751ccc8ce5ae01f4a5430a9d9ca8e6f5b8b9"
+    },
+    {
+      "byte_length": 682,
+      "path": "process_evidence/PRINCIPAL_CAPTURE_START_ARCHIVE.json",
+      "sha256": "020e82b277fde4b58c80243149f993c7c5913638fd37f98042594c9e06758a1a"
+    }
+  ],
+  "metadata": {
+    "gid": 0,
+    "gname": "",
+    "gzip_filename": "",
+    "gzip_mtime": 0,
+    "mode": "0600",
+    "mtime": 0,
+    "uid": 0,
+    "uname": ""
+  },
+  "regular_files_only": true,
+  "schema": "economic_network.public_archive_manifest/v1",
+  "sorted_unique_names": true,
+  "total_member_bytes": 547978
+}

@@ -884,6 +884,10 @@ def test_credit_funding_e4_needs_the_capture_fixture_flag() -> None:
     entries = copy.deepcopy(_live_entries())
     for entry in entries:
         if entry["workspace_id"] == "capital_structure":
+            # This test is about fixture-only E4 admission, not today's source
+            # freshness. Pin the workspace CURRENT so a live STALE_SOURCE E2
+            # cannot mask the behavior being asserted.
+            entry["snapshot"]["availability"]["state"] = "CURRENT"
             entry["snapshot"]["withheld_command_tabs"] = ["funding"]
     closed = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
     closed_credit = next(s for s in closed if s["id"] == "credit")

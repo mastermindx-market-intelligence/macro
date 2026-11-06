@@ -1,0 +1,20 @@
+[
+  {
+    "bytes": 31323,
+    "name": "RECOMMENDED_SELECTION_POLICY.json",
+    "sha256": "03881ee568f6f08f06ef88a2fad0e33ff2fe14b3ab1db526c35221d642cfe9fd",
+    "stage": "DRAFT_SNAPSHOT_NOT_FINAL_FREEZE"
+  },
+  {
+    "bytes": 15881,
+    "name": "PRIMARY_SOURCE_REGISTER.json",
+    "sha256": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43",
+    "stage": "DRAFT_SNAPSHOT_NOT_FINAL_FREEZE"
+  },
+  {
+    "bytes": 38864,
+    "name": "SELECTION_POLICY_ADJUDICATION_MEMO.md",
+    "sha256": "763f8724b1ec9e88a60b94dd65b3d61befe6af79ff28f64f472f0a87ecf9a582",
+    "stage": "DRAFT_SNAPSHOT_NOT_FINAL_FREEZE"
+  }
+]

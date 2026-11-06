@@ -329,7 +329,11 @@
             <td>{{ row.n_dates_fmt }}</td>
             <td>{{ row.months_span_fmt }}</td>
             <td class="{{ 'pos' if row.wr21_abs is not none and row.wr21_abs >= 0.5 else '' }}">{{ row.wr21_abs_fmt }}</td>
-            <td class="{{ 'pos' if row.wr21_excess is not none and row.wr21_excess > 0 else ('neg' if row.wr21_excess is not none and row.wr21_excess < 0 else '') }}">{{ row.wr21_excess_fmt }}</td>
+            <td class="{{ row.wr_exc_css }}">{{ row.wr21_excess_fmt }}{% if row.is_avoid %}
+              <div style="color:var(--muted);font-size:11px">
+                <span class="l-en">Avoid accuracy 21d</span><span class="l-zh">21日规避准确率</span>
+                {{ row.avoid_accuracy_fmt }}
+              </div>{% endif %}</td>
             <td class="{{ 'pos' if row.med_excess21 is not none and row.med_excess21 > 0 else ('neg' if row.med_excess21 is not none and row.med_excess21 < 0 else '') }}">{{ row.med_excess21_fmt }}</td>
             <td>{{ row.mfe_med_fmt }}</td>
             <td>{{ row.mae_med_fmt }}</td>
@@ -355,6 +359,10 @@
                 <table class="sb-ladder">
                   <thead><tr>
                     <th>{{ t('Horizon', '地平线') }}</th>
+                    <th data-tip-en="Resolved calls at this exit horizon"
+                        data-tip-zh="该退出地平线上已结算的信号数">
+                      {{ t('Resolved', '已结算') }}
+                    </th>
                     <th>{{ t('Win rate', '胜率') }}</th>
                     <th>{{ t('Exc vs SPY', '超额') }}</th>
                     <th>{{ t('Med exc', '中位超额') }}</th>
@@ -367,6 +375,7 @@
                     {% for leg in hd.ladder %}
                     <tr>
                       <td>{{ leg.horizon }}</td>
+                      <td>{{ leg.n_fmt }}</td>
                       <td>{{ leg.wr_abs_fmt }}</td>
                       <td class="{{ 'pos' if leg.wr_exc_fmt not in ('—', '+0.0%') else '' }}">{{ leg.wr_exc_fmt }}</td>
                       <td class="{{ 'pos' if leg.med_exc_fmt not in ('—', '+0.0%') else '' }}">{{ leg.med_exc_fmt }}</td>
@@ -755,6 +764,9 @@
     {% if t0.total > 30 %}
     <p style="font-size:12px;color:var(--muted);margin:0 0 10px">
       {{ t('Showing top 30 of', '显示前30，共') }} {{ t0.total }} {{ t('by liquidity', '按流动性排序') }}
+      {%- if t0.universe_n is not none %}
+      · {{ "{:,}".format(t0.universe_n) }} {{ t('names screened', '只股票已筛选') }}
+      {%- endif %}
     </p>
     {% endif %}
     <div class="tbl-scroll">
@@ -781,6 +793,10 @@
             </td>
             <td class="l">
               <span class="l-en">turned up today</span><span class="l-zh">今日上穿</span>
+              <span style="color:var(--muted);font-size:11px;margin-left:4px">
+                {%- if m.d1_k is not none %}(K {{ m.d1_k|round(0)|int }})
+                {%- else %}(—){%- endif %}
+              </span>
             </td>
             <td class="beta-adv">
               {%- if m.dollar_adv_20d is not none -%}
@@ -961,9 +977,11 @@
             <th><span class="l-en">State</span><span class="l-zh">状态</span></th>
           </tr></thead>
           <tbody>
-            {% for key, cell in (acct.get('strata') or {}).items() %}
+            {% for key, groups in (acct.get('strata') or {}).items() %}
+            {% if groups is mapping %}
+            {% for gname, cell in groups.items() %}
             <tr>
-              <td colspan="2" style="text-align:left">{{ key }}</td>
+              <td colspan="2" style="text-align:left">{{ key }}.{{ gname }}</td>
               <td>{{ cell.get('raw_n') if cell.get('raw_n') is not none else '—' }}</td>
               <td>{{ cell.get('effective_n') if cell.get('effective_n') is not none else '—' }}</td>
               <td>
@@ -976,6 +994,8 @@
                 {% endif %}
               </td>
             </tr>
+            {% endfor %}
+            {% endif %}
             {% endfor %}
           </tbody>
         </table>
@@ -995,6 +1015,14 @@
         {% endif %}
       </div>
       {% endif %}
+      {% if acct.get('present') %}
+      {% set alr = acct.get('all_lanes_rows', 0) %}
+      {% set acct_note = acct.get('note', '') %}
+      <p class="acct-muted" style="font-size:12px;margin-top:6px">
+        <span class="l-en">All lanes: {{ alr }} rows. {{ acct_note }}</span>
+        <span class="l-zh">所有通道：{{ alr }} 行。{{ acct_note }}</span>
+      </p>
+      {% endif %}
     </div>
 
     <!-- ── Two-axis failure-mode mix ── -->
@@ -1004,20 +1032,70 @@
           <span class="l-en">Outcome Causes</span>
           <span class="l-zh">结果原因</span>
         </div>
+        {% set oc_map = (acct.get('strata') or {}).get('by_outcome_cause') or {} %}
+        {% if oc_map %}
+        <div class="tbl-scroll">
+          <table class="acct-tbl">
+            <tbody>
+              {% for gname, cell in oc_map.items() %}
+              <tr>
+                <td>{{ gname }}</td>
+                <td>{{ cell.get('raw_n') if cell.get('raw_n') is not none else '—' }}</td>
+                <td>
+                  {% if cell.get('state') == 'ACCRUING' %}
+                  <span class="badge-accruing">
+                    <span class="l-en">ACCRUING</span><span class="l-zh">累积中</span>
+                  </span>
+                  {% else %}
+                  {{ cell.get('state') or '—' }}
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
         <div class="acct-empty-state" style="padding:20px 12px">
           <span class="l-en">Measuring — outcome-cause breakdown available once attribution rows mature.</span>
           <span class="l-zh">测量中——结果原因分解在归因行成熟后可用。</span>
         </div>
+        {% endif %}
       </div>
       <div class="acct-card">
         <div class="acct-card-title">
           <span class="l-en">Process Faults</span>
           <span class="l-zh">流程缺陷</span>
         </div>
+        {% set pf_map = (acct.get('strata') or {}).get('by_process_fault') or {} %}
+        {% if pf_map %}
+        <div class="tbl-scroll">
+          <table class="acct-tbl">
+            <tbody>
+              {% for gname, cell in pf_map.items() %}
+              <tr>
+                <td>{{ gname }}</td>
+                <td>{{ cell.get('raw_n') if cell.get('raw_n') is not none else '—' }}</td>
+                <td>
+                  {% if cell.get('state') == 'ACCRUING' %}
+                  <span class="badge-accruing">
+                    <span class="l-en">ACCRUING</span><span class="l-zh">累积中</span>
+                  </span>
+                  {% else %}
+                  {{ cell.get('state') or '—' }}
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
         <div class="acct-empty-state" style="padding:20px 12px">
           <span class="l-en">Measuring — process-fault breakdown available once attribution rows mature.</span>
           <span class="l-zh">测量中——流程缺陷分解在归因行成熟后可用。</span>
         </div>
+        {% endif %}
       </div>
     </div>
 
@@ -1108,10 +1186,18 @@
           </tr></thead>
           <tbody>
             {% for organ, v in (uc_strata.items() if uc_strata is mapping else {}.items()) %}
+            {% set nd = v.get('n_discordant') %}
+            {% set rn = v.get('raw_n') %}
             <tr>
               <td style="text-align:left">{{ organ }}</td>
               <td>{{ '%.1f%%'|format(v.get('discordance_rate', 0) * 100) if v.get('discordance_rate') is not none else '—' }}</td>
-              <td>{{ v.get('n') if v.get('n') is not none else '—' }}</td>
+              <td>
+                {% if rn is not none %}
+                {{ nd if nd is not none else '—' }} / {{ rn }}
+                {% else %}
+                —
+                {% endif %}
+              </td>
             </tr>
             {% endfor %}
           </tbody>

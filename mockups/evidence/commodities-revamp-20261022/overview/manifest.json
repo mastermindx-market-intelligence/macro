@@ -1,0 +1,802 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "card_hover",
+        "spec": "card_hover:hover(.cw-focus[data-cw-open=\"oil\"])",
+        "value": ".cw-focus[data-cw-open=\"oil\"]"
+      },
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "market_focus",
+        "spec": "market_focus:focus(.cw-market[data-cw-open=\"gold\"])",
+        "value": ".cw-market[data-cw-open=\"gold\"]"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-22T05:49:41Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1981,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 3246,
+            "elements_wider_than_viewport": 11,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 1981,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 9,
+          "h3": 9,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 15,
+        "payload_bytes_total": 477507,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 24,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 265
+      },
+      "page_id": "commodities.html",
+      "registry_route": "/commodities.html",
+      "route": "/commodities.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 344591,
+          "captured": true,
+          "file": "025b4cede077bdd1.png",
+          "force_state": null,
+          "height": 1981,
+          "locale": "en",
+          "sha256": "025b4cede077bdd1033bbb73b71be73988db2f9b726de8d0a623c2e112f91da1",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7366604064941407,
+            "inp_proxy_ms": null,
+            "lcp_ms": 188,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card_hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 353217,
+          "captured": true,
+          "file": "d1c4a69c2d228fad--card_hover.png",
+          "force_state": "card_hover",
+          "height": 1981,
+          "locale": "en",
+          "sha256": "d1c4a69c2d228fad176e17263035e3b64ca7273ef31935abb0ab1e0b67945c9a",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7366612589434506,
+            "inp_proxy_ms": null,
+            "lcp_ms": 124,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "market_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 331229,
+          "captured": true,
+          "file": "4020bd5be50e9e2a--market_focus.png",
+          "force_state": "market_focus",
+          "height": 1981,
+          "locale": "en",
+          "sha256": "4020bd5be50e9e2a6513ecb0a85fb287a11a4a9524c688d4f6919149b94e8d52",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7366604064941407,
+            "inp_proxy_ms": null,
+            "lcp_ms": 136,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 316294,
+          "captured": true,
+          "file": "1ec6a861ccba5d01.png",
+          "force_state": null,
+          "height": 1981,
+          "locale": "en",
+          "sha256": "1ec6a861ccba5d010e1d549eab5c33627847bb360be5feb0d7f5ccf95c8ada26",
+          "theme": "light",
+          "timing": {
+            "cls": 0.7367458488809718,
+            "inp_proxy_ms": null,
+            "lcp_ms": 120,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card_hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 318744,
+          "captured": true,
+          "file": "80faf3afbb5dbfe2--card_hover.png",
+          "force_state": "card_hover",
+          "height": 1981,
+          "locale": "en",
+          "sha256": "80faf3afbb5dbfe2acb512b55b7e581a7466d50d851f82d4691c8dae6c1f2241",
+          "theme": "light",
+          "timing": {
+            "cls": 0.7367467814546227,
+            "inp_proxy_ms": null,
+            "lcp_ms": 132,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "market_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 300435,
+          "captured": true,
+          "file": "f7ba9c080d3380e9--market_focus.png",
+          "force_state": "market_focus",
+          "height": 1981,
+          "locale": "en",
+          "sha256": "f7ba9c080d3380e91c11cafc2100bcaee36077f79df93e58674aca57ad4addb0",
+          "theme": "light",
+          "timing": {
+            "cls": 0.7367458488809718,
+            "inp_proxy_ms": null,
+            "lcp_ms": 132,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 329619,
+          "captured": true,
+          "file": "5f87e332cc34099c.png",
+          "force_state": null,
+          "height": 1977,
+          "locale": "zh",
+          "sha256": "5f87e332cc34099c1398e37d06408ff41a0dbf50bf9895e49e4e0d60368fe43f",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.719551801407844,
+            "inp_proxy_ms": null,
+            "lcp_ms": 172,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card_hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 337458,
+          "captured": true,
+          "file": "8666c264672134ff--card_hover.png",
+          "force_state": "card_hover",
+          "height": 1977,
+          "locale": "zh",
+          "sha256": "8666c264672134ffbf0a9e051eee824e020bdb4cf75b0e4210a1564b469e7c03",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7370945883501051,
+            "inp_proxy_ms": null,
+            "lcp_ms": 168,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "market_focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 316849,
+          "captured": true,
+          "file": "c583c9dede90f00d--market_focus.png",
+          "force_state": "market_focus",
+          "height": 1977,
+          "locale": "zh",
+          "sha256": "c583c9dede90f00d23eb20ef74093761e936cfeca3ce8a355041203ee61e0669",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.719551801407844,
+            "inp_proxy_ms": null,
+            "lcp_ms": 204,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 302157,
+          "captured": true,
+          "file": "4a19f2808ccb244b.png",
+          "force_state": null,
+          "height": 1977,
+          "locale": "zh",
+          "sha256": "4a19f2808ccb244be1a17befaf8335d6c149040ef411c2a74632e18c14c9d63b",
+          "theme": "light",
+          "timing": {
+            "cls": 0.719551801407844,
+            "inp_proxy_ms": null,
+            "lcp_ms": 140,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card_hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 304090,
+          "captured": true,
+          "file": "c94b7e83e6fd3a51--card_hover.png",
+          "force_state": "card_hover",
+          "height": 1977,
+          "locale": "zh",
+          "sha256": "c94b7e83e6fd3a51a374c1d78740e23e7f08194f3e930996d37810c3986a29cf",
+          "theme": "light",
+          "timing": {
+            "cls": 0.7195527339814949,
+            "inp_proxy_ms": null,
+            "lcp_ms": 160,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "market_focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 288336,
+          "captured": true,
+          "file": "24bd579a071d2db8--market_focus.png",
+          "force_state": "market_focus",
+          "height": 1977,
+          "locale": "zh",
+          "sha256": "24bd579a071d2db80443ee374cbdec7267b96580e906b23871d40ff19a2912a8",
+          "theme": "light",
+          "timing": {
+            "cls": 0.719551801407844,
+            "inp_proxy_ms": null,
+            "lcp_ms": 148,
+            "resource_count": 23,
+            "server_timing": [],
+            "transfer_bytes": 1170059
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 263106,
+          "captured": true,
+          "file": "c1cbd38c4384e2ca.png",
+          "force_state": null,
+          "height": 3246,
+          "locale": "en",
+          "sha256": "c1cbd38c4384e2cadf434487ccd7677e8bf8a8d7bd229c7176d12a2b717c1790",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.1272563660762005,
+            "inp_proxy_ms": null,
+            "lcp_ms": 92,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card_hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 238482,
+          "captured": true,
+          "file": "eb1ed064f344dd23--card_hover.png",
+          "force_state": "card_hover",
+          "height": 3246,
+          "locale": "en",
+          "sha256": "eb1ed064f344dd237f5d3299286a5ec19528043c22c045d95221590981bda542",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.1272563660762005,
+            "inp_proxy_ms": null,
+            "lcp_ms": 92,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "market_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 248035,
+          "captured": true,
+          "file": "0f55e9ce50d0e8b4--market_focus.png",
+          "force_state": "market_focus",
+          "height": 3246,
+          "locale": "en",
+          "sha256": "0f55e9ce50d0e8b45a2327ee6d21d007387aa382034e533f132c34c03cfcfc8f",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.1272563660762005,
+            "inp_proxy_ms": null,
+            "lcp_ms": 112,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 244934,
+          "captured": true,
+          "file": "f8dc24eaf822817e.png",
+          "force_state": null,
+          "height": 3238,
+          "locale": "en",
+          "sha256": "f8dc24eaf822817e9414f83fe40897d8e51d1206d0e90dbafb5fa6d9f7b9ced3",
+          "theme": "light",
+          "timing": {
+            "cls": 0.1272563660762005,
+            "inp_proxy_ms": null,
+            "lcp_ms": 96,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card_hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 217981,
+          "captured": true,
+          "file": "eb85afe21ba9a792--card_hover.png",
+          "force_state": "card_hover",
+          "height": 3238,
+          "locale": "en",
+          "sha256": "eb85afe21ba9a7922ce7e31105a6cb5a9c70e97c237c1bdaacf435ecbf55cabc",
+          "theme": "light",
+          "timing": {
+            "cls": 0.1272563660762005,
+            "inp_proxy_ms": null,
+            "lcp_ms": 88,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "market_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 227056,
+          "captured": true,
+          "file": "1a2c04c5e064320e--market_focus.png",
+          "force_state": "market_focus",
+          "height": 3238,
+          "locale": "en",
+          "sha256": "1a2c04c5e064320e8dfdddf0c19ca415df4415a0386f4017656c1672b585f485",
+          "theme": "light",
+          "timing": {
+            "cls": 0.1272563660762005,
+            "inp_proxy_ms": null,
+            "lcp_ms": 80,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 250429,
+          "captured": true,
+          "file": "b5587490d1cf7d39.png",
+          "force_state": null,
+          "height": 3101,
+          "locale": "zh",
+          "sha256": "b5587490d1cf7d39e79fc2bfe818dfa6cd339789bf743f89c8930bf881fa573f",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.12334809863027762,
+            "inp_proxy_ms": null,
+            "lcp_ms": 112,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card_hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 215506,
+          "captured": true,
+          "file": "367f565db73164ed--card_hover.png",
+          "force_state": "card_hover",
+          "height": 3101,
+          "locale": "zh",
+          "sha256": "367f565db73164ed37b4c1a64cea14744668b21f0428b98d1ce16e06b8b529d9",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.12334809863027762,
+            "inp_proxy_ms": null,
+            "lcp_ms": 132,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "market_focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 226923,
+          "captured": true,
+          "file": "61042471559d9427--market_focus.png",
+          "force_state": "market_focus",
+          "height": 3101,
+          "locale": "zh",
+          "sha256": "61042471559d9427959c933356ef45838b55ad0ccb4068379720c1cc1f920333",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.12334809863027762,
+            "inp_proxy_ms": null,
+            "lcp_ms": 116,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 238379,
+          "captured": true,
+          "file": "4cebe3adb4b13564.png",
+          "force_state": null,
+          "height": 3093,
+          "locale": "zh",
+          "sha256": "4cebe3adb4b13564d4f513f53162a9e1f6a35ad8b9c49c269c2787bb67015f5e",
+          "theme": "light",
+          "timing": {
+            "cls": 0.1233919278819877,
+            "inp_proxy_ms": null,
+            "lcp_ms": 116,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card_hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 201907,
+          "captured": true,
+          "file": "e1bfb06e262878e6--card_hover.png",
+          "force_state": "card_hover",
+          "height": 3093,
+          "locale": "zh",
+          "sha256": "e1bfb06e262878e6148367c324d20423f57629347bc41ff2be3fe40fe86861a1",
+          "theme": "light",
+          "timing": {
+            "cls": 0.1233919278819877,
+            "inp_proxy_ms": null,
+            "lcp_ms": 116,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "market_focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 214771,
+          "captured": true,
+          "file": "71a459d0de310eb4--market_focus.png",
+          "force_state": "market_focus",
+          "height": 3093,
+          "locale": "zh",
+          "sha256": "71a459d0de310eb4f8e68b7f2a7845896ae8755f10d973faba5b46ca277ecf27",
+          "theme": "light",
+          "timing": {
+            "cls": 0.1233919278819877,
+            "inp_proxy_ms": null,
+            "lcp_ms": 132,
+            "resource_count": 22,
+            "server_timing": [],
+            "transfer_bytes": 1145859
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/commodities.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/commodities-paper-revamp-20261022",
+    "resolved_sha_or_none": "2148a98367be4239baac6af5bad103b2fb6f78e9",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/commodities-paper-revamp-20261022 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/macro/web/commodities-paper-revamp-20261022/site"
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 24,
+    "states_captured": 24
+  }
+}

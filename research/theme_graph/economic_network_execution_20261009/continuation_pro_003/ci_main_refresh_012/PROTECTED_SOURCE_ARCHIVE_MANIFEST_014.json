@@ -1,0 +1,124 @@
+{
+  "all11_git_blob_identities_recomputed": true,
+  "archive_bytes": 74856,
+  "archive_sha256": "baa6a87bf70e3348a4c9d90dd0baf7a4f0be8ad323b2efe2b33df52611805bc7",
+  "archived_source_execution": false,
+  "entries": [
+    {
+      "byte_length": 5500,
+      "git_blob": null,
+      "kind": "receipt",
+      "path": "PROTECTED_SOURCE_RECONCILIATION_014.json",
+      "sha256": "c4f752440609821bc9e1f81874f1b8be5d9bafac16a96ec3bff567f687cd5345"
+    },
+    {
+      "byte_length": 1969,
+      "git_blob": null,
+      "kind": "guide",
+      "path": "CURRENT_PROCEDURE_READ_014.md",
+      "sha256": "7f1a8eda1d3f651fa824a72e6e195bf0e7f5ff701239071f43434b200433cea9"
+    },
+    {
+      "byte_length": 18529,
+      "git_blob": "38a18571229e487f525b1c9780f7993220a5da93",
+      "kind": "source",
+      "path": "source/docs/sol_skills/INDEX.md",
+      "sha256": "608aebc84a106f4e3c687f020a7f0e69af88f38e014d4664a376e2be2ddfa220"
+    },
+    {
+      "byte_length": 9790,
+      "git_blob": "b11e58f083040144933cf2ddab76bf6c60a7e542",
+      "kind": "source",
+      "path": "source/docs/sol_skills/COLD_START.md",
+      "sha256": "e98396580886c45a4e05413b4df950aa23407f22807010829a32c485a5b4a5f1"
+    },
+    {
+      "byte_length": 50001,
+      "git_blob": "413b1ce8b5cf6feaea33ab53434acfad1e8956c8",
+      "kind": "source",
+      "path": "source/docs/sol_skills/ACTIVE_EXECUTION.md",
+      "sha256": "fb6a89101ad75512b971b2457f3f419704eae136afa28bac5a646ae69a6ed0dc"
+    },
+    {
+      "byte_length": 16115,
+      "git_blob": "8adc1ace42db9ab97854f96689485be223d34c51",
+      "kind": "source",
+      "path": "source/docs/sol_skills/SESSION_RELIABILITY.md",
+      "sha256": "817366c630abe31308a09c18caa5249ea4c39c83d74c130496079bb151283076"
+    },
+    {
+      "byte_length": 12638,
+      "git_blob": "2073a33f05506268b15f0b5ce292ce57d5b60ed3",
+      "kind": "source",
+      "path": "source/docs/sol_skills/WEB_CEO_DELEGATION.md",
+      "sha256": "a9e901018162135f01cbe49c8438127780d179db368e7557521db70abff2b9ef"
+    },
+    {
+      "byte_length": 14842,
+      "git_blob": "f4e7fa1dd183cfb3d28d26dccfbf527dd5dd8e00",
+      "kind": "source",
+      "path": "source/docs/sol_skills/REVIEW_RETURN.md",
+      "sha256": "0ce795b24f96874ffcb86eff2a425dcd6ec8f4a30e6a7bd0dd49f18f7d731d06"
+    },
+    {
+      "byte_length": 12482,
+      "git_blob": "1373b72a13fb4a084b0331eb2bcf2d4a680d9738",
+      "kind": "source",
+      "path": "source/docs/sol_skills/RECONCILE_STATE.md",
+      "sha256": "5b6206e8615fe2de45c712dbba351943be78f1e1ae1fe8a13562bb50fe37b694"
+    },
+    {
+      "byte_length": 10129,
+      "git_blob": "4a9ec3782da001322604e977dbe91b9cf371f0b9",
+      "kind": "source",
+      "path": "source/docs/sol_skills/CLOSEOUT.md",
+      "sha256": "60c65636604ce0a52ca61d6061a13d8f08f1f9345b99418474b00825ac628642"
+    },
+    {
+      "byte_length": 33919,
+      "git_blob": "d01f7efc2648a061628a6c72e05eccd5559cda8e",
+      "kind": "source",
+      "path": "source/docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md",
+      "sha256": "2d59e5dd86e6494e137cf34c97a2c57995a13e02541c051f3061c0d4ace97c16"
+    },
+    {
+      "byte_length": 22436,
+      "git_blob": "5bfb9bbc91177e2400da596b45ec809d294a3242",
+      "kind": "source",
+      "path": "source/docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+      "sha256": "b192a50f778e909337f52a514c19a222a7b130e2a2f79e9209ca083a1212eea9"
+    },
+    {
+      "byte_length": 6302,
+      "git_blob": "1aa822c511d1af89f3ec580b2178f62ad75502a3",
+      "kind": "source",
+      "path": "source/docs/DELIVERY_WORKFLOW.md",
+      "sha256": "16ae0f3f71af87d67b89f66fb47a6f4d25a5c8b7ca2413797d8c7e18126510e0"
+    },
+    {
+      "byte_length": 1811,
+      "git_blob": null,
+      "kind": "provenance",
+      "path": "provenance/COMPARE.json",
+      "sha256": "3e42265123b354ee372232c0f892f31c2dcd09e529db0b0cb3eb45b7a414d391"
+    },
+    {
+      "byte_length": 668,
+      "git_blob": null,
+      "kind": "provenance",
+      "path": "provenance/INDEX_JSON_404.json",
+      "sha256": "541962a04b1743a860cec249747b9ed93465c096bb802b5305968775ae7577df"
+    },
+    {
+      "byte_length": 689,
+      "git_blob": null,
+      "kind": "provenance",
+      "path": "provenance/CURRENT_BRANCH_AND_REPORT_READ.json",
+      "sha256": "6b501775b9f44057b4ef47a8765049bb52c2a5fe4a1b9b4c60d548367d061b82"
+    }
+  ],
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "revision": "326c8469a21d7f50fc9ecb1848196bf1c6e66685",
+  "schema": "economic_network.protected_source_archive/v1",
+  "transport_blob": "75eabf6602868353099332b315d32f1b9777c2af"
+}

@@ -1,0 +1,14 @@
+{
+  "visual-evidence": {
+    "rc": 0,
+    "tail": ""
+  },
+  "design": {
+    "rc": 0,
+    "tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25380 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25380)\n"
+  },
+  "runtime-style": {
+    "rc": 0,
+    "tail": "runtime style injection guard OK (228 .js files scanned, 44 injecting, 88 total hits \u2014 all within frozen allowances)\n"
+  }
+}

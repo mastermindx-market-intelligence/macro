@@ -1,0 +1,9 @@
+FILE=PREREG.md
+PREREG_SHA256=9e152194440979b96b9ee80658c844b699ce065bd9f6c25e2a610c03c568f60b
+FROZEN_UTC=Fri Oct  9 10:03:55 UTC 2026
+TIMESTAMP_SOURCE=date -u
+NOTE=frozen before evaluate.py was written or run; no evaluation outcome read
+AMENDMENT_FILE=PREREG_AMENDMENT.md
+AMENDMENT_SHA256=fd5bbe42ab0b7fd007b399bcbe6bb642531b524304d389ccc637180af56f9801
+AMENDMENT_RECORDED_UTC=Fri Oct  9 10:05:57 UTC 2026
+AMENDMENT_NOTE=A1 written before the first evaluate.py run; no evaluation outcome read

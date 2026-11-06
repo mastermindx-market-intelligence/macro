@@ -1,0 +1,19 @@
+{
+  "schema": "tiingo.exact_historical_method_source_recovery/v1",
+  "recorded_at_utc": "2026-10-13T04:51:45.403695+00:00",
+  "source_files_recovered_sha256": {
+    "recovered-exact-phase04-preflight-cbe6c5d3.py": "cbe6c5d3fbe5377179886a2f77b32c420fc0a08dd0b62ad89f05a26bec328928",
+    "recovered-exact-phase04-capture-e7ddeb38.py": "e7ddeb3874fed231df4013f08d875f87d849483629275f1d8af9d837cb964c7e",
+    "recovered-exact-phase03-disposition-1a8518d9.py": "1a8518d92ffac20d2ff3dbae76d0e4b8af10b3ddbc470f12d44324829a698755",
+    "recovered-exact-phase03-controller-834105b1.py": "834105b1134839935adffe823883fa6cd0d94a468e935481178e15a255e4fa60",
+    "recovered-exact-phase04-unbound-qualification-template-922a3cbd.py": "922a3cbde94f0440f3d67d67ba07e16e31e19c96bedd28d2ae6152032858426a",
+    "recovered-exact-phase04-unbound-controller-template-0bc225f4.py": "0bc225f4b7a351d159153abc51e3123cca27d924a35b42489ef4c7abed1b4bfa"
+  },
+  "all_match_historical_independently_reviewed_or_actually_executed_hashes": true,
+  "historical_capture_or_qualification_work_reexecuted": false,
+  "original_absent_temporary_files_not_called_current_source": true,
+  "recovered_bytes_saved_in_persistent_task_evidence_root": true,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "archive_writes": 0
+}

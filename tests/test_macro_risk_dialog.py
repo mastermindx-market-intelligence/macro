@@ -397,3 +397,67 @@ def test_leadership_rank_delta_uses_locale_aware_up_down_tokens():
     assert '--up: #45b873; --down: #e06464;' in css
     assert 'html[data-lang="zh"] {' in css
     assert '--up: #e06464; --down: #45b873;' in css
+
+
+
+def _render_current_reading_scare(row):
+    vm = _vm()
+    latest = dict(vm["latest"])
+    radar = dict(latest["risk_radar"])
+    radar["scares"] = [row]
+    latest["risk_radar"] = radar
+    vm["latest"] = latest
+    return _dlg(_render(vm))
+
+
+def _current_reading_scare_row(html):
+    start = html.index('class="riskdlg-scare"')
+    band = html.index('class="sc-band ', start)
+    return html[start:html.index("</div>", band) + len("</div>")]
+
+
+def test_current_reading_unavailable_never_renders_numeric_calm_in_risk_detail():
+    html = _render_current_reading_scare(
+        {
+            "scare": "internals",
+            "label_en": "Breadth internals deterioration",
+            "label_zh": "内部广度恶化",
+            "score": 0.0,
+            "band": "calm",
+            "n_legs_resolved": 0,
+            "weight_coverage": 0.0,
+            "reading_state": "UNAVAILABLE",
+            "display_score": None,
+            "display_band": None,
+            "firing_legs": [],
+        }
+    )
+    scare = _current_reading_scare_row(html)
+    assert 'data-reading-state="UNAVAILABLE"' in scare
+    assert "Unavailable" in scare and "不可用" in scare
+    assert '<span class="sc-score">—</span>' in scare
+    assert 'class="sc-bar-fill"' not in scare
+    assert not re.search(r">\s*0(?:\.0)?\s*<", scare)
+
+
+def test_current_reading_real_zero_stays_calm_in_risk_detail():
+    html = _render_current_reading_scare(
+        {
+            "scare": "internals",
+            "label_en": "Breadth internals deterioration",
+            "label_zh": "内部广度恶化",
+            "score": 0.0,
+            "band": "calm",
+            "n_legs_resolved": 1,
+            "weight_coverage": 1.0,
+            "reading_state": "AVAILABLE",
+            "display_score": 0.0,
+            "display_band": "calm",
+            "firing_legs": [],
+        }
+    )
+    scare = _current_reading_scare_row(html)
+    assert 'data-reading-state="AVAILABLE"' in scare
+    assert "Unavailable" not in scare and "不可用" not in scare
+    assert '<span class="l-en">calm</span>' in scare
+    assert ">0.0<" in scare

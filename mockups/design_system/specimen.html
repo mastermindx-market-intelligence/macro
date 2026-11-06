@@ -103,8 +103,9 @@ html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
   color:var(--muted); font:600 var(--fs-sm)/1 var(--font-ui); padding:8px 12px; cursor:pointer;
   transition:color var(--t-fast) var(--ease-std), border-color var(--t-fast) var(--ease-std); }
 .mx-tabset button[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--link); }
-.mx-callout{ border-left:3px solid var(--c,var(--ink-info)); border-radius:0 var(--r-ctl) var(--r-ctl) 0;
-  background:color-mix(in srgb, var(--c,var(--ink-info)) 8%, var(--panel)); padding:10px 14px; font-size:var(--fs-sm); }
+/* Chairman 2026-10-18: status belongs in labeled ink, never a colored container edge. */
+.mx-callout{ border:1px solid var(--line); border-radius:var(--r-ctl);
+  background:var(--panel2); padding:10px 14px; font-size:var(--fs-sm); }
 .mx-callout b{ color:var(--c,var(--ink-info)); }
 .mx-callout--warn{ --c:var(--ink-warn); }
 .mx-callout--act{ --c:var(--ink-act); }

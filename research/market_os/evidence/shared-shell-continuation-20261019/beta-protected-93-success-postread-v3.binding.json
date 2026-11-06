@@ -1,0 +1,18 @@
+{
+  "schema": "mastermind.attended.beta_success_postread_binding.v1",
+  "protected_owner_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+  "attempt_id": "5099c71dba9f4fb78a3088308688a9a4",
+  "owned_stage": "/opt/terminal/beta/.stage.0frO0j",
+  "owned_archive_paths": [],
+  "protected_owner_artifact": "/root/mastermind-beta-owner-93e303cc-ucmhwhpm/terminal-build.sh",
+  "production_entry": {
+    "caddy_sha256": "6de6d01adbe40a5c71f8d80472f3d0deca5a02a99c4e27779984b3bff4d274b1",
+    "deployment_sha": "50a8c01553ee92731a53dfcff36256308cfb5f0e",
+    "next_build_id": "build-TfctsWXpff2fKS",
+    "owner_sha256": "6d05d3d5745e0e0a29262c89ba61cf881c2605201cce5b0fc85a52bde0e42ec8",
+    "pid": "2336355",
+    "start_monotonic": "7552363880288"
+  },
+  "installer_exit": 0,
+  "transaction_commit_observed": true
+}

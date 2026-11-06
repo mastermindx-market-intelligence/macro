@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-16T22:59:22Z",
+ "accession": "0001770450-26-000009",
+ "cik": "0001770450",
+ "doc_byte_length": 7185231,
+ "doc_sha256": "2ae680a2eb7a1c98c12fd381a5139d992b05623af0a62a0c582759345a08842c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-17",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "xrx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1006878,
+  "byte_start": 1005968,
+  "normalized": "The Shared Services and License Agreement (the SSLA) entered pursuant to the joint venture arrangement with certain investors including certain funds and accounts managed by Angelo, Gordon & Co., L.P. may be terminated by XRX Brandco LLC upon certain events of default, in which case the Company’s right to use the certain intellectual property, including the “Xerox” brand, would terminate, which could have a material adverse effect on our business. Additionally, with trademark ownership residing in XRX Brandco LLC, our ability to independently enforce our trademark rights or sublicensing may be constrained by the terms of the SSLA, which could limit our flexibility in responding to competitive threats or pursuing business opportunities. Refer to Note 26 – Subsequent Events in the Consolidated Financial Statements for more information about the joint venture arrangement.",
+  "normalized_sha256": "c738893616d8c3f71ba6fda3c924b1ac61a5cc00594ac8255d61a104ad8a0623",
+  "raw": "The Shared Services and License Agreement (the SSLA) entered pursuant to the joint venture arrangement with certain investors including certain funds and accounts managed by Angelo, Gordon &amp; Co., L.P. may be terminated by XRX Brandco LLC upon certain events of default, in which case the Company&#8217;s right to use the certain intellectual property, including the &#8220;Xerox&#8221; brand, would terminate, which could have a material adverse effect on our business. Additionally, with trademark ownership residing in XRX Brandco LLC, our ability to independently enforce our  trademark rights or sublicensing may be constrained by the terms of the SSLA, which could limit our flexibility in responding to competitive threats or pursuing business opportunities. Refer to Note 26 &#8211; Subsequent Events in the Consolidated Financial Statements for more information about the joint venture arrangement.",
+  "raw_sha256": "2396e8845f390f9891534f132dc8306e1c4c418a444b7d68280b0a21606045a0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1770450/000177045026000009/xrx-20251231.htm",
+ "xbrl_contexts": []
+}

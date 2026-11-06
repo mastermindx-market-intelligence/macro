@@ -1,0 +1,86 @@
+{
+  "schema": "forex.r26_response_observation_qualification.v1",
+  "base_head": "3db88469490925ff9ed23eec4a87eb19a0ff0cec",
+  "protected_skillpack_pin": "05a9eb52a54e29fb7bbd0d40813ed12623b176c7",
+  "scope": "Existing collect_one response clock repair and caller compatibility; synthetic HTTP/temporary archive fixtures, no provider capture.",
+  "clock": {
+    "sample_point": "Local UTC after successful bounded response.read(max_bytes + 1) and size check, before HTTP context teardown.",
+    "not_established": [
+      "wire-exact arrival time",
+      "vendor publication time",
+      "bounded scheduling delay",
+      "monotonic accuracy",
+      "finality",
+      "correction immutability"
+    ],
+    "historical_receipts_rewritten": false,
+    "public_boats_callers_use_observation_clock": false,
+    "receipt_schema_identifies_producer_timing_basis": false
+  },
+  "repair": {
+    "private_helper": "_fetch_json_observation",
+    "public_fetch_json_bytes": "Same signature, ordinary (raw, content_type) two-tuple.",
+    "collect_one": "Pass captured observation sample through existing Archive.store_response(received_at=...).",
+    "first_receipt": "Unchanged immutable same-request/same-day reuse retains original identity, clock and bytes."
+  },
+  "red": {
+    "head": "3db88469490925ff9ed23eec4a87eb19a0ff0cec",
+    "process_pid": 22953,
+    "rc": 1,
+    "elapsed_seconds": 2.959,
+    "completed_at": "2026-10-22T18:11:47.424248+00:00",
+    "source_blob": "631dbfa4d6545ff55aabf56fe17366924fa2d2a8",
+    "log_sha256": "b341fbbcbc7128fa2de035609d5684aada999620f9566113f1236c5ff529221e",
+    "summary": "3 failed, 4 passed, 292 deselected in 2.28 seconds"
+  },
+  "green": {
+    "head": "3db88469490925ff9ed23eec4a87eb19a0ff0cec",
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+      "-B",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_tiingo_archive.py",
+      "tests/test_tiingo_forex_source.py",
+      "tests/test_tiingo_reader.py",
+      "tests/test_tiingo_views.py",
+      "tests/test_tiingo_ingestion_integrity.py",
+      "tests/test_boats_history_refresh.py",
+      "tests/test_boats_live_history_refresh.py"
+    ],
+    "rc": 0,
+    "elapsed_seconds": 16.49,
+    "completed_at": "2026-10-22T18:15:46.299297+00:00",
+    "source_blob": "d3f5f822a794763fac5842a90763193d8e2176b7",
+    "changed_blobs": {
+      "collectors/tiingo_archive.py": "d3f5f822a794763fac5842a90763193d8e2176b7",
+      "tests/test_tiingo_archive.py": "169050a6b52cc997bf011d99c683adcbd16e8cb3",
+      "tests/test_tiingo_forex_source.py": "021f3694790c9899fabeac2a2ae5069648718712"
+    },
+    "log_sha256": "e18f29c81b0991dff9b7d2adca35fe54c80c9d89ca80f6e64611304f74aed9b6",
+    "provider_requests": 0,
+    "historical_receipts_modified": false,
+    "process_pid": 35759,
+    "summary": "507 passed in 15.58 seconds"
+  },
+  "source_patch_sha256": "a6bf77d663c108e6b1d601e62d0420ab9b4ba0e51a4c058cae2b5e7b0f3d4682",
+  "tests_patch_sha256": "15279d07abe46e972d4431d480677f63f6e01f30b00f098e94e0e6792049b621",
+  "consumer_consequence": "Actual temporary Archive\u2192materializer\u2192BoundedTiingoRead\u2192unchanged candidate assessor preserves the pre-close minute response. Dense grid and OHLC checks pass; both_responses_observed_after_interval_end fails, eligibility is empty and admission false.",
+  "preserved_baseline": {
+    "head": "3db88469490925ff9ed23eec4a87eb19a0ff0cec",
+    "local_passes": 355,
+    "ci_run": 39787499393,
+    "ci_conclusion": "SUCCESS",
+    "fences_run": 39787499203,
+    "fences_conclusion": "SUCCESS"
+  },
+  "remaining_provenance": "Legacy storage-clock receipts and independent BOATS routes cannot be retrospectively relabeled. Receipt integrity alone does not identify the timing basis; strict prospective candidate qualification still needs the actual acquisition implementation/provenance.",
+  "boundary": {
+    "active_source_admission": false,
+    "account_condition_created": false,
+    "evaluator_activated": false,
+    "independent_review_accepted": false,
+    "terminal_hold_released": false
+  }
+}

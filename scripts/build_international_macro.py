@@ -23,6 +23,7 @@ from engine.international_macro_dashboard import (
     REGIONS,
     build_country_view,
     load_history,
+    load_history_result,
     validate_view,
 )
 from lib import config, site_assets
@@ -75,7 +76,14 @@ def _radar_display(record: dict) -> dict | None:
         return None
 
 
-def build_all(latest: dict | None = None) -> list[Path]:
+def build_all(latest: dict | None = None, *, history_receipts: dict | None = None) -> list[Path]:
+    """Render the incumbent routes, optionally retaining their single reads.
+
+    The empty caller-owned sink shares typed receipts with the same publication.
+    It is neither a second acquisition nor a disclosure or vintage decision.
+    """
+    if history_receipts is not None and (type(history_receipts) is not dict or history_receipts):
+        raise ValueError("invalid_history_receipts_sink")
     latest = latest or _load_latest()
     records = {
         str(record.get("cc")): record
@@ -103,7 +111,13 @@ def build_all(latest: dict | None = None) -> list[Path]:
     template = env.get_template("international_macro.html.j2")
     outputs: list[Path] = []
     for cc, spec in REGIONS.items():
-        view = build_country_view(records[cc], load_history(cc))
+        if history_receipts is None:
+            history = load_history(cc)
+        else:
+            receipt = load_history_result(cc)
+            history_receipts[cc] = receipt
+            history = receipt["frame"] if receipt["status"] in {"ready", "empty"} else None
+        view = build_country_view(records[cc], history)
         validate_view(view)
         (data_out / f"{cc}_latest.json").write_text(
             json.dumps(view, indent=2, ensure_ascii=False, default=str) + "\n"

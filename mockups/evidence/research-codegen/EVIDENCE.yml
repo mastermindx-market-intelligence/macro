@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - admin/static/app.js
+  - admin/static/styles.css
+  - admin/static/index.html
+  - admin/research_diagnostic_tokens.py
+manifest: mockups/evidence/research-codegen/capture.json

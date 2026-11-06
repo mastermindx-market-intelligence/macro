@@ -15,6 +15,7 @@ alone, whose fallback keeps it green on a base without the shared module.
 
 from __future__ import annotations
 
+import ast
 import copy
 import dataclasses
 from pathlib import Path
@@ -955,3 +956,85 @@ def test_robotics_product_modules_reach_no_qledger():
     assert reached <= _PERMITTED_THEME_GRAPH_REACH, (
         f"new engine.theme_graph reach: {sorted(reached - _PERMITTED_THEME_GRAPH_REACH)}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Shell fingerprint — _generation calls generation_fingerprint
+# ---------------------------------------------------------------------------
+
+def _composer_tree() -> ast.AST:
+    return ast.parse(Path(robotics.__file__).read_text(encoding="utf-8"))
+
+
+def _call_names(fn: ast.AST) -> list[str]:
+    names = []
+    for node in ast.walk(fn):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+        if isinstance(func, ast.Name):
+            names.append(func.id)
+        elif isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name):
+            names.append(f"{func.value.id}.{func.attr}")
+    return names
+
+
+def test_generation_calls_generation_fingerprint():
+    """_generation delegates to the shell and does not call hashlib.sha256."""
+    tree = _composer_tree()
+    functions = [
+        node for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_generation"
+    ]
+    assert len(functions) == 1
+    calls = _call_names(functions[0])
+    assert "generation_fingerprint" in calls
+    assert "hashlib.sha256" not in calls
+
+
+def test_import_error_arm_does_not_redefine_shell_functions():
+    """The composer does not carry a second copy of the shell clock helpers."""
+    tree = _composer_tree()
+    defined = {
+        node.name
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+    forbidden = {
+        "_canonical_text",
+        "_is_instant",
+        "_parse_clock",
+        "_parse_day",
+        "_le",
+    }
+    assert defined.isdisjoint(forbidden), sorted(defined & forbidden)
+
+
+def test_synthetic_fingerprint_matches_shell():
+    """One synthetic query/bundle digest equals the shell fingerprint.
+
+    Byte pin for the move: same fields, prefix ``gen_``, width 32. Finite
+    inputs stay equal before and after the call is delegated.
+    """
+    from engine.market_ontology.theme_research_binding import generation_fingerprint
+
+    query, bundle = load_bundle_case("witness_perception_orbbec_twinny")
+    got = robotics._generation(query, bundle)
+    expect = generation_fingerprint(
+        definition_version=robotics.DEFINITION_VERSION,
+        rights_revision=bundle.rights_revision,
+        revision_tuple=bundle.revision_tuple,
+        fields={
+            "slice_key": query.slice_key,
+            "view": query.view,
+            "time_mode": query.time_mode,
+            "source_cutoff": query.source_cutoff,
+            "recorded_cutoff": query.recorded_cutoff,
+            "anchor_theme_id": query.anchor_theme_id,
+        },
+        prefix="gen_",
+        width=32,
+    )
+    assert got == expect
+    assert got.startswith("gen_")
+    assert len(got) == len("gen_") + 32

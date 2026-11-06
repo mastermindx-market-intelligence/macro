@@ -1,0 +1,23 @@
+{
+  "schema": "tiingo.whole_source_quality_scalar_preflight_summary/v1",
+  "retained_preflight_sha256": "a004dfaa1601be0b4299e55e3f8602b3c03ad8ec2282a3067361e61e4bfb99de",
+  "accepted_actual_window_parent_sha256": "ab9f193a5069105b42b1e42906a628992afdaa03351940e7364160c01e32ddaf",
+  "symbol": "SCNG",
+  "receipt_id": "6c049844922359c2fe4dccb3711d0f93efd61a60be7ad6b6d3e8f9c2783bf167",
+  "raw_sha256": "1f29948411f1806853f0ea61082688393d7d875c329b132ce578a83bb4637731",
+  "raw_bytes": 950557,
+  "whole_receipt_rows": 4454,
+  "invalid_integer_volume_field_count": 16,
+  "all_other_normalizer_inputs_verified": true,
+  "narrow_negative_json_int_volume_policy": true,
+  "type_bool_excluded": true,
+  "outside_negative_int64_policy_held": true,
+  "retained_partial_file_count": 342,
+  "all_partial_hashes_unchanged": true,
+  "whole_invalid_receipt_retained_without_projection": true,
+  "scalar_values_or_market_rows_copied": false,
+  "source_payload_modified": false,
+  "provider_retry_authorized": false,
+  "canonical_identity_admitted": false,
+  "pit_backtest_eligible": false
+}

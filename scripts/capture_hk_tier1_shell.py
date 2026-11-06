@@ -81,8 +81,9 @@ def _render_html() -> str:
 
 
 def _write_scratch(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     html = _render_html()
-    (scratch / "hk.html").write_text(html, encoding="utf-8")
+    write_unshimmed_html(scratch / "hk.html", html, encoding="utf-8")
     templates = _ROOT / "templates"
     for name in ("theme.css", "theme.js", "navigation-refresh.css",
                  "product-nav-icons.css", "illus.css"):

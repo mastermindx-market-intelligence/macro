@@ -1,0 +1,66 @@
+{
+  "workflow_run_id": "38716442763",
+  "subject_head_sha": "ff7912003742ebfaa172a30c68dc8d65ddc9330e",
+  "tested_tree_sha": "1ac926152208d1ca3160bd255c2b0190148b5305",
+  "base_sha": "fb59691f231cddc30f8dd4452507b8f657724626",
+  "plan_sha256": "328f79a236f4761bc126113d553819e86b4c55070a5f7fcaf345e23941e89cae",
+  "eligible_job_count": 127,
+  "observed_at": "2026-10-15T10:00:42.640753+00:00",
+  "artifact_id": 11962738877,
+  "zip_sha256": "e1a0c4b039c1f026a5b316a181c1721c2f830390c107a9d57ee5b6a342e5e72f",
+  "a1_job": {
+    "logical_job_id": "eval-os-a1",
+    "pack_index": 9,
+    "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+    "steps": [
+      {
+        "proof_id": "require Node for actual renderer contracts",
+        "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+      },
+      {
+        "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+        "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+      }
+    ]
+  },
+  "verified_at": "2026-10-15T10:01:31.505016+00:00",
+  "tested_parents": [
+    "fb59691f231cddc30f8dd4452507b8f657724626",
+    "ff7912003742ebfaa172a30c68dc8d65ddc9330e"
+  ],
+  "tested_git_tree": "0cf65aa0e8cf5ccee812f46ab81e3a0e97ab5022",
+  "admitted_preview_tree": "0cf65aa0e8cf5ccee812f46ab81e3a0e97ab5022",
+  "preview_matches": true,
+  "production_paths": [
+    "admin/evidence_findings.py",
+    "admin/evidence_status.py",
+    "admin/intelligence_os.py",
+    "admin/server.py",
+    "admin/static/app.js",
+    "admin/static/index.html",
+    "admin/static/preferences.js",
+    "admin/static/styles.css",
+    "app/deploy/update.sh",
+    "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",
+    "engine/neuralweb/response_eval.py",
+    "engine/qledger.py",
+    "scripts/build_intelligence_registry.py",
+    "scripts/grade_qledger.py",
+    "admin/theme_tokens.py",
+    "templates/theme.css",
+    "engine/qledger_desk_adapter.py"
+  ],
+  "production_paths_match": true,
+  "a1_execution_identity_unchanged": true,
+  "terminal_checks_pending": true,
+  "original_artifact_location": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/hosted-plan-38716442763.zip",
+  "run_observation": {
+    "id": 38716442763,
+    "head_sha": "ff7912003742ebfaa172a30c68dc8d65ddc9330e",
+    "status": "in_progress",
+    "conclusion": null,
+    "run_attempt": 1,
+    "created_at": "2026-10-15T09:54:50Z",
+    "updated_at": "2026-10-15T09:58:21Z"
+  }
+}

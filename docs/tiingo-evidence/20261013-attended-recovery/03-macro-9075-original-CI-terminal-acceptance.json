@@ -1,0 +1,30 @@
+{
+  "schema": "tiingo.exact_head_original_CI_terminal_acceptance/v1",
+  "recorded_at_utc": "2026-10-13T04:52:50.792990+00:00",
+  "pr_number": 9075,
+  "head": "ca8852fee5089c747fa24c694e1ce50274420546",
+  "original_run_id": 38346775069,
+  "original_observer8767_transport_exit_preserved": 1,
+  "same_run_recovery_observer_session": 77952,
+  "same_run_recovery_observer_actual_terminal_chunk": "253c3c",
+  "actual_recovery_observer_exit_code": 0,
+  "actual_terminal_return_consumed": true,
+  "all_12_original_pack_conclusions": "success",
+  "ci_gate_conclusion": "success",
+  "ci_plan_conclusion": "success",
+  "contract_delta_conclusion": "success",
+  "current_canonical_pr_base": "9a028be57becd5691cf493f7fa897cf10ee99be4",
+  "current_pr_mergeable": "MERGEABLE",
+  "current_merge_state_status": "UNSTABLE",
+  "actual_current_terminal_CI_read_sha256": "22f3288e3b74d0fdb798b9e6757591fed6524b39165ee300f6c51a1847c0d47a",
+  "actual_current_protected_PR_read_sha256": "c2f9632102a2d56fa71d3a22fee24571e89acbda8b91ec86bb2708daac4c42a8",
+  "actual_current_read_CLI_exit_codes": [
+    0,
+    0
+  ],
+  "source_review_sha256": "acfcd91a1bdf23058dec05db2ad58fea66ca35b267dd369a674803b0c9276587",
+  "actual_native_integrated_compatibility_sha256": "f06abd2d0cf79dc918981a3c16b748d82f94cb191cf2914f8092e37d3063c91d",
+  "inactive_codex_pilot_failure_not_waived": true,
+  "normal_server_protection_still_required": true,
+  "source_runtime_change": false
+}

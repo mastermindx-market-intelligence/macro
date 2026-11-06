@@ -1,0 +1,67 @@
+{
+  "started_at": "2026-10-20T15:28:41.297257+00:00",
+  "base_head": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f",
+  "source_review": "sector_rig_counsel NONBLOCKING exact final 115-line patch; browser verification remains pending",
+  "checks": [
+    {
+      "command": [
+        "git",
+        "add",
+        "--",
+        "templates/landing.css",
+        "site/landing.css",
+        "templates/about.html",
+        "site/about.html",
+        "templates/index.html",
+        "site/index.html",
+        "site/products/market-terminal.html",
+        "site/products/market-dashboards.html",
+        "site/products/mastermind-ai.html"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "scripts.check_template_site_sync"
+      ],
+      "exit": 0,
+      "stdout": "template\u2194site sync OK (134 pairs checked)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "commit",
+        "-F",
+        "/tmp/shared-shell-css-visual-20261019T1107/about-footer-source-message.txt"
+      ],
+      "exit": 0,
+      "stdout": "[sol/market-os-shared-shell-design-20260924 8b51fb46d1873] fix(market-os): wrap the landing footer on narrow screens\n 9 files changed, 9 insertions(+), 7 deletions(-)\n",
+      "stderr": ""
+    }
+  ],
+  "source_tree": "242d08555cdc496f9da14056890e3961685ecc31",
+  "source_head": "8b51fb46d18739a4d10d1ef07dce3ca0f989f0da",
+  "parents": [
+    "b312bc4c08cf7633bf8fd259d2d46ec545fa120f"
+  ],
+  "finished_at": "2026-10-20T15:29:07.962458+00:00",
+  "local_only": true,
+  "browser_acceptance": "PENDING"
+}
