@@ -81,9 +81,9 @@ Editorial task IDs below are not Executive Job or Agent OS wave IDs. Status is s
 
 | Node | Depends on | Deliverable and acceptance | Initial state |
 |---|---|---|---|
-| PSL-0 | current source | Freeze this plan, ownership/negative-evidence map, exact carrier and source readback | in_progress |
-| PSL-1 | PSL-0 | Pure bounded dossier composition integrated into incumbent measured-group read; no I/O; exact windows, identity, nulls, clocks, source roots and disabled authority; adversarial contract tests | ready |
-| PSL-2 | PSL-1 | Qualify existing fundamental/risk source mappings and PIT clocks; compose one real per-sector explanation with alternatives/falsifiers; no fabricated context when unavailable | proposed |
+| PSL-0 | current source | Freeze this plan, ownership/negative-evidence map, exact carrier and source readback | published in Draft PR #10806; Agent OS linkage proposed in the same carrier |
+| PSL-1 | PSL-0 | Pure bounded dossier composition integrated into incumbent measured-group read through explicit opt-in; no I/O; exact windows, identity, nulls, clocks, source roots and disabled authority; adversarial contract tests | implemented; 236 focused tests passed; hosted CI and consumer activation pending |
+| PSL-2 | PSL-1 | Qualify existing fundamental/risk source mappings and PIT clocks; compose one real per-sector explanation with alternatives/falsifiers; no fabricated context when unavailable | source qualification in progress; no evidence adapter admitted |
 | PSL-3 | PSL-1, trusted generation | Adopt the same dossier in existing Sector Central and Terminal detail paths; shared content, source inspector, responsive accessible states; coordinate active UI/generation writers | blocked: #10780 freshness and source collisions |
 | PSL-4 | PSL-2, PSL-3 | Mastermind portfolio read-only consumer parity and inspectable attribution; no policy mutation | proposed |
 | PSL-5 | qualified evidence | Prospective research specification and existing outcome-store accrual; incremental OOS, honest episode N, leakage/cost checks, invalidation tests; no outcome peeking or model promotion | proposed |
@@ -92,11 +92,23 @@ Editorial task IDs below are not Executive Job or Agent OS wave IDs. Status is s
 
 ### First implementation slice: PSL-1
 
-Source scope: new pure dossier helper if needed, `engine/leadership_rotation_context.py`, focused existing/follow-on tests and this plan. Reuse `measured_group_read` so every existing reader can receive the exact same dossier; avoid a standalone producer or publication file. Keep the existing schema's required fields and ordering compatible.
+Source scope: private pure dossier helpers inside `engine/leadership_rotation_context.py`, `tests/test_leadership_measured_read.py`, this plan and Agent OS continuity. The public seam is `measured_group_read(..., include_sector_dossiers=True)`. Its default remains byte-identical to the frozen v1 producer/parser fixture; this slice does not silently activate consumers. The optional addendum is versioned `leadership_rotation_context.sector_dossiers/v1`. No standalone producer, publication file or new exported core-contract API is introduced.
+
+The existing `leadership-measured-read` and `leadership-rotation-countercases` jobs already enroll the incumbent module/test paths. The helper stays in that module because #10780 also owns `.github/ci/legacy-jobs.yml`; a new import-closure file without path enrollment would weaken future CI selection. This implementation leaves that live writer's manifest unchanged. The nominal expanded fixture fits 32 KiB; the original default 16 KiB test and frozen bytes remain unchanged. This is fixture qualification, not a production latency/size SLA.
 
 Freeze the minimum useful object after reviewing actual source: measured profile plus data availability and explicit unqualified mechanism/risk slots, not invented fundamental claims. If optional source inputs are admitted, they must be explicitly mapped and dated. The first implementation must be reachable through the existing public Python reader, not a disconnected schema/demo.
 
-Discriminating proof: preserve zero; reject boolean/nonfinite/malformed values; missing member not zero; wrong cohort/benchmark/session cannot join; no 21→20 relabel; later information cannot enter an earlier decision cut; duplicates cannot inflate coverage; retracted evidence cannot remain active; output deterministic, JSON-safe and bounded; caller inputs unchanged; all trade/rank authority disabled; existing measured-reader tests remain valid. Synthetic fixtures prove these semantics, not live scientific validity or production.
+Discriminating proof: preserve zero; reject boolean/nonfinite/malformed values; missing member not zero; wrong cohort/benchmark/session cannot join; no 21→20 relabel; later information cannot enter an earlier decision cut; duplicates cannot inflate coverage; explicit malformed provenance and relative wealth below -100% are withheld; no active mechanism/retraction claims are admitted in this slice; output deterministic, JSON-safe and bounded; caller inputs unchanged; all trade/rank authority disabled; existing measured-reader tests remain valid. Synthetic fixtures prove these semantics, not live scientific validity or production.
+
+### Consumer seams and source qualification discovered during implementation
+
+- Macro already publishes `measured_read` from `engine/sector_central.py::_measured_read`. Enabling the new flag there is an integration change held behind the current #10780 generation writer; no new endpoint is needed.
+- Terminal `terminal/lib/sectorIntelligence.ts::sectorMeasuredRead` currently narrows the measured read to names/rank/21- and 63-session fields/reasons. Its existing `terminal/app/api/sector-intelligence/route.ts` gateway passes the source payload. Extend the parser and accepted detail/source-inspector journey; preserve the existing gateway/auth.
+- Mastermind `brain/portfolio_intelligence.py::sector_rotation(limit=6)` currently uses legacy top-N sector/basket rows and does not consume the measured read. Add a separate bounded all-eleven projection when admitted; a top-six return cannot represent whole-cohort coverage.
+- The legacy `generation.id` is `session|benchmark|cohort`, a compatibility key. It is not an immutable generation, revision or original-availability receipt. The dossier names it accordingly and leaves those stronger claims unavailable.
+- `group_earnings` is keyed by basket identity and computes dated membership; `theme_revisions` is keyed by configured themes. Neither is a sector-ETF mapping. A build timestamp or latest source date does not prove original availability for a historical cut.
+- Cross-sector ETF positive counts are distinct from within-sector constituent participation and concentration. Those two constituent fields remain unavailable until native membership/weights are admitted.
+- Native Sol architecture judgment found malformed supplied row provenance and below-domain relative wealth as concrete risks; both were repaired and tested. This advisory work is not a formal GitHub approval.
 
 ### Science gate (PSL-5)
 
@@ -130,8 +142,12 @@ Milestones update this same plan's evidence table and the lawful Agent OS handof
 
 ## 8. Evidence and next action
 
-- Bootstrap and exact source census completed; no overlapping Persistent Sector Leadership PR found by exact GitHub search.
-- First workspace acquisition: NOT_APPLIED / REPOSITORY_SOURCE_UNAVAILABLE. Normal origin/main fetch completed (PID 60296, exit 0), fixing missing exact base.
-- Second acquisition callback was unqualified. Reconciled through original `studio_git_publish_status`: same operation/branch, clean local head exactly equal to the pinned Macro base, remote absent. Registered worktree carries the operation lock. No retry or replacement workspace.
-- Existing accepted work is not reopened. No worker has been dispatched; no production or publication effect yet.
-- Next: commit/read back this plan; commission bounded PSL-1 against its frozen contract while the parent adjudicates fundamental and cross-consumer architecture; inspect exact returned bytes, repair concrete defects, and advance the next safe phase.
+- Bootstrap and exact source census completed; no overlapping Persistent Sector Leadership PR found by exact GitHub search. This source candidate is [Macro Draft PR #10806](https://github.com/mastermindx-market-intelligence/macro/pull/10806).
+- Initial plan commit `d213d0ee71d8b0736b1f58f35dbfe185cfc76889` was published through the original Studio source carrier and read back byte-identically from GitHub.
+- First workspace acquisition: NOT_APPLIED / REPOSITORY_SOURCE_UNAVAILABLE. Normal origin/main fetch completed (PID 60296, exit 0), fixing the missing exact base.
+- The subsequent acquisition callback was unqualified. Original publisher status and registered worktree receipt reconciled the same operation/branch/base. No replacement worktree or blind retry occurred.
+- Fabric request `psl1-dossier-build-20261106-c4`, controller PID 79844, was retained and returned `REQUEST_REFUSED_BEFORE_LAUNCH / EXECUTION_NOT_ELIGIBLE`; native status reported execution absence and controller exit 75. No worker START or source result exists. No retry/failover/native build substitute was launched. Parent direct work uses `NO_ELIGIBLE_PRE_EFFECT_WORKER` in the verified source workspace.
+- Local verification after the two hardening repairs: `python3 -m pytest -q tests/test_leadership_measured_read.py tests/test_leadership_rotation_contract.py tests/test_sector_central_measured_panel.py tests/test_group_read_surface.py` → **236 passed in 11.58s**, Python 3.14.7, process 1136 exit 0. Existing frozen fixture and assertions were preserved. This is local proof, not a hosted CI or production receipt.
+- Only the opt-in Python reader currently exposes the dossier. Sector Central, Terminal and portfolio consumer activation, source-clock/correction contracts, mechanism/risk qualification, required CI and production/browser proof remain unverified.
+- Existing LR-W1–W5 acceptance and LR-W6 scientific embargo remain unchanged. There are no live child workers or watcher loops. No merge, release, deployment or production-acceptance claim is made.
+- Next material action: publish and read back the qualified source slice, finish the bounded native evidence/consumer admission audit, and use the same carrier to resolve concrete findings. Consumer rollout follows reconciliation of the active generation/design writers and exact source contracts; it cannot be inferred from this source-only slice.

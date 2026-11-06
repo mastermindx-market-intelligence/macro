@@ -45,6 +45,7 @@ artifacts:
   - research/ROTATION_COMMAND_MASTERPLAN_BY_FABLE.md
   - research/ROTATION_EVENTS_V2_MASTERPLAN_BY_FABLE.md
   - research/SECTOR_ROTATION_CONTINUATION.md
+  - research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_MASTERPLAN_2026-11-06.md
 waves:
   - id: LR-W1
     title: T01 frontier + T02 source qualification + T03–T05/T08 contract projection + T06 evidence modes + T16 replay isolation
@@ -75,7 +76,22 @@ waves:
     status: todo
     depends_on: [LR-W5]
     next_action: Author a dated PREREG V3 (own blob pin; never edit V1/V2/V2.1) re-registering the statistics, re-run T12/T13 size+power under it, and only on SIZED+POWERED issue a P1 read. T25 is a human act.
+  - id: LR-PSL-W1
+    title: Persistent Sector Leadership — bounded dossier source contract and native evidence qualification (Mastermind 1202)
+    status: in_progress
+    pr: 10806
+    depends_on: [LR-W3]
+    next_action: Publish and qualify the opt-in measured-read dossier on PR 10806; reconcile active generation/design carriers before consumer activation. LR-W6 and its historical-data embargo are unchanged.
 next_action: >
+  2026-11-06: Chairman commissioned Persistent Sector Leadership from Mastermind #1202 comment
+  6695716256. Task tree: research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_MASTERPLAN_2026-11-06.md;
+  source carrier Macro #10806; cumulative handoff
+  agentos/handoffs/LEADERSHIP-ROTATION-INTELLIGENCE-2026-11-06-persistent-sector-c4.md.
+  LR-PSL-W1 adds an explicit opt-in dossier while preserving frozen measured-read bytes.
+  Continue native evidence qualification and exact-head CI; consumer activation awaits reconciliation
+  of #10780 generation and the accepted Sector Central/Terminal design carriers. This source slice
+  is BUILT_NOT_PROVEN and does not change LR-W6 science or prior acceptance.
+
   2026-10-31: the dormant observation-continuity slice (#10104, orphaned Sol carrier) is carried forward
   as EW-P2 of the Grey Deer Early-Warning Completion program (WS:GREY-DEER-RISK-INTELLIGENCE waves EW-P0..EW-P5,
   seat 00dea969) on a successor branch from main with recording default-off; LR-W6 is unchanged.
