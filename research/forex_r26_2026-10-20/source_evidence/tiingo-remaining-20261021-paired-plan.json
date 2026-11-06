@@ -1,0 +1,113 @@
+{
+  "complete_history_proven": false,
+  "execution_authorized": false,
+  "execution_progress": "NOT_OBSERVED",
+  "items": [
+    {
+      "ordinal": 0,
+      "request_path": "/tiingo/fx/gbpusd/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "gbpusd"
+    },
+    {
+      "ordinal": 1,
+      "request_path": "/tiingo/fx/gbpusd/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "gbpusd"
+    },
+    {
+      "ordinal": 2,
+      "request_path": "/tiingo/fx/usdjpy/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdjpy"
+    },
+    {
+      "ordinal": 3,
+      "request_path": "/tiingo/fx/usdjpy/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdjpy"
+    },
+    {
+      "ordinal": 4,
+      "request_path": "/tiingo/fx/usdchf/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdchf"
+    },
+    {
+      "ordinal": 5,
+      "request_path": "/tiingo/fx/usdchf/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdchf"
+    },
+    {
+      "ordinal": 6,
+      "request_path": "/tiingo/fx/audusd/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "audusd"
+    },
+    {
+      "ordinal": 7,
+      "request_path": "/tiingo/fx/audusd/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "audusd"
+    },
+    {
+      "ordinal": 8,
+      "request_path": "/tiingo/fx/usdcad/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdcad"
+    },
+    {
+      "ordinal": 9,
+      "request_path": "/tiingo/fx/usdcad/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdcad"
+    },
+    {
+      "ordinal": 10,
+      "request_path": "/tiingo/fx/usdmxn/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdmxn"
+    },
+    {
+      "ordinal": 11,
+      "request_path": "/tiingo/fx/usdmxn/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdmxn"
+    },
+    {
+      "ordinal": 12,
+      "request_path": "/tiingo/fx/usdbrl/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdbrl"
+    },
+    {
+      "ordinal": 13,
+      "request_path": "/tiingo/fx/usdbrl/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdbrl"
+    },
+    {
+      "ordinal": 14,
+      "request_path": "/tiingo/fx/usdcnh/prices?endDate=2026-10-21&resampleFreq=1min&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdcnh"
+    },
+    {
+      "ordinal": 15,
+      "request_path": "/tiingo/fx/usdcnh/prices?endDate=2026-10-21&resampleFreq=4hour&startDate=2026-10-21",
+      "source": "forex-bars",
+      "symbol": "usdcnh"
+    }
+  ],
+  "network": false,
+  "next_offset": null,
+  "offset": 0,
+  "plan_sha256": "edc99ec670790134596f79efcbc00400352857046136e0319201481191fa5bb6",
+  "schema": "mastermind.tiingo.offline_plan.v1",
+  "source_counts": {
+    "forex-bars": 16
+  },
+  "tasks": 16,
+  "total_tasks": 16
+}

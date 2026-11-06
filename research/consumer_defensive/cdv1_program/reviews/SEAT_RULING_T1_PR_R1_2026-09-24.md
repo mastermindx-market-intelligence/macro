@@ -1,0 +1,25 @@
+# Seat ruling — CDV-1 Task 1 (PR #7905), round 1 (Opus red-team REJECT, repairable)
+
+Authority: Fable Meta-CEO seat for CDV-1. Input: `OPUS_T1_PR_REVIEW_R1_2026-09-24.md` on head 5dadd935 (F1–F15; verdict REJECT → ACCEPT_WITH_REPAIRS once R1–R6 land). The seat upholds the verdict: the two properties Task 1 exists to prove — facts bound at SOURCE scope, and byte-replay proof of every value — are the two that fail. Everything below is binding on the repair lane; the frozen spec (plan §1, audit rulings F1–F19 in `DEC:CDV1-PLAN-SEAM-RULINGS`) stays in force.
+
+## Binding repairs
+
+- **R1 (F2 — scope-derived vocabulary, BLOCKER).** `pg_profile.py` may not carry any literal that exists only in the synthetic fixture (row labels such as a fixed "Fourth Quarter 2026", fixed headings, or a reconciliation sentence recognised by the word "synthetic"). Build the candidate row labels, column headers and period tokens FROM `fiscal_scope` (fiscal year, quarter ordinal, period-end date and their prior-year counterparts), in the conventions PG releases actually use (ordinal-quarter + fiscal-year forms, "Three Months Ended <Month DD, YYYY>" forms, and the fiscal-year-only annual forms that must be REFUSED for a quarterly scope). Locate the reconciliation block by its heading and the definition's key terms from the source, never by a sentence. Add a test with an FY2027 scope against a body that also carries the prior-year 2026 column: the 2027 column binds as current, the 2026 column binds only as prior, and nothing else binds.
+- **R2 (F5 — replay must compare, BLOCKER).** `validate_selected_facts` replays the bytes at every span and must PARSE the replayed excerpt under the metric definition's unit rule and compare it to the stored value (and, for period-bearing spans, to the stored period). Any mismatch is refused with a typed reason (`replay_mismatch`); a swapped current/prior span pair, a value edited with the span kept, and a reconciliation excerpt edited under a kept receipt are the three tamper tests that must go RED before the fix and GREEN after.
+- **R3 (F3, F4 — drivers by column header).** Read the Sales Drivers table by column header → column index → the current-period row; all eight driver facts must bind on the base fixture and the tests must assert their VALUES, not just their presence. Fix the `columns_reordered` fixture so header row and value row are permuted together, and add a test that the permuted table binds identical values.
+- **R4 (F1 — unit-aware parsing).** Parse each literal under ITS definition: `usd_per_share` accepts `$1.25`, `1.25`, `(1.25)` → −1.25; `percent` accepts `1%`, `(2)%`, `+3%`, `(2%)`; a literal whose shape does not match the definition's unit becomes a typed absence (`unit_mismatch`), never a coerced number. Fix the fixture's EPS cells to the dollar form so the base fixture exercises the rule.
+- **R5 (F6, F7, F8).** Check the workspace quarter against `fiscal_scope.quarter` — every fiscal quarter is valid, only a mismatch is refused (drop the hard-coded fourth-quarter rule). Replace the combined-volume/mix control test with one whose fixture reports ONLY a combined volume/mix line: it must yield typed absences for both `pg_volume` and `pg_mix` whose subject names the combined presentation, and no split value. Replace the prior core EPS literal 1.48 with a value that is not a reported P&G figure (any synthetic value such as 1.31) and re-check the fixture file for other live-looking numbers.
+- **R6 (F9–F13 minors, all binding).** Absence rows are validated in full (authority pinned to the display-only value the plan allows, subject and document_id bound to the workspace); every span's `rights_profile` must equal the private profile and that token must be registered where `rp_public_primary_v1` is declared (one registry, no second list); `fact_id` derives from (event, metric, period, basis) and a duplicate is refused; a `None` fiscal_period raises `EconomicObservationError`; a dash row's span points at the dash cell. F14: remove the dead `headers` parameter and the duplicate 24-row cap check.
+
+## Accepted as-is
+
+- F15 (a new gate:code job rather than extending the Task 8 group plan): ratified by the seat in the program packet; no change.
+- CI wiring, contract-delta 0 introduced, the 219 + 30 existing tests green: keep them green; the clean-venv rule (`pip install pytest pyyaml`) still binds — if a repair adds an import outside {pytest, yaml, stdlib}, add the package to that same install line.
+
+## Not accepted
+
+- No redesign of the seams (`profile_for_ticker`, `pg_profile(*, fiscal_scope)`, `validate_selected_facts` filtering the `pg_` namespace, private rights profile). The repairs land inside the existing modules and tests.
+
+## Verification the seat will apply after the repair
+
+Opus re-review round 2 is bounded to R1–R6: the FY2027 scope test, the three tamper tests, the eight driver values, the unit-mismatch absence, the combined-only absence, the `None` period error, and a grep of `pg_profile.py` for fixture-only literals. Then CI on the exact head, then merge.

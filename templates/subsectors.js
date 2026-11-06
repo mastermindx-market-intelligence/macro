@@ -56,7 +56,7 @@
   function tierBadge(t) { return '<span class="tier ' + (t || 'none') + '">' + (t || '—') + '</span>'; }
   function regimePill(r) { var side = (r && r.side) || 'neutral'; return '<span class="pill ' + side + '">' + esc((r && r.label) || (r && r.state) || '—') + '</span>'; }
   // compact data-confidence dot (title EN-only — no translated text in title= per house law)
-  function relDot(rel) { var r = (rel || '').toLowerCase(); if (r !== 'high' && r !== 'med' && r !== 'low') return ''; var lab = { high: 'High confidence — deep live coverage', med: 'Medium confidence', low: 'Thin data — read with caution' }[r]; return '<span class="rel ' + r + '" title="' + lab + '"><i></i></span>'; }
+  function relDot(rel) { var r = (rel || '').toLowerCase(); if (r !== 'high' && r !== 'med' && r !== 'low') return ''; var lab = { high: 'High confidence — deep coverage', med: 'Medium confidence', low: 'Thin data — read with caution' }[r]; return '<span class="rel ' + r + '" title="' + lab + '"><i></i></span>'; }
   function freshTxt(e) {
     if (!e) return '';
     if (e.tier === 'T3' || e.tier === 'T4') return L('about to fire', '即将触发');
@@ -72,8 +72,9 @@
     var side = String(r.side || r.regime_side || '').toLowerCase();
     if (state === 'EXTENDED') return { key: 'stretched', label: ['Stretched — wait for pullback', '已伸展——等待回撤'] };
     if (state === 'BELOW_TREND') return { key: 'below_trend', label: ['Below trend — require confirmation', '低于趋势——需要确认'] };
-    if (side === 'avoid') return { key: 'caution', label: ['Caution — confirm before entry', '谨慎——入场前确认'] };
-    return { key: 'clean', label: ['Clear enough to act', '入场环境较清晰'] };
+    if (side === 'avoid' || state === 'TOPPING' || state === 'SELL') return { key: 'caution', label: ['Caution — confirm before entry', '谨慎——入场前确认'] };
+    if (['BUY', 'BUY_PARTIAL', 'SETUP_BUY', 'OVERSOLD_BOUNCE', 'NEUTRAL'].indexOf(state) >= 0) return { key: 'clean', label: ['Clear enough to act', '入场环境较清晰'] };
+    return { key: 'unavailable', label: ['Entry condition unavailable', '入场条件不可用'] };
   }
   function conditionText(r) {
     var q = entryCondition(r);
@@ -100,7 +101,7 @@
      universe split buy→avoid) · the single best-timed entry · honest coverage. */
 
   var CLASS_META = {
-    entry_now: { seg: 'entry',    label: ['Entry now', '现可入场'],  col: 'var(--up)' },
+    entry_now: { seg: 'entry',    label: ['Fresh signals', '新信号'],  col: 'var(--up)' },
     tailwind:  { seg: 'tailwind', label: ['Tailwind', '顺风'],       col: 'color-mix(in srgb,var(--up) 55%,var(--info))' },
     neutral:   { seg: 'neutral',  label: ['Neutral', '中性'],        col: 'var(--g-mid)' },
     late:      { seg: 'late',     label: ['Late', '偏晚'],           col: 'var(--orange)' },
@@ -180,8 +181,8 @@
     var c = stats.counts, tail = c.tailwind, e = c.entry_now, head = c.headwind + c.late;
     var body, bodyZh;
     if (e > 0) {
-      body = '<b>' + e + '</b> group' + (e > 1 ? 's' : '') + ' just turned <span class="accent-up">buyable</span>' + (tail ? ' and <b>' + tail + '</b> more carry a tailwind' : '') + '. Entries have the wind at their back — confirm the group before chasing.';
-      bodyZh = '<b>' + e + '</b> 个子行业刚转为<span class="accent-up">可买</span>' + (tail ? '，另有 <b>' + tail + '</b> 个处于顺风' : '') + '。入场有顺风——追涨前请先确认该组。';
+      body = '<b>' + e + '</b> group' + (e > 1 ? 's' : '') + ' triggered a <span class="accent-up">fresh entry signal</span>' + (tail ? ' and <b>' + tail + '</b> more carry a tailwind' : '') + '. Entry condition needs a separate check: a group can still be stretched or below trend.';
+      bodyZh = '<b>' + e + '</b> 个组出现<span class="accent-up">新入场信号</span>' + (tail ? '，另有 <b>' + tail + '</b> 个处于顺风' : '') + '。入场条件需单独判断：该组仍可能已伸展或低于趋势。';
     } else if (tail > 0) {
       body = 'No group is firing a <span class="accent-up">fresh entry</span> right now, but <b>' + tail + '</b> carry a tailwind — watch for the cross, don\'t force it.';
       bodyZh = '当前无子行业触发<span class="accent-up">新入场</span>，但有 <b>' + tail + '</b> 个处于顺风——等待交叉，不要勉强。';
@@ -239,16 +240,16 @@
   function heroSection(payload, ds) {
     var stats = universeStats(payload, ds);
     var e = stats.counts.entry_now;
-    var cov = stats.cov;
-    var honest = cov.n_gateable != null
-      ? L('<span class="num">' + cov.n_gateable + '</span> of <span class="num">' + cov.n_subsectors + '</span> ' + DS[ds].noun[0] + ' have enough live data to time' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> thin (listed in the table, not timed)' : ''),
-        '<span class="num">' + cov.n_gateable + '</span>/<span class="num">' + cov.n_subsectors + '</span> 个' + DS[ds].noun[1] + '有足够实时数据可计时' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> 个数据稀疏（列于表内，不计时）' : ''))
+    var cov = stats.cov; var covTotal = cov.n_subsectors != null ? cov.n_subsectors : cov.n_listed; // per-universe denominator: sectors carry n_subsectors, baskets n_listed (SIC-D-B03) — never "of undefined" (R3A-66 / P20)
+    var honest = cov.n_gateable != null && covTotal != null
+      ? L('<span class="num">' + cov.n_gateable + '</span> of <span class="num">' + covTotal + '</span> ' + DS[ds].noun[0] + ' have enough data to time' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> thin (listed in the table, not timed)' : ''),
+        '<span class="num">' + cov.n_gateable + '</span>/<span class="num">' + covTotal + '</span> 个' + DS[ds].noun[1] + '有足够数据可计时' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> 个数据稀疏（列于表内，不计时）' : ''))
       : '';
     return '<div class="isle sc-hero">'
       + '<div class="sc-eyebrow"><span class="dot"></span><span class="lbl">' + L('Rotation read', '轮动读数') + '</span>'
       + '<span class="backdrop">' + backdropChips() + '</span></div>'
       + '<div class="sc-hero-grid">'
-      + '<div class="sc-headline"><div class="big' + (e ? '' : ' zero') + '">' + e + '</div><div class="cap">' + L('Buyable now', '现可买') + '</div></div>'
+      + '<div class="sc-headline"><div class="big' + (e ? '' : ' zero') + '">' + e + '</div><div class="cap">' + L('Fresh entry signals', '新入场信号') + '</div></div>'
       + ribbonHTML(stats)
       + '</div>'
       + verdictProse(stats, ds)
@@ -374,32 +375,51 @@
     var days = HISTORY.days.slice(0, 12);
     var rows = [];
     days.forEach(function (day) {
-      var desk = day.desks && day.desks[ds];
-      var recs = desk && Array.isArray(desk.recommendations) ? desk.recommendations : [];
+      if (!day || typeof day !== 'object' || Array.isArray(day) || typeof day.date !== 'string' || !day.date) return;
+      var desk = day.desks && typeof day.desks === 'object' && !Array.isArray(day.desks) ? day.desks[ds] : null;
+      var valid = desk && typeof desk === 'object' && !Array.isArray(desk) && Array.isArray(desk.recommendations);
+      var recs = valid ? desk.recommendations.filter(function (r) {
+        return r && typeof r === 'object' && !Array.isArray(r)
+          && ((typeof r.label === 'string' && r.label) || (typeof r.key === 'string' && r.key));
+      }) : [];
+      if (!valid || (desk.recommendations.length && !recs.length)) {
+        rows.push('<tr><td class="num">' + esc(day.date) + '</td><td colspan="4" style="color:var(--muted)">'
+          + L('Publication record unavailable for this desk.', '该栏目当日发布记录不可用。') + '</td></tr>');
+        return;
+      }
       if (!recs.length) {
         rows.push('<tr><td class="num">' + esc(day.date) + '</td><td colspan="4" style="color:var(--muted)">'
           + L('No fresh entry signal published.', '当日未发布新入场信号。') + '</td></tr>');
         return;
       }
       recs.forEach(function (r) {
+        var tier = /^T[1-4]$/.test(r.entry_tier) ? r.entry_tier : null;
         rows.push('<tr><td class="num">' + esc(day.date) + '</td>'
           + '<td style="font-weight:700">' + esc(r.label || r.key || '') + '</td>'
-          + '<td>' + tierBadge(r.entry_tier) + '</td>'
+          + '<td>' + tierBadge(tier) + '</td>'
           + '<td>' + conditionText(r) + '</td>'
           + '<td style="color:var(--muted)">' + esc(r.regime_state || '—') + '</td></tr>');
       });
+      if (recs.length !== desk.recommendations.length) {
+        rows.push('<tr><td class="num">' + esc(day.date) + '</td><td colspan="4" style="color:var(--muted)">'
+          + L('Some publication entries are unavailable.', '部分发布条目不可用。') + '</td></tr>');
+      }
     });
+    if (!rows.length) return '';
     var acc = HISTORY.accuracy || {};
     var status = acc.status === 'measuring'
       ? L('Forward scorecard: measuring', '前瞻评分：测量中')
       : L('Forward scorecard: accruing', '前瞻评分：累积中');
-    var start = HISTORY.pit_only_since || HISTORY.history_start || '—';
-    var note = L('Point-in-time record starts ' + esc(start) + '. Earlier dates are not reconstructed from today\'s membership.',
-                 '时点记录始于 ' + esc(start) + '。更早日期不会用当前成分进行回溯重建。');
+    var start = typeof HISTORY.history_start === 'string' ? HISTORY.history_start : '—';
+    var note = L('Publication record starts ' + esc(start) + '. Earlier dates are not reconstructed from today\'s membership.',
+                 '发布记录始于 ' + esc(start) + '。更早日期不会用当前成分进行回溯重建。');
+    note += ' · ' + (typeof HISTORY.pit_only_since === 'string'
+      ? L('Prospective observations since ' + esc(HISTORY.pit_only_since) + '.', '前瞻时点观测始于 ' + esc(HISTORY.pit_only_since) + '。')
+      : L('Prospective observations are still accruing.', '前瞻时点观测仍在累积。'));
     return '<div class="sec sc-stagger sc-s3"><div class="sec-head"><h2>' + ic('list','sc-h2-ic') + ' '
       + L('Recommendation history', '推荐历史') + '</h2></div>'
-      + '<div class="desc">' + L('What this desk actually published each day — immutable first-seen snapshots, built for audit and future accuracy measurement.',
-          '记录本页面每日实际发布的内容——首次发布后不可改写，用于审计与未来准确性测量。') + '</div>'
+      + '<div class="desc">' + L('Session-dated publication records. Prospective measurement requires a known first-observation clock; late or unknown observations stay in history.',
+          '按数据交易日保存的发布记录。前瞻测量要求已知首次观测时间；迟到或时间未知的观测仅保留于历史。') + '</div>'
       + '<div class="sc-tablecard"><div class="tbl-scroll"><table class="sc-tbl"><thead><tr>'
       + '<th>' + L('Date', '日期') + '</th><th>' + L('Group', '组别') + '</th><th>' + L('Signal', '信号') + '</th>'
       + '<th>' + L('Entry condition', '入场条件') + '</th><th>' + L('Raw regime', '原始状态') + '</th>'
@@ -566,6 +586,21 @@
 
   /* ══ render + wiring ═════════════════════════════════════════════════════════ */
 
+  function refreshFullTable() {
+    var table = document.getElementById('sc-fulltable'), payload = DATA[TAB];
+    if (!table || !payload || !payload.ok) return;
+    var staging = document.createElement('div');
+    staging.innerHTML = fullTableSection(payload, TAB);
+    var fresh = staging.querySelector('#sc-fulltable');
+    if (!fresh || !table.tHead || !table.tBodies.length) return;
+    table.tHead.innerHTML = fresh.tHead.innerHTML;
+    table.tBodies[0].innerHTML = fresh.tBodies[0].innerHTML;
+    var card = table.closest('.sc-tablecard'), freshCard = fresh.closest('.sc-tablecard');
+    var count = card && card.querySelector('.sc-search .cnt');
+    var freshCount = freshCard && freshCard.querySelector('.sc-search .cnt');
+    if (count && freshCount) count.textContent = freshCount.textContent;
+  }
+
   function render() {
     var app = document.getElementById('sc-app');
     var ds = TAB;
@@ -577,12 +612,19 @@
     app.innerHTML = heroSection(payload, ds)
       + boardSection(payload, ds)
       + picksSection(payload, ds)
-      + historySection(ds)
+      + '<div id="sc-history">' + historySection(ds) + '</div>'
       + leadershipSection(ds)
       + sectorStrip(payload, ds)
       + niSection
       + fullTableSection(payload, ds);
     wrapTbls(app);
+  }
+
+  function refreshHistory() {
+    var slot = document.getElementById('sc-history');
+    if (!slot) return;
+    slot.innerHTML = historySection(TAB);
+    wrapTbls(slot);
   }
 
   function setTab(tab) {
@@ -607,15 +649,12 @@
     if (!th) return;
     var col = th.getAttribute('data-col'), s = SORT[TAB] || { col: 'tier', dir: 1 };
     SORT[TAB] = { col: col, dir: s.col === col ? -s.dir : (col === 'label' || col === 'sector' ? 1 : (col === 'rs60' || col === 'n') ? -1 : 1) };
-    render();
+    refreshFullTable();
   }
   function onAppInput(e) {
     if (!e.target || e.target.id !== 'sc-fulltable-q') return;
     FILTER[TAB] = e.target.value || '';
-    var pos = e.target.selectionStart;
-    render();
-    var again = document.getElementById('sc-fulltable-q');
-    if (again) { again.focus(); try { again.setSelectionRange(pos, pos); } catch (x) {} }
+    refreshFullTable();
   }
 
   function boot() {
@@ -630,9 +669,9 @@
     });
     var historyFetch = fetch('marketdata/subsector_confluence_history.json', { cache: 'no-cache' })
       .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
-    Promise.all(deskFetches.concat([historyFetch])).then(function (res) {
+    historyFetch.then(function (history) { HISTORY = history; refreshHistory(); });
+    Promise.all(deskFetches).then(function (res) {
       keys.forEach(function (k, i) { DATA[k] = res[i]; });
-      HISTORY = res[keys.length];
       var cnt = function (k) { var p = DATA[k]; return p ? (p[DS[k].groupsKey] || []).length : 0; };
       var set = function (id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
       set('tabn-sub', cnt('subsectors')); set('tabn-bas', cnt('baskets'));

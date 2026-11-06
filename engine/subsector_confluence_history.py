@@ -22,8 +22,10 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import date
+import math
+from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -90,17 +92,45 @@ def _entry_condition(row: dict) -> str:
         return "stretched"
     if state == "BELOW_TREND":
         return "below_trend"
-    if side == "avoid":
+    if side == "avoid" or state in {"TOPPING", "SELL"}:
         return "caution"
-    return "clean"
+    if state in {"BUY", "BUY_PARTIAL", "SETUP_BUY", "OVERSOLD_BOUNCE", "NEUTRAL"}:
+        return "clean"
+    return "unavailable"
 
 
-def _freeze_group(group: dict, *, desk: str, stamp: str, engine_universe: str | None) -> dict:
+def _utc_now() -> datetime:
+    """Actual observation clock; source generation metadata never replaces this."""
+    return datetime.now(timezone.utc)
+
+
+def _prospective_observation(row: dict) -> bool:
+    """Same source session when first observed, including weekend/holiday recovery.
+
+    Session-date normalization stays with the incumbent calendar owner. A later
+    trading-session capture and an archival row with no aware observation clock
+    remain history-only; neither can be retroactively promoted to prospective.
+    """
+    try:
+        stamp = date.fromisoformat(str(row.get("date") or "")).isoformat()
+        observed = datetime.fromisoformat(str(row.get("observed_at") or "").replace("Z", "+00:00"))
+        if observed.tzinfo is None or observed.utcoffset() is None:
+            return False
+        observed_date = observed.astimezone(ZoneInfo("America/New_York")).date()
+        return _session_stamp(observed_date) == stamp
+    except (TypeError, ValueError, OverflowError):
+        return False
+
+
+def _freeze_group(group: dict, *, desk: str, stamp: str, engine_universe: str | None,
+                  observed_at: str, source_generated_utc: str | None) -> dict:
     entry = group.get("entry") or {}
     regime = group.get("regime") or {}
     row = {
         "schema": SCHEMA,
         "date": stamp,
+        "observed_at": observed_at,
+        "source_generated_utc": source_generated_utc,
         "desk": desk,
         "engine_universe": engine_universe,
         "key": group.get("key"),
@@ -143,7 +173,17 @@ def snapshot(payload: dict, desk: str, *, today: date | str | None = None,
         groups = payload.get(groups_key) or []
         if not groups:
             return 0
-        stamp = _session_stamp(today or payload.get("as_of"))
+        source_date = today if today is not None else payload.get("as_of")
+        if source_date is None or not str(source_date).strip():
+            return 0
+        stamp = _session_stamp(source_date)
+        date.fromisoformat(stamp)  # reject an unparseable source date, never mint today
+        observed = _utc_now()
+        if observed.tzinfo is None or observed.utcoffset() is None:
+            return 0
+        observed_at = observed.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+        generated = payload.get("generated_utc")
+        source_generated_utc = generated if isinstance(generated, str) else None
         existing = {
             f"{r.get('date')}|{r.get('desk')}|{r.get('key')}"
             for r in _load(root)
@@ -159,6 +199,8 @@ def snapshot(payload: dict, desk: str, *, today: date | str | None = None,
                 desk=desk,
                 stamp=stamp,
                 engine_universe=payload.get("universe"),
+                observed_at=observed_at,
+                source_generated_utc=source_generated_utc,
             ))
             existing.add(dedup)
         if not new:
@@ -175,30 +217,44 @@ def snapshot(payload: dict, desk: str, *, today: date | str | None = None,
 
 
 def _member_ret(ticker: str, root: Path, start: str, end: str) -> float | None:
-    p0, p1 = _level_asof(ticker, root, start), _close_at(ticker, root, end)
-    if p0 in (None, 0) or p1 is None:
+    try:
+        p0 = float(_level_asof(ticker, root, start))
+        p1 = float(_close_at(ticker, root, end))
+        if not math.isfinite(p0) or not math.isfinite(p1) or p0 <= 0 or p1 < 0:
+            return None
+        value = p1 / p0 - 1.0
+        # A zero terminal price retains the existing total-loss meaning.
+        return value if math.isfinite(value) else None
+    except (TypeError, ValueError, OverflowError, ZeroDivisionError):
         return None
-    return float(p1 / p0 - 1.0)
 
 
-def _fwd_rel(row: dict, root: Path, horizon_d: int) -> float | None:
-    """Frozen-member EW return minus the desk benchmark, using incumbent price helpers."""
+def _fwd_measurement(row: dict, root: Path, horizon_d: int) -> dict | None:
+    """Finite priced-subset EW return, benchmark-relative, with explicit coverage."""
     try:
         _, bench = _DESKS.get(row.get("desk"), ("subsectors", "SPY"))
         end = (pd.Timestamp(row["date"]) + pd.Timedelta(days=horizon_d)).strftime("%Y-%m-%d")
+        members = row.get("members") or []
         rets = [
-            ret
-            for ticker in (row.get("members") or [])
+            ret for ticker in members
             if (ret := _member_ret(ticker, root, row["date"], end)) is not None
         ]
         if len(rets) < _MIN_PRICED:
             return None
-        b0, b1 = _level_asof(bench, root, row["date"]), _close_at(bench, root, end)
-        if b0 in (None, 0) or b1 is None:
+        benchmark = _member_ret(bench, root, row["date"], end)
+        if benchmark is None:
             return None
-        return float(sum(rets) / len(rets) - (b1 / b0 - 1.0))
-    except Exception:  # noqa: BLE001
+        value = math.fsum(rets) / len(rets) - benchmark
+        if not math.isfinite(value):
+            return None
+        return {"fwd_rel": value, "priced_members": len(rets), "frozen_members": len(members)}
+    except Exception:  # noqa: BLE001 — missing outcome evidence stays unscored
         return None
+
+
+def _fwd_rel(row: dict, root: Path, horizon_d: int) -> float | None:
+    measurement = _fwd_measurement(row, root, horizon_d)
+    return measurement["fwd_rel"] if measurement is not None else None
 
 
 def _matured_entry_rows(rows: list[dict], root: Path, horizon_d: int,
@@ -206,7 +262,7 @@ def _matured_entry_rows(rows: list[dict], root: Path, horizon_d: int,
     out: list[dict] = []
     for row in rows:
         try:
-            if row.get("class") != "entry_now":
+            if row.get("class") != "entry_now" or not _prospective_observation(row):
                 continue
             if (pd.Timestamp(today_dt) - pd.Timestamp(row["date"])).days < horizon_d:
                 continue
@@ -214,10 +270,10 @@ def _matured_entry_rows(rows: list[dict], root: Path, horizon_d: int,
             end = (pd.Timestamp(row["date"]) + pd.Timedelta(days=horizon_d)).strftime("%Y-%m-%d")
             if not _covers(bench, root, end):
                 continue
-            fwd = _fwd_rel(row, root, horizon_d)
-            if fwd is None:
+            measurement = _fwd_measurement(row, root, horizon_d)
+            if measurement is None:
                 continue
-            out.append({**row, "fwd_rel": fwd})
+            out.append({**row, **measurement})
         except Exception:  # noqa: BLE001
             continue
     return out
@@ -252,11 +308,16 @@ def accuracy(*, today: date | str | None = None, root: Path | None = None,
             matured = _matured_entry_rows(rows, root, horizon, today_dt)
             any_matured = any_matured or bool(matured)
             extended = [r for r in matured if r.get("entry_condition") == "stretched"]
-            other = [r for r in matured if r.get("entry_condition") != "stretched"]
+            other = [r for r in matured if r.get("entry_condition") in {"clean", "below_trend", "caution"}]
             out_h[str(horizon)] = {
                 "all": _summary(matured),
                 "extended": _summary(extended),
                 "not_extended": _summary(other),
+                "coverage": {
+                    "priced_member_observations": sum(r["priced_members"] for r in matured),
+                    "frozen_member_observations": sum(r["frozen_members"] for r in matured),
+                    "partial_rows": sum(r["priced_members"] < r["frozen_members"] for r in matured),
+                },
             }
         dates = sorted({r.get("date") for r in rows if r.get("date")})
         return {
@@ -266,9 +327,11 @@ def accuracy(*, today: date | str | None = None, root: Path | None = None,
             "history_start": dates[0] if dates else None,
             "horizons": out_h,
             "note": (
-                "Prospective point-in-time measurement only. Extended vs non-extended "
-                "fresh triggers are reported separately; this scorecard does not change "
-                "live ranking, gating, sizing, or trade authority."
+                "Prospective same-session first observations only; late or unknown observation "
+                "clocks remain history-only. Returns use the equally weighted priced subset "
+                "of frozen members; coverage counts are member observations per horizon. "
+                "Extended vs known non-extended fresh triggers are reported separately; "
+                "this scorecard does not change live ranking, gating, sizing, or trade authority."
             ),
         }
     except Exception as exc:  # noqa: BLE001
@@ -344,10 +407,11 @@ def public_projection(*, today: date | str | None = None, root: Path | None = No
     return {
         "schema": PROJECTION_SCHEMA,
         "history_start": start,
-        "pit_only_since": start,
+        "pit_only_since": min((r["date"] for r in rows if _prospective_observation(r)), default=None),
         "methodology": (
-            "First-seen daily publication snapshots. No retrospective recomputation from "
-            "today's membership; history starts when this ledger was introduced."
+            "Session-dated first-seen publication records. No retrospective recomputation from "
+            "today's membership. Actual observation clocks qualify prospective measurements; "
+            "late or unknown observations remain archival history."
         ),
         "days": days,
         "accuracy": accuracy(today=today, root=root),
