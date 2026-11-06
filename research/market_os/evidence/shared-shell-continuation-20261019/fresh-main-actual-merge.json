@@ -1,0 +1,88 @@
+{
+  "started_at": "2026-10-19T12:05:13.762698+00:00",
+  "head_before": "0905751badd88752cbab19ffedac51e610488035",
+  "incoming": "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+  "candidate_source_main": "fc44c814c19228d1d19964a34dcf40ce0593eb87",
+  "pr_head_before": "0905751badd88752cbab19ffedac51e610488035",
+  "armed": false,
+  "source_operation": "same original worktree merge; no renderer or host action",
+  "merge": {
+    "args": [
+      "git",
+      "merge",
+      "--no-ff",
+      "--no-commit",
+      "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd"
+    ],
+    "exit": 1,
+    "stdout": "Auto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nAuto-merging site/china.html\nAuto-merging site/china_lookup.html\nwarning: Cannot merge binary files: site/etfs.html (HEAD vs. fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/hk_stocks.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/markets.html\nAuto-merging site/news.html\nAuto-merging site/reference.html\nAuto-merging site/sector_central.html\nAuto-merging site/signal_lab.html\nwarning: Cannot merge binary files: site/special_situations.html (HEAD vs. fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd)\nAuto-merging site/special_situations.html\nCONFLICT (content): Merge conflict in site/special_situations.html\nAuto-merging site/stock.html\nAuto-merging site/stocks/index.html\nwarning: Cannot merge binary files: site/us_stocks.html (HEAD vs. fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\nAutomatic merge failed; fix conflicts and then commit the result.\n",
+    "stderr": ""
+  },
+  "finished_at": "2026-10-19T12:05:47.900299+00:00",
+  "resolved_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "site/etfs.html",
+    "site/special_situations.html",
+    "site/us_stocks.html"
+  ],
+  "resolutions": [
+    {
+      "path": "site/etfs.html",
+      "base_sha256": "7e6445fe84febbc742cb83c23cc1995d67ca171db0d26d0ded30baac6c57bcc2",
+      "ours_sha256": "ca009e5f7c0fb267212af1da14833b2b9df9a04c77effbbdef693d09972aa12d",
+      "theirs_sha256": "97f444495e0cb92bc8c73afa2dc92950f902fee9af93e5843460c35be4e8f7ee",
+      "resolved_sha256": "f8ee19ce24f88d0dede677dce3bcfa45676cda8602b28ff4c818b99367628daf",
+      "resolved_bytes": 97332,
+      "adapters": 1,
+      "ours_exactly_reconstructed": true,
+      "incoming_exactly_reconstructed": true,
+      "canonical_injector_idempotent": true
+    },
+    {
+      "path": "site/special_situations.html",
+      "base_sha256": "4bd73835a9dbf7b1777460638a9acb7bdc9a320e1bc7dd25912c007f01c284dd",
+      "ours_sha256": "07b11505e6d2684af839cdb71284945c6e14feaf8fc10e54174dc4cf68fe2d33",
+      "theirs_sha256": "9d6bdec75055fa38fdb6d477167a745eb787e79e05aed42d36bea2274fbe7688",
+      "resolved_sha256": "2788b52ebdef190ffc236a25bc1b9f9fcb92b727a836cd83cfc5b6a4cb1b458b",
+      "resolved_bytes": 114875,
+      "adapters": 3,
+      "ours_exactly_reconstructed": true,
+      "incoming_exactly_reconstructed": true,
+      "canonical_injector_idempotent": true
+    },
+    {
+      "path": "site/us_stocks.html",
+      "base_sha256": "7d67e6575b462694bdf1700232c7489d834b6fba91423f2e6b6f1380f50a9885",
+      "ours_sha256": "0531c7216f721f9e75301381ed860ff8b70a04f4978135b0b92d09b78931bcf8",
+      "theirs_sha256": "984412804326fc072b99b662d41ea3f329066865f55ed0453714a347f0d9cb79",
+      "resolved_sha256": "3beacdc885ad4967a3da95661d4145a7cde0b8f291e36ec65685134389c3c52b",
+      "resolved_bytes": 731236,
+      "adapters": 3,
+      "ours_exactly_reconstructed": true,
+      "incoming_exactly_reconstructed": true,
+      "canonical_injector_idempotent": true
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "base_sha256": "31fd61c8c31e41205f5cff90edb4d3b372fcba66ddfe657f54add7c2e9bad380",
+      "ours_sha256": "2ab0a9d753cfe1f0b8611ac709dae87a369e89c96a3d7aa8af010c40b05c5514",
+      "theirs_sha256": "625a2aa08ea6aec2d4cbe73a6ed0db3b003553ea6ce20a64b44e4dff8da4dc37",
+      "resolved_sha256": "1b210d6ca000d8bf5460e44f3518a267af8065203817ffd78c2f45259402fe9d",
+      "resolved_bytes": 1842194,
+      "conflicts": 7,
+      "old_ours_deltas_equal_new_delta": true,
+      "paths_union_verified": true,
+      "job_count": 327,
+      "jobs_added_or_removed": 0
+    }
+  ],
+  "index_tree": "584015252eddaf9ec25a74da2fb2e0afe136b9ef",
+  "unmerged_after": [],
+  "unstaged_after": [],
+  "only_resolved_paths_differ_from_preview": true,
+  "staged_paths_count": 5050,
+  "head_after": "0905751badd88752cbab19ffedac51e610488035",
+  "merge_head": "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+  "committed": false,
+  "pushed": false
+}

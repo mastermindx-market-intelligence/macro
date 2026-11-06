@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2025-10-17T12:48:42Z",
+ "accession": "0001628280-25-045293",
+ "cik": "0000898293",
+ "doc_byte_length": 2890685,
+ "doc_sha256": "0746a93d526ba79d45aefd0dc5a9a58715932c39257319273a2e3dc129bbff05",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-10-17",
+ "form": "10-K",
+ "period_of_report": "2025-08-31",
+ "primary_document": "jbl-20250831.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2334986,
+  "byte_start": 2333390,
+  "normalized": "Customer B (2)*11 %17",
+  "normalized_sha256": "e50ca743f5e2d082e61eb3ffab430d03fb3d401e4e9537ba49151cabe4617e20",
+  "raw": "Customer B </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:6.5pt;font-weight:400;line-height:100%;position:relative;top:-3.5pt;vertical-align:baseline\">(2)</span></div></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-317\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1230\">11</ix:nonFraction>&#160;</span></td><td style=\"background-color:#ffffff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#ffffff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-318\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1231\">17",
+  "raw_sha256": "5b28db941a83689e8a6ca3fd5360311e7420bf37fe71c510e6feec0e92b933be"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/898293/000162828025045293/jbl-20250831.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 159365,
+   "byte_start": 158689,
+   "context_ref": "c-318",
+   "raw": "<xbrli:context id=\"c-318\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000898293</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">jbl:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2022-09-01</xbrli:startDate><xbrli:endDate>2023-08-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "0478e178849bf3cd346746a2e0ce4099eda7db80e26390517f335053b2e4f87c"
+  }
+ ]
+}

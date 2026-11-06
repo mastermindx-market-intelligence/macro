@@ -1,0 +1,247 @@
+{
+  "as_of": "2026-09-23",
+  "coverage": {
+    "end": "2026-09-23",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-14 to 2026-09-23; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-14"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-09-23",
+      "events": [
+        {
+          "date": "2026-09-23",
+          "id": "cev-research_vault-4097e88c98cf",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nmuie7j0as1-4f0c24",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Asia Pacific Equity Derivs",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "events": []
+    },
+    {
+      "date": "2026-09-21",
+      "events": []
+    },
+    {
+      "date": "2026-09-20",
+      "events": []
+    },
+    {
+      "date": "2026-09-19",
+      "events": []
+    },
+    {
+      "date": "2026-09-18",
+      "events": [
+        {
+          "date": "2026-09-18",
+          "id": "cev-research_vault-5afdefc17403",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-fip581gs8cw-ae1704",
+          "tickers": [],
+          "title": "S&T: GS Mourad post Fed what's working what's not working 17 Sep 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-17",
+      "events": [
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-cf288ca2fb96",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-g3bugkjjgib-77331c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM International Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-16",
+      "events": [
+        {
+          "date": "2026-09-16",
+          "id": "cev-research_vault-c656772232b3",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ifvweti4bl0-81ed6e",
+          "tickers": [],
+          "title": "S&T: GS FOMC View The September FOMC Goldmans Take from Traders and Research 15 Sep 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "events": [
+        {
+          "date": "2026-09-15",
+          "id": "cev-research_vault-cd03d89da006",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xm8agt8ub0p-04ec2a",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM Equity Strategy Equity",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-14",
+      "events": [
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-7048facbb57d",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-2bjqnt4xqgi-8c8a40",
+          "tickers": [],
+          "title": "Deutsche Bank: Investor Positioning and Flows Sep 14",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-c15e03c4696e",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-hzsvetxvigq-bc8e45",
+          "tickers": [],
+          "title": "Goldman Sachs: European Week Ahead September 14 September 20",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-c8456b114a82",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-oqv4veyoxen-c1fa76",
+          "tickers": [],
+          "title": "UBS: UBS Carroll AI Semis and Memory buying; EWZ and EEM upside; Gold buying",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-cf6b710046a8",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-l8tjmav0fbs-f97805",
+          "tickers": [],
+          "title": "Goldman Sachs: LATAM Today September 14, 2026",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-d75ea7b25159",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-fsxbylntfm1-fa6d7c",
+          "tickers": [],
+          "title": "Goldman Sachs: Samsung Electro Mechanics (009150.KS) 8 key takeaways from U.S",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-e6f1ff5b152b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xbqzxz3tfma-e7bf94",
+          "tickers": [],
+          "title": "Goldman Sachs: NAURA (002371)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-e8082e3d965b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-f3uco3grcae-012c24",
+          "tickers": [],
+          "title": "Goldman Sachs: Nuclear Nuggets Global reactor tracker September edition",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-e9f7e47c1465",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-lu7cxya4jgw-68886d",
+          "tickers": [],
+          "title": "Goldman Sachs: Optical Tour Top 10 takeaways from our visits with entrepreneurs on technology development, demand, supply, and competition",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-eafbed72a1c0",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-0961x7vv7yr-a0b2df",
+          "tickers": [],
+          "title": "Deutsche Bank: DB Early Morning Reid Macro Strategy",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-ef5a9f306f41",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-rnbupbkebci-d44be6",
+          "tickers": [],
+          "title": "Goldman Sachs: GS EUROPEAN EXPRESS Software Defence Straumann flatexDEGIRO Informa Macro Global Corporate Access",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-f6768d409db8",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-lhzodclhruz-178e9f",
+          "tickers": [],
+          "title": "Societe Generale: Morning Briefing Road to 5% Runs Through CPI",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-f9bf6c407981",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ybgrjrviv8y-78584e",
+          "tickers": [],
+          "title": "Goldman Sachs: Rexel S.A. (RXL.PA) Barometer and thoughts into 3Q26",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-fcb782db034c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-mf5mg08vga2-7c5129",
+          "tickers": [],
+          "title": "Goldman Sachs: Adobe Inc",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-14",
+          "id": "cev-research_vault-ff0d189dd610",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ewdierpbnwg-46136c",
+          "tickers": [],
+          "title": "Goldman Sachs: Global Rates Notes Revising Gilt Yield Forecasts Higher",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

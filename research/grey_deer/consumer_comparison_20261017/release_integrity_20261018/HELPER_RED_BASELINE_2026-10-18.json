@@ -1,0 +1,65 @@
+{
+  "runner": "stdlib AST loader; exact standalone fixture test bodies, no pytest/app imports",
+  "test_source_sha256": "8a5a275be5243201428c80636b531b778e43dd4503e1037d8e927306dd63a8aa",
+  "helper_sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204",
+  "app_import_tests_executed": false,
+  "network_or_production_calls": false,
+  "cases": [
+    {
+      "test": "test_integrity_stops_service_before_source_copy",
+      "parameters": {},
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "[{'event': 'forward', 'service': 'active'}]",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 294, in test_integrity_stops_service_before_source_copy\n    assert copies and all(item[\"service\"] == \"inactive\" for item in copies), copies\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: [{'event': 'forward', 'service': 'active'}]\n",
+      "seconds": 1.097
+    },
+    {
+      "test": "test_integrity_restores_unlisted_and_receiver_deleted_paths",
+      "parameters": {},
+      "status": "failed",
+      "error": "FileNotFoundError",
+      "message": "[Errno 2] No such file or directory: '/tmp/rr-deploy-fixture-rbocjl98/remote/docs/obsolete.md'",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 307, in test_integrity_restores_unlisted_and_receiver_deleted_paths\n    assert (remote / \"docs/obsolete.md\").read_text() == \"receiver-only-old\\n\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/rr-deploy-fixture-rbocjl98/remote/docs/obsolete.md'\n",
+      "seconds": 0.718
+    },
+    {
+      "test": "test_integrity_snapshot_failure_cannot_authorize_source_mutation",
+      "parameters": {},
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "2026-10-17 23:22:19 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:22:20 deploy OK: fixture.service healthy at commit 2222222222222222222222222222222222222222\n",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 316, in test_integrity_snapshot_failure_cannot_authorize_source_mutation\n    assert result.returncode == 1, result.stdout + result.stderr\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 2026-10-17 23:22:19 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:22:20 deploy OK: fixture.service healthy at commit 2222222222222222222222222222222222222222\n\n",
+      "seconds": 1.134
+    },
+    {
+      "test": "test_integrity_failed_restored_health_is_not_complete",
+      "parameters": {},
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 326, in test_integrity_failed_restored_health_is_not_complete\n    assert \"rollback complete\" not in result.stdout\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "seconds": 2.22
+    },
+    {
+      "test": "test_integrity_refused_init_preserves_foreign_marker",
+      "parameters": {},
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "2026-10-17 23:22:22 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:22:23 deploy failed: forward evaluation pending start initialization failed; rolling back\n2026-10-17 23:22:23 rollback complete; health returned 200\n",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 337, in test_integrity_refused_init_preserves_foreign_marker\n    assert marker.exists(), result.stdout + result.stderr\n           ^^^^^^^^^^^^^^^\nAssertionError: 2026-10-17 23:22:22 deploying 2222222222222222222222222222222222222222 (2 changed path(s))\n    app/main.py\n    app/old.py\n2026-10-17 23:22:23 deploy failed: forward evaluation pending start initialization failed; rolling back\n2026-10-17 23:22:23 rollback complete; health returned 200\n\n",
+      "seconds": 1.25
+    },
+    {
+      "test": "test_integrity_excluded_descendants_survive_rollback",
+      "parameters": {},
+      "status": "failed",
+      "error": "AssertionError",
+      "message": "",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/rr_run_deploy_fixture_tests_20261018.py\", line 62, in <module>\n    fn(**args)\n  File \"/workspace/scratch/da452a3ea08d/release_review/candidate/tests/test_deploy_provenance.py\", line 348, in test_integrity_excluded_descendants_survive_rollback\n    assert (tmp_path / \"remote/app/.env\").read_text() == \"newer-protected-value\\n\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "seconds": 0.726
+    }
+  ],
+  "passed": 0,
+  "failed": 6
+}

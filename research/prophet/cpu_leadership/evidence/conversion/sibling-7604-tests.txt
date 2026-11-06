@@ -1,0 +1,14 @@
+........................................................................ [ 87%]
+.........F                                                               [100%]
+=================================== FAILURES ===================================
+_____________ test_no_module_outside_the_runner_imports_the_audit ______________
+tests/test_prophet_miss_audit.py:1261: in test_no_module_outside_the_runner_imports_the_audit
+    assert not offenders, (
+E   AssertionError: prophet_miss_audit is ops telemetry with ZERO authority — it must not be imported by any other module:
+E       engine/prophet_subtheme_funnel.py
+E   assert not ['engine/prophet_subtheme_funnel.py']
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, agentos, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_prophet_miss_audit.py::test_no_module_outside_the_runner_imports_the_audit
+1 failed, 81 passed in 101.57s (0:01:41)

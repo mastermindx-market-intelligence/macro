@@ -1,0 +1,31 @@
+{
+  "checks": [
+    {
+      "check": "real_retained_pdf_local_consumer",
+      "passed": true
+    },
+    {
+      "check": "pending_producer_is_not_acceptance",
+      "passed": true
+    },
+    {
+      "check": "bad_receipt_hash_refused",
+      "passed": true
+    },
+    {
+      "check": "wrong_publication_date_refused",
+      "passed": true
+    },
+    {
+      "check": "bad_promoted_pdf_refused",
+      "passed": true
+    },
+    {
+      "check": "bad_derivative_refused",
+      "passed": true
+    }
+  ],
+  "input_hashes_unchanged": true,
+  "production_reads": 0,
+  "writes": 0
+}

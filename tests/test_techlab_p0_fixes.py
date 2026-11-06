@@ -561,3 +561,169 @@ class TestP06BoundaryExclusion:
         assert result.empty
         assert "signed_return" in result.columns
         assert "fwd_ret" in result.columns
+
+# ---------------------------------------------------------------------------
+# W19-T1 — Tech Lab: fire span, no false 2000 cap, 12M return, busiest days
+# (DESIGN.md specs 1-4).  The unit under test is pure DOM-free JS inside
+# templates/tech_lab.html.j2, sliced out and shelled under node (mirrors
+# tests/test_risk_core_js.py).  Synthetic fixtures only.
+# ---------------------------------------------------------------------------
+
+import json  # noqa: E402  (appended block owns its imports; header untouched)
+import shutil  # noqa: E402
+import subprocess  # noqa: E402
+
+_W19T_TEMPLATE = _REPO_ROOT / "templates" / "tech_lab.html.j2"
+_w19t_needs_node = pytest.mark.skipif(shutil.which("node") is None,
+                                      reason="node not on PATH")
+_W19T_PURE = ("L", "esc", "_pct", "_fireSpan", "_topFireDaysHtml")
+
+
+def _w19t_text():
+    return _W19T_TEMPLATE.read_text(encoding="utf-8")
+
+
+def _w19t_slice(text, name):
+    """Brace-match `function name(` or `window.name = function(`; bodies here
+    keep braces out of string literals, so plain counting is exact."""
+    anchor = "function %s(" % name
+    i = text.find(anchor)
+    if i < 0:
+        anchor = "%s = function(" % name
+        i = text.find(anchor)
+    assert i >= 0, "no anchor for %r in tech_lab.html.j2" % name
+    depth, seen = 0, False
+    for j in range(i, len(text)):
+        ch = text[j]
+        if ch == "{":
+            depth, seen = depth + 1, True
+        elif ch == "}":
+            depth -= 1
+            if seen and depth == 0:
+                return text[i:j + 1]
+    raise AssertionError("unbalanced braces slicing %r" % name)
+
+
+def _w19t_js(*names):
+    text = _w19t_text()
+    return "\n".join(_w19t_slice(text, n) for n in names) + "\n"
+
+
+def _w19t_node(expr, *names):
+    """Run node over the sliced helpers + JSON.stringify(<expr>); return stdout."""
+    src = _w19t_js(*names) + "process.stdout.write(JSON.stringify(%s));\n" % expr
+    res = subprocess.run(["node", "-e", src], capture_output=True, text=True,
+                         timeout=30)
+    assert res.returncode == 0, "node failed:\n%s\n%s" % (res.stdout, res.stderr)
+    return json.loads(res.stdout)
+
+
+def _w19t_days(days):
+    return "_topFireDaysHtml({top_fire_days:%s})" % json.dumps(days)
+
+
+_W19T_PRODUCER_DAYS = [
+    {"date": "2020-04-14", "n_fires": 40},
+    {"date": "2020-04-15", "n_fires": 37},
+    {"date": "2020-11-10", "n_fires": 36},
+]
+# Producer order is largest-first; here that is NOT date order, so a sort dies.
+_W19T_UNSORTED_DAYS = [
+    {"date": "2020-11-10", "n_fires": 36},
+    {"date": "2020-04-14", "n_fires": 40},
+]
+
+
+@_w19t_needs_node
+def test_w19t_fire_span_text():
+    """Spec 1: plain first_fire -> last_fire span; em-dash when a date is absent."""
+    both = "{first_fire:'1977-12-08', last_fire:'2026-08-31'}"
+    assert _w19t_node("_fireSpan(%s, false)" % both, *_W19T_PURE) == \
+        "first 1977-12-08 → last 2026-08-31"
+    assert _w19t_node("_fireSpan(%s, true)" % both, *_W19T_PURE) == \
+        "首次 1977-12-08 → 最近 2026-08-31"
+    last_only = "{last_fire:'2026-05-13'}"
+    assert _w19t_node("_fireSpan(%s, false)" % last_only, *_W19T_PURE) == \
+        "first — → last 2026-05-13"
+    assert _w19t_node("_fireSpan({}, false)", *_W19T_PURE) == "first — → last —"
+    out = _w19t_node("_fireSpan({first_fire:'<b>x', last_fire:'y'}, false)", *_W19T_PURE)
+    assert "&lt;b&gt;" in out and "<b>" not in out
+
+
+@_w19t_needs_node
+def test_w19t_top_fire_days_html():
+    """Spec 4: producer-order cluster days under the stat grid; empty hides."""
+    out = _w19t_node(_w19t_days(_W19T_PRODUCER_DAYS), *_W19T_PURE)
+    assert "Busiest fire days" in out and "集中触发日" in out
+    seen = [out.index(d["date"]) for d in _W19T_PRODUCER_DAYS]
+    assert seen == sorted(seen) and len(set(seen)) == 3
+    for d in _W19T_PRODUCER_DAYS:
+        assert "%s (%d)" % (d["date"], d["n_fires"]) in out
+    assert out.count(" · ") >= 2
+    assert _w19t_node(_w19t_days([]), *_W19T_PURE) == ""
+    assert _w19t_node(_w19t_days(None), *_W19T_PURE) == ""
+    assert _w19t_node("_topFireDaysHtml({})", *_W19T_PURE) == ""
+    out2 = _w19t_node(_w19t_days(_W19T_UNSORTED_DAYS), *_W19T_PURE)
+    assert out2.index("2020-11-10") < out2.index("2020-04-14")
+    assert "(36)" in out2 and "(40)" in out2
+
+
+@_w19t_needs_node
+def test_w19t_pct_renders_committed_12m():
+    """Spec 3 scale doc: perf_12m is stored as a fraction (passes at seed)."""
+    for v, want in ((11.67924, "+1167.9%"), (-0.138175, "-13.8%"), (None, "—")):
+        assert _w19t_node("_pct(%s)" % json.dumps(v), "L", "esc", "_pct") == want
+
+
+def test_w19t_no_false_2000_cap_and_static_pins():
+    """Specs 1-4: false cap claim gone; committed field paths and ids wired."""
+    text = _w19t_text()
+    for gone in ("capped at 2000", "上限2000次", "n_fires>=2000"):
+        assert gone not in text, "%r still claims a 2000 cap" % gone
+    for present in ('data-sort="perf12m"', "tlSortScreener('perf12m',this)",
+                    "perf12m: s.perf_12m", 'id="prof-12m"',
+                    "getElementById('prof-12m')", 'id="det-top-days"'):
+        assert present in text, "%r missing from tech_lab.html.j2" % present
+    label = '<span class="l-en">12M</span><span class="l-zh">12个月</span>'
+    assert text.count(label) == 2, "12M label belongs on the th and the profile pk"
+    lines = text.splitlines()
+    k = [i for i, ln in enumerate(lines) if "Data unavailable" in ln]
+    assert len(k) == 1 and 'colspan="8"' in lines[k[0] - 1]
+    assert 'colspan="7"' not in text
+    detail = _w19t_slice(text, "tlSelectSignal")
+    assert "cls:'sv-neu', b:''" in detail
+    assert "sig.n_fires" in detail and "sig.n_months" in detail
+    assert "_fireSpan(sig, false)" in detail and "_fireSpan(sig, true)" in detail
+    assert "_topFireDaysHtml(sig)" in detail
+    assert "getElementById('det-top-days')" in detail
+
+
+def test_w19t_screener_row_has_12m_cell():
+    """Spec 3: the screener row carries perf12m and renders it like perf30d."""
+    text = _w19t_text()
+    region = (_w19t_slice(text, "tlBuildScreenerRows")
+              + _w19t_slice(text, "tlRenderScreener"))
+    assert "perf12m: s.perf_12m" in region
+    for frag in ("r.perf12m != null", "(r.perf12m>=0?'r-pos':'r-neg')",
+                 "_pct(r.perf12m)", '<span class="r-neu">—</span>'):
+        assert frag in region, "%r missing in the screener row region" % frag
+    assert region.index("_pct(r.perf30d)") < region.index("_pct(r.perf12m)")
+    assert region.index("_pct(r.perf12m)") < region.index("sig-dots")
+    start = text.index('id="screener-table"')
+    head = text[start:text.index("</thead>", start)].replace("<thead>", "")
+    assert head.count("<th") == 8, "thead must match the 8 rendered cells"
+    row = _w19t_slice(text, "tlRenderScreener")
+    assert row.count("'<td") == 8, "each of the 8 columns renders its own cell"
+    assert "'<td class=\"tl-num\">' + (r.perf12m != null" in row
+
+
+def test_w19t_profile_fills_12m():
+    """Spec 3: Stock Profile fills #prof-12m exactly like #prof-30d."""
+    text = _w19t_text()
+    start = text.index("var p7 = s.perf_7d")
+    stop = text.index("var actEl = document.getElementById('prof-active')", start)
+    region = text[start:stop]
+    assert "var p12 = s.perf_12m" in region
+    assert "getElementById('prof-12m')" in region
+    assert "_pct(p12)" in region
+    assert "(p12!=null?(p12>=0?'r-pos':'r-neg'):'r-neu')" in region

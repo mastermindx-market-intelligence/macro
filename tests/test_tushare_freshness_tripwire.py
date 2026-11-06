@@ -2,9 +2,11 @@
 
 The failure this guards is not "a collector broke" — it is that NOTHING SAID SO.
 tushare_client returns None for every failure it has, callers omit the leg rather
-than write a zero, and asia-close's collect step never fails on one source. Each
+than write a zero, and asia-close's collector normally degrades per source. Each
 of those is individually correct; together they let flow_hist and moneyflow freeze
-at 2026-07-24 and still render on flow_velocity.html on 2026-08-06.
+at 2026-07-24 and still render on flow_velocity.html on 2026-08-06. Store age is
+not root-cause evidence, so the advisory must route operators to the adapter's
+transport-vs-auth receipt instead of guessing that the token or tier is wrong.
 """
 from __future__ import annotations
 
@@ -101,6 +103,11 @@ def test_annotation_starts_the_line_and_is_flushed(capsys: pytest.CaptureFixture
     line = [ln for ln in capsys.readouterr().out.splitlines() if "::warning" in ln]
     assert line, "no annotation emitted for a stale plane"
     assert line[0].startswith("::warning"), f"annotation must start the line, got: {line[0][:40]!r}"
+    assert "data/run_status.json" in line[0]
+    assert "tushare-transport-outage" in line[0]
+    assert "tushare-auth-rejected" in line[0]
+    assert "Do not rotate TUSHARE_TOKEN from store age alone" in line[0]
+    assert "Check TUSHARE_TOKEN is set and the membership/积分 tier" not in line[0]
 
 
 def test_china_search_core_gate_catches_the_2026_09_09_freeze(monkeypatch, capsys):
@@ -147,6 +154,7 @@ def test_latest_date_reads_wide_tz_aware_close_index(monkeypatch, tmp_path):
 
 
 def test_collect_asia_group_uses_the_binding_core_health_result(monkeypatch):
+    import ast
     import inspect
     import scripts.collect as collect
     import scripts.check_tushare_freshness as freshness
@@ -154,10 +162,37 @@ def test_collect_asia_group_uses_the_binding_core_health_result(monkeypatch):
     monkeypatch.setattr(freshness, "check_china_search_core", lambda now=None: 3)
     assert collect._required_group_health("asia") == 3
     assert collect._required_group_health("us") == 0
-    source = inspect.getsource(collect.main)
-    call = source.rindex("_required_group_health(")
-    assert call > source.index("_src_reg_run()"),         "required-store health must run after every post-collect task"
-    assert call < source.rindex("return 0 if ok > 0 else 1"),         "the binding result must decide the collect command's final exit"
+
+    # Bind the real main() entry calls rather than a private function that
+    # the scoped-QLedger writer fence correctly moved into its own helper.
+    # An unrelated --only command must not bypass that helper by importing
+    # source_registry directly from main().
+    tree = ast.parse(inspect.getsource(collect.main))
+    calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)]
+
+    def named(name):
+        return [n for n in calls
+                if isinstance(n.func, ast.Name) and n.func.id == name]
+
+    shared = named("_run_shared_qledger_postcollect")
+    registry = named("_run_source_registry_postcollect")
+    required = named("_required_group_health")
+    assert len(shared) == len(registry) == len(required) == 1
+    assert not named("_src_reg_run"), "main must not bypass the scoped writer gate"
+    assert shared[0].lineno < registry[0].lineno < required[0].lineno, (
+        "required-store health must run after every shared post-collect task"
+    )
+    assert len(registry[0].keywords) == 1
+    kw = registry[0].keywords[0]
+    assert kw.arg == "only" and ast.dump(kw.value) == ast.dump(
+        ast.parse("args.only", mode="eval").body
+    ), "source-registry writer gate must receive the actual CLI --only scope"
+
+    exits = [n for n in ast.walk(tree) if isinstance(n, ast.Return)
+             and ast.unparse(n.value) == "0 if ok > 0 else 1"]
+    assert len(exits) == 1 and required[0].lineno < exits[0].lineno, (
+        "the binding result must decide the collect command's final exit"
+    )
 
 
 def test_mainland_session_clock_survives_utc_to_shanghai_midnight(monkeypatch, capsys):

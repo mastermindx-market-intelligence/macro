@@ -1,0 +1,10 @@
+{
+  "state": "ROOT_LOCAL_RECONCILED_OWNER_ADOPTED_NOT_PUBLISHED",
+  "old_manifest_sha256": "5f9e5ca3fb624935ca65ec3c4c9677517769a713b765148ae82f9ee291e0faf8",
+  "new_manifest_sha256": "d3fd29d01e55e9ef8484b0722ec56aef2eec96b256bd4ba6db8ca4429b3d62d4",
+  "generation": "8a27d8b450ab547be676fadc",
+  "copied_current_predecessor_generation": "6ab0665a0783750f665b1b25",
+  "upstream_writes": 0,
+  "network_reads": 0,
+  "all43_approval_fingerprints_verified_before_adoption": true
+}

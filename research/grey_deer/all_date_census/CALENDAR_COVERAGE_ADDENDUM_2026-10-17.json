@@ -1,0 +1,20 @@
+{
+  "calendar_code_sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+  "caveat": "The existing calendar one-off closure list is not an exchange-certified historical calendar. Differences require independent historical closure/source evidence; neither missing bars nor calendar errors are assumed. Frozen census lattice and outcomes unchanged.",
+  "origins_sha256": "061fe9cdd46dd4f64f5d2dbf5e3536d9e28c5673ec60621bdff22c402da4831d",
+  "qualification": "UNRESOLVED_RULE_CALENDAR_DIFFERENCES",
+  "reference_dates_not_rule_sessions": [],
+  "reference_sessions": 8486,
+  "rule_calendar_sessions": 8493,
+  "rule_sessions_absent_from_reference": [
+    "1994-04-27",
+    "2001-09-11",
+    "2001-09-12",
+    "2001-09-13",
+    "2001-09-14",
+    "2004-06-11",
+    "2007-01-02"
+  ],
+  "schema": "grey_deer.calendar_coverage_addendum.v1",
+  "source_ref": "3ab3382af89242c7b7fe8c65360bd883a7dd3504"
+}

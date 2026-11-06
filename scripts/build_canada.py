@@ -266,19 +266,14 @@ def canada_regime_timeline(hist: pd.DataFrame) -> dict:
 
 
 def _lifespan_rows(quad: pd.Series) -> list[dict]:
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(quad)
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({
-            "quad": QUAD_SHORT[q],           # display name (template reads row.quad)
-            "n": trans["n_by_quad"].get(q, "—"),
-            "median_days": trans["median_days"].get(q, "—"),  # template reads row.median_days
-            "next": next_quads_line(nxt),
-            "next_zh": next_quads_line(nxt, zh=True),
-        })
-    return rows
+    """canada.html's table: canada_history.html's rows under this template's keys."""
+    from engine.playbook import finished_lifespan_rows
+    return [{"quad": row["name"],             # display name (template reads row.quad)
+             "n": row["n"],
+             "median_days": row["median"],    # template reads row.median_days
+             "next": row["next"],
+             "next_zh": row["next_zh"]}
+            for row in finished_lifespan_rows(quad)]
 
 
 def _drilldown_closes() -> tuple[pd.DataFrame, str | None]:
@@ -591,7 +586,7 @@ def _housing_note() -> dict | None:
 
 
 def _build_history(env, latest: dict, generated: str) -> None:
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
+    from engine.playbook import finished_lifespan_rows, transition_stats
     hist = store.read("canada_regime", "regime_history")
     if hist is None or "quad" not in hist.columns:
         log.warning("canada history: no regime_history; skipping history page")
@@ -600,12 +595,7 @@ def _build_history(env, latest: dict, generated: str) -> None:
     mdf = store.read("canada", mi)
     px = mdf["close"] if mdf is not None else pd.Series(dtype=float)
     trans = transition_stats(hist["quad"])
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
-                     "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
+    rows = finished_lifespan_rows(hist["quad"])
     html = env.get_template("canada_history.html.j2").render(
         latest=latest, generated_utc=generated,
         chart_regime=_chart_regime(px, hist) if not px.empty else "", chart_axes=_chart_axes(hist),
@@ -681,10 +671,18 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
 
     Fail-open-LOUD: any failure yields a visible health row rather than a silent pass —
     the board's scoreboard must never fail invisibly."""
-    rows = (setups or {}).get("buy") or []
-    if not rows:
-        return [{"en": "Board ledger (no ranked names to log)", "zh": "榜单账本（无可记录个股）",
-                 "status": "SKIP", "rows": 0, "last": "—"}]
+    # Zero-official-buy liveness (masterplan §10.4): a MISSING board object keeps
+    # today's SKIP return, but a real board whose official buy subset is empty must
+    # NOT bail out here — only the ledger append is withheld below (zero official
+    # buys stay append-free); the scorecard attach, grade, track_ledger emit and
+    # zero-authority shadow write all still run, so full-pool research capture and
+    # the honestly-empty track panel survive a zero-buy session.
+    _skip_row = {"en": "Board ledger (no ranked names to log)",
+                 "zh": "榜单账本（无可记录个股）",
+                 "status": "SKIP", "rows": 0, "last": "—"}
+    if setups is None or not isinstance(setups, dict):
+        return [_skip_row]
+    rows = setups.get("buy") or []
     asof = _board_asof(latest)
     from scripts.build_canada_library import _ENTRY_STATE, CA_BOARD_DEFINITION
     calls = []
@@ -745,10 +743,14 @@ def _canada_board_ledger(setups: dict | None, latest: dict) -> list[dict]:
             "knife_demoted": (w.get("watch_reason") == "knife"),
             "board_definition": CA_BOARD_DEFINITION,
         })
-    health: list[dict] = []
+    health: list[dict] = [] if rows else [_skip_row]
     try:
         from engine import board_ledger
-        if _ledger_advance_enabled():
+        if not rows:
+            log.info("CA board ledger: zero official buys for %s — append skipped "
+                     "(%d watch calls); scorecard/grade/track/shadow still run",
+                     asof, len(calls))
+        elif _ledger_advance_enabled():
             n = board_ledger.append_board(calls, market="CA", asof=asof)
             if n <= 0:
                 health.append({"en": "Board ledger (append wrote 0 rows — see build log)",
@@ -836,9 +838,8 @@ def _tailwind_freshness_gate(setups: dict | None, latest: dict) -> dict | None:
     except Exception as e:  # noqa: BLE001
         log.warning("CA tailwind freshness: panel unreadable (%s)", e)
         return None
-    # trading-day staleness ≈ business days between the two dates (calendar-day / weekend
-    # aware; holidays make this a slight over-count, which fails SAFE — suppress sooner).
-    stale_td = int(pd.bdate_range(tw_date, board_date).size - 1) if tw_date < board_date else 0
+    from lib.market_session import missed_sessions
+    stale_td = missed_sessions("CA", tw_date.date(), board_date.date())
     setups["tailwind_stale_days"] = stale_td
     if stale_td > 3:
         setups["tailwind_suppressed"] = True

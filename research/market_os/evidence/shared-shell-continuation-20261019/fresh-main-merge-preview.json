@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-19T11:55:34.886133+00:00",
+  "head": "0905751badd88752cbab19ffedac51e610488035",
+  "base": "fc44c814c19228d1d19964a34dcf40ce0593eb87",
+  "status": "",
+  "unmerged": "",
+  "preview": {
+    "args": [
+      "git",
+      "merge-tree",
+      "--write-tree",
+      "--name-only",
+      "--messages",
+      "HEAD",
+      "origin/main"
+    ],
+    "exit": 1,
+    "stdout": "93cd248644eb654f7d766a49380c5ce3e07b7625\n.github/ci/legacy-jobs.yml\nsite/etfs.html\nsite/special_situations.html\nsite/us_stocks.html\n\nAuto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nAuto-merging site/china.html\nAuto-merging site/china_lookup.html\nwarning: Cannot merge binary files: site/etfs.html (HEAD vs. origin/main)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/hk_stocks.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/markets.html\nAuto-merging site/news.html\nAuto-merging site/reference.html\nAuto-merging site/sector_central.html\nAuto-merging site/signal_lab.html\nwarning: Cannot merge binary files: site/special_situations.html (HEAD vs. origin/main)\nAuto-merging site/special_situations.html\nCONFLICT (content): Merge conflict in site/special_situations.html\nAuto-merging site/stock.html\nAuto-merging site/stocks/index.html\nwarning: Cannot merge binary files: site/us_stocks.html (HEAD vs. origin/main)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\n",
+    "stderr": ""
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "files": [
+    {
+      "byte_length": 7342,
+      "path": "MASSIVE_SCOPE_ADJUDICATION.md",
+      "sha256": "35548286eaee7ba2f999f14e198846946076094e3672924be9cc56cd0f71c42b"
+    },
+    {
+      "byte_length": 3092,
+      "path": "PRIMARY_SOURCE_REGISTER.json",
+      "sha256": "1fdcb9a8e60afeeda0e66c472146689b57d4d16f5df7c3fdbbb29119c555721f"
+    },
+    {
+      "byte_length": 1180,
+      "path": "RETRIEVAL_AND_EFFECT_RECEIPT.json",
+      "sha256": "ce575d69255854436ec7f9d888368e05e2c29089cfd3fa32debc55b582f4cbb0"
+    }
+  ],
+  "no_real_selection_or_admission": true,
+  "schema": "economic_network.product_scope_addendum_manifest/v1",
+  "self_excluded": "MANIFEST.json",
+  "status": "FROZEN_PRINCIPAL_SOURCE_SCOPE_ADJUDICATION"
+}

@@ -1,0 +1,45 @@
+{
+  "proof_scope": "actual immutable repository inputs through candidate machine consumer; not authenticated live deployment",
+  "input_commit": "bbc684e2acd10319df9b2007882f478ae30f1d70",
+  "runtime_head": "77df9ed9160494ceec0d735dc61005b66aa7dc96",
+  "observed_at": "2026-09-23T07:24:41.901421+00:00",
+  "inputs": {
+    "us": {
+      "path": "site/basketdata/baskets.json",
+      "sha256": "8e555d99acd149662b65a7230accffef63b524c2a57061b3ffdea950d93abb0b",
+      "as_of": "2026-09-21",
+      "theme_count": 49
+    },
+    "china": {
+      "path": "site/chinabasketdata/baskets.json",
+      "sha256": "075b220d9f720b110cb1f52573547b4e244df9f2606a4079644571c97ab6f859",
+      "as_of": "2026-09-22",
+      "theme_count": 22
+    }
+  },
+  "producer_status": "UNAVAILABLE",
+  "sources": {
+    "us": {
+      "path": "site/basketdata/baskets.json",
+      "sha256": "8e555d99acd149662b65a7230accffef63b524c2a57061b3ffdea950d93abb0b",
+      "observation_session": "2026-09-21",
+      "expected_session": "2026-09-22",
+      "observed_at_utc": "2026-09-23T07:24:41.901421+00:00",
+      "status": "STALE",
+      "availability_basis": "current_read_only"
+    },
+    "china": {
+      "path": "site/chinabasketdata/baskets.json",
+      "sha256": "075b220d9f720b110cb1f52573547b4e244df9f2606a4079644571c97ab6f859",
+      "observation_session": "2026-09-22",
+      "expected_session": "2026-09-22",
+      "observed_at_utc": "2026-09-23T07:24:41.901421+00:00",
+      "status": "CURRENT",
+      "availability_basis": "current_read_only",
+      "theme_count": 22
+    }
+  },
+  "consumer_status": "UNAVAILABLE",
+  "consumer_reason": "PRODUCER_CONTEXT_UNAVAILABLE",
+  "theme_states": {}
+}

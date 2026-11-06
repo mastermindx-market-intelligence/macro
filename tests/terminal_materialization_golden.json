@@ -1,0 +1,194 @@
+{
+  "bars_sha256": "3c4689fae6fe5a3ffd28cb42157db70564aeba0980cf7b54cdb3d11b542a630a",
+  "document": {
+    "bar_quality": "real_ohlc",
+    "bars": [
+      [
+        "2026-10-15",
+        100.0,
+        101.5,
+        99.5,
+        101.0,
+        0
+      ],
+      [
+        "2026-10-16",
+        101.0,
+        103.0,
+        100.75,
+        102.125,
+        12000
+      ]
+    ],
+    "source_observation": {
+      "adapter_version": "fixture-1",
+      "bars_sha256": "0a0d14e749f6a0ae33e2f294c4b1cc5b70566faf9d8dd2761e1576840c2776c0",
+      "coverage": {
+        "first": "2026-10-15",
+        "last": "2026-10-16",
+        "rows": 2
+      },
+      "digest_codec": "python.json.compact.v1",
+      "historical_availability": "UNATTESTED",
+      "observed_at": "2026-10-17T00:00:00+00:00",
+      "producer": "ingest/build_polygon_universe.py",
+      "provider": "yahoo",
+      "qualification": "OBSERVATION_ONLY",
+      "request": {
+        "adapter": "yfinance",
+        "auto_adjust": true,
+        "index_timezone": "America/New_York",
+        "interval": "1d",
+        "period": "max",
+        "session_dates": "exchange_local",
+        "symbol": "ZQXA"
+      }
+    },
+    "src": "yahoo",
+    "t": "ZQXA",
+    "view": {
+      "basis_drift": null,
+      "contract": {
+        "adjustment_reference": {
+          "action_revision_set_id": null,
+          "as_at": null,
+          "basis": "tradj",
+          "executable": false,
+          "readout": "vendor total-return proxy \u2014 not a printed price",
+          "vintage": "unattested"
+        },
+        "coverage": {
+          "first": "2026-10-15",
+          "last": "2026-10-16",
+          "rows": 2
+        },
+        "evidence_mode": {
+          "clock": "observed_at",
+          "code_version": "sha256:763f0e44641befdd5096ee2b38a5f40ee59348c54425d05ae99a3b3b9d65772c",
+          "dependency_generation_ids": [],
+          "generation_attested": false,
+          "mode": "CURRENT",
+          "output_registry_row": "terminal.bars.daily.ohlc_json",
+          "registry_row": null
+        },
+        "field_units": {
+          "close": "USD/share",
+          "currency": "USD",
+          "high": "USD/share",
+          "low": "USD/share",
+          "open": "USD/share",
+          "share_basis": "tradj",
+          "volume": "shares",
+          "volume_convention": "vendor-reported, unattested"
+        },
+        "identity_namespace": "US-<MIC>-<CODE>[.N]",
+        "materialization": {
+          "adapter_version": "fixture-1",
+          "alias_namespace": "yahoo_fetch",
+          "bars_sha256": "3c4689fae6fe5a3ffd28cb42157db70564aeba0980cf7b54cdb3d11b542a630a",
+          "coverage": {
+            "first": "2026-10-15",
+            "last": "2026-10-16",
+            "rows": 2
+          },
+          "historical_availability": "UNATTESTED",
+          "identity_reference": {
+            "files_sha256": {
+              "security_master.parquet": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+              "vendor_aliases.parquet": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            },
+            "generation_attested": false,
+            "generation_id": null,
+            "historical_availability": "UNATTESTED",
+            "read_at": "2026-10-17T00:00:01Z"
+          },
+          "observation_bars_sha256": "0a0d14e749f6a0ae33e2f294c4b1cc5b70566faf9d8dd2761e1576840c2776c0",
+          "observed_at": "2026-10-17T00:00:00+00:00",
+          "owner": {
+            "code_version": "sha256:763f0e44641befdd5096ee2b38a5f40ee59348c54425d05ae99a3b3b9d65772c",
+            "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "files_sha256": {
+              "lib/dataos/identity.py": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "lib/dataos/terminal_materialization.py": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+            },
+            "repository": "mastermindx-market-intelligence/macro"
+          },
+          "producer": {
+            "code_version": "sha256:4b5f0bda3f6d51a82773a7d665e6f7d6fdbc5ca6201abdbc50612df620e96f43",
+            "commit": null,
+            "files_sha256": {
+              "ingest/build_polygon_universe.py": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "ingest/dataos_materialization.py": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "ingest/polygon_bars.py": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "ingest/session_anchor.py": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "repository": "mastermindx-market-intelligence/mastermind-terminal"
+          },
+          "request": {
+            "adapter": "yfinance",
+            "auto_adjust": true,
+            "index_timezone": "America/New_York",
+            "interval": "1d",
+            "period": "max",
+            "session_dates": "exchange_local",
+            "symbol": "ZQXA"
+          },
+          "requested_symbol": "ZQXA",
+          "reused": false,
+          "row_codec": "dataos.terminal_ohlc.rows.v1",
+          "schema": "dataos.terminal_yahoo_materialization.v1",
+          "source": "yahoo",
+          "symbol": "ZQXA"
+        },
+        "purpose": "terminal_daily_ohlc",
+        "schema": "dataos.view_contract.v1",
+        "store_vendor": "yahoo",
+        "venues": [
+          "ARCX",
+          "XASE",
+          "XNAS",
+          "XNYS"
+        ]
+      },
+      "listing": {
+        "listing_key": "US-XNYS-ZQXA",
+        "mic": "XNYS",
+        "security_id": "SEC:US-XNYS-ZQXA"
+      },
+      "refusal_reasons": [],
+      "schema": "terminal.ohlc_view.v1",
+      "segments": [
+        {
+          "bar_quality": "real_ohlc",
+          "from": "2026-10-15",
+          "src": "yahoo",
+          "to": "2026-10-16"
+        }
+      ],
+      "suspected_breaks": []
+    }
+  },
+  "encoded_hex": "646174616f732e7465726d696e616c5f6f686c632e726f77732e76310a00000002323032362d31302d3135405900000000000040596000000000004058e0000000000040594000000000000000000000000000323032362d31302d313640594000000000004059c000000000004059300000000000405988000000000040c7700000000000",
+  "fixture": true,
+  "normative_owner": "macro:lib/dataos/terminal_materialization.py",
+  "portable_encoded_hex": "646174616f732e7465726d696e616c5f6f686c632e726f77732e76310a00000002323032362d30312d30323e801b2b29a4692b3e8421f5f40d83763e7ad7f29abcaf483e8172c417c771ef433fffffffffffff323032362d30312d3035406900000000000040692000000000004068e0000000000040690000000000000000000000000000",
+  "portable_rows": [
+    [
+      "2026-01-02",
+      1.2e-07,
+      1.5e-07,
+      1e-07,
+      1.3e-07,
+      9007199254740991
+    ],
+    [
+      "2026-01-05",
+      200.0,
+      201.0,
+      199.0,
+      200.0,
+      0
+    ]
+  ],
+  "portable_sha256": "0ab5bba2fd7c3e734800bead67a750c56dbdf03acf465bf0cb0f476abf5cbfbc"
+}

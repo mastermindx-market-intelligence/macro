@@ -1,0 +1,143 @@
+{
+  "authority": {
+    "can_alert": false,
+    "can_execute": false,
+    "can_gate": false,
+    "can_promote": false,
+    "can_rank": false,
+    "can_size": false,
+    "can_trade": false,
+    "outcome_scan_before_registration": "forbidden",
+    "research_only": true
+  },
+  "base_pin": "007e0cccbd06f089605ba122efc658f406043dd3",
+  "family": "mi_s2_theme_relative_intraday_hourly_rth_prospective",
+  "formation_boundary": {
+    "first_eligible_decision_at": "2026-10-07T15:00:00+00:00",
+    "first_eligible_market_session": "2026-10-07",
+    "owner_acceptance_at": "2026-10-07T02:46:58Z",
+    "rule_en": "First formation decision_at strictly after owner acceptance timestamp; decision clock is 11:00 America/New_York (end of bar starting 10:00 ET).",
+    "rule_zh": "首次形成的 decision_at 必须严格晚于产品负责人接受时间；决策时刻为美国东部时间 11:00（10:00 起始小时棒的结束）。"
+  },
+  "frozen_at": "2026-10-07T03:09:01Z",
+  "frozen_parameters": {
+    "bar_convention": {
+      "excluded_bar_starts_et": [
+        "09:00",
+        "before_09:00",
+        "at_or_after_16:00"
+      ],
+      "forward_bar_starts_et": [
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00"
+      ],
+      "forward_window_k": 5,
+      "full_rth_bar_starts_et": [
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00"
+      ],
+      "pre_decision_window": "single bar starting 10:00 ET (ends 11:00 ET decision time)",
+      "timezone": "America/New_York",
+      "vendor_aggregate_t_audit": "S2 interval/alignment audit must confirm from authoritative documentation; until then registration fails closed on bar-start claims.",
+      "vendor_aggregate_t_semantics": "bar_start",
+      "vendor_aggregate_t_status": "ASSUMED"
+    },
+    "data_treatment": {
+      "forward_return_value_inspection": "forbidden_for_exclusions",
+      "missing_bars": "omit constituent cell",
+      "stale_identical_close_guard": "pre_decision_only_three_or_more_consecutive",
+      "zero_return_positive_volume": "retain observation",
+      "zero_volume": "omit constituent cell"
+    },
+    "exposure": {
+      "application": "beta applied to hourly bar residuals",
+      "estimation": "OLS beta vs theme benchmark on daily returns strictly before decision session",
+      "trailing_daily_sessions": 63
+    },
+    "maturity": {
+      "excluded_sessions_do_not_count_as_rejection": true,
+      "n_valid_decision_sessions": 120,
+      "session_coverage_floor": 0.8
+    },
+    "session_policy_binding": {
+      "calendar_existence_owner": "lib.nyse_calendar.is_session",
+      "early_close_dates": [
+        "2026-11-27",
+        "2026-12-24",
+        "2027-11-26"
+      ],
+      "owner": "engine.prophet_entry_policy",
+      "session_policy_era": "NYSE_RTH_2026_2027",
+      "supported_session_years": [
+        2026,
+        2027
+      ]
+    },
+    "statistic": {
+      "aggregate": "mean across matured valid sessions",
+      "inconclusive_rule": "any other mature result or immature sample",
+      "null_mean_rho": 0.0,
+      "per_session": "cross_sectional_spearman between cumulative pre-decision residual strength and same-session forward residual strength",
+      "rejection_delta": 0.1,
+      "rejection_rule": "same_interval_entirely_within_closed_band",
+      "support_rule": "two_sided_95_one_sample_t_interval_excludes_zero"
+    },
+    "study_id": "MI-S2-TRI-HOURLY-RTH",
+    "study_label_en": "Theme-relative intraday descriptive strength on hourly RTH bars.",
+    "study_label_zh": "主题相对日内描述性强度（常规交易时段小时线）。",
+    "theme_benchmark": {
+      "method": "equal_weight_live_pit_theme_members",
+      "pit_reader": "engine.basket_membership_pit.members_asof(suite='baskets')",
+      "pit_required": true,
+      "self_inclusion": "constituent_excluded_from_benchmark"
+    },
+    "unit_of_independence": "decision_session"
+  },
+  "frozen_parameters_sha256": "547c222ece2be438abd15ea4efbfda29318f2490211e75959e01bb895a81c804",
+  "outcome_blind_law": "No forward descriptive scoring, Spearman computation, or outcome scan may run before this registration is merged.",
+  "owner_acceptance": {
+    "accepted_at": "2026-10-07T02:46:58Z",
+    "disposition": "OWNER_ACCEPTED / S2_REGISTRATION_AUTHORIZED",
+    "github_comment_id": "6029833181",
+    "github_comment_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8528#issuecomment-6029833181",
+    "reviewed_proposal_head": "cc56787650d4c791535c43845284647f3f6c3c3b"
+  },
+  "program_id": "MI-S2-TRI-HOURLY-RTH",
+  "registration_sha256": "8048f6ef48ca7362a5d5a5dde68615aa546989571d5c3e8ad3deba9885e10c61",
+  "s1_bindings": {
+    "json_git_blob": "e4935d05fed97f8ef37221adce559b485d78e4cf",
+    "json_path": "research/product_intelligence_local_delivery/S1_THEME_RELATIVE_INTRADAY_HYPOTHESIS_PROPOSAL_2026-10-06.json",
+    "markdown_git_blob": "6015a38223ef4122049adebfc695107b36e2ad35",
+    "markdown_path": "research/product_intelligence_local_delivery/S1_THEME_RELATIVE_INTRADAY_HYPOTHESIS_PROPOSAL_2026-10-06.md"
+  },
+  "schema": "mastermind.mi_s2_prospective_registration.v1",
+  "session_calendar_verification": {
+    "early_close_dates": [
+      "2026-11-27",
+      "2026-12-24",
+      "2027-11-26"
+    ],
+    "note": "Core trading 09:30–16:00 ET; 2027 full holidays and single early close 2027-11-26 verified against NYSE beta hours page at registration time.",
+    "source_url": "https://beta.nyse.com/trade/hours-calendars",
+    "supported_session_years": [
+      2026,
+      2027
+    ],
+    "verified_on": "2026-10-07"
+  },
+  "status": "prospective_accrual_only",
+  "trial_accounting": {
+    "ledger_path": "data/trial_ledger.jsonl",
+    "no_interim_outcome_reads": true,
+    "no_threshold_grid": true,
+    "owner": "engine.trial_ledger.TrialLedger.log_trial",
+    "prospective_configurations": 1
+  }
+}

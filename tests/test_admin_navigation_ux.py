@@ -195,3 +195,183 @@ def test_startup_cannot_treat_a_failed_session_probe_as_authenticated():
     assert 'Unable to verify your session.' in init
     assert 'catch(() => ({ auth_enabled: false, authenticated: true }))' not in init
     assert 'SUMMARY = next; // keep the last good snapshot' in APP
+
+
+def test_content_review_intersects_filters_before_twelve_card_pagination():
+    _node_assert("""
+const review = new Function('const CS_REVIEW_PAGE_SIZE = 12;' + block('function csReviewPage(', 'function csRefreshPlan(') + '; return csReviewPage;')();
+const entries = Array.from({length: 48}, (_, i) => ({acctId: i % 2 ? 'beta' : 'alpha', post:{id:i, type:i % 3 ? 'chart' : 'signal', headline:'Draft ' + i, ticker: i === 44 ? 'AMD' : 'XYZ'}}));
+const original = JSON.stringify(entries);
+assert.equal(review(entries).rows.length, 12);
+assert.equal(review(entries, {page: 2}).rows[0].post.id, 12);
+assert.equal(review(entries, {page: 999}).page, 4);
+assert.equal(review(entries, {page: -1}).page, 1);
+assert.equal(review(entries, {}, 500).rows.length, 12);
+let selection = {type:'signal', account:'beta'};
+assert.deepEqual(review(entries, selection).rows.map(x => x.post.id), [3,9,15,21,27,33,39,45]);
+assert.deepEqual(review(entries, {account:'beta', type:'signal'}), review(entries, selection));
+assert.equal(review(entries, {query:'amd'}).rows[0].post.id, 44);
+assert.equal(review(entries, {query:'  DrAfT 44 ', account:'alpha', type:'chart'}).total, 1);
+assert.equal(review(entries, {query:'AMD', account:'beta'}).total, 0);
+const empty = review(entries, {query:'does not exist', page:9});
+assert.deepEqual([empty.from,empty.to,empty.page,empty.pages,empty.total], [0,0,1,1,0]);
+assert.equal(JSON.stringify(entries), original);
+assert.equal(review([null, {}, {post:null}]).total, 0);
+""")
+
+
+def test_content_review_uses_light_reads_and_never_inlines_chart_documents():
+    renderer = APP.split('RENDER.marketing_content = async () => {', 1)[1].split('/* Is the content plan stale?', 1)[0]
+    assert '"/api/marketing/content?charts=metadata"' in APP
+    assert 'csWireReview(allPosts, postCardHtml, d.content_revision, renderEpoch)' in renderer
+    assert 'allPosts.map(postCardHtml)' not in renderer
+    assert '${featured.svg}' not in renderer
+    assert 'data-cs-preview' in renderer
+    assert 'renderEpoch !== ADMIN_RENDER_EPOCH' in renderer
+    assert 'Nothing on this page has been sent.' not in renderer
+    preview = APP.split('async function csLoadPreview(', 1)[1].split('function csWireReview(', 1)[0]
+    assert 'document.createElement("img")' in preview
+    assert '.innerHTML' not in preview
+    assert 'response.content_revision !== revision' in preview
+    assert 'details.isConnected' in preview
+    assert 'plan_changed' in preview
+    assert 'Retry preview' in preview
+    assert 'Refresh plan' in preview
+
+
+def test_unrecorded_drop_reasons_are_not_reported_as_passed_drafts():
+    _node_assert("""
+const drop = new Function(block('function csDropPanel(', '/* Scroll helper for the funnel cells') + '; return csDropPanel;')();
+for (const data of [{}, {funnel:null}, {funnel:{drop_reasons:{}}}]) {
+  const html = drop(data);
+  assert(html.includes('No drop reasons were recorded'));
+  assert(html.includes('does not prove every draft passed'));
+  assert(!html.includes('Every planned post got words'));
+}
+""")
+
+
+def test_content_queue_distinguishes_local_delivery_refusal_and_unknown_effect():
+    _node_assert("""
+const classify = new Function(block('const CS_INTEL_REFUSAL_LABEL = ', 'async function csQueueIntel(') + '; return csIntelQueueOutcome;')();
+assert.equal(classify({ok:true,item_id:'item-1',account:'alpha',delivered:true}), 'queued');
+assert.equal(classify({ok:true,item_id:'item-1',account:'alpha',delivered:false}), 'local_only');
+assert.equal(classify({ok:true,item_id:'item-1',account:'alpha'}), 'local_only');
+assert.equal(classify({ok:false,reason:'story_locked'}), 'refused');
+for (const result of [null, {}, {ok:true}, {ok:false,error:'server failed'}, {ok:false,reason:'error'}, {ok:false,reason:'__proto__'}]) {
+  assert.equal(classify(result), 'unknown');
+}
+""")
+
+
+def test_content_queue_lost_ack_never_claims_no_effect_or_reissues_write():
+    _node_assert("""
+const source = block('const CS_INTEL_REFUSAL_LABEL = ', '/* Filters update one shared selection');
+async function exercise(response, throws = false) {
+  const calls = [], links = [], messages = [];
+  const out = {style:{}, textContent:'', append(...nodes) { links.push(...nodes.filter(node => node && node.type === 'button')); }};
+  const card = {querySelector: () => out, getAttribute: key => key === 'data-story-id' ? 'story-a' : 'draft-a'};
+  const button = {disabled:false, textContent:'Queue for X', closest: () => card};
+  const doc = {createElement: () => ({}), createTextNode: text => text};
+  const queue = new Function('post','toast','document','go',source + '; return csQueueIntel;')(
+    async (path, body) => { calls.push({path,body}); if (throws) throw new Error('lost acknowledgement'); return response; },
+    message => messages.push(message), doc, page => messages.push(page)
+  );
+  await queue(button);
+  const label = button.textContent, detail = out.textContent;
+  await queue(button);
+  return {calls, links, label, detail, button, messages};
+}
+const lost = await exercise(null, true);
+assert.equal(lost.calls.length, 1);
+assert.equal(lost.label, 'Status unknown');
+assert(lost.detail.includes('may have completed'));
+assert(!lost.detail.includes('nothing was queued'));
+assert.equal(lost.links.length, 1);
+assert.equal(lost.button.disabled, true);
+assert.deepEqual(lost.calls[0].body, {story_id:'story-a',draft_id:'draft-a'});
+const local = await exercise({ok:true,item_id:'item-1',account:'alpha',delivered:false});
+assert.equal(local.calls.length, 1);
+assert.equal(local.label, 'Delivery unconfirmed');
+assert(local.detail.includes('not confirmed'));
+const confirmed = await exercise({ok:true,item_id:'item-1',account:'alpha',delivered:true});
+assert.equal(confirmed.calls.length, 1);
+assert.equal(confirmed.label, 'Queued');
+const refused = await exercise({ok:false,reason:'story_locked',detail:'already owned'});
+assert.equal(refused.label, 'Queue for X');
+assert.equal(refused.button.disabled, false);
+assert(refused.detail.includes('Refused by'));
+""")
+
+
+def test_publisher_receipt_labels_preserve_delivery_uncertainty():
+    """A legacy posted record is not independently verified delivery evidence."""
+    start = APP.index('RENDER.marketing_publish = async () => {')
+    end = APP.index('/* Dark-desk park readout', start)
+    renderer = APP[start:end]
+    assert '["posted", "Publisher records", "var(--muted)"]' in renderer
+    assert 'Recent publisher records' in renderer
+    assert 'not delivery confirmation or permission to resend' in renderer
+    assert '["posted", "Posted",' not in renderer
+    assert 'What goes out next, what is stuck, and what already went.' not in renderer
+    assert 'Live posts land here with their Buffer receipt' not in renderer
+    assert 'Engagement is polled after the post lands' not in renderer
+    assert 'Submission receipts and confirmed delivery remain separate.' in renderer
+    # Preserve the existing ledger fields, receipt navigation, and measurement nulls.
+    assert 'const posted = d.recent_posted || [];' in renderer
+    assert 'posted: ["#pub-posted",' in renderer
+    assert 'r.external_url' in renderer and 'r.external_id' in renderer
+    assert 'v2 == null ?' in renderer and 'not measured yet' in renderer
+    assert 'recorded ${a.posted || 0}' in renderer
+    assert 'pubWireGoLive(d);' in renderer
+    assert 'onclick="pubRunDryRun(this)"' in renderer
+
+
+def test_site_inventory_searches_all_rows_before_bounded_pagination():
+    _node_assert("""
+const select = new Function(block('function adminInventoryPage(', 'RENDER.content = ') + '; return adminInventoryPage;')();
+const pages = Array.from({length:12622}, (_, i) => ({name: `page-${i}.html`, kb:i, age_hours:i}));
+const original = JSON.stringify(pages);
+assert.equal(select(pages).rows.length, 50);
+assert.deepEqual(select(pages).rows, pages.slice(0,50));
+assert.equal(select(pages, '', 2).rows[0].name, 'page-50.html');
+assert.equal(select(pages, '  PAGE-12621  ').rows[0].name, 'page-12621.html');
+assert.equal(select(pages, 'not-a-page').total, 0);
+assert.equal(select(pages, '', Infinity).page, 1);
+assert.equal(select(pages, '', -1).page, 1);
+assert.equal(select(pages, '', 99999).page, 253);
+assert.equal(select(pages, '', 253).rows.length, 22);
+const seen = []; for (let n=1; n<=253; n++) seen.push(...select(pages,'',n).rows.map(p=>p.name));
+assert.equal(seen.length,12622); assert.equal(new Set(seen).size,12622);
+assert.equal(JSON.stringify(pages), original);
+const empty = select([], '', 7);
+assert.deepEqual([empty.page,empty.pages,empty.from,empty.to,empty.total],[1,1,0,0,0]);
+""")
+
+
+def test_site_inventory_late_initial_read_cannot_replace_a_new_page():
+    _node_assert("""
+const vm = require('node:vm');
+let finish; const view = {innerHTML:'new page', isConnected:true};
+const sandbox = {RENDER:{}, CURRENT:'content', ADMIN_RENDER_EPOCH:1, $:()=>view,
+  api:()=>new Promise(resolve=>{finish=resolve;}), card:()=>'', esc:String, fmtAge:String};
+vm.createContext(sandbox);
+vm.runInContext(block('function adminInventoryPage(', '/* ---- NEURAL WEB (W8a)'),sandbox);
+const pending = sandbox.RENDER.content();
+sandbox.CURRENT='overview'; sandbox.ADMIN_RENDER_EPOCH=2;
+finish({pages:[],total_pages:0}); await pending;
+assert.equal(view.innerHTML,'new page');
+""")
+
+
+def test_site_inventory_has_named_controls_and_read_error_recovery():
+    content = APP.split('RENDER.content = async () => {', 1)[1].split('/* ---- NEURAL WEB (W8a)', 1)[0]
+    assert 'id="inventorySearch" type="search"' in content
+    assert 'label for="inventorySearch"' in content
+    assert 'aria-live="polite"' in content
+    assert 'adminInventoryPage(d.pages, search.value, page)' in content
+    assert 'page = 1; draw();' in content
+    assert 'Link check unavailable. Try again.' in content
+    assert 'Live-site check unavailable. Try again.' in content
+    assert '$("#view").appendChild' not in content
+    assert 'post(' not in content and 'dispatch(' not in content

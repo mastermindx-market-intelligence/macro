@@ -1,0 +1,9 @@
+{
+  "installed_head": "3a316a30256b5e6d326d9cdc8d88af96eb47a4bc",
+  "source_url": "https://www.whitehouse.gov/releases/2026/10/president-trump-visits-alaska-delivering-results-for-the-last-frontier/",
+  "event_id": "wh-2026-10-13-president-trump-visits-alaska-delivering-results-for-the-last-frontier",
+  "source_capture_sha256": "e4559bcfd77f1d44b29aacd2bf0c5417e99341bb8bc45b8e90f229e12eb5ed57",
+  "prior_qualification": "source_qualification_20261014_1012/public_source_screen.json",
+  "disposition": "Same previously excluded recap; context-only generated alert and illustrative ticker exposure do not override the old event dates or qualify a fresh issuer story. No external refetch, alias, writer or provider call.",
+  "public_banner_is_not_source_admission": true
+}

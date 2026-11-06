@@ -1,0 +1,550 @@
+{
+  "all_53_reviewed_source_pins_preserved": true,
+  "baseline": "green",
+  "baseline_detail": "3bb1ee47939d https://github.com/mastermindx-market-intelligence/macro/actions/runs/37934675736",
+  "candidate": "693ee939c8a28920ef9de7bc32a9f47a7ba76b82",
+  "checks": [
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113864946641,
+      "name": "ci-authority/main",
+      "status": "completed"
+    },
+    {
+      "binding": false,
+      "conclusion": "failure",
+      "id": 113864941685,
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113864849950,
+      "name": "ci-authority",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113860832578,
+      "name": "ci-gate",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113849377966,
+      "name": "ci-authority",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "skipped",
+      "id": 113848539758,
+      "name": "trusted-ci",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538526,
+      "name": "ci-pack-11",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538411,
+      "name": "ci-pack-7",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538362,
+      "name": "ci-pack-10",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538309,
+      "name": "ci-pack-2",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538308,
+      "name": "ci-pack-4",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538282,
+      "name": "ci-pack-5",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538235,
+      "name": "ci-pack-1",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538234,
+      "name": "ci-pack-8",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538221,
+      "name": "ci-pack-6",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538209,
+      "name": "ci-pack-9",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538208,
+      "name": "ci-pack-0",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113848538142,
+      "name": "ci-pack-3",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113847140993,
+      "name": "grader-manifest",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113847137408,
+      "name": "capability-broker",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113847133529,
+      "name": "self-mod-fence",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "skipped",
+      "id": 113846843948,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113846810075,
+      "name": "contract-delta",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113846809854,
+      "name": "ci-plan",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "skipped",
+      "id": 113846809679,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "skipped",
+      "id": 113846809391,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113846807728,
+      "name": "fence-pack",
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "id": 113846798223,
+      "name": "ci-authority",
+      "status": "completed"
+    }
+  ],
+  "comments": [],
+  "error": {
+    "message": "('SOURCE_RELEASE_GATE_NOT_CLEAR', True, 'main commit ff652de57152 changed the check definitions themselves, so no existing green describes the checks that run now', 'green', '3bb1ee47939d https://github.com/mastermindx-market-intelligence/macro/actions/runs/37934675736', None)",
+    "type": "AssertionError"
+  },
+  "finished_at": "2026-10-09T14:26:15.016289+00:00",
+  "freshness_snapshot_tip": "87b01101ef13aa20ded205f3a2b267b68d094def",
+  "initial_pull_head": "693ee939c8a28920ef9de7bc32a9f47a7ba76b82",
+  "main_before": "87b01101ef13aa20ded205f3a2b267b68d094def",
+  "merge_action": "NOT_EXECUTED",
+  "native_helper_sha256": "8eac1e841a5508605f4dceec014bffb05fa2a012d830607dfd2a240882bc7423",
+  "pr": 8711,
+  "proof_base": "3bb1ee47939d9caa1db10a4e764365d3a2ee5b77",
+  "proof_base_detail": "",
+  "protected_master": "8d838c8df453a78fac3459b7458576e1ba2cbcb8",
+  "recorded_hold": null,
+  "review_state": {
+    "autoMergeRequest": null,
+    "baseRefOid": "3bb1ee47939d9caa1db10a4e764365d3a2ee5b77",
+    "headRefOid": "693ee939c8a28920ef9de7bc32a9f47a7ba76b82",
+    "isDraft": false,
+    "labels": {
+      "nodes": [],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "mergeable": "MERGEABLE",
+    "merged": false,
+    "reviewDecision": null,
+    "reviewThreads": {
+      "nodes": [],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    },
+    "reviews": {
+      "nodes": [],
+      "pageInfo": {
+        "hasNextPage": false
+      }
+    }
+  },
+  "run": {
+    "conclusion": "success",
+    "event": "pull_request",
+    "head_sha": "693ee939c8a28920ef9de7bc32a9f47a7ba76b82",
+    "html_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37938576895",
+    "id": 37938576895,
+    "name": "ci",
+    "path": ".github/workflows/ci.yml",
+    "run_attempt": 1,
+    "status": "completed"
+  },
+  "schema": "economic_network.final_native_release_gate/v2",
+  "source_pins": [
+    {
+      "byte_length": 0,
+      "path": "engine/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 16985,
+      "path": "engine/basket_breadth_divergence.py",
+      "sha256": "f073f778f43f9e040b5b3b76cfb66fe5085940ca00b92e7ae2fac359d1d68be6"
+    },
+    {
+      "byte_length": 31503,
+      "path": "engine/catalyst_tone.py",
+      "sha256": "1856dc10ea0c9fc480517d50b1b8488303ea29dbc18c7b86cd11d29ea0e7dbb0"
+    },
+    {
+      "byte_length": 832,
+      "path": "engine/company_intelligence/__init__.py",
+      "sha256": "09e8425cdca490d03bece9462af575fddd25802e0ca2aa12be7d24f6ded8b347"
+    },
+    {
+      "byte_length": 34222,
+      "path": "engine/company_intelligence/contracts.py",
+      "sha256": "a9ab0b648e72b7537fc812618adab8325bd9f88410ba1169103929ddccc276ad"
+    },
+    {
+      "byte_length": 7219,
+      "path": "engine/company_intelligence/health.py",
+      "sha256": "db924871e9a49446ebbe6e84c2c9c57a361b903fb8764a5a891a531cdb449210"
+    },
+    {
+      "byte_length": 11962,
+      "path": "engine/company_intelligence/pinned_relationship_candidates.py",
+      "sha256": "afafacb978face2775c769844a2773e04a5cb5b755aacd6c9724d7e51eb07cb7"
+    },
+    {
+      "byte_length": 45473,
+      "path": "engine/company_intelligence/relationship_candidates.py",
+      "sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55"
+    },
+    {
+      "byte_length": 42756,
+      "path": "engine/company_intelligence/relationship_observations.py",
+      "sha256": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7"
+    },
+    {
+      "byte_length": 36392,
+      "path": "engine/company_intelligence/views.py",
+      "sha256": "b5cc18f5722305f841a18b94867edcdd36e6797889136bd807e6a5161cef70f4"
+    },
+    {
+      "byte_length": 6683,
+      "path": "engine/desk_ledger.py",
+      "sha256": "9e079f7d26e3a60e75ee651140612c2efd6a9d00a9405ac5c424fe219600dbc2"
+    },
+    {
+      "byte_length": 1009,
+      "path": "engine/earnings_release/__init__.py",
+      "sha256": "efb8ea9960f8fe2e5e6ab79eff5bef7abde6b7d7fa63f7b5faca17081a9bbe85"
+    },
+    {
+      "byte_length": 12010,
+      "path": "engine/earnings_release/receipts.py",
+      "sha256": "463c97d12c74baaf76fe1abab359b38d2b89a2958f455e5d541caa8fa580fb84"
+    },
+    {
+      "byte_length": 1854,
+      "path": "engine/fundamental_forensics/__init__.py",
+      "sha256": "c4c6084411d11e5b07bfd0e4600880ccbbc60309712262bdd266657c120ad5fb"
+    },
+    {
+      "byte_length": 17295,
+      "path": "engine/fundamental_forensics/detectors.py",
+      "sha256": "3a5b3ceb58cbfd21253052676c4ef38b3125b45799f44c799a8977c3685f522a"
+    },
+    {
+      "byte_length": 118522,
+      "path": "engine/fundamental_forensics/disclosure_diff.py",
+      "sha256": "a266960ac1c3d48b7ebedbe1141d50e1ed3cbfd617d27d01aa6e1554fce389ba"
+    },
+    {
+      "byte_length": 76795,
+      "path": "engine/fundamental_forensics/filing_attestation.py",
+      "sha256": "1b2693a9bbff66761a573a8c1bd5d32b352a2d43719407e2864fda6e725d0a47"
+    },
+    {
+      "byte_length": 57231,
+      "path": "engine/fundamental_forensics/filing_package.py",
+      "sha256": "929de48d3391844f71dc0875d97eddd4372524133de41de90953819a7d5da4d9"
+    },
+    {
+      "byte_length": 77632,
+      "path": "engine/fundamental_forensics/ixbrl_extraction.py",
+      "sha256": "e9a3ad540b154d37f2a8724ac4bd523d6aa951c70d500f9fed80295fc60b6e58"
+    },
+    {
+      "byte_length": 14519,
+      "path": "engine/fundamental_forensics/models.py",
+      "sha256": "cd8e5e62d4e29378453b89ea6b2f5cfd4028ed5ea4502a9d43f98f0819c3aa97"
+    },
+    {
+      "byte_length": 12032,
+      "path": "engine/fundamental_forensics/normalize.py",
+      "sha256": "b23163c565ad0bd5bc079542538725c56d747a1212346ba74f8f6f9f3ea80487"
+    },
+    {
+      "byte_length": 5086,
+      "path": "engine/fundamental_forensics/pipeline.py",
+      "sha256": "ecb8d2ebe9da231a70b9edcfea654f0bfee00e01570fbfd596106e5fe528817b"
+    },
+    {
+      "byte_length": 7430,
+      "path": "engine/fundamental_forensics/sec_companyfacts.py",
+      "sha256": "bf575fdcb307e12efdf9e281697e0fe143e7a373282efde6f1799e2582c89170"
+    },
+    {
+      "byte_length": 48206,
+      "path": "engine/fundamental_forensics/sec_document_spine.py",
+      "sha256": "ee240863943823e598083f45164c6a288e9098292a47a454cc70898c2bdf8366"
+    },
+    {
+      "byte_length": 54924,
+      "path": "engine/fundamental_forensics/source_sync.py",
+      "sha256": "73ddb5ac6ed910b1f4d9a7d76a944063f3251011e7b2af96d7fbb8306f46776a"
+    },
+    {
+      "byte_length": 17148,
+      "path": "engine/gdelt_client.py",
+      "sha256": "9282e05655b3de93da3046c0fe36d17e6b682d5825237fd68a16017ae788ab6a"
+    },
+    {
+      "byte_length": 660,
+      "path": "engine/marketing/__init__.py",
+      "sha256": "6c9056208c0a9c0115eb54b9f8abfd01b36fd168e843b0d5235c9291240bfa5c"
+    },
+    {
+      "byte_length": 5038,
+      "path": "engine/marketing/accounts.py",
+      "sha256": "868a6f728f177009808c9321416d08a9a8e610ff2c6aa3733bf3cb1c0adcc40f"
+    },
+    {
+      "byte_length": 5355,
+      "path": "engine/marketing/authority.py",
+      "sha256": "0d73e0cdd1bc36b24a6ea45658e63c254094bd3b8ef8878b092020afd1a27368"
+    },
+    {
+      "byte_length": 287289,
+      "path": "engine/marketing/chart_render.py",
+      "sha256": "2d8d596c39545c9c0b064a56ec8508b41fb7845ff8fb124902a956896668fbcd"
+    },
+    {
+      "byte_length": 3628,
+      "path": "engine/marketing/charter.py",
+      "sha256": "af4bef84e91e4631534e7da7508c4c6eae9b0529272365228339fe7b48ec4f1f"
+    },
+    {
+      "byte_length": 4436,
+      "path": "engine/marketing/claims.py",
+      "sha256": "ad6667e71d23ddb4cda28cf5b8d79fc7328a80f94f415540063822c6dd0d9d0b"
+    },
+    {
+      "byte_length": 10714,
+      "path": "engine/marketing/cmo.py",
+      "sha256": "f2b124754fb808d1935fcde19bdad3d66f334ada97b1f292fbfc9af0686974f9"
+    },
+    {
+      "byte_length": 45779,
+      "path": "engine/marketing/departments.py",
+      "sha256": "f42be96b317a040bf28c6dcdb4343aa9d8b83fce0133ef77121448f2015f889f"
+    },
+    {
+      "byte_length": 4797,
+      "path": "engine/marketing/economics.py",
+      "sha256": "bb4e78bb1251366d536a79aa789a357ce6ece47c32ca4534e920e8ee4d24b3d9"
+    },
+    {
+      "byte_length": 2136,
+      "path": "engine/marketing/events.py",
+      "sha256": "f940ba236256f56841cc944fdab5914ee4c5a85a5b9ce774137bcede7c5caace"
+    },
+    {
+      "byte_length": 1686,
+      "path": "engine/marketing/ledgers.py",
+      "sha256": "a94a60f25914ff67328c3b54eb46befa81c1b3910a9a0f72c260fb0609c7a3e8"
+    },
+    {
+      "byte_length": 14389,
+      "path": "engine/marketing/logo_cache.py",
+      "sha256": "afc70743c63ba6c7ddc732914876baa38ef0eff384b296b42f249fe09510d0c6"
+    },
+    {
+      "byte_length": 5350,
+      "path": "engine/marketing/opportunity_bus.py",
+      "sha256": "09f0ce3e55bcbda2e83051c396ba78bdc68d9e7d0fdfb093fdb4b09197f94df2"
+    },
+    {
+      "byte_length": 7182,
+      "path": "engine/marketing/publication.py",
+      "sha256": "9904f90241f1b236dd88094aa6b388fdf43d627c6117900a3b36ededb6f4beb2"
+    },
+    {
+      "byte_length": 18901,
+      "path": "engine/marketing/state.py",
+      "sha256": "1b933891c7c3c1d22018ea6b49fbb370a7f6cd5f9e5e9123912405081b81c15b"
+    },
+    {
+      "byte_length": 142755,
+      "path": "engine/master_brain.py",
+      "sha256": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70"
+    },
+    {
+      "byte_length": 1175,
+      "path": "engine/research_vault/__init__.py",
+      "sha256": "5b35706ac8760796f9ac445b8c1fceda53a058aa64ea46cf6c79d19e420a97f8"
+    },
+    {
+      "byte_length": 47498,
+      "path": "engine/research_vault/r2_store.py",
+      "sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd"
+    },
+    {
+      "byte_length": 0,
+      "path": "lib/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "byte_length": 1131,
+      "path": "lib/config.py",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    {
+      "byte_length": 5496,
+      "path": "lib/dataos/__init__.py",
+      "sha256": "0d8df3c0c127df3ec7a5b7148dd32dfed66dbd4c22e5fa496b77ec15377213a7"
+    },
+    {
+      "byte_length": 49306,
+      "path": "lib/dataos/identity.py",
+      "sha256": "8baefdf03e29afb59b4bc70805327e88e0e4e96e0a720727ffa695ba1775ad6f"
+    },
+    {
+      "byte_length": 7737,
+      "path": "lib/dataos/nulls.py",
+      "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49"
+    },
+    {
+      "byte_length": 10509,
+      "path": "lib/dataos/price.py",
+      "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15"
+    },
+    {
+      "byte_length": 15792,
+      "path": "lib/dataos/quality.py",
+      "sha256": "e56dfb5baa8f53ccf8141dbfa357d266faed519043e258a56d657abe264f9706"
+    },
+    {
+      "byte_length": 16599,
+      "path": "lib/dataos/registry.py",
+      "sha256": "b57ec16a61086b8d35beb2f81af30efc4af55f1ac07ec95cfcfd87beefeef0a5"
+    },
+    {
+      "byte_length": 12847,
+      "path": "lib/dataos/temporal.py",
+      "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67"
+    }
+  ],
+  "stale": true,
+  "stale_detail": "main commit ff652de57152 changed the check definitions themselves, so no existing green describes the checks that run now",
+  "started_at": "2026-10-09T14:25:56.521148+00:00",
+  "status": "REFUSED",
+  "strict_anchor_verdict": "clean",
+  "strict_check_details": [],
+  "strict_check_verdict": "clean",
+  "strict_required_anchors": [
+    "ci-gate",
+    "ci-pack-0",
+    "ci-pack-1",
+    "ci-pack-10",
+    "ci-pack-11",
+    "ci-pack-2",
+    "ci-pack-3",
+    "ci-pack-4",
+    "ci-pack-5",
+    "ci-pack-6",
+    "ci-pack-7",
+    "ci-pack-8",
+    "ci-pack-9",
+    "fence-pack"
+  ],
+  "workflow_run_id": 37938576895
+}

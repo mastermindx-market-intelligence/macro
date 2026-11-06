@@ -238,6 +238,102 @@ def test_real_data_act_gating_invariant():
     assert out["staleness"]["daily_asof"] is not None
 
 
+def _observations(sig, dvol=None, sopr=None, preserve=True):
+    original = R.store
+    R.store = _Store({("deribit", "dvol"): dvol, ("bgeo", "sopr"): sopr})
+    try:
+        return R.fire_series(sig, preserve_unknown=preserve)
+    finally:
+        R.store = original
+
+
+def test_observations_keep_warmup_and_missing_sources_unknown():
+    sig = _base_sig(n=160)
+    missing = _observations(sig)
+    assert list(missing.columns) == ["d2", "d3", "u1"]
+    assert missing.isna().all().all()
+    idx = sig.index
+    out = _observations(sig, _dvol(idx, _calm_ranges(160)), _sopr(idx, _neutral_sopr(160)))
+    assert out.d2.iloc[:61].isna().all() and pd.notna(out.d2.iloc[61])
+    assert out.d3.iloc[:90].isna().all() and pd.notna(out.d3.iloc[90])
+    assert out.u1.iloc[:90].isna().all() and pd.notna(out.u1.iloc[90])
+    assert out.iloc[100:].notna().all().all()
+    assert not out.iloc[100:].any().any(), "Observed calm is False, not unknown"
+    assert all(str(t) == "boolean" for t in out.dtypes)
+
+
+def test_observations_require_complete_calendar_lookbacks():
+    sig = _base_sig(n=160)
+    idx = sig.index
+    dv = _dvol(idx, _calm_ranges(160)).drop(idx[100])
+    sp = _sopr(idx, _neutral_sopr(160))
+    out = _observations(sig, dv, sp)
+    assert out.d2.loc[idx[100]:].isna().all()
+    assert out.d3.iloc[120:].notna().all(), "A DVOL gap must not hide SOPR"
+    sparse_price = sig.drop(idx[100])
+    out = _observations(sparse_price, _dvol(idx, _calm_ranges(160)), sp)
+    assert out.u1.loc[idx[101]:idx[105]].isna().all()
+    assert pd.notna(out.u1.loc[idx[106]])
+
+
+def test_observations_reject_nonfinite_invalid_and_zero_variance_sources():
+    sig = _base_sig(n=160)
+    idx = sig.index
+    constant = _observations(sig, _dvol(idx, [0.04] * 160), _sopr(idx, [1.0] * 160))
+    assert constant.isna().all().all()
+    for invalid in [np.nan, np.inf, -np.inf, 0., -1.]:
+        dv = _dvol(idx, _calm_ranges(160))
+        sp = _sopr(idx, _neutral_sopr(160))
+        dv.loc[idx[100], "dvol_close"] = invalid
+        sp.loc[idx[100], "sopr"] = invalid
+        out = _observations(sig, dv, sp)
+        assert out.loc[idx[100]:].isna().all().all()
+
+
+def test_observations_default_fire_contract_is_unchanged_on_known_rows():
+    sig = _base_sig(n=160, drift=0.004)
+    idx = sig.index
+    ranges = _calm_ranges(160); ranges[-1] = 0.30
+    values = _neutral_sopr(160); values[-1] = 1.20
+    dv, sp = _dvol(idx, ranges), _sopr(idx, values)
+    qualified = _observations(sig, dv, sp)
+    legacy = _observations(sig, dv, sp, preserve=False)
+    assert all(str(t) == "bool" for t in legacy.dtypes)
+    assert bool(legacy.d2.iloc[-1]) and bool(legacy.d3.iloc[-1])
+    for col in legacy:
+        known = qualified[col].notna()
+        assert (legacy.loc[known, col].values == qualified.loc[known, col].astype(bool).values).all()
+    assert not legacy.d2.iloc[:60].any()
+
+
+def test_observations_are_prefix_invariant_with_full_source_history():
+    sig = _base_sig(n=160, drift=-0.012)
+    idx = sig.index
+    dv = _dvol(idx, _calm_ranges(160)); sp = _sopr(idx, _neutral_sopr(160))
+    full = _observations(sig, dv, sp)
+    for end in [90, 100, 121, 147, 159]:
+        got = _observations(sig.iloc[:end], dv, sp)
+        pd.testing.assert_frame_equal(got, full.iloc[:end])
+    dv.loc[idx[-1], "dvol_high"] = 10000.
+    sp.loc[idx[-1], "sopr"] = 10.
+    altered = _observations(sig, dv, sp)
+    pd.testing.assert_frame_equal(altered.iloc[:-1], full.iloc[:-1])
+
+
+def test_observations_reject_malformed_signal_dates():
+    sig = _base_sig(n=20)
+    cases = [sig.iloc[::-1], pd.concat([sig.iloc[:2], sig.iloc[1:]])]
+    hourly = sig.copy(); hourly.index += pd.Timedelta(hours=1)
+    cases.extend([hourly, sig.reset_index(drop=True)])
+    for bad in cases:
+        try:
+            _observations(bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Invalid dates cannot be source-qualified")
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for fn in fns:

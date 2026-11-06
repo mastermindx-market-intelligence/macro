@@ -1,0 +1,224 @@
+{
+  "schema": "qbus-news-retrieval.fixture-benchmark.v1",
+  "label": "review-baseline",
+  "fixture_clock": "2026-10-05T15:00:00+00:00",
+  "generated_at": "2026-10-20T13:35:21.190574+00:00",
+  "scope": "Temporary local SQLite fixtures. No network or production writes.",
+  "measurement": "Full writer commit timings; not ingestion-to-browser latency.",
+  "host_class": {
+    "os": "Darwin",
+    "machine": "arm64",
+    "python": "3.14.7",
+    "sqlite": "3.53.4",
+    "cpu_count": 24
+  },
+  "source_sha256": {
+    "engine/qbus_news_store.py": "4641235265ce7684937bae47c68cb6e92d13d91ea3db6ddebb161731235073ff",
+    "engine/qbus_news_cluster.py": "0740c1860d0630defa0b0d64d53cee28f1393467e3e2eb149f4f72b87dbe0a2e",
+    "engine/qbus_news_retrieval.py": null
+  },
+  "sizes": {
+    "128": {
+      "initial_items": 129,
+      "batch_size_max": 256,
+      "initial_ingest_including_open_ms": 127.208,
+      "batch_commit": {
+        "n": 1,
+        "min_ms": 123.068,
+        "median_ms": 123.068,
+        "max_ms": 123.068,
+        "samples_ms": [
+          123.068
+        ]
+      },
+      "duplicate_full_commit": {
+        "n": 10,
+        "min_ms": 8.18,
+        "median_ms": 8.987,
+        "max_ms": 13.165,
+        "samples_ms": [
+          8.336,
+          8.51,
+          8.18,
+          9.144,
+          8.447,
+          8.987,
+          9.141,
+          13.165,
+          8.645,
+          9.342
+        ]
+      },
+      "table_counts": {
+        "news_clusters": 130,
+        "news_cluster_members": 139,
+        "news_cluster_fingerprints": null,
+        "news_cluster_postings": null,
+        "news_shingle_df": null
+      },
+      "query_plans": {
+        "incumbent_recency": [
+          "SEARCH news_clusters USING INDEX idx_news_clusters_observed (anchor_observed_at>? AND anchor_observed_at<?)",
+          "SCAN json_each EXISTS VIRTUAL TABLE INDEX 1:",
+          "LIST SUBQUERY 1",
+          "SCAN json_each VIRTUAL TABLE INDEX 1:",
+          "CREATE BLOOM FILTER",
+          "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+        ],
+        "bounded_posting_time": null,
+        "reverse_posting_repair": null
+      },
+      "retrieval_evidence": {
+        "available": false
+      },
+      "bytes_before_close": {
+        "main": 4096,
+        "-wal": 1738672,
+        "-shm": 32768
+      },
+      "bytes_after_close": {
+        "main": 610304,
+        "-wal": 0,
+        "-shm": 0
+      }
+    },
+    "512": {
+      "initial_items": 513,
+      "batch_size_max": 256,
+      "initial_ingest_including_open_ms": 733.176,
+      "batch_commit": {
+        "n": 3,
+        "min_ms": 3.053,
+        "median_ms": 327.191,
+        "max_ms": 399.444,
+        "samples_ms": [
+          327.191,
+          399.444,
+          3.053
+        ]
+      },
+      "duplicate_full_commit": {
+        "n": 10,
+        "min_ms": 8.507,
+        "median_ms": 9.188,
+        "max_ms": 10.075,
+        "samples_ms": [
+          8.839,
+          9.292,
+          9.193,
+          9.862,
+          8.507,
+          8.588,
+          9.188,
+          10.075,
+          9.009,
+          8.509
+        ]
+      },
+      "table_counts": {
+        "news_clusters": 514,
+        "news_cluster_members": 523,
+        "news_cluster_fingerprints": null,
+        "news_cluster_postings": null,
+        "news_shingle_df": null
+      },
+      "query_plans": {
+        "incumbent_recency": [
+          "SEARCH news_clusters USING INDEX idx_news_clusters_observed (anchor_observed_at>? AND anchor_observed_at<?)",
+          "SCAN json_each EXISTS VIRTUAL TABLE INDEX 1:",
+          "LIST SUBQUERY 1",
+          "SCAN json_each VIRTUAL TABLE INDEX 1:",
+          "CREATE BLOOM FILTER",
+          "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+        ],
+        "bounded_posting_time": null,
+        "reverse_posting_repair": null
+      },
+      "retrieval_evidence": {
+        "available": false
+      },
+      "bytes_before_close": {
+        "main": 4096,
+        "-wal": 3646232,
+        "-shm": 32768
+      },
+      "bytes_after_close": {
+        "main": 2048000,
+        "-wal": 0,
+        "-shm": 0
+      }
+    },
+    "2048": {
+      "initial_items": 2049,
+      "batch_size_max": 256,
+      "initial_ingest_including_open_ms": 3264.763,
+      "batch_commit": {
+        "n": 9,
+        "min_ms": 1.98,
+        "median_ms": 412.429,
+        "max_ms": 439.082,
+        "samples_ms": [
+          323.023,
+          406.359,
+          399.224,
+          412.429,
+          423.757,
+          415.36,
+          438.927,
+          439.082,
+          1.98
+        ]
+      },
+      "duplicate_full_commit": {
+        "n": 10,
+        "min_ms": 8.128,
+        "median_ms": 8.785,
+        "max_ms": 11.264,
+        "samples_ms": [
+          9.717,
+          8.543,
+          11.264,
+          9.002,
+          8.785,
+          8.128,
+          8.999,
+          8.142,
+          8.424,
+          8.257
+        ]
+      },
+      "table_counts": {
+        "news_clusters": 2050,
+        "news_cluster_members": 2059,
+        "news_cluster_fingerprints": null,
+        "news_cluster_postings": null,
+        "news_shingle_df": null
+      },
+      "query_plans": {
+        "incumbent_recency": [
+          "SEARCH news_clusters USING INDEX idx_news_clusters_observed (anchor_observed_at>? AND anchor_observed_at<?)",
+          "SCAN json_each EXISTS VIRTUAL TABLE INDEX 1:",
+          "LIST SUBQUERY 1",
+          "SCAN json_each VIRTUAL TABLE INDEX 1:",
+          "CREATE BLOOM FILTER",
+          "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+        ],
+        "bounded_posting_time": null,
+        "reverse_posting_repair": null
+      },
+      "retrieval_evidence": {
+        "available": false
+      },
+      "bytes_before_close": {
+        "main": 6672384,
+        "-wal": 5182992,
+        "-shm": 32768
+      },
+      "bytes_after_close": {
+        "main": 7647232,
+        "-wal": 0,
+        "-shm": 0
+      }
+    }
+  }
+}

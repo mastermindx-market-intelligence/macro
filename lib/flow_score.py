@@ -210,6 +210,82 @@ def brier(pred: np.ndarray | list, y: np.ndarray | list) -> float:
     return float(np.mean((pred - y) ** 2))
 
 
+def strict_weighted_binary_inputs(
+    pred: np.ndarray | list,
+    y: np.ndarray | list,
+    weights: np.ndarray | list,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Validate weighted binary inputs. Never filters or drops rows.
+
+    Returns one-dimensional float64 arrays ``(pred, y, weights)`` of equal
+    nonzero length.
+
+    Predicted probabilities must be finite and in ``[0, 1]``. Labels must be
+    exactly 0 or 1 (non-finite and out-of-range labels raise). Weights must
+    be finite, strictly positive, and ``math.fsum(weights)``
+    must be positive and finite. One label class is allowed; AUC callers
+    impose that requirement separately. Invalid inputs raise ValueError.
+    """
+    from math import fsum
+
+    try:
+        p = np.asarray(pred, dtype=float)
+        yy = np.asarray(y, dtype=float)
+        w = np.asarray(weights, dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("weighted binary inputs must be numeric arrays") from exc
+
+    if p.ndim != 1 or yy.ndim != 1 or w.ndim != 1:
+        raise ValueError("weighted binary inputs must be one-dimensional")
+    if p.size == 0 or p.shape != yy.shape or p.shape != w.shape:
+        raise ValueError("weighted binary inputs must have equal nonzero lengths")
+    if not np.isfinite(p).all() or np.any(p < 0.0) or np.any(p > 1.0):
+        raise ValueError("predicted probabilities must be finite and in [0, 1]")
+    if not np.isfinite(yy).all() or not np.isin(yy, (0.0, 1.0)).all():
+        raise ValueError("labels must be exact binary 0/1")
+    if not np.isfinite(w).all() or np.any(w <= 0.0):
+        raise ValueError("weights must be finite and strictly positive")
+    total = float(fsum(w.tolist()))
+    if not np.isfinite(total) or not total > 0.0:
+        raise ValueError("weight sum must be positive and finite")
+    return p, yy, w
+
+
+def weighted_binary_metrics(
+    pred: np.ndarray | list,
+    y: np.ndarray | list,
+    weights: np.ndarray | list,
+) -> dict[str, float]:
+    """Weighted Brier, base rate, base-rate Brier, and AUC.
+
+    Validates with strict_weighted_binary_inputs. Both label classes are
+    required. Brier and the label mean use np.average(..., weights=w);
+    base-rate Brier is mean * (1 - mean). AUC is
+    sklearn.metrics.roc_auc_score(..., sample_weight=w), imported lazily.
+    Every returned value is a finite float; otherwise ValueError.
+    """
+    p, yy, w = strict_weighted_binary_inputs(pred, y, weights)
+    if np.unique(yy).size != 2:
+        raise ValueError("AUC requires both label classes")
+
+    brier_score = float(np.average((p - yy) ** 2, weights=w))
+    base_rate = float(np.average(yy, weights=w))
+    base_rate_brier = float(base_rate * (1.0 - base_rate))
+    # Lazy sklearn import: this module must import without sklearn installed.
+    from sklearn.metrics import roc_auc_score
+
+    auc = float(roc_auc_score(yy, p, sample_weight=w))
+    out = {
+        "brier": brier_score,
+        "base_rate": base_rate,
+        "base_rate_brier": base_rate_brier,
+        "auc": auc,
+    }
+    if not all(np.isfinite(value) for value in out.values()):
+        raise ValueError("weighted binary metrics must be finite")
+    return out
+
+
 # ── reliability table ─────────────────────────────────────────────────────────
 
 def reliability_table(
@@ -232,7 +308,10 @@ def reliability_table(
     y : array-like of float
         Binary outcomes.
     weights : array-like of float or None
-        Uniqueness weights (from uniqueness_weights()). If None, uniform.
+        Uniqueness weights. If None, legacy uniform weights after dropping
+        non-finite rows. If supplied, validated by
+        strict_weighted_binary_inputs (no row is dropped; one class is
+        allowed). Invalid explicit weights raise ValueError.
     n_bins : int
         Number of bins.
     equal_mass : bool
@@ -244,50 +323,69 @@ def reliability_table(
         bin_lo, bin_hi: prediction range for the bin
         pred_mean: mean predicted probability in the bin
         emp_rate: weighted empirical outcome rate
-        n_eff: sum of weights (effective n)
+        n_eff: sum of weights (effective n). Explicit weights use math.fsum.
     Bins with zero weight are omitted.
-    """
-    pred = np.asarray(pred, dtype=float)
-    y = np.asarray(y, dtype=float)
-    if weights is None:
-        w = np.ones(len(pred), dtype=float)
-    else:
-        w = np.asarray(weights, dtype=float)
 
-    mask = np.isfinite(pred) & np.isfinite(y) & np.isfinite(w)
-    pred, y, w = pred[mask], y[mask], w[mask]
-    n = len(pred)
+    Notes
+    -----
+    Equal-mass edges remain the raw-row quantiles of the predicted
+    probabilities (``np.quantile`` on the row vector, ties collapsed by
+    ``np.unique``, then ``np.digitize``). That edge law is explicitly
+    diagnostic and unresolved for FS5: it is not a weighted-quantile
+    method and it does not define a per-bin threshold. Duplicating one
+    unit into equal-weight prints can move those edges. Tie-breaking and
+    bin assignment are unchanged. No ECE is computed here.
+    """
+    from math import fsum
+
+    if weights is None:
+        pred_arr = np.asarray(pred, dtype=float)
+        y_arr = np.asarray(y, dtype=float)
+        w = np.ones(len(pred_arr), dtype=float)
+        mask = np.isfinite(pred_arr) & np.isfinite(y_arr) & np.isfinite(w)
+        pred_arr, y_arr, w = pred_arr[mask], y_arr[mask], w[mask]
+        strict_weights = False
+    else:
+        pred_arr, y_arr, w = strict_weighted_binary_inputs(pred, y, weights)
+        strict_weights = True
+
+    n = len(pred_arr)
     if n == 0:
         return []
 
+    def _n_eff(weights_in_bin: np.ndarray) -> float:
+        if strict_weights:
+            return float(fsum(weights_in_bin.tolist()))
+        return float(weights_in_bin.sum())
+
     if equal_mass:
         quantiles = np.linspace(0.0, 1.0, n_bins + 1)
-        bin_edges = np.quantile(pred, quantiles)
+        bin_edges = np.quantile(pred_arr, quantiles)
         bin_edges = np.unique(bin_edges)
         if len(bin_edges) < 2:
             # Constant predictions — one bin
             return [{
-                "bin_lo": float(pred.min()),
-                "bin_hi": float(pred.max()),
-                "pred_mean": float(pred.mean()),
-                "emp_rate": float(np.average(y, weights=w)) if w.sum() > 0 else float("nan"),
-                "n_eff": float(w.sum()),
+                "bin_lo": float(pred_arr.min()),
+                "bin_hi": float(pred_arr.max()),
+                "pred_mean": float(pred_arr.mean()),
+                "emp_rate": float(np.average(y_arr, weights=w)) if w.sum() > 0 else float("nan"),
+                "n_eff": _n_eff(w),
             }]
-        bin_indices = np.digitize(pred, bin_edges[1:-1])
+        bin_indices = np.digitize(pred_arr, bin_edges[1:-1])
     else:
         bin_edges = np.linspace(0.0, 1.0, n_bins + 1)
-        bin_indices = np.digitize(pred, bin_edges[1:-1])
+        bin_indices = np.digitize(pred_arr, bin_edges[1:-1])
 
     rows: list[dict[str, Any]] = []
     unique_bins = np.unique(bin_indices)
     for b in unique_bins:
         mask_b = bin_indices == b
         w_b = w[mask_b]
-        w_sum = float(w_b.sum())
+        w_sum = _n_eff(w_b)
         if w_sum == 0:
             continue
-        p_b = pred[mask_b]
-        y_b = y[mask_b]
+        p_b = pred_arr[mask_b]
+        y_b = y_arr[mask_b]
         # Bin edges
         b_lo = float(p_b.min())
         b_hi = float(p_b.max())
@@ -438,6 +536,55 @@ def uniqueness_weights(
 
     return pd.Series(weights, name="uniqueness_weight")
 
+
+
+
+def uniqueness_weights_nyse_intervals(events_df: pd.DataFrame) -> pd.Series:
+    """FS-5 uniqueness over validated native, inclusive NYSE label intervals.
+
+    Preserve the registered effective-N quantity: each (fill session, root)
+    contributes its average inverse concurrency, distributed across its prints.
+    Boundary and population identity validation is shared with FS-5 geometry;
+    no horizon, missing date, or event-date approximation is permitted.
+    """
+    from lib.flow_score_geometry import GeometryError, canonical_intervals
+
+    intervals = canonical_intervals(events_df)
+    units: dict[tuple, tuple[int, int, list[str]]] = {}
+    for row in intervals.itertuples(index=False):
+        key = (row.fill_session, row.root.strip().upper())
+        start, end = int(row.fill_position), int(row.end_position)
+        if key in units:
+            prior_start, prior_end, members = units[key]
+            if (start, end) != (prior_start, prior_end):
+                raise GeometryError("uniqueness_unit_boundary_mismatch")
+            members.append(row.event_id)
+        else:
+            units[key] = (start, end, [row.event_id])
+
+    delta = np.zeros(int(intervals["end_position"].max()) + 2, dtype=np.int64)
+    for start, end, _members in units.values():
+        delta[start] += 1
+        delta[end + 1] -= 1
+    concurrency = np.cumsum(delta)
+    inverse = np.divide(
+        1.0, concurrency, out=np.zeros_like(concurrency, dtype=float),
+        where=concurrency > 0,
+    )
+    from math import fsum
+    by_id: dict[str, float] = {}
+    for start, end, members in units.values():
+        unit_weight = fsum(inverse[start : end + 1]) / (end - start + 1)
+        if not np.isfinite(unit_weight) or not 0 < unit_weight <= 1:
+            raise GeometryError("uniqueness_weight_invalid")
+        for event_id in members:
+            by_id[event_id] = unit_weight / len(members)
+    return pd.Series(
+        [by_id[event_id] for event_id in intervals["event_id"]],
+        index=intervals["event_id"].tolist(),
+        name="uniqueness_weight",
+        dtype=float,
+    )
 
 # ── artifact loader ───────────────────────────────────────────────────────────
 

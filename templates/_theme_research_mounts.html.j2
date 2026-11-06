@@ -1,0 +1,18 @@
+{#- templates/_theme_research_mounts.html.j2 — Theme Tracker theme-research aggregator.
+
+  ONE place that owns the per-vertical loop for theme-research mounts on the
+  Theme Tracker, mirroring _basket_intelligence_mounts.html.j2 on the basket
+  page. Each registered vertical whose anchor is a theme row on the page gets
+  one section, rendered by _theme_research_section.html.j2 from the
+  registration; `ignore missing` so an absent partial never breaks the
+  incumbent page. Empty list -> nothing renders. Emits no bytes of its own.
+
+  The loop lives HERE rather than inline in state_of_themes.html.j2 because
+  that page's last `endfor` is a load-bearing anchor: tests/
+  test_finance_entry_points.py locates the lanes loop with rfind on it. An
+  inline loop on the tracker moved that anchor past the finance include and
+  failed their ordering guard even though the invariant it protects still
+  held. Keeping the loop behind an include leaves the tracker's last `endfor`
+  the lanes loop, and the rendered bytes identical.
+-#}
+{% for tr_mount in theme_research_mounts or [] %}{% include "_theme_research_section.html.j2" ignore missing %}{% endfor %}

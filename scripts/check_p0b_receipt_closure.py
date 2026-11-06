@@ -9,9 +9,9 @@ tests/test_stock_dashboard_first_frame.py, and every fresh merge-ref inherits
 it. This guard is the GATE for that class.
 
 The pinned set is derived at runtime FROM the committed receipts: each
-mobile-layout*.json file's construction_inputs keys, loaded_assets keys, and
-verifier.path, plus rendered-fixture.json's recipe input paths and the
-fixture path the receipts bind. Template names are never hardcoded as the
+mobile-layout*.json file's construction_inputs keys, loaded_assets keys,
+verifier.path and font_pin.manifest.path, plus rendered-fixture.json's recipe
+input paths and the fixture path the receipts bind. Template names are never hardcoded as the
 live pin set.
 
 Given a diff file-list: if any pinned path changed without a same-diff change
@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -44,6 +45,22 @@ RECEIPT_GLOB = "mobile-layout*.json"
 FIXTURE_NAME = "rendered-fixture.json"
 RECEIPT_SCHEMA = "mastermind.stock_dashboard_mobile_layout.v1"
 FIXTURE_SCHEMA = "mastermind.stock_dashboard_rendered_fixture.v1"
+DEFAULT_VERIFIER = "scripts/verify_stock_dashboard_mobile_layout.cjs"
+# The verifier refuses to measure on any other Chromium build.
+CHROMIUM_PIN_RE = re.compile(r'^const CHROMIUM_PIN = "([^"]+)";$', re.MULTILINE)
+
+# Events whose plan legitimately publishes the planner's `null` token: the
+# main-role events in run_ci_pack.SUPPORTED_PLAN_ROLE_EVENTS (a main proof is a
+# full-suite plan with no changed-file list) and the base replay, which hands
+# its base-as-main child a `null` handle. There is no diff there, so this gate
+# has nothing to close; whole-tree receipt consistency is the receipt tests'
+# job (tests/test_stock_dashboard_first_frame.py). On every other event, above
+# all `pull_request`, whose plan must carry an exact inventory, `null` means
+# the planner failed, and the gate still refuses it. tests/test_ci_pack.py
+# pins this set to the planner's table.
+NO_DIFF_SUBJECT_EVENTS = frozenset(
+    {"workflow_dispatch", "workflow_run", "schedule", "base_replay"}
+)
 
 
 def _posix(path: Path, root: Path) -> str:
@@ -63,8 +80,29 @@ def _sparse_refusal(root: Path) -> str | None:
     return remedy_line(absent) if absent else None
 
 
-def parse_changed_paths(text: str) -> set[str]:
-    """Accept `git diff --name-only` output or a unified diff."""
+def parse_changed_paths(text: str, *, null_is_no_diff: bool = False) -> set[str]:
+    """Accept planner JSON, `git diff --name-only`, or a unified diff.
+
+    Semantic packs publish their authoritative changed-path list as a JSON
+    array through CI_CHANGED_FILES_FILE.  A configured planner sentinel
+    (`null`) or malformed JSON must REFUSE rather than degrade to a harmless
+    literal path and accidentally pass the closure gate.  The one exception is
+    `null_is_no_diff`, which the caller sets only for NO_DIFF_SUBJECT_EVENTS:
+    there `null` is the planner's documented full-suite token, not a failure.
+    """
+    stripped = text.strip()
+    if stripped == "null":
+        if null_is_no_diff:
+            return set()
+        raise ValueError("planner changed-file handle is null / unavailable")
+    if stripped.startswith(("[", "{")):
+        try:
+            parsed = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"malformed planner changed-file JSON: {exc}") from exc
+        if not isinstance(parsed, list) or not all(isinstance(path, str) for path in parsed):
+            raise ValueError("planner changed-file JSON must be an array of strings")
+        return {path for path in parsed if path}
     lines = text.splitlines()
     if any(line.startswith("diff --git ") for line in lines):
         paths: set[str] = set()
@@ -141,6 +179,74 @@ def fixture_recipe_inputs(fixture: dict | None) -> set[str]:
     return paths
 
 
+def font_pin_manifest(payload: dict) -> str | None:
+    font_pin = payload.get("font_pin")
+    if not isinstance(font_pin, dict):
+        return None
+    manifest = font_pin.get("manifest")
+    if isinstance(manifest, dict) and isinstance(manifest.get("path"), str):
+        return manifest["path"] or None
+    return None
+
+
+def verifier_chromium_pin(root: Path, verifier: str) -> str | None:
+    try:
+        text = (root / verifier).read_text(encoding="utf-8")
+    except OSError:
+        return None
+    match = CHROMIUM_PIN_RE.search(text)
+    return match.group(1) if match else None
+
+
+def describe_browser(browser: dict) -> str:
+    """One receipt's browser block as text: build, binary, Playwright, host."""
+    text = f"{browser.get('engine', '?')} {browser.get('version', '?')}"
+    extra = []
+    executable = browser.get("executable")
+    if isinstance(executable, dict) and executable.get("name"):
+        extra.append(f"{executable['name']} sha256 {executable.get('sha256', '?')}")
+    if browser.get("playwright"):
+        extra.append(f"Playwright {browser['playwright']}")
+    if browser.get("platform"):
+        extra.append(f"{browser['platform']}/{browser.get('arch', '?')}")
+    return f"{text} ({', '.join(extra)})" if extra else text
+
+
+def environment_hint(root: Path) -> str:
+    """Name the browser build and fonts a re-mint must reproduce."""
+    receipts = load_browser_receipts(root)
+    versions = sorted(
+        {
+            describe_browser(browser)
+            for _rel, payload in receipts
+            if isinstance(browser := payload.get("browser"), dict)
+        }
+    )
+    verifier = DEFAULT_VERIFIER
+    for _rel, payload in receipts:
+        v = payload.get("verifier")
+        if isinstance(v, dict) and isinstance(v.get("path"), str):
+            verifier = v["path"]
+    manifests = sorted({m for _rel, payload in receipts if (m := font_pin_manifest(payload))})
+    built = ", ".join(versions) or "the build the receipts record"
+    parts = [f"re-mint environment: the committed receipts were measured on {built}"]
+    pin = verifier_chromium_pin(root, verifier)
+    if pin:
+        parts.append(
+            f"{verifier} pins Chromium {pin}, its headless-shell binary, the "
+            "Playwright release and the host platform, and refuses anything else "
+            "(pass --browser with that build's chrome-headless-shell if Playwright "
+            "resolves a different one)"
+        )
+    if manifests:
+        parts.append(
+            f"it serves only the fonts committed in {', '.join(manifests)} and "
+            "refuses a receipt if any glyph falls back to a platform font "
+            "(regenerate the subsets with scripts/build_p0b_font_pin.py)"
+        )
+    return "; ".join(parts)
+
+
 def derive_pin_sets(root: Path) -> tuple[dict[str, set[str]], str | None]:
     """Map each receipt path to the paths it pins. Second value is a refuse reason."""
     receipts = load_browser_receipts(root)
@@ -164,6 +270,9 @@ def derive_pin_sets(root: Path) -> tuple[dict[str, set[str]], str | None]:
         verifier = payload.get("verifier")
         if isinstance(verifier, dict) and isinstance(verifier.get("path"), str):
             pins.add(verifier["path"])
+        manifest = font_pin_manifest(payload)
+        if manifest:
+            pins.add(manifest)
         fixture_row = payload.get("fixture_receipt")
         fixture_path = None
         if isinstance(fixture_row, dict) and isinstance(fixture_row.get("path"), str):
@@ -185,7 +294,7 @@ def derive_pin_sets(root: Path) -> tuple[dict[str, set[str]], str | None]:
 def remint_command(root: Path) -> str:
     """Name the remint recipe from the receipts themselves when possible."""
     receipts = load_browser_receipts(root)
-    verifier = "scripts/verify_stock_dashboard_mobile_layout.cjs"
+    verifier = DEFAULT_VERIFIER
     fixture = f"{EVIDENCE_DIR_REL}/{FIXTURE_NAME}"
     recipe = "scripts/render_stock_dashboard_fixture.py"
     historical_head = None
@@ -253,6 +362,11 @@ def run_selftest() -> int:
     ca_receipt = evidence / "mobile-layout-canada.json"
     fixture = evidence / FIXTURE_NAME
     pinned = "templates/zz-selftest.html.j2"
+    font_manifest = f"{EVIDENCE_DIR_REL}/inputs/browser-data/p0b-font-pin/font-pin.json"
+    (tmp / "scripts").mkdir()
+    (tmp / DEFAULT_VERIFIER).write_text(
+        'const CHROMIUM_PIN = "1.2.3.4";\n', encoding="utf-8"
+    )
     fixture.write_text(
         json.dumps(
             {
@@ -284,6 +398,8 @@ def run_selftest() -> int:
                     "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
                     "sha256": "d" * 64,
                 },
+                "browser": {"engine": "chromium", "version": "1.2.3.4"},
+                "font_pin": {"manifest": {"path": font_manifest, "sha256": "9" * 64}},
                 "fixture_receipt": {
                     "path": f"{EVIDENCE_DIR_REL}/{FIXTURE_NAME}",
                     "sha256": "e" * 64,
@@ -327,6 +443,17 @@ def run_selftest() -> int:
         print("selftest FAIL: pinned-path-only diff unexpectedly passed")
         return 1
 
+    # RED: a font-pin manifest edit moves glyph metrics, so it remints too.
+    if not evaluate({font_manifest}, pin_sets):
+        print("selftest FAIL: font-pin manifest change unexpectedly passed")
+        return 1
+
+    hint = environment_hint(tmp)
+    for needle in ("chromium 1.2.3.4", "pins Chromium 1.2.3.4", font_manifest):
+        if needle not in hint:
+            print(f"selftest FAIL: environment hint lacks {needle!r}: {hint}")
+            return 1
+
     # GREEN: pinned path plus every receipt that pins it (recipe inputs bind both).
     green = evaluate(
         {
@@ -344,6 +471,19 @@ def run_selftest() -> int:
     clean = evaluate({"engine/unrelated.py"}, pin_sets)
     if clean:
         print(f"selftest FAIL: unrelated path red: {clean}")
+        return 1
+
+    # The planner's `null` token: a main proof has no diff to close, and
+    # anything else still refuses it.
+    if parse_changed_paths("null\n", null_is_no_diff=True):
+        print("selftest FAIL: a main-role null handle produced changed paths")
+        return 1
+    try:
+        parse_changed_paths("null\n")
+    except ValueError:
+        pass
+    else:
+        print("selftest FAIL: a null handle passed without a main-role event")
         return 1
 
     print("check_p0b_receipt_closure selftest OK", flush=True)
@@ -365,6 +505,18 @@ def main(argv: list[str] | None = None) -> int:
         "--selftest",
         action="store_true",
         help="Run the built-in selftest and exit.",
+    )
+    parser.add_argument(
+        "--event",
+        default="",
+        help=(
+            "GitHub event that minted the changed-file handle (CI passes "
+            "$GITHUB_EVENT_NAME). Deliberately never read from the environment, "
+            "so a test run inside a CI job cannot inherit it. The planner's "
+            "`null` token is accepted only for: "
+            + ", ".join(sorted(NO_DIFF_SUBJECT_EVENTS))
+            + "."
+        ),
     )
     args = parser.parse_args(argv)
 
@@ -396,7 +548,24 @@ def main(argv: list[str] | None = None) -> int:
         print(f"::error title=p0b-receipt-closure::{refuse}", flush=True)
         return 2
 
-    changed = parse_changed_paths(diff_text)
+    null_is_no_diff = args.event in NO_DIFF_SUBJECT_EVENTS
+    try:
+        changed = parse_changed_paths(diff_text, null_is_no_diff=null_is_no_diff)
+    except ValueError as exc:
+        print(
+            f"::error title=p0b-receipt-closure::REFUSED: {exc} "
+            f"(event={args.event or 'unset'})",
+            flush=True,
+        )
+        return 2
+    if null_is_no_diff and diff_text.strip() == "null":
+        print(
+            f"::notice title=p0b-receipt-closure::{args.event} plan carries the "
+            "planner's null handle (full suite, no changed-file list): no diff "
+            "to close",
+            flush=True,
+        )
+        return 0
     findings = evaluate(changed, pin_sets)
     if not findings:
         return 0
@@ -405,6 +574,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"::error title=p0b-receipt-closure::{finding}", flush=True)
     print(
         f"::error title=p0b-receipt-closure::re-mint with: {hint}",
+        flush=True,
+    )
+    print(
+        f"::error title=p0b-receipt-closure::{environment_hint(root)}",
         flush=True,
     )
     return 1

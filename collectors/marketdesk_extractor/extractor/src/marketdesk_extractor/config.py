@@ -411,3 +411,16 @@ class Config:
 
     def api(self, path: str) -> str:
         return f"{self.base_url}/api/mobile/{path.lstrip('/')}"
+
+    def terms_consent_url(self) -> str:
+        """The overlay the authenticated app posts when T&Cs are updated.
+
+        Not under ``/api/mobile/``. Observed 2026-10-24: ``POST /terms/consent``
+        then a reload unblocks ``browse`` / ``provision`` while ``latest`` still
+        worked. Click handler: ``API.consent``.
+        """
+        return f"{self.base_url}/terms/consent"
+
+    def user_login_url(self) -> str:
+        """Firebase ID-token exchange that mints the MarketDesk ``A`` cookie."""
+        return f"{self.base_url}/api/user/login"

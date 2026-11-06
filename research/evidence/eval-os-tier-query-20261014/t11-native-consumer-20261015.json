@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-10-15T07:53:13.196784+00:00",
+  "origin": "https://www.mastermind-x.com",
+  "endpoint": "/api/brain/stream",
+  "browser_profile": "Chrome Person 1",
+  "browser_id": "3",
+  "tab_id": "1925922561",
+  "request_id": "64992.109",
+  "route": "instant/native-fact",
+  "model": "native-fact.v1",
+  "receipt_schema": "brain.native_fact_receipt.v1",
+  "field_id": "stage.current",
+  "registry_digest": "7dff09b790f9f789dfeed80781a7fb62bc138ad4bf801d81664d471c4508d4cf",
+  "fact_fingerprint": "c52929913a9b77ecdd877ccdeb235ab027caf3ffdda4f96c3f21628633cf38ff",
+  "source_id": "stage_analysis.screener",
+  "source_license_class": "internal_derived",
+  "request_scoped_no_value_cache": true,
+  "authenticated_UI_observed": true,
+  "semantic_fingerprint_match": true,
+  "canonical_renderer_matches_API_clause": true,
+  "API_clause_matches_visible_DOM": true,
+  "facts_checked": 1,
+  "rights_scope": "Normal authenticated product request only; no persistent raw value cache or new rights grant. This record retains references and verdicts, not the fact value or answer.",
+  "limits": [
+    "One current native deterministic answer, not arbitrary model narrative verification.",
+    "Not A1 source/merge/deployment or postrelease owner progression proof.",
+    "No outcome reads, historical value reconstruction, clock reset or numerical validation badge.",
+    "Source of the installed runtime was not independently bound by this observation."
+  ],
+  "local_visual_evidence": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/t11-native-consumer-20261015.jpg",
+  "retention_note": "This JSON retains only references and verification verdicts. A local screenshot retains the observed UI for review; it is not a reusable fact cache or rights grant."
+}

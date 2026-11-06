@@ -1502,7 +1502,7 @@ def test_full_width_entry_event_round_trips_through_the_reader(
 
 _D5_EPISODE_GENERATION = "peg:" + "a" * 64
 _D5_ANCHOR = {
-    "kind": "reset_low",
+    "kind": "turn_watch_reset_low",
     "time": "2026-07-30T20:00:00Z",
     "price": "100.0000",
     "basis": "turn_watch.reset_low",

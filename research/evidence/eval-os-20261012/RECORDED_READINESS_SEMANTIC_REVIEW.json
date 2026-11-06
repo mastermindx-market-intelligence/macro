@@ -1,0 +1,44 @@
+{
+  "schema": "eval_os.science_semantic_review.v1",
+  "status": "SOURCE_SEMANTICS_ACCEPTED_PRODUCT_TEST_RECEIPT_PENDING",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "head": "aacc81a73277eb6c6d1ae5445b404ddda90200f9",
+  "source_files": {
+    "engine/qledger.py": {
+      "sha256": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00",
+      "size_bytes": 258090
+    },
+    "scripts/grade_qledger.py": {
+      "sha256": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+      "size_bytes": 53641
+    },
+    "admin/intelligence_os.py": {
+      "sha256": "26f6f82198cd165220c14be5504e5a0a7f68f4c9b6c641ab7b2734892c40aa31",
+      "size_bytes": 48996
+    },
+    "admin/evidence_status.py": {
+      "sha256": "15992ce464e0a719a3e7a00f4b7a58ba2d301d74130fe5bf3b74f2a1e219ec21",
+      "size_bytes": 17132
+    }
+  },
+  "blocking_findings": [],
+  "actual_helper_location": "scripts/grade_qledger.py:219 readiness_source_generation; engine/qledger.py change is deferred public config compatibility alias only",
+  "reviewed_contracts": {
+    "recorded_vs_current": "Consumer always current_source_qualification unavailable/all_inputs_qualification unavailable; per-family read_status partial even matching named generation; no current Ready/Validated inference.",
+    "native_comparison": "uses_native_claims inspects existing binding without source read; native named comparison deferred; no readiness computation or extra native corpus materialization from snapshot consumer.",
+    "legacy_identity": "Metadata is explicitly host_local_metadata with host/root digest and stat dev/ino/size/mtime/ctime, not portable content identity or market freshness.",
+    "publisher_coherence": "Capture generation and artifact identity before compute; compare after; before-publication artifact guard; movement returns retained_previous before writes/alerts. Scope is observed before/after generation, not a cross-process transaction guarantee.",
+    "baseline_binding": "Only consumed placebo_magnitude/by_family subtrees bound in duel_baseline_digest; adding readiness/receipt does not self-invalidate.",
+    "metrics": "Snapshot readiness rows preserved; projection retains baseline/cohort labels, null/zero, clock partitions and refused/rowless fields. No numerical/clock method edits.",
+    "receipt_scope": "Named ledger metadata/config/clocks/owner-code only. quote_prices/price_cache/calendar_data/market_freshness/task_version_cohort excluded.",
+    "unversioned": "Existing snapshot remains available as recorded support with unversioned/current-unqualified context. Wrong schema/digest/source movement cannot promote authority.",
+    "resources": "Regular-file lstat/nonblock/nofollow/fstat checks and bounded reads observed in receipt dependencies and snapshot reader."
+  },
+  "limits": [
+    "No current all-input/quote-cache identity claimed.",
+    "No whole-A1 bounded-memory claim; T1 input path remains separately governed.",
+    "No production, API/UI integration, natural-run or CI result proved by this review."
+  ],
+  "tests": "Product owns existing 41366 test operation; no suites rerun or success inferred.",
+  "source_edits": false
+}

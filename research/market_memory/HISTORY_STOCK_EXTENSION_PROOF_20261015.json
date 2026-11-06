@@ -1,0 +1,116 @@
+{
+  "capture": {
+    "attempted": 47,
+    "bytes": 43226,
+    "errors": [],
+    "failed": 0,
+    "new": 47,
+    "ok": 47,
+    "row_hints": 188
+  },
+  "checks": [
+    {
+      "MU_present": true,
+      "date": "2022-09-13",
+      "default_outcomes_opened": false,
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "response_sha256": "e06b5548a7ae26ab3d1308ebaece0d2b3e7a880169c26778f4c375afcc9b6510",
+      "rows": 49,
+      "source_ref_count": 51
+    },
+    {
+      "MU_present": true,
+      "date": "2026-10-09",
+      "default_outcomes_opened": false,
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "response_sha256": "8c03363a913f90076d5a1691f4960a30b72c49e705f90fef0d84e17ef726ba8a",
+      "rows": 48,
+      "source_ref_count": 51
+    },
+    {
+      "MU_present": false,
+      "date": "2026-10-12",
+      "default_outcomes_opened": false,
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "response_sha256": "403902a334810e3c7341a9b17318ad5300122fa1efc148bb8f210de5e80abc4a",
+      "rows": 47,
+      "source_ref_count": 51
+    },
+    {
+      "MU_present": false,
+      "date": "2026-10-13",
+      "default_outcomes_opened": false,
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "response_sha256": "053d1edbe8358f571a52e22470855522bdfd05d420d24ae7a0dae3b1f45aa191",
+      "rows": 47,
+      "source_ref_count": 51
+    },
+    {
+      "MU_present": false,
+      "date": "2026-10-14",
+      "default_outcomes_opened": false,
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "response_sha256": "79ff6c90582d35d06d11035f814957a23a9209fc25927a62a59073c4442ffb97",
+      "rows": 47,
+      "source_ref_count": 51
+    }
+  ],
+  "extension": {
+    "added_state_rows": 141,
+    "artifact_id": "mmhist_6f95bc6ae2d958d42023fea550820a9c919e029bbbd17d2fd61deb01d8bc2d43",
+    "data_bytes": 50940253,
+    "files": 68,
+    "first_added_observed_date": "2026-10-12",
+    "last_observed_date": "2026-10-14",
+    "manifest_bytes": 90350,
+    "manifest_sha256": "ccaff1599545c58d2f9e1bfcba81bd1088c65267b400f773fcd6f7d2f553e709",
+    "mode": "RETROSPECTIVE_EXPLORATORY",
+    "outcome_rows": 345173,
+    "outcomes_policy": "separate_new_generation; original_outcome_files_not_read_or_changed",
+    "output_created": true,
+    "parent_artifact_id": "mmhist_f97006c665c3e9a4fca8240767f8203f179eaa305f62338b6788839aa3b1e397",
+    "parent_last_observed_date": "2026-10-09",
+    "parent_manifest_sha256": "43da330274bb1728e627d59781afea0a158139bccfa782d08e92a9b97d81bcec",
+    "parent_states_sha256": "45636e8ab0952cfa5db8c47b98078286ae976dd155c875efcf4352fa7b417551",
+    "pit_backtest_eligible": false,
+    "preserved_state_rows": 345032,
+    "schema": "market_memory.history_extension.v1",
+    "state_rows": 345173,
+    "status": "EXTENDED"
+  },
+  "kept_existing_51_source_universe": true,
+  "macro_refreshed": false,
+  "old_manifest_and_all_68_files_unchanged": true,
+  "persistent_scheduling_hold_preserved": true,
+  "schema": "market_memory.stock_extension_proof.v1",
+  "source_disposition": {
+    "eligible_new_capture_symbols": 47,
+    "ended_sources": [
+      "TWTR",
+      "ATVI",
+      "XLNX"
+    ],
+    "existing_MU_history": "retained unchanged; no new dates until a separately qualified revision study",
+    "held_new_capture": {
+      "changed_fields": [
+        "close_tradj",
+        "high_tradj",
+        "low_tradj",
+        "open_tradj"
+      ],
+      "market_date": "2026-10-09",
+      "new_capture_ref": [
+        "2026-10-15",
+        "408273e007f80ae8f1441aa6ea369344d3de15615fb848757fe52103b37c08eb"
+      ],
+      "reason": "new adjusted OHLC values conflict with the retained old source; no automatic revision replacement",
+      "vendor_symbol": "MU"
+    },
+    "new_provider_requests_for_repair": 0,
+    "next_request_sha256": "ed22dc7de00dddad142cfe956816169bbc63a9e9fe5bba3a6653c5c2c27837ef",
+    "original_extension": "REFUSED_BEFORE_OUTPUT; original next-request and error retained",
+    "original_selected_universe_unchanged": true,
+    "output_effect": "NONE; destination absent",
+    "schema": "market_memory.stock_tail_source_disposition.v1"
+  }
+}

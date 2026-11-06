@@ -6,6 +6,7 @@ idempotency is a real second-call proof, not a static fixture.
 from __future__ import annotations
 
 import json
+import re
 import urllib.error
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -16,6 +17,27 @@ from engine import recurring_briefs as rb
 from scripts import build_recurring_briefs as entry
 
 ROOT = Path(__file__).resolve().parents[1]
+
+_CJK_RE = re.compile(r"[一-鿿]")
+
+
+def _assert_real_zh_from_block(sentences_zh: list[str], artifact: dict) -> None:
+    """Every weekly ``sentence_zh`` is Chinese text and at least one is the
+    artifact's own.
+
+    The earlier form pinned three words of one week's zh block (收益率 /
+    美联储 / 格局变化). The 2026-09-23 weekly bake published a real zh block
+    carrying none of them and turned both callers red with no code change.
+    The contract is CJK text that the published ``zh`` block actually
+    carries, never a particular week's vocabulary.
+    """
+    zh_blob = json.dumps(artifact.get("zh") or {}, ensure_ascii=False)
+    assert all(z and _CJK_RE.search(z) for z in sentences_zh), (
+        f"weekly sentence_zh must be real Chinese; got {sentences_zh!r}"
+    )
+    assert any(z in zh_blob for z in sentences_zh), (
+        f"weekly sentence_zh must come from the published zh block; got {sentences_zh!r}"
+    )
 
 SUB_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 THESIS_ID = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
@@ -569,26 +591,29 @@ def test_weekly_artifact_production_named_thesis_is_ready_red_first():
     )
 
 
-def test_weekly_body_draws_real_zh_from_published_block():
-    """H3 / BLOCKER 3: ``sentence_zh`` must be real Chinese from the weekly
-    ``zh`` block — the production measurement fed an English ``sentence_zh``
-    with a ``（翻译待补）`` marker for 11/11 weekly rows.
+@pytest.mark.parametrize("watch_shape", ["record", "string"])
+def test_weekly_body_draws_real_zh_from_published_block(watch_shape):
+    """H3: complete published translations must survive every narrative field.
+
+    Use a complete, deterministic source here. A new weekly bake may contain
+    null translations; the separate source-pair test verifies those honest gaps.
     """
+    artifact = _weekly_brief(include_zh_block=True)
+    if watch_shape == "string":
+        artifact["watch_items"] = [artifact["watch_items"][0]["note"]]
     body = rb.compose_body(
-        _thesis_target(tickers=("AAPL",)),
-        _production_weekly(),
-        monitors=[],
+        _thesis_target(tickers=("AAPL",)), artifact, monitors=[],
     )
-    sentences_zh = [row["sentence_zh"] for row in body["market_read"]]
-    assert sentences_zh, "weekly body must have sentences"
-    joined = " ".join(sentences_zh)
-    assert "（翻译待补）" not in joined, (
-        "weekly sentence_zh must not carry the translation-pending marker "
-        "(the artifact publishes a real zh block)"
-    )
-    assert any("收益率" in z or "美联储" in z or "格局变化" in z for z in sentences_zh), (
-        "weekly sentence_zh must contain real Chinese from the zh block"
-    )
+    actual = {row["sentence_en"]: row["sentence_zh"] for row in body["market_read"]}
+    assert actual == {
+        "The week's tape stayed inside last week's range.": "本周行情维持在上一周区间内运行。",
+        "A quiet week for the names we follow.": "一周内我们关注的个股保持在区间内，节奏平稳。",
+        "Liquidity stayed supportive.": "流动性仍偏支持。",
+        "Apple stayed inside its range all week.": "苹果整周保持在区间内。",
+    }
+    sentences_zh = list(actual.values())
+    assert all("（翻译待补）" not in sentence for sentence in sentences_zh)
+    _assert_real_zh_from_block(sentences_zh, artifact)
 
 
 def test_daily_body_uses_only_situation_not_evidence():
@@ -977,23 +1002,53 @@ def test_user_facing_strings_reject_production_daily_slugs():
 
 
 def test_user_facing_strings_reject_translation_pending_for_weekly():
-    """Anti-mask H3: weekly sentences must NOT carry the
-    ``（翻译待补）`` marker when the artifact publishes a ``zh`` block.
+    """Published translations must be exact; an absent row must remain a gap.
+
+    The 2026-10-17 artifact has a real zh block and four null watch translations.
+    Block presence alone cannot promise complete translation coverage. Keep the
+    real committed artifact in this check without turning its changing coverage
+    into a code regression or treating the Chinese pending marker as a translation.
     """
-    body = rb.compose_body(
-        _thesis_target(tickers=("AAPL",)),
-        _production_weekly(),
-        monitors=[],
+    from itertools import zip_longest
+
+    artifact = _production_weekly()
+    zh = artifact.get("zh") or {}
+    pairs = [(artifact.get(field), zh.get(field)) for field in ("summary", "regime_read")]
+    for field in ("tldr", "watch_items"):
+        pairs.extend(zip_longest(artifact.get(field) or [], zh.get(field) or []))
+    expected = {}
+    for en, translation in pairs:
+        if isinstance(en, dict):
+            en = en.get("note") or en.get("sentence") or en.get("text")
+        if not isinstance(en, str) or not en.strip():
+            continue
+        en = en.strip()
+        translated = translation.strip() if isinstance(translation, str) else ""
+        expected.setdefault(en, translated or f"{en}（翻译待补）")
+    assert expected, "published weekly fixture must contain narrative text"
+    rows = rb.extract_market_read(artifact, set())
+    actual = {row["sentence_en"]: row["sentence_zh"] for row in rows if row["section"] == "week"}
+    assert actual == expected
+
+
+@pytest.mark.parametrize("watch_translations", [
+    [],
+    [None, "第二项观察。"],
+    ["", "第二项观察。"],
+    ["   ", "第二项观察。"],
+])
+def test_weekly_missing_translation_preserves_later_pairs(watch_translations):
+    """A missing first translation must not borrow or shift the second one."""
+    artifact = _weekly_brief(include_zh_block=True)
+    artifact["watch_items"] = ["First watch point.", "Second watch point."]
+    artifact["zh"]["watch_items"] = watch_translations
+    body = rb.compose_body(_thesis_target(), artifact, monitors=[])
+    actual = {row["sentence_en"]: row["sentence_zh"] for row in body["market_read"]}
+    assert actual["First watch point."] == "First watch point.（翻译待补）"
+    assert actual["Second watch point."] == (
+        "第二项观察。" if watch_translations else "Second watch point.（翻译待补）"
     )
-    sentences_zh = [row["sentence_zh"] or "" for row in body["market_read"]]
-    joined = " ".join(sentences_zh)
-    assert "（翻译待补）" not in joined, (
-        f"weekly sentence_zh must be real Chinese; got {joined!r}"
-    )
-    # And at least one sentence must carry real Chinese from the artifact.
-    assert any("收益率" in z or "美联储" in z or "格局变化" in z for z in sentences_zh), (
-        f"weekly sentence_zh must contain real Chinese from the zh block; got {sentences_zh!r}"
-    )
+    assert actual["Liquidity stayed supportive."] == "流动性仍偏支持。"
 
 
 # ---------------------------------------------------------------------------

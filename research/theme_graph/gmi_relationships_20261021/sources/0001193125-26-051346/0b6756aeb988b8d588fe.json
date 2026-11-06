@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-13T21:06:57Z",
+ "accession": "0001193125-26-051346",
+ "cik": "0001122904",
+ "doc_byte_length": 4517302,
+ "doc_sha256": "28a777267657769e83ca739e63a51b90f84ab9192151617a62582bd8a1943a99",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ntgr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2057025,
+  "byte_start": 2055811,
+  "normalized": "As of December 31, 2024, Best Buy, Inc. and affiliates and Amazon and affiliates each accounted for approximately 19% of the Company’s total accounts receivable.",
+  "normalized_sha256": "08fe02715b03c8685f839f9f5791739862d04de3d7e6e23c5d41a6fac09367b8",
+  "raw": " As of </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">December 31, 2024</span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">, Best Buy, Inc. and affiliates and Amazon and affiliates each accounted for approximately </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_c4e00998-7817-4e2a-9b0e-2cc3a91482b4\" contextRef=\"C_f7a5538a-41da-4fe5-a07b-576e086c71c8\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\"><ix:nonFraction id=\"F_ac057b22-5a2a-4a6e-854c-b87f431c30b7\" contextRef=\"C_423a0f50-6b15-4434-9476-7be47becfeff\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">19</ix:nonFraction></ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% of the Company&#8217;s total accounts receivable.",
+  "raw_sha256": "0b6756aeb988b8d588fe0a149e73f1b079fdc4efa2db960cc84f06a6cc961731"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1122904/000119312526051346/ntgr-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 86048,
+   "byte_start": 85354,
+   "context_ref": "C_f7a5538a-41da-4fe5-a07b-576e086c71c8",
+   "raw": "<xbrli:context id=\"C_f7a5538a-41da-4fe5-a07b-576e086c71c8\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001122904</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">ntgr:AmazonMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "e35620560ed139cc1e81ba557b9a73a3fc2703721474eebc5d744aa257402799"
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-24T06:43:37.593594+00:00",
+  "base": "0aa0e21cbd832f754f1a07a8c2a847b9ad56ea68",
+  "failure": "Original400653 pack0 recorder comparison crosses independent evaluated_at second; exact-base timeout/descendantUNKNOWN classification preserved.",
+  "reproduction": "One deterministic RED with test-only advancing clock; exact status and byte-body assertions retained.",
+  "repair": "Pin the existing real health evaluator now argument only in recorder-isolation test. Production clocks, health implementation, SLOs, recorder and all assertions unchanged.",
+  "affected_result": "26 latency tests PASS under advancing-clock reproduction plugin; no hosted reclassification or rerun.",
+  "reuse": "357 earlier runtime/3CI controls/29closures/packing retained; only existing test body changed, no new imports or dependencies."
+}

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:45:35Z",
+ "accession": "0001801368-26-000008",
+ "cik": "0001801368",
+ "doc_byte_length": 3138683,
+ "doc_sha256": "5a886ef2e336b6b374b630f95ccc340e0abb6f4d652c6e0d313897d17e4f4048",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mp-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 342781,
+  "byte_start": 342443,
+  "normalized": "In February 2023, the Company entered into a distributorship agreement (the “Distribution Agreement”) with Sumitomo Corporation of Americas (“Sumitomo”), under which Sumitomo serves as the exclusive distributor of the NdPr oxide and NdPr metal produced by the Company to Japanese customers through the end of 2030.",
+  "normalized_sha256": "7925fd862bdf0643e2e18eb52be8eb6f51e535ecc2fd795518b45c53f1da644e",
+  "raw": "In February 2023, the Company entered into a distributorship agreement (the &#8220;Distribution Agreement&#8221;) with Sumitomo Corporation of Americas (&#8220;Sumitomo&#8221;), under which Sumitomo serves as the exclusive distributor of the NdPr oxide and NdPr metal produced by the Company to Japanese customers through the end of 2030.",
+  "raw_sha256": "9e9a104a2780478d0742ed9d5960f872279e2a3d458947f0b98535ce8d5d6cc9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1801368/000180136826000008/mp-20251231.htm",
+ "xbrl_contexts": []
+}

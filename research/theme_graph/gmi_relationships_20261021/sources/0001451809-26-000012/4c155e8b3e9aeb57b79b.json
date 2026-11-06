@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-11T21:06:57Z",
+ "accession": "0001451809-26-000012",
+ "cik": "0001451809",
+ "doc_byte_length": 1797085,
+ "doc_sha256": "568771611c495d5ee81c5aa62e4061177df08c685c30ad77b993be6c0a20008b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sitm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 358301,
+  "byte_start": 357682,
+  "normalized": "Many major components, product equipment items, engineered materials, and raw materials, which are procured or subcontracted by our third-party suppliers for manufacturing of our products are procured or subcontracted on a single or sole-source basis. Except for our agreement with Bosch for MEMS wafers, we do not have any long-term supply agreements with any of our other manufacturing suppliers. These third-party manufacturers often serve customers that are larger than us or require a greater portion of their services, which may decrease our relative importance and negotiating leverage with these third parties.",
+  "normalized_sha256": "d224a8cd9ed53669410e70ffa13ca8ec90449bae990bd7b850fa647567fb3bb7",
+  "raw": " Many major components, product equipment items, engineered materials, and raw materials, which are procured or subcontracted by our third-party suppliers for manufacturing of our products are procured or subcontracted on a single or sole-source basis. Except for our agreement with Bosch for MEMS wafers, we do not have any long-term supply agreements with any of our other manufacturing suppliers. These third-party manufacturers often serve customers that are larger than us or require a greater portion of their services, which may decrease our relative importance and negotiating leverage with these third parties.",
+  "raw_sha256": "4c155e8b3e9aeb57b79bc86e4e33b1a1fff234368f860d6be0a1fc67c3d749c6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1451809/000145180926000012/sitm-20251231.htm",
+ "xbrl_contexts": []
+}

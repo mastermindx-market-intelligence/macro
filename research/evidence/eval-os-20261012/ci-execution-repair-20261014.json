@@ -1,0 +1,47 @@
+{
+  "schema": "eval_os.ci_execution_repair.v1",
+  "source_parent": "30c61c5c838b63730cc5ef6c82f9f3b106c5b6f0",
+  "failed_run": 38490118984,
+  "observed_failures": [
+    "A1 missing jsonschema",
+    "A1 missing markupsafe",
+    "workstream narrative inside YAML envelope"
+  ],
+  "repair": [
+    "declare jsonschema and markupsafe in existing A1 install step",
+    "move unchanged progress narrative below frontmatter; preserve record metadata"
+  ],
+  "no_behavior_assertion_or_law_change": true,
+  "existing_jobs_preserved": 300,
+  "isolated_qualification": {
+    "python": "3.12.13",
+    "system_site_packages": false,
+    "counts": {
+      "tests": 373,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "seconds": 196.404,
+    "node": "v26.5.0; hosted prior Node20.20.2 passed renderer checks",
+    "artifact_sha256": {
+      "a1-isolated-20261014.xml": "6b6b33e84b43d550d44230fbd78b534d60512b601fda5b4e6b3a21729e9c6185",
+      "a1-isolated-20261014.txt": "4a32a4e3738d7fb75bce214714a88e57e665a73a8c6ef466457bc3c3d9bf19bd",
+      "a1-isolated-packages.txt": "7342980124b0eadf6f4a1992870e390ff1e87b8e1e2c48e0caefb21d2775c5a4",
+      "release-decision-approved.json": "f3e6cd21f7e7145b3f0bd8de23416ae1cd5ef1925efc8bbc0589815f5b6c61ec"
+    }
+  },
+  "agentos_validation": {
+    "records": 1732,
+    "errors": 0,
+    "warnings": 164,
+    "raw_sha256": "a2c6adcb1c5f2570ec302e90f4c7bd8cae08e2ea3865fc2d882e017d1a4c53b4",
+    "warnings_scope": "includes inherited/sparse phantom path and overdue warnings; no law weakening"
+  },
+  "raw_failed_ci_sha256": "044f55288a073654558e9df9ef63ff8d8d9cfa9b8654b489215582b4d4d281f8",
+  "authority": "Chairman explicitly released hold and authorized repo controller with normal base updates/freshchecks and autonomous deployment/prodverification",
+  "release_comment": "https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6158644348",
+  "hosted_requalification_required": true,
+  "production_proven": false,
+  "programme_complete": false
+}

@@ -1,0 +1,24 @@
+{
+  "started_utc": "2026-10-21T13:07:50.417587+00:00",
+  "protocol_sha256": "f14d0a35e4254ebe5f54ab5be035c7b16e987b4428c2a6baec8239dffa2eecfc",
+  "code_sha256": "b8e9b7f317739e3b3f3c2a1adffad0d85da9546abd48925f01ce233f9aa7e9ab",
+  "native_sha256": "2b6f09e37e92c9791159941be2f8e0d0260b857d820e266f315f32a5c0cedfe6",
+  "manifest_sha256": "f7677fffb9d431797d75d5709bfede909b217c3642aaae00e05c43122ee8c5e3",
+  "seed": 20261021,
+  "new_parameter_grid": false,
+  "completed_utc": "2026-10-21T13:08:33.452880+00:00",
+  "defensive_complete_events": 1872,
+  "sector_complete_events": 104,
+  "sector_all_signals": 108,
+  "portfolio_policies_scenarios": 51,
+  "archive_parity": {
+    "new_events": 1872,
+    "archived_events": 1872,
+    "matched_dates": 1872,
+    "new_only": 0,
+    "old_only": 0,
+    "cell_mismatches": 0,
+    "max_abs_return_difference": 1.13528735240509e-06
+  },
+  "interpretation": "exploratory exposed history; no production qualification"
+}

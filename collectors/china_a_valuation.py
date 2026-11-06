@@ -61,6 +61,7 @@ class ChinaAValuationAdapter(Adapter):
 
     name = "china_a_valuation"
     group = "china_a_val"
+    session_calendar = "CN"  # observation dates follow the cash/Connect session
     stale_after_days = 4   # daily trading-day series; tolerate weekends/holidays
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
