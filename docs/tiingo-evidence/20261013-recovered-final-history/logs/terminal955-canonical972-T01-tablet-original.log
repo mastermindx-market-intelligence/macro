@@ -1,0 +1,26 @@
+[warmup] /terminal?symbol=NVDA → 200 in 69ms
+[warmup] /options → 200 in 121ms
+[warmup] /portfolio → 200 in 54ms
+[warmup] /alerts → 200 in 62ms
+[warmup] /analysis → 200 in 107ms
+[warmup] /discover → 200 in 72ms
+[warmup] /admin → 200 in 44ms
+[warmup] /embed/chart?symbol=NVDA → 200 in 37ms
+[warmup] /login → 200 in 53ms
+[warmup] /reset-password → 200 in 58ms
+[warmup] /api/me → 200 in 55ms
+[warmup] /api/watchlist → 200 in 27ms
+[warmup] /api/layouts → 200 in 27ms
+[warmup] /api/watchlist/annotations → 409 in 22ms
+[warmup] 14 routes compiled in 1s
+
+Running 1 test using 1 worker
+
+
+(node:33347) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/1] [tablet] › e2e/pine-htf-temporal.spec.ts:401:7 › T01 — Pine higher-timeframe values are published only after the period is confirmed › editor → chart → replay → input → timeframe keeps request.security causal
+
+[WebServer] [analyticsEvents] SUPABASE_SERVICE_ROLE_KEY absent — events held in memory only (dev mode)
+  1 passed (58.7s)

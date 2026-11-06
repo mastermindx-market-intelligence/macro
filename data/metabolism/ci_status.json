@@ -1,49 +1,31 @@
 {
-  "ts": "2026-10-10T18:55:31+00:00",
-  "main_sha": "3b7651313235b367c1d7451516fba1c8a7f58e9d",
+  "ts": "2026-11-06T00:04:40+00:00",
+  "main_sha": "aa95b0d1d204dc9fd958afbe22e4be3ed647d806",
   "red_required": [
     {
-      "name": "free-content-estate",
-      "conclusion": "failure",
+      "name": "sweep",
+      "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38052553931/job/114214442325"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38052553931/job/114214442315"
-    },
-    {
-      "name": "tier-gate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38052553931/job/114214442290"
-    },
-    {
-      "name": "contract-drift",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38052553931/job/114214442230"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/42099261121/job/127497423932"
     },
     {
       "name": "template-site-sync",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38052553931/job/114214442208"
-    },
-    {
-      "name": "immune",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38052323852/job/114213766050"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/42099061486/job/127496744613"
+    },
+    {
+      "name": "rebuild",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/42099034826/job/127496654185"
     }
   ],
   "green": false,
-  "consecutive_failures": 219,
+  "consecutive_failures": 248,
   "sensed_shas": [
-    "3b7651313235b367c1d7451516fba1c8a7f58e9d",
-    "035a9c19ce66aeda59167bec5246d3a66d5a264c"
+    "aa95b0d1d204dc9fd958afbe22e4be3ed647d806",
+    "776f2cdce986310152bb6842412d0d2840debb9d"
   ],
   "heartbeat_degraded": false
 }

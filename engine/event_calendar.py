@@ -46,11 +46,21 @@ log = logging.getLogger(__name__)
 # --------------------------------------------------------------------------- #
 # static schedules — refresh ~annually (FRED override keeps them honest in CI)
 # --------------------------------------------------------------------------- #
-# Fed-published 2026 FOMC decision dates. SEP/dot-plot meetings are Mar/Jun/Sep/Dec.
+# Fed-published FOMC decision dates, CY2026 + CY2027. SEP/dot-plot meetings are
+# Mar/Jun/Sep/Dec. Source: Federal Reserve, "Meeting calendars and information",
+# https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm (2027 rows read
+# 2026-10-14). Each meeting is two days; the DECISION day is the second. The Fed
+# marks every date tentative until confirmed at the meeting immediately preceding
+# it. Coverage ends at the last row: a later date is uncovered, never inferred.
+# engine/marketing/fomc_statements.py keeps a fallback copy of these dates pinned
+# EQUAL to this list (tests/test_marketing_fomc_desk.py) — a refresh updates both.
 _FOMC: list[tuple[str, bool]] = [
     ("2026-01-28", False), ("2026-03-18", True), ("2026-04-29", False),
     ("2026-06-17", True),  ("2026-07-29", False), ("2026-09-16", True),
     ("2026-10-28", False), ("2026-12-09", True),
+    ("2027-01-27", False), ("2027-03-17", True), ("2027-04-28", False),
+    ("2027-06-09", True),  ("2027-07-28", False), ("2027-09-15", True),
+    ("2027-10-27", False), ("2027-12-08", True),
 ]
 
 # Authoritative CY2026 release days (month -> day-of-month), transcribed from the
