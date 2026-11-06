@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-10-14T14:31:27.325154+00:00",
+  "base_main": "29e383bc0ded2c3d3dae819fd5b7647ab6fea229",
+  "current_main_pin": "190311584167a164d9a78a390071b19fcb4b5382",
+  "files": {
+    ".github/workflows/government-revenue-live.yml": {
+      "main_sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+      "incorporated_main_sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+      "upstream_unchanged": true,
+      "same_as_frozen_branch": false
+    },
+    ".github/workflows/daily.yml": {
+      "main_sha256": "89c1d9a77c7213366a597ffa4d96568dc72d9b7dce818d911a4e3719485a7bd7",
+      "incorporated_main_sha256": "89c1d9a77c7213366a597ffa4d96568dc72d9b7dce818d911a4e3719485a7bd7",
+      "upstream_unchanged": true,
+      "same_as_frozen_branch": false
+    },
+    ".github/workflows/fms-acquire.yml": {
+      "main_sha256": "88b395b0e200a9dee8bd93a66560eef036ff7c618892dd78598aab675cb0ffe0",
+      "incorporated_main_sha256": "88b395b0e200a9dee8bd93a66560eef036ff7c618892dd78598aab675cb0ffe0",
+      "upstream_unchanged": true,
+      "same_as_frozen_branch": false
+    }
+  },
+  "unmerged_new_helpers": "govrev_publisher_preflight.py and govrev_candidate_proof.py return404 on main because owned additions in PR9066; not an upstream deletion",
+  "no_source_change": true
+}

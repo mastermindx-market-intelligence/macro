@@ -1,0 +1,100 @@
+{
+ "stage": "absence",
+ "scan_root": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/quant-staging-20261008/_base",
+ "scanned_dirs": [
+  "engine",
+  "scripts",
+  "tests"
+ ],
+ "n_py_files": 6384,
+ "manifest_sha256": "6985819c71b76f7c2b5aaf2cb82f2bf381446ffe114170a4f95f1921a6f7f975",
+ "patterns": [
+  "breeden",
+  "litzenberger",
+  "risk[-_ ]?neutral[-_ ]?(density|distribution|pdf)",
+  "state[-_ ]?price[-_ ]?density",
+  "\\brnd\\b",
+  "rn[-_]density",
+  "tail[-_ ]density",
+  "implied[-_ ](density|distribution|pdf)"
+ ],
+ "n_hits": 11,
+ "hit_files": [
+  "engine/flow_velocity.py",
+  "scripts/collect.py",
+  "scripts/research/mri_miss_anatomy.py",
+  "scripts/research/ptt_w1_persistence_of_fit.py",
+  "scripts/research/ptt_w1_timing_regrade.py"
+ ],
+ "hits": [
+  {
+   "path": "engine/flow_velocity.py",
+   "line": 324,
+   "pattern": "\\brnd\\b",
+   "text": "rnd = lambda v: round(v, 1) if v is not None else None   # noqa: E731"
+  },
+  {
+   "path": "engine/flow_velocity.py",
+   "line": 325,
+   "pattern": "\\brnd\\b",
+   "text": "return {\"rate_now\": rnd(float(s.iloc[-1])), \"rate_4wk\": rnd(r4),"
+  },
+  {
+   "path": "engine/flow_velocity.py",
+   "line": 326,
+   "pattern": "\\brnd\\b",
+   "text": "\"rate_norm\": rnd(norm), \"rate_rel\": rnd(rel)}"
+  },
+  {
+   "path": "scripts/collect.py",
+   "line": 196,
+   "pattern": "implied[-_ ](density|distribution|pdf)",
+   "text": "(\"kalshi_releases\", \"collectors.kalshi_releases\", \"KalshiReleasesAdapter\"),  # Kalshi CPI/NFP/claims bracket markets \u2192 implied distribution snapshots (MRI PR-K; keyless)"
+  },
+  {
+   "path": "scripts/research/mri_miss_anatomy.py",
+   "line": 1117,
+   "pattern": "implied[-_ ](density|distribution|pdf)",
+   "text": "\"MRI-R29). C-2 is the market-implied distribution adapter (Kalshi benchmark \""
+  },
+  {
+   "path": "scripts/research/ptt_w1_persistence_of_fit.py",
+   "line": 482,
+   "pattern": "\\brnd\\b",
+   "text": "rnd = mm.mean(axis=1, skipna=False).dropna()"
+  },
+  {
+   "path": "scripts/research/ptt_w1_persistence_of_fit.py",
+   "line": 483,
+   "pattern": "\\brnd\\b",
+   "text": "vals[\"random\"] = (float(rnd.median())"
+  },
+  {
+   "path": "scripts/research/ptt_w1_persistence_of_fit.py",
+   "line": 484,
+   "pattern": "\\brnd\\b",
+   "text": "if len(rnd) >= ref[\"random\"] * 0.5 else np.nan)"
+  },
+  {
+   "path": "scripts/research/ptt_w1_timing_regrade.py",
+   "line": 403,
+   "pattern": "\\brnd\\b",
+   "text": "rnd = mm2.mean(axis=1, skipna=False).dropna()"
+  },
+  {
+   "path": "scripts/research/ptt_w1_timing_regrade.py",
+   "line": 404,
+   "pattern": "\\brnd\\b",
+   "text": "vals[met][\"random\"] = (float(rnd.median())"
+  },
+  {
+   "path": "scripts/research/ptt_w1_timing_regrade.py",
+   "line": 405,
+   "pattern": "\\brnd\\b",
+   "text": "if len(rnd) >= ref[\"random\"] * 0.5 else np.nan)"
+  }
+ ],
+ "q13_module_present_in_scan_root": false,
+ "q13_test_present_in_scan_root": false,
+ "note": "Hits are listed for manual classification (VERDICT.md); a hit is not an incumbent by itself."
+}

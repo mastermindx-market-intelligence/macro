@@ -1,0 +1,150 @@
+{
+  "schema": "c19.wp30.paid_data_decision.v1",
+  "base_sha": "99b8a6e107d82d8178db67a4b5d0b85888d9c95e",
+  "status": "RESEARCH_ONLY_PROCUREMENT_NEUTRAL",
+  "verdict": "DEFER_BUY_SUBSTITUTE_SRC_A1",
+  "gap_rows": [
+    {
+      "id": "G1",
+      "gap": "No historical as-known institutional consensus adapter; SRC-A1 source_effective_at and source_published_at are always null.",
+      "evidence": [
+        "collectors/equity_revisions.py:354",
+        "collectors/equity_revisions.py:355",
+        "research/alpha_intelligence/expectation_market_dynamics/DATA_CLOCK_RIGHTS_MATRIX.md:37",
+        "research/alpha_intelligence/expectation_market_dynamics/VEND_0_INSTITUTIONAL_ESTIMATES_BAKEOFF_2026-08-23.md:54"
+      ],
+      "status": "OPEN"
+    },
+    {
+      "id": "G2",
+      "gap": "Contributor identity is forbidden this wave; contributor_id is always None.",
+      "evidence": [
+        "collectors/equity_revisions.py:353",
+        "research/alpha_intelligence/expectation_market_dynamics/DATA_CLOCK_RIGHTS_MATRIX.md:89"
+      ],
+      "status": "OPEN"
+    },
+    {
+      "id": "G3",
+      "gap": "fiscal_period and fiscal_year remain unconditionally null; fiscal mapping is never guessed.",
+      "evidence": [
+        "collectors/equity_revisions.py:345",
+        "collectors/equity_revisions.py:346",
+        "research/alpha_intelligence/expectation_market_dynamics/DATA_CLOCK_RIGHTS_MATRIX.md:86"
+      ],
+      "status": "OPEN"
+    },
+    {
+      "id": "G4",
+      "gap": "rights_class is UNKNOWN; vendor storage/display/training/redistribution rights remain RIGHTS_UNVERIFIED.",
+      "evidence": [
+        "collectors/equity_revisions.py:363",
+        "research/alpha_intelligence/expectation_market_dynamics/VEND_0_INSTITUTIONAL_ESTIMATES_BAKEOFF_2026-08-23.md:77"
+      ],
+      "status": "OPEN"
+    }
+  ],
+  "baseline": {
+    "source": "SRC-A1 yfinance consensus_snapshot",
+    "evidence": [
+      "collectors/equity_revisions.py:352",
+      "collectors/equity_revisions.py:104",
+      "research/alpha_intelligence/expectation_market_dynamics/DATA_CLOCK_RIGHTS_MATRIX.md:89",
+      "research/alpha_intelligence/expectation_market_dynamics/VEND_0_EVIDENCE_LEDGER_2026-08-23.json:127"
+    ],
+    "limits": [
+      "current-state and forward-accrual only; a snapshot is not a vintage",
+      "source_effective_at and source_published_at always null",
+      "contributor_id always None; no raw-vendor contributor identity this wave",
+      "fiscal_period and fiscal_year always null",
+      "rights_class UNKNOWN; no storage/display/training/redistribution right asserted",
+      "not a comparable institutional vendor"
+    ],
+    "comparable_to_institutional_vendor": false
+  },
+  "candidates": [
+    {
+      "name": "LSEG I/B/E/S",
+      "status": "CLAIMED_NOT_SAMPLED"
+    },
+    {
+      "name": "FactSet",
+      "status": "CLAIMED_NOT_SAMPLED"
+    },
+    {
+      "name": "S&P Capital IQ",
+      "status": "CLAIMED_NOT_SAMPLED"
+    },
+    {
+      "name": "Visible Alpha",
+      "status": "CLAIMED_NOT_SAMPLED"
+    },
+    {
+      "name": "Bloomberg",
+      "status": "CLAIMED_NOT_SAMPLED"
+    },
+    {
+      "name": "Zacks-Intrinio",
+      "status": "CLAIMED_NOT_SAMPLED"
+    }
+  ],
+  "missing_evidence": [
+    "authorized record-level sample for the frozen panel",
+    "as-of replay receipts",
+    "correction/withdrawal lineage",
+    "contributor entitlement",
+    "written storage/display/training/redistribution rights",
+    "authoritative comparable cost"
+  ],
+  "remaining_gate": {
+    "owner": "Chairman",
+    "act": "procurement-neutral rights-permitted sample request",
+    "authorized": false
+  },
+  "n_cases": 4,
+  "cases": [
+    {
+      "id": "N1",
+      "case": "Vendor brand assumed to supply history",
+      "guard": [
+        "research/alpha_intelligence/expectation_market_dynamics/handoffs/VEND_0.md:26",
+        "engine/signal_frontier_docket.py:259"
+      ],
+      "test_pin": null
+    },
+    {
+      "id": "N2",
+      "case": "Current snapshot treated as original vintage",
+      "guard": [
+        "research/alpha_intelligence/expectation_market_dynamics/VEND_0_INSTITUTIONAL_ESTIMATES_BAKEOFF_2026-08-23.md:54",
+        "research/alpha_intelligence/expectation_market_dynamics/DATA_CLOCK_RIGHTS_MATRIX.md:37",
+        "collectors/equity_revisions.py:354"
+      ],
+      "test_pin": "tests/test_equity_revisions_w2a.py::test_historical_clock_injection_is_refused_to_prevent_snapshot_backfill"
+    },
+    {
+      "id": "N3",
+      "case": "Contributor detail bought before baseline need",
+      "guard": [
+        "research/alpha_intelligence/expectation_market_dynamics/DATA_CLOCK_RIGHTS_MATRIX.md:89",
+        "collectors/equity_revisions.py:353"
+      ],
+      "test_pin": "tests/test_equity_revisions_w2a.py::test_accrues_all_raw_horizons_eps_and_revenue_with_contract_schema; tests/test_k3e_provider_family_qualification.py::test_missing_contributor_identity_is_refused_and_reasoned"
+    },
+    {
+      "id": "N4",
+      "case": "Price estimate treated as a binding quote",
+      "guard": [
+        "research/alpha_intelligence/expectation_market_dynamics/VEND_0_INSTITUTIONAL_ESTIMATES_BAKEOFF_2026-08-23.md:78",
+        "engine/analyst_revisions.py:14"
+      ],
+      "test_pin": null
+    }
+  ],
+  "authority": {
+    "procurement": false,
+    "vendor_contact": false,
+    "spend": false,
+    "production": false
+  }
+}

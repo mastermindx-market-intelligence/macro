@@ -1,0 +1,39 @@
+{
+  "schema": "eval_os_independent_qledger_config_compatibility_review.v1",
+  "adjudication": "ACCEPTED_BOUNDED_SOURCE_FIX",
+  "reviewed_at": "2026-10-13T06:06:47.313709+00:00",
+  "source": "engine/qledger.py",
+  "source_sha256": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00",
+  "review_base": "23dfff6dc2920d04e90cf3a9e8c51e0c2a6f7bf6",
+  "delta": "Four lines inside existing __getattr__ only: config name lazily imports and returns incumbent lib.config module.",
+  "reason": [
+    "Restores public qledger.config ROOT override used by existing callers/tests",
+    "_root(None/empty) imports the same lib.config owner, so public ROOT mutation preserves prior resolution",
+    "Name queried at runtime only; no eager config/scoring-tail import introduced",
+    "All prior helper aliases and unknown-name AttributeError preserved"
+  ],
+  "evidence": {
+    "tests": "102 passed,196 deselected,184.83s; no rerun by reviewer",
+    "stdout": "qledger-config-compatibility-tests.txt",
+    "stdout_sha256": "69c6c97b6ff30578067cfb5d9a23790d182c7a546cc305f40514f85698520b46",
+    "junit": "qledger-config-compatibility.xml",
+    "junit_sha256": "eee771189fdb5298daf86e46c7b043f1fa571636e092f5ed3486ed4317b36270",
+    "junit_tests": 102,
+    "junit_failures": 0,
+    "junit_errors": 0,
+    "junit_skipped": 0,
+    "classes": [
+      "tests.test_qledger_reader_compatibility",
+      "tests.test_deploy_update_self_heal"
+    ],
+    "four_controls": [
+      "test_public_root_resolution_is_unchanged[path]",
+      "test_public_root_resolution_is_unchanged[string]",
+      "test_public_root_resolution_is_unchanged[none]",
+      "test_public_root_resolution_is_unchanged[empty]"
+    ]
+  },
+  "limit": "Local source/affected tests only; no final-head CI or release claim. Prior-head CI failure remains retained until concluded exact final-head evidence.",
+  "source_writes": false,
+  "ci_queries": false
+}

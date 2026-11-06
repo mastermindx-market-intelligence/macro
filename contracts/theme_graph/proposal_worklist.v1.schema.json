@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/proposal_worklist.v1.schema.json",
+  "title": "GMI read-only probation worklist",
+  "description": "Stateless page over the existing queue, not another queue, approval workflow or graph authority.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "authority_ceiling", "asof", "knowledge_cutoff", "filters", "ordering", "availability", "counts", "facets", "snapshot_sha256", "page", "items", "limitations"],
+  "properties": {
+    "schema": {"const": "gmi.theme_proposal_worklist/v1"},
+    "authority_ceiling": {"const": "research_internal_only"},
+    "asof": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"},
+    "knowledge_cutoff": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"},
+    "ordering": {"const": "CREATED_UTC_THEN_PROPOSAL_ID"},
+    "filters": {"type": "object", "additionalProperties": false, "required": ["status", "kind", "proposed_by", "subject_id"],
+      "properties": {"status": {"enum": ["all", "proposed", "ratified", "rejected"]}, "kind": {"type": ["string", "null"]}, "proposed_by": {"type": ["string", "null"]}, "subject_id": {"type": ["string", "null"]}}},
+    "availability": {"type": "object", "additionalProperties": false, "required": ["state", "reason"],
+      "properties": {"state": {"enum": ["OK", "EMPTY", "NO_MATCH"]}, "reason": {"type": ["string", "null"]}}},
+    "counts": {"type": "object", "additionalProperties": false, "required": ["visible", "matching", "returned"],
+      "properties": {"visible": {"type": "integer", "minimum": 0}, "matching": {"type": "integer", "minimum": 0}, "returned": {"type": "integer", "minimum": 0, "maximum": 100}}},
+    "facets": {"type": "object", "additionalProperties": false, "required": ["status", "kind", "proposed_by"],
+      "properties": {"status": {"$ref": "#/$defs/facet"}, "kind": {"$ref": "#/$defs/facet"}, "proposed_by": {"$ref": "#/$defs/facet"}}},
+    "snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "page": {"type": "object", "additionalProperties": false, "required": ["offset", "limit", "next_offset"],
+      "properties": {"offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1, "maximum": 100}, "next_offset": {"type": ["integer", "null"], "minimum": 0}}},
+    "items": {"type": "array", "maxItems": 100, "items": {"type": "object", "additionalProperties": false,
+      "required": ["proposal", "review_query"], "properties": {
+        "proposal": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/proposal"},
+        "review_query": {"type": "object", "additionalProperties": false, "required": ["proposal_id", "asof", "knowledge_cutoff"],
+          "properties": {"proposal_id": {"type": "string", "pattern": "^prop:[0-9a-f]{16}$"},
+            "asof": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"},
+            "knowledge_cutoff": {"$ref": "ontology_neighborhood.v1.schema.json#/$defs/date"}}}
+      }}},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "$defs": {"facet": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}}
+}

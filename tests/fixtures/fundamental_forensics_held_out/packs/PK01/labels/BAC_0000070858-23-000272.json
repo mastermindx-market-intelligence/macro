@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000070858-23-000272",
+    "expected_period_end": "2023-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "40196000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK01",
+    "polarity": "positive",
+    "reason": "bac-20230930.htm | us-gaap:OtherShortTermBorrowings @ c-25 | Short-term borrowings (includes $ 4,046 and $ 832 measured at fair value) 40,196 | Balance-sheet short-term borrowings at 2023-09-30, millions.",
+    "section_family": "debt_outstanding",
+    "split": "held_out",
+    "target_id": "short_term_debt",
+    "target_kind": "extract",
+    "trial_id": "PK01|0000070858-23-000272|extract|short_term_debt"
+  },
+  {
+    "accession": "0000070858-23-000272",
+    "expected_period_end": "2023-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "290359000000",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK01",
+    "polarity": "positive",
+    "reason": "bac-20230930.htm | us-gaap:LongTermDebt @ c-25 | Total long-term debt $ 3,270 $ 31,001 $ 37,998 $ 37,636 $ 25,747 $ 154,707 $ 290,359 | Debt-note total long-term debt at 2023-09-30, millions.",
+    "section_family": "debt_outstanding",
+    "split": "held_out",
+    "target_id": "long_term_debt",
+    "target_kind": "extract",
+    "trial_id": "PK01|0000070858-23-000272|extract|long_term_debt"
+  }
+]

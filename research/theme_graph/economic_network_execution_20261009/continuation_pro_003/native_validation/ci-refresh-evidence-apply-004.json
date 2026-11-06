@@ -1,0 +1,12 @@
+{
+  "error": {
+    "message": "'files'",
+    "type": "KeyError"
+  },
+  "finished_at": "2026-10-09T14:35:23.158284+00:00",
+  "git_commit_push_performed": false,
+  "head": "3521765204903320db76ddd84d6a43539ded8e62",
+  "schema": "economic_network.refresh_evidence_application/v1",
+  "started_at": "2026-10-09T14:35:20.573457+00:00",
+  "status": "REFUSED"
+}

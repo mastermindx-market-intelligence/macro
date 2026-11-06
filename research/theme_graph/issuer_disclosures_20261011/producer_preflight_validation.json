@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-12T04:31:52.977423+00:00",
+  "state": "ACCEPTED_CORRECTED_SOURCE_PREPARATION_ONLY",
+  "source_hashes": {
+    "engine/company_intelligence/issuer_disclosure_preflight.py": "4023abd088c6f4533ce2daf6626aad3241cf7aa6db95c2c77aeb0f4078c8f6a4",
+    "scripts/publish_company_disclosure.py": "679ac0fd5c9149f705829c55787302211a2f45d9b203a4571fa8817b2f59ba69",
+    "tests/test_company_disclosure_preflight.py": "e0ea621db6a3fd9334d1730ff60fab767857efe8ac009e62a1d15f97464215b7",
+    "tests/test_company_disclosure_owner.py": "5649a644140e4b3957a8936dde18f330bf6bbe45e3161f93e3a4843a62e1e763",
+    "research/theme_graph/issuer_disclosures_20261011/PRIVATE_RUNTIME_LAYOUT.md": "de1b0d36f5a8fa4863182baf9489bd2cb7dc248b93102ac26bb5fcf63009f741",
+    ".github/ci/legacy-jobs.yml": "ee42c6fc9a8594f7db9a148fa3ed8705a7c95dea16b85d645c4ac87481c96e90"
+  },
+  "review": {
+    "id": "gmi-producer-preflight-code-review-20261012-grok-001",
+    "artifact": "/Volumes/Mastermind/evidence/gmi-producer-preflight-code-review-20261012-grok-001-same-run-read-recovery/result.md",
+    "sha256": "a3235db24932d872c3de3ce7dc01cae97d71133725cd2408255b435532f205eb",
+    "original_verdict": "BLOCK original38477/b560 candidate",
+    "export_recovery": "Same original run/root/parent/host/stdout/manifest via original adapter after technical lease_snapshot_busy; original UNAVAILABLE receipt preserved; no worker replay",
+    "adjudication": [
+      "Required six module entries; executing python -m __main__ bound by __spec__.name and hashed against committed blob",
+      "Pre-effect OSError and invalid shape produce sanitized refusal; no journal, Store or body",
+      "Original report uses state/current and state/manifests as directory names incorrectly; actual seven roots match installed provisioner including state/generations",
+      "Final mount/root refresh and late census clock strengthen original reviewed limits"
+    ]
+  },
+  "architecture": {
+    "reviewer": "/root/native_fact_architecture",
+    "verdict": "ACCEPT descriptor-bound mount correction at4023abd/679ac0f",
+    "claims": [
+      "Fresh fdinfo mnt_id uniquely binds opened root to mountinfo; both per-mount and filesystem options must be rw and not ro",
+      "Final operations FD must match retained inode/device/uid/gid/mode and mount_id"
+    ],
+    "limits": [
+      "Point-in-time observation cannot prevent subsequent remount or guarantee writes",
+      "On-disk provenance is not exhaustive loaded-code attestation; fresh trusted interpreter and qualified deployment premises remain",
+      "Original F04 must qualify current API service generation; no live producer proof yet"
+    ]
+  },
+  "tests": [
+    {
+      "exec": 5635,
+      "rc": 0,
+      "consumed": true,
+      "result": "62 passed in63.70s",
+      "scope": "owner and preflight affected suite at4023abd/679ac0f and test fde349b before addition of three refusal cases"
+    },
+    {
+      "exec": 51468,
+      "rc": 0,
+      "consumed": true,
+      "result": "3 passed,27deselected in6.50s",
+      "scope": "new expected-file/process/final-directory-open OSError refusal tests only"
+    },
+    {
+      "exec": 39953,
+      "rc": 0,
+      "consumed": true,
+      "result": "3 passed in336.22s",
+      "scope": "changed CI import closure and exclusive packing checks; no imports changed by subsequent stdlib correction"
+    }
+  ],
+  "no_publication_operation_reserved": true,
+  "no_production_acceptance": true,
+  "scope": "Source qualification only. Real current API generation, same-process producer, staging, adoption and promotion remain required.",
+  "protected_merge_integrated": "17afadc7ed8ab82ec3b49f8d88ffd3a193bee58c",
+  "old_native_head": "300271a40b9e7015bf240992713c25314df69add"
+}

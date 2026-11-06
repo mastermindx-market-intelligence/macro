@@ -1,0 +1,12 @@
+{
+  "command": "python3 -m pytest -q tests/test_press_external_candidate.py tests/test_press_planner.py tests/test_press_validators.py tests/test_press_run.py",
+  "result": "277 passed in 17.00s",
+  "exit_code": 0,
+  "source_sha256": {
+    "engine/press/external_candidate.py": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497",
+    "tests/test_press_external_candidate.py": "01e1139997d32b5f1429ecbe379ba777b4a3a9e6dbf6fb73e84ad597a81758fc"
+  },
+  "consumer": "4 historical positive controls, 11 refusals; unchanged inputs and zero provider/staging writes",
+  "source_review": "context_review_adjudication.md",
+  "publication_approved": false
+}

@@ -1,0 +1,155 @@
+{
+  "at": "2026-10-20T15:57:07.140183+00:00",
+  "observer_interval": [
+    "2026-10-20T15:55:09.505598+00:00",
+    "2026-10-20T15:55:10.196329+00:00"
+  ],
+  "raw_sha256": "bf9a09de5361692d9976e4271f95c5ec3f7cbd8898feba5b442d19407412abfa",
+  "beta_service": {
+    "MainPID": "2427329",
+    "ExecMainStartTimestampMonotonic": "7560285026653",
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled"
+  },
+  "production_service": {
+    "MainPID": "2975859",
+    "ExecMainStartTimestampMonotonic": "7600473092356",
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled"
+  },
+  "production_matches_1442_baseline": true,
+  "accepted_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "accepted_runtime_and_source_pointers_match": true,
+  "beta_markers_match_1442": true,
+  "production_build_and_owner_stable_within_sample": true,
+  "loaded_caddy_file_stable_within_sample": true,
+  "local_status_tuple": {
+    "enabled": true,
+    "protocol": "mmx.shared-shell.v1",
+    "buildId": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+    "bridgeVersion": "20261018.1",
+    "documentVersion": "20261018.1",
+    "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+  },
+  "owner_and_hold_samples_clear": true,
+  "sample_is_reservation": false,
+  "no_pending_or_stages": true,
+  "free_bytes": {
+    "/": 34219192320,
+    "/opt/terminal": 16140898304
+  },
+  "macro_head": "d28809ffa9733bac0bc4da7a27cef755f646c935",
+  "macro_files": [
+    {
+      "path": "/usr/local/bin/macro-update",
+      "exists": true,
+      "bytes": 141844,
+      "sha256": "e965f947852fae19b03b93c8074fc52b8e260656afe164d594bb813bb8344605",
+      "read_complete": true,
+      "error": null,
+      "errno": null
+    },
+    {
+      "path": "/etc/caddy/Caddyfile",
+      "exists": true,
+      "bytes": 74183,
+      "sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+      "read_complete": true,
+      "error": null,
+      "errno": null
+    },
+    {
+      "path": "/opt/macro/app/deploy/update.sh",
+      "exists": true,
+      "bytes": 141844,
+      "sha256": "e965f947852fae19b03b93c8074fc52b8e260656afe164d594bb813bb8344605",
+      "read_complete": true,
+      "error": null,
+      "errno": null
+    },
+    {
+      "path": "/opt/macro/app/deploy/Caddyfile",
+      "exists": true,
+      "bytes": 74183,
+      "sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+      "read_complete": true,
+      "error": null,
+      "errno": null
+    },
+    {
+      "path": "/opt/macro/site/shared_shell_bridge.js",
+      "exists": false,
+      "bytes": null,
+      "sha256": null,
+      "read_complete": false,
+      "error": "FileNotFoundError",
+      "errno": 2
+    },
+    {
+      "path": "/opt/macro/site/shared_shell.css",
+      "exists": false,
+      "bytes": null,
+      "sha256": null,
+      "read_complete": false,
+      "error": "FileNotFoundError",
+      "errno": 2
+    },
+    {
+      "path": "/opt/macro/site/index.html",
+      "exists": true,
+      "bytes": 187645,
+      "sha256": "53a92e68a6745fd914b24b38a498a41ce6794b344753a1b6d017ef2ee598c8bc",
+      "read_complete": true,
+      "error": null,
+      "errno": null
+    },
+    {
+      "path": "/opt/macro/site/sector_central.html",
+      "exists": true,
+      "bytes": 371114,
+      "sha256": "1d2d5014067843ef646d194ae6d97a7b77be395bb38fc9aa1913fa07c33aa24f",
+      "read_complete": true,
+      "error": null,
+      "errno": null
+    },
+    {
+      "path": "/opt/macro/site.served/shared_shell_bridge.js",
+      "exists": false,
+      "bytes": null,
+      "sha256": null,
+      "read_complete": false,
+      "error": "FileNotFoundError",
+      "errno": 2
+    },
+    {
+      "path": "/opt/macro/site.served/shared_shell.css",
+      "exists": false,
+      "bytes": null,
+      "sha256": null,
+      "read_complete": false,
+      "error": "FileNotFoundError",
+      "errno": 2
+    },
+    {
+      "path": "/opt/macro/site.served/index.html",
+      "exists": true,
+      "bytes": 187645,
+      "sha256": "53a92e68a6745fd914b24b38a498a41ce6794b344753a1b6d017ef2ee598c8bc",
+      "read_complete": true,
+      "error": null,
+      "errno": null
+    },
+    {
+      "path": "/opt/macro/site.served/sector_central.html",
+      "exists": true,
+      "bytes": 371114,
+      "sha256": "1d2d5014067843ef646d194ae6d97a7b77be395bb38fc9aa1913fa07c33aa24f",
+      "read_complete": true,
+      "error": null,
+      "errno": null
+    }
+  ],
+  "limits": "Read-only time-bounded sample, not loaded-Caddy runtime proof, MOG arm, publication, public DNS/TLS/auth/browser or withdrawal/recovery acceptance. Refresh before a later action boundary; no installer or production mutation."
+}

@@ -1,0 +1,59 @@
+{
+  "started_at": "2026-10-19T12:02:49.632407+00:00",
+  "base": "69dd6e774cc48223005426765e74aed193d55954",
+  "ours": "0905751badd88752cbab19ffedac51e610488035",
+  "theirs": "fc44c814c19228d1d19964a34dcf40ce0593eb87",
+  "source_effect": false,
+  "files": [
+    {
+      "path": "site/etfs.html",
+      "base_sha256": "7e6445fe84febbc742cb83c23cc1995d67ca171db0d26d0ded30baac6c57bcc2",
+      "ours_sha256": "ca009e5f7c0fb267212af1da14833b2b9df9a04c77effbbdef693d09972aa12d",
+      "theirs_sha256": "97f444495e0cb92bc8c73afa2dc92950f902fee9af93e5843460c35be4e8f7ee",
+      "resolved_sha256": "f8ee19ce24f88d0dede677dce3bcfa45676cda8602b28ff4c818b99367628daf",
+      "resolved_bytes": 97332,
+      "adapters": 1,
+      "ours_exactly_reconstructed": true,
+      "incoming_exactly_reconstructed": true,
+      "canonical_injector_idempotent": true
+    },
+    {
+      "path": "site/special_situations.html",
+      "base_sha256": "4bd73835a9dbf7b1777460638a9acb7bdc9a320e1bc7dd25912c007f01c284dd",
+      "ours_sha256": "07b11505e6d2684af839cdb71284945c6e14feaf8fc10e54174dc4cf68fe2d33",
+      "theirs_sha256": "9d6bdec75055fa38fdb6d477167a745eb787e79e05aed42d36bea2274fbe7688",
+      "resolved_sha256": "2788b52ebdef190ffc236a25bc1b9f9fcb92b727a836cd83cfc5b6a4cb1b458b",
+      "resolved_bytes": 114875,
+      "adapters": 3,
+      "ours_exactly_reconstructed": true,
+      "incoming_exactly_reconstructed": true,
+      "canonical_injector_idempotent": true
+    },
+    {
+      "path": "site/us_stocks.html",
+      "base_sha256": "7d67e6575b462694bdf1700232c7489d834b6fba91423f2e6b6f1380f50a9885",
+      "ours_sha256": "0531c7216f721f9e75301381ed860ff8b70a04f4978135b0b92d09b78931bcf8",
+      "theirs_sha256": "984412804326fc072b99b662d41ea3f329066865f55ed0453714a347f0d9cb79",
+      "resolved_sha256": "3beacdc885ad4967a3da95661d4145a7cde0b8f291e36ec65685134389c3c52b",
+      "resolved_bytes": 731236,
+      "adapters": 3,
+      "ours_exactly_reconstructed": true,
+      "incoming_exactly_reconstructed": true,
+      "canonical_injector_idempotent": true
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "base_sha256": "31fd61c8c31e41205f5cff90edb4d3b372fcba66ddfe657f54add7c2e9bad380",
+      "ours_sha256": "2ab0a9d753cfe1f0b8611ac709dae87a369e89c96a3d7aa8af010c40b05c5514",
+      "theirs_sha256": "625a2aa08ea6aec2d4cbe73a6ed0db3b003553ea6ce20a64b44e4dff8da4dc37",
+      "resolved_sha256": "1b210d6ca000d8bf5460e44f3518a267af8065203817ffd78c2f45259402fe9d",
+      "resolved_bytes": 1842194,
+      "conflicts": 7,
+      "old_ours_deltas_equal_new_delta": true,
+      "paths_union_verified": true,
+      "job_count": 327,
+      "jobs_added_or_removed": 0
+    }
+  ],
+  "finished_at": "2026-10-19T12:03:04.431114+00:00"
+}

@@ -1,0 +1,100 @@
+{
+  "record_type": "GitHub Actions observation",
+  "observed_at": "2026-10-19T08:34:17Z",
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "pull_request": 1062,
+  "head_sha": "bd158476d6ba1394b2867fa09db6faa762473158",
+  "run_id": 39213825821,
+  "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/39213825821",
+  "jobs": [
+    {
+      "id": 117936502590,
+      "name": "Terminal e2e desktop-3 (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936502735,
+      "name": "Ingest + signal-layer tests",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936502813,
+      "name": "Terminal e2e tablet-2 (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936503002,
+      "name": "Terminal e2e desktop-2 (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936503013,
+      "name": "Terminal e2e desktop-1 (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936503073,
+      "name": "Investigation PostgreSQL invariants",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936503092,
+      "name": "Terminal e2e tablet-1 (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936503159,
+      "name": "Terminal e2e mobile-1 (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936503256,
+      "name": "Terminal e2e mobile-2 (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936503295,
+      "name": "Terminal e2e serial (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936503334,
+      "name": "Quote Hub tests",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117936503405,
+      "name": "Terminal unit + typecheck (shard)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 117960286597,
+      "name": "Terminal typecheck + tests",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "pr_observation": {
+    "state": "OPEN",
+    "draft": false,
+    "mergeable_state": "behind",
+    "labels": [
+      "merge-on-green"
+    ],
+    "auto_merge": "SQUASH",
+    "merged": false
+  },
+  "limitation": "This observation does not prove a later refreshed head, protected landing, host adoption or runtime acceptance."
+}

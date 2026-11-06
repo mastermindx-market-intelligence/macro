@@ -1,0 +1,49 @@
+{
+  "schema": "defense.v10_startup_review_adjudication.v1",
+  "adjudicated_at": "2026-10-14T07:36:33.426250+00:00",
+  "run_id": "defense-v10-subject-review-01a13300-a",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "parent": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "execution_rc": 65,
+  "retained_result": {
+    "bytes": 158400,
+    "sha256": "f1035a212878ec04f38899d6597227d219c94c05a22fb1fa40f86b62e9639a91",
+    "saved_as": "startup-review-retained.txt.gz"
+  },
+  "artifact_delivery": "Failed contract; same-carrier export returned REFUSED artifact_export_precondition_or_local_delivery_failed. No retry, alternate retrieval or Fabric accept.",
+  "quality_verdict": "No accepted Fabric verdict. Assessable retained reviewer observations below do not substitute for delivered artifact acceptance.",
+  "reviewer_observation": {
+    "reported_verdict": "APPROVE",
+    "reported_blocking_findings": 0,
+    "supplied_source_hashes": {
+      "templates/government-revenue-investor-start.js": "5e3af056038d886e5e611b327135f0256086591f8ec31b853579eb0e9daf86f3",
+      "templates/government-revenue-investor.js": "11562d7b71cee0e0e817987adf51312204080cf70da1485d6a98f971d6790e97"
+    },
+    "actual_checks": "20 supplied component/sequencing tests; removing the subject closure reproduced failures. Full actual page constructor, production runtime and entitled customer flow were not covered."
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "disposition": "Minor pre-existing subject-preserving token notification reload. No wrong-subject data or V10 regression demonstrated; retained for product follow-up."
+    },
+    {
+      "id": "F2",
+      "disposition": "Disproved by actual source and regression. Page constructor reuses __govrevFirstInvestor.ui. Actual component plus exact page constructor/controller demonstrates one owned instance; matching INITIAL_SESSION does not duplicate a read, account change reloads to ready, and sign-out reloads to locked with no content. Do not unmount the reused component."
+    },
+    {
+      "id": "F3",
+      "disposition": "The initial SDK probe is intentional session restoration. No new authorization or concrete network failure demonstrated; reported concern does not invalidate the observed critical path."
+    },
+    {
+      "id": "F4",
+      "disposition": "Speculative header-time subject divergence, no reachable counterexample in retained review. Existing turn/epoch invalidation and actual delayed/sign-out/account-change tests remain binding."
+    }
+  ],
+  "parent_validation": {
+    "suite": "tests/test_government_revenue_priority.cjs plus affected investor/theme tests",
+    "result": "41 passed",
+    "log": "HANDOVER_GREEN.log.gz",
+    "current_test_sha256": "2bf8614308e7386ef9592a3e8a726e1dc1248635170115891ca840ce6173720d"
+  },
+  "remaining": "Complete protected CI, publication, installed identity, real entitled workflow and independent product acceptance; no production claim."
+}

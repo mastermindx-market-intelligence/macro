@@ -1,0 +1,69 @@
+{
+  "source": {
+    "schema": "defense.primary_public_capacity_source_acquisition.v1",
+    "url": "https://news.lockheedmartin.com/2026-01-06-Lockheed-Martin-and-Department-of-War-Advance-Landmark-Acquisition-Transformation-to-Accelerate-PAC-3-R-MSE-Production",
+    "http_status": 200,
+    "observed_at": "2026-10-14T05:42:51.288313+00:00",
+    "retrieved_at": "2026-10-14T05:42:51.706076+00:00",
+    "response_sha256": "b558a0f8f3aa332c9962d15b12e306c98f7f66f05614c05b9a7dc08bbf9a908a",
+    "bytes": 156843,
+    "printed_publication_date": "2026-01-06",
+    "available_at": "2026-10-14T05:42:51.706076+00:00",
+    "availability_basis": "complete_response_retrieval_not_request_start_or_printed_publication_date",
+    "transport": "incumbent scripts.refresh_event_workspaces._http_get",
+    "owner_admission": "STAGED_NOT_ADMITTED",
+    "root_source_mutation": false,
+    "publication": false
+  },
+  "document_id": "disclosure_document_85f9e290636e9288d40ca90e51a8924f39aeec2bfb8ef6a2a3c7cf5cc17f59e2",
+  "blocks": [
+    {
+      "document_id": "disclosure_document_85f9e290636e9288d40ca90e51a8924f39aeec2bfb8ef6a2a3c7cf5cc17f59e2",
+      "block_id": "disclosure_block_92ef182d1a40caa2bca0a319662b2aeb6fe001ea0db2d73f3b8f634aadbf7388",
+      "text": "DALLAS, Jan. 6, 2026 /PRNewswire/ -- Lockheed Martin (NYSE: LMT) signed a landmark framework agreement with the U.S. Department of War to rapidly accelerate the production and delivery of PAC-3® Missile Segment Enhancement (MSE) interceptors. This transformative partnership, designed to deliver sustained production at scale, will increase annual capacity from approximately 600 to 2,000 in a seven-year agreement, supporting U.S. forces, allies and partner nations.",
+      "normalized_text_sha256": "1d184b664d13b1d69633edb1716fa2be8d4d6af13b1f81b3656491491f13aa3c",
+      "source_span": {
+        "char_start": 133396,
+        "char_end": 134064
+      },
+      "byte_replay_receipt": {
+        "schema": "earnings_release.span_receipt/v1",
+        "source_sha256": "b558a0f8f3aa332c9962d15b12e306c98f7f66f05614c05b9a7dc08bbf9a908a",
+        "char_start": 133396,
+        "char_end": 134064,
+        "byte_start": 133446,
+        "byte_end": 134116,
+        "span_sha256": "2fad3a7c773335721b19ab65d58ed8bbb072867ef7c438b059f408d449363481",
+        "span_bytes": 670,
+        "span_text": "<p><span class=\"legendSpanClass\"><span class=\"xn-location\">DALLAS</span></span>, <span class=\"legendSpanClass\"><span class=\"xn-chron\">Jan. 6, 2026</span></span> /<a href=\"http://www.prnewswire.com/\" target=\"_blank\">PRNewswire</a>/ -- Lockheed Martin (NYSE: LMT) signed a landmark framework agreement with the U.S. Department of War to rapidly accelerate the production and delivery of PAC-3® Missile Segment Enhancement (MSE) interceptors. This transformative partnership, designed to deliver sustained production at scale, will increase annual capacity from approximately 600 to 2,000 in a seven-year agreement, supporting U.S. forces, allies and partner nations.</p>",
+        "value_text": "DALLAS , Jan. 6, 2026 / PRNewswire / -- Lockheed Martin (NYSE: LMT) signed a landmark framework agreement with the U.S. Department of War to rapidly accelerate the production and delivery of PAC-3® Missile Segment Enhancement (MSE) interceptors. This transformative partnership, designed to deliver sustained production at scale, will increase annual capacity from approximately 600 to 2,000 in a seven-year agreement, supporting U.S. forces, allies and partner nations.",
+        "value_text_sha256": "2900b45d6fb324c312033a36b8f341376db55e28766956554d0593367319f12a"
+      }
+    },
+    {
+      "document_id": "disclosure_document_85f9e290636e9288d40ca90e51a8924f39aeec2bfb8ef6a2a3c7cf5cc17f59e2",
+      "block_id": "disclosure_block_f462b6209c8aa4a348905f401c99481af7d3b8edbfd9408790f5acd9e98fa591",
+      "text": "Timeline: The seven-year agreement increases capacity for PAC-3 MSE to approximately 2,000. Lockheed Martin is well-positioned to fulfill this agreement, having recently increased PAC-3 MSE production by more than 60% over the past two years. In 2025, Lockheed Martin delivered 620 PAC-3 MSEs, exceeding the previous year by more than 20%.",
+      "normalized_text_sha256": "fe32eb2e18dbbf5b0d879c9023020f39b4bbae554e8a2c00d1201f8bfcfcd040",
+      "source_span": {
+        "char_start": 135713,
+        "char_end": 136078
+      },
+      "byte_replay_receipt": {
+        "schema": "earnings_release.span_receipt/v1",
+        "source_sha256": "b558a0f8f3aa332c9962d15b12e306c98f7f66f05614c05b9a7dc08bbf9a908a",
+        "char_start": 135713,
+        "char_end": 136078,
+        "byte_start": 135776,
+        "byte_end": 136141,
+        "span_sha256": "62756092bef3000866d2527b72192872feb9a6f13567c3cedca157fc70be3af6",
+        "span_bytes": 365,
+        "span_text": "<li><b>Timeline:</b> The seven-year agreement increases capacity for PAC-3 MSE to approximately 2,000. Lockheed Martin is well-positioned to fulfill this agreement, having recently increased PAC-3 MSE production by more than 60% over the past two years. In 2025, Lockheed Martin delivered 620 PAC-3 MSEs, exceeding the previous year by more than 20%.<br/><br/></li>",
+        "value_text": "Timeline: The seven-year agreement increases capacity for PAC-3 MSE to approximately 2,000. Lockheed Martin is well-positioned to fulfill this agreement, having recently increased PAC-3 MSE production by more than 60% over the past two years. In 2025, Lockheed Martin delivered 620 PAC-3 MSEs, exceeding the previous year by more than 20%.",
+        "value_text_sha256": "fe32eb2e18dbbf5b0d879c9023020f39b4bbae554e8a2c00d1201f8bfcfcd040"
+      }
+    }
+  ],
+  "source_bytes_changed": false,
+  "supersedes_metadata_only": "776e083e85ec244022adf338d5f037786a9d526bb4fa15b02bb367fd6ed8de0c"
+}

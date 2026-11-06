@@ -1,0 +1,375 @@
+{
+  "scope": "37 fetched source documents; full acquisition files are not all bundled; use immutable URLs to verify",
+  "source_manifest": [
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "agentos/workstreams/WS-GMI-THEME-GRAPH.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "fd7f8a16f9e4505d9bd923bb098a2cc6f22e521a",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/agentos__workstreams__WS-GMI-THEME-GRAPH.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/agentos/workstreams/WS-GMI-THEME-GRAPH.md",
+      "sha256": "07c1dfc419fb4c1bd62aaf9a40a4b30556b528fec67697706841cd108f8c2c77",
+      "bytes": 21625
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "agentos/decisions/DEC-GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "212258074d74934a579a20aebc4c5caa7eca7b3a",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/agentos__decisions__DEC-GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/agentos/decisions/DEC-GMI-THEME-GRAPH-END-TO-END-COMPLETION-OWNERSHIP-SEQUENCING.md",
+      "sha256": "35a41d03a957ddb3514ad7a505f11065c2a7a56643633b17ea1f416df990603e",
+      "bytes": 7204
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/theme_graph/THEME_FABRIC_CONVERGENCE_HANDOFF_2026-10-07.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "16e2cc2d4fae4efa4ecaa04340ca332a3112242d",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__theme_graph__THEME_FABRIC_CONVERGENCE_HANDOFF_2026-10-07.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/research/theme_graph/THEME_FABRIC_CONVERGENCE_HANDOFF_2026-10-07.md",
+      "sha256": "934da747451983bbd4d98b5e0aa40991fc44aeaec0d09203b6ee7d6fc873a353",
+      "bytes": 22491
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/theme_graph/THEME_FABRIC_COMPLETION_RESEARCH_2026-10-07.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "b084ac629e1619862ed0826d4d4784944464f2c9",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__theme_graph__THEME_FABRIC_COMPLETION_RESEARCH_2026-10-07.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/research/theme_graph/THEME_FABRIC_COMPLETION_RESEARCH_2026-10-07.md",
+      "sha256": "41c2e732f015bbe178957c71717151377768d0e7fd9187bd0843c0e62efb2620",
+      "bytes": 205383
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/theme_graph/theme_fabric_gap_matrix.json",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "16fb007706bd0eeddb8a43b02124eff058cab779",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__theme_graph__theme_fabric_gap_matrix.json",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/research/theme_graph/theme_fabric_gap_matrix.json",
+      "sha256": "e6481c4367d5f15b3933a5ca5958bfcb40463ffd9c43c61d7fcf76b688ac4710",
+      "bytes": 291920
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/economic_propagation/D0_OWNERSHIP_AND_GRAPH_CENSUS.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "124c38db7a394dc82d307db91533bd0515eef954",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__economic_propagation__D0_OWNERSHIP_AND_GRAPH_CENSUS.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/research/economic_propagation/D0_OWNERSHIP_AND_GRAPH_CENSUS.md",
+      "sha256": "7a733ce48db0fd3348fb395b7abc2ea7daee4d7c7728c77832b8c10238eda72b",
+      "bytes": 20114
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/EARNINGS_NEURAL_GRAPH_READTHROUGH_AND_CATALYST_ARCHITECTURE_2026-08-16.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "98a6a3f9859ff8e51d4aa2391f1d983423fbc38a",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__EARNINGS_NEURAL_GRAPH_READTHROUGH_AND_CATALYST_ARCHITECTURE_2026-08-16.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/research/EARNINGS_NEURAL_GRAPH_READTHROUGH_AND_CATALYST_ARCHITECTURE_2026-08-16.md",
+      "sha256": "645d22ce40f4a1c83e40bd53ec28e26e067717221f9a2bde57e9b5f7e4d457e7",
+      "bytes": 19992
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "contracts/theme_graph/edges.v1.schema.json",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "5323dd270ca218778d3bde0e96d8cfed5761cb73",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/contracts__theme_graph__edges.v1.schema.json",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/contracts/theme_graph/edges.v1.schema.json",
+      "sha256": "9d6405e86a3a525adb11b1f69b30b5a141e3fcd8e8cb18561139b2bab32ba835",
+      "bytes": 7823
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "engine/market_ontology/exposure_map.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "6b2131f440b55791d30730ed7cea928f79968cf7",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/engine__market_ontology__exposure_map.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/engine/market_ontology/exposure_map.py",
+      "sha256": "ea68fd7d0e69789d896a0cad878a5015e8811d3c4ecae151cf6a8ac41c4684da",
+      "bytes": 48707
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "engine/theme_graph/structural_navigation.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "5f1056e4bade9924cb7f7aeda60f52e75c0f21b0",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/engine__theme_graph__structural_navigation.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/engine/theme_graph/structural_navigation.py",
+      "sha256": "28f36b53b47a1db4792162ebb7b4865b5afe5809d1828e9d6232845cd6272afb",
+      "bytes": 41872
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "8d2b2ea8a2a8bf2e85be9e17a075c1c3c48642d1",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/agentos__workstreams__WS-ALPHA-INTELLIGENCE-INTEGRATION.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md",
+      "sha256": "d9d7d103e301cdf067d5446e1006434838707449c5bee80cd0289ffadafe9832",
+      "bytes": 18983
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-08-26-k3d-commission.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "3f04d4475be8eb2fe1b7ba647a95541f8e5a8926",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/agentos__handoffs__ALPHA-INTELLIGENCE-INTEGRATION-2026-08-26-k3d-commission.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-08-26-k3d-commission.md",
+      "sha256": "97dd3cdc1ad6716f3bbe8137dd03b1e8301bdce4ffcfb2ddfdbb7bf8040e61f3",
+      "bytes": 20043
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/market_intelligence_productization/MARKET_ONTOLOGY_F04_EXPLORER_ARCHITECTURE_AMENDMENT_3_REVIEW_CLOSURE_2026-09-04.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "205c0a249844382c4fede523d48bf67e97685689",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__market_intelligence_productization__MARKET_ONTOLOGY_F04_EXPLORER_ARCHITECTURE_AMENDMENT_3_REVIEW_CLOSURE_2026-09-04.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/research/market_intelligence_productization/MARKET_ONTOLOGY_F04_EXPLORER_ARCHITECTURE_AMENDMENT_3_REVIEW_CLOSURE_2026-09-04.md",
+      "sha256": "f87b63232b3336672b7969b0657e90d42c3608ab5ce62f446f45d5ffb2600f52",
+      "bytes": 19093
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/economic_propagation/COMMISSION4_EFFECTIVE_DATED_ECONOMIC_EXPOSURE_SUPPLY_CHAIN_GRAPH_2026-10-04.md",
+      "ref": "4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272",
+      "blob": "cf36604b43027fee80722a54e7eb10e418cf0306",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__economic_propagation__COMMISSION4_EFFECTIVE_DATED_ECONOMIC_EXPOSURE_SUPPLY_CHAIN_GRAPH_2026-10-04.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/4f4e80ca9ba9309ccb8bb211ff4d0a1ecff00272/research/economic_propagation/COMMISSION4_EFFECTIVE_DATED_ECONOMIC_EXPOSURE_SUPPLY_CHAIN_GRAPH_2026-10-04.md",
+      "sha256": "6bc568d7fdcdd45c8a45c02f1094cb3109ff727665db13e30f1d277e127c03d0",
+      "bytes": 74447
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/theme_graph/micro_membership_20261008/RESEARCH_CHECKPOINT.md",
+      "ref": "1392087e13254f7f8fc8e2a48d8def02f0097ee8",
+      "blob": "81fd7d5e9d7298b3019f5546b3401bc8e1a6f287",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__theme_graph__micro_membership_20261008__RESEARCH_CHECKPOINT.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1392087e13254f7f8fc8e2a48d8def02f0097ee8/research/theme_graph/micro_membership_20261008/RESEARCH_CHECKPOINT.md",
+      "sha256": "a037302ad51a88f1244946713b2b809b72882abab646491696b982a1b394d514",
+      "bytes": 6858
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "contracts/economic_propagation/propagation_hypothesis.v1.schema.json",
+      "ref": "74b6426c8be71adec27df00f2f98172f8528c2b2",
+      "blob": "847c47e557aa9b5b3e2a0bab11a0b3c9fc2a9907",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/contracts__economic_propagation__propagation_hypothesis.v1.schema.json",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/74b6426c8be71adec27df00f2f98172f8528c2b2/contracts/economic_propagation/propagation_hypothesis.v1.schema.json",
+      "sha256": "2fb402368b71693d457a173efe03d5b3e7144bae7bba1573eb90730e01a375d6",
+      "bytes": 22585
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/economic_propagation/K3D_PROPAGATION_HYPOTHESIS_CONTRACT_FREEZE_2026-08-27.md",
+      "ref": "74b6426c8be71adec27df00f2f98172f8528c2b2",
+      "blob": "5ca04c2b0511069828b912621374659c961a5622",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__economic_propagation__K3D_PROPAGATION_HYPOTHESIS_CONTRACT_FREEZE_2026-08-27.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/74b6426c8be71adec27df00f2f98172f8528c2b2/research/economic_propagation/K3D_PROPAGATION_HYPOTHESIS_CONTRACT_FREEZE_2026-08-27.md",
+      "sha256": "4e93e04e80baa71caed3aa32d7e92fa0bff552c1de00ec1b108e4e8cc0470080",
+      "bytes": 18052
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "lib/economic_propagation.py",
+      "ref": "74b6426c8be71adec27df00f2f98172f8528c2b2",
+      "blob": "5e4df7fc9bbd95a120dc13313058a9ce250c2843",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/lib__economic_propagation.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/74b6426c8be71adec27df00f2f98172f8528c2b2/lib/economic_propagation.py",
+      "sha256": "8d35e0df2bdeb2bbc48e4b845d9182a0b47a7476b2f4719631b38661ee33f0d0",
+      "bytes": 60562
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/app/api/company-theme-context/[symbol]/route.ts",
+      "ref": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+      "blob": "9f82fbd37b196d0b509daf0ed1d5bb2bb16daa5c",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/terminal__app__api__company-theme-context__symbol__route.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54f97dda68a76a55ba0813afc9433ef54aaf401c/terminal/app/api/company-theme-context/[symbol]/route.ts",
+      "sha256": "2d6b85a86e52b866814b86299600d54d3c684445ffce9958fe2a1d3feb25fa2c",
+      "bytes": 3947
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/lib/marketOntologyContext.ts",
+      "ref": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+      "blob": "792e55e5aed5ef34111ad5f7726f84e5e6ac5bc3",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/terminal__lib__marketOntologyContext.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54f97dda68a76a55ba0813afc9433ef54aaf401c/terminal/lib/marketOntologyContext.ts",
+      "sha256": "cd53876e457ac923e787e7c007b34e429c4788b0060230b06fba0bcb0b6da307",
+      "bytes": 11125
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/app/api/nw/route.ts",
+      "ref": "54f97dda68a76a55ba0813afc9433ef54aaf401c",
+      "blob": "93fe099574b67fb7a8bc4834e4504c3e96f78f38",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/terminal__app__api__nw__route.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54f97dda68a76a55ba0813afc9433ef54aaf401c/terminal/app/api/nw/route.ts",
+      "sha256": "8041a22e78f851dce23cdb23494003e9eb4ccc06da4526fab712f84c29ce1a95",
+      "bytes": 4794
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "AGENTS.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "367c567422f3554828f3fa57805811aa81a41df6",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/macro__AGENTS.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/AGENTS.md",
+      "sha256": "463ea7c70ea9a1ddbb5154b9f65b7c745d0093dc15485db216936fa9bddf057c",
+      "bytes": 78660
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "CLAUDE.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "5d3c9b1936574af58581b03d149b4160119b1e79",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/macro__CLAUDE.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/CLAUDE.md",
+      "sha256": "3c2016ddb9a67a6488f7938e665cb5f37b767b7d39c2122057cb9d110149d329",
+      "bytes": 85973
+    },
+    {
+      "repo": "mastermindx-market-intelligence/Mastermind",
+      "path": "AGENTS.md",
+      "ref": "c7e47c859eb2925c5626931fd511800773ba09ac",
+      "blob": "f251f95d2b1a335059bb22422afde77f618918e1",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/Mastermind__AGENTS.md",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/c7e47c859eb2925c5626931fd511800773ba09ac/AGENTS.md",
+      "sha256": "f847dc0e396584215f6d8ac5cad7c2b8d40517286066c9ced7daa37597561999",
+      "bytes": 15537
+    },
+    {
+      "repo": "mastermindx-market-intelligence/Mastermind",
+      "path": "CLAUDE.md",
+      "ref": "c7e47c859eb2925c5626931fd511800773ba09ac",
+      "blob": "a3527784eeff237a388638ac639f04ed7581188b",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/Mastermind__CLAUDE.md",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/c7e47c859eb2925c5626931fd511800773ba09ac/CLAUDE.md",
+      "sha256": "3dc7a4f6aa5c575e9f1ddc9a80ee584c80fdd99313ba9f5fe63ef5eded295470",
+      "bytes": 10100
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "data/theme_graph/_meta.json",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "99eb52e5062ad6cbc5232d00229c46a26f3901fa",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/data__theme_graph___meta.json",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/data/theme_graph/_meta.json",
+      "sha256": "9dc6c77a2c29f14ee54f09dbc864c3fc51589257204f3ea127955dda0c655b0c",
+      "bytes": 3694
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "research/economic_propagation/D0_THREE_GRAPH_SEPARATION_MAP.md",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "fad9e0bb125d844d42a0d8f9acf8870b4e0a22af",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/research__economic_propagation__D0_THREE_GRAPH_SEPARATION_MAP.md",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/research/economic_propagation/D0_THREE_GRAPH_SEPARATION_MAP.md",
+      "sha256": "16491b75dc645ab5b0419dca0f8be244913b0937511ea4572b5b7aa1838c1f9d",
+      "bytes": 8782
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "scripts/theme_coverage_gaps.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "f4911ef723d77416d17d0902418db9fd02ca1f86",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/scripts__theme_coverage_gaps.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/scripts/theme_coverage_gaps.py",
+      "sha256": "7bde31b99baf242941afdeae39ae4277066911a3d2fb356a76c024564b9975e8",
+      "bytes": 25372
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "engine/theme_graph/membership_evidence.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "7b8fcc1ab2f087906329f406d260aeea09c7af82",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/engine__theme_graph__membership_evidence.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/engine/theme_graph/membership_evidence.py",
+      "sha256": "82cc237aff35f698a0ec50faf9127db1e6795beeda7bb9a4db9eb50e8917c0f0",
+      "bytes": 12515
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "lib/dataos/temporal.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/lib__dataos__temporal.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/lib/dataos/temporal.py",
+      "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+      "bytes": 12847
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "config/theme_crosswalk.yml",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "5796e3e5cf16839c7dbca2bf6d74737b35b547fc",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/config__theme_crosswalk.yml",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/config/theme_crosswalk.yml",
+      "sha256": "7b56facba880e4beca54cb82673f7ac048bce493c561a896b5d4a24c54aee9f6",
+      "bytes": 54796
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "lib/dataos/registry.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "91c4a8eed34b118902dd2a80678b71472e328dca",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/lib__dataos__registry.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/lib/dataos/registry.py",
+      "sha256": "b57ec16a61086b8d35beb2f81af30efc4af55f1ac07ec95cfcfd87beefeef0a5",
+      "bytes": 16599
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "engine/theme_graph/theme_state.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "38274c5002bcd5d5773c28dee27016fb2eef830e",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/engine__theme_graph__theme_state.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/engine/theme_graph/theme_state.py",
+      "sha256": "2cb329073277cb9e037b2fc8602226d7e375d144a06d0c9d847d77ff3ab4dbc6",
+      "bytes": 31552
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "engine/theme_graph/theme_state_use_reader.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "cd983eaa1b7e8a4955aed9137cfe6ed7105a8f06",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/engine__theme_graph__theme_state_use_reader.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/engine/theme_graph/theme_state_use_reader.py",
+      "sha256": "0e9869887b4980b8b8a54d11ab8ad8819621ede11cbd3d23272b68783de99f1f",
+      "bytes": 4346
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "engine/theme_graph/theme_state_production.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "9807052a4505b172a5c31244da450485ad20f80b",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/engine__theme_graph__theme_state_production.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/engine/theme_graph/theme_state_production.py",
+      "sha256": "2677ef874b2312938295e29236390574a79ff2d07e493d209160396f6768d924",
+      "bytes": 18767
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "engine/neuralweb/theme_state_adapter.py",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "7dc00e1c9d5ad7e878112aedd8e98e8d94c5ef24",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/engine__neuralweb__theme_state_adapter.py",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/engine/neuralweb/theme_state_adapter.py",
+      "sha256": "b5225e7c61ae348fbff4cf760d95df940f1abd74effaafae5d0dfffa11f6853d",
+      "bytes": 67149
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "path": "config/dataset_registry.yml",
+      "ref": "7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477",
+      "blob": "42252174a9f97c0643d30c9057455761aff35f80",
+      "local": "/workspace/scratch/9fd3d58c239a/source/estate/config__dataset_registry.yml",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/7e6ce338a9f88aaa60834bdeaf5ee2fe90dab477/config/dataset_registry.yml",
+      "sha256": "bb9b6975eeabebf630f73e632d307d280ea1d9e34f30953ac3989c65fc90f0a7",
+      "bytes": 50632
+    }
+  ]
+}

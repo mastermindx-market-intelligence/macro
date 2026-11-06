@@ -1192,15 +1192,16 @@
       "shadows": {
         "v3_factor": {
           "display_only": true,
-          "point": null,
-          "p10": -376.1231,
-          "p25": -165.0443,
-          "p50": 7.1207,
-          "p75": 179.5134,
-          "p90": 364.5465,
-          "confidence": null,
-          "input_completeness": 1.0,
-          "warning": "trails champion; sub-naive on full-window backtest (2010+ MAE v3=527.9 vs naive=459.8), catastrophic 2020-recovery error \u2014 do not read as an improvement (MRI-R21 shadow, champion keeps the card)"
+          "claim_withdrawn": {
+            "verdict": "FALSIFIED_UNDER_COHERENT_TARGET",
+            "task": "RIC-M0",
+            "target": "same-release-vintage first print (coherent target)",
+            "mae_ratio_vs_declared_baseline": 1.373,
+            "trial_family": "ric_mri_coherent_requal_v1",
+            "receipt": "research/rates_inflation_command/seat_20261014/m0_results/m0_requal_2026-10-14.json",
+            "receipt_sha256": "80cf894c1b748280dd3120f28b4f6d8499e34b4ce3c6d82ae0b2cf368387c720",
+            "protocol_sha256": "87b51dcad66c6f84989675e9cce91eb5b46b3888d60b2e599a8736d87e2309df"
+          }
         }
       },
       "cutoff_label": "T-1"

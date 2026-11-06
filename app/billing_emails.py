@@ -251,38 +251,29 @@ def plan_name(tier: str | None) -> str:
     return t.title() if t else ""
 
 
-# TODO(SEE): move these into config/plans.yml as a `name_zh` beside each feature's `name`
-# WHEN A FOURTH FEATURE LANDS. At three keys a hand-maintained table is cheaper than a
-# schema change and the fallback below (catalog `name`, never the slug) is honest; past
-# that the table starts drifting from the catalog it mirrors.
-_FEATURE_ZH = {
-    "site_full": "整站访问权限",
-    "terminal_live_options": "终端实时期权数据",
-    "chat_opus": "Opus 模型的 Mastermind 对话",
-}
-
-
 def _feature_label(key: str) -> tuple[str, str] | None:
     """(en, zh) label for an entitlement feature key, or None when we cannot name it.
 
-    EN comes from ``config/plans.yml``'s ``features[].name``. ZH comes from the table
-    above, falling back to the catalog NAME — never to the key. A raw slug
+    EN comes from ``config/plans.yml``'s ``features[].name``; ZH uses ``name_zh``,
+    falling back to the catalog NAME — never to the key. A raw slug
     (``terminal_live_options``) is banned from user-facing copy by DESIGN_DOCTRINE, and
     an English slug dropped into a Chinese sentence is worse still, so a feature we
     cannot name in words is OMITTED from the sentence rather than printed as a slug.
     """
     en = ""
+    zh = ""
     try:
         for f in billing._catalog().get("features", []) or []:
             if f.get("key") == key:
                 en = str(f.get("name") or "").strip()
+                zh = str(f.get("name_zh") or "").strip()
                 break
     except Exception:  # noqa: BLE001
         pass
     if not en:
         log.debug("billing_emails: feature %r has no catalog name — omitted from copy", key)
         return None
-    return en, _FEATURE_ZH.get(key) or en
+    return en, zh or en
 
 
 def _tier_rank_of(tier: str | None) -> int:

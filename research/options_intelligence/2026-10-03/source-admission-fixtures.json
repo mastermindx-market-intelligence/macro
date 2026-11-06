@@ -1,0 +1,2294 @@
+{
+  "fixture_contract": "proposed_source_admission_fixtures/v1",
+  "synthetic_only": true,
+  "procedure_pin": "20adcaf65c2dd1bb734ab06e215feb1a0eb65659",
+  "notes": [
+    "SYN_* condition tokens and all reference receipts are invented synthetic test inputs, never provider rules.",
+    "Expected results are literal hand-derived assertions. At-ask and midpoint controls both have premium 2*2*50=200 and categorical proxy .80.",
+    "Capture is simulated, not demonstrated real source certification; all results must keep source_certified_accepted=false."
+  ],
+  "policy": {
+    "policy_id": "synthetic_source_admission/v1",
+    "version": 1,
+    "status": "proposed_synthetic_only",
+    "max_quote_age_ms": 1000,
+    "stale_limit_inclusive": true,
+    "price_tolerance": "0",
+    "condition_policy": {
+      "policy_id": "synthetic_conditions/v1",
+      "version": 1,
+      "qualification": "synthetic_fixture_only",
+      "allowed_trade": [
+        "SYN_T_REGULAR"
+      ],
+      "allowed_quote": [
+        "SYN_Q_TWO_SIDED"
+      ]
+    }
+  },
+  "base_evidence": {
+    "evidence_ref": "synthetic-admission-case",
+    "input_basis": "synthetic_trade_quote",
+    "requested_claim": "synthetic_measured_nbbo",
+    "input_origin": "synthetic",
+    "coverage_scope": "selected_notable_event_subset",
+    "requested_coverage_scope": "selected_notable_event_subset",
+    "policy_ref": {
+      "policy_id": "synthetic_source_admission/v1",
+      "version": 1
+    },
+    "provenance": {
+      "mode": "captured_pit",
+      "original_receipts_retained": true,
+      "source_timestamp_meaning": "synthetic_event_time_only"
+    },
+    "clocks": {
+      "producer_classified_at": "2026-10-02T12:00:00.150Z",
+      "computed_at": "2026-10-02T12:00:00.200Z",
+      "candidate_decision_at": "2026-10-02T12:00:01.000Z",
+      "precision_ms": 1,
+      "offset_uncertainty_ms": 0
+    },
+    "artifact": {
+      "artifact_id": "syn-feature",
+      "revision": "syn-arev1"
+    },
+    "publication_receipt": {
+      "artifact_id": "syn-feature",
+      "revision": "syn-arev1",
+      "published_at": "2026-10-02T12:00:00.300Z",
+      "original_receipt_retained": true
+    },
+    "consumer_receipt": {
+      "artifact_id": "syn-feature",
+      "revision": "syn-arev1",
+      "received_at": "2026-10-02T12:00:00.400Z",
+      "admitted_at": "2026-10-02T12:00:00.450Z",
+      "original_receipt_retained": true
+    },
+    "records": [
+      {
+        "record_id": "syn-r1",
+        "source_revision": "syn-srev1",
+        "source_sequence": "7",
+        "sequence_scope": "synthetic_contract_session",
+        "contract_id": "SYN:XYZ:2026-10-16:C:100",
+        "trade_timestamp": "2026-10-02T12:00:00.000Z",
+        "price": "2",
+        "contracts": 2,
+        "quote_multiplier": "50",
+        "trade_condition": "SYN_T_REGULAR",
+        "legacy_side_category": "~buy",
+        "correction_status": "synthetic_original_unamended",
+        "input_receipt": {
+          "record_id": "syn-r1",
+          "source_revision": "syn-srev1",
+          "observed_at": "2026-10-02T12:00:00.050Z",
+          "available_at": "2026-10-02T12:00:00.100Z",
+          "original_receipt_retained": true
+        },
+        "contract_reference": {
+          "reference_id": "syn-contract-ref",
+          "revision": "1",
+          "contract_id": "SYN:XYZ:2026-10-16:C:100",
+          "available_at": "2026-10-01T12:00:00.000Z",
+          "currency": "USD",
+          "quote_unit": "USD_per_underlying_unit",
+          "multiplier": "50",
+          "deliverable_kind": "synthetic_single_underlying",
+          "underlying_units": "50",
+          "original_receipt_retained": true
+        },
+        "quote": {
+          "quote_timestamp": "2026-10-02T11:59:59.500Z",
+          "bid": "1.8",
+          "ask": "2",
+          "bid_size": 10,
+          "ask_size": 10,
+          "bid_condition": "SYN_Q_TWO_SIDED",
+          "ask_condition": "SYN_Q_TWO_SIDED",
+          "contract_id": "SYN:XYZ:2026-10-16:C:100"
+        }
+      }
+    ],
+    "additional_input_refs": [],
+    "outcome_reference": null,
+    "join_request": null
+  },
+  "common_expect": {
+    "source_certified_accepted": false,
+    "reference_scope": "research_fixture_only"
+  },
+  "cases": [
+    {
+      "id": "at_ask_control",
+      "break_caught": "Wrong money scale, denominator, location or sign arithmetic",
+      "changes": {},
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "nbbo.source_print_count": 1,
+        "nbbo.valid_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.covered_premium_usd": "200",
+        "nbbo.print_coverage": "1",
+        "nbbo.premium_coverage": "1",
+        "nbbo.at_ask_share": "1",
+        "nbbo.at_bid_share": "0",
+        "nbbo.inside_share": "0",
+        "nbbo.outside_share": "0",
+        "rows.0.quote_age_ms": "500",
+        "rows.0.inferred_sign": 1,
+        "side_proxy.ask_share_proxy": "0.8"
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "midpoint_is_unknown_sign_but_measured_zero",
+      "break_caught": "Unknown sign collapsed to neutral; category copied into measured ask share",
+      "changes": {
+        "records.0.quote.ask": "2.2"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "rows.0.inferred_sign": null,
+        "rows.0.quote_location": "inside",
+        "nbbo.at_ask_share": "0",
+        "nbbo.inside_share": "1",
+        "inferred.unknown_print_count": 1,
+        "inferred.unknown_premium_usd": "200",
+        "side_proxy.ask_share_proxy": "0.8"
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "MIDPOINT_SIGN_UNKNOWN"
+        ]
+      }
+    },
+    {
+      "id": "at_bid_same_category",
+      "break_caught": "Measured share insensitive to actual NBBO location",
+      "changes": {
+        "records.0.quote.bid": "2",
+        "records.0.quote.ask": "2.2"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "nbbo.at_ask_share": "0",
+        "nbbo.at_bid_share": "1",
+        "rows.0.inferred_sign": -1,
+        "side_proxy.ask_share_proxy": "0.8"
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "future_quote",
+      "break_caught": "Future quote allowed because before later candidate decision",
+      "changes": {
+        "records.0.quote.quote_timestamp": "2026-10-02T12:00:00.001Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": "0",
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "FUTURE_OR_EQUAL_QUOTE"
+        ]
+      }
+    },
+    {
+      "id": "equal_timestamp",
+      "break_caught": "Invented sub-millisecond order for tied represented timestamps",
+      "changes": {
+        "records.0.quote.quote_timestamp": "2026-10-02T12:00:00.000Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": "0",
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "FUTURE_OR_EQUAL_QUOTE"
+        ]
+      }
+    },
+    {
+      "id": "stale_one_tick_beyond",
+      "break_caught": "Maximum age not enforced",
+      "changes": {
+        "records.0.quote.quote_timestamp": "2026-10-02T11:59:58.999Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": "0",
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "STALE_QUOTE"
+        ]
+      }
+    },
+    {
+      "id": "stale_boundary_inclusive",
+      "break_caught": "Inclusive synthetic boundary made exclusive",
+      "changes": {
+        "records.0.quote.quote_timestamp": "2026-10-02T11:59:59.000Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "nbbo.valid_print_count": 1,
+        "rows.0.quote_age_ms": "1000"
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "locked_quote",
+      "break_caught": "Locked NBBO treated as directional measurement",
+      "changes": {
+        "records.0.quote.bid": "2"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": "0",
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "LOCKED_QUOTE"
+        ]
+      }
+    },
+    {
+      "id": "crossed_quote",
+      "break_caught": "Crossed NBBO accepted",
+      "changes": {
+        "records.0.quote.bid": "2.1"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": "0",
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "CROSSED_QUOTE"
+        ]
+      }
+    },
+    {
+      "id": "zero_displayed_size",
+      "break_caught": "Zero size treated as valid two-sided quote",
+      "changes": {
+        "records.0.quote.ask_size": 0
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": "0",
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "QUOTE_SIZE_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "missing_quote",
+      "break_caught": "Missing quote silently becomes measured zero",
+      "changes": {
+        "records.0.quote": null
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": "0",
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "QUOTE_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "trade_condition_ineligible",
+      "break_caught": "Non-allowed synthetic trade condition admitted",
+      "changes": {
+        "records.0.trade_condition": "SYN_T_EXCLUDED"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": "0",
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "CONDITION_INELIGIBLE"
+        ]
+      }
+    },
+    {
+      "id": "quote_condition_ineligible",
+      "break_caught": "Non-allowed synthetic quote condition admitted",
+      "changes": {
+        "records.0.quote.ask_condition": "SYN_Q_EXCLUDED"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": "200",
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": "0",
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "CONDITION_INELIGIBLE"
+        ]
+      }
+    },
+    {
+      "id": "condition_policy_unqualified",
+      "break_caught": "Familiar-looking condition values admitted without qualified policy",
+      "changes": {},
+      "policy_changes": {
+        "condition_policy.qualification": "unqualified"
+      },
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.valid_print_count": 0,
+        "nbbo.at_ask_share": null
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "CONDITION_POLICY_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "condition_policy_missing_version",
+      "break_caught": "Missing condition policy version defaulted",
+      "changes": {},
+      "policy_changes": {
+        "condition_policy.version": null
+      },
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.valid_print_count": 0
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "CONDITION_POLICY_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "unresolved_correction",
+      "break_caught": "Unresolved correction treated as complete economic denominator; raw record premium must remain separately visible",
+      "changes": {
+        "records.0.correction_status": "unresolved"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": null,
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": null,
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null,
+        "nbbo.known_record_premium_usd": "200",
+        "nbbo.source_premium_complete": false
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "CORRECTION_UNRESOLVED"
+        ]
+      }
+    },
+    {
+      "id": "missing_multiplier",
+      "break_caught": "Missing multiplier defaulted to 100 or monetary zero",
+      "changes": {
+        "records.0.quote_multiplier": null
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null,
+        "nbbo.premium_coverage": null,
+        "nbbo.at_ask_share": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "MULTIPLIER_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "wrong_multiplier_reference",
+      "break_caught": "Declared multiplier disagrees with reference",
+      "changes": {
+        "records.0.quote_multiplier": "100"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "MULTIPLIER_REFERENCE_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "adjusted_basket_refused",
+      "break_caught": "Scalar multiplier treated as complete basket valuation",
+      "changes": {
+        "records.0.contract_reference.deliverable_kind": "synthetic_adjusted_basket"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "DELIVERABLE_TRANSFORM_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "artifact_published_after_decision",
+      "break_caught": "Only input PIT checked, publication ignored",
+      "changes": {
+        "publication_receipt.published_at": "2026-10-02T12:00:01.100Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "ARTIFACT_CLOCK_CHAIN_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "consumer_receipt_after_decision",
+      "break_caught": "Artifact existence mistaken for consumer availability",
+      "changes": {
+        "consumer_receipt.received_at": "2026-10-02T12:00:01.100Z",
+        "consumer_receipt.admitted_at": "2026-10-02T12:00:01.150Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "CONSUMER_AFTER_DECISION"
+        ]
+      }
+    },
+    {
+      "id": "artifact_revision_mismatch",
+      "break_caught": "Receipt for another feature revision reused",
+      "changes": {
+        "publication_receipt.revision": "syn-arev0"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "ARTIFACT_REVISION_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "computation_before_input",
+      "break_caught": "All timestamps before candidate but causal chain inverted",
+      "changes": {
+        "clocks.computed_at": "2026-10-02T12:00:00.090Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "INPUT_AFTER_COMPUTATION"
+        ]
+      }
+    },
+    {
+      "id": "reconstructed_history",
+      "break_caught": "Reconstructed event time mistaken for original captured availability",
+      "changes": {
+        "provenance.mode": "reconstructed_history",
+        "provenance.original_receipts_retained": false
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false,
+        "nbbo.at_ask_share": "1"
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "CAPTURED_PIT_NOT_EVIDENCED"
+        ]
+      }
+    },
+    {
+      "id": "mode_string_without_receipts",
+      "break_caught": "Changing provenance mode label creates nonexistent receipts",
+      "changes": {
+        "provenance.original_receipts_retained": false
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "CAPTURED_PIT_NOT_EVIDENCED"
+        ]
+      }
+    },
+    {
+      "id": "real_fields_still_unqualified",
+      "break_caught": "Synthetic policy grants real source certification",
+      "changes": {
+        "input_origin": "real_unqualified"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "source_certified_accepted": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "REAL_SOURCE_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "honest_category_proxy",
+      "break_caught": "Proxy cannot remain separately usable as a proxy",
+      "changes": {
+        "input_basis": "source_side_category_proxy",
+        "requested_claim": "legacy_side_proxy",
+        "records.0.quote": null
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "nbbo.valid_print_count": 0,
+        "nbbo.at_ask_share": null,
+        "side_proxy.ask_share_proxy": "0.8",
+        "side_proxy.measure_kind": "source_side_category_proxy"
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "category_proxy_mislabeled_measured",
+      "break_caught": "Numerically plausible proxy promoted to measured NBBO",
+      "changes": {
+        "input_basis": "source_side_category_proxy",
+        "requested_claim": "synthetic_measured_nbbo"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.valid_print_count": 0,
+        "nbbo.at_ask_share": null,
+        "side_proxy.ask_share_proxy": "0.8"
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "BASIS_CLAIM_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "mixed_covered_and_unknown",
+      "break_caught": "Valid denominator substituted for source denominator",
+      "changes": {
+        "records": [
+          {
+            "record_id": "syn-r1",
+            "source_revision": "syn-srev1",
+            "source_sequence": "7",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r1",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          },
+          {
+            "record_id": "syn-r2",
+            "source_revision": "syn-srev2",
+            "source_sequence": "8",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r2",
+              "source_revision": "syn-srev2",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": null
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "nbbo.source_print_count": 2,
+        "nbbo.valid_print_count": 1,
+        "nbbo.source_premium_usd": "400",
+        "nbbo.covered_premium_usd": "200",
+        "nbbo.print_coverage": "0.5",
+        "nbbo.premium_coverage": "0.5",
+        "nbbo.at_ask_share": "1",
+        "inferred.unknown_print_count": 1,
+        "inferred.unknown_premium_usd": "200"
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "equal_premium_ask_and_midpoint",
+      "break_caught": "At-ask share uses side category or classified-sign denominator",
+      "changes": {
+        "records": [
+          {
+            "record_id": "syn-r1",
+            "source_revision": "syn-srev1",
+            "source_sequence": "7",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r1",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          },
+          {
+            "record_id": "syn-r2",
+            "source_revision": "syn-srev2",
+            "source_sequence": "8",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r2",
+              "source_revision": "syn-srev2",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2.2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "nbbo.valid_print_count": 2,
+        "nbbo.premium_coverage": "1",
+        "nbbo.at_ask_share": "0.5",
+        "nbbo.inside_share": "0.5",
+        "inferred.classified_print_count": 1,
+        "inferred.unknown_print_count": 1,
+        "side_proxy.ask_share_proxy": "0.8"
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "empty_cohort",
+      "break_caught": "Empty evidence treated as neutral or full coverage",
+      "changes": {
+        "records": []
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 0,
+        "nbbo.valid_print_count": 0,
+        "nbbo.source_premium_usd": "0",
+        "nbbo.premium_coverage": null,
+        "nbbo.at_ask_share": null,
+        "side_proxy.ask_share_proxy": null
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "unknown_category_does_not_poison_nbbo",
+      "break_caught": "Missing category mapped to 0.5 or blocks independent quote measurement",
+      "changes": {
+        "records.0.legacy_side_category": null
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "side_proxy.ask_share_proxy": null,
+        "nbbo.at_ask_share": "1"
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "unqualified_sequence_scope",
+      "break_caught": "Unknown sequence meaning silently certified",
+      "changes": {
+        "records.0.sequence_scope": null
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_print_count": 1,
+        "nbbo.source_premium_usd": null,
+        "nbbo.valid_print_count": 0,
+        "nbbo.premium_coverage": null,
+        "nbbo.at_ask_share": null,
+        "rows.0.inferred_sign": null,
+        "nbbo.source_premium_complete": false,
+        "nbbo.known_record_premium_usd": "200"
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "SEQUENCE_CONTRACT_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "uncertain_clock_order",
+      "break_caught": "Clock offset uncertainty silently set to zero",
+      "changes": {
+        "clocks.offset_uncertainty_ms": 1
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "CLOCK_CONTRACT_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "naive_timestamp",
+      "break_caught": "Naive vendor time silently parsed as UTC",
+      "changes": {
+        "records.0.trade_timestamp": "2026-10-02T12:00:00.000"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.valid_print_count": 0
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "TRADE_CLOCK_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "input_available_after_computation",
+      "break_caught": "Input revision unavailable at computed artifact time",
+      "changes": {
+        "records.0.input_receipt.available_at": "2026-10-02T12:00:00.250Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "INPUT_AFTER_COMPUTATION"
+        ]
+      }
+    },
+    {
+      "id": "selected_not_marketwide",
+      "break_caught": "Selected notable events relabeled market-wide sample",
+      "changes": {
+        "requested_coverage_scope": "market_wide"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "COVERAGE_SCOPE_OVERCLAIM"
+        ]
+      }
+    },
+    {
+      "id": "outcome_pending_separate",
+      "break_caught": "Future outcome leaks into current feature or becomes zero",
+      "changes": {
+        "outcome_reference": {
+          "label_id": "syn-label1",
+          "label_revision": "1",
+          "matures_at": "2026-10-02T12:01:00.000Z",
+          "available_at": "2026-10-02T12:01:00.100Z",
+          "evaluation_at": "2026-10-02T12:00:01.000Z",
+          "value": "99"
+        }
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "outcome.status": "pending",
+        "outcome.value": null,
+        "nbbo.at_ask_share": "1"
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "outcome_observed_zero",
+      "break_caught": "Legitimate matured zero discarded as missing",
+      "changes": {
+        "outcome_reference": {
+          "label_id": "syn-label1",
+          "label_revision": "1",
+          "matures_at": "2026-10-02T12:01:00.000Z",
+          "available_at": "2026-10-02T12:01:00.100Z",
+          "evaluation_at": "2026-10-02T12:01:00.200Z",
+          "value": "0"
+        }
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "outcome.status": "available",
+        "outcome.value": "0"
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "nonnumeric_price",
+      "break_caught": "Nonfinite number coerced into source money",
+      "changes": {
+        "records.0.price": "NaN"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null,
+        "nbbo.valid_print_count": 0
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "TRADE_ECONOMICS_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "duplicate_identity_unresolved",
+      "break_caught": "Same-response duplicate identity counted twice as admissible evidence",
+      "changes": {
+        "records": [
+          {
+            "record_id": "syn-r1",
+            "source_revision": "syn-srev1",
+            "source_sequence": "7",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r1",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          },
+          {
+            "record_id": "syn-r1",
+            "source_revision": "syn-srev1",
+            "source_sequence": "7",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r1",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.valid_print_count": 0
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "DUPLICATE_RECORD_ID_UNRESOLVED"
+        ]
+      }
+    },
+    {
+      "id": "unknown_policy_reference",
+      "break_caught": "Unknown policy ID accepted with defaults",
+      "changes": {
+        "policy_ref.policy_id": "unknown_policy"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "POLICY_REFERENCE_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "outside_quote_location_not_sign",
+      "break_caught": "Outside print forced into ask/bid or aggressor certainty",
+      "changes": {
+        "records.0.quote.ask": "1.9"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "nbbo.outside_share": "1",
+        "nbbo.at_ask_share": "0",
+        "rows.0.inferred_sign": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "OUTSIDE_QUOTE_SIGN_UNKNOWN"
+        ]
+      }
+    },
+    {
+      "id": "source_revision_mismatch",
+      "break_caught": "Source receipt belonging to another revision reused",
+      "changes": {
+        "records.0.input_receipt.source_revision": "syn-srev0"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "INPUT_REVISION_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "invalid_quantity",
+      "break_caught": "Zero quantity receives measured weight",
+      "changes": {
+        "records.0.contracts": 0
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null,
+        "nbbo.valid_print_count": 0
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "TRADE_ECONOMICS_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "oi_effective_not_available",
+      "break_caught": "OI effective session replaced by publication session",
+      "changes": {
+        "additional_input_refs": [
+          {
+            "kind": "open_interest",
+            "reference_id": "syn-oi",
+            "revision": "1",
+            "source_timestamp": "2026-10-02T10:30:00.000Z",
+            "received_at": "2026-10-02T10:30:00.010Z",
+            "available_at": "2026-10-02T10:30:00.020Z",
+            "original_receipt_retained": true,
+            "details": {
+              "effective_at": "2026-10-01T20:00:00.000Z",
+              "open_interest": 10
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "additional_inputs.0.effective_at": "2026-10-01T20:00:00.000Z",
+        "additional_inputs.0.available_at": "2026-10-02T10:30:00.020Z",
+        "additional_inputs.0.valid": true
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "oi_future_availability",
+      "break_caught": "Previous effective date permits future available OI",
+      "changes": {
+        "additional_input_refs": [
+          {
+            "kind": "open_interest",
+            "reference_id": "syn-oi",
+            "revision": "1",
+            "source_timestamp": "2026-10-02T10:30:00.000Z",
+            "received_at": "2026-10-02T10:30:00.010Z",
+            "available_at": "2026-10-02T12:00:01.100Z",
+            "original_receipt_retained": true,
+            "details": {
+              "effective_at": "2026-10-01T20:00:00.000Z",
+              "open_interest": 10
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "INPUT_AFTER_COMPUTATION"
+        ]
+      }
+    },
+    {
+      "id": "complete_greek_reference_only",
+      "break_caught": "Complete synthetic Greek provenance gets lost",
+      "changes": {
+        "additional_input_refs": [
+          {
+            "kind": "greeks",
+            "reference_id": "syn-greeks",
+            "revision": "1",
+            "source_timestamp": "2026-10-02T11:59:59.900Z",
+            "received_at": "2026-10-02T12:00:00.010Z",
+            "available_at": "2026-10-02T12:00:00.020Z",
+            "original_receipt_retained": true,
+            "details": {
+              "underlying_timestamp": "2026-10-02T11:59:59.800Z",
+              "underlying_source_ref": "SYN_UNDERLYING",
+              "model_id": "SYN_REFERENCE_MODEL",
+              "model_version": "1",
+              "price_basis": "synthetic_midpoint",
+              "rate_ref": "syn-rate1",
+              "dividend_ref": "syn-div1",
+              "iv_solver_ref": "syn-inversion1",
+              "tte_seconds": "3600",
+              "day_count": "ACT/365F",
+              "expiry_rule_ref": "syn-fixing1",
+              "contract_ref": "SYN:XYZ:2026-10-16:C:100",
+              "sigma_unit": "decimal_annualized",
+              "delta_unit": "price_per_underlying_price",
+              "gamma_unit": "per_underlying_price",
+              "vega_unit": "price_per_decimal_sigma",
+              "vanna_unit": "delta_per_decimal_sigma",
+              "charm_unit": "delta_per_calendar_year"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "additional_inputs.0.valid": true,
+        "additional_inputs.0.kind": "greeks",
+        "additional_inputs.0.numerical_accuracy_qualified": false
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "greek_underlying_clock_missing",
+      "break_caught": "Missing Greek underlying time silently reconstructed",
+      "changes": {
+        "additional_input_refs": [
+          {
+            "kind": "greeks",
+            "reference_id": "syn-greeks",
+            "revision": "1",
+            "source_timestamp": "2026-10-02T11:59:59.900Z",
+            "received_at": "2026-10-02T12:00:00.010Z",
+            "available_at": "2026-10-02T12:00:00.020Z",
+            "original_receipt_retained": true,
+            "details": {
+              "underlying_timestamp": null,
+              "underlying_source_ref": "SYN_UNDERLYING",
+              "model_id": "SYN_REFERENCE_MODEL",
+              "model_version": "1",
+              "price_basis": "synthetic_midpoint",
+              "rate_ref": "syn-rate1",
+              "dividend_ref": "syn-div1",
+              "iv_solver_ref": "syn-inversion1",
+              "tte_seconds": "3600",
+              "day_count": "ACT/365F",
+              "expiry_rule_ref": "syn-fixing1",
+              "contract_ref": "SYN:XYZ:2026-10-16:C:100",
+              "sigma_unit": "decimal_annualized",
+              "delta_unit": "price_per_underlying_price",
+              "gamma_unit": "per_underlying_price",
+              "vega_unit": "price_per_decimal_sigma",
+              "vanna_unit": "delta_per_decimal_sigma",
+              "charm_unit": "delta_per_calendar_year"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "additional_inputs.0.valid": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "GREEK_PROVENANCE_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "greek_units_unqualified",
+      "break_caught": "Unknown decimal/percent Greek scale admitted",
+      "changes": {
+        "additional_input_refs": [
+          {
+            "kind": "greeks",
+            "reference_id": "syn-greeks",
+            "revision": "1",
+            "source_timestamp": "2026-10-02T11:59:59.900Z",
+            "received_at": "2026-10-02T12:00:00.010Z",
+            "available_at": "2026-10-02T12:00:00.020Z",
+            "original_receipt_retained": true,
+            "details": {
+              "underlying_timestamp": "2026-10-02T11:59:59.800Z",
+              "underlying_source_ref": "SYN_UNDERLYING",
+              "model_id": "SYN_REFERENCE_MODEL",
+              "model_version": "1",
+              "price_basis": "synthetic_midpoint",
+              "rate_ref": "syn-rate1",
+              "dividend_ref": "syn-div1",
+              "iv_solver_ref": "syn-inversion1",
+              "tte_seconds": "3600",
+              "day_count": "ACT/365F",
+              "expiry_rule_ref": "syn-fixing1",
+              "contract_ref": "SYN:XYZ:2026-10-16:C:100",
+              "sigma_unit": "decimal_annualized",
+              "delta_unit": "price_per_underlying_price",
+              "gamma_unit": "per_underlying_price",
+              "vega_unit": "unknown_or_percent_point",
+              "vanna_unit": "delta_per_decimal_sigma",
+              "charm_unit": "delta_per_calendar_year"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "additional_inputs.0.valid": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "GREEK_PROVENANCE_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "null_matching_contract_ids",
+      "break_caught": "Equality of two absent identities mistaken for qualified identity",
+      "changes": {
+        "records.0.contract_id": null,
+        "records.0.contract_reference.contract_id": null
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "CONTRACT_REFERENCE_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "whitespace_contract_id",
+      "break_caught": "Whitespace treated as meaningful economic identity",
+      "changes": {
+        "records.0.contract_id": "   ",
+        "records.0.contract_reference.contract_id": "   "
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "CONTRACT_REFERENCE_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "numeric_artifact_identity",
+      "break_caught": "Matched non-string artifact identifiers admitted",
+      "changes": {
+        "artifact.artifact_id": 123,
+        "publication_receipt.artifact_id": 123,
+        "consumer_receipt.artifact_id": 123
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "ARTIFACT_REVISION_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "numeric_source_revision",
+      "break_caught": "Matched non-string source revision admitted",
+      "changes": {
+        "records.0.source_revision": 1,
+        "records.0.input_receipt.source_revision": 1
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "INPUT_REVISION_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "matched_marketwide_scope_overclaim",
+      "break_caught": "Both unqualified scope labels match and thereby imply market coverage",
+      "changes": {
+        "coverage_scope": "market_wide",
+        "requested_coverage_scope": "market_wide"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "COVERAGE_SCOPE_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "matched_null_scopes",
+      "break_caught": "Absent source and requested scope equality mistaken for evidence",
+      "changes": {
+        "coverage_scope": null,
+        "requested_coverage_scope": null
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "COVERAGE_SCOPE_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "sub_millisecond_truncation",
+      "break_caught": "Datetime parser truncates unsupported fractional precision and invents order",
+      "changes": {
+        "records.0.quote.quote_timestamp": "2026-10-02T11:59:59.5000009Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.valid_print_count": 0
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "QUOTE_CLOCK_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "mixed_unresolved_correction",
+      "break_caught": "Clean print hides ambiguous source denominator from unresolved amendment",
+      "changes": {
+        "records": [
+          {
+            "record_id": "syn-r1",
+            "source_revision": "syn-srev1",
+            "source_sequence": "7",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r1",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          },
+          {
+            "record_id": "syn-r2",
+            "source_revision": "syn-srev2",
+            "source_sequence": "8",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "unresolved",
+            "input_receipt": {
+              "record_id": "syn-r2",
+              "source_revision": "syn-srev2",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_complete": false,
+        "nbbo.source_premium_usd": null
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "CORRECTION_UNRESOLVED"
+        ]
+      }
+    },
+    {
+      "id": "duplicate_economic_identity",
+      "break_caught": "Fresh record ID hides same declared contract/session/sequence",
+      "changes": {
+        "records": [
+          {
+            "record_id": "syn-r1",
+            "source_revision": "syn-srev1",
+            "source_sequence": "7",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r1",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          },
+          {
+            "record_id": "syn-r2",
+            "source_revision": "syn-srev1",
+            "source_sequence": "7",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r2",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null,
+        "nbbo.valid_print_count": 0
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "DUPLICATE_SOURCE_IDENTITY_UNRESOLVED"
+        ]
+      }
+    },
+    {
+      "id": "boolean_policy_version",
+      "break_caught": "Boolean True passes integer version through Python equality",
+      "changes": {
+        "policy_ref.version": true
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "POLICY_REFERENCE_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "same_date_incompatible_board_archive",
+      "break_caught": "Date equality silently joins different exact artifact revisions and populations",
+      "changes": {
+        "join_request": {
+          "left": {
+            "as_of": "2026-10-01",
+            "artifact_revision": "git_blob:bae9b8dac3b1cfefe9912e58c3d524f8c2007a1d",
+            "population_ref": "board_pair:f9f4108104c84918bacc5ff06805be40",
+            "row_count": 69
+          },
+          "right": {
+            "as_of": "2026-10-01",
+            "artifact_revision": "observation_fingerprint:cf0059c8da553ea5ad07bdf8cc4ce8252ca504e78dcea17b164b39f37fe3627b",
+            "population_ref": "archived_W3:cf0059c8da553ea5ad07bdf8cc4ce8252ca504e78dcea17b164b39f37fe3627b",
+            "row_count": 62
+          }
+        }
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "join_identity.compatible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "ARTIFACT_COHORT_JOIN_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "exact_same_artifact_population_control",
+      "break_caught": "Exact identity control rejected indiscriminately",
+      "changes": {
+        "join_request": {
+          "left": {
+            "as_of": "2026-10-01",
+            "artifact_revision": "git_blob:bae9b8dac3b1cfefe9912e58c3d524f8c2007a1d",
+            "population_ref": "board_pair:f9f4108104c84918bacc5ff06805be40",
+            "row_count": 69
+          },
+          "right": {
+            "as_of": "2026-10-01",
+            "artifact_revision": "git_blob:bae9b8dac3b1cfefe9912e58c3d524f8c2007a1d",
+            "population_ref": "board_pair:f9f4108104c84918bacc5ff06805be40",
+            "row_count": 69
+          }
+        }
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "join_identity.compatible": true
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "classification_before_event",
+      "changes": {
+        "clocks.producer_classified_at": "2026-10-02T11:59:00.000Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "INPUT_AFTER_CLASSIFICATION"
+        ]
+      }
+    },
+    {
+      "id": "classification_before_input_available",
+      "changes": {
+        "clocks.producer_classified_at": "2026-10-02T12:00:00.075Z"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "INPUT_AFTER_CLASSIFICATION"
+        ]
+      }
+    },
+    {
+      "id": "invalid_timezone_offset_minute",
+      "changes": {
+        "records.0.quote.quote_timestamp": "2026-10-02T13:38:59.500+00:99"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.valid_print_count": 0
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "QUOTE_CLOCK_INVALID"
+        ]
+      }
+    },
+    {
+      "id": "duplicate_sequence_leading_zero",
+      "changes": {
+        "records": [
+          {
+            "record_id": "syn-r1",
+            "source_revision": "syn-srev1",
+            "source_sequence": "7",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r1",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          },
+          {
+            "record_id": "syn-r2",
+            "source_revision": "syn-srev1",
+            "source_sequence": "07",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r2",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null,
+        "nbbo.source_premium_complete": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "SEQUENCE_CONTRACT_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "non_ascii_sequence",
+      "changes": {
+        "records.0.source_sequence": "٧"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "SEQUENCE_CONTRACT_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "blank_greek_model_reference",
+      "changes": {
+        "additional_input_refs": [
+          {
+            "kind": "greeks",
+            "reference_id": "syn-greeks",
+            "revision": "1",
+            "source_timestamp": "2026-10-02T11:59:59.900Z",
+            "received_at": "2026-10-02T12:00:00.010Z",
+            "available_at": "2026-10-02T12:00:00.020Z",
+            "original_receipt_retained": true,
+            "details": {
+              "underlying_timestamp": "2026-10-02T11:59:59.800Z",
+              "underlying_source_ref": "SYN_UNDERLYING",
+              "model_id": " ",
+              "model_version": "1",
+              "price_basis": "synthetic_midpoint",
+              "rate_ref": "syn-rate1",
+              "dividend_ref": "syn-div1",
+              "iv_solver_ref": "syn-inversion1",
+              "tte_seconds": "3600",
+              "day_count": "ACT/365F",
+              "expiry_rule_ref": "syn-fixing1",
+              "contract_ref": "SYN:XYZ:2026-10-16:C:100",
+              "sigma_unit": "decimal_annualized",
+              "delta_unit": "price_per_underlying_price",
+              "gamma_unit": "per_underlying_price",
+              "vega_unit": "price_per_decimal_sigma",
+              "vanna_unit": "delta_per_decimal_sigma",
+              "charm_unit": "delta_per_calendar_year"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "additional_inputs.0.valid": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "GREEK_PROVENANCE_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "nontext_outcome_identity",
+      "changes": {
+        "outcome_reference": {
+          "label_id": 123,
+          "label_revision": 123,
+          "matures_at": "2026-10-02T12:01:00.000Z",
+          "available_at": "2026-10-02T12:01:00.100Z",
+          "evaluation_at": "2026-10-02T12:01:00.200Z",
+          "value": "0"
+        }
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "outcome.status": "unavailable",
+        "outcome.value": null
+      },
+      "expect_contains": {}
+    },
+    {
+      "id": "proxy_incomplete_monetary_denominator",
+      "changes": {
+        "records": [
+          {
+            "record_id": "syn-r1",
+            "source_revision": "syn-srev1",
+            "source_sequence": "7",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": "50",
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r1",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          },
+          {
+            "record_id": "syn-r2",
+            "source_revision": "syn-srev1",
+            "source_sequence": "8",
+            "sequence_scope": "synthetic_contract_session",
+            "contract_id": "SYN:XYZ:2026-10-16:C:100",
+            "trade_timestamp": "2026-10-02T12:00:00.000Z",
+            "price": "2",
+            "contracts": 2,
+            "quote_multiplier": null,
+            "trade_condition": "SYN_T_REGULAR",
+            "legacy_side_category": "~buy",
+            "correction_status": "synthetic_original_unamended",
+            "input_receipt": {
+              "record_id": "syn-r2",
+              "source_revision": "syn-srev1",
+              "observed_at": "2026-10-02T12:00:00.050Z",
+              "available_at": "2026-10-02T12:00:00.100Z",
+              "original_receipt_retained": true
+            },
+            "contract_reference": {
+              "reference_id": "syn-contract-ref",
+              "revision": "1",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100",
+              "available_at": "2026-10-01T12:00:00.000Z",
+              "currency": "USD",
+              "quote_unit": "USD_per_underlying_unit",
+              "multiplier": "50",
+              "deliverable_kind": "synthetic_single_underlying",
+              "underlying_units": "50",
+              "original_receipt_retained": true
+            },
+            "quote": {
+              "quote_timestamp": "2026-10-02T11:59:59.500Z",
+              "bid": "1.8",
+              "ask": "2",
+              "bid_size": 10,
+              "ask_size": 10,
+              "bid_condition": "SYN_Q_TWO_SIDED",
+              "ask_condition": "SYN_Q_TWO_SIDED",
+              "contract_id": "SYN:XYZ:2026-10-16:C:100"
+            }
+          }
+        ],
+        "input_basis": "source_side_category_proxy",
+        "requested_claim": "legacy_side_proxy"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.source_premium_usd": null,
+        "side_proxy.category_premium_coverage": null
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "PROXY_DENOMINATOR_UNQUALIFIED"
+        ]
+      }
+    },
+    {
+      "id": "quote_contract_mismatch",
+      "changes": {
+        "records.0.quote.contract_id": "SYN:DIFFERENT"
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "nbbo.valid_print_count": 0
+      },
+      "expect_contains": {
+        "rows.0.reasons": [
+          "QUOTE_CONTRACT_MISMATCH"
+        ]
+      }
+    },
+    {
+      "id": "contract_receipt_not_retained",
+      "changes": {
+        "records.0.contract_reference.original_receipt_retained": false
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": false,
+        "acceptance.captured_pit_eligible": false
+      },
+      "expect_contains": {
+        "acceptance.reasons": [
+          "CAPTURED_PIT_NOT_EVIDENCED"
+        ]
+      }
+    },
+    {
+      "id": "feature_only_input_after_classification",
+      "changes": {
+        "additional_input_refs": [
+          {
+            "kind": "greeks",
+            "reference_id": "syn-greeks",
+            "revision": "1",
+            "source_timestamp": "2026-10-02T11:59:59.900Z",
+            "received_at": "2026-10-02T12:00:00.010Z",
+            "available_at": "2026-10-02T12:00:00.175Z",
+            "original_receipt_retained": true,
+            "details": {
+              "underlying_timestamp": "2026-10-02T11:59:59.800Z",
+              "underlying_source_ref": "SYN_UNDERLYING",
+              "model_id": "SYN_REFERENCE_MODEL",
+              "model_version": "1",
+              "price_basis": "synthetic_midpoint",
+              "rate_ref": "syn-rate1",
+              "dividend_ref": "syn-div1",
+              "iv_solver_ref": "syn-inversion1",
+              "tte_seconds": "3600",
+              "day_count": "ACT/365F",
+              "expiry_rule_ref": "syn-fixing1",
+              "contract_ref": "SYN:XYZ:2026-10-16:C:100",
+              "sigma_unit": "decimal_annualized",
+              "delta_unit": "price_per_underlying_price",
+              "gamma_unit": "per_underlying_price",
+              "vega_unit": "price_per_decimal_sigma",
+              "vanna_unit": "delta_per_decimal_sigma",
+              "charm_unit": "delta_per_calendar_year"
+            }
+          }
+        ]
+      },
+      "policy_changes": {},
+      "expect": {
+        "acceptance.synthetic_contract_pass": true,
+        "acceptance.captured_pit_eligible": true,
+        "additional_inputs.0.valid": true
+      },
+      "expect_contains": {}
+    }
+  ],
+  "required_mutations": [
+    "unknown_to_zero",
+    "future_quote_allowed",
+    "publication_ignored",
+    "unqualified_condition_policy_allowed",
+    "category_proxy_as_measured",
+    "blanket_multiplier_100",
+    "reconstructed_as_captured",
+    "consumer_cutoff_ignored",
+    "correction_ignored",
+    "date_only_artifact_join"
+  ],
+  "principal_provided_identity_witness": {
+    "received_from": "parent principal; no independent artifact fetch by this reference",
+    "current_board": {
+      "as_of": "2026-10-01",
+      "artifact_revision": "git_blob:bae9b8dac3b1cfefe9912e58c3d524f8c2007a1d",
+      "population_ref": "board_pair:f9f4108104c84918bacc5ff06805be40",
+      "row_count": 69,
+      "emit": "2026-10-03T08:15:30+00:00"
+    },
+    "archived_W3": {
+      "as_of": "2026-10-01",
+      "artifact_revision": "observation_fingerprint:cf0059c8da553ea5ad07bdf8cc4ce8252ca504e78dcea17b164b39f37fe3627b",
+      "population_ref": "archived_W3:cf0059c8da553ea5ad07bdf8cc4ce8252ca504e78dcea17b164b39f37fe3627b",
+      "row_count": 62
+    },
+    "evidence_package": "B4 publication 626848e",
+    "limit": "Concrete supplied metadata exercises identity refusal only; it does not prove artifact contents or run a production cohort join."
+  }
+}

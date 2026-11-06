@@ -1,0 +1,12 @@
+{
+  "followup": "One nonreported limitation was promoted to explicit no-nested-parent destination guard, with a failing-before/passing-after preflight regression. New-source review follows separately; do not infer final-source approval from this earlier hash.",
+  "parent_checks": "454 combined tests passed; actual market tail served; old states and source files verified unchanged",
+  "parent_run_id": "market-time-machine-20261015",
+  "retained_bytes": 4217,
+  "retained_response_sha256": "a5987566ea1a0c92eb9619369f29b923a9ccb6bfa20256e7980b4ff65be2d26c",
+  "reviewed_source_sha256": "49c1e5bde4fd6a61b757ded927134bf2395bae537ed55001b45ac76206d4b8fa",
+  "root_id": "market-time-machine-20261015",
+  "run": "market-time-machine-accrual-20261015-review-01",
+  "schema": "market_memory.accrual_review_adjudication.v1",
+  "verdict": "PASS_ON_FROZEN_SUBJECT"
+}

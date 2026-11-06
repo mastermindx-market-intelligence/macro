@@ -1,0 +1,19 @@
+{
+  "schema": "tiingo.original_disposition_accounting_actual_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T01:52:17.123421+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 38800,
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "accounting_method_sha256": "a698cad5496f1a298c8bf5210b0cd5a132dcbb8010b4a7237fb9cf2a7f9eb82e",
+  "actual_accounting_sha256": "2df8e075d3ed6962c19163fef91e88184709a430942cf282a7698f5d087960fb",
+  "all_original_4392_requests_partitioned": true,
+  "qualified_successes": 1757,
+  "whole_quality_quarantines": 1,
+  "held_attempted_failures": 3,
+  "never_admitted_count": 2631,
+  "all_qualifier_writer_returns_consumed": true,
+  "failed_requests_retried": false,
+  "full_capture_claimed": false,
+  "programme_acceptance_claimed": false
+}

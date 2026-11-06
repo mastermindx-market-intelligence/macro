@@ -14,22 +14,25 @@ from scripts import build_government_revenue
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = (ROOT / "templates" / "government_revenue.html.j2").read_text(encoding="utf-8")
+CONTROLLER = (ROOT / "templates" / "government-revenue-page.js.j2").read_text(encoding="utf-8")
+STARTER = (ROOT / "templates" / "government-revenue-investor-start.js").read_text(encoding="utf-8")
+TEMPLATE += "\n" + CONTROLLER + "\n" + STARTER
 BRIEFCASE = (ROOT / "templates" / "government-revenue-briefcase.js").read_text(encoding="utf-8")
 BRIEFCASE_UI = (ROOT / "templates" / "government-revenue-briefcase-ui.js").read_text(encoding="utf-8")
 CANDIDATE_RADAR = (ROOT / "templates" / "government-revenue-candidate-radar.js").read_text(encoding="utf-8")
 CANDIDATE_RADAR_SITE = (ROOT / "site" / "government-revenue-candidate-radar.js").read_text(encoding="utf-8")
 SITE_PATH = ROOT / "site" / "government_revenue.html"
 SITE = SITE_PATH.read_text(encoding="utf-8")
+SITE_RUNTIME = (ROOT / "site" / "government-revenue-page.js").read_text(encoding="utf-8")
 WORKSPACE_PATH = ROOT / "site" / "government-revenue-data" / "workspace.json"
 HAS_NODE = shutil.which("node") is not None
 needs_node = pytest.mark.skipif(not HAS_NODE, reason="node not on PATH")
 
 
 def _page_runtime_js() -> str:
-    blocks = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", TEMPLATE, re.S)
-    runtime = next((block for block in blocks if "__hydrateGovernmentWorkspace" in block), None)
-    assert runtime is not None, "Government Revenue page runtime is missing"
-    return runtime
+    assert '__hydrateGovernmentWorkspace' in CONTROLLER
+    from jinja2 import Environment, FileSystemLoader
+    return Environment(loader=FileSystemLoader(str(ROOT / "templates"))).get_template("government-revenue-page.js.j2").render()
 
 
 def _run_runtime(
@@ -50,6 +53,11 @@ def _run_runtime(
     budget_module_status: str | None = None,
     company_bridge_stub: bool = False,
     real_dossiers_js: bool = False,
+    source_receipt_candidates: list[dict] | None = None,
+    history_flow: bool = False,
+    history_query: str = "Alpha",
+    restored_query: str | None = None,
+    async_mode_rows: dict | None = None,
 ) -> dict:
     """Run the page's real IIFE against a deliberately tiny browser DOM stub."""
     page_runtime = _page_runtime_js()
@@ -70,7 +78,13 @@ def _run_runtime(
         var LANG = %(lang)s;
         var BUDGET_MODULE_STATUS = %(budget_module_status)s;
         var COMPANY_BRIDGE_STUB = %(company_bridge_stub)s;
+        var HISTORY_FLOW = %(history_flow)s;
+        var HISTORY_QUERY = %(history_query)s;
+        var RESTORED_QUERY = %(restored_query)s;
+        var ASYNC_MODE_ROWS = %(async_mode_rows)s;
         var bridgeCalls = [];
+        var SOURCE_RECEIPT_CANDIDATES = %(source_receipt_candidates)s;
+        var candidateSourceResolver = null;
         var fetchCalls = 0;
         function makeElement(){
           var listeners = {};
@@ -83,7 +97,7 @@ def _run_runtime(
             setAttribute:function(name,value){this[name]=String(value)},
             getAttribute:function(name){return this[name] == null ? null : String(this[name])},
             querySelectorAll:function(){return[]}, querySelector:function(){return null}, closest:function(){return null},
-            focus:function(){}, blur:function(){},
+            focus:function(){document.activeElement=this}, blur:function(){},
             classList:{add:function(){},remove:function(){},toggle:function(){},contains:function(){return false}}
           };
         }
@@ -101,16 +115,20 @@ def _run_runtime(
           dispatchEvent:function(){return true}
         };
         var location = {href:'https://example.test/government_revenue.html'+LOCATION_SEARCH, pathname:'/government_revenue.html', search:LOCATION_SEARCH, hash:''};
-        var history = {replaceState:function(){}};
+        var winListeners={},historyEntries=[{state:null,url:location.href}],historyIndex=0;
+        function locate(url){var next=new URL(url,location.href);location.href=next.href;location.pathname=next.pathname;location.search=next.search;location.hash=next.hash}
+        var history = {state:null,replaceState:function(snapshot,title,url){this.state=snapshot;locate(url);historyEntries[historyIndex]={state:snapshot,url:location.href}},pushState:function(snapshot,title,url){this.state=snapshot;locate(url);historyEntries=historyEntries.slice(0,historyIndex+1);historyEntries.push({state:snapshot,url:location.href});historyIndex++},go:function(delta){historyIndex+=delta;var entry=historyEntries[historyIndex];this.state=entry.state;locate(entry.url);(winListeners.popstate||[]).forEach(function(fn){fn({state:entry.state})})}};
         var navigator = {clipboard:null};
-        var window = {location:location, history:history, navigator:navigator, innerWidth:1440};
+        if(RESTORED_QUERY!==null){history.state={governmentRevenue:{schema:1,q:RESTORED_QUERY,truth:'all'}};historyEntries[0].state=history.state}
+        var window = {addEventListener:function(name,fn){(winListeners[name]=winListeners[name]||[]).push(fn)},location:location, history:history, navigator:navigator, innerWidth:1440,
+          MDXAuth:{enabled:function(){return true},onChange:function(cb){cb(null,"INITIAL_SESSION")}}};
         // R6: when requested, load the REAL shipped government-revenue-dossiers.js
         // (not a stub) so window.createGovernmentRevenueCompanyBridge/IdentityAtlas/
         // Dossier/Budget are the actual production factories, proving the page's
         // wiring end-to-end. Any per-factory stub below still wins if the caller
         // ALSO asked for one (assigned after, so it overrides).
         %(dossiers_js)s
-        if(CANDIDATE_ROWS!==null)window.createGovernmentRevenueCandidateRadar=function(api){return {
+        if(CANDIDATE_ROWS!==null)window.createGovernmentRevenueCandidateRadar=function(api){candidateSourceResolver=api.sourceReceipts;return {
           load:function(){api.onRows(CANDIDATE_ROWS,{status:CANDIDATE_STATUS,total:CANDIDATE_ROWS.length,mapping_backlog_total:CANDIDATE_BACKLOG,mapping_backlog_tickers:CANDIDATE_BACKLOG_TICKERS,mapping_backlog_states:CANDIDATE_BACKLOG_STATES,freshness:{exact_candidate_availability:EXACT_CANDIDATE_AVAILABILITY}});return Promise.resolve(CANDIDATE_ROWS)},
           refresh:function(){return this.load()}, render:function(){}, invalidate:function(){}, state:function(){return 'ok'}, crosschecks:function(){return ''}
         }};
@@ -131,6 +149,10 @@ def _run_runtime(
           loadCompany:function(t){bridgeCalls.push({op:'load', ticker:t})},
           invalidate:function(){bridgeCalls.push({op:'invalidate'})}
         }};
+        if(ASYNC_MODE_ROWS){
+          var modeFactories={budget:'createGovernmentRevenueBudget',programs:'createGovernmentRevenueProgramDossier',fms:'createGovernmentRevenueFms'};
+          Object.keys(ASYNC_MODE_ROWS).forEach(function(mode){window[modeFactories[mode]]=function(api){return {load:function(){return Promise.resolve().then(function(){api.onRows(ASYNC_MODE_ROWS[mode],{status:'ok'})})},refresh:function(){return[]},render:function(){},invalidate:function(){},state:function(){return'ok'}}}});
+        }
         var fetch = function(){fetchCalls += 1; return Promise.resolve({ok:FETCH_STATUS >= 200 && FETCH_STATUS < 300,status:FETCH_STATUS,json:function(){return Promise.resolve(FULL_WORKSPACE)}})};
         function CustomEvent(name, init){this.type=name;this.detail=init&&init.detail}
         %(page_runtime)s
@@ -147,11 +169,22 @@ def _run_runtime(
             var freshness = runtime.effectiveFreshnessState(PAYLOAD, PAYLOAD.procurement_workspace, NOW_MS);
             var tickerStates=TICKER_ROUTES===null?null:TICKER_ROUTES.map(function(ticker){return runtime.tickerRailState(ticker)});
             var tickerRoutes=TICKER_ROUTES===null?null:TICKER_ROUTES.map(function(ticker){return runtime.openTickerFilmstrip(ticker)});
+            var historyFlow=null;
+            if(HISTORY_FLOW){
+              node('deskSearch').value=HISTORY_QUERY;node('deskSearch').fire('input');
+              var before={selection:runtime.currentSelection(),query:node('deskSearch').value,queue:node('queueList').innerHTML,url:location.href};
+              node('companyMode').fire('click');
+              var navigated={selection:runtime.currentSelection(),url:location.href,entries:historyEntries.length};
+              if(historyEntries.length>1){history.go(-1)}
+              var back={selection:runtime.currentSelection(),query:node('deskSearch').value,queue:node('queueList').innerHTML,url:location.href,focused:document.activeElement===node('deskSearch')};
+              if(historyEntries.length>1){history.go(1)}
+              historyFlow={before:before,navigated:navigated,back:back,forward:{selection:runtime.currentSelection(),query:node('deskSearch').value,url:location.href},entries:historyEntries};
+            }
             var afterRetry = bannerSnapshot();
             // Everything below is language-sensitive, so snapshot it BEFORE the
             // langchange re-render swaps the whole desk into Chinese.
-            var result = {initial:initial, afterRetry:afterRetry,
-              fetchCalls:fetchCalls, freshness:freshness,
+            var result = {currentUrl:location.href,historyFlow:historyFlow,initial:initial, afterRetry:afterRetry,
+              fetchCalls:fetchCalls, freshness:freshness, searchQuery:node('deskSearch').value,
               bundlesMatch:runtime.workspaceBundleMatches(PAYLOAD.procurement_workspace, FULL_WORKSPACE),
               rows:runtime.workspaceRows(), tickerStates:tickerStates, tickerRoutes:tickerRoutes,
               selection:runtime.currentSelection(), inspectorHtml:node('inspector').innerHTML,
@@ -161,6 +194,7 @@ def _run_runtime(
               agencyNames:runtime.agencyNames(),
               workspaceComplete:runtime.workspaceIsComplete(PAYLOAD.procurement_workspace),
               bridgeCalls:bridgeCalls,
+              candidateReceiptSources:SOURCE_RECEIPT_CANDIDATES===null?null:SOURCE_RECEIPT_CANDIDATES.map(function(candidate){return candidateSourceResolver?candidateSourceResolver(candidate):null}),
               // The fake DOM's innerHTML is a plain string, not parsed --
               // getElementById('companyBridge') returns a SEPARATE fake
               // element from whatever was stuffed into #inspector's
@@ -196,6 +230,11 @@ def _run_runtime(
         "lang": json.dumps(lang),
         "budget_module_status": json.dumps(budget_module_status) if budget_module_status is not None else "null",
         "company_bridge_stub": json.dumps(company_bridge_stub),
+        "history_flow": json.dumps(history_flow),
+        "history_query": json.dumps(history_query),
+        "restored_query": json.dumps(restored_query),
+        "async_mode_rows": json.dumps(async_mode_rows),
+        "source_receipt_candidates": json.dumps(source_receipt_candidates),
         "dossiers_js": (
             (ROOT / "templates" / "government-revenue-dossiers.js").read_text(encoding="utf-8")
             if real_dossiers_js
@@ -277,7 +316,9 @@ def test_candidate_radar_requires_exact_receipt_bound_candidates_and_keeps_compa
     assert "fetchPages" in CANDIDATE_RADAR
     assert "candidate_mapping_generation_drift" in CANDIDATE_RADAR
     assert CANDIDATE_RADAR_SITE == CANDIDATE_RADAR
-    assert 'src="government-revenue-candidate-radar.js"' in TEMPLATE
+    assert "'government-revenue-candidate-radar.js'" in STARTER
+    assert "script.src=name" in STARTER
+    assert "script.setAttribute('data-sync','')" in STARTER
 
 
 @needs_node
@@ -617,8 +658,8 @@ def test_keyboard_url_mobile_and_zero_data_paths_are_first_class() -> None:
 def test_research_briefcase_is_local_auditable_and_workspace_gated() -> None:
     implementation = TEMPLATE + BRIEFCASE + BRIEFCASE_UI
     for marker in (
-        'data-sync src="government-revenue-briefcase.js"',
-        'data-sync src="government-revenue-briefcase-ui.js"',
+        'government-revenue-briefcase.js',
+        'government-revenue-briefcase-ui.js',
         'id="researchBriefcase"',
         'id="savedViewSelect"',
         'id="toggleLocalAlert"',
@@ -820,7 +861,7 @@ def test_runtime_distinguishes_unavailable_change_detection_from_a_quiet_tape(tm
         "受影响的 8 条记录仍保留在不可变审计账本中，但已从候选、Prophet、排名、仓位、门控与信号界面排除。"
         in TEMPLATE
     )
-    assert "Historical issuance quarantined" in SITE
+    assert "Historical issuance quarantined" in SITE_RUNTIME
 
 
 @needs_node
@@ -1743,7 +1784,7 @@ def test_identity_atlas_ships_on_the_company_inspector() -> None:
     correct PR and pass on a stale one.
     """
     for marker in (
-        'data-sync src="government-revenue-dossiers.js"',
+        'government-revenue-dossiers.js',
         "createGovernmentRevenueIdentityAtlas",
         'id="identityAtlas"',
         "Identity Atlas",
@@ -1957,7 +1998,7 @@ def test_runtime_renders_the_real_bridge_government_fact_block_for_an_irdm_selec
 ])
 def test_mobile_panel_keyboard_regressions(tmp_path: Path, case: str) -> None:
     runtime = _page_runtime_js()
-    start = runtime.index("  // One active mobile panel;")
+    start = runtime.index("  var mobileSheet=null,overlayOverflow=null;")
     end = runtime.index("  function rowKeys(", start)
     functions = runtime[start:end]
     for name in ("openEvidenceDrawer", "closeDrawer"):
@@ -2086,7 +2127,7 @@ guardOverlayFocus({target:elements.workspaceUnlock});assert.equal(document.activ
 
 
 def test_mobile_panel_handlers_are_on_the_real_user_path() -> None:
-    for source in (TEMPLATE, SITE):
+    for source in (TEMPLATE, SITE + "\n" + SITE_RUNTIME):
         assert "$('filterOpen').addEventListener('click',openMobileFilters)" in source
         assert "document.addEventListener('keydown',pageKeys)" in source
         assert "document.addEventListener('focusin',guardOverlayFocus)" in source
@@ -2096,7 +2137,7 @@ def test_mobile_panel_handlers_are_on_the_real_user_path() -> None:
 
 
 def test_native_select_labels_never_use_dual_language_spans() -> None:
-    for source in (TEMPLATE, SITE):
+    for source in (TEMPLATE, SITE + "\n" + SITE_RUNTIME):
         for option in re.findall(r"<option\b[^>]*>(.*?)</option>", source, re.S):
             assert '<span class="l-' not in option
             assert "{{ t(" not in option
@@ -2105,12 +2146,143 @@ def test_native_select_labels_never_use_dual_language_spans() -> None:
 
 def test_source_drawer_stacking_is_above_mobile_parent() -> None:
     import hashlib
-    for source in (TEMPLATE,):
+    published_styles = re.findall(r"<style\b[^>]*>(.*?)</style>", SITE, re.S)
+    refs = re.findall(r"assets/css/([a-f0-9]{8})\.css\?v=\1", SITE)
+    for digest in refs:
+        css = ROOT / "site/assets/css" / f"{digest}.css"
+        assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == digest
+        published_styles.append(css.read_text())
+    published = next(style for style in published_styles if ".drawer-backdrop.above-mobile-sheet" in style)
+    for source in (TEMPLATE, published):
         sheet = int(re.search(r"\.mobile-sheet\{[^}]*z-index:(\d+)", source).group(1))
         drawer = int(re.search(r"\.evidence-drawer\{z-index:(\d+)", source).group(1))
         backdrop = int(re.search(r"\.drawer-backdrop\.above-mobile-sheet\{z-index:(\d+)", source).group(1))
         assert sheet < backdrop < drawer
-    refs = re.findall(r"assets/css/([a-f0-9]{8})\.css\?v=\1", SITE)
-    css_files = [ROOT / "site/assets/css" / f"{digest}.css" for digest in refs]
-    css = next(path for path in css_files if ".drawer-backdrop.above-mobile-sheet" in path.read_text())
-    assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == css.stem
+
+
+def test_deferred_tool_sources_remain_ordered_sync_assets_after_typed_finance():
+    for name in ("government-revenue-briefcase.js", "government-revenue-briefcase-ui.js", "government-revenue-dossiers.js"):
+        assert "'" + name + "'" in STARTER
+    assert "script.async=false" in STARTER
+    assert "script.setAttribute('data-sync','')" in STARTER
+    assert "Promise.resolve(initial.promise).then(" in STARTER
+    assert "page.type='module'" in STARTER
+    assert "page.src='government-revenue-page.js'" in STARTER
+
+
+@needs_node
+@pytest.mark.parametrize("mismatch", [None, "event_id", "record_id", "ref_id", "content_sha256", "known_at", "effective_at", "duplicate_receipt"])
+def test_candidate_source_receipts_join_only_exact_governed_event(tmp_path: Path, mismatch: str | None) -> None:
+    from copy import deepcopy
+    receipt = {"ref_id":"usaspending:retained:award_detail:abc", "content_sha256":"a"*64, "record_id":"award:exact", "known_at":"2026-08-02T09:00:00Z", "effective_at":"2026-07-13T00:00:00Z"}
+    candidate = {"event_refs":["govws-exact", "award:exact"], "source_receipt_refs":[deepcopy(receipt), "govws-retained-text"]}
+    source = {**receipt, "url":"https://api.usaspending.gov/api/v2/awards/award-exact/"}
+    event = _d11_agency_event("govws-exact", "Department of Defense", record_id="award:exact", evidence={"source_class":"official_fact", "receipts":[source]})
+    if mismatch in {"event_id", "record_id"}:
+        event[mismatch] = "different"
+    elif mismatch == "duplicate_receipt":
+        event["evidence"]["receipts"].append({**source, "url":"https://api.usaspending.gov/different/"})
+    elif mismatch:
+        source[mismatch] = "different"
+    workspace = {"schema_version":"government_procurement_workspace.v2", "bundle_id":"grw2-"+"a"*24, "total":1, "events":[event], "freshness":{"status":"ok"}, "coverage":{}, "limitations":[]}
+    payload = {"companies":[], "market":{}, "freshness":{"status":"ok"}, "opportunity_intelligence":{"market":{}}, "procurement_workspace":workspace}
+    before = deepcopy(candidate)
+    out = _run_runtime(tmp_path,payload,workspace,1785672000000,candidate_rows=[],source_receipt_candidates=[candidate])
+    refs = out["candidateReceiptSources"][0]
+    assert refs is not None
+    assert refs[1] == "govws-retained-text"
+    assert candidate == before
+    if mismatch is None:
+        assert refs[0] == {**receipt,"url":source["url"]}
+    else:
+        assert refs == candidate["source_receipt_refs"]
+
+
+@needs_node
+def test_browser_back_forward_restores_research_view_without_search_in_url(tmp_path: Path) -> None:
+    events=[_d11_agency_event("govws-alpha","Department of Defense",title="Alpha award"),_d11_agency_event("govws-beta","Department of Defense",title="Beta award")]
+    workspace={"schema_version":"government_procurement_workspace.v2","bundle_id":"grw2-"+"a"*24,"total":2,"events":events,"freshness":{"status":"ok"},"coverage":{},"limitations":[]}
+    payload={"companies":[],"market":{},"freshness":{"status":"ok"},"opportunity_intelligence":{"market":{}},"procurement_workspace":workspace}
+    out=_run_runtime(tmp_path,payload,workspace,1785672000000,candidate_rows=[],history_flow=True)
+    flow=out["historyFlow"]
+    assert flow["navigated"]["entries"]==2
+    assert flow["navigated"]["selection"]["mode"]=="companies"
+    assert flow["back"]["selection"]==flow["before"]["selection"]
+    assert flow["back"]["query"]=="Alpha"
+    assert flow["back"]["queue"]==flow["before"]["queue"]
+    assert flow["back"]["focused"] is True
+    assert flow["forward"]["selection"]["mode"]=="companies"
+    assert flow["forward"]["query"]=="Alpha"
+    assert all("Alpha" not in entry["url"] for entry in flow["entries"])
+
+
+@needs_node
+@pytest.mark.parametrize("mode,kind",[("programs","program_dossier"),("budget","budget_program"),("fms","fms_case")])
+def test_async_source_rail_preserves_direct_record_url(tmp_path: Path, mode: str, kind: str) -> None:
+    rows=[{"id":mode+":"+suffix,"kind":kind,"truth":"official","title":suffix,"subtitle":"","agency":"","tickers":[],"defense":True} for suffix in ["first","requested"]]
+    workspace={"schema_version":"government_procurement_workspace.v2","bundle_id":"grw2-"+"a"*24,"total":0,"events":[],"freshness":{"status":"ok"},"coverage":{},"limitations":[]}
+    payload={"companies":[],"market":{},"freshness":{"status":"ok"},"opportunity_intelligence":{"market":{}},"procurement_workspace":workspace}
+    out=_run_runtime(tmp_path,payload,workspace,1785672000000,location_search="?mode="+mode+"&item="+mode+"%3Arequested",async_mode_rows={mode:rows})
+    assert out["selection"]["mode"]==mode
+    assert out["selection"]["selected"]==mode+":requested"
+    assert "item="+mode+"%3Arequested" in out["currentUrl"]
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_filtered_candidate_deep_link_never_selects_a_substitute(tmp_path: Path, lang: str) -> None:
+    workspace={"schema_version":"government_procurement_workspace.v2","bundle_id":"grw2-"+"a"*24,"total":0,"events":[],"freshness":{"status":"ok"},"coverage":{},"limitations":[]}
+    payload={"companies":[{"ticker":"ONE","name":"One Co."},{"ticker":"TWO","name":"Two Co."}],"market":{},"freshness":{"status":"ok"},"opportunity_intelligence":{"market":{}},"procurement_workspace":workspace}
+    candidates=[{"id":"candidate:"+ticker.lower(),"kind":"candidate","tickers":[ticker],"title":ticker,"subtitle":"","candidate":{}} for ticker in ["ONE","TWO"]]
+    out=_run_runtime(tmp_path,payload,workspace,1785672000000,candidate_rows=candidates,location_search="?mode=candidates&item=candidate%3Atwo&ticker=ONE",lang=lang)
+    assert out["selection"]["selected"] == ""
+    assert "candidate:two" in out["inspectorHtml"]
+    assert "candidate:one" not in out["inspectorHtml"]
+    assert ("excluded by your filters" if lang=="en" else "被当前筛选排除") in out["inspectorHtml"]
+
+
+@needs_node
+@pytest.mark.parametrize("restore", [False, True])
+def test_search_and_history_keep_the_export_query_limit(tmp_path: Path, restore: bool) -> None:
+    query="a"*120+"excluded suffix"
+    workspace={"schema_version":"government_procurement_workspace.v2","bundle_id":"grw2-"+"a"*24,"total":0,"events":[],"freshness":{"status":"ok"},"coverage":{},"limitations":[]}
+    payload={"companies":[],"market":{},"freshness":{"status":"ok"},"opportunity_intelligence":{"market":{}},"procurement_workspace":workspace}
+    out=_run_runtime(tmp_path,payload,workspace,1785672000000,candidate_rows=[],history_flow=not restore,history_query=query,restored_query=query if restore else None)
+    assert out["searchQuery"] == query[:120]
+    assert "a"*120 not in out["currentUrl"]
+    if not restore:
+        assert out["historyFlow"]["before"]["query"] == query[:120]
+        assert out["historyFlow"]["back"]["query"] == query[:120]
+
+
+@needs_node
+def test_search_preserves_space_while_typing_a_multiword_query(tmp_path: Path) -> None:
+    workspace={"schema_version":"government_procurement_workspace.v2","bundle_id":"grw2-"+"a"*24,"total":0,"events":[],"freshness":{"status":"ok"},"coverage":{},"limitations":[]}
+    payload={"companies":[],"market":{},"freshness":{"status":"ok"},"opportunity_intelligence":{"market":{}},"procurement_workspace":workspace}
+    out=_run_runtime(tmp_path,payload,workspace,1785672000000,candidate_rows=[],history_flow=True,history_query="Alpha ")
+    assert out["historyFlow"]["before"]["query"] == "Alpha "
+    assert out["historyFlow"]["back"]["query"] == "Alpha"
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("detail", [True, False])
+def test_workspace_source_navigation_skips_post_only_transaction_receipt(tmp_path: Path, lang: str, detail: bool) -> None:
+    from copy import deepcopy
+    transaction = "https://api.usaspending.gov/api/v2/transactions/?page=1"
+    award = "https://api.usaspending.gov/api/v2/awards/CONT_AWD_N0002418C2305_9700_-NONE-_-NONE-/"
+    receipts = [{"url": transaction, "publisher": "USAspending.gov", "record_id": "award:exact", "content_sha256": "a" * 64}]
+    if detail:
+        receipts.append({"url": award, "publisher": "USAspending.gov", "record_id": "award:exact", "content_sha256": "b" * 64})
+    event = _d11_agency_event("govws-exact", "Department of Defense", evidence={"source_class": "official_fact", "receipts": receipts})
+    workspace = {"schema_version": "government_procurement_workspace.v2", "bundle_id": "grw2-" + "a" * 24, "total": 1, "events": [event], "freshness": {"status": "ok"}, "coverage": {}, "limitations": []}
+    payload = {"companies": [], "market": {}, "freshness": {"status": "ok"}, "opportunity_intelligence": {"market": {}}, "procurement_workspace": workspace}
+    before = deepcopy(workspace)
+    out = _run_runtime(tmp_path, payload, workspace, 1785672000000, lang=lang)
+    html = out["inspectorHtml"]
+    assert 'href="' + transaction.replace("&", "&amp;") + '"' not in html
+    if detail:
+        assert html.count('href="' + award + '"') == 2  # primary action and source section
+    else:
+        assert ("This governed event has no public record URL" if lang == "en" else "该受治理事件没有公开记录链接") in html
+    assert workspace == before  # saved POST receipt remains evidence, not a browser action

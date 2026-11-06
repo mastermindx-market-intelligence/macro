@@ -1,0 +1,17 @@
+{
+  "observed_at": "2026-10-14T00:19:37.577748+00:00",
+  "url": "https://www.occ.treas.gov/rss/occ_news.xml",
+  "status": 200,
+  "sha256": "16f504bdb14bc85c9efc16dadaa7ee3bb152cc09b3556bfb4d898396a47831e6",
+  "byte_length": 8756,
+  "scope": "Source endpoint qualification only; no configured collector, provider, stage, cursor or publication effect",
+  "bac_items": [
+    {
+      "title": "OCC Imposes $750 Million Assessment Against Bank of America for Deficient BSA/AML Compliance",
+      "link": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html",
+      "description": "The Office of the Comptroller of the Currency (OCC) today announced a $750 million civil money penalty against Bank of America, N.A. (bank), for violations of the Bank Secrecy Act and its implementing regulations, including 12 CFR 21.21 and 12 CFR 21.11. This amount is the largest in OCC history. ",
+      "pubDate": "13 Oct 2026 16:15:00 -0400",
+      "guid": ""
+    }
+  ]
+}

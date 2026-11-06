@@ -1,0 +1,40 @@
+{
+  "prior_guard_only_attempt": {
+    "pid": 89573,
+    "exit": 1,
+    "effect": "none; assertion before all writes",
+    "reason": "over-escaped comparison regex corrected to character classes"
+  },
+  "at": "2026-10-20T10:42:20.454566+00:00",
+  "head": "e2d10f933587f58be8716505529a37f8839901f7",
+  "incoming": "42c859546ececa797b400db0adeb8c5a22f96832",
+  "base": "92c51f1ff800b36fc63e7869243945996ac7315c",
+  "source_inputs": {
+    "templates/theme.js": "c97a29857f1f008a6d6f155e5e64b1558e2d07264ffda5a196c108f0ac6f07dd",
+    "templates/mm_brain.js": "5eedc2cee65e3a3e08e9554984441ce308cb8a04a8f1b01e7c3d5b56147f9011",
+    "templates/terminal_overlay.js": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf",
+    "templates/shared_shell_bridge.js": "048314d5a56e2eb639262829b2b54a5419fd92532c392b85668d3c717c0b653d",
+    "templates/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "lib/site_assets.py": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+    "scripts/optimize_assets.py": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be"
+  },
+  "theme_emitter": "lib.site_assets.emit_theme_js",
+  "chat_owner": "H source plus existing inject_shared_shell_text and make_optimizer; exact incoming-only theme-stamp delta verified",
+  "new_files": {
+    "site/theme.js": {
+      "bytes": 271223,
+      "sha256": "c27f65318a3877e154e11f4f43fc7545e9fb67aa52cdd15cda2aaba9ebd21c29"
+    },
+    "templates/chat.html": {
+      "bytes": 90161,
+      "sha256": "c4cad91e7ce1ca0a4e86c068aa68384f7fc621cc692cd40f31c10a6200caa3e8"
+    },
+    "site/chat.html": {
+      "bytes": 90161,
+      "sha256": "c4cad91e7ce1ca0a4e86c068aa68384f7fc621cc692cd40f31c10a6200caa3e8"
+    }
+  },
+  "mm_brain_template_site_equal": true,
+  "chat_pair_equal": true,
+  "focused_diff_check_exit": 0
+}

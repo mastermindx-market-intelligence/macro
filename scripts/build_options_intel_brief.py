@@ -1424,12 +1424,33 @@ def main(argv: list[str] | None = None) -> int:
                           "it is older than the >36h freshness rule. Never used by the "
                           "nightly lane; for local verification of the scoring math "
                           "against a deliberately frozen test store.")
+    ap.add_argument("--require-store", action="store_true",
+                     help="PRODUCTION-REQUIRED mode, for the store-bearing nightly lane "
+                          "(AD-1T2). Two conditions become loud non-zero exits instead of "
+                          "the default off-host self-skip: the canonical ThetaData store "
+                          "must RESOLVE, and the artifact left on disk must be readable "
+                          "and carry this run's receipt_id. It does NOT gate on board "
+                          "HEALTH -- a resolvable but thin or stale store still produces "
+                          "a payload, and publishing that honestly (NO_SIGNAL, "
+                          "INSUFFICIENT_COVERAGE, STALE_SOURCE) is the contract, not a "
+                          "failure. A semantic no-op is also still a success. Leave this "
+                          "OFF for every runner that is not the designated producer.")
     args = ap.parse_args(argv)
 
     out_path = Path(args.out)
     payload = build(out_path=out_path, ignore_staleness=args.ignore_staleness)
 
     if payload is None:
+        # AD-1T2: on the ONE lane that is supposed to be store-bearing, an unresolved
+        # store is the defect itself — not a condition to skip past. Exiting 0 here is
+        # what let site/options_intel_brief.json sit frozen for 23+ trading sessions
+        # behind a green step. The artifact bytes are still left untouched: a failed
+        # required build must never blank or truncate the last valid brief.
+        if args.require_store:
+            print("::error title=options-intel-brief::--require-store: the canonical "
+                  "ThetaData store did not resolve on a lane declared store-bearing. "
+                  "No brief was produced; the last valid artifact is untouched.", flush=True)
+            return 2
         # §G off-host self-skip: the warning was already emitted by
         # _resolve_store_with_diagnostics(); leave the committed artifact untouched
         # and exit 0 — never crash the nightly on a store-less runner.
@@ -1438,12 +1459,32 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if _semantic_unchanged(out_path, payload):
+        # A no-op is a legitimate outcome — same session, weekend, holiday. Contract §7
+        # deliberately ignores `built_at_utc`/`_run`, so an unmoved timestamp is NOT a
+        # failure and --require-store must not turn it into one. Freshness is monitored
+        # against the eligible-session calendar, never inferred from this timestamp.
         print(f"::notice title=options-intel-brief::semantic no-op — {out_path} unchanged "
               f"(receipt_id={payload.get('receipt_id')})", flush=True)
     else:
         write_json_atomic(out_path, payload)
         print(f"::notice title=options-intel-brief::wrote {out_path} "
               f"(receipt_id={payload.get('receipt_id')})", flush=True)
+
+    if args.require_store:
+        # The required lane must not report success on an artifact the consumer cannot
+        # read. Validate what is actually ON DISK — covering both the write and the
+        # no-op branch — and bind it to the payload we just built.
+        try:
+            on_disk = json.loads(out_path.read_text())
+        except Exception as exc:
+            print(f"::error title=options-intel-brief::--require-store: {out_path} is "
+                  f"missing or unreadable after a successful build ({exc}).", flush=True)
+            return 3
+        if on_disk.get("receipt_id") != payload.get("receipt_id"):
+            print(f"::error title=options-intel-brief::--require-store: {out_path} carries "
+                  f"receipt_id={on_disk.get('receipt_id')} but this run built "
+                  f"{payload.get('receipt_id')} — refusing to report success.", flush=True)
+            return 3
 
     print("=== options.intel_brief/v1 header ===")
     for k in ("as_of_session", "oi_counted_date", "pending_session", "pending_reason",

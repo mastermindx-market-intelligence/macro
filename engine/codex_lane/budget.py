@@ -35,8 +35,10 @@ Never log token values.
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
+import math
 import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -214,6 +216,15 @@ def can_run(
         budget_pct: float = float(cfg.get("budget_pct", 85))
         max_sessions: int = int(cfg.get("max_sessions_per_window", 10))
 
+        # A newer provider protocol may explicitly withhold ordinary usage.
+        # Meter percentages and a passed local budget never override that state.
+        observed_limits = state.get("rate_limits")
+        if isinstance(observed_limits, dict) and "ordinary_usage_allowed" in observed_limits:
+            if observed_limits["ordinary_usage_allowed"] is not True:
+                return False, "provider_usage_not_allowed_or_unknown"
+            if not _complete_rate_limits(observed_limits):
+                return False, "provider_quota_incomplete"
+
         # 1. paused_until check
         paused_until_str = state.get("paused_until") or ""
         if paused_until_str:
@@ -278,32 +289,70 @@ def can_run(
 # Internal state-update helper (shared between note_result and note_rate_limits)
 # ---------------------------------------------------------------------------
 
-def _apply_rate_limits_to_state(state: dict, rl: dict) -> None:
-    """Apply a normalized rate-limits dict (from runner) to *state* in place.
+def _complete_rate_limits(rl: object) -> bool:
+    """Validate the existing normalized shape; missing is not explicit N/A."""
+    if not isinstance(rl, dict) or any(k not in rl for k in ("primary", "secondary")):
+        return False
+    allowed = rl.get("ordinary_usage_allowed")
+    if allowed is not None and type(allowed) is not bool:
+        return False
+    present = False
+    for key in ("primary", "secondary"):
+        window = rl[key]
+        if window is None:
+            continue
+        if not isinstance(window, dict):
+            return False
+        value = window.get("used_percent")
+        try:
+            if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+                return False
+        except (OverflowError, TypeError, ValueError):
+            return False
+        present = True
+    return present
 
-    Clears the degraded flag whenever primary or secondary is present and
-    non-null.  Trusts the latest reported snapshot over any local estimate
-    (CRX-R4).
 
-    If the incoming *rl* dict lacks a truthy ``fetched_at`` key, a copy is
-    stored with ``fetched_at`` stamped to the current UTC time so the
-    staleness session-cap check (can_run gate step 3) always has a reference
-    point.  The caller's dict is never mutated.
+def _apply_rate_limits_to_state(state: dict, rl: dict) -> bool:
+    """Apply a complete, ordered observation without inventing a reset event.
 
-    FIX 2 — wrong-account tripwire: if plan_type changes between snapshots,
-    log a warning so the operator knows a runner box may be logged into the
-    wrong ChatGPT account.  Stores the new plan_type in state["plan_type"].
+    Absolute provider values may decrease and reset timestamps may move in either
+    direction. Only observation time is ordered. An older/equal-time reply or an
+    unorderable stream result cannot overwrite a newer fetched snapshot. Initial
+    legacy results may retain receipt-time stamping for compatibility, but that
+    stamp is never sufficient evidence to lift a pause. Return whether applied.
+    This lane assumes its existing single-account binding; plan_type is only a
+    diagnostic, not a verified account identity or authorization.
     """
-    # Stamp fetched_at if absent so the >24h staleness check has a reference.
-    if not rl.get("fetched_at"):
-        rl = dict(rl)  # shallow copy — do not mutate caller's dict
-        rl["fetched_at"] = _to_iso(_now_utc())
+    complete = _complete_rate_limits(rl)
+    permission_observed = (isinstance(rl, dict) and "ordinary_usage_allowed" in rl
+                           and (rl["ordinary_usage_allowed"] is None
+                                or type(rl["ordinary_usage_allowed"]) is bool))
+    if not complete and not permission_observed:
+        return False
+    now = _now_utc()
+    stamp = rl.get("fetched_at")
+    observed = _parse_iso(stamp)
+    previous = state.get("rate_limits")
+    previous_time = _parse_iso(previous.get("fetched_at")) if isinstance(previous, dict) else None
+    if stamp and (observed is None or observed > now):
+        return False
+    if previous_time is not None and (observed is None or observed <= previous_time):
+        return False
+    # Unknown measurements are not safe evidence to persist as quota or N/A.
+    # Keep only the independently validated permission and its observation time.
+    rl = (copy.deepcopy(rl) if complete else
+          {"ordinary_usage_allowed": rl["ordinary_usage_allowed"], "fetched_at": stamp})
+    if (isinstance(previous, dict) and "ordinary_usage_allowed" in previous
+            and "ordinary_usage_allowed" not in rl):
+        # Omission does not revoke prior permission evidence, but must never
+        # suppress a newer restrictive meter. Carry the known signal forward;
+        # pause recovery separately requires explicit permission in the new read.
+        rl["ordinary_usage_allowed"] = previous["ordinary_usage_allowed"]
+    if not stamp:
+        rl["fetched_at"] = _to_iso(now)
     state["rate_limits"] = rl
-    # Clear degraded if at least one window is reported
-    primary = rl.get("primary")
-    secondary = rl.get("secondary")
-    if primary is not None or secondary is not None:
-        state["degraded"] = False
+    state["degraded"] = not complete
 
     # FIX 2: plan_type change detection (wrong-account tripwire)
     new_plan_type = rl.get("plan_type")
@@ -318,6 +367,7 @@ def _apply_rate_limits_to_state(state: dict, rl: dict) -> None:
                 new_plan_type,
             )
         state["plan_type"] = new_plan_type
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -365,9 +415,10 @@ def note_result(run: dict, root: str | Path | None = None) -> None:
         # Handle usage_limit: set paused_until
         error_kind = run.get("error_kind")
         if error_kind == "usage_limit":
-            # FIX 19(c) — if run's rate_limits is None, use state["rate_limits"] as fallback
-            _rl_for_pause = run_rl if run_rl is not None else state.get("rate_limits")
-            paused_until = _compute_pause_until(_rl_for_pause, now)
+            # A stale/unstamped snapshot is not proof that this failure is stale.
+            # Retain the failure, but derive its pause from the latest accepted
+            # observation, never from the discarded result's obsolete clock.
+            paused_until = _compute_pause_until(state.get("rate_limits"), now)
             state["paused_until"] = _to_iso(paused_until)
             log.info(
                 "codex_lane.budget: usage_limit hit — pausing until %s",
@@ -394,10 +445,11 @@ def note_rate_limits(rl: dict | None, root: str | Path | None = None) -> None:
     - Otherwise updates state["rate_limits"] and state["updated_at"],
       clears the degraded flag when primary or secondary is non-null.
 
-    FIX 1 — CRX-R4 self-heal: after applying the snapshot, if state still
-    has a future paused_until AND the fresh snapshot shows that every present
-    window (primary/secondary, skipping None) is below budget_pct, the pause
-    was written by a stale/wrong-account signal — clear it and log.
+    A complete observation at most 10 minutes old may clear a quota pause
+    when every applicable window is below budget. It must not predate the
+    previously persisted state transition. Older, conflicting, future and
+    malformed snapshots do not overwrite newer provider values. This handles
+    natural or promotional resets without guessing their cause or schedule.
 
     NEVER raises.
     """
@@ -406,29 +458,29 @@ def note_rate_limits(rl: dict | None, root: str | Path | None = None) -> None:
     try:
         resolved_root = _resolve_root(root)
         state = load_state(resolved_root)
-        _apply_rate_limits_to_state(state, rl)
+        last_transition = _parse_iso(state.get("updated_at"))
+        if not _apply_rate_limits_to_state(state, rl):
+            return
 
-        # FIX 1: self-heal stale paused_until when fresh snapshot is healthy
         paused_until_str = state.get("paused_until") or ""
-        if paused_until_str:
-            paused_dt = _parse_iso(paused_until_str)
-            if paused_dt is not None and paused_dt > _now_utc():
-                cfg = load_cfg(resolved_root)
-                budget_pct: float = float(cfg.get("budget_pct", 85))
-                primary = (rl.get("primary") or {})
-                secondary = (rl.get("secondary") or {})
-                p_pct = primary.get("used_percent")
-                s_pct = secondary.get("used_percent")
-                # Require at least one window to be present (skip None windows)
-                present_pcts = [v for v in (p_pct, s_pct) if v is not None]
-                if present_pcts and all(float(v) < budget_pct for v in present_pcts):
-                    state["paused_until"] = None
-                    log.info(
-                        "codex_lane.budget: fresh snapshot below budget (%.1f%%)"
-                        " — clearing stale paused_until %s",
-                        budget_pct,
-                        paused_until_str,
-                    )
+        paused_dt = _parse_iso(paused_until_str)
+        observed = _parse_iso(rl.get("fetched_at"))
+        now = _now_utc()
+        # Receipt-time stamping of a legacy result is not a fresh native read.
+        # A read already in flight before a newer failure cannot clear it.
+        fresh = (_complete_rate_limits(rl) and observed is not None
+                 and 0 <= (now - observed).total_seconds() <= 600
+                 and (last_transition is None or observed >= last_transition)
+                 and ("ordinary_usage_allowed" not in state["rate_limits"]
+                      or rl.get("ordinary_usage_allowed") is True))
+        if paused_dt is not None and paused_dt > now and fresh:
+            cfg = load_cfg(resolved_root)
+            budget_pct = float(cfg.get("budget_pct", 85))
+            present_pcts = [rl[key]["used_percent"] for key in ("primary", "secondary")
+                            if rl[key] is not None]
+            if all(value < budget_pct for value in present_pcts):
+                state["paused_until"] = None
+                log.info("codex_lane.budget: fresh complete snapshot cleared quota pause")
 
         _save_state(state, resolved_root)
     except Exception as exc:  # noqa: BLE001

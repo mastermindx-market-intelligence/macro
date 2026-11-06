@@ -72,7 +72,7 @@ def _view_body(src: str, view: str) -> str:
 def test_sidebar_present_with_six_view_buttons() -> None:
     s = _page()
     assert '<nav class="si-side"' in s, "the persistent rail is gone"
-    assert '<nav class="si-side" aria-label="Sector Intelligence views">' in s, \
+    assert '<nav class="si-side" aria-label="Sector Intelligence views" hidden>' in s, \
         "rail lost its aria-label"
     btns = re.findall(r'class="si-view-btn[^"]*" data-view="([a-z]+)" href="#([a-z]+)"', s)
     assert [b[0] for b in btns] == NAV_VIEWS, f"sidebar buttons/order wrong: {btns}"
@@ -97,57 +97,42 @@ def test_v1_anchor_rail_is_retired() -> None:
     assert 'class="scc-rail"' not in s
     # …and the funnel it carried is a routed view now, not an exit link: the rail owns a
     # #confluence button and no longer points off-page at the standalone subsectors page.
-    rail = s.split("</nav>", 1)[0]
+    rail = s.split('<nav class="si-side"', 1)[1].split("</nav>", 1)[0]
     assert 'data-view="confluence" href="#confluence"' in rail
     assert 'href="subsectors.html"' not in rail, \
         "the old funnel exit LINK survived — it should be the routed #confluence view now"
 
 
 def test_shell_grid_and_stage() -> None:
+    """The corrected product is the existing Macro page, under its shared nav."""
     s = _page()
     assert 'class="si-shell"' in s and 'class="si-stage"' in s
-    assert "grid-template-columns:var(--si-rail-w, 200px)" in s, \
-        "§1 pins the shell grid and the --si-rail-w custom property"
+    assert s.count('{% include "_site_nav.html.j2" %}') == 1
+    assert s.count('<h1 class="si-page-title">') == 1
+    assert 'class="si-workflow"' in s
+    assert '/discover?tab=sectors' not in s
+    assert '--si-rail-w' not in _shell_css(s)
 
 
-def test_sticky_rail_containing_block_reaches_the_page_bottom() -> None:
-    """gate 1 says the sidebar is PERSISTENT, and it measurably was not.
-
-    The rail is `position:sticky` inside .si-shell at a full 100vh. A sticky element
-    can only stay pinned while its containing block has slack beneath it, so every
-    pixel left below the shell is a pixel the rail gets shoved up by at maximum scroll.
-    Measured in-browser: with the page <footer> outside the shell the rail rode up 103px
-    at the bottom of every view and clipped its own top buttons off screen — the sidebar
-    stopped being persistent exactly where a reader is deepest in a view and most likely
-    to switch. Two things fix it and both must hold: the footer lives inside the stage,
-    and the shell cancels body's bottom padding.
-    """
+def test_brief_precedes_session_tape_and_stays_in_macro_stage() -> None:
+    """The Paper Brief leads; the existing tape and footer remain reachable."""
     s = _page()
+    overview = _view_body(s, 'overview')
+    assert overview.index('class="rvx-hero') < overview.index('id="ftr-tape-strip"')
+    assert overview.index('_sector_central_brief.html.j2') < overview.index('id="ftr-tape-strip"')
     tail = s.split('{# /si-view explore #}', 1)[1]
-    assert tail.index("<footer>") < tail.index("{# /si-stage #}"), \
-        "the page footer escaped the stage — the sticky rail loses its bottom slack"
-    css = _shell_css(s)
-    assert "margin-bottom:-18px" in css, \
-        "shell must cancel body's bottom padding or the rail unpins at max scroll"
-    body_pad = re.search(r"body\s*\{[^}]*padding:\s*(\d+)px", s)
-    assert body_pad and body_pad.group(1) == "18", (
-        "body padding changed — the shell's negative bottom margin must match it "
-        f"(found {body_pad.group(1) if body_pad else '?'}px)"
-    )
+    assert tail.index("<footer>") < tail.index("{# /si-stage #}")
+    assert 'margin-bottom:-18px' not in _shell_css(s)
 
 
-def test_mobile_switcher_is_not_a_hamburger() -> None:
-    """gate 9: <768px the rail becomes a segmented switcher, never a menu that
-    hides the product."""
-    s = _page()
-    mob = s.split("@media (max-width:767px)", 1)
-    assert len(mob) == 2, "no <768px breakpoint — the mobile switcher is missing"
-    block = mob[1][:900]
-    assert "flex-direction:row" in block, "mobile rail must lay out as a tab row"
-    assert "border-bottom-color:var(--link)" in block, \
-        "§1b: on mobile the .on accent moves to border-bottom"
-    for banned in ("hamburger", "display:none;}\n    .si-side"):
-        assert banned not in block
+def test_mobile_switcher_keeps_the_workflow_and_labels() -> None:
+    """Responsive layout retains the real links and does not hide their labels."""
+    css = _shell_css(_page())
+    mobile = css.split('@media (max-width:767px)', 1)[1]
+    assert '.si-side { flex-wrap:wrap;' in mobile
+    assert '.si-workflow-link' in mobile
+    assert 'min-height:44px' in mobile
+    assert '.si-vb-l { display:none' not in css
 
 
 # ───────────────────────────────────────────────────────── organ view membership
@@ -336,11 +321,16 @@ def test_mounting_does_not_wait_for_a_frame() -> None:
     A forced reflow gives the same 'view is laid out first' guarantee unconditionally.
     """
     code = _code(_router())
-    act = code.split("function activate(", 1)[1].split("\nfunction ", 1)[0]
-    assert "requestAnimationFrame" not in act, \
-        "view activation must not depend on a frame callback — hidden tabs never get one"
-    assert "requestAnimationFrame" not in code, \
-        "no part of the router may gate work behind rAF"
+    mount = code.split("if(!mounted[view]){", 1)[1].split("loadAssets(view);", 1)[0]
+    assert "requestAnimationFrame" not in mount, \
+        "organ mounting must not depend on a frame callback — hidden tabs never get one"
+    # SIC-I09A (2026-10-21): the J-restore scroll replay is the router's ONE permitted
+    # frame callback — it gates nothing but the scrollTo itself (idempotent, eventual on
+    # hidden tabs, no mounted-style flag to strand), and its exact shape + no-target
+    # branch are pinned by tests/test_sector_central_history.py. The mount path above —
+    # the original blank-panel defect — keeps its absolute prohibition.
+    assert code.count("requestAnimationFrame") == 1, \
+        "the SIC-I09A scroll replay is the router's only frame callback"
 
 
 def test_map_read_uses_the_hoisted_quadrant_source() -> None:
@@ -455,9 +445,8 @@ def test_rail_footer_carries_provenance() -> None:
 # ───────────────────────────────────────────────────────────────── shell CSS law
 
 def _shell_css(src: str) -> str:
-    marker = "SI WORKSPACE V2 shell"
-    assert marker in src, "shell CSS block is gone"
-    return src.split(marker, 1)[1].split("</style>", 1)[0]
+    assert '{% include "_sector_central_paper.css.j2" %}' in src
+    return (TPL / '_sector_central_paper.css.j2').read_text(encoding='utf-8')
 
 
 def test_shell_css_has_no_literal_colours() -> None:
@@ -469,21 +458,23 @@ def test_shell_css_has_no_literal_colours() -> None:
                        (r"\bhsla?\(", "hsl()")):
         hits = re.findall(pat, css)
         assert not hits, f"literal {label} in the shell CSS: {hits[:4]}"
-    assert "var(--" in css and "color-mix(" in css
+    assert "var(--panel)" in css and "var(--ink-link,var(--link))" in css
 
 
-def test_shell_state_colours_match_the_pinned_spec() -> None:
+def test_shell_selection_has_no_colored_container_edge() -> None:
     css = _shell_css(_page())
-    assert "color-mix(in srgb, var(--link) 6%, transparent)" in css, "§1b hover mix"
-    assert "color-mix(in srgb, var(--link) 11%, var(--panel))" in css, "§1b .on mix"
-    assert "border-left-color:var(--link)" in css, "§1b .on accent"
-    assert "border-right:1px solid var(--line)" in css
+    assert '.si-workflow-link.on, .si-view-btn.on' in css
+    assert 'font-weight:700; background:var(--panel2)' in css
+    assert 'outline:2px solid var(--link)' in css  # complete keyboard focus remains
+    assert not re.search(r'border-left:\s*[234]px', css)
+    assert 'inset 3px 0' not in css
+    assert '.si-view-btn.on::before' not in css
 
 
 def test_view_switch_is_a_display_toggle() -> None:
     """gate 1/8: instant, no reload, no refetch, no spinner."""
     css = _shell_css(_page())
-    assert ".si-view { display:none; }" in css
+    assert re.search(r"\.si-view\s*\{\s*display:none;", css)
     assert ".si-view.on { display:block; }" in css
     assert "transition" not in css.split(".si-view {", 1)[1][:200], \
         "§1b motion: the view switch is instant"
@@ -680,3 +671,10 @@ def test_no_theme_prefixed_key_remains_in_legacy_anchors_table() -> None:
             f"{label} still carries theme-* key(s) {offenders} — LINE 324 "
             "short-circuit makes them dead router entries"
         )
+
+
+def test_brief_evidence_link_opens_the_measured_map_panel() -> None:
+    out = _replay_router(['#si-measured', '#overview', '#confluence'])
+    assert out['#si-measured'] == ['map', 'si-measured']
+    assert out['#overview'] == ['overview', None]
+    assert out['#confluence'] == ['confluence', None]

@@ -1,0 +1,354 @@
+{
+  "research_date": "2026-10-03",
+  "assembled_at_utc": "2026-10-03T08:56:24.668589+00:00",
+  "scope": "Official public ThetaData capability audit; no private provider login or data request; synthetic mathematical witness only.",
+  "mastermind_entitlement_status": "UNVERIFIED",
+  "vendor_latency_status": "ADVERTISED_NOT_MEASURED",
+  "sources": [
+    {
+      "id": "T01",
+      "title": "Options subscriptions",
+      "url": "https://thetadata.net/docs/Articles/Getting-Started/Subscriptions.html",
+      "web_ref": "turn17view2",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "ea34365568442df53fd9d8924e974acdbb64a4587fdd6d205d85240959a25c37"
+    },
+    {
+      "id": "T02",
+      "title": "Account-wide concurrent requests",
+      "url": "https://thetadata.net/docs/Articles/Data-And-Requests/Concurrent-Requests.html",
+      "web_ref": "turn10view1",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "518da6b92eb08717ca9e649fbb83d20feb874abbea34324b79e475b925fde9fd"
+    },
+    {
+      "id": "T03",
+      "title": "Retail pricing",
+      "url": "https://www.thetadata.net/pricing",
+      "web_ref": "turn10view3",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T04",
+      "title": "Commercial use",
+      "url": "https://www.thetadata.net/commercial-use",
+      "web_ref": "turn34view0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T05",
+      "title": "Option history trade",
+      "url": "https://thetadata.net/docs/operations/option_history_trade.html",
+      "web_ref": "turn24view4",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T06",
+      "title": "Option history trade quote",
+      "url": "https://thetadata.net/docs/operations/option_history_trade_quote.html",
+      "web_ref": "turn17view0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "ca6b7b1c86ab851c8b682f29d50eee682f0c4024cd466ae1b04e831755cfd928"
+    },
+    {
+      "id": "T07",
+      "title": "Option history quote",
+      "url": "https://thetadata.net/docs/operations/option_history_quote.html",
+      "web_ref": "turn24view5",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "c620e31529586bf28256c8a4098255928d736007f4043ce357b24c36bfc34a6d"
+    },
+    {
+      "id": "T08",
+      "title": "Option history open interest",
+      "url": "https://thetadata.net/docs/operations/option_history_open_interest.html",
+      "web_ref": "turn7view7",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "d379c5faed6e2e8261d00df816a70f8d85cc52a529dc39cbedb10d253b3ac68d"
+    },
+    {
+      "id": "T09",
+      "title": "Option snapshot open interest",
+      "url": "https://thetadata.net/docs/operations/option_snapshot_open_interest.html",
+      "web_ref": "turn49view3",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "73c2669c4eac3294588a4408c1d4a4cb7a774d78421247ea3ba36b72fa8a0938"
+    },
+    {
+      "id": "T10",
+      "title": "Option history end of day",
+      "url": "https://thetadata.net/docs/operations/option_history_eod.html",
+      "web_ref": "turn39view6",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "0757359f38f838279dfbab17b66bccab5d6a0da5dcb3180975d8656a312948fe"
+    },
+    {
+      "id": "T11",
+      "title": "Option history end-of-day Greeks",
+      "url": "https://thetadata.net/docs/operations/option_history_greeks_eod.html",
+      "web_ref": "turn39view7",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "115e69aae60888804ba953053af5c37534e9b16bb90be0941a595e193d9b2e5d"
+    },
+    {
+      "id": "T12",
+      "title": "Option history all Greeks",
+      "url": "https://thetadata.net/docs/operations/option_history_greeks_all.html",
+      "web_ref": "turn17view1",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "4bb5984eef510f3521dffe1519e423f553e2c028e440a0639257e642f92e77ee"
+    },
+    {
+      "id": "T13",
+      "title": "Option history all binomial Greeks",
+      "url": "https://thetadata.net/docs/operations/option_history_binomial_greeks_all.html",
+      "web_ref": "turn49view2",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "8fe57aac6eecea7ef934e129a35a8493115491b08cf38796c48a721c419271a0"
+    },
+    {
+      "id": "T14",
+      "title": "Option history all trade Greeks",
+      "url": "https://thetadata.net/docs/operations/option_history_trade_greeks_all.html",
+      "web_ref": "turn34search0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T15",
+      "title": "Option snapshot all Greeks",
+      "url": "https://thetadata.net/docs/operations/option_snapshot_greeks_all.html",
+      "web_ref": "turn0search4",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T16",
+      "title": "Option at-time quote",
+      "url": "https://thetadata.net/docs/operations/option_at_time_quote.html",
+      "web_ref": "turn0search21",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T17",
+      "title": "Flat Files V3 getting started",
+      "url": "https://thetadata.net/docs/Flat-Files/Getting-Started",
+      "web_ref": "turn4search0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "520c2a381c6dfbb33b79c47b38fec5b8570d0de0e53226fe7bc28b18ba23833a"
+    },
+    {
+      "id": "T18",
+      "title": "Option flat-file quote",
+      "url": "https://thetadata.net/docs/operations/option_flat_file_quote.html",
+      "web_ref": "turn49view4",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "a9cc940e19b6dc178f6ce1881e95f9fef44571c079b274976fc9e4e8bb593b23"
+    },
+    {
+      "id": "T19",
+      "title": "Full option trade stream",
+      "url": "https://thetadata.net/docs/Streaming/US-Options/Full-Trade-Stream.html",
+      "web_ref": "turn49view1",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "f10a793a0a37807cea0799262d5acce180909b5ce4cc030fabaed1af4458bfbd"
+    },
+    {
+      "id": "T20",
+      "title": "Per-contract option trade stream",
+      "url": "https://thetadata.net/docs/Streaming/US-Options/Trade-Stream.html",
+      "web_ref": "turn27view3",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "7f7c33a5f06eae1cd250f851dc721bda4e6d13306b20e6be4dc6ecfe5f4be2da"
+    },
+    {
+      "id": "T21",
+      "title": "Per-contract option quote stream",
+      "url": "https://thetadata.net/docs/Streaming/US-Options/Quote-Stream.html",
+      "web_ref": "turn27view4",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "53c980f02abbe0454d2b843d3bdc115eaa07d129e7f959099775019412f82867"
+    },
+    {
+      "id": "T22",
+      "title": "Streaming transport getting started",
+      "url": "https://thetadata.net/docs/Streaming/Getting-Started.html",
+      "web_ref": "turn24view3",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "fe866eb7291631aabd8d2e23502b1c4f369b154f8793ca754271e7840d7c67d7"
+    },
+    {
+      "id": "T23",
+      "title": "Option contracts list",
+      "url": "https://thetadata.net/docs/operations/option_list_contracts.html",
+      "web_ref": "turn27view5",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "66895438aec04c15a131c8933a28587a71222ddfadf72671f0f4ea71d16d5cdb"
+    },
+    {
+      "id": "T24",
+      "title": "Data availability, errors and trade sequence",
+      "url": "https://thetadata.net/docs/Articles/Data-And-Requests/Making-Requests.html",
+      "web_ref": "turn49view0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "d5805f5b192cf03b75ce883729c54cb8cbedb69063dcb723376643632ae89dcb"
+    },
+    {
+      "id": "T25",
+      "title": "Underlying SIPs and vendor receipt latency",
+      "url": "https://thetadata.net/docs/Articles/Data-And-Requests/The-SIPs.html",
+      "web_ref": "turn27view1",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "618432d8e5963815c9bac76c559f23478c3c94053b9aa64248cc86587265adbf"
+    },
+    {
+      "id": "T26",
+      "title": "May 5, 2026 Python library announcement",
+      "url": "https://www.thetadata.net/blog/2026-05-05-introducing-the-theta-data-python-library",
+      "web_ref": "turn4view0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T27",
+      "title": "Python library getting started",
+      "url": "https://thetadata.net/docs/Python-Library/Getting-Started.html",
+      "web_ref": "turn10view4",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "afd09ccf873a49421c11b33e656d32c3517f480dc4b942f872bef67e1847fba9"
+    },
+    {
+      "id": "T28",
+      "title": "Option Greeks methodology",
+      "url": "https://thetadata.net/docs/Articles/Data-And-Requests/Option-Greeks.html",
+      "web_ref": "turn10view0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "a86600133abf4c8d711716389b751e8a1afc54393670f12a650dc5b18fc571f8"
+    },
+    {
+      "id": "T29",
+      "title": "OCC equity option specifications",
+      "url": "https://www.theocc.com/clearance-and-settlement/clearing/equity-options-product-specifications",
+      "web_ref": "turn39view2",
+      "source_type": "official_exchange_or_clearing_organization",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T30",
+      "title": "Cboe SPX specifications",
+      "url": "https://www.cboe.com/tradable-products/sp-500/spx-options/spx-specifications",
+      "web_ref": "turn39view1",
+      "source_type": "official_exchange_or_clearing_organization",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T31",
+      "title": "ThetaData index option symbology",
+      "url": "https://thetadata.net/docs/Articles/Data-And-Requests/Symbology.html",
+      "web_ref": "turn24view2",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T32",
+      "title": "Trade condition enum",
+      "url": "https://thetadata.net/docs/Articles/Errors-Exchanges-Conditions/Trade-Conditions.html",
+      "web_ref": "turn27view0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "retrieved_main_text_sha256": "3d15819e05b5171556ac3f129632734dfe864c866f9236d5e326a7e6f6197003"
+    },
+    {
+      "id": "T33",
+      "title": "Terminal system/status commands",
+      "url": "https://thetadata.net/docs/System/System.html",
+      "web_ref": "turn58view0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T34",
+      "title": "ThetaData public OpenAPI V3",
+      "url": "https://thetadata.net/docs/openapiv3.yaml",
+      "web_ref": null,
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof",
+      "fetch_method": "public_download_via_urllib",
+      "sha256": "f0d44363cb81e46f6aca330743495c94e6e1622e695a02893937d91cbff24350",
+      "bytes": 1124705,
+      "path_count": 80,
+      "entitlement_account_subscription_runtime_version_paths_found": 0,
+      "info_version": "3.0.0",
+      "web_fetch_note": "web renderer rejected application/octet-stream; source downloaded read-only instead"
+    },
+    {
+      "id": "T35",
+      "title": "Terminal getting started and version semantics",
+      "url": "https://thetadata.net/docs/Articles/Getting-Started/Getting-Started.html",
+      "web_ref": "turn60view0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T36",
+      "title": "Cboe AM-SPX settlement methodology",
+      "url": "https://cdn.cboe.com/resources/spx/Settlement_of_Standard_AM_Settled_SP_500_Index_Options.pdf",
+      "web_ref": "turn71view1",
+      "source_type": "official_exchange_or_clearing_organization",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    },
+    {
+      "id": "T37",
+      "title": "ThetaData HTTP error codes",
+      "url": "https://thetadata.net/docs/Articles/Errors-Exchanges-Conditions/Error-Codes.html",
+      "web_ref": "turn71view0",
+      "source_type": "official_vendor",
+      "evidence_level": "public_documentation_verified_not_runtime_proof"
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "options-thetadata.md",
+      "path": "/tmp/options-thetadata.md",
+      "bytes": 31485,
+      "sha256": "2f2006edc85f60573dab88f4ae870febc2eac9921705a5563e74b731be6e5bd2"
+    },
+    {
+      "name": "options-theta-tte-study.py",
+      "path": "/tmp/options-theta-tte-study.py",
+      "bytes": 3357,
+      "sha256": "0e708eb65654af3fc0acd475ee47eea672b7240351a639ab5a4286aa59d09956"
+    },
+    {
+      "name": "options-theta-tte-study.json",
+      "path": "/tmp/options-theta-tte-study.json",
+      "bytes": 6858,
+      "sha256": "2eb25ce47bf53c2bf136ee3c269266195d80a9341fcc16153671f040c664d64d"
+    }
+  ]
+}

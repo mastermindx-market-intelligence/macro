@@ -1,0 +1,5 @@
+FREEZE PREREG.md
+utc: Fri Oct  9 10:40:45 UTC 2026
+sha256: dedbe342c380b950a4b367e6295ad17b09661cec15fcd06f5ebe9aba9a644af6
+file: research/quant_assessment_2026_10/Q19_censoring_path_ambiguity/PREREG.md
+note: frozen before any evaluation outcome (barrier, first-passage state, ambiguity count or E) was computed or read; evaluate.py not yet written.

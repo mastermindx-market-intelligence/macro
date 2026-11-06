@@ -537,6 +537,47 @@ class TestComposeHero:
             pass  # relaxed check: just ensure non-empty line
         assert len(line_en) > 10
 
+    def test_missing_owner_word_is_never_turned_into_a_reading(self):
+        # null rates, full inflation
+        hero = compose_hero(self._contract(None, None, "at target", "steady"), None)
+        assert hero["rates"]["state"] == {"en": "Read being updated", "zh": "读数更新中"}
+        assert hero["rates"]["stance"] == {"en": "—", "zh": "—"}
+        assert hero["line"] == {"en": "Inflation is on target.", "zh": "通胀达标。"}
+
+        # full rates, null inflation
+        hero = compose_hero(self._contract("neutral", "stable", "at target", None), None)
+        assert hero["inflation"]["state"] == {"en": "Read being updated", "zh": "读数更新中"}
+        assert hero["inflation"]["stance"] == {"en": "—", "zh": "—"}
+        assert hero["line"] == {"en": "Rates are steady.", "zh": "利率平稳。"}
+
+        # everything null
+        hero = compose_hero(self._contract(None, None, None, None), None)
+        assert hero["line"] == {"en": "The read is being updated.", "zh": "读数更新中。"}
+
+        # everything null + dx
+        hero = compose_hero(self._contract(None, None, None, None), {"usd_dir": "weakening"})
+        assert hero["line"]["en"] == "The dollar is falling."
+
+        # rates partial-null + turn_watch extreme_watch (stance overridden, state pending)
+        contract = {
+            "state": {
+                "rates": {"regime": "restrictive", "direction": None, "turn_watch": "extreme_watch"},
+                "inflation": {"regime": "at target", "direction": "steady"},
+                "expectations": {"anchoring": "anchored"},
+            }
+        }
+        hero = compose_hero(contract, None)
+        assert hero["rates"]["state"] == {"en": "Read being updated", "zh": "读数更新中"}
+        assert hero["rates"]["stance"]["en"] == "At a 5-yr extreme — watching for a turn"
+        assert "rates" not in hero["line"]["en"].lower()
+
+        # full words — byte-shape parity
+        hero = compose_hero(self._contract("restrictive", "rising", "above target", "cooling"), None)
+        assert hero["line"]["en"] == "Rates are high & rising, and inflation is cooling toward target."
+        assert hero["line"]["zh"] == "利率高位上行，通胀降温接近目标。"
+        hero = compose_hero(self._contract("restrictive", "rising", "above target", "cooling"), {"usd_dir": "weakening"})
+        assert hero["line"]["en"] == "Rates are high & rising, inflation is cooling toward target, and the dollar is falling."
+
 
 class TestComposeHeroTurnWatch:
     def _contract(self, turn_watch=None):

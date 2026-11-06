@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mastermind.selection_cohort_source.v1",
+  "title": "Existing-owner internal finalized-cohort publication envelope",
+  "description": "Prospective aware current-context instant; first-generation receipt is immutable. I/O wrapper only; no source authenticity, rights grant, public display, QLedger registration or predictive authority. Existing compiler validates selection input.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generation_id",
+    "source_schema",
+    "source_ref",
+    "source_origin_ref",
+    "schema",
+    "status",
+    "market",
+    "policy",
+    "reason_projection",
+    "source_sha256",
+    "receipt_sha256",
+    "source_availability",
+    "source_clocks",
+    "capture_use",
+    "public_display_allowed",
+    "source_selection",
+    "ancestry",
+    "can_rank",
+    "can_size",
+    "can_gate",
+    "can_originate_signal",
+    "can_add_candidates",
+    "can_escalate"
+  ],
+  "properties": {
+    "generation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_origin_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema": {
+      "const": "mastermind.selection_cohort_source.v1"
+    },
+    "status": {
+      "const": "FINALIZED"
+    },
+    "market": {
+      "enum": [
+        "us_today",
+        "cn_featured"
+      ]
+    },
+    "policy": {
+      "const": "owner-current-context-at-finalization/v1"
+    },
+    "reason_projection": {
+      "enum": [
+        "native-owner-reasons/v1",
+        "cn-served-reasons/v1"
+      ]
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "receipt_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_availability": {
+      "enum": [
+        "VALID",
+        "PARTIAL"
+      ]
+    },
+    "source_clocks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "capture_use": {
+      "const": "selection_cohort_internal_capture"
+    },
+    "public_display_allowed": {
+      "const": false
+    },
+    "source_selection": {
+      "type": "object",
+      "description": "Validated by unchanged accepted selection_cohort compiler; this outer I/O schema does not copy that owner contract."
+    },
+    "ancestry": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "owner",
+          "source_family",
+          "source_ref",
+          "generation_id",
+          "sha256",
+          "available_at"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_family": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "generation_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "available_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2})$"
+          },
+          "row_index": {"type": "integer", "minimum": 0},
+          "reason_projection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "can_rank": {
+      "const": false
+    },
+    "can_size": {
+      "const": false
+    },
+    "can_gate": {
+      "const": false
+    },
+    "can_originate_signal": {
+      "const": false
+    },
+    "can_add_candidates": {
+      "const": false
+    },
+    "can_escalate": {
+      "const": false
+    }
+  }
+}

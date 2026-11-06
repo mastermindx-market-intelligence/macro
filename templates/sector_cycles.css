@@ -25,6 +25,7 @@ body { background: var(--bg); color: var(--text); }
 .sc-tab.on { color: var(--text); background: var(--panel);
   box-shadow: 0 1px 2px rgba(0,0,0,.22), 0 3px 12px color-mix(in srgb, var(--link) 16%, transparent); }
 .sc-tab.on i { color: var(--ink-link, var(--link)); border-color: color-mix(in srgb, var(--link) 42%, var(--line)); }
+@media (max-width: 560px) { .sc-tabs { flex-wrap: wrap; } }
 
 /* ---- page-level universe toggle (Sector ETFs / Shenwan vs Thematic Baskets) -------
    On the Sector Central hubs this toggle drives BOTH the cycle map AND the conviction
@@ -185,6 +186,7 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
 .sc-page .cc-nm { overflow-wrap: anywhere; }
 .cc-tags { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex: none; }
 .sc-page .cc-phase { font-size: 10px; }
+@media (max-width: 880px) { .sc-page .cyc-cards { grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); } }
 
 /* Cards read by CYCLE PHASE, not by the (rainbow) per-ETF accent — only the small
    identity dot keeps the ETF colour, so the grid groups visually by where each

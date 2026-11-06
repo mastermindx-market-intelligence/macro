@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "-B",
+    "-m",
+    "pytest",
+    "tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered",
+    "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "tests/test_ci_pack.py::test_plan_is_deterministic",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+    "-q",
+    "--basetemp=/Users/chriswong/Library/Caches/Mastermind/economic-observations-20261009-pro-003/principal/pytest-ci-contracts-tmp-001",
+    "-o",
+    "cache_dir=/Users/chriswong/Library/Caches/Mastermind/economic-observations-20261009-pro-003/principal/pytest-ci-contracts-cache-001"
+  ],
+  "elapsed_seconds": 171.229,
+  "exit": 0,
+  "head": "dfa8533b07f1f603ef9f9bb6fbf957e4b1c112a1",
+  "isolated_temporary_root": "/Users/chriswong/Library/Caches/Mastermind/economic-observations-20261009-pro-003/principal/pytest-ci-contracts-tmp-001",
+  "log": {
+    "bytes": 110,
+    "path": "/Users/chriswong/Library/Caches/Mastermind/economic-observations-20261009-pro-003/principal/observation-ci-contracts-001.log",
+    "sha256": "ae0e46b82d84d5644d71e04d6a013ae24fbd2f6aed500af4dae154741712c1a9"
+  },
+  "observed_at": "2026-10-09T11:18:36.150774+00:00",
+  "schema": "economic_network.pro003_ci_contract_pytest/v1",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "3c23ea9dcc9094a10a3e5874b8281998f203227f522752d00f578820c5b9e581",
+    "engine/company_intelligence/relationship_observations.py": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7",
+    "tests/test_ci_pack.py": "e2e7e0307a2e02fdd6703a40ff87f2efbd1d1fd82bf65d7ed365d579cccb8d52",
+    "tests/test_company_relationship_observations.py": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da"
+  },
+  "summary_tail": [
+    ".....                                                                    [100%]",
+    "5 passed in 170.26s (0:02:50)"
+  ],
+  "workspace_status_unchanged": true
+}

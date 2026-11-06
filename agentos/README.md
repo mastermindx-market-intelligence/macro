@@ -180,6 +180,41 @@ same-hour scale; `git worktree list` above is what covers the same hour, instant
 free. That is why `expires` defaults to +12h rather than +72h, and why `status` reports
 `worktree_live: false` when a claiming branch has no live checkout.
 
+### Ship-boundary assistance (W4)
+
+```bash
+python3 scripts/agentos.py claim AGENT-OS
+python3 scripts/agentos.py ship-capture --pr 123 --body-file pr-body.md
+python3 scripts/agentos.py ship-report
+python3 scripts/agentos.py release AGENT-OS
+```
+
+These helpers edit or read the existing records only and always return advisory results.
+A claim is the existing branch note with a 12-hour expiry, never a lease or proof of life.
+Release removes only this exact branch's note. Commit any authored note through the normal
+PR flow; it has no cross-session durability until published.
+
+In Claude Code, the Bash PostToolUse hook observes successful literal `gh pr create` with
+an explicit body or body file and an exact origin-matching returned PR URL. It binds the
+current branch's unique nonexpired claim, or requires every changed path to have the same
+sole owner under the existing repository-aware `owns_paths` matcher. The canonical
+Workstream and Wave declarations must name that same existing workstream and wave.
+Renames retain both old and new path ownership. Ambiguous, unbound, unsupported, malformed,
+missing or conflicting observations produce no edit and never block execution.
+
+Capture writes only a new PR association and `todo`/`in_progress` -> `awaiting_ci` on that
+existing wave. It leaves **uncommitted tracked changes** and says so; include the edit in
+the next ordinary commit and push. An equal PR is idempotent. An occupied PR field,
+including explicit null, is left for authored reconciliation. No helper marks work done,
+creates records, edits priorities, writes generated dates, stages, commits or calls GitHub.
+`updated` continues to come from Git history after the normal commit.
+
+A separate Stop hook reads the current exact branch claim and reports a missing valid,
+committed same-branch handoff whose latest commit is at or after the current claim. It does not write at Stop or affect the existing completion
+guard's decision. Shell wrappers, implicit templates, custom head/repo selection and other
+unsupported PR commands are left to explicit `ship-capture` or ordinary authored updates.
+See `DEC:AGENTOS-W4-CAPTURE-BOUNDARY` and the handoff protocol for boundaries and proof.
+
 ---
 
 ## Relationship to the stores that already exist
