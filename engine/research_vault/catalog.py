@@ -690,3 +690,36 @@ def serialize(catalog: dict, now: datetime | None = None) -> bytes:
     _reindex(catalog)
     catalog["generated_at"] = _now_iso(now)
     return (json.dumps(catalog, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+# Dedicated-read preview matches the historical public app rule. Ordinary app
+# delegation remains in the held full F11 consumer slice.
+PUBLIC_PREVIEW_COUNT = 3
+
+
+def preview_items(catalog, limit: int = PUBLIC_PREVIEW_COUNT) -> list:
+    """Item slice of the public preview. Same rule as the historical app helper.
+
+    Summary-ready rows come first, in catalog order. When fewer than ``limit``
+    are ready, the rest of the catalog fills the slice, including duplicate ids,
+    blank ids and None items, and is not deduped. A non-dict item still raises,
+    matching the previous helper.
+    """
+    items = list(catalog.get("items") or [])
+    ready = [
+        item for item in items
+        if any(str(point or "").strip() for point in ((item or {}).get("summary_points") or []))
+    ]
+    preview = ready[:limit]
+    selected = {str((item or {}).get("id") or "") for item in preview}
+    if len(preview) < limit:
+        preview.extend(
+            item for item in items
+            if str((item or {}).get("id") or "") not in selected
+        )
+    return preview[:limit]
+
+
+def preview_ids(catalog, limit: int = PUBLIC_PREVIEW_COUNT) -> list[str]:
+    """Ids of :func:`preview_items`, in the same order. Blank ids stay blank."""
+    return [str((item or {}).get("id") or "") for item in preview_items(catalog, limit)]

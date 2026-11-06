@@ -415,9 +415,101 @@ def test_press_lane_covers_estate_and_analytical_dependencies():
         "numpy", "pandas", "requests", "beautifulsoup4"}
 
 
-def test_every_press_suite_is_named_by_the_ci_job():
-    job = _load(_LEGACY)["jobs"]["press-lane"]
-    named = set(re.findall(r"tests/test_press_\w+\.py",
-                           " ".join(str(s.get("run") or "") for s in job["steps"])))
+def test_every_press_suite_is_named_by_an_established_ci_lane():
+    jobs = _load(_LEGACY)["jobs"]
+    # Native plan suites belong to the code gate; duplicating them in the
+    # data lane adds execution cost without providing PR coverage.
+    commands = " ".join(str(step.get("run") or "")
+                        for name in ("press-lane", "ticker-news-qbus")
+                        for step in jobs[name]["steps"])
+    named = set(re.findall(r"tests/test_press_\w+\.py", commands))
     on_disk = {f"tests/{p.name}" for p in (_REPO / "tests").glob("test_press_*.py")}
     assert named == on_disk, f"unrun press suites: {sorted(on_disk - named)}"
+
+
+def test_native_plan_suites_are_registered_once_in_the_code_gate():
+    jobs = _load(_LEGACY)["jobs"]
+    for suite in ("tests/test_press_native_plan_scope.py",
+                  "tests/test_press_native_plan_integration.py"):
+        registrations = [name for name, job in jobs.items()
+                         for step in job["steps"] if suite in str(step.get("run") or "")]
+        assert registrations == ["ticker-news-qbus"]
+
+
+def test_native_plan_suites_reach_existing_code_gate_with_import_closure():
+    from scripts.ci_scope_dependencies import suite_dependency_closure
+    from scripts.run_ci_pack import _matches_any
+
+    job = _load(_LEGACY)["jobs"]["ticker-news-qbus"]
+    assert job["gate"] == "code" and job["scope"] == "exclusive"
+    command = " ".join(str(step.get("run") or "") for step in job["steps"])
+    for suite in ("tests/test_press_native_plan_scope.py",
+                  "tests/test_press_native_plan_integration.py"):
+        assert suite in command
+        assert suite in job["paths"]
+        closure = suite_dependency_closure(suite, pytest_command=command)
+        assert "engine/press/native_plan_scope.py" in closure.files
+        missing = [path for path in closure.files if not _matches_any(job["paths"], path)]
+        assert missing == [], f"native-plan import closure is outside the code gate: {missing}"
+
+
+def test_reviewed_bundle_dispatch_uses_same_run_artifact_without_generation():
+    inputs = _triggers(_load(_WF))["workflow_dispatch"]["inputs"]
+    assert {"promotion_bundle", "promotion_slot", "promotion_sha256"} <= set(inputs)
+    stage = next(s for s in _jobs()["stage"]["steps"] if s.get("id") == "stage")
+    assert "--import-reviewed-bundle" in stage["run"]
+    assert "else" in stage["run"] and 'ARGS="--staging"' in stage["run"]
+    assert "--promotion-sha256" in stage["run"] and "--promotion-slot" in stage["run"]
+    emit = next(s for s in _jobs()["emit"]["steps"] if s.get("name", "").startswith("emit passing"))
+    assert "--promote-reviewed-bundle" in emit["run"]
+    download = next(s for s in _jobs()["emit"]["steps"] if "download-artifact" in s.get("uses", ""))
+    assert download["with"]["name"] == "press-staging-${{ github.run_id }}"
+    assert "run-id" not in download["with"]  # no unbound cross-run artifact import
+    assert "--check-reviewed-bundle" in _commit_step() and "--published" in _commit_step()
+
+
+def test_push_retry_exhaustion_is_a_failed_workflow_step(tmp_path):
+    import os
+    import subprocess
+    bins = tmp_path / "bin"
+    bins.mkdir()
+    helper = tmp_path / "scripts/ci/push_retry.sh"
+    helper.parent.mkdir(parents=True)
+    helper.write_text("push_on_main_ok() { return 0; }\npush_autostash_ok() { return 0; }\n")
+    # Run the actual workflow shell: all five pushes fail, while Git setup,
+    # rebase and unrelated render commands succeed. No real repository/network.
+    commands = {
+        "git": 'case "$1" in diff) exit 1;; push) echo push >> "$PUSH_COUNT"; exit 1;; *) exit 0;; esac',
+        "python": "exit 0", "sleep": "exit 0",
+    }
+    for name, body in commands.items():
+        path = bins / name
+        path.write_text("#!/bin/sh\n" + body + "\n")
+        path.chmod(0o755)
+    count = tmp_path / "pushes"
+    env = {**os.environ, "PATH": str(bins) + os.pathsep + os.environ["PATH"],
+           "GITHUB_WORKSPACE": str(tmp_path), "PUSH_COUNT": str(count), "PRESS_PROMOTION_BUNDLE": ""}
+    completed = subprocess.run(["bash", "-c", _commit_step()], cwd=tmp_path,
+                               env=env, capture_output=True, text=True)
+    assert count.read_text().splitlines() == ["push"] * 5
+    assert completed.returncode != 0, "exhausted publication push must not report success"
+
+
+def test_emit_without_reviewed_bundle_refuses_before_generation(tmp_path):
+    import os
+    import subprocess
+    bins = tmp_path / "bin"
+    bins.mkdir()
+    marker = tmp_path / "provider-attempt"
+    python = bins / "python"
+    python.write_text('#!/bin/sh\necho attempted >> "$ATTEMPT_MARKER"\nexit 0\n')
+    python.chmod(0o755)
+    stage = next(step for step in _jobs()["stage"]["steps"] if step.get("id") == "stage")
+    env = {**os.environ, "PATH": str(bins) + os.pathsep + os.environ["PATH"],
+           "ATTEMPT_MARKER": str(marker), "PRESS_REQUEST_EMIT": "true",
+           "PRESS_PROMOTION_BUNDLE": "", "PRESS_PROMOTION_SLOT": "", "PRESS_PROMOTION_SHA256": "",
+           "PRESS_DESKS": "", "PRESS_MAX_SLOTS": "", "PRESS_AS_OF": ""}
+    result = subprocess.run(["bash", "-c", stage["run"]], cwd=tmp_path,
+                            env=env, capture_output=True, text=True)
+    assert result.returncode != 0
+    assert not marker.exists(), "emit=true must refuse before the writer/generation command"

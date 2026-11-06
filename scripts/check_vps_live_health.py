@@ -16,7 +16,10 @@ from typing import Any
 
 DEFAULT_URL = "https://mastermind-x.com/api/status"
 # 60-minute bar stamped at start, + 60-minute rebuild cadence, + 15-minute
-# Polygon delay, + 12-minute bars-lane timeout, + headroom.
+# Polygon delay, + 12-minute bars-lane timeout, + headroom. A missed hourly
+# build is caught first by the 90-minute artifact-age check (source age
+# ~128m at artifact age 90m); this limit catches an artifact rebuilt on time
+# from stale bars.
 FLOW_PULSE_SOURCE_MAX_AGE_MIN = 150.0
 BOARD_QUOTE_SOURCE_MAX_AGE_MIN = 30.0
 
@@ -217,9 +220,10 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
                 failures.append(
                     f"flow_pulse: only {with_bars}/{n_tickers} tickers have current-session bars"
                 )
-    # ABSENT-OK until /api/status projects these fields (follow-up), then flip to strict.
-    # Weekday 15-19Z is inside regular trading hours at both DST offsets; source
-    # clocks legitimately stop at the close.
+    # /api/status projects both clocks (app/live_status_projection.py), so a
+    # missing clock in-window is a fault. Weekday 15-19Z is inside regular
+    # trading hours at both DST offsets; source clocks legitimately stop at
+    # the close.
     if weekday and 15 <= hour <= 19:
         for key, limit in (
             ("flow_pulse", FLOW_PULSE_SOURCE_MAX_AGE_MIN),
@@ -228,6 +232,7 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
             check = checks.get(key)
             raw = check.get("source_asof") if isinstance(check, dict) else None
             if raw is None:
+                failures.append(f"{key}: missing source_asof")
                 continue
             age = _abs_age_min(raw, current)
             if age is None:

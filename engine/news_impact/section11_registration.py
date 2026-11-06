@@ -10,8 +10,14 @@ frontier_only_audit subset, and runs eval_receipt.make_registration for the A3 p
 The registration holds ids, enums, counts, shas and rules only, never labeled values
 (DEC:NEWS-IMPACT-BENCHMARK-BODY-SOURCE).
 
-  python -m engine.news_impact.section11_registration --out <path>   # write
-  python -m engine.news_impact.section11_registration --check        # rebuild and compare
+Historical metadata integrity does not establish current implementation eligibility.
+The original v1 registration is immutable; current code must match every registered
+component before this module can qualify or write it. A changed implementation needs
+a separately admitted registration, never a rewrite of the original.
+
+  python -m engine.news_impact.section11_registration --check-historical-v1
+  python -m engine.news_impact.section11_registration --check        # also require current code
+  python -m engine.news_impact.section11_registration --out <path>   # eligible code only; no overwrite
 """
 from __future__ import annotations
 
@@ -21,6 +27,7 @@ import json
 import sys
 from collections import Counter
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any, Iterable, Mapping
 
 from engine.news_impact import eval_receipt as er
@@ -46,6 +53,26 @@ ROOT = Path(__file__).resolve().parents[2]
 PROGRAM = "research/prophet_v4/news_to_business_impact_20261006"
 BENCH = f"{PROGRAM}/benchmark"
 DEFAULT_OUT = f"{BENCH}/section11/registration.json"
+
+# The original registration's complete identity, not a selectable live-code profile.
+# The builder reconstructs metadata from pinned inputs; it does not execute old code.
+HISTORICAL_V1_SHA256 = "5637cbea2d44533db77d7c77051996cd27dad5e1bb16ba483fd5b1ffeb02a71a"
+HISTORICAL_V1_CODE_VERSIONS: Mapping[str, str] = MappingProxyType({
+    "cascade_schema": "news_impact_event.v1:3edc7139",
+    "cluster": "ni-cluster-1",
+    "edgar_body": "ni-edgar-body-2",
+    "issuer": "ni-issuer-1",
+    "observation": "ni-observation-1",
+    "producer": "ni-producer-1",
+    "producer_facts": "ni-producer-facts-1",
+    "prophet_adapter": "ni-prophet-adapter-2",
+    "routing_gates_1": "ni-routing-gates-1",
+    "routing_gates_2": "ni-routing-gates-2",
+    "sampler": "ni-sampler-1",
+    "tape_draw": "ni-tape-draw-1",
+    "section11_draws": "ni-section11-draws-1",
+    "section11_registration": "ni-section11-registration-1",
+})
 
 T_PROSPECTIVE = "2026-10-15T00:00:00Z"
 MODE = "confirm"
@@ -262,7 +289,27 @@ def _population_block(rows: list[dict[str, str]], queue: list[str], families: Ma
     }
 
 
-def build_registration(root: Path = ROOT) -> dict[str, Any]:
+def current_code_versions() -> dict[str, str]:
+    """Describe the loaded implementation, independently of historical metadata."""
+    return {
+        "cascade_schema": DEFAULT_SCHEMA_VERSION,
+        "cluster": CLUSTERER_VERSION,
+        "edgar_body": EDGAR_BODY_VERSION_2,
+        "issuer": RESOLVER_VERSION,
+        "observation": OBSERVATION_VERSION,
+        "producer": PRODUCER_VERSION,
+        "producer_facts": PRODUCER_FACTS_VERSION,
+        "prophet_adapter": ADAPTER_VERSION,
+        "routing_gates_1": GATES_1_VERSION,
+        "routing_gates_2": GATES_2_VERSION,
+        "sampler": SAMPLER_VERSION,
+        "tape_draw": TAPE_DRAW_VERSION,
+        "section11_draws": draws.SECTION11_DRAWS_VERSION,
+        "section11_registration": SECTION11_REGISTRATION_VERSION,
+    }
+
+
+def _build_registration(root: Path, code_versions: Mapping[str, str]) -> dict[str, Any]:
     pins = pin_inputs(root)
     registry = er.load_registry(root / PINNED_INPUTS["endpoints"])
     if registry.sha256 != pins["endpoints"]["sha256"]:
@@ -424,22 +471,7 @@ def build_registration(root: Path = ROOT) -> dict[str, Any]:
             "note": "these cascade.v1 lanes run in production only after an operator tap; the runs registered here are measurement runs on frozen historical cases and enable no lane",
             "measurement_run_slot_caps": dict(cascade["measurement_run_slot_caps"]),
         },
-        "code_versions": {
-            "cascade_schema": DEFAULT_SCHEMA_VERSION,
-            "cluster": CLUSTERER_VERSION,
-            "edgar_body": EDGAR_BODY_VERSION_2,
-            "issuer": RESOLVER_VERSION,
-            "observation": OBSERVATION_VERSION,
-            "producer": PRODUCER_VERSION,
-            "producer_facts": PRODUCER_FACTS_VERSION,
-            "prophet_adapter": ADAPTER_VERSION,
-            "routing_gates_1": GATES_1_VERSION,
-            "routing_gates_2": GATES_2_VERSION,
-            "sampler": SAMPLER_VERSION,
-            "tape_draw": TAPE_DRAW_VERSION,
-            "section11_draws": draws.SECTION11_DRAWS_VERSION,
-            "section11_registration": SECTION11_REGISTRATION_VERSION,
-        },
+        "code_versions": dict(code_versions),
         "disclosures": [
             "Historical folds f1 to f5 are QA only; no prospective case exists in v2_match.",
             "Model vintage is unknown for every family and is printed as vintage_unknown.",
@@ -475,24 +507,98 @@ def render(reg: Mapping[str, Any]) -> str:
     return json.dumps(reg, sort_keys=True, indent=1, ensure_ascii=False) + "\n"
 
 
+def _require_historical_v1(registration: Mapping[str, Any]) -> None:
+    """Bind this historical API to the original identity and complete metadata."""
+    digest = hashlib.sha256(render(registration).encode("utf-8")).hexdigest()
+    if digest != HISTORICAL_V1_SHA256:
+        raise RegistrationError("HISTORICAL_REGISTRATION_CHANGED", SECTION11_REGISTRATION_VERSION)
+
+
+def build_historical_registration_v1(root: Path = ROOT) -> dict[str, Any]:
+    """Reconstruct the immutable v1 metadata; this does not qualify or execute code."""
+    registration = _build_registration(root, HISTORICAL_V1_CODE_VERSIONS)
+    _require_historical_v1(registration)
+    return registration
+
+
+def require_registered_implementation(registration: Mapping[str, Any]) -> None:
+    """Refuse if the loaded code differs from any component of the original v1.
+
+    Run/report consumers must call this guard; a historical reconstruction is not
+    an eligibility receipt. No caller-supplied version override is accepted.
+    """
+    _require_historical_v1(registration)
+    registered = registration["code_versions"]
+    current = current_code_versions()
+    differences = [
+        f"{key}: registered={registered.get(key, '<missing>')}, current={current.get(key, '<missing>')}"
+        for key in sorted(set(registered) | set(current))
+        if key not in registered or key not in current or registered[key] != current[key]
+    ]
+    if differences:
+        raise RegistrationError("REGISTERED_IMPLEMENTATION_MISMATCH", "; ".join(differences))
+
+
+def build_registration(root: Path = ROOT) -> dict[str, Any]:
+    """Build v1 only when frozen inputs and the current implementation both match."""
+    registration = build_historical_registration_v1(root)
+    require_registered_implementation(registration)
+    return registration
+
+
+def _check_committed_historical_v1(payload: bytes, root: Path) -> None:
+    path = root / DEFAULT_OUT
+    if not path.is_file():
+        raise RegistrationError("REGISTRATION_MISSING", DEFAULT_OUT)
+    if path.read_bytes() != payload:
+        raise RegistrationError("HISTORICAL_REGISTRATION_CHANGED", DEFAULT_OUT)
+
+
+def _write_new_or_identical(out: Path, payload: bytes) -> bool:
+    """Never truncate an existing file, including a symlink or hard-link alias."""
+    if out.exists() or out.is_symlink():
+        if out.is_file() and out.read_bytes() == payload:
+            return False
+        raise RegistrationError("REGISTRATION_OVERWRITE_REFUSED", str(out))
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # Exclusive creation also refuses a file or symlink arriving after the check.
+    try:
+        with out.open("xb") as stream:
+            stream.write(payload)
+    except FileExistsError as exc:
+        raise RegistrationError("REGISTRATION_OVERWRITE_REFUSED", str(out)) from exc
+    return True
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--out", default=None, help="write the registration here")
-    ap.add_argument("--check", action="store_true", help="rebuild and compare with the committed file")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--out", default=None, help="write an eligible registration to a new or identical file")
+    mode.add_argument("--check", action="store_true", help="check the frozen file and current implementation")
+    mode.add_argument("--check-historical-v1", action="store_true", help="check original v1 metadata only")
     args = ap.parse_args(argv)
-    text = render(build_registration())
-    if args.check:
-        committed = (ROOT / DEFAULT_OUT).read_text(encoding="utf-8")
-        if committed != text:
-            print(f"REGISTRATION_DRIFT: {DEFAULT_OUT}", file=sys.stderr)
-            return 1
-        print(f"registration ok: {DEFAULT_OUT}")
+    try:
+        registration = build_historical_registration_v1()
+        payload = render(registration).encode("utf-8")
+        if args.check or args.check_historical_v1:
+            _check_committed_historical_v1(payload, ROOT)
+            if args.check:
+                require_registered_implementation(registration)
+                print(f"historical integrity and current implementation match: {DEFAULT_OUT}")
+            else:
+                print(f"historical v1 integrity ok; current eligibility not checked: {DEFAULT_OUT}")
+            return 0
+        require_registered_implementation(registration)
+        out = Path(args.out) if args.out else ROOT / DEFAULT_OUT
+        written = _write_new_or_identical(out, payload)
+        print(f"{'wrote' if written else 'unchanged'} {out}")
         return 0
-    out = Path(args.out) if args.out else ROOT / DEFAULT_OUT
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(text, encoding="utf-8")
-    print(f"wrote {out}")
-    return 0
+    except RegistrationError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    except OSError as exc:
+        print(f"REGISTRATION_IO_ERROR: {exc}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
