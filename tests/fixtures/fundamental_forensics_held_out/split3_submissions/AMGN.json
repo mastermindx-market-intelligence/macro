@@ -1,0 +1,40 @@
+{
+  "cik": "0000318154",
+  "filings_10k": [
+    {
+      "accessionNumber": "0000318154-22-000010",
+      "filingDate": "2022-02-16",
+      "form": "10-K",
+      "primaryDocument": "amgn-20211231.htm",
+      "reportDate": "2021-12-31"
+    },
+    {
+      "accessionNumber": "0000318154-23-000017",
+      "filingDate": "2023-02-09",
+      "form": "10-K",
+      "primaryDocument": "amgn-20221231.htm",
+      "reportDate": "2022-12-31"
+    },
+    {
+      "accessionNumber": "0000318154-24-000011",
+      "filingDate": "2024-02-14",
+      "form": "10-K",
+      "primaryDocument": "amgn-20231231.htm",
+      "reportDate": "2023-12-31"
+    }
+  ],
+  "fiscalYearEnd": "1231",
+  "name": "AMGEN INC",
+  "response_sha256": {
+    "https://data.sec.gov/submissions/CIK0000318154.json": "19b0db8c75996d0b1cad136a096fbb532656ea22f9aa8b59ab3fc271cf203d72"
+  },
+  "retrieved_at": "2026-11-01T20:23:04Z",
+  "sic": "2836",
+  "sicDescription": "Biological Products, (No Diagnostic Substances)",
+  "source_urls": [
+    "https://data.sec.gov/submissions/CIK0000318154.json"
+  ],
+  "tickers": [
+    "AMGN"
+  ]
+}

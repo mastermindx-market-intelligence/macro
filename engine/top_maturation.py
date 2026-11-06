@@ -1055,16 +1055,17 @@ def order_legs(legs: Sequence[Mapping[str, Any]], state: str) -> list[dict]:
     return lead + [g for g in rows if g.get("key") not in BREAKING_LEAD_LEGS]
 
 
-def classify(fired: Sequence[str]) -> str:
+def classify(fired: Sequence[str], *, tier: str = "primary") -> str:
     """The four states. `breaking` needs STRUCTURE, never a bare oscillator cross.
 
-    L counts only the nine counting legs. The terminal state additionally requires
-    both structural legs — the 50-day line lost AND a real give-back from the run's
-    own high — so a name cannot be called "character changed" on volatility and
-    volume alone. This is the inherited `sector_signals` invariant.
+    Primary keeps its frozen nine counting legs. Widened tiers also count their
+    own `running_hot` leg, consistently with the evaluation/readability gate.
+    The terminal state still requires both structural legs — the 50-day line
+    lost AND a real give-back from the run's own high — so a name cannot be
+    called "character changed" on volatility and volume alone.
     """
     s = set(fired)
-    L = len(s & set(COUNTING_LEGS))
+    L = len(s & set(tier_counting_legs(tier)))
     if "below_50d" in s and "drawdown_from_high" in s:
         return "breaking"
     if L >= THINNING_LEGS:
@@ -1558,7 +1559,7 @@ def _build_tier(tier: str, *, data_root: Path, panel: Mapping[str, pd.DataFrame]
             continue
 
         legs, fired, age_leg = _fire_legs(f, d, thr, lib_age, hot=bool(spec["hot"]))
-        state = classify(fired)
+        state = classify(fired, tier=tier)
         if off_band:
             if state != "breaking":
                 n_off_band_dropped += 1

@@ -141,3 +141,96 @@ def test_adverse_interpretation_requires_its_own_current_qualified_fact(defect):
  else:fact['value']=float('inf')
  story=d._theme_economic_story('space',[('economics','defense_economics',f,None) for f in space_comparison_rows()+extras])
  assert 'sales rose' in story[0] and 'GEM63XL adjustment' not in story[0]
+
+
+# --- C1 repair: native reviewed FMS case with source_surface=state ---
+
+class _StubFmsOwner:
+ owner_kind='fms'
+ def __init__(self,payload): self._payload=payload;self.raw_bytes=json.dumps(payload,sort_keys=True,separators=(',',':')).encode()
+ def payload(self): return self._payload
+
+def _fms_case(observations,*,case_key='fms:transmittal:26-82',capability_title='Norway – 155mm HE M795 Projectile'):
+ return dict(case_key=case_key,case_state='current',stage='congressional_notification',capability_title=capability_title,advancement_condition='official_evidence_of_offered_accepted_or_implemented_loa',observations=observations,clocks=dict(first_observed_at='2026-08-26T11:01:35+00:00',official_web_publication_date=dict(provenance='state_header_date',value='2026-08-05')))
+
+def _fms_payload(case):
+ return dict(contract='government_fms_case.v1',schema_version='1.0.0',content_id='fms-test-'+case['case_key'],cases=[case])
+
+def _fms_ref(case_key='fms:transmittal:26-82'):
+ return dict(owner_key='fms',pointer='/cases/0/advancement_condition',row_id=case_key)
+
+def _state_obs(url='https://www.state.gov/releases/bureau-of-political-military-affairs/2026/08/norway-155mm-high-explosive-he-m795-projectile/'):
+ return dict(source_surface='state',source_url=url,response_sha256='e546eb90ae5716f48808bd951c1c3781d8973d2404c808b13bc27003239e96b1',known_at='2026-08-26T11:01:35+00:00')
+
+def _dsca_obs(url='https://www.dsca.mil/Press-Media/Major-Arms-Sales/ArticleDisplay/Article/4321/'):
+ return dict(source_surface='dsca',source_url=url,response_sha256='a'*64,known_at='2026-08-26T11:01:35+00:00')
+
+
+def test_resolve_admits_state_primary_when_dsca_observation_absent():
+ case=_fms_case([_state_obs()]);owner=_StubFmsOwner(_fms_payload(case));ref=_fms_ref()
+ en,zh,sources=d._resolve(ref,'funding_stage',{'fms':owner})
+ assert 'congressional notification' in en
+ assert sources and sources[0]['url'].startswith('https://www.state.gov/')
+ assert sources[0]['documentary_class']=='congressional_notification' and sources[0]['native_reason_code']=='congressional_notification_only'
+ assert sources[0]['source_publication_date']=='2026-08-05' and sources[0]['house_known_at']=='2026-08-26T11:01:35+00:00'
+
+
+def test_resolve_keeps_dsca_first_when_both_surfaces_present():
+ case=_fms_case([_dsca_obs(),_state_obs()]);owner=_StubFmsOwner(_fms_payload(case));ref=_fms_ref()
+ _,_,sources=d._resolve(ref,'funding_stage',{'fms':owner})
+ assert len(sources)==1 and sources[0]['url'].startswith('https://www.dsca.mil/')
+
+
+def test_resolve_state_primary_preserves_next_event_context_for_norway26_82():
+ case=_fms_case([_state_obs()]);owner=_StubFmsOwner(_fms_payload(case));ref=_fms_ref()
+ en,zh,_=d._resolve(ref,'next_event',{'fms':owner})
+ assert 'letter of offer and acceptance' in en and '要约和接受函' in zh
+
+
+def test_resolve_dsca_only_keeps_dsca_url_and_primary_class():
+ case=_fms_case([_dsca_obs()]);owner=_StubFmsOwner(_fms_payload(case));ref=_fms_ref()
+ _,_,sources=d._resolve(ref,'funding_stage',{'fms':owner})
+ assert sources[0]['url'].startswith('https://www.dsca.mil/') and sources[0]['documentary_class']=='congressional_notification'
+
+
+def test_resolve_rejects_state_observation_missing_response_sha256():
+ obs=_state_obs();obs.pop('response_sha256');case=_fms_case([obs]);owner=_StubFmsOwner(_fms_payload(case));ref=_fms_ref()
+ with pytest.raises(ValueError,match='fms_primary_receipt_missing'):d._resolve(ref,'funding_stage',{'fms':owner})
+
+
+def test_resolve_rejects_federal_register_only_case():
+ obs=dict(source_surface='federal_register',source_url='https://www.federalregister.gov/documents/full_text/text/2026/08/28/2026-17565.txt',response_sha256='6e31e63cc170a75d531525f02da0cb045f5a397bc8e0142b086e1c81bc504c3f',known_at='2026-09-16T07:29:57+00:00')
+ case=_fms_case([obs]);owner=_StubFmsOwner(_fms_payload(case));ref=_fms_ref()
+ with pytest.raises(ValueError,match='fms_primary_receipt_missing'):d._resolve(ref,'funding_stage',{'fms':owner})
+
+
+@pytest.mark.parametrize('bad_url',['http://www.state.gov/releases/x/','https://user:pass@www.state.gov/releases/x/','https://www.state.gov.attacker.example/releases/x/'])
+def test_resolve_rejects_state_url_with_wrong_scheme_userinfo_or_lookalike_host(bad_url):
+ case=_fms_case([_state_obs(url=bad_url)]);owner=_StubFmsOwner(_fms_payload(case));ref=_fms_ref()
+ with pytest.raises(ValueError,match='public_primary_url_unqualified'):d._resolve(ref,'funding_stage',{'fms':owner})
+
+
+def test_resolve_rejects_state_surface_pointing_to_dsca_host():
+ case=_fms_case([_state_obs(url='https://www.dsca.mil/Press-Media/x/')]);owner=_StubFmsOwner(_fms_payload(case));ref=_fms_ref()
+ with pytest.raises(ValueError,match='public_primary_url_unqualified'):d._resolve(ref,'funding_stage',{'fms':owner})
+
+
+def test_native_state_receipt_condition_survives_complete_public_validation():
+ p,owners,current=inputs()
+ assignments={row['theme_id']:deepcopy(row['rails']) for row in p['themes']}
+ case=owners['fms'].payload()['cases'][63]
+ assert case['case_key']=='fms:transmittal:26-82' and case['source_coverage']['classification']=='state_and_fr'
+ assignments['munitions_replenishment']['next_event']={
+  'state':'partial','reason_code':'condition_not_scheduled_date',
+  'references':[{'owner_key':'fms','pointer':'/cases/63/advancement_condition','row_id':case['case_key']}]}
+ context=t.compose_program_theme_context(assignments,owners=owners,generated_at=p['generated_at'],as_of=p['as_of'])
+ public=d.disclose_program_themes(context,owners=owners,current_owner_receipts=current)
+ row=next(x for x in public['themes'] if x['theme_id']=='munitions_replenishment')
+ assert row['rail_states']['next_event']=='partial'
+ assert 'letter of offer and acceptance' in row['next_en'] and '要约和接受函' in row['next_zh']
+ source=next(x for x in row['sources'] if x['row_id']==case['case_key'])
+ assert source['url']==case['observations'][0]['source_url']
+ assert source['documentary_class']=='congressional_notification' and source['native_reason_code']=='congressional_notification_only'
+ assert source['issuer_id'] is None and source['security_id'] is None
+ assert all(x['research_state']=='EVIDENCE_INSUFFICIENT' for x in public['themes'])
+ assert d.validate_public_theme_disclosure(public)

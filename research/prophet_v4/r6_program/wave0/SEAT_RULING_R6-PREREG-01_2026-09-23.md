@@ -46,3 +46,13 @@ Files: `research/prophet_v4/b4_entry_policy_calibration/PREREG.json` and `resear
 9. `decision_law` rewritten so "supported" requires the single primary endpoint (not any-of-K) plus the non-inferiority bound; "killed" retains the Pareto and non-identifiability rules.
 
 Reviewer exclusion: the amendment's reviewer must not be its author or the seat. The lane's reviewer is GLM-5.3 (independent); the seat adjudicates and merges.
+
+## Status note (2026-10-21, seat ruling F1)
+
+Line 9 above ("(#7581/#7738 are Draft)") was true on 2026-09-23 and stays as dated
+history. Both PRs have since merged: #7581 (`engine/prophet_entry_availability_sources.py`)
+and #7738 (`engine/prophet_entry_policy.py`) are merged library code at BASE. No nightly
+caller of that library exists at BASE (the only importer is a one-shot offline research
+script and tests), so the line-9 substance still holds: no live B4 runtime, and "no
+prospective observation has been captured". The runtime caller is routed to the Source
+orchestrator's Stage 3 journey (r7_program/intel/INTEL_DISPOSITION_2026-10-21.md, F5).

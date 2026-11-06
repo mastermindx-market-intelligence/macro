@@ -55,28 +55,20 @@ waves:
     depends_on: [d00-freeze]
   - id: consumers
     title: Retained views, D00.A1 venue clock + declared units, price-ladder opt-in canonical read, coverage, agreement inspector, view-contract sidecar emitter, Terminal / DataWorkspace / basket reads, support matrix (P05, P06, C01-C04, U01-U04, M01)
-    status: in_progress
-    pr: [9179, 9184, 9185, 9188, 9210, 9218, 9220, 9226, 9234, 9236, 9237, 9241, 9539]
+    status: done
+    pr: [9179, 9184, 9185, 9188, 9210, 9218, 9220, 9226, 9234, 9236, 9237, 9241, 9539, 9555]
     depends_on: [identity-time, math-registry-rights]
   - id: verification-acceptance
     title: Independent oracle, adversarial access, matched workload, end-to-end journey, corrections, recovery, source review, install and cycle plans (Q01-Q03, F01, A01-A03, R01-R03)
-    status: in_progress
+    status: done
     pr: [9273, 9275]
     depends_on: [consumers]
   - id: c00-closeout
     title: Live verification on the served product, second nightly cycle, acceptance matrix closeout (C00)
-    status: todo
+    status: in_progress
     depends_on: [verification-acceptance]
 next_action: >-
-  Consume the ONE watcher per open DRAFT PR and hand-merge each at its exact concluded-green head
-  (U04 #9241, C04 #9226, M01 #9237, verification #9273, acceptance #9275; the second of
-  #9273/#9275 to merge needs update-branch because both add a legacy-jobs.yml job), proving each
-  landing against freshly fetched origin/main; then dispatch ONE main ci.yml baseline over a clear
-  field (never over a live run) to clear the CI-authority heads (#9241, #9226) and prove C04's
-  daily.yml edit; wire-5 exports (read_view, the U04 and M01 names) from the seat after U04/M01
-  land; R02 installed/selected/consumed receipts after R01 + A02 + M01; R03 is the first nightly
-  that commits data/stocks/_view_contract.json (never dispatch daily.yml); then the final C00
-  closeout matrix in a records PR.
+  (1) DONE 2026-11-02 — R03 read back (research/data_os_completion/2026-10-13/R03_CYCLE_PLAN.md §8): #9556 merged, nightly 39356358114 pushed the sidecar (7308bc1dc500), pre-10-20 history price-identical on AAPL/MSFT/XOM, 9 sessions appended, coverage 253/251/2 and refusal_reasons [] unchanged; R03.01/.04 PASS-WITH-GAPS, R03.02/.03 PASS. Findings routed, not owned here: R03-F1 (two `data: daily collection <date>` commits per date 10-21 … 10-24) and R03-F2 (10-27 … 10-29 nightlies gated off, backfilled 10-30) → the nightly owner; flagship tickers served without `view` (VIEW_ABSENT) → macro #9619 + Terminal #1043. Never dispatch daily.yml. (2) DONE — Q02-F1 #9654 (b300469398ca) and gap A1 #9709 (fc44c814c192) merged and land-proofed. (3) DONE — main RIG red healed by #7100 (b91514a3); main ci.yml 39245121273 @ff1b80af0f5e completed SUCCESS, clearing the C04 / wire-5 / #9273 CI-authority heads. (4) D00.D5/D6 generation producer (matrix row GEN): Sol operation `rs-pullback-initial-generation-r13-20261013-c1` landed as PR #9617 (10ae5ef9da43, merged 2026-10-24: reference-publication generation receipts in `scripts/build_security_master.py`); the daily bars store still emits no `GenerationRef`, so the store-level generation invariant stays EXPLICITLY UNFINISHED and is not this workstream's to build. c00-closeout stays in_progress on that one row plus the flagship `view` binding (#9619 + Terminal #1043). Never redeploy Terminal #996; never re-dispatch a concluded baseline.
 landmines:
   - "WS:TIINGO-DATA-OS owns lib/dataos/tiingo_*.py, collectors/tiingo_archive.py, scripts/tiingo_*, docs/tiingo-evidence/ and the twenty PROPOSED Tiingo registry rows; this workstream never touches them."
   - "lib/dataos/__init__.py has exactly one writer per wave (the identity+time orchestrator in wave 1; the seat from the wave-2 wiring #9168 on); parallel export wiring collides on the shared export list."
@@ -91,6 +83,8 @@ do_not_redo:
   - "Identity candidate PR #8637 is adopted by cherry-pick -x in package I01; do not re-author identity continuity or recommission its GMI sidecar changes."
   - "The route proof (G01) is one lane, one round; do not replay a blocked preflight."
 artifacts:
+  - research/data_os_completion/2026-10-13/C00_CLOSEOUT_MATRIX.md
+  - research/data_os_completion/2026-10-13/R02_RECEIPTS.md
   - research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
   - research/data_os_completion/2026-10-13/D00_A1_AMENDMENT.md
   - research/MASTERMIND_DATA_OS_ARCHITECTURE.md

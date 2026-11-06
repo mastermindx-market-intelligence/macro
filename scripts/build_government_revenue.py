@@ -1109,6 +1109,9 @@ def _load_optional_canonical_idv_dossier(root: Path, dossier: dict) -> tuple[str
     return raw, payload
 
 
+_THEME_ICON_IMPORT_RE = re.compile(r'@import url\("product-nav-icons\.css\?v=[0-9a-f]{8}"\);')
+
+
 def _government_revenue_critical_css(env) -> str:
     """Concatenate canonical head styles in order; keep all relative URLs.
 
@@ -1122,10 +1125,12 @@ def _government_revenue_critical_css(env) -> str:
         css, filename, _ = env.loader.get_source(env, name)
         if name == "theme.css":
             imported, _, _ = env.loader.get_source(env, "product-nav-icons.css")
-            marker = '@import url("product-nav-icons.css?v=093ad1ea");'
-            if css.count(marker) != 1:
+            # The stamp moves whenever product-nav-icons.css changes (sha256[:8],
+            # the optimizer's cache key); match the import by shape, not by hash.
+            marker = _THEME_ICON_IMPORT_RE
+            if len(marker.findall(css)) != 1:
                 raise ValueError("canonical theme icon import changed; review dependency order")
-            css = css.replace(marker, imported, 1)
+            css = marker.sub(lambda _m: imported, css, count=1)
         if "@import" in css:
             raise ValueError("unresolved stylesheet import in " + name)
         # Current canonical non-data URLs are same-root self-hosted fonts.

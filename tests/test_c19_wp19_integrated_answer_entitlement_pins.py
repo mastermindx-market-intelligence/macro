@@ -26,9 +26,14 @@ import app.integrated_answer as integrated_answer
 from app.forensics import _PRIVATE_HEADERS
 from app.integrated_answer import router as integrated_answer_router
 from engine.company_intelligence.contracts import ContractError, safe_ticker
-from tests.test_integrated_answer_v0 import _client, _page, _patch_all_seams
+from tests.test_integrated_answer_v0 import _client, _page, _patch_all_seams, pin_capital_structure_leg
 
 _PATH = "/api/integrated-answer/v1/AAPL"
+
+
+@pytest.fixture(autouse=True)
+def _pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    pin_capital_structure_leg(monkeypatch)
 
 
 def _real_client(monkeypatch, *, flag_on: bool = True) -> TestClient:
@@ -60,12 +65,17 @@ def _stub_auth(monkeypatch, *, require_user, enforce_site_full) -> None:
 
 
 def _forbid_compose(monkeypatch) -> None:
-    """Any attempt to build a page during a denial test is a hard failure."""
+    """Any attempt to build a page during a denial test is a hard failure.
+
+    The route calls ``_compose_page_with_receipts`` directly, so patching only
+    ``_compose_page`` would never fire; both seams are forbidden.
+    """
 
     def _forbidden(*_args, **_kwargs):
         raise AssertionError("composed")
 
     monkeypatch.setattr(integrated_answer, "_compose_page", _forbidden)
+    monkeypatch.setattr(integrated_answer, "_compose_page_with_receipts", _forbidden)
 
 
 def _allowing_stubs(monkeypatch):

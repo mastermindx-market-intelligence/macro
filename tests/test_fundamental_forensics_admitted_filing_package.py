@@ -52,17 +52,38 @@ T_FLOOR = datetime(2026, 8, 1, 0, 0, tzinfo=timezone.utc)
 # Captured on this branch at de6ee6a2 before the passthrough edit. Golden
 # manifests lack capture_basis/capture_recorded_at, so these ids/bytes must
 # stay identical after the additive D3 field list change.
-_FIP1_GENERATION_ID = "ffprods_181f4473001fd3d8d8090551bee67fc7a688834f92cc5d4057c968f166eeed8f"
+#
+# Re-pinned 2026-10-19 by seat ruling R-9761-CLK (c), as G0 #9603 re-pinned for
+# its registry change: the generation ids and the AAPL manifest bind the
+# registry_json role, so the metric registry 1.1.0 pack (#9761) moves them while
+# the statement-package index and the query bytes stay identical. The
+# *_REGISTRY_V1_0_0 values are the previous pins; the golden test re-derives them
+# exactly from the committed byte-copy of the 1.0.0 registry, so any drift other
+# than the registry is still caught. Re-pinned again for the formula pack 1.1.0
+# (F3 not-presented policy): only the generation ids and the manifest move; the
+# index, the query bytes and every *_REGISTRY_V1_0_0 value re-derive unchanged.
+_REGISTRY_V1_0_0_ROOT = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
+_FIP1_GENERATION_ID = "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069"
+_FIP1_GENERATION_ID_REGISTRY_V1_0_0 = (
+    "ffprods_099a50f4a0f65f632bdf197af27c4a3dd0f6bbc86d1cc3aee805dd12c191154e"
+)
 _FIP1_INDEX_SHA = "22376a6171015e6efe1857a289edd36a657bf7762bcb37bc08efe14ab548f4d7"
 # re-pinned 2026-10-12 by seat ruling: P1 #8992 R2 added the optional
 # statement_trees_json role (packages-bearing generations only)
-_AAPL_GOLDEN_GENERATION_ID = "ffprods_0b5def029e7088a915d96db8a4261f9294350beb426e17600ac050943a0a0932"
+# (re-pinned 2026-10-19 by R-9761-CLK (c); previous pins kept as *_REGISTRY_V1_0_0)
+_AAPL_GOLDEN_GENERATION_ID = "ffprods_0c22ee6bf81f0e0dfa254427ee1f1ad69d21594941d21956bc67c178d71afe86"
+_AAPL_GOLDEN_GENERATION_ID_REGISTRY_V1_0_0 = (
+    "ffprods_e0cc353b1372f883ab481c76dda453e6903cd03e9ef10bfd6cd5d387e2317866"
+)
 _AAPL_GOLDEN_INDEX_SHA = "74c2975c1903ae026e2971490571463551ce33bf18cd9e40593e75b1e213bb3f"
-_AAPL_GOLDEN_MANIFEST_SHA = "f1e378e876001f09ea9c2355aedb8cacd6aa0b06f57de54aa184cb0d33e0d3fe"
+_AAPL_GOLDEN_MANIFEST_SHA = "548e72417ecb54df70cce76bfbf82a2d1e5ebde2d484f239328f264930c01bbb"
+_AAPL_GOLDEN_MANIFEST_SHA_REGISTRY_V1_0_0 = (
+    "65dd20e2ad55737c35c75656b15af699fa3e1b99392a24c8c1a14b8d70bc3b1e"
+)
 _FIP1_QUERY_SHA = {
-    "as_reported": "c7c7c6b285f697597d50139e5991277bdac57e1c325d63424f35b12cf0201ba1",
-    "latest_known_as_of": "086a59ef400af43103d4e13572e384e6b7766b58a9179eabbb709265ad0aa019",
-    "latest_restated": "8044e58d7a09690d93111408c5f7df186f010a58a88f9c425af2bf4b24b84859",
+    "as_reported": "bf8e9099e0f94d891f8b739adf15eee8651a0478b55ecbed746ac19a734e2c02",
+    "latest_known_as_of": "2d9964257abbe545322c54e4572956dffeddae257fc49ff11cef7264d0bd79d7",
+    "latest_restated": "7ba7a23305a1284ddf6e75eba582eb58791922c46cd1d63b0147560888350c0a",
 }
 T1_SOURCE = "2024-12-31T23:59:59Z"
 T2_RECORDED = "2026-08-03T12:00:00Z"
@@ -135,7 +156,7 @@ def _aapl_entity() -> EntityInput:
     )
 
 
-def _fip1_material() -> PDS.ProductionDatasetMaterial:
+def _fip1_material(registry_root: Path = ROOT) -> PDS.ProductionDatasetMaterial:
     base = fip1_fixture_dataset(ROOT)
     return PDS.ProductionDatasetMaterial(
         binding=base.binding,
@@ -149,7 +170,7 @@ def _fip1_material() -> PDS.ProductionDatasetMaterial:
         ),
         ledger=base.ledger,
         filing_metadata=base.filing_metadata,
-        registry_payload=PDS.snapshot_core_registry_payload(ROOT),
+        registry_payload=PDS.snapshot_core_registry_payload(registry_root),
         admitted_at=T_ADMITTED,
         source_recorded_at_floor=T_FLOOR,
     )
@@ -680,15 +701,22 @@ def test_parse_evidence_retains_unsupported_states() -> None:
 
 
 def test_golden_generation_bytes_unchanged() -> None:
-    material = _fip1_material()
-    store = PDS.InMemoryStrictConditionalStore()
-    publication = PDS.publish_production_dataset(store, material)
-    assert publication.generation_id == _FIP1_GENERATION_ID
-    generation = PDS.load_generation(store, "mmx.issuer.fip1", publication.generation_id)
-    assert (
-        hashlib.sha256(generation.role_payloads["statement_packages_index_json"]).hexdigest()
-        == _FIP1_INDEX_SHA
-    )
+    # R-9761-CLK (c): the live registry carries the new pins; the same inputs
+    # against the committed 1.0.0 registry root re-derive the previous pins
+    # exactly, so the only moved input is the registry itself.
+    for registry_root, fip1_generation_id in (
+        (ROOT, _FIP1_GENERATION_ID),
+        (_REGISTRY_V1_0_0_ROOT, _FIP1_GENERATION_ID_REGISTRY_V1_0_0),
+    ):
+        material = _fip1_material(registry_root)
+        store = PDS.InMemoryStrictConditionalStore()
+        publication = PDS.publish_production_dataset(store, material)
+        assert publication.generation_id == fip1_generation_id, registry_root
+        generation = PDS.load_generation(store, "mmx.issuer.fip1", publication.generation_id)
+        assert (
+            hashlib.sha256(generation.role_payloads["statement_packages_index_json"]).hexdigest()
+            == _FIP1_INDEX_SHA
+        )
     base = fip1_fixture_dataset(ROOT)
     for selection, expected in _FIP1_QUERY_SHA.items():
         result = execute_financial_query(
@@ -699,20 +727,39 @@ def test_golden_generation_bytes_unchanged() -> None:
 
     packages = [load_golden_aapl_package(ROOT, accession=a) for a in GOLDEN_AAPL_QUERY_ACCESSIONS]
     ledger, filing_metadata, _report = parse_and_convert_golden_packages(packages)
-    aapl_material = PDS.ProductionDatasetMaterial(
-        binding=_aapl_binding(),
-        entity=_aapl_entity(),
-        ledger=ledger,
-        filing_metadata=filing_metadata,
-        registry_payload=PDS.snapshot_core_registry_payload(ROOT),
-        admitted_at=T_ADMITTED,
-        source_recorded_at_floor=T_FLOOR,
-        packages=tuple(packages),
-        security_id="SEC:US-XNAS-AAPL",
-        listing_key="US-XNAS-AAPL",
+
+    def _aapl_material(registry_root: Path) -> PDS.ProductionDatasetMaterial:
+        return PDS.ProductionDatasetMaterial(
+            binding=_aapl_binding(),
+            entity=_aapl_entity(),
+            ledger=ledger,
+            filing_metadata=filing_metadata,
+            registry_payload=PDS.snapshot_core_registry_payload(registry_root),
+            admitted_at=T_ADMITTED,
+            source_recorded_at_floor=T_FLOOR,
+            packages=tuple(packages),
+            security_id="SEC:US-XNAS-AAPL",
+            listing_key="US-XNAS-AAPL",
+        )
+
+    store_v1_0_0 = PDS.InMemoryStrictConditionalStore()
+    publication_v1_0_0 = PDS.publish_production_dataset(
+        store_v1_0_0, _aapl_material(_REGISTRY_V1_0_0_ROOT)
     )
+    assert publication_v1_0_0.generation_id == _AAPL_GOLDEN_GENERATION_ID_REGISTRY_V1_0_0
+    assert hashlib.sha256(store_v1_0_0.get_bytes(publication_v1_0_0.manifest_key)).hexdigest() == (
+        _AAPL_GOLDEN_MANIFEST_SHA_REGISTRY_V1_0_0
+    )
+    generation_v1_0_0 = PDS.load_generation(
+        store_v1_0_0, "ISS:US-XNAS-AAPL", publication_v1_0_0.generation_id
+    )
+    assert (
+        hashlib.sha256(generation_v1_0_0.role_payloads["statement_packages_index_json"]).hexdigest()
+        == _AAPL_GOLDEN_INDEX_SHA
+    )
+
     store2 = PDS.InMemoryStrictConditionalStore()
-    publication2 = PDS.publish_production_dataset(store2, aapl_material)
+    publication2 = PDS.publish_production_dataset(store2, _aapl_material(ROOT))
     assert publication2.generation_id == _AAPL_GOLDEN_GENERATION_ID
     generation2 = PDS.load_generation(store2, "ISS:US-XNAS-AAPL", publication2.generation_id)
     index_payload = generation2.role_payloads["statement_packages_index_json"]

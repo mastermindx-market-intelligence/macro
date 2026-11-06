@@ -31,6 +31,13 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname
 log = logging.getLogger("build_alt_data")
 
 
+# The card's "Nd vs prior Nd" window. tests/test_altdata_intel.py pins this
+# to the collectors' RECENT_D/PRIOR_D and FOA_RECENT_D/FOA_PRIOR_D
+# (collectors/sam_gov.py:45-46, collectors/grants_gov.py:34-35) so the label
+# is data, not a hardcoded 90 that can silently drift from the producers.
+PIPELINE_WINDOW_DAYS = 90
+
+
 def theme_pipeline_counts(root: Path | None = None) -> dict:
     """Display-only federal pipeline counts per theme basket (W16-B-FOA).
 
@@ -46,6 +53,11 @@ def theme_pipeline_counts(root: Path | None = None) -> dict:
 
     Numbers for the page ONLY: no z, ratio or rank is computed here, and the
     result never feeds altdata_*, emit, picks or the ledger.
+
+    Returns ``rows`` capped at 15 plus ``total`` (the pre-cap count) so the
+    card can say honestly when it truncates; ``window_days`` comes from
+    ``PIPELINE_WINDOW_DAYS``. Never raise: a non-dict as-of sidecar costs the
+    as-of column, a poison count cell costs that cell — never the card.
     """
     import pandas as pd
 
@@ -79,13 +91,23 @@ def theme_pipeline_counts(root: Path | None = None) -> dict:
     try:
         meta_path = root / "data" / "sam_gov" / "opp_velocity_meta.json"
         if meta_path.exists():
-            as_of = json.loads(meta_path.read_text()).get("as_of") or {}
+            raw_as_of = json.loads(meta_path.read_text()).get("as_of")
+            if isinstance(raw_as_of, dict):
+                as_of = raw_as_of     # truthy non-dict (list/str/int) would
+            else:                     # escape as AttributeError on .get(b)
+                log.warning("pipeline counts: SAM as-of meta is %s, not a "
+                            "dict — no as-of", type(raw_as_of).__name__)
     except Exception as e:  # noqa: BLE001
         log.warning("pipeline counts: SAM as-of meta unreadable (%s) — no as-of", e)
 
     def _count(rec: dict | None, col: str) -> int | None:
         v = (rec or {}).get(col)
-        return None if v is None or pd.isna(v) else int(v)
+        try:      # total: NaN/None -> None; "abc"/inf -> None; never fatal
+            if v is None or pd.isna(v):
+                return None
+            return int(v)
+        except (TypeError, ValueError, OverflowError):
+            return None
 
     ids = list(dict.fromkeys([*sam_rows, *foa_rows]))   # union, deterministic order
     rows = [{"basket_id": b,
@@ -95,7 +117,8 @@ def theme_pipeline_counts(root: Path | None = None) -> dict:
              "foa_prior": _count(foa_rows.get(b), "prior_count"),
              "sam_as_of": as_of.get(b)} for b in ids]
     rows.sort(key=lambda r: (-(max(r["sam_recent"] or 0, r["foa_recent"] or 0)), r["basket_id"]))
-    return {"rows": rows[:15], "window_days": 90}
+    return {"rows": rows[:15], "total": len(rows),
+            "window_days": PIPELINE_WINDOW_DAYS}
 
 
 def main() -> int:

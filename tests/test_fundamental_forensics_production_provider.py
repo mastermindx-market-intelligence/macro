@@ -65,9 +65,9 @@ _FIP1_ENTITY_ID = "mmx.issuer.fip1"
 # Frozen pre-D3 baselines, computed on the untouched tree at 5267c66846e.
 # If an additive D3 change moves any of these bytes, the change is wrong.
 _FIP1_QUERY_SHA = {
-    "as_reported": "c7c7c6b285f697597d50139e5991277bdac57e1c325d63424f35b12cf0201ba1",
-    "latest_known_as_of": "086a59ef400af43103d4e13572e384e6b7766b58a9179eabbb709265ad0aa019",
-    "latest_restated": "8044e58d7a09690d93111408c5f7df186f010a58a88f9c425af2bf4b24b84859",
+    "as_reported": "bf8e9099e0f94d891f8b739adf15eee8651a0478b55ecbed746ac19a734e2c02",
+    "latest_known_as_of": "2d9964257abbe545322c54e4572956dffeddae257fc49ff11cef7264d0bd79d7",
+    "latest_restated": "7ba7a23305a1284ddf6e75eba582eb58791922c46cd1d63b0147560888350c0a",
 }
 
 

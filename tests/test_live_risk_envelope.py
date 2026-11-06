@@ -42,7 +42,7 @@ def gd1():
 
 
 def _write_root(tmp_path, *, risk_state=None, leadership=None, settled=None,
-                 prev_envelope=None):
+                 prev_envelope=None, public=None):
     (tmp_path / "site" / "live").mkdir(parents=True, exist_ok=True)
     (tmp_path / "data" / "leadership_crack").mkdir(parents=True, exist_ok=True)
     (tmp_path / "data" / "risk_envelope").mkdir(parents=True, exist_ok=True)
@@ -54,7 +54,16 @@ def _write_root(tmp_path, *, risk_state=None, leadership=None, settled=None,
         (tmp_path / "data" / "risk_envelope" / "latest.json").write_text(json.dumps(settled))
     if prev_envelope is not None:
         (tmp_path / "site" / "live" / "risk_envelope.json").write_text(json.dumps(prev_envelope))
+    if public is not None:
+        _write_public(tmp_path, public)
     return tmp_path
+
+
+def _write_public(root, doc):
+    """The PUBLIC settled copy (site/riskdata/risk_envelope.json) the S02/S12
+    qualification pairs with the durable copy."""
+    (root / "site" / "riskdata").mkdir(parents=True, exist_ok=True)
+    (root / "site" / "riskdata" / "risk_envelope.json").write_text(json.dumps(doc))
 
 
 def _risk_state(built, *, live_active=True, verdict="RISK_OFF", score=40,
@@ -109,6 +118,16 @@ def _leadership(asof, state="BROKEN"):
 def _settled(session, bundle_id="fd9ccdbe47f7f008", stage="FRAGILE"):
     return {"source_session": session, "bundle_id": bundle_id,
             "hazard_summary": {"stage": stage}}
+
+
+def _settled_q(session, *, bundle_id="fd9ccdbe47f7f008", stage="FRAGILE",
+               revision="settled", produced_at=None):
+    """A settled copy carrying the S02/S12 qualification fields. `produced_at`
+    defaults to 16:20 EDT on `session` (after the close, August fixtures)."""
+    doc = _settled(session, bundle_id=bundle_id, stage=stage)
+    doc["revision"] = revision
+    doc["produced_at"] = produced_at if produced_at is not None else f"{session}T20:20:00Z"
+    return doc
 
 
 # ══ item 1 — settled fixture compose output byte-identical after the adapter edit ══
@@ -434,17 +453,188 @@ class TestPrecedence:
         assert env1["live_transition"]["pending"] == {"stage": "NONE", "ticks": 1, "needs": 3}
         blre.write(root=root, now=datetime(2026, 8, 20, 15, 1, tzinfo=timezone.utc))
 
-        # nightly settles: the settled envelope's source_session advances to L,
-        # confirming the de-escalation the live plane already saw.
-        (root / "data" / "risk_envelope" / "latest.json").write_text(
-            json.dumps(_settled("2026-08-20", bundle_id="newbundle00000001", stage="NONE"))
-        )
-        env2 = blre.build(root=root, now=datetime(2026, 8, 20, 15, 3, tzinfo=timezone.utc))
+        # the settle lands after the close: the settled envelope's source_session
+        # advances to L, confirming the de-escalation the live plane already saw.
+        # EW-P5 S02/S12: it is QUALIFIED (revision settled, produced 16:20 EDT, paired
+        # public copy), read by a post-market live fire of the same session.
+        settled_doc = _settled_q("2026-08-20", bundle_id="newbundle00000001", stage="NONE")
+        (root / "data" / "risk_envelope" / "latest.json").write_text(json.dumps(settled_doc))
+        _write_public(root, settled_doc)
+        (root / "site" / "live" / "risk_state.json").write_text(json.dumps(
+            _risk_state("2026-08-20 20:30:00 UTC", verdict="RISK_ON",
+                        radar_state="calm", radar_score=10.0)))
+        env2 = blre.build(root=root, now=datetime(2026, 8, 20, 20, 31, tzinfo=timezone.utc))
         assert env2["precedence"] == "settled"
         assert env2["stale_reason"] == "session already settled"
+        assert env2["settled_qualification"] == {"qualified": True}
         assert env2["live_transition"]["pending"] is None
         assert env2["live_transition"]["stable_stage"] == "NONE"
         assert env2["overlays"]["settled_source_session"] == "2026-08-20"
+
+    def test_qualification_is_null_unless_sessions_match(self, tmp_path):
+        """L > S and L < S keep their rules; the qualification is published only
+        for L == S."""
+        root = _write_root(
+            tmp_path, risk_state=_risk_state("2026-08-20 15:00:00 UTC"),
+            leadership=_leadership("2026-08-19"), settled=_settled("2026-08-19"),
+        )
+        env = blre.build(root=root, now=datetime(2026, 8, 20, 15, 1, tzinfo=timezone.utc))
+        assert env["precedence"] == "live" and env["settled_qualification"] is None
+        root2 = _write_root(
+            tmp_path / "older", risk_state=_risk_state("2026-08-17 15:00:00 UTC"),
+            leadership=_leadership("2026-08-17"), settled=_settled_q("2026-08-19"),
+        )
+        env2 = blre.build(root=root2, now=datetime(2026, 8, 17, 15, 1, tzinfo=timezone.utc))
+        assert env2["precedence"] == "settled" and env2["settled_qualification"] is None
+
+
+# == EW-P5 S02/S12: a same-session settled copy must QUALIFY to suppress the overlay ==
+
+class TestSameSessionSettleQualification:
+    """Catalogue S02: a label alone never grants settlement, and the live overlay is
+    not suppressed as already settled. S12: never silently suppress the overlay on
+    revision text only. S01: a qualified capture pairs the public and durable copies."""
+
+    LIVE_BUILT = "2026-08-20 15:00:00 UTC"          # 11:00 EDT, session open
+    NOW = datetime(2026, 8, 20, 15, 1, tzinfo=timezone.utc)
+
+    def _build(self, tmp_path, settled, public=None, *, built=None, now=None):
+        root = _write_root(
+            tmp_path, risk_state=_risk_state(built or self.LIVE_BUILT),
+            leadership=_leadership("2026-08-19"), settled=settled, public=public,
+        )
+        return blre.build(root=root, now=now or self.NOW)
+
+    def _assert_overlay_stays_live(self, env, reason):
+        assert env["precedence"] == "live"
+        assert env["live_active"] is True
+        assert env["stale_reason"] is None
+        assert env["settled_qualification"] == {"qualified": False, "reason": reason}
+
+    def test_s02_intraday_same_session_settle_does_not_suppress(self, tmp_path):
+        doc = _settled_q("2026-08-20", produced_at="2026-08-20T14:30:00Z")   # 10:30 EDT
+        env = self._build(tmp_path, doc, public=doc)
+        self._assert_overlay_stays_live(
+            env, "produced_at is before 16:00 America/New_York on the source session")
+
+    def test_s12_revision_text_alone_does_not_suppress(self, tmp_path):
+        doc = _settled("2026-08-20")
+        doc["revision"] = "settled"                # label only: no produced_at
+        env = self._build(tmp_path, doc, public=doc)
+        self._assert_overlay_stays_live(env, "produced_at is missing, unparseable or naive")
+
+    def test_s12_unlabelled_same_session_file_does_not_suppress(self, tmp_path):
+        env = self._build(tmp_path, _settled("2026-08-20"), public=_settled("2026-08-20"))
+        self._assert_overlay_stays_live(env, "revision None is not settled or corrected")
+
+    def test_live_provisional_revision_does_not_suppress(self, tmp_path):
+        doc = _settled_q("2026-08-20", revision="live_provisional")
+        env = self._build(tmp_path, doc, public=doc)
+        self._assert_overlay_stays_live(
+            env, "revision 'live_provisional' is not settled or corrected")
+
+    def test_naive_produced_at_does_not_suppress(self, tmp_path):
+        doc = _settled_q("2026-08-20", produced_at="2026-08-20T20:20:00")   # no zone
+        env = self._build(tmp_path, doc, public=doc)
+        self._assert_overlay_stays_live(env, "produced_at is missing, unparseable or naive")
+
+    def test_missing_public_copy_does_not_suppress(self, tmp_path):
+        """A post-close settle read by a post-market live fire, but with no public
+        copy: not a qualified capture (S01)."""
+        env = self._build(tmp_path, _settled_q("2026-08-20"), built="2026-08-20 20:30:00 UTC",
+                          now=datetime(2026, 8, 20, 20, 31, tzinfo=timezone.utc))
+        self._assert_overlay_stays_live(env, "public settled copy is missing")
+
+    def test_mismatched_public_copy_does_not_suppress(self, tmp_path):
+        doc = _settled_q("2026-08-20")
+        env = self._build(tmp_path, doc, public=dict(doc, bundle_id="otherbundle000001"),
+                          built="2026-08-20 20:30:00 UTC",
+                          now=datetime(2026, 8, 20, 20, 31, tzinfo=timezone.utc))
+        self._assert_overlay_stays_live(
+            env, "public settled copy does not match the durable source_session and bundle_id")
+
+    def test_unqualified_settle_keeps_the_dwell_ticking(self, tmp_path):
+        """No silent supersede: an unqualified same-session file leaves the transition
+        on the normal debounce path instead of clearing it."""
+        calm = dict(verdict="RISK_ON", radar_state="calm", radar_score=10.0)
+        root = _write_root(
+            tmp_path, risk_state=_risk_state("2026-08-20 15:00:00 UTC", **calm),
+            leadership=_leadership("2026-08-19", state="REPAIRING"),
+            settled=_settled("2026-08-19", stage="FRAGILE"),
+        )
+        blre.write(root=root, now=datetime(2026, 8, 20, 15, 1, tzinfo=timezone.utc))
+        doc = _settled_q("2026-08-20", stage="NONE", produced_at="2026-08-20T14:30:00Z")
+        (root / "data" / "risk_envelope" / "latest.json").write_text(json.dumps(doc))
+        _write_public(root, doc)
+        # The leadership read is stale unless its asof equals the settled session,
+        # so it advances with the (unqualified) same-session file; otherwise the
+        # candidate is null and the transition freezes instead of ticking.
+        (root / "data" / "leadership_crack" / "latest.json").write_text(
+            json.dumps(_leadership("2026-08-20", state="REPAIRING")))
+        (root / "site" / "live" / "risk_state.json").write_text(
+            json.dumps(_risk_state("2026-08-20 15:02:00 UTC", **calm)))
+        env = blre.build(root=root, now=datetime(2026, 8, 20, 15, 3, tzinfo=timezone.utc))
+        assert env["precedence"] == "live"
+        assert env["settled_qualification"]["qualified"] is False
+        assert env["live_transition"]["stable_stage"] == "FRAGILE"
+        assert env["live_transition"]["pending"] == {"stage": "NONE", "ticks": 2, "needs": 3}
+
+    def test_unqualified_settle_with_a_stale_read_freezes_not_clears(self, tmp_path):
+        """When the same-session file makes the leadership read stale, the candidate
+        is null: the transition freezes and keeps its pending, never clears it."""
+        calm = dict(verdict="RISK_ON", radar_state="calm", radar_score=10.0)
+        root = _write_root(
+            tmp_path, risk_state=_risk_state("2026-08-20 15:00:00 UTC", **calm),
+            leadership=_leadership("2026-08-19", state="REPAIRING"),
+            settled=_settled("2026-08-19", stage="FRAGILE"),
+        )
+        blre.write(root=root, now=datetime(2026, 8, 20, 15, 1, tzinfo=timezone.utc))
+        doc = _settled_q("2026-08-20", stage="NONE", produced_at="2026-08-20T14:30:00Z")
+        (root / "data" / "risk_envelope" / "latest.json").write_text(json.dumps(doc))
+        _write_public(root, doc)
+        (root / "site" / "live" / "risk_state.json").write_text(
+            json.dumps(_risk_state("2026-08-20 15:02:00 UTC", **calm)))
+        env = blre.build(root=root, now=datetime(2026, 8, 20, 15, 3, tzinfo=timezone.utc))
+        assert env["precedence"] == "live"
+        assert env["live_transition"]["stable_stage"] == "FRAGILE"
+        assert env["live_transition"]["pending"] == {"stage": "NONE", "ticks": 1, "needs": 3}
+
+
+class TestSettledQualificationRule:
+    """The pure rule, including the rule order and the America/New_York close."""
+
+    def test_corrected_revision_qualifies(self):
+        doc = _settled_q("2026-08-20", revision="corrected")
+        assert blre._settled_qualification(doc, doc, "2026-08-20") == {"qualified": True}
+
+    def test_close_is_new_york_time_in_both_offsets(self):
+        # 2026-11-02 is a Monday after the DST change: 16:00 EST = 21:00 UTC.
+        early = _settled_q("2026-11-02", produced_at="2026-11-02T20:30:00Z")
+        assert blre._settled_qualification(early, early, "2026-11-02")["qualified"] is False
+        at_close = _settled_q("2026-11-02", produced_at="2026-11-02T21:00:00Z")
+        assert blre._settled_qualification(at_close, at_close, "2026-11-02") == {"qualified": True}
+        # August (EDT): 16:00 = 20:00 UTC, so 20:30Z is after the close.
+        aug = _settled_q("2026-08-20", produced_at="2026-08-20T20:30:00Z")
+        assert blre._settled_qualification(aug, aug, "2026-08-20") == {"qualified": True}
+
+    def test_offset_produced_at_is_compared_as_an_instant(self):
+        doc = _settled_q("2026-08-20", produced_at="2026-08-20T16:05:00-04:00")
+        assert blre._settled_qualification(doc, doc, "2026-08-20") == {"qualified": True}
+
+    def test_revision_is_checked_before_the_clock_and_the_pair(self):
+        doc = _settled_q("2026-08-20", revision="draft", produced_at="garbage")
+        assert blre._settled_qualification(doc, None, "2026-08-20") == {
+            "qualified": False, "reason": "revision 'draft' is not settled or corrected"}
+
+    def test_unparseable_session_is_unqualified(self):
+        doc = _settled_q("2026-08-20")
+        assert blre._settled_qualification(doc, doc, "not-a-date") == {
+            "qualified": False, "reason": "source_session is not an ISO date"}
+
+    def test_public_copy_session_mismatch_is_unqualified(self):
+        doc = _settled_q("2026-08-20")
+        public = dict(doc, source_session="2026-08-19")
+        assert blre._settled_qualification(doc, public, "2026-08-20")["qualified"] is False
 
 
 # ══ item 7 — the dwell/debounce law (adjudication #2/#5 add live_active +

@@ -1,0 +1,153 @@
+{
+  "purpose": "Retained generation register must be resolved through incumbent prepare_refresh_lease under GET-only transport, never equated directly to live ownership.",
+  "tests": [
+    {
+      "case": "stale_register",
+      "passed": true,
+      "mutation_performed": false,
+      "blocked_mutation_attempt": false
+    },
+    {
+      "case": "live_unindexed_owner",
+      "passed": true,
+      "mutation_performed": false,
+      "blocked_mutation_attempt": false
+    },
+    {
+      "case": "unreadable_direct_owner",
+      "passed": true,
+      "mutation_performed": false,
+      "blocked_mutation_attempt": false
+    },
+    {
+      "case": "cleanup_required",
+      "passed": true,
+      "mutation_performed": false,
+      "blocked_mutation_attempt": true
+    }
+  ],
+  "raw_register_old_helper_reserved": 1,
+  "canonical_stale_register_reserved": 0,
+  "live_observation_pending": false,
+  "helper_sha256": "b337b9da41e1e4abfe228a8251c5dee9ff16e7f2d3ceb0445d01043348e922d1",
+  "helper_path": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/observe_tested_closure_admission.py",
+  "protected_definitions_match": "fb59691f231cddc30f8dd4452507b8f657724626",
+  "historical_observation": {
+    "at": "2026-10-15T09:47:09.826333+00:00",
+    "active_pr_proofs": 8,
+    "raw_register_reservations_reported": 1,
+    "owner_pr_labels": [
+      "merge-on-green",
+      "merge-blocked"
+    ],
+    "publication_admitted": false,
+    "correction": "The reported reservation is unproven until canonical direct-issue lease reconciliation; eight active proofs still independently fill capacity."
+  },
+  "limits": "No controller writes, lease release or clock mutation. Two too-early helper invocations refused locally before any API read; cooldown state retained. Fresh canonical admission then allowed ordinary same-carrier source publication. Hosted binding checks and incumbent final merge remain owed.",
+  "live_observation": {
+    "at": "2026-10-15T09:53:52.636468+00:00",
+    "pr_head": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+    "main": "fb59691f231cddc30f8dd4452507b8f657724626",
+    "lease_description": "m1 p=9209 h=233e383cd0f8e28c5dbddf8ae25ee7d1754b1a74 t=1792057882 g=ae60e8e7d393",
+    "lease_owner": {
+      "number": 9209,
+      "state": "open",
+      "head": "66df70f0b163a83ef321cb8d938be59ab1f98732"
+    },
+    "active_pr_proofs": 7,
+    "canonical_unindexed_reservations": 0,
+    "cap": 8,
+    "publication_admitted": true
+  },
+  "publication": {
+    "at": "2026-10-15T09:55:03.264049+00:00",
+    "head": "ff7912003742ebfaa172a30c68dc8d65ddc9330e",
+    "state": "OPEN",
+    "isDraft": false,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6651",
+    "body_verified": true,
+    "ordinary_push": true,
+    "base_integration_performed": false,
+    "ci_pending_observation": true
+  },
+  "publication_preview": {
+    "at": "2026-10-15T09:54:25.631487+00:00",
+    "local_head": "ff7912003742ebfaa172a30c68dc8d65ddc9330e",
+    "remote_parent": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+    "main": "fb59691f231cddc30f8dd4452507b8f657724626",
+    "preview_exit": 0,
+    "preview_tree": "0cf65aa0e8cf5ccee812f46ab81e3a0e97ab5022",
+    "preview_detail": "",
+    "clean": true,
+    "ordinary_ancestor": true,
+    "admission": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/closure-admission-095352.json"
+  },
+  "current_source_publication_repair": {
+    "at": "2026-10-15T20:14:29.670855+00:00",
+    "existing_observer_updated": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-refresh-recovery-20261015/observe_tested_closure_admission.py",
+    "GET_transport_controls_passed": 4,
+    "retained_past_decisions": [
+      {
+        "receipt": "canonical-yahoo-source-admission-1918.json",
+        "active": 8,
+        "reservation": 0,
+        "cap": 8,
+        "past_no_push_still_required": true
+      },
+      {
+        "receipt": "owner-event-admission-1941.json",
+        "active": 10,
+        "reservation": 0,
+        "cap": 8,
+        "past_no_push_still_required": true
+      }
+    ],
+    "correction": "Recent inline readers incorrectly required NO lease owner for ordinary source publication. The original retained helper already used canonical active+unindexed-reservation admission. Other-PR refresh custody is not A1 source custody; same-A1 lease still holds publication. Controller-only base refresh/final merge and protected checks unchanged.",
+    "runtime_effects": "None. Current observation clock is preserved, no network call/test rerun/controller or publisher created.",
+    "historical_positive_admission_reused": {
+      "at": "2026-10-15T09:53:52.636468+00:00",
+      "pr_head": "ba8487f0b3b1a8a68fcaf1ebc950a72c1d7abf17",
+      "main": "fb59691f231cddc30f8dd4452507b8f657724626",
+      "lease_description": "m1 p=9209 h=233e383cd0f8e28c5dbddf8ae25ee7d1754b1a74 t=1792057882 g=ae60e8e7d393",
+      "lease_owner": {
+        "number": 9209,
+        "state": "open",
+        "head": "66df70f0b163a83ef321cb8d938be59ab1f98732"
+      },
+      "active_pr_proofs": 7,
+      "canonical_unindexed_reservations": 0,
+      "cap": 8,
+      "publication_admitted": true
+    },
+    "boundary_controls": [
+      {
+        "case": "retained_0953_actual_admitted_other_owner",
+        "passed": true
+      },
+      {
+        "case": "full_capacity",
+        "passed": true
+      },
+      {
+        "case": "unindexed_reservation",
+        "passed": true
+      },
+      {
+        "case": "same_A1_custody",
+        "passed": true
+      },
+      {
+        "case": "changed_remote_head",
+        "passed": true
+      },
+      {
+        "case": "closed_carrier",
+        "passed": true
+      },
+      {
+        "case": "composition_conflict",
+        "passed": true
+      }
+    ]
+  }
+}

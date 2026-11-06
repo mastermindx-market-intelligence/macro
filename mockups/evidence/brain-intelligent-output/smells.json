@@ -1,0 +1,490 @@
+{
+  "schema": "mastermind.ux_smell_report.v1",
+  "generated_at": "2026-10-22T12:14:23Z",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "version": "1.4.0"
+  },
+  "target": {
+    "kind": "local-hermetic-widget-fixture",
+    "resolved_sha_or_none": "975b4cdee0027bcb85addba7760a71bc960af571",
+    "asset_sha256": {
+      "mm_brain.js": "e7dce73797a01db5d115eaef6c19e24fa866b0f95206f7d36444252cc2c1511c",
+      "mm_brain_finance.js": "a8f801ae918f3df77edb7e506ea18b93be766e99142a1efbc1d3c86f2a4426ca",
+      "mm_brain_finance.css": "b317487a9c44f06615cb74553376879cf6c12e8d9c9cd91e78c28598b584d983",
+      "mm_brain_presentation.js": "88e1f94bdbbc39bbe5f6e1ba5044b9f750aefc0a2853514389422902a87d7119",
+      "mm_brain_math.js": "e24d5a2c1fba95bc0966babfbb8d85ff7bd559a22c8858cc35df009472b3e9ed",
+      "mm_brain_markdown.js": "9b93741c080f399416f60ffd1c276b6fc77157befc97c11312a1a061d87e0a36",
+      "chat.css": "043131b33675735680d566bca8b065914ebe0ec41d68ec2e7cd59571b80ff7f0",
+      "chat.html": "7662d0d5d78feea720265cfd7a546992319a3d4f5fe5da864832995886e8511e"
+    },
+    "recipe_sha256": "776dc706e7b8e100a071dec109b3bbaae741228f3fafd387ebad960184a629e0",
+    "statement_snapshot_id": "f98a94ae873078ad6ab8ae736c51e7b9314ed9b008c01335e518923891a3ffa3",
+    "source_note": "Working-tree assets at capture; HEAD is only the parent checkpoint. No live gateway/provider or production proof."
+  },
+  "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
+  "metric_notes": {
+    "section_count": "direct <section> children of <body> plus direct element children of <main>; an approximation of 'how many blocks is this page'",
+    "panel_count": "class-name heuristic over the configured selector list; both over- and under-counts are expected",
+    "visible_word_count": "whitespace-split innerText of <body>; Chinese text is not word-segmented, so a zh capture undercounts relative to en",
+    "raw_slug_hits": "visible text matching 3+ segment snake_case; legitimate identifiers (file names, API keys quoted on purpose) match too",
+    "duplicate_heading_texts": "case-folded visible heading text seen more than once; a repeated section label across tabs is a legitimate duplicate",
+    "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "source_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "payload_bytes_total": "sum of response body sizes reported by the driver for the reference state; excludes bodies the driver could not size",
+    "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
+    "screenshot_completion": "captured states / attempted states for this page; states the registry excludes are not attempted and are recorded as gaps"
+  },
+  "pages": [
+    {
+      "page_id": "brain-output-statement",
+      "route": "statement.html",
+      "metrics": {
+        "document_height_px": 900,
+        "section_count": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 1,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 1,
+        "visible_word_count": 198,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 10,
+        "payload_bytes_total": 111524,
+        "asof_present": true,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    },
+    {
+      "page_id": "brain-output-statement-lower",
+      "route": "statement-lower.html",
+      "metrics": {
+        "document_height_px": 900,
+        "section_count": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 1,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 1,
+        "visible_word_count": 198,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 10,
+        "payload_bytes_total": 111568,
+        "asof_present": true,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    },
+    {
+      "page_id": "brain-output-price",
+      "route": "price.html",
+      "metrics": {
+        "document_height_px": 900,
+        "section_count": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 1,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 1,
+        "visible_word_count": 87,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 9,
+        "payload_bytes_total": 99969,
+        "asof_present": true,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    },
+    {
+      "page_id": "brain-output-company",
+      "route": "company.html",
+      "metrics": {
+        "document_height_px": 900,
+        "section_count": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 1,
+          "h4": 1,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 1,
+        "visible_word_count": 106,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 9,
+        "payload_bytes_total": 99969,
+        "asof_present": true,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    },
+    {
+      "page_id": "brain-output-quotes",
+      "route": "quotes.html",
+      "metrics": {
+        "document_height_px": 900,
+        "section_count": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 1,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 1,
+        "visible_word_count": 157,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 9,
+        "payload_bytes_total": 79264,
+        "asof_present": true,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    },
+    {
+      "page_id": "brain-output-summary",
+      "route": "summary.html",
+      "metrics": {
+        "document_height_px": 900,
+        "section_count": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 1,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 1,
+        "visible_word_count": 77,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 9,
+        "payload_bytes_total": 99969,
+        "asof_present": true,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    },
+    {
+      "page_id": "brain-output-math",
+      "route": "math.html",
+      "metrics": {
+        "document_height_px": 900,
+        "section_count": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 0,
+        "visible_word_count": 74,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 8,
+        "payload_bytes_total": 337856,
+        "asof_present": false,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    },
+    {
+      "page_id": "brain-output-technical",
+      "route": "technical.html",
+      "metrics": {
+        "document_height_px": 900,
+        "section_count": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 0,
+        "visible_word_count": 74,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 6,
+        "payload_bytes_total": 24350,
+        "asof_present": false,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    },
+    {
+      "page_id": "brain-output-standalone",
+      "route": "standalone.html",
+      "metrics": {
+        "document_height_px": 900,
+        "section_count": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 1,
+          "h3": 1,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 1,
+        "visible_word_count": 232,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 4,
+        "payload_bytes_total": 27728,
+        "asof_present": true,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    }
+  ]
+}

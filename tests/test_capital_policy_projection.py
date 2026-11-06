@@ -1572,3 +1572,135 @@ def test_heal_empty_reason_is_the_frozen_sentence(monkeypatch):
     assert rates["reason_en"] == "No dated step is pending right now."
     assert rates["reason_zh"] == "目前没有待办的既定日期节点。"
 
+
+# The comment-close load on main's committed Federal Register record for the
+# 2026-11-02 build (392f59ac): eleven shown dates, most of them collapsed plural
+# rows, then fifteen more dated steps. Pairs are (days from TODAY, documents
+# closing that day). The FOMC row carries the SEP label, and the auction cache
+# is absent, as in that build.
+_REAL_LOAD_SHOWN = (
+    (0, 4), (1, 2), (2, 8), (3, 5), (4, 1), (7, 14),
+    (8, 3), (10, 2), (11, 4), (14, 3), (15, 1),
+)
+_REAL_LOAD_HIDDEN = tuple((16 + i, 1) for i in range(15))
+
+
+def _real_load(monkeypatch, tmp_path, calendar_calls=None):
+    numbers = iter(range(20000, 30000))
+    rows = []
+    for offset, n in _REAL_LOAD_SHOWN + _REAL_LOAD_HIDDEN:
+        day = (TODAY + timedelta(days=offset)).isoformat()
+        rows.extend(
+            _policy_event(day=day, document_number=f"2026-{next(numbers)}")
+            for _ in range(n)
+        )
+    calendar = dict(_empty_calendar(), upcoming_events=rows)
+    events = [
+        _macro_event(
+            "FOMC", (TODAY + timedelta(days=37)).isoformat(),
+            label="FOMC decision (SEP · dot-plot)",
+        ),
+        _production_opex_event((TODAY + timedelta(days=9)).isoformat()),
+    ]
+    _patch_engines(monkeypatch, events=events, calendar=calendar)
+    if calendar_calls is not None:
+        def counted(df=None, today=None):
+            calendar_calls.append(today)
+            return calendar
+        monkeypatch.setattr("engine.policy_calendar.compute_policy_calendar", counted)
+    monkeypatch.setattr("engine.capital_policy_projection.config.ROOT", tmp_path)
+    monkeypatch.setattr(page_builder, "_policy_watch", lambda today=None: _stub_watch())
+    _pin_builder_today(monkeypatch)
+    _copy_templates(tmp_path)
+
+
+def test_16_real_load_sheds_rows_instead_of_withholding_the_page(tmp_path, monkeypatch):
+    """The page renders within the unchanged budget on the load real data carries.
+
+    Twelve rows of this load overrun 8192 bytes (asserted last, so the fixture
+    stays honest). The old builder raised on that and build_site withheld the
+    whole page every night from 2026-10-24 behind a green run.
+    """
+    _real_load(monkeypatch, tmp_path)
+    html = page_builder.render(tmp_path).read_text(encoding="utf-8")
+    section = _section(html)
+    assert len(section.encode("utf-8")) <= SECTION_BUDGET_BYTES
+    artifact = json.loads(
+        (tmp_path / "site" / "data" / "capital_policy_projection.json").read_text(encoding="utf-8")
+    )
+    shown = artifact["row_count"]
+    assert 2 <= shown < MAX_ROWS
+    assert artifact["truncated"] is True
+    assert artifact["truncation_en"] == f"Showing the next {shown} dated steps; more are scheduled."
+    assert artifact["truncation_zh"] == f"仅显示接下来的 {shown} 个既定日期节点，后续仍有安排。"
+    assert artifact["truncation_en"] in section
+    assert artifact["truncation_zh"] in section
+    # A shed never empties a window: the policy-rate row stays.
+    assert len(_window(artifact, "rates_policy")["rows"]) == 1
+    disclosure = _window(artifact, "disclosure_regulatory")
+    hidden = len(_REAL_LOAD_SHOWN) + len(_REAL_LOAD_HIDDEN) - len(disclosure["rows"])
+    assert disclosure["more_en"] == f"{hidden} more dated steps are not shown."
+    assert disclosure["more_en"] in section
+    assert disclosure["more_zh"] in section
+
+    twelve = project(today=TODAY)
+    assert twelve["row_count"] == MAX_ROWS
+    monkeypatch.setattr("engine.capital_policy_projection.SECTION_BUDGET_BYTES", 10 ** 9)
+    assert len(_render_section(tmp_path, monkeypatch, twelve).encode("utf-8")) > 8192
+
+
+def test_16b_banner_names_the_rows_shown_and_the_cap_never_rises(monkeypatch):
+    calendar = dict(_empty_calendar(), upcoming_events=[
+        _policy_event(day=(TODAY + timedelta(days=d)).isoformat(),
+                      document_number=f"2026-{30000 + d}")
+        for d in range(1, 4)
+    ])
+    fomc = _macro_event("FOMC", (TODAY + timedelta(days=5)).isoformat(), label="FOMC decision")
+    _patch_engines(monkeypatch, events=[fomc], calendar=calendar)
+    # Two occupied windows each keep a row, so a cap of one still shows two.
+    payload = project(today=TODAY, max_rows=1)
+    assert payload["row_count"] == 2
+    assert payload["truncation_en"] == "Showing the next 2 dated steps; more are scheduled."
+    assert payload["truncation_zh"] == "仅显示接下来的 2 个既定日期节点，后续仍有安排。"
+
+    _patch_engines(monkeypatch, events=[], calendar=calendar)
+    payload = project(today=TODAY, max_rows=1)
+    assert payload["row_count"] == 1
+    assert payload["truncation_en"] == "Showing the next 1 dated step; more are scheduled."
+    assert _window(payload, "disclosure_regulatory")["more_en"] == "2 more dated steps are not shown."
+
+    many = [
+        _macro_event("FOMC", (TODAY + timedelta(days=i)).isoformat(), label="FOMC decision")
+        for i in range(40)
+    ]
+    _patch_engines(monkeypatch, events=many, calendar=_empty_calendar())
+    assert project(today=TODAY, max_rows=99)["row_count"] == MAX_ROWS
+    assert project(today=TODAY, max_rows=0)["row_count"] == 1
+
+    # A cap below one is read as one: a lone step is the whole schedule, so
+    # no banner may claim that more are scheduled.
+    _patch_engines(monkeypatch, events=[fomc], calendar=_empty_calendar())
+    lone = project(today=TODAY, max_rows=0)
+    assert (lone["row_count"], lone["truncated"], lone["truncation_en"]) == (1, False, "")
+
+
+def test_16c_shed_stops_at_one_row_per_window_and_the_fence_still_refuses(tmp_path, monkeypatch):
+    """A section that cannot fit is still withheld, after one calendar read."""
+    calls: list = []
+    _real_load(monkeypatch, tmp_path, calendar_calls=calls)
+    caps: list = []
+    real_project = engine_projection.project
+
+    def counting_project(today=None, horizon_days=None, max_rows=None):
+        caps.append(max_rows)
+        return real_project(today=today, horizon_days=horizon_days, max_rows=max_rows)
+
+    monkeypatch.setattr("engine.capital_policy_projection.project", counting_project)
+    monkeypatch.setattr("engine.capital_policy_projection.SECTION_BUDGET_BYTES", 10)
+    with pytest.raises(RuntimeError, match="policy-projection section over budget"):
+        page_builder.render(tmp_path)
+    assert not (tmp_path / "site" / "capital_structure.html").exists()
+    assert not (tmp_path / "site" / "data" / "capital_policy_projection.json").exists()
+    assert caps == [None] + list(range(MAX_ROWS - 1, 0, -1))
+    # The shed re-asks the engine for the same day under the one-day memo.
+    assert calls == [TODAY]

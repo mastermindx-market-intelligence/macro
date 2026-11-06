@@ -51,7 +51,10 @@ from .projection import (
 STATE_SCHEMA = "capital_structure.state.v2"
 #: 2.1.0 = I1 economic terms, 2.2.0 = X0 transaction observations, 2.3.0 = I2
 #: variable/reset/contingent terms (SPEC_I2 §1); every minor is purely additive.
-STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.3.0"
+#: 2.4.0 = S0 scenario composition (SPEC_S0 §8): the ``scenario_result`` record
+#: and the seven declarative sub-records a composer emits beside the three
+#: component records it never rewrites.
+STATE_CONTRACT_VERSION = "capital-structure-state-contracts/2.4.0"
 STATE_SCHEMA_FILE = "capital_structure_state.v2.schema.json"
 STATE_SCHEMA_PATH = Path(__file__).resolve().parents[2] / "contracts" / STATE_SCHEMA_FILE
 
@@ -67,6 +70,7 @@ RECORD_SCHEMAS = {
     "instrument_set": "capital_structure.instrument_set.v2",
     "share_basis_result": "capital_structure.share_basis_result.v2",
     "calculation_receipt": "capital_structure.calculation_receipt.v2",
+    "scenario_result": "capital_structure.scenario_result.v2",
 }
 
 #: The projection family this state family is compatible with.  The constant is
@@ -176,6 +180,28 @@ INTERFACE_OWNERSHIP: tuple[tuple[str, str, tuple[str, ...], str], ...] = (
         "project_funding",
         ("FinancialInputs", "CommitmentInputs", "FinancingScenario"),
         "FundingSchedule",
+    ),
+    (
+        "engine/capital_structure/scenario_composition.py",
+        "compose_scenario",
+        (
+            "CapitalState",
+            "InstrumentSet",
+            "ShareBasisResult",
+            "FinancialInputs",
+            "CommitmentInputs",
+            "FinancingScenario",
+            "RulePack",
+            # ``pack`` is the optional rule-applicability pack S0 forwards
+            # verbatim to ``explain_capacity``; it names no contract type, so it
+            # is listed like ``as_of`` rather than as a dataclass name.
+            "pack",
+            # ``listing`` is the optional then-known ListingFact (SPEC_G0 §2.4),
+            # forwarded verbatim to ``explain_capacity``; like ``pack`` it is a
+            # keyword, not a state contract type.
+            "listing",
+        ),
+        "ScenarioResult",
     ),
 )
 
@@ -1293,17 +1319,26 @@ class FinancingScenario:
         for action in self.actions:
             _require(isinstance(action, ActionSelection), "scenario.actions: ActionSelection required")
         _unique([action.route_id for action in self.actions], "scenario.actions")
+        # Actions, assumptions and resolutions are keyed sets: their given order
+        # carries no meaning, so they are stored canonically and a permuted
+        # scenario keeps one scenario_id and one record (SPEC_S0 section 11 item 6).
+        object.__setattr__(self, "actions", tuple(sorted(self.actions, key=lambda action: action.route_id)))
         for name in ("fee_rate", "discount_rate"):
             value = getattr(self, name)
             if value is not None:
                 _decimal(value, f"scenario.{name}")
                 _require(Decimal(value) <= 1, f"scenario.{name}: a rate is at most 1")
-        object.__setattr__(self, "other_assumptions", tuple((str(key), str(value)) for key, value in self.other_assumptions))
+        object.__setattr__(
+            self, "other_assumptions", tuple(sorted((str(key), str(value)) for key, value in self.other_assumptions))
+        )
         _unique([key for key, _ in self.other_assumptions], "scenario.other_assumptions")
         object.__setattr__(self, "unknown_resolutions", tuple(self.unknown_resolutions))
         for item in self.unknown_resolutions:
             _require(isinstance(item, UnknownResolution), "scenario.unknown_resolutions: UnknownResolution required")
         _unique([item.unknown_id for item in self.unknown_resolutions], "scenario.unknown_resolutions")
+        object.__setattr__(
+            self, "unknown_resolutions", tuple(sorted(self.unknown_resolutions, key=lambda item: item.unknown_id))
+        )
 
     @property
     def assumptions(self) -> dict[str, Any]:
@@ -1806,6 +1841,600 @@ class FundingSchedule:
 
     def as_record(self) -> dict[str, Any]:
         return {"schema": RECORD_SCHEMAS["funding_schedule"], **_plain(self)}
+
+
+# ---------------------------------------------------------------------------
+# Scenario composition (S0)
+# ---------------------------------------------------------------------------
+
+#: SPEC_S0 §8: the status of one scenario action, read from the component that
+#: owns it.  A composer never re-solves a joint problem and never re-derives an
+#: instrument economic, so every status here is a copy of another owner's answer.
+ACTION_CHECK_STATUSES = (
+    "within_capacity",
+    "infeasible",
+    "infeasible_on_price_branch",
+    "ineligible_route",
+    "not_applied",
+    "not_a_capacity_route",
+    "not_modelled",
+)
+#: SPEC_S0 §8: the composed answer to "do the requested actions fit together?".
+JOINT_CHECK_STATUSES = ("feasible", "infeasible", "indeterminate", "no_capacity_actions")
+#: SPEC_S0 §8: what the funding schedule said about one canonically owned amount.
+RECONCILIATION_STATUSES = ("agree", "disagree", "conflict", "funding_unpriced", "not_applicable")
+#: SPEC_S0 §8: scenario-only funding-gap coverage per period (A30).
+COVERAGE_STATUSES = ("covered", "shortfall", "indeterminate", "not_evaluated")
+#: SPEC_S0 §8: the canonical owner of an action or of one cash amount.
+ACTION_OWNERS = ("capacity", "supply", "funding_only", "capacity_unmodelled")
+#: SPEC_S0 §7a: every status capacity can report for the charter-limit pool, plus
+#: S0's own ``not_evaluated`` for a capacity run that carries no ``authorized`` key.
+AUTHORIZED_HEADROOM_STATUSES = (
+    "not_evaluated",
+    "known",
+    "shortfall",
+    "ceiling_only",
+    "unknown",
+    "contradicted",
+    "invalid",
+)
+#: SPEC_S0 §6: which component a declarative price-basis row describes.
+PRICE_BASIS_COMPONENTS = ("capacity", "supply", "funding")
+#: SPEC_S0 §6: the price bases the three components publish.  Different bases
+#: across components are expected; they are stated and never reconciled.
+PRICE_BASIS_KINDS = (
+    "fixed",
+    "path_start",
+    "path_window_low_high",
+    "path_horizon_end",
+    "unpriced",
+)
+#: SPEC_S0 §5: how one issuance row's share count was derived.
+ISSUANCE_ROW_BASES = (
+    "stated_share_quantity",
+    "fixed_price",
+    "path_start_price",
+    "path_window_low_high",
+    "supply_trace",
+    "not_priced",
+    "not_evaluated_by_owner",
+)
+#: SPEC_S0 §7: the one sentence every coverage period carries (A30).  It is a
+#: structural requirement of :class:`CoveragePeriod`, not a style suggestion.
+COVERAGE_SCENARIO_ONLY_NOTE = (
+    "scenario proceeds, undated and conditional; not cash on hand; timing unmodeled"
+)
+#: Exact number text a price-basis row may carry: plain decimal text, or an
+#: exact reduced ``num/den`` for a rational that does not terminate in base 10.
+_EXACT_NUMBER_TEXT = re.compile(
+    r"^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:/(?:0|[1-9][0-9]*))?$"
+)
+_RESULT_ID = re.compile(r"^scenario_result:cs:[A-Fa-f0-9]{32}$")
+
+
+def _exact_number(value: Any, field_name: str) -> str:
+    _require(
+        isinstance(value, str) and bool(_EXACT_NUMBER_TEXT.match(value)),
+        f"{field_name}: exact decimal or num/den text required, got {value!r}",
+    )
+    return value
+
+
+def _usd_field(quantity: Any, field_name: str) -> "Quantity":
+    _require(isinstance(quantity, Quantity), f"{field_name}: Quantity required")
+    _require(quantity.unit == "usd", f"{field_name}: a usd Quantity is required")
+    return quantity
+
+
+def _scenario_share_field(quantity: Any, field_name: str) -> "Quantity":
+    _require(isinstance(quantity, Quantity), f"{field_name}: Quantity required")
+    _require(quantity.unit == "shares", f"{field_name}: a share Quantity is required")
+    _require(
+        quantity.share_basis == "scenario_incremental_issuance",
+        f"{field_name}: a scenario issuance share count names the scenario basis",
+    )
+    return quantity
+
+
+def _sorted_unique(values: Sequence[str], field_name: str) -> tuple[str, ...]:
+    out = tuple(values)
+    for item in out:
+        _require(isinstance(item, str) and bool(item), f"{field_name}: non-empty string required")
+    _require(out == tuple(sorted(set(out))), f"{field_name}: sorted and unique required")
+    return out
+
+
+def _optional_note(value: Any, field_name: str) -> str | None:
+    if value is None:
+        return None
+    _require(isinstance(value, str) and bool(value.strip()), f"{field_name}: a note is non-empty text")
+    return value
+
+
+@dataclass(frozen=True)
+class SignedQuantity:
+    """A unit-bearing SIGNED money amount whose absence is a first-class state.
+
+    :class:`Quantity` refuses a negative value by contract, and that refusal is
+    right for every fact and every component record.  SPEC_S0 §7 needs one
+    exception: in F1's deficit case the period's non-conditional balance is
+    negative, and S0's ``scenario_balance`` must stay exact rather than be
+    clamped to zero, rounded, or withheld as an unknown (A26).  This record is
+    that exception and nothing else -- it carries the same fields as
+    :class:`Quantity`, serialises to the same shape (``signed_usd_quantity``),
+    and only the four signed coverage fields use it.  A share count is never
+    signed, so ``share_basis`` must stay null.
+    """
+
+    unit: str
+    status: str = "unknown"
+    value: str | None = None
+    share_basis: str | None = None
+    security_class_id: str | None = None
+    applicability: str | None = None
+    provenance: Provenance | None = None
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        _member(self.unit, UNIT_KINDS, "signed_quantity.unit")
+        _member(self.status, QUANTITY_STATUSES, "signed_quantity.status")
+        if self.status == "known":
+            _decimal(self.value, "signed_quantity.value", nonnegative=False)
+        else:
+            _require(
+                self.value is None,
+                f"signed_quantity.value must be null when status is {self.status!r}",
+            )
+        _require(
+            self.share_basis is None,
+            "signed_quantity.share_basis: a signed money amount carries no share basis",
+        )
+        if self.security_class_id is not None:
+            _identifier(self.security_class_id, "signed_quantity.security_class_id")
+        if self.provenance is not None:
+            _require(
+                isinstance(self.provenance, Provenance), "signed_quantity.provenance: Provenance required"
+            )
+
+    @classmethod
+    def known(cls, value: str, unit: str, **kwargs: Any) -> "SignedQuantity":
+        return cls(unit=unit, status="known", value=value, **kwargs)
+
+    @classmethod
+    def unknown(cls, unit: str, **kwargs: Any) -> "SignedQuantity":
+        return cls(unit=unit, status="unknown", value=None, **kwargs)
+
+    @property
+    def decimal(self) -> Decimal | None:
+        return Decimal(self.value) if self.status == "known" and self.value is not None else None
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+def _signed_usd_field(quantity: Any, field_name: str) -> "SignedQuantity":
+    _require(isinstance(quantity, SignedQuantity), f"{field_name}: SignedQuantity required")
+    _require(quantity.unit == "usd", f"{field_name}: a signed usd SignedQuantity is required")
+    return quantity
+
+
+@dataclass(frozen=True)
+class ActionCheck:
+    """One scenario action against the component that owns it (SPEC_S0 §3).
+
+    S0 maps capacity's ``inputs["actions_applied"]``, ``inputs["non_capacity_actions"]``
+    and its blocker ids onto one status per scenario action.  It never re-solves
+    the joint problem and never invents a status capacity did not emit.
+    """
+
+    route_id: str
+    action: str
+    settlement: str
+    status: str
+    owner: str
+    fixed: bool
+    blocker_ids: tuple[str, ...] = ()
+    unknown_ids: tuple[str, ...] = ()
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        label = f"action_check[{self.route_id}]"
+        _identifier(self.route_id, "action_check.route_id")
+        _member(self.action, ROUTE_KINDS, f"{label}.action")
+        _member(self.settlement, SETTLEMENTS, f"{label}.settlement")
+        _member(self.status, ACTION_CHECK_STATUSES, f"{label}.status")
+        _member(self.owner, ACTION_OWNERS, f"{label}.owner")
+        _require(isinstance(self.fixed, bool), f"{label}.fixed: bool required")
+        object.__setattr__(self, "blocker_ids", _sorted_unique(self.blocker_ids, f"{label}.blocker_ids"))
+        object.__setattr__(self, "unknown_ids", _sorted_unique(self.unknown_ids, f"{label}.unknown_ids"))
+        object.__setattr__(self, "note", _optional_note(self.note, f"{label}.note"))
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class JointCheck:
+    """Do the requested actions fit together?  Read from C2, never re-solved.
+
+    ``aggregate_status``, ``binding`` and ``blocker_ids`` are copies of the
+    capacity envelope's own fields; the note quotes capacity's floor/ceiling
+    sentence verbatim when capacity states one.  S0 reports no witness of its
+    own — capacity's witness stays reachable through ``capacity_envelope``.
+    """
+
+    status: str
+    aggregate_status: str
+    binding: tuple[str, ...] = ()
+    blocker_ids: tuple[str, ...] = ()
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        _member(self.status, JOINT_CHECK_STATUSES, "joint_check.status")
+        _member(self.aggregate_status, QUANTITY_STATUSES, "joint_check.aggregate_status")
+        object.__setattr__(self, "binding", _sorted_unique(self.binding, "joint_check.binding"))
+        object.__setattr__(self, "blocker_ids", _sorted_unique(self.blocker_ids, "joint_check.blocker_ids"))
+        object.__setattr__(self, "note", _optional_note(self.note, "joint_check.note"))
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class CashReconciliation:
+    """One cash amount, its single canonical owner, and what F1 booked (SPEC_S0 §4).
+
+    A disagreement is evidence, never a correction: S0 substitutes nothing into
+    the funding schedule, so ``conflict_id`` names the blocker that carries both
+    values for the later F1b lane.
+    """
+
+    route_id: str
+    owner: str
+    canonical_gross: Quantity
+    canonical_net: Quantity
+    funding_amount: Quantity
+    status: str
+    conflict_id: str | None = None
+
+    def __post_init__(self) -> None:
+        label = f"cash_reconciliation[{self.route_id}]"
+        _identifier(self.route_id, "cash_reconciliation.route_id")
+        _member(self.owner, ACTION_OWNERS, f"{label}.owner")
+        _usd_field(self.canonical_gross, f"{label}.canonical_gross")
+        _usd_field(self.canonical_net, f"{label}.canonical_net")
+        _usd_field(self.funding_amount, f"{label}.funding_amount")
+        _member(self.status, RECONCILIATION_STATUSES, f"{label}.status")
+        if self.conflict_id is not None:
+            _identifier(self.conflict_id, f"{label}.conflict_id")
+        conflict = self.status in ("disagree", "conflict")
+        _require(
+            conflict == (self.conflict_id is not None),
+            f"{label}: a {self.status} reconciliation names its conflict id, and no other status does",
+        )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class IssuanceRow:
+    """One action's scenario new-share effect (SPEC_S0 §5).
+
+    Rows are never added to an outstanding share count or to a claim, and the
+    two totals over the rows are known only when every row is known (A26).
+    """
+
+    route_id: str
+    shares_low: Quantity
+    shares_high: Quantity
+    basis: str
+    unknown_id: str | None = None
+
+    def __post_init__(self) -> None:
+        label = f"issuance_row[{self.route_id}]"
+        _identifier(self.route_id, "issuance_row.route_id")
+        _scenario_share_field(self.shares_low, f"{label}.shares_low")
+        _scenario_share_field(self.shares_high, f"{label}.shares_high")
+        _member(self.basis, ISSUANCE_ROW_BASES, f"{label}.basis")
+        if self.unknown_id is not None:
+            _identifier(self.unknown_id, f"{label}.unknown_id")
+        both_known = self.shares_low.status == "known" and self.shares_high.status == "known"
+        _require(
+            both_known == (self.unknown_id is None),
+            f"{label}: an unknown share count names its unknown id, and a known one does not",
+        )
+        if both_known:
+            assert self.shares_low.decimal is not None and self.shares_high.decimal is not None
+            _require(
+                self.shares_low.decimal <= self.shares_high.decimal,
+                f"{label}: the low bound exceeds the high bound",
+            )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class PriceBasis:
+    """One component's declared price basis (SPEC_S0 §6), stated not reconciled."""
+
+    component: str
+    basis: str
+    low: str | None = None
+    high: str | None = None
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        label = f"price_basis[{self.component}]"
+        _member(self.component, PRICE_BASIS_COMPONENTS, "price_basis.component")
+        _member(self.basis, PRICE_BASIS_KINDS, f"{label}.basis")
+        for name in ("low", "high"):
+            value = getattr(self, name)
+            if value is not None:
+                _exact_number(value, f"{label}.{name}")
+        object.__setattr__(self, "note", _optional_note(self.note, f"{label}.note"))
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class AuthorizedHeadroomDisclosure:
+    """Whether capacity evaluated the charter share limit (SPEC_S0 §7a).
+
+    S0 neither computes nor checks the limit: it states whether capacity did,
+    carries capacity's status verbatim when it did, and discloses ``not_evaluated``
+    when capacity carried no ``authorized`` input at all.  It never emits a
+    number, a default headroom or a cap on any issuance row.
+    """
+
+    status: str
+    pool_id: str | None = None
+    capacity_status: str | None = None
+    note: str | None = None
+
+    def __post_init__(self) -> None:
+        _member(self.status, AUTHORIZED_HEADROOM_STATUSES, "authorized_headroom.status")
+        if self.pool_id is not None:
+            _identifier(self.pool_id, "authorized_headroom.pool_id")
+        evaluated = self.status != "not_evaluated"
+        _require(
+            evaluated == (self.pool_id is not None),
+            "authorized_headroom: an evaluated status names the capacity pool id",
+        )
+        if evaluated:
+            _require(
+                self.capacity_status == self.status,
+                "authorized_headroom: capacity's status is carried verbatim, never re-derived",
+            )
+            _require(self.note is None, "authorized_headroom: a carried status adds no note of its own")
+        else:
+            _require(self.capacity_status is None, "authorized_headroom: not_evaluated carries no capacity status")
+            _require(bool(self.note), "authorized_headroom: not_evaluated states what was not checked")
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class CoveragePeriod:
+    """One period's scenario-only funding-gap coverage (SPEC_S0 §7, A30).
+
+    ``scenario_net`` counts the scenario's own conditional flows only; the
+    relieved maturities F1 already excluded are never added back and the
+    pre-existing conditional flows that are not scenario actions are never
+    counted.  ``scenario_balance`` is signed and exact even in F1's deficit
+    case, where F1's own closing balance is unknown.
+    """
+
+    period_start: str
+    period_end: str
+    gap: Quantity
+    scenario_net: SignedQuantity
+    scenario_balance: SignedQuantity
+    shortfall: Quantity
+    status: str
+    note: str
+    gross_basis: SignedQuantity | None = None
+    net_basis: SignedQuantity | None = None
+
+    def __post_init__(self) -> None:
+        label = f"coverage_period[{self.period_start}]"
+        _date(self.period_start, "coverage_period.period_start")
+        _date(self.period_end, "coverage_period.period_end")
+        _require(self.period_end > self.period_start, f"{label}: period_end must follow period_start")
+        _usd_field(self.gap, f"{label}.gap")
+        _signed_usd_field(self.scenario_net, f"{label}.scenario_net")
+        _signed_usd_field(self.scenario_balance, f"{label}.scenario_balance")
+        _usd_field(self.shortfall, f"{label}.shortfall")
+        _member(self.status, COVERAGE_STATUSES, f"{label}.status")
+        _require(
+            isinstance(self.note, str) and self.note.startswith(COVERAGE_SCENARIO_ONLY_NOTE),
+            f"{label}.note: every coverage period carries the scenario-only note (A30)",
+        )
+        _require(
+            (self.gross_basis is None) == (self.net_basis is None),
+            f"{label}: the gross and net bases are reported together or not at all",
+        )
+        if self.gross_basis is not None:
+            _signed_usd_field(self.gross_basis, f"{label}.gross_basis")
+        if self.net_basis is not None:
+            _signed_usd_field(self.net_basis, f"{label}.net_basis")
+        if self.status == "covered":
+            _require(
+                self.shortfall.status == "known" and self.shortfall.decimal == 0,
+                f"{label}: covered states a known zero shortfall",
+            )
+        if self.status == "shortfall":
+            _require(
+                self.shortfall.status == "known" and self.shortfall.decimal is not None
+                and self.shortfall.decimal > 0,
+                f"{label}: a shortfall states its exact known amount",
+            )
+        if self.status in ("indeterminate", "not_evaluated"):
+            _require(
+                self.shortfall.status != "known",
+                f"{label}: {self.status} carries no known shortfall",
+            )
+
+    def as_record(self) -> dict[str, Any]:
+        return _plain(self)
+
+
+@dataclass(frozen=True)
+class ScenarioResult:
+    """One composed scenario: capacity, supply and funding under ONE identity.
+
+    The three component records travel inside it byte-identically; S0 adds the
+    cross-checks none of them can make alone and never rewrites one of them.
+    Invariants: every component carries this result's ``scenario_id`` and
+    ``state_id``; ``prophet_authority`` is the literal ``false`` denial; the
+    record carries no forbidden property name at any depth; and the per-action
+    tuples are sorted by their own id field so a row order never changes a byte.
+    """
+
+    result_id: str
+    scenario_id: str
+    state_id: str
+    scenario_view: str
+    state_view_mode: str
+    as_of: str
+    capacity_envelope: CapacityEnvelope
+    supply_envelope: SupplyEnvelope
+    funding_schedule: FundingSchedule
+    action_checks: tuple[ActionCheck, ...]
+    joint_check: JointCheck
+    cash_reconciliation: tuple[CashReconciliation, ...]
+    issuance_rows: tuple[IssuanceRow, ...]
+    scenario_new_shares_low: Quantity
+    scenario_new_shares_high: Quantity
+    price_bases: tuple[PriceBasis, ...]
+    coverage: tuple[CoveragePeriod, ...]
+    authorized_headroom: AuthorizedHeadroomDisclosure
+    receipt: CalculationReceipt
+    blockers: tuple[str, ...] = ()
+    unknowns: tuple[Unknown, ...] = ()
+    notes: tuple[str, ...] = ()
+    prophet_authority: bool = False
+
+    def __post_init__(self) -> None:
+        _require(
+            isinstance(self.result_id, str) and bool(_RESULT_ID.match(self.result_id)),
+            f"scenario_result.result_id: a scenario_result:cs:<32 hex> id is required, got {self.result_id!r}",
+        )
+        _identifier(self.scenario_id, "scenario_result.scenario_id")
+        _identifier(self.state_id, "scenario_result.state_id")
+        _member(self.scenario_view, SCENARIO_VIEWS, "scenario_result.scenario_view")
+        _member(self.state_view_mode, VIEW_MODES, "scenario_result.state_view_mode")
+        _timestamp(self.as_of, "scenario_result.as_of")
+        for name, kind in (
+            ("capacity_envelope", CapacityEnvelope),
+            ("supply_envelope", SupplyEnvelope),
+            ("funding_schedule", FundingSchedule),
+        ):
+            component = getattr(self, name)
+            _require(isinstance(component, kind), f"scenario_result.{name}: {kind.__name__} required")
+            _require(
+                component.scenario_id == self.scenario_id,
+                f"scenario_result.{name}: scenario {component.scenario_id!r} differs from {self.scenario_id!r}",
+            )
+            _require(
+                component.state_id == self.state_id,
+                f"scenario_result.{name}: state {component.state_id!r} differs from {self.state_id!r}",
+            )
+            _require(
+                component.receipt.scenario_id == self.scenario_id,
+                f"scenario_result.{name}: receipt scenario differs from the result scenario",
+            )
+        object.__setattr__(self, "action_checks", tuple(self.action_checks))
+        for item in self.action_checks:
+            _require(isinstance(item, ActionCheck), "scenario_result.action_checks: ActionCheck required")
+        _require(
+            [item.route_id for item in self.action_checks]
+            == sorted({item.route_id for item in self.action_checks}),
+            "scenario_result.action_checks: sorted by route_id with no duplicate",
+        )
+        _require(isinstance(self.joint_check, JointCheck), "scenario_result.joint_check: JointCheck required")
+        object.__setattr__(self, "cash_reconciliation", tuple(self.cash_reconciliation))
+        for item in self.cash_reconciliation:
+            _require(isinstance(item, CashReconciliation), "scenario_result.cash_reconciliation: CashReconciliation required")
+        _require(
+            [item.route_id for item in self.cash_reconciliation]
+            == sorted({item.route_id for item in self.cash_reconciliation}),
+            "scenario_result.cash_reconciliation: sorted by route_id with no duplicate",
+        )
+        object.__setattr__(self, "issuance_rows", tuple(self.issuance_rows))
+        for item in self.issuance_rows:
+            _require(isinstance(item, IssuanceRow), "scenario_result.issuance_rows: IssuanceRow required")
+        _require(
+            [item.route_id for item in self.issuance_rows]
+            == sorted({item.route_id for item in self.issuance_rows}),
+            "scenario_result.issuance_rows: sorted by route_id with no duplicate",
+        )
+        _scenario_share_field(self.scenario_new_shares_low, "scenario_result.scenario_new_shares_low")
+        _scenario_share_field(self.scenario_new_shares_high, "scenario_result.scenario_new_shares_high")
+        if self.scenario_new_shares_low.status == "known" and self.scenario_new_shares_high.status == "known":
+            assert self.scenario_new_shares_low.decimal is not None
+            assert self.scenario_new_shares_high.decimal is not None
+            _require(
+                self.scenario_new_shares_low.decimal <= self.scenario_new_shares_high.decimal,
+                "scenario_result: the low share total exceeds the high one",
+            )
+        else:
+            _require(
+                self.scenario_new_shares_low.status == self.scenario_new_shares_high.status,
+                "scenario_result: the two share totals carry one status",
+            )
+        object.__setattr__(self, "price_bases", tuple(self.price_bases))
+        for item in self.price_bases:
+            _require(isinstance(item, PriceBasis), "scenario_result.price_bases: PriceBasis required")
+        _require(
+            [item.component for item in self.price_bases]
+            == sorted({item.component for item in self.price_bases}),
+            "scenario_result.price_bases: sorted by component with no duplicate",
+        )
+        object.__setattr__(self, "coverage", tuple(self.coverage))
+        previous: CoveragePeriod | None = None
+        for item in self.coverage:
+            _require(isinstance(item, CoveragePeriod), "scenario_result.coverage: CoveragePeriod required")
+            if previous is not None:
+                _require(
+                    item.period_start >= previous.period_end,
+                    "scenario_result.coverage: periods ascend without overlap",
+                )
+            previous = item
+        _require(
+            isinstance(self.authorized_headroom, AuthorizedHeadroomDisclosure),
+            "scenario_result.authorized_headroom: AuthorizedHeadroomDisclosure required",
+        )
+        _require(isinstance(self.receipt, CalculationReceipt), "scenario_result.receipt: CalculationReceipt required")
+        _require(
+            self.receipt.scenario_id == self.scenario_id,
+            "scenario_result.receipt: receipt scenario differs from the result scenario",
+        )
+        object.__setattr__(self, "blockers", _sorted_unique(self.blockers, "scenario_result.blockers"))
+        object.__setattr__(self, "unknowns", tuple(self.unknowns))
+        for item in self.unknowns:
+            _require(isinstance(item, Unknown), "scenario_result.unknowns: Unknown required")
+        _require(
+            [item.unknown_id for item in self.unknowns] == sorted({item.unknown_id for item in self.unknowns}),
+            "scenario_result.unknowns: sorted by unknown_id with no duplicate",
+        )
+        for conflict_id in (item.conflict_id for item in self.cash_reconciliation):
+            if conflict_id is not None:
+                _require(
+                    conflict_id in self.blockers,
+                    f"scenario_result.blockers: {conflict_id!r} is named by a row but absent",
+                )
+        object.__setattr__(self, "notes", tuple(self.notes))
+        for item in self.notes:
+            _require(isinstance(item, str) and bool(item.strip()), "scenario_result.notes: non-empty text required")
+        _require(self.prophet_authority is False, "scenario_result.prophet_authority: only the literal false denial")
+        _assert_safe_keys(self.as_record())
+
+    def as_record(self) -> dict[str, Any]:
+        return {"schema": RECORD_SCHEMAS["scenario_result"], **_plain(self)}
 
 
 # ---------------------------------------------------------------------------
@@ -2783,13 +3412,18 @@ def validate_state_record(kind: str, record: Mapping[str, Any], schema_path: Pat
 
 
 __all__ = [
+    "ACTION_CHECK_STATUSES",
+    "ACTION_OWNERS",
     "ACCRUAL_COMPOUNDING",
     "ACCRUAL_DAY_COUNTS",
+    "AUTHORIZED_HEADROOM_STATUSES",
     "ANTI_DILUTION_METHODS",
     "AUTHORITY",
     "Accrual",
     "AntiDilution",
+    "ActionCheck",
     "ActionSelection",
+    "AuthorizedHeadroomDisclosure",
     "Assumption",
     "BINDING_ORIGINS",
     "BINDING_TARGET_KINDS",
@@ -2802,6 +3436,9 @@ __all__ = [
     "CapitalState",
     "BRANCH_ELECTED_BY",
     "BELOW_FLOOR_RULES",
+    "COVERAGE_SCENARIO_ONLY_NOTE",
+    "COVERAGE_STATUSES",
+    "CashReconciliation",
     "CashEffect",
     "CommitmentInputs",
     "Constraint",
@@ -2810,6 +3447,7 @@ __all__ = [
     "ContractViolation",
     "ConversionCondition",
     "CorporateActionBasis",
+    "CoveragePeriod",
     "CorporateActionInputs",
     "ECONOMIC_TERM_NAMES",
     "ECONOMIC_TERM_PRICE_FORMULA_NAMES",
@@ -2828,10 +3466,14 @@ __all__ = [
     "FundingPeriod",
     "FundingSchedule",
     "GenerationBinding",
+    "ISSUANCE_ROW_BASES",
     "INHERITED_UNAVAILABLE_CAPABILITIES",
     "INTERFACE_OWNER",
     "INTERFACE_OWNERSHIP",
     "INTERFACE_READER",
+    "IssuanceRow",
+    "JOINT_CHECK_STATUSES",
+    "JointCheck",
     "Instrument",
     "InstrumentSet",
     "PROJECTION_COMPATIBILITY",
@@ -2842,10 +3484,14 @@ __all__ = [
     "PRICE_TERM_NAMES",
     "PRICE_WINDOW_ENDS",
     "PriceAssumption",
+    "PRICE_BASIS_COMPONENTS",
+    "PRICE_BASIS_KINDS",
+    "PriceBasis",
     "PriceComponent",
     "PriceFormula",
     "Provenance",
     "Quantity",
+    "RECONCILIATION_STATUSES",
     "REALIZED_CASH_KINDS",
     "RECORD_SCHEMAS",
     "REPORTING_BASES",
@@ -2870,9 +3516,11 @@ __all__ = [
     "STATE_SCHEMA",
     "STATE_SCHEMA_FILE",
     "STATE_SCHEMA_PATH",
+    "ScenarioResult",
     "ShareBasisResult",
     "ShareInputs",
     "ShareObservationRef",
+    "SignedQuantity",
     "StateRequest",
     "SupplyEnvelope",
     "TERM_FACT_ORIGINS",

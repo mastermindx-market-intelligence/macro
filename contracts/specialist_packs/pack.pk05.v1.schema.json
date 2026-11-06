@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk05.v1.schema.json",
   "title": "Specialist pack PK05 v1 catalogue",
-  "description": "Tax and uncertain tax positions. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Tax and uncertain tax positions. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K1/K2 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk05/v1",
   "pack_id": "PK05",
   "name": "Tax and uncertain tax positions",
@@ -15,10 +15,274 @@
     "typed absences",
     "production source trace"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "income_tax_expense",
+      "name": "Income tax expense or benefit (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "pretax_income",
+      "name": "Income before income taxes (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "effective_tax_rate_formula",
+      "name": "Effective tax rate (pack formula)",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "formula"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "effective_tax_rate_disclosed",
+      "name": "Effective tax rate, disclosed",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "statutory_federal_rate",
+      "name": "Statutory federal income tax rate",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "etr_reconciliation_line",
+      "name": "Income tax rate reconciliation line item",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "utp_opening",
+      "name": "Unrecognized tax benefits, opening balance",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "utp_closing",
+      "name": "Unrecognized tax benefits, closing balance",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "utp_rollforward_increases_prior_period",
+      "name": "Unrecognized tax benefits rollforward, increases from prior-period positions",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "utp_rollforward_decreases_prior_period",
+      "name": "Unrecognized tax benefits rollforward, decreases from prior-period positions",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "utp_rollforward_increases_current_period",
+      "name": "Unrecognized tax benefits rollforward, increases from current-period positions",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "utp_rollforward_settlements",
+      "name": "Unrecognized tax benefits rollforward, settlements",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "utp_rollforward_lapse_of_statute",
+      "name": "Unrecognized tax benefits rollforward, lapse of statute of limitations",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "utp_impact_on_etr",
+      "name": "Unrecognized tax benefits that would affect the effective tax rate",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "income_taxes_paid",
+      "name": "Income taxes paid, net",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "deferred_tax_assets_gross",
+      "name": "Deferred tax assets, gross",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "tax_note_text_block",
+      "name": "Income tax note text block",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "etr_reconciliation_sum",
+      "kind": "sum_identity",
+      "operands": [
+        "etr_reconciliation_line",
+        "income_tax_expense"
+      ]
+    },
+    {
+      "check_id": "utp_rollforward",
+      "kind": "rollforward",
+      "operands": [
+        "utp_opening",
+        "utp_rollforward_increases_prior_period",
+        "utp_rollforward_decreases_prior_period",
+        "utp_rollforward_increases_current_period",
+        "utp_rollforward_settlements",
+        "utp_rollforward_lapse_of_statute",
+        "utp_closing"
+      ]
+    },
+    {
+      "check_id": "etr_formula_vs_disclosed",
+      "kind": "cross_statement",
+      "operands": [
+        "effective_tax_rate_formula",
+        "effective_tax_rate_disclosed"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_standard_fact",
+      "parameter": "concept",
+      "meaning": "the standard concept named by the parameter has no admitted fact for the period"
+    },
+    {
+      "code": "extension_concept_unaliased",
+      "parameter": "prefix",
+      "meaning": "the value exists only under an extension prefix with no frozen alias"
+    },
+    {
+      "code": "disallowed_dimension",
+      "parameter": null,
+      "meaning": "the only facts carry a dimension the field does not admit"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "division_by_zero",
+      "parameter": null,
+      "meaning": "a ratio denominator is zero"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }

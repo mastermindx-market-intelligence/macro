@@ -370,6 +370,12 @@ def test_re_paint_degraded_paint_restores_chip_copy_and_receipt(js):
                        pending={"stage": "TRANSMITTING", "ticks": 2, "needs": 3})
     degraded = _re_feed(stage=None, data_state="DEGRADED")
     healthy_again = _re_feed(stage="FRAGILE", pending=None)
+    # These are successive publications, not contradictory bodies under one
+    # publication identity. Keep the production ordering fence intact.
+    from datetime import datetime, timedelta, timezone
+    published = datetime.now(timezone.utc) - timedelta(seconds=3)
+    for offset, payload in enumerate((healthy, degraded, healthy_again)):
+        payload["built"] = (published + timedelta(seconds=offset)).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     setup = f"""
     var band = reg("#risk-envelope-band", new El("risk-envelope-band"));
@@ -796,18 +802,22 @@ class TestSplicedFramesQuoteClocks:
 
     def test_a_synthetic_flagged_quote_is_excluded_from_the_clock_receipt(self, monkeypatch):
         """F3: a quote whose quote_ts did NOT come from a real market timestamp
-        (quote_ts_synthetic=True) must still SPLICE normally (pricing/staleness
-        unaffected) but its clock must never enter the receipt — mapped to None."""
+        (quote_ts_synthetic=True) must never put its clock in the receipt. Since
+        #8606 (rule 6: a synthetic quote clock is no actionable live cash update)
+        live_overlay.staleness() calls it stale, so it is not spliced at all: the
+        symbol reads its nightly close and has no clock."""
         closes = {"SPY": _nightly_close(500.0)}
         monkeypatch.setattr(live_overlay, "read_close", lambda name: closes.get(name))
         now = datetime(2026, 8, 21, 9, 6, tzinfo=timezone.utc)
         quotes = {"SPY": _live_quote(505.0, "2026-08-21T09:05:30+00:00",
                                      prev_close=500.0, synthetic=True)}
+        assert live_overlay.staleness(quotes["SPY"], 20.0, now=now, session_open=True)["reason"] \
+            == "synthetic quote timestamp"
         spliced, live_close, nightly_close, quote_clocks = brs._spliced_frames(
             quotes, max_chg=10.0, stale_after=20.0, now=now, session_open=True)
-        assert "SPY" in spliced          # pricing/splicing unaffected
-        assert live_close["SPY"] == 505.0
-        assert quote_clocks["SPY"] is None    # but excluded from the clock receipt
+        assert "SPY" not in spliced and "SPY" not in live_close
+        assert nightly_close["SPY"] == 500.0
+        assert "SPY" not in quote_clocks      # its clock never enters the receipt
         assert brs._source_event_time(quote_clocks, now) is None
 
     def test_all_synthetic_quotes_yield_none_source_event_time(self, monkeypatch):
@@ -820,8 +830,9 @@ class TestSplicedFramesQuoteClocks:
         }
         spliced, live_close, nightly_close, quote_clocks = brs._spliced_frames(
             quotes, max_chg=10.0, stale_after=20.0, now=now, session_open=True)
-        assert set(spliced) == {"SPY", "QQQ"}
-        assert quote_clocks == {"SPY": None, "QQQ": None}
+        assert spliced == {} and live_close == {}
+        assert nightly_close == {"SPY": 500.0, "QQQ": 400.0}
+        assert quote_clocks == {}
         assert brs._source_event_time(quote_clocks, now) is None
 
 

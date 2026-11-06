@@ -1,0 +1,20 @@
+{
+  "consumed_at": "2026-10-15T18:04:03.184632+00:00",
+  "workflow_run_id": 38773271071,
+  "attempt": 1,
+  "head": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+  "artifact_id": 11996491671,
+  "zip_sha256": "6973efcaa30db276900281a559aff1193f5211b033ad045e426e2ecabe36fdc6",
+  "canonical_mode": "semantic",
+  "plan_sha256": "8e801ceafb530364d28e9d8619ad8d73bf8a3271d03324552bb6b8b4f6464f00",
+  "base_sha": "32bbb313dcc4df8939664ac6ffd8b7115bf0f717",
+  "tested_commit": "529cae70cb6ccdb22791ccd745163a75e7d72c9d",
+  "jobs": 127,
+  "semantic_command_steps_passed": 351,
+  "blocked": 0,
+  "inherited": 0,
+  "infrastructure_blocking": false,
+  "clear": true,
+  "plan_execution_and_step_identities_match": true,
+  "scope": "Original939b terminal semantic CI proof; binding checks, incumbent merge and production remain separate. Not unit-test count or zero-skip proof."
+}

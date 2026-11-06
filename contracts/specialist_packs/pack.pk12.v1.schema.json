@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk12.v1.schema.json",
   "title": "Specialist pack PK12 v1 catalogue",
-  "description": "Biotech cash/R&D/financing disclosures. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Biotech cash/R&D/financing disclosures. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K3/K4 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk12/v1",
   "pack_id": "PK12",
   "name": "Biotech cash/R&D/financing disclosures",
@@ -16,10 +16,209 @@
     "production source trace",
     "NVAX"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "cash_and_cash_equivalents",
+      "name": "Cash and cash equivalents (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "short_term_investments",
+      "name": "Short-term investments (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "research_and_development_expense",
+      "name": "Research and development expense (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "net_cash_from_operating_activities",
+      "name": "Net cash from operating activities (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "net_cash_from_financing_activities",
+      "name": "Net cash from financing activities (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "equity_financing_proceeds",
+      "name": "Proceeds from issuance of common stock",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "atm_or_shelf_span",
+      "name": "At-the-market program or shelf registration disclosure",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "going_concern_or_liquidity_span",
+      "name": "Going-concern or liquidity disclosure",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "cash_runway_quarters",
+      "name": "Cash runway in quarters (pack formula; burn basis in formula_rule_id)",
+      "type": "ratio",
+      "unit": "quarters",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "formula"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "cash_runway_quarters",
+      "kind": "cross_statement",
+      "operands": [
+        "cash_runway_quarters",
+        "cash_and_cash_equivalents",
+        "short_term_investments",
+        "net_cash_from_operating_activities"
+      ]
+    },
+    {
+      "check_id": "runway_months_annual_fcf_div_12",
+      "kind": "cross_statement",
+      "operands": [
+        "cash_runway_quarters",
+        "cash_and_cash_equivalents",
+        "net_cash_from_operating_activities",
+        "core:capital_expenditures"
+      ]
+    },
+    {
+      "check_id": "rd_to_cash",
+      "kind": "cross_statement",
+      "operands": [
+        "research_and_development_expense",
+        "cash_and_cash_equivalents"
+      ]
+    },
+    {
+      "check_id": "financing_disclosed_not_forecast",
+      "kind": "qualitative_presence",
+      "operands": [
+        "atm_or_shelf_span",
+        "equity_financing_proceeds",
+        "net_cash_from_financing_activities"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_standard_fact",
+      "parameter": "concept",
+      "meaning": "the standard concept named by the parameter has no admitted fact for the period"
+    },
+    {
+      "code": "extension_concept_unaliased",
+      "parameter": "prefix",
+      "meaning": "the value exists only under an extension prefix with no frozen alias"
+    },
+    {
+      "code": "disallowed_dimension",
+      "parameter": null,
+      "meaning": "the only facts carry a dimension the field does not admit"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "division_by_zero",
+      "parameter": null,
+      "meaning": "a ratio denominator is zero"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    },
+    {
+      "code": "issuer_class_unknown",
+      "parameter": null,
+      "meaning": "the SIC needed to resolve applicability is unbound"
+    },
+    {
+      "code": "sic_outside_biotech_codes",
+      "parameter": null,
+      "meaning": "the issuer's SIC is outside the pack-owned versioned biotech SIC rule and the pre-revenue test does not hold"
+    },
+    {
+      "code": "non_positive_burn",
+      "parameter": null,
+      "meaning": "the runway burn basis is zero or negative, so no runway is computed"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }

@@ -1,0 +1,192 @@
+{
+  "schema": "mastermind.attended.beta_public_dns_tls_read.v1",
+  "observed_at": "2026-10-20T01:51:50.676502+00:00",
+  "nameserver_lookup": {
+    "argv": [
+      "dig",
+      "+time=3",
+      "+tries=1",
+      "+noall",
+      "+answer",
+      "mastermind-x.com",
+      "NS"
+    ],
+    "exit": 0,
+    "stdout": "mastermind-x.com.\t86400\tIN\tNS\ta.dnspod.com.\nmastermind-x.com.\t86400\tIN\tNS\tb.dnspod.com.\nmastermind-x.com.\t86400\tIN\tNS\tc.dnspod.com.\n",
+    "stderr": ""
+  },
+  "authoritative_reads": [
+    {
+      "argv": [
+        "dig",
+        "@a.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+norecurse",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 38807\n;; flags: qr ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 00 6e 6f 20 6c 6f 63 61 6c 20 63 61 63 68 65 20 74 6f 20 66 75 6c 66 69 6c 6c 20 6e 6f 6e 20 72 65 63 75 72 73 69 6f 6e 20 28 52 44 3d 30 29 20 72 65 71 75 65 73 74 (\"..no local cache to fulfill non recursion (RD=0) request\")\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "@a.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+norecurse",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 4128\n;; flags: qr ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 00 6e 6f 20 6c 6f 63 61 6c 20 63 61 63 68 65 20 74 6f 20 66 75 6c 66 69 6c 6c 20 6e 6f 6e 20 72 65 63 75 72 73 69 6f 6e 20 28 52 44 3d 30 29 20 72 65 71 75 65 73 74 (\"..no local cache to fulfill non recursion (RD=0) request\")\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "@a.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+norecurse",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "AAAA"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 58437\n;; flags: qr ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 00 6e 6f 20 6c 6f 63 61 6c 20 63 61 63 68 65 20 74 6f 20 66 75 6c 66 69 6c 6c 20 6e 6f 6e 20 72 65 63 75 72 73 69 6f 6e 20 28 52 44 3d 30 29 20 72 65 71 75 65 73 74 (\"..no local cache to fulfill non recursion (RD=0) request\")\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "@b.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+norecurse",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 37811\n;; flags: qr ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 00 6e 6f 20 6c 6f 63 61 6c 20 63 61 63 68 65 20 74 6f 20 66 75 6c 66 69 6c 6c 20 6e 6f 6e 20 72 65 63 75 72 73 69 6f 6e 20 28 52 44 3d 30 29 20 72 65 71 75 65 73 74 (\"..no local cache to fulfill non recursion (RD=0) request\")\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "@b.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+norecurse",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 5999\n;; flags: qr ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 00 6e 6f 20 6c 6f 63 61 6c 20 63 61 63 68 65 20 74 6f 20 66 75 6c 66 69 6c 6c 20 6e 6f 6e 20 72 65 63 75 72 73 69 6f 6e 20 28 52 44 3d 30 29 20 72 65 71 75 65 73 74 (\"..no local cache to fulfill non recursion (RD=0) request\")\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "@b.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+norecurse",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "AAAA"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 49154\n;; flags: qr ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 00 6e 6f 20 6c 6f 63 61 6c 20 63 61 63 68 65 20 74 6f 20 66 75 6c 66 69 6c 6c 20 6e 6f 6e 20 72 65 63 75 72 73 69 6f 6e 20 28 52 44 3d 30 29 20 72 65 71 75 65 73 74 (\"..no local cache to fulfill non recursion (RD=0) request\")\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "@c.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+norecurse",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 51192\n;; flags: qr ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 00 6e 6f 20 6c 6f 63 61 6c 20 63 61 63 68 65 20 74 6f 20 66 75 6c 66 69 6c 6c 20 6e 6f 6e 20 72 65 63 75 72 73 69 6f 6e 20 28 52 44 3d 30 29 20 72 65 71 75 65 73 74 (\"..no local cache to fulfill non recursion (RD=0) request\")\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "@c.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+norecurse",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 6473\n;; flags: qr ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 00 6e 6f 20 6c 6f 63 61 6c 20 63 61 63 68 65 20 74 6f 20 66 75 6c 66 69 6c 6c 20 6e 6f 6e 20 72 65 63 75 72 73 69 6f 6e 20 28 52 44 3d 30 29 20 72 65 71 75 65 73 74 (\"..no local cache to fulfill non recursion (RD=0) request\")\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "@c.dnspod.com.",
+        "+time=3",
+        "+tries=1",
+        "+norecurse",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "AAAA"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 24654\n;; flags: qr ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 00 6e 6f 20 6c 6f 63 61 6c 20 63 61 63 68 65 20 74 6f 20 66 75 6c 66 69 6c 6c 20 6e 6f 6e 20 72 65 63 75 72 73 69 6f 6e 20 28 52 44 3d 30 29 20 72 65 71 75 65 73 74 (\"..no local cache to fulfill non recursion (RD=0) request\")\n",
+      "stderr": ""
+    }
+  ],
+  "strict_tls_head": {
+    "argv": [
+      "curl",
+      "--head",
+      "--silent",
+      "--show-error",
+      "--connect-timeout",
+      "10",
+      "--max-time",
+      "20",
+      "https://beta.mastermind-x.com/api/shared-shell/status"
+    ],
+    "exit": 60,
+    "stdout": "",
+    "stderr": "curl: (60) SSL: no alternative certificate subject name matches target host name 'beta.mastermind-x.com'\nMore details here: https://curl.se/docs/sslcerts.html\n\ncurl failed to verify the legitimacy of the server and therefore could not\nestablish a secure connection to it. To learn more about this situation and\nhow to fix it, please visit the web page mentioned above.\n"
+  },
+  "dns_changed": false,
+  "tls_validation_bypassed": false,
+  "browser_acceptance": false
+}

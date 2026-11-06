@@ -472,6 +472,17 @@ class Materialization:
     #: an outage weapon. Structural evidence only — no ticker literals anywhere in the
     #: logic that produces this list.
     company_mint_refusals: list[dict] = field(default_factory=list)
+    #: ORCH-PIPE 2026-10-21 (lane B1) — typed refusals from the activity-history fold
+    #: and its projection: the fold refused wholesale (ACTIVITY_FOLD_REFUSED), one per
+    #: refused/retained fold outcome (code = the fold's own reason), and one per
+    #: refused projection (endpoint absent, edge-id collision). Never a raise — same
+    #: nightly-bake rule as company_mint_refusals. Empty when ``activity_events`` is
+    #: None (the ledger is the only input; its absence is today's production state).
+    activity_refusals: list[dict] = field(default_factory=list)
+    #: Compact summary of the same fold: counts of current/history/retained/refused/
+    #: excluded_after_cutoff, projected_edges, projected_evidence, knowledge_cutoff.
+    #: Empty when the fold was refused wholesale or ``activity_events`` is None.
+    activity_fold: dict = field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -1615,22 +1626,35 @@ def build(*, era: str, belief_time: str | None = None,
           finviz_history_path: Path | None = None,
           finviz_live_tree_path: Path | None = None,
           substrate_dir: Path | None = None,
-          retired_node_ids: frozenset[str] | None = None) -> Materialization:
+          retired_node_ids: frozenset[str] | None = None,
+          activity_events: list[dict] | None = None) -> Materialization:
     """Compute the whole graph view. Pure: reads inputs, writes nothing.
 
     ``retired_node_ids`` (V4-D2B3, R-A6): node_ids whose latest ``node_lifecycle``
     status is retired/merged, read by the caller (the impure orchestrator) and handed
     in as a plain frozenset — materialize itself never touches the store.
+
+    ``activity_events`` (ORCH-PIPE 2026-10-21, lane B1): curated activity-membership
+    history events, folded with :func:`apply_activity_membership_events` as of
+    ``computed_at`` and projected into MEMBER_OF edges + evidence receipts by
+    :func:`project_activity_memberships`. ``None`` — no ledger present — is the exact
+    pre-fold path, byte-identical. The fold itself has no authority (its ``authority``
+    dict stays all-False); this projection of GRANTED+ACCEPT current beliefs is the
+    admitting act. NEVER raises on activity input — every failure becomes a typed
+    refusal row (nightly-bake rule, same as company_mint_refusals).
     """
     if era not in ("reconstruction", "observed"):
         raise ValueError(f"era must be reconstruction|observed, got {era!r}")
     root = Path(__file__).resolve().parent.parent.parent
-    return _Builder(
+    # Hoisted ONCE so the builder and the activity fold see the same stamps.
+    computed_at = computed_at or utc_now_stamp()
+    belief_time = belief_time or utc_today()
+    mat = _Builder(
         data_dir=data_dir or config.data_dir(),
         crosswalk_path=crosswalk_path or (root / "config" / "theme_crosswalk.yml"),
         era=era,
-        belief_time=belief_time or utc_today(),
-        computed_at=computed_at or utc_now_stamp(),
+        belief_time=belief_time,
+        computed_at=computed_at,
         raw_snapshot=raw_snapshot,
         ths_history=ths_history,
         finviz_seed_path=finviz_seed_path,
@@ -1639,6 +1663,44 @@ def build(*, era: str, belief_time: str | None = None,
         substrate_dir=substrate_dir,
         retired_node_ids=retired_node_ids,
     ).run()
+    if activity_events is None:
+        return mat
+    try:
+        fold = apply_activity_membership_events(activity_events,
+                                                knowledge_cutoff=computed_at)
+    except ActivityHistoryRefusal as exc:
+        mat.activity_refusals.append(
+            {"code": "ACTIVITY_FOLD_REFUSED", "reason": exc.code, "detail": str(exc)})
+        return mat
+    # Surface the fold's own refusals and retained removals verbatim (code = reason);
+    # a retained removal is a refused deletion, and the nightly must see it.
+    for row in fold["refused"] + fold["retained"]:
+        mat.activity_refusals.append(dict(row, code=row["reason"]))
+    edges, evidence, refusals = project_activity_memberships(
+        fold, events=activity_events, belief_time=belief_time, era=era,
+        computed_at=computed_at,
+        node_ids={str(n["node_id"]) for n in mat.nodes},
+        edge_ids={str(e["edge_id"]) for e in mat.edges})
+    mat.activity_refusals.extend(refusals)
+    mat.activity_fold = {
+        "current": len(fold["current"]), "history": len(fold["history"]),
+        "retained": len(fold["retained"]), "refused": len(fold["refused"]),
+        "excluded_after_cutoff": len(fold["excluded_after_cutoff"]),
+        "projected_edges": len(edges), "projected_evidence": len(evidence),
+        "knowledge_cutoff": computed_at,
+    }
+    # Merge and RE-SORT exactly the way _Builder.run() sorts (keep-first on id — the
+    # same first-writer-wins discipline as _edge/_evidence_ref).
+    if edges:
+        merged = {e["edge_id"]: e for e in mat.edges}
+        merged.update((e["edge_id"], e) for e in edges)
+        mat.edges = [merged[k] for k in sorted(merged)]
+    if evidence:
+        merged_ev = {e["evidence_id"]: e for e in mat.evidence}
+        for row in evidence:
+            merged_ev.setdefault(row["evidence_id"], row)
+        mat.evidence = [merged_ev[k] for k in sorted(merged_ev)]
+    return mat
 
 
 # ---------------------------------------------------------------------------
@@ -2120,3 +2182,369 @@ def changed_edges(computed: list[dict], stored: pd.DataFrame) -> list[dict]:
     prior = {str(r["edge_id"]): _material(r) for r in stored.to_dict("records")}
     return [row for row in computed
             if prior.get(str(row["edge_id"])) != _material(row)]
+
+
+# ---------------------------------------------------------------------------------------
+# Native activity membership HISTORY (recovery 2026-10-16 §9 step 3; contract
+# contracts/theme_graph/activity_membership_history.v1.schema.json).
+#
+# A PURE fold over versioned APPEND / CORRECT / REMOVE events for owner-admitted native
+# activity memberships (today only the C01 species, planned_product_integration). It is
+# deliberately NOT called by build(), writes nothing, and feeds nothing into edges.v1:
+# the fold answers "what was believed at this knowledge cutoff" and grants no
+# materialize, publish or rank authority. The same discipline as apply_relation_events
+# holds: absence is never removal. Only a complete, authoritative observation of an
+# exhaustive roster that does not contain the subject removes a belief; a timeout, a
+# partial read, a changed shape or a non-exhaustive roster leaves the belief in place.
+# Knowledge-cutoff filtering runs BEFORE any selection, and no belief is ever deleted:
+# a superseded or removed belief moves to history with its closed knowledge interval.
+# ---------------------------------------------------------------------------------------
+
+ACTIVITY_HISTORY_EVENT_SCHEMA = "gmi.activity_membership_history_event/v1"
+ACTIVITY_HISTORY_STATE_SCHEMA = "gmi.activity_membership_history_state/v1"
+ADMITTED_ACTIVITY_HISTORY_SPECIES = frozenset({"planned_product_integration",
+                                               "principal_business_activity"})
+ACTIVITY_HISTORY_CONTRACT = "contracts/theme_graph/activity_membership_history.v1.schema.json"
+_ACTIVITY_HISTORY_SOURCE = re.compile(r"^co:[a-z]{2}:[A-Za-z0-9._-]+$")
+_ACTIVITY_HISTORY_TARGET = re.compile(r"^theme:[a-z0-9_]+$")
+_ACTIVITY_HISTORY_REMOVAL_REFUSAL = {
+    "TIMEOUT": "REMOVAL_REFUSED_TIMEOUT",
+    "PARTIAL": "REMOVAL_REFUSED_PARTIAL",
+    "CHANGED_SHAPE": "REMOVAL_REFUSED_CHANGED_SHAPE",
+}
+_ACTIVITY_HISTORY_VALIDATOR: list = []
+
+
+class ActivityHistoryRefusal(ValueError):
+    """A typed refusal of an activity history event or fold; ``code`` is stable."""
+
+    def __init__(self, code: str, detail: str = "") -> None:
+        super().__init__(f"{code}: {detail}" if detail else code)
+        self.code = code
+
+
+def _activity_history_canonical(value) -> bytes:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
+                      allow_nan=False).encode("utf-8")
+
+
+def activity_history_event_digest(event: dict) -> str:
+    """sha256 of the canonical event without ``event_id``/``event_sha256``."""
+    payload = {k: v for k, v in event.items() if k not in {"event_id", "event_sha256"}}
+    return hashlib.sha256(_activity_history_canonical(payload)).hexdigest()
+
+
+def activity_membership_id(*, source_node_id: str, target_node_id: str, species: str,
+                           scope: dict) -> str:
+    """The membership identity: directed endpoints, species and scope, nothing else."""
+    body = {"source_node_id": source_node_id, "target_node_id": target_node_id,
+            "species": species, "scope": scope}
+    return "actmem:" + hashlib.sha256(_activity_history_canonical(body)).hexdigest()[:24]
+
+
+def _activity_history_validator():
+    if not _ACTIVITY_HISTORY_VALIDATOR:
+        import jsonschema
+
+        path = Path(__file__).resolve().parents[2] / ACTIVITY_HISTORY_CONTRACT
+        schema = json.loads(path.read_text(encoding="utf-8"))
+        jsonschema.Draft202012Validator.check_schema(schema)
+        _ACTIVITY_HISTORY_VALIDATOR.append(jsonschema.Draft202012Validator(schema))
+    return _ACTIVITY_HISTORY_VALIDATOR[0]
+
+
+def _activity_history_instant(value, *, code: str) -> datetime:
+    text = value if isinstance(value, str) else ""
+    if "T" not in text:
+        raise ActivityHistoryRefusal(code, repr(value))
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ActivityHistoryRefusal(code, repr(value)) from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ActivityHistoryRefusal(code, f"{value!r} carries no zone")
+    return parsed
+
+
+def validate_activity_history_event(event: dict) -> None:
+    """Refuse an event that is not a closed, honestly digested, admitted history event.
+
+    Semantic refusals are named before the generic schema refusal so a caller learns
+    WHY: a basket / vendor-theme / non co:->theme: endpoint is ENDPOINT_NOT_ADMITTED
+    (the group-to-micro and vendor-family refusal), an unadmitted species is
+    SPECIES_NOT_ADMITTED, and the action rules are CURATION_REQUIRED (APPEND/CORRECT),
+    SUPERSEDES_REQUIRED (CORRECT) and OBSERVATION_REQUIRED (REMOVE).
+    """
+    if not isinstance(event, dict):
+        raise ActivityHistoryRefusal("EVENT_SCHEMA_INVALID", "event is not an object")
+    endpoints = event.get("endpoints")
+    if isinstance(endpoints, dict):
+        source, target = endpoints.get("source_node_id"), endpoints.get("target_node_id")
+        if not (isinstance(source, str) and _ACTIVITY_HISTORY_SOURCE.match(source)
+                and isinstance(target, str) and _ACTIVITY_HISTORY_TARGET.match(target)):
+            raise ActivityHistoryRefusal("ENDPOINT_NOT_ADMITTED", f"{source!r} -> {target!r}")
+    if "species" in event and event.get("species") not in ADMITTED_ACTIVITY_HISTORY_SPECIES:
+        raise ActivityHistoryRefusal("SPECIES_NOT_ADMITTED", repr(event.get("species")))
+    action = event.get("action")
+    if action in {"APPEND", "CORRECT"} and event.get("curation") is None:
+        raise ActivityHistoryRefusal("CURATION_REQUIRED", f"{action} needs a named curation")
+    if action == "CORRECT" and event.get("supersedes_event_sha256") is None:
+        raise ActivityHistoryRefusal("SUPERSEDES_REQUIRED", "CORRECT names the belief it corrects")
+    if action == "APPEND" and event.get("supersedes_event_sha256") is not None:
+        raise ActivityHistoryRefusal("EVENT_SCHEMA_INVALID", "APPEND supersedes nothing")
+    if action == "REMOVE" and event.get("observation") is None:
+        raise ActivityHistoryRefusal("OBSERVATION_REQUIRED", "REMOVE needs an observation")
+    errors = sorted(_activity_history_validator().iter_errors(event),
+                    key=lambda e: [str(p) for p in e.absolute_path])
+    if errors:
+        first = errors[0]
+        path = "/".join(str(p) for p in first.absolute_path) or "<root>"
+        raise ActivityHistoryRefusal("EVENT_SCHEMA_INVALID", f"{path}: {first.message}")
+    digest = activity_history_event_digest(event)
+    if event["event_sha256"] != digest or event["event_id"] != "actevt:" + digest[:24]:
+        raise ActivityHistoryRefusal("EVENT_DIGEST_MISMATCH", event["event_id"])
+    expected = activity_membership_id(
+        source_node_id=event["endpoints"]["source_node_id"],
+        target_node_id=event["endpoints"]["target_node_id"],
+        species=event["species"], scope=event["scope"])
+    if event["membership_id"] != expected:
+        raise ActivityHistoryRefusal("MEMBERSHIP_ID_MISMATCH", event["membership_id"])
+    _activity_history_instant(event["clocks"]["knowledge_at"], code="EVENT_SCHEMA_INVALID")
+
+
+def _activity_history_belief(event: dict) -> dict:
+    return {
+        "membership_id": event["membership_id"],
+        "endpoints": event["endpoints"],
+        "species": event["species"],
+        "scope": event["scope"],
+        "role": event["role"],
+        "lifecycle": event["lifecycle"],
+        "evidence_lineage": event["evidence_lineage"],
+        "use_qualification": event["use_qualification"],
+        "curation": event["curation"],
+        "event_sha256": event["event_sha256"],
+        "knowledge_from": event["clocks"]["knowledge_at"],
+        "knowledge_to": None,
+    }
+
+
+def _activity_history_outcome(event: dict, reason: str, **extra) -> dict:
+    row = {"event_sha256": event["event_sha256"], "event_id": event["event_id"],
+           "membership_id": event["membership_id"], "action": event["action"],
+           "knowledge_at": event["clocks"]["knowledge_at"], "reason": reason}
+    row.update(extra)
+    return row
+
+
+def apply_activity_membership_events(events: list[dict], *, knowledge_cutoff: str) -> dict:
+    """Fold activity history events into belief as of ``knowledge_cutoff`` (pure).
+
+    1. Every event is validated; one invalid event refuses the whole fold.
+    2. Events known after the cutoff are excluded BEFORE any selection.
+    3. The rest apply in (knowledge instant, event_sha256) order, per membership:
+       APPEND becomes belief only when curated ACCEPT and graph-membership use is
+       GRANTED; CORRECT must supersede the current belief (same rules); REMOVE needs a
+       COMPLETE_AUTHORITATIVE observation of an exhaustive roster without the subject,
+       otherwise the belief is RETAINED with the exact reason.
+    Nothing is deleted: superseded and removed beliefs move to ``history`` with a closed
+    [knowledge_from, knowledge_to) interval. No I/O, no clock reads, no authority.
+    """
+    cutoff = _activity_history_instant(knowledge_cutoff, code="KNOWLEDGE_CUTOFF_INVALID")
+    rows = [json.loads(_activity_history_canonical(e)) if isinstance(e, dict) else e
+            for e in events]
+    for event in rows:
+        validate_activity_history_event(event)
+    unique = {event["event_sha256"]: event for event in rows}
+
+    def known(event: dict) -> datetime:
+        return _activity_history_instant(event["clocks"]["knowledge_at"],
+                                         code="EVENT_SCHEMA_INVALID")
+
+    excluded = sorted(sha for sha, event in unique.items() if known(event) > cutoff)
+    admitted = sorted((event for sha, event in unique.items() if known(event) <= cutoff),
+                      key=lambda event: (known(event), event["event_sha256"]))
+
+    current: dict[str, dict] = {}
+    history: list[dict] = []
+    retained: list[dict] = []
+    refused: list[dict] = []
+    for event in admitted:
+        mid, action = event["membership_id"], event["action"]
+        prior = current.get(mid)
+        accepted = (event.get("curation") or {}).get("decision") == "ACCEPT"
+        granted = event["use_qualification"]["graph_membership_use"] == "GRANTED"
+        if action == "APPEND":
+            if prior is not None:
+                refused.append(_activity_history_outcome(event, "DUPLICATE_APPEND"))
+            elif not accepted:
+                refused.append(_activity_history_outcome(event, "APPEND_NOT_ACCEPTED"))
+            elif not granted:
+                refused.append(_activity_history_outcome(event, "GRAPH_MEMBERSHIP_USE_NOT_GRANTED"))
+            else:
+                current[mid] = _activity_history_belief(event)
+        elif action == "CORRECT":
+            if prior is None or prior["event_sha256"] != event["supersedes_event_sha256"]:
+                refused.append(_activity_history_outcome(event, "CORRECTION_TARGET_NOT_CURRENT"))
+            elif not accepted:
+                refused.append(_activity_history_outcome(event, "CORRECTION_NOT_ACCEPTED"))
+            elif not granted:
+                refused.append(_activity_history_outcome(event, "GRAPH_MEMBERSHIP_USE_NOT_GRANTED"))
+            else:
+                closed = dict(prior, knowledge_to=event["clocks"]["knowledge_at"],
+                              superseded_by_event_sha256=event["event_sha256"])
+                history.append(closed)
+                current[mid] = _activity_history_belief(event)
+        else:  # REMOVE
+            observation = event["observation"]
+            if prior is None:
+                refused.append(_activity_history_outcome(event, "NO_CURRENT_BELIEF"))
+                continue
+            completeness = observation["completeness"]
+            if completeness != "COMPLETE_AUTHORITATIVE":
+                reason = _ACTIVITY_HISTORY_REMOVAL_REFUSAL[completeness]
+            elif not observation["roster_exhaustive"]:
+                reason = "REMOVAL_REFUSED_NON_EXHAUSTIVE_ROSTER"
+            elif observation["subject_present"]:
+                reason = "REMOVAL_CONTRADICTED_SUBJECT_PRESENT"
+            else:
+                reason = None
+            if reason is not None:
+                retained.append(_activity_history_outcome(
+                    event, reason, retained_belief_event_sha256=prior["event_sha256"]))
+                continue
+            history.append(dict(prior, knowledge_to=event["clocks"]["knowledge_at"],
+                                removed_by_event_sha256=event["event_sha256"]))
+            del current[mid]
+
+    def order(row: dict) -> tuple:
+        return (row["membership_id"], row.get("knowledge_from") or row.get("knowledge_at"),
+                row["event_sha256"])
+
+    return {
+        "schema": ACTIVITY_HISTORY_STATE_SCHEMA,
+        "knowledge_cutoff": knowledge_cutoff,
+        "current": sorted(current.values(), key=order),
+        "history": sorted(history, key=order),
+        "retained": sorted(retained, key=order),
+        "refused": sorted(refused, key=order),
+        "excluded_after_cutoff": excluded,
+        "authority": {"may_materialize_edges": False, "may_publish": False, "may_rank": False},
+    }
+
+
+# ---------------------------------------------------------------------------
+# Activity-history projection (ORCH-PIPE 2026-10-21, lane B1)
+# ---------------------------------------------------------------------------------------
+
+#: The deterministic formula id stamped on every edge the projector mints — parallel to
+#: CONFIDENCE_BASIS ("membership_doc.v1") and "membership_pit.ths.v1": a basis names HOW
+#: a row came to be believed, never how much to trust it.
+ACTIVITY_HISTORY_CONFIDENCE_BASIS = "activity_history.v1"
+
+
+def project_activity_memberships(
+        fold: dict, *, events: list[dict], belief_time: str, era: str,
+        computed_at: str, node_ids: set[str],
+        edge_ids: set[str]) -> tuple[list[dict], list[dict], list[dict]]:
+    """Project a folded activity history into edges.v1 MEMBER_OF + evidence.v1 rows.
+
+    Pure: same inputs -> same outputs (sorted), no I/O, no clock reads. For every
+    CURRENT belief the fold produced (GRANTED + ACCEPT, post-cutoff, post-supersession):
+
+    * one ``operator_curation`` EVIDENCE receipt citing the event id, dated by the
+      curation decision. evidence.v1: ``provider``/``claim_type`` are null on
+      first-party receipts, and an operator curation IS first-party; ``effective_at``
+      stays null unless the event's clock states a KNOWN effective date.
+    * at most ONE MEMBER_OF edge per (source, target) pair — beliefs from different
+      memberships that name the same pair share one edge — its ``valid_from`` the
+      group's earliest effective date (the event's KNOWN ``effective_at``, else the
+      belief's knowledge date), ``date_provenance="activity_history"``, citing the
+      group's sorted evidence ids.
+
+    A curated, receipted activity membership is a FIRST-CLASS evidence-grain fact, not
+    a composition of membership with expression (ORCH-PIPE ruling E, 2026-10-21): so
+    these are the only company->theme edges this store may ever carry.
+
+    Refusals, never raises, never a minted node:
+      ACTIVITY_FOLD_REFUSED              — (recorded by build(), not here)
+      ACTIVITY_ENDPOINT_NODE_ABSENT      — an endpoint has no node row in this build;
+      ACTIVITY_EDGE_COLLIDES_WITH_EXISTING — the deterministic edge_id already exists
+                                           (the group gets no projection at all, its
+                                           receipts included: an edge nobody cites is
+                                           not published).
+    """
+    by_sha = {str(e.get("event_sha256")): e for e in events if isinstance(e, dict)}
+    refusals: list[dict] = []
+    groups: dict[tuple[str, str], dict] = {}
+    for belief in fold.get("current", []):
+        src = str(belief["endpoints"]["source_node_id"])
+        dst = str(belief["endpoints"]["target_node_id"])
+        missing = [n for n in (src, dst) if n not in node_ids]
+        if missing:
+            refusals.append({
+                "code": "ACTIVITY_ENDPOINT_NODE_ABSENT",
+                "membership_id": str(belief.get("membership_id")),
+                "event_sha256": str(belief.get("event_sha256")),
+                "missing": missing,
+            })
+            continue
+        # The fold validated every event, so the belief's event is always present in
+        # ``events``; the .get() chain only keeps this total over adversarial input.
+        event = by_sha.get(str(belief.get("event_sha256"))) or {}
+        effective = (event.get("clocks") or {}).get("effective_at") or {}
+        known_effective = (str(effective["value"])
+                           if effective.get("state") == "KNOWN" and effective.get("value")
+                           else None)
+        valid_from = known_effective or str(belief.get("knowledge_from"))[:10]
+        event_id = str(event.get("event_id") or belief.get("membership_id"))
+        published_at = str((belief.get("curation") or {}).get("decided_at"))[:10]
+        evidence_id = evidence_id_for("operator_curation", event_id, published_at)
+        group = groups.setdefault((src, dst), {"valid_from": valid_from, "evidence": [],
+                                               "membership_ids": []})
+        group["valid_from"] = min(group["valid_from"], valid_from)
+        group["membership_ids"].append(str(belief.get("membership_id")))
+        group["evidence"].append({
+            "evidence_id": evidence_id, "kind": "operator_curation",
+            "published_at": published_at, "effective_at": known_effective,
+            "source_ref": event_id,
+            # Mint-time snapshot (§9.4): first-party curation is internal-usable;
+            # display/redistribution stay false — the rights registry, not the
+            # curator, owns those answers and can move after this row is written.
+            "licensing_internal_ok": True, "licensing_display_ok": False,
+            "licensing_redistribution_ok": False,
+            "retention": None, "computed_at": computed_at,
+            "provider": None, "claim_type": None,
+        })
+    edges: list[dict] = []
+    evidence: list[dict] = []
+    for (src, dst), group in groups.items():
+        edge_id = edge_id_for("MEMBER_OF", src, dst, group["valid_from"])
+        if edge_id in edge_ids:
+            refusals.append({
+                "code": "ACTIVITY_EDGE_COLLIDES_WITH_EXISTING",
+                "edge_id": edge_id, "src": src, "dst": dst,
+                "membership_ids": sorted(group["membership_ids"]),
+            })
+            continue
+        edge_ids.add(edge_id)
+        row = {
+            "edge_id": edge_id, "type": "MEMBER_OF", "src": src, "dst": dst,
+            "valid_from": group["valid_from"], "valid_to": None,
+            "evidence_time": group["valid_from"], "belief_time": belief_time,
+            "era": era, "source_class": "curated",
+            "date_provenance": "activity_history",
+            "evidence_refs": sorted(e["evidence_id"] for e in group["evidence"]),
+            "confidence_basis": ACTIVITY_HISTORY_CONFIDENCE_BASIS,
+            "computed_at": computed_at, "engine_version": ENGINE_VERSION,
+        }
+        for f in RESERVED_EDGE_FIELDS:
+            row[f] = None
+        edges.append(row)
+        evidence.extend(group["evidence"])
+    edges.sort(key=lambda r: r["edge_id"])
+    evidence.sort(key=lambda r: r["evidence_id"])
+    refusals.sort(key=lambda r: (str(r.get("code")),
+                                 json.dumps(r, sort_keys=True, ensure_ascii=False,
+                                            default=str)))
+    return edges, evidence, refusals

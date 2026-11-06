@@ -105,11 +105,13 @@ import argparse
 import datetime as _dt
 import fnmatch
 import hashlib
+import importlib.util
 import json
 import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -201,6 +203,32 @@ PROVENANCE_RE = re.compile(
     re.IGNORECASE,
 )
 BANNED_HANDOFF_PHRASES = ("see above", "as discussed", "see the discussion above")
+# Advisory only: text cannot establish whether an original publisher is a live
+# runner or an archived author. A sole ghost-parent next action is a handoff
+# quality finding, never an execution/lease-transfer decision (Agent OS I1).
+GHOST_ORIGINAL_WRITER_ACTION_RE = re.compile(
+    r"\b(?:only\s+(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)"
+    r"|(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)\s+(?:must|needs\s+to|has\s+to)"
+    r"|(?:requires?|depends\s+on)\s+(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)(?:['’]s)?"
+    r"|(?:return|hand)\s+(?:(?:this\s+work|the\s+work|work|it|this)\s+)?(?:back\s+)?to\s+"
+    r"(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)"
+    r"|(?:wait|waiting)\s+(?:for|on)\s+(?:the\s+)?original\s+"
+    r"(?:writer|parent|publisher|session|chat))\b",
+    re.IGNORECASE,
+)
+# A diagnostic must not mark instructions that expressly PREVENT a ghost handoff.
+GHOST_PARENT_NEGATION_RE = re.compile(
+    r"^\s*(?:do\s+not|don't|never)\s+(?:return|hand|wait)\b",
+    re.IGNORECASE,
+)
+# One authored next_action may include both the incumbent's specific held effect
+# and this receiver's independent recovery step; preserve that useful handoff.
+GHOST_SUCCESSOR_ACTION_RE = re.compile(
+    r"\b(?:current|currently\s+assigned|next|next\s+lawfully\s+assigned|present|assigned\s+successor)"
+    r"\s+(?:receiver|session|owner|agent|operator)\b.{0,180}?"
+    r"\b(?:inspect|verify|reconcile|advance|continue|run|repair|test|review|audit|check)\b",
+    re.IGNORECASE,
+)
 VERIFIED_FLOOR = "tests pass"
 
 STALE_DISCOVERY_DAYS = 90
@@ -657,6 +685,36 @@ def _git(*args: str, cwd: Path | None = None, timeout: int = 60,
     return result.stdout
 
 
+def git_updated(path: Path) -> str | None:
+    """Latest commit date for the current path, using the incumbent per-path query.
+
+    Context compilation consumes only updated dates. Do not walk the complete
+    addition history to compute an unused created date, and do not combine paths:
+    Git's history simplification and merge diffs are path-dependent.
+    """
+    try:
+        rel = path.resolve().relative_to(_ROOT)
+    except ValueError:
+        return None
+    updated = _git("log", "-1", "--format=%as", "--", str(rel))
+    last = (updated or "").strip().splitlines()
+    return last[0] if last else None
+
+
+def git_updated_batch(paths: Iterable[Path]) -> dict[Path, str | None]:
+    """Read each distinct path once, with at most four concurrent history queries.
+
+    Keep the exact per-path reader: combined-path Git history changes merge
+    semantics. Results and the executor belong only to this invocation; joining
+    in input order preserves deterministic callers without a persistent cache.
+    """
+    unique = list(dict.fromkeys(paths))
+    if not unique:
+        return {}
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        return dict(zip(unique, executor.map(git_updated, unique)))
+
+
 def git_dates(path: Path) -> tuple[str | None, str | None]:
     """``(created, updated)`` as ISO dates, derived from git history.
 
@@ -947,8 +1005,154 @@ def _acceptance_contract_problems(rec: dict[str, Any], path: Path) -> list[Probl
     return out
 
 
+def _direction_record_problems(rec: dict[str, Any], path: Path, *, decision: bool) -> list[Problem]:
+    """Optional Direction facts, inline for existing sealed brief compatibility.
+
+    No new helper import, currentness registry, or execution authority is added.
+    The dedicated read separately captures its bounded lineage projection helper.
+    """
+    def ref(value: Any, prefix: str, limit: int) -> bool:
+        return (type(value) is str and value.startswith(prefix) and 2 <= len(value[len(prefix):]) <= limit
+                and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", value[len(prefix):]) is not None)
+    valid = True
+    if not decision:
+        if "accepted_direction" not in rec:
+            return []
+        chosen = rec.get("accepted_direction")
+        valid = (ref(chosen, "DEC:", 128) and type(rec.get("decisions")) is list and chosen in rec["decisions"])
+    else:
+        if "direction" not in rec:
+            return []
+        value = rec.get("direction")
+        if type(value) is not dict or set(value) != {"schema", "state", "work_ref", "predecessor"}:
+            valid = False
+        else:
+            predecessor = value["predecessor"]
+            own = "DEC:" + str(rec.get("key", ""))
+            valid = (value["schema"] == "agentos.direction_acceptance.v1" and value["state"] == "ACCEPTED"
+                     and ref(value["work_ref"], "WS:", 64)
+                     and (predecessor is None or ref(predecessor, "DEC:", 128) and predecessor != own)
+                     and type(rec.get("affects")) is list and value["work_ref"] in rec["affects"]
+                     and "project_plan_adoption" not in rec
+                     and rec.get("supersedes", []) == ([] if predecessor is None else [predecessor]))
+        day = rec.get("decided_at")
+        try:
+            if type(day) is _dt.date:
+                pass
+            elif type(day) is str and re.fullmatch(r"\d{4}-\d{2}-\d{2}", day) is not None:
+                valid = valid and _dt.date.fromisoformat(day).isoformat() == day
+            else:
+                valid = False
+            for field, maximum in (("answer", 4096), ("rationale", 4096), ("decided_by", 256)):
+                text = rec.get(field)
+                valid = valid and type(text) is str and bool(text.strip()) and len(text.encode("utf-8")) <= maximum
+        except (ValueError, UnicodeError):
+            valid = False
+    return [] if valid else [Problem(path, "bad-direction", "INVALID_DIRECTION", hard=True)]
+
+
+def _archive_record_problems(rec: dict[str, Any], path: Path) -> list[Problem]:
+    """Explicit optional canonical archive declaration; no status inference."""
+    if "archive" not in rec:
+        return []
+    value = rec["archive"]
+    valid = type(value) is dict and set(value) == {"schema", "state", "archived_on", "archived_by", "reason"}
+    if valid:
+        valid = value["schema"] == "agentos.workstream_archive.v1" and value["state"] == "ARCHIVED"
+        day = value["archived_on"]
+        try:
+            valid = valid and ((type(day) is _dt.date) or (type(day) is str and re.fullmatch(r"\d{4}-\d{2}-\d{2}", day) is not None and _dt.date.fromisoformat(day).isoformat() == day))
+            for field, maximum in (("archived_by", 256), ("reason", 2000)):
+                text = value[field]
+                valid = valid and type(text) is str and bool(text.strip()) and len(text.encode("utf-8")) <= maximum
+        except (ValueError, UnicodeError):
+            valid = False
+    return [] if valid else [Problem(path, "bad-archive", "INVALID_ARCHIVE_DECLARATION", hard=True)]
+
+
+def _project_knowledge_problems(rec: dict[str, Any], path: Path, *, decision: bool) -> list[Problem]:
+    """Optional explicit project files/preferences; installed brief needs no helper."""
+    def actor(value: Any) -> bool:
+        return type(value) is str and re.fullmatch(r"workspace:[0-9a-f]{64}", value) is not None
+    def digest(value: Any) -> bool:
+        return type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) is not None
+    def text(value: Any, maximum: int) -> bool:
+        try:
+            return type(value) is str and bool(value.strip()) and len(value.encode("utf-8")) <= maximum
+        except UnicodeError:
+            return False
+    if decision:
+        if "project_preference" not in rec:
+            return []
+        value = rec["project_preference"]
+        valid = type(value) is dict and set(value) == {"schema", "work_ref", "kind", "value", "origin", "last_edit"}
+        if valid:
+            ref = value["work_ref"]
+            valid = (type(ref) is str and ref.startswith("WS:") and 2 <= len(ref[3:]) <= 64
+                     and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", ref[3:]) is not None
+                     and value["schema"] == "agentos.project_preference.v1" and value["kind"] == "COMMUNICATION"
+                     and text(value["value"], 2000) and rec.get("answer") == value["value"]
+                     and rec.get("key") == "PROJECT-COMMUNICATION-PREFERENCE-" + ref[3:]
+                     and type(rec.get("affects")) is list and ref in rec["affects"])
+            origin, edit = value["origin"], value["last_edit"]
+            valid = (valid and type(origin) is dict and set(origin) == {"kind", "actor_ref", "source_ref", "source_revision"}
+                     and origin["kind"] == "USER_EDIT" and actor(origin["actor_ref"])
+                     and origin["source_ref"] is None and origin["source_revision"] is None
+                     and type(edit) is dict and set(edit) == {"actor_ref", "request_sha256"}
+                     and actor(edit["actor_ref"]) and digest(edit["request_sha256"]))
+        return [] if valid else [Problem(path, "bad-project-preference", "INVALID_PROJECT_PREFERENCE", hard=True)]
+    out = []
+    if "standing_instructions" in rec:
+        values = rec["standing_instructions"]
+        valid = type(values) is list and len(values) <= 16
+        refs = set()
+        if valid:
+            for row in values:
+                valid = type(row) is dict and set(row) == {"instruction_ref", "text"}
+                if not valid:
+                    break
+                ref, literal = row["instruction_ref"], row["text"]
+                valid = (type(ref) is str and ref.startswith("INS:") and 2 <= len(ref[4:]) <= 64
+                         and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", ref[4:]) is not None and ref not in refs
+                         and text(literal, 16384) and len(literal) <= 4096
+                         and not any((ord(c) < 32 and c not in "\n\r\t") or ord(c) == 127 for c in literal))
+                if not valid:
+                    break
+                refs.add(ref)
+        if not valid:
+            out.append(Problem(path, "bad-standing-instructions", "INVALID_STANDING_INSTRUCTIONS", hard=True))
+    if "project_files" not in rec:
+        return out
+    values = rec["project_files"]
+    valid = type(values) is list and len(values) <= 32 and type(rec.get("artifacts")) is list
+    identities = set()
+    if valid:
+        for row in values:
+            valid = type(row) is dict and set(row) == {"file_id", "artifact_ref", "display_name", "media_type", "content_sha256", "origin"}
+            if not valid:
+                break
+            fid, name, media, origin = row["file_id"], row["display_name"], row["media_type"], row["origin"]
+            suffix = {"text/markdown": ".md", "text/plain": ".txt"}.get(media) if type(media) is str else None
+            valid = (digest(fid) and fid not in identities and text(name, 128)
+                     and not any(ord(c) < 32 or ord(c) == 127 or c in "/\\" for c in name)
+                     and suffix is not None and digest(row["content_sha256"])
+                     and row["artifact_ref"] == "agentos/project-files/WS-" + str(rec.get("key")) + "/" + fid + suffix
+                     and row["artifact_ref"] in rec["artifacts"]
+                     and type(origin) is dict and set(origin) == {"kind", "actor_ref", "request_sha256"}
+                     and origin["kind"] == "PRINCIPAL_UPLOAD" and actor(origin["actor_ref"]) and digest(origin["request_sha256"]))
+            if not valid:
+                break
+            identities.add(fid)
+    if not valid:
+        out.append(Problem(path, "bad-project-files", "INVALID_PROJECT_FILES", hard=True))
+    return out
+
+
 def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None) -> list[Problem]:
     out: list[Problem] = _acceptance_contract_problems(rec, path)
+    out.extend(_direction_record_problems(rec, path, decision=False))
+    out.extend(_archive_record_problems(rec, path))
+    out.extend(_project_knowledge_problems(rec, path, decision=False))
     # `created` / `updated` are DERIVED from git by the generator (see git_dates) and are
     # deliberately NOT required here — see the module docstring on the conflict site.
     for field in ("key", "title", "objective", "status", "program",
@@ -1128,8 +1332,67 @@ def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None)
     return out
 
 
+def _project_plan_contract() -> Any:
+    """Load the owner helper from this exact source tree, only when declared.
+
+    Captured legacy records need no new helper. A captured owner that declares the
+    extension must include its sibling helper; ambient PYTHONPATH is not authority.
+    """
+    source = Path(__file__).resolve().with_name("agentos_project_plan_contract.py")
+    spec = importlib.util.spec_from_file_location("_agentos_project_plan_contract", source)
+    if spec is None or spec.loader is None:
+        raise ImportError("PLAN_CONTRACT_UNAVAILABLE")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _validated_project_plan_adoption(rec: dict[str, Any]) -> dict[str, Any]:
+    contract = _project_plan_contract()
+    value = rec.get("project_plan_adoption")
+    work_ref = value.get("work_ref") if isinstance(value, dict) else None
+    adoption = contract.validate_adoption(value, work_ref=work_ref)
+    affects = rec.get("affects")
+    if not isinstance(affects, list) or adoption["work_ref"] not in affects:
+        raise contract.PlanContentError("WORK_REF_MISMATCH")
+    predecessor = adoption["predecessor"]
+    if predecessor is not None:
+        if predecessor == "DEC:" + str(rec.get("key")):
+            raise contract.PlanContentError("LINEAGE_CONFLICT")
+        if not isinstance(rec.get("supersedes"), list) or predecessor not in rec["supersedes"]:
+            raise contract.PlanContentError("LINEAGE_INCOMPLETE")
+    return adoption
+
+
+def parse_project_plan_proposal(raw_bytes: bytes, *, work_ref: str) -> tuple[dict[str, Any], bytes]:
+    """Parse an already-captured artifact without normalizing candidate bytes.
+
+    The existing generic record splitter intentionally consumes whitespace after
+    its fence. Proposal content hashes require an exact byte boundary instead.
+    YAML interpretation still belongs to this existing Agent OS source owner.
+    No path/ref is resolved and this function cannot qualify a captured source.
+    """
+    contract = _project_plan_contract()
+    if type(raw_bytes) is not bytes or not 0 < len(raw_bytes) <= 262144:
+        raise contract.PlanContentError("CONTENT_OVER_BUDGET")
+    match = re.fullmatch(rb"---(?:\r\n|\n)(.*?)(?:\r\n|\n)---(?:\r\n|\n)(.*)",
+                         raw_bytes, re.DOTALL)
+    if match is None:
+        raise contract.PlanContentError("INVALID_PROPOSAL")
+    try:
+        header = _yaml_safe_load(match.group(1).decode("utf-8"))
+    except (UnicodeDecodeError, yaml.YAMLError):
+        raise contract.PlanContentError("INVALID_PROPOSAL") from None
+    candidate = match.group(2)
+    validated = contract.validate_proposal(header, work_ref=work_ref,
+                                            candidate_bytes=candidate)
+    return validated, candidate
+
+
 def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
+    out.extend(_direction_record_problems(rec, path, decision=True))
+    out.extend(_project_knowledge_problems(rec, path, decision=True))
     for field in ("key", "question", "answer", "rationale", "alternatives",
                   "evidence", "affects", "confidence", "reversibility",
                   "decided_by", "decided_at"):
@@ -1151,6 +1414,15 @@ def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     # Same defect class as superseded_by, one field over: `_refs` silently drops a bare
     # key, so an unshaped `supersedes` entry used to skip the reciprocity check entirely.
     _check_citations(rec, "supersedes", "DEC", path, out)
+    if "project_plan_adoption" in rec:
+        try:
+            _validated_project_plan_adoption(rec)
+        except (ImportError, OSError):
+            out.append(Problem(path, "bad-project-plan-adoption",
+                               "PLAN_CONTRACT_UNAVAILABLE", hard=True))
+        except ValueError as exc:
+            # The helper emits closed value-free codes, never record content.
+            out.append(Problem(path, "bad-project-plan-adoption", str(exc), hard=True))
 
     alts = rec.get("alternatives")
     if isinstance(alts, list):
@@ -1174,6 +1446,64 @@ def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     return out
 
 
+def select_project_plan_adoption(records: list[dict[str, Any]], *, work_ref: str) -> Any:
+    """Join already-captured DEC records through their actual owner validator.
+
+    This is a read projection, not a registry or permission. The caller owns the
+    capture and source revision; no record or referenced content is opened here.
+    """
+    contract = _project_plan_contract()
+    current = contract.select_current_adoption(records, work_ref=work_ref)
+    for rec in records:
+        if "project_plan_adoption" not in rec:
+            continue
+        metadata = rec.get("project_plan_adoption")
+        if (isinstance(metadata, dict) and metadata.get("work_ref") == work_ref
+                or isinstance(rec.get("affects"), list) and work_ref in rec["affects"]):
+            path = Path("agentos/decisions") / ("DEC-" + str(rec.get("key")) + ".md")
+            if any(problem.hard for problem in check_decision(rec, path)):
+                raise contract.PlanContentError("INVALID_ADOPTION")
+    return current
+
+
+def _evaluation_finding_error(value: Any) -> str | None:
+    """Validate data shape only; this does not verify evidence or assess a tier.
+
+    Missing observations/requirements are explicit nulls. A present numeric
+    comparison contains authored baseline/current/unit; qualitative text is copied
+    literally. No delta or temporal comparison is inferred.
+    The closed shape cannot carry scheduling, ranking or grant metadata.
+    """
+    fields = {"engine", "metric", "observed_change", "segment", "evidence_link", "suggested_tier"}
+    if not isinstance(value, dict) or set(value) != fields:
+        return "evaluation_finding must contain exactly the six documented fields"
+    def text_ok(item: Any) -> bool:
+        if not isinstance(item, str) or not item.strip():
+            return False
+        try:
+            return len(item.encode("utf-8")) <= 2048
+        except UnicodeEncodeError:
+            return False
+    for field in ("engine", "metric", "segment", "evidence_link"):
+        if not text_ok(value[field]):
+            return f"evaluation_finding.{field} must be non-empty text of at most 2048 UTF-8 bytes"
+    tier = value["suggested_tier"]
+    if tier is not None and (not isinstance(tier, str) or tier not in {"T0", "T1", "T2", "T3", "T4"}):
+        return "evaluation_finding.suggested_tier must be T0..T4 or explicit null"
+    change = value["observed_change"]
+    if change is None:
+        return None
+    if isinstance(change, str):
+        return None if text_ok(change) else "evaluation_finding.observed_change text must be non-empty UTF-8 of at most 2048 bytes"
+    if not isinstance(change, dict) or set(change) != {"baseline", "current", "unit"} or not text_ok(change["unit"]):
+        return "evaluation_finding.observed_change must be null, qualitative text, or baseline/current/unit"
+    for field in ("baseline", "current"):
+        number = change[field]
+        if number is not None and (type(number) not in (int, float) or not -1.7976931348623157e308 <= number <= 1.7976931348623157e308):
+            return f"evaluation_finding.observed_change.{field} must be a finite number or null"
+    return None
+
+
 def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
     for field in ("key", "claim", "falsifier", "so_what", "kind",
@@ -1187,6 +1517,11 @@ def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
         if path.stem != f"DSC-{key}":
             out.append(Problem(path, "filename-mismatch",
                                f"filename must be 'DSC-{key}.md'", hard=True))
+
+    if "evaluation_finding" in rec:
+        finding_error = _evaluation_finding_error(rec["evaluation_finding"])
+        if finding_error:
+            out.append(Problem(path, "bad-evaluation-finding", finding_error, hard=True))
 
     _enum(rec, "kind", DISCOVERY_KIND, path, out)
     _enum(rec, "confidence", CONFIDENCE_DSC, path, out)
@@ -1272,6 +1607,20 @@ def check_handoff(rec: dict[str, Any], path: Path) -> list[Problem]:
                             f"body says {phrase!r} — the next session cannot see 'above'",
                             hard=True)
                 )
+    actions = rec.get("next_actions")
+    if (isinstance(actions, list) and actions
+            and all(isinstance(item, str) and item.strip() for item in actions)
+            and all(GHOST_ORIGINAL_WRITER_ACTION_RE.search(item)
+                    and not GHOST_PARENT_NEGATION_RE.search(item)
+                    and not GHOST_SUCCESSOR_ACTION_RE.search(item)
+                    for item in actions)):
+        out.append(Problem(
+            path, "ghost-original-writer-only-action",
+            "next_actions may depend solely on an original writer/parent/publisher; the currently "
+            "assigned or next lawfully assigned receiver needs an executable source/effect "
+            "reconciliation step. Preserve real STARTed lease and EFFECT_UNKNOWN.",
+            hard=False,
+        ))
     return out
 
 
@@ -1578,6 +1927,7 @@ _ADVISORY_RULES = frozenset({
     "point-in-time-head",
     "narrative-head",
     "snapshot-absent",
+    "ghost-original-writer-only-action",
 })
 _RECORD_FOLDERS = frozenset({"workstreams", "decisions", "discoveries", "handoffs"})
 
@@ -1892,9 +2242,23 @@ def draft_handoff(payload: dict[str, Any]) -> str:
         "",
         "# Draft skeleton",
         "",
+        "Continuation rule: the currently assigned or next lawfully assigned receiver "
+        "gets an executable recovery action, not a referral to the original writer "
+        "or an archived parent chat. Inspect exact source PR/workspace and actual "
+        "writer/lease/effect evidence; advance permitted independent work while "
+        "real STARTed carriers and EFFECT_UNKNOWN remain fenced.",
+        "",
         f"Canonical path: `{canonical}`. Snapshot as_of `{as_of}`. "
         "The carriers list is the machine pin. Do not retype head SHAs, "
         "base SHAs, CI run ids, comment ids or review ids by hand.",
+        "",
+        "Next-action review: the currently assigned receiver must inspect the",
+        "original PR/workspace and reconcile live writers, leases and effects.",
+        "Do not make a historical original writer or archived parent chat the",
+        "sole actor. Name the receiver\'s next permitted action; an actual",
+        "STARTed operation or EFFECT_UNKNOWN stays fenced on the same original carrier.",
+        "An exact-session proof target remains exact; advance only disjoint work.",
+        "If no valid receiver has been assigned, name the real assignment gate.",
         "",
     ]
     if pins:
@@ -1984,6 +2348,13 @@ def draft_decision(payload: dict[str, Any]) -> str:
         if optional == "review_by":
             _require_iso_date(payload[optional], "review_by")
         rec[optional] = payload[optional]
+    if "project_plan_adoption" in payload:
+        try:
+            rec["project_plan_adoption"] = _validated_project_plan_adoption(payload)
+        except (ImportError, OSError):
+            _die("PLAN_CONTRACT_UNAVAILABLE")
+        except ValueError as exc:
+            _die(str(exc))
     path = f"agentos/decisions/DEC-{key}.md"
     text = (
         _yaml_frontmatter(rec)
@@ -2019,6 +2390,11 @@ def draft_discovery(payload: dict[str, Any]) -> str:
         "key", "claim", "falsifier", "so_what", "kind", "verified_at",
         "verified_by", "scope", "confidence",
     )}
+    if "evaluation_finding" in payload:
+        finding_error = _evaluation_finding_error(payload["evaluation_finding"])
+        if finding_error:
+            _die(finding_error)
+        rec["evaluation_finding"] = payload["evaluation_finding"]
     path = f"agentos/discoveries/DSC-{key}.md"
     return (
         _yaml_frontmatter(rec)
@@ -3739,8 +4115,11 @@ def pure_section(state: dict[str, Any]) -> dict[str, Any]:
     return pure
 
 
-def _dump_json(payload: dict[str, Any]) -> str:
-    return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+def _dump_json(payload: dict[str, Any], *, compact: bool = False) -> str:
+    return json.dumps(
+        payload, indent=None if compact else 2, ensure_ascii=False,
+        separators=(",", ":") if compact else None,
+    ) + "\n"
 
 
 DO_NOT_EDIT = (
@@ -5251,6 +5630,12 @@ def compile_bundle(
     excluded: list[dict[str, Any]] = []
     groups: dict[str, list[dict[str, Any]]] = {name: [] for name in PACK_ORDER}
     order = [0]
+    dated_items: list[tuple[dict[str, Any], Path]] = []
+
+    def dated_item(date_path: Path, **fields: Any) -> dict[str, Any]:
+        item = _bundle_item(updated=None, **fields)
+        dated_items.append((item, date_path))
+        return item
 
     def emit(pack: str, item: dict[str, Any]) -> None:
         item["_seq"] = order[0]
@@ -5278,15 +5663,13 @@ def compile_bundle(
         emit("higher_law", item)
 
     # ---- workstream state (never dropped by budget) ------------------------
-    _, ws_updated = git_dates(ws_path)
-    emit("workstream_block", _bundle_item(
+    emit("workstream_block", dated_item(ws_path,
         kind="workstream",
         key=f"WS:{key}",
         path=_rel(ws_path),
         locator=f"{_rel(ws_path)}#frontmatter",
         authority_class="A4",
         status=str(rec.get("status") or "unknown"),
-        updated=ws_updated,
         excerpt=_workstream_excerpt(rec, prs),
         why="the compilation target",
     ))
@@ -5294,14 +5677,13 @@ def compile_bundle(
         for entry in rec.get(field) or []:
             if not isinstance(entry, str) or not entry.strip():
                 continue
-            emit("workstream_block", _bundle_item(
+            emit("workstream_block", dated_item(ws_path,
                 kind="constraint",
                 key=f"WS:{key}",
                 path=_rel(ws_path),
                 locator=f"{_rel(ws_path)}#{field}",
                 authority_class="A4",
                 status=label,
-                updated=ws_updated,
                 excerpt=f"[{label.upper()}] {_clip(_flat(entry), EXCERPT_CONSTRAINT)}",
                 why=f"{field} declared on WS:{key}",
             ))
@@ -5315,15 +5697,13 @@ def compile_bundle(
         dep_path = source(f"WS/{dep}")
         if malformed("dependency", f"WS:{dep}", dep_path):
             continue
-        _, dep_updated = git_dates(dep_path)
-        emit("dependency", _bundle_item(
+        emit("dependency", dated_item(dep_path,
             kind="dependency",
             key=f"WS:{dep}",
             path=_rel(dep_path),
             locator=f"{_rel(dep_path)}#frontmatter",
             authority_class="A4",
             status=str(dep_rec.get("status") or "unknown"),
-            updated=dep_updated,
             excerpt=(
                 f"{_flat(dep_rec.get('title'))}\n"
                 f"status: {dep_rec.get('status')}\n"
@@ -5383,17 +5763,15 @@ def compile_bundle(
                 if supersedes else "")
         body = _fields(dec_rec, (("question", "question"), ("answer", "answer"),
                                  ("rationale", "rationale")))
-        _, dec_updated = git_dates(dec_path)
         rows.append({
             "_date": str(_as_date(dec_rec.get("decided_at")) or ""),
-            "item": _bundle_item(
+            "item": dated_item(dec_path,
                 kind="decision",
                 key=f"DEC:{dec_key}",
                 path=_rel(dec_path),
                 locator=f"{_rel(dec_path)}#frontmatter",
                 authority_class="A3",
                 status=str(dec_rec.get("confidence") or "unknown"),
-                updated=dec_updated,
                 excerpt=_clip(body, EXCERPT_DECISION - len(note)) + note,
                 why="; ".join(reasons[dec_key]),
             ),
@@ -5467,17 +5845,15 @@ def compile_bundle(
         if not citations.get(dsc_key, 0) and age is not None and age > STALE_DISCOVERY_DAYS:
             drop("discovery", f"DSC:{dsc_key}", dsc_path, f"uncited and {age}d old")
             continue
-        _, dsc_updated = git_dates(dsc_path)
         rows.append({
             "_date": str(verified or ""),
-            "item": _bundle_item(
+            "item": dated_item(dsc_path,
                 kind="discovery",
                 key=f"DSC:{dsc_key}",
                 path=_rel(dsc_path),
                 locator=f"{_rel(dsc_path)}#frontmatter",
                 authority_class="A3",
                 status=str(dsc_rec.get("confidence") or "unknown"),
-                updated=dsc_updated,
                 excerpt=_clip(_fields(dsc_rec, (("claim", "claim"), ("so what", "so_what"),
                                                 ("falsifier", "falsifier"))),
                               EXCERPT_DISCOVERY),
@@ -5529,15 +5905,13 @@ def compile_bundle(
                 continue
             if malformed("handoff", stem, hnd_path):
                 continue
-            _, hnd_updated = git_dates(hnd_path)
-            emit("handoff", _bundle_item(
+            emit("handoff", dated_item(hnd_path,
                 kind="handoff",
                 key=f"WS:{key}",
                 path=_rel(hnd_path),
                 locator=f"{_rel(hnd_path)}#frontmatter",
                 authority_class="A4",
                 status=str(hnd_all[stem].get("ended_because") or "unknown"),
-                updated=hnd_updated,
                 excerpt=_clip(
                     _fields(hnd_all[stem], (
                         ("mission", "mission"), ("state before", "state_before"),
@@ -5582,6 +5956,13 @@ def compile_bundle(
                     f"quote it.",
             why=f"listed in WS:{key} artifacts",
         ))
+
+    # Date membership follows the original eligible item sites, not the broader
+    # source digest (which also binds excluded/superseding records). Fill every
+    # candidate before costing: dates affect both packing and omission accounting.
+    dates = git_updated_batch(path for _item, path in dated_items)
+    for item, path in dated_items:
+        item["updated"] = dates[path]
 
     # ---- budget ------------------------------------------------------------
     # Selection happens BEFORE rendering, over the already-filtered items, so JSON and
@@ -5844,7 +6225,10 @@ def cmd_compile_context(args: argparse.Namespace) -> int:
     # Mirrors context_index_query.py exactly: machines get the default, humans opt in, and
     # `--json --text` together resolves to JSON in BOTH tools rather than one each way.
     as_json = args.json or not args.text
-    sys.stdout.write(_dump_json(bundle) if as_json else render_bundle(bundle))
+    # The owner emits complete compact wire bytes. Native readers retain them
+    # verbatim; formatting overhead must not crowd out the bounded envelope.
+    # Selection, all constraint/accounting fields and human text stay unchanged.
+    sys.stdout.write(_dump_json(bundle, compact=True) if as_json else render_bundle(bundle))
     return 0
 
 

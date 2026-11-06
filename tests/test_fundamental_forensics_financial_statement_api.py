@@ -16,7 +16,12 @@ from engine.fundamental_forensics.statement_service import GoldenAaplStatementPr
 ROOT = Path(__file__).resolve().parents[1]
 _PATH = "/api/forensics/v1/financial/statements"
 _SCHEMA = "fundamental_forensics.financial_statement_request/v1"
+# Response bytes on the committed byte-copy of the 1.0.0 registry
+# (tests/fixtures/fundamental_forensics_registry_v1_0_0). They re-derive
+# unchanged; test_registry_v1_0_0_rederives_the_pinned_response_bytes proves it.
 _RESPONSE_SHA = "25e5562e81cb80bd42d0feb544c212c4471e11736601aaee418a60981a457184"
+# Response bytes on the live registry (mapping pack 1.1.0).
+_RESPONSE_SHA_LIVE = "1edd5a13635308930f19634896e196b2362d79562f34e5aad91cb939d189478d"
 
 _EXPECTED_PRIVATE_HEADERS = {
     "cache-control": "private, no-store",
@@ -120,8 +125,11 @@ def test_paid_golden_aapl_returns_three_statement_trees(paid_client) -> None:
     response = paid_client.post(_PATH, content=_body(), headers={"content-type": "application/json"})
     assert response.status_code == 200
     _assert_private_headers(response)
-    assert response.headers.get("x-fif-response-sha256") == _RESPONSE_SHA
-    assert hashlib.sha256(response.content).hexdigest() == _RESPONSE_SHA
+    assert response.headers.get("x-fif-response-sha256") == _RESPONSE_SHA_LIVE
+    assert hashlib.sha256(response.content).hexdigest() == _RESPONSE_SHA_LIVE
+    # #9761 follow-up (minor 5): this live pin is the no-cutoff body's bytes —
+    # recorded_at stays optional, and absent means the live registry view.
+    assert b"recorded_at" not in _body()
     payload = response.json()
     assert payload["schema"] == "fundamental_forensics.financial_statement_response/v1"
     assert payload["entity"]["entity_id"] == "ISS:US-XNAS-AAPL"
@@ -190,6 +198,7 @@ def test_non_post_is_private_405(paid_client, method: str) -> None:
 
 _Q3_ACCESSION = "0000320193-26-000020"
 _Q3_RESPONSE_SHA = "b98602a299996ff7ea58b842364031547df795d1458b51134eef0e37159b7918"
+_Q3_RESPONSE_SHA_LIVE = "b55b1592610b436d918b6ded55ed5673a41af2be8673af20ea058ed3bd89ac0a"
 _Q3_EVENT_ID = "evt_cik0000320193_2026q3_results"
 _Q3_8K_ACCESSION = "0000320193-26-000018"
 
@@ -202,7 +211,7 @@ def test_paid_q3_returns_quarterly_trees_and_event_ref(paid_client) -> None:
     )
     assert response.status_code == 200
     _assert_private_headers(response)
-    assert response.headers.get("x-fif-response-sha256") == _Q3_RESPONSE_SHA
+    assert response.headers.get("x-fif-response-sha256") == _Q3_RESPONSE_SHA_LIVE
     payload = response.json()
     assert payload["filing"]["accession"] == _Q3_ACCESSION
     assert payload["filing"]["form"] == "10-Q"
@@ -223,7 +232,7 @@ def test_paid_q3_returns_quarterly_trees_and_event_ref(paid_client) -> None:
     assert payload["delivery"]["attested"] is False
     assert payload["delivery"]["production_issuer_service"] is False
     a1 = paid_client.post(_PATH, content=_body(), headers={"content-type": "application/json"})
-    assert a1.headers.get("x-fif-response-sha256") == _RESPONSE_SHA
+    assert a1.headers.get("x-fif-response-sha256") == _RESPONSE_SHA_LIVE
 
 
 def test_paid_results_eight_k_is_unknown_filing(paid_client) -> None:
@@ -400,3 +409,75 @@ def test_production_statement_trees_damage_is_identical_503(router_app, monkeypa
         details.add((response.status_code, response.json()["detail"]))
     # Identical detail for every damage class: no corpus-state oracle.
     assert details == {(503, "financial statements temporarily unavailable")}
+
+
+# ---------------------------------------------------------------------------
+# Registry drift: the 1.0.0 registry re-derives the pinned bytes, and the live
+# registry differs from it in exactly one leaf per golden filing.
+# ---------------------------------------------------------------------------
+
+_REGISTRY_V1_0_0_ROOT = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
+_LSE_RECEIPT = {
+    "concept": "LiabilitiesAndStockholdersEquity",
+    "governing_concept": "Assets",
+    "governing_priority": 10,
+    "metric_id": "total_assets",
+    "priority": 20,
+    "reason": "alias_priority",
+    "taxonomy": "us-gaap",
+}
+
+
+def _leaf_diff(old, new, path, out) -> None:
+    if type(old) is not type(new):
+        out.append((path, old, new))
+    elif isinstance(old, dict):
+        for key in sorted(set(old) | set(new)):
+            if key not in old or key not in new:
+                out.append((f"{path}.{key}", old.get(key, "<absent>"), new.get(key, "<absent>")))
+            else:
+                _leaf_diff(old[key], new[key], f"{path}.{key}", out)
+    elif isinstance(old, list):
+        if len(old) != len(new):
+            out.append((f"{path}[len]", len(old), len(new)))
+        for index, (a, b) in enumerate(zip(old, new)):
+            _leaf_diff(a, b, f"{path}[{index}]", out)
+    elif old != new:
+        out.append((path, old, new))
+
+
+@pytest.mark.parametrize(
+    ("accession", "pinned", "live", "row"),
+    [
+        (None, _RESPONSE_SHA, _RESPONSE_SHA_LIVE, 34),
+        (_Q3_ACCESSION, _Q3_RESPONSE_SHA, _Q3_RESPONSE_SHA_LIVE, 35),
+    ],
+)
+def test_registry_v1_0_0_rederives_the_pinned_response_bytes(
+    paid_client, monkeypatch, accession, pinned, live, row
+) -> None:
+    import engine.fundamental_forensics.statement_service as statement_service
+    from engine.fundamental_forensics.financial_intelligence_packet import load_core_registry
+
+    body = _body() if accession is None else _body(accession=accession)
+    headers = {"content-type": "application/json"}
+    live_response = paid_client.post(_PATH, content=body, headers=headers)
+    assert live_response.status_code == 200
+    assert hashlib.sha256(live_response.content).hexdigest() == live
+    monkeypatch.setattr(
+        statement_service,
+        "load_core_registry",
+        lambda _repo_root: load_core_registry(_REGISTRY_V1_0_0_ROOT),
+    )
+    old_response = paid_client.post(_PATH, content=body, headers=headers)
+    assert old_response.status_code == 200
+    assert old_response.headers.get("x-fif-response-sha256") == pinned
+    assert hashlib.sha256(old_response.content).hexdigest() == pinned
+    old_payload, live_payload = old_response.json(), live_response.json()
+    diffs: list = []
+    _leaf_diff(old_payload, live_payload, "$", diffs)
+    assert diffs == [(f"$.statements[1].rows[{row}].mapping_receipt", None, _LSE_RECEIPT)]
+    assert live_payload["statements"][1]["statement_type"] == "balance_sheet"
+    assert live_payload["statements"][1]["rows"][row]["concept"] == (
+        "us-gaap:LiabilitiesAndStockholdersEquity"
+    )

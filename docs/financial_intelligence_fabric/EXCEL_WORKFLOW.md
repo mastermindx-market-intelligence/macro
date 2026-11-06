@@ -90,3 +90,74 @@ function of the response mapping.
   claimed desktop environment before asserting it.
 - JWT lifetime forces token re-entry; a missing or expired token is a failed
   refresh, not a stale-number success.
+
+## A39-L localhost refresh proof
+
+`scripts/fif_excel_refresh_harness.py` runs the four A39 policy cases against
+the real routes on a loopback server with a controllable sign-in state, and
+checks the saved workbook against the API receipt by machine.  Golden corpus
+only: it refuses to start when `FIF_FINANCIAL_DATASET_MODE` holds anything but
+`golden` or when any environment variable whose *name* starts with `R2_` is
+present (names only, values never read), and it binds `127.0.0.1` exclusively.
+
+1. **Serve** (repo root, uvicorn on `PATH` — the deployment ASGI runner):
+
+   ```
+   python3 scripts/fif_excel_refresh_harness.py serve --out <dir> [--port 8765]
+   ```
+
+   Before the socket opens, the harness calls the routes in-process and writes
+   into `<dir>`: `tokens.json` (mode 0600, the canonical record of the two
+   random bearer tokens), `pinned.pq`, `current.pq`, `signed_out.pq`,
+   `free_tier.pq` (the committed template with only the `<<...>>`
+   placeholders filled — the request JSON is M-escaped with doubled quotes;
+   mode 0600 because each embeds its case token), and `receipts.json` (per
+   case: status, `query_hash`, the receipt nodes, the request body, plus
+   revisions evidence and the pinned/current cell differences).  The stdout
+   summary and stderr GAP lines never contain a token.
+   `python3 scripts/fif_excel_refresh_harness.py cases` prints the
+   case table (case, token kind, cutoffs, expected status) without tokens.
+
+2. **Paste per case** (Excel Desktop, Advanced Editor as in Option A):
+
+   | Case | Paste | Expected |
+   |---|---|---|
+   | authorized, pinned policy | `pinned.pq` | table loads; earlier filing only |
+   | authorized, current policy | `current.pq` | table loads; newly visible cell + moved source links |
+   | signed out | `signed_out.pq` (empty bearer) | refresh fails 401 |
+   | free tier | `free_tier.pq` | refresh fails 403 |
+
+   The full token for `pinned`/`current` is in `<dir>/tokens.json` under
+   `"full"`; `signed_out.pq` and `free_tier.pq` are already self-contained.
+   Do not edit the pasted M beyond the placeholders the harness filled.
+
+3. **Save the workbook**: after Close & Load and (for the two failure cases)
+   the failed Data → Refresh All, save as `.xlsx` (e.g. `pinned.xlsx`).  For
+   the failure cases, do not keep a previously loaded table as if current —
+   clear it and leave the query error state.
+
+4. **Verify**:
+
+   ```
+   python3 scripts/fif_excel_refresh_harness.py verify-workbook \
+     --case pinned --workbook pinned.xlsx --out <dir>
+   ```
+
+   Prints a JSON verdict (`case`, `rows_compared`, `mismatches`, `verdict`) and
+   exits 0 on `match`, 1 on `mismatch` (including a failure-case workbook that
+   still presents receipt-looking rows), 2 on input errors.  The checker reads
+   the workbook with the standard library only, finds the loaded table through
+   `xl/tables/*.xml` refs or the first sheet carrying the receipt's column
+   headers, and compares cell for cell — values as canonical decimal text,
+   source-link fields (`accession`, `entity_id`, `filed_at`, `accepted_at`,
+   `recorded_at`, mapping/formula digests) exactly.  A Power Query load of the
+   shipped template carries the node columns; there the nested
+   `period`/`provenance` records are bound by `cell_id`, the canonical hash
+   over the whole node payload.
+
+   Known corpus limitation (recorded per run in `receipts.json` `gaps`): the
+   golden pair's pinned→current differences are the later filing's FILED facts
+   (a newly visible cell, and an unchanged value whose selected source moved),
+   never `revision_of` events, so the revisions route answers 200 with an
+   empty `revisions` list and cannot carry the differing cell.  The harness
+   refuses to fabricate one and reports the gap instead.

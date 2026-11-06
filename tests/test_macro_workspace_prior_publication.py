@@ -10,6 +10,7 @@ rebuild of an unchanged publication minted ``prior_value == current_value``,
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -646,3 +647,135 @@ def test_null_reason_tokens_this_pr_writes_are_reviewed_both_locales() -> None:
     assert pair["zh"] == _NO_EARLIER_ZH
     assert L.unknown_tokens() == ()
 
+
+_OLD_CHANGED_NOTE_EN = "Today against last time"
+_OLD_CHANGED_NOTE_ZH = "以相同方法将今天与上次对比"
+_UNDATED_CHANGED_NOTE_EN = (
+    "The latest reading against the one before it, measured the same way."
+)
+_UNDATED_CHANGED_NOTE_ZH = "以相同方法将最新读数与上一读数对比。"
+
+
+def _render_what_changed(view: dict) -> str:
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
+                      autoescape=True, undefined=StrictUndefined)
+    register_suite_filters(env)
+    return env.from_string(
+        '{% import "_macro_suite_shell.html.j2" as shell %}'
+        "{{ shell.what_changed(view) }}"
+    ).render(view=view)
+
+
+def _changed_section(html: str) -> str:
+    found = re.search(r'<section class="mq-changed".*?</section>', html, re.S)
+    assert found, "the page must render the what-changed section"
+    return found.group(0)
+
+
+def _changed_note(section: str) -> tuple[str, str]:
+    found = re.search(
+        r'<span class="mq-section-note"><span class="l-en">(.*?)</span>'
+        r'<span class="l-zh">(.*?)</span></span>',
+        section,
+    )
+    assert found, "the what-changed section must carry one bilingual note"
+    return found.group(1), found.group(2)
+
+
+def _head_cell(section: str, en: str, zh: str) -> str:
+    found = re.search(
+        rf'<th scope="col"><span class="l-en">{en}</span>'
+        rf'<span class="l-zh">{zh}</span>(.*?)</th>',
+        section,
+    )
+    assert found, f"missing {en} head cell"
+    return found.group(0)
+
+
+def _assert_dated(section: str, current_iso: str, prior_iso: str) -> None:
+    cur = L.date_display_pair(current_iso)
+    prior = L.date_display_pair(prior_iso)
+    assert cur is not None and prior is not None
+    en, zh = _changed_note(section)
+    assert en == f"{cur['en']} against {prior['en']}, measured the same way."
+    assert zh == f"{cur['zh']}与{prior['zh']}对比，测算方法相同。"
+    prior_cell = _head_cell(section, "Prior", "上期")
+    current_cell = _head_cell(section, "Current", "当前")
+    assert prior["en"] in prior_cell and prior["zh"] in prior_cell
+    assert cur["en"] in current_cell and cur["zh"] in current_cell
+    assert cur["en"] not in prior_cell and prior["en"] not in current_cell
+    assert "mq-owner-field" in prior_cell and "mq-owner-field" in current_cell
+
+
+def _assert_undated(section: str) -> None:
+    en, zh = _changed_note(section)
+    assert en == _UNDATED_CHANGED_NOTE_EN
+    assert zh == _UNDATED_CHANGED_NOTE_ZH
+    heads = re.findall(r"<th\b[^>]*>.*?</th>", section, re.S)
+    assert all("mq-owner-field" not in cell for cell in heads)
+
+
+def test_shell_no_longer_says_today_against_last_time() -> None:
+    """The Change column no longer claims the gap is today versus last time."""
+    shell = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(encoding="utf-8")
+    assert _OLD_CHANGED_NOTE_EN not in shell
+    assert _OLD_CHANGED_NOTE_ZH not in shell
+
+
+def test_later_publication_what_changed_names_the_gap_the_columns_cover() -> None:
+    """A real composed snapshot, through the real view: both dates reach the
+    reader, and a same-dated rebuild still names the earlier publication."""
+    fx = _frames()
+    june = _compose(fx["june"], fx["built_at"])
+    july = _compose(fx["july"], fx["built_at"], prior=june)
+    rebuilt = _compose(fx["july"], fx["built_at"], prior=july)
+    for snapshot in (july, rebuilt):
+        view = V.build_view(snapshot, page_built_at="2026-09-04T00:00:00Z",
+                            artifact=_artifact())
+        _assert_dated(_changed_section(_render_what_changed(view)),
+                      "2026-07-01", "2026-06-01")
+
+
+def _handcrafted_changes_view(*, comparable: bool, prior_is_earlier: bool,
+                              prior_effective_date: str | None) -> dict:
+    return {
+        "headline": {"effective_date": "2026-09-04"},
+        "changes": {
+            "comparable": comparable,
+            "prior_is_earlier": prior_is_earlier,
+            "prior_effective_date": prior_effective_date,
+            "comparability_label": {"en": "Comparable", "zh": "可比"},
+            "absence": None,
+            "deltas": [{
+                "label": {"en": "Level", "zh": "水平"},
+                "prior_present": True,
+                "prior": "1",
+                "current_present": True,
+                "current": "2",
+                "delta_present": True,
+                "sign": "up",
+                "delta": "+1",
+            }],
+        },
+    }
+
+
+@pytest.mark.parametrize("comparable,earlier,prior_iso,dated", [
+    (True, True, "2026-08-01", True),
+    (False, True, "2026-08-01", False),
+    (True, False, "2026-08-01", False),
+    (True, True, None, False),
+], ids=["dated", "comparable_false", "prior_not_earlier", "prior_date_missing"])
+def test_what_changed_dates_only_a_comparable_earlier_pair(
+        comparable: bool, earlier: bool, prior_iso: str | None, dated: bool) -> None:
+    """Four hermetic renders. Only the fully dated case names the gap."""
+    html = _render_what_changed(_handcrafted_changes_view(
+        comparable=comparable, prior_is_earlier=earlier,
+        prior_effective_date=prior_iso))
+    assert _OLD_CHANGED_NOTE_EN not in html
+    assert _OLD_CHANGED_NOTE_ZH not in html
+    section = _changed_section(html)
+    if dated:
+        _assert_dated(section, "2026-09-04", "2026-08-01")
+    else:
+        _assert_undated(section)

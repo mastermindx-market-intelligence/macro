@@ -99,7 +99,7 @@
         "listing_key": "US-XNAS-AAPL",
         "mic": "XNAS",
         "security_id": "SEC:US-XNAS-AAPL",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "3571",
@@ -220,7 +220,7 @@
       "cik": "0001640147",
       "fiscal_year_end": "01-31",
       "identity_binding_state": "generic_path_only",
-      "issuer_class": "industrial",
+      "issuer_class": "software",
       "legal_name": "Snowflake Inc.",
       "security_master_binding": {
         "effective_at": "2023-05-09T00:00:00",
@@ -229,7 +229,7 @@
         "listing_key": "US-XNYS-SNOW",
         "mic": "XNYS",
         "security_id": "SEC:US-XNYS-SNOW",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "7372",
@@ -360,7 +360,7 @@
         "listing_key": "US-XNYS-CAT",
         "mic": "XNYS",
         "security_id": "SEC:US-XNYS-CAT",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "3531",
@@ -490,7 +490,7 @@
         "listing_key": "US-XNYS-BAC",
         "mic": "XNYS",
         "security_id": "SEC:US-XNYS-BAC",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "6021",
@@ -611,7 +611,7 @@
       "cik": "0001652044",
       "fiscal_year_end": "12-31",
       "identity_binding_state": "generic_path_only",
-      "issuer_class": "industrial",
+      "issuer_class": "software",
       "legal_name": "Alphabet Inc.",
       "security_master_binding": {
         "effective_at": "2023-05-09T00:00:00",
@@ -620,7 +620,7 @@
         "listing_key": "US-XNAS-GOOGL",
         "mic": "XNAS",
         "security_id": "SEC:US-XNAS-GOOGL",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "7370",

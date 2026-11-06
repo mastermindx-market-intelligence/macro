@@ -316,7 +316,15 @@ def _run_pipeline(a, gen_src, gen_run, evidence, repo_catalog, repo_excerpts):
     from engine.research_vault import ingest as ingest_mod
     from engine.research_vault import r2_store
 
-    store = r2_store.build_store(local_dir=a.local)
+    # Only a VALIDATED generation identity (checked in main() before this ran)
+    # asks the store for its single-attempt write client, so the producer's own
+    # publications are never silently repeated by hidden SDK PUT retries.
+    # Ordinary CLI/materialize/default callers keep the exact legacy signature
+    # and behaviour; no env or user retry-policy flag exists.
+    if gen_src is not None and gen_run is not None:
+        store = r2_store.build_store(local_dir=a.local, single_attempt_writes=True)
+    else:
+        store = r2_store.build_store(local_dir=a.local)
     if store is None:
         # On a developer box this is genuinely nothing to do. On the hourly
         # production run it means the R2 secrets did not reach the runner, and
@@ -414,7 +422,7 @@ def _run_pipeline(a, gen_src, gen_run, evidence, repo_catalog, repo_excerpts):
             ids = {it["id"] for it in items if isinstance(it, dict) and it.get("id")}
             # READ-ONLY: this connection must never mutate the corpus that was
             # just published to R2.
-            conn = sqlite3.connect(f"file:{corpus_path}?mode=ro", uri=True)
+            conn = sqlite3.connect(f"{corpus_path.resolve().as_uri()}?mode=ro", uri=True)
             try:
                 excerpts = excerpt_mod.snapshot(conn, ids)
             finally:

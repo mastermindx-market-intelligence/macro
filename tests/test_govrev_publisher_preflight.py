@@ -137,6 +137,23 @@ def test_baseline_requires_actual_current_source_and_legacy_evidence(tmp_path):
     with pytest.raises(pre.Refused):pre.read_baseline(tmp_path)
 
 
+def test_fms_persistence_helper_drift_invalidates_publisher_baseline(tmp_path):
+    assert 'scripts/ci/fms_persist.py' in pre.SOURCE_PATHS
+    for relative in pre.SOURCE_PATHS:
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(relative)
+    baseline = copy.deepcopy(BASELINE)
+    baseline['source_closure'] = pre.source_closure(tmp_path)
+    path = tmp_path / pre.BASELINE
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(baseline))
+    assert pre.read_baseline(tmp_path) == baseline
+    (tmp_path / 'scripts/ci/fms_persist.py').write_text('unqualified persistence change')
+    with pytest.raises(pre.Refused, match='baseline_source_or_owner_not_qualified'):
+        pre.read_baseline(tmp_path)
+
+
 def test_missing_baseline_records_case_and_refuses_before_effect(tmp_path,monkeypatch):
     monkeypatch.setenv('GITHUB_REPOSITORY',pre.REPOSITORY);monkeypatch.setenv('GITHUB_RUN_ID','10');monkeypatch.setenv('GITHUB_RUN_ATTEMPT','1');monkeypatch.setenv('GITHUB_TOKEN','synthetic-unused')
     root=tmp_path/'root';root.mkdir();out=tmp_path/'out'
@@ -156,7 +173,10 @@ def test_rerun_attempt_cannot_start_new_publication(tmp_path,monkeypatch):
 def test_preflight_precedes_builds_and_permissions_only_existing_owners():
     workflow=yaml.safe_load((BASE/'.github/workflows/government-revenue-live.yml').read_text())
     steps=workflow['jobs']['refresh']['steps'];index=next(i for i,s in enumerate(steps) if s.get('name')==pre.STEP_NAME)
-    assert index==1
+    assert index==3
+    assert steps[0]['with']['ref']=='${{ github.sha }}'
+    assert steps[1]['id']=='source_binding'
+    assert steps[2]['with']['ref']=='${{ steps.source_binding.outputs.source_sha }}'
     assert workflow['permissions']['actions']=='read'
     assert all('build_government_revenue' not in s.get('run','') for s in steps[:index])
     daily=yaml.safe_load((BASE/'.github/workflows/daily.yml').read_text())

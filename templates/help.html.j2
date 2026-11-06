@@ -168,6 +168,9 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
     <span class="help-kicker">{{ t('Resources', '资源') }}</span>
     <h1>{{ t('Help', '帮助') }}</h1>
     <p class="help-owners">{{ t('Market Reference', '市场参考') }} · {{ t('Methodology', '方法论') }} · {{ t('Support', '支持') }} · {{ t('Account', '账户') }}</p>
+    {# A Help build is not evidence that any market-data source refreshed. Relative
+       age is evaluated at visit time; without JS the fallback stays honest. #}
+    <p class="help-empty" id="help-refresh" data-refresh-state="unknown" data-build-stamp="{{ refresh.stamp_utc if refresh is defined and refresh.stamp_utc else '' }}">{{ t('The age of this Help page is unavailable in this browser. Data pages show their own update times.', '当前浏览器无法确定本帮助页的时效。数据页面会分别显示各自的更新时间。') }}</p>
   </header>
 
 {% if entries %}
@@ -271,6 +274,7 @@ html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 
 
 {% include "_public_footer.html.j2" %}
 <script src="theme.js"></script>
+<script src="help_refresh.js" defer></script>
 {% include "_public_chrome_js.html.j2" %}
 <script>
 (function(){

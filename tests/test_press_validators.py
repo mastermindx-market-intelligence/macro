@@ -882,7 +882,7 @@ def test_self_similarity_ignores_posts_outside_the_window(tmp_path):
 def test_validate_records_every_check_pass_or_fail():
     report = V.validate(F.draft(_OURS), F.slot(), F.config(), root=_REPO)
     assert [c["name"] for c in report["checks"]] == list(V.CHECK_NAMES)
-    assert len(V.CHECK_NAMES) == 18
+    assert len(V.CHECK_NAMES) == 19
 
 
 def test_a_crashing_check_reads_as_a_failure_not_a_pass(monkeypatch):

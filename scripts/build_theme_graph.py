@@ -259,6 +259,37 @@ def _relation_event_sources() -> tuple[Path, Path]:
             Path(__file__).resolve().parent.parent / "config/theme_crosswalk.yml")
 
 
+def _activity_history_events() -> list[dict] | None:
+    """The append-only activity-membership history ledger, or None when absent.
+
+    ``data/theme_graph/probation/activity_history_events.jsonl`` — one closed event
+    per line (same folder pattern as relation_events.v2.jsonl), written by the
+    curation program, never by this script. Absent file -> None: today's production
+    state, and build() then takes its exact pre-fold path. ANY malformed line refuses
+    the WHOLE ledger (None) — a partially readable history must never look like a
+    shorter honest one — with a line-start ::warning (GitHub annotation law).
+    """
+    path = store.probation_path().parent / "activity_history_events.jsonl"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return None
+    events: list[dict] = []
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+            if not isinstance(event, dict):
+                raise ValueError("line is not a JSON object")
+        except ValueError as exc:
+            print(f"::warning title=theme graph activity history refused::"
+                  f"{path}:{lineno} {exc}", flush=True)
+            return None
+        events.append(event)
+    return events
+
+
 def _relation_action_owner_reader():
     """Chairman gate #5 (2026-10-06): the probation owner's own ledger is the sole action authority; read-only resolver, fails closed."""
     return probation.RelationActionOwnerReader(_relation_event_sources()[0])
@@ -291,7 +322,19 @@ def run(*, backfill: bool, force_backfill: bool,
         return 1
     view = materialize.build(era=era, raw_snapshot=_newest_raw_snapshot(),
                              ths_history=ths_history,
-                             retired_node_ids=_retired_node_ids())
+                             retired_node_ids=_retired_node_ids(),
+                             activity_events=_activity_history_events())
+    if view.activity_refusals:
+        # A titled ::warning, one line: the fold WORKED and refused input, or the
+        # projection refused a row — either way the nightly must see it. Bare print,
+        # line-start, flushed (GitHub annotation law).
+        counts: dict[str, int] = {}
+        for row in view.activity_refusals:
+            code = str(row.get("code") or "?")
+            counts[code] = counts.get(code, 0) + 1
+        print("::warning title=theme graph activity refusals::"
+              + "; ".join(f"{code}={n}" for code, n in sorted(counts.items())),
+              flush=True)
     ths_plane = view.local_plane.get("build_ths_plane")
     if isinstance(ths_plane, dict) and ths_plane.get("error"):
         log.error("theme graph: THS association plane failed (%s) — refusing to "

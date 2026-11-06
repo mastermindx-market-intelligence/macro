@@ -53,6 +53,7 @@ verified_by: >
   non-passive).
 scope: [terminal]
 confidence: verified
+superseded_by: DSC:CHART-ENGINE-Q03B-V2-FIRST-WHEEL-ELEVATION-PERSISTS-WITH-HEARTBEAT
 ---
 
 # DSC-CHART-ENGINE-Q03B-FIRST-WHEEL-IS-RENDERER-IDLE-WAKEUP

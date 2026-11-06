@@ -1,0 +1,74 @@
+{
+  "benchmark_id": "rotation_wiring_2026-07-16",
+  "frozen": true,
+  "source": "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-16",
+    "session_label": "date only",
+    "adjudication_date": "2026-07-16",
+    "historical_source_availability": "unverified",
+    "dependence_group": "us-rotation-july-2026",
+    "source": {
+      "path": "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+      "sha256": "e1e58df473e39d55b6f9215a46873c70dbe7007b0596b8ddc71a245b97c3925c"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-16",
+        "source_lines": [
+          135,
+          138
+        ],
+        "text": "**F1 — Clock failure.** Conviction runs on 252d constructions; rotations happen on 5-20d\nclocks. Measured ranker lag 40-60 sessions; the earliest correct call (10d RS, 06-10) beat the\nranker's earliest possible call by ~2 months. The only sub-63d conviction input is a 22d slope\ntiebreaker (`sector_cycles.py:628`). China was fixed for exactly this (#2634); the US wasn't.",
+        "sha256": "65e372608c3c080622c922b9b1b31e04d76c753fcd9f6e62b53b49388843c6dc"
+      },
+      {
+        "event_date": "2026-07-16",
+        "source_lines": [
+          153,
+          161
+        ],
+        "text": "**F4 — Wiring failure (asymmetric, 16 dead-ends).** Detection→consequence paths found: one\n(MRS credit gate — currently reading Goldilocks, so inert). Dead-ends: COR/DSPX chips,\ncorr_floor_break, breadth_split, sector_breadth parquet (zero consumers), mag7 trend_state,\nleadership_regime, rotation_events (`may_rank:false`), fragmentation, bottom/sector_bottom\nradars, narrative_brain (degraded), preference table (never imported), flow lens, ETF flows,\nsubsector rotation alerts, seasonality box. Under MLC-R8 the system may de-escalate displayed\nbuys but nothing may escalate — so context can only ever make the boards *more* bearish,\nnever rotate them *toward* a new leader. The de-escalation half is also incomplete: mag7\nrolling over cannot demote mag7 from Act-Now BUY same-day.",
+        "sha256": "3b1a3715252d5bb3b0afee0cd93acfaaabb9ecf976d5e001fe2224a94001bd8c"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        215,
+        227
+      ],
+      "text": "Binding: no `sector_rotation_schedule.v1` parallel surface (fold into Turn Desk /\n`oracle_state.json` Family-D, #1750); rotation × cycle-position **entry-confluence** DON'T-TEST;\nrs-based member-dispersion **gates** DON'T-TEST (display OK); positioning fusion ILLEGAL;\nLLM-originated signals/scores FORBIDDEN (de-escalation only); calendar-gated risk legs\nFORBIDDEN; MLC-R8 (overlays demote, never originate/upgrade a displayed buy); US stock-table\nrank-blend Phase-0 NULL (no timing-into-rank re-blend); short-side = AVOID-not-SHORT; verdicts\nonly at pre-declared horizon rulers; \"validated\" wording CI-gated.\n\nDistinction relied on: the **China #2634 display re-rank** (fast RS + state governor + OB\npenalty, operator-ratified, \"ONE rank system page-wide\") is house-legal precedent that a\n*display-tier re-ordering of a board* is neither an entry gate (so the rotation×cycle\nDON'T-TEST does not apply) nor an escalation of a calibrated key (MLC-R8 untouched). XSR W1\ncopies that shape exactly.",
+      "sha256": "9dbc668af8f3d5c288c1bb2ef3743fd13bc3e99a322fa4e05d0688eed01565da"
+    }
+  },
+  "question_en": "Based on the supplied July 16 diagnostic text, distinguish the time-scale and consumer-wiring failures and describe a bounded display response that preserves the recorded constraints.",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-16 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-16] **F1 — Clock failure.** Conviction runs on 252d constructions; rotations happen on 5-20d\nclocks. Measured ranker lag 40-60 sessions; the earliest correct call (10d RS, 06-10) beat the\nranker's earliest possible call by ~2 months. The only sub-63d conviction input is a 22d slope\ntiebreaker (`sector_cycles.py:628`). China was fixed for exactly this (#2634); the US wasn't.\n[2026-07-16] **F4 — Wiring failure (asymmetric, 16 dead-ends).** Detection→consequence paths found: one\n(MRS credit gate — currently reading Goldilocks, so inert). Dead-ends: COR/DSPX chips,\ncorr_floor_break, breadth_split, sector_breadth parquet (zero consumers), mag7 trend_state,\nleadership_regime, rotation_events (`may_rank:false`), fragmentation, bottom/sector_bottom\nradars, narrative_brain (degraded), preference table (never imported), flow lens, ETF flows,\nsubsector rotation alerts, seasonality box. Under MLC-R8 the system may de-escalate displayed\nbuys but nothing may escalate — so context can only ever make the boards *more* bearish,\nnever rotate them *toward* a new leader. The de-escalation half is also incomplete: mag7\nrolling over cannot demote mag7 from Act-Now BUY same-day.",
+  "expected_properties": [
+    {
+      "tag": "clock_vs_wiring",
+      "check": "Separate the mismatch between rotation and conviction time scales from the absence of downstream consumers; adding another detector alone does not repair either consumer path."
+    },
+    {
+      "tag": "authority_boundary",
+      "check": "Preserve display-only status and demotion-only overlays; no new buy upgrade, gate, sizing, calibrated key or timing-to-rank blend."
+    },
+    {
+      "tag": "context_specific_precedent",
+      "check": "Explain the recorded display-reordering precedent within its stated scope, without turning the historical charter into current implementation authorization."
+    },
+    {
+      "tag": "source_limits",
+      "check": "Treat the latency and wiring observations as reported by the July 16 adjudication, not independently measured facts or proof of historical served inputs."
+    }
+  ],
+  "known_failure_modes": [
+    "Collapse distinct populations and clocks into one house verdict.",
+    "Treat historical diagnostic or charter text as present execution authority.",
+    "Use later outcomes or count related July episodes as independent evidence."
+  ],
+  "gold_standard_sentence": "Long conviction clocks and display-only detections are separate bottlenecks. Make the existing observations and their clocks visible coherently, preserving de-escalation and promotion restrictions. The recorded precedent for display reordering does not grant a new entry gate, position sizing, calibrated-key change or timing-to-rank blend.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

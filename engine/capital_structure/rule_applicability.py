@@ -55,7 +55,7 @@ from engine.capital_structure.issuer_state_contracts import (
 )
 
 RULE_APPLICABILITY_PACK_SCHEMA = "capital_structure.rule_applicability_pack.v1"
-RULE_APPLICABILITY_PACK_VERSION = "capital-structure-rule-applicability/1.1.0"
+RULE_APPLICABILITY_PACK_VERSION = "capital-structure-rule-applicability/1.2.0"
 RULE_APPLICABILITY_PACK_RELPATH = Path("config") / "capital_structure_rule_applicability_pack.v1.json"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -504,6 +504,39 @@ def load_rule_applicability_pack(
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise RuleApplicabilityError(f"{target}: not valid JSON") from exc
     return parse_rule_applicability_pack(raw, reference_pack=reference_pack, file_sha256=hashlib.sha256(data).hexdigest())
+
+
+def select_rule_pack(
+    jurisdiction: str, venue: str, form: str
+) -> "RuleApplicabilityPack | Unknown":
+    """The single qualified rule pack for a jurisdiction + venue + form (SPEC_G0 §2.3).
+
+    One pack is qualified today; this function is the single point a second
+    qualified pack plugs into.  A request outside the pack's ``rule_pack``
+    ``jurisdiction``/``venues``/``forms`` returns the typed
+    ``rule_pack_unqualified:{jurisdiction}:{venue}:{form}`` Unknown instead of a
+    silent answer — never a defaulted pack.
+    """
+    pack = load_rule_applicability_pack()
+    if (
+        pack.jurisdiction == jurisdiction
+        and venue in pack.venues
+        and form in pack.forms
+    ):
+        return pack
+    return Unknown(
+        unknown_id=f"rule_pack_unqualified:{jurisdiction}:{venue}:{form}",
+        description=(
+            f"no qualified rule-applicability pack covers jurisdiction {jurisdiction!r}, "
+            f"venue {venue!r} and form {form!r}; the qualified pack covers jurisdiction "
+            f"{pack.jurisdiction!r}, venues {list(pack.venues)} and forms {list(pack.forms)}"
+        ),
+        resolving_fact=(
+            f"a qualified rule-applicability pack carrying jurisdiction {jurisdiction!r}, "
+            f"venue {venue!r} and form {form!r}"
+        ),
+        affects=(pack.rule_pack_id,),
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,8 @@
+{
+  "same_05a_probe_bytes": true,
+  "hash": "499c211d6b7136057e1c4fdd96df5948f18a7b742904b521a03af2114ac585ec",
+  "all17_hashes_reproduced": true,
+  "symbolic_ref_refused_before_write": true,
+  "production_action": false,
+  "scope": "Local generation/selfcheck only; final refreshed source still needs qualification and new binding."
+}

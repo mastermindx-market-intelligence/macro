@@ -541,6 +541,27 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911, PLR0912, PLR09
             )
             return 5
 
+        # Optional native identity observation for FUTURE research context.
+        # Same pack carrier, no identity copy/store or detector input change.
+        from engine.entry_radar.quote_context import retain_pack_identity, QuoteContextUnavailable
+        from engine.entry_radar.replay.identity_observation_snapshot import read_identity_snapshot
+        from lib.dataos.identity import IdentityError
+        try:
+            identity_read = read_identity_snapshot(root / "data" / "reference")
+            pack = retain_pack_identity(pack, identity_read)
+        except (IdentityError, QuoteContextUnavailable):
+            # Legacy/unavailable native identity does not disable Radar.
+            # No receipt is invented, and context consumers refuse its absence.
+            pass
+
+        # A pointer to the existing immutable Earnings owner, never copied bodies.
+        from dataclasses import replace
+        from engine.company_intelligence.research_generation import capture_generation_pointer, EarningsGenerationUnavailable
+        try:
+            pack = replace(pack, earnings_generation=capture_generation_pointer())
+        except EarningsGenerationUnavailable:
+            pass  # Optional research only; no invented pointer or Radar refusal.
+
         # --- 3. the inversion proof ---------------------------------------------
         with _stage("proof"):
             proof = lp.build_inversion_proof(pack)

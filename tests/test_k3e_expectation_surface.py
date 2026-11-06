@@ -305,6 +305,58 @@ def test_cli_fixture_reads_only_explicit_commit_and_refuses_moving_ref(tmp_path)
     assert json.loads(refusal.stderr)["reason"] == "FULL_IMMUTABLE_SOURCE_REVISION_REQUIRED"
 
 
+def test_cli_child_exits_cleanly_after_capture_and_alias_decode(tmp_path):
+    """Regression: a successful result must be followed by a clean exit.
+
+    The CLI child once printed the full inspection JSON and then died to a
+    native abort at interpreter finalization (SIGABRT, "terminate called
+    without an active exception"), so a correct pinned-commit read reached
+    the caller as returncode -6. Decoding the capture and alias readers must
+    leave no native teardown pending, repeatedly, not only on the first run.
+    """
+    pd = pytest.importorskip("pandas")
+    repository = tmp_path / "fixture"
+    repository.mkdir()
+    rows, attempts = capture()
+    alias_records = [dict(
+        vendor="yahoo", vendor_symbol="V", security_id="SEC:V",
+        valid_from=None, valid_to=None,
+        ingested_at=pd.Timestamp("2026-10-01 00:00:00"),
+    )]
+    for path, records in (
+        (OBSERVATIONS_PATH, rows),
+        (ATTEMPTS_PATH, attempts),
+        (ALIASES_PATH, alias_records),
+    ):
+        destination = repository / path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(records).to_parquet(destination)
+    def git(*args):
+        return subprocess.check_output(["git", "-C", str(repository), *args], text=True).strip()
+    git("init", "-q")
+    git("add", "data")
+    git("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
+        "commit", "-qm", "synthetic fixture")
+    revision = git("rev-parse", "HEAD")
+    script = Path(__file__).resolve().parents[1] / "scripts/query_k3e_expectation_surface.py"
+    args = [sys.executable, "-B", str(script), "--repository", str(repository),
+            "--source-revision", revision, "--ticker", "V", "--metric", "EPS",
+            "--horizon", "+1q", "--as-of", CUT]
+    semantics = []
+    for _ in range(3):
+        run = subprocess.run(args, capture_output=True, text=True)
+        # Refusals exit 2 with a JSON reason on stderr; anything negative is
+        # death by signal, i.e. the native abort, not a refusal.
+        assert run.returncode == 0, (run.returncode, run.stderr)
+        assert "terminate called" not in run.stderr
+        semantic = json.loads(run.stdout)["semantic_payload"]
+        assert semantic["identity_gate"]["status"] == "CHECKED"
+        semantics.append(semantic)
+    assert semantics[0] == semantics[1] == semantics[2]
+    assert selected(semantics[0])["value"] == 2.5
+    assert semantics[0]["source"]["source_revision"] == revision
+
+
 def test_latest_duplicate_or_invalid_attempt_does_not_hide_degradation():
     rows, attempts = capture()
     _, later = capture("later", "2026-10-02T11:00:00Z")
@@ -680,6 +732,9 @@ def test_cli_fixture_alias_path_absent(tmp_path):
             "--horizon", "+1q", "--as-of", CUT]
     run = subprocess.run(args, capture_output=True, text=True)
     assert run.returncode == 0, run.stderr
+    # The capture-only readers must likewise never die to the native
+    # finalization abort ("terminate called without an active exception").
+    assert "terminate called" not in run.stderr
     semantic = json.loads(run.stdout)["semantic_payload"]
     assert semantic["identity_gate"]["status"] == "ALIAS_PATH_ABSENT_AT_REVISION"
     assert semantic["source"]["inputs"][ALIASES_PATH] == dict(absent_at_revision=True)

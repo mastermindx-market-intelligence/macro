@@ -177,3 +177,66 @@ def test_real_collect_main_uses_one_shared_qledger_gate():
              and isinstance(node.func, ast.Name)
              and node.func.id == "_run_shared_qledger_postcollect"]
     assert len(calls) == 1, "actual collect entry must call tested gate once"
+
+
+# Scoped source-registry writer guard: #9509 only fenced the first two
+# shared callbacks. The later source_registry hook can register QLedger
+# narrative families when a manually scoped --only run carries NIGHTLY env.
+@pytest.mark.parametrize("argv", [
+    ["--only", "edgar_13f"],
+    ["--only", "sam_gov_opportunities"],
+    ["--only", "intl_etf"],
+    ["--only", "  "],
+    ["--full-history", "--only", "edgar_13f"],
+])
+def test_partial_only_nightly_must_not_invoke_source_registry(monkeypatch, argv):
+    from types import ModuleType
+    import sys
+    import scripts.collect as collect
+
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    args = collect._build_arg_parser().parse_args(argv)
+    assert args.only, "partial selected-run must preserve explicit CLI scope"
+    module = ModuleType("engine.source_registry")
+    worker = MagicMock()
+    module.run_as_collect_step = worker
+    with patch.dict(sys.modules, {"engine.source_registry": module}):
+        collect._run_source_registry_postcollect(only=args.only)
+    worker.assert_not_called()
+
+
+def test_full_and_asia_no_only_keep_source_registry_hook(monkeypatch):
+    from types import ModuleType
+    import sys
+    import scripts.collect as collect
+
+    module = ModuleType("engine.source_registry")
+    worker = MagicMock()
+    module.run_as_collect_step = worker
+    for env, argv in (
+        ("nightly", []),
+        ("nightly", ["--exclude-group", "asia"]),
+        ("", ["--group", "asia"]),
+        ("", ["--full-history"]),
+    ):
+        monkeypatch.setenv("COLLECT_LANE", env)
+        args = collect._build_arg_parser().parse_args(argv)
+        assert args.only == ""
+        with patch.dict(sys.modules, {"engine.source_registry": module}):
+            collect._run_source_registry_postcollect(only=args.only)
+    assert worker.call_count == 4
+
+
+def test_main_routes_the_real_source_registry_hook_through_one_gate():
+    import ast
+    import inspect
+    import scripts.collect as collect
+
+    nodes = ast.walk(ast.parse(inspect.getsource(collect.main)))
+    calls = [
+        node for node in nodes
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "_run_source_registry_postcollect"
+    ]
+    assert len(calls) == 1, "main must use exactly one tested writer fence"

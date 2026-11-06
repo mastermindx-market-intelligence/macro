@@ -23,9 +23,10 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Finish protected product delivery on PR9463 after separating unchanged runtime
-  source onto its held draft carrier; verify actual authenticated publication.
-  Preserve all original review/refusal identities and the pending Chris decision.
+  Connect typed synthetic accounting/prefix receipts to the existing advisory
+  review consumer and qualify that source increment through normal release.
+  Resolve the current Fabric recovery-owner delivery and original v4 effects;
+  no replay or candidate admission follows from source publication.
 artifacts:
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
   - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
@@ -36,6 +37,10 @@ artifacts:
   - engine/research_factory/codegen_boundary.py
   - engine/research_codegen/static_checks.py
 do_not_redo:
+  - Commercial licensing for the incumbent Yahoo/yfinance route, Massive/Polygon,
+    Tiingo and ThetaData options is APPROVED_BY_CHAIRMAN_ATTESTATION. Consume
+    DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023; do not ask again
+    or require contract upload/public-terms re-proof. Historical/PIT remains separate.
   - Reuse accepted checks and reviews until their relevant source or requirements change.
   - Original contracts operation remains EFFECT_UNKNOWN. Chris authorized quarantine
     and a fresh seven-path implementation, not replay, refused reads or lease release.
@@ -49,48 +54,53 @@ landmines:
     the documented protection-read gap. Do not change repository controls or credentials.
 ---
 
-Current checkpoint — 2026-10-15 (Vancouver).
+Current programme state — 2026-10-20 (Vancouver).
 
-Fence9077, capture9099, strict transport9190 and structural validation9100 are
-merged. Capture9099 merged as1c35abcd198df30366fe08b4dd714d9ec2b359ef. Its four
-implementation/test files match current main exactly. Product carrier9463 now
-integrates main86db1b0487ec. The former combined headbfd14315a594 passed all
-selected CI checks in38780929145; the original observer completed and its log
-was consumed. No live/idle observer is claimed for that completed run.
+Product [PR9463](https://github.com/mastermindx-market-intelligence/macro/pull/9463)
+is merged at3cae8c860468a198f40ed7cc3047b0fed7266613 and deployed. The retained
+production observation proves authenticated experiments200, anonymous401,
+disabled/empty diagnostics, ENdark/ZHlight and no console errors. This is the
+existing admin workflow and access boundary, not a live research-candidate run.
 
-Release scopes are being separated without replacing workers or reviews.
-PR9463 owns the reviewed dormant contracts, causal captured-input bridge,
-Trial Ledger/Vault changes, read-only synthetic diagnostics, existing admin UI
-and deployment closure. The accepted accounting source hashes are unchanged.
-Runtime installer, canary, host observers and fixed-workload plans/frontend
-are preserved byte-for-byte in the admitted rf-runtime-review-01a1333c SSD
-worktree with their own draft release carrier. The runtime-only review gate
-therefore no longer freezes independent product publication. No runtime source
-is admitted or installed by this separation; general transport remains dormant.
+Runtime source [PR9487](https://github.com/mastermindx-market-intelligence/macro/pull/9487)
+is merged at070e5a5d1531b342bdb94e856f5c7ba90bd18211. Exact-head CI39255429345
+completed successfully; all76 intended paths matched the merge and freshly
+fetched default. Fixed-workload repair and archive/mountinfo source reviews
+were accepted. Chris authorized quarantine of original archive/mountinfo
+reviews and release of those review reservations; their original operations,
+unknowns and refused reads remain preserved. Reuse accepted source evidence.
 
-The new factory/frontend42checks and runtime658tests/67subtests (four platform
-skips) remain valid. The isolated source test commands retain the previous
-process separation for smoke-module loading and payload unit tests. Product
-integration after removal passes19connected/admin/token checks. Required CI
-and exact source-scope checks qualify the narrowed release before arming.
-The actual local authenticated admin browser already passed synthetic good and
-refused diagnostics, unsigned401, theme/language and logout; production proof
-is still owed after normal deployment. Evidence:
-/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/u02-admin/authenticated-local-v1/OBSERVATION.json.
+Original physical operation rf-fixed-smoke-runsc-01a1333c-v4 ended controller77.
+The exact retained861-byte response was consumed but contains no artifact
+manifest or physical carrier receipt. Provider final, installation, smoke and
+cleanup remain unconfirmed. The1200-second task bound was exceeded at1742seconds;
+no later recovery erases that breach. Chris authorized delivery of the existing
+same-operation retrieval request to the current Fabric owner onOctober20;
+that communication is not retry, transfer, alternate-read or replacement
+permission. Former Fabric Integration is parked and names Fable in Claude6
+as successor; current supported owner delivery is being resolved. No physical
+recovery or absence is claimed from this record.
 
-Chris authorized quarantine and two-file source release for
-rf-fixed-workload-plans-01a1333c-v1; its run/lease/unknown termination/refused
-read remain unchanged. Fresh source is implemented and preserved on the runtime
-carrier. Its separate reviewrf-fixed-workload-source-review-01a1333c-v1 ended
-rc75 before provider execution on the broker-assigned account's host-local
-cooldown. Exact484-byte result consumed; no quality verdict, retry or account
-switch. Fabric Integration owns the already-requested source diagnosis.
+The next source increment joins typed synthetic staging/prefix receipts into
+`diagnostic_review_packet` rather than relying on a fixture-only projection.
+It preserves raw failure/uncertainty accounting internally and sanitizes the
+advisory attachment. Receipt types and consistent hashes do not authenticate a
+producer. No original expectation binding exists for the good/bad output control,
+so that control remains NOT_RUN. Physical/resource controls remain NOT_RUN;
+execution, qualification and scientific authority stay disabled.
 
-The original archive-order and mountinfo reviews remain unknown/refused. Their
-specific quarantine/review-release question is pending Chris, not inferred from
-the source-file grant. The concrete proposal is in the existing evidence folder:
-runtime-release/physical-qualification/ORIGINAL_REVIEW_QUARANTINE_PROPOSAL.md.
-Frozen v4 remains undispatched. Trusted host/resource mapping, complete helper
-census, cleanup, candidate admission, real pilot and scientific/prospective
-acceptance remain unfinished. Reuse accepted evidence; green CI or source
-publication does not complete the programme.
+After lawful incident settlement, accepted host/resource/helper/cleanup
+composition is still required. A recovered fixed-canary PASS is not candidate
+admission. P01 still owes actual staging identities, a known-answer primitive
+and future-dependent refusal control; injected nonfinite output tests prove
+plumbing only. Qualified historical data availability (commercial rights are settled by
+DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023), full counted trial/Vault and
+evaluator composition, an honest historical/null result, naturally accrued
+prospective observations and continuity/rollback remain programme obligations.
+Existing runtime/admission engines remain dormant. No new OS/Fabric owner,
+ledger, Vault, scheduler, data rights or trading authority is created.
+
+Material operational evidence and original effects remain in the existing
+`/Volumes/Mastermind/evidence/research-factory-codegen-20261012-01a1333c/ROOT_CONTINUATION.json`.
+The source-release verification, original response hash and production observation
+are retained there; this record grants no execution or physical acceptance.

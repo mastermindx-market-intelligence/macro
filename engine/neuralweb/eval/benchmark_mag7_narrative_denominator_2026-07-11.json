@@ -1,0 +1,74 @@
+{
+  "benchmark_id": "mag7_narrative_denominator_2026-07-11",
+  "frozen": true,
+  "source": "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2026-07-11",
+    "session_label": "date only",
+    "adjudication_date": "2026-07-11",
+    "historical_source_availability": "unverified",
+    "dependence_group": "mag7-june-july-2026-turn",
+    "source": {
+      "path": "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+      "sha256": "feb1ab9da314c452fefe3bc49b1a05dadf9dffe25fed6f01ee956d2de1da51d7"
+    },
+    "input_facts": [
+      {
+        "event_date": "2026-07-11",
+        "source_lines": [
+          88,
+          92
+        ],
+        "text": "Verified external timeline (web lane; quotes sourced; narrative **context, not\nfindings**): 06-07 Truth Social \"stocks should go up, not down\"; 06-26 Warsh-confidence\n/ low-rates remarks (day 0 — coincident); 07-02 CNBC Kernen interview (\"81 records…\neverybody's profiting\"); 07-06 Rose Garden \"a couple of guys who went short, those poor\nbastards… being wiped out\". **The loud statements trailed the low by 4-7 sessions.**",
+        "sha256": "739efa657dea03a207e7f0a8a217b609c54b91dffdafc92c6cc90e8ee8762fb8"
+      },
+      {
+        "event_date": "2026-07-11",
+        "source_lines": [
+          101,
+          104
+        ],
+        "text": "**The \"Trump says buy\" heuristic, honestly:** the catalog is n≈3-4 *selected* episodes\n(2018-12-26: one day after the exact bear low, +7.9% next month; 2025-04-09: durable\nlow, statement hours *before* the policy action; 2020-03-13: ten days and −10% early)\nwith **no false-positive denominator** — nobody counted the loud statements that marked",
+        "sha256": "29f2a32def9bef8347b6cff74ef70e91905c5f48c2f78280661ce27a87f714c5"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        101,
+        109
+      ],
+      "text": "**The \"Trump says buy\" heuristic, honestly:** the catalog is n≈3-4 *selected* episodes\n(2018-12-26: one day after the exact bear low, +7.9% next month; 2025-04-09: durable\nlow, statement hours *before* the policy action; 2020-03-13: ten days and −10% early)\nwith **no false-positive denominator** — nobody counted the loud statements that marked\nnothing. That is an anecdote, not an edge. This 2026 instance is a *miss* for the\nheuristic as an entry trigger (statements trailed the low); the operator's real-time\ndoubt (\"memory was falling off a cliff\") was reasonable. What is worth building is not\na statement-follow signal but the deterministic statement *tape* + event catalog\n(conditions-framing, PS-R1-compliant), so the base rate can ever be measured.",
+      "sha256": "78bcf1e23bea494e22d3c9dcb453759ef6e322bb4c5d1ac2679977af276051b9"
+    }
+  },
+  "question_en": "Using only this July 11 diagnostic excerpt, assess the selected statement examples as evidence for a repeatable entry rule. What missing denominator and timing distinctions must remain visible?",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT — cutoff date 2026-07-11 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2026-07-11] Verified external timeline (web lane; quotes sourced; narrative **context, not\nfindings**): 06-07 Truth Social \"stocks should go up, not down\"; 06-26 Warsh-confidence\n/ low-rates remarks (day 0 — coincident); 07-02 CNBC Kernen interview (\"81 records…\neverybody's profiting\"); 07-06 Rose Garden \"a couple of guys who went short, those poor\nbastards… being wiped out\". **The loud statements trailed the low by 4-7 sessions.**\n[2026-07-11] **The \"Trump says buy\" heuristic, honestly:** the catalog is n≈3-4 *selected* episodes\n(2018-12-26: one day after the exact bear low, +7.9% next month; 2025-04-09: durable\nlow, statement hours *before* the policy action; 2020-03-13: ten days and −10% early)\nwith **no false-positive denominator** — nobody counted the loud statements that marked",
+  "expected_properties": [
+    {
+      "tag": "timing",
+      "check": "Distinguish the coincident June 26 remarks from louder July 2/6 statements after the low; retain the documented multi-session lag."
+    },
+    {
+      "tag": "selection",
+      "check": "The approximately 3-4 selected episodes lack a false-positive denominator; do not convert selected successes into a calibrated hit rate."
+    },
+    {
+      "tag": "counterexample",
+      "check": "Retain the March 2020 early example and distinguish statement timing from subsequent policy action in April 2025."
+    },
+    {
+      "tag": "authority",
+      "check": "A catalog or statement tape could support future measurement; no current validated edge, rule promotion or trading instruction follows."
+    }
+  ],
+  "known_failure_modes": [
+    "Treat retrospective supplied diagnostic text as a historically served point-in-time snapshot.",
+    "Turn a distinct population, selected anecdote or failed calibration into a validated execution signal.",
+    "Import later observations absent from the supplied cutoff slice or count related cases as independent trials."
+  ],
+  "gold_standard_sentence": "The selected examples are anecdotes with no false-positive denominator, and the statement timings differ materially. The later 2026 remarks do not establish an entry trigger; an event catalog is a measurement prerequisite, not a validated rule.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}

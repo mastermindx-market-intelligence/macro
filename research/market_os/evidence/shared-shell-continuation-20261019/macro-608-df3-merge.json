@@ -1,0 +1,44 @@
+{
+  "started_at": "2026-10-20T19:07:32.325153+00:00",
+  "head_before": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+  "incoming": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "base": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "state": "MERGE_OPEN_FOR_ORIGINAL_OWNER_RESOLUTION",
+  "scope": "Original worktree/branch only; actual dirty PR, no competing MOG writer; current incoming tree has no identified missing new objects. Historical13 missing objects are not asserted available.",
+  "finished_at": "2026-10-20T19:08:16.820670+00:00",
+  "command": [
+    "git",
+    "-C",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "merge",
+    "--no-commit",
+    "--no-ff",
+    "df3cba80e5ff43e3411209381b32d9d4df06bd1f"
+  ],
+  "exit": 1,
+  "log_bytes": 1377,
+  "log_sha256": "361c297b2bde2c2873b9721190f45a793d829ff697a37459ff43e35bdd223f1c",
+  "trace_bytes": 50661,
+  "head_after": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+  "merge_head": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "unmerged": [
+    ".github/ci/legacy-jobs.yml",
+    "app/deploy/update.sh",
+    "site/etfs.html",
+    "site/macro_labor_markets.html",
+    "site/us_stocks.html",
+    "tests/test_ci_pack.py"
+  ],
+  "unstaged": [
+    ".github/ci/legacy-jobs.yml",
+    ".github/ci/legacy-jobs.yml",
+    "app/deploy/update.sh",
+    "app/deploy/update.sh",
+    "site/etfs.html",
+    "site/macro_labor_markets.html",
+    "site/macro_labor_markets.html",
+    "site/us_stocks.html",
+    "tests/test_ci_pack.py",
+    "tests/test_ci_pack.py"
+  ]
+}

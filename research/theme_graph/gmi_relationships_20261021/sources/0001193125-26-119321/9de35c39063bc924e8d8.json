@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T18:15:26Z",
+ "accession": "0001193125-26-119321",
+ "cik": "0001280263",
+ "doc_byte_length": 4117571,
+ "doc_sha256": "deeacde656e445319dba455f66696bc4ccbee30ed2c9ef92dc4a9695c8f83852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "amba-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 453359,
+  "byte_start": 452709,
+  "normalized": "In fiscal year 2026, the customer representing 10% or more of our revenue was WT Microelectronics Co., Ltd., or WT, which serves as our non-exclusive sales representative and fulfillment partner in Asia other than Japan, accounted for approximately 70% of total revenue. We believe that revenue from our top 10 end customers, either directly or through a distributor or an ODM, accounted for approximately 67% of our total revenue in fiscal year 2026. Our largest end customer in fiscal year 2026 was Arashi Vision Inc. dba Insta360, or Arashi, for which we indirectly supply SoCs through WT to multiple ODMs that build products on behalf of Arashi.",
+  "normalized_sha256": "124adb2ca408c7d14f4d305ac6d9fbec1042708a5823bf323ae528a3739111aa",
+  "raw": " In fiscal year 2026, the customer representing 10% or more of our revenue was WT Microelectronics Co., Ltd., or WT, which serves as our non-exclusive sales representative and fulfillment partner in Asia other than Japan, accounted for approximately 70% of total revenue. We believe that revenue from our top 10 end customers, either directly or through a distributor or an ODM, accounted for approximately 67% of our total revenue in fiscal year 2026. Our largest end customer in fiscal year 2026 was Arashi Vision Inc. dba Insta360, or Arashi, for which we indirectly supply SoCs through WT to multiple ODMs that build products on behalf of Arashi.",
+  "raw_sha256": "9de35c39063bc924e8d8f4e2e10ceffbea9d1d06a297a9e00f5deb64ece5e489"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1280263/000119312526119321/amba-20260131.htm",
+ "xbrl_contexts": []
+}

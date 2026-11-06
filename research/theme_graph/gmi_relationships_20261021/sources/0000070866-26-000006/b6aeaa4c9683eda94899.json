@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T12:32:05Z",
+ "accession": "0000070866-26-000006",
+ "cik": "0000070866",
+ "doc_byte_length": 3392138,
+ "doc_sha256": "a325b79339a4fe6f86d996161118da6268e95490acfaabad3b658b760c461931",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ncr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3322913,
+  "byte_start": 3322740,
+  "normalized": "Trademark License and Use Agreement, dated as of October 16 ,2023, by and between NCR Voyix Corporation and NCR Atleos Corporation (Exhibit 10.5 to the October 17, 2023 8-K)",
+  "normalized_sha256": "b6aeaa4c9683eda94899564a0ff1834393a3bc2da69ab4e77a70b34dbba5b362",
+  "raw": "Trademark License and Use Agreement, dated as of October 16 ,2023, by and between NCR Voyix Corporation and NCR Atleos Corporation (Exhibit 10.5 to the October 17, 2023 8-K)",
+  "raw_sha256": "b6aeaa4c9683eda94899564a0ff1834393a3bc2da69ab4e77a70b34dbba5b362"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/70866/000007086626000006/ncr-20251231.htm",
+ "xbrl_contexts": []
+}

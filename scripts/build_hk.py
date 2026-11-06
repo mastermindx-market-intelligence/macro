@@ -290,7 +290,8 @@ def _build_sector_pages(env) -> int:
 
 
 def _build_history(env, latest: dict, generated: str) -> None:
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
+    from engine.playbook import (QUAD_SHORT, closed_durations, closed_median,
+                                 finished_lifespan_rows, quad_segments, transition_stats)
     hist = store.read("hk_regime", "regime_history")
     if hist is None or "quad" not in hist.columns:
         log.warning("hk history: no regime_history; skipping history page")
@@ -299,16 +300,30 @@ def _build_history(env, latest: dict, generated: str) -> None:
     mdf = store.read("hk", mi)
     px = mdf["close"] if mdf is not None else pd.Series(dtype=float)
     trans = transition_stats(hist["quad"])
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
-                     "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
+    # The segment in force: quad_segments carries its start date and
+    # transition_stats its age, neither of which reached a template before.
+    # Under two segments there is nothing to age against, so the page degrades
+    # to the rendering it had (no age row).
+    cur = trans.get("current") or {}
+    seg = quad_segments(hist["quad"])
+    # transition_stats counts the running segment's age so far as a length, so
+    # the regime in force takes its median from finished periods. There may be
+    # none, and then the page prints no median for it.
+    cur_median = closed_median(hist["quad"], cur["quad"]) if cur.get("quad") else None
+    in_force = None
+    if len(seg) >= 2 and cur.get("quad"):
+        in_force = {"name": QUAD_SHORT.get(cur["quad"], cur["quad"]),
+                    "start": str(seg.iloc[-1]["start"])[:10],
+                    "age_days": int(cur["age_days"]),
+                    "median_days": cur_median,
+                    "n_closed": len(closed_durations(hist["quad"], cur["quad"]))}
+    # A row counts finished periods, as the in-force line does. Every finished
+    # period has a successor, so that count is also the sample behind "next".
+    rows = finished_lifespan_rows(hist["quad"])
     html = env.get_template("hk_history.html.j2").render(
         latest=latest, generated_utc=generated,
         chart_regime=_chart_regime(px, hist) if not px.empty else "", chart_axes=_chart_axes(hist),
-        lifespan_rows=rows)
+        lifespan_rows=rows, regime_in_force=in_force)
     write_page(Path(config.load()["storage"]["site_dir"]) / "hk_history.html", html)
     log.info("wrote hk_history.html (%d regime periods)", trans.get("n_segments", 0))
 
@@ -594,15 +609,8 @@ def _funding_vm(latest: dict) -> dict | None:
 
 def _lifespan_rows(quad: pd.Series) -> list[dict]:
     """Per-quad base rates (count, median length, two most-common next quads)."""
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(quad)
-    rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        rows.append({"name": QUAD_SHORT[q], "n": trans["n_by_quad"].get(q, "—"),
-                     "median": trans["median_days"].get(q, "—"),
-                     "next": next_quads_line(nxt), "next_zh": next_quads_line(nxt, zh=True)})
-    return rows
+    from engine.playbook import finished_lifespan_rows
+    return finished_lifespan_rows(quad)
 
 
 def _vhsi_vm() -> dict | None:

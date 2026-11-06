@@ -42,7 +42,7 @@ def _with_client(cfg: Config, fn):
 # --- command handlers ------------------------------------------------------
 def cmd_auth(cfg: Config, args) -> int:
     from .auth import run_auth_flow
-    ok = run_auth_flow(cfg, timeout_s=args.timeout)
+    ok = run_auth_flow(cfg, timeout_s=args.timeout, force=args.force)
     print("Authenticated." if ok else "Auth failed / timed out.")
     return 0 if ok else 2
 
@@ -244,6 +244,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("auth", help="interactive login (headed), saves session profile")
     sp.add_argument("--timeout", type=int, default=300)
+    sp.add_argument(
+        "--force", action="store_true",
+        help="open the login window even if latest/latest still returns IDs "
+             "(needed when the T&Cs overlay blocks browse/provision)",
+    )
     sp.set_defaults(func=cmd_auth)
 
     sp = sub.add_parser("discover", help="find + score new papers (no download)")

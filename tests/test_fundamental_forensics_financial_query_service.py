@@ -36,6 +36,16 @@ T3_SOURCE = "2025-12-31T23:59:59Z"
 T3_RECORDED = "2026-08-05T12:00:02Z"
 
 
+# FIP1 is a synthetic industrial issuer with no shipped coverage record; the
+# hermetic production-path tests inject its SIC (R1-SIC/R2).
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
+
+
 def _make_request(
     *,
     schema: str = "fundamental_forensics.financial_query_request/v1",
@@ -705,6 +715,42 @@ def test_missing_t0_revenue_cell_state_is_missing() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Issuer class: a class-restricted metric answers the entity's SIC (R1-SIC)
+# ---------------------------------------------------------------------------
+
+
+def test_bank_sic_entity_gets_not_applicable_on_class_restricted_metric() -> None:
+    provider = _fip1_provider()
+    body = _make_request(metric_ids=["gross_profit"])
+    result = execute_financial_query(
+        body=body, provider=provider, issuer_sic_resolver=lambda cik: "6021"
+    )
+    receipt = result.envelope["receipt"]
+    root_ids = set(receipt["root_cell_ids"])
+    nodes = [n for n in receipt["nodes"] if n["cell_id"] in root_ids]
+    assert len(nodes) == 1
+    assert nodes[0]["metric_id"] == "gross_profit"
+    assert nodes[0]["state"] == "not_applicable"
+    assert nodes[0]["reason"] == "not_applicable_for_issuer_class"
+    assert nodes[0]["value"] is None
+
+
+def test_industrial_sic_entity_gets_value_on_class_restricted_metric() -> None:
+    provider = _fip1_provider()
+    body = _make_request(metric_ids=["gross_profit"])
+    result = execute_financial_query(
+        body=body, provider=provider, issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
+    receipt = result.envelope["receipt"]
+    root_ids = set(receipt["root_cell_ids"])
+    nodes = [n for n in receipt["nodes"] if n["cell_id"] in root_ids]
+    assert len(nodes) == 1
+    assert nodes[0]["metric_id"] == "gross_profit"
+    assert nodes[0]["state"] == "value"
+    assert nodes[0]["value"] == "500"
+
+
+# ---------------------------------------------------------------------------
 # Determinism: identical bytes across wall-clock changes
 # ---------------------------------------------------------------------------
 
@@ -800,7 +846,9 @@ def test_fip1_max_envelope_under_8mib() -> None:
         periods=periods,
         policy={"selection": "latest_known_as_of", "source_snapshot_at": T3_SOURCE, "recorded_at": T3_RECORDED},
     )
-    result = execute_financial_query(body=body, provider=provider)
+    result = execute_financial_query(
+        body=body, provider=provider, issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     size = len(result.body)
     assert size < 8 * 1024 * 1024, f"Envelope is {size} bytes, exceeds 8 MiB limit"
     # Report size in output for EVIDENCE
@@ -953,9 +1001,9 @@ def test_golden_delivery_and_bytes_unchanged_by_production_path() -> None:
     # exact pre-D3 bytes for all three selections — frozen pre-D3 baselines
     # captured on the untouched tree at 5267c66846e.
     pre_d3_shas = {
-        ("absent", "as_reported"): "c7c7c6b285f697597d50139e5991277bdac57e1c325d63424f35b12cf0201ba1",
-        ("absent", "latest_known_as_of"): "086a59ef400af43103d4e13572e384e6b7766b58a9179eabbb709265ad0aa019",
-        ("absent", "latest_restated"): "8044e58d7a09690d93111408c5f7df186f010a58a88f9c425af2bf4b24b84859",
+        ("absent", "as_reported"): "bf8e9099e0f94d891f8b739adf15eee8651a0478b55ecbed746ac19a734e2c02",
+        ("absent", "latest_known_as_of"): "2d9964257abbe545322c54e4572956dffeddae257fc49ff11cef7264d0bd79d7",
+        ("absent", "latest_restated"): "7ba7a23305a1284ddf6e75eba582eb58791922c46cd1d63b0147560888350c0a",
     }
     golden_delivery = {
         "kind": "committed_golden_fixture",

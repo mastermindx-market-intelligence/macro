@@ -319,7 +319,7 @@
               ],
               "properties": {
                 "schema": {
-                  "const": "gmi.theme_state_owner_bundle/v1"
+                  "enum": ["gmi.theme_state_owner_bundle/v1", "gmi.theme_state_owner_bundle/v2"]
                 },
                 "sha256": {
                   "type": "string",

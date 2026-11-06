@@ -1,0 +1,502 @@
+{
+  "artifacts": {
+    "total_count": 15,
+    "artifacts": [
+      {
+        "id": 11926135630,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNjEzNTYzMA==",
+        "name": "ci-semantic-pack-38624362438-0",
+        "size_in_bytes": 1853,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11926135630",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11926135630/zip",
+        "expired": false,
+        "digest": "sha256:68c3ca298a08e7721baac0b2ee0b470300285d428e177a76c1a50ef0fd68f1b0",
+        "created_at": "2026-10-14T20:02:38Z",
+        "updated_at": "2026-10-14T20:02:38Z",
+        "expires_at": "2026-10-28T20:02:37Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11925977754,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNTk3Nzc1NA==",
+        "name": "ci-semantic-evidence-38624362438",
+        "size_in_bytes": 31273,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11925977754",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11925977754/zip",
+        "expired": false,
+        "digest": "sha256:5e74d436f35febfd985076bd6076c6bd0b3016956fc6fa5d152ba6f88d5629f1",
+        "created_at": "2026-10-14T20:14:24Z",
+        "updated_at": "2026-10-14T20:14:24Z",
+        "expires_at": "2026-10-28T20:14:23Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11925690162,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNTY5MDE2Mg==",
+        "name": "ci-semantic-pack-38624362438-4",
+        "size_in_bytes": 3482,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11925690162",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11925690162/zip",
+        "expired": false,
+        "digest": "sha256:be675199b5a15f3d72d7d30b060f1d2fdf66a911704f44384135dc9058414c86",
+        "created_at": "2026-10-14T19:57:54Z",
+        "updated_at": "2026-10-14T19:57:54Z",
+        "expires_at": "2026-10-28T19:57:54Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11925682749,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNTY4Mjc0OQ==",
+        "name": "ci-semantic-pack-38624362438-5",
+        "size_in_bytes": 3674,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11925682749",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11925682749/zip",
+        "expired": false,
+        "digest": "sha256:ead7724ece5df5e5ea488fc86acc25b81ebc4742627c5a703fa945faf38cd655",
+        "created_at": "2026-10-14T20:14:10Z",
+        "updated_at": "2026-10-14T20:14:10Z",
+        "expires_at": "2026-10-28T20:14:09Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11925482516,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNTQ4MjUxNg==",
+        "name": "ci-semantic-pack-38624362438-8",
+        "size_in_bytes": 4203,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11925482516",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11925482516/zip",
+        "expired": false,
+        "digest": "sha256:f24050e6ebf011239a87c231184f56abd30ffe6072f18bd9a16c37af74910785",
+        "created_at": "2026-10-14T20:12:03Z",
+        "updated_at": "2026-10-14T20:12:03Z",
+        "expires_at": "2026-10-28T20:12:02Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11924775570,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNDc3NTU3MA==",
+        "name": "ci-semantic-pack-38624362438-10",
+        "size_in_bytes": 4648,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924775570",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924775570/zip",
+        "expired": false,
+        "digest": "sha256:db8fd418d08947ba8677c61bf38c1fb4bb9af94f8a95d3121ccf7c80f1253674",
+        "created_at": "2026-10-14T19:51:20Z",
+        "updated_at": "2026-10-14T19:51:20Z",
+        "expires_at": "2026-10-28T19:51:19Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11924668094,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNDY2ODA5NA==",
+        "name": "ci-semantic-pack-38624362438-11",
+        "size_in_bytes": 3890,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924668094",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924668094/zip",
+        "expired": false,
+        "digest": "sha256:40fcd32f592efa093f146e1871520e79f88cfa547abc86845d2e6acb34db0541",
+        "created_at": "2026-10-14T20:04:58Z",
+        "updated_at": "2026-10-14T20:04:58Z",
+        "expires_at": "2026-10-28T20:04:58Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11924525984,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNDUyNTk4NA==",
+        "name": "ci-semantic-pack-38624362438-9",
+        "size_in_bytes": 3637,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924525984",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924525984/zip",
+        "expired": false,
+        "digest": "sha256:4d0c49878e2b58d8164c569eba7ba14aaecab15715a3436b3a15443ab7c614d7",
+        "created_at": "2026-10-14T19:49:37Z",
+        "updated_at": "2026-10-14T19:49:37Z",
+        "expires_at": "2026-10-28T19:49:36Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11924442516,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNDQ0MjUxNg==",
+        "name": "ci-semantic-pack-38624362438-6",
+        "size_in_bytes": 4638,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924442516",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924442516/zip",
+        "expired": false,
+        "digest": "sha256:7b0dcedc1d0039b622da8a61e7dedf09e01527e1aeab92d8bc72fb67b1087b08",
+        "created_at": "2026-10-14T19:56:46Z",
+        "updated_at": "2026-10-14T19:56:46Z",
+        "expires_at": "2026-10-28T19:56:45Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11924026535,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyNDAyNjUzNQ==",
+        "name": "ci-changed-files",
+        "size_in_bytes": 3246,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924026535",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11924026535/zip",
+        "expired": false,
+        "digest": "sha256:6a1ed8ab4ed6e02222a091945a8b36d2dcb8c55fd029fb6bb6b90905ab4c1339",
+        "created_at": "2026-10-14T19:35:07Z",
+        "updated_at": "2026-10-14T19:35:07Z",
+        "expires_at": "2026-10-28T19:35:07Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11923959599,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyMzk1OTU5OQ==",
+        "name": "ci-semantic-pack-38624362438-7",
+        "size_in_bytes": 2986,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11923959599",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11923959599/zip",
+        "expired": false,
+        "digest": "sha256:6b93673a2aa6c642239ae1dd0d31fdf91787e376591a179cfaea2a9765a24dbd",
+        "created_at": "2026-10-14T19:53:44Z",
+        "updated_at": "2026-10-14T19:53:44Z",
+        "expires_at": "2026-10-28T19:53:44Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11923899156,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyMzg5OTE1Ng==",
+        "name": "ci-semantic-pack-38624362438-3",
+        "size_in_bytes": 2525,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11923899156",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11923899156/zip",
+        "expired": false,
+        "digest": "sha256:aa08096266d86e3aee1c18201d5b23ecd34e98c76952a7ae0e203438dc940711",
+        "created_at": "2026-10-14T19:51:18Z",
+        "updated_at": "2026-10-14T19:51:18Z",
+        "expires_at": "2026-10-28T19:51:17Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11923576584,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyMzU3NjU4NA==",
+        "name": "ci-semantic-plan-38624362438-1",
+        "size_in_bytes": 34518,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11923576584",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11923576584/zip",
+        "expired": false,
+        "digest": "sha256:1e543d92addd617ade9c47f5b3b6edce85af74d74f8521beb21c2dcfff90697d",
+        "created_at": "2026-10-14T19:35:09Z",
+        "updated_at": "2026-10-14T19:35:09Z",
+        "expires_at": "2026-10-28T19:35:08Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11923298973,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyMzI5ODk3Mw==",
+        "name": "ci-semantic-pack-38624362438-1",
+        "size_in_bytes": 1881,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11923298973",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11923298973/zip",
+        "expired": false,
+        "digest": "sha256:a784e91bd49ed66a5be5721d09056c42a1c295106ca735adc9f441f53c52c3eb",
+        "created_at": "2026-10-14T19:47:04Z",
+        "updated_at": "2026-10-14T19:47:04Z",
+        "expires_at": "2026-10-28T19:47:04Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      },
+      {
+        "id": 11922979758,
+        "node_id": "MDg6QXJ0aWZhY3QxMTkyMjk3OTc1OA==",
+        "name": "ci-semantic-pack-38624362438-2",
+        "size_in_bytes": 1953,
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11922979758",
+        "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/11922979758/zip",
+        "expired": false,
+        "digest": "sha256:d93dcd55154c48957cb0616d777ee41a4d0d673727c75a56a0b8f78c6213bdc7",
+        "created_at": "2026-10-14T19:46:33Z",
+        "updated_at": "2026-10-14T19:46:33Z",
+        "expires_at": "2026-10-28T19:46:33Z",
+        "workflow_run": {
+          "id": 38624362438,
+          "repository_id": 1266869026,
+          "head_repository_id": 1266869026,
+          "head_branch": "claude/eval-os-a1-evidence-view-20260828",
+          "head_sha": "fea04c414282a29f8f757430c7e1e1b3c52998fe"
+        }
+      }
+    ]
+  },
+  "annotations": [
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 2,
+      "start_column": null,
+      "end_line": 2,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "",
+      "message": "Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/download-artifact@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 410,
+      "start_column": null,
+      "end_line": 410,
+      "end_column": null,
+      "annotation_level": "failure",
+      "title": "",
+      "message": "Process completed with exit code 1.",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 384,
+      "start_column": null,
+      "end_line": 384,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_foresight_cascade.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 383,
+      "start_column": null,
+      "end_line": 383,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_fed_path.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 382,
+      "start_column": null,
+      "end_line": 382,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_crypto_collectors.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 381,
+      "start_column": null,
+      "end_line": 381,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_china_intel_hub_command.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 380,
+      "start_column": null,
+      "end_line": 380,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_catalyst_stock.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 379,
+      "start_column": null,
+      "end_line": 379,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_btc_signals.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 378,
+      "start_column": null,
+      "end_line": 378,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_btc_intraday_cvd.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 377,
+      "start_column": null,
+      "end_line": 377,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_btc_impulse_radar.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 376,
+      "start_column": null,
+      "end_line": 376,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_btc_impulse_falsifier.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 375,
+      "start_column": null,
+      "end_line": 375,
+      "end_column": null,
+      "annotation_level": "warning",
+      "title": "stale-unrun-baseline",
+      "message": "tests/test_btc_impulse_alerts.py is no longer an unrun suite (wired into a job) \u2014 prune it from config/unrun_test_baseline.json",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 144,
+      "start_column": null,
+      "end_line": 144,
+      "end_column": null,
+      "annotation_level": "failure",
+      "title": "legacy-job-ci-control-plane-contracts",
+      "message": "ci-control-plane-contracts: step 'hosted-runner packing contract' exited 1",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 35,
+      "start_column": null,
+      "end_line": 35,
+      "end_column": null,
+      "annotation_level": "notice",
+      "title": "ci-pack-skipped",
+      "message": "120 legacy job(s) out of scope for this diff; main's baseline still runs all 247",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 34,
+      "start_column": null,
+      "end_line": 34,
+      "end_column": null,
+      "annotation_level": "notice",
+      "title": "ci-pack-scope",
+      "message": "scoped to 260 changed file(s): 127/247 jobs (1 unscoped always-on, 126 scoped matches); bounded manifest job delta changed 8 selected job(s); derived scopes for 143/247 jobs; 103 declared exclusive",
+      "raw_details": ""
+    },
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/mastermindx-market-intelligence/macro/blob/fea04c414282a29f8f757430c7e1e1b3c52998fe/.github",
+      "start_line": 1,
+      "start_column": null,
+      "end_line": 1,
+      "end_column": null,
+      "annotation_level": "notice",
+      "title": "",
+      "message": "\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\"",
+      "raw_details": ""
+    }
+  ],
+  "observed_at": "2026-10-15T06:38:51.028240+00:00"
+}

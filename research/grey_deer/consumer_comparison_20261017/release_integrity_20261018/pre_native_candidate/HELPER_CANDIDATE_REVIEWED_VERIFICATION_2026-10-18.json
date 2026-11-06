@@ -1,0 +1,321 @@
+{
+  "runner": "stdlib AST loader; exact standalone fixture test bodies, no pytest/app imports",
+  "test_source_sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a",
+  "helper_sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+  "app_import_tests_executed": false,
+  "network_or_production_calls": false,
+  "cases": [
+    {
+      "test": "test_integrity_stops_service_before_source_copy",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.583
+    },
+    {
+      "test": "test_integrity_restores_unlisted_and_receiver_deleted_paths",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.717
+    },
+    {
+      "test": "test_integrity_snapshot_failure_cannot_authorize_source_mutation",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.067
+    },
+    {
+      "test": "test_integrity_failed_restored_health_is_not_complete",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 2.825
+    },
+    {
+      "test": "test_integrity_refused_init_preserves_foreign_marker",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.818
+    },
+    {
+      "test": "test_integrity_excluded_descendants_survive_rollback",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.64
+    },
+    {
+      "test": "test_integrity_unverified_stop_never_copies_source",
+      "parameters": {
+        "flag": "FAKE_STOP_FAIL"
+      },
+      "status": "passed",
+      "seconds": 0.484
+    },
+    {
+      "test": "test_integrity_unverified_stop_never_copies_source",
+      "parameters": {
+        "flag": "FAKE_STOP_STAYS_ACTIVE"
+      },
+      "status": "passed",
+      "seconds": 0.616
+    },
+    {
+      "test": "test_integrity_failed_snapshot_preserves_previous_backup_and_availability",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.088
+    },
+    {
+      "test": "test_integrity_failed_restore_never_restarts_partial_tree",
+      "parameters": {
+        "failure": "copy"
+      },
+      "status": "passed",
+      "seconds": 1.133
+    },
+    {
+      "test": "test_integrity_failed_restore_never_restarts_partial_tree",
+      "parameters": {
+        "failure": "health"
+      },
+      "status": "passed",
+      "seconds": 2.419
+    },
+    {
+      "test": "test_integrity_checksum_restores_same_size_and_mtime_content",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.927
+    },
+    {
+      "test": "test_integrity_active_cohort_is_preserved_across_upgrade_and_noop",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 2.088
+    },
+    {
+      "test": "test_integrity_active_cohort_authority_mutation_requires_reconciliation",
+      "parameters": {
+        "field": "account.json"
+      },
+      "status": "passed",
+      "seconds": 2.319
+    },
+    {
+      "test": "test_integrity_active_cohort_authority_mutation_requires_reconciliation",
+      "parameters": {
+        "field": "fills.jsonl"
+      },
+      "status": "passed",
+      "seconds": 2.262
+    },
+    {
+      "test": "test_integrity_disappearing_active_cohort_is_not_reinitialized",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.802
+    },
+    {
+      "test": "test_integrity_unknown_cohort_effects_are_retained",
+      "parameters": {
+        "failure": "FAKE_LOST_INIT_REPLY"
+      },
+      "status": "passed",
+      "seconds": 1.823
+    },
+    {
+      "test": "test_integrity_unknown_cohort_effects_are_retained",
+      "parameters": {
+        "failure": "FAKE_LOST_FINALIZE_REPLY"
+      },
+      "status": "passed",
+      "seconds": 2.273
+    },
+    {
+      "test": "test_integrity_unknown_cohort_effects_are_retained",
+      "parameters": {
+        "failure": "FAKE_FAIL_STATUS"
+      },
+      "status": "passed",
+      "seconds": 2.41
+    },
+    {
+      "test": "test_integrity_failed_tag_refresh_restores_exact_preimage",
+      "parameters": {
+        "preexisting": false
+      },
+      "status": "passed",
+      "seconds": 1.771
+    },
+    {
+      "test": "test_integrity_failed_tag_refresh_restores_exact_preimage",
+      "parameters": {
+        "preexisting": true
+      },
+      "status": "passed",
+      "seconds": 1.835
+    },
+    {
+      "test": "test_integrity_sigterm_after_copy_restores_once",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.602
+    },
+    {
+      "test": "test_integrity_symlinked_snapshot_root_is_refused",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.155
+    },
+    {
+      "test": "test_integrity_failed_target_stop_prevents_rollback_copy",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 2.337
+    },
+    {
+      "test": "test_integrity_receipt_glob_entries_cannot_masquerade_as_empty",
+      "parameters": {
+        "entry_kind": "directory"
+      },
+      "status": "passed",
+      "seconds": 0.91
+    },
+    {
+      "test": "test_integrity_receipt_glob_entries_cannot_masquerade_as_empty",
+      "parameters": {
+        "entry_kind": "dangling_symlink"
+      },
+      "status": "passed",
+      "seconds": 0.873
+    },
+    {
+      "test": "test_integrity_silent_receipt_scan_failure_never_authorizes_copy",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 0.946
+    },
+    {
+      "test": "test_integrity_new_package_with_excluded_cache_fails_restore_closed",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 2.503
+    },
+    {
+      "test": "test_deploy_writes_expected_marker_before_restart",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.561
+    },
+    {
+      "test": "test_activation_gate_order_and_canonical_lock_are_explicit",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 0.0
+    },
+    {
+      "test": "test_deploy_refuses_unresolved_pre_v2_settlement_state",
+      "parameters": {
+        "artifact": "paper_transaction.json"
+      },
+      "status": "passed",
+      "seconds": 0.872
+    },
+    {
+      "test": "test_deploy_refuses_unresolved_pre_v2_settlement_state",
+      "parameters": {
+        "artifact": "settlement_receipts/old.json"
+      },
+      "status": "passed",
+      "seconds": 0.97
+    },
+    {
+      "test": "test_activation_rejects_account_or_fills_byte_mutation",
+      "parameters": {
+        "mutation_flag": "FAKE_MUTATE_ACCOUNT_ON_RESTART"
+      },
+      "status": "passed",
+      "seconds": 2.371
+    },
+    {
+      "test": "test_activation_rejects_account_or_fills_byte_mutation",
+      "parameters": {
+        "mutation_flag": "FAKE_MUTATE_FILLS_ON_RESTART"
+      },
+      "status": "passed",
+      "seconds": 2.284
+    },
+    {
+      "test": "test_activation_rejects_missing_authority_file",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 2.187
+    },
+    {
+      "test": "test_failed_deploy_restores_code_marker_and_retains_pending_cohort",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 3.205
+    },
+    {
+      "test": "test_partial_rsync_failure_restores_old_tree_and_restarts",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.848
+    },
+    {
+      "test": "test_marker_write_failure_uses_post_backup_rollback",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 2.065
+    },
+    {
+      "test": "test_restart_failure_restores_marker_and_attempts_rollback_restart",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 1.898
+    },
+    {
+      "test": "test_deploy_rejects_health_when_scheduler_is_not_running",
+      "parameters": {},
+      "status": "passed",
+      "seconds": 2.945
+    },
+    {
+      "test": "test_partial_copy_rolls_back_shared_runtime_packages",
+      "parameters": {
+        "preexisting": false,
+        "package": "common"
+      },
+      "status": "passed",
+      "seconds": 1.68
+    },
+    {
+      "test": "test_partial_copy_rolls_back_shared_runtime_packages",
+      "parameters": {
+        "preexisting": false,
+        "package": "integrations"
+      },
+      "status": "passed",
+      "seconds": 1.672
+    },
+    {
+      "test": "test_partial_copy_rolls_back_shared_runtime_packages",
+      "parameters": {
+        "preexisting": true,
+        "package": "common"
+      },
+      "status": "passed",
+      "seconds": 1.693
+    },
+    {
+      "test": "test_partial_copy_rolls_back_shared_runtime_packages",
+      "parameters": {
+        "preexisting": true,
+        "package": "integrations"
+      },
+      "status": "passed",
+      "seconds": 1.622
+    }
+  ],
+  "passed": 44,
+  "failed": 0
+}

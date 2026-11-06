@@ -221,8 +221,8 @@ def _strip_fms_shell(template_text: str, page_js_text: str) -> tuple[str, str]:
         ),
         (
             "\n  var fmsUI=typeof window.createGovernmentRevenueFms==='function'?window.createGovernmentRevenueFms({authReloadOwner:true,obj:obj,arr:arr,esc:esc,text:text,n:n,money:money,date:date,tr:tr,safeUrl:safeUrl,host:function(){return $('inspector')},"
-            "isSelected:function(id){return state.selected===id},openEvidenceDrawer:openEvidenceDrawer,copyLink:copyLink,setMobile:setMobileSummary,onRows:function(rows,meta){rowsByMode.fms=arr(rows).filter(obj);fmsStatus=text((meta||{}).status,'unavailable');"
-            "syncCounts();populateFilters();if(state.mode==='fms'){state.selected='';applyFilters()}}}):(function(){fmsStatus=fallbackFmsStatus();return{load:function(){return Promise.resolve([])},refresh:function(){return[]},render:function(){},invalidate:function(){},state:function(){return fmsStatus}}})();"
+            "isSelected:function(id){return state.selected===id},openEvidenceDrawer:openEvidenceDrawer,copyLink:copyLink,setMobile:setMobileSummary,onRows:function(rows,meta){var requested=pendingSelection||state.selected;rowsByMode.fms=arr(rows).filter(obj);fmsStatus=text((meta||{}).status,'unavailable');"
+            "syncCounts();populateFilters();if(state.mode==='fms'){state.selected=requested;applyFilters()}}}):(function(){fmsStatus=fallbackFmsStatus();return{load:function(){return Promise.resolve([])},refresh:function(){return[]},render:function(){},invalidate:function(){},state:function(){return fmsStatus}}})();"
         ),
         "if(!r||r.kind!=='fms_case')fmsUI.invalidate();",
         "fmsUI.invalidate();",

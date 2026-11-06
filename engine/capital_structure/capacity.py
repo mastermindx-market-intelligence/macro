@@ -101,6 +101,7 @@ from engine.capital_structure.issuer_state_contracts import (
     _record,
     sha256_of,
 )
+from engine.capital_structure.listing_facts import ListingFact
 from engine.capital_structure.rule_applicability import (
     FLOAT_MEASUREMENT_LOOKBACK_DAYS,
     RuleApplicabilityError,
@@ -140,6 +141,9 @@ BABY_SHELF_RULES: dict[str, tuple[str, str]] = {
     "F-3": ("form_f3.I.B.5", "form_f3.I.B.1"),
 }
 NASDAQ_RULE_ID = "nasdaq.5635.d.1.B"
+#: SPEC_G0 §2.3: the foreign-private-issuer home-country-practice rule whose
+#: verified status at the sale date exempts the 5635(d) pool.
+NASDAQ_5615_RULE_ID = "nasdaq.5615.a.3"
 REFERENCE_PACK_MANIFEST_ID = "capital_structure.reference_pack.E0"
 
 #: The A14 scenario assumptions that make Rule 5635(d) reachable at all.
@@ -157,10 +161,30 @@ BRANCHES = ("pessimistic", "optimistic")
 #: The ``other_assumptions`` key that declares mutually exclusive route groups.
 ROUTE_EXCLUSIVITY_KEY = "route_exclusivity"
 
+#: SPEC_V0 §1: the envelope blocker prefix for a joint solve the kernel refused.
+#: ``solve_joint`` refuses, evaluating nothing, when the exclusive groups give
+#: more branches than ``capacity_joint.MAX_BRANCHES``; the kernel's own text
+#: follows the prefix so the served body names the refusal verbatim.
+JOINT_SOLVE_REFUSED_PREFIX = "joint_solve_refused"
+
+#: SPEC_C2D §2.2: the ``other_assumptions`` key that binds an OUTSIDE registered
+#: route to a registration path of this envelope, as
+#: ``"<route_id>=<path_id>;<route_id>=<path_id>"`` -- ``;`` separates bindings,
+#: ``=`` separates the route from its path, ids verbatim, whitespace stripped.
+#: The same text grammar family as ``route_exclusivity``.  The binding is a
+#: SCENARIO ASSUMPTION (masterplan §4), never an observed fact, so it is carried
+#: as a condition and reported in ``inputs``, and it never becomes a route.
+ROUTE_REGISTRATION_PATHS_KEY = "route_registration_paths"
+
 #: The route kinds this adapter models.  A scenario action of either kind on a
 #: route the envelope does not carry is an input error, not another owner's
 #: business (SPEC_C2B §2.2).
 CAPACITY_OWNED_ROUTE_KINDS = ("shelf_takedown", "at_the_market")
+
+#: SPEC_C2D §1.2: the outside route kinds a declaration can bind to a path.
+#: ``pipe`` is deliberately absent -- a PIPE is unregistered, so it has no
+#: registration path and naming one is an input error (SPEC_C2D §0.7).
+OUTSIDE_REGISTERED_KINDS = ("registered_direct", "equity_line")
 
 #: SPEC_C2B §2.3: the owner that consumes pools this adapter cannot model.
 CAPACITY_UNMODELLED_OWNER = "capacity_unmodelled"
@@ -257,20 +281,25 @@ def explain_capacity(
     *,
     pack: rule_applicability.RuleApplicabilityPack | None = None,
     transactions: TransactionLedger | None = None,
+    listing: ListingFact | None = None,
 ) -> CapacityEvaluation:
     """As :func:`evaluate_capacity`, plus the digested inputs and kernel records.
 
     ``transactions`` is the additive SPEC_C2X keyword: an X0a
     :class:`~engine.capital_structure.transactions.TransactionLedger` at the same
     ``as_of`` for the same issuer, whose usage rows capacity consumes as fact, as
-    an evidenced floor or as a contradiction.  ``evaluate_capacity`` keeps the
-    three-parameter signature ``INTERFACE_OWNERSHIP`` freezes for it, so a caller
-    that supplies a ledger reads ``explain_capacity(...).envelope``.
+    an evidenced floor or as a contradiction.  ``listing`` is the additive
+    SPEC_G0 keyword: a :class:`~engine.capital_structure.listing_facts.ListingFact`
+    whose observed venue binds the listing_venue assumption and whose
+    foreign-private-issuer status decides the Nasdaq 5615(a)(3) exemption.
+    ``evaluate_capacity`` keeps the three-parameter signature
+    ``INTERFACE_OWNERSHIP`` freezes for it, so a caller that supplies either
+    reads ``explain_capacity(...).envelope``.
     """
     if pack is None:
         pack = load_rule_applicability_pack()
     try:
-        return _Builder(state, scenario, rules, pack, transactions).run()
+        return _Builder(state, scenario, rules, pack, transactions, listing).run()
     except CapacityInputError:
         raise
     except (ContractViolation, JointModelError, RuleApplicabilityError) as exc:
@@ -343,6 +372,15 @@ def _nested(body: Any, *keys: str) -> Any:
             return None
         node = node.get(key)
     return node
+
+
+def _filing_instant(body: Any) -> datetime | None:
+    """A document-term row's FILING clock: the SEC acceptance of its filing.
+    Never an ingestion clock -- ``source_available_at`` is when we first saw
+    the document, so a backfilled original would outrank its own earlier-
+    captured amendment, and one backfill run stamps many filings alike
+    (the ``_filing_chronology_time`` rule of the event spine)."""
+    return _utc(_nested(body, "filing", "accepted_at"))
 
 
 def _text(value: Any) -> str | None:
@@ -512,8 +550,21 @@ def _read_records(state: CapitalState, cutoff: datetime) -> _StateRead:
             if schema == REGISTRATION_PATH_SCHEMA:
                 available = _utc(_nested(body, "origin", "mastermind_available_at"))
             elif schema == DOCUMENT_TERM_SCHEMA:
-                available = _utc(_nested(body, "point_in_time", "source_available_at")) or _utc(
-                    _nested(body, "filing", "accepted_at")
+                # A document-term row is then-known at the LATER of its own
+                # materialization instant and its source availability; the
+                # filing clock is only a fallback when neither is present.
+                record_stamps = [
+                    stamp
+                    for stamp in (
+                        _utc(_nested(body, "point_in_time", "available_at")),
+                        _utc(_nested(body, "point_in_time", "source_available_at")),
+                    )
+                    if stamp is not None
+                ]
+                available = (
+                    max(record_stamps)
+                    if record_stamps
+                    else _utc(_nested(body, "filing", "accepted_at"))
                 )
             elif schema in SHARE_COUNT_SCHEMAS:
                 available = _available_instant(body)
@@ -712,6 +763,47 @@ class _NonCapacityAction:
 
 
 @dataclass(frozen=True)
+class _OutsideView:
+    """SPEC_C2D §1.3: one modelled outside action and the pools it consumes.
+
+    An outside route gets NO :class:`_RoutePlan`, no kernel variable, no per-route
+    bound and no witness row: its own limit (a commitment amount, a purchase
+    agreement, a placement size) belongs to the funding owner.  What capacity
+    states here is only the consumption of shared pools it already models, so the
+    aggregate stays what the ENVELOPE routes can raise after every fixed use.
+
+    ``shares`` is the share count consumed per branch -- the quantity itself when
+    the unit is shares, ``usd[branch] * share_coefficient(branch)`` otherwise --
+    and is EMPTY where the uncovered price path cannot price a share pool
+    (SPEC_C2D §0.16): an unknown stays unknown, never ``0``.
+    """
+
+    route_id: str
+    action: str
+    path_id: str | None
+    usd: dict[str, Fraction]
+    shares: dict[str, Fraction]
+    pools: tuple[str, ...]
+    conditions_assumed_met: tuple[str, ...]
+
+    def as_record(self) -> dict[str, Any]:
+        """``inputs["outside_consumption"]`` (§5): exact text, never a number."""
+        return {
+            "route_id": self.route_id,
+            "action": self.action,
+            "path_id": self.path_id,
+            "pools": list(self.pools),
+            "usd": {branch: _money_text(self.usd[branch]) for branch in BRANCHES},
+            "shares": (
+                {branch: _fraction_text(self.shares[branch]) for branch in sorted(self.shares)}
+                if self.shares
+                else None
+            ),
+            "conditions_assumed_met": list(self.conditions_assumed_met),
+        }
+
+
+@dataclass(frozen=True)
 class _UsageEvidence:
     """SPEC_C2X §6: one ledger usage row exactly as capacity consumed or refused it.
 
@@ -751,6 +843,17 @@ class _RoutePlan:
     consumes: tuple[str, ...]
     applicability: str | None
     evidence: tuple[EvidenceRef, ...]
+
+
+def _refusals(*solutions: JointSolution | None) -> tuple[str, ...]:
+    """The kernel refusal texts of the given solves, sorted and distinct.
+
+    ``solve_joint`` sets ``blockers`` only when it refuses to enumerate (SPEC_V0 §1),
+    so any blocker means that solve evaluated no branch at all.
+    """
+    return tuple(sorted({
+        text for solution in solutions if solution is not None for text in solution.blockers
+    }))
 
 
 def _unknown_bound(unit: str, note: str, share_basis: str | None = None) -> Quantity:
@@ -808,6 +911,7 @@ class _Builder:
         rules: RulePack,
         pack: rule_applicability.RuleApplicabilityPack,
         transactions: TransactionLedger | None = None,
+        listing: ListingFact | None = None,
     ) -> None:
         if not isinstance(state, CapitalState):
             raise CapacityInputError("state: a CapitalState is required")
@@ -817,6 +921,8 @@ class _Builder:
             raise CapacityInputError("rules: a RulePack is required")
         if not isinstance(pack, rule_applicability.RuleApplicabilityPack):
             raise CapacityInputError("pack: a RuleApplicabilityPack is required")
+        if listing is not None and not isinstance(listing, ListingFact):
+            raise CapacityInputError("listing: a ListingFact or None is required")
         # SPEC_C2X §1: refused before anything is read, so no partial digest exists.
         transactions = _check_transactions(state, transactions)
         cutoff = _utc(state.request.as_of)
@@ -861,6 +967,24 @@ class _Builder:
         self.resolutions = {item.unknown_id: item for item in scenario.unknown_resolutions}
         self.assumptions = dict(scenario.other_assumptions)
         self.transactions = transactions
+        #: SPEC_G0 §2.2: the listing enters as an additive keyword.  A then-known
+        #: view later than the state cutoff is not yet known: it is treated as
+        #: None, and the digest records the exclusion instead of the fact.  The
+        #: view is later when it became available after the cutoff, or when it
+        #: describes a day after the cutoff's own day (it was derived from
+        #: filings the state could not yet see).
+        self.listing_supplied = listing
+        self.listing_excluded_after_as_of = False
+        self.listing: ListingFact | None = listing
+        if listing is not None:
+            available = _utc(listing.available_at)
+            if (
+                available is None
+                or available > cutoff
+                or listing.as_of > cutoff.date().isoformat()
+            ):
+                self.listing_excluded_after_as_of = True
+                self.listing = None
         #: SPEC_C2X §3: the effective resolution the ledger decides for a usage key
         #: -- an evidenced fact, or ``None`` when the scenario assumption was
         #: refused below an evidenced floor or the row contradicted.  A key absent
@@ -900,6 +1024,12 @@ class _Builder:
         self.action_views: dict[str, _ActionView] = {}
         self.non_capacity_actions: tuple[_NonCapacityAction, ...] = ()
         self.unmodelled_consumption: tuple[str, ...] = ()
+        #: SPEC_C2D §1.4: the outside routes this adapter models, by route id.
+        self.outside_views: dict[str, _OutsideView] = {}
+        #: SPEC_C2D §2.2: the parsed ``route_registration_paths`` declaration.
+        self.outside_declared: tuple[tuple[str, str], ...] = ()
+        #: SPEC_C2D §2.3: declared outside routes blocked on an ineligible path.
+        self.outside_blocked: tuple[str, ...] = ()
         self.residual_routes: dict[str, dict[str, Fraction | None]] = {
             branch: {} for branch in BRANCHES
         }
@@ -963,6 +1093,8 @@ class _Builder:
         self._exclusive_groups()
         self._apply_actions()
         pessimistic, optimistic, ceiling = self._solve()
+        for text in _refusals(pessimistic, optimistic, ceiling):
+            self.blockers.append(f"{JOINT_SOLVE_REFUSED_PREFIX}:{text}")
         active = tuple(sorted(
             plan.route_id for plan in self.route_plans if plan.status in ACTIVE_ROUTE_STATUSES
         ))
@@ -1412,22 +1544,51 @@ class _Builder:
 
     def _fee_table(self, path: _ShelfPath) -> _FeeTable:
         rows: list[tuple[_Observation, str]] = []
+        # A total row the compiler found but could not observe (ambiguous or
+        # unavailable) still says the filing HAS a stated total, so a lone
+        # per-security row must not stand in for it.  Such a filing also
+        # joins the filing ordering below: when it is the latest, its
+        # unreadable total leaves the amount unknown rather than letting an
+        # earlier filing's amount stand.  An observed row stated in another
+        # currency or scale joins the ordering too (a total among them counts
+        # as unreadable), so a later amendment this evaluator cannot read
+        # still makes the earlier amount stale.  An amendment with no fee
+        # table at all emits no row and never displaces the original's amount.
+        # Every fee-table row of a filing is counted whatever its disposition,
+        # currency or scale, and a contradiction on any of them marks the
+        # filing contradicted: a row this evaluator cannot read is still part
+        # of the table, so a lone readable row beside it is never the total.
+        unobserved_totals: Counter[str] = Counter()
+        table_rows: Counter[str] = Counter()
+        contradicted: set[str] = set()
+        stated: list[tuple[str, datetime | None]] = []
         for observation in self.read.fee_rows:  # type: ignore[union-attr]
             body = observation.body
             if _text(_nested(body, "term", "name")) != FEE_TABLE_TERM_NAME:
                 continue
+            on_path = _text(_nested(body, "filing", "accession"))
+            if on_path is not None and on_path in path.accessions:
+                table_rows[on_path] += 1
+                if _sequence(_nested(body, "relationships", "contradiction_ids")):
+                    contradicted.add(on_path)
             if _text(_nested(body, "state", "disposition")) != "observed":
-                continue
-            normalized = body.get("normalized") if isinstance(body.get("normalized"), Mapping) else {}
-            currency = _text(normalized.get("currency"))
-            if currency is None or currency.upper() != "USD":
-                continue
-            raw_scale = normalized.get("scale")
-            scale = _decimal_or_none(raw_scale if isinstance(raw_scale, str) else str(raw_scale))
-            if scale is None or scale != 1:
+                if _text(_nested(body, "term", "scope")) == "registration_fee_table_total":
+                    unobserved = _text(_nested(body, "filing", "accession"))
+                    if unobserved is not None and unobserved in path.accessions:
+                        unobserved_totals[unobserved] += 1
+                        stated.append((unobserved, _filing_instant(body)))
                 continue
             accession = _text(_nested(body, "filing", "accession"))
             if accession is None or accession not in path.accessions:
+                continue
+            stated.append((accession, _filing_instant(body)))
+            normalized = body.get("normalized") if isinstance(body.get("normalized"), Mapping) else {}
+            currency = _text(normalized.get("currency"))
+            raw_scale = normalized.get("scale")
+            scale = _decimal_or_none(raw_scale if isinstance(raw_scale, str) else str(raw_scale))
+            if currency is None or currency.upper() != "USD" or scale is None or scale != 1:
+                if _text(_nested(body, "term", "scope")) == "registration_fee_table_total":
+                    unobserved_totals[accession] += 1
                 continue
             rows.append((observation, accession))
 
@@ -1454,36 +1615,112 @@ class _Builder:
                 )
             return _FeeTable(quantity, None, (), None, None, unknowns, blockers)
 
-        if not rows:
+        if not stated:
             return missing("no fee-table row for this registration is then-known")
-        latest = max(rows, key=lambda item: (item[0].available, item[1]))
-        accession = latest[1]
+        # The registered amount is the one stated by the LATEST FILING on the
+        # path, ranked by its SEC acceptance -- never by ``available`` (which
+        # also carries the materialization instant) nor by when we first saw
+        # the document.  A filing without an acceptance time, or two filings
+        # accepted at one instant, cannot be ordered, so the amount is
+        # unknown rather than picked by accession spelling.
+        filed: dict[str, datetime | None] = {}
+        for row_accession, stamp in stated:
+            if row_accession in filed:
+                previous = filed[row_accession]
+                stamp = None if previous is None or stamp is None else max(previous, stamp)
+            filed[row_accession] = stamp
+        if len(filed) == 1:
+            accession = next(iter(filed))
+        else:
+            clocks = [stamp for stamp in filed.values() if stamp is not None]
+            if len(clocks) < len(filed):
+                return missing(
+                    f"not every filing under {path.path_id} with a fee table carries a "
+                    "filing instant, so the latest one cannot be named",
+                    blockers=(f"fee_table_order_unknown:{path.path_id}",),
+                )
+            newest = max(clocks)
+            leaders = sorted(acc for acc, stamp in filed.items() if stamp == newest)
+            if len(leaders) > 1:
+                return missing(
+                    f"{len(leaders)} filings under {path.path_id} share the latest "
+                    "filing instant, so neither fee table can be chosen",
+                    blockers=(f"fee_table_order_tied:{path.path_id}",),
+                )
+            accession = leaders[0]
         group = [item for item in rows if item[1] == accession]
-        refs = _unique_refs(
-            [ref for item in group for ref in _span_refs(_nested(item[0].body, "evidence", "spans"))]
-        )
-        available = max(item[0].available for item in group)
-        contradicted = any(
-            _sequence(_nested(item[0].body, "relationships", "contradiction_ids")) for item in group
-        )
-        if contradicted:
+        if accession in contradicted:
             # SPEC_C1 §5: a contradicted fee table is reported as contradicted,
-            # never as merely unknown and never as a known amount.
+            # never as merely unknown and never as a known amount -- even when
+            # the contradicted row is one this evaluator cannot read.
             return missing(
                 f"the fee-table rows of {accession} carry a contradiction",
                 blockers=(f"fee_table_contradicted:{accession}",),
                 status="contradicted",
             )
-        if len(group) > 1:
+        if not group and not unobserved_totals[accession]:
             return missing(
-                f"{len(group)} fee-table rows in {accession} disagree about the registered amount",
+                f"the fee-table rows of {accession} are not stated in whole US dollars, "
+                "so the latest filing's amount cannot be read",
+                blockers=(f"fee_table_value_unusable:{accession}",),
+            )
+        # SPEC_C2 §5: the filing's own "Total Offering Amounts" row is the
+        # registered amount.  When the latest accession carries exactly one
+        # such total-scoped row, its value -- with its provenance and span
+        # evidence -- wins over the per-security rows, which are never summed.
+        # Two total rows (agreeing or not) cannot pick an amount.  With no
+        # total row a security row is the amount only when it is the filing's
+        # ONLY fee-table row: a sibling row in another currency or scale, or
+        # one the compiler could not observe, leaves the amount unknown.
+        total_rows = [
+            item
+            for item in group
+            if _text(_nested(item[0].body, "term", "scope")) == "registration_fee_table_total"
+        ]
+        if unobserved_totals[accession] and not total_rows:
+            return missing(
+                f"the fee-table total of {accession} is present but not readable as a "
+                "whole-dollar USD amount, so no per-security row may stand in for it",
+                blockers=(f"fee_table_total_indeterminate:{accession}",),
+            )
+        if len(total_rows) == 1 and not unobserved_totals[accession]:
+            chosen = total_rows
+        elif total_rows or table_rows[accession] != len(group):
+            chosen = []
+        else:
+            chosen = list(group)
+        if not chosen or len(chosen) > 1:
+            return missing(
+                f"{table_rows[accession]} fee-table rows in {accession} cannot name one "
+                "registered amount",
                 blockers=(f"fee_table_multi_row:{accession}",),
             )
-        value = _decimal_or_none(_nested(group[0][0].body, "normalized", "value"))
+        refs = _unique_refs(
+            [
+                ref
+                for item in chosen
+                for ref in _span_refs(_nested(item[0].body, "evidence", "spans"))
+            ]
+        )
+        available = max(item[0].available for item in chosen)
+        value = _decimal_or_none(_nested(chosen[0][0].body, "normalized", "value"))
         if value is None or value < 0:
             return missing(
                 f"the fee-table value of {accession} is not a nonnegative decimal",
                 blockers=(f"fee_table_value_not_decimal:{accession}",),
+            )
+        if value == 0:
+            # A deferred-fee automatic shelf (Rules 456(b)/457(r)) files its fee
+            # table quoting "$ 0.00": the document says zero, but that states no
+            # registered amount at all.  It is indeterminate, never a known $0.
+            if _text(_nested(chosen[0][0].body, "term", "scope")) == "registration_fee_table_total":
+                return missing(
+                    f"the fee-table total of {accession} quotes zero, which states no registered amount",
+                    blockers=(f"fee_table_total_indeterminate:{accession}",),
+                )
+            return missing(
+                f"the fee-table row of {accession} quotes zero, which states no registered amount",
+                blockers=(f"fee_table_value_indeterminate:{accession}",),
             )
         if not refs:
             return missing(
@@ -2491,6 +2728,60 @@ class _Builder:
         except ContractViolation:
             return ()
 
+    def _listing_digest_keys(self) -> dict[str, Any]:
+        """SPEC_G0 §2.2: the additive ``nasdaq`` digest keys of a supplied listing.
+
+        Present only when an effective listing was supplied; their order follows
+        the module's canonical JSON (sorted keys).
+        """
+        if self.listing is None:
+            return {}
+        if self.listing.venue != "unknown":
+            basis: str = "observed"
+            venue: str | None = self.listing.venue
+        else:
+            basis = "assumption"
+            venue = _text(self.assumptions.get("listing_venue"))
+        return {
+            "listing_venue_basis": basis,
+            "listing_venue": venue,
+            "fpi": self.listing.foreign_private_issuer,
+            "home_country_practice_5635": self.listing.home_country_practice_5635,
+        }
+
+    def _nasdaq_record(self) -> Any:
+        """``inputs["nasdaq"]``: today's record, or the additive listing keys."""
+        if self.nasdaq_inputs is None and self.listing is None:
+            return None
+        body: dict[str, Any] = dict(self.nasdaq_inputs) if self.nasdaq_inputs is not None else {"pool": None}
+        body.update(self._listing_digest_keys())
+        return body
+
+    def _demote_exchange_pool(
+        self,
+        shared_by: tuple[str, ...],
+        *,
+        condition: str,
+        unknown_prefix: str,
+        description: str,
+        resolving_fact: str,
+        reason: str,
+    ) -> None:
+        """SPEC_G0 §2.2: demote every active path; no exchange pool is decided.
+
+        The condition lands on every active path's routes, so a route that
+        carries it is never eligible; the routes stay active, so no path is
+        reported as no-active-path (A33).
+        """
+        for path in self.paths:
+            if path.classification != "ineligible":
+                self.path_conditions[path.path_id].add(condition)
+        for route_id in shared_by:
+            self.unknowns.append(
+                _unknown(f"{unknown_prefix}:{route_id}", description, resolving_fact, (route_id,))
+            )
+        self.nasdaq_inputs = {"pool": None, "reason": reason, **self._listing_digest_keys()}
+
     def _nasdaq_pool(self) -> None:
         active_paths = [path for path in self.paths if path.classification != "ineligible"]
         if not active_paths:
@@ -2499,10 +2790,55 @@ class _Builder:
             sorted({route_id for path in active_paths for route_id in self._route_ids(path)})
         )
         pool_id = f"nasdaq_20pct:{self.sale_iso}"
-        assumed = all(
-            _text(self.assumptions.get(key)) == value
-            for key, value in NASDAQ_OFFERING_ASSUMPTIONS.items()
-        )
+        keys = {
+            key: _text(self.assumptions.get(key)) for key in NASDAQ_OFFERING_ASSUMPTIONS
+        }
+        assumed = all(keys[key] == value for key, value in NASDAQ_OFFERING_ASSUMPTIONS.items())
+        observed = self.listing if self.listing is not None and self.listing.venue != "unknown" else None
+        if observed is not None:
+            # SPEC_G0 §2.2: the observed venue is an issuer fact.  Conflict is
+            # checked before the qualified-venue test; an unqualified venue is
+            # never eligible on the venue axis, whatever the scenario assumed.
+            if keys["listing_venue"] is not None and keys["listing_venue"] != observed.venue:
+                self._demote_exchange_pool(
+                    shared_by,
+                    condition="listing_venue_conflict",
+                    unknown_prefix="listing_venue_conflict",
+                    description=(
+                        f"the scenario assumes {keys['listing_venue']} but the issuer is "
+                        f"listed on {observed.venue}"
+                    ),
+                    resolving_fact=(
+                        "an issuer listing fact whose venue agrees with the scenario's "
+                        "listing_venue assumption"
+                    ),
+                    reason="listing_venue_conflict",
+                )
+                return
+            if observed.venue not in self.pack.venues:
+                self._demote_exchange_pool(
+                    shared_by,
+                    condition=f"venue_rule_pack_unqualified:{observed.venue}",
+                    unknown_prefix=f"venue_rule_pack_unqualified:{observed.venue}",
+                    description=(
+                        f"the issuer is listed on {observed.venue}, which no qualified "
+                        "rule-applicability pack carries, so the exchange pool is not decided (A33)"
+                    ),
+                    resolving_fact=(
+                        f"a qualified rule-applicability pack carrying venue {observed.venue!r}"
+                    ),
+                    reason=f"venue_rule_pack_unqualified:{observed.venue}",
+                )
+                return
+            # The observed venue is used in place of an absent assumption and
+            # satisfies the listing_venue key; the other two keys are still
+            # assumed exactly as before -- nothing is inferred for them.
+            assumed = (
+                keys["exchange_offering_treatment"]
+                == NASDAQ_OFFERING_ASSUMPTIONS["exchange_offering_treatment"]
+                and keys["price_relative_to_minimum_price"]
+                == NASDAQ_OFFERING_ASSUMPTIONS["price_relative_to_minimum_price"]
+            )
         if not assumed:
             for route_id in shared_by:
                 self.unknowns.append(
@@ -2521,6 +2857,10 @@ class _Builder:
             self.path_conditions[path.path_id].add(
                 "nasdaq_aggregation_of_related_transactions_not_evaluated"
             )
+        # SPEC_G0 §2.2: G0-E never removes an existing condition, so an exempted
+        # route keeps the Rule 5635(d) citation and its aggregation condition.
+        if self._nasdaq_5615_pool_inapplicable(active_paths):
+            return
         price = self.scenario.price
         assert self.price_view is not None
         view = self.price_view
@@ -2651,6 +2991,59 @@ class _Builder:
         }
         if route_coefficients:
             self.nasdaq_inputs["route_coefficients"] = [list(row) for row in route_coefficients]
+
+    def _nasdaq_5615_pool_inapplicable(self, active_paths: Sequence[_ShelfPath]) -> bool:
+        """SPEC_G0 §2.3: the Nasdaq 5615(a)(3) foreign-private-issuer exemption.
+
+        Reached only when venue nasdaq is used (observed or assumed) and the
+        offering assumptions hold.  An FPI that elected home-country practice in
+        lieu of the Rule 5600 Series is not subject to Rule 5635(d); the rule's
+        qualified status at the sale date decides whether that is asserted.
+        Returns True when the 5635(d) pool must not be added.  An election
+        unknown keeps the pool and conditions every sharing route; any other
+        status of the rule, or its absence from the pack, is no exemption.
+        """
+        listing = self.listing
+        if listing is None or listing.foreign_private_issuer is not True:
+            return False
+        if listing.home_country_practice_5635 == "unknown":
+            for path in active_paths:
+                self.path_conditions[path.path_id].add(
+                    "nasdaq_5635_applies_unless_home_country_practice_elected"
+                )
+            return False
+        if listing.home_country_practice_5635 != "elected":
+            return False
+        if not listing.evidence:
+            # An election asserted without its Item 16G evidence decides nothing:
+            # the pool stays and every sharing route is conditioned on it.
+            for path in active_paths:
+                self.path_conditions[path.path_id].add(
+                    "nasdaq_5635_applies_unless_home_country_practice_evidenced"
+                )
+            return False
+        if NASDAQ_5615_RULE_ID not in self.pack.rules:
+            for path in active_paths:
+                self.path_conditions[path.path_id].add("nasdaq_5615_a_3_absent_at_sale_date")
+            return False
+        status = rule_status_as_of(self.pack, NASDAQ_5615_RULE_ID, self.sale_iso)
+        if status.state != "verified":
+            for path in active_paths:
+                self.path_conditions[path.path_id].add(
+                    f"nasdaq_5615_a_3_{status.state}_at_sale_date"
+                )
+            return False
+        for path in active_paths:
+            self.path_rules[path.path_id].add(NASDAQ_5615_RULE_ID)
+        self.nasdaq_inputs = {
+            "pool": None,
+            "reason": "home_country_practice_elected",
+            "rule_id": NASDAQ_5615_RULE_ID,
+            "rule_state": status.state,
+            "evidence": [item.as_record() for item in listing.evidence],
+            **self._listing_digest_keys(),
+        }
+        return True
 
     # -- §8b the authorized-unreserved share pool (C2c-A) ---
 
@@ -3186,6 +3579,259 @@ class _Builder:
             conditions_assumed_met=tuple(sorted(action.conditions_assumed_met)),
         )
 
+    # -- SPEC_C2D outside-route consumption (C2d) -------------------------
+
+    def _outside_window_priced(self, action_kind: str) -> bool:
+        """Whether an outside kind is priced at the at-the-market window (§3.1).
+
+        C&DI 116.21-116.26: an equity line's primary registration is an
+        at-the-market offering under Rule 415(a)(4), so it prices exactly like the
+        ``at_the_market`` routes this adapter already carries.  A PIPE and a
+        registered direct are sales already scheduled at the horizon start, so
+        they price at ``p_start``.
+        """
+        return action_kind == "equity_line" and self.scenario.price.kind == "path"
+
+    def _outside_price(self, action_kind: str, branch: str) -> Fraction | None:
+        """§3.1/§3.2: ``_action_price``'s branch table without a :class:`_RoutePlan`.
+
+        ``None`` when the price path covers no price on or before the horizon
+        start: an uncovered price is an unknown, never a guessed number, so a
+        ``usd`` quantity then deducts nothing from a share pool (§0.16).
+        """
+        assert self.price_view is not None
+        view = self.price_view
+        if self._outside_window_priced(action_kind):
+            return view.low if branch == "pessimistic" else view.high
+        return view.p_start
+
+    def _outside_price_name(self, action_kind: str, branch: str) -> str:
+        """The price label the §2.4 refusal names, worded as ``_action_price`` does."""
+        if self._outside_window_priced(action_kind):
+            return "the window low" if branch == "pessimistic" else "the window high"
+        return "the price in effect at the horizon start"
+
+    def _pipe_pools(self) -> tuple[str, ...]:
+        """§2.3: the pools a PIPE draws on -- never a registration pool.
+
+        A PIPE is unregistered, so it consumes only the Rule 5635(d)
+        exchange-approval pool and the authorized-unreserved charter pool, and only
+        those this envelope actually carries.
+        """
+        present = {pool.pool_id for pool in self.pools}
+        return tuple(
+            sorted(
+                pool_id
+                for pool_id in (
+                    f"nasdaq_20pct:{self.sale_iso}",
+                    f"authorized_unreserved:{self.sale_iso}",
+                )
+                if pool_id in present
+            )
+        )
+
+    def _outside_conditions(self, item: _NonCapacityAction) -> tuple[str, ...]:
+        """§4.2: the conditions a modelled outside route assumes, by kind.
+
+        The route-to-path binding is a SCENARIO ASSUMPTION (masterplan §4), so it
+        is named as a condition and never recorded as an observed fact.  An equity
+        line also carries the C&DI 116.23/116.25 note: a concurrent I.B.3 resale
+        registration that evades I.B.6 capacity is counted, and this adapter does
+        not look for one.  A PIPE adds no condition -- the Nasdaq pool already
+        carries ``nasdaq_aggregation_of_related_transactions_not_evaluated``.
+        """
+        route_id = item.route_id
+        if item.action == "registered_direct":
+            return _conditions((f"registered_direct_path_declared_by_scenario:{route_id}",))
+        return _conditions(
+            (
+                f"equity_line_path_declared_by_scenario:{route_id}",
+                f"equity_line_concurrent_resale_registration_not_evaluated:{route_id}",
+            )
+        )
+
+    def _registration_paths(
+        self, outside: Sequence[_NonCapacityAction]
+    ) -> tuple[tuple[str, str], ...]:
+        """§2.2: parse ``other_assumptions["route_registration_paths"]``.
+
+        ``"<route_id>=<path_id>;<route_id>=<path_id>"`` -- the ``route_exclusivity``
+        text grammar family.  Every refusal is a :class:`CapacityInputError` naming
+        the key, because a declaration that cannot be read exactly is not a
+        declaration: the route then stays the SPEC_C2B §2.3 named Unknown.
+        """
+        raw = self.assumptions.get(ROUTE_REGISTRATION_PATHS_KEY)
+        if raw is None:
+            return ()
+        text = raw if isinstance(raw, str) else str(raw)
+        kinds = {item.route_id: item.action for item in outside}
+        known_paths = {path.path_id for path in self.paths} | set(self.registered)
+        bindings: list[tuple[str, str]] = []
+        seen: set[str] = set()
+        for chunk in text.split(";"):
+            label = chunk.strip()
+            if not label:
+                continue
+            route_id, separator, path_id = label.partition("=")
+            route_id, path_id = route_id.strip(), path_id.strip()
+            if not separator:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: binding {label!r} carries no '=' between a "
+                    "route id and a registration path id"
+                )
+            if not route_id or not path_id:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: binding {label!r} names an empty route id "
+                    "or an empty registration path id"
+                )
+            if route_id in seen:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {route_id!r} is declared more than once"
+                )
+            seen.add(route_id)
+            action = kinds.get(route_id)
+            if action is None:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {route_id!r} is not an outside route action "
+                    "of this scenario; the envelope's own routes are declared by its route plans, "
+                    "never here"
+                )
+            if action == "pipe":
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {route_id!r} is a pipe action; a PIPE is "
+                    "unregistered, so it has no registration path to declare"
+                )
+            if action not in OUTSIDE_REGISTERED_KINDS:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {route_id!r} is a {action!r} action; only "
+                    f"{' and '.join(OUTSIDE_REGISTERED_KINDS)} routes are declared here"
+                )
+            if path_id not in known_paths:
+                raise CapacityInputError(
+                    f"{ROUTE_REGISTRATION_PATHS_KEY}: {path_id!r} is not a registration path of "
+                    "this envelope"
+                )
+            bindings.append((route_id, path_id))
+        return tuple(sorted(bindings))
+
+    def _outside_quantities(
+        self, item: _NonCapacityAction, quantity: Quantity
+    ) -> tuple[dict[str, Fraction], dict[str, Fraction]]:
+        """§2.4: the exact dollars and shares one modelled outside action consumes.
+
+        A ``usd`` quantity is the dollars in both branches, and the shares are
+        ``amount / price(branch)`` -- OMITTED, never zero, where the price path
+        covers no price (§0.16).  A ``shares`` quantity is the shares in both
+        branches and needs a price to state its dollars, so an uncovered path is a
+        refusal worded as ``_action_price`` words it.
+        """
+        route_id = item.route_id
+        amount = exact(quantity.value, f"action[{route_id}].quantity")
+        if amount < 0:
+            raise CapacityInputError(
+                f"action on {route_id!r} carries a negative quantity"
+            )
+        usd: dict[str, Fraction] = {}
+        shares: dict[str, Fraction] = {}
+        if quantity.unit == "usd":
+            for branch in BRANCHES:
+                usd[branch] = amount
+                price = self._outside_price(item.action, branch)
+                if price is not None:
+                    shares[branch] = amount / price
+            return usd, shares
+        if quantity.unit == "shares":
+            for branch in BRANCHES:
+                price = self._outside_price(item.action, branch)
+                if price is None:
+                    raise CapacityInputError(
+                        f"a share quantity on {route_id} needs "
+                        f"{self._outside_price_name(item.action, branch)}, and the price path "
+                        f"carries no price in effect on or before the horizon start "
+                        f"{self.scenario.horizon_start}"
+                    )
+                shares[branch] = amount
+                usd[branch] = amount * price
+            return usd, shares
+        raise CapacityInputError(
+            f"action on {route_id!r} is quantified in {quantity.unit!r}; only usd and shares "
+            "convert into gross dollars"
+        )
+
+    def _outside_consumption(self, outside: Sequence[_NonCapacityAction]) -> None:
+        """SPEC_C2D §2: model the outside consumption the documents support.
+
+        A FIXED cash PIPE consumes the exchange-approval and authorized-unreserved
+        share pools it draws on.  A FIXED cash ``registered_direct`` or
+        ``equity_line`` is modelled once the scenario DECLARES its registration
+        path, and consumes every pool that path's takedown shares -- dollars at
+        face and shares at the §3 coefficient.  Everything else stays exactly the
+        SPEC_C2B §2.3 named Unknown: undeclared, effectiveness unknown, non-cash,
+        recorded-only, or another owner's action.  No outside route becomes a
+        route here: no plan, no kernel variable, no bound, no witness row (§8).
+        """
+        self.outside_declared = self._registration_paths(outside)
+        declared = dict(self.outside_declared)
+        selections = {item.route_id: item for item in self.scenario.actions}
+        paths = {path.path_id: path for path in self.paths}
+        views: dict[str, _OutsideView] = {}
+        blocked: list[str] = []
+        for item in outside:
+            if not (
+                item.fixed
+                and item.owner == CAPACITY_UNMODELLED_OWNER
+                and item.settlement == "cash"
+            ):
+                continue
+            route_id = item.route_id
+            path_id = declared.get(route_id)
+            if item.action == "pipe":
+                pools = self._pipe_pools()
+                conditions: tuple[str, ...] = ()
+                path_id = None
+            elif path_id is None:
+                # §0.6: which pools an undeclared takedown draws on is not known.
+                continue
+            else:
+                path = paths.get(path_id)
+                if path is None:
+                    continue
+                if path.classification == "ineligible":
+                    # §0.9: the existing blocker, and NO deduction: an ineligible
+                    # path has no pool for this action to consume.
+                    self.blockers.append(f"asserted_action_on_ineligible_route:{route_id}")
+                    blocked.append(route_id)
+                    continue
+                if path.classification == "unknown":
+                    # §0.10: effectiveness unknown means consumption unknown.
+                    continue
+                pools = tuple(
+                    sorted(
+                        pool.pool_id
+                        for pool in self.pools
+                        if path.takedown_id in pool.shared_by
+                    )
+                )
+                conditions = self._outside_conditions(item)
+                self.path_conditions[path_id].update(conditions)
+            quantity = selections[route_id].quantity
+            if quantity is None or quantity.status != "known" or quantity.value is None:
+                # SPEC_C2B §2.2 never inspects the quantity's status, so a fixed
+                # action may carry an unknown amount: that stays unknown (§0.6).
+                continue
+            usd, shares = self._outside_quantities(item, quantity)
+            views[route_id] = _OutsideView(
+                route_id=route_id,
+                action=item.action,
+                path_id=path_id,
+                usd=usd,
+                shares=shares,
+                pools=pools,
+                conditions_assumed_met=conditions,
+            )
+        self.outside_blocked = tuple(sorted(blocked))
+        self.outside_views = views
+
     def _apply_actions(self) -> None:
         """Asserted actions become a FIXED use, never a cap on the route."""
         plans = {plan.route_id: plan for plan in self.route_plans}
@@ -3201,11 +3847,17 @@ class _Builder:
             else:
                 outside.append(self._non_capacity_action(action))
         self.non_capacity_actions = tuple(outside)
+        # SPEC_C2D §1.5: a modelled outside route consumes named pools, so it is no
+        # longer an unknown; a blocked one (§2.3) is named by its blocker instead.
+        self._outside_consumption(outside)
         self.unmodelled_consumption = tuple(
             sorted(
                 item.route_id
                 for item in outside
-                if item.fixed and item.owner == CAPACITY_UNMODELLED_OWNER
+                if item.fixed
+                and item.owner == CAPACITY_UNMODELLED_OWNER
+                and item.route_id not in self.outside_views
+                and item.route_id not in self.outside_blocked
             )
         )
         for action in envelope_actions:
@@ -3356,6 +4008,21 @@ class _Builder:
                 if view is None or not view.fixed or not view.applied:
                     continue
                 deduction += pool.coefficient_for(route_id, branch) * view.usd[branch]
+            # SPEC_C2D §3.3: an outside route is charged what its view consumed, and
+            # never through ``pool.coefficient_for`` -- the pool carries no row for
+            # a route it does not share with, and its default coefficient is the
+            # TAKEDOWN's 1/p_start, which is wrong for an equity line in a priced
+            # path.  A share pool an uncovered price could not price is skipped:
+            # nothing known to deduct (§0.16).
+            for outside_view in self.outside_views.values():
+                if pool.pool_id not in outside_view.pools:
+                    continue
+                if pool.bound.unit == "usd":
+                    deduction += outside_view.usd[branch]
+                    continue
+                outside_shares = outside_view.shares.get(branch)
+                if outside_shares is not None:
+                    deduction += outside_shares
             if bound is not None and deduction:
                 bound = bound - deduction
             elif bound is None and pool.substitute is not None and deduction > pool.substitute:
@@ -3539,6 +4206,14 @@ class _Builder:
         """§2.7: one aggregate.  Fixed actions are added; branch optima never are."""
         if self.contradiction is not None:
             return Quantity(unit="usd", status="contradicted", note=self.contradiction)
+        refused = _refusals(pessimistic, optimistic, ceiling)
+        if refused:
+            # SPEC_V0 §1: a refused solve evaluated no branch, so its zero floor
+            # and absent ceiling are placeholders, never a bound to quote.
+            return _unknown_bound(
+                "usd",
+                "joint solve refused (" + "; ".join(refused) + "); floor and ceiling unstated",
+            )
         fixed_pessimistic = self.fixed_totals["pessimistic"]
         fixed_optimistic = self.fixed_totals["optimistic"]
         ceiling_text = self._ceiling_text(ceiling)
@@ -3587,7 +4262,13 @@ class _Builder:
         )
 
     def _ceiling_text(self, ceiling: JointSolution) -> str:
-        """§2.7: the ceiling-call text an aggregate note quotes (``unbounded`` if none)."""
+        """§2.7: the ceiling-call text an aggregate note quotes (``unbounded`` if none).
+
+        A ceiling call the kernel refused evaluated nothing: it is ``unstated``,
+        never ``unbounded`` (SPEC_V0 §1).
+        """
+        if ceiling.blockers:
+            return "unstated"
         ceiling_raw = (
             ceiling.value if ceiling.determined else ceiling.ceiling_when_unknowns_relaxed
         )
@@ -3608,6 +4289,7 @@ class _Builder:
         """
         affects = tuple(sorted(pool.constraint_id for pool in pools))
         kinds = {item.route_id: item.action for item in self.non_capacity_actions}
+        settled = {item.route_id: item.settlement for item in self.non_capacity_actions}
         for route_id in self.unmodelled_consumption:
             action = kinds[route_id]
             unknown_id = f"action_route_not_modelled:{route_id}"
@@ -3616,14 +4298,27 @@ class _Builder:
                 # identifier limit; the description still names the full route.
                 digest = hashlib.sha256(route_id.encode("utf-8")).hexdigest()[:16]
                 unknown_id = f"action_route_not_modelled:{digest}"
+            resolving_fact = (
+                f"the registration path, pricing date and share or dollar consumption of "
+                f"{route_id} against each shared pool"
+            )
+            if action in OUTSIDE_REGISTERED_KINDS and settled.get(route_id) == "cash":
+                # SPEC_C2D §4.3: the ONE appended sentence, and only for the two
+                # kinds a declaration binds.  A PIPE and a non-cash action keep the
+                # SPEC_C2B text verbatim, and the identifier logic above is
+                # untouched.
+                resolving_fact += (
+                    "; a registered direct or equity line is modelled once "
+                    f"{ROUTE_REGISTRATION_PATHS_KEY} binds it to a registration path of this "
+                    "envelope"
+                )
             self.unknowns.append(
                 _unknown(
                     unknown_id,
                     f"{action} on {route_id} may draw on shared registration and "
                     "exchange-approval pools that capacity models only for shelf takedowns "
                     "and at-the-market programmes",
-                    f"the registration path, pricing date and share or dollar consumption of "
-                    f"{route_id} against each shared pool",
+                    resolving_fact,
                     affects,
                 )
             )
@@ -3783,6 +4478,21 @@ class _Builder:
             ),
             **(
                 {
+                    # SPEC_C2D §5: what each modelled outside action consumes, and
+                    # the declaration that bound it -- emitted only when at least
+                    # one outside action IS modelled (§0.1), so every fixture with
+                    # none digests exactly as it did before C2d.
+                    "outside_consumption": [
+                        self.outside_views[route_id].as_record()
+                        for route_id in sorted(self.outside_views)
+                    ],
+                    "outside_declared": [list(item) for item in self.outside_declared],
+                }
+                if self.outside_views
+                else {}
+            ),
+            **(
+                {
                     "transaction_ledger": {
                         "issuer_id": self.transactions.issuer_id,
                         "as_of": self.transactions.as_of,
@@ -3794,10 +4504,20 @@ class _Builder:
                 if self.transactions is not None
                 else {}
             ),
+            **(
+                {"listing_excluded_after_as_of": True}
+                if self.listing_excluded_after_as_of
+                else {}
+            ),
+            **(
+                {"listing": self.listing_supplied.as_record()}
+                if self.listing_supplied is not None and not self.listing_excluded_after_as_of
+                else {}
+            ),
             "remaining_capacity": self._remaining_record(),
             "registration_paths": path_records,
             "baby_shelf": self.baby_shelf_inputs,
-            "nasdaq": self.nasdaq_inputs,
+            "nasdaq": self._nasdaq_record(),
             **({"authorized": self.authorized_inputs} if self.authorized_inputs is not None else {}),
             "routes": [route.as_record() for route in routes],
             "pools": [pool.as_record() for pool in pools],
@@ -3888,10 +4608,12 @@ __all__ = [
     "NASDAQ_OFFERING_ASSUMPTIONS",
     "NASDAQ_RULE_ID",
     "NON_CAPACITY_OWNERS",
+    "OUTSIDE_REGISTERED_KINDS",
     "PROGRAMME_USAGE_PREFIX",
     "REGISTRATION_PATH_SCHEMA",
     "REFERENCE_PACK_MANIFEST_ID",
     "ROUTE_EXCLUSIVITY_KEY",
+    "ROUTE_REGISTRATION_PATHS_KEY",
     "SHARE_BASIS_RESULT_SCHEMA",
     "SHARE_COUNT_SCHEMAS",
     "SHELF_FAMILIES",

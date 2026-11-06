@@ -1,0 +1,32 @@
+[
+  {
+    "path": "app/government_revenue.py",
+    "expected": "e19a13a40a38a3f26e7f617e1f199a7294cb1cad8e4fa8d95823ec1fce5a7966",
+    "observed": "e19a13a40a38a3f26e7f617e1f199a7294cb1cad8e4fa8d95823ec1fce5a7966",
+    "match": true
+  },
+  {
+    "path": "site/government_revenue.html",
+    "expected": "07d989175bd1a70cabdc041b48d5633b7b1b895fb99e9636c2dbef327598e552",
+    "observed": "07d989175bd1a70cabdc041b48d5633b7b1b895fb99e9636c2dbef327598e552",
+    "match": true
+  },
+  {
+    "path": "data/government_revenue/defense_economics.json",
+    "expected": "7004d843ac28cdc29fc0fa1117823a8e1e2c2bd05ed22dffb9fa49909474a072",
+    "observed": "7004d843ac28cdc29fc0fa1117823a8e1e2c2bd05ed22dffb9fa49909474a072",
+    "match": true
+  },
+  {
+    "path": "site/government-revenue-data/defense-economics.json",
+    "expected": "7004d843ac28cdc29fc0fa1117823a8e1e2c2bd05ed22dffb9fa49909474a072",
+    "observed": "7004d843ac28cdc29fc0fa1117823a8e1e2c2bd05ed22dffb9fa49909474a072",
+    "match": true
+  },
+  {
+    "path": "site/government-revenue-data/program-dossier.json",
+    "expected": "4918536eee8b44791f924ec162a2e11e74dfe4cfbe1909d1c4ce85fe8c3ac988",
+    "observed": "4918536eee8b44791f924ec162a2e11e74dfe4cfbe1909d1c4ce85fe8c3ac988",
+    "match": true
+  }
+]

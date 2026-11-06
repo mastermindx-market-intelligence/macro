@@ -41,6 +41,10 @@ _TOP_KEYS = frozenset({
 _LIFECYCLES = {
     "product_integration": {"planned", "announced", "reported_use", "ended", "disputed"},
     "supplier_roster": {"listed", "ended", "disputed"},
+    # Manual disclosure species: the object supplies the subject in the stated
+    # product scope. "reported_use" is document-relative, never a present-day
+    # status, delivery/quantity witness, or automatic commercial adjudication.
+    "disclosed_supplier": {"reported_use", "ended", "disputed"},
     "framework_agreement": {"planned", "announced", "in_force", "ended", "disputed"},
     "administrative_party": {"appointed", "ended", "disputed"},
     "anonymous_counterparty": {"planned", "announced", "reported_use", "ended", "disputed"},
@@ -50,6 +54,7 @@ _LIFECYCLES = {
 _DISPOSITIONS = {
     "product_integration": ("product_integration_candidate", "product_only", True),
     "supplier_roster": ("roster_observation_only", "named_roster_only", False),
+    "disclosed_supplier": ("disclosed_supplier_candidate", "disclosed_role_product_scope_only", True),
     "framework_agreement": ("framework_candidate_no_deliveries", "framework_only", True),
     "administrative_party": ("administrative_role_only", "administrative_only", False),
     "anonymous_counterparty": ("counterparty_unresolved", "source_scope_only", False),
@@ -377,6 +382,14 @@ def inspect_candidate(
             "shipments": None, "revenue": None, "economic_weight": None,
             "theme_membership": None,
         }
+        if assertion["kind"] == "disclosed_supplier":
+            result["current_candidate_view"]["role_semantics"] = {
+                "supplier_label": assertion["object_label"],
+                "customer_label": assertion["subject_label"],
+                "direction": "object_supplies_subject",
+                "status_scope": "selected_document_only_not_current_status",
+                "qualification": "manual_assertion_not_owner_adopted",
+            }
         return result
     except CandidateInputError as exc:
         result["refusal"] = {"code": exc.code}

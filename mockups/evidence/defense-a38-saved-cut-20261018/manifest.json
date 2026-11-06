@@ -1,0 +1,295 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "tool": {
+    "module_ref": "mockups/evidence/defense-a38-saved-cut-20261018/CUA_CAPTURE.js",
+    "module_sha256": "7851ea6ba5d073c7da462b4a14d4207aab03590df964b0fc125d76a8e371da59"
+  },
+  "pages": [
+    {
+      "page_id": "government-revenue-saved-window",
+      "url": "http://127.0.0.1:58761/government_revenue.html",
+      "states": [
+        {
+          "file": "dark-en-1440.png",
+          "theme": "dark",
+          "locale": "en",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "access": "local-test-principal",
+          "force_state": null,
+          "captured": true,
+          "observed_at": "2026-10-19T11:33:47.602Z",
+          "dom": {
+            "drawer_visible": true,
+            "height": 900,
+            "horizontal_overflow": false,
+            "locale": "en",
+            "selected_event_id": "govws-22f2ee53487e1e6c760c13e0",
+            "theme": "dark",
+            "width": 1440
+          },
+          "capture_transport": {
+            "format": "JPEG",
+            "file": "dark-en-1440.capture.jpg",
+            "sha256": "025d352b83ec324fa7f3ac0d99e69a214548861f907f3649a097f5b224adb0b2",
+            "conversion": "Lossless PNG re-encoding of decoded browser screenshot pixels; no crop, resize, recolor or other editing."
+          },
+          "sha256": "42addf3e02c2da7ca075e05c09d8c79b2d6ab8f564e6463e2912f0f06b5764a0",
+          "bytes": 439548,
+          "width": 1440,
+          "height": 900,
+          "capture_tool_module_sha256": "7851ea6ba5d073c7da462b4a14d4207aab03590df964b0fc125d76a8e371da59"
+        },
+        {
+          "file": "dark-en-390.png",
+          "theme": "dark",
+          "locale": "en",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "access": "local-test-principal",
+          "force_state": null,
+          "captured": true,
+          "observed_at": "2026-10-19T11:34:37.601Z",
+          "dom": {
+            "drawer_visible": true,
+            "height": 844,
+            "horizontal_overflow": false,
+            "locale": "en",
+            "selected_event_id": "govws-22f2ee53487e1e6c760c13e0",
+            "theme": "dark",
+            "width": 390
+          },
+          "capture_transport": {
+            "format": "JPEG",
+            "file": "dark-en-390.capture.jpg",
+            "sha256": "4bafdfc30e319f1459be327ea5e5ded352b82812cd91c7b1abb63e12605511b7",
+            "conversion": "Lossless PNG re-encoding of decoded browser screenshot pixels; no crop, resize, recolor or other editing."
+          },
+          "sha256": "5f1136faf27f68c3cef21843221ddeebbeb034046cb927195db24a9a9e212ee3",
+          "bytes": 256454,
+          "width": 390,
+          "height": 844,
+          "capture_tool_module_sha256": "7851ea6ba5d073c7da462b4a14d4207aab03590df964b0fc125d76a8e371da59"
+        },
+        {
+          "file": "dark-zh-390.png",
+          "theme": "dark",
+          "locale": "zh",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "access": "local-test-principal",
+          "force_state": null,
+          "captured": true,
+          "observed_at": "2026-10-19T11:35:26.004Z",
+          "dom": {
+            "drawer_visible": true,
+            "height": 844,
+            "horizontal_overflow": false,
+            "locale": "zh",
+            "selected_event_id": "govws-22f2ee53487e1e6c760c13e0",
+            "theme": "dark",
+            "width": 390
+          },
+          "capture_transport": {
+            "format": "JPEG",
+            "file": "dark-zh-390.capture.jpg",
+            "sha256": "0909073321a2bae99b271655d58fb4188fe1e00f69e5845a2eba122c627d17e3",
+            "conversion": "Lossless PNG re-encoding of decoded browser screenshot pixels; no crop, resize, recolor or other editing."
+          },
+          "sha256": "ba3073874698421e3b4c3482328b8dd4daec892231d432988659d117f0d0aa42",
+          "bytes": 232056,
+          "width": 390,
+          "height": 844,
+          "capture_tool_module_sha256": "7851ea6ba5d073c7da462b4a14d4207aab03590df964b0fc125d76a8e371da59"
+        },
+        {
+          "file": "dark-zh-1440.png",
+          "theme": "dark",
+          "locale": "zh",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "access": "local-test-principal",
+          "force_state": null,
+          "captured": true,
+          "observed_at": "2026-10-19T11:35:26.758Z",
+          "dom": {
+            "drawer_visible": true,
+            "height": 900,
+            "horizontal_overflow": false,
+            "locale": "zh",
+            "selected_event_id": "govws-22f2ee53487e1e6c760c13e0",
+            "theme": "dark",
+            "width": 1440
+          },
+          "capture_transport": {
+            "format": "JPEG",
+            "file": "dark-zh-1440.capture.jpg",
+            "sha256": "5a6bf50fc624e0c7c726296f165815013c344deb6ff1a896183482102d033b98",
+            "conversion": "Lossless PNG re-encoding of decoded browser screenshot pixels; no crop, resize, recolor or other editing."
+          },
+          "sha256": "566d1839bd95b1a69aa5149bc4d7571d2508b94fbf678f8e3c25d98eb1a91771",
+          "bytes": 414671,
+          "width": 1440,
+          "height": 900,
+          "capture_tool_module_sha256": "7851ea6ba5d073c7da462b4a14d4207aab03590df964b0fc125d76a8e371da59"
+        },
+        {
+          "file": "light-zh-1440.png",
+          "theme": "light",
+          "locale": "zh",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "access": "local-test-principal",
+          "force_state": null,
+          "captured": true,
+          "observed_at": "2026-10-19T11:35:59.154Z",
+          "dom": {
+            "drawer_visible": true,
+            "height": 900,
+            "horizontal_overflow": false,
+            "locale": "zh",
+            "selected_event_id": "govws-22f2ee53487e1e6c760c13e0",
+            "theme": "light",
+            "width": 1440
+          },
+          "capture_transport": {
+            "format": "JPEG",
+            "file": "light-zh-1440.capture.jpg",
+            "sha256": "597c160f2ecfe32acc55ad1a6352519ce882dc1a80b56c0eeb4ab6d59049dcf7",
+            "conversion": "Lossless PNG re-encoding of decoded browser screenshot pixels; no crop, resize, recolor or other editing."
+          },
+          "sha256": "011c306f65fe2c238b3738e9db93569c84b6e7d1e01023693e704e612959bdce",
+          "bytes": 437674,
+          "width": 1440,
+          "height": 900,
+          "capture_tool_module_sha256": "7851ea6ba5d073c7da462b4a14d4207aab03590df964b0fc125d76a8e371da59"
+        },
+        {
+          "file": "light-zh-390.png",
+          "theme": "light",
+          "locale": "zh",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "access": "local-test-principal",
+          "force_state": null,
+          "captured": true,
+          "observed_at": "2026-10-19T11:35:59.827Z",
+          "dom": {
+            "drawer_visible": true,
+            "height": 844,
+            "horizontal_overflow": false,
+            "locale": "zh",
+            "selected_event_id": "govws-22f2ee53487e1e6c760c13e0",
+            "theme": "light",
+            "width": 390
+          },
+          "capture_transport": {
+            "format": "JPEG",
+            "file": "light-zh-390.capture.jpg",
+            "sha256": "b4b37f160c05e3b3b17b2e3a7aa6442ac8443b118738c7880e10cd0237bb5fc9",
+            "conversion": "Lossless PNG re-encoding of decoded browser screenshot pixels; no crop, resize, recolor or other editing."
+          },
+          "sha256": "90d22f848c092c8096b474b239ef410d461f4148178c0f175c650b1d24b784cc",
+          "bytes": 263167,
+          "width": 390,
+          "height": 844,
+          "capture_tool_module_sha256": "7851ea6ba5d073c7da462b4a14d4207aab03590df964b0fc125d76a8e371da59"
+        },
+        {
+          "file": "light-en-390.png",
+          "theme": "light",
+          "locale": "en",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "access": "local-test-principal",
+          "force_state": null,
+          "captured": true,
+          "observed_at": "2026-10-19T11:36:32.251Z",
+          "dom": {
+            "drawer_visible": true,
+            "height": 844,
+            "horizontal_overflow": false,
+            "locale": "en",
+            "selected_event_id": "govws-22f2ee53487e1e6c760c13e0",
+            "theme": "light",
+            "width": 390
+          },
+          "capture_transport": {
+            "format": "JPEG",
+            "file": "light-en-390.capture.jpg",
+            "sha256": "38ce461d32e90813134b68494f89973ff4d3ca91fccf76d33a6f1d9f3ec5ee21",
+            "conversion": "Lossless PNG re-encoding of decoded browser screenshot pixels; no crop, resize, recolor or other editing."
+          },
+          "sha256": "dd9dcc4f89aa0b9cd672dbe2d63c7042c7b226f9f5e0dee5539870094d868d64",
+          "bytes": 283629,
+          "width": 390,
+          "height": 844,
+          "capture_tool_module_sha256": "7851ea6ba5d073c7da462b4a14d4207aab03590df964b0fc125d76a8e371da59"
+        },
+        {
+          "file": "light-en-1440.png",
+          "theme": "light",
+          "locale": "en",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "access": "local-test-principal",
+          "force_state": null,
+          "captured": true,
+          "observed_at": "2026-10-19T11:36:32.846Z",
+          "dom": {
+            "drawer_visible": true,
+            "height": 900,
+            "horizontal_overflow": false,
+            "locale": "en",
+            "selected_event_id": "govws-22f2ee53487e1e6c760c13e0",
+            "theme": "light",
+            "width": 1440
+          },
+          "capture_transport": {
+            "format": "JPEG",
+            "file": "light-en-1440.capture.jpg",
+            "sha256": "1bf50d2bf82459624a3775350a8e9198f751f443d8121e66c5dcac049cf33f8e",
+            "conversion": "Lossless PNG re-encoding of decoded browser screenshot pixels; no crop, resize, recolor or other editing."
+          },
+          "sha256": "fb3452039237724aa879fcf046890a875a49df4e8693ee5700ec9cfe01796873",
+          "bytes": 481988,
+          "width": 1440,
+          "height": 900,
+          "capture_tool_module_sha256": "7851ea6ba5d073c7da462b4a14d4207aab03590df964b0fc125d76a8e371da59"
+        }
+      ]
+    }
+  ],
+  "scope": "Native source preview of Government Revenue saved evidence drawer. Local identity stand-in; public governed bundle. Does not establish production authentication, entitlement, deployment or whole-product acceptance.",
+  "source_head": "0649c47aed7c843cf731a1a9929aaa2ea2816264",
+  "changed_source_sha256": {
+    "templates/government-revenue-briefcase.js": "4dc17c121029b82faf0561e9dd83b136fdb5ac8dc1f9450d6d64edd1bc9cb1c2",
+    "templates/government-revenue-briefcase-ui.js": "f17ecba1d0f89c4eee757b232e7b27ab47f2f3e1964bc04a74ca36c3bee618dd",
+    "templates/government-revenue-page.js.j2": "364d68aa467f43db2771a9d591d5e91e62443d310d8c87e2b42ccf2075d3328f",
+    "templates/government-revenue-parity.css": "1b5a01fd4fc5d7133bfdf16ef264b0d3cb6b83829416af78fc0994734e60c02c"
+  }
+}

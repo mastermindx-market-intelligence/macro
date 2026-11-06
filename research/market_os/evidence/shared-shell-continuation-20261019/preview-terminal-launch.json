@@ -1,0 +1,50 @@
+{
+  "schema": "mastermind.shared_shell_local_dev_launch.v1",
+  "started_at": "2026-10-19T08:18:06.319Z",
+  "terminal_head": "4bfca4043e1779b1bf74dd388e40783e3c4000e4",
+  "launcher_pid": 99993,
+  "cwd": "/Volumes/Mastermind 2/agent-workspaces/terminal/web/shared-shell-public-context-20261019/terminal",
+  "executable": "/opt/homebrew/Cellar/node/26.5.0/bin/node",
+  "arguments": [
+    "/Volumes/Mastermind 2/agent-workspaces/terminal/web/shared-shell-public-context-20261019/terminal/node_modules/next/dist/bin/next",
+    "dev",
+    "--hostname",
+    "127.0.0.1",
+    "--port",
+    "3100"
+  ],
+  "fixture_environment": {
+    "NODE_ENV": "development",
+    "CI": "1",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "MMX_SHARED_SHELL": "1",
+    "TERMINAL_E2E_FIXTURE": "1",
+    "TERMINAL_REQUIRE_AUTH": "0",
+    "MMX_INVESTOR_SHELL_PREVIEW": "0",
+    "MMX_SHARED_SHELL_LEGACY_ORIGIN": "http://127.0.0.1:3110",
+    "NEXT_PUBLIC_SUPABASE_URL": "http://127.0.0.1:54321",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "fixture-anon-key",
+    "GIT_SHA": "local-shared-shell-4bfca4043e1779b1bf74dd388e40783e3c4000e4",
+    "NEXT_DEPLOYMENT_ID": "local-shared-shell-4bfca4043e1779b1bf74dd388e40783e3c4000e4",
+    "NEXT_PUBLIC_SHARED_SHELL_BUILD": "local-shared-shell-4bfca4043e1779b1bf74dd388e40783e3c4000e4"
+  },
+  "dotenv_files": [],
+  "dotenv_keys_blanked": 0,
+  "dotenv_containment": "actual installed @next/env parsed and verified in isolated processes; values never serialized",
+  "other_inherited_environment": [
+    "PATH"
+  ],
+  "generated_output": "Next development cache under terminal/.next",
+  "auth_mode": "existing development-only guest selector cookies are set by the browser harness",
+  "network_scope": "loopback listener; this launcher does not claim an OS-level outbound firewall",
+  "cleanup": "only the child process group created by this launcher",
+  "publication": false,
+  "next_pid": 169,
+  "stop_signal": "SIGTERM",
+  "cleanup_reason": "attended-stop",
+  "cleanup_started_at": "2026-10-19T08:24:22.340Z",
+  "exit_code": 0,
+  "exit_signal": null,
+  "completed_at": "2026-10-19T08:24:22.568Z",
+  "owned_group_gone": true
+}

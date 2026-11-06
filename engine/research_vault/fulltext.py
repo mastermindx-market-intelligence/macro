@@ -19,6 +19,31 @@ REPLAY_EXACT = "EXACT"
 SEGMENTER_VERSION = "page-byte-v1"
 TEXT_LAYER_STATES = frozenset({"full", "thin", "none", "unavailable"})
 
+# Closed supported-extractor-version vocabulary. The incumbent ``-layout``
+# extraction stays the production default under ``...extract_pdf_text.v1``; the
+# pdftotext default-reading-order pass is an explicit opt-in CANDIDATE under
+# ``...extract_pdf_text.reading_order.v2`` and is never selected by default.
+EXTRACTOR_VERSION_V1 = "research_vault.ingest.extract_pdf_text.v1"
+EXTRACTOR_VERSION_READING_ORDER_V2 = (
+    "research_vault.ingest.extract_pdf_text.reading_order.v2"
+)
+SUPPORTED_EXTRACTOR_VERSIONS = (
+    EXTRACTOR_VERSION_V1,
+    EXTRACTOR_VERSION_READING_ORDER_V2,
+)
+
+
+def resolve_extractor_version(value: Any) -> str:
+    """Return ``value`` only when it is in the closed supported vocabulary.
+
+    Raises ValueError for anything else. Callers invoke this BEFORE any store
+    or filesystem I/O so an unsupported version can never reach a read path.
+    """
+    version = _require_text(value, "extractor_version")
+    if version not in SUPPORTED_EXTRACTOR_VERSIONS:
+        raise ValueError("unsupported extractor_version")
+    return version
+
 
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()

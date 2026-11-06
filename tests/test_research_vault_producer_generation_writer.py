@@ -10,7 +10,9 @@ import pytest
 from engine.research_vault import catalog, corpus, fulltext_store, fulltext_writer, ingest
 from engine.research_vault import producer_generation as contract
 from engine.research_vault import producer_generation_writer as writer
-from engine.research_vault.r2_store import LocalStore
+from engine.research_vault.r2_store import (
+    BoundedReadTooLarge, HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES, LocalStore,
+)
 from engine.research_vault.generation_evidence import FileGenerationEvidence, read_evidence
 
 NOW = datetime(2026, 10, 13, tzinfo=timezone.utc)
@@ -732,3 +734,231 @@ def test_fenced_store_retains_qualified_receipt_reader_window(monkeypatch):
     injected = r2_store.R2Store("fixture", client=object())
     session.store = injected
     assert ingest._receipt_read_workers(writer.FencedProducerStore(injected, session), 4) == 1
+
+
+def _seed_discovery_record(store, doc, tmp_path):
+    from engine.research_vault import fulltext
+    text = 'bodyprefix ' + 'alpha ' * 11000 + ' bodytailwitness'
+    digest = 'c' * 64
+    p = tmp_path / 'discovery-source.sqlite'
+    conn = corpus.open_db(p)
+    corpus.upsert(conn, doc['items'][0], text,
+                  facts={'content_sha256': digest, 'text_layer': 'full'})
+    conn.close()
+    store.put_bytes(contract.CORPUS_KEY, p.read_bytes())
+    store.put_bytes(fulltext_store.receipt_key(RID), json.dumps({
+        'id': RID, 'pdf_key': 'research_inbox/seeded.pdf',
+        'content_sha256': digest}).encode())
+    record = fulltext.build_extracted_text(report_id=RID, source_pdf_sha256=digest,
+        text=text, extractor_name=fulltext_store.EXTRACTOR_NAME,
+        extractor_version=fulltext_store.EXTRACTOR_VERSION,
+        page_count=1, text_layer_state='full')
+    store.put_bytes(fulltext_store.derivative_key(RID, digest),
+                    fulltext_store.encode_record(record))
+    return text, digest
+
+
+def test_actual_generation_publishes_discoverable_full_body_before_complete(seeded, tmp_path, monkeypatch):
+    from engine.research_vault import fulltext_index
+    store, doc = seeded
+    text, _ = _seed_discovery_record(store, doc, tmp_path)
+    monkeypatch.setattr(fulltext_writer, 'materialize_pending', lambda *a, **k: {'aborted': None})
+    result = ingest.run(store, tmp_path / 'working.sqlite', now=NOW,
+                        generation_identity=IDENTITY)
+    assert result.get('error') is None, result
+    assert result['generation_complete'] is True
+    p = tmp_path / 'published-read.sqlite'
+    p.write_bytes(store.get_bytes(contract.CORPUS_KEY))
+    conn = corpus.open_db(p)
+    try:
+        assert [row['id'] for row in corpus.search(conn, 'bodytailwitness')] == [RID]
+        assert conn.execute('SELECT body FROM documents WHERE doc_id=?', (RID,)).fetchone()[0] == text
+        actual = json.loads(store.get_bytes(catalog.CATALOG_KEY))
+        assert fulltext_index.discovery_coverage(conn, actual, {RID}) == 'FULL_TEXT'
+    finally:
+        conn.close()
+
+
+def test_actual_generation_refuses_pdf_revision_change_after_body_publication(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _seed_discovery_record(store, doc, tmp_path)
+    def changed_after_corpus(*args, **kwargs):
+        store.put_bytes(fulltext_store.receipt_key(RID), json.dumps({
+            'id': RID, 'content_sha256': 'd' * 64}).encode())
+        return {'aborted': None}
+    monkeypatch.setattr(fulltext_writer, 'materialize_pending', changed_after_corpus)
+    result = ingest.run(store, tmp_path / 'working.sqlite', now=NOW,
+                        generation_identity=IDENTITY)
+    assert result['generation_complete'] is False
+    assert result['error'] == 'generation_completion_failed'
+    assert 'fulltext source cut changed' in result['generation_error']
+    assert json.loads(store.get_bytes(catalog.CATALOG_KEY))['producer_generation']['state'] == 'BUILDING'
+
+
+def test_actual_generation_staging_cache_read_failure_does_not_publish_candidate_body(seeded, tmp_path, monkeypatch):
+    from engine.research_vault.producer_read_cache import CorpusReadCache
+    store, doc = seeded
+    _seed_discovery_record(store, doc, tmp_path)
+    before = store.get_bytes(contract.CORPUS_KEY)
+    real = CorpusReadCache._entry
+    def failing_stage(self, rid, **kwargs):
+        if self.sealed and not kwargs.get('receipt_only'):
+            raise OSError('synthetic staging cache read failed')
+        return real(self, rid, **kwargs)
+    monkeypatch.setattr(CorpusReadCache, '_entry', failing_stage)
+    with pytest.raises(OSError, match='synthetic staging cache read failed'):
+        ingest.run(store, tmp_path / 'working.sqlite', now=NOW,
+                   generation_identity=IDENTITY)
+    assert store.get_bytes(contract.CORPUS_KEY) == before
+    assert json.loads(store.get_bytes(catalog.CATALOG_KEY))['producer_generation']['state'] == 'BUILDING'
+
+
+def test_actual_generation_planned_new_receipt_keeps_native_prefix_until_next_derivative(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _seed_real_corpus(store, tmp_path)
+    rid, digest = 'new-planned-receipt', 'e' * 64
+    item = {'id': rid, 'title': 'New pending receipt', 'institution': 'Desk',
+            'published_at': NOW.isoformat(), 'summary_points': []}
+    text = 'newnativeprefix ' + 'alpha ' * 11000 + ' nextgenerationtail'
+    monkeypatch.setattr(ingest, '_list_inbox_pdfs', lambda _: ['research_inbox/new.pdf'])
+    def new_row(_store, conn, _key, **kwargs):
+        facts = {'content_sha256': digest, 'text_layer': 'full'}
+        corpus.upsert(conn, item, text, facts=facts)
+        return {'status': 'ingested', 'item': item, 'title_source': 'sidecar', 'facts': facts}
+    monkeypatch.setattr(ingest, '_ingest_one', new_row)
+    monkeypatch.setattr(fulltext_writer, 'materialize_pending', lambda *a, **k: {'aborted': None})
+    assert store.get_bytes(fulltext_store.receipt_key(rid)) is None
+    result = ingest.run(store, tmp_path / 'working.sqlite', now=NOW,
+                        checkpoint_every=0, generation_identity=IDENTITY)
+    assert result.get('error') is None, result
+    assert result['generation_complete'] is True
+    assert fulltext_store.parse_receipt_digest(store.get_bytes(fulltext_store.receipt_key(rid)), rid) == digest
+    p = tmp_path / 'published-read.sqlite';p.write_bytes(store.get_bytes(contract.CORPUS_KEY))
+    conn = corpus.open_db(p)
+    try:
+        assert [row['id'] for row in corpus.search(conn, 'newnativeprefix')] == [rid]
+        assert corpus.search(conn, 'nextgenerationtail') == []
+        assert conn.execute('SELECT fulltext_binding FROM documents WHERE doc_id=?', (rid,)).fetchone()[0] is None
+    finally:
+        conn.close()
+
+def test_existing_oversize_catalog_runs_a_real_generation(seeded):
+    """BEGIN/checkpoint/COMPLETE over an existing >16 KiB committed catalog."""
+    store, doc = seeded
+    doc["synthetic_padding"] = "x" * (24 * 1024)
+    assert store.put_bytes(catalog.CATALOG_KEY, json.dumps(doc).encode())
+    store.events.clear()
+    session = writer.ProducerGenerationSession.begin(store, doc, IDENTITY, now=NOW)
+    wrapped = writer.FencedProducerStore(store, session)
+    wrapped.put_bytes(contract.CORPUS_KEY, b"synthetic corpus")
+    assert catalog.publish(wrapped, doc, now=NOW).published
+    record = json.loads(session.complete(doc, now=NOW))["producer_generation"]
+    assert record["state"] == "COMPLETE"
+    stored = json.loads(store.get_bytes(catalog.CATALOG_KEY))["producer_generation"]
+    assert stored["state"] == "COMPLETE"
+    assert len(store.get_bytes(catalog.CATALOG_KEY)) > 16 * 1024
+
+
+# Canonical catalog CAS must use the existing producer allocation.
+CATALOG_KEY = "research_vault/catalog.json"
+CATALOG_ALLOWANCE = 16 * 1024 * 1024
+LEGACY_LIMIT = HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES
+COMMITTED_CATALOG_BYTES = 3_598_794  # actual committed production catalog size
+
+
+def _store(tmp_path):
+    return LocalStore(tmp_path / "store")
+
+
+def _synthetic_catalog(target_bytes: int) -> bytes:
+    """One deterministic synthetic catalog of an exact serialized size."""
+    doc = {"schema": "synthetic-catalog", "count": 2959, "items": []}
+    prefix = json.dumps(doc, separators=(",", ":"))[:-1]
+    member = '"synthetic_padding":"'
+    padding = target_bytes - len(prefix) - len(",") - len(member) - len('"}')
+    assert padding > 0, target_bytes
+    raw = (prefix + "," + member + "x" * padding + '"}').encode()
+    assert len(raw) == target_bytes
+    json.loads(raw)  # stays one valid JSON document
+    return raw
+
+
+def _seed(store, key, body):
+    assert store.put_bytes(key, body)
+    assert store.get_bytes(key) == body
+
+
+def test_committed_size_catalog_conditional_write_succeeds(tmp_path):
+    store = _store(tmp_path)
+    original = _synthetic_catalog(COMMITTED_CATALOG_BYTES)
+    _seed(store, CATALOG_KEY, original)
+    version = LocalStore._local_version(original)
+    # The producer reads the predecessor through the catalog allocation.
+    readback = store.get_bytes_strict_bounded_versioned(CATALOG_KEY, CATALOG_ALLOWANCE)
+    assert readback.data == original
+    assert readback.version == version
+    replacement = _synthetic_catalog(COMMITTED_CATALOG_BYTES + 11)
+    assert store.put_bytes_strict_conditional(
+        CATALOG_KEY, replacement, expected_version=version)
+    assert store.get_bytes(CATALOG_KEY) == replacement
+    assert store.get_bytes_strict_bounded_versioned(
+        CATALOG_KEY, CATALOG_ALLOWANCE).version == LocalStore._local_version(replacement)
+
+
+def test_stale_and_create_only_expectations_never_touch_oversize_catalog(tmp_path):
+    store = _store(tmp_path)
+    original = _synthetic_catalog(COMMITTED_CATALOG_BYTES)
+    _seed(store, CATALOG_KEY, original)
+    stale = LocalStore._local_version(b"stale synthetic predecessor")
+    assert not store.put_bytes_strict_conditional(
+        CATALOG_KEY, b"never", expected_version=stale)
+    assert not store.put_bytes_strict_conditional(
+        CATALOG_KEY, b"never", expected_version=None)
+    assert store.get_bytes(CATALOG_KEY) == original
+
+
+def test_exact_catalog_allowance_boundary_still_succeeds(tmp_path):
+    store = _store(tmp_path)
+    original = _synthetic_catalog(CATALOG_ALLOWANCE)
+    _seed(store, CATALOG_KEY, original)
+    assert store.put_bytes_strict_conditional(
+        CATALOG_KEY, b"replacement at the exact allowance",
+        expected_version=LocalStore._local_version(original))
+
+
+def test_catalog_allowance_ends_at_the_producer_allocation(tmp_path):
+    store = _store(tmp_path)
+    original = _synthetic_catalog(CATALOG_ALLOWANCE + 1)
+    _seed(store, CATALOG_KEY, original)
+    with pytest.raises(BoundedReadTooLarge):
+        store.put_bytes_strict_conditional(
+            CATALOG_KEY, b"never", expected_version=LocalStore._local_version(original))
+    assert store.get_bytes(CATALOG_KEY) == original
+
+
+@pytest.mark.parametrize("key", [
+    "research_vault/nested/catalog.json",
+    "research_vault/catalog.json.bak",
+    "research_vault/CATALOG.json",
+    "research_inbox/catalog.json",
+])
+def test_noncanonical_keys_keep_the_legacy_ceiling(tmp_path, key):
+    store = _store(tmp_path)
+    original = b"p" * (LEGACY_LIMIT + 1)
+    _seed(store, key, original)
+    version = LocalStore._local_version(original)
+    with pytest.raises(BoundedReadTooLarge):
+        store.put_bytes_strict_conditional(key, b"never", expected_version=version)
+    assert store.get_bytes(key) == original
+    # Below the legacy ceiling the same key still conditionally writes.
+    small = b"within the legacy ceiling"
+    _seed(store, key, small)
+    assert store.put_bytes_strict_conditional(
+        key, b"replacement below the legacy ceiling",
+        expected_version=LocalStore._local_version(small))
+
+
+def test_catalog_allowance_matches_the_producer_constant():
+    from engine.research_vault import producer_generation
+    from engine.research_vault import r2_store
+    assert r2_store._CONDITIONAL_CATALOG_MAX_BYTES == producer_generation.CATALOG_MAX_BYTES

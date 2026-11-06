@@ -1,0 +1,8 @@
+# Offline synthetic quote-block fixture only, not full-page/live acceptance.
+# Art direction, limits and negative states are in the source contract and
+# negative-states.json; this receipt only binds paths to canonical captures.
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ticker.html.j2
+  - site/assets/js/dossier-live-quote.js
+manifest: mockups/evidence/dossier-premarket-20261023/manifest.json
