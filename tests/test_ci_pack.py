@@ -5471,9 +5471,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_670),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5481,6 +5481,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-06 PR #10515 enrolls tests/test_ubuntu_storage_guard.py in the
+    existing self-mod-fence pytest command. Hosted contract-delta run
+    42182745198/job127775901445 measured tested merge
+    d05cb19f8198dff7bb6e3cf2f545a85f6f9c5ff4 against exact base
+    6fa62d5f6a6a278d42c7faf4775a6b703bcdb943: index.html 137 jobs /
+    5,912 -> 5,914 weight; build_free_content 137 / 5,927 -> 5,929;
+    plan_book 131 / 5,668 -> 5,670. Every probe still uses ten packs,
+    with no new selected job. This intentional code-fence coverage adds
+    exactly two planner estimator units, not two measured execution seconds.
+    Fund only that observed +2 on each weight ceiling. Job-count limits,
+    pack limits, selectors, the delta ratchet and all existing suites stay
+    unchanged; no additional job or workflow is introduced.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
