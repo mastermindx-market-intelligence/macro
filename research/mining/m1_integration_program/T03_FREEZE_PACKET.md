@@ -156,6 +156,31 @@ the lane that makes it live. Measured at #7950 head (`scratchpad/probe_mgd_08_10
 - a native economics block carries `['basis','measure','sign','source_label','stable_subject_id','value']`
   — **no `period`** — and `stable_subject_id` is the issuer CIK (`'0000000421'`).
 
+**RECEIPT RE-DERIVED INLINE 2026-09-27 (wave 9), plus one CORRECTION to the first bullet.**
+`scratchpad/probe_mgd_08_10_v2.py` no longer exists, so neither bullet was re-verifiable. Both
+reproduce at HEAD `d985e668c4ab`; the block bullet exactly (`['basis', 'measure', 'sign', 'source_label', 'stable_subject_id', 'value']`, period present: False,
+`stable_subject_id` '0000000421') via:
+
+```
+python3 -c "import sys;sys.path.insert(0,'.');from engine.market_ontology import mining_theme_research as c;from tests.mining_casebook import synthetic_case as s;k=s('copper_complete');p=c.compose_mining_research(k.query,k.bundle);b=p['economics']['native_blocks'][0];print(sorted(b),'period' in b,b['stable_subject_id'])"
+```
+
+The CORRECTION is to what the first bullet IMPLIES — and it is itself a correction of the
+sentence that first stood here, which said `identity_results` "is never constructed there".
+That was written from a 5-site grep; there are 11 sites and four of them DO assemble the field,
+so the sentence was false as phrased. Superseded text kept because a later reader who greps will
+find the four and should see that it was already caught. The accurate claim is stronger:
+`identity_results` is a BUNDLE FIELD whose row CONTENT never originates in this module. All 11 reference sites in `engine/market_ontology/mining_theme_research.py` enumerated, because a claim quantified over every site must list them: :310 is a TEST SEAM that sets the field EMPTY `()`; :332 copies it through unchanged in the omission-appending helper; :473 and :1018 coerce CALLER-supplied rows (`tuple(bundle.get("identity_results", ()))`, empty default); :541, :596, :607 and :676 READ it (`for ident in bundle.identity_results`); :536, :593 and :671 are comments. So the module mints no identity row —
+every row it ever reads was supplied by its caller.
+So `['cik','fictional','name']` is the CASEBOOK FIXTURE's shape, not a contract this program
+emits: measured across all 11 casebook cases there is exactly 1 distinct shape, ['cik', 'fictional', 'name'], carried by
+10 of 11 cases — `missing_issuer` carries zero rows, which is that fixture's whole purpose. The
+MGD-10 conclusion is UNCHANGED and if anything stronger: a period cannot be expressed on a
+measurement here, and the identity side cannot carry a validity window either, because this
+program does not own that object at all. T03 must therefore establish the time-valid bridge on
+the input contract, not merely add a `period` key to a native block. The two-armed pin below is
+still OWED, in the same PR that first carries `period` onto a native block.
+
 So today the module makes no historical-ownership claim because it cannot express a period on
 a measurement. **T03 changes that**: its job is definition-safe economic inputs and
 `COMPARABILITY_FIELDS` already names `period`. The first row that carries a period while being

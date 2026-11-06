@@ -1,0 +1,21 @@
+{
+  "schema": "tiingo.disposition_v2_repair_independent_source_review/v1",
+  "recorded_at_utc": "2026-10-13T01:39:34.477616+00:00",
+  "conclusion": "PASS_SOURCE_ONLY",
+  "reviewed_core_sha256": "824e31f5d7d851784240fb9b9f9aa0938b26fcaa6b1a70fec44a6753c2a1cf01",
+  "reviewed_controller_sha256": "0ffa5f8d5d748ae438257c532fa306964be49c9e800f26b8b120b6ad66e866ba",
+  "prior_review_sha256": "5568c7c0e965c51f93b06830e30a5935129cfd52c08d656ec844998789bff25f",
+  "exact_delta_verified_by_reversing_only_helper_calls_and_controller_repin": true,
+  "v1_parent_hash_and_actual_consumption_verified": true,
+  "v1_prefix02_coverage_hash_checked_before_load_in_context_and_coverage": true,
+  "current_v1_prefix02_coverage_matches_consumed_parent": true,
+  "unchanged_collision_and_scalar_and_finite_controls_accepted": true,
+  "execution_scope": "Existing raw receipts only, one original root-owned qualification writer. Prefix04 remains the frozen1476 diagnostic snapshot; no capture retry or invented failed03 snapshot.",
+  "new_capture_failure_does_not_authorize_retry": true,
+  "final_accounting_requires_version_compatibility_and_actual_terminal_proofs": true,
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "pipeline_or_controller_executed": false,
+  "source_mutated": false
+}
