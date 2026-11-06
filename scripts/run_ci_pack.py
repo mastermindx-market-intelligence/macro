@@ -423,7 +423,15 @@ OBSERVED_COMMAND_SECONDS = {
     # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
     # These calibrate balancing only; install/checkout/queue are excluded.
     # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
-    "fif-kernel-guards": 1630,
+    # 2026-11-05 (S6): the 1630 s FIF kernel job is three siblings carrying the
+    # same closure. On #10759's run 42123959736 it sat alone in pack 0 for 60+
+    # min while every other pack finished in 10-33, so every PR touching its
+    # 1,131-path closure (including lib/macro_suite_labels.py) paid that floor.
+    # Per-sibling seconds are the local per-suite measurement (M2, sequential,
+    # 2026-11-05) scaled so the three sum to the hosted 1630 s median.
+    "fif-kernel-guards": 537,
+    "fif-kernel-guards-b": 555,
+    "fif-kernel-guards-c": 538,
     "earnings-economic-dossier": 1070,
     "workflow-yaml": 90,
     "market-memory-contract": 416,

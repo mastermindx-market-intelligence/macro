@@ -36,6 +36,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 MANIFEST = ROOT / ".github" / "ci" / "legacy-jobs.yml"
+# S6 (2026-11-05): the FIF kernel job is three measured siblings with one closure.
+FIF_KERNEL_SIBLINGS = frozenset({"fif-kernel-guards", "fif-kernel-guards-b", "fif-kernel-guards-c"})
 FENCES = ROOT / ".github" / "workflows" / "fences.yml"
 
 # A `ci-trigger-closure: data` marker on a path in this file flags a NAME that a test
@@ -1553,7 +1555,44 @@ def test_fif_kernel_guards_selects_on_registry_v1_0_0_fixture_edit(real_manifest
     selected, reason = PACK.select_jobs(
         jobs, ["tests/fixtures/fundamental_forensics_registry_v1_0_0/x.json"]
     )
-    assert "fif-kernel-guards" in {job.job_id for job in selected}, reason
+    assert FIF_KERNEL_SIBLINGS & {job.job_id for job in selected}, reason
+
+
+def test_fif_kernel_siblings_share_one_closure_and_partition_the_suite_once(
+    real_manifest_scopes,
+) -> None:
+    """S6 (2026-11-05): the 120-file kernel step was one 1,630 s job alone in
+    pack 0 (the critical path of every PR inside its closure — on #10759's run
+    42123959736 it ran 60+ minutes while every other pack finished in 10–33).
+    It is now three siblings. Splitting must not change WHAT runs: the three
+    kernel steps partition the original suite list exactly once, and every
+    sibling carries the identical curated closure so an edit that selected the
+    kernel before selects all three now (``scope: exclusive`` REPLACES
+    inference; the merge driver ``scripts/ci_pack_fragments.py`` is a line
+    scanner, so the list is copied rather than anchored)."""
+    jobs, _ = real_manifest_scopes
+    by_id = {job.job_id: job for job in jobs}
+    siblings = [by_id[job_id] for job_id in sorted(FIF_KERNEL_SIBLINGS)]
+    closures = {tuple(job.paths) for job in siblings}
+    assert len(closures) == 1, "sibling closures diverged"
+    assert all(job.exclusive and job.gate == "code" for job in siblings)
+    step_name = "FIF kernel suites (class A, hermetic)"
+    slices = []
+    for job in siblings:
+        step = next(
+            step for step in job.definition["steps"] if step.get("name") == step_name
+        )
+        suites = [tok for tok in str(step["run"]).split() if tok.startswith("tests/")]
+        assert suites, job.job_id
+        slices.append(suites)
+    flat = [suite for suites in slices for suite in suites]
+    assert len(flat) == len(set(flat)) == 120, (len(flat), len(set(flat)))
+    for suite in flat:
+        assert (ROOT / suite).is_file(), suite
+    # Every sibling is measured: an unmeasured sibling would fall back to the
+    # generic estimator (~90 for 40 files) and the balancer would stack it.
+    for job in siblings:
+        assert job.job_id in PACK.OBSERVED_COMMAND_SECONDS, job.job_id
 
 
 def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
@@ -3028,7 +3067,7 @@ def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
 ) -> None:
     """Calibration changes the attested assignment, never the work it proves."""
     calibrated = _full_plan()
-    for job_id in ("fif-kernel-guards", "earnings-economic-dossier"):
+    for job_id in (*FIF_KERNEL_SIBLINGS, "earnings-economic-dossier"):
         monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
     heuristic = _full_plan()
 
@@ -3044,8 +3083,10 @@ def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
     flattened = [job_id for pack in calibrated.pack_jobs for job_id in pack]
     assert len(flattened) == len(set(flattened)) == len(calibrated.eligible_job_ids)
     assert set(flattened) == set(calibrated.eligible_job_ids)
-    heavy = {"ci-control-plane-contracts", "fif-kernel-guards", "earnings-economic-dossier"}
-    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == 3
+    # 2026-11-05 (S6): the FIF kernel is three measured siblings, so five heavy
+    # jobs must land in five distinct packs instead of three.
+    heavy = {"ci-control-plane-contracts", *FIF_KERNEL_SIBLINGS, "earnings-economic-dossier"}
+    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == len(heavy) == 5
 
 
 def test_plan_hash_covers_job_assignment_but_not_prose() -> None:
@@ -4973,7 +5014,11 @@ CURATED_EXCLUSIVE = {
     # Inference would union ~139 fallback roots (the app/ TestClient suites
     # import app.main) and breach all three PACKING_PROBES; scope: exclusive
     # pins the job to the FIF globs plus its measured static/runtime closure.
+    # 2026-11-05 (S6): split into three measured siblings carrying the same
+    # closure; see test_fif_kernel_siblings_share_one_closure_and_partition_the_suite_once.
     "fif-kernel-guards",
+    "fif-kernel-guards-b",
+    "fif-kernel-guards-c",
     # 2026-10-12 SNI S2 event response (#8893): the runner's `git` subprocess
     # calls and the language test's rglob are opaque, so inference widened
     # the fallback to engine/** and the plan_book packing probe selected the
