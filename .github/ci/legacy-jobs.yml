@@ -10948,10 +10948,29 @@ jobs:
           node-version: "20"
       - name: install render test dependencies
         run: pip install pytest pandas numpy pyyaml jinja2 pyarrow
+      # F11 (intl-GS CI budget, 2026-11-06): the `--with-deps` APT transaction is
+      # redundant on the hosted runner and ate this job's whole 15-minute deadline
+      # on ci run 42133634168, job 127617611027 (PR #10780). `playwright install
+      # --with-deps` ALWAYS adds the shared "tools" group (playwright-core 1.63.0
+      # nativeDeps, ubuntu24.04-x64) on top of the browser's own libraries: seven
+      # FONT packages (fonts-unifont, xfonts-scalable, fonts-ipafont-gothic,
+      # fonts-wqy-zenhei, fonts-tlwg-loma-otf, fonts-freefont-ttf) plus xvfb,
+      # libfontconfig1, libfreetype6, fonts-liberation, fonts-noto-color-emoji.
+      # Every one of Chromium's 21 link libraries was already "the newest version"
+      # on the ubuntu-24.04 runner; only those seven fonts were absent, and the
+      # runner's geo-local mirror throttles the ubuntu pool path to ~45 kB/s
+      # (44.7 kB/s there, 43.3 kB/s reproduced independently), so 21.1 MB of fonts
+      # cost 7min52s of the 900s deadline while the browser itself downloaded in
+      # 7.3s. Dropping only the OS-dependency transaction keeps the identical
+      # playwright@1.63.0 and chromium build (v1243) and keeps every assertion: the
+      # suite's CJK assertions read DOM text and computed colours, and it passes
+      # 10/10 with no CJK font installed at all. If a runner image ever drops a
+      # link library, playwright's own launch-time check fails the job loudly with
+      # "Missing libraries: [...]" instead of silently weakening it.
       - name: install browser test dependencies
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       # F10 (intl-GS CI budget, DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
       # the unrestricted post-checkout base fetch cost ~4 minutes on hosted runners
       # (PR full-suite runs of 2026-10-31; every subtest green, job cut at the pack
