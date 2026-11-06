@@ -678,14 +678,18 @@ def compact(v: dict | None) -> dict:
 
 # the SLIM, fully JSON-safe verdict for the "what to buy" boards (Top-setups strip on
 # us_stocks.html + the discovery Buy-zone picks). Unlike compact() it drops the §7 marker
-# payload ("last"/"state"/...) — those can carry NaN, and the boards only need the tier +
-# freshness — so it is safe to persist with allow_nan=False. is_buyable() reads from this.
+# payload ("last"/"state"/...) — those can carry NaN. Keep the scalar confirmation
+# state and native clocks: T1 includes a pending master, so losing tier/sub made
+# consumers present an unconfirmed trigger as a confirmed buy. These fields are
+# disclosures only; is_buyable() and every ranking input remain unchanged.
 _BUY_KEYS = ("eligible", "tier_cascade", "tier_sub", "ticks", "bars_to_cross", "provisional",
-             "htf_s1", "htf_s2", "young_history", "anchor_era", "sq_anchor_era")
+             "htf_s1", "htf_s2", "young_history", "anchor_era", "sq_anchor_era",
+             "tier", "sub", "reason", "asof", "tier_event_date", "tier_observed_date",
+             "tier_observation_provisional")
 
 
 def buy_signal(v: dict | None) -> dict:
-    """Slim, JSON-safe buy verdict: confluence tier + freshness + HTF badges, no markers."""
+    """Slim verdict with confirmation and clock evidence, without marker payloads."""
     if not v:
         # a BLANK is still a post-era row: the board persisted it under this anchor, so the
         # graded record must be able to place it in the right cohort (R5/R-SQ3). BOTH eras

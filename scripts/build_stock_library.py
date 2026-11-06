@@ -5564,10 +5564,11 @@ def main(now: datetime | None = None) -> int:
     # build_library runs at the END of build_site). Mirrors build_china_library.
     if cand:
         # The buy list is HARD-GATED on the owner's MACD-2D x StochRSI-3D confluence
-        # (signal_gate.is_buyable: T1/T2 just-crossed or T3 about-to-cross) — so the board
-        # only ever recommends a name that has actually triggered (or is imminently
-        # triggering) the entry, never a high-alpha leader that is downtrending on the 3D
-        # MACD/StochRSI. The gate REPLACES the alpha>=0.5 floor; the alpha leg now only
+        # (signal_gate.is_buyable: T1/T2 just-crossed or T3 about-to-cross). T1 can
+        # include pending confirmation, and this call does not supply align_map:
+        # oscillator timing alone does not verify healthy price structure or an
+        # open current entry. Preserve that distinction in the watch-table UI.
+        # The gate REPLACES the alpha>=0.5 floor; the alpha leg now only
         # RANKS the survivors (Phase-0 found the cycle/reversal blend dilutes forward-return
         # ranking, so we keep the validated alpha leg as the sort and show timing as context).
         setups = rank_setups(cand, as_of=alpha_asof, rank_by="alpha",
