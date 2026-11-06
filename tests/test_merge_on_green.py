@@ -5830,6 +5830,125 @@ def test_ambiguous_lease_claim_never_updates_or_tries_a_second_owner(monkeypatch
     assert len([call for call in calls if call[0] == "PATCH"]) == 1
 
 
+def test_refused_generation_register_read_declines_the_claim_out_loud(
+    monkeypatch, capsys
+):
+    """A pre-write refusal must say why. Observed live: the tier-0 main-red-repair
+    pull request was deferred sweep after sweep at "0/1 effective CI workload
+    slot(s) in use" while the queue showed a free slot, because the register read
+    was refused and `claim()` returned a bare False."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and url.endswith("/pulls/1"):
+            return 200, _pull(1)
+        if method == "GET" and "/labels/" in url:
+            return 403, {"message": "forbidden"}
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "refresh-deferred"
+    out = capsys.readouterr().out
+    assert (
+        "::notice title=merge-on-green refresh lease::PR #1: refresh lease not "
+        "claimed — the generation register read answered HTTP 403; no "
+        "update-branch write attempted." in out
+    )
+    assert "0/1 effective CI workload slot(s) in use" in out
+    assert not [call for call in calls if call[0] in {"PATCH", "POST", "PUT"}]
+    assert budget.refreshes_used == 0
+
+
+def test_spent_claim_latch_names_the_first_claimant(monkeypatch, capsys):
+    """The one-claim-per-sweep latch is correct and must stay; it must also be
+    visible, naming the pull request that consumed it."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and url.endswith("/pulls/1"):
+            return 200, _pull(1)
+        if method == "GET" and url.endswith("/pulls/2"):
+            return 200, _pull(2)
+        if method == "GET" and "/labels/" in url:
+            return 200, {
+                "name": MOG.REFRESH_LEASE_LABEL,
+                "description": MOG.REFRESH_LEASE_DESCRIPTION,
+            }
+        if method == "PATCH" and "/labels/" in url:
+            return 500, None
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "refresh-deferred"
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(2), "write", budget, "stale"
+    ) == "refresh-deferred"
+    out = capsys.readouterr().out
+    assert (
+        "PR #1: refresh lease not claimed — a generation register write was "
+        "attempted but the read-back did not affirm the intended record (write "
+        "HTTP 500, read-back HTTP 200); the register's outcome is unknown" in out
+    )
+    assert (
+        "PR #2: refresh lease not claimed — this sweep already spent its single "
+        "lease claim on PR #1" in out
+    )
+    assert lease.claim_attempted_number == 1
+    assert not [call for call in calls if call[0] in {"POST", "PUT"}]
+    assert len([call for call in calls if call[0] == "PATCH"]) == 1
+
+
+def test_owner_with_refused_register_read_is_declined_as_a_refused_read(
+    monkeypatch, capsys
+):
+    """Heads match, but the register read is refused: the notice must say the
+    register no longer affirms the generation, not that an update was already
+    authorised (review finding on the S2a change)."""
+    head = "a" * 40
+
+    def fake_request(method, url, token, payload=None):
+        if method == "GET" and "/labels/" in url:
+            return 403, {"message": "forbidden"}
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease(
+        "acme/widgets",
+        "read",
+        "write",
+        owner_number=1,
+        owner_updated_at="2026-11-05T22:00:00Z",
+        generation_head_sha=head,
+        generation_id="gen",
+    )
+    pull = _pull(1, labels=(MOG.MERGE_ON_GREEN_LABEL, MOG.REFRESH_LEASE_LABEL))
+    assert lease.claim(pull) is False
+    out = capsys.readouterr().out
+    assert (
+        "PR #1: refresh lease not claimed — the generation register no longer "
+        "affirms its generation (read refused or record changed)" in out
+    )
+    assert "already authorised" not in out
+
+
 def test_affirmative_fresh_conflict_declines_before_lease_claim_or_write(monkeypatch):
     """A live unmergeable head is declined before any lease claim, budget, or PUT.
 
