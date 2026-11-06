@@ -110,6 +110,48 @@ principal registry or public result API is introduced. Frozen wire2 has no such
 fact and is not retroactively upgraded. Original input/result receipts and pending
 or unknown operations remain intact; no source reload/reserve/start/refund follows.
 
+## Dedicated composed service profile
+
+The prospective native service record must explicitly name
+memory.e0.protected_m2_service_ssh.v2. Older standalone profiles do not match.
+The Linux component authenticates the dedicated machine key, exact root-owned
+key-file/options, actual successful authentication and key-option forced session,
+process/socket/command lineage, approved executable/parser and current rereads.
+It does not infer historical daemon environment settings from a new sshd parse.
+
+Client-input confinement is supplied by the OTHER mandatory component: the
+qualified protected M2 root owner, exclusive separate service-key custody and
+its fixed SSH client. Requests reach only the closed frame, never argv, endpoint,
+key path, SSH configuration or environment. The inspected implementation uses
+-F /dev/null, literal options/command, no agent/forward/proxy/local-command/TTY
+fallback and fixed minimal Popen environment. Current kernel Control/socket,
+source and enrollment checks bracket every exchange. Both root OS/admins are
+trusted. This profile does not claim safety for arbitrary holders of the key.
+
+The actual inspected client source was LOCAL frozen Mastermind b73e7bbe0, source
+return74723384145dd075543bb818f2d948fc1743d552627621599220556b3796c115;
+that reference is not a claim of protected publication or installation. The
+complete installed composition must prove its real current client source, sole
+protected invocation, key custody and failure behavior. Native admin service
+selection authorizes the named service; neither a caller verification flag, a
+source hash alone nor fixture data proves the installed counterpart. Server
+root/PAM/user environment remains part of the trusted Linux OS configuration,
+not reclassified as attacker-controlled request input. Original source/review,
+scientific, budget and protected-release holds are not waived by this profile.
+
+For V3 continuation, issuer.current_access_ref and
+issuer.current_selection_sha256 describe freshly qualified current selection.
+They may advance only through the authentic native complete access history and
+unchanged immutable source/service/recipient grant. All original locator fields
+and input remain exact. The recipient grant and original service audience are
+immutable in this version; no blanket field exemption or legacy migration is
+allowed. The locator.original_intent_sha256 binds the private native reservation
+intent (including immutable native grant/source bindings); it is not the digest
+of the five-field public wire intent. In contrast, the typed original-recipient
+fact's pre_input_intent_sha256 is EXACTLY the canonical five-field wire intent
+digest. M2 cannot recompute private original-intent contents from public metadata;
+it checks the original qualified locator unchanged across later disclosures.
+
 ## Required joined checks
 
 A genuinely absent/revoked Linux grant must refuse before any M2 paid admission,
