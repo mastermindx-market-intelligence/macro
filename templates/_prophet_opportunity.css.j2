@@ -84,7 +84,9 @@ html[data-theme="light"] .po-card{box-shadow:var(--card-shadow)}
 .po-refinements .po-class{flex-basis:100%}
 .po-refinements .po-priority{max-width:100%}
 .po-refinements .po-marks{flex:1 1 auto}
-.po-clock-part{white-space:nowrap}
+/* Keep normal segments together; cap exceptional supplied tokens to the
+   available clock width and permit emergency wrapping without hiding text. */
+.po-clock-part{display:inline-block;max-inline-size:100%;white-space:normal;overflow-wrap:anywhere;vertical-align:top}
 .po-status{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 12px}
 .po-ticker{font-size:18px;font-weight:800;line-height:1.2;letter-spacing:.01em;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
 .po-name{font-size:14px;font-weight:500;color:var(--text);min-width:0;overflow-wrap:anywhere}
