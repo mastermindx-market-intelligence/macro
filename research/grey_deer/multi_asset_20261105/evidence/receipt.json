@@ -1,7 +1,7 @@
 {
   "schema": "multi_asset.source_component_qualification.v1",
   "source_revision": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
-  "captured_at": "2026-11-06T02:03:20.488178+00:00",
+  "captured_at": "2026-11-06T02:25:11.319654+00:00",
   "input_artifacts": [
     {
       "path": "data/yahoo/SPY.parquet",
@@ -106,7 +106,7 @@
   "context_digest": "e628264defe7511fd61e0ec255c565c339670d6cb2151432820c85da0ccc3816",
   "envelope_bundle_id": "f033fcf36bb3ae95",
   "render_source_sha256": {
-    "engine/multi_asset_context.py": "3d0213fa527ce1d4361e8af65efb2eb4b6760cffdf60796866aa2a4b233a948c",
+    "engine/multi_asset_context.py": "75e5a76e8de1f5a6dc8152b04d458009b31db08cdd634f89ac877c36287d2baa",
     "engine/multi_asset_daily.py": "b76a145e0556a9b9cee3ab1271fade274f4600206a86f1581f7319af483ef802",
     "engine/risk_envelope.py": "8fa87ed4a7aa366116775ed1a557aeee8bccd7e05116989a6b67c30f9707d25a",
     "scripts/risk_envelope_multi_asset.py": "1724dec4689906cca7276ddf7145392bfeef44056e117fc714c61ca3bc6a7657",

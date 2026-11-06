@@ -1,7 +1,7 @@
 {
   "schema": "mastermind.multi_asset_daily_context/v1",
   "method_version": "same_us_cash_session_snapshot.v1",
-  "captured_at": "2026-11-06T02:03:20.488178Z",
+  "captured_at": "2026-11-06T02:25:11.319654Z",
   "alignment_basis": "US_CASH_SESSION_LABEL_NOT_QUOTE_TIMESTAMP",
   "window": {
     "start_session": "2026-10-28",

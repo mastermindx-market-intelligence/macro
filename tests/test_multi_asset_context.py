@@ -300,3 +300,20 @@ class CurrencyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UnicodeEvidenceTests(unittest.TestCase):
+    def test_oversized_malformed_unicode_is_bounded_not_a_composer_crash(self):
+        row = observation("EEM", rights_ref="x" * 4096 + chr(0xD800))
+        result = compose_context([observation(), row], as_of=AS_OF,
+                                 benchmark_instrument_id="SPY", base_currency="USD")
+        self.assertEqual(result["status"], "AVAILABLE")
+        self.assertEqual(len(result["input_digest"]), 64)
+        self.assertEqual(result["observations"][0]["rights_ref"]["invalid"], "oversized_string")
+
+    def test_excluded_row_malformed_unicode_does_not_hide_exclusion(self):
+        row = observation("EEM", currency="invalid", rights_ref="x" * 4096 + chr(0xD800))
+        result = compose_context([observation(), row], as_of=AS_OF,
+                                 benchmark_instrument_id="SPY", base_currency="USD")
+        self.assertEqual(result["status"], "UNAVAILABLE")
+        self.assertIn("invalid_currency", result["exclusions"][0]["reasons"])

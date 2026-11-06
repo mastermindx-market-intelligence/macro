@@ -78,7 +78,7 @@ def _safe(value: Any, depth: int = 0) -> Any:
     if isinstance(value, str):
         if len(value) <= 4096:
             return value
-        return {"invalid": "oversized_string", "sha256": hashlib.sha256(value.encode()).hexdigest()}
+        return {"invalid": "oversized_string", "sha256": hashlib.sha256(value.encode("utf-8", errors="surrogatepass")).hexdigest()}
     if _number(value):
         return float(value)
     if isinstance(value, Real):

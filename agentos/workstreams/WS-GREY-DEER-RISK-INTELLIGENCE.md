@@ -41,6 +41,10 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/multi_asset_20261105/DELIVERY_PLAN.md
+  - research/grey_deer/multi_asset_20261105/QUALIFICATION.md
+  - research/grey_deer/multi_asset_20261105/CALIBRATION_SOURCE_AUDIT.json
+  - research/grey_deer/multi_asset_20261105/evidence/verification.json
   - research/grey_deer/serving_freshness_20261021/AMZN_ADJUDICATION.md
   - research/grey_deer/serving_freshness_20261021/amzn_historical_execution_20261021.json
   - research/grey_deer/serving_freshness_20261021/mtf_history_candidates_20261021.json
@@ -536,6 +540,12 @@ waves:
     # Seat-found coverage candidates to verify independently: S08 (tests/test_risk_envelope.py null-law classes), S11 (three tests/test_rotation_risk_envelope.py module tests), U05 (two tests/test_risk_envelope_radar_integration.py tests). Mapping gaps are listed in the receipts census.
     depends_on: [EW-P4]
 next_action: >
+  Additive Chairman-directed multi-asset delivery (2026-11-05): the assigned Sol lead owns
+  the implementation plan at research/grey_deer/multi_asset_20261105/DELIVERY_PLAN.md.
+  Complete exact-source qualification and normal release of its MA-1 source slice, then
+  advance fast evidence, predictive qualification and portfolio shadow integration.
+  This adds no live capital authority and does not supersede the existing EW work below.
+
   2026-11-03 (CEO seat 00dea969, records r7): EW-P1 is DONE at PRODUCTION_PROOF: the second natural engine session landed on
   2026-11-03 (4e08d434708e 20:43:31Z, dfeed92a98a8 21:30:18Z; latest.json as_of 2026-10-30 -> 2026-11-02) from daily.yml run
   41634890986, dispatched by the repo's prophet-rescue self-heal lane after the EST-cron run's engine job failed, not by the
