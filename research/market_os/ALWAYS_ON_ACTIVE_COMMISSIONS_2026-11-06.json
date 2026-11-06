@@ -962,6 +962,35 @@
         "CI capability-owner policy resolution and protected release",
         "Authenticated beta source-to-screen advancement and fault drills; all migration waves remain open"
       ]
+    },
+    "breadth_adjusted_acquisition": {
+      "base_sha": "c3cd9bb6256ae7ea5943d226691a9b290e475f9e",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/BREADTH_ADJUSTED_ACQUISITION_2026-11-06.md",
+      "proof": {
+        "passed": 114,
+        "warnings": 14,
+        "exit_code": 0,
+        "diff_check": 0,
+        "log": "/tmp/mmx-breadth-capture-qualified-20261106.log",
+        "log_sha256": "5e8052691acb1f1c47058b7720d924848ce2f25369b4505cb5fc2fa51e143837",
+        "counts_overlap_prior": true,
+        "legacy_fixture": "tests/fixtures/base_breadth_download_c3cd.py",
+        "legacy_method_sha256": "ca8435027f01f41696ad391cb82319de3d889a6bf4eb2b6b598803667202d3a9"
+      },
+      "behavior": [
+        "Existing large/small/mid adapters accept detached membership/configuration/exclusions/aliases and one verified completed target.",
+        "Shared incumbent download retry owner; no runtime legacy cache write, proxy seed or last-extras state.",
+        "Active target coverage >=80% after original400/450/350 floors; departed and retained unresolved columns excluded.",
+        "Fresh-span null/gap ownership; bounded whole-history four-field repair preserves prior observed dates and joint depth; failure retains original prior."
+      ],
+      "remaining": [
+        "Basket extras and actual resolver-selection qualification",
+        "Private coherent broad/member storage and runtime input composition",
+        "Pure basket handoff/board and final Sector assembly",
+        "Updater recovery/bootstrap, legacy drain/anti-downgrade",
+        "CI capability-owner resolution, protected release and authenticated beta proof; wider migration waves"
+      ]
     }
   }
 }
