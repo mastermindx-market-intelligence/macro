@@ -11,6 +11,7 @@ from playwright.sync_api import sync_playwright
 cli = argparse.ArgumentParser(description=__doc__)
 cli.add_argument("--workspace", type=Path, required=True)
 cli.add_argument("--output", type=Path, required=True)
+cli.add_argument("--entry", choices=("setup", "sources"), default="setup")
 args = cli.parse_args()
 root = args.workspace.resolve()
 sys.path.insert(0, str(root))
@@ -54,6 +55,7 @@ body = """
     <summary class="po-setup">View setup / 查看形态</summary>
     __DETAIL__
    </details>
+   <footer class="po-foot"></footer>
   </article>
  </div></div>
  <section id="us-plan-block"><button id="us-life-clear" type="button" hidden>Clear filter</button>
@@ -70,11 +72,12 @@ body = """
 args.output.mkdir(parents=True, exist_ok=False)
 report = {"source_head": head, "source_sha256": hashes,
           "scope": "Synthetic anonymous fixture; actual template/CSS/dialog/lifecycle/navigation owners; no live/authenticated acceptance",
-          "cases": []}
+          "entry": args.entry, "tool_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "cases": []}
 with sync_playwright() as pw:
     browser = pw.chromium.launch()
-    for width, theme_name, locale in [(1440, "light", "en"), (1440, "dark", "zh"),
-                                       (390, "light", "en"), (320, "dark", "zh")]:
+    cases = ([(width, theme, lang) for width in (1440, 390) for theme in ("light", "dark") for lang in ("en", "zh")]
+             if args.entry == "sources" else [(1440, "light", "en"), (1440, "dark", "zh"), (390, "light", "en"), (320, "dark", "zh")])
+    for width, theme_name, locale in cases:
         label = f"{width}-{theme_name}-{locale}"
         ctx = browser.new_context(viewport={"width": width, "height": 900 if width > 1000 else 844},
                                   color_scheme=theme_name, locale="zh-CN" if locale == "zh" else "en-US",
@@ -89,9 +92,18 @@ with sync_playwright() as pw:
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.goto("https://prophet.fixture.test/us_stocks.html", wait_until="domcontentloaded")
-        page.locator("#pv-card-LFUS > details.pv-setup-inline > summary").click()
+        opener = page.locator("#pv-card-LFUS .pvs-card-sources" if args.entry == "sources" else "#pv-card-LFUS > details.pv-setup-inline > summary")
+        if args.entry == "sources":
+            assert opener.count() == 1
+            assert opener.bounding_box()["height"] >= 44
+        opener.focus()
+        page.keyboard.press("Enter")
         dialog = page.locator("#pv-setup-dialog[open]")
-        dialog.locator('[role="tab"][aria-controls$="-sources-panel"]').click()
+        source_tab = dialog.locator('[role="tab"][aria-controls$="-sources-panel"]')
+        if args.entry == "sources":
+            assert source_tab.get_attribute("aria-selected") == "true"
+        else:
+            source_tab.click()
         link = dialog.locator(".pvs-plan-link")
         link.scroll_into_view_if_needed()
         link.focus()
@@ -137,9 +149,15 @@ with sync_playwright() as pw:
         assert page.locator("[data-pvs-return]").count() == 0
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         assert dialog.evaluate("el => el.scrollWidth <= el.clientWidth + 1")
+        dialog.locator(".pvs-close").click()
+        assert opener.evaluate("el => el === document.activeElement")
+        assert page.locator("#pv-card-LFUS .pvs-card-sources").count() == 1
+        card_shot = args.output / ("card-sources-" + label + ".png")
+        page.screenshot(path=str(card_shot))
         assert not errors, errors
         report["cases"].append({"case": label, "passed": True, "keyboard_retry_and_return": True,
-                                "same_sources_section_focus_scroll": True, "false_zero_state": False,
+                                "same_sources_section_focus_scroll": True, "card_close_focus": True, "false_zero_state": False,
+                                "card_screenshot": card_shot.name, "card_sha256": hashlib.sha256(card_shot.read_bytes()).hexdigest(),
                                 "page_errors": errors, "screenshot": shot.name,
                                 "sha256": hashlib.sha256(shot.read_bytes()).hexdigest()})
         (args.output / "qa.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")

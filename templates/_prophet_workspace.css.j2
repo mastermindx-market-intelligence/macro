@@ -317,3 +317,7 @@ html[data-theme="light"] .pv-setup-body .pvs-section-tab[aria-selected="true"] {
 #us-standouts :is(#us-today-grid, #us-cand-grid) .pvcard:not(.po-card) .pv-live:not([hidden]) {
   pointer-events: auto;
 }
+
+/* R8 card Sources shortcut: same token treatment, usable at narrow widths. */
+.po-foot .pvs-card-sources { min-height: 44px; padding-inline: var(--sp-2, 8px); color: var(--link); white-space: normal; overflow-wrap: anywhere; }
+.po-foot .pvs-card-sources:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }

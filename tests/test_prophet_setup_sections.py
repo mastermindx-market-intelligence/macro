@@ -839,3 +839,77 @@ def test_plan_relation_and_table_serialisation_keep_their_published_shape():
     assert 'class="pvs-fallback-note"' in action
     legacy = tpl.action("legacy body without markers")
     assert "legacy body without markers" in legacy and 'data-pvs-section' not in legacy
+
+
+# Paper R8 direct Sources action; same native detail and exact Plan return.
+_CARD_SOURCE_PREP = _PREP + """
+origin.row.classList.add('po-card');
+const foot = mk('footer', 'po-foot'); origin.row.append(foot);
+await flush();
+const sourceButton = () => origin.row.querySelector('.pvs-card-sources');
+"""
+
+
+def test_r8_card_sources_opens_sources_and_restores_actual_card_trigger():
+    _run(_CARD_SOURCE_PREP + """
+assert.ok(sourceButton(), 'a real source-bearing card gets one shortcut');
+assert.equal(sourceButton().getAttribute('aria-haspopup'), 'dialog');
+assert.ok(sourceButton().textContent.includes('Sources'));
+assert.ok(sourceButton().textContent.includes('来源'));
+fire(sourceButton()); await flush();
+assert.equal(dialogEl().open, true);
+assert.equal(sectionOf(), 'sources');
+assert.equal(origin.audit.hasAttribute('open'), true);
+assert.equal(origin.row.querySelectorAll('.pvs-card-sources').length, 1);
+fire(closeBtn()); await flush();
+assert.equal(document.activeElement, sourceButton());
+assert.equal(origin.audit.hasAttribute('open'), false, 'published disclosure state restored');
+fire(origin.trigger); await flush();
+assert.equal(sectionOf(), 'structure', 'ordinary View setup remains unchanged');
+""")
+
+
+def test_r8_sources_plan_hop_keeps_exact_source_link_scroll_and_close_focus():
+    _run(_CARD_SOURCE_PREP + """
+fire(sourceButton()); await flush();
+origin.link.focus(); dialogEl().scrollTop = 177;
+fire(origin.link); await flush();
+assert.equal(window.USProphetSource.get(), 'plans');
+assert.equal(window.PVSetupReturn.available(), true);
+assert.equal(window.PVSetupReturn.run(), true); await flush();
+assert.equal(sectionOf(), 'sources');
+assert.equal(document.activeElement, origin.link);
+assert.equal(dialogEl().scrollTop, 177);
+assert.equal(dialogEl().querySelector('.pv-setup-body'), origin.body);
+fire(closeBtn()); await flush();
+assert.equal(document.activeElement, sourceButton());
+""")
+
+
+@pytest.mark.parametrize('mutation', [
+    "origin.row.setAttribute('hidden', '');",
+    "origin.row.classList.add('mx-tier-hidden');",
+    "origin.row.setAttribute('aria-hidden', 'true');",
+    "origin.trigger.setAttribute('hidden', '');",
+    "origin.body.querySelector('[data-pvs-section=\"sources\"]').remove();",
+])
+def test_r8_sources_does_not_open_with_missing_or_withheld_source(mutation):
+    _run(_CARD_SOURCE_PREP + """
+const stale = sourceButton(); assert.ok(stale);
+""" + mutation + """
+fire(stale); await flush();
+assert.ok(!dialogEl() || !dialogEl().open);
+assert.equal(window.PVSetupReturn.available(), false);
+""")
+
+
+def test_r8_source_control_replacement_does_not_steal_focus_or_duplicate_controls():
+    _run(_CARD_SOURCE_PREP + """
+const original = sourceButton();
+fire(original); await flush();
+original.remove(); await flush();
+fire(closeBtn()); await flush();
+assert.notEqual(document.activeElement, original);
+assert.equal(origin.row.querySelectorAll('.pvs-card-sources').length, 1);
+assert.equal(document.activeElement, origin.trigger, 'canonical summary is the safe fallback');
+""")

@@ -6497,7 +6497,41 @@
     if (study.entries.length < 2) study.viewing = false;
     renderStudy();
   }
+  /* Paper R8's direct Sources action uses this card's existing detail owner. It
+     is mounted only with real source content; the inline summary remains the
+     no-script path and the canonical identity used by the Plan return. */
+  function cardSourcesBody(row, details) {
+    var body = details && details.querySelector(':scope > .pv-setup-body');
+    if (!body && active && active.row === row && active.details === details && active.moved.length === 1) body = active.moved[0].node;
+    var panel = body && body.querySelector('[data-pvs-section="sources"]');
+    return panel && (!panel.hasAttribute('hidden') || (sections && sections.refs.some(function (ref) { return ref.panel === panel; }))) ? body : null;
+  }
+  function cardSourcesFocus(button, row, details) {
+    return !!button && button.isConnected && row.contains(button) &&
+      row.querySelector('.pvs-card-sources') === button &&
+      row.querySelector('.pv-setup-inline') === details &&
+      !button.disabled && !button.closest('[hidden],[aria-hidden="true"],.mx-tier-hidden,.mx-tier-blurred') &&
+      button.getClientRects().length > 0;
+  }
+  function mountCardSources() {
+    document.querySelectorAll('#us-standouts .po-card').forEach(function (row) {
+      var details = row.querySelector('.pv-setup-inline'), foot = row.querySelector('.po-foot');
+      var button = row.querySelector('.pvs-card-sources');
+      if (!foot || !details || !cardSourcesBody(row, details)) { if (button) button.remove(); return; }
+      if (button) return;
+      button = bilingual(node('button', 'gbtn pvs-card-sources'), 'Sources', '来源');
+      button.type = 'button';
+      button.setAttribute('aria-haspopup', 'dialog');
+      foot.append(button);
+      button.addEventListener('click', function () {
+        if (!cardSourcesFocus(button, row, details) || !cardSourcesBody(row, details)) return;
+        var trigger = details.querySelector(':scope > summary');
+        if (trigger && open(trigger, details, row, 'sources') === true) active.focusTrigger = button;
+      });
+    });
+  }
   function mountStudy() {
+    mountCardSources();
     // A hydration may copy markup into a new grid. Only newly bound live nodes count.
     studyUIs = studyUIs.filter(function (ui) {
       if (ui.grid.isConnected && ui.bar.isConnected) return true;
@@ -6611,7 +6645,8 @@
     dialog.querySelector('#pvs-dialog-title').textContent = '';
     dialog.querySelector('.pvs-native-link').removeAttribute('href');
     if (!old.hadLock) document.documentElement.classList.remove('pv-setup-lock');
-    if (restoreFocus && old.trigger.isConnected && old.trigger.getClientRects().length) old.trigger.focus({preventScroll: true});
+    var focusTarget = cardSourcesFocus(old.focusTrigger, old.row, old.details) ? old.focusTrigger : old.trigger;
+    if (restoreFocus && focusTarget.isConnected && focusTarget.getClientRects().length) focusTarget.focus({preventScroll: true});
     else if (restoreFocus) {
       var fallback = document.querySelector('#ucp-search, #us-src-btn-cand');
       if (fallback) fallback.focus({preventScroll: true});
@@ -6980,6 +7015,7 @@
     // Home again on the SAME candidate: hand the section the reader left from back to
     // its own body. Any other open path (trigger, Previous/Next) passes nothing.
     if (open(j.trigger, j.details, j.row, j.section) !== true) { clearJourney(); return false; }
+    if (cardSourcesFocus(j.focusTrigger, j.row, j.details)) active.focusTrigger = j.focusTrigger;
     restorePosition(j);                       // same reader, same dialog reading position
     clearJourney();                           // home again: nothing left to return from
     return true;
@@ -7101,7 +7137,7 @@
     snapshot: function (origin) {
       if (active && !active.row.closest('#us-plan-block,#us-life-grid')) {
         journeyPass = 'plans';                // armed for this journey's own Plans hop
-        return {trigger: active.trigger, details: active.details, row: active.row,
+        return {trigger: active.trigger, focusTrigger: active.focusTrigger || null, details: active.details, row: active.row,
           stamp: active.sourceStamp, href: active.href, ticker: active.ticker,
           x: active.x, y: active.y, mode: origin && origin.mode, view: origin && origin.view,
           section: currentSectionName(),
@@ -7126,7 +7162,7 @@
         return false;
       }
       if (!targetId || !planCard || (snap.stamp !== sourceStamp(snap.row))) { clearJourney(); return false; }
-      journey = {trigger: snap.trigger, details: snap.details, row: snap.row, stamp: snap.stamp,
+      journey = {trigger: snap.trigger, focusTrigger: snap.focusTrigger || null, details: snap.details, row: snap.row, stamp: snap.stamp,
         href: snap.href, ticker: snap.ticker, x: snap.x, y: snap.y,
         mode: snap.mode || 'candidates', view: snap.view || 'grid', targetId: targetId, planCard: planCard,
         section: snap.section || null, link: snap.link || null,
