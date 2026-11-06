@@ -3,7 +3,7 @@
   "root_id": "macro-always-on-shared-shell-20261105-c3",
   "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T06:48:47.551908+00:00",
+  "recorded_at": "2026-11-06T07:12:06.876079+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -888,6 +888,51 @@
         "CI capability resolution and protected release",
         "authenticated beta source-to-screen acceptance"
       ]
+    },
+    "private_yahoo_generation": {
+      "base_sha": "fb84067e6fd21b2fe8fbc25351cdfa58af971f56",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/YAHOO_PRIVATE_GENERATION_CONTRACT_2026-11-06.md",
+      "proof": {
+        "affected_command": "python -m pytest -q tests/test_yahoo_generation_contract.py tests/test_yahoo_runtime_profile.py tests/test_yahoo_cycle_acquisition.py tests/test_sector_generation_reader.py tests/test_vps_live_orchestration.py -k \"yahoo or generation\"",
+        "affected_passed": 313,
+        "affected_deselected": 88,
+        "affected_warnings": 15,
+        "affected_log": "/tmp/mmx-yahoo-private-input-regression-20261106.log",
+        "affected_log_sha256": "40bed089a0d3490e888f76dec13dbfb30aac60029ddfe406b19c732145baff7d",
+        "final_command": "python -m pytest -q tests/test_yahoo_generation_contract.py",
+        "final_passed": 54,
+        "final_warnings": 6,
+        "final_log": "/tmp/mmx-yahoo-private-input-final-20261106.log",
+        "final_log_sha256": "e7ad4197d8aa33dbaa8979e9ec557fcf66929b1ded29d23e011df835f1d3901e",
+        "exit_code": 0,
+        "counts_overlap": true
+      },
+      "behavior": [
+        "Closed acquisition, prior, clock and per-member lineage bind the existing input_identity; no vendor clock invented.",
+        "Private bounded primitive parquet staging invokes incumbent publisher; one captured-byte reader constructs verified cohort.",
+        "Existing ContextVar binds whole in-process calculation; normal publication uses actual post-capture clock and retained source/computation metadata.",
+        "Explicit @/colon identities round-trip; malformed members/identity refused before staging effects."
+      ],
+      "installed_shape_evidence": "research/market_os/YAHOO_INSTALLED_ARCHIVE_SHAPES_2026-11-06.json",
+      "remaining": [
+        "capture actual prior frames/identity/CAS from same selection or explicit bootstrap",
+        "producer and child-process binding",
+        "private fixed-manifest compatibility transport where required",
+        "broad/member/board and updater/drain/anti-downgrade",
+        "CI policy resolution, protected release and authenticated beta acceptance"
+      ]
+    },
+    "terminal_release_observation": {
+      "recorded_at": "2026-11-06T07:12:06.877892+00:00",
+      "pr": 1311,
+      "head": "847af34df5f811fa4a9152936e42d199b8a45b08",
+      "state": "OPEN",
+      "merged": false,
+      "labels": [
+        "merge-on-green"
+      ],
+      "mutation": "none; original carrier retained; no queue position inferred from REST read"
     }
   }
 }

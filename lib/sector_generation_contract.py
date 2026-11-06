@@ -154,8 +154,8 @@ def project_sector_bundle(
 ) -> dict[str, Any]:
     """Project one captured bundle for an already-authorized audience.
 
-    The projector checks core/baseline alignment and emits its existing Brief and
-    board allowlists. This contract does not claim complete core/history transport.
+    The projector checks core/baseline alignment and emits the allowlisted core,
+    reconstructed history, Brief and board under one authorized content hash.
     """
     inputs, receipt = _capture_view(
         member_bytes=member_bytes, input_identity=input_identity,

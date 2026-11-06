@@ -1,0 +1,222 @@
+{
+  "source_head": "4e5c79ebcfb463d8b19e4f29ce819a8423751ba2",
+  "rows": [
+    {
+      "ticker": "XLB",
+      "bytes": 188560,
+      "sha256": "1875d63c38f09e998e4c2ca3acd82343bb610a3302488b43b91c995cbdf9b103",
+      "rows": 7011,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 242016
+    },
+    {
+      "ticker": "XLC",
+      "bytes": 60854,
+      "sha256": "1a9e74e3a9c8ce1c4d32143899b636eff627a3fa0af03ad8ace8866b63564d42",
+      "rows": 2108,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 76360
+    },
+    {
+      "ticker": "XLE",
+      "bytes": 194107,
+      "sha256": "83aabf3d57cd9993774f9f2a8ab53375ed907d61859bf12879af88c39bb54b8f",
+      "rows": 7011,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 246488
+    },
+    {
+      "ticker": "XLF",
+      "bytes": 189518,
+      "sha256": "b0d550efe40c53cdab4c5e59e05aef175f60a9d451d3c504d9d57d28c12bdcad",
+      "rows": 7011,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 237195
+    },
+    {
+      "ticker": "XLI",
+      "bytes": 189690,
+      "sha256": "f4ab6a5f79c2b4d03a2cf0e7c950f64822f9698c2917ad0074d74737e866f39d",
+      "rows": 7011,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 242728
+    },
+    {
+      "ticker": "XLK",
+      "bytes": 190479,
+      "sha256": "acd3fb830f1059caa8a087e9d73a541bf3de6cb8f252a3c0f52f4fbd3194b657",
+      "rows": 7011,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 244392
+    },
+    {
+      "ticker": "XLP",
+      "bytes": 181999,
+      "sha256": "edc5466e53af1d5338323f084cf2063fbd519d85a4665bfa2ee2d691eb70915d",
+      "rows": 7011,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 233483
+    },
+    {
+      "ticker": "XLRE",
+      "bytes": 73001,
+      "sha256": "d7e2aa14173d54aff2ed6a5f13d612c5547ed4107371c439196de7fbc9d0db28",
+      "rows": 2786,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 91927
+    },
+    {
+      "ticker": "XLU",
+      "bytes": 186851,
+      "sha256": "dbf0ac77a8101425d6c09d3f1edc69a1a68e914a816aff4816e56f01c1480222",
+      "rows": 7011,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 238448
+    },
+    {
+      "ticker": "XLV",
+      "bytes": 184752,
+      "sha256": "7e68dd9815e40c24d7c8ad98843ddd4986128a8385a64814f8750ace3e93ee2c",
+      "rows": 7011,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 237496
+    },
+    {
+      "ticker": "XLY",
+      "bytes": 190146,
+      "sha256": "988335d4f4f2a960b5c1993d89d58f3dc751c64101bc617cb8e41b846e120b36",
+      "rows": 7011,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 245320
+    },
+    {
+      "ticker": "SPY",
+      "bytes": 245070,
+      "sha256": "330cc7af5b8f3a5f06b2b4d715f8522e17a5abdaeb892422d9291809d0154100",
+      "rows": 8501,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 314348
+    },
+    {
+      "ticker": "QQQ",
+      "bytes": 201822,
+      "sha256": "376008a7838b8a9d51aa3e99eaa3a437aef33a8a9d20d5c61bbc51d173c09f7e",
+      "rows": 6959,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 254940
+    },
+    {
+      "ticker": "IWM",
+      "bytes": 192760,
+      "sha256": "270ca1f1a63c878292d0a81841c00c32c561ad3dc4e15affaf2a68bb76cabfed",
+      "rows": 6651,
+      "groups": 1,
+      "columns": [
+        "close_price",
+        "close",
+        "volume",
+        "Date"
+      ],
+      "schema": "close_price: double\nclose: double\nvolume: double\nDate: timestamp[ms]\n-- schema metadata --\npandas: '{\"index_columns\": [\"Date\"], \"column_indexes\": [{\"name\": \"Price\",' + 685",
+      "uncompressed_bytes": 244764
+    }
+  ],
+  "scope": "Read-only individual installed legacy archive shape/hash survey; not coherent bootstrap, freshness, source-stability or runtime activation proof. No provider requests or writes.",
+  "observation_window_utc": [
+    "2026-11-06T07:06:33Z",
+    "2026-11-06T07:08:24Z"
+  ],
+  "source_carrier": "Studio PID17620; one read-only SSH command; exit0",
+  "recorded_at": "2026-11-06T07:12:06.871021+00:00"
+}

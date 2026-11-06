@@ -300,6 +300,8 @@ class GenerationValidationContext:
     members: Mapping[str, bytes]
     published_at: str
     admission_time: datetime
+    source_revision: str
+    computed_at: str | None
 
 
 @dataclass(frozen=True)
@@ -1590,6 +1592,8 @@ def _publish_generation_locked(
                 members=MappingProxyType(dict(captured_member_bytes)),
                 published_at=target.get("published_at"),
                 admission_time=publication_time,
+                source_revision=target.get("source_revision"),
+                computed_at=target.get("computed_at"),
             )
             error = request.bundle_validator(context)
             if error:
@@ -2149,6 +2153,9 @@ class Orchestrator:
         self.data_dir = data_dir
         self.stage_dir = ROOT / "site" / "live"
         self.now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+        # A supplied clock remains deterministic for tests/replay. Normal
+        # publication samples after capture, not at orchestrator construction.
+        self._publication_now = now
         self.runner = runner
         self.python = Path(sys.executable)
         self.results: list[TaskResult] = []
@@ -2501,6 +2508,84 @@ class Orchestrator:
             mode=0o644,
         )
 
+    def _yahoo_private_root(self) -> Path:
+        """Use the incumbent private state root; never a checkout/public tree."""
+        from lib.yahoo_generation_contract import YahooGenerationContractError
+        state = Path(self.state_dir)
+        if not state.is_absolute():
+            raise YahooGenerationContractError("absolute_private_root_required")
+        try:
+            if any(path.is_symlink() for path in (state, *state.parents)):
+                raise YahooGenerationContractError("private_root_symlink")
+            resolved = state.resolve()
+            forbidden = (ROOT.resolve(), Path(self.public_dir).resolve())
+            if any(resolved == root or root in resolved.parents for root in forbidden):
+                raise YahooGenerationContractError("private_root_inside_source_or_public")
+            if state.exists() and not state.is_dir():
+                raise YahooGenerationContractError("private_root_not_directory")
+            root = state / "generations"
+            if root.is_symlink():
+                raise YahooGenerationContractError("private_root_symlink")
+        except OSError:
+            raise YahooGenerationContractError("private_root_unavailable") from None
+        return root
+
+    def publish_yahoo_inputs(
+        self, encoded, *, generation_id: str, source_revision: str,
+        expected_current_content_id: str | None, lane: str = "snapshot",
+    ) -> GenerationPublishResult:
+        """Stage explicit encoded inputs privately, then call the sole publisher.
+
+        This method does not acquire data, bootstrap from a checkout, resolve a
+        prior, bind a child process, or retry an uncertain publication. The caller
+        supplies the observed selection fence and reconciles the returned effect.
+        """
+        from lib.yahoo_generation_contract import (
+            EncodedYahooInputs, MAX_YAHOO_MEMBER_BYTES, YAHOO_GENERATION_MEMBERS,
+            YahooGenerationContractError, prepare_yahoo_generation_request,
+        )
+        if not isinstance(encoded, EncodedYahooInputs):
+            raise YahooGenerationContractError("encoded_inputs_required")
+        if not isinstance(encoded.members, Mapping) or len(encoded.members) != len(YAHOO_GENERATION_MEMBERS):
+            raise YahooGenerationContractError("invalid_yahoo_member_set")
+        captured = dict(encoded.members)
+        if set(captured) != set(YAHOO_GENERATION_MEMBERS):
+            raise YahooGenerationContractError("invalid_yahoo_member_set")
+        if any(type(raw) is not bytes or not 0 < len(raw) <= MAX_YAHOO_MEMBER_BYTES
+               for raw in captured.values()):
+            raise YahooGenerationContractError("history_bytes_invalid")
+        root = self._yahoo_private_root()
+        # Request preparation detaches/validates identity before any disk effect.
+        # These logical names are replaced with the private staged paths below;
+        # no validator opens a file during request preparation.
+        prepared_request = prepare_yahoo_generation_request(
+            sources={name: Path(name) for name in YAHOO_GENERATION_MEMBERS},
+            input_identity=encoded.input_identity, generation_id=generation_id,
+            source_revision=source_revision, lane=lane)
+        _private_dir(Path(self.state_dir))
+        # This ephemeral directory is only a producer source for the incumbent
+        # captured-byte publisher; it is never a selection or serving location.
+        with tempfile.TemporaryDirectory(prefix=".yahoo-input-", dir=self.state_dir) as temporary:
+            stage = Path(temporary)
+            sources = {}
+            for name, raw in captured.items():
+                if _artifact_name_error(name):
+                    raise YahooGenerationContractError("invalid_yahoo_member_set")
+                path = stage / name
+                _private_dir(path.parent)
+                fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                with os.fdopen(fd, "wb") as output:
+                    output.write(raw)
+                    output.flush()
+                    os.fsync(output.fileno())
+                sources[name] = path
+            request = prepare_yahoo_generation_request(sources=sources,
+                input_identity=prepared_request.input_identity, generation_id=generation_id,
+                source_revision=source_revision, lane=lane)
+            return self.publish_generation(request,
+                expected_current_content_id=expected_current_content_id,
+                generations_root=root)
+
     def publish_generation(
         self,
         request: GenerationRequest,
@@ -2532,7 +2617,7 @@ class Orchestrator:
             state_dir=self.state_dir,
             expected_current_content_id=expected_current_content_id,
             public_root=self.public_dir,
-            now=self.now,
+            now=self._publication_now,
         )
 
     def select_generation(
@@ -2552,7 +2637,7 @@ class Orchestrator:
             expected_current_content_id=expected_current_content_id,
             target_content_id=target_content_id,
             public_root=self.public_dir,
-            now=self.now,
+            now=self._publication_now,
         )
 
 
