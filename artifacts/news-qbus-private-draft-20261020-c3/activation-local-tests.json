@@ -1,0 +1,48 @@
+{
+  "schema": "news.activation.local_test_receipt.v1",
+  "written_at": "2026-10-20T17:15:59.093570+00:00",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_news_activation_local.py"
+  ],
+  "returncode": 0,
+  "tests_run": 13,
+  "test_runtime_seconds": 0.079,
+  "summary": "Ran 13 tests in 0.079s; OK",
+  "evidence_capture": "Exact result summary from successful tool execution immediately preceding this receipt; no tests rerun to write the receipt",
+  "scope": "Isolated temporary-directory operation simulation. New parser fixtures exercise real service_state and source_and_services with fake systemctl/git, synthetic local unit bytes and no /etc or /proc access.",
+  "script_sha256": "4f6b515ad32295b3b2ba6a896801cb32afbac5904ed8de9d30585720cda84428",
+  "tests_sha256": "fbba3d0a421591d5b95ea92d8fd072ceb16fd9d0e94f098349145d0de68bfa6d",
+  "fixture_sha256": "8d2f4a528f3847f3afbea3f24ae8bbc04b2a25dee890d843537abba8b1d67bd3",
+  "test_names": [
+    "test_apply_preserves_values_orders_effects_and_never_replays",
+    "test_atomic_no_clobber_and_stale_preimage",
+    "test_duplicate_missing_reordered_or_extra_environment_file_refused",
+    "test_duplicate_single_value_service_property_refused",
+    "test_failed_check_retains_phase_and_refuses_automatic_retry",
+    "test_malformed_env_is_not_evaluated",
+    "test_non_alpaca_and_duplicate_key_refused",
+    "test_optional_key_without_prior_carrier_refused",
+    "test_preview_has_no_effect",
+    "test_receipt_symlink_is_preserved_and_refused",
+    "test_service_state_preserves_repeated_environment_files_in_order",
+    "test_service_state_supports_combined_environment_files_property",
+    "test_unrelated_duplicate_keys_remain_untouched"
+  ],
+  "before_fix_regression": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "test_news_activation_local.OperationTests.test_service_state_preserves_repeated_environment_files_in_order"
+    ],
+    "returncode": 1,
+    "error": "loaded_environment_files_drift:macro-api.service",
+    "reproduced_production_preview": true
+  },
+  "supersedes": "activation-local-tests.before-parser-repair.json"
+}

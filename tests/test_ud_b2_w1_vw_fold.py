@@ -1,20 +1,14 @@
-"""UD-B2-W1 — Vol-weather chips folded into the visible risk surface.
+"""Macro volatility diagnostics — one engine-true detail surface.
 
-Engine-true assertions (per R-H law): bind to vm['vol_weather'] as produced by
-scripts/build_site.py:_vol_weather_view() (file-backed JSON; never hand-typed
-shapes). The macro.html fixture under site/macro.html IS the engine output —
-rendered by scripts/build_site.py from the assembled vm. We slice it the way
-the R-E pattern does (sentinel + matching-close depth count) and assert the
-chips live inside the dial + scar chip surface (the mx5 scorecard's left
-column, .mx5-sc-left) and are absent from #dlg-sentiment.
+The display binds to vm['vol_weather'] from scripts/build_site.py:
+_vol_weather_view() exactly as before. The 2026-09-23 Macro UX follow-up
+reverses only the #7539 Round-3 placement deviation: detailed volatility,
+curve, correlation and dispersion rows belong inside #dlg-risk, not under the
+primary scorecard dial.
 
-R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy container
-(display:none!important on the macro route, including the .mx4-grid
-carve-out). The RATIFIED host is .mx5-sc-left. The RISK/风险 + Credit
-Stress stub face was removed so the strip and the risk read appear once.
-
-Spec: research/UNIFIED_DASHBOARD_DISPOSITION.md row 21 (risk isle IMPROVE R3)
-and row 35 (vol-weather chips IMPROVE R3 — absorbed into the risk surface).
+The contract is presentation-only: one instance on the page, no duplicate in
+#dlg-sentiment, no engine recompute, class-driven severity, honest young-data
+states, bilingual plain words, and a compact Risk Detail host.
 """
 from __future__ import annotations
 
@@ -29,8 +23,6 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 MACRO_HTML = ROOT / "site" / "macro.html"
-DASHBOARD_TEMPLATE = ROOT / "templates" / "dashboard.html.j2"
-THEME_CSS = ROOT / "templates" / "theme.css"
 VOL_WEATHER_JSON = ROOT / "site" / "basketdata" / "vol_weather.json"
 
 # Phrases banned from the glance tier (R-W1-B). Internal metric names belong in
@@ -81,6 +73,24 @@ def macro_html() -> str:
     if not MACRO_HTML.exists():
         pytest.skip(f"site/macro.html not found at {MACRO_HTML}")
     return MACRO_HTML.read_text()
+
+
+def _shipping_projection(html: str) -> str:
+    """Return the committed document plus any local linked stylesheets.
+
+    The render pipeline externalizes large ``<style>`` blocks into content-
+    hashed assets. Regression checks must follow the bytes the browser loads,
+    rather than assume every CSS rule remains inline in ``macro.html``.
+    """
+    linked_css = []
+    for href in re.findall(r'<link[^>]+href="([^"]+\.css(?:\?[^"#]*)?)"', html):
+        rel = href.split("?", 1)[0]
+        if rel.startswith(("/", "http://", "https://")):
+            continue
+        css_path = MACRO_HTML.parent / rel
+        if css_path.is_file():
+            linked_css.append(css_path.read_text(encoding="utf-8"))
+    return html + "\n" + "\n".join(linked_css)
 
 
 # ---------------------------------------------------------------------------
@@ -154,14 +164,16 @@ def _slice_vol_weather_strip(host_html: str) -> str:
 
 
 def _vw_host_slice(macro_html: str) -> str:
-    """Return the host slice for the vol-weather strip.
+    """Return the dedicated Risk Detail host for volatility diagnostics.
 
-    Round-3: the strip lives inside `<div class="mx5-sc-vw">` in the mx5
-    scorecard's left column (mx5-sc-left). Slice that container so we can
-    inspect the strip + its rows without leaking the rest of the scorecard.
+    The helper deliberately keys off the new section sentinel. Historical
+    RED-first tests still call this helper against pre-move HTML and therefore
+    continue to prove the placement capability was absent there.
     """
-    sentinel = '<div class="mx5-sc-vw"'
-    return _slice_from_sentinel(macro_html, sentinel)
+    sentinel = '<section class="riskdlg-vw"'
+    start = macro_html.index(sentinel)
+    end = macro_html.index("</section>", start) + len("</section>")
+    return macro_html[start:end]
 
 
 # ---------------------------------------------------------------------------
@@ -170,21 +182,16 @@ def _vw_host_slice(macro_html: str) -> str:
 
 
 class TestUDB2W1VwFold:
-    """The vol-weather chips now live inside the risk isle (R3 fold)."""
+    """The vol-weather chips now live inside Risk Detail (R3 fold)."""
 
-    def test_chips_present_inside_risk_isle(self, vol_weather, macro_html):
-        # R-W1-A-AMENDED: strip lives in the mx5 scorecard's left column
-        # (.mx5-sc-vw inside .mx5-sc-left). #sx-risk-v2 is not the host.
+    def test_chips_present_inside_risk_detail(self, vol_weather, macro_html):
         host = _vw_host_slice(macro_html)
-        assert "data-sx-vw-strip" in host, (
-            "Vol-weather sub-row (data-sx-vw-strip) must live inside the "
-            "mx5-sc-vw host in .mx5-sc-left (R-W1-A-AMENDED)"
-        )
-        # Every chip key in the real VM must appear inside the host slice
+        assert 'data-sx-vw-host="risk-detail"' in host
+        assert "data-sx-vw-strip" in host
         keys = [c["key"] for c in vol_weather["chips"]]
-        for k in keys:
-            assert f'data-sx-vw-chip="{k}"' in host, (
-                f"Chip key {k} missing from risk isle host"
+        for key in keys:
+            assert f'data-sx-vw-chip="{key}"' in host, (
+                f"Chip key {key} missing from Risk Detail"
             )
 
     def test_chips_absent_from_dlg_sentiment(self, macro_html):
@@ -220,50 +227,21 @@ class TestUDB2W1VwFold:
             "Old sibling-section id (vsb-vol-weather-section) must not appear on the page"
         )
 
-    def test_isle_carries_scope_class_for_styling(self, macro_html):
+    def test_risk_detail_carries_scope_class_for_styling(self, macro_html):
         host = _vw_host_slice(macro_html)
-        assert "sx-vw-strip--risk-isle" in host, (
-            "Risk isle sub-row must carry the scoped class for theme.css rules"
-        )
+        assert "sx-vw-strip--risk-detail" in host
+        assert "sx-vw-strip--risk-isle" not in host
 
-    def test_bilingual_eyebrow_inside_isle(self, macro_html):
+    def test_bilingual_section_heading_inside_risk_detail(self, macro_html):
         host = _vw_host_slice(macro_html)
-        assert "Volatility weather" in host
-        assert "波动率天气" in host
+        assert "Volatility &amp; correlation" in host
+        assert "波动率与相关性" in host
 
-    def test_isle_contains_no_dlg_class(self, macro_html):
-        """The sub-row must NOT carry any dialog-only class."""
+    def test_detail_rows_do_not_resurrect_legacy_dialog_classes(self, macro_html):
         host = _vw_host_slice(macro_html)
-        assert "mx5-dlg-factor-row" not in host, (
-            "Risk isle sub-row must not use the dialog factor-row class"
-        )
-        assert "vsb-vw-row" not in host, (
-            "Risk isle sub-row must not use the old dialog row class"
-        )
-
-    def test_tablet_scorecard_names_wrap_before_chart_collapses(self):
-        """The scorecard stays two-column down to 701px, so the weather names
-        must wrap through that entire narrow-card range instead of becoming
-        unreadable ellipses on portrait tablets.
-        """
-        css = THEME_CSS.read_text(encoding="utf-8")
-        marker = "/* ── Tablet / narrow scorecard (≤1100px): keep weather names readable ── */"
-        assert marker in css, (
-            "Vol-weather needs an explicit tablet contract; desktop + 390px "
-            "coverage leaves the 701–1100px two-column scorecard unprotected"
-        )
-        tablet = css.split(marker, 1)[1].split("/* ── Mobile (≤560px)", 1)[0]
-        assert "@media(max-width:1100px)" in tablet
-        selector = "body.page-macro .mx5-sc-vw .sx-vw-name{"
-        assert selector in tablet
-        rule = tablet.split(selector, 1)[1].split("}", 1)[0]
-        assert "white-space:normal" in rule
-        assert "text-overflow:ellipsis" not in rule
-        row_selector = "body.page-macro .mx5-sc-vw .sx-vw-row{"
-        assert row_selector in tablet
-        row_rule = tablet.split(row_selector, 1)[1].split("}", 1)[0]
-        assert "grid-template-columns:22px minmax(0,1fr) 64px" in row_rule
-        assert "gap:8px" in row_rule
+        assert "mx5-dlg-factor-row" not in host
+        assert "vsb-vw-row" not in host
+        assert 'id="vsb-vol-weather-section"' not in host
 
     def test_plain_word_names_inside_isle(self, macro_html):
         """R-W1-B: glance tier carries only tier words + plain clauses.
@@ -275,7 +253,7 @@ class TestUDB2W1VwFold:
         # Slice to ONLY the vol-weather strip so disclosure-tier rows outside
         # the strip cannot false-fail us.
         glance = _slice_vol_weather_strip(host)
-        assert glance, "vol-weather strip must exist inside risk isle"
+        assert glance, "vol-weather strip must exist inside Risk Detail"
         for phrase in BANNED_GLANCE_PHRASES_EN + BANNED_GLANCE_PHRASES_ZH:
             assert phrase not in glance, (
                 f"Banned internal metric name {phrase!r} must not appear on glance tier "
@@ -290,7 +268,7 @@ class TestUDB2W1VwFold:
         """
         host = _vw_host_slice(macro_html)
         glance = _slice_vol_weather_strip(host)
-        assert glance, "vol-weather strip must exist inside risk isle"
+        assert glance, "vol-weather strip must exist inside Risk Detail"
         # pctile phrases must not appear on glance
         assert "higher than" not in glance, (
             "Glance tier must not carry 'higher than N% of days' pctile phrase (one-integer law)"
@@ -324,7 +302,7 @@ class TestUDB2W1VwFold:
         """
         host = _vw_host_slice(macro_html)
         glance = _slice_vol_weather_strip(host)
-        assert glance, "vol-weather strip must exist inside risk isle"
+        assert glance, "vol-weather strip must exist inside Risk Detail"
         # No --sg-wx-c keying on rows
         assert "--sg-wx-c" not in glance, (
             "Inline --sg-wx-c keying on vol-weather rows is forbidden (R-W1-F)"
@@ -347,7 +325,7 @@ class TestUDB2W1VwFold:
         """
         host = _vw_host_slice(macro_html)
         glance = _slice_vol_weather_strip(host)
-        assert glance, "vol-weather strip must exist inside risk isle"
+        assert glance, "vol-weather strip must exist inside Risk Detail"
         row_re = re.compile(
             r'<div\s+class="sx-vw-row\s+(?P<cls>sx-vw-row--\w+)"\s+'
             r'data-sx-vw-chip="(?P<chip>\w+)"\s+'
@@ -362,82 +340,77 @@ class TestUDB2W1VwFold:
                 f"(expected class={expected_class!r} — the class IS the colour key)"
             )
 
-    def test_isle_dial_face_remains_visible_after_fold(self, macro_html):
-        """R-W1-A-AMENDED: the dial + scar chips stay visible on the
-        ratified host (.mx5-sc-left). #sx-risk-v2's face is
-        display:none!important BY DESIGN on the macro route.
-        """
-        sentinel = '<div class="mx5-sc-left">'
-        sc_left = _slice_from_sentinel(macro_html, sentinel)
-        assert "mx5-gauge-svg" in sc_left or "mx5-gauge" in sc_left, (
-            "mx5-sc-left must carry the dial (the visible risk surface)"
-        )
-        assert "mx5BtnRisk" in sc_left, (
-            "mx5-sc-left must carry the scar-chip risk button"
-        )
-        # The optimizer extracts most inline CSS from site/macro.html into
-        # fingerprinted assets. Guard the source rule in dashboard.html.j2,
-        # while the assertions above keep the rendered dial/controls honest.
-        dashboard_source = DASHBOARD_TEMPLATE.read_text(encoding="utf-8")
-        assert re.search(
-            r"body\.page-macro\.mx4-grid\s+#sx-risk-v2\s+\.sxg-face"
-            r"\s*\{\s*display\s*:\s*none\s*!\s*important\s*;?\s*\}",
-            dashboard_source,
-        ), (
-            "R-W1-A-AMENDED: #sx-risk-v2 face is display:none!important "
-            "BY DESIGN on the macro route, including the .mx4-grid carve-out"
+    def test_primary_scorecard_keeps_dial_and_risk_entry_without_weather_stack(self, macro_html):
+        sc_left = _slice_from_sentinel(macro_html, '<div class="mx5-sc-left">')
+        assert "mx5-gauge-svg" in sc_left or "mx5-gauge" in sc_left
+        assert "mx5BtnRisk" in sc_left
+        assert "data-sx-vw-strip" not in sc_left
+        assert "mx5-sc-vw" not in sc_left
+        projection = _shipping_projection(macro_html)
+        assert (
+            "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}"
+            in projection
+            or "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important}"
+            in projection
+            or "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none !important}"
+            in projection
         )
 
-    def test_strip_lives_below_dial_and_scar_chips_in_mx5_scorecard(self, macro_html):
-        """The strip renders as a sub-row INSIDE the mx5 scorecard's left
-        column, BELOW the dial and the scar chips. The host (.mx5-sc-vw)
-        lives inside .mx5-sc-left.
-        """
-        sentinel = '<div class="mx5-sc-left">'
-        sc_left = _slice_from_sentinel(macro_html, sentinel)
-        assert "mx5-sc-vw" in sc_left, (
-            "mx5-sc-left must contain the vol-weather host (.mx5-sc-vw)"
-        )
-        assert "data-sx-vw-strip" in sc_left, (
-            "mx5-sc-left must contain the vol-weather strip itself"
+    def test_strip_lives_in_risk_detail_before_sentiment(self, macro_html):
+        host = _vw_host_slice(macro_html)
+        assert "data-sx-vw-strip" in host
+        dlg_start = macro_html.index('<div class="mx5-dlg" id="dlg-risk"')
+        vw_pos = macro_html.index('<section class="riskdlg-vw"', dlg_start)
+        sentiment_pos = macro_html.index('<div class="riskdlg-sentiment"', dlg_start)
+        assert dlg_start < vw_pos < sentiment_pos, (
+            "Volatility diagnostics must sit in Risk Detail before Sentiment"
         )
 
-    def test_strip_present_once_inside_mx5_sc_left(self, macro_html):
-        """R-W1-A-AMENDED: presence-assert on the .mx5-sc-left slice
-        (replaces test_strip_absent_from_sx_risk_v2_slice). The strip
-        lives inside .mx5-sc-left and is rendered once on the whole page.
-        """
-        sentinel = '<div class="mx5-sc-left">'
-        sc_left = _slice_from_sentinel(macro_html, sentinel)
-        assert "data-sx-vw-strip" in sc_left, (
-            "Vol-weather strip must live inside the .mx5-sc-left slice "
-            "(R-W1-A-AMENDED ratified host)"
-        )
-        assert macro_html.count("data-sx-vw-strip") == 1, (
-            "Vol-weather strip must render exactly once on the whole page; "
-            f"got {macro_html.count('data-sx-vw-strip')}"
-        )
+    def test_strip_present_once_inside_risk_detail(self, macro_html):
+        host = _vw_host_slice(macro_html)
+        assert host.count("data-sx-vw-strip") == 1
+        assert macro_html.count("data-sx-vw-strip") == 1
+        assert macro_html.count('data-sx-vw-host="risk-detail"') == 1
 
-    def test_no_vw_or_risk_stub_class_outside_mx5_sc_left(self, macro_html):
-        """The strip and the risk read appear ONCE, inside the scorecard.
-        After removing the .mx5-sc-left slice, no vw/risk-stub class remains.
-        """
-        sentinel = '<div class="mx5-sc-left">'
-        sc_left = _slice_from_sentinel(macro_html, sentinel)
-        remainder = macro_html.replace(sc_left, "", 1)
-        for needle in (
-            "data-sx-vw-strip",
-            'class="mx5-sc-vw"',
-            "sxg-face-risk-hidden",
+    def test_no_volatility_rows_outside_risk_detail(self, macro_html):
+        host = _vw_host_slice(macro_html)
+        remainder = macro_html.replace(host, "", 1)
+        assert "data-sx-vw-strip" not in remainder
+        assert "data-sx-vw-chip=" not in remainder
+        assert 'class="mx5-sc-vw"' not in macro_html
+        assert 'data-sx-vw-host="mx5-sc-left"' not in macro_html
+
+    def test_risk_detail_layout_is_compact_desktop_and_stacked_mobile(self, macro_html):
+        projection = _shipping_projection(macro_html)
+        assert "body.page-macro .riskdlg-vw .sx-vw-strip{" in projection
+        assert "grid-template-columns:repeat(2,minmax(0,1fr));" in projection
+        assert "@media(max-width:640px)" in projection
+        mobile = projection[projection.index("@media(max-width:640px)"):]
+        assert "body.page-macro .riskdlg-vw .sx-vw-strip" in mobile
+        assert "grid-template-columns:minmax(0,1fr);" in mobile
+
+
+    def test_macro_brain_launcher_is_compact_through_tablet(self, macro_html):
+        """The Macro launcher stays an orb through tablet widths."""
+        projection = _shipping_projection(macro_html)
+        tablet = re.search(
+            r"@media\s*\(\s*max-width\s*:\s*1024px\s*\)\s*\{\s*"
+            r"body\.page-macro\s+#mmb-launch\s*\{([^{}]*)\}\s*"
+            r"body\.page-macro\s+#mmb-launch\s+\.lt\s*\{([^{}]*)\}",
+            projection,
+        )
+        assert tablet, "Macro needs a scoped compact Brain launcher through 1024px"
+        launcher = re.sub(r"\s+", "", tablet.group(1))
+        label = re.sub(r"\s+", "", tablet.group(2))
+        for declaration in (
+            "right:16px",
+            "bottom:calc(16px+env(safe-area-inset-bottom,0px))",
+            "padding:8px",
+            "gap:0",
         ):
-            assert needle not in remainder, (
-                f"{needle!r} must not appear outside .mx5-sc-left "
-                f"(leftover RISK sibling / duplicate strip)"
-            )
-        # Class tokens in HTML class attributes (not CSS comments / selectors).
-        assert not re.search(r'class="[^"]*\bsx-vw-strip\b', remainder), (
-            "sx-vw-strip class must not appear on any element outside .mx5-sc-left"
-        )
+            assert declaration in launcher, declaration
+        assert "display:none" in label, "The tablet launcher must hide its text label"
+
 
     def test_glance_cor1m_and_cor3m_labels_are_distinct(self, macro_html):
         """Glance rows 6/7 (cor1m / cor3m) must not share one label.
@@ -502,3 +475,38 @@ class TestUDB2W1VwFold:
                 f"Extreme-band row chip={k!r} must show 'storm' / '风暴' tier word; "
                 f"got tier body: {tier_body!r}"
             )
+
+# Keep the Macro mobile card breakpoint under the existing CI-wired dashboard
+# contract; full browser geometry was separately proved against the live page.
+def test_macro_mobile_brief_and_alerts_inherit_full_width() -> None:
+    template = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    match = re.search(r'<style id="mx4-css">(.*?)</style>', template, re.S)
+    assert match, "Macro mobile grid stylesheet must remain available"
+    css = match.group(1)
+    tablet = re.search(r"@media\(max-width:1099px\)\{(.*?)\n\}", css, re.S)
+    mobile = re.search(r"@media\(max-width:700px\)\{(.*?)\n\}", css, re.S)
+    assert tablet is not None and mobile is not None
+    for card in ("sx-aibrief-v2", "sx-news-v2"):
+        assert f"#{card}{{grid-column:span 6;}}" not in tablet.group(1), card
+    assert "body.page-macro.mx4-grid .sx," in mobile.group(1)
+    assert "grid-column:span 12;" in mobile.group(1)
+
+def test_macro_mobile_alert_status_badge_avoids_card_action() -> None:
+    template = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    match = re.search(r'<style id="mx4-css">(.*?)</style>', template, re.S)
+    assert match, "Macro card CSS is missing"
+    css = match.group(1)
+    mobile = re.search(
+        r"@media\(max-width:700px\)\{\s*"
+        r"body\.page-macro\.mx4-grid #sx-news-v2 "
+        r"\.mx5-card-title-row\{([^{}]*)\}",
+        css, re.S,
+    )
+    assert mobile, "Mobile Alerts header must reserve room for the corner action"
+    assert "padding-right:64px" in mobile.group(1)
+    assert "flex-wrap:wrap" in mobile.group(1)
+    assert "row-gap:8px" in mobile.group(1)
+    assert (
+        "body.page-macro.mx4-grid #sx-news-v2 "
+        ".mx5-card-title{margin-bottom:0;}"
+    ) in css

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-04T21:11:08Z",
+ "accession": "0001493152-26-008854",
+ "cik": "0001540684",
+ "doc_byte_length": 1763926,
+ "doc_sha256": "fdda90d7cf6cbfa0281114dae749bc71760342c34823cc2f3182e6e0b6b3c26d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "form10-k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1723786,
+  "byte_start": 1723548,
+  "normalized": "Offtake and Sales Agreement dated November 29, 2023, by and between the Company and Sheng Wei Zhi Yuan International Limited. Incorporated by reference to Exhibit 10.4 to the Form 8-K filed with the Commission on December 1, 2023.",
+  "normalized_sha256": "a124ed91716e5969bb9f98a6721560502e54a1cba393e6b464b919083ec5018a",
+  "raw": "Offtake\n    and Sales Agreement dated November 29, 2023, by and between the Company and Sheng Wei Zhi Yuan International Limited. Incorporated\n    by reference to Exhibit 10.4 to the Form 8-K filed with the Commission on December 1, 2023.",
+  "raw_sha256": "50c0d3aece71730b80b26ea3979558867972e690e8886ec0fc8ae70e52494d37"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1540684/000149315226008854/form10-k.htm",
+ "xbrl_contexts": []
+}

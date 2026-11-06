@@ -1,0 +1,48 @@
+✔ exact schema fixture is accepted (1.039625ms)
+✔ missing financial owner fields are not populated from source prose (0.198917ms)
+✔ wrong contract, generation, identity, authority and duplicate quartet fail closed (0.451334ms)
+✔ unbound or mismatched financial receipt cannot render (6.736792ms)
+✔ recognition missing owner cannot smuggle computed figures (0.13175ms)
+✔ issuer URL is independent and preserves every desk query/hash (0.197083ms)
+✔ legacy quartet seed only without independent issuer, unknown values do not become identities (0.117083ms)
+✔ source navigation permits reviewed primary domains and rejects unsafe URLs (0.136708ms)
+✔ company bridge explicit navigation scopes the company while issuer/query/hash persist (0.169167ms)
+✔ per-call authenticated dedicated endpoint and last-good cache, invalid and paid-gate behavior (1.869625ms)
+✔ cold failed read is unavailable rather than a valid empty period (0.3395ms)
+✔ ZH uses translated controls and no markup injected from owner prose (0.412375ms)
+✔ actual composer emitted valuation leg uses schema field and displays algebraic scenario (8.341041ms)
+✔ ZH context siblings render without English fallback leaking into action copy (1.722166ms)
+✔ qualified reported financial facts are visible at rest with source period and units (2.864917ms)
+✔ saved issuer select method replaces only issuer and rejects unknown input (0.2755ms)
+✔ finance settles before all eight preserved secondary reads (14.0865ms)
+✔ typed finance failure still loads secondary panels (2.666958ms)
+✔ old finance cannot start secondary work after SIGNED_OUT (1.238208ms)
+✔ old finance cannot start secondary work after SIGNED_IN (3.457ms)
+✔ selection changes are guarded before secondary continuation (6.461083ms)
+✔ same initial auth notification coalesces while and after settled (12.949ms)
+✔ first promise is adopted once without another finance fetch (3.5425ms)
+✔ first promise from another subject is not adopted (0.996209ms)
+✔ early instance mounts once and stops fetching after page takes ownership (8.186833ms)
+✔ createGovernmentRevenueBudget standalone auth reload default remains active (21.587542ms)
+✔ createGovernmentRevenueBudget page owner suppresses duplicate auth fetch and invalidates old result (3.094416ms)
+✔ createGovernmentRevenueFms standalone auth reload default remains active (2.930334ms)
+✔ createGovernmentRevenueFms page owner suppresses duplicate auth fetch and invalidates old result (2.0535ms)
+✔ actual early startup missing auth settles locked without network and releases every public tool (7.061833ms)
+✔ actual early startup disabled auth settles locked without network and releases every public tool (1.177458ms)
+✔ actual early typed403 settles then loads modules, with visible partial on one module failure (0.928041ms)
+✔ completed initial session starts finance before a delayed auth notification (2.491917ms)
+✔ newer SIGNED_OUT wins over pending initial session result (2.217125ms)
+✔ newer SIGNED_IN wins over pending initial session result (1.612875ms)
+✔ initial session result cannot reclaim finance from page owner (1.113292ms)
+✔ actual investor retains restored subject when matching INITIAL_SESSION arrives after its finance read (3.816625ms)
+✔ actual investor retains restored subject when matching INITIAL_SESSION arrives during its finance read (6.198042ms)
+✔ actual investor drops early restored finance on a later sign-out (5.152125ms)
+✔ actual investor rejects the old restored response after an account change (4.774958ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 222.114

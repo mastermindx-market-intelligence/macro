@@ -113,6 +113,32 @@ Research Vault data, and changes no launchd state:
   -c 'import marketdesk_extractor; print(marketdesk_extractor.__file__)'
 ```
 
+Source-byte readback and an import smoke do not prove that the installed Playwright
+package has its matching browser executable. Before the runtime probe, stop the
+existing `com.mastermindx.research-trickle` launch agent so KeepAlive cannot create a
+second owner, and confirm that its daemon, Playwright driver and browser have exited.
+Use the existing runtime interpreter and profile; do not upgrade the Python package
+or substitute a different browser/profile as part of this readiness check:
+
+```bash
+cd "$HOME/mastermind-research/marketdesk_paper_extractor"
+.venv/bin/python -m playwright install chromium
+MARKETDESK_HEADLESS=true .venv/bin/marketdesk --env .env trickle --once --dry-run
+```
+
+The supported dry-run opens the existing profile and checks authentication/quota;
+it skips discovery, downloads, publication, FAILED-row reset and auth-health
+projection. It still initializes the existing DB/schema and writes normal logs and
+browser-profile state. Bound its wall time and consume the result. Require an
+actual `session ready` result, not merely exit code zero. A browser startup failure
+is `UNKNOWN / BROWSER_START_FAILED`; a negative authentication result is separate.
+A successful authentication probe does not establish that browse or report metadata
+works. Close the diagnostic before restoring the one existing launch agent.
+
+Only a completed discovery pass and an actual eligible report progressing through
+download and vault publication establish recovered intake. Preserve the independent
+downstream publication hold and require the existing end-to-end acceptance checks.
+
 Destination overrides are for hermetic tests and rehearsals only. The recovered
 launchd plists retain their packet-exact absolute production paths and are not
 rewritten by the installer, so production install, readback, and rollback commands

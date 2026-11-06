@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-12T18:43:55Z",
+ "accession": "0001895262-26-000076",
+ "cik": "0001895262",
+ "doc_byte_length": 2547631,
+ "doc_sha256": "f45be69703d371724ebab79f57f3008bd2f57fa61c35de50d9f159629e2afe16",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ne-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2328325,
+  "byte_start": 2327086,
+  "normalized": "Exxon Mobil Corporation (“ExxonMobil”)19.7 %22.1",
+  "normalized_sha256": "d42af72a84c48d7a38cef832e7b0e7d7f6a0d711f5f37648a789eb0567c8d28e",
+  "raw": "Exxon Mobil Corporation (&#8220;ExxonMobil&#8221;)</span></td><td colspan=\"3\" style=\"background-color:#b9d9eb;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#b9d9eb;border-top:1pt solid #000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-406\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1485\">19.7</ix:nonFraction>&#160;</span></td><td style=\"background-color:#b9d9eb;border-top:1pt solid #000;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"background-color:#b9d9eb;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#b9d9eb;border-top:1pt solid #000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Open Sans',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-407\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1486\">22.1",
+  "raw_sha256": "fbb8f069233dce1b71c250c705d89711150c3e6b1541d2526694454b6c392f56"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1895262/000189526226000076/ne-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 210345,
+   "byte_start": 209541,
+   "context_ref": "c-407",
+   "raw": "<xbrli:context id=\"c-407\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001895262</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">ne:ExxonMobilCorporationExxonMobilMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:StatementBusinessSegmentsAxis\">ne:ReportableSegmentMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "c6e270dedf866be3d1544854c8208ab5072ce392a81d488b03f4de6351bfd1bd"
+  }
+ ]
+}
