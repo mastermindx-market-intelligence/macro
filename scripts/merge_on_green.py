@@ -3566,6 +3566,7 @@ class RefreshLease:
         self.readable = readable
         self.claim_attempted = False
         self.released_numbers: set[int] = set()
+        self.claim_attempted_number: int | None = None
         self._label_ready: bool | None = None
 
     @property
@@ -3617,6 +3618,27 @@ class RefreshLease:
             return True
         return current - stamp >= REFRESH_LEASE_MAX_SECONDS
 
+    def _decline(self, number: Any, reason: str) -> bool:
+        """Refuse a claim out loud.
+
+        Every refusal before the issue-label POST used to be a bare ``return
+        False`` (most are pre-write; the read-back case follows a register write
+        whose outcome is then unknown); the only trace
+        the sweep left was `refresh_deferred`'s "0/1 effective CI workload slot(s)
+        in use", which reads as a capacity wait when the real cause was a refused
+        generation-register read, a sweep-wide claim latch, or a released
+        generation (observed live with a tier-0 `main-red-repair` pull request
+        deferred sweep after sweep while the queue showed a free slot). The
+        annotation names the cause; the fail-closed verdict is unchanged.
+        """
+        _annotate(
+            "notice",
+            "merge-on-green refresh lease",
+            f"PR #{number}: refresh lease not claimed — {reason}; no update-branch "
+            "write attempted.",
+        )
+        return False
+
     def _write_generation_record(self, number: Any, head_sha: str) -> bool:
         """Create/update and affirm the exact generation before claiming.
 
@@ -3654,7 +3676,11 @@ class RefreshLease:
                     },
                 )
             else:
-                return False
+                return self._decline(
+                    number,
+                    f"the generation register read answered HTTP {status}"
+                    + ("" if isinstance(current, dict) or status != 200 else " without a label object"),
+                )
             # Every mutating response is potentially ambiguous, and 422 is also
             # validation/throttling. Only an exact read-back authorises the issue
             # label or the CI-producing update.
@@ -3666,11 +3692,19 @@ class RefreshLease:
                 or not isinstance(verified, dict)
                 or str(verified.get("description") or "") != description
             ):
-                return False
+                return self._decline(
+                    number,
+                    "a generation register write was attempted but the read-back did "
+                    f"not affirm the intended record (write HTTP {write_status}, "
+                    f"read-back HTTP {verify_status}); the register's outcome is "
+                    "unknown",
+                )
             self._label_ready = True
             parsed = parse_refresh_lease_record(description)
             if parsed is None:
-                return False
+                return self._decline(
+                    number, "the affirmed generation record did not parse"
+                )
             (
                 _owner,
                 self.generation_head_sha,
@@ -3707,24 +3741,60 @@ class RefreshLease:
         """Claim before ``update-branch``; ambiguity fails closed."""
         number = pull.get("number")
         head_sha = str(((pull.get("head") or {}).get("sha")) or "").lower()
-        if not self.readable or not number or len(head_sha) != 40:
-            return False
+        if not self.readable:
+            return self._decline(
+                number, "the lease census or generation register is unreadable this sweep"
+            )
+        if not number:
+            return self._decline(number, "the live pull request carries no number")
+        if len(head_sha) != 40:
+            return self._decline(
+                number, "the live pull request carries no 40-character head sha"
+            )
         if str(number).isdigit() and int(number) in self.released_numbers:
-            return False
+            return self._decline(
+                number, "its generation was released earlier in this same sweep"
+            )
         if self.owns(pull):
             # A generation may authorize exactly one update of its recorded head.
             # Once update-branch moved the live head, later sweeps only reconcile
             # that workload; they must never use the same label for a second update.
-            return bool(
-                self.generation_head_sha
-                and head_sha == self.generation_head_sha
-                and self.record_is_current()
+            if not self.generation_head_sha:
+                return self._decline(
+                    number, "it holds the lease but no generation head is recorded"
+                )
+            if head_sha != self.generation_head_sha:
+                return self._decline(
+                    number,
+                    "its recorded generation already authorised one update "
+                    f"(recorded head {self.generation_head_sha[:12]}, live head "
+                    f"{head_sha[:12]})",
+                )
+            if self.record_is_current():
+                return True
+            return self._decline(
+                number,
+                "the generation register no longer affirms its generation "
+                "(read refused or record changed)",
             )
-        if self.owner_number is not None or self.claim_attempted:
-            return False
+        if self.owner_number is not None:
+            return self._decline(
+                number, f"PR #{self.owner_number} holds the one durable lease"
+            )
+        if self.claim_attempted:
+            return self._decline(
+                number,
+                "this sweep already spent its single lease claim"
+                + (
+                    f" on PR #{self.claim_attempted_number}"
+                    if self.claim_attempted_number is not None
+                    else ""
+                ),
+            )
         # Set before any network write. A timeout may mean the server accepted it,
         # so this process must never try a different pull request afterward.
         self.claim_attempted = True
+        self.claim_attempted_number = int(number) if str(number).isdigit() else None
         if not self._write_generation_record(number, head_sha):
             return False
         try:
