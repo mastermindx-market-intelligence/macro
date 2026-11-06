@@ -1,0 +1,550 @@
+{# ── dlg-policy — Policy Monitor dialog ────────────────────────────────────
+   Consumes the normalized display model `pm` (lib/policy_monitor_view.py).
+
+   INFORMATION ORDER (frozen design packet):
+     1 · named sticky header (title, context, close, snapshot date)
+     2 · assessment band — the CONDITIONS STATE and the EVIDENCE CONDITION are
+         reported separately, and a met condition is never renamed as observed
+         market repricing
+     3 · rates as the main analytical panel — labelled chart, percent units,
+         elapsed-time x axis, legend, an equivalent values table, and a
+         supporting rail carrying the source-qualified current rate, the
+         supported market horizon and the Fed comparison
+     4 · combined stance with its statement-guidance component
+     5 · recorded policy activity (counts labelled for what the producer
+         actually collects; the last recorded alert is NOT a Fed speech)
+     6 · transmission watch rows — observed technical state kept apart from
+         the dated hypothesis, with the stale-copy warning next to the copy
+     7 · the existing repricing / calendar / flip context, with missing
+         distinguished from empty and the countdown marked as a count, not a
+         live clock
+     8 · sources + methodology disclosure
+
+   The existing modal controller owns open/close, Escape, backdrop, focus trap
+   and focus restoration — this fragment only supplies markup.
+   ────────────────────────────────────────────────────────────────────────── #}
+<div class="mx5-dlg" id="dlg-policy" role="dialog" aria-modal="true" aria-labelledby="dlg-policy-title" tabindex="-1">
+  <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
+  <div class="mx5-dlg-panel">
+    <div class="mx5-dlg-header">
+      <div class="plm-dlg-headtext">
+        <h2 class="mx5-dlg-title" id="dlg-policy-title">
+          <span class="l-en">Policy Monitor</span><span class="l-zh">政策监测</span>
+        </h2>
+        <div class="plm-dlg-sub">
+          <span class="l-en">Conditions · rates · evidence</span><span class="l-zh">条件 · 利率 · 证据</span>
+        </div>
+      </div>
+      <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
+    </div>
+
+    <div class="mx5-dlg-body">
+      <div id="dlg-policy-lever-card">
+
+        {# ══ 1 · Assessment band ══════════════════════════════════════════ #}
+        <div class="plm-assess">
+          <div class="plm-surface plm-assess-cell">
+            <div class="plm-assess-top">
+              <span class="plm-dot plm-dot--{{ pmv.state.value|lower }}"></span>
+              <span class="plm-assess-state">
+                <span class="l-en">{{ pmv.state.summary_en }}</span>
+                <span class="l-zh">{{ pmv.state.summary_zh }}</span>
+              </span>
+            </div>
+            <div class="plm-assess-watch">
+              <span class="l-en">{{ pmv.state.watch_en }}</span>
+              <span class="l-zh">{{ pmv.state.watch_zh }}</span>
+            </div>
+            <ul class="plm-cond-list">
+              {% for c in pmv.conditions %}
+              <li class="plm-cond">
+                <span class="plm-cond-mark plm-cond-mark--{% if c.met is none %}unknown{% elif c.met %}met{% else %}unmet{% endif %}">
+                  {%- if c.met is none -%}
+                  <span class="l-en">Unknown</span><span class="l-zh">未知</span>
+                  {%- elif c.met -%}
+                  <span class="l-en">Met</span><span class="l-zh">成立</span>
+                  {%- else -%}
+                  <span class="l-en">Not met</span><span class="l-zh">未成立</span>
+                  {%- endif -%}
+                </span>
+                <span>
+                  <span class="plm-cond-label">
+                    <span class="l-en">{{ c.label_en }}</span><span class="l-zh">{{ c.label_zh }}</span>
+                  </span>
+                  <span class="plm-cond-value">
+                    <span class="l-en">{{ c.value_en }}</span><span class="l-zh">{{ c.value_zh }}</span>
+                  </span>
+                </span>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="plm-surface plm-assess-cell">
+            <div class="plm-evidence-row">
+              <span class="plm-evidence-level">
+                <span class="l-en">Evidence: {{ pmv.evidence.label_en }}</span>
+                <span class="l-zh">证据：{{ pmv.evidence.label_zh }}</span>
+              </span>
+            </div>
+            <div class="plm-evidence-note">
+              <span class="l-en">{{ pmv.evidence.summary_en }}</span>
+              <span class="l-zh">{{ pmv.evidence.summary_zh }}</span>
+            </div>
+            {% if pmv.evidence.notes %}
+            <details class="plm-details"><summary tabindex="0"><span class="l-en">Source notes ({{ pmv.evidence.notes|length }})</span><span class="l-zh">来源说明（{{ pmv.evidence.notes|length }}）</span></summary>
+            <ul class="plm-evidence-list">
+              {% for n in pmv.evidence.notes %}
+              <li><span class="l-en">{{ n.en }}</span><span class="l-zh">{{ n.zh }}</span></li>
+              {% endfor %}
+            </ul>
+            </details>
+            {% endif %}
+          </div>
+        </div>
+
+        {# ══ 2 · Rates — the main analytical panel ════════════════════════ #}
+        <div class="mx5-dlg-sep"></div>
+        <h3 class="plm-section-title" id="plm-chart-title">
+          <span class="l-en">Market-implied rate path</span><span class="l-zh">市场隐含利率路径</span>
+        </h3>
+        {% if pmv.rates.available %}
+        <div class="plm-analysis-grid"><div class="plm-analysis-main">
+        <div class="plm-note" id="plm-chart-desc">
+          <span class="l-en">{{ pmv.rates.source_en or 'Source not recorded' }}{% if pmv.rates.as_of %} · {{ pmv.rates.as_of }}{% endif %}</span>
+          <span class="l-zh">{{ pmv.rates.source_zh or '来源未记录' }}{% if pmv.rates.as_of %} · {{ pmv.rates.as_of }}{% endif %}</span>
+        </div>
+        <div class="plm-chartwrap">
+          {% for _ch, _size in [(pmv.rates.chart, 'desktop'), (pmv.rates.mobile_chart, 'mobile')] %}
+          <svg class="plm-chart-svg plm-chart--{{ _size }}" viewBox="0 0 {{ _ch.width }} {{ _ch.height }}" role="img"
+               aria-labelledby="plm-chart-title" aria-describedby="plm-chart-desc">
+            <defs>
+              <linearGradient id="plmChartGrad-{{ _size }}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--info)" stop-opacity=".20"></stop>
+                <stop offset="100%" stop-color="var(--info)" stop-opacity="0"></stop>
+              </linearGradient>
+            </defs>
+
+            {# y gridlines + value labels #}
+            {% for t in _ch.y_ticks %}
+            <line class="plm-gridline" x1="{{ _ch.x_min }}" y1="{{ t.y }}" x2="{{ _ch.x_max }}" y2="{{ t.y }}"></line>
+            <text class="plm-axis-text" x="{{ _ch.x_min - 8 }}" y="{{ t.y + 4 }}" text-anchor="end">{{ t.label }}</text>
+            {% endfor %}
+            <line class="plm-baseline" x1="{{ _ch.x_min }}" y1="{{ _ch.y_bottom }}" x2="{{ _ch.x_max }}" y2="{{ _ch.y_bottom }}"></line>
+
+            {# x tick labels — elapsed-time positions #}
+            {% for xt in _ch.x_ticks %}
+            <text class="plm-axis-text l-en" x="{{ xt.x }}" y="{{ _ch.y_bottom + 20 }}" text-anchor="middle">{{ xt.label_en }}</text>
+            <text class="plm-axis-text l-zh" x="{{ xt.x }}" y="{{ _ch.y_bottom + 20 }}" text-anchor="middle">{{ xt.label_zh }}</text>
+            {% endfor %}
+
+            {# axis titles #}
+            <text class="plm-axis-title l-en" x="{{ _ch.x_min }}" y="{{ _ch.y_top - 8 }}">{{ pmv.rates.axis_en }}</text>
+            <text class="plm-axis-title l-zh" x="{{ _ch.x_min }}" y="{{ _ch.y_top - 8 }}">{{ pmv.rates.axis_zh }}</text>
+            <text class="plm-axis-title l-en" x="{{ (_ch.x_min + _ch.x_max) / 2 }}" y="{{ _ch.height - 6 }}" text-anchor="middle">Horizon (months)</text>
+            <text class="plm-axis-title l-zh" x="{{ (_ch.x_min + _ch.x_max) / 2 }}" y="{{ _ch.height - 6 }}" text-anchor="middle">期限（月）</text>
+
+            {# missing horizons — a dashed uncertainty marker, never a zero #}
+            {% for gp in _ch.gaps %}
+            <line class="plm-gapmark" x1="{{ gp.x }}" y1="{{ _ch.y_top }}" x2="{{ gp.x }}" y2="{{ _ch.y_bottom }}"></line>
+            {% endfor %}
+
+            {# the current policy rate, dashed #}
+            {% if _ch.reference %}
+            <line class="plm-refline" x1="{{ _ch.x_min }}" y1="{{ _ch.reference.y }}" x2="{{ _ch.x_max }}" y2="{{ _ch.reference.y }}"></line>
+            <text class="plm-reflabel l-en" x="{{ _ch.reference.label_x }}" y="{{ _ch.reference.label_y }}" text-anchor="{{ _ch.reference.label_anchor }}">{{ _ch.reference.label_en }} {{ '%.2f'|format(_ch.reference.value) }}%</text>
+            <text class="plm-reflabel l-zh" x="{{ _ch.reference.label_x }}" y="{{ _ch.reference.label_y }}" text-anchor="{{ _ch.reference.label_anchor }}">{{ _ch.reference.label_zh }} {{ '%.2f'|format(_ch.reference.value) }}%</text>
+            {% endif %}
+
+            {# the market-implied path #}
+            {% for area in _ch.areas %}
+            <path class="plm-series-area" d="{{ area }}" fill="url(#plmChartGrad-{{ _size }})"></path>
+            {% endfor %}
+            {% for seg in _ch.segments %}
+            {# pathLength normalises the path so the draw-in reveal uses one
+               fixed dash value instead of a per-segment custom property. #}
+            <polyline class="plm-series" pathLength="100" points="{{ seg.points | map('join', ' ') | join(' ') }}"></polyline>
+            {% endfor %}
+            {% for mk in _ch.markers %}
+            <circle class="plm-node" cx="{{ mk.x }}" cy="{{ mk.y }}" r="4"></circle>
+            {% if mk.show_label %}
+            <text class="plm-node-label" x="{{ mk.x }}" y="{{ mk.y - 10 }}" text-anchor="middle">{{ '%.2f'|format(mk.value) }}%</text>
+            {% endif %}
+            {% endfor %}
+
+            {# Fed projections that earn a place on the elapsed-time axis #}
+            {% for d in _ch.dots %}
+            <polygon class="plm-dot-marker"
+                     points="{{ d.x }},{{ d.y - 6 }} {{ d.x + 6 }},{{ d.y }} {{ d.x }},{{ d.y + 6 }} {{ d.x - 6 }},{{ d.y }}"></polygon>
+            <text class="plm-node-label" x="{{ d.x }}" y="{{ d.y + 20 }}" text-anchor="middle">{{ d.year }} {{ '%.2f'|format(d.median) }}%</text>
+            {% endfor %}
+          </svg>
+          {% endfor %}
+        </div>
+
+        <div class="plm-legend">
+          <span class="plm-legend-item"><span class="plm-legend-key plm-legend-key--market"></span><span class="l-en">Market-implied rate</span><span class="l-zh">市场隐含利率</span></span>
+          {% if pmv.rates.dots_on_axis %}<span class="plm-legend-item"><span class="plm-legend-key plm-legend-key--fed"></span><span class="l-en">SEP year-end projection</span><span class="l-zh">SEP年末预测</span></span>{% endif %}
+          {% if pmv.rates.reference %}<span class="plm-legend-item"><span class="plm-legend-key plm-legend-key--ref"></span><span class="l-en">{{ pmv.rates.current_rate.label_en }}</span><span class="l-zh">{{ pmv.rates.current_rate.label_zh }}</span></span>{% endif %}
+          {% if pmv.rates.chart.gaps %}
+          <span class="plm-legend-item"><span class="plm-legend-key plm-legend-key--gap"></span><span class="l-en">Missing horizon (gap, not zero)</span><span class="l-zh">缺失期限（缺口，非零）</span></span>
+          {% endif %}
+        </div>
+
+        </div>{# /analysis main #}
+        {# supporting rail #}
+        <div class="plm-rail">
+          <div class="plm-surface plm-rail-card">
+            <div class="plm-rail-label"><span class="l-en">{{ pmv.rates.current_rate.label_en }}</span><span class="l-zh">{{ pmv.rates.current_rate.label_zh }}</span></div>
+            {% if pmv.rates.current_rate.known %}
+            <div class="plm-rail-value plm-rail-value--reading">{{ '%.2f'|format(pmv.rates.current_rate.value) }}%</div>
+            <div class="plm-rail-sub">
+              <span class="l-en">{{ pmv.rates.current_rate.source_en }}{% if pmv.rates.current_rate.as_of %} · {{ pmv.rates.current_rate.as_of }}{% endif %}</span>
+              <span class="l-zh">{{ pmv.rates.current_rate.source_zh }}{% if pmv.rates.current_rate.as_of %} · {{ pmv.rates.current_rate.as_of }}{% endif %}</span>
+            </div>
+            {% else %}
+            <div class="plm-rail-value"><span class="l-en">Not recorded</span><span class="l-zh">未记录</span></div>
+            {% endif %}
+          </div>
+          <div class="plm-surface plm-rail-card">
+            <div class="plm-rail-label"><span class="l-en">12-month market rate</span><span class="l-zh">12个月市场利率</span></div>
+            <div class="plm-rail-value plm-rail-value--reading">{% if pmv.rates.terminal_rate is not none %}{{ '%.2f'|format(pmv.rates.terminal_rate) }}%{% else %}<span class="l-en">Unavailable</span><span class="l-zh">不可用</span>{% endif %}</div>
+            <div class="plm-rail-sub"><span class="l-en">{{ pmv.move_en }}</span><span class="l-zh">{{ pmv.move_zh }}</span></div>
+          </div>
+          <div class="plm-surface plm-rail-card">
+            <div class="plm-rail-label"><span class="l-en">Fed projection comparison</span><span class="l-zh">美联储预测对比</span></div>
+            <div class="plm-rail-value plm-rail-value--status">
+              {% if pmv.relative.known %}
+              <span class="l-en">{{ pmv.relative.label_en }}</span><span class="l-zh">{{ pmv.relative.label_zh }}</span>
+              {% else %}
+              <span class="l-en">{{ pmv.relative.label_en }}</span><span class="l-zh">{{ pmv.relative.label_zh }}</span>
+              {% endif %}
+            </div>
+            <div class="plm-rail-sub">
+              <span class="l-en">{{ pmv.relative.sub_en }}</span>
+              <span class="l-zh">{{ pmv.relative.sub_zh }}</span>
+            </div>
+          </div>
+        </div>
+
+        </div>{# /analysis grid #}
+        <details class="plm-details">
+          <summary tabindex="0"><span class="l-en">Rate values and sources</span><span class="l-zh">利率数值与来源</span></summary>
+          <div class="plm-details-body">
+        {# equivalent accessible values table #}
+        <table class="plm-table">
+          <caption class="plm-tbl-cap">
+            <span class="l-en">Implied rate by horizon</span><span class="l-zh">各期限的隐含利率</span>
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="l-en">Horizon</span><span class="l-zh">期限</span></th>
+              <th scope="col"><span class="l-en">Implied rate</span><span class="l-zh">隐含利率</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in pmv.rates.table %}
+            <tr>
+              <th scope="row">
+                <span class="l-en">{{ row.horizon_en }}</span><span class="l-zh">{{ row.horizon_zh }}</span>
+              </th>
+              <td class="num">{% if row.known %}{{ row.value }}{% else %}<span class="l-en">not available</span><span class="l-zh">不可用</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="plm-note" style="margin-top:6px">
+          <span class="l-en">Source: {{ pmv.rates.source_en or 'source not recorded' }}{% if pmv.rates.as_of %} · observed {{ pmv.rates.as_of }}{% endif %}</span>
+          <span class="l-zh">来源：{{ pmv.rates.source_zh or '来源未记录' }}{% if pmv.rates.as_of %} · 观测于 {{ pmv.rates.as_of }}{% endif %}</span>
+        </div>
+
+          </div>
+        </details>
+        {% for n in pmv.rates.notes %}
+        <div class="plm-note" style="margin-top:8px">
+          <span class="l-en">{{ n.en }}</span><span class="l-zh">{{ n.zh }}</span>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="plm-null">
+          <span class="l-en">Market-implied path unavailable.</span>
+          <span class="l-zh">市场隐含路径不可用。</span>
+        </div>
+        {% endif %}
+
+        {% if not pmv.rates.available and pmv.rates.current_rate.known %}
+        <div class="plm-note"><span class="l-en">{{ pmv.rates.current_rate.label_en }}</span><span class="l-zh">{{ pmv.rates.current_rate.label_zh }}</span>: {{ '%.2f'|format(pmv.rates.current_rate.value) }}%{% if pmv.rates.current_rate.as_of %} · {{ pmv.rates.current_rate.as_of }}{% endif %}</div>
+        {% endif %}
+        {# Fed projections, tabulated by year #}
+        {% if pmv.rates.dots %}
+        <details class="plm-details" style="margin-top:10px">
+          <summary tabindex="0"><span class="l-en">Fed projections by year</span><span class="l-zh">按年份列出的美联储预测</span></summary>
+          <div class="plm-details-body">
+            <table class="plm-src-table plm-dot-table">
+              <thead>
+                <tr>
+                  <th scope="col"><span class="l-en">Year</span><span class="l-zh">年份</span></th>
+                  <th scope="col"><span class="l-en">Median dot</span><span class="l-zh">中位点</span></th>
+                  <th scope="col"><span class="l-en">Target</span><span class="l-zh">目标</span></th>
+                  <th scope="col"><span class="l-en">Placement</span><span class="l-zh">位置</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in pmv.rates.dots %}
+                <tr>
+                  <td>{{ d.year }}</td>
+                  <td class="num">{{ '%.2f'|format(d.median) }}%</td>
+                  <td><span class="l-en">{{ d.target_label_en }}</span><span class="l-zh">{{ d.target_label_zh }}</span></td>
+                  <td>
+                    <span class="l-en">{{ d.on_axis_label_en }}</span><span class="l-zh">{{ d.on_axis_label_zh }}</span>
+                    {% if d.on_axis and d.months is not none %}
+                    <span class="muted">· {{ '%.1f'|format(d.months) }}m</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <div class="plm-note" style="margin-top:8px">
+              <span class="l-en">SEP medians are participant policy projections. {% if pmv.rates.projection_date %}Publication: {{ pmv.rates.projection_date }}.{% else %}Publication date unavailable: these references are excluded from the current chart and comparison.{% endif %}</span>
+              <span class="l-zh">SEP中位数是参与者的政策预测。{% if pmv.rates.projection_date %}发布日期：{{ pmv.rates.projection_date }}。{% else %}发布日期不可用：这些参考值未纳入当前图表及比较。{% endif %}</span>
+            </div>
+          </div>
+        </details>
+        {% endif %}
+
+
+        {# ══ 3 · Combined stance and its guidance component ═════════════ #}
+        <div class="mx5-dlg-sep"></div>
+        <div class="plm-split">
+          <div class="plm-surface plm-split-cell">
+            <div class="plm-split-label"><span class="l-en">Policy stance read</span><span class="l-zh">政策立场解读</span></div>
+            <div class="plm-split-value">
+              <span class="l-en">{{ pmv.stance.label_en }}</span><span class="l-zh">{{ pmv.stance.label_zh }}</span>
+            </div>
+            <div class="plm-split-sub"><span class="l-en">Combined reading of available futures pricing and statement guidance.</span><span class="l-zh">综合可用的期货定价与声明指引。</span></div>
+          </div>
+          <div class="plm-surface plm-split-cell">
+            <div class="plm-split-label"><span class="l-en">Fed guidance</span><span class="l-zh">美联储指引</span></div>
+            <div class="plm-split-value">
+              <span class="l-en">{{ pmv.guidance.label_en }}</span><span class="l-zh">{{ pmv.guidance.label_zh }}</span>
+            </div>
+            <div class="plm-split-sub">
+              {% if pmv.guidance.known %}
+              <span class="l-en">Statement guidance component of the combined reading.</span>
+              <span class="l-zh">综合解读中的声明指引部分。</span>
+              {% else %}
+              <span class="l-en">This snapshot carries no usable guidance reading, so no direction is implied.</span>
+              <span class="l-zh">本次快照没有可用的指引读数，因此不隐含任何方向判断。</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        {# ══ 4 · Recorded policy activity ═══════════════════════════════ #}
+        <div class="mx5-dlg-sep"></div>
+        <div class="plm-eyebrow">
+          <span class="l-en">Recorded policy activity</span><span class="l-zh">已记录的政策动态</span>
+        </div>
+        <div class="plm-counts">
+          <div class="plm-surface plm-count">
+            <div class="plm-count-num">{% if pmv.activity.known_7d %}{{ pmv.activity.n_7d }}{% else %}&mdash;{% endif %}</div>
+            <div class="plm-count-lbl"><span class="l-en">recorded policy alerts (7d)</span><span class="l-zh">记录的政策提醒（7日）</span></div>
+          </div>
+          <div class="plm-surface plm-count">
+            <div class="plm-count-num">{% if pmv.activity.known_30d %}{{ pmv.activity.n_30d }}{% else %}&mdash;{% endif %}</div>
+            <div class="plm-count-lbl"><span class="l-en">recorded policy alerts (30d)</span><span class="l-zh">记录的政策提醒（30日）</span></div>
+          </div>
+        </div>
+        <div class="plm-note">
+          <span class="l-en">{{ pmv.activity.coverage_en }}</span><span class="l-zh">{{ pmv.activity.coverage_zh }}</span>
+        </div>
+        {% if pmv.activity.last_alert.known %}
+        <div class="plm-surface plm-alert" style="margin-top:8px">
+          <div class="plm-alert-date">
+            {% if pmv.activity.last_alert.date %}
+            <span class="l-en">{{ pmv.activity.last_alert_label_en }} — {{ pmv.activity.last_alert.date }}</span>
+            <span class="l-zh">{{ pmv.activity.last_alert_label_zh }} — {{ pmv.activity.last_alert.date }}</span>
+            {% else %}
+            <span class="l-en">{{ pmv.activity.last_alert_label_en }}</span>
+            <span class="l-zh">{{ pmv.activity.last_alert_label_zh }}</span>
+            {% endif %}
+          </div>
+          <div class="plm-alert-text">
+            <span class="l-en">{{ pmv.activity.last_alert.summary_en }}</span>
+            <span class="l-zh">{{ pmv.activity.last_alert.summary_zh }}</span>
+          </div>
+        </div>
+        {% endif %}
+        <div class="plm-note" style="margin-top:6px">
+          <span class="l-en">{{ pmv.activity.fed_communication_label_en }}</span>
+          <span class="l-zh">{{ pmv.activity.fed_communication_label_zh }}</span>
+        </div>
+
+        {# ══ 5 · Transmission watch rows ════════════════════════════════ #}
+        {% if pmv.transmission %}
+        <div class="mx5-dlg-sep"></div>
+        <div class="plm-eyebrow">
+          <span class="l-en">Transmission watch</span><span class="l-zh">传导观察</span>
+        </div>
+        {% for t in pmv.transmission %}
+        <div class="plm-surface plm-tx">
+          <div class="plm-tx-head">
+            <span class="plm-tx-name"><span class="l-en">{{ t.name_en }}</span><span class="l-zh">{{ t.name_zh }}</span></span>
+            <span class="plm-tx-asset">
+              {% if t.asset_known %}
+              <span class="l-en">{{ t.asset }}</span><span class="l-zh">{{ t.asset }}</span>
+              {% else %}
+              <span class="l-en">no technical asset</span><span class="l-zh">无技术资产</span>
+              {% endif %}
+            </span>
+          </div>
+          <div class="plm-tx-observed">
+            <span class="plm-tx-state plm-tx-state--{{ t.observed.state }}">
+              <span class="l-en">Observed: {{ t.observed.label_en }}</span>
+              <span class="l-zh">已观测：{{ t.observed.label_zh }}</span>
+            </span>
+            {% if t.observed.gauge.known and not t.observed.gauge.clamped %}
+            <span class="plm-tx-gauge" aria-hidden="true"><span class="plm-tx-gauge-fill" style="width:{{ t.observed.gauge.value }}%"></span></span>
+            <span class="plm-tx-asset"><span class="l-en">Stochastic %K</span><span class="l-zh">随机指标 %K</span> {{ '%.1f'|format(t.observed.gauge.value) }}</span>
+            {% elif t.observed.gauge.clamped %}
+            <span class="plm-tx-asset"><span class="l-en">Stochastic reading out of range</span><span class="l-zh">随机指标读数超出范围</span></span>
+            {% endif %}
+          </div>
+          {% if t.observed.reason_en %}
+          <div class="plm-note" style="margin-bottom:6px">
+            <span class="l-en">{{ t.observed.reason_en }}</span><span class="l-zh">{{ t.observed.reason_zh }}</span>
+          </div>
+          {% endif %}
+          <div class="plm-tx-hyp">
+            <span class="l-en">{{ t.hypothesis_en }}</span><span class="l-zh">{{ t.hypothesis_zh }}</span>
+          </div>
+          {% if t.copy_as_of %}
+          <div class="plm-tx-stale">
+            <span class="l-en">Narrative last reviewed {{ t.copy_as_of }}{% if t.copy_stale %} — stale, treat as background{% endif %}</span>
+            <span class="l-zh">叙述最后复核于 {{ t.copy_as_of }}{% if t.copy_stale %} — 已陈旧，仅作背景参考{% endif %}</span>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {# ══ 6 · Existing context: repricing, calendar, flip ═════════════ #}
+        <div class="mx5-dlg-sep"></div>
+        <div class="plm-eyebrow">
+          <span class="l-en">Context</span><span class="l-zh">背景</span>
+        </div>
+        <div class="plm-ctx">
+          <div class="plm-ctx-row">
+            <div class="plm-ctx-label"><span class="l-en">Structural context</span><span class="l-zh">结构性背景</span></div>
+            <div class="plm-ctx-value">
+              <span class="l-en">{{ pmv.structure_view.value_en }}</span>
+              <span class="l-zh">{{ pmv.structure_view.value_zh }}</span>
+              {% if pmv.structure_view.caveat_en %}
+              <div class="plm-note">
+                <span class="l-en">{{ pmv.structure_view.caveat_en }}</span>
+                <span class="l-zh">{{ pmv.structure_view.caveat_zh }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="plm-ctx-row">
+            <div class="plm-ctx-label"><span class="l-en">Repricing channels</span><span class="l-zh">重定价渠道</span></div>
+            <div class="plm-ctx-value">
+              {% if pmv.context.repricing.known %}
+                {% if pmv.context.repricing.channels %}
+                  {% for c in pmv.context.repricing.channels %}
+                  <div><span class="l-en">{{ c.label_en }}</span><span class="l-zh">{{ c.label_zh }}</span></div>
+                  {% endfor %}
+                {% else %}
+                <span class="l-en">{{ pmv.context.repricing.empty_en }}</span>
+                <span class="l-zh">{{ pmv.context.repricing.empty_zh }}</span>
+                {% endif %}
+              {% else %}
+              <span class="l-en">{{ pmv.context.repricing.unknown_en }}</span>
+              <span class="l-zh">{{ pmv.context.repricing.unknown_zh }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="plm-ctx-row">
+            <div class="plm-ctx-label"><span class="l-en">{{ pmv.context.calendar.label_en }}</span><span class="l-zh">{{ pmv.context.calendar.label_zh }}</span></div>
+            <div class="plm-ctx-value">
+              {% if pmv.context.calendar.known %}
+              <span class="l-en">{{ pmv.context.calendar.countdown_en }}</span>
+              <span class="l-zh">{{ pmv.context.calendar.countdown_zh }}</span>
+              {% else %}
+              <span class="l-en">{{ pmv.context.calendar.unknown_en }}</span>
+              <span class="l-zh">{{ pmv.context.calendar.unknown_zh }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="plm-ctx-row">
+            <div class="plm-ctx-label"><span class="l-en">{{ pmv.context.flip.label_en }}</span><span class="l-zh">{{ pmv.context.flip.label_zh }}</span></div>
+            <div class="plm-ctx-value">
+              {% if pmv.context.flip.known %}
+              <span class="l-en">{{ pmv.context.flip.value_en }}</span>
+              <span class="l-zh">{{ pmv.context.flip.value_zh }}</span>
+              {% else %}
+              <span class="l-en">No confirmed flip is recorded in this snapshot.</span>
+              <span class="l-zh">本次快照未记录已确认的翻转。</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        {# ══ 7 · Sources and methodology ═════════════════════════════════ #}
+        <div class="mx5-dlg-sep"></div>
+        <details class="plm-details">
+          <summary tabindex="0"><span class="l-en">Sources</span><span class="l-zh">来源</span></summary>
+          <div class="plm-details-body">
+            <table class="plm-src-table">
+              <thead>
+                <tr>
+                  <th scope="col"><span class="l-en">Input</span><span class="l-zh">输入</span></th>
+                  <th scope="col"><span class="l-en">Source</span><span class="l-zh">来源</span></th>
+                  <th scope="col"><span class="l-en">Date</span><span class="l-zh">日期</span></th>
+                  <th scope="col"><span class="l-en">Basis</span><span class="l-zh">口径</span></th>
+                  <th scope="col"><span class="l-en">Quality</span><span class="l-zh">质量</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in pmv.sources %}
+                <tr>
+                  <td><span class="l-en">{{ s.label_en }}</span><span class="l-zh">{{ s.label_zh }}</span></td>
+                  <td><span class="l-en">{{ s.value_en }}</span><span class="l-zh">{{ s.value_zh }}</span></td>
+                  <td class="muted">{{ s.date if s.date else '—' }}</td>
+                  <td class="muted"><span class="l-en">{{ s.basis_en }}</span><span class="l-zh">{{ s.basis_zh }}</span></td>
+                  <td class="muted"><span class="l-en">{{ s.quality_en }}</span><span class="l-zh">{{ s.quality_zh }}</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </details>
+        <details class="plm-details">
+          <summary tabindex="0"><span class="l-en">Methodology &amp; boundary</span><span class="l-zh">方法与边界</span></summary>
+          <div class="plm-details-body">
+            <div class="plm-note">
+              <span class="l-en">{{ pmv.methodology_en }}</span>
+              <span class="l-zh">{{ pmv.methodology_zh }}</span>
+            </div>
+            {% if pmv.state.reported %}
+            <div class="plm-note"><span class="l-en">Reported condition label: {{ pmv.state.reported }}. The headline is qualified against the dated observations above.</span><span class="l-zh">原始条件标签：{{ pmv.state.reported }}。上方结论依据各项带日期的观测确认。</span></div>
+            {% endif %}
+            <div class="plm-note" style="margin-top:8px">
+              <span class="l-en">{{ pmv.boundary_en }}</span>
+              <span class="l-zh">{{ pmv.boundary_zh }}</span>
+            </div>
+          </div>
+        </details>
+
+        {# ══ 8 · One footer ═══════════════════════════════════════════════ #}
+        <div class="plm-footer" style="margin-top:14px">
+          <span class="plm-footer-boundary"><span class="l-en">{{ pmv.footer_en }}</span><span class="l-zh">{{ pmv.footer_zh }}</span></span>
+        </div>
+
+      </div>{# /dlg-policy-lever-card #}
+    </div>
+  </div>
+</div>
+

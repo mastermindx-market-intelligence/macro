@@ -1,0 +1,129 @@
+{
+  "resolved_sha": "afc33cb328f354a95923957928432f9ed64b86b0",
+  "source_dirty": false,
+  "template_blob": "e5dfcbe92035a5c553cec795f0006bac3c7f64ba",
+  "normalizer_blob": "159cf2bf19695cf973dfd6ff213c10bf09c291e7",
+  "face_fragment_blob": "19923c6623cc82d16e8705abb00306e7c5e426e1",
+  "dialog_fragment_blob": "58880af75e936141a9b426a644e4f8855ffc5ea5",
+  "stylesheet_blob": "b261a890918748bf7e588379736a7ae4be8b2cff",
+  "harness_note": "The macro page's detailed dialogs are the registration benefit: the page's own MMXAccessPreview resolves an anonymous visitor to the sign-in sheet, so the probe resolves that preview as a signed-in tier before it clicks the face. The page's own mx5OpenDlg/mx5CloseDlg controller opens the real dialog; no markup or controller code is patched.",
+  "schema": "policy_monitor_produced_sections.v1",
+  "producer": "scripts.build_policy_lever.build",
+  "producer_blob": "cef4bf8a79076050a8acf2f0994c14a5a3883ad0",
+  "input_blobs": {
+    "data/yahoo/CL_F.parquet": "37fc327afa1788e691ecb599406769c1f61457f8",
+    "data/yahoo/SMH.parquet": "8ee05c76bdacafbd020cb8880e83eaaa96b1b30b",
+    "data/yahoo/SOXX.parquet": "422b2c6dbb50661eea9b6aacf00521a954be5078",
+    "data/whitehouse/alerts.jsonl": "a76974045ed22e9ea776020b35bdb1c69a8444a2",
+    "data/regime/latest.json": "1a300e214702fffc46b01e73d1c2657d5cca108b",
+    "config.yml": "5be75249c98033d7ee0fbe55928713b1f50af627"
+  },
+  "computed_at": "2026-11-02T04:30:02.067082Z",
+  "market_observation_date": "2026-10-30",
+  "oil_observation_date": "2026-10-30",
+  "source_status": "usable",
+  "coverage": "unknown",
+  "note": "Real existing producer return, generated in memory using the committed source files. No generated site artifact was committed. Additional lower-section screenshots in EN/light/1440 and ZH/dark/390.",
+  "sections": [
+    {
+      "file": "policy-produced-en-light-1440-dialog-activity.png",
+      "clip": {
+        "x": 218,
+        "y": 78,
+        "width": 1004,
+        "height": 844
+      },
+      "bytes": 80491
+    },
+    {
+      "file": "policy-produced-en-light-1440-dialog-transmission.png",
+      "clip": {
+        "x": 218,
+        "y": 78,
+        "width": 1004,
+        "height": 844
+      },
+      "bytes": 82655
+    },
+    {
+      "file": "policy-produced-en-light-1440-dialog-context.png",
+      "clip": {
+        "x": 218,
+        "y": 78,
+        "width": 1004,
+        "height": 844
+      },
+      "bytes": 90513
+    },
+    {
+      "file": "policy-produced-zh-dark-390-dialog-activity.png",
+      "clip": {
+        "x": 0,
+        "y": 114.6,
+        "width": 390,
+        "height": 729.4
+      },
+      "bytes": 64073
+    },
+    {
+      "file": "policy-produced-zh-dark-390-dialog-transmission.png",
+      "clip": {
+        "x": 0,
+        "y": 114.6,
+        "width": 390,
+        "height": 729.4
+      },
+      "bytes": 78299
+    },
+    {
+      "file": "policy-produced-zh-dark-390-dialog-context.png",
+      "clip": {
+        "x": 0,
+        "y": 114.6,
+        "width": 390,
+        "height": 729.4
+      },
+      "bytes": 73554
+    }
+  ],
+  "interaction_checks": [
+    {
+      "state": "populated",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "height": 1000,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    },
+    {
+      "state": "populated",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 390,
+      "height": 844,
+      "table_rows": 4,
+      "fed_dot_rows": 4,
+      "no_dialog_overflow": true,
+      "no_launcher_overlap": true,
+      "launcher_nodes": 1,
+      "keyboard_disclosures_reachable": true,
+      "keyboard_disclosures_activate": true,
+      "reverse_focus_wrap": true,
+      "reopen_ok": true,
+      "escape_closed": true,
+      "focus_returned": true,
+      "no_page_overflow": true
+    }
+  ]
+}
