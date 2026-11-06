@@ -197,3 +197,109 @@ def test_final_boundary_rejects_stale_post_pull_frames(tmp_path,monkeypatch):
     monkeypatch.setattr(a,"_pull",corrupt_pull)
     with pytest.raises(RuntimeError,match="completed session"):
         a.fetch()
+
+
+# Current-main compatibility: reuse the existing per-market clock owner.
+def _mixed_market_case(tmp_path, monkeypatch, market="cn", retries=2):
+    from datetime import datetime, timezone
+    from lib import market_session
+    instant = datetime(2026, 10, 7, 12, tzinfo=timezone.utc)
+    real_us = sh.nyse_calendar.expected_last_session
+    real_market = market_session.expected_session
+    us_session = real_us(instant)
+    foreign_session = real_market(market, instant) if market else date(2026, 9, 30)
+    foreign = {
+        "cn": ["600519.SS", "600000.SS", "601398.SS", "601318.SS", "600036.SS"],
+        "hk": ["0700.HK", "9988.HK", "0005.HK", "1299.HK", "3690.HK"],
+        "ca": ["RY.TO", "TD.TO", "BMO.TO", "BNS.TO", "CNR.TO"],
+        None: ["VOD.L", "SHEL.L", "BP.L", "RIO.L", "HSBA.L"],
+    }[market]
+    names = ["AAPL", "MSFT", "NVDA", "AMD", "GOOG"] + foreign
+    dates = {name: foreign_session if name in foreign else us_session for name in names}
+    a = adapter(tmp_path, monkeypatch, batch_size=20, retries=retries)
+    monkeypatch.setattr(sh, "top10_union", lambda: list(names))
+    observations = {"us": [], "foreign": []}
+    class Clock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return instant if tz else instant.replace(tzinfo=None)
+    monkeypatch.setattr(sh, "datetime", Clock)
+    def observe_us(now=None):
+        observations["us"].append(now)
+        return real_us(instant if now is None else now)
+    def observe_foreign(which, now=None):
+        observations["foreign"].append((which, now))
+        return real_market(which, instant if now is None else now)
+    monkeypatch.setattr(sh.nyse_calendar, "expected_last_session", observe_us)
+    monkeypatch.setattr(market_session, "expected_session", observe_foreign)
+    calls, faults = [], {}
+    def download(batch, **kwargs):
+        calls.append((list(batch), kwargs["period"]))
+        pieces = {}
+        for symbol in batch:
+            fault = faults.get(symbol, {})
+            day = fault.get("day", dates[symbol])
+            value = fault.get("value", 103.0)
+            frame = pd.DataFrame({"High": [104.0], "Low": [102.0], "Volume": [700.0]},
+                                 index=pd.to_datetime([day]))
+            frame["Close"] = pd.Series([value], index=frame.index, dtype=object)
+            pieces[symbol] = frame
+        return pd.concat(pieces, axis=1)
+    monkeypatch.setattr(yf, "download", download)
+    return a, names, foreign, dates, instant, observations, calls, faults
+
+
+@pytest.mark.parametrize("market", ["cn", "hk", "ca", None])
+def test_mixed_market_completed_closes_use_existing_clocks(tmp_path, monkeypatch, market):
+    a, names, foreign, dates, instant, observed, calls, _ = _mixed_market_case(
+        tmp_path, monkeypatch, market)
+    frames = a.fetch()
+    assert set(frames) == set(names)
+    assert len(calls) == 1
+    assert observed["us"] == [instant]
+    assert observed["foreign"] == ([(market, instant)] if market else [])
+    for symbol in names:
+        assert frames[symbol]["close"].dropna().index.max().date() == dates[symbol]
+    if market == "cn":
+        assert dates[foreign[0]] == date(2026, 9, 30)
+        assert dates["AAPL"] == date(2026, 10, 6)
+
+
+@pytest.mark.parametrize("fault", ["us_session", "stale", "zero", "boolean", "missing"])
+def test_foreign_completed_close_contract_is_not_the_us_date(tmp_path, monkeypatch, fault):
+    a, _, foreign, dates, _, _, calls, faults = _mixed_market_case(tmp_path, monkeypatch)
+    defect = {
+        "us_session": {"day": dates["AAPL"]},
+        "stale": {"day": date(2026, 9, 29)},
+        "zero": {"value": 0.0},
+        "boolean": {"value": True},
+        "missing": {"value": np.nan},
+    }[fault]
+    faults.update({symbol: defect for symbol in foreign})
+    with pytest.raises(RuntimeError, match="completed session"):
+        a.fetch()
+    assert len(calls) == a.ycfg["retries"]
+
+
+@pytest.mark.parametrize("missing_count", [3, 4])
+def test_mixed_retained_markets_keep_whole_universe_coverage_floor(
+        tmp_path, monkeypatch, missing_count):
+    a, names, foreign, _, _, _, calls, faults = _mixed_market_case(tmp_path, monkeypatch)
+    missing = set(foreign[:missing_count])
+    faults.update({symbol: {"value": np.nan} for symbol in missing})
+    if missing_count == 3:
+        assert set(a.fetch()) == set(names) - missing
+        assert len(calls) == 1
+    else:
+        with pytest.raises(RuntimeError, match="6/10"):
+            a.fetch()
+        assert len(calls) == a.ycfg["retries"]
+
+
+def test_mixed_market_rebase_keeps_the_same_market_sessions(tmp_path, monkeypatch):
+    a, names, _, _, instant, observed, calls, _ = _mixed_market_case(tmp_path, monkeypatch)
+    monkeypatch.setattr(store, "basis_shifted", lambda *args, **kwargs: True)
+    assert set(a.fetch()) == set(names)
+    assert [period for _, period in calls] == ["1mo", "max"]
+    assert observed["us"] == [instant]
+    assert observed["foreign"] == [("cn", instant)]

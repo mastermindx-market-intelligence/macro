@@ -1,0 +1,78 @@
+FFFF..FFFF..                                                             [100%]
+=================================== FAILURES ===================================
+_____ test_act_now_bad_envelope_does_not_prevent_owner_refresh[envelope0] ______
+tests/test_china_board_watch_lane.py:258: in test_act_now_bad_envelope_does_not_prevent_owner_refresh
+    assert build_china._theme_intel_for_act_now(p) is current
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/build_china.py:114: in _theme_intel_for_act_now
+    persisted = persisted_doc.get("theme_intel")
+                ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'list' object has no attribute 'get'
+_____ test_act_now_bad_envelope_does_not_prevent_owner_refresh[wrong-root] _____
+tests/test_china_board_watch_lane.py:258: in test_act_now_bad_envelope_does_not_prevent_owner_refresh
+    assert build_china._theme_intel_for_act_now(p) is current
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/build_china.py:114: in _theme_intel_for_act_now
+    persisted = persisted_doc.get("theme_intel")
+                ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'str' object has no attribute 'get'
+________ test_act_now_bad_envelope_does_not_prevent_owner_refresh[True] ________
+tests/test_china_board_watch_lane.py:258: in test_act_now_bad_envelope_does_not_prevent_owner_refresh
+    assert build_china._theme_intel_for_act_now(p) is current
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/build_china.py:114: in _theme_intel_for_act_now
+    persisted = persisted_doc.get("theme_intel")
+                ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'bool' object has no attribute 'get'
+_________ test_act_now_bad_envelope_does_not_prevent_owner_refresh[7] __________
+tests/test_china_board_watch_lane.py:258: in test_act_now_bad_envelope_does_not_prevent_owner_refresh
+    assert build_china._theme_intel_for_act_now(p) is current
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/build_china.py:114: in _theme_intel_for_act_now
+    persisted = persisted_doc.get("theme_intel")
+                ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'int' object has no attribute 'get'
+_______ test_act_now_bad_envelope_rerender_keeps_sector_cards[envelope0] _______
+tests/test_china_board_watch_lane.py:276: in test_act_now_bad_envelope_rerender_keeps_sector_cards
+    intel = build_china._theme_intel_for_act_now(p, refresh=False)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/build_china.py:114: in _theme_intel_for_act_now
+    persisted = persisted_doc.get("theme_intel")
+                ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'list' object has no attribute 'get'
+______ test_act_now_bad_envelope_rerender_keeps_sector_cards[wrong-root] _______
+tests/test_china_board_watch_lane.py:276: in test_act_now_bad_envelope_rerender_keeps_sector_cards
+    intel = build_china._theme_intel_for_act_now(p, refresh=False)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/build_china.py:114: in _theme_intel_for_act_now
+    persisted = persisted_doc.get("theme_intel")
+                ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'str' object has no attribute 'get'
+_________ test_act_now_bad_envelope_rerender_keeps_sector_cards[True] __________
+tests/test_china_board_watch_lane.py:276: in test_act_now_bad_envelope_rerender_keeps_sector_cards
+    intel = build_china._theme_intel_for_act_now(p, refresh=False)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/build_china.py:114: in _theme_intel_for_act_now
+    persisted = persisted_doc.get("theme_intel")
+                ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'bool' object has no attribute 'get'
+___________ test_act_now_bad_envelope_rerender_keeps_sector_cards[7] ___________
+tests/test_china_board_watch_lane.py:276: in test_act_now_bad_envelope_rerender_keeps_sector_cards
+    intel = build_china._theme_intel_for_act_now(p, refresh=False)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/build_china.py:114: in _theme_intel_for_act_now
+    persisted = persisted_doc.get("theme_intel")
+                ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'int' object has no attribute 'get'
+
+NOTE: sparse worktree — .agents, .warp, mockups, orch, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_china_board_watch_lane.py::test_act_now_bad_envelope_does_not_prevent_owner_refresh[envelope0]
+FAILED tests/test_china_board_watch_lane.py::test_act_now_bad_envelope_does_not_prevent_owner_refresh[wrong-root]
+FAILED tests/test_china_board_watch_lane.py::test_act_now_bad_envelope_does_not_prevent_owner_refresh[True]
+FAILED tests/test_china_board_watch_lane.py::test_act_now_bad_envelope_does_not_prevent_owner_refresh[7]
+FAILED tests/test_china_board_watch_lane.py::test_act_now_bad_envelope_rerender_keeps_sector_cards[envelope0]
+FAILED tests/test_china_board_watch_lane.py::test_act_now_bad_envelope_rerender_keeps_sector_cards[wrong-root]
+FAILED tests/test_china_board_watch_lane.py::test_act_now_bad_envelope_rerender_keeps_sector_cards[True]
+FAILED tests/test_china_board_watch_lane.py::test_act_now_bad_envelope_rerender_keeps_sector_cards[7]
+8 failed, 4 passed, 12 deselected in 1.28s

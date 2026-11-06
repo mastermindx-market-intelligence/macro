@@ -16,7 +16,7 @@ from __future__ import annotations
 import io
 import logging
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -313,14 +313,24 @@ def _has_completed_stock_close(close: pd.Series, session) -> bool:
         return False
 
 
-def _completed_stock_batch_count(df: pd.DataFrame, batch: list[str], session) -> int:
+def _stock_close_matches_session(close: pd.Series, session) -> bool:
+    if session is None:
+        # Unclassified symbols retain the existing nonempty-Close path. Never
+        # assign a US calendar to an unsupported venue or claim cash freshness.
+        return isinstance(close, pd.Series) and not close.dropna().empty
+    return _has_completed_stock_close(close, session)
+
+
+def _completed_stock_batch_count(df: pd.DataFrame, batch: list[str], session,
+                                 *, expected_sessions=None) -> int:
     count = 0
     for ticker in batch:
         try:
             close = df[ticker]["Close"]
         except (KeyError, TypeError):
             continue
-        count += int(_has_completed_stock_close(close, session))
+        target = expected_sessions[ticker] if expected_sessions is not None else session
+        count += int(_stock_close_matches_session(close, target))
     return count
 
 
@@ -330,6 +340,11 @@ class StockPriceAdapter(Adapter):
     name = "stock_prices"
     group = "stocks"
     overwrite_overlap = True  # yfinance auto_adjust=True → seam-free re-adjust of the refresh window
+
+    def session_calendar_for_series(self, name: str) -> str | None:
+        # Holdings may include foreign shares; use the same cash routing as Yahoo.
+        from lib.market_session import cash_market_for_symbol
+        return cash_market_for_symbol(name)
 
     def __init__(self) -> None:
         self.ycfg = config.load()["yahoo"]
@@ -381,39 +396,43 @@ class StockPriceAdapter(Adapter):
             tip = tip.tz_localize(None)
         return bool((today - tip.normalize()).days > _MAX_WINDOW_BRIDGE_DAYS)
 
-    def _download(self, batch: list[str], period: str, *, expected_session=None) -> pd.DataFrame:
+    def _download(self, batch: list[str], period: str, *, expected_session=None,
+                  expected_sessions=None) -> pd.DataFrame:
         import yfinance as yf
         last_exc: Exception | None = None
         best, best_count = None, -1
+        validate_session = expected_session is not None or expected_sessions is not None
         for attempt in range(self.ycfg["retries"]):
             try:
                 df = yf.download(batch, period=period, auto_adjust=True,
                                  progress=False, group_by="ticker", threads=True)
-                if expected_session is not None:
-                    count = _completed_stock_batch_count(df, batch, expected_session)
+                if validate_session:
+                    count = _completed_stock_batch_count(
+                        df, batch, expected_session, expected_sessions=expected_sessions)
                     if count > best_count:
                         best, best_count = df, count
                     if count < len(batch) * 0.7:
                         raise RuntimeError(
-                            f"stocks: completed session {expected_session}: "
-                            f"only {count}/{len(batch)} valid closing prices"
+                            f"stocks: completed session coverage (US reference {expected_session}): "
+                            f"only {count}/{len(batch)} usable closing prices"
                         )
                 return df
             except Exception as e:  # noqa: BLE001 — preserve the existing retry owner/budget
                 last_exc = e
                 if attempt < self.ycfg["retries"] - 1:
                     time.sleep(self.ycfg["backoff_base_s"] * (2 ** attempt))
-        if expected_session is not None and best is not None:
+        if validate_session and best is not None:
             # Batch partitioning cannot change the existing WHOLE-universe 70%
             # availability contract. _pull discards stale names; fetch judges the
             # actual current returned population, including retention/rebase work.
-            log.warning("stocks: completed session %s batch retry exhausted (%d/%d current)",
+            log.warning("stocks: completed session coverage (US reference %s) batch retry exhausted (%d/%d usable)",
                         expected_session, best_count, len(batch))
             return best
         raise last_exc  # type: ignore[misc]
 
     def _pull(self, period: str, tlist: list[str], frames: dict[str, pd.DataFrame],
-              rebase: list[str] | None, tol: float, *, expected_session=None) -> None:
+              rebase: list[str] | None, tol: float, *, expected_session=None,
+              expected_sessions=None) -> None:
         """Batched download into *frames*. When *rebase* is a list (the cheap 1mo
         window), a ticker whose window disagrees with its stored closes on the
         overlap dates (store.basis_shifted) was re-adjusted by Yahoo since the last
@@ -427,6 +446,8 @@ class StockPriceAdapter(Adapter):
             if not batch:
                 continue
             kwargs = {"expected_session": expected_session} if expected_session is not None else {}
+            if expected_sessions is not None:
+                kwargs["expected_sessions"] = expected_sessions
             df = self._download(batch, period, **kwargs)
             for t in batch:
                 try:
@@ -439,7 +460,9 @@ class StockPriceAdapter(Adapter):
                     continue
                 if sub.empty:
                     continue
-                if expected_session is not None and not _has_completed_stock_close(sub["close"], expected_session):
+                target = expected_sessions[t] if expected_sessions is not None else expected_session
+                validate_session = expected_session is not None or expected_sessions is not None
+                if validate_session and not _stock_close_matches_session(sub["close"], target):
                     continue
                 if rebase is not None and store.basis_shifted(self.group, t, sub, tol=tol):
                     rebase.append(t)  # discard the window; re-pull full history below
@@ -447,7 +470,8 @@ class StockPriceAdapter(Adapter):
                 frames[t] = sub
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
-        expected_session = nyse_calendar.expected_last_session()
+        observed_at = datetime.now(timezone.utc)
+        expected_session = nyse_calendar.expected_last_session(observed_at)
         current = top10_union()
         if not current:
             raise RuntimeError("no holdings stored yet — run sector_holdings first")
@@ -459,6 +483,17 @@ class StockPriceAdapter(Adapter):
         exited = delisted_symbols.tickers()
         tickers = _fetch_universe(current, stored, _dead_tickers() | exited)
         _report_delisted_exclusions(current, stored, exited)
+        # Reuse the current cash-market owner and one reference instant. A
+        # holiday in one venue must not make another venue's valid close stale.
+        from lib.market_session import expected_session as market_expected_session
+        markets = {ticker: self.session_calendar_for_series(ticker) for ticker in tickers}
+        sessions = {"us": expected_session, None: None}
+        for market in sorted({value for value in markets.values() if value not in ("us", None)}):
+            sessions[market] = market_expected_session(market, observed_at)
+        expected_sessions = {ticker: sessions[market] for ticker, market in markets.items()}
+        session_kwargs = {"expected_session": expected_session}
+        if any(market != "us" for market in markets.values()):
+            session_kwargs["expected_sessions"] = expected_sessions
         # daily runs fetch a short window, EXCEPT thin-volume/shallow/stale-tip
         # tickers which get a full-history backfill so a bad seed (or a frozen tip
         # older than the window can bridge) can never silently persist.
@@ -475,12 +510,12 @@ class StockPriceAdapter(Adapter):
         tol = float(self.ycfg.get("upsert_basis_tol", 1e-3))
         for period, tlist in groups:
             self._pull(period, tlist, frames, rebase if period == "1mo" else None, tol,
-                       expected_session=expected_session)
+                       **session_kwargs)
         if rebase:
             log.info("stocks: %d name(s) on a re-adjusted basis — refetching "
                      "period='max': %s", len(rebase), rebase[:12])
             try:
-                self._pull("max", rebase, frames, None, tol, expected_session=expected_session)
+                self._pull("max", rebase, frames, None, tol, **session_kwargs)
             except Exception as e:  # noqa: BLE001 — skip tonight; the guard re-flags next run
                 log.warning("stocks: basis refetch failed for %d name(s) (%s) — "
                             "kept out of this run", len(rebase), e)
@@ -489,11 +524,11 @@ class StockPriceAdapter(Adapter):
         # exactly the run whose per-name detail is worth having, and a run that
         # survives it can still be hiding up to 30% silent drops.
         frames = {ticker: frame for ticker, frame in frames.items()
-                  if "close" in frame and _has_completed_stock_close(frame["close"], expected_session)}
+                  if "close" in frame and _stock_close_matches_session(frame["close"], expected_sessions[ticker])}
         _report_missing_symbols(tickers, frames, current)
         if len(frames) < len(tickers) * 0.7:
-            raise RuntimeError(f"stocks: completed session {expected_session}: "
-                               f"only {len(frames)}/{len(tickers)} current prices returned")
+            raise RuntimeError(f"stocks: completed session coverage (US reference {expected_session}): "
+                               f"only {len(frames)}/{len(tickers)} usable prices returned")
         return frames
 
 

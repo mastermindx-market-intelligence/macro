@@ -1,0 +1,82 @@
+{
+  "schema_version": "mastermind.data_workspace_bindings/v1",
+  "registry_path": "dataset_registry.yml",
+  "roots": [
+    {
+      "alias": "macro_snapshot",
+      "path": "/Users/chriswong/Documents/Cluade/macro-main/data",
+      "evidence_kind": "unqualified_snapshot",
+      "note": "Concrete local Macro checkout data. File presence does not establish current production freshness or point-in-time reconstruction."
+    },
+    {
+      "alias": "macro_legacy_history",
+      "path": "/Users/chriswong/Documents/Cluade/Macro Dashboard/data",
+      "evidence_kind": "historical_archive",
+      "note": "Older and sometimes larger historical stores. Read-only data access; this legacy checkout is not a source-edit workspace."
+    },
+    {
+      "alias": "fundamental_history",
+      "path": "/Users/chriswong/fund-src/data",
+      "evidence_kind": "unqualified_snapshot",
+      "note": "Stored fundamentals and transcript data; retain vendor, fetched and availability clocks separately."
+    },
+    {
+      "alias": "iex_deep_archive",
+      "path": "/Volumes/Mastermind/market-data/iex/hist/raw",
+      "evidence_kind": "raw_archive",
+      "note": "IEX venue-only DEEP+ packet archive. Large compressed captures are metadata-only here; use the existing decoder for derived queries.",
+      "required_mount": "/Volumes/Mastermind"
+    },
+    {
+      "alias": "free_source_research",
+      "path": "/Volumes/Mastermind/.mastermind_private/free_source_gaps_20261008",
+      "evidence_kind": "research_capture",
+      "note": "CFTC, GLEIF, BEA and Census research captures. Consult source inventory; locators and revised histories are not original publication vintages.",
+      "required_mount": "/Volumes/Mastermind"
+    },
+    {
+      "alias": "options_sample_research",
+      "path": "/Volumes/Mastermind/.mastermind_private/options_free_trials_20261008",
+      "evidence_kind": "research_sample",
+      "note": "Cboe demonstration samples. Not a live feed or a production admission; participant side is not aggressor side and original quote-age evidence is absent.",
+      "required_mount": "/Volumes/Mastermind"
+    },
+    {
+      "alias": "options_nbbo_cohort",
+      "path": "/Users/chriswong/.mastermind_private/options_nbbo_cohort_v1",
+      "evidence_kind": "research_capture",
+      "note": "Research cohort artifacts. Inspect actual enrollment and outcome receipts before interpreting any availability."
+    },
+    {
+      "alias": "momoedge_capture",
+      "path": "/Users/chriswong/.mastermind_private/momoedge_prospective_capture_v1",
+      "evidence_kind": "research_capture",
+      "note": "Prospective research observations; no production or outcome qualification inferred from this root."
+    },
+    {
+      "alias": "tiingo",
+      "path": "/Volumes/Mastermind/market-data/tiingo",
+      "evidence_kind": "proposed_source",
+      "note": "Proposed archive binding. Absence is reported exactly; this adapter does not launch ingestion or retry authenticated vendor operations.",
+      "required_mount": "/Volumes/Mastermind"
+    },
+    {
+      "alias": "lse_options",
+      "path": "/Volumes/Mastermind/data/lse/options",
+      "evidence_kind": "proposed_source",
+      "note": "Existing local options namespace may be empty. Do not infer recorded overnight sessions from directory names.",
+      "required_mount": "/Volumes/Mastermind"
+    },
+    {
+      "alias": "web_test_runs",
+      "path": "/Volumes/Mastermind/data/web-lab-runs",
+      "evidence_kind": "research_capture",
+      "note": "Bounded web Lab request, result and status artifacts. Trial accounting remains the existing engine.trial_ledger owner.",
+      "required_mount": "/Volumes/Mastermind"
+    }
+  ],
+  "test_workspace": {
+    "path": "/Volumes/Mastermind/data/web-lab-runs",
+    "required_mount": "/Volumes/Mastermind"
+  }
+}

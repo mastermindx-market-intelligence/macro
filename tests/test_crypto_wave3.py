@@ -13,6 +13,35 @@ from scripts import build_crypto
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def _stage_valid_cockpit(site: Path, exposure_pct: int = 60) -> None:
+    site.mkdir(parents=True, exist_ok=True)
+    signals = build_crypto.store.read("vector", "signals")
+    assert signals is not None and not signals.empty
+    as_of = str(pd.Timestamp(signals.index[-1]).date())
+    (site / "crypto_cockpit.json").write_text(
+        json.dumps(
+            {
+                "decision": {
+                    "schema": "btc.decision/v1",
+                    "status": "ok",
+                    "as_of": as_of,
+                    "integrity_ok": True,
+                    "final_exposure_pct": exposure_pct,
+                    "errors": [],
+                    "authority_source": "btc.decision/v1.final.exposure_pct",
+                },
+                "hero": {
+                    "stance_en": "Constructive",
+                    "stance_zh": "偏积极",
+                    "exposure_pct": exposure_pct,
+                },
+                "axes": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
 def _bars(start: float, periods: int = 260, step: float = 1.0) -> pd.DataFrame:
     idx = pd.date_range("2025-01-01", periods=periods, freq="D")
     close = pd.Series([start + i * step for i in range(periods)], index=idx)
@@ -137,13 +166,17 @@ def test_btc_options_null_contract_is_plain_and_render_safe():
 def test_crypto_template_renders_null_options_contract(monkeypatch, tmp_path):
     empty = btc_options.build_contract(lambda _group, _name: None)
     monkeypatch.setattr(build_crypto, "build_btc_options", lambda: empty)
-    output = build_crypto.build(tmp_path / "site")
+    site = tmp_path / "site"
+    _stage_valid_cockpit(site)
+    output = build_crypto.build(site)
     html = output.read_text(encoding="utf-8")
     assert "Deribit options snapshot is awaiting its next collection." in html
 
 
 def test_build_publishes_wave3_contracts_and_three_asset_lanes(tmp_path):
-    output = build_crypto.build(tmp_path / "site")
+    site = tmp_path / "site"
+    _stage_valid_cockpit(site)
+    output = build_crypto.build(site)
     html = output.read_text(encoding="utf-8")
     assert 'data-sym="ETH-USD"' in html
     assert 'data-sym="SOL-USD"' in html
