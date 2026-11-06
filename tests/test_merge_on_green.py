@@ -9132,7 +9132,17 @@ def test_a_foreign_refresh_lease_in_the_single_slot_band_falls_back_to_the_reser
     )
     budget = _red_main_budget(max_refreshes=1)
     budget.requires_refresh_lease = True
-    budget.refresh_lease = MOG.RefreshLease("acme/widgets", "read", "write", owner_number=7195)
+    lease = MOG.RefreshLease(
+        "acme/widgets", "read", "write",
+        owner_number=7195,
+        owner_updated_at=dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        generation_head_sha="a" * 40,
+        generation_id="b" * 32,
+    )
+    # A foreign association alone is not reliable proof: the generation
+    # register must still bind the observed owner before the repair can bypass it.
+    monkeypatch.setattr(lease, "record_is_current", lambda: True)
+    budget.refresh_lease = lease
     assert _sweep_stale(_repair_pull(), budget) == "re-proving"
     updated = [c for c in calls if c[1].endswith("/update-branch")]
     assert len(updated) == 1 and "/pulls/10759/" in updated[0][1]
@@ -9143,6 +9153,77 @@ def test_a_foreign_refresh_lease_in_the_single_slot_band_falls_back_to_the_reser
     # is for the labelled repair only.
     assert budget.take_refresh(_pull(7300), repair_candidate=False) is False
     assert budget.refreshes_used == 0
+
+
+@pytest.mark.parametrize("failure_stage", ["generation-write", "label-readback"])
+def test_s8_ambiguous_lease_claim_never_grants_a_second_refresh(
+    monkeypatch, failure_stage
+):
+    """A failed generation/label write may already have happened on GitHub.
+    The red-baseline reserve must NOT hide that uncertainty with update-branch."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202,
+        main_commits=_STALE_MAIN, live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=1)
+    budget.requires_refresh_lease = True
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    if failure_stage == "generation-write":
+        # The real claim sets claim_attempted BEFORE writing the generation.
+        # False could follow a successful write with a lost response/readback.
+        monkeypatch.setattr(lease, "_write_generation_record", lambda *_a: False)
+    else:
+        # Generation write may have succeeded; a lost label response plus a
+        # negative direct readback still leaves the effect unsettled.
+        monkeypatch.setattr(lease, "_write_generation_record", lambda *_a: True)
+        monkeypatch.setattr(lease, "_issue_has_claim_labels", lambda *_a: False)
+    budget.refresh_lease = lease
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert lease.claim_attempted
+    assert not [call for call in calls if call[1].endswith("/update-branch")]
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 0, 0)
+    assert not budget.repair_reserve_available(True, _repair_pull())
+
+
+def test_s8_claim_ambiguity_also_blocks_zero_slot_reserve_without_a_new_claim():
+    """No fresh write is authorized by falling into the 0/0 reserve path after
+    an earlier ambiguous lease attempt in this same serialized sweep."""
+    budget = _red_main_budget(max_refreshes=0)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    lease.claim_attempted = True
+    budget.refresh_lease = lease
+    assert budget.take_refresh(_repair_pull(), repair_candidate=True) is False
+    assert budget.repair_reserve_used == budget.refresh_attempts_used == 0
+
+
+@pytest.mark.parametrize("stale", ["missing-generation", "changed-generation", "expired-owner"])
+def test_s8_foreign_owner_requires_current_generation_before_reserved_refresh(
+    monkeypatch, stale
+):
+    """A listed foreign owner is not an authenticated authorization shortcut."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202,
+        main_commits=_STALE_MAIN, live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=1)
+    budget.requires_refresh_lease = True
+    lease = MOG.RefreshLease(
+        "acme/widgets", "read", "write", owner_number=7195,
+        owner_updated_at=(
+            "2020-01-01T00:00:00Z" if stale == "expired-owner"
+            else dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        ),
+        generation_head_sha=("" if stale == "missing-generation" else "a" * 40),
+        generation_id=("" if stale == "missing-generation" else "b" * 32),
+    )
+    monkeypatch.setattr(lease, "record_is_current", lambda: stale != "changed-generation")
+    budget.refresh_lease = lease
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert not lease.claim_attempted
+    assert not [call for call in calls if call[1].endswith("/update-branch")]
+    assert budget.repair_reserve_used == budget.refresh_attempts_used == 0
 
 
 @pytest.mark.parametrize(
