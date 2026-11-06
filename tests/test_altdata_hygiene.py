@@ -19,6 +19,7 @@ import pandas as pd
 import pytest
 
 from engine import altdata, altdata_models as models
+from engine import altdata_confirmers as confirmers
 from collectors import quiver
 from collectors.base import run_adapter
 
@@ -134,6 +135,25 @@ class TestAddGuard:
         channels = set(recs["CLUSTONLY"]["channels"])
         assert "insider_cluster" in channels
         assert "insider_buy" not in channels
+
+    def test_strong_app_demand_none_reviews_does_not_raise(self):
+        """A strong app row with NO review count is skipped, not formatted.
+
+        `f"{None:,}"` raises TypeError inside channel_records, so one count-less row
+        blanks the whole app_demand feed for the round (the board swallows it via _safe).
+        """
+        recs = self._run({"app_ratings": [
+            {"ticker": "NFLX", "lean": "strong", "rating": 4.8, "reviews": None},
+        ]})
+        assert "app_demand" not in set(recs["NFLX"]["channels"])
+
+    def test_strong_app_demand_int_reviews_still_fires(self):
+        """The guard must not cost the good row its channel or its thousands separator."""
+        recs = self._run({"app_ratings": [
+            {"ticker": "NVDA", "lean": "strong", "rating": 4.7, "reviews": 12345},
+        ]})
+        assert "app_demand" in set(recs["NVDA"]["channels"])
+        assert recs["NVDA"]["channel_detail"]["app_demand"] == "4.7★ × 12,345 reviews"
 
 
 # ===========================================================================
@@ -532,3 +552,32 @@ class TestTickerKeyHygiene:
         recs = self._run([{"ticker": "CONSECUTIVE", "detail": "prose"}])
         assert recs == {}
         assert "::notice title=altdata-ticker-hygiene" in capsys.readouterr().out
+
+
+# ===========================================================================
+# Confirmers display order — CONTEXT bits must not depend on PYTHONHASHSEED
+# ===========================================================================
+class TestThemeConfirmersContextOrder:
+    """`_theme_confirmers` built `context` from set iteration, so the foresight
+    `altdata_summary` chip reordered itself between runs of identical data.
+    """
+
+    def test_theme_confirmers_context_bits_sorted(self):
+        # one member carrying every CONTEXT channel: key order must be sorted
+        r = confirmers._theme_confirmers("T", ["AAA"], {
+            "AAA": {"channels": ["patent_cluster", "congress_cluster",
+                                 "13f_add", "activist_13d"]},
+        })
+        assert list(r["context"]) == ["13f_add", "activist_13d",
+                                      "congress_cluster", "patent_cluster"]
+        assert r["summary"] == ("1 13f add · 1 activist 13d · "
+                                "1 congress cluster · 1 patent cluster")
+
+    def test_theme_confirmers_bits_sorted_across_members(self):
+        """Members arrive in DESCENDING slug order, so the summary is the only place the
+        sort can show: the keys still follow member order."""
+        r = confirmers._theme_confirmers("T", ["AAA", "BBB"], {
+            "AAA": {"channels": ["patent_cluster"]},
+            "BBB": {"channels": ["13f_add"]},
+        })
+        assert r["summary"] == "1 13f add · 1 patent cluster"

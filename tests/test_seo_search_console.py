@@ -709,6 +709,122 @@ class TestFamilyScorecard:
 # ---------------------------------------------------------------------------
 
 
+class TestReportingWindow:
+    def _frame(self, rows):
+        return _build_parquet(rows, None, "web", date(2025, 1, 1))
+
+    def test_family_totals_ranks_and_brand_split_use_inclusive_window(self):
+        import pandas as pd
+        df = self._frame([
+            _make_api_row(date_str="2026-06-22", page="https://x.test/old.html",
+                          query="mastermind old", clicks=900, impressions=1000),
+            _make_api_row(date_str=_WINDOW["start"], query="mastermind", clicks=2, impressions=20),
+            _make_api_row(date_str=_WINDOW["end"], query="market", clicks=3, impressions=30),
+            _make_api_row(date_str="2026-07-21", page="https://x.test/future.html",
+                          clicks=800, impressions=1000),
+        ])
+        before = df.copy(deep=True)
+        sc = _build_scorecard(df, "2026-07-20", _WINDOW)
+        assert sc["families"]["core"]["clicks"] == 5
+        assert sc["families"]["core"]["impressions"] == 50
+        assert sc["families"]["core"]["ctr"] == 0.1
+        assert len(sc["families"]["core"]["top_pages"]) == 1
+        assert sc["brand_split"]["brand"]["clicks"] == 2
+        assert sc["brand_split"]["non_brand"]["clicks"] == 3
+        pd.testing.assert_frame_equal(df, before)
+
+    def test_gap_threshold_position_ctr_and_best_page_use_same_window(self):
+        df = self._frame([
+            _make_api_row(date_str="2026-06-22", query="mixed", page="https://x.test/old.html",
+                          clicks=100, impressions=10000, position=1),
+            _make_api_row(date_str=_WINDOW["start"], query="mixed", page="https://x.test/current.html",
+                          clicks=1, impressions=100, position=15),
+            _make_api_row(date_str="2026-06-22", query="below floor", clicks=0, impressions=90),
+            _make_api_row(date_str=_WINDOW["end"], query="below floor", clicks=0, impressions=10),
+            _make_api_row(date_str="2026-07-21", query="future", clicks=0, impressions=1000),
+        ])
+        gaps = _build_query_gaps(df, "2026-07-20", _WINDOW)["gaps"]
+        assert len(gaps) == 1 and gaps[0]["query"] == "mixed"
+        assert gaps[0]["impressions"] == 100 and gaps[0]["clicks"] == 1
+        assert gaps[0]["ctr"] == 0.01 and gaps[0]["avg_position"] == 15
+        assert gaps[0]["best_page"] == "https://x.test/current.html"
+
+    def test_history_without_observations_in_window_keeps_empty_shapes(self):
+        df = self._frame([_make_api_row(date_str="2026-06-22"),
+                          _make_api_row(date_str="2026-07-21")])
+        assert _build_scorecard(df, "2026-07-20", _WINDOW)["families"] == {}
+        assert _build_query_gaps(df, "2026-07-20", _WINDOW)["gaps"] == []
+        assert len(df) == 2
+
+    @pytest.mark.parametrize("builder", [_build_scorecard, _build_query_gaps])
+    @pytest.mark.parametrize("bad_date", [None, "bad", "2026-02-30", "2026-07-01T00:00:00Z"])
+    def test_invalid_retained_dates_are_not_silently_dropped(self, builder, bad_date):
+        df = self._frame([_make_api_row()]).astype({"date": object})
+        df.loc[0, "date"] = bad_date
+        with pytest.raises(ValueError):
+            builder(df, "2026-07-20", _WINDOW)
+
+    @pytest.mark.parametrize("builder", [_build_scorecard, _build_query_gaps])
+    @pytest.mark.parametrize("as_of,window", [
+        ("2026-07-20", {"start": "2026-07-20", "end": "2026-06-23"}),
+        ("2026-07-20", {"start": "2026-06-23", "end": "2026-07-21"}),
+        ("2026-07-20", {"start": "20260623", "end": "2026-07-20"}),
+        ("2026-07-20T12:00:00Z", _WINDOW),
+    ])
+    def test_invalid_window_refuses_even_with_empty_history(self, builder, as_of, window):
+        import pandas as pd
+        with pytest.raises(ValueError):
+            builder(pd.DataFrame(), as_of, window)
+
+    def test_mocked_run_retains_history_but_publishes_only_windowed_aggregates(self, tmp_path, monkeypatch):
+        import pandas as pd
+        _stub_google_auth(monkeypatch)
+        monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
+        monkeypatch.delenv("GSC_SA_JSON", raising=False)
+        creds = _write_creds(tmp_path)
+        seo_dir = tmp_path / _ARTIFACTS_REL
+        seo_dir.mkdir(parents=True, exist_ok=True)
+        prior = self._frame([
+            _make_api_row(date_str="2026-06-22", clicks=900, impressions=1000),
+            _make_api_row(date_str="2026-07-21", clicks=800, impressions=1000),
+        ])
+        prior.to_parquet(seo_dir / _DAILY_FILE, index=False)
+        incoming = [_make_api_row(date_str="2026-07-15", clicks=1, impressions=100, position=15)]
+        monkeypatch.setattr("engine.marketing.seo_search_console._gsc_query",
+                            lambda *a, **k: _api_response(incoming))
+        state = run(tmp_path, creds_path=str(creds), as_of=_AS_OF, write=True)
+        assert state["available"] is True and state["rows_fetched"] == 1
+        assert len(pd.read_parquet(seo_dir / _DAILY_FILE)) == 3
+        sc = json.loads((seo_dir / _SCORECARD_FILE).read_text())
+        gaps = json.loads((seo_dir / _GAPS_FILE).read_text())
+        assert sc["families"]["core"]["clicks"] == 1
+        assert gaps["gaps"][0]["impressions"] == 100
+        assert sc["window"] == gaps["window"] == _WINDOW
+
+    def test_malformed_history_preserves_last_good_aggregate_bytes(self, tmp_path, monkeypatch, caplog):
+        _stub_google_auth(monkeypatch)
+        monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
+        monkeypatch.delenv("GSC_SA_JSON", raising=False)
+        creds = _write_creds(tmp_path)
+        seo_dir = tmp_path / _ARTIFACTS_REL
+        seo_dir.mkdir(parents=True, exist_ok=True)
+        prior = self._frame([_make_api_row(date_str="2026-07-01T00:00:00Z")])
+        prior.to_parquet(seo_dir / _DAILY_FILE, index=False)
+        saved = {
+            _SCORECARD_FILE: b'{"as_of":"2026-06-01","families":{"core":{"clicks":7}}}\n',
+            _GAPS_FILE: b'{"as_of":"2026-06-01","gaps":[{"query":"prior"}]}\n',
+        }
+        for filename, content in saved.items():
+            (seo_dir / filename).write_bytes(content)
+        monkeypatch.setattr("engine.marketing.seo_search_console._gsc_query",
+                            lambda *a, **k: _api_response([_make_api_row(date_str="2026-07-15")]))
+        state = run(tmp_path, creds_path=str(creds), as_of=_AS_OF, write=True)
+        assert state["available"] is True  # Fetch success is separate from aggregate freshness.
+        assert "GSC reporting dates must be exact YYYY-MM-DD labels" in caplog.text
+        for filename, content in saved.items():
+            assert (seo_dir / filename).read_bytes() == content
+
+
 class TestBrandSplit:
     def test_brand_regex_matches(self):
         """Brand regex matches 'mastermind' variants."""

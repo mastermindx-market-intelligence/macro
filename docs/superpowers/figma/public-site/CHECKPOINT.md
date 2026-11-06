@@ -1,3 +1,19 @@
+# Public-Site Figma Baseline — 2026-11-06 Repository Preparation Repair
+
+**Status:** repository preparation and CI integration only. The native Figma work recorded below remains **unfinished**.
+
+## What this 2026-11-06 repair changed
+
+- The fourteen files this branch originally added (four ledgers/spec/plan documents, three test suites and the four `tools/figma` modules) were recomposed byte-for-byte from the original September 2026 branch head onto the then-current frozen `main`. No runtime, tool or test behavior changed; the three suites still pass unchanged (11 tests).
+- The only new path is one `.github/ci/legacy-jobs.yml` job, `public-site-figma-baseline-contracts`, which is the single CI run-step owner the three suites previously lacked (`tests/test_public_site_figma_capture_jobs.py`, `tests/test_public_site_figma_import_plan.py`, `tests/test_public_site_figma_reference_matrix.py` — contract-delta flagged exactly those three as introduced unwired suites). The job runs the suites offline: pytest plus the `playwright` import only, with node parsing the two generated JS scripts. No Figma, network or browser operation.
+- This proves repository preparation and CI integration only. It is not Figma execution proof and adds no design content.
+
+## What remains unfinished (unchanged from September)
+
+The editable four-page Current reconstruction, reference overlays, responsive EN/ZH and motion proof, and the Chairman Current 1:1 acceptance are all still open. No new claim about current Figma permissions, connector state or carrier node state is made here: the September record below is historical evidence, not current state. The frozen site source `15c01bd991f35d0bb2185ee1e608a05df0805803` and the existing file key `sDuVPajwNnGLkZlWyun9wq` are unchanged, and the continuation sequence below still governs.
+
+## September 2026 historical record
+
 # MastermindX Public-Site Figma Baseline — Execution Checkpoint
 
 **Operation:** `public-site-figma-baseline-20260915-sol-001`  
