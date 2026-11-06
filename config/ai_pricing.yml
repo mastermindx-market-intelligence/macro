@@ -42,7 +42,16 @@ per_mtok:
   # MiniMax source: platform.minimax.io API Pricing. M3 bills by input-context tier.
   # The rate card labels 512K / 1M rather than binary powers; decimal ceilings
   # are deliberately conservative so an ambiguous boundary never underprices.
+  #
+  # `match: exact` — these are published rate-card IDENTITIES, not version
+  # prefixes.  A longer sibling name that merely starts with one of them
+  # ("MiniMax-M3.1-Flash", "glm-5.3-flashx") is a different model that was
+  # never qualified for this price, so it stays UNKNOWN instead of inheriting
+  # a published row.  Rows without a `match` key keep the legacy
+  # longest-prefix behavior (dated names such as
+  # "claude-haiku-4-5-20251001" still resolve to "claude-haiku-4-5").
   MiniMax-M3:
+    match: exact
     context_tiers:
       - max_context_tokens: 512000
         input: 0.30
@@ -59,6 +68,7 @@ per_mtok:
   # Cache-write billing is not represented by the current public rate card, so
   # an observed cache-creation token count fails cost estimation to unknown.
   glm-5.3-flash:
+    match: exact
     input: 0.15
     output: 0.50
     cache_read: 0.03

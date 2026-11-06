@@ -191,6 +191,116 @@ class TestEstimateCostUsd:
         ) is None
 
 
+# ── exact model identity qualification ────────────────────────────────────────
+
+class TestExactModelIdentity:
+    """The newly qualified price identities are EXACT, not version prefixes.
+
+    ``MiniMax-M3`` and ``glm-5.3-flash`` are published rate-card identities.  A
+    longer sibling name that merely starts with one of them is a DIFFERENT
+    model with no published price in this table, so it must stay UNKNOWN
+    instead of inheriting the published row.  Legacy rows keep their original
+    longest-prefix behavior, dated names included.
+    """
+
+    def test_named_sibling_identities_stay_unknown(self) -> None:
+        from lib.ai_costs import estimate_cost_usd
+
+        # These sibling identities were UNKNOWN before the two rows were added
+        # and must stay UNKNOWN now that the rows exist.
+        assert estimate_cost_usd("MiniMax-M3.1-Flash", 100_000, 0) is None
+        assert estimate_cost_usd(
+            "MiniMax-M3.1-Flash", 100_000, 10_000, cache_read_tokens=20_000
+        ) is None
+        assert estimate_cost_usd("glm-5.3-flashx", 100_000, 0) is None
+        assert estimate_cost_usd(
+            "glm-5.3-flashx", 1_000_000, 1_000_000, cache_read_tokens=1_000_000
+        ) is None
+
+    def test_intended_exact_identities_keep_their_accepted_rates(self) -> None:
+        from lib.ai_costs import estimate_cost_usd
+
+        assert estimate_cost_usd(
+            "MiniMax-M3", 100_000, 10_000, cache_read_tokens=20_000
+        ) == 0.0432
+        assert estimate_cost_usd("MiniMax-M3", 600_000, 10_000) == 0.384
+        assert estimate_cost_usd(
+            "glm-5.3-flash", 1_000_000, 1_000_000, cache_read_tokens=1_000_000
+        ) == 0.68
+        # An unpublished cache-write token class still fails to unknown rather
+        # than borrowing the legacy global cache multipliers.
+        assert estimate_cost_usd(
+            "MiniMax-M3", 1_000, 0, cache_creation_tokens=1
+        ) is None
+        assert estimate_cost_usd(
+            "glm-5.3-flash", 1_000, 0, cache_creation_tokens=1
+        ) is None
+
+    def test_exact_identities_do_not_leak_to_dated_or_case_variants(self) -> None:
+        from lib.ai_costs import estimate_cost_usd
+
+        # A dated variant of an exact identity is a different published price
+        # identity and this table publishes none for it: UNKNOWN, not a guess.
+        assert estimate_cost_usd("MiniMax-M3-20260101", 100_000, 0) is None
+        assert estimate_cost_usd("glm-5.3-flash-20260101", 100_000, 0) is None
+        # Identity matching stays case sensitive exactly as it was.
+        assert estimate_cost_usd("minimax-m3", 100_000, 0) is None
+        assert estimate_cost_usd("GLM-5.3-FLASH", 100_000, 0) is None
+
+    def test_legacy_dated_model_prefixes_still_resolve(self) -> None:
+        from lib.ai_costs import estimate_cost_usd
+
+        assert estimate_cost_usd("claude-haiku-4-5-20251001", 1_000_000, 0) == 1.0
+        assert estimate_cost_usd(
+            "claude-sonnet-4-6-20260101", 1_000_000, 1_000_000
+        ) == 18.0
+        assert estimate_cost_usd("deepseek-v4-pro-20260101", 1_000_000, 0) == 0.435
+        assert estimate_cost_usd(
+            "deepseek-v4-flash-20260101", 1_000_000, 1_000_000
+        ) == 0.42
+        # Legacy rows still carry the global cache multipliers.
+        assert estimate_cost_usd(
+            "claude-haiku-4-5-20251001", 1_000_000, 0, cache_read_tokens=1_000_000
+        ) == 1.1
+
+    def test_minimax_context_tier_boundary_is_unchanged(self) -> None:
+        from lib.ai_costs import estimate_cost_usd
+
+        assert estimate_cost_usd("MiniMax-M3", 512_000, 0) == 0.1536
+        assert estimate_cost_usd("MiniMax-M3", 512_001, 0) == 0.3072006
+        assert estimate_cost_usd("MiniMax-M3", 1_000_000, 0) == 0.6
+        assert estimate_cost_usd("MiniMax-M3", 1_000_001, 0) is None
+
+    def test_a_row_can_declare_exact_or_prefix_matching(self, tmp_path: Path) -> None:
+        """The per-row identity policy is what makes a row exact."""
+        pricing = _write_pricing(tmp_path)
+        text = pricing.read_text(encoding="utf-8")
+        text = text.replace(
+            "  claude-haiku-4-5:\n    input: 1.00\n    output: 5.00\n",
+            "  claude-haiku-4-5:\n    input: 1.00\n    output: 5.00\n"
+            "  vendor-model-x:\n"
+            "    match: exact\n"
+            "    input: 2.00\n"
+            "    output: 6.00\n"
+            "  vendor-model-y:\n"
+            "    match: prefix\n"
+            "    input: 4.00\n"
+            "    output: 8.00\n",
+            1,
+        )
+        pricing.write_text(text, encoding="utf-8")
+        from lib.ai_costs import estimate_cost_usd
+
+        # An exact row prices only its own published identity.
+        assert estimate_cost_usd("vendor-model-x", 1_000_000, 0, root=tmp_path) == 2.0
+        assert estimate_cost_usd("vendor-model-x-2", 1_000_000, 0, root=tmp_path) is None
+        # A row that declares prefix matching keeps the legacy behavior.
+        assert estimate_cost_usd("vendor-model-y", 1_000_000, 0, root=tmp_path) == 4.0
+        assert estimate_cost_usd("vendor-model-y-2", 1_000_000, 0, root=tmp_path) == 4.0
+        # A row that declares no policy at all keeps the legacy behavior.
+        assert estimate_cost_usd("claude-haiku-4-5-20251001", 1_000_000, 0, root=tmp_path) == 1.0
+
+
 # ── record_usage ──────────────────────────────────────────────────────────────
 
 class TestRecordUsage:

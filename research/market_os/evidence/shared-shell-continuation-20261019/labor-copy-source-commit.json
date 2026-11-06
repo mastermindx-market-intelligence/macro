@@ -1,0 +1,21 @@
+{
+  "started_at": "2026-10-20T15:53:25.899031+00:00",
+  "parent": "8b51fb46d18739a4d10d1ef07dce3ca0f989f0da",
+  "staged_tree": "d27fb44b0bc7a13e7a827515528a53210653cdd5",
+  "paths": [
+    "lib/macro_suite_labels.py",
+    "site/macro_labor_markets.html",
+    "tests/test_macro_command_copy_law.py"
+  ],
+  "tested_working_diff_sha256": "2e48adc5a04c5a0b06ef09dc49e8a3a3799a6a7d6d45a12aa4c3308988c764e4",
+  "test_receipt_sha256": "d07abaa26cb498f1283e722cbaadfd437bb34729aa12bbb2fb991e0a4e79a2a0",
+  "lineage_receipt_sha256": "a5a4e0f6b52b61752b70e7d3c63d0d613e8174b4fbc46c9675561ead749c1a31",
+  "status": "COMMITTED_LOCAL_ONLY",
+  "pushed": false,
+  "commit_exit": 0,
+  "finished_at": "2026-10-20T15:53:37.090678+00:00",
+  "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "tree": "d27fb44b0bc7a13e7a827515528a53210653cdd5",
+  "status_after": "",
+  "log_sha256": "da60c917159c9112981cb2cd789c63d6e39706edaffb1d5f35939ca34609643f"
+}

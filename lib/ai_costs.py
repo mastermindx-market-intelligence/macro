@@ -205,23 +205,46 @@ def _load_pricing(root: Path | None = None) -> dict[str, Any]:
         return {}
 
 
+def _row_covers_model(prefix: str, rates: dict[str, Any], model: str) -> bool:
+    """Decide whether one pricing row covers ``model``.
+
+    Legacy rows (no ``match`` key) keep the original longest-prefix behavior.
+    ``match: exact`` restricts the row to that one published model identity:
+    a longer sibling name that merely starts with it is a different model with
+    no published price, so it must stay UNKNOWN rather than inherit a row it
+    was never qualified for.  ``match: prefix`` states the legacy behavior
+    explicitly.  Every other declared value fails CLOSED to exact matching, so
+    a typo can never silently re-open a distinct sibling identity.
+    """
+    if "match" not in rates:
+        return model.startswith(prefix)
+    if rates["match"] == "prefix":
+        return model.startswith(prefix)
+    return model == prefix
+
+
 def _matching_model_rates(
     model: str | None,
     pricing: dict[str, Any],
 ) -> dict[str, Any] | None:
-    """Return the longest-prefix pricing row for ``model``, or ``None``."""
+    """Return the pricing row that covers ``model``, or ``None``.
+
+    Rows without an identity policy keep the original longest-prefix match, so
+    dated names such as ``claude-haiku-4-5-20251001`` still resolve to
+    ``claude-haiku-4-5``.  A row may declare ``match: exact`` to price only
+    its own published identity; see :func:`_row_covers_model`.
+    """
     if not model:
         return None
     per_mtok: dict[str, Any] = pricing.get("per_mtok") or {}
     best_prefix = ""
     best_rates: dict[str, Any] | None = None
     for prefix, rates in per_mtok.items():
-        if (
-            isinstance(prefix, str)
-            and isinstance(rates, dict)
-            and model.startswith(prefix)
-            and len(prefix) > len(best_prefix)
-        ):
+        if not (isinstance(prefix, str) and isinstance(rates, dict)):
+            continue
+        if not _row_covers_model(prefix, rates, model):
+            continue
+        if len(prefix) > len(best_prefix):
             best_prefix = prefix
             best_rates = rates
     return best_rates

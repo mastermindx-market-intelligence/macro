@@ -1,0 +1,22 @@
+[
+  {
+    "accession": "0000320193-23-000064",
+    "expected_period_end": "2023-04-01",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "AAPL",
+    "label_class": "extract_absent",
+    "pack_id": "PK06",
+    "polarity": "negative",
+    "reason": "aapl-20230401.htm | untagged | No lease amounts in the 10-Q: grepped the whole primary for 'right-of-use', 'operating lease' and 'finance lease': 0 matches each, and no us-gaap:*Lease* facts are tagged; the Company's lease disclosures appear only in the Form 10-K, so no current finance lease liability amount is disclosed.",
+    "section_family": "lease_liability",
+    "split": "held_out",
+    "target_id": "finance_lease_liability_current",
+    "target_kind": "extract",
+    "trial_id": "PK06|0000320193-23-000064|extract|finance_lease_liability_current"
+  }
+]
