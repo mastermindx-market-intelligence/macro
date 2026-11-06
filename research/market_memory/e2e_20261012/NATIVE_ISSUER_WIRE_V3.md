@@ -77,13 +77,38 @@ issuer's current authoritative owner may expose the minimum typed original
 recipient fact internally through the existing protected owner contract. No
 public generic disclosure or alternate mutable principal is created here.
 
-The concrete fact schema and its exact current receiver validation are a separate
-joined source contract owned by the current Linux and M2 implementers. This file
-does NOT invent that principal or promote Control custody to recipient authority.
-Until that genuine typed original-recipient join is implemented and qualified,
-completed-original disclosure remains refused. A read-only integrity loader alone
-cannot mint a disclosure capability. The original input/result receipts and
-original pending/unknown status remain preserved.
+For prospective v3 only, authorize_result_disclosure extends its existing exact
+`authorization` object with one field, `original_recipient`. That fact has EXACT
+keys schema, recipient_kind, principal_ref, ssh_key_fingerprint,
+original_operation_id, pre_input_intent_sha256. Schema is
+research_factory.market_memory_e0_original_recipient.v3; recipient_kind is
+native_broker_service. principal_ref is the EXACT native service/admin receipt
+reference selected by the original installation, not an owner-seat or arbitrary
+principal label. ssh_key_fingerprint is the same original actual authenticated
+service key, freshly matched to the current native service/grant. Operation and
+pre_input_intent_sha256 bind the SAME original operation and canonical five-field
+wire intent. Neither field includes future packet/result or self-dependent grants.
+All existing result input/SHA/size/purpose authorization fields remain exact.
+
+The native recipient grant must explicitly contain original_recipient with EXACT
+keys recipient_kind, principal_ref, ssh_key_fingerprint and explicit
+recipient_permissions EXACT [delegate_original_child_input,
+read_original_child_result]. The service is the actual authorized transport
+recipient and restricted original-child proxy. Original registered reviewer,
+task and private slot remain separately qualified scope, not observed identity or
+independence. The original audience is retained immutably in the original case
+intent/envelope. A later different recipient or service cannot silently replace it.
+The returned fact is derived from that original native owner data and fresh current
+qualification, not reconstructed from a client's requested principal.
+
+This deliberately identifies a SERVICE audience, not an arbitrary M2 end user or
+Control custody owner. M2 must still establish its actual current protected
+service/caller receiver authority and enforce its closed disclosure channel. It
+must refuse if that genuine current predicate is absent; it may not invent a
+Control permission or issue a capability merely because the fact parses. No new
+principal registry or public result API is introduced. Frozen wire2 has no such
+fact and is not retroactively upgraded. Original input/result receipts and pending
+or unknown operations remain intact; no source reload/reserve/start/refund follows.
 
 ## Required joined checks
 
