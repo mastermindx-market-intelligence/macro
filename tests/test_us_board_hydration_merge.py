@@ -324,23 +324,33 @@ def test_the_shipped_pair_merges_to_one_heading_per_stage(tmp_path, merge_js):
     )
 
 
-# Protected loader availability: execute the real promise chain.
+
+# Protected loader availability + the ONE native Daily Brief query.
 """Execute the actual protected board loader: unavailable is not access denied.
 
 The Node stub models only DOM operations this loader uses. It runs the entire
-rendered hydration IIFE, including its real promise chain and payload validation;
-neither fetch classification nor hydrate() is replaced by a test implementation.
+rendered hydration IIFE, including its real promise chain, payload validation,
+the genuine three-field Today admission gate and the single authenticated
+native query; neither fetch classification nor hydrate() is replaced by a test
+implementation. The Today binding comes from the REAL owner callable
+(scripts.build_stock_library.today_selection_source_binding) on original input
+bytes — receipts are never manufactured here.
 """
 
+import copy
 import json
 import re
 import shutil
 import subprocess
 from html.parser import HTMLParser
+from urllib.parse import quote
 
 import pytest
 
 from tests.test_dashboard_template_render import _base_vm, _board_row, _env
+
+API_URL = "/api/prophet/daily-brief/v1"
+PAYLOAD_URL = "/premiumdata/us_stocks.json"
 
 
 class _Tree(HTMLParser):
@@ -388,34 +398,136 @@ def _find(tree, identity):
     return None
 
 
+def _today_rows():
+    rows = [_board_row(ticker=ticker, featured=True, stage="live",
+                       signal_asof="2026-10-08",
+                       entry_signal={"status": status, "headline": status})
+            for ticker, status in (("MSCI", "buy_soon"), ("ADSK", "partial"),
+                                   ("ABBV", "buy_now"))]
+    return rows
+
+
+def _native_source(rows):
+    """The REAL owner binding over the EXACT serialized original input bytes."""
+    from scripts.build_stock_library import today_selection_source_binding
+    doc = {"as_of": "2026-10-12", "board_definition": "us_prophet_v3",
+           "emit": {"pair_id": "1" * 32, "at_utc": "2026-10-12T18:02:00+00:00"},
+           "buy": copy.deepcopy(rows)}
+    raw = json.dumps(doc, separators=(",", ":")).encode()
+    return today_selection_source_binding(raw), raw
+
+
+def _bound(row, position, binding):
+    return {**row, "_today_selection_index": position,
+            "_today_row_receipt": binding["ordered_rows"][position]["row_receipt"]}
+
+
+def _meta(binding, positions):
+    return [{"selection_index": p,
+             "row_receipt": binding["ordered_rows"][p]["row_receipt"]}
+            for p in positions]
+
+
+from tests.test_us_today_source_binding import _fixture_candidate_input
+
+
+def _brief_envelope(binding, *, status="PARTIAL", candidates="auto",
+                    reason_codes=("DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE",)):
+    if candidates == "auto":
+        candidates = [{"selection_index": row["selection_index"],
+                       "row_receipt": row["row_receipt"],
+                       "status": "AVAILABLE",
+                       "candidate_input": _fixture_candidate_input(binding, row["selection_index"]),
+                       "daily_brief": {"assessment": None}, "reason_codes": []}
+                      for row in binding["ordered_rows"]]
+    return {"schema": "prophet.daily_brief_read/v1", "status": status,
+            "candidate_generation_id": "peg:" + "d" * 64,
+            "source_binding": {
+                "schema": "prophet.today_selection_source_binding/v1",
+                "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+                "source_sha256": binding["source_sha256"],
+                "pair_id": binding["pair_id"],
+                "selection_receipt": binding["selection_receipt"],
+                "market_session": binding["market_session"]},
+            "candidates": candidates, "reason_codes": list(reason_codes)}
+
+
+def _api_query_url(binding):
+    return (API_URL + "?source_sha256=" + quote(binding["source_sha256"], safe="")
+            + "&pair_id=" + quote(binding["pair_id"], safe="")
+            + "&selection_receipt=" + quote(binding["selection_receipt"], safe=""))
+
+
 @pytest.fixture(scope="module")
 def loader_scene():
-    rows = [_board_row(ticker=ticker, featured=True, stage="live", signal_asof="2026-10-08",
-                       entry_signal={"status": status, "headline": status})
-            for ticker, status in (("MSCI", "buy_soon"), ("ADSK", "partial"), ("ABBV", "buy_now"))]
+    rows = _today_rows()
+    binding, _raw = _native_source(rows)
     vm = _base_vm()
-    vm.update(us_standouts={"buy": rows[:2], "eligible": 3, "as_of": "2026-10-08",
+    vm.update(us_standouts={"buy": [_bound(r, i, binding) for i, r in
+                                    enumerate(rows[:2])],
+                            "eligible": 3, "as_of": "2026-10-08",
                             "ranking": {"featured_count": 3}},
-              gate={"payload": "/premiumdata/us_stocks.json", "tier": "essential",
+              gate={"payload": PAYLOAD_URL, "tier": "essential",
                     "preview": 2, "total": 3, "locked": 1,
-                    "stage_counts": {"live": 3}}, pgate=None, life_gate=None)
+                    "stage_counts": {"live": 3}}, pgate=None, life_gate=None,
+              us_today_source_binding=binding)
     env = _env()
     env.autoescape = True
     page = env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
     scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", page, re.S)
     loader = next(js for js in scripts if "var GATE =" in js and "whenAuthSettled()" in js)
     assert "return fetch(SRC," in loader and ".then(hydrate)" in loader
-    board = _find(_Tree(re.sub(r"<script\b.*?</script>", "", page, flags=re.S)).root, "us-standouts")
+    board = _find(_Tree(re.sub(r"<script\b.*?</script>", "", page, flags=re.S)).root,
+                  "us-standouts")
     assert board is not None and _find(board, "us-today") is not None
     assert _find(board, "us-tier-wall") is not None
     cards = env.get_template("_us_board_cards.html.j2").render(
-        items=rows, sg_any=True, bs_adj=False, xu_allfeat=False, trg_map={},
+        items=[_bound(r, i, binding) for i, r in enumerate(rows)],
+        sg_any=True, bs_adj=False, xu_allfeat=False, trg_map={},
         rw_en="", rw_zh="", setup_as_of="2026-10-08")
     return {"loader": loader, "board": board, "fragment_html": cards,
             "fragment": _Tree(cards).root["children"],
+            "binding": binding,
+            "api_url": _api_query_url(binding),
+            "api": {"failure": "200", "envelope": _brief_envelope(binding)},
             "payload": {"schema": "tier_payload.v1", "page": "us_stocks",
-                        "today_cards_html": cards, "today_preview": 3, "today_total": 3,
-                        "rows": rows[2:]}}
+                        "today_cards_html": cards, "today_preview": 3,
+                        "today_total": 3,
+                        "today_rows_meta": _meta(binding, [0, 1, 2]),
+                        "today_source_binding": binding,
+                        "rows": copy.deepcopy(rows[2:])}}
+
+
+def _ungated_scene():
+    """A genuine bound nonempty UNGATED Today: no gate dict at all, the honest
+    empty protected remainder, and the same real owner binding."""
+    rows = _today_rows()
+    binding, _raw = _native_source(rows)
+    vm = _base_vm()
+    vm.update(us_standouts={"buy": [_bound(r, i, binding) for i, r in
+                                    enumerate(rows)],
+                            "eligible": 3, "as_of": "2026-10-08",
+                            "ranking": {"featured_count": 3}},
+              pgate=None, life_gate=None,
+              us_today_native_emit=PAYLOAD_URL,
+              us_today_source_binding=binding)
+    env = _env()
+    env.autoescape = True
+    page = env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", page, re.S)
+    loader = next(js for js in scripts if "var GATE =" in js and "whenAuthSettled()" in js)
+    assert "TODAY_SRC" in loader and '"/premiumdata/us_stocks.json"' in loader
+    board = _find(_Tree(re.sub(r"<script\b.*?</script>", "", page, flags=re.S)).root,
+                  "us-standouts")
+    return {"loader": loader, "board": board, "fragment_html": "", "fragment": [],
+            "binding": binding, "api_url": _api_query_url(binding),
+            "api": {"failure": "200", "envelope": _brief_envelope(binding)},
+            "payload": {"schema": "tier_payload.v1", "page": "us_stocks",
+                        "gated": False, "built": "2026-10-12T00:00:00Z",
+                        "cards_html": "", "rows": [],
+                        "today_cards_html": "", "today_preview": 0,
+                        "today_total": 0, "today_rows_meta": [],
+                        "today_source_binding": binding}}
 
 
 _NODE = r"""
@@ -451,6 +563,26 @@ function make(record) {
   n.removeChild = c => { n.childNodes = n.childNodes.filter(x => x !== c); c.parentNode = null; };
   n.remove = () => { if (n.parentNode) n.parentNode.removeChild(n); };
   n.addEventListener = () => {};
+  n.insertAdjacentElement = (pos, el) => {
+    if (!el || typeof el === 'string') return el;
+    if ((pos === 'beforebegin' || pos === 'afterend') && n.parentNode) {
+      const siblings = n.parentNode.childNodes;
+      const at = siblings.indexOf(n) + (pos === 'afterend' ? 1 : 0);
+      siblings.splice(at, 0, el);
+      el.parentNode = n.parentNode;
+    } else {
+      el.parentNode = n;
+      n.childNodes.push(el);
+    }
+    return el;
+  };
+  n.insertAdjacentHTML = (pos, html) => {
+    n.insertAdjacentElement(pos, make({tag: 'div', attrs: {}, children: [String(html)]}));
+  };
+  // id/class reflection, as real DOM elements have it.
+  Object.defineProperty(n, 'id', {get: () => n.attrs.id || '', set: v => { n.attrs.id = String(v); }});
+  Object.defineProperty(n, 'className', {get: () => n.attrs.class || '',
+    set: v => { n.attrs.class = String(v); }});
   n.querySelectorAll = selector => {
     const out = [], selectors = selector.split(',').map(s => s.trim().split(/\s+/));
     function walk(parent) {
@@ -512,15 +644,25 @@ const before = {today: snapshot(document.getElementById('us-today')),
   candidates: snapshot(document.getElementById('us-candidates')),
   date: board.getAttribute('data-board-asof'), foreign: snapshot(foreign)};
 const window = {MDXAuth: {user: () => ({id: 'member'}), hasSession: () => true,
-  client: () => Promise.resolve({auth: {getSession: () => { sessionRefreshes++; return Promise.resolve({}); }}})},
+  client: () => Promise.resolve({auth: {getSession: () => {
+    sessionRefreshes++;
+    if (scene.session_mode === 'rejected') return Promise.reject(new Error('fixture rejected'));
+    const session = scene.session_mode === 'missing' ? null :
+      {access_token: scene.session_mode === 'blank' ? ' ' : 'explicit-test-session'};
+    return Promise.resolve({data: {session}, error: scene.session_mode === 'error' ? {} : null});
+  }}})},
   USStockTable: {_mergeRows: rows => merges.push(rows)}};
 const fetch = (url, options) => {
   requests.push({url, options});
-  if (scene.failure === 'network') return Promise.reject(new TypeError('offline'));
-  const code = scene.failure === 'http500' ? 500 : Number(scene.failure) || 200;
+  const isApi = String(url).indexOf('/api/prophet/daily-brief/v1') === 0;
+  const failure = isApi ? ((scene.api || {}).failure || '200') : scene.failure;
+  if (failure === 'network') return Promise.reject(new TypeError('offline'));
+  const code = failure === 'http500' ? 500 : Number(failure) || 200;
   return Promise.resolve({ok: code >= 200 && code < 300, status: code,
-    json: () => scene.failure === 'bad_json' ? Promise.reject(new SyntaxError('bad JSON')) :
-      Promise.resolve(scene.failure === 'invalid_envelope' ? {schema: 'wrong', page: 'us_stocks'} : scene.payload)});
+    json: () => failure === 'bad_json' ? Promise.reject(new SyntaxError('bad JSON')) :
+      Promise.resolve(scene.failure === 'invalid_envelope' && !isApi
+        ? {schema: 'wrong', page: 'us_stocks'}
+        : (isApi ? (scene.api || {}).envelope : scene.payload))});
 };
 vm.runInNewContext(scene.loader, {window, document, fetch, Promise, console, Event: function(){},
   setTimeout: fn => { fn(); return 1; }, location: {href: 'us_stocks.html'}});
@@ -532,14 +674,20 @@ setImmediate(() => {
         (n.attrs.id === 'us-candidates' && scene.mode !== 'candidates') ||
         (n.attrs.id === 'us-plan-block' && scene.mode !== 'plans')) visible = false;
   }
+  const today = document.getElementById('us-today');
+  const note = today && today.querySelector('#us-today-native-note');
   console.log(JSON.stringify({requests, merges, sessionRefreshes, before,
-    after: {today: snapshot(document.getElementById('us-today')),
+    after: {today: snapshot(today),
       candidates: snapshot(document.getElementById('us-candidates')),
       date: board.getAttribute('data-board-asof'), foreign: snapshot(foreign)},
     status: snapshot(s), visible, en: s && (s.querySelector('.l-en') || {}).textContent,
     zh: s && (s.querySelector('.l-zh') || {}).textContent,
     wall: !!document.getElementById('us-tier-wall'),
-    todayTickers: document.getElementById('us-today').querySelectorAll('.pvcard[data-ticker]').map(n => n.dataset.ticker)}));
+    todayTickers: today.querySelectorAll('.pvcard[data-ticker]').map(n => n.dataset.ticker),
+    nativeState: today && today.getAttribute('data-today-native-state'),
+    nativeReasons: today && today.getAttribute('data-today-native-reasons'),
+    nativeNote: note ? note.textContent : null,
+    nativeNoteState: note ? note.getAttribute('data-today-native-state') : null}));
 });
 """
 
@@ -548,15 +696,16 @@ def _run(tmp_path, scene, **options):
     node = shutil.which("node")
     assert node, "these promise-chain regressions require Node, as do the existing hydration harnesses"
     data = {**scene, **options}
+    data.pop("api_url", None)
     (tmp_path / "scene.json").write_text(json.dumps(data), encoding="utf-8")
     (tmp_path / "loader.js").write_text(_NODE, encoding="utf-8")
     proc = subprocess.run([node, str(tmp_path / "loader.js"), str(tmp_path / "scene.json")],
                           capture_output=True, text=True, timeout=30, check=False)
     assert proc.returncode == 0, proc.stderr or proc.stdout
     out = json.loads(proc.stdout)
-    assert len(out["requests"]) == 1 and out["sessionRefreshes"] == 1
-    assert out["requests"][0] == {"url": "/premiumdata/us_stocks.json",
+    assert out["requests"][0] == {"url": PAYLOAD_URL,
                                   "options": {"credentials": "same-origin", "cache": "no-store"}}
+    assert out["sessionRefreshes"] == 1
     return out
 
 
@@ -564,8 +713,10 @@ def _run(tmp_path, scene, **options):
 @pytest.mark.parametrize("failure", ["network", "http500", "bad_json", "invalid_envelope"])
 def test_signed_in_load_failure_discloses_unavailable_and_preserves_preview(tmp_path, loader_scene, mode, failure):
     out = _run(tmp_path, loader_scene, mode=mode, failure=failure)
+    assert len(out["requests"]) == 1, "no native query may follow a refused payload"
     assert out["after"] == out["before"], "a failed load must preserve cards/counts/source date and other warnings"
     assert out["wall"] and out["merges"] == []
+    assert out["nativeState"] is None and out["nativeNote"] is None
     assert out["status"] is not None, "the actual loader leaves signed-in failures undisclosed"
     assert out["visible"], "board availability must be visible in Today and Screener"
     assert out["status"]["attrs"].get("role") == "status"
@@ -581,8 +732,10 @@ def test_signed_in_load_failure_discloses_unavailable_and_preserves_preview(tmp_
 @pytest.mark.parametrize("failure", ["401", "403"])
 def test_access_denial_preserves_existing_wall_without_claiming_data_outage(tmp_path, loader_scene, mode, failure):
     out = _run(tmp_path, loader_scene, mode=mode, failure=failure)
+    assert len(out["requests"]) == 1
     assert out["after"] == out["before"]
     assert out["wall"] and out["merges"] == [] and not out["visible"]
+    assert out["nativeState"] is None
 
 
 @pytest.mark.parametrize("mode", ["today", "candidates"])
@@ -598,3 +751,251 @@ def test_success_hydrates_source_rows_and_clears_only_load_error(tmp_path, loade
     assert out["status"] is not None, "successful hydration must clear the actual load-status slot"
     assert not out["visible"]
     assert out["status"]["attrs"].get("data-state") != "unavailable"
+
+
+# ── the ONE native Daily Brief query on admitted metadata ────────────────────
+
+
+def test_native_query_fires_once_with_exact_pins_and_discloses_partial(tmp_path, loader_scene):
+    out = _run(tmp_path, loader_scene, mode="today", failure="success")
+    binding = loader_scene["binding"]
+    assert len(out["requests"]) == 2, "exactly one payload fetch, exactly one native query"
+    assert out["requests"][1] == {"url": loader_scene["api_url"],
+                                  "options": {"credentials": "same-origin", "cache": "no-store",
+                                              "headers": {"Authorization": "Bearer explicit-test-session"}}}
+    assert out["nativeState"] == "partial"
+    assert out["nativeReasons"] == "DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE"
+    assert out["nativeNoteState"] == "partial"
+    assert out["nativeNote"] is not None
+    assert "Native candidate binding is available for 3 of 3 shown names" in out["nativeNote"]
+    assert "原生候选绑定" in out["nativeNote"]
+    # the hydrated cards are NOT dropped by the native disclosure
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
+
+
+def test_native_available_status_discloses_available(tmp_path, loader_scene):
+    scene = copy.deepcopy(loader_scene)
+    scene["api"] = {"failure": "200",
+                    "envelope": _brief_envelope(binding=scene["binding"], status="AVAILABLE",
+                                                reason_codes=[])}
+    out = _run(tmp_path, scene, mode="today")
+    assert out["nativeState"] == "available"
+    assert "Native candidate context is attached" in out["nativeNote"]
+    assert "已附加此精确来源的原生候选上下文" in out["nativeNote"]
+
+
+@pytest.mark.parametrize("failure", ["401", "403"])
+def test_native_auth_denial_preserves_hydration_and_withholds_native_context(tmp_path, loader_scene, failure):
+    out = _run(tmp_path, loader_scene, mode="today", failure="success")
+    out = _run(tmp_path, {**loader_scene, "api": {"failure": failure}},
+               mode="today")
+    assert len(out["requests"]) == 2
+    assert out["nativeState"] == "unavailable" and out["nativeNoteState"] == "unavailable"
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"], "the auth wall never un-hydrates Today"
+    assert out["nativeReasons"] == "NATIVE_AUTH_UNAVAILABLE"
+
+
+def test_native_409_conflict_discloses_typed_reason_without_retry(tmp_path, loader_scene):
+    scene = copy.deepcopy(loader_scene)
+    scene["api"] = {"failure": "409",
+                    "envelope": _brief_envelope(binding=scene["binding"], status="UNAVAILABLE",
+                                                candidates=[],
+                                                reason_codes=["SOURCE_BINDING_MISMATCH"])}
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 2, "a conflict is never retried"
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeReasons"] == "SOURCE_BINDING_MISMATCH"
+    assert out["nativeNoteState"] == "unavailable"
+    assert "Native candidate context is unavailable" in out["nativeNote"]
+    assert "此精确来源的原生候选上下文不可用" in out["nativeNote"]
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"], "incumbent shell cards are never dropped"
+
+
+def test_native_503_untyped_or_malformed_falls_back_to_typed_unavailable(tmp_path, loader_scene):
+    scene = copy.deepcopy(loader_scene)
+    scene["api"] = {"failure": "503", "envelope": {"error": "DAILY_BRIEF_UNAVAILABLE"}}
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 2
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeReasons"] == "DAILY_BRIEF_UNAVAILABLE"
+    scene["api"] = {"failure": "503",
+                    "envelope": _brief_envelope(binding=scene["binding"], status="UNAVAILABLE",
+                                                candidates=[],
+                                                reason_codes=["CANDIDATE_SNAPSHOT_CHANGED"])}
+    out = _run(tmp_path, scene, mode="today")
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeReasons"] == "CANDIDATE_SNAPSHOT_CHANGED"
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda env_: env_.update(schema="prophet.daily_brief_read/v2"),
+        lambda env_: env_["source_binding"].update(receipt_kind="W3C_CAPTURE"),
+        lambda env_: env_["source_binding"].update(selection_receipt="sha256:" + "0" * 64),
+        lambda env_: env_.update(candidates=env_["candidates"][:-1]),
+        lambda env_: env_["candidates"].reverse(),
+        lambda env_: env_["candidates"][2].update(row_receipt="sha256:" + "f" * 64),
+        lambda env_: env_.update(status="UNAVAILABLE", candidates=[]),
+    ],
+)
+def test_native_malformed_or_mismatched_envelopes_fail_unavailable(tmp_path, loader_scene, mutate):
+    scene = copy.deepcopy(loader_scene)
+    envelope = _brief_envelope(binding=scene["binding"])
+    mutate(envelope)
+    scene["api"] = {"failure": "200", "envelope": envelope}
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 2
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeNoteState"] == "unavailable"
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
+
+
+def test_native_transport_failure_discloses_unavailable_without_retry(tmp_path, loader_scene):
+    scene = copy.deepcopy(loader_scene)
+    scene["api"] = {"failure": "network"}
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 2
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeReasons"] == "DAILY_BRIEF_UNAVAILABLE"
+
+
+def test_admission_refusal_blocks_both_hydration_and_the_native_query(tmp_path, loader_scene):
+    """A shell pin mismatch must leave Today untouched AND keep the query shut."""
+    scene = copy.deepcopy(loader_scene)
+    wrong = copy.deepcopy(scene["binding"])
+    wrong["selection_receipt"] = "sha256:" + "0" * 64
+    scene["payload"]["today_source_binding"] = wrong
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 1
+    assert out["nativeState"] is None
+    assert out["todayTickers"] == ["MSCI", "ADSK"], "the honest shell shelf stays"
+
+
+def test_incomplete_display_meta_blocks_hydration_and_query(tmp_path, loader_scene):
+    scene = copy.deepcopy(loader_scene)
+    scene["payload"]["today_rows_meta"] = scene["payload"]["today_rows_meta"][:2]
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 1
+    assert out["todayTickers"] == ["MSCI", "ADSK"]
+    assert out["nativeState"] is None
+
+
+# ── genuine bound nonempty UNGATED Today rides the same trampoline ───────────
+
+
+def test_ungated_genuine_today_queries_once_and_keeps_the_server_shelf(tmp_path):
+    scene = _ungated_scene()
+    out = _run(tmp_path, scene, mode="today")
+    binding = scene["binding"]
+    assert len(out["requests"]) == 2
+    assert out["requests"][1] == {"url": scene["api_url"],
+                                  "options": {"credentials": "same-origin", "cache": "no-store",
+                                              "headers": {"Authorization": "Bearer explicit-test-session"}}}
+    assert not out["wall"] and out["merges"] == []
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"], "the full server shelf is retained"
+    assert out["nativeState"] == "partial"
+    assert out["after"]["today"]["attrs"]["data-today-visible"] == "3"
+
+
+def test_ungated_admission_refusal_keeps_server_shelf_and_skips_query(tmp_path):
+    scene = _ungated_scene()
+    wrong = copy.deepcopy(scene["binding"])
+    wrong["pair_id"] = "2" * 32
+    scene["payload"]["today_source_binding"] = wrong
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 1
+    assert out["nativeState"] is None
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
+
+
+def test_ungated_native_failure_still_discloses_on_the_server_shelf(tmp_path):
+    scene = _ungated_scene()
+    scene["api"] = {"failure": "503", "envelope": {"error": "DAILY_BRIEF_UNAVAILABLE"}}
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 2
+    assert out["nativeState"] == "unavailable"
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
+
+
+def test_tampered_roster_position_never_reaches_the_native_query(tmp_path, loader_scene):
+    """Matching pins and cardinality alone validate nothing: a same-count
+    REPLACED receipt at one roster position is caught against the owner-issued
+    display metadata BEFORE hydration, and no native query fires."""
+    scene = copy.deepcopy(loader_scene)
+    scene["payload"]["today_source_binding"]["ordered_rows"][2]["row_receipt"] = \
+        "sha256:" + "f" * 64
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 1
+    assert out["nativeState"] is None
+    assert out["todayTickers"] == ["MSCI", "ADSK"], "the honest shell shelf stays"
+
+
+@pytest.mark.parametrize("session_mode", ["missing", "blank", "error", "rejected"])
+def test_native_missing_or_failed_same_session_makes_no_query(tmp_path, loader_scene, session_mode):
+    scene = copy.deepcopy(loader_scene)
+    scene["session_mode"] = session_mode
+    out = _run(tmp_path, scene, mode="today")
+    assert len(out["requests"]) == 1
+    assert out["sessionRefreshes"] == 1
+    assert out["nativeState"] == "unavailable"
+    assert out["nativeReasons"] == "NATIVE_SESSION_UNAVAILABLE"
+    assert out["todayTickers"] == ["MSCI", "ADSK", "ABBV"]
+
+
+# ── genuinely empty served shelf: the shared loader must stay silent ─────────
+
+def _empty_shelf_scene():
+    """A genuinely EMPTY served shelf on a REAL bound roster: the shell serves
+    none of the roster (honest empty `data-today-served`), the protected
+    remainder ships honestly empty, and hydrateToday must refuse it — so the
+    ONE shared loader (Plans/life gate included) makes no native query, attaches
+    no native note and leaves the rendered empty shell untouched."""
+    # Retain genuine unfeatured source rows so the real template renders the
+    # Today section, whose served Featured population is honestly empty.
+    rows = [{**row, "featured": False} for row in _today_rows()]
+    binding, _raw = _native_source(rows)
+    vm = _base_vm()
+    vm.update(us_standouts={"buy": [_bound(row, i, binding)
+                                   for i, row in enumerate(rows)],
+                            "eligible": 3, "as_of": "2026-10-08",
+                            "ranking": {"featured_count": 0}},
+              pgate=None, life_gate=None,
+              us_today_native_emit=PAYLOAD_URL,
+              us_today_source_binding=binding)
+    env = _env()
+    env.autoescape = True
+    page = env.get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", page, re.S)
+    loader = next(js for js in scripts if "var GATE =" in js and "whenAuthSettled()" in js)
+    assert "TODAY_SRC" in loader and '"/premiumdata/us_stocks.json"' in loader
+    board = _find(_Tree(re.sub(r"<script\b.*?</script>", "", page, flags=re.S)).root,
+                  "us-standouts")
+    assert board is not None and _find(board, "us-today") is not None
+    shelf = _find(board, "us-today")["attrs"]
+    assert shelf.get("data-today-served") == "", (
+        "this fixture composes the genuinely empty served shelf")
+    assert shelf.get("data-today-roster-size") == "3"
+    return {"loader": loader, "board": board, "fragment_html": "", "fragment": [],
+            "binding": binding, "api_url": _api_query_url(binding),
+            "api": {"failure": "200", "envelope": _brief_envelope(binding)},
+            "payload": {"schema": "tier_payload.v1", "page": "us_stocks",
+                        "gated": False, "built": "2026-10-12T00:00:00Z",
+                        "cards_html": "", "rows": [],
+                        "today_cards_html": "", "today_preview": 0,
+                        "today_total": 0, "today_rows_meta": [],
+                        "today_source_binding": binding}}
+
+
+@pytest.mark.parametrize("mode", ["today", "plans"])
+def test_genuinely_empty_served_shelf_makes_no_native_query_and_no_mutation(
+        tmp_path, mode):
+    scene = _empty_shelf_scene()
+    out = _run(tmp_path, scene, mode=mode)
+    assert len(out["requests"]) == 1, (
+        "an honestly empty served shelf must not fire the native query")
+    assert out["nativeState"] is None and out["nativeReasons"] is None
+    assert out["nativeNote"] is None and out["nativeNoteState"] is None
+    assert out["todayTickers"] == []
+    assert out["after"] == out["before"], (
+        "an empty shelf must not mutate the shell, its empty note or any other warning")

@@ -1,0 +1,39 @@
+{
+  "started_at": "2026-10-20T19:06:36.837121+00:00",
+  "finished_at": "2026-10-20T19:06:38.945326+00:00",
+  "scope": "Complete new reachable object delta M excluding already-integrated B; prior all-history census intentionally stopped and not accepted",
+  "incoming": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "base": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "command": [
+    "git",
+    "-C",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "rev-list",
+    "--objects",
+    "--no-object-names",
+    "--missing=print",
+    "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+    "--not",
+    "9875169102cc6f36a64d465fe7c06f6bb8fb0220"
+  ],
+  "exit": 0,
+  "bytes": 432727,
+  "sha256": "b8c3fbc3ee66ae41c8f64b34e8a9b13341b987ec5bcd3f8a7c2dabd524105e5d",
+  "stderr_bytes": 0,
+  "missing_count": 13,
+  "missing": [
+    "?f9cf17066081e4b159fc37dcc75aafa39fe20df9",
+    "?3d1272f32bda6424df79bb631ddaa7c566d1e35c",
+    "?b693eff4993fd512c00d638b993fd3b030307b30",
+    "?a45492dc00ace48f7c6c7f07b8bf38fa98af9eb5",
+    "?a515fa790543e3ba79ed982ee935d1f17636fb7c",
+    "?fce1b2cba137d57df69f7ba93d59fb6f5f47188b",
+    "?5da2a2b9dafc357155146cfa68c4254420b87b58",
+    "?8363061ad8e16e17e8dfd32ccfcf8136d5a28d0d",
+    "?78e849a8a681ef63b3d76a362390bec973ca2f27",
+    "?cbaeddb2bb86a003986d0cc370d27da695f3b28a",
+    "?5e70b12fde6bf964b50c54f8a325939d7d2ca1f0",
+    "?28f8b3a915a577096d7cc0541aa45b146b217ef1",
+    "?9b7fb4b2039ae185e0bd028f50fbd770c3e22ac6"
+  ]
+}

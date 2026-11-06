@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 import json
 import math
 import sqlite3
+import stat
 import sys
 import time
 from pathlib import Path
@@ -42,6 +43,10 @@ _UNSET_HEALTH = {"state": "unavailable", "reason": "health_path_unset"}
 # measured n whose full report stays <= 5.0 s (half of the 10 s target, as
 # margin for the loaded 2-vCPU production host).
 AUDIT_STORY_CAP = 3000
+
+# The over-cap hand-run line. It carries a literal <path> placeholder so the
+# report never echoes where the store lives.
+AUDIT_HAND_RUN = "python3 scripts/qbus_news_cluster_audit.py --store <path>"
 
 _TRANSPORTS_SQL = """
 SELECT transport,
@@ -126,7 +131,11 @@ def _zulu(value: datetime) -> str:
 def _audit_section(
     database: Path | str, stories: int, audit_cap: int
 ) -> dict[str, object]:
-    """Project the cluster audit as counts only, or hand it off over the cap."""
+    """Project the cluster audit as counts only, or hand it off over the cap.
+
+    The hand-run command carries a ``<path>`` placeholder so the report
+    never echoes the store path.
+    """
 
     if stories > audit_cap:
         return {
@@ -134,9 +143,7 @@ def _audit_section(
             "reason": "story_count_over_cap",
             "stories": stories,
             "cap": audit_cap,
-            "hand_run": (
-                f"python3 scripts/qbus_news_cluster_audit.py --store {database}"
-            ),
+            "hand_run": AUDIT_HAND_RUN,
         }
     try:
         audited = audit_store(Path(database))
@@ -176,15 +183,14 @@ def build_inventory(
     known_at = _zulu(current)
     path = Path(database)
     try:
-        # pathlib re-raises EACCES and friends instead of reporting the
-        # path as absent, so an untraversable state directory must map to
-        # the same fail-closed refusal as every other unreadable store.
-        if not path.exists():
-            raise InventoryError("database_missing")
-        if not path.is_file():
+        # Use stat directly: recent Python versions make exists()/is_file()
+        # suppress permission errors, which would mislabel an unreadable store.
+        info = path.stat()
+        if not stat.S_ISREG(info.st_mode):
             raise InventoryError("database_unreadable")
-
-        size = path.stat().st_size
+        size = info.st_size
+    except (FileNotFoundError, NotADirectoryError) as exc:
+        raise InventoryError("database_missing") from exc
     except OSError as exc:
         raise InventoryError("database_unreadable") from exc
 
@@ -501,6 +507,7 @@ def format_text(report: dict[str, object]) -> str:
             f"p95 {flow['p95_ms']} ms max {flow['max_ms']} ms "
             f"over/共 {flow['reads']} reads/次; "
             f"tickers / 抽样代码: {', '.join(flow['tickers'])}"
+            "; in-process, not HTTP / 进程内读取，非 HTTP"
         )
     elif flow.get("reason") is None:
         lines.append(f"flow reads / 流量读取: {flow['state']}")

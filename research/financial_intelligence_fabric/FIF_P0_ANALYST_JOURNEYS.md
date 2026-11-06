@@ -57,9 +57,9 @@ Machine list: `FIF_P0_VIEW_CONTRACT.json` `payload_contract`. Keys listed there 
 
 **Financial APIs not called by this page:** `POST /api/forensics/v1/financial/{query,revisions,packet,statements}` (`app/forensics.py:841`, `:888`, `:939`, `:990`). P2 must amend the JSON and this test in the same PR to start calling them.
 
-## 5. First viewport (inference, unmeasured)
+## 5. First viewport (P0 inference; P2 measured)
 
-`first_viewport.measured` is false. No browser was run.
+At P0 `first_viewport.measured` was false and no browser was run; the inference below describes the P0 surface. P2 replaced it with a measured receipt (`mockups/evidence/fundamental_forensics_p2/populated/fold_measurement.json`, fixture-backed golden, local): at 1440×900 nav, desk header, stats, lead brief, next steps and the tab rail all sit inside the first viewport; at 390×844 nav, desk header, the lead brief `#ff-quick-signal` and the attention/coverage stats do, while next steps and the tab rail start below the fold.
 
 Desktop 1440 (`min-width: 1100px`, `templates/fundamental_forensics.css:1890`): body padding 26px (`css:1891`); workspace `min(100%, 1480px)` (`css:51`); evidence sticky on radar/disclosures/redlines/trace-receipt (`css:1893`); hero visual 300×210 (`css:2611`); run-meta four columns (`css:96`); context card three columns (`css:156`); overview `1.42fr` / 300px (`css:2661`); sticky tab bar (`css:409`). Stacked above the fold: nav, hero (`html.j2:25`), run-meta, company card, overview. Ranked findings (`ff-panel-radar`, `html.j2:316`) start at or just below the fold. The page leads with narrative (hero promise `html.j2:31`, overview quick-signal `html.j2:223`) rather than a metrics grid, matching `MASTERPLAN.md:105`.
 
@@ -79,7 +79,7 @@ Mechanism: template macro `t(en, zh)` (`html.j2:1`) emits `.l-en` / `.l-zh`; JS 
 
 ## 8. GAPS
 
-- First-viewport fold position is inferred from markup/CSS (`css:1890`, `css:2822`); `measured` stays false.
+- First-viewport fold position was inferred from markup/CSS at P0 (`css:1890`, `css:2822`). Closed in P2: `measured` now records the fold receipt, including the 390 lead-brief crossing.
 - Sparse tree has no `data/`; live company/finding counts were not observed.
 - Hero (`html.j2:25`) and tab bar (`html.j2:271`) have no `id=`; they are described here and omitted from `panels[].dom_id`.
 - Projection fields `source_sha256`, `source_span`, `cell_id` (`disclosure_projection.py:377`) are not JS identifiers, so they are omitted from `payload_contract.evidence_receipt_keys`.
@@ -88,3 +88,13 @@ Mechanism: template macro `t(en, zh)` (`html.j2:1`) emits `.l-en` / `.l-zh`; JS 
 - GET catchall `app/forensics.py:705` is not a page fetch.
 - `query_service.py:517` helper name is not copied here.
 - No screenshots, no UI edits, no journey implementation in this freeze.
+
+## 9. P2 amendment
+
+P2 (`research/financial_intelligence_fabric/FIF_P2_DESIGN_SPEC.md` §9) amends the machine contract and the pinning test in the same PR as the UI, as §0 requires. The change is additive: no key was removed or renamed, so the schema stays `fundamental_forensics.p0_view_contract/v1` and `frozen_at_commit` still names the P0 freeze.
+
+- New panels, in contract order: `desk_header` → `ff-desk-header` (company picker, health clocks, as-of, export; J1, J3, J5), `revisions` → `ff-revisions` (three-policy `POST financial/query` plus `POST financial/revisions`; J3), and `peers` → `ff-panel-peers` (`payload.peer_cohort` plus URL policy params; J4).
+- `page_endpoints` now lists the four financial POSTs the page calls: `query`, `statements`, `revisions` and `query.xlsx`. `api_not_called_by_page` keeps only `/packet`.
+- `payload_contract` adds `company_keys.entity_id`, `finding_keys.occurrence_id` and `query_cell_keys` (`root_cell_id`, `occurrence_id`, `source_span`, `selected_raw_fact`).
+- Journey rulings: R2 (J1 keeps review-priority-then-recency order and shows magnitude on the card), R3 (J2 numbers are source controls with explicit disabled copy where no span exists), R4 (J3 desk as-of drives query plus revisions, default latest), R5 (J4 is a read-only peer panel with URL parameters only; saved comparisons belong to X2), and R6 (J5 is one export in the desk header that POSTs the current query body). J1, J2, J3 and J5 are `exists`; J4 is `partial`.
+- `first_viewport` is rewritten for the desk-header composition. Section 5 above describes the P0 surface; the P2 fold position is recorded in the contract's `first_viewport`.

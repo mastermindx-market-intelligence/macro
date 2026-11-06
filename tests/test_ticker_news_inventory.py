@@ -5,6 +5,7 @@ from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import sqlite3
@@ -800,11 +801,35 @@ def test_docs_inventory_section_describes_the_command():
     section = text.split("## Inventory / 库存", 1)
     assert len(section) == 2
     body = section[1]
+    paragraphs = body.split("\n\n")
+    cjk = re.compile(r"[一-鿿]")
     assert "scripts/ticker_news_inventory.py" in body
-    assert "mode=ro" in body
+    # mode=ro must be described in English and in Chinese, independently.
+    assert any("mode=ro" in p and not cjk.search(p) for p in paragraphs)
+    assert any("mode=ro" in p and cjk.search(p) for p in paragraphs)
     assert "rest_catchup_proven" in body
     assert "health_path_unset" in body
     assert "delivery_json" in body
+    assert "--store <path>" in body
+    en_universe = any(
+        not cjk.search(p)
+        and "reason_codes" in p
+        and "distinct" in p
+        and "snapshot-level" in p
+        and "not a per-security count" in p
+        for p in paragraphs
+    )
+    zh_universe = any(
+        cjk.search(p)
+        and "reason_codes" in p
+        and "去重" in p
+        and "快照级" in p
+        and "不是逐证券计数" in p
+        for p in paragraphs
+    )
+    assert en_universe and zh_universe
+    label = "in-process, not HTTP / 进程内读取，非 HTTP"
+    assert sum(1 for p in paragraphs if label in p) >= 2
     assert "validated" not in body.lower()
     assert "title=" not in body
 
@@ -1116,6 +1141,7 @@ def test_new_section_text_labels_are_bilingual(tmp_path, capsys):
         "over/共",
         "reads/次",
         "tickers / 抽样代码",
+        "in-process, not HTTP / 进程内读取，非 HTTP",
     ):
         assert label in blob, label
 
@@ -1230,7 +1256,9 @@ def test_cluster_summary_equals_audit_store(tmp_path, capsys):
 
 
 def test_cluster_audit_skips_over_cap_with_hand_run_line(tmp_path):
-    db = _flow_store(tmp_path)
+    hostile = tmp_path / 'w12 store ?#%41 "q é数据'
+    hostile.mkdir()
+    db = _flow_store(hostile)
 
     report = inventory.build_inventory(
         database=db,
@@ -1244,13 +1272,137 @@ def test_cluster_audit_skips_over_cap_with_hand_run_line(tmp_path):
         "reason": "story_count_over_cap",
         "stories": 6,
         "cap": 1,
-        "hand_run": f"python3 scripts/qbus_news_cluster_audit.py --store {db}",
+        "hand_run": "python3 scripts/qbus_news_cluster_audit.py --store <path>",
     }
+    assert inventory.AUDIT_HAND_RUN == (
+        "python3 scripts/qbus_news_cluster_audit.py --store <path>"
+    )
     text = inventory.format_text(report)
     assert (
         "cluster audit skipped / 聚类审计已跳过: stories/条目 6 > cap/上限 1; "
-        f"run/手动运行: python3 scripts/qbus_news_cluster_audit.py --store {db}"
+        "run/手动运行: python3 scripts/qbus_news_cluster_audit.py --store <path>"
     ) in text
+    blob = json.dumps(report, ensure_ascii=False) + text
+    assert str(db) not in blob
+    assert str(db.parent) not in blob
+    assert str(tmp_path) not in blob
+
+
+def test_cli_over_cap_never_echoes_the_store_path(tmp_path, capsys, monkeypatch):
+    hostile = tmp_path / 'w12 store ?#%41 "q é数据'
+    hostile.mkdir()
+    db = _flow_store(hostile)
+    real_build = inventory.build_inventory
+
+    def force_cap(**kwargs):
+        kwargs["audit_cap"] = 1
+        return real_build(**kwargs)
+
+    # No CLI flag sets the audit cap, and main() binds AUDIT_STORY_CAP as a
+    # def-time default of build_inventory, so the cap is forced through the
+    # build_inventory global while main(), argparse, --json and --text all
+    # stay the genuine CLI path.
+    monkeypatch.setattr(inventory, "build_inventory", force_cap)
+
+    json_rc, json_out = _invoke(capsys, db, "--json")
+    text_rc, text_out = _invoke(capsys, db, "--text")
+
+    assert json_rc == 0
+    assert text_rc == 0
+    assert json.loads(json_out)["cluster_summary"]["audit"]["state"] == "skipped"
+    assert "cluster audit skipped / 聚类审计已跳过" in text_out
+    for out in (json_out, text_out):
+        assert str(db) not in out
+        assert str(db.parent) not in out
+        assert str(tmp_path) not in out
+
+
+# Each name is opened read-only as given: without percent-encoding the URI,
+# q?bus/q#bus would truncate at ? or # (opening or creating a file "q") and
+# %41copy would percent-decode to Acopy.
+HOSTILE_STORE_NAMES = (
+    "sp ace.sqlite3",
+    "q?bus.sqlite3",
+    "q#bus.sqlite3",
+    "%41copy.sqlite3",
+    "100%.sqlite3",
+    'quo"te\'.sqlite3',
+    "naïve-数据.sqlite3",
+    'dir ?#%41 "q\' é/qbus.sqlite3',
+)
+
+
+@pytest.mark.parametrize("name", HOSTILE_STORE_NAMES)
+def test_hostile_store_paths_open_the_named_file_and_create_nothing(
+    tmp_path, capsys, name
+):
+    reference_dir = tmp_path / "reference"
+    reference_dir.mkdir()
+    reference = _flow_store(reference_dir)
+    case_dir = tmp_path / "case"
+    case_dir.mkdir()
+    hostile = case_dir / name
+    if hostile.parent != case_dir:
+        hostile.parent.mkdir()
+    shutil.copyfile(reference, hostile)
+    copy_dir = tmp_path / "plaincopy"
+    copy_dir.mkdir()
+    plain_copy = copy_dir / "plain_copy.sqlite3"
+    shutil.copyfile(reference, plain_copy)
+
+    decoy = None
+    if name == "%41copy.sqlite3":
+        mixed_dir = tmp_path / "mixedsrc"
+        mixed_dir.mkdir()
+        mixed_db, *_times = _mixed_store(mixed_dir)
+        decoy = case_dir / "Acopy.sqlite3"
+        shutil.copyfile(mixed_db, decoy)
+    if name in ("q?bus.sqlite3", "q#bus.sqlite3"):
+        assert not (case_dir / "q").exists()
+
+    before = set(tmp_path.rglob("*"))
+    hostile_before = _snapshot(hostile)
+    decoy_before = None if decoy is None else _snapshot(decoy)
+
+    hostile_rc, hostile_out = _invoke(capsys, hostile, "--json")
+    plain_rc, plain_out = _invoke(capsys, plain_copy, "--json")
+
+    assert hostile_rc == 0
+    assert plain_rc == 0
+    # generated_at is pinned by --now and database.path carries the file
+    # basename; no other field holds the file name, so both are dropped.
+    hostile_report = json.loads(hostile_out)
+    plain_report = json.loads(plain_out)
+    for report in (hostile_report, plain_report):
+        del report["generated_at"]
+        del report["database"]["path"]
+    assert hostile_report == plain_report
+    assert hostile_report["cluster_summary"]["audit"]["state"] == "ran"
+
+    assert _snapshot(hostile) == hostile_before
+    if decoy is not None:
+        assert _snapshot(decoy) == decoy_before
+    allowed = {
+        hostile.parent / f"{hostile.name}-wal",
+        hostile.parent / f"{hostile.name}-shm",
+        plain_copy.parent / f"{plain_copy.name}-wal",
+        plain_copy.parent / f"{plain_copy.name}-shm",
+    }
+    assert set(tmp_path.rglob("*")) - before <= allowed
+
+
+@pytest.mark.parametrize("name", HOSTILE_STORE_NAMES)
+def test_missing_hostile_store_path_is_not_created(tmp_path, capsys, name):
+    fresh = tmp_path / "fresh"
+    fresh.mkdir()
+    missing = fresh / name
+    before = set(tmp_path.rglob("*"))
+
+    rc, out = _invoke(capsys, missing)
+
+    assert rc == 2
+    assert out == '{"error":"database_missing"}\n'
+    assert set(tmp_path.rglob("*")) == before
 
 
 def test_cluster_audit_under_cap_projects_counts_only(tmp_path, capsys):
@@ -1358,6 +1510,40 @@ def test_flow_latency_with_injected_timer(tmp_path):
     }
 
 
+def test_flow_text_line_is_labelled_in_process_not_http(tmp_path):
+    db = _flow_store(tmp_path)
+    universe = _flow_universe(tmp_path)
+    ticks = []
+
+    def timer():
+        call = len(ticks)
+        ticks.append(call)
+        slot, after = divmod(call, 2)
+        return (slot * (slot + 1) // 2 + after * (slot + 1)) * 0.001
+
+    report = inventory.build_inventory(
+        database=db,
+        health=None,
+        now=FLOW_NOW,
+        universe=universe,
+        rights=RIGHTS_FILE,
+        flow_tickers=2,
+        flow_reads=20,
+        timer=timer,
+    )
+
+    assert (
+        "flow reads / 流量读取: p50 10.0 ms p95 19.0 ms max 20.0 ms "
+        "over/共 20 reads/次; tickers / 抽样代码: MMM, ZZZ; "
+        "in-process, not HTTP / 进程内读取，非 HTTP"
+    ) in inventory.format_text(report)
+
+    unset = inventory.build_inventory(database=db, health=None, now=FLOW_NOW)
+    unset_text = inventory.format_text(unset)
+    assert "flow reads / 流量读取: unavailable (universe_path_unset)" in unset_text
+    assert "in-process, not HTTP" not in unset_text
+
+
 def test_flow_latency_unavailable_reasons(tmp_path, capsys):
     db = _flow_store(tmp_path)
     universe = _flow_universe(tmp_path)
@@ -1423,8 +1609,9 @@ def test_flow_latency_unavailable_reasons(tmp_path, capsys):
 
 
 def test_new_sections_use_no_ranking_words(tmp_path_factory, capsys):
-    # A neutrally-named directory: the audit hand-run line echoes the
-    # database path as given, and pytest embeds the test name in tmp_path.
+    # A neutrally-named directory: the report prints only the store basename
+    # (the audit hand-run line carries a <path> placeholder), and pytest
+    # embeds the test name in tmp_path.
     tmp_path = tmp_path_factory.mktemp("w12clean")
     db = _flow_store(tmp_path)
     universe = _flow_universe(tmp_path)

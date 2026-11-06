@@ -12,6 +12,7 @@ import json
 import re
 from dataclasses import dataclass
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 from typing import Any, Mapping, Protocol
 
@@ -21,6 +22,7 @@ from .financial_intelligence_packet import (
     load_filing_package_fixture,
     period_semantic_key,
 )
+from .issuer_sic import IssuerSicResolver, resolve_issuer_sic
 from .query import (
     BitemporalMetricQueryEngine,
     BitemporalPolicy,
@@ -28,6 +30,7 @@ from .query import (
     PeriodRequest,
     QueryBounds,
     QueryBoundsError,
+    QueryEntity,
     QueryPolicy,
     QueryValidationError,
     UnsupportedMetricError,
@@ -224,6 +227,13 @@ class FinancialQueryDataset:
     # bitemporal leak the acceptance matrix forbids. Absent keeps the
     # golden/FIP1 behavior byte-identical.
     dataset_admitted_at: Any = None
+    # FIF A01/A11: the source's original Clark namespace per (accession,
+    # source_occurrence_key), when the provider still holds the filings.
+    # The kernel then binds each lineage receipt's taxonomy URI pair to the
+    # source instead of trusting the receipt's attestation.  Absent keeps the
+    # policy-gated attestation (production generations carry no per-fact
+    # namespace; their receipts are minted from source by the single writer).
+    source_taxonomy_uris: Any = None
 
 
 def enforce_dataset_admission_floor(policy: Any, dataset: Any) -> None:
@@ -620,7 +630,12 @@ validate_supplied_dataset = _validate_supplied_dataset
 # ---------------------------------------------------------------------------
 
 
-def execute_financial_query(*, body: bytes, provider: FinancialQueryProvider) -> FinancialQueryResult:
+def execute_financial_query(
+    *,
+    body: bytes,
+    provider: FinancialQueryProvider,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
+) -> FinancialQueryResult:
     """Admit, resolve, query, and envelop in that order.
 
     Provider.resolve is never called before admission succeeds.
@@ -642,13 +657,29 @@ def execute_financial_query(*, body: bytes, provider: FinancialQueryProvider) ->
     enforce_dataset_admission_floor(policy, dataset)
     delivery = canonical_financial_delivery(dataset.delivery)
 
+    # R1-SIC: the issuer SIC reaches the kernel only through QueryEntity,
+    # resolved from the shipped coverage contract by the entity's own CIK
+    # binding.  No CIK record means no SIC — fail-closed NOT_EVALUABLE on
+    # class-restricted metrics, never a guessed class.
+    sic_resolver = (
+        issuer_sic_resolver
+        if issuer_sic_resolver is not None
+        else partial(resolve_issuer_sic)
+    )
+
     # Phase 3: kernel query. Metric support is cutoff-visible governance,
     # never live catalog membership.
     try:
         engine = BitemporalMetricQueryEngine(
             ledger=dataset.ledger,
             registry=dataset.registry,
-            entities={binding.ticker: binding.source_entity_id},
+            entities=[
+                QueryEntity(
+                    ticker=binding.ticker,
+                    entity_id=binding.source_entity_id,
+                    issuer_sic=sic_resolver(binding.source_entity_id),
+                )
+            ],
             filing_metadata=dataset.filing_metadata,
             bounds=QueryBounds(
                 max_tickers=1,
@@ -657,6 +688,7 @@ def execute_financial_query(*, body: bytes, provider: FinancialQueryProvider) ->
                 max_cells=_MAX_CELLS,
             ),
             lineage_evidence=getattr(dataset, "lineage_evidence", ()) or (),
+            source_taxonomy_uris=getattr(dataset, "source_taxonomy_uris", None),
         )
         matrix = engine.query_matrix(
             tickers=[binding.ticker],
