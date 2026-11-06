@@ -1,0 +1,24 @@
+{
+  "final_source_commit": "e85506e68d520b4989e20ad055453247e9a76702",
+  "previous_source": "0168ced84543a2839d9617452670e8fb87e9fefb",
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/prophet-r8-anatomy-1ff07e9e523f9d21",
+  "delta": "Only .po-clock-part CSS plus explanatory comment changed. Inline-block max-inline-size100%,normal white-space,overflow-wrap:anywhere bounds overlong supplied content without altering text.",
+  "discriminator": {
+    "fractional_iso": "2026-09-24T16:00:00.123456+00:00",
+    "fractional_iso_before": "Fits the tested145pxdesktop/148pxmobile quote column; timepart139.25pxEN/129.90625pxZH,one line.",
+    "long_token": "SuppliedUntranslatedClockTokenWithoutAnyWhitespaceOrPunctuation",
+    "long_token_before": "371.25pxEN/376.14pxZH; exceedsquote in all8cells.",
+    "long_token_after": "Capped145pxdesktop/148pxmobile;3lines; no truncation or hidden content.",
+    "cells": "1440four-column desktop and390mobile \u00d7 light/dark \u00d7 EN/ZH"
+  },
+  "checks": {
+    "no_page_or_card_overflow": true,
+    "no_segment_exceeds_quote": true,
+    "all_exact_raw_and_text_values_preserved": true,
+    "ordinary_segments_remain_single_line": true
+  },
+  "assertions": "2directly affected clock-value tests pass;previous127component/integration and actualowner facts/hooks/navigation evidence reused at their stated source.",
+  "visual_review": "Inspected after longtoken1440lightEN,longtoken390darkZH,longISO1440lightEN originals; text readable withinquote,ordinaryISOwhole.",
+  "integration": "Apply cumulative T004.S9-complete.diff to exact9db,or cherry-pick775fa68d8692,0168ced84543,and this finalCSScommit in sequence. Root owns actual native-pair regeneration/qualification.",
+  "effects": "NoFabric/child/publisher/PRpush/CI/accessaction. Same original carrier;previousprelaunch75unchanged."
+}

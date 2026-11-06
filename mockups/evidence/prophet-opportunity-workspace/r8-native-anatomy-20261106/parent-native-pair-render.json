@@ -1,0 +1,70 @@
+{
+  "source_head": "e85506e68d520b4989e20ad055453247e9a76702",
+  "candidate_index_tree": "cff22f1ce571b482ca0498555ef3e8b912637f94",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/prophet9495-ci-repair-20261105-35337d29017a5982",
+  "original_root": "01a11e89-b35d-7a81-9404-5fce2c6170cb",
+  "started_at": 1794004933.1362581,
+  "modules": [
+    {
+      "module": "scripts.build_site",
+      "argv": [
+        "scripts.build_site",
+        "--no-refresh-stock-library",
+        "--frozen-us-board-sha256",
+        "bdc9fc3c80407e0055f6d93ad77361098f083bf7b0807cec9c9e3ca788118093",
+        "--frozen-us-gate-sha256",
+        "e01d8b02f39dd463db51693e95f5a5e08168996f8f6bbf318782ad90a2c1be20"
+      ],
+      "exit": 0,
+      "seconds": 701.65
+    },
+    {
+      "module": "scripts.inject_data_base",
+      "argv": [
+        "scripts.inject_data_base"
+      ],
+      "exit": 0,
+      "seconds": 8.14
+    },
+    {
+      "module": "scripts.externalize_css",
+      "argv": [
+        "scripts.externalize_css"
+      ],
+      "exit": 0,
+      "seconds": 16.36
+    },
+    {
+      "module": "scripts.optimize_assets",
+      "argv": [
+        "scripts.optimize_assets"
+      ],
+      "exit": 0,
+      "seconds": 47.05
+    }
+  ],
+  "source_mode": "existing frozen US board and Planbook; no origination or data refresh",
+  "frozen_input_count": 1915,
+  "render_input_count": 567,
+  "stock_library_refresh": false,
+  "render_no_drip": true,
+  "scope": "native source/artifact proof, not browser or live acceptance",
+  "artifacts": {
+    "site/us_stocks.html": {
+      "bytes": 831513,
+      "sha256": "025e7269d50e2d9f0299aee66cfa964baf20b6d4ffe138de8d1f5fc5c6903e89"
+    },
+    "site/premiumdata/us_stocks.json": {
+      "bytes": 10752016,
+      "sha256": "66bedcdf10035458d4af14849e2cde6f794421a7c94fccc2a7ee24252cd3923e"
+    }
+  },
+  "frozen_changed_paths": [],
+  "frozen_inputs_unchanged": true,
+  "render_source_changes": {},
+  "completed_at": 1794005706.957537,
+  "network_attempts_blocked": {
+    "socket.getaddrinfo": 22
+  },
+  "ended_at": 1794005706.957567
+}
