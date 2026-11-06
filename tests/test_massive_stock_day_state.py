@@ -315,3 +315,37 @@ def test_new_tip_is_fetched_before_sealed_etf_repair_under_day_cap(store):
     assert result["partial_recheck_attempted"] == 0
     assert result["partial_etf_days_remaining"] >= 1
     assert target not in {t.date() for t in pd.to_datetime(msd.load_ticker("QQQ").index)}
+
+
+@pytest.mark.parametrize("fresh_tip", [False, True], ids=["rechecks-only", "after-new-tip"])
+@pytest.mark.parametrize("vendor_error", [False, True], ids=["short-source", "source-error"])
+def test_partial_etf_rechecks_share_day_budget(store, fresh_tip, vendor_error):
+    """Every recheck consumes the remaining cap, including a failed fetch."""
+    end = DAYS[-2] if fresh_tip else DAYS[-1]
+    msd.backfill(start=DAYS[0], end=end, pace_s=0)
+    gaps = [("QQQ", DAYS[1]), ("XLE", DAYS[2]), ("IWM", DAYS[3])]
+    for ticker, day in gaps:
+        _plant_sealed_etf_hole(ticker, day)
+    if vendor_error:
+        store["fail"].update(day for _, day in gaps)
+    state_before = msd._backfill_state_path().read_bytes()
+    manifest_before = msd._manifest_path().read_bytes()
+    store["calls"].clear()
+
+    normal = [DAYS[-1]] if fresh_tip else []
+    cap = len(normal) + 1
+    result = msd.run_incremental(max_days=cap, pace_s=0)
+
+    assert store["calls"] == normal + [DAYS[1]]
+    assert len(store["calls"]) == cap
+    assert result["days_fetched"] == len(normal)
+    assert result["days_failed"] == int(vendor_error)
+    assert result["partial_recheck_attempted"] == 1
+    assert result["partial_repaired_tickers"] == 0
+    assert result["partial_etf_days_remaining"] >= 1
+    assert msd._processed_days() == set(DAYS)
+    for ticker, day in gaps:
+        assert day not in {t.date() for t in pd.to_datetime(msd.load_ticker(ticker).index)}
+    if not fresh_tip:
+        assert msd._backfill_state_path().read_bytes() == state_before
+        assert msd._manifest_path().read_bytes() == manifest_before

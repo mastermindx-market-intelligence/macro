@@ -574,7 +574,7 @@ def backfill(
     Args:
         start: first date to consider (default: EARLIEST_ENTITLED)
         end:   last date to consider (default: latest_available())
-        max_days: stop after this many FETCHED days (smoke-tests / partial runs)
+        max_days: cap normal fetched days plus admitted partial-session rechecks
         pace_s: sleep between day fetches (S3 is self-throttled but be polite)
         recheck_etfs: already-sealed day -> tickers missing that exact bar
 
@@ -627,10 +627,14 @@ def backfill(
     dirty = 0   # state/manifest checkpoint counter (counts all processed, not just fetched)
 
     for i, d in enumerate(targets):
-        if max_days is not None and days_fetched >= max_days:
+        if max_days is not None and days_fetched + recheck_attempted >= max_days:
             log.info("massive_stock_day: max_days=%d reached, stopping (%d targets left)",
                      max_days, len(targets) - i)
             break
+        # A recheck consumes remaining capacity even if its fetch fails; it is
+        # not a newly captured day and must not inflate days_fetched.
+        if d in recheck:
+            recheck_attempted += 1
         try:
             raw = fetch_aggs(d, product="stock_day", underlyings=None, use_cache=True)
         except Exception as e:   # noqa: BLE001
@@ -640,7 +644,6 @@ def backfill(
             continue
 
         if d in recheck:
-            recheck_attempted += 1
             required = recheck[d]
             # A vendor day file which is still short is NOT evidence of a repair.
             # Do not touch unrelated 20k ticker parquets, or advance manifest
