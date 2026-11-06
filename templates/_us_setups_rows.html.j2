@@ -47,6 +47,20 @@
         <span class="ts-buy muted" data-tip-en="The source does not provide enough confirmation evidence. A tier label alone is not a confirmed entry." data-tip-zh="来源未提供足够的确认依据。仅有层级标签，不代表入场已确认。">{{ t('Unverified — wait', '未核实 — 等待') }}</span>
       {% endif %}
       <small class="ts-signal-date muted">{% if sg.get('tier_observed_date') or sg.get('asof') %}{{ t('Observed', '观测日') }} {{ sg.get('tier_observed_date') or sg.get('asof') }}{% else %}{{ t('Signal date unavailable', '信号日期不可用') }}{% endif %}</small>
+      {% set pc = r.get('price_context') if r.get('price_context') is mapping else {} %}
+      {% set ps = pc.get('status') if pc.get('asof') else none %}
+      <small class="ts-price-context" data-tip-en="Dated daily-cycle context from the existing price analysis. This is separate from signal confirmation and does not verify current entry availability." data-tip-zh="现有价格分析给出的每日周期背景，日期单列。它与信号确认分开，不代表已核实当前可以入场。">
+        {% if ps in ('blocked', 'avoid') %}<span class="ent-warn">{{ t('Decline — wait', '下行 — 等待') }}</span>
+        {% elif ps == 'exit' %}<span class="ent-warn">{{ t('Rolling over — wait', '转弱 — 等待') }}</span>
+        {% elif ps in ('extended', 'topping') %}<span class="ent-warn">{{ t('Extended — wait', '拉伸 — 等待') }}</span>
+        {% elif ps == 'bounce_wait' %}<span class="ent-warn">{{ t('Turn unconfirmed', '转向未确认') }}</span>
+        {% elif ps == 'wait_pullback' %}<span class="muted">{{ t('Awaiting pullback', '等待回撤') }}</span>
+        {% elif ps == 'hold' %}<span class="muted">{{ t('Late cycle — wait', '周期后段 — 等待') }}</span>
+        {% elif ps in ('await_confluence', 'buy_soon', 'watch') %}<span class="muted">{{ t('Timing not ready', '时机未成熟') }}</span>
+        {% elif ps in ('buy_now', 'partial') %}<span class="muted">{{ t('Entry check needed', '入场仍需核实') }}</span>
+        {% else %}<span class="muted">{{ t('Price context unavailable', '价格背景不可用') }}</span>{% endif %}
+        {% if pc.get('asof') %}<span class="muted ts-price-date"> · {{ t('Price', '价格日') }} {{ pc.asof }}</span>{% endif %}
+      </small>
     </td>
     <td class="c-cycle">{% if r.label %}{{ td(r.label) }}{% else %}<span class="muted">—</span>{% endif %}</td>
     <td class="c-trend">{% if r.alpha_entry == 'pullback' %}<span class="ent-warn" data-tip-en="Recent relative performance is weak despite a stronger older momentum score. This does not verify a healthy pullback or exclude a downtrend." data-tip-zh="尽管较早的动量评分较强，近期相对表现偏弱。这不代表健康回调，也不能排除下跌趋势。">{{ t('Weak month', '近期偏弱') }}</span>{% elif r.alpha_entry == 'extended' %}<span class="ent-warn">{{ t('Strong month', '近期偏强') }}</span>{% elif r.alpha_entry == 'intact' %}<span class="muted">{{ t('Middle range', '中间区间') }}</span>{% else %}<span class="muted">{{ r.alpha_entry or '—' }}</span>{% endif %}</td>

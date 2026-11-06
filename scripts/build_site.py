@@ -5265,6 +5265,16 @@ def _load_us_trigger_snapshot(site: Path) -> dict:
                 if clock is not None and (not isinstance(clock, str) or len(clock) != 10
                         or datetime.strptime(clock, "%Y-%m-%d").date().isoformat() != clock):
                     raise ValueError(f"trigger row has invalid {key}")
+            context = row.get("price_context")
+            if context is not None:
+                if not isinstance(context, dict) or set(context) != {"status", "asof"}:
+                    raise ValueError("trigger row has malformed price context")
+                status, clock = context.get("status"), context.get("asof")
+                if status is not None or clock is not None:
+                    if (not isinstance(status, str) or not status
+                            or not isinstance(clock, str) or len(clock) != 10
+                            or datetime.strptime(clock, "%Y-%m-%d").date().isoformat() != clock):
+                        raise ValueError("trigger row has undated price context")
             # These values are formatted numerically by both shell and payload.
             # Reject the snapshot before either consumer can retain an older
             # table after a render error. Do not silently drop individual names.

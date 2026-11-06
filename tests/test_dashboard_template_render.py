@@ -909,6 +909,25 @@ def test_trigger_snapshot_date_cannot_be_replaced_by_newer_board_date():
     assert "chance of winning" in panel
 
 
+def test_trigger_price_context_never_overrides_pending_confirmation():
+    row = _setup_row(price_context={"status": "buy_now", "asof": "2026-11-04"},
+                     signal={"eligible": True, "tier_cascade": "T1", "tier": "anticipation",
+                             "sub": "pending", "tier_observed_date": "2026-11-03"})
+    html = _env().get_template("_us_setups_rows.html.j2").render(rows=[row])
+    assert "Unconfirmed — wait" in html and "Entry check needed" in html
+    assert "未确认 — 等待" in html and "入场仍需核实" in html
+    assert "Signal confirmed" not in html and "Buy zone" not in html
+
+
+def test_trigger_price_context_absence_is_visible_in_legacy_snapshots():
+    partial = _env().get_template("_us_setups_rows.html.j2")
+    for context in (None, {}, {"status": "buy_now"},
+                    {"status": "future_owner_status", "asof": "2026-11-04"}):
+        html = partial.render(rows=[_setup_row(price_context=context)])
+        assert "Price context unavailable" in html and "价格背景不可用" in html
+        assert "Entry check needed" not in html
+
+
 def test_trigger_snapshot_unavailable_is_not_an_empty_signal_result():
     vm = _vm_with_setups([])
     vm["top_setups"] = {"as_of": None, "buy": [], "snapshot_unavailable": True}

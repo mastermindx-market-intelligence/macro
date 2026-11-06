@@ -1486,6 +1486,30 @@ def _spark_svg(vals, color: str = "var(--link)", w: int = 240, h: int = 42,
 _ZONE_ACTIVE_STATUSES = {"buy_now", "partial", "buy_soon", "await_confluence"}
 
 
+def _trigger_price_context(es, close: pd.Series) -> dict:
+    """Project the existing daily-cycle status and its actual input-bar clock.
+
+    Display context only: no prices, sizing, score, or B4 Availability fact.
+    In particular, the legacy gauge's open status does not qualify native entry
+    geometry or its close-to-close volatility proxy as measured B4 ATR.
+    """
+    unavailable = {"status": None, "asof": None}
+    if not isinstance(es, dict) or not isinstance(es.get("status"), str):
+        return unavailable
+    c = close.dropna()
+    if c.empty:
+        return unavailable
+    try:
+        # assess() uses c.iloc[-1]; a universe/build date or rich-tech price
+        # clock can belong to a different source and must not replace this one.
+        asof = c.index[-1].date().isoformat()
+        if date.fromisoformat(asof).isoformat() != asof:
+            return unavailable
+    except (AttributeError, TypeError, ValueError):
+        return unavailable
+    return {"status": es["status"], "asof": asof}
+
+
 def _spark_zone(es) -> dict:
     """Optional buy-zone band kwargs for _spark_svg, from the row's entry-timing
     gauge (engine.entry_signal.assess). Mirrors the prophet-card zone-footer gate:
@@ -4046,6 +4070,7 @@ def main(now: datetime | None = None) -> int:
     # composite z (set once all names are profiled), not a per-name logistic skin.
     profiles: dict[str, dict] = {}
     entry_sig: dict[str, dict] = {}             # entry-timing gauge per name (board rows)
+    trigger_price_context: dict[str, dict] = {}  # same admitted gauge, display + input-bar clock only
     entry_sig_null: dict[str, str] = {}         # gauge disclosed-null reason per name — a board
                                                 # row must carry entry_signal OR this reason, so
                                                 # the forward ledger never grades a silent null
@@ -4680,6 +4705,7 @@ def main(now: datetime | None = None) -> int:
             profiles[ticker] = prof
             if rec.get("entry_signal"):
                 entry_sig[ticker] = rec["entry_signal"]    # attached to standout rows below
+                trigger_price_context[ticker] = _trigger_price_context(rec["entry_signal"], close)
             if rec.get("risk_sizing"):
                 risk_sig[ticker] = rec["risk_sizing"]      # attached to standout rows below
         # ---- Macro sensitivity (display-only, never scored) -------------------
@@ -5575,6 +5601,10 @@ def main(now: datetime | None = None) -> int:
                              buy_gate=lambda t: signal_gate.is_buyable(sig_verdict.get(t)))
         for r in setups.get("buy", []):
             r["signal"] = signal_gate.buy_signal(sig_verdict.get(r.get("ticker")))
+            # Attach after ranking; never alter membership, ordering, or scores.
+            # The same feed/delisting admission above controls this projection.
+            r["price_context"] = trigger_price_context.get(
+                r.get("ticker"), {"status": None, "asof": None})
         (site / "factordata" / "setups.json").write_text(
             json.dumps(setups, separators=(",", ":"), default=str))
         log.info("wrote setups.json (%d buy [confluence-gated], %d laggards, %d candidates)",

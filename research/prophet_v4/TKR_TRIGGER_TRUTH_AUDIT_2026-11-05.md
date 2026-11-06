@@ -67,6 +67,110 @@ must supply the absent inputs, not how to invent an additional signal. Bounded
 delegation requires a real original-root/parent binding; exposed Fabric tools
 alone do not establish that identity.
 
+## Resumed implementation and publication receipt
+
+The original carrier is now published as **Macro draft PR #10786**:
+<https://github.com/mastermindx-market-intelligence/macro/pull/10786>.
+The initial remote commit is `6b140691fc3a6418c9c28c172ac3816e38075727`.
+Its complete tree, `fd866698e73c17010924d5e9d0bb553097b863cd`, exactly matches
+local recovery commit `7e42db77b4987036c0afb504ad4dbeda91d3584b`.
+The local shell push failed before a remote effect because it had no GitHub
+credential helper; an exact ref read still returned absent. The already
+authenticated GitHub connector then created each verified blob, the matching
+tree and commit, and this same branch/PR. No credential was read or changed.
+This supersedes the historical publication human gate below. Draft, merge,
+deployment, and live product acceptance remain separate.
+
+Initial hosted checks: fences run `42137333759` passed. CI run `42137333877`
+was still running at this receipt; its planner passed. These receipts apply to
+the initial remote head only, not automatically to subsequent commits.
+
+### P5a — existing daily-cycle context reaches the trigger table
+
+The existing `engine.entry_signal.assess` already distinguishes `blocked` /
+`avoid`, `bounce_wait`, `extended` / `topping`, wait states, and legacy open
+states. `scripts/build_stock_library.py` already attaches that result to the
+wide board but omitted it from `setups.json`. The resumed patch connects the
+same admitted result to the trigger rows after selection and ranking:
+
+- `price_context` is a closed display projection containing only `status` and
+  `asof`. The date is the last non-null close actually supplied to `assess`,
+  not the build time, residual-alpha snapshot, or independently enriched
+  technical-price clock. Missing owners/clocks remain explicitly unavailable.
+- The projection is populated only in the existing non-stale/non-delisted
+  branch. It adds no membership rule, rank, score, price geometry, size, or
+  entry-availability fact. The original owner output is unchanged.
+- The shared public/paid row displays the dated price context alongside the
+  independent signal observation. A confirmed historical trigger can therefore
+  show a decline or unconfirmed turn without hiding the conflict. Legacy
+  `buy_now` / `partial` becomes **Entry check needed** on this surface; it does
+  not become an `ENTRY_OPEN` assertion.
+- English and Chinese use the existing mobile-visible signal column. Missing
+  context in older snapshots stays visible as unavailable. Unknown future
+  statuses cannot produce a positive entry label.
+
+Focused validation after this change: **55 passed**, covering actual cycle
+owner outputs, exact source-bar clocks (including a later missing bar), pending
+confirmation, malformed/absent inputs, same-date snapshot replacement,
+producer-to-loader-to-public/paid propagation, unchanged row ordering/scores,
+paid-name separation, and the existing mobile-column contract. These overlap
+earlier accepted tests and are not an additional 55 independent checks to add
+to the previous 67. Actual browser visual/accessibility acceptance remains owed.
+The separate existing entry-gauge, feed-freshness and price-clock compatibility
+selection passed **56 tests** (8 new trigger cases excluded because they ran in
+the focused selection). Python compilation and `git diff --check` also passed.
+Commands used the recovered test dependencies via
+`PYTHONPATH=/workspace/scratch/2b4262f6094d/test_deps:.`:
+
+```text
+python -m pytest -q tests/test_build_stock_library_price_clock.py tests/test_dashboard_template_render.py tests/test_us_board_gate.py -k 'trigger or strip_tables_mobile_column_contract'
+python -m pytest -q tests/test_entry_signal.py tests/test_stock_library_freshness.py tests/test_build_stock_library_price_clock.py -k 'not trigger'
+```
+
+### P5b — canonical current-entry integration boundary
+
+The implementation must continue through the incumbent owners below. It must
+not translate the legacy display projection into trading authority.
+
+| Responsibility | Existing owner | Verified boundary / required next evidence |
+| --- | --- | --- |
+| Candidate identity, episode, generation and factual projection | `engine/prophet_candidate_state.py` | B3 intentionally emits unavailable B4; preserve its source-only contract. |
+| One native B3/B4 read and exact binding | `engine/prophet_b4_same_read.py` | Uses `verified_pair`, the same snapshot, identity/session matching and owner-byte re-attestation. Currently passes empty geometry and metric mappings. |
+| Quote/live-state source qualification | `engine/prophet_entry_availability_sources.py` | Private source timestamp, matching quote age/price, alias reversal and measured quote/armed-pack basis are checked. That measurement does not establish the independently produced geometry basis. |
+| Dated daily-cycle display context | `engine/entry_signal.py` and the existing stock-library producer | Safe for the bounded display projection above. Its `atr_pct` is a close-to-close proxy; it can fall back to 2% of spot. It has no native episode-bound first-trigger/anchor/ATR contract. |
+| Current-entry decision | `engine/prophet_entry_availability.py` | Sole B4 evaluator; required unknowns must remain unavailable. Do not infer a healthy structure from an oscillator tier or reuse an old snapshot as a live quote. |
+| Risk, liquidity and gap policy | `engine/prophet_entry_policy.py` | Existing control constants are `SHADOW_ONLY` / `CONTROL_ONLY` and not calibrated. Wiring them as live admission PASS would be a scientific promotion, not a neutral integration. |
+
+**Next native vertical:** extend the existing source adapter only when the
+incumbent geometry/metric producer can bind a canonical security, episode,
+candidate generation, market session, source-bar observation clock, exact
+geometry/anchor/first-trigger inputs, and measured adjustment basis to native
+receipt material. Carry the inputs through the same-read join and re-attest
+their bytes, then let the existing B4 evaluator consume them. Preserve unknown
+risk, liquidity, gap and structural facts until their own qualified outputs
+exist; a fresh quote does not repair these absences. No substitute ranker,
+metric store, guessed fallback ATR, or generic injected gate verdict is needed.
+
+Required discriminating checks for that vertical include mismatched security
+or alias reversal, episode/generation/session drift, changed source bytes,
+stale/future observation clocks, split/adjustment-basis mismatch, absent
+first-trigger/anchor/true-range inputs, invalid geometry, and a valid quote
+with any required gate still unknown. Point-in-time episode evaluation,
+costs, false exclusions and scientific promotion remain prerequisites for
+claims of improved returns or new admission/ranking/sizing authority. The
+three reported stocks are incident regressions, not threshold calibration.
+
+### Product proof boundary
+
+The current browser URL policy explicitly denied opening the local `file:`
+preview. That denial is preserved; no alternate browser, data URL, local
+server, or host route was used to reproduce the blocked action. The browser
+completion-summary call itself returned a tool-schema error after the denial.
+No screenshot, responsive visual acceptance, keyboard journey, or deployed
+reconciliation is claimed. The code/contract/CI lanes continued independently.
+The next product-proof step needs an already authorized HTTP(S) preview of
+the exact candidate, with the ordinary site access and release controls intact.
+
 ## Verified initial findings
 
 1. Screenshot values exactly match `site/factordata/setups.json` at

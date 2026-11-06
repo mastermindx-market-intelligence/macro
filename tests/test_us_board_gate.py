@@ -852,6 +852,57 @@ def test_trigger_pending_state_is_identical_in_public_and_paid_rows():
     assert 'data-tkr="TSX3"' not in shell and 'data-tkr="TSX3"' in paid
 
 
+@pytest.mark.parametrize("context", ["bad", {"status": "blocked"},
+    {"status": "buy_now", "asof": "today"}, {"status": None, "asof": "2026-11-04"},
+    {"status": "blocked", "asof": "2026-11-04", "entry_open": True}])
+def test_trigger_snapshot_rejects_unbound_price_context(tmp_path, context):
+    from scripts.build_site import _load_us_trigger_snapshot
+    from tests.test_dashboard_template_render import _setup_row
+    path = tmp_path / "factordata" / "setups.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps({"as_of": "2026-11-04", "buy": [_setup_row(price_context=context)]}))
+    assert _load_us_trigger_snapshot(tmp_path)["snapshot_unavailable"] is True
+
+
+def test_trigger_owner_context_survives_producer_snapshot_and_public_paid_split(tmp_path):
+    import ast
+    from copy import deepcopy
+    from engine import signal_gate
+    from scripts import build_site as bs
+    from scripts import build_stock_library as library
+    vm = _panel_vm(setups=5, leaders=0, ran=0, actnow=0, watch=0, laggards=0)
+    snapshot = {**vm["top_setups"], "as_of": "2026-11-04"}
+    original = deepcopy(snapshot)
+    contexts = {r["ticker"]: {"status": "blocked", "asof": "2026-11-03"}
+                for r in snapshot["buy"]}
+    # Execute the actual post-rank writer block, then the actual loader and both
+    # consumers. The ranking inputs and original sequence are not reconstructed.
+    tree = ast.parse(Path(library.__file__).read_text())
+    loop = next(n for n in ast.walk(tree) if isinstance(n, ast.For)
+                and any(isinstance(x, ast.Subscript) and isinstance(x.slice, ast.Constant)
+                        and x.slice.value == "price_context" for x in ast.walk(n)))
+    scope = {"setups": snapshot, "signal_gate": signal_gate, "sig_verdict": {},
+             "trigger_price_context": contexts}
+    exec(compile(ast.Module(body=[loop], type_ignores=[]), library.__file__, "exec"), scope)
+    assert [{k: v for k, v in row.items() if k not in {"signal", "price_context"}}
+            for row in snapshot["buy"]] == [
+                {k: v for k, v in row.items() if k != "signal"} for row in original["buy"]]
+    path = tmp_path / "factordata" / "setups.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps(snapshot))
+    vm["top_setups"] = bs._load_us_trigger_snapshot(tmp_path)
+    assert vm["top_setups"] == snapshot
+    overrides, gate, locked = bs._split_us_panels(vm, 3, gated=True)
+    shell = _render_panels({**vm, **overrides}, gate)
+    paid = bs._render_us_panel_payload(_env(), gate, locked, vm)["setups_html"]
+    assert len(TS_ROW.findall(shell)) == 3 and len(TS_ROW.findall(paid)) == 2
+    for row in TS_ROW.findall(shell) + TS_ROW.findall(paid):
+        assert "Decline — wait" in row and "下行 — 等待" in row
+        assert "2026-11-03" in row and "2026-11-04" not in row
+        assert "Buy zone" not in row
+    assert 'data-tkr="TSX3"' not in shell and 'data-tkr="TSX3"' in paid
+
+
 def test_every_adjacent_panel_ships_only_its_preview_slice():
     pytest.importorskip("pandas")
     pytest.importorskip("plotly")
