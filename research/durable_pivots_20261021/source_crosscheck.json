@@ -1,0 +1,54 @@
+[
+  {
+    "ticker": "SPY",
+    "n": 1254,
+    "median_abs_relative_close_difference": 2.0363314090499074e-08,
+    "p99_abs_relative_close_difference": 5.176904088410872e-08,
+    "over1percent": 0,
+    "reference": "existing Massive daily snapshot"
+  },
+  {
+    "ticker": "QQQ",
+    "n": 1254,
+    "median_abs_relative_close_difference": 2.217243433300098e-08,
+    "p99_abs_relative_close_difference": 5.264630835943862e-08,
+    "over1percent": 0,
+    "reference": "existing Massive daily snapshot"
+  },
+  {
+    "ticker": "SOXX",
+    "n": 1254,
+    "median_abs_relative_close_difference": 0.6666666529364811,
+    "p99_abs_relative_close_difference": 0.6666666828231969,
+    "over1percent": 672,
+    "reference": "existing Massive daily snapshot",
+    "raw_reference_basis_mismatch": "Reference pre-2024-03-07 observations are not adjusted for 3:1 split; analysis-only normalization using captured split event.",
+    "after_split_normalization_median_abs_relative_close_difference": 2.1023663865360476e-08,
+    "after_split_normalization_p99": 5.239357711683823e-08,
+    "after_split_normalization_over1percent": 0
+  },
+  {
+    "ticker": "GLD",
+    "n": 1254,
+    "median_abs_relative_close_difference": 2.013531003042246e-08,
+    "p99_abs_relative_close_difference": 4.73423053171107e-08,
+    "over1percent": 0,
+    "reference": "existing Massive daily snapshot"
+  },
+  {
+    "ticker": "SLV",
+    "n": 1254,
+    "median_abs_relative_close_difference": 2.1027270147300214e-08,
+    "p99_abs_relative_close_difference": 5.103609089451844e-08,
+    "over1percent": 0,
+    "reference": "existing Massive daily snapshot"
+  },
+  {
+    "ticker": "TLT",
+    "n": 1254,
+    "median_abs_relative_close_difference": 2.0885761231603794e-08,
+    "p99_abs_relative_close_difference": 5.0132130462454694e-08,
+    "over1percent": 0,
+    "reference": "existing Massive daily snapshot"
+  }
+]

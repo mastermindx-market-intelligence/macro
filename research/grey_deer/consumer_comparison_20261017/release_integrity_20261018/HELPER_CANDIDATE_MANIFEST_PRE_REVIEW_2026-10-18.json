@@ -1,0 +1,26 @@
+{
+  "observed_at": "2026-10-18T03:34:43.973236+00:00",
+  "candidate": [
+    {
+      "path": "release_review/candidate/scripts/deploy_code_to_vps.sh",
+      "bytes": 19748,
+      "sha256": "61fdd17298a72e88df268d2e0933209a29b1cb995c677410c0f22dd3f1467038"
+    },
+    {
+      "path": "release_review/candidate/tests/test_deploy_provenance.py",
+      "bytes": 35193,
+      "sha256": "bc9999668d61780c4d88010ad0044e687eb161fa56e7a9551cc942054ed72a97"
+    }
+  ],
+  "rsync_version": "rsync  version 3.2.7  protocol version 31",
+  "source_helpers_unchanged": true,
+  "source_tests_unchanged": true,
+  "first_party_changed_paths": [
+    "scripts/deploy_code_to_vps.sh",
+    "tests/test_deploy_provenance.py"
+  ],
+  "first_party_modules_imported": false,
+  "source_wrapper_changed": false,
+  "source_forward_module_changed": false,
+  "native_pytest_run": false
+}

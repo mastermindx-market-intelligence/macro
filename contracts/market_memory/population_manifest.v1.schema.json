@@ -1,0 +1,994 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/population_manifest.v1.schema.json",
+  "title": "Market Memory P0 outcome-blind W2C population manifest v1",
+  "description": "Read-only, outcome-blind census manifest over one authenticated private W2C experience store. It carries the complete declared expected-session denominator (admitted, abstained, missed and unrecorded typed gaps), a stable label-free membership digest that excludes outcome revisions, maturity state, audit observation clocks, writer audit time and the original population receipt audit hash, the separately retained authenticated full-content audit digest of the original population receipt, typed source-closure qualification, and typed capture/comparison/fit eligibility. It never performs a numerical comparison, never establishes a feature transform registry or fitted normalizer, and never grants permission from an admitted opportunity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "manifest_id",
+    "manifest_version",
+    "owner",
+    "census_basis",
+    "through_session",
+    "expected_sessions",
+    "census",
+    "membership",
+    "source_closure",
+    "audit",
+    "eligibility",
+    "claims",
+    "authority"
+  ],
+  "properties": {
+    "schema": {
+      "const": "market_memory.population_manifest.v1"
+    },
+    "manifest_id": {
+      "type": "string",
+      "pattern": "^mmpopman_[a-f0-9]{64}$"
+    },
+    "manifest_version": {
+      "const": 1
+    },
+    "owner": {
+      "$ref": "#/$defs/ownerIdentity"
+    },
+    "census_basis": {
+      "const": "frozen_activation_plus_xnys_calendar_not_presence_or_timer_runs"
+    },
+    "through_session": {
+      "$ref": "#/$defs/session"
+    },
+    "expected_sessions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {
+        "$ref": "#/$defs/session"
+      }
+    },
+    "census": {
+      "$ref": "#/$defs/census"
+    },
+    "membership": {
+      "$ref": "#/$defs/membershipIdentity"
+    },
+    "source_closure": {
+      "$ref": "#/$defs/sourceClosure"
+    },
+    "audit": {
+      "$ref": "#/$defs/auditIdentity"
+    },
+    "eligibility": {
+      "$ref": "#/$defs/eligibility"
+    },
+    "claims": {
+      "$ref": "#/$defs/claims"
+    },
+    "authority": {
+      "$ref": "spy_experience_registration.v1.schema.json#/$defs/authority"
+    }
+  },
+  "$defs": {
+    "session": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "utc": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$"
+    },
+    "ownerIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_id",
+        "registration_id",
+        "registration_sha256",
+        "store_id",
+        "store_schema",
+        "store_profile",
+        "installation_id",
+        "installation_writer_commit"
+      ],
+      "properties": {
+        "owner_id": {
+          "const": "W2C"
+        },
+        "registration_id": {
+          "type": "string",
+          "pattern": "^mmspyexpreg_[a-f0-9]{64}$"
+        },
+        "registration_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "store_id": {
+          "type": "string",
+          "pattern": "^mmspyexpstore_[a-f0-9]{64}$"
+        },
+        "store_schema": {
+          "const": "market_memory.spy_experience_store.v1"
+        },
+        "store_profile": {
+          "const": "market_memory.private.spy_experience_accrual.v1"
+        },
+        "installation_id": {
+          "type": "string",
+          "pattern": "^mmspyexpinstall_[a-f0-9]{64}$"
+        },
+        "installation_writer_commit": {
+          "$ref": "#/$defs/commit"
+        }
+      }
+    },
+    "censusCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected",
+        "recorded",
+        "admitted",
+        "abstained",
+        "missed",
+        "unrecorded"
+      ],
+      "properties": {
+        "expected": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "recorded": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "admitted": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "abstained": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "missed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "unrecorded": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        }
+      }
+    },
+    "opportunityCutoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_opens_at",
+        "deadline_at",
+        "actual_cutoff_at",
+        "first_owner_observed_at",
+        "owner_attempted_window_session",
+        "owner_attempted_at",
+        "reconciled_at",
+        "clock_model"
+      ],
+      "properties": {
+        "window_opens_at": {
+          "$ref": "#/$defs/utc"
+        },
+        "deadline_at": {
+          "$ref": "#/$defs/utc"
+        },
+        "actual_cutoff_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/utc"
+            }
+          ]
+        },
+        "first_owner_observed_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/utc"
+            }
+          ]
+        },
+        "owner_attempted_window_session": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/session"
+            }
+          ]
+        },
+        "owner_attempted_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/utc"
+            }
+          ]
+        },
+        "reconciled_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/utc"
+            }
+          ]
+        },
+        "clock_model": {
+          "const": "session_ordinal_only_no_fabricated_market_close_timestamp"
+        }
+      }
+    },
+    "gapCutoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_opens_at",
+        "deadline_at",
+        "clock_model"
+      ],
+      "properties": {
+        "window_opens_at": {
+          "$ref": "#/$defs/utc"
+        },
+        "deadline_at": {
+          "$ref": "#/$defs/utc"
+        },
+        "clock_model": {
+          "const": "session_ordinal_only_no_fabricated_market_close_timestamp"
+        }
+      }
+    },
+    "censusRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session",
+        "opportunity_id",
+        "disposition",
+        "reason",
+        "cutoff",
+        "source_pins",
+        "decision_state_projection",
+        "decision_state_projection_reason"
+      ],
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/session"
+        },
+        "opportunity_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^mmspyexpopp_[a-f0-9]{64}$"
+            }
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "admitted",
+            "abstained",
+            "missed",
+            "unrecorded"
+          ]
+        },
+        "reason": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9_.]+$"
+            }
+          ]
+        },
+        "cutoff": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/opportunityCutoff"
+            },
+            {
+              "$ref": "#/$defs/gapCutoff"
+            }
+          ]
+        },
+        "source_pins": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "spy_experience_opportunity.v1.schema.json#/$defs/sourcePins"
+            }
+          ]
+        },
+        "decision_state_projection": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "spy_experience_opportunity.v1.schema.json#/$defs/decisionStateProjection"
+            }
+          ]
+        },
+        "decision_state_projection_reason": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9_.]+$"
+            }
+          ]
+        }
+      }
+    },
+    "census": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "counts",
+        "rows",
+        "gaps"
+      ],
+      "properties": {
+        "counts": {
+          "$ref": "#/$defs/censusCounts"
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "$ref": "#/$defs/censusRow"
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "session",
+              "reason"
+            ],
+            "properties": {
+              "session": {
+                "$ref": "#/$defs/session"
+              },
+              "reason": {
+                "const": "expected_session_without_authenticated_opportunity_row"
+              }
+            }
+          }
+        }
+      }
+    },
+    "membershipIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "membership_version",
+        "algorithm",
+        "membership_sha256",
+        "excluded_identity_dimensions"
+      ],
+      "properties": {
+        "schema": {
+          "const": "market_memory.population_membership.v1"
+        },
+        "membership_version": {
+          "const": 1
+        },
+        "algorithm": {
+          "const": "sha256_canonical_json_v1"
+        },
+        "membership_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "excluded_identity_dimensions": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "outcome_revision_ids",
+              "outcome_labels_and_statuses",
+              "maturity_state",
+              "population_audit_observed_at",
+              "population_writer_audit_commit",
+              "population_receipt_full_content_audit_sha256"
+            ]
+          }
+        }
+      }
+    },
+    "generationClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "profile",
+        "store_id",
+        "generation_id",
+        "generation_sha256",
+        "capture_count",
+        "declared_by_session_count",
+        "status",
+        "reason"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "trusted",
+            "technical"
+          ]
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "store_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "generation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "generation_sha256": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/sha256"
+            }
+          ]
+        },
+        "capture_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "declared_by_session_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "status": {
+          "enum": [
+            "authenticated",
+            "generation_absent_from_active_ancestry",
+            "capture_cap_refused",
+            "owner_store_absent"
+          ]
+        },
+        "reason": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9_.]+$"
+            }
+          ]
+        }
+      }
+    },
+    "captureClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session",
+        "opportunity_id",
+        "role",
+        "capture_id",
+        "context_id",
+        "status",
+        "reason"
+      ],
+      "properties": {
+        "session": {
+          "$ref": "#/$defs/session"
+        },
+        "opportunity_id": {
+          "type": "string",
+          "pattern": "^mmspyexpopp_[a-f0-9]{64}$"
+        },
+        "role": {
+          "enum": [
+            "trusted",
+            "technical"
+          ]
+        },
+        "capture_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "context_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "authenticated",
+            "capture_absent_from_authenticated_generation",
+            "generation_not_authenticated"
+          ]
+        },
+        "reason": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9_.]+$"
+            }
+          ]
+        }
+      }
+    },
+    "sourceClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capture_cap",
+        "status",
+        "generation_closures",
+        "capture_closures",
+        "retained_gap_count",
+        "component_source_receipts_authenticated"
+      ],
+      "properties": {
+        "capture_cap": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "status": {
+          "enum": [
+            "no_source_refs_declared",
+            "complete",
+            "retained_gaps"
+          ]
+        },
+        "generation_closures": {
+          "type": "array",
+          "maxItems": 8192,
+          "items": {
+            "$ref": "#/$defs/generationClosure"
+          }
+        },
+        "capture_closures": {
+          "type": "array",
+          "maxItems": 8192,
+          "items": {
+            "$ref": "#/$defs/captureClosure"
+          }
+        },
+        "retained_gap_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "component_source_receipts_authenticated": {
+          "const": false
+        }
+      }
+    },
+    "auditIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "population_receipt_id",
+        "population_receipt_sha256",
+        "population_receipt_bytes",
+        "population_receipt_through_session",
+        "population_observed_at",
+        "population_writer_commit",
+        "population_complete",
+        "population_owner_generation_refs",
+        "membership_independent_of_audit"
+      ],
+      "properties": {
+        "population_receipt_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^mmspyexppop_[a-f0-9]{64}$"
+            }
+          ]
+        },
+        "population_receipt_sha256": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/sha256"
+            }
+          ]
+        },
+        "population_receipt_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "population_receipt_through_session": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/session"
+            }
+          ]
+        },
+        "population_observed_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/utc"
+            }
+          ]
+        },
+        "population_writer_commit": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/commit"
+            }
+          ]
+        },
+        "population_complete": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "population_owner_generation_refs": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pin_observed_at",
+                "trusted_generation",
+                "technical_generation"
+              ],
+              "properties": {
+                "pin_observed_at": {
+                  "$ref": "#/$defs/utc"
+                },
+                "trusted_generation": {
+                  "$ref": "spy_experience_opportunity.v1.schema.json#/$defs/trustedGeneration"
+                },
+                "technical_generation": {
+                  "$ref": "spy_experience_opportunity.v1.schema.json#/$defs/technicalGeneration"
+                }
+              }
+            }
+          ]
+        },
+        "membership_independent_of_audit": {
+          "const": true
+        }
+      }
+    },
+    "eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capture_availability",
+        "comparison",
+        "fit",
+        "row_qualification"
+      ],
+      "properties": {
+        "capture_availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authenticated",
+            "absent_from_authenticated_generation",
+            "generation_not_authenticated",
+            "not_applicable"
+          ],
+          "properties": {
+            "authenticated": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            },
+            "absent_from_authenticated_generation": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            },
+            "generation_not_authenticated": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            },
+            "not_applicable": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            }
+          }
+        },
+        "comparison": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "performed",
+            "status",
+            "reason",
+            "rows_with_registered_coordinates",
+            "rows_pending_coordinates",
+            "rows_blocked_by_source_qualification",
+            "rows_not_applicable"
+          ],
+          "properties": {
+            "performed": {
+              "const": false
+            },
+            "status": {
+              "const": "not_performed_pending_registered_coordinates"
+            },
+            "reason": {
+              "const": "p0_establishes_no_feature_transform_registry_or_fitted_normalizer"
+            },
+            "rows_with_registered_coordinates": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4096
+            },
+            "rows_pending_coordinates": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4096
+            },
+            "rows_blocked_by_source_qualification": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4096
+            },
+            "rows_not_applicable": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4096
+            }
+          }
+        },
+        "fit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eligible",
+            "reason",
+            "training_eligible",
+            "promotion_eligible",
+            "authority"
+          ],
+          "properties": {
+            "eligible": {
+              "const": false
+            },
+            "reason": {
+              "const": "p0_population_manifest_is_authority_display_context_only"
+            },
+            "training_eligible": {
+              "const": false
+            },
+            "promotion_eligible": {
+              "const": false
+            },
+            "authority": {
+              "$ref": "spy_experience_registration.v1.schema.json#/$defs/authority"
+            }
+          }
+        },
+        "row_qualification": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "session",
+              "opportunity_id",
+              "capture_available",
+              "capture_available_reason",
+              "comparison_eligibility",
+              "comparison_eligibility_reason",
+              "fit_eligibility",
+              "fit_eligibility_reason"
+            ],
+            "properties": {
+              "session": {
+                "$ref": "#/$defs/session"
+              },
+              "opportunity_id": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^mmspyexpopp_[a-f0-9]{64}$"
+                  }
+                ]
+              },
+              "capture_available": {
+                "enum": [
+                  "authenticated",
+                  "absent_from_authenticated_generation",
+                  "generation_not_authenticated",
+                  "not_applicable"
+                ]
+              },
+              "capture_available_reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[a-z0-9_.]+$"
+              },
+              "comparison_eligibility": {
+                "enum": [
+                  "eligible_for_registered_comparison_only",
+                  "pending_registered_coordinates",
+                  "blocked_by_source_qualification",
+                  "not_applicable"
+                ]
+              },
+              "comparison_eligibility_reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[a-z0-9_.]+$"
+              },
+              "fit_eligibility": {
+                "const": false
+              },
+              "fit_eligibility_reason": {
+                "const": "p0_population_manifest_is_authority_display_context_only"
+              }
+            }
+          }
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registration_authenticated",
+        "installation_authenticated",
+        "ledger_rows_authenticated",
+        "population_receipt_authenticated",
+        "source_closure_complete",
+        "membership_outcome_blind",
+        "external_clock_authenticated",
+        "aba_resistance_authenticated",
+        "calendar_session_derivation_authenticated",
+        "component_source_receipts_authenticated",
+        "training_eligible",
+        "promotion_eligible"
+      ],
+      "properties": {
+        "registration_authenticated": {
+          "const": true
+        },
+        "installation_authenticated": {
+          "const": true
+        },
+        "ledger_rows_authenticated": {
+          "const": true
+        },
+        "population_receipt_authenticated": {
+          "type": "boolean"
+        },
+        "source_closure_complete": {
+          "type": "boolean"
+        },
+        "membership_outcome_blind": {
+          "const": true
+        },
+        "external_clock_authenticated": {
+          "const": false
+        },
+        "aba_resistance_authenticated": {
+          "const": false
+        },
+        "calendar_session_derivation_authenticated": {
+          "const": true
+        },
+        "component_source_receipts_authenticated": {
+          "const": false
+        },
+        "training_eligible": {
+          "const": false
+        },
+        "promotion_eligible": {
+          "const": false
+        }
+      }
+    }
+  }
+}
