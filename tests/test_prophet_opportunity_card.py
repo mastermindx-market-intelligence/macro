@@ -252,7 +252,7 @@ def test_selected_r8_identity_first_anatomy_order():
     assert [n.attrs.get("data-po-field") for n in element_children(head)] == ["identity", "quote"]
     assert find(card, attrs={"data-po-field": "status"}).parent is card
     assert order == [
-        "header.po-head", "div.po-head-main-po-status", "ol.po-stages",
+        "header.po-head", "div.po-refinements", "div.po-head-main-po-status", "ol.po-stages",
         "figure.po-chart", "p.po-obs", "details.po-cautions", "a.po-context",
         "div.po-terms", "footer.po-foot",
     ]
@@ -859,3 +859,15 @@ def test_workspace_css_hides_the_group_outside_the_existing_study_grid():
     for line in region.splitlines():
         if ".po-cf" in line and "{" in line:
             assert line.lstrip().startswith(("#us-standouts", "html[data-theme"))
+
+
+@pytest.mark.parametrize("clock", ["2026-09-24T16:00:00-04:00", "2026-10-14 16:00 ET"])
+def test_clock_wrap_segments_preserve_exact_raw_timestamp(clock):
+    root = render_card(rich_card(quote={"price": "42.50", "asof": clock}))
+    quote = find(root, attrs={"data-po-clock": "quote"})
+    value = find(quote, cls="po-asof-value")
+    assert text_of(value) == clock
+    assert value.attrs["aria-label"] == clock
+    assert text_of(find_all(value, cls="po-clock-part")[0]) == clock[:10]
+    if clock[10] == "T":
+        assert [text_of(n) for n in find_all(value, cls="po-clock-part")] == [clock[:10], clock[10:]]

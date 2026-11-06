@@ -190,8 +190,11 @@ def test_selected_r8_native_identity_and_quote_lead_independent_assessment():
             assert children.index(card.select_one(".po-signal-date")) < children.index(chart)
             assert head.select_one(".po-ticker").get_text() == "BRK.B"
             assert "Example Company" in head.get_text()
-            assert "Insurance" in head.get_text() and "Financials" in head.get_text()
-            assert head.select_one(".po-priority")
+            secondary = card.select_one(".po-refinements")
+            assert secondary.parent is card and children.index(head) < children.index(secondary) < children.index(status)
+            assert "Insurance" in secondary.get_text() and "Financials" in secondary.get_text()
+            assert secondary.select_one(".po-priority")
+            assert not head.select(".po-class,.po-priority,.po-marks")
             assert card.select_one(".po-cautions")
             assert card.select_one(".po-terms[data-po-clock='terms']")
             assert card.select_one(".po-footer .pv-setup-inline > summary")

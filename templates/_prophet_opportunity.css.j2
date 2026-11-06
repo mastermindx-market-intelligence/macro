@@ -49,8 +49,8 @@ html[data-theme="light"] .po-card{box-shadow:var(--card-shadow)}
 
 /* ── identity-first header: company left · independent quote right ─────────
    R8 keeps the name alongside its quote before the separate status/maturity
-   region. Rich supplied classification, priority and marks wrap in the name
-   column; status/strategy/horizon never compete with the quote clock. */
+   region. Classification, priority and marks use full-card rows; the separate
+   status/strategy/horizon never compete with the quote clock. */
 .po-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:8px 12px;min-width:0}
 @media (max-width:359px){.po-head{grid-template-columns:minmax(0,1fr)}}
 .po-head-main{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0}
@@ -77,10 +77,14 @@ html[data-theme="light"] .po-card{box-shadow:var(--card-shadow)}
 .po-nochart{display:flex;align-items:center;justify-content:center;height:72px;border:1px dashed var(--line);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--muted)}
 
 /* ── identity, priority, marks ────────────────────────────────────────────── */
-/* Source order is also the reading order. The identity column uses a
-   vertical flow so long bilingual refinements and priority remain readable
-   beside the quote at 390px and within a four-column desktop grid. */
+/* The name stays beside its quote; secondary identity facts use the full
+   card width instead of deepening an otherwise empty half-width column. */
 .po-id{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.po-refinements{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;min-width:0}
+.po-refinements .po-class{flex-basis:100%}
+.po-refinements .po-priority{max-width:100%}
+.po-refinements .po-marks{flex:1 1 auto}
+.po-clock-part{white-space:nowrap}
 .po-status{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 12px}
 .po-ticker{font-size:18px;font-weight:800;line-height:1.2;letter-spacing:.01em;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
 .po-name{font-size:14px;font-weight:500;color:var(--text);min-width:0;overflow-wrap:anywhere}
