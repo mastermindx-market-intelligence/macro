@@ -425,3 +425,96 @@ def test_trusted_pc_route_requires_two_parent_tested_merge(tmp_path):
     assert rejected_replay.returncode != 0
     assert "invalid base-replay identity" in rejected_replay.stdout
     assert git("rev-parse", "HEAD") in rejected_replay.stdout
+
+
+@pytest.mark.parametrize("check_name", ["H1", "H2", "W1"])
+def test_renamed_current_files_remain_guarded_without_historical_blobs(
+    tmp_path, monkeypatch, check_name,
+):
+    """A filtered shallow clone must scan rename destinations without hydration."""
+    source = tmp_path / "source"
+    source.mkdir()
+    root = tmp_path / "filtered"
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(
+        GIT_AUTHOR_NAME="CI fixture", GIT_AUTHOR_EMAIL="ci@example.invalid",
+        GIT_COMMITTER_NAME="CI fixture", GIT_COMMITTER_EMAIL="ci@example.invalid",
+        GIT_NO_REPLACE_OBJECTS="1",
+    )
+
+    def git(*args, cwd=source, check=True, offline=False):
+        scoped_env = dict(env)
+        if offline:
+            scoped_env.update(GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="")
+        return subprocess.run(
+            ["git", *args], cwd=cwd, env=scoped_env, check=check,
+            capture_output=True, text=True,
+        )
+
+    git("init", "-b", "main")
+    git("config", "uploadpack.allowFilter", "true")
+    old = source / "notes" / "original.txt"
+    old.parent.mkdir()
+    stable = "".join(f"Stable fixture line {index:03d} with unchanged content.\n" for index in range(100))
+    old.write_text(stable, encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "original")
+    base = git("rev-parse", "HEAD").stdout.strip()
+    old_blob = git("rev-parse", "HEAD:notes/original.txt").stdout.strip()
+
+    data = {
+        "meta": {"known_fdr_families": [], "site_privacy_tokens": ["held_book"]},
+        "rulings": [{
+            "ruling_id": "TEST-KILLED-RENAME", "status": "killed",
+            "match_terms": ["synthetic_rename_proposal"],
+        }],
+    }
+    if check_name == "H1":
+        relative = "config/renamed.yml"
+        token = "_".join(["synthetic", "rename", "family"])
+        violation = f"fdr_family: {token}\n"
+    elif check_name == "H2":
+        relative = "site/renamed.html"
+        violation = "<div>held_book</div>\n"
+    else:
+        relative = "research/renamed.md"
+        violation = "This proposes synthetic_rename_proposal.\n"
+    destination = source / relative
+    destination.parent.mkdir(parents=True)
+    old.rename(destination)
+    destination.write_text(stable + violation, encoding="utf-8")
+    git("add", "-A")
+    git("commit", "-m", "rename with guarded content")
+    tested = git("rev-parse", "HEAD").stdout.strip()
+    # Establish that this fixture really takes the similarity/rename path when
+    # the historical blobs are available, rather than only testing an addition.
+    rename = git("diff", "--find-renames", "--name-status", f"{base}...HEAD").stdout
+    assert rename.startswith("R"), rename
+    assert rename.rstrip().endswith("\t" + relative)
+
+    git("clone", "--no-checkout", "--filter=blob:none", "--depth=2",
+        source.as_uri(), str(root), cwd=tmp_path)
+    git("checkout", "--detach", tested, cwd=root)
+    git("config", "diff.renames", "true", cwd=root)
+    assert git("cat-file", "-e", old_blob, cwd=root, check=False, offline=True).returncode != 0
+    for key, value in {
+        "GIT_NO_LAZY_FETCH": "1", "GIT_ALLOW_PROTOCOL": "",
+        "GIT_NO_REPLACE_OBJECTS": "1", "RULING_DIFF_BASE": base,
+    }.items():
+        monkeypatch.setenv(key, value)
+
+    changed, available = _conflict_mod._get_changed_files(root)
+    assert available is True
+    assert root / relative in changed
+    assert root / "notes/original.txt" not in changed
+    if check_name == "H2":
+        findings = _conflict_mod._check_h2(data, changed, root, [])
+    else:
+        checker = _conflict_mod._check_h1 if check_name == "H1" else _conflict_mod._check_w1
+        findings = checker(data, changed, root)
+    assert any(
+        finding["check"] == check_name and finding["file"] == relative
+        and finding["severity"] == ("WARN" if check_name == "W1" else "HARD")
+        for finding in findings
+    ), findings
+    assert git("cat-file", "-e", old_blob, cwd=root, check=False, offline=True).returncode != 0

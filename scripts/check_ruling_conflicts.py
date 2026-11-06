@@ -111,7 +111,7 @@ def _get_changed_files(root: Path) -> tuple[list[Path], bool]:
             return [], False
 
         committed = subprocess.run(
-            ["git", "diff", "--name-only", f"{merge_base}...HEAD"],
+            ["git", "diff", "--no-renames", "--name-only", f"{merge_base}...HEAD"],
             cwd=root, capture_output=True, text=True, timeout=15,
         )
         uncommitted = subprocess.run(
