@@ -53,7 +53,7 @@ class FakeResponse:
         return self.data.read(size)
 
 
-class GuardTests(unittest.TestCase):
+class TestGuard(unittest.TestCase):
     def setUp(self):
         # A missing mock must fail before any physical host action or HTTP call.
         self.subprocess_fence = patch.object(

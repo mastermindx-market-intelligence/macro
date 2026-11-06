@@ -2,28 +2,30 @@
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
   "as_of": "2026-11-04",
-  "generated_utc": "2026-11-05T10:21:14Z",
+  "generated_utc": "2026-11-06T01:43:32Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
-    "n": 4,
-    "n_eff": 1.75,
+    "n": 6,
+    "n_eff": 1.5,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 4 candidates \u2248 1.75 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 6 candidates \u2248 1.5 independent bets."
   },
   "same_thesis_groups": [
     {
       "members": [
         "ARCB",
+        "CFFN",
         "GAP",
+        "NWBI",
         "VCTR"
       ],
-      "size": 3,
-      "basis": "factor-cosine",
-      "label": "shared-membership"
+      "size": 5,
+      "basis": "membership-jaccard",
+      "label": "Financials"
     }
   ],
-  "earnings_coverage_frac": 0.75,
+  "earnings_coverage_frac": 0.667,
   "by_ticker": {
     "LTC": {
       "verdict": "new",
@@ -40,7 +42,7 @@
           "same_earnings_week": null
         },
         {
-          "ticker": "VCTR",
+          "ticker": "CFFN",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
@@ -49,7 +51,7 @@
           "same_earnings_week": null
         },
         {
-          "ticker": "GAP",
+          "ticker": "VCTR",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
@@ -69,9 +71,18 @@
     },
     "ARCB": {
       "verdict": "duplicate",
-      "max_similarity": 0.9541,
+      "max_similarity": 0.9767,
       "basis": "membership+high-tier-factor",
       "nearest": [
+        {
+          "ticker": "CFFN",
+          "combined": 0.9767,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.9767,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": true
+        },
         {
           "ticker": "GAP",
           "combined": 0.9541,
@@ -82,20 +93,11 @@
           "same_earnings_week": false
         },
         {
-          "ticker": "VCTR",
-          "combined": 0.8706,
+          "ticker": "NWBI",
+          "combined": 0.8985,
           "membership_jaccard": 0.0,
-          "factor_cosine": 0.8706,
+          "factor_cosine": 0.8985,
           "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "LTC",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.10<0.2",
           "shared_groups": [],
           "same_earnings_week": false
         }
@@ -103,19 +105,91 @@
       "earnings_leg": {
         "next_date": "2026-11-04",
         "same_week_peers": [
+          "CFFN",
           "VCTR"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as GAP \u2014 shared factor profile (similarity 95%).",
-      "why_zh": "\u4e0e GAP \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 95%\uff09\u3002"
+      "why_en": "Same bet as CFFN \u2014 shared factor profile (similarity 98%).",
+      "why_zh": "\u4e0e CFFN \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 98%\uff09\u3002"
+    },
+    "CFFN": {
+      "verdict": "duplicate",
+      "max_similarity": 1.0,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "VCTR",
+          "combined": 1.0,
+          "membership_jaccard": 1.0,
+          "factor_cosine": 0.8709,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Financials"
+          ],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "NWBI",
+          "combined": 1.0,
+          "membership_jaccard": 1.0,
+          "factor_cosine": 0.9654,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Financials"
+          ],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "ARCB",
+          "combined": 0.9767,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.9767,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": true
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-11-04",
+        "same_week_peers": [
+          "ARCB",
+          "VCTR"
+        ],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as VCTR \u2014 Financials (similarity 100%).",
+      "why_zh": "\u4e0e VCTR \u62bc\u6ce8\u76f8\u540c \u2014 Financials\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
     },
     "VCTR": {
       "verdict": "duplicate",
-      "max_similarity": 0.9564,
+      "max_similarity": 1.0,
       "basis": "membership+high-tier-factor",
       "nearest": [
+        {
+          "ticker": "CFFN",
+          "combined": 1.0,
+          "membership_jaccard": 1.0,
+          "factor_cosine": 0.8709,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Financials"
+          ],
+          "same_earnings_week": true
+        },
+        {
+          "ticker": "NWBI",
+          "combined": 1.0,
+          "membership_jaccard": 1.0,
+          "factor_cosine": 0.8318,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Financials"
+          ],
+          "same_earnings_week": false
+        },
         {
           "ticker": "GAP",
           "combined": 0.9564,
@@ -124,42 +198,80 @@
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": false
-        },
-        {
-          "ticker": "ARCB",
-          "combined": 0.8706,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.8706,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "LTC",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.10<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
         }
       ],
       "earnings_leg": {
         "next_date": "2026-11-04",
         "same_week_peers": [
-          "ARCB"
+          "ARCB",
+          "CFFN"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as GAP \u2014 shared factor profile (similarity 96%).",
-      "why_zh": "\u4e0e GAP \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 96%\uff09\u3002"
+      "why_en": "Same bet as CFFN \u2014 Financials (similarity 100%).",
+      "why_zh": "\u4e0e CFFN \u62bc\u6ce8\u76f8\u540c \u2014 Financials\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
+    },
+    "NWBI": {
+      "verdict": "duplicate",
+      "max_similarity": 1.0,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "CFFN",
+          "combined": 1.0,
+          "membership_jaccard": 1.0,
+          "factor_cosine": 0.9654,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Financials"
+          ],
+          "same_earnings_week": null
+        },
+        {
+          "ticker": "VCTR",
+          "combined": 1.0,
+          "membership_jaccard": 1.0,
+          "factor_cosine": 0.8318,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Financials"
+          ],
+          "same_earnings_week": null
+        },
+        {
+          "ticker": "GAP",
+          "combined": 0.9426,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.9426,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": null
+        }
+      ],
+      "earnings_leg": {
+        "next_date": null,
+        "same_week_peers": [],
+        "has_data": false
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as CFFN \u2014 Financials (similarity 100%).",
+      "why_zh": "\u4e0e CFFN \u62bc\u6ce8\u76f8\u540c \u2014 Financials\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
     },
     "GAP": {
       "verdict": "duplicate",
-      "max_similarity": 0.9564,
+      "max_similarity": 0.9753,
       "basis": "membership+high-tier-factor",
       "nearest": [
+        {
+          "ticker": "CFFN",
+          "combined": 0.9753,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.9753,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
         {
           "ticker": "VCTR",
           "combined": 0.9564,
@@ -175,15 +287,6 @@
           "membership_jaccard": 0.0,
           "factor_cosine": 0.9541,
           "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "LTC",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.10<0.2",
           "shared_groups": [],
           "same_earnings_week": false
         }
@@ -194,12 +297,19 @@
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as VCTR \u2014 shared factor profile (similarity 96%).",
-      "why_zh": "\u4e0e VCTR \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 96%\uff09\u3002"
+      "why_en": "Same bet as CFFN \u2014 shared factor profile (similarity 98%).",
+      "why_zh": "\u4e0e CFFN \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 98%\uff09\u3002"
     }
   },
   "pair_basis": {
     "LTC__ARCB": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.10<0.2",
+      "shared_groups": []
+    },
+    "LTC__CFFN": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -213,6 +323,13 @@
       "factor_basis": "beta-read-thin:r2=0.10<0.2",
       "shared_groups": []
     },
+    "LTC__NWBI": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.10<0.2",
+      "shared_groups": []
+    },
     "LTC__GAP": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -220,10 +337,24 @@
       "factor_basis": "beta-read-thin:r2=0.10<0.2",
       "shared_groups": []
     },
+    "ARCB__CFFN": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.9767,
+      "combined": 0.9767,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
     "ARCB__VCTR": {
       "membership_jaccard": 0.0,
       "factor_cosine": 0.8706,
       "combined": 0.8706,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "ARCB__NWBI": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.8985,
+      "combined": 0.8985,
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
@@ -234,10 +365,51 @@
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
+    "CFFN__VCTR": {
+      "membership_jaccard": 1.0,
+      "factor_cosine": 0.8709,
+      "combined": 1.0,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": [
+        "sector:Financials"
+      ]
+    },
+    "CFFN__NWBI": {
+      "membership_jaccard": 1.0,
+      "factor_cosine": 0.9654,
+      "combined": 1.0,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": [
+        "sector:Financials"
+      ]
+    },
+    "CFFN__GAP": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.9753,
+      "combined": 0.9753,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "VCTR__NWBI": {
+      "membership_jaccard": 1.0,
+      "factor_cosine": 0.8318,
+      "combined": 1.0,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": [
+        "sector:Financials"
+      ]
+    },
     "VCTR__GAP": {
       "membership_jaccard": 0.0,
       "factor_cosine": 0.9564,
       "combined": 0.9564,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "NWBI__GAP": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.9426,
+      "combined": 0.9426,
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     }
@@ -250,7 +422,7 @@
     "new_note": "similarity < 0.35 \u2192 distinct bet"
   },
   "n_eff_by_lane": {
-    "entry_open": 2.0,
+    "entry_open": 1.6,
     "setting_up": 1.0
   },
   "source_passport": {

@@ -4406,6 +4406,10 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "inference-host-guard",
+    # Installer simulations own their concrete source/read closure without
+    # adding weight to unrelated ordinary-code packing probes.
+    "earnings-worker-systemd",
     # Actual page-query import/read closure; no unrelated fallback ownership.
     "admin-analytics-pages",
     # Paid Fabric source-only guidance and deterministic attribution tests are
@@ -4482,8 +4486,6 @@ CURATED_EXCLUSIVE = {
     "ci-control-plane-contracts",
     "bot-session-recovery-browser",  # R5 Bot auth recovery: curated browser scope owns its two ancestor initializers.
     "live-flow-recovery-guards",
-    # Loopback guard owns its bounded proxy, source units and offline contracts.
-    "inference-host-guard",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
     # this file's own packing-ceiling probe: templates/index.html 132 jobs /
     # 5,810 weight > 5,800; the two code probes over their job ceilings too).
