@@ -742,3 +742,273 @@ def test_nonfuture_event_retains_native_precision_without_invented_cross_clock_o
     out = rc.qualify_live_context(current, settled=anchor, now=_LIVE_NOW)
     assert out["usable"] is True and out["clocks"] == current["clocks"]
     assert out["rotation_at_turn"]["current_at_turn"] is False
+
+
+def _native_warning_envelope():
+    native = envelope()
+    native["hazard_summary"].update(stage=None, stage_reason="required_coverage_unavailable",
+                                     contributing_sources=["risk-radar-us"])
+    native["data_state"] = "DEGRADED"
+    native["provenance"] = {"sources": [{
+        "source_id": "risk-radar-us", "role": "hazard_evidence", "coverage": "FRESH",
+        "state": "caution", "hazard_stage": "FRAGILE", "as_of": native["source_session"],
+        "label_en": "Cross-asset scares", "label_zh": "跨资产风险",
+        "detail": {"label_en": "Credit stress", "label_zh": "信用压力"},
+    }]}
+    return native
+
+
+def test_chat_keeps_qualified_native_warning_when_joint_stage_is_unknown():
+    native = _native_warning_envelope()
+    before = deepcopy(native)
+    context = rc.compact_context(native, now=NOW)
+    text = rc.render_context(context)
+    assert context["usable"]
+    assert context["hazard_summary"]["stage"] is None
+    assert "Credit stress" in text and "building" in text
+    assert "partial coverage" in text.lower()
+    assert "2026-10-06" in text
+    assert "信用压力" in rc.render_context(context, lang="zh")
+    assert "FRAGILE" not in context["source_warnings"][0]["state_en"]
+    assert native == before
+    assert context["authority"]["envelope_may_size"] is False
+    assert len(text) <= 1800
+
+
+@pytest.mark.parametrize("mutation", ["stale", "not_contributing", "unknown_state", "duplicate_source", "different_session", "unknown_null_reason"])
+def test_chat_does_not_invent_or_repeat_an_unqualified_source_warning(mutation):
+    native = _native_warning_envelope()
+    source = native["provenance"]["sources"][0]
+    if mutation == "stale": source["coverage"] = "STALE"
+    elif mutation == "not_contributing": native["hazard_summary"]["contributing_sources"] = []
+    elif mutation == "unknown_state": source["state"] = "UNRECOGNISED"
+    elif mutation == "duplicate_source": native["provenance"]["sources"].append(deepcopy(source))
+    elif mutation == "unknown_null_reason": native["hazard_summary"]["stage_reason"] = "UNRECOGNISED"
+    else: source["as_of"] = "2026-10-05"
+    context = rc.compact_context(native, now=NOW)
+    assert not context.get("source_warnings")
+    assert "Credit stress" not in rc.render_context(context)
+
+
+def test_new_warning_context_is_removed_at_the_existing_unentitled_boundary():
+    context = rc.compact_context(_native_warning_envelope(), now=NOW)
+    before = deepcopy(context)
+    assert context.get("source_warnings")
+    redacted = rc.redact_new_context(context)
+    assert "source_warnings" not in redacted
+    assert context == before
+
+
+def test_native_warning_names_are_bounded_in_model_context():
+    native = _native_warning_envelope()
+    native["provenance"]["sources"][0]["detail"]["label_en"] = "A" * 20000
+    context = rc.compact_context(native, now=NOW)
+    assert context.get("source_warnings")
+    assert len(context["source_warnings"][0]["label_en"]) <= 96
+    assert len(rc.render_context(context)) <= 1800
+
+
+@pytest.mark.parametrize("mutation", ["missing_stage", "string_contributors", "mapping_contributors"])
+def test_chat_native_warning_requires_explicit_owner_stage_and_array_contributors(mutation):
+    native = _native_warning_envelope()
+    if mutation == "missing_stage":
+        del native["hazard_summary"]["stage"]
+    elif mutation == "string_contributors":
+        native["hazard_summary"]["contributing_sources"] = "risk-radar-us"
+    else:
+        native["hazard_summary"]["contributing_sources"] = {"risk-radar-us": True}
+    before = deepcopy(native)
+    context = rc.compact_context(native, now=NOW)
+    assert not context.get("source_warnings")
+    assert "Credit stress" not in rc.render_context(context)
+    assert native == before
+
+
+# R9 — stale settled chat cannot silently inherit today's timestamp. These
+# tests exercise the real incumbent NYSE completed-session calendar. No new
+# producer/reader/poller and no signal/forecast/sizing authority is created.
+def test_settled_chat_fallback_qualifies_source_against_completed_market_session(tmp_path):
+    from datetime import datetime, timezone
+
+    old = envelope()  # native Oct 6 settled risk context
+    write(tmp_path, "data/risk_envelope/latest.json", old)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    now = datetime(2026, 10, 8, 22, tzinfo=timezone.utc)  # Oct 8 after NYSE close
+    original = deepcopy(old)
+    context = rc.read_preferred_context(tmp_path, now=now)
+    assert context["usable"] is True  # dated, last-known evidence is retained
+    assert context["source_session"] == "2026-10-06"
+    assert context["source_current_at_turn"] is False
+    assert context["expected_completed_session"] == "2026-10-08"
+    en = rc.render_context(context)
+    zh = rc.render_context(context, lang="zh")
+    assert "Last-known, not current" in en
+    assert "2026-10-08" in en
+    assert "not an all-clear" in en
+    assert "非当前" in zh and "2026-10-08" in zh
+    assert "Mixed" in en  # source-backed older observation remains labelled
+    assert len(en) <= 1800 and len(zh) <= 1800
+    assert old == original
+
+
+def test_preclose_settled_anchor_is_current_completed_session_not_false_stale(tmp_path):
+    from datetime import datetime, timezone
+
+    old = envelope()  # Oct 6 = last completed session at Oct 7 10:01 ET
+    write(tmp_path, "data/risk_envelope/latest.json", old)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    now = datetime(2026, 10, 7, 14, 1, tzinfo=timezone.utc)
+    context = rc.read_preferred_context(tmp_path, now=now)
+    assert context["usable"] is True
+    assert context["source_current_at_turn"] is True
+    assert context["expected_completed_session"] == "2026-10-06"
+    assert "Last-known, not current" not in rc.render_context(context)
+
+
+def test_weekend_chat_does_not_launder_friday_gap_as_current(tmp_path):
+    from datetime import datetime, timezone
+
+    old = envelope()
+    # Saturday Oct 10 expects Friday Oct 9, regardless of when the JSON was built.
+    old["observed_at"] = "2026-10-09T20:00:00Z"
+    old["produced_at"] = "2026-10-09T20:00:00Z"
+    old["stale_after"] = None
+    write(tmp_path, "data/risk_envelope/latest.json", old)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    context = rc.read_preferred_context(tmp_path, now=datetime(2026, 10, 10, 15, tzinfo=timezone.utc))
+    assert context["source_current_at_turn"] is False
+    assert context["expected_completed_session"] == "2026-10-09"
+    assert "not an all-clear" in rc.render_context(context)
+
+
+def test_settled_turn_freshness_metadata_respects_existing_unentitled_projection(tmp_path):
+    from datetime import datetime, timezone
+
+    old = envelope()
+    write(tmp_path, "data/risk_envelope/latest.json", old)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    context = rc.read_preferred_context(
+        tmp_path, now=datetime(2026, 10, 8, 22, tzinfo=timezone.utc))
+    before = deepcopy(context)
+    assert context["source_current_at_turn"] is False
+    redacted = rc.redact_new_context(context)
+    assert "source_current_at_turn" not in redacted
+    assert "expected_completed_session" not in redacted
+    assert "source_warnings" not in redacted
+    assert context == before
+
+
+# Review adjudication: a failed exchange-calendar computation is UNKNOWN,
+# not proof that the source is stale or permission to call it current.
+@pytest.mark.parametrize("exc", [KeyError("calendar timezone missing"), ValueError("calendar unqualified")])
+def test_settled_reader_survives_calendar_failure_without_false_stale_claim(tmp_path, monkeypatch, exc):
+    from datetime import datetime, timezone
+
+    native = envelope()
+    write(tmp_path, "data/risk_envelope/latest.json", native)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-06"})
+    def broken(now): raise exc
+    monkeypatch.setattr(rc.nyse_calendar, "expected_last_session", broken)
+    context = rc.read_preferred_context(tmp_path, now=datetime(2026, 10, 8, 22, tzinfo=timezone.utc))
+    assert context["usable"] is True
+    assert context["source_current_at_turn"] is None
+    assert context["expected_completed_session"] is None
+    rendered = rc.render_context(context)
+    assert "market calendar unavailable" in rendered
+    assert "not an all-clear" in rendered
+    assert "Last-known, not current" not in rendered
+
+
+def test_weekend_last_completed_session_is_not_marked_stale_when_matched(tmp_path):
+    from datetime import datetime, timezone
+
+    native = envelope()
+    native["source_session"] = native["as_of"] = "2026-10-09"
+    native["measured_state"]["as_of"] = "2026-10-09"
+    native["rotation_context"]["as_of"] = "2026-10-09"
+    native["stale_after"] = None
+    write(tmp_path, "data/risk_envelope/latest.json", native)
+    write(tmp_path, "data/market_state/latest.json", {"asof": "2026-10-09"})
+    out = rc.read_preferred_context(tmp_path, now=datetime(2026, 10, 10, 15, tzinfo=timezone.utc))
+    assert out["usable"] is True
+    assert out["source_current_at_turn"] is True
+    assert out["expected_completed_session"] == "2026-10-09"
+    assert "Last-known, not current" not in rc.render_context(out)
+
+
+def test_short_context_budget_keeps_dated_warning_and_lag_caveat(tmp_path):
+    from datetime import datetime, timezone
+
+    native = _native_warning_envelope()
+    write(tmp_path, "data/risk_envelope/latest.json", native)
+    write(tmp_path, "data/market_state/latest.json", {"asof": native["source_session"]})
+    context = rc.read_preferred_context(tmp_path, now=datetime(2026, 10, 8, 22, tzinfo=timezone.utc))
+    text = rc.render_context(context, char_budget=900)
+    assert "Last-known, not current" in text
+    assert "not an all-clear" in text
+    assert "Attributed source warnings" in text
+    assert "Credit stress" in text
+    assert len(text) <= 900
+
+
+# R11: all settled Risk Envelope readers, not just the live-preferred chat
+# fallback, must distinguish dated last-known evidence from a current session.
+def test_direct_settled_reader_shows_last_known_session_gap(tmp_path):
+    from datetime import datetime, timezone
+    native = envelope()
+    write(tmp_path, "data/risk_envelope/latest.json", native)
+    write(tmp_path, "data/market_state/latest.json", {"asof": native["source_session"]})
+    now = datetime(2026, 10, 8, 22, tzinfo=timezone.utc)
+    direct = rc.read_context(tmp_path, now=now)
+    assert direct["usable"] is True
+    assert direct["source_current_at_turn"] is False
+    assert direct["expected_completed_session"] == "2026-10-08"
+    assert "Last-known, not current" in rc.render_context(direct)
+
+
+def test_compact_settled_context_is_not_a_second_false_calm_read():
+    native = envelope()
+    native_before = deepcopy(native)
+    out = rc.compact_context(native, now=NOW)
+    assert out["usable"] is True
+    assert out["source_current_at_turn"] is False
+    assert "not an all-clear" in rc.render_context(out)
+    assert native == native_before
+
+
+def test_compact_live_context_does_not_become_settled_by_calendar_annotation():
+    native = envelope()
+    native["revision"] = "live_provisional"
+    result = rc.compact_context(native, now=NOW)
+    assert result["usable"] is True
+    assert "source_current_at_turn" not in result
+    assert "expected_completed_session" not in result
+
+
+# R12: settled data newer than the latest COMPLETED session is unverified,
+# not a stale older observation and not an all-clear.
+@pytest.mark.parametrize("moment,source_day,produced", [
+    ("2026-10-07T14:01:00Z", "2026-10-07", "2026-10-07T12:01:00Z"),
+    ("2026-10-08T20:30:00Z", "2026-10-08", "2026-10-08T20:15:00Z"),
+])
+def test_current_session_settled_source_before_completion_is_unverified_not_stale(
+        moment, source_day, produced):
+    from datetime import datetime
+
+    native = envelope()
+    native["source_session"] = native["as_of"] = source_day
+    native["measured_state"]["as_of"] = source_day
+    native["rotation_context"]["as_of"] = source_day
+    native["observed_at"] = native["produced_at"] = produced
+    native["stale_after"] = None
+    out = rc.compact_context(native, now=datetime.fromisoformat(moment.replace("Z", "+00:00")))
+    assert out["usable"] is True
+    assert out["expected_completed_session"] < source_day
+    assert out["source_current_at_turn"] is None
+    en = rc.render_context(out)
+    zh = rc.render_context(out, lang="zh")
+    assert "not yet a completed US session" in en
+    assert "not an all-clear" in en
+    assert "Last-known, not current" not in en
+    assert "尚未完成" in zh
+    assert len(en) <= 1800 and len(zh) <= 1800

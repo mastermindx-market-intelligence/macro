@@ -1,0 +1,149 @@
+{
+  "kind": "synthetic_native_contract_replay",
+  "base": "9e8f22ec1fc03c046bc1f38b3f397d5f6c9965ef",
+  "original_adapter_sha256": "d55199b132d0b37906c07357cb454889443fb833439c5fdbcc1339a2c2b945df",
+  "candidate_adapter_sha256": "16bde15e68550cd871eb94b2b1ce259fc2b8555a274a3695197a5c2cb1fbb61d",
+  "n_cases": 15,
+  "original_matches": 8,
+  "candidate_matches": 15,
+  "measured_score_verdict_and_authority_unchanged": true,
+  "historical_backtest": false,
+  "production_verification": false,
+  "cases": [
+    {
+      "leadership_state": "INTACT",
+      "radar_state": "calm",
+      "expected_descriptive_stage": "NONE",
+      "original": "NONE",
+      "candidate": "NONE",
+      "original_matches": true,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "INTACT",
+      "radar_state": "watch",
+      "expected_descriptive_stage": "NONE",
+      "original": "NONE",
+      "candidate": "NONE",
+      "original_matches": true,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "INTACT",
+      "radar_state": "caution",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": "FRAGILE",
+      "candidate": "FRAGILE",
+      "original_matches": true,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "INTACT",
+      "radar_state": "elevated",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": "NONE",
+      "candidate": "FRAGILE",
+      "original_matches": false,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "INTACT",
+      "radar_state": "risk-off",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": "NONE",
+      "candidate": "FRAGILE",
+      "original_matches": false,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "CRACKING",
+      "radar_state": "calm",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": null,
+      "candidate": "FRAGILE",
+      "original_matches": false,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "CRACKING",
+      "radar_state": "watch",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": null,
+      "candidate": "FRAGILE",
+      "original_matches": false,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "CRACKING",
+      "radar_state": "caution",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": null,
+      "candidate": "FRAGILE",
+      "original_matches": false,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "CRACKING",
+      "radar_state": "elevated",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": null,
+      "candidate": "FRAGILE",
+      "original_matches": false,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "CRACKING",
+      "radar_state": "risk-off",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": null,
+      "candidate": "FRAGILE",
+      "original_matches": false,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "BROKEN",
+      "radar_state": "calm",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": "FRAGILE",
+      "candidate": "FRAGILE",
+      "original_matches": true,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "BROKEN",
+      "radar_state": "watch",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": "FRAGILE",
+      "candidate": "FRAGILE",
+      "original_matches": true,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "BROKEN",
+      "radar_state": "caution",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": "FRAGILE",
+      "candidate": "FRAGILE",
+      "original_matches": true,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "BROKEN",
+      "radar_state": "elevated",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": "FRAGILE",
+      "candidate": "FRAGILE",
+      "original_matches": true,
+      "candidate_matches": true
+    },
+    {
+      "leadership_state": "BROKEN",
+      "radar_state": "risk-off",
+      "expected_descriptive_stage": "FRAGILE",
+      "original": "FRAGILE",
+      "candidate": "FRAGILE",
+      "original_matches": true,
+      "candidate_matches": true
+    }
+  ]
+}

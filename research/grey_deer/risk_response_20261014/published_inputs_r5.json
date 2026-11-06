@@ -1,0 +1,22 @@
+{
+  "kind": "published_inputs_candidate_composition",
+  "source_commit": "c95766ce92a2ffe75f45d464110c9c7534bd409d",
+  "observation_mode": "read_only_reconstruction_at_current_read_time",
+  "observed_at": "2026-10-15T10:52:13.026073+00:00",
+  "source_sha256": {
+    "data/market_state/latest.json": "b96f564e1e86fd3588bf9d22900c6bdbbf59633442f0eef03bd3783db1a48648",
+    "data/leadership_crack/latest.json": "516b26fbb0fa5d9e2e30e665dbd280230d05d46f2b12d91812177956e3380d87",
+    "data/risk_envelope/latest.json": "4035fb8c4c576297a19d150b010585bab58a2e6a6f2db5cc60d070a57a4c777a"
+  },
+  "published_leadership": {"asof": "2026-10-14", "state": "CRACKING"},
+  "published_envelope": {"stage": null, "stage_reason": "required_source_state_unmapped", "contributing_sources": ["risk-radar-us"], "unmapped_required_sources": ["leadership-crack-latest"]},
+  "candidate_envelope": {"stage": "FRAGILE", "stage_reason": "observed_settled_evidence", "contributing_sources": ["leadership-crack-latest", "risk-radar-us"], "unmapped_required_sources": [], "unreadable_sources": [], "display_only": true},
+  "measured_score": 44,
+  "measured_verdict": "MIXED",
+  "foreground_contains_native_warning": true,
+  "source_session": "2026-10-14",
+  "input_documents_unchanged": true,
+  "production": false,
+  "historically_issued_alert": false,
+  "new_forecast_or_sizing_authority": false
+}

@@ -1,0 +1,81 @@
+{
+  "kind": "offline_real_chromium_component_proof",
+  "cases": [
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "settled_warning": true,
+      "live_warning": true,
+      "aggregate_stage": "UNKNOWN",
+      "native_cause": true
+    },
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "settled_warning": true,
+      "live_warning": true,
+      "aggregate_stage": "UNKNOWN",
+      "native_cause": true
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "settled_warning": true,
+      "live_warning": true,
+      "aggregate_stage": "UNKNOWN",
+      "native_cause": true
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "settled_warning": true,
+      "live_warning": true,
+      "aggregate_stage": "UNKNOWN",
+      "native_cause": true
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "settled_warning": true,
+      "live_warning": true,
+      "aggregate_stage": "UNKNOWN",
+      "native_cause": true
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "settled_warning": true,
+      "live_warning": true,
+      "aggregate_stage": "UNKNOWN",
+      "native_cause": true
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "settled_warning": true,
+      "live_warning": true,
+      "aggregate_stage": "UNKNOWN",
+      "native_cause": true
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "settled_warning": true,
+      "live_warning": true,
+      "aggregate_stage": "UNKNOWN",
+      "native_cause": true
+    }
+  ],
+  "passed": 8,
+  "network_blocked": true,
+  "production": false,
+  "full_application": false
+}

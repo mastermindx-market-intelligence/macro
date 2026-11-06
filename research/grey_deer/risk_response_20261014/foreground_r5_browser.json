@@ -1,0 +1,117 @@
+{
+  "kind": "offline_real_template_foreground_browser_proof",
+  "passed": 10,
+  "synthetic_auth_and_market_inputs": true,
+  "external_network": false,
+  "production": false,
+  "cases": [
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "visible_above_gauge": true,
+      "fits_viewport": true,
+      "anonymous_gate_preserved": true,
+      "keyboard_dialog_and_return": true,
+      "live_updates_with_dialog_closed": true,
+      "dated_fallback": true,
+      "screenshot": "research/grey_deer/risk_response_20261014/foreground_browser/dark-en-1440.png"
+    },
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "visible_above_gauge": true,
+      "fits_viewport": true,
+      "anonymous_gate_preserved": true,
+      "keyboard_dialog_and_return": true,
+      "live_updates_with_dialog_closed": true,
+      "dated_fallback": true,
+      "screenshot": "research/grey_deer/risk_response_20261014/foreground_browser/dark-en-390.png"
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "visible_above_gauge": true,
+      "fits_viewport": true,
+      "anonymous_gate_preserved": true,
+      "keyboard_dialog_and_return": true,
+      "live_updates_with_dialog_closed": true,
+      "dated_fallback": true,
+      "screenshot": "research/grey_deer/risk_response_20261014/foreground_browser/dark-zh-1440.png"
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "visible_above_gauge": true,
+      "fits_viewport": true,
+      "anonymous_gate_preserved": true,
+      "keyboard_dialog_and_return": true,
+      "live_updates_with_dialog_closed": true,
+      "dated_fallback": true,
+      "screenshot": "research/grey_deer/risk_response_20261014/foreground_browser/dark-zh-390.png"
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "visible_above_gauge": true,
+      "fits_viewport": true,
+      "anonymous_gate_preserved": true,
+      "keyboard_dialog_and_return": true,
+      "live_updates_with_dialog_closed": true,
+      "dated_fallback": true,
+      "screenshot": "research/grey_deer/risk_response_20261014/foreground_browser/light-en-1440.png"
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "visible_above_gauge": true,
+      "fits_viewport": true,
+      "anonymous_gate_preserved": true,
+      "keyboard_dialog_and_return": true,
+      "live_updates_with_dialog_closed": true,
+      "dated_fallback": true,
+      "screenshot": "research/grey_deer/risk_response_20261014/foreground_browser/light-en-390.png"
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "visible_above_gauge": true,
+      "fits_viewport": true,
+      "anonymous_gate_preserved": true,
+      "keyboard_dialog_and_return": true,
+      "live_updates_with_dialog_closed": true,
+      "dated_fallback": true,
+      "screenshot": "research/grey_deer/risk_response_20261014/foreground_browser/light-zh-1440.png"
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "visible_above_gauge": true,
+      "fits_viewport": true,
+      "anonymous_gate_preserved": true,
+      "keyboard_dialog_and_return": true,
+      "live_updates_with_dialog_closed": true,
+      "dated_fallback": true,
+      "screenshot": "research/grey_deer/risk_response_20261014/foreground_browser/light-zh-390.png"
+    },
+    {
+      "initial_state": "quiet",
+      "live_date_physically_visible": true,
+      "outage_not_all_clear": true,
+      "validated_quiet_can_clear": true
+    },
+    {
+      "initial_state": "unavailable",
+      "live_date_physically_visible": true,
+      "outage_not_all_clear": true,
+      "validated_quiet_can_clear": true
+    }
+  ]
+}

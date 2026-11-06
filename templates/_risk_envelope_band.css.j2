@@ -86,6 +86,52 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-live-source-rows {white-space:pre-line; font-size:var(--fs-label); line-height:1.6; overflow-wrap:anywhere;}
 #dlg-risk #gde-live-sources[hidden] {display:none;}
 
+/* Chairman 2026-10-15 bounded foreground strip: the ONE pre-gauge risk summary
+   (outside the dialog). Subdued warning material from current theme tokens; the
+   [hidden] rule must beat the display values below. No flashing, no new fonts, no
+   global styling; readable wrap down to 390px. */
+#risk-response-summary {
+  display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); column-gap:24px;
+  grid-column:1/-1; margin:0 0 12px; padding:24px;
+  border:1px solid var(--line);
+  border-radius:var(--r-card, 12px);
+  background:var(--panel2);
+  color:var(--ink-1);
+}
+html[data-theme="light"] #risk-response-summary {
+  background:var(--panel);
+  box-shadow:var(--card-shadow);
+}
+#risk-response-summary[hidden] {display:none !important;}
+#risk-response-summary .rr-briefing-main {min-width:0;}
+#risk-response-summary .rr-briefing-response {min-width:0; border-left:1px solid var(--line); padding-left:24px;}
+#risk-response-summary .rr-head h2 {margin:0; font-size:var(--fs-num-lg); line-height:1.25; font-weight:650; color:var(--ink-1);}
+#risk-response-summary .rr-date {margin:8px 0 0; font-size:var(--fs-label); line-height:1.4; color:var(--ink-2); font-variant-numeric:tabular-nums; overflow-wrap:anywhere;}
+#risk-response-summary .rr-response-label {margin:0 0 10px; font-size:var(--fs-label); line-height:1.4; font-weight:600; color:var(--ink-2);}
+#risk-response-summary .rr-response-label .l-en {letter-spacing:0.08em;}
+#risk-response-summary .rr-response-label .l-zh {letter-spacing:0;}
+#risk-response-summary .rr-line {margin:0; font-size:var(--fs-body); line-height:1.5; color:var(--ink-1); overflow-wrap:anywhere;}
+#risk-response-summary #risk-response-cause {margin-top:16px;}
+#risk-response-summary #risk-response-action {font-size:var(--fs-num-lg); line-height:1.35; font-weight:700;}
+#risk-response-summary .rr-open {display:inline-flex; align-items:center; justify-content:center; margin-top:16px; min-height:44px; padding:10px 18px; font:inherit; font-size:var(--fs-sm); font-weight:600; text-align:center; cursor:pointer; border:1px solid var(--line); border-radius:var(--r-ctl, 8px); background:transparent; color:var(--ink-1);}
+#risk-response-summary .rr-open:hover {border-color:var(--ink-3);}
+#risk-response-summary .rr-open:focus-visible {outline:2px solid var(--link); outline-offset:2px;}
+/* Chairman 2026-10-18: neutral even borders; semantic emphasis belongs in labeled ink. */
+#risk-response-summary[data-state="warning"] .rr-head h2,
+#risk-response-summary[data-state="partial-warning"] .rr-head h2 {color:var(--ink-warn);}
+#risk-response-summary[data-state="measured-risk-off"] .rr-head h2 {color:var(--ink-act);}
+#risk-response-summary[data-state="unavailable"] {background:var(--panel2); color:var(--ink-2);}
+html[data-theme="light"] #risk-response-summary[data-state="unavailable"] {background:var(--panel2); box-shadow:none;}
+#risk-response-summary[data-state="unavailable"] .rr-head h2 {color:var(--ink-2);}
+#risk-response-summary[data-state="unavailable"] #risk-response-action {color:var(--ink-2);}
+#risk-response-summary[data-state="unavailable"] #risk-response-cause {display:none;}
+@media(max-width:640px) {
+  #risk-response-summary {display:block; padding:16px;}
+  #risk-response-summary .rr-briefing-main {padding-bottom:16px;}
+  #risk-response-summary .rr-briefing-response {border-left:0; border-top:1px solid var(--line); padding-left:0; padding-top:16px;}
+  #risk-response-summary .rr-open {display:flex; width:100%;}
+}
+
 /* ── EW-P4.T1 descriptive early-warning observation (consumer-only). Chairman
    2026-10-18 rule: even one-piece borders on ALL four sides, neutral or
    surface-warn-subtle backgrounds from tokens, no edge stripe / accent rail /

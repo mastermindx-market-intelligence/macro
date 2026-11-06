@@ -721,3 +721,137 @@ class TestIssuedWarningDuration:
         # The fact remains source detail: it does not change the source-native score/state.
         assert radar["state"] == "caution"
         assert radar["score"] == ms["radar"]["top_score"]
+
+
+class TestNativeProducerVocabulary:
+    """The real producers' early/loud states must survive the descriptive adapter.
+
+    These fixtures do not promote spread, forecasts, sizing or recovery authority.
+    They exercise source state -> shared adapter -> real composer, not map literals.
+    """
+
+    def test_real_leadership_cracking_state_is_not_mistaken_for_unmapped(self, gd1):
+        from copy import deepcopy
+        import pandas as pd
+        from engine.leadership_crack import _state_machine
+
+        idx = pd.DatetimeIndex([gd1["session"]])
+        states, sinces = _state_machine(
+            pd.Series([-2.0], index=idx),
+            pd.Series([-0.04], index=idx),
+            pd.Series([0.10], index=idx),
+        )
+        assert states.iloc[0] == "CRACKING"
+        ms = deepcopy(gd1["market_state"])
+        lead = deepcopy(gd1["leadership_crack"])
+        lead.update(state=states.iloc[0], state_since=str(sinces.iloc[0].date()))
+        before = deepcopy((ms, lead))
+        env = _compose(build_sources(ms, lead, gd1["session"]), session=gd1["session"])
+        source = next(s for s in env["provenance"]["sources"] if s["source_id"] == "leadership-crack-latest")
+        assert source["state"] == "CRACKING"
+        assert source["hazard_stage"] == "FRAGILE"
+        assert env["hazard_summary"]["stage"] == "FRAGILE"
+        assert env["measured_state"]["verdict"] == "RISK_ON"
+        assert env["measured_state"]["score"] == ms["score"]
+        assert (ms, lead) == before
+        assert env["authority"]["envelope_may_gate"] is False
+
+    @pytest.mark.parametrize("state,expected", [
+        ("calm", "NONE"), ("watch", "NONE"), ("caution", "FRAGILE"),
+        ("elevated", "FRAGILE"), ("risk-off", "FRAGILE"),
+    ])
+    def test_actual_market_state_radar_transport_preserves_native_warning(self, gd1, monkeypatch, state, expected):
+        from copy import deepcopy
+        from engine import market_state
+
+        monkeypatch.setattr(market_state, "_rr_scorecard_track", lambda market: None)
+        ms = deepcopy(gd1["market_state"])
+        radar = market_state._radar_to_rd({
+            "schema": "risk_radar.v2", "asof": gd1["session"], "state": state,
+            "top_score": 85, "can_force": False,
+            "dominant_label_en": "Rates / inflation shock", "dominant_label_zh": "利率／通胀冲击",
+        })
+        ms["radar"] = radar
+        lead = dict(gd1["leadership_crack"], state="INTACT", dislocation=False)
+        env = _compose(build_sources(ms, lead, gd1["session"]), session=gd1["session"])
+        source = next(s for s in env["provenance"]["sources"] if s["source_id"] == "risk-radar-us")
+        assert source["state"] == state
+        assert source["hazard_stage"] == expected
+        assert env["hazard_summary"]["stage"] == expected
+        assert env["measured_state"]["score"] == ms["score"]
+        assert env["authority"]["envelope_may_gate"] is False
+        assert env["authority"]["envelope_may_size"] is False
+        assert source["stage_ceiling"] == "FRAGILE"
+
+    def test_recognising_cracking_does_not_admit_an_old_required_observation(self, gd1):
+        lead = dict(gd1["leadership_crack"], state="CRACKING", asof="2026-08-17")
+        env = _compose(build_sources(gd1["market_state"], lead, gd1["session"]), session=gd1["session"])
+        source = next(s for s in env["provenance"]["sources"] if s["source_id"] == "leadership-crack-latest")
+        assert source["state"] == "CRACKING"
+        assert source["as_of"] == "2026-08-17"
+        assert source["coverage"] == "STALE"
+        assert env["hazard_summary"]["stage"] is None
+
+    def test_a_genuinely_new_required_state_is_still_unknown(self, gd1):
+        lead = dict(gd1["leadership_crack"], state="UNRECOGNISED_FUTURE_STATE")
+        env = _compose(build_sources(gd1["market_state"], lead, gd1["session"]), session=gd1["session"])
+        assert env["hazard_summary"]["stage"] is None
+
+
+class TestRadarOwnSessionContinuity:
+    """Preserve the producer clock instead of borrowing the parent's session.
+
+    Legacy records without this additive field retain their prior representation;
+    a current producer's explicit null or older date must never be laundered.
+    """
+
+    def test_market_state_transport_retains_native_radar_session(self, monkeypatch):
+        from copy import deepcopy
+        from engine import market_state
+        monkeypatch.setattr(market_state, "_rr_scorecard_track", lambda market: None)
+        native = {"state": "elevated", "top_score": 85, "asof": "2026-10-08", "can_force": False}
+        before = deepcopy(native)
+        transported = market_state._radar_to_rd(native)
+        assert transported.get("asof") == "2026-10-08"
+        assert transported["state"] == "elevated"
+        assert transported["top_score"] == 85
+        assert transported["can_force"] is False
+        assert native == before
+
+    @pytest.mark.parametrize("native_date,usable", [("2026-10-14", True), ("2026-10-08", False), (None, False), (True, False)])
+    def test_declared_radar_clock_not_container_clock_controls_current_qualification(self, native_date, usable):
+        from scripts.build_risk_envelope import _risk_radar_read
+        radar = {"state": "elevated", "top_score": 85, "asof": native_date}
+        read = _risk_radar_read(radar, "2026-10-14", "2026-10-14")
+        assert read.usable is usable
+        assert read.as_of == (native_date if isinstance(native_date, str) else None)
+        assert read.state == "elevated"
+        assert read.score == 85
+        assert read.admitted_stage == "FRAGILE"
+
+    def test_fresh_live_container_cannot_refresh_older_declared_radar_session(self):
+        from scripts.build_risk_envelope import _risk_radar_read
+        read = _risk_radar_read({"state": "risk-off", "asof": "2026-10-08"},
+                                "2026-10-14", "2026-10-14", stale_override=False)
+        assert read.as_of == "2026-10-08"
+        assert read.usable is False
+
+    def test_legacy_absent_field_keeps_its_prior_container_basis(self):
+        from scripts.build_risk_envelope import _risk_radar_read
+        read = _risk_radar_read({"state": "caution"}, "2026-10-14", "2026-10-14")
+        assert read.as_of == "2026-10-14"
+        assert read.usable is True
+
+
+def test_fresh_native_radar_is_not_made_stale_by_an_older_measured_container():
+    """Source clocks are independent in both directions, not only for rejection."""
+    from scripts.build_risk_envelope import _risk_radar_read
+    current = _risk_radar_read({"state": "elevated", "asof": "2026-10-14"},
+                               "2026-10-14", "2026-10-08")
+    assert current.as_of == "2026-10-14"
+    assert current.usable is True
+    legacy = _risk_radar_read({"state": "elevated"}, "2026-10-14", "2026-10-08")
+    assert legacy.usable is False
+    explicitly_stale = _risk_radar_read({"state": "elevated", "asof": "2026-10-14"},
+                                        "2026-10-14", "2026-10-08", stale_override=True)
+    assert explicitly_stale.usable is False

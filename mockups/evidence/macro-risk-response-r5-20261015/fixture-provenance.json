@@ -1,0 +1,14 @@
+{
+  "kind": "synthetic_candidate_template_fixture",
+  "production": false,
+  "network_consumers_removed": true,
+  "credentials": false,
+  "fixture_sha256": "a2c39d6512fe1ba777927e90df4cf4462795e04354c0fdfee31c2276d103a365",
+  "source_sha256": {
+    "templates/dashboard.html.j2": "ed8bb27b16ed1fe18cc105fdb1ec66925d5275c2bcc0f33c14af71f019a85665",
+    "templates/_risk_envelope_band.html.j2": "e40071710cb110a1c789dc4195d97788b8afa0c2f38214cbb5d53d9bc58da48e",
+    "templates/_risk_envelope_band.css.j2": "3c853e9e80f36d5cc3d2c73992853b8adef56bcb75d55841355d0707f10fa097",
+    "templates/risk_envelope_live.js": "7c5140ac4cf707b76f85a866e3aaf9c1a1a6f0cb4df95883f58861a12e27e850",
+    "site/risk_envelope_live.js": "7c5140ac4cf707b76f85a866e3aaf9c1a1a6f0cb4df95883f58861a12e27e850"
+  }
+}

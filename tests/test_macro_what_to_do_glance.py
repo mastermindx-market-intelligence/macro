@@ -18,7 +18,7 @@ def _glance_source() -> str:
 
 def _render_glance(
     *, catalysts=True, policy_state="QUIET", risk_elevated=True,
-    color="yellow", participation_scope=None,
+    color="yellow", participation_scope=None, qualified_quiet=True,
 ) -> str:
     state = {
         "color": color,
@@ -37,7 +37,17 @@ def _render_glance(
         if catalysts
         else []
     )
-    return jinja2.Environment().from_string(_glance_source()).render(
+    # This fragment now uses the same foreground presentation macro as the full
+    # page. Supply the real dependency, not a stub. The default quiet envelope
+    # isolates the established three-row/participation contracts; separate tests
+    # exercise missing/qualified-warning context and its visible precedence.
+    environment = jinja2.Environment(loader=jinja2.FileSystemLoader(ROOT / "templates"), autoescape=True)
+    source = '{% from "_risk_envelope_band.html.j2" import risk_foreground %}' + _glance_source()
+    quiet = {"schema":"mastermind.risk_envelope/v1", "market":"US", "source_session":"2026-10-14",
+             "hazard_summary":{"stage":"NONE", "contributing_sources":[]}, "measured_state":{"usable":True}}
+    return environment.from_string(source).render(
+        risk_envelope=quiet if qualified_quiet else None,
+        _risk_fg_expected="2026-10-14",
         market_state=state,
         MS=state,
         macro_catalysts=events,
@@ -47,12 +57,17 @@ def _render_glance(
     )
 
 
+def _visible_primary(html):
+    import re
+    return re.search(r'data-wtd-primary.*?<div class="mx5-action-label"[^>]*>(.*?)</div>', html, re.S)[1]
+
+
 def test_glance_is_capped_at_three_rendered_rows():
     """The face stays a decision glance instead of growing back into a report."""
     html = _render_glance()
     assert html.count('class="mx5-action-item') == 3
     assert "data-wtd-primary" in html
-    assert "Trade small. Stay selective." in html
+    assert "Trade small. Stay selective." in _visible_primary(html)
     assert "FOMC rate decision: expect noise; ignore the first move." in html
     assert "Avoid chasing extended leaders." in html
 
@@ -99,7 +114,7 @@ def test_primary_copy_is_participation_aware_in_selective_risk_on():
         },
     )
 
-    assert "Stay selective. Follow confirmed leadership and fresh turns." in html
+    assert "Stay selective. Follow confirmed leadership and fresh turns." in _visible_primary(html)
     assert "Follow the trend. Add on strength." not in html
 
 
@@ -117,3 +132,10 @@ def test_glance_uses_the_dashboard_typography_without_alert_labels():
     assert "font-weight:760" not in css
     assert "text-transform:uppercase" not in css
     assert "mx5-action-verb" not in html
+
+
+def test_missing_risk_context_is_not_permission_to_add_risk():
+    html = _render_glance(color="green", qualified_quiet=False)
+    assert "Verify conditions before adding risk." in _visible_primary(html)
+    assert "Add where setups confirm." not in _visible_primary(html)
+    assert html.count('class="mx5-action-item') == 3
