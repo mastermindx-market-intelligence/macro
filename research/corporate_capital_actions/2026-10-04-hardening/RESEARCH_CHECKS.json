@@ -1,0 +1,46 @@
+{
+  "schema": "commission13.research_arithmetic_receipt.v1",
+  "audit_date": "2026-10-04",
+  "research_documents_commit": "be947a675bb8a1693f3d78ca41bb6e4dffc04f7a",
+  "scope": "Independent local exact-rational arithmetic checks of hypothetical examples; not tests of a ledger implementation, live source, vendor or forecasting model.",
+  "check_count": 16,
+  "all_passed": true,
+  "checks": [
+    {"name": "treasury acquisition retirement reissue", "passed": true, "actual": "[100, 92, 92, 95, 100]", "expected": "[100, 92, 92, 95, 100]"},
+    {"name": "ASR total versus incremental", "passed": true, "actual": "90", "expected": "90"},
+    {"name": "primary secondary proceeds shares", "passed": true, "actual": "(80, 76, 104, Fraction(5, 52))", "expected": "(80, 76, 104, Fraction(5, 52))"},
+    {"name": "employee net delivery", "passed": true, "actual": "2/5", "expected": "2/5"},
+    {"name": "split once residual", "passed": true, "actual": "10", "expected": "10"},
+    {"name": "weighted shares and EPS", "passed": true, "actual": "(Fraction(280, 3), Fraction(9, 7), Fraction(33, 28))", "expected": "(Fraction(280, 3), Fraction(9, 7), Fraction(33, 28))"},
+    {"name": "convertible settlement branches", "passed": true, "actual": "(Fraction(10, 1), Fraction(5, 1))", "expected": "(10, 5)"},
+    {"name": "shared capacity", "passed": true, "actual": "(80, 40, True)", "expected": "(80, 40, True)"},
+    {"name": "debt and cash", "passed": true, "actual": "(120, 18)", "expected": "(120, 18)"},
+    {"name": "anchor and period overlap", "passed": true, "actual": "(95, 6)", "expected": "(95, 6)"},
+    {"name": "spin merger entitlement", "passed": true, "actual": "(Fraction(5, 2), Fraction(10, 1), 40, Fraction(1, 1), 4)", "expected": "(Fraction(5, 2), 10, 40, 1, 4)"},
+    {"name": "preferred proceeds", "passed": true, "actual": "(250, 249)", "expected": "(250, 249)"},
+    {"name": "original holder recovery", "passed": true, "actual": "(420, Fraction(7, 2), Fraction(210, 1), Fraction(-3, 10), 780)", "expected": "(420, Fraction(7, 2), 210, Fraction(-3, 10), 780)"},
+    {"name": "interim cash breach", "passed": true, "actual": "-20", "expected": "-20"},
+    {"name": "experiment budget", "passed": true, "actual": "(6, 16, 10)", "expected": "(6, 16, 10)"},
+    {"name": "binomial bounds rounded percent", "passed": true, "actual": "[95.13, 98.76, 99.5]", "expected": "[95.13, 98.76, 99.5]"}
+  ],
+  "one_sided_95_percent_correctness_lower_bounds_zero_errors": {
+    "60": 0.9512970866899025,
+    "240": 0.987595361949591,
+    "600": 0.9950195566196387
+  },
+  "native_git_diff_verified": {
+    "base": "79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f",
+    "head": "be947a675bb8a1693f3d78ca41bb6e4dffc04f7a",
+    "files_added": 5,
+    "existing_files_modified": 0,
+    "existing_files_deleted": 0,
+    "scope": "Five additive Markdown research documents under research/corporate_capital_actions/2026-10-04-hardening/"
+  },
+  "remote_batch_content_hash_and_structure_check": {
+    "status": "BLOCKED_NOT_RUN",
+    "reason": "Composite remote shell verification was blocked by the tool safety gate. No success or file hashes from that command are claimed."
+  },
+  "production_tests_run": false,
+  "market_outcome_tests_run": false,
+  "financial_authority_changed": false
+}
