@@ -1,0 +1,11 @@
+# US Prophet deep-stock completed-price recovery
+
+Mission: preserve the existing deep-stock producer while preventing a historical-only successful response from masking a missing completed NYSE close. Parent: WS:PROPHET-US-AVAILABILITY. Current live Chairman direction is end-to-end restoration. Procedure pin: Mastermind a78b8fe23d8e1ed129880ac47e97ebe96afa8aea. Macro base: 11485597cc53b3137346084aae4623cceed28a3f.
+
+The integrated source copy exposed 243/245 preferred data/stocks tapes ending Sep-14; fresh S&P breadth alone cannot supersede those preferred deep histories. The source collector retries exceptions but accepts price-incomplete 200 responses and counts historical frames toward its 70% floor. No source-selection or adjustment-basis override is permitted to hide this.
+
+Bounded design: capture one existing NYSE completed-session reference per stock_prices fetch; require a finite positive close on that date within the existing batch retry budget; preserve best partial responses and the existing whole-universe 70% floor; exclude stale returned frames before the normal health/store consumer can publish them as a current fetch. Verify again after split-basis/full-history recovery. Keep all retention, confirmed-dead, basis-repair, calendar and other adapter behaviors unchanged. No new provider, scheduler, budget, registry or trading rule.
+
+Execution: failing tests over the actual StockPriceAdapter fetch and run_adapter consumer; narrow repair in collectors/sector_holdings.py; existing retention/basis/exit regression suites; register hermetic current-close tests under code gates; real-provider producer-to-private-store proof; independent review, exact-head checks and current-base composition before any release. The running natural nightly and sibling source writers remain untouched.
+
+Workspace: the installed mmx-workspace route is hard-bound to Mastermind, not Macro; it is not repointed or impersonated. This Macro-only isolated Git worktree uses the existing ignored repo workspace convention. Direct execution reason: NO_ELIGIBLE_PRE_EFFECT_WORKER plus principal integration judgment; no approved Executive ingress is available in this tool session. No independent review is claimed for principal-authored code.

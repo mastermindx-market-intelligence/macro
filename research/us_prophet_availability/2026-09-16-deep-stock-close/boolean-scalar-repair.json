@@ -1,0 +1,12 @@
+{
+  "proof_class": "source_owner_regression",
+  "production": false,
+  "provider_calls": 0,
+  "previous_head": "6159410678619d148531ba3e2ecbb1ad7a537d04",
+  "collector_sha256": "764fc3fb5050414c9eaccca1579768342fdb2f03fec341e838c23b284961503c",
+  "focused_red": "3 failed, 6 passed, 19 deselected",
+  "focused_green": "9 passed, 19 deselected",
+  "owner_green": "111 passed, 1 skipped",
+  "mutation": "remove np.bool_ rejection",
+  "mutation_result": "3 failed, 6 passed, 19 deselected"
+}

@@ -462,7 +462,7 @@ def _stocks_resp(stored: pd.DataFrame, tail: int | None = None, factor: float = 
         close = base["close"].to_numpy() / factor
         idx = base.index
     else:
-        idx = pd.bdate_range(end="2026-06-30", periods=n_max)
+        idx = pd.bdate_range(end=stored.index.max(), periods=n_max)
         close = np.linspace(100.0, 150.0, n_max) / factor
     return pd.DataFrame({"Close": close, "High": close, "Low": close,
                          "Volume": 1e6}, index=idx)
@@ -471,8 +471,12 @@ def _stocks_resp(stored: pd.DataFrame, tail: int | None = None, factor: float = 
 def _make_stocks_adapter(monkeypatch, tickers: list[str], responder, calls: list):
     a = sh.StockPriceAdapter()
     monkeypatch.setattr(sh, "top10_union", lambda: list(tickers))
+    # Basis fixtures declare their own observed session. A max response must end
+    # on that same session, not the old hard-coded June date beside a current tail.
+    fixture_session = store.read("stocks", tickers[0]).index.max().date()
+    monkeypatch.setattr(sh.nyse_calendar, "expected_last_session", lambda now=None: fixture_session)
 
-    def fake_download(batch, period):
+    def fake_download(batch, period, **kwargs):
         calls.append((period, list(batch)))
         return responder(batch, period)
 
