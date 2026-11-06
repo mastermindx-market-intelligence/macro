@@ -47,11 +47,10 @@ html[data-theme="light"] .po-card{box-shadow:var(--card-shadow)}
 .po-dir-down{color:var(--ink-down,var(--down))}
 .po-dir-flat{color:var(--muted)}
 
-/* ── header: two explicit columns — status/strategy · quote ─────────────────
-   The left column owns the stance chip plus the supplied strategy/horizon
-   facts; the right column owns the whole quote hierarchy, right-anchored.
-   Below 360 the two columns stack; larger phones retain the same glanceable
-   status/quote pair as the desktop card. */
+/* ── identity-first header: company left · independent quote right ─────────
+   R8 keeps the name alongside its quote before the separate status/maturity
+   region. Rich supplied classification, priority and marks wrap in the name
+   column; status/strategy/horizon never compete with the quote clock. */
 .po-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:8px 12px;min-width:0}
 @media (max-width:359px){.po-head{grid-template-columns:minmax(0,1fr)}}
 .po-head-main{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0}
@@ -63,7 +62,7 @@ html[data-theme="light"] .po-card{box-shadow:var(--card-shadow)}
 .po-price{display:block;font-size:24px;font-weight:700;line-height:1.15;letter-spacing:-.01em;font-variant-numeric:tabular-nums;min-width:0;max-width:100%;overflow-wrap:anywhere}
 .po-price-missing{display:block;max-width:100%;overflow-wrap:anywhere}
 .po-currency{font-size:12px;font-weight:600;color:var(--muted)}
-.po-chg{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.po-chg{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;max-width:100%;overflow-wrap:anywhere}
 .po-asof{max-width:100%;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
 .po-missing{font-size:12px;color:var(--muted)}
 
@@ -78,15 +77,11 @@ html[data-theme="light"] .po-card{box-shadow:var(--card-shadow)}
 .po-nochart{display:flex;align-items:center;justify-content:center;height:72px;border:1px dashed var(--line);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--muted)}
 
 /* ── identity, priority, marks ────────────────────────────────────────────── */
-/* Row 1 shares one top baseline — ticker left, priority right; company,
-   industry and marks run full width beneath in source order. Grid placement
-   only: no markup re-ordering, nothing removed, absences keep their slots. */
-.po-id{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;column-gap:12px;row-gap:4px;min-width:0}
-.po-id .po-ticker{grid-column:1;grid-row:1}
-.po-id .po-priority{grid-column:2;grid-row:1}
-.po-id .po-name,
-.po-id .po-class,
-.po-id .po-marks{grid-column:1/-1}
+/* Source order is also the reading order. The identity column uses a
+   vertical flow so long bilingual refinements and priority remain readable
+   beside the quote at 390px and within a four-column desktop grid. */
+.po-id{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.po-status{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 12px}
 .po-ticker{font-size:18px;font-weight:800;line-height:1.2;letter-spacing:.01em;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
 .po-name{font-size:14px;font-weight:500;color:var(--text);min-width:0;overflow-wrap:anywhere}
 .po-class{font-size:12px;color:var(--muted);min-width:0;overflow-wrap:anywhere}

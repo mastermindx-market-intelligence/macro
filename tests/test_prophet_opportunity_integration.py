@@ -170,3 +170,28 @@ def test_one_supplied_classification_does_not_gain_a_placeholder_neighbor():
     classification = card.select_one('.po-class')
     assert 'Financials' in classification.get_text()
     assert '—' not in classification.get_text() and not classification.select('.po-sep')
+
+
+def test_selected_r8_native_identity_and_quote_lead_independent_assessment():
+    # Exercise the production partial and presenter in both existing entry paths.
+    # Missing quotes never move, remove or become an assessment or a stage.
+    for prefix in ("today", "screener"):
+        for row in (_source(), _source(price=None, price_as_of=None)):
+            card = _render([row], prefix).select_one(".po-card")
+            children = card.find_all(recursive=False)
+            head = children[0]
+            assert "po-head" in head["class"]
+            assert [n.get("data-po-field") for n in head.find_all(recursive=False)] == ["identity", "quote"]
+            status = card.select_one("[data-po-field='status']")
+            stages = card.select_one("[data-po-field='stages']")
+            chart = card.select_one("[data-po-field='chart']")
+            assert status.parent is card and stages.parent is card
+            assert children.index(status) < children.index(stages) < children.index(chart)
+            assert children.index(card.select_one(".po-signal-date")) < children.index(chart)
+            assert head.select_one(".po-ticker").get_text() == "BRK.B"
+            assert "Example Company" in head.get_text()
+            assert "Insurance" in head.get_text() and "Financials" in head.get_text()
+            assert head.select_one(".po-priority")
+            assert card.select_one(".po-cautions")
+            assert card.select_one(".po-terms[data-po-clock='terms']")
+            assert card.select_one(".po-footer .pv-setup-inline > summary")

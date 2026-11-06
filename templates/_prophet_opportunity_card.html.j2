@@ -179,21 +179,44 @@
 {#- Comparable identity: a real ticker. Only this enables the compare box. -#}
 {%- set _comparable = _idmap is not none and _idmap.get('ticker') is string and _idmap.get('ticker')|length > 0 -%}
 <article class="{% if native %}pvcard pv-has-setup {% endif %}po-card po-{{ _stance }}" id="po-{{ _cid }}" data-po-stance="{{ _stance }}"{% if native %} data-ticker="{{ native.ticker }}" data-stance="{{ _stance }}"{% if native.get("stage_key") %} data-stage="{{ native.stage_key }}"{% endif %}{% endif %}{% if _raw_id %} data-po-id="{{ _raw_id }}"{% endif %}>
-  {#- ── 1. status and quote ────────────────────────────────────────────────── #}
-  <header class="po-head" data-po-field="status">
-    <div class="po-head-main">
-      {#- The chip displays the RESOLVED stance. A supplied stance_label is an
-          override for a real read (buy/near/wait/hold/avoid); when the stance
-          resolves to unknown — absent, mistyped or off-enum — the label is
-          deliberately ignored, because a bespoke word over the neutral rail
-          would claim a read that is not there. -#}
-      <span class="po-chip">{%- if _stance == 'unknown' -%}<span class="l-en">{{ "Assessment unavailable" if native else _PO_STANCE_EN.unknown }}</span><span class="l-zh">{{ "暂无评估" if native else _PO_STANCE_ZH.unknown }}</span>{%- else -%}{%- set _sl = v.get('stance_label') -%}{%- if _sl is mapping and _sl.get('en') is string and _sl.get('en') or _sl is string and _sl -%}{{ _po_text(_sl, _PO_STANCE_EN[_stance], _PO_STANCE_ZH[_stance]) }}{%- else -%}<span class="l-en">{{ _PO_STANCE_EN[_stance] }}</span><span class="l-zh">{{ _PO_STANCE_ZH[_stance] }}</span>{%- endif -%}{%- endif -%}</span>
-      {% if not native or v.get("strategy") %}<span class="po-meta" data-po-field="strategy">{{ _po_text(v.get('strategy'), 'Strategy unavailable', '策略暂缺') }}</span>{% endif %}
-      {% if not native or v.get("horizon") %}<span class="po-meta" data-po-field="horizon">{{ _po_text(v.get('horizon'), 'Horizon unavailable', '周期暂缺') }}</span>{% endif %}
-      {% if native %}<span class="po-live-slots pv-ov pv-ovl">
-        {% set _tg = native.get('trigger') %}{% if _tg and _tg.get('kind') in ('fired','imminent') %}<span class="po-trigger{% if _tg.kind == 'imminent' %} po-trigger-soon{% endif %}" tabindex="0" data-tip-en="{{ _tg.get('tip_en') or '' }}" data-tip-zh="{{ _tg.get('tip_zh') or _tg.get('tip_en') or '' }}">{{ _po_text({'en':'Triggered' if _tg.kind == 'fired' else 'Imminent', 'zh':'已触发' if _tg.kind == 'fired' else '即将触发'}, '', '') }}</span>{% endif %}
-        <span class="pv-live" hidden></span>
-      </span>{% endif %}
+  {#- ── 1. identity and quote ────────────────────────────────────────────────── #}
+  <header class="po-head">
+    <div class="po-id" data-po-field="identity">
+      {%- if _idmap -%}
+        {%- set _tk = _idmap.get('ticker') -%}
+        {%- if _tk is string and _tk -%}
+        {% if native %}<a class="po-ticker fig pv-setup-stock-link" href="stock.html#{{ native.ticker|urlencode }}">{{ _tk }}</a>{% else %}<span class="po-ticker fig">{{ _tk }}</span>{% endif %}
+        {%- else -%}
+        <span class="po-missing"><span class="l-en">Identity unavailable</span><span class="l-zh">身份暂缺</span></span>
+        {%- endif -%}
+        {%- if _idmap.get('name') -%}<span class="po-name">{{ _po_text(_idmap.get('name'), _DASH, _DASH) }}</span>{%- endif -%}
+        {%- if _idmap.get('industry') or _idmap.get('sector') -%}
+        <span class="po-class">{% if _idmap.get('industry') %}{{ _po_text(_idmap.get('industry'), _DASH, _DASH) }}{% endif %}{%- if _idmap.get('industry') and _idmap.get('sector') %}<span class="po-sep" aria-hidden="true">·</span>{%- endif %}{% if _idmap.get('sector') %}{{ _po_text(_idmap.get('sector'), _DASH, _DASH) }}{% endif %}</span>
+        {%- endif -%}
+      {%- else -%}
+        <span class="po-missing"><span class="l-en">Identity unavailable</span><span class="l-zh">身份暂缺</span></span>
+      {%- endif -%}
+      <span class="po-priority" data-po-field="priority"{% if native and _prio and _prio.get('meaning') %} tabindex="0" data-tip-en="{{ _prio.meaning.en }}" data-tip-zh="{{ _prio.meaning.zh }}"{% endif %}>
+        {%- if _prio -%}
+        <span class="po-priority-label">{{ _po_text(_prio.get("label"), "Priority", "优先级") }}</span>
+        {%- if _po_has_amount(_prio.get('value')) -%}
+        <span class="po-priority-value fig">{{ _prio.get('value') }}</span>
+        {%- else -%}
+        <span class="po-missing">{{ _DASH }}</span>
+        {%- endif -%}
+        {% if not native %}{{ _po_text(_prio.get('meaning'), 'Meaning unavailable', '含义暂缺') }}{% else %}<span aria-hidden="true">ⓘ</span>{% endif %}
+        {%- else -%}
+        <span class="po-missing"><span class="l-en">Priority unavailable</span><span class="l-zh">优先级暂缺</span></span>
+        {%- endif -%}
+      </span>
+      {%- if _marks -%}
+      <ul class="po-marks" data-po-field="marks">
+        {%- for _m in _marks if _m -%}
+        {%- set _tone = _m.get('tone') if _m is mapping else '' -%}
+        <li class="po-mark po-mark-{{ 'warn' if _tone == 'warn' else ('info' if _tone == 'info' else 'neutral') }}"{% if _m is mapping and _m.get('explanation') %} tabindex="0" data-tip-en="{{ _m.explanation.en }}" data-tip-zh="{{ _m.explanation.zh }}"{% endif %}>{{ _po_text(_m, _DASH, _DASH) }}</li>
+        {%- endfor -%}
+      </ul>
+      {%- endif -%}
     </div>
     <div class="po-quote" data-po-field="quote" data-po-clock="quote"{% if native %} data-quote-container{% endif %}>
       {%- if _quote -%}
@@ -216,7 +239,35 @@
       {%- endif -%}
     </div>
   </header>
-  {#- ── 2. chart — its own observation label and its own clock ──────────────── #}
+  <div class="po-head-main po-status" data-po-field="status">
+      {#- The chip displays the RESOLVED stance. A supplied stance_label is an
+          override for a real read (buy/near/wait/hold/avoid); when the stance
+          resolves to unknown — absent, mistyped or off-enum — the label is
+          deliberately ignored, because a bespoke word over the neutral rail
+          would claim a read that is not there. -#}
+      <span class="po-chip">{%- if _stance == 'unknown' -%}<span class="l-en">{{ "Assessment unavailable" if native else _PO_STANCE_EN.unknown }}</span><span class="l-zh">{{ "暂无评估" if native else _PO_STANCE_ZH.unknown }}</span>{%- else -%}{%- set _sl = v.get('stance_label') -%}{%- if _sl is mapping and _sl.get('en') is string and _sl.get('en') or _sl is string and _sl -%}{{ _po_text(_sl, _PO_STANCE_EN[_stance], _PO_STANCE_ZH[_stance]) }}{%- else -%}<span class="l-en">{{ _PO_STANCE_EN[_stance] }}</span><span class="l-zh">{{ _PO_STANCE_ZH[_stance] }}</span>{%- endif -%}{%- endif -%}</span>
+      {% if not native or v.get("strategy") %}<span class="po-meta" data-po-field="strategy">{{ _po_text(v.get('strategy'), 'Strategy unavailable', '策略暂缺') }}</span>{% endif %}
+      {% if not native or v.get("horizon") %}<span class="po-meta" data-po-field="horizon">{{ _po_text(v.get('horizon'), 'Horizon unavailable', '周期暂缺') }}</span>{% endif %}
+      {% if native %}<span class="po-live-slots pv-ov pv-ovl">
+        {% set _tg = native.get('trigger') %}{% if _tg and _tg.get('kind') in ('fired','imminent') %}<span class="po-trigger{% if _tg.kind == 'imminent' %} po-trigger-soon{% endif %}" tabindex="0" data-tip-en="{{ _tg.get('tip_en') or '' }}" data-tip-zh="{{ _tg.get('tip_zh') or _tg.get('tip_en') or '' }}">{{ _po_text({'en':'Triggered' if _tg.kind == 'fired' else 'Imminent', 'zh':'已触发' if _tg.kind == 'fired' else '即将触发'}, '', '') }}</span>{% endif %}
+        <span class="pv-live" hidden></span>
+      </span>{% endif %}
+    </div>
+  {#- ── 2. separate assessment and strategy-native maturity stages ─────────────────────────────────── #}
+  {%- if _stages -%}
+  <ol class="po-stages" data-po-field="stages">
+    {%- for _s in _stages if _s is mapping -%}
+    <li class="po-stage{% if _s.get('active') is sameas true %} po-stage-on{% endif %}"{% if _s.get('active') is sameas true %} aria-current="step"{% endif %}>
+      <span class="po-stage-dot" aria-hidden="true"></span>
+      <span class="po-stage-label">{{ _po_text(_s.get('label'), _DASH, _DASH) }}</span>
+    </li>
+    {%- endfor -%}
+  </ol>
+  {%- else -%}
+  <p class="po-missing po-stages-missing" data-po-field="stages"><span class="l-en">Stage information unavailable</span><span class="l-zh">阶段信息暂缺</span></p>
+  {%- endif -%}
+  {% if native and v.get('signal_asof') %}<p class="po-signal-date"><span class="l-en">Signal session</span><span class="l-zh">信号日期</span> · {{ v.signal_asof }}</p>{% endif %}
+  {#- ── 3. chart — its own observation label and its own clock ──────────────── #}
   {%- set _cns = namespace(n=0, pts='') -%}
   {%- set _pts = _chart.get('points') if (_chart and _chart.get('points') is sequence and _chart.get('points') is not string) else none -%}
   {%- if _pts -%}
@@ -255,44 +306,6 @@
     <div class="po-nochart"><span class="l-en">History unavailable</span><span class="l-zh">历史暂缺</span></div>
   </div>
   {%- endif -%}
-  {#- ── 3. identity: ticker/company, industry/sector, priority ─────────────── #}
-  <div class="po-id" data-po-field="identity">
-    {%- if _idmap -%}
-      {%- set _tk = _idmap.get('ticker') -%}
-      {%- if _tk is string and _tk -%}
-      {% if native %}<a class="po-ticker fig pv-setup-stock-link" href="stock.html#{{ native.ticker|urlencode }}">{{ _tk }}</a>{% else %}<span class="po-ticker fig">{{ _tk }}</span>{% endif %}
-      {%- else -%}
-      <span class="po-missing"><span class="l-en">Identity unavailable</span><span class="l-zh">身份暂缺</span></span>
-      {%- endif -%}
-      {%- if _idmap.get('name') -%}<span class="po-name">{{ _po_text(_idmap.get('name'), _DASH, _DASH) }}</span>{%- endif -%}
-      {%- if _idmap.get('industry') or _idmap.get('sector') -%}
-      <span class="po-class">{% if _idmap.get('industry') %}{{ _po_text(_idmap.get('industry'), _DASH, _DASH) }}{% endif %}{%- if _idmap.get('industry') and _idmap.get('sector') %}<span class="po-sep" aria-hidden="true">·</span>{%- endif %}{% if _idmap.get('sector') %}{{ _po_text(_idmap.get('sector'), _DASH, _DASH) }}{% endif %}</span>
-      {%- endif -%}
-    {%- else -%}
-      <span class="po-missing"><span class="l-en">Identity unavailable</span><span class="l-zh">身份暂缺</span></span>
-    {%- endif -%}
-    <span class="po-priority" data-po-field="priority"{% if native and _prio and _prio.get('meaning') %} tabindex="0" data-tip-en="{{ _prio.meaning.en }}" data-tip-zh="{{ _prio.meaning.zh }}"{% endif %}>
-      {%- if _prio -%}
-      <span class="po-priority-label">{{ _po_text(_prio.get("label"), "Priority", "优先级") }}</span>
-      {%- if _po_has_amount(_prio.get('value')) -%}
-      <span class="po-priority-value fig">{{ _prio.get('value') }}</span>
-      {%- else -%}
-      <span class="po-missing">{{ _DASH }}</span>
-      {%- endif -%}
-      {% if not native %}{{ _po_text(_prio.get('meaning'), 'Meaning unavailable', '含义暂缺') }}{% else %}<span aria-hidden="true">ⓘ</span>{% endif %}
-      {%- else -%}
-      <span class="po-missing"><span class="l-en">Priority unavailable</span><span class="l-zh">优先级暂缺</span></span>
-      {%- endif -%}
-    </span>
-    {%- if _marks -%}
-    <ul class="po-marks" data-po-field="marks">
-      {%- for _m in _marks if _m -%}
-      {%- set _tone = _m.get('tone') if _m is mapping else '' -%}
-      <li class="po-mark po-mark-{{ 'warn' if _tone == 'warn' else ('info' if _tone == 'info' else 'neutral') }}"{% if _m is mapping and _m.get('explanation') %} tabindex="0" data-tip-en="{{ _m.explanation.en }}" data-tip-zh="{{ _m.explanation.zh }}"{% endif %}>{{ _po_text(_m, _DASH, _DASH) }}</li>
-      {%- endfor -%}
-    </ul>
-    {%- endif -%}
-  </div>
   {#- ── 4. observation + cautions ───────────────────────────────────────────── #}
   <p class="po-obs" data-po-field="observation">{{ _po_text(v.get('observation'), 'Observation unavailable', '观察暂缺') }}</p>
   {%- if _cautions -%}
@@ -317,19 +330,6 @@
     </p>
     {%- endif -%}
   {%- endif -%}
-  {#- ── 5. strategy-native maturity stages ─────────────────────────────────── #}
-  {%- if _stages -%}
-  <ol class="po-stages" data-po-field="stages">
-    {%- for _s in _stages if _s is mapping -%}
-    <li class="po-stage{% if _s.get('active') is sameas true %} po-stage-on{% endif %}"{% if _s.get('active') is sameas true %} aria-current="step"{% endif %}>
-      <span class="po-stage-dot" aria-hidden="true"></span>
-      <span class="po-stage-label">{{ _po_text(_s.get('label'), _DASH, _DASH) }}</span>
-    </li>
-    {%- endfor -%}
-  </ol>
-  {%- else -%}
-  <p class="po-missing po-stages-missing" data-po-field="stages"><span class="l-en">Stage information unavailable</span><span class="l-zh">阶段信息暂缺</span></p>
-  {%- endif -%}
   {#- ── 6. context link — only when a safe real target exists ──────────────── #}
   {#- A context key that is absent means "no link offered" and renders no row;
       a context that was supplied but unusable (wrong shape or an unsafe href)
@@ -343,7 +343,6 @@
   {%- elif v.get('context') -%}
   <p class="po-missing po-context-missing" data-po-field="context"><span class="l-en">Context link unavailable</span><span class="l-zh">背景链接暂缺</span></p>
   {%- endif -%}
-  {% if native and v.get('signal_asof') %}<p class="po-signal-date"><span class="l-en">Signal session</span><span class="l-zh">信号日期</span> · {{ v.signal_asof }}</p>{% endif %}
   {#- ── 7. dated entry/milestone band — its own clock, its own currency ────── #}
   {%- if _terms -%}
   <div class="po-terms" data-po-field="terms" data-po-clock="terms">

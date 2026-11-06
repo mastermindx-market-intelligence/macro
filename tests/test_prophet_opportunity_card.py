@@ -244,13 +244,16 @@ def test_bilingual_record_without_zh_falls_back_to_english():
     assert text_of(find(name, cls="l-zh")) == "Board order only"
 
 
-def test_frozen_anatomy_order():
+def test_selected_r8_identity_first_anatomy_order():
     root = render_card(rich_card())
     card = find(root, cls="po-card")
     order = [f"{n.tag}.{'-'.join(sorted(classes(n)))}" for n in element_children(card)]
+    head = find(card, cls="po-head")
+    assert [n.attrs.get("data-po-field") for n in element_children(head)] == ["identity", "quote"]
+    assert find(card, attrs={"data-po-field": "status"}).parent is card
     assert order == [
-        "header.po-head", "figure.po-chart", "div.po-id", "p.po-obs",
-        "details.po-cautions", "ol.po-stages", "a.po-context",
+        "header.po-head", "div.po-head-main-po-status", "ol.po-stages",
+        "figure.po-chart", "p.po-obs", "details.po-cautions", "a.po-context",
         "div.po-terms", "footer.po-foot",
     ]
 
