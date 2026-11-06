@@ -13,7 +13,7 @@ claim: >
   configuration guarantee or a promise that every future queue result equals an earlier PR
   head tree. A changed integration base requires qualification of the actual integrated source.
 falsifier: >
-  The cited historical queue/PR/commit receipts showing a different entry state, landed commit,
+  The historical Mastermind #959 queue/PR/commit receipts showing a different entry state, landed commit,
   parent or tree would refute the corresponding historical observation. A later legitimate
   configuration or integration-base change limits reuse; it does not erase the dated receipt.
   Use existing canonical readbacks to assess this record. It does not authorize a direct-merge
