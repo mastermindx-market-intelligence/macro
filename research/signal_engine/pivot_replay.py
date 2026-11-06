@@ -70,7 +70,11 @@ def evaluate_pivot_calls(calls: list[dict], panels: Mapping[str, pd.DataFrame], 
         from engine.bottom_ruler import grade_call
         grader = grade_call
     ids = Counter(x.get("id") for x in calls if isinstance(x, dict) and isinstance(x.get("id"), str))
-    cutoff_day = cutoff.astimezone(_NY).date()
+    try:
+        cutoff_day = cutoff.astimezone(_NY).date()
+    except (OverflowError, ValueError):
+        result.update(error="invalid_evaluation_contract", naturally_observed=False, summary=None)
+        return result
 
     def evaluate(call: Any) -> dict:
         raw = call if isinstance(call, dict) else {}
@@ -94,10 +98,13 @@ def evaluate_pivot_calls(calls: list[dict], panels: Mapping[str, pd.DataFrame], 
         if mode == "as_issued":
             if available is None:
                 row["status"] = "not_known"; return row
-            issued_day = available.astimezone(_NY).date()
-            if issued_day != day:
+            try:
+                local_available = available.astimezone(_NY)
+            except (OverflowError, ValueError):
+                row["status"] = "invalid_availability"; return row
+            if local_available.date() != day:
                 row["status"] = "delayed_issuance_requires_execution_model"; return row
-            if available.astimezone(_NY).hour < 16:
+            if local_available.hour < 16:
                 row["status"] = "daily_close_not_yet_qualified"; return row
         panel = panels.get(row["symbol"])
         if not isinstance(panel, pd.DataFrame) or "close" not in panel:

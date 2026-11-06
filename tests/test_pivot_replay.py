@@ -42,6 +42,31 @@ def test_invalid_cutoff(bad):
     assert run(evaluation_at=bad)["error"] == "invalid_evaluation_contract"
 
 
+@pytest.mark.parametrize("extreme", [
+    "0001-01-01T00:00:00+14:00",
+    "9999-12-31T23:59:59-12:00",
+])
+def test_out_of_range_new_york_cutoff_returns_contract_error(extreme):
+    result = run(evaluation_at=extreme)
+    assert result["error"] == "invalid_evaluation_contract"
+    assert result["naturally_observed"] is False
+    assert result["summary"] is None
+    assert result["calls"] == []
+
+
+def test_out_of_range_availability_does_not_abort_valid_call():
+    f = panel()
+    bad = call(f, id="bad")
+    bad["available_at"] = "0001-01-01T00:00:00+14:00"
+    good = call(f, id="good")
+    result = run([bad, good], {"ABC": f})
+    assert [row["status"] for row in result["calls"]] == ["invalid_availability", "graded"]
+    assert result["summary"]["n_submitted"] == 2
+    assert result["summary"]["n_graded"] == 1
+    assert result["summary"]["n_unavailable"] == 1
+    assert result["error"] is None
+
+
 def test_exact_day_delayed_issuance_not_backdated():
     f=panel();c=call(f);c["available_at"] = f.index[22].date().isoformat()+"T17:00:00-05:00"
     assert run([c])["calls"][0]["status"] == "delayed_issuance_requires_execution_model"

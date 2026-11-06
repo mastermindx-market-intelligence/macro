@@ -4406,10 +4406,10 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
-    # PR10785: hermetic pivot integration; exact read closure, unchanged ceilings.
-    "signal-gate-pair-coherence",
     # Actual page-query import/read closure; no unrelated fallback ownership.
     "admin-analytics-pages",
+    # PR10785: hermetic pivot integration; exact read closure, unchanged ceilings.
+    "signal-gate-pair-coherence",
     # Paid Fabric source-only guidance and deterministic attribution tests are
     # exclusively scoped; do not widen unrelated ordinary-code packing probes.
     "meta-ceo-fabric-contracts",
