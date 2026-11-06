@@ -751,3 +751,23 @@ def write_page(path: Path | str, html: str, *, encoding: str | None = None) -> P
     p.write_text(rendered, encoding=encoding)
     _ensure_shim_asset()
     return p
+
+
+_DOCUMENT_RE = re.compile(r"<!doctype\b|<html[\s>]|<head[\s>]", re.IGNORECASE)
+
+
+def write_unshimmed_html(path: Path | str, text: str, *, encoding: str | None = None) -> Path:
+    """Write HTML that must stay byte-for-byte: a detached fragment, or a throwaway
+    page outside the site dir (evidence fixtures, headless render wrappers).
+
+    write_page is wrong for both. It prepends the shim to a fragment, which has no
+    <head> to hold it, and it touches site assets for a page no reader loads. This
+    is not a way round write_page: a whole document under the site dir is refused,
+    so a shipped page still has to go through it."""
+    p = Path(path)
+    resolved = p.resolve()
+    root = _site_root()
+    if (resolved == root or root in resolved.parents) and _DOCUMENT_RE.search(text):
+        raise ValueError(f"{p}: a whole page under the site dir must go through write_page")
+    p.write_text(text, encoding=encoding)
+    return p
