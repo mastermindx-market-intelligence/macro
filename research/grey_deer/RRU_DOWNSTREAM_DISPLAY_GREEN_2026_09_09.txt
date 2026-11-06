@@ -1,0 +1,12 @@
+test_legacy_numeric_and_absent_baskets_states_are_unchanged (__main__.DisplayAcceptance.test_legacy_numeric_and_absent_baskets_states_are_unchanged) ... ok
+test_legacy_numeric_reversal_remains_renderable (__main__.DisplayAcceptance.test_legacy_numeric_reversal_remains_renderable) ... ok
+test_legacy_numeric_stock_board_keeps_its_original_advisory (__main__.DisplayAcceptance.test_legacy_numeric_stock_board_keeps_its_original_advisory) ... ok
+test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) ... ok
+test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) ... ok
+test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 5.381s
+
+OK
+{"scope": "display", "tests": 6, "failures": 0, "errors": 0, "source_unchanged": true, "synthetic_only": true, "source_sha256": {"templates/china.html.j2": "cb6e0685b96a6d897e9562418927c0bb5d5e656d4b31c99e843ec5f213fa7031", "templates/baskets_desk.js": "bf97c8ba2ce8198e02a39ea3e2bc3097ed53027f7835e8821e99b320fe1c62dd", "templates/cn_reversal_sleeve.html.j2": "9056c65d7c1c6361860186361d8b05e036f20928834f52a15dbbd35108f960e4"}}

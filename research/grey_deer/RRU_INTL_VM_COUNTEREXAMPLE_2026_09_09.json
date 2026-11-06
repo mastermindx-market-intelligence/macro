@@ -1,0 +1,38 @@
+{
+  "kind": "synthetic_actual_vm_counterexample",
+  "source_pin": "eb9e91961ddc4f3043d0dad358602525e66eccda",
+  "source_sha256": "ba656f2786a54df357009ded2e269431ad3759a421c346fe26990e16282fec4a",
+  "actual_score": 50,
+  "without_radar_score": 54,
+  "actual_parts": {
+    "base": 50.0,
+    "growth": 7.7,
+    "inflation": -1.0,
+    "recession": -2.7,
+    "liquidity": 0.0,
+    "risk_state": -4.0
+  },
+  "without_radar_parts": {
+    "base": 50.0,
+    "growth": 7.7,
+    "inflation": -1.0,
+    "recession": -2.7,
+    "liquidity": 0.0,
+    "risk_state": 0.0
+  },
+  "published_risk": {
+    "state": "caution",
+    "top_score": null,
+    "dominant_en": null,
+    "dominant_zh": null,
+    "h21": 0.42,
+    "measure": null,
+    "trajectory": {},
+    "scares": [],
+    "calibrated": true
+  },
+  "composition_preserved": false,
+  "source_unchanged": true,
+  "production": false,
+  "ledger_io": false
+}

@@ -1,0 +1,33 @@
+{
+  "packet": "research/grey_deer/RRU_FULL_REVIEW_PACKET_2026_09_10.md",
+  "bytes": 467774,
+  "sha256": "9ddf3d045a1deef533f34f2515aaff2e8ac9e6938fd293084d36302e771782b4",
+  "source_pin": "16b6c14cd4791dde7cd7217a6945987805b0fa16",
+  "patch_sha256": "83846c4e953fedd643e30953da14ee57907f477631d717a06ebef82b853f7108",
+  "full_source_paths": [
+    "engine/international_macro_dashboard.py",
+    "engine/intl_run.py",
+    "engine/market_state.py",
+    "engine/risk_radar_intl.py",
+    "engine/risk_radar_intl_audit.py",
+    "engine/risk_radar_intl_tune.py",
+    "engine/risk_radar_recovery.py",
+    "scripts/build_international_macro.py",
+    "templates/_risk_radar_card.html.j2",
+    "templates/international_macro.html.j2"
+  ],
+  "limited_context_paths": [
+    "scripts/build_canada.py",
+    "scripts/build_china.py",
+    "scripts/build_china_risk_state.py",
+    "scripts/build_hk.py",
+    "templates/baskets_desk.js",
+    "templates/china.html.j2",
+    "templates/cn_reversal_sleeve.html.j2"
+  ],
+  "invoked": false,
+  "archive": "research/grey_deer/RRU_FULL_REVIEW_PACKET_2026_09_10.md.gz",
+  "archive_sha256": "369c72fa4dbebab31359e23699ecba330a76342180bdb9b82f4734565bd0fbae",
+  "archive_exact_original": true,
+  "publication_note": "Exact unmodified input packet archived losslessly; numbered blank lines trigger text whitespace checks. Source patch remains plain text and checked. Raw input retained locally; no review output included."
+}

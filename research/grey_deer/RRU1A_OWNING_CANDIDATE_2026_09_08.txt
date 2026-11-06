@@ -1,0 +1,7 @@
+SOURCE_SHA256 1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7
+CANDIDATE_SHA256 d33e7425be4981f731fa5ec5d6bac6f70a117c419cbd1bfdac4c4d350ea63b38
+PATCH_SHA256 180eddd157dc4a98901c9437461b9923d0632a441af41c48c812080b0c23ec0e
+MODE in-memory candidate; actual module, percentile and owning tests
+............                                                             [100%]
+12 passed in 2.68s
+SOURCE_UNCHANGED True

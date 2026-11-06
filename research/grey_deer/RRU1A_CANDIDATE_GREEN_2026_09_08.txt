@@ -1,0 +1,49 @@
+SOURCE_SHA256 1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7
+CANDIDATE_SHA256 d33e7425be4981f731fa5ec5d6bac6f70a117c419cbd1bfdac4c4d350ea63b38
+PROFILE_KEYS au,ca,cn,ez,gb,hk,in,jp,kr,tw
+SCOPE synthetic arithmetic only; no engine file, ledger, or production mutation
+test_au_all_missing (__main__.MissingnessRegression.test_au_all_missing) ... ok
+test_au_complete (__main__.MissingnessRegression.test_au_complete) ... ok
+test_au_missing_group (__main__.MissingnessRegression.test_au_missing_group) ... ok
+test_au_partial (__main__.MissingnessRegression.test_au_partial) ... ok
+test_ca_all_missing (__main__.MissingnessRegression.test_ca_all_missing) ... ok
+test_ca_complete (__main__.MissingnessRegression.test_ca_complete) ... ok
+test_ca_missing_group (__main__.MissingnessRegression.test_ca_missing_group) ... ok
+test_ca_partial (__main__.MissingnessRegression.test_ca_partial) ... ok
+test_cn_all_missing (__main__.MissingnessRegression.test_cn_all_missing) ... ok
+test_cn_complete (__main__.MissingnessRegression.test_cn_complete) ... ok
+test_cn_missing_group (__main__.MissingnessRegression.test_cn_missing_group) ... ok
+test_cn_partial (__main__.MissingnessRegression.test_cn_partial) ... ok
+test_ez_all_missing (__main__.MissingnessRegression.test_ez_all_missing) ... ok
+test_ez_complete (__main__.MissingnessRegression.test_ez_complete) ... ok
+test_ez_missing_group (__main__.MissingnessRegression.test_ez_missing_group) ... ok
+test_ez_partial (__main__.MissingnessRegression.test_ez_partial) ... ok
+test_gb_all_missing (__main__.MissingnessRegression.test_gb_all_missing) ... ok
+test_gb_complete (__main__.MissingnessRegression.test_gb_complete) ... ok
+test_gb_missing_group (__main__.MissingnessRegression.test_gb_missing_group) ... ok
+test_gb_partial (__main__.MissingnessRegression.test_gb_partial) ... ok
+test_hk_all_missing (__main__.MissingnessRegression.test_hk_all_missing) ... ok
+test_hk_complete (__main__.MissingnessRegression.test_hk_complete) ... ok
+test_hk_missing_group (__main__.MissingnessRegression.test_hk_missing_group) ... ok
+test_hk_partial (__main__.MissingnessRegression.test_hk_partial) ... ok
+test_in_all_missing (__main__.MissingnessRegression.test_in_all_missing) ... ok
+test_in_complete (__main__.MissingnessRegression.test_in_complete) ... ok
+test_in_missing_group (__main__.MissingnessRegression.test_in_missing_group) ... ok
+test_in_partial (__main__.MissingnessRegression.test_in_partial) ... ok
+test_jp_all_missing (__main__.MissingnessRegression.test_jp_all_missing) ... ok
+test_jp_complete (__main__.MissingnessRegression.test_jp_complete) ... ok
+test_jp_missing_group (__main__.MissingnessRegression.test_jp_missing_group) ... ok
+test_jp_partial (__main__.MissingnessRegression.test_jp_partial) ... ok
+test_kr_all_missing (__main__.MissingnessRegression.test_kr_all_missing) ... ok
+test_kr_complete (__main__.MissingnessRegression.test_kr_complete) ... ok
+test_kr_missing_group (__main__.MissingnessRegression.test_kr_missing_group) ... ok
+test_kr_partial (__main__.MissingnessRegression.test_kr_partial) ... ok
+test_tw_all_missing (__main__.MissingnessRegression.test_tw_all_missing) ... ok
+test_tw_complete (__main__.MissingnessRegression.test_tw_complete) ... ok
+test_tw_missing_group (__main__.MissingnessRegression.test_tw_missing_group) ... ok
+test_tw_partial (__main__.MissingnessRegression.test_tw_partial) ... ok
+
+----------------------------------------------------------------------
+Ran 40 tests in 1.516s
+
+OK

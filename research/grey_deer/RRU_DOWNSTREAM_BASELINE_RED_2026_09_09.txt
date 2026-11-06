@@ -1,0 +1,221 @@
+test_legacy_numeric_and_absent_baskets_states_are_unchanged (__main__.DisplayAcceptance.test_legacy_numeric_and_absent_baskets_states_are_unchanged) ... ok
+test_legacy_numeric_reversal_remains_renderable (__main__.DisplayAcceptance.test_legacy_numeric_reversal_remains_renderable) ... ok
+test_legacy_numeric_stock_board_keeps_its_original_advisory (__main__.DisplayAcceptance.test_legacy_numeric_stock_board_keeps_its_original_advisory) ... ok
+test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) ...
+  test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) (case='complete_low') ... FAIL
+  test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) (case='complete_high') ... FAIL
+  test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) (case='partial') ... FAIL
+  test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) (case='unavailable') ... FAIL
+test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) ...
+  test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) (case='complete_low') ... FAIL
+  test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) (case='complete_high') ... FAIL
+  test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) (case='partial') ... FAIL
+  test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) (case='unavailable') ... FAIL
+test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) ...
+  test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) (case='complete_low') ... FAIL
+  test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) (case='complete_high') ... FAIL
+  test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) (case='partial') ... FAIL
+  test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) (case='unavailable') ... FAIL
+test_corrected_construction_must_not_inherit_legacy_market_permission (__main__.AuthorityAcceptance.test_corrected_construction_must_not_inherit_legacy_market_permission) ... FAIL
+test_legacy_proven_payload_retains_existing_permission (__main__.AuthorityAcceptance.test_legacy_proven_payload_retains_existing_permission) ... ok
+
+======================================================================
+FAIL: test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) (case='complete_low')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 93, in test_reversal_sleeve_renders_unavailable_without_numeric_crash
+    html = jinja_region('reversal', chip(case))
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 48, in jinja_region
+    return env.from_string(text).render(d={'sizing': payload})
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "<template>", line 3, in top-level template code
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/filters.py", line 1043, in do_format
+    return soft_str(value) % (kwargs or args)
+           ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+TypeError: must be real number, not NoneType
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 95, in test_reversal_sleeve_renders_unavailable_without_numeric_crash
+    self.fail(f'Actual reversal template cannot render candidate: {exc}')
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Actual reversal template cannot render candidate: must be real number, not NoneType
+
+======================================================================
+FAIL: test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) (case='complete_high')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 93, in test_reversal_sleeve_renders_unavailable_without_numeric_crash
+    html = jinja_region('reversal', chip(case))
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 48, in jinja_region
+    return env.from_string(text).render(d={'sizing': payload})
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "<template>", line 3, in top-level template code
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/filters.py", line 1043, in do_format
+    return soft_str(value) % (kwargs or args)
+           ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+TypeError: must be real number, not NoneType
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 95, in test_reversal_sleeve_renders_unavailable_without_numeric_crash
+    self.fail(f'Actual reversal template cannot render candidate: {exc}')
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Actual reversal template cannot render candidate: must be real number, not NoneType
+
+======================================================================
+FAIL: test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) (case='partial')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 93, in test_reversal_sleeve_renders_unavailable_without_numeric_crash
+    html = jinja_region('reversal', chip(case))
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 48, in jinja_region
+    return env.from_string(text).render(d={'sizing': payload})
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "<template>", line 3, in top-level template code
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/filters.py", line 1043, in do_format
+    return soft_str(value) % (kwargs or args)
+           ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+TypeError: must be real number, not NoneType
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 95, in test_reversal_sleeve_renders_unavailable_without_numeric_crash
+    self.fail(f'Actual reversal template cannot render candidate: {exc}')
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Actual reversal template cannot render candidate: must be real number, not NoneType
+
+======================================================================
+FAIL: test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) (case='unavailable')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 93, in test_reversal_sleeve_renders_unavailable_without_numeric_crash
+    html = jinja_region('reversal', chip(case))
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 48, in jinja_region
+    return env.from_string(text).render(d={'sizing': payload})
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "<template>", line 3, in top-level template code
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/filters.py", line 1043, in do_format
+    return soft_str(value) % (kwargs or args)
+           ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+TypeError: must be real number, not NoneType
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 95, in test_reversal_sleeve_renders_unavailable_without_numeric_crash
+    self.fail(f'Actual reversal template cannot render candidate: {exc}')
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Actual reversal template cannot render candidate: must be real number, not NoneType
+
+======================================================================
+FAIL: test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) (case='complete_low')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 103, in test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible
+    self.assertIn('Sizing unavailable', visible)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Sizing unavailable' not found in ''
+
+======================================================================
+FAIL: test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) (case='complete_high')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 103, in test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible
+    self.assertIn('Sizing unavailable', visible)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Sizing unavailable' not found in ''
+
+======================================================================
+FAIL: test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) (case='partial')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 103, in test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible
+    self.assertIn('Sizing unavailable', visible)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Sizing unavailable' not found in ''
+
+======================================================================
+FAIL: test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) (case='unavailable')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 103, in test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible
+    self.assertIn('Sizing unavailable', visible)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Sizing unavailable' not found in ''
+
+======================================================================
+FAIL: test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) (case='complete_low')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 84, in test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction
+    self.assertIn('Sizing unavailable', html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Sizing unavailable' not found in '\n    \n    \n    \n    \n    \n    \n    \n    \n    <div style="margin:11px 0 0;padding:7px 11px;border-radius:8px;font-size:11.5px;line-height:1.5;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;border:1px solid var(--line);border-left:3px solid var(--up);background:color-mix(in srgb,var(--up) 6%,var(--panel))">\n      <span style="font-weight:600;color:var(--muted)"><span class="l-en">Risk backdrop</span><span class="l-zh">风险背景</span></span>\n      <span aria-hidden="true" style="display:inline-flex;gap:3px;align-items:center"><span style="width:15px;height:6px;border-radius:3px;background:var(--up)"></span><span style="width:9px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:9px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:9px;height:6px;border-radius:3px;background:var(--line)"></span></span>\n      <span style="color:var(--up);font-weight:700"><span class="l-en">CALM — normal sizing</span><span class="l-zh">平静 — 正常仓位</span></span>\n      <span class="muted" style="font-size:10.5px">· <span class="l-en">main risk: Calm — no driver elevated</span><span class="l-zh">主要风险：平静 — 无驱动升高</span></span>\n      <span class="muted" style="font-size:10px">· as of | 截至 2025-05-16</span>\n      Pressure coming from &lt;b&gt;outside China&lt;/b&gt; — US interest rates, the yuan, the gap between US and Chinese yields, and how many stocks are joining in. It sets the backdrop for &lt;b&gt;how big to trade&lt;/b&gt;. It never removes a name and never changes the board&amp;#39;s order. | 来自&lt;b&gt;中国以外&lt;/b&gt;的压力 — 美国利率、人民币汇率、中美利差，以及有多少个股在参与。它决定&lt;b&gt;该用多大仓位&lt;/b&gt;，但绝不剔除任何标的，也不改变看板排序。\n    </div>\n    '
+
+======================================================================
+FAIL: test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) (case='complete_high')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 84, in test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction
+    self.assertIn('Sizing unavailable', html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Sizing unavailable' not found in '\n    \n    \n    \n    \n    \n    \n    \n    \n    <div style="margin:11px 0 0;padding:7px 11px;border-radius:8px;font-size:11.5px;line-height:1.5;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;border:1px solid var(--line);border-left:3px solid var(--down);background:color-mix(in srgb,var(--down) 6%,var(--panel))">\n      <span style="font-weight:600;color:var(--muted)"><span class="l-en">Risk backdrop</span><span class="l-zh">风险背景</span></span>\n      <span aria-hidden="true" style="display:inline-flex;gap:3px;align-items:center"><span style="width:9px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:9px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:9px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:15px;height:6px;border-radius:3px;background:var(--down)"></span></span>\n      <span style="color:var(--down);font-weight:700"><span class="l-en">RISK-OFF — trade smaller</span><span class="l-zh">避险 — 减小仓位</span></span>\n      <span class="muted" style="font-size:10.5px">· <span class="l-en">main risk: US rate shock</span><span class="l-zh">主要风险：美债利率冲击</span></span>\n      <span class="muted" style="font-size:10px">· as of | 截至 2025-05-16</span>\n      Pressure coming from &lt;b&gt;outside China&lt;/b&gt; — US interest rates, the yuan, the gap between US and Chinese yields, and how many stocks are joining in. It sets the backdrop for &lt;b&gt;how big to trade&lt;/b&gt;. It never removes a name and never changes the board&amp;#39;s order. | 来自&lt;b&gt;中国以外&lt;/b&gt;的压力 — 美国利率、人民币汇率、中美利差，以及有多少个股在参与。它决定&lt;b&gt;该用多大仓位&lt;/b&gt;，但绝不剔除任何标的，也不改变看板排序。\n    </div>\n    '
+
+======================================================================
+FAIL: test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) (case='partial')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 84, in test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction
+    self.assertIn('Sizing unavailable', html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Sizing unavailable' not found in '\n    \n    \n    \n    \n    \n    \n    \n    \n    <div style="margin:11px 0 0;padding:7px 11px;border-radius:8px;font-size:11.5px;line-height:1.5;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;border:1px solid var(--line);border-left:3px solid var(--down);background:color-mix(in srgb,var(--down) 6%,var(--panel))">\n      <span style="font-weight:600;color:var(--muted)"><span class="l-en">Risk backdrop</span><span class="l-zh">风险背景</span></span>\n      <span aria-hidden="true" style="display:inline-flex;gap:3px;align-items:center"><span style="width:9px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:9px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:9px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:15px;height:6px;border-radius:3px;background:var(--down)"></span></span>\n      <span style="color:var(--down);font-weight:700"><span class="l-en">RISK-OFF — trade smaller</span><span class="l-zh">避险 — 减小仓位</span></span>\n      <span class="muted" style="font-size:10.5px">· <span class="l-en">main risk: US rate shock</span><span class="l-zh">主要风险：美债利率冲击</span></span>\n      <span class="muted" style="font-size:10px">· as of | 截至 2025-05-16</span>\n      Pressure coming from &lt;b&gt;outside China&lt;/b&gt; — US interest rates, the yuan, the gap between US and Chinese yields, and how many stocks are joining in. It sets the backdrop for &lt;b&gt;how big to trade&lt;/b&gt;. It never removes a name and never changes the board&amp;#39;s order. | 来自&lt;b&gt;中国以外&lt;/b&gt;的压力 — 美国利率、人民币汇率、中美利差，以及有多少个股在参与。它决定&lt;b&gt;该用多大仓位&lt;/b&gt;，但绝不剔除任何标的，也不改变看板排序。\n    </div>\n    '
+
+======================================================================
+FAIL: test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) (case='unavailable')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 84, in test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction
+    self.assertIn('Sizing unavailable', html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Sizing unavailable' not found in '\n    '
+
+======================================================================
+FAIL: test_corrected_construction_must_not_inherit_legacy_market_permission (__main__.AuthorityAcceptance.test_corrected_construction_must_not_inherit_legacy_market_permission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_DOWNSTREAM_ACCEPTANCE_2026_09_09.py", line 128, in test_corrected_construction_must_not_inherit_legacy_market_permission
+    self.assertFalse(rd.get('binding'),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+                     f'Unreviewed construction acquired ceiling={rd.get("ceiling")}; overrides={overrides}')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false : Unreviewed construction acquired ceiling=26; overrides=[{'kind': 'radar', 'note_en': 'China Risk Radar forces Risk-off.', 'note_zh': '中国风险雷达强制为「避险」。'}]
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.991s
+
+FAILED (failures=13)
+{"scope": "all", "tests": 8, "failures": 13, "errors": 0, "source_unchanged": true, "synthetic_only": true, "source_sha256": {"templates/china.html.j2": "cb6e0685b96a6d897e9562418927c0bb5d5e656d4b31c99e843ec5f213fa7031", "templates/baskets_desk.js": "bf97c8ba2ce8198e02a39ea3e2bc3097ed53027f7835e8821e99b320fe1c62dd", "templates/cn_reversal_sleeve.html.j2": "9056c65d7c1c6361860186361d8b05e036f20928834f52a15dbbd35108f960e4"}}

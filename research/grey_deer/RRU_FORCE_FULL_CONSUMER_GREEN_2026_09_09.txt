@@ -1,0 +1,14 @@
+test_actual_cn_profile_does_not_gain_harness_override_authority (__main__.FullConsumerTests.test_actual_cn_profile_does_not_gain_harness_override_authority) ... ok
+test_actual_cn_profile_preserves_legacy_authorized_ceiling (__main__.FullConsumerTests.test_actual_cn_profile_preserves_legacy_authorized_ceiling) ... ok
+test_actual_cn_profile_preserves_measured_score_for_unpromoted_reading (__main__.FullConsumerTests.test_actual_cn_profile_preserves_measured_score_for_unpromoted_reading) ... ok
+test_independent_harness_alert_guard_survives (__main__.FullConsumerTests.test_independent_harness_alert_guard_survives) ... ok
+test_independent_harness_dislocation_guard_survives (__main__.FullConsumerTests.test_independent_harness_dislocation_guard_survives) ... ok
+test_independent_harness_regime_guard_survives (__main__.FullConsumerTests.test_independent_harness_regime_guard_survives) ... ok
+test_independent_harness_stress_guard_survives (__main__.FullConsumerTests.test_independent_harness_stress_guard_survives) ... ok
+test_missing_current_radar_does_not_remove_the_measured_component (__main__.FullConsumerTests.test_missing_current_radar_does_not_remove_the_measured_component) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.006s
+
+OK
+{"tests": 8, "failures": 0, "errors": 0, "original_consumer": false, "source_unchanged": true, "full_consumer": true, "full_pipeline": false, "synthetic_only": true, "independent_guards_use_harness_profile": true}
