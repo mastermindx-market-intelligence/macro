@@ -1,0 +1,192 @@
+{
+  "status": "MANUAL_RESEARCH_FIXTURE_NOT_TRUSTED_INGESTION",
+  "extraction_method": "analyst-normalized from publisher pages; not automatic PDF extraction",
+  "permissions_note": "allowed_for_assay is a local fixture flag, not a commercial license or product permission",
+  "original_source_hashes_verified": false,
+  "claims": [
+    {
+      "entity": "EUR/USD",
+      "scope": "spot_pair",
+      "metric": "exchange_rate",
+      "currency": "USD",
+      "scale": "per_EUR",
+      "basis": "publisher_headline_forecast",
+      "scenario": "baseline",
+      "origin": "ING research — manual case label",
+      "claim_kind": "analyst_forecast",
+      "source_role": "publisher_forecast",
+      "allowed_for_assay": true,
+      "review_state": "manually_checked_public_statement",
+      "available_at": null,
+      "source_pdf_sha256": null,
+      "body_sha256": null,
+      "vault_doc_id": null,
+      "document_version": "unverified_original_version",
+      "target": {
+        "kind": "year_end",
+        "year": 2026,
+        "measure": "end_of_period",
+        "fixing": null
+      },
+      "id": "june_fixed",
+      "document_id": "june19",
+      "event_date": "2026-06-19",
+      "value": {
+        "shape": "exact_point",
+        "point": "1.18"
+      },
+      "source_url": "https://think.ing.com/articles/fx-daily-us-holiday-offers-japan-intervention-window/"
+    },
+    {
+      "entity": "EUR/USD",
+      "scope": "spot_pair",
+      "metric": "exchange_rate",
+      "currency": "USD",
+      "scale": "per_EUR",
+      "basis": "publisher_headline_forecast",
+      "scenario": "baseline",
+      "origin": "ING research — manual case label",
+      "claim_kind": "analyst_forecast",
+      "source_role": "publisher_forecast",
+      "allowed_for_assay": true,
+      "review_state": "manually_checked_public_statement",
+      "available_at": null,
+      "source_pdf_sha256": null,
+      "body_sha256": null,
+      "vault_doc_id": null,
+      "document_version": "unverified_original_version",
+      "target": {
+        "kind": "year_end",
+        "year": 2026,
+        "measure": "end_of_period",
+        "fixing": null
+      },
+      "id": "sept3_fixed",
+      "document_id": "sept3",
+      "event_date": "2026-09-03",
+      "value": {
+        "shape": "exact_point",
+        "point": "1.16"
+      },
+      "source_url": "https://think.ing.com/articles/fx-monthly-yield-curve-dynamics-drive-the-dollar/",
+      "explicit_revision": true,
+      "reported_prior": {
+        "shape": "exact_point",
+        "point": "1.18"
+      }
+    },
+    {
+      "entity": "EUR/USD",
+      "scope": "spot_pair",
+      "metric": "exchange_rate",
+      "currency": "USD",
+      "scale": "per_EUR",
+      "basis": "publisher_headline_forecast",
+      "scenario": "baseline",
+      "origin": "ING research — manual case label",
+      "claim_kind": "analyst_forecast",
+      "source_role": "publisher_forecast",
+      "allowed_for_assay": true,
+      "review_state": "manually_checked_public_statement",
+      "available_at": null,
+      "source_pdf_sha256": null,
+      "body_sha256": null,
+      "vault_doc_id": null,
+      "document_version": "unverified_original_version",
+      "target": {
+        "kind": "year_end",
+        "year": 2026,
+        "measure": "end_of_period",
+        "fixing": null
+      },
+      "id": "sept7_fixed",
+      "document_id": "sept7",
+      "event_date": "2026-09-07",
+      "value": {
+        "shape": "exact_point",
+        "point": "1.16"
+      },
+      "source_url": "https://think.ing.com/articles/g10-fx-talking-september-2026/",
+      "explicit_revision": true,
+      "reported_prior": {
+        "shape": "exact_point",
+        "point": "1.18"
+      }
+    },
+    {
+      "entity": "EUR/USD",
+      "scope": "spot_pair",
+      "metric": "exchange_rate",
+      "currency": "USD",
+      "scale": "per_EUR",
+      "basis": "publisher_headline_forecast",
+      "scenario": "baseline",
+      "origin": "ING research — manual case label",
+      "claim_kind": "analyst_forecast",
+      "source_role": "publisher_forecast",
+      "allowed_for_assay": true,
+      "review_state": "manually_checked_public_statement",
+      "available_at": null,
+      "source_pdf_sha256": null,
+      "body_sha256": null,
+      "vault_doc_id": null,
+      "document_version": "unverified_original_version",
+      "target": {
+        "kind": "relative_tenor",
+        "label": "3M",
+        "measure": "end_of_period",
+        "fixing": null,
+        "anchor_date": null,
+        "resolved_target_date": null,
+        "resolution_basis": null
+      },
+      "id": "aug_relative",
+      "document_id": "aug6",
+      "event_date": "2026-08-06",
+      "value": {
+        "shape": "exact_point",
+        "point": "1.17"
+      },
+      "source_url": "https://think.ing.com/articles/g10-fx-talking-august-2026/",
+      "source_verification_note": "August value qualified in chunk 4; September table revisited in chunk 5. No PDF byte binding."
+    },
+    {
+      "entity": "EUR/USD",
+      "scope": "spot_pair",
+      "metric": "exchange_rate",
+      "currency": "USD",
+      "scale": "per_EUR",
+      "basis": "publisher_headline_forecast",
+      "scenario": "baseline",
+      "origin": "ING research — manual case label",
+      "claim_kind": "analyst_forecast",
+      "source_role": "publisher_forecast",
+      "allowed_for_assay": true,
+      "review_state": "manually_checked_public_statement",
+      "available_at": null,
+      "source_pdf_sha256": null,
+      "body_sha256": null,
+      "vault_doc_id": null,
+      "document_version": "unverified_original_version",
+      "target": {
+        "kind": "relative_tenor",
+        "label": "3M",
+        "measure": "end_of_period",
+        "fixing": null,
+        "anchor_date": null,
+        "resolved_target_date": null,
+        "resolution_basis": null
+      },
+      "id": "sept_relative",
+      "document_id": "sept7",
+      "event_date": "2026-09-07",
+      "value": {
+        "shape": "exact_point",
+        "point": "1.16"
+      },
+      "source_url": "https://think.ing.com/articles/g10-fx-talking-september-2026/",
+      "source_verification_note": "August value qualified in chunk 4; September table revisited in chunk 5. No PDF byte binding."
+    }
+  ],
+  "source_check_scope": "June19 and Sept3 original text revisited; Sept7 HTML and first PDF page revisited; no new source bytes saved. Fixed target means the source-named year-end period, not a proved daily fixing convention."
+}

@@ -1,0 +1,153 @@
+{
+  "schema": "research_vault.gold_tasks.r22",
+  "state": "DESIGN_FIXTURES_NOT_RUN",
+  "purpose": "Freeze discriminating tasks before automated producer adoption or incremental MarketDesk acquisition.",
+  "source_use_note": "URLs and expected semantics only. Inclusion is not authorization for automated acquisition, storage, model processing, redistribution, or public excerpts.",
+  "cases": [
+    {
+      "id": "G1_COMPANY_DEFINITION_CHANGE",
+      "family": "current_company_question",
+      "question": "Did Microsoft's lower calendar-2026 capex headline from roughly $190B to roughly $175B establish a like-for-like reduction in underlying datacenter investment?",
+      "sources": [
+        {
+          "owner": "Microsoft",
+          "kind": "public_issuer_disclosure",
+          "date": "2026-04-29",
+          "url": "https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q3"
+        },
+        {
+          "owner": "Microsoft",
+          "kind": "public_issuer_disclosure",
+          "date": "2026-07-29",
+          "url": "https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4"
+        }
+      ],
+      "expected": [
+        "Identify approximately $190B as the earlier calendar-2026 capex statement.",
+        "Identify approximately $175B as the later reported capex expectation.",
+        "Preserve management's explanation that the useful-life update shifts more future datacenter leases from finance to operating leases.",
+        "Preserve that management said investment expectations outside that effect were unchanged.",
+        "Classify the headline values as not a clean like-for-like demand/capacity cut without additional lease/cash/capacity reconciliation."
+      ],
+      "forbidden": [
+        "Conclude that Microsoft cut underlying AI capacity investment by $15B.",
+        "Treat finance-lease capex and operating-lease economics as identical.",
+        "Infer a supplier revenue loss from the headline delta alone."
+      ],
+      "use": "Dimension/definition control before applying institutional research to an issuer thesis."
+    },
+    {
+      "id": "G2_SAME_SOURCE_REVISION_AND_REPEAT",
+      "family": "comparable_revision_pair",
+      "question": "How did ING's year-end 2026 EUR/USD view change from August into September, and did the September 7 publication constitute another independent downgrade?",
+      "sources": [
+        {
+          "owner": "ING THINK",
+          "kind": "public_research_page",
+          "date": "2026-08-13",
+          "url": "https://think.ing.com/articles/fx-daily-boring-cpi-boring-august/",
+          "rights": "AUTOMATED_PROCESSING_NOT_ADJUDICATED"
+        },
+        {
+          "owner": "ING THINK",
+          "kind": "public_research_page",
+          "date": "2026-09-03",
+          "url": "https://think.ing.com/articles/fx-monthly-yield-curve-dynamics-drive-the-dollar/",
+          "rights": "AUTOMATED_PROCESSING_NOT_ADJUDICATED"
+        },
+        {
+          "owner": "ING THINK",
+          "kind": "public_research_page",
+          "date": "2026-09-07",
+          "url": "https://think.ing.com/articles/g10-fx-talking-september-2026/",
+          "rights": "AUTOMATED_PROCESSING_NOT_ADJUDICATED"
+        }
+      ],
+      "expected": [
+        "Keep the target period fixed at year-end/4Q 2026 before calculating a revision.",
+        "Record the August year-end target as 1.18 and the September house revision to 1.16.",
+        "Treat the September 7 publication's 1.18-to-1.16 endpoints as repetition of the same numerical revision unless additional source chronology proves otherwise.",
+        "Keep the changed Fed assumption/rationale attributed to ING rather than treating it as realized fact."
+      ],
+      "forbidden": [
+        "Count September 3 and September 7 as two independent institutional downgrades.",
+        "Compare rolling 3M values from different publication dates as though they are the same fixed calendar target.",
+        "Promote the source forecast into a Mastermind trading signal."
+      ],
+      "use": "Revision/reaffirmation/repetition semantics."
+    },
+    {
+      "id": "G3_INDEPENDENT_SOURCE_DISAGREEMENT",
+      "family": "independent_source_disagreement",
+      "question": "Did independent public research sources agree on the Federal Reserve's September 2026 policy decision?",
+      "sources": [
+        {
+          "owner": "Amundi Investment Institute",
+          "kind": "public_research_page",
+          "date": "2026-09-09",
+          "url": "https://research-center.amundi.com/article/global-investment-views-september-2026",
+          "rights": "AUTOMATED_PROCESSING_NOT_ADJUDICATED"
+        },
+        {
+          "owner": "ING THINK",
+          "kind": "public_research_page",
+          "date": "2026-09-11",
+          "url": "https://think.ing.com/articles/fomc-preview-fed-set-to-hike-25bp-in-recalibration-move/",
+          "rights": "AUTOMATED_PROCESSING_NOT_ADJUDICATED"
+        }
+      ],
+      "expected": [
+        "Resolve Amundi and ING as separate publication/source origins for this public control.",
+        "Identify that Amundi expected the Fed to remain on hold through year-end while ING expected a 25bp September hike.",
+        "Classify this as a genuine forecast disagreement for the September policy path, subject to exact publication/vintage clocks.",
+        "Preserve each source's rationale separately and do not average the policy outcomes into a synthetic consensus."
+      ],
+      "forbidden": [
+        "Claim institutional consensus.",
+        "Count multiple ING publications repeating the same house view as extra independent votes.",
+        "Convert disagreement into a conviction score or trade authority."
+      ],
+      "use": "Source independence and disagreement preservation."
+    },
+    {
+      "id": "G4_LONG_REPORT_LATE_QUALIFICATION",
+      "family": "long_report_qualification",
+      "question": "Can IEA estimates for data-centre demand, AI-enabled energy savings, and productivity-driven energy demand simply be combined into one net AI-energy forecast?",
+      "sources": [
+        {
+          "owner": "International Energy Agency",
+          "kind": "CC_BY_4_0_report",
+          "date": "2026-04-16",
+          "url": "https://www.iea.org/reports/key-questions-on-energy-and-ai",
+          "pdf": "https://iea.blob.core.windows.net/assets/3179f7f8-01f6-4dd6-bffa-c9f7b73f1dc9/KeyQuestionsonEnergyandAI.pdf",
+          "license": "CC BY 4.0",
+          "license_scope_note": "IEA open-use terms apply to IEA-produced content; third-party components/images and excluded data products require their own treatment."
+        }
+      ],
+      "expected": [
+        "Find supporting qualification in the late report section around printed pages 100-101, not only the executive summary.",
+        "Explain that the component estimates differ materially in scope and uncertainty and should not simply be added into one net effect.",
+        "Preserve that the productivity/energy-demand cases are exploratory and are not included in World Energy Outlook scenarios.",
+        "Disclose incomplete retrieval if the current 60,000-character stored body does not cover the required evidence."
+      ],
+      "forbidden": [
+        "Answer from the executive summary alone while implying complete-report review.",
+        "Add heterogeneous effect estimates into a single net figure.",
+        "Treat exploratory cases as the IEA's adopted World Energy Outlook scenario."
+      ],
+      "use": "Long-tail evidence, caveat retrieval, and coverage honesty."
+    }
+  ],
+  "acceptance": {
+    "must_report_per_case": [
+      "sources_considered",
+      "source_versions_or_dates",
+      "retrieval_layer",
+      "coverage_state",
+      "supported_answer",
+      "important_uncertainty",
+      "forbidden_inference_check"
+    ],
+    "parent_success": "All four tasks resolved or honestly abstained with evidence; no task may be green merely because a relevant document ID was returned."
+  }
+}

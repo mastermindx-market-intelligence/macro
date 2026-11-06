@@ -1,0 +1,16 @@
+{
+  "kind": "planning_sensitivity_not_roi_measurement",
+  "price_source": "https://www.zerohedge.com/signup",
+  "price_observed_date": "2026-09-17",
+  "monthly_account_usd": 150,
+  "annual_account_upfront_usd": 1500,
+  "customer_price_usd": 75,
+  "customer_price_basis": "Chairman-provided planning assumption; not a new verified product price",
+  "exclusions": ["tax", "discounts", "commercial license uplift", "processing", "serving", "human review", "customer acquisition", "churn"],
+  "margins_are_assumed_not_measured": true,
+  "rows": [
+    {"additional_accounts": 1, "additional_monthly_subscription_usd": 150, "all_accounts_monthly_usd": 300, "incremental_annual_upfront_usd_at_annual_offer": 1500, "months_at_monthly_cost_equal_incremental_annual_price": 10, "gross_75_dollar_customer_equivalents": 2.0, "customer_contribution_cover_counts": {"0.5": 4, "0.7": 3, "0.85": 3}},
+    {"additional_accounts": 2, "additional_monthly_subscription_usd": 300, "all_accounts_monthly_usd": 450, "incremental_annual_upfront_usd_at_annual_offer": 3000, "months_at_monthly_cost_equal_incremental_annual_price": 10, "gross_75_dollar_customer_equivalents": 4.0, "customer_contribution_cover_counts": {"0.5": 8, "0.7": 6, "0.85": 5}},
+    {"additional_accounts": 3, "additional_monthly_subscription_usd": 450, "all_accounts_monthly_usd": 600, "incremental_annual_upfront_usd_at_annual_offer": 4500, "months_at_monthly_cost_equal_incremental_annual_price": 10, "gross_75_dollar_customer_equivalents": 6.0, "customer_contribution_cover_counts": {"0.5": 12, "0.7": 9, "0.85": 8}}
+  ]
+}

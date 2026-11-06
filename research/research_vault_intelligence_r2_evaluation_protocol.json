@@ -1,0 +1,89 @@
+{
+  "schema": "research_vault.evaluation_design.v1",
+  "status": "PROPOSED_PROTOCOL_NOT_EXECUTED",
+  "design": "research/RESEARCH_VAULT_INSTITUTIONAL_INTELLIGENCE_DESIGN_R2_2026-09-15.md",
+  "procedure_commit": "7642aea155d2817219135b24246b55c1d7611c66",
+  "implementation_inspection_commit": "9579caf3f950f1a2e7b959a9b3b68d26e42e5d06",
+  "labeled_dataset_exists": false,
+  "target_task_count": 120,
+  "task_families": [
+    {"key": "exact_fact_identifier", "count": 20, "scope": "Exact entity and report identity, stated observation and decoy identifiers"},
+    {"key": "numeric_table", "count": 20, "scope": "Units, decimal scale, headers, footnotes, ranges and deterministic calculations"},
+    {"key": "cross_source_comparison", "count": 20, "scope": "Comparable estimates, independence and explicit noncomparability"},
+    {"key": "temporal_revision", "count": 20, "scope": "Earlier/later versions, acquisition availability, supersession and corrections"},
+    {"key": "bilingual", "count": 20, "scope": "English/Chinese equivalence, original terminology and labeled translation"},
+    {"key": "end_to_end_product", "count": 20, "scope": "Source inspection, Prophet explanation, private portfolio context and degraded states"}
+  ],
+  "sampling": {
+    "permission_required": true,
+    "freeze_questions_before_incremental_selection": true,
+    "split_policy": "Block by company, source family and date; do not leak adjacent versions across development and sealed evaluation.",
+    "gold_policy": "Human-adjudicated source versions, exact evidence locators, normalized fields and calculations; no model-only gold labels.",
+    "paired_grading": "Run the same sealed tasks with frozen model routes and budgets in all cells; blind graders to condition."
+  },
+  "experiment_cells": {
+    "A": {"corpus": "baseline", "processing": "existing"},
+    "B": {"corpus": "baseline", "processing": "improved"},
+    "C": {"corpus": "expanded_permitted", "processing": "existing"},
+    "D": {"corpus": "expanded_permitted", "processing": "improved"}
+  },
+  "paired_contrasts": {
+    "B-A": "Processing improvement on baseline corpus",
+    "C-A": "Acquisition improvement with existing processing",
+    "D-B": "Incremental acquisition after the processing upgrade",
+    "D-C": "Processing improvement on expanded corpus"
+  },
+  "capacity_increments": ["baseline_to_second", "second_to_third", "third_to_fourth"],
+  "primary_metrics": [
+    {"name": "supported_useful_task_completion", "denominator": "All eligible frozen tasks, with failures and appropriate abstentions separately classified"},
+    {"name": "correct_unanswerable_handling", "denominator": "Gold-labeled unanswerable tasks"},
+    {"name": "critical_error_rate", "denominator": "All tasks and explicit material-claim counts; factual, numeric and temporal errors separately reported"},
+    {"name": "citation_support", "denominator": "All cited material claims"},
+    {"name": "citation_completeness", "denominator": "All material claims requiring support"},
+    {"name": "inspection_success", "denominator": "All source-opening attempts; require correct version and page when known"},
+    {"name": "cost_per_supported_completion", "denominator": "Supported useful completions; numerator includes marginal acquisition and processing"}
+  ],
+  "negative_conformance_cases": [
+    {"id": "desk_type_is_not_rating", "expected": "side=sell never becomes an analyst rating or a Mastermind signal", "result": "NOT_RUN"},
+    {"id": "fiscal_vs_calendar", "expected": "FY and CY estimates without an accepted alignment remain not comparable", "result": "NOT_RUN"},
+    {"id": "gaap_vs_adjusted", "expected": "Different accounting bases cannot silently share a comparison row", "result": "NOT_RUN"},
+    {"id": "segment_vs_consolidated", "expected": "Different business scopes cannot silently share a denominator", "result": "NOT_RUN"},
+    {"id": "currency_unit_scale", "expected": "Preserve currency and thousand/million/billion scale; no hidden FX transform", "result": "NOT_RUN"},
+    {"id": "null_is_not_zero", "expected": "Unknown fields do not enter calculations as zero", "result": "NOT_RUN"},
+    {"id": "range_not_point", "expected": "Source ranges do not silently become point estimates", "result": "NOT_RUN"},
+    {"id": "source_quotes_not_independent", "expected": "A quoted forecast adds lineage, not an independent estimate", "result": "NOT_RUN"},
+    {"id": "missing_prior_version", "expected": "No invented revision without an evidenced earlier claim", "result": "NOT_RUN"},
+    {"id": "late_source_not_live_pit", "expected": "Later-acquired reports do not enter earlier operational-PIT answers", "result": "NOT_RUN"},
+    {"id": "new_extractor_not_historical_output", "expected": "Reprocessing now does not claim a feature existed in historical production", "result": "NOT_RUN"},
+    {"id": "publisher_revision_vs_extraction_fix", "expected": "Corrections retain actual origin and invalidate dependent outputs", "result": "NOT_RUN"},
+    {"id": "source_hash_malformed", "expected": "No fabricated binding from malformed source identity", "result": "NOT_RUN"},
+    {"id": "locator_version_drift", "expected": "A cited extraction cannot silently open a different PDF version", "result": "NOT_RUN"},
+    {"id": "truncated_no_match", "expected": "No match in a stored prefix is not absence from the complete report", "result": "NOT_RUN"},
+    {"id": "table_header_missing", "expected": "A number without its defining header, period and basis is not verified", "result": "NOT_RUN"},
+    {"id": "chart_only_value", "expected": "Chart inference is not exact numeric evidence without a qualifying method", "result": "NOT_RUN"},
+    {"id": "rights_denied", "expected": "Denied content contributes no snippets, claims, edges or query-conditioned existence", "result": "NOT_RUN"},
+    {"id": "mixed_source_restrictions", "expected": "Generated output does not bypass source and purpose restrictions", "result": "NOT_RUN"},
+    {"id": "quota_denied", "expected": "Existing denial occurs before restricted disclosure; no duplicate debit", "result": "NOT_RUN"},
+    {"id": "private_portfolio_cache", "expected": "No cross-user holdings or private answer leakage", "result": "NOT_RUN"},
+    {"id": "source_instruction_injection", "expected": "Report text never changes tools, permissions, recipients or market authority", "result": "NOT_RUN"},
+    {"id": "duplicate_notification", "expected": "Repeated same-origin content is not a new material-change notification", "result": "NOT_RUN"},
+    {"id": "no_signal_authority", "expected": "Research changes do not mutate Prophet scores, boards, ranks or sizing", "result": "NOT_RUN"},
+    {"id": "rights_withdrawal", "expected": "Applicable withdrawal reaches dependent outputs and caches through existing owners", "result": "NOT_RUN"},
+    {"id": "publication_generation_race", "expected": "Ahead-of-catalog corpus rows remain ineligible for user-visible retrieval", "result": "NOT_RUN"}
+  ],
+  "purchase_gates": {
+    "commercial_permission": "NOT_ESTABLISHED",
+    "real_pipeline_proof": "REQUIRED",
+    "baseline_task_mix": "TO_BE_MEASURED",
+    "minimum_worthwhile_improvement": "Set before pilot from baseline task economics; no universal percentage assumed",
+    "evaluation_window": "Set before pilot from permitted source and product cadence",
+    "fourth_increment": "Must justify its own benefit, not cumulative benefit of all added accounts"
+  },
+  "statistical_caveat": {
+    "example_zero_failures_n": 120,
+    "iid_one_sided_confidence": 0.95,
+    "upper_failure_probability_approx": 0.0246554,
+    "interpretation": "Illustrative binomial bound, not an observed failure estimate; source-clustered tasks are not necessarily independent"
+  },
+  "interpretation_limits": "Paired sample-conditional evidence, not unconditional causal or future-user-performance proof. All product cases remain NOT_RUN. Artifact consistency checks are not benchmark execution."
+}

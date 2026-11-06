@@ -1,0 +1,24 @@
+# Selected accounting wrappers transcribed from pending brain_market_intel.py
+# 8271ae320732997be4553957e3e2773d1b9e9f1b, full module blob
+# 376d1045e6187926bea2fd4c83385d140174b817. Docstrings omitted only.
+# This file is not claimed to be a complete or byte-identical Brain module.
+from datetime import datetime
+_BRAIN_VIEW_IP_PREFIX = "brain:"
+
+def _peek_report_view(user_id: str, now: datetime) -> dict | None:
+    try:
+        from engine.research_vault import view_ratelimit
+        info = view_ratelimit.peek(
+            user_id, _BRAIN_VIEW_IP_PREFIX + user_id, now=now)
+        return info if isinstance(info, dict) else None
+    except Exception:
+        return None
+
+
+def _charge_report_view(user_id: str, now: datetime) -> tuple[bool, dict]:
+    try:
+        from engine.research_vault import view_ratelimit
+        return view_ratelimit.allow(
+            user_id, _BRAIN_VIEW_IP_PREFIX + user_id, now=now)
+    except Exception:
+        return True, {}
