@@ -36,14 +36,20 @@ def test_internals_lead_with_settled_coverage(coverage, expected):
         "coherence": {"scope": "market_reads"},
     }
     model, soup = projection({"dd21": 0.22}, envelope=envelope)
-    line = soup.select_one(".rkw-internals-slot .rkw-coverage")
+    template = soup.select_one("#risk-radar-workspace-template")
+    assert template is not None
+    line = template.select_one(".rkw-internals-slot .rkw-coverage")
+    assert line is not None
     assert expected in line.select_one(".l-en").string
     assert "trend and stress" in line.select(".l-en")[1].string
     assert "趋势与压力" in line.select(".l-zh")[1].string
     assert model["horizons"]["21"]["probability"] == 0.22
 
     envelope["data_state"] = "FRESH"
-    assert projection({}, envelope=envelope)[1].select_one(".rkw-coverage") is None
+    _, fresh_soup = projection({}, envelope=envelope)
+    fresh_template = fresh_soup.select_one("#risk-radar-workspace-template")
+    assert fresh_template is not None
+    assert fresh_template.select_one(".rkw-coverage") is None
 
 
 def test_projection_preserves_each_horizon_and_its_own_baseline():
@@ -96,7 +102,13 @@ def test_no_live_hook_is_copied_into_the_inert_shell():
     _, soup = projection({})
     assert soup.select_one("#gde-live-stage") is None
     assert soup.select_one("#risk-envelope-band") is None
-    assert len(soup.select("button[data-rkw-horizon]")) == 3
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    shell = soup.select_one("#risk-radar-workspace-template")
+    assert shell is not None
+    assert shell.select_one("#gde-live-stage") is None
+    assert shell.select_one("#risk-envelope-band") is None
+    assert len(shell.select("button[data-rkw-horizon]")) == 3
 
 
 def test_partial_data_still_keeps_the_legacy_evidence_in_the_dialog():
