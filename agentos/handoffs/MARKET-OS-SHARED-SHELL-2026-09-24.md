@@ -494,7 +494,7 @@ prs:
 - 7949
 ---
 
-## Current joined source delivery — 2026-11-05
+## Current joined source delivery — 2026-11-06
 
 Programme remains **NOT_ACCEPTED**. Original W0–W10, six workspaces, 24 groups,
 19 renderer shapes and 61 cases remain the acceptance boundary. This replaces
@@ -503,13 +503,60 @@ source, CI, merge, installation, native publication and product acceptance are
 separate facts; task counts do not measure completion.
 
 At this corrective source freeze, the last published Macro #10674 head is
-`0855becf028ae7eb155f53bba7916b4a1e22428b`, unarmed/merge-blocked. Natural run
-42124592659 is terminal: **680 PASS, 7 UNKNOWN, 2 PR_REGRESSION, 0 inherited;
-clear=false**, tested `1730928bc902ca7d2ab4bcc4778d339d5d146757`, base
-`0d1b6e986391824b3f99a8b0f203a29cab1ead7b`, plan `4d7375d5`.
-Original observer26992 and its foreground consumers are closed. Formal5793278764
-approves only0855; the corrective successor needs its own exact-head formal
-non-author review and natural hosted/current-base proof. Older667/run420989
+`4658847bfc1a6c913d025dc172ea6b3c6fd57fbc`, unarmed/merge-blocked. Its natural run
+42143408582 is terminal: **642 PASS, 48 UNKNOWN, 0 inherited; clear=false**,
+tested `e40cee38dbb64835fc41956dd1f54260b4c2db8c`, base
+`8d55f6dc49e85ce577949b090562741da84039e5`, plan `180f5cdf`.
+Original observer51382 is CLOSED/EXIT1; no observer remains live. Formal5794627642
+approves only465. The coherent successor needs its own exact-head formal
+non-author review and natural hosted/current-base proof. Prior421245/0855 remains
+680PASS/7UNKNOWN/2PR_REGRESSION, independently retained and not successor credit.
+
+The new source component is58931537865391fa2e5d4e303e91f9eb21700b7f:
+Dossier test consumers follow the existing strict deferred/market mount contracts,
+retain all five peer identities and values/states, check actual owner-configured
+selection destinations and explicit bilingual unavailable affordances. Thirty-two
+old test functions are exact; the other two change only these inspection/action
+expectations. Actual targeted14PASS, full44PASS/2residualFAIL and corrected four
+residual/negative cases PASS remain distinct, not a fabricated single full green.
+The original scientific fixtures, templates, numeric/state/source clocks are untouched.
+
+The native acquisition classifier preserves explicit HTTP401/403 as PERMISSION,
+so both incumbent completion gates refuse before effect. Its333 affected controls
+pass. The separately qualified two-file evidence descendant retains validated public
+archive identities, hashes/source bindings and fixed returned error categories only
+on the existing outer diagnostic channel (370 affected controls PASS). No URI/private
+output, child protocol, package input, deadline, gate, cleanup or retry permission
+changes. HTTP cause remains UNKNOWN. Neither patch proves a speed or timeout fix.
+
+Accepted S17 Macro a906e2d4 is included: claim original operation before retention,
+record retained only after the synchronous producer's no-more-writes boundary,
+then recheck incumbent current rights. The same-project server-role RPC is closed;
+no public completion input or replay authority is added. Capture remains default OFF;
+SQL/grant/activation/live native persistence are UNAPPLIED/unqualified. Current joined
+source tests46PASS. Eleven existing readsets and two test targets are additive.
+
+Current protected ddaa9bb6 is preserved through a153c71c. Its only four changed code
+paths are the protected7066 manifest additions and three Research screener files.
+The sole Business HTML conflict is resolved through the existing one-page reader,
+renderer and optimizer using the matching verified immutable raw snapshot/manifest.
+All31 values/reference periods/source refs and15 assets are preserved; tamper refusal,
+raw digest immutability and native/publication body/time parity pass. No collector,
+financial engine, handpatched HTML or invented timestamp/VM was used. Bonds changes
+only its accepted CSS href; Intl changes only its two accepted asset URLs. New History
+remains NOT_INSTALLED. Actual canonical closure/three-packing checks2PASS215.47s at
+a153; the metadata descendant preserves exact owner dependency sets and ambiguity
+kinds/roots (only source line positions shift), with unchanged manifest/runner/weights.
+
+Actual current Ontology timing leaves about100.14s for the responsive browser suite:
+406.54s acquisition plus93.33s five earlier proofs under the unchanged600s deadline.
+Execution quiescence is narrowly qualified by actual same-job full hostedVM completion,
+cleanup and documented automatic decommission, with30 unchanged audited source bodies
+and the exact Ontology job definition. Semantic timed_out/UNKNOWN and all T55 history
+remain; no old command is replayed or promoted to PASS. The original IM14 head failures
+were reproduced locally and repaired as test consumers; base attribution stays UNKNOWN.
+Same fresh reviewer preparationb8380a7a covers the initial ten-path delta; final metadata,
+current-base/context and formal remote-head binding remain separately required. Older667/run420989
 683PASS/6UNKNOWN,4462/run420652619PASS/69UNKNOWN/1PR_REGRESSION and historical
 8c/687PASS remain distinct facts, never inherited successor clearance.
 
@@ -646,9 +693,9 @@ are original held Paper operations; they do not establish a generic source-DOM b
 or clear the distinct1188/29789 Chromium refusals. No new provider, host, SQL,
 browser, financial recomputation or production activation occurred in this source repair.
 
-The latest validated mmtask export is2026-11-06T01:06:19Z:164 verified entries,
+The latest validated mmtask export is2026-11-06T03:32:07Z:169 verified entries,
 0 errors/1 warning, **PREPARED ONLY**. Export SHA256:
-`5f6643a8e97e9e94dd49666b16ea16f92f2c971883fbc190f2bbca1ca4f4bdb3`.
+`0f824a754121c2cb3e328601bf14a143844c54414468798688210e0902999035`.
 
 | Existing task | Buffered source state | Bounded outcome |
 | --- | --- | --- |

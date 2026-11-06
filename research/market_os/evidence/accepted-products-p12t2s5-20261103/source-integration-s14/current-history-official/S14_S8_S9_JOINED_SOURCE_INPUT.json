@@ -2,19 +2,19 @@
   "schema": "shared-shell.source-composition.v1",
   "task": "P12.T2.S14.S8.S9",
   "state": "SOURCE_COMPONENT_QUALIFIED_NOT_HOSTED_OR_RELEASED",
-  "runtime_component_head": "65228b988921a6594e598fe94f7f24682f89dfdc",
-  "runtime_component_tree": "6872ba7f4b27fa550839f3d1ba5d020162d45128",
-  "protected_base": "02839f000f3e0623ad65c8bc2fb3b910b7cce6d2",
-  "prior_published_head": "667e93fa9ab4c136060ad9e5e8caa5b69d202e5f",
+  "runtime_component_head": "58931537865391fa2e5d4e303e91f9eb21700b7f",
+  "runtime_component_tree": "e7b186ebf9ec242163e99047475e26279dac44f0",
+  "protected_base": "ddaa9bb6ec3f1ac482487513f3fab13ff547d1f0",
+  "prior_published_head": "4658847bfc1a6c913d025dc172ea6b3c6fd57fbc",
   "prior_CI": {
-    "run": 42098955595,
-    "tested": "fb69a896323b5495271913c6b0f7cde5c9072e84",
-    "base": "a20e6437cc8a892b769d549876ebf81ca0e2dcd1",
-    "passed": 683,
-    "unknown": 6,
+    "run": 42143408582,
+    "passed": 642,
+    "unknown": 48,
     "inherited": 0,
     "clear": false,
-    "all_original_unknowns_preserved": true
+    "observer": "51382 CLOSED/EXIT1",
+    "tested": "e40cee38dbb64835fc41956dd1f54260b4c2db8c",
+    "base": "8d55f6dc49e85ce577949b090562741da84039e5"
   },
   "selector_repair": {
     "path": "tests/intl_workspace_history_controller.test.cjs",
@@ -297,8 +297,38 @@
       "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-pack11-execution-settlement-adjudication.json": "0194b186b3bf816ce6df52c3dd83ced6437b37406abc7500cfec82aafb016ef0",
       "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/s14-s8-s9-corrective-export-binding.json": "5e94c81c8d2279842c4f33bbeea9447a88674bc4a0e95eb1dad909a3e7671edc"
     },
-    "checks": "DAG49+importentrypoint19PASS. OriginalIM134RED\u21924PASS; fullaffected46PASS/1tooltipFAIL\u2192targeted2PASS32.34s, integrated9protocolnegativesPASS. No single47greenrerun claim. Existing current483closure/packing remainsapplicable: no legacyjob/readedge/dependency/budgetchange.",
+    "checks": "DAG49+importentrypoint19PASS. OriginalIM134RED→4PASS; fullaffected46PASS/1tooltipFAIL→targeted2PASS32.34s, integrated9protocolnegativesPASS. No single47greenrerun claim. Existing current483closure/packing remainsapplicable: no legacyjob/readedge/dependency/budgetchange.",
     "hold_scope": "Exactheld3registry/PLNTpostimagesunchangeda2/801/234; rootscopedinclusion913512fa, original10696/e5dd/UNKNOWN9533/GMIatomic/export/SS05runtime/SQL/browser/Paper/defaultOFFholds preserved.",
     "release": "LOCAL_SOURCE_ONLY_NOT_HOSTED; newheadnaturalfullrequiredCI/exactformal/currentfreshness/non-authorcontroller release/native/served owed."
+  },
+  "historical_runtime_component": {
+    "runtime_component_head": "65228b988921a6594e598fe94f7f24682f89dfdc",
+    "runtime_component_tree": "6872ba7f4b27fa550839f3d1ba5d020162d45128",
+    "protected_base": "02839f000f3e0623ad65c8bc2fb3b910b7cce6d2",
+    "prior_published_head": "667e93fa9ab4c136060ad9e5e8caa5b69d202e5f",
+    "prior_CI": {
+      "run": 42098955595,
+      "tested": "fb69a896323b5495271913c6b0f7cde5c9072e84",
+      "base": "a20e6437cc8a892b769d549876ebf81ca0e2dcd1",
+      "passed": 683,
+      "unknown": 6,
+      "inherited": 0,
+      "clear": false,
+      "all_original_unknowns_preserved": true
+    }
+  },
+  "corrective421434_source_join": {
+    "component": "58931537865391fa2e5d4e303e91f9eb21700b7f",
+    "task": "P12.T2.S14.S8.S9.S6+S7+S8+S9",
+    "Dossier_commit": "c9577f65b43489b0d0a5d36265c36b2d2251b5a2",
+    "denial_commit": "bf08cbeed47a1",
+    "participant_commit": "7015901f40b7cb7853e6cc7b5935c52e80f6ca73",
+    "current_base_merge": "a153c71c1f90ce288b697c3daa217511f4f5ac01",
+    "metadata_input_sha256": "6480198fe791076db114eb402f6d59bd634df109742e81ccf2b94141fd0ca0cc",
+    "initial_changed_risk_review_sha256": "b8380a7a3f0e18c75e4d8c0fc2d90dd90c915546fadf9be40a7221edf7d548b6",
+    "source_controls": "32oldDossiertestsexact/twoowner-contractcorrections/negativecanaries;46nativecapturePASS;333denial+370metadata retainedPASS; canonical2PASS215.47s+metadataexactdependency-kinds",
+    "runtime_limits": "No timeout/speed/UNKNOWN clearance, no SQL/activation/private/host/provider/browser effects. NewHistoryNOT_INSTALLED/S13NOT_YET_LIVE. Original10696/9533/generation/export/SS05 holds unchanged.",
+    "source_head_formal_and_CI": "NOT_YET_QUALIFIED; one same-carrier natural proof after publication; same genuine independent final-head formal/non-author release still owed",
+    "task_registration_note": "S17 initial mmtask command lacked harness binding; corrected registration/start before further source changes; no new effect authority inferred."
   }
 }
