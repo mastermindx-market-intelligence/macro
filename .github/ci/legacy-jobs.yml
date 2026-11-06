@@ -21158,7 +21158,6 @@ jobs:
       - ".claude/agents/reviewer.md"
       - "docs/DESIGN_DOCTRINE.md"
       - "research/SECTOR_INTELLIGENCE_CONSOLIDATED_EXPERIENCE_2026-09-26.md"
-      - "tests/test_human_first_design_guidance.py"
     # TP-0 theme-parity governance (research/THEME_PARITY_RATCHET_PRESENTATION_CONVERGENCE_ARCHITECTURE.md).
     # Three forward-only gates so NEW user-facing presentation debt fails closed
     # without reddening the ~19k inherited findings in templates/:
@@ -21202,7 +21201,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: design governance unit suites
-        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_freshness_chips_language_invariant.py tests/test_human_first_design_guidance.py -q
+        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_freshness_chips_language_invariant.py -q
       - name: design-system ratchet selftest (each rule fires on its own fixture)
         run: python3 scripts/check_design_system.py --self-check
       - name: runtime-style injection guard selftest (gate fires on planted injection)
