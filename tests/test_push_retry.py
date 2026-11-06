@@ -531,10 +531,11 @@ def test_daily_engine_checkpoints_core_outputs_before_tail_desks():
     assert regional_index < checkpoint_index < membership_index < tail_index
 
     checkpoint = steps[checkpoint_index]
-    assert checkpoint["if"] == "always()"
+    assert checkpoint["if"] == "always() && steps.custody_recovery.outcome == 'success'"
+    assert checkpoint["id"] == "core_custody"
     assert checkpoint["timeout-minutes"] == 25
     assert checkpoint["continue-on-error"] is True
-    assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+    assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh --checkpoint"
 
 
 def test_daily_engine_keeps_final_commit_after_core_checkpoint():
@@ -542,7 +543,7 @@ def test_daily_engine_keeps_final_commit_after_core_checkpoint():
     publisher_steps = [
         step
         for step in steps
-        if step.get("run") == "bash scripts/ci/daily_engine_commit_outputs.sh"
+        if step.get("run") == "bash scripts/ci/daily_engine_commit_outputs.sh --checkpoint"
     ]
 
     assert [step.get("name") for step in publisher_steps] == [
@@ -550,7 +551,8 @@ def test_daily_engine_keeps_final_commit_after_core_checkpoint():
         "commit engine outputs",
     ]
     assert publisher_steps[0]["continue-on-error"] is True
-    assert publisher_steps[1]["if"] == "always()"
+    assert publisher_steps[1]["if"] == "always() && steps.core_custody.outputs.admitted == 'true'"
+    assert publisher_steps[1]["id"] == "final_custody"
 
 
 def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
@@ -605,7 +607,7 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
     ] == expected
 
     publisher_source = resolve_run_source(
-        "bash scripts/ci/daily_engine_commit_outputs.sh", REPO_ROOT
+        "bash scripts/ci/daily_engine_commit_outputs.sh --checkpoint", REPO_ROOT
     )
     actual_modules = [
         step.module for step in _extract_steps_from_run(publisher_source)
@@ -672,8 +674,17 @@ def test_daily_engine_push_loss_is_red_without_suppressing_delivery_tail():
 
     steps = doc["jobs"]["engine"]["steps"]
     commit_index = steps.index(step)
+    ungated_diagnostics = {
+        "restore carved qledger bytes after the engine commit (runner-local, never published)",
+        "OIP PIT — fail closed after unrelated rendering completes",
+        "timings ledger + 85% budget tripwire (W2)",
+    }
     for delivery_step in steps[commit_index + 1 :]:
-        assert delivery_step.get("if") == "always()", delivery_step.get("name")
+        condition = delivery_step.get("if")
+        if delivery_step.get("name") in ungated_diagnostics:
+            assert condition == "always()", delivery_step.get("name")
+        else:
+            assert condition == "always() && steps.final_custody.outputs.admitted == 'true'", delivery_step.get("name")
 
     for job_name, job in doc["jobs"].items():
         needs = job.get("needs", [])
@@ -3052,12 +3063,22 @@ def _us_board_clone(tmp_path: Path) -> tuple[Path, Path]:
 
 
 def _run_us_board_commit(repo: Path, *args: str, **env: str) -> subprocess.CompletedProcess:
+    # The hold state lives under RUNNER_TEMP (else TMPDIR), keyed by run id and
+    # job. Give every call a private default, so state that another run left in
+    # TMPDIR cannot leak into this test.
+    runner_temp = repo.parent / "runner-temp"
+    runner_temp.mkdir(exist_ok=True)
     return subprocess.run(
         ["bash", str(REPO_ROOT / "scripts" / "ci" / "us_board_commit.sh"), *args],
         capture_output=True,
         text=True,
         cwd=str(repo),
-        env={**os.environ, "GITHUB_WORKSPACE": str(REPO_ROOT), **env},
+        env={
+            **os.environ,
+            "GITHUB_WORKSPACE": str(REPO_ROOT),
+            "RUNNER_TEMP": str(runner_temp),
+            **env,
+        },
     )
 
 
@@ -3700,6 +3721,52 @@ def test_hold_recovery_preserves_the_callers_errexit_and_reports_failure(tmp_pat
     report = next(line for line in result.stdout.splitlines() if line.startswith("rc="))
     assert report.startswith("rc=1 ")
     assert ("e" in report.split("flags=", 1)[1]) is errexit
+
+
+def test_hold_lineage_pulls_in_the_sibling_group_and_a_split_ref_is_kept_not_superseded(tmp_path):
+    """A recovered ref carried a ledger row and a rotation row. The ledger row is
+    held again; the rotation row is not staged this time. The rotation group is
+    still held (it shares the lineage), and the old ref is not named in `from`,
+    because the new ref does not carry all of its rows."""
+    bare, repo = _us_board_clone(tmp_path)
+    subprocess.run(["git", "-C", str(repo), "config", "user.email", "t@t"], check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.name", "t"], check=True)
+    env = _hold_env(tmp_path, "1001")
+    state = Path(env["RUNNER_TEMP"]) / "push_hold.1001.us_board_ledgers"
+    state.mkdir(parents=True)
+    old_ref = "refs/heads/push-hold/us_board_ledgers/1000-1-aaaaaaaaaaaa"
+    (state / "recovered").write_text(
+        f"{old_ref}\tdata/us_board_ledger/snapshots.jsonl\n"
+        f"{old_ref}\tdata/us_sector_rotation/latest.json\n"
+    )
+    held = b"old\n" + (b"R" * 60)
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    (repo / "data/us_sector_rotation/extra.json").write_text("{}\n")
+    subprocess.run(["git", "-C", str(repo), "add", "data"], check=True)
+
+    result = run_sh(
+        f'''
+        . "{REPO_ROOT}/scripts/ci/push_hold.sh"
+        push_hold_oversize_staged "data/us_board_ledger" "data/us_sector_rotation"
+        ''',
+        env=env,
+        cwd=repo,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert f"::warning title=hold lineage split::{old_ref} has rows that are not held again" in result.stdout
+    assert (
+        "data/us_sector_rotation/extra.json is 3 B, under the limit. Withheld with its group because "
+        f"data/us_sector_rotation/latest.json shares a held lineage with {old_ref}"
+    ) in result.stdout
+    [ref] = _hold_refs(bare)
+    entries, froms = _manifest(bare, ref)
+    assert sorted(entry["path"] for entry in entries) == [
+        "data/us_board_ledger/snapshots.jsonl",
+        "data/us_sector_rotation/extra.json",
+    ]
+    assert froms == []
+    assert _git_output(repo, "diff", "--cached", "--name-only") == ""
 
 
 @pytest.mark.parametrize("blocked_state", ["directory", "empty_marker"])

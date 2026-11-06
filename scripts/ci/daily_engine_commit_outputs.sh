@@ -4,10 +4,48 @@
 # 2026-08-26 512KB processing-cap headroom diet (tests/test_workflow_file_size.py;
 # PR #6499 left ~36 bytes of headroom). Env comes from the step's `env:` block,
 # which stays in the YAML.
-# Invoked as: bash scripts/ci/daily_engine_commit_outputs.sh
+# Invoked as: bash scripts/ci/daily_engine_commit_outputs.sh [--checkpoint]
 set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declares no shell:
 
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
+. "${GITHUB_WORKSPACE:-.}/scripts/ci/push_hold.sh"
+# Refuse before normalizers or staging, including direct invocations.
+push_hold_recovery_ok || exit 2
+if [ "${1:-}" = "--checkpoint" ]; then
+  checkpoint_rc=0
+  # The normal committer runs once; its existing EXIT cleanup finishes first.
+  bash "${BASH_SOURCE[0]}" || checkpoint_rc=$?
+  if [ "$checkpoint_rc" -eq 2 ]; then
+    _push_hold_mark_unreconciled "checkpoint" "custody operation did not qualify" || true
+  elif [ "$checkpoint_rc" -ge 128 ]; then
+    _push_hold_mark_unreconciled "checkpoint" "committer interrupted before custody qualification" || true
+  elif push_hold_recovery_ok && [ -n "${GITHUB_OUTPUT:-}" ]; then
+    printf '%s\n' "admitted=true" >> "$GITHUB_OUTPUT"
+  fi
+  exit "$checkpoint_rc"
+fi
+# R-33 hold. GitHub decides GH001 per blob, so ONE staged file over the limit
+# rejects this whole commit. The engine stages thousands of outputs and cannot
+# prove which source file and site/ projection belong together, so its staged
+# set is one publication group: a blob over the limit holds all of it. The exact
+# held bytes go to a custody ref on origin before anything is unstaged, the step
+# is red, and the job's recover step restores them on the next run. The worktree
+# keeps its bytes for the always() steps that follow. The second checkpoint of
+# the same run holds again whatever the first one held.
+ENGINE_GROUP="data site reports templates"
+PUSH_HOLD_KEEP_WORKTREE=1
+engine_hold() {
+  local rc=0
+  push_hold_recovery_ok || exit 2
+  push_hold_oversize_staged "$ENGINE_GROUP" || rc=$?
+  if [ "$rc" -ne 0 ]; then exit "$rc"; fi
+  if push_hold_held; then
+    echo "::error title=engine outputs withheld::an engine output is over GitHub's blob limit, so none of this run's engine outputs is published; the held bytes are on origin and the next run restores them"
+    push_hold_settle HEAD
+    exit 1
+  fi
+  return 0
+}
 git config user.name "dashboard-bot"
 git config user.email "actions@users.noreply.github.com"
 # normalize the EXACT tree this always() commit stages (P0 2026-08-04,
@@ -203,7 +241,7 @@ git add -f site/live/notify_state.json 2>/dev/null || true
 # lost engine commit must red the run (see the push_lost branch below).
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"
 qledger_carve_staged || exit 1
-if git diff --cached --quiet; then echo "no engine output changes"; exit 0; fi
+if git diff --cached --quiet; then echo "no engine output changes"; push_hold_settle HEAD; if push_hold_red; then exit 1; fi; exit 0; fi
 # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): a conflicted
 # autostash apply anywhere upstream of this step leaves `Updated upstream /
 # Stashed changes` blocks that the broad `git add` above stages VERBATIM —
@@ -216,7 +254,10 @@ if git diff --cached --quiet; then echo "no engine output changes"; exit 0; fi
 if ! push_staged_heal data/ site/ reports/ templates/; then
   exit 1
 fi
-if git diff --cached --quiet; then echo "no engine output changes after conflict heal"; exit 0; fi
+if git diff --cached --quiet; then echo "no engine output changes after conflict heal"; push_hold_settle HEAD; if push_hold_red; then exit 1; fi; exit 0; fi
+# After the heal, so marker bytes never reach custody. A carved qledger plane
+# is not staged, so the hold leaves it alone.
+engine_hold
 bash scripts/ci/options_signal_nightly.sh commit-broad-candidate \
   "engine: regime update $(date -u +%F)"
 # best-effort push (see commit-data). The deploy below uses the uploaded
@@ -305,10 +346,20 @@ while push_attempt; do
         echo "::warning title=render-sync skipped::post-rebase site/templates scanned dirty (conflict markers) — follow-up commit skipped and offenders restored from HEAD; pushing the guarded engine commit only"
       fi
     fi
+    # R-33: the rebase or the render-sync re-add can carry a blob over the
+    # limit. Hold the whole candidate against the accepted main instead of
+    # losing it to GH001: HEAD goes back to that main, so every change of this
+    # run is staged and held against main's bytes.
+    if push_hold_staged_over "$COMMODITY_ACCEPTED"; then
+      git reset -q --soft "$COMMODITY_ACCEPTED" || exit 2
+      engine_hold
+      echo "::error title=hold custody failed::a blob over the limit was found after the rebase and the hold did not take it"
+      exit 2
+    fi
     # This is the actual final candidate, including any render-sync commit.
     qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
     python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref "$qledger_push_candidate" || exit 1
-    if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+    if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; push_hold_settle "$COMMODITY_ACCEPTED"; if push_hold_red; then exit 1; fi; exit 0; fi
   fi
   push_abort_rebase
   push_backoff

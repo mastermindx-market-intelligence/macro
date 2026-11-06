@@ -964,8 +964,9 @@ def test_finish_script_annotations_start_the_line():
         )
 
 
+@pytest.mark.parametrize("permission", [None, "true", "", "false"])
 def test_finish_publishes_only_its_exact_ledger_with_foreign_index_state(
-    tmp_path: Path,
+    tmp_path: Path, permission: str | None,
 ) -> None:
     origin = tmp_path / "origin.git"
     lane = tmp_path / "lane"
@@ -995,6 +996,7 @@ def test_finish_publishes_only_its_exact_ledger_with_foreign_index_state(
     parent = git("rev-parse", "HEAD")
     foreign.write_text("must-not-ride\n")
     git("add", "config/foreign.txt")
+    index_before = git("write-tree")
 
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
@@ -1006,24 +1008,27 @@ def test_finish_publishes_only_its_exact_ledger_with_foreign_index_state(
         "printf '%s\\n' '{\"run\":2}' >> data/ops/nightly_timings/${GITHUB_JOB}.jsonl\n"
     )
     fake_python.chmod(0o755)
+    run_env = {
+        **os.environ,
+        "PATH": f"{fake_bin}:{os.environ['PATH']}",
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_WORKSPACE": str(ROOT),
+        "GITHUB_JOB": "engine",
+        "GITHUB_RUN_ID": "timing-test",
+        "RUNNER_TEMP": str(tmp_path),
+    }
+    run_env.pop("NIGHTLY_TIMINGS_PUBLISH_ALLOWED", None)
+    if permission is not None:
+        run_env["NIGHTLY_TIMINGS_PUBLISH_ALLOWED"] = permission
     result = subprocess.run(
         ["bash", str(FINISH_SH), "300"],
         cwd=lane,
-        env={
-            **os.environ,
-            "PATH": f"{fake_bin}:{os.environ['PATH']}",
-            "GITHUB_ACTIONS": "true",
-            "GITHUB_WORKSPACE": str(ROOT),
-            "GITHUB_JOB": "engine",
-            "GITHUB_RUN_ID": "timing-test",
-            "RUNNER_TEMP": str(tmp_path),
-        },
+        env=run_env,
         text=True,
         capture_output=True,
         check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "pushed nightly timings (engine)" in result.stdout
     assert git("rev-parse", "HEAD") == parent
     remote = subprocess.run(
         ["git", "--git-dir", str(origin), "rev-parse", "main"],
@@ -1031,6 +1036,14 @@ def test_finish_publishes_only_its_exact_ledger_with_foreign_index_state(
         capture_output=True,
         check=True,
     ).stdout.strip()
+    if permission in ("", "false"):
+        assert remote == parent
+        assert git("write-tree") == index_before, "denied telemetry must not stage or build a candidate"
+        assert '{"run":2}' in ledger.read_text(), "always() still writes the local diagnostic"
+        assert any(line.startswith("::warning title=nightly timings custody unqualified::") for line in result.stdout.splitlines())
+        assert "pushed nightly timings" not in result.stdout
+        return
+    assert "pushed nightly timings (engine)" in result.stdout
     changed = subprocess.run(
         ["git", "--git-dir", str(origin), "diff-tree", "--no-commit-id", "-r", "--name-only", remote],
         text=True,

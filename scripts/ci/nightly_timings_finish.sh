@@ -45,6 +45,12 @@ if [ "${GITHUB_ACTIONS:-}" != "true" ]; then
   echo "not in GitHub Actions — ledger row written locally, commit/push skipped"
   exit 0
 fi
+# Engine always records diagnostics, but uncertain custody cannot publish a tail.
+# An explicitly empty permission is denied; only other jobs' UNSET value defaults.
+if [ "${NIGHTLY_TIMINGS_PUBLISH_ALLOWED-true}" != "true" ]; then
+  echo "::warning title=nightly timings custody unqualified::${JOB}: row remains local; final engine custody was not admitted"
+  exit 0
+fi
 [ -f "$LEDGER" ] || {
   echo "::warning title=nightly timings row missing::${JOB}: finish exited 0 but ${LEDGER} does not exist — no row to commit, so tonight's elapsed time and the 85% tripwire trend are lost (non-fatal)"
   exit 0
