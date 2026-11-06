@@ -1,0 +1,67 @@
+{
+  "kind": "synthetic empty supplied-frame actual builder/template fixture",
+  "live_product_proof": false,
+  "source_qualification": null,
+  "browser": "system Chrome on Mini2",
+  "html_sha256": "2756403207b7deddc5ddb985ef221ef8bdeb6452a2bf3f3472e8c8d2d2635f57",
+  "capture_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+  "driver_factory": "canonical _PlaywrightDriver with channel=chrome",
+  "capture_results": [
+    {
+      "name": "group-focus",
+      "route": "/intl.html?view=library&group=leaders",
+      "rc": 0
+    }
+  ],
+  "keyboard_focus_checks": [
+    {
+      "active": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "2px"
+    },
+    {
+      "active": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "2px"
+    },
+    {
+      "active": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "2px"
+    },
+    {
+      "active": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "2px"
+    },
+    {
+      "active": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "2px"
+    },
+    {
+      "active": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "2px"
+    },
+    {
+      "active": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "2px"
+    },
+    {
+      "active": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "2px"
+    }
+  ],
+  "interaction_amendment": "Real Tab before canonical focus; additionally requires focus-visible and nonzero outline"
+}

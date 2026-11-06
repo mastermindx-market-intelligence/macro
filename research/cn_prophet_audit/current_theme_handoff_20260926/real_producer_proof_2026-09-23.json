@@ -1,0 +1,2282 @@
+{
+  "source": "978a5209eb0710d87a2d750982ae907c735fdf27",
+  "consumers": {
+    "mature": "9c8ff7315347eb8b6d00875603c55b1bd63ad8b5",
+    "emerging": "0fab873d85decf6ce72d08e9d4df6b7668e5626f"
+  },
+  "proof_kind": "current code on immutable recorded inputs; not point-in-time or live proof",
+  "observed_at_utc": "2026-09-26T11:01:26.355816+00:00",
+  "source_sha256": {
+    "scripts/build_china.py": "3ea9083ec6cce3d3715c692cba8197a2b38ed744e67980435d4144002eb7364f",
+    "engine/theme_scoring.py": "56567c17a603a9174d5718deba6246c3eae6fc1026c7cbd4427258cb82fd184a",
+    "engine/narrative_rotation.py": "a39495af298f2cfb155b93ee564c7e797f4a43651b16dfdf0c6be09dd46bacf6",
+    "engine/baskets_china.py": "dacef9edecf7a802d9fddbcbfced9eec8e1d97fec67968a5101977b5309a69be",
+    "engine/group_flow.py": "900c9382523e3b8a52a65fa0dce95fb73af835565caed49ec5cdf42f5c5b8532",
+    "engine/vol_regime.py": "67c8e9ebf4b1c42337b952b11eadc052045db90f452b6838c6975e453b9bcc6d",
+    "engine/basket_breadth_divergence.py": "f073f778f43f9e040b5b3b76cfb66fe5085940ca00b92e7ae2fac359d1d68be6",
+    "lib/closes_panel.py": "70bc2c1bb6a15dc677e88c12ee78b1c492afb2bbf75846860cf9d13fc6518496",
+    "lib/cn_calendar.py": "cc712647c3d774eb60315221cf00ac293d0b8a4b9a4cd7210a7f5c87a11fd29d",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "lib/store.py": "77051ae1e522e415e2b8c3be51f51187f2571d53a049472a52ca54e9ee1a3c4b",
+    "config.yml": "78186dd7b079a0d49706bf76a5614327c0c00da51bc6644b11de30d37d86b75c"
+  },
+  "cases": [
+    {
+      "day": "2026-09-23",
+      "input_commit": "bf93a8dbd5f245444ef7b4286d1b5f4bd1aa356f",
+      "input_inventory": {
+        "config.yml": {
+          "git_blob": "0e31ebbced710de614269d8da4ed2ac76215c0a2",
+          "sha256": "78186dd7b079a0d49706bf76a5614327c0c00da51bc6644b11de30d37d86b75c",
+          "bytes": 491979
+        },
+        "data/china/000001.SS.parquet": {
+          "git_blob": "445f4b729dd74656f604d59f72fd8f51b23fed92",
+          "sha256": "fde7953ffe4db529895db48ace0bb182412f041a163988a8e009c1ca90614e67",
+          "bytes": 131930
+        },
+        "data/china_search/closes.parquet": {
+          "git_blob": "73f4d2a2ac5ad8e0d78768517204ad90cd43ab75",
+          "sha256": "0c84d83ae894865563586a386af9699af8c511f80d36e5d4b9004740cc36d2f3",
+          "bytes": 13417704
+        },
+        "data/baskets_china/membership.json": {
+          "git_blob": "4084cb7dcedf0677fc9db7bb36917360c1197c14",
+          "sha256": "8ad3b8a53871381e02f7e612528649a24d0d1eb6a661a64a5d2e58d57a10c78c",
+          "bytes": 102386
+        },
+        "data/china/510300.SS.parquet": {
+          "git_blob": "34f7bb5af7e355f0f8362ebc3fa119058b447091",
+          "sha256": "5fd8228d7a1bc54832ac9fda1769ec623cc46a815c5820410a245c3fe21f5a16",
+          "bytes": 77934
+        },
+        "data/china_regime/latest.json": {
+          "git_blob": "612422dfe6fe1b131cdfe968f91f20ae5054dedd",
+          "sha256": "08f81b474b00f851f2073fc4424d69bab401ca3a840d941c234c979a3fe8b13b",
+          "bytes": 146245
+        },
+        "data/forex/latest.json": {
+          "git_blob": "0eef154987bcd51cdbef35164a548667d70e6f1f",
+          "sha256": "946092128f070d0a0de41a111cef4633d73b3a3b509603fc04896426621c9e86",
+          "bytes": 23526
+        },
+        "data/vol_regime/basket_overlay_gate.json": {
+          "git_blob": "d3afd589ec992382af9fc5b586c2e2171eba651e",
+          "sha256": "90761f20b7a7cd280aab912a758a779f2fc7dc9c5a178e39f0979870245d807c",
+          "bytes": 651
+        },
+        "data/regime/latest.json": {
+          "git_blob": "6fe44a9728dea221d29aab44760e59fe3f042d43",
+          "sha256": "2b05ddd79cb54841890f5179cefee1a79a5d314376765ba35952864fe0d09909",
+          "bytes": 863755
+        },
+        "data/strategies/baskets_calibration.json": {
+          "git_blob": "f440a4887d8b9b157fdd5e6e2b5ca6cdbc2463dd",
+          "sha256": "3135c3de3b325058c03444c45af3c1b2d968534020a14dd3c0620e3b25ff6432",
+          "bytes": 14530
+        },
+        "data/earnings/earnings.parquet": {
+          "git_blob": "b8ea4c916ba09d662f8ce013f51e282ff954bb3c",
+          "sha256": "83504d870b1518643400fa3f2f6638df9c1b3767407df78365649fddd2b63c0f",
+          "bytes": 202925
+        },
+        "site/sectordata/sector_central.json": {
+          "git_blob": "fc91915a5ed3a69d4d1654ef635c6026295ec567",
+          "sha256": "61045e32d32e1e4ae568bd08d78b8315faebf56b276c4c54e9362d51303277b7",
+          "bytes": 168122
+        },
+        "site/vol/regime.json": {
+          "git_blob": "ba2ccde4b01ed73efadfe7982460b188c7392010",
+          "sha256": "ea74f5327af153dcf1f6619a3352a36281da59d9bf7d6cbe37b45dc4ef4475f3",
+          "bytes": 6148
+        },
+        "site/chinabasketdata/baskets.json": {
+          "git_blob": "e04e5eb7620aab5e71b4248df6dabdc87fe29396",
+          "sha256": "de41b6726db8134aa43793585c44c520bbd03849daae7324a867bb7a189c818b",
+          "bytes": 932614
+        },
+        "data/breadth_divergence/forward_log.parquet": {
+          "git_blob": "4482541add90bd65f39e3ffa1df5d03f1883d3f6",
+          "sha256": "c52a309f9057b1d3d2f12b82d6faf16322a5fe9a60239e19249d04c0b39115cd",
+          "bytes": 14147
+        },
+        "site/chinabasketdata/act_now_cn.json": {
+          "git_blob": "fc9ec55f4e7aedc2c683a26699b9dd8431d0d098",
+          "sha256": "c7e3249a8195a496b9dc0c1a6a503012546ce4deb898b3b460a66455a7ea8282",
+          "bytes": 118349
+        },
+        "data/china_sector_cycles/forward_log.parquet": {
+          "git_blob": "19eaf20f4094b415c6a2907102bd8791f723b41c",
+          "sha256": "9b56c830a7953cf7ade0d488978a3cbc3c6990f1fab97923b63c1aca86c7e595",
+          "bytes": 48296
+        },
+        "data/china_stocks/000001.SZ.parquet": {
+          "git_blob": "b8c03ec48fa1fc2be3c8fb5f979fdd96ba22e118",
+          "sha256": "121c39b27a853e027097b80701557dcdd950cd005108f08bed85557b5b220391",
+          "bytes": 354556
+        },
+        "data/china_stocks/000060.SZ.parquet": {
+          "git_blob": "c22f6679b71c181a5bd5e33a7f35f1c5758e7fb6",
+          "sha256": "dc5f064be4cdbf85ac9b82d359f6919d62c7a65848619eea0e070a78c0d69733",
+          "bytes": 288538
+        },
+        "data/china_stocks/000100.SZ.parquet": {
+          "git_blob": "9fd45e262a7ce7173b9f5e1e64fdfbb7fabc91d3",
+          "sha256": "1411282f790f6c48f5f914041fe0d52f48656568c22ecd23e4c3841364fe2482",
+          "bytes": 199361
+        },
+        "data/china_stocks/000166.SZ.parquet": {
+          "git_blob": "53ac33e9c00e5cba8e4ef263da8dd4e7bd10fadb",
+          "sha256": "f80bb9d539a053dfcec0de4f56ec3b35cbb31abb6e2ce2aecdcd5483ac598830",
+          "bytes": 377684
+        },
+        "data/china_stocks/000333.SZ.parquet": {
+          "git_blob": "1665d1f6b0596efd8b6a86f3a80ebd56a2dd34bc",
+          "sha256": "643d1bb96ca461718f21ce39487d4395d47e34aa9e0008371d451787fae6a002",
+          "bytes": 131864
+        },
+        "data/china_stocks/000338.SZ.parquet": {
+          "git_blob": "b95362cd5c383869b5373b6f1d6960f142a3c158",
+          "sha256": "688f658f107ed39c7cfb88bbfa93418fd95de5be76b77c9dbf9449e9ea673e26",
+          "bytes": 240294
+        },
+        "data/china_stocks/000423.SZ.parquet": {
+          "git_blob": "0465abf9fc0cdfbb93eaa1c496af5f1b6392233a",
+          "sha256": "2bef69b9a7172894e5ac594cc2fb78172cbf3412ad50b4378dbdd890befa66e9",
+          "bytes": 364811
+        },
+        "data/china_stocks/000538.SZ.parquet": {
+          "git_blob": "33dc3ee370fad11f316a0f685000a17faa6ac0ee",
+          "sha256": "04e0b26baae2d672b3bb0ed72ecfc33835cfceb71c9c83bddead44cdde051f94",
+          "bytes": 323837
+        },
+        "data/china_stocks/000568.SZ.parquet": {
+          "git_blob": "b1044421aa15f56e93daae53752589d097d3377a",
+          "sha256": "2e943e3229ee9b140b82e38e6b5e23d17f302898ee0dfb0dafdaf2a6a19b077c",
+          "bytes": 403330
+        },
+        "data/china_stocks/000596.SZ.parquet": {
+          "git_blob": "110b1700fb013ae3e149cfde93262010760b4ae6",
+          "sha256": "0c0e3a7a0ee027f171a7b9dabb586acffe2334bfbd5a2c7b01c9703123748f51",
+          "bytes": 363381
+        },
+        "data/china_stocks/000625.SZ.parquet": {
+          "git_blob": "4b5e08cbf44f07cccc07f082bde139bee0f83452",
+          "sha256": "e9d12d1bdaf7dacfb4740fe98b8061c3ee4330149a0411d3bcba9f32c99320b7",
+          "bytes": 349441
+        },
+        "data/china_stocks/000630.SZ.parquet": {
+          "git_blob": "cf23953a8984e8e7b7de9fa63afde68a75825d07",
+          "sha256": "2bb0e5a4f2a54320e6a3ddf8266476796f3102eb6d29e5142df5d92c8a2e046d",
+          "bytes": 277042
+        },
+        "data/china_stocks/000651.SZ.parquet": {
+          "git_blob": "d36f5091bbadfb2afb54d1c7aad0c94b49201c56",
+          "sha256": "c076ae55301f93ec938b2604339062f0a85426c5e5f657c4812c667bb26bf46f",
+          "bytes": 367196
+        },
+        "data/china_stocks/000657.SZ.parquet": {
+          "git_blob": "e654ef951f7c7ece839cf1c115d6826b5dba21e6",
+          "sha256": "fce23cd20f159a942dde5c09dadc82378eca539dab9659de7b9ac13f2ee77ba0",
+          "bytes": 253742
+        },
+        "data/china_stocks/000725.SZ.parquet": {
+          "git_blob": "23edf64732c0caeaaad3e5c0338cc3b3d6bd6dcd",
+          "sha256": "8ef9c78c543ca00277c8d402382e0355ae8cbc8160314d30b9273619b03f0507",
+          "bytes": 232098
+        },
+        "data/china_stocks/000729.SZ.parquet": {
+          "git_blob": "1b9f85a03ac01981e11d23e06e079f3630cdace3",
+          "sha256": "4abe30d39d5d7c0d8a0b3e3edd5cd056521fc66e72e8e8301fd8a125ec56dd2e",
+          "bytes": 352666
+        },
+        "data/china_stocks/000733.SZ.parquet": {
+          "git_blob": "d45242b56a5c36e1a8688f7d6c2a6ceb8d09a25a",
+          "sha256": "8b5d0b562f985e66197ca218d441d1dd482e503a9fc9a5e23efb84a121c2a982",
+          "bytes": 288517
+        },
+        "data/china_stocks/000768.SZ.parquet": {
+          "git_blob": "bb9a9a2192549da3da23dae78eda46a4cba2d240",
+          "sha256": "8164dab6c826e3d10db007c5d9344fe10ee50b41591e2b12b3ba438baa31b407",
+          "bytes": 287536
+        },
+        "data/china_stocks/000776.SZ.parquet": {
+          "git_blob": "ed7986cadfce298d5063f97b359980967ef9dc06",
+          "sha256": "3cb45d65d37487ac95f47677bff887e371fd50718fe08e65b21fe60f6ad312ab",
+          "bytes": 317996
+        },
+        "data/china_stocks/000783.SZ.parquet": {
+          "git_blob": "05e00bceb326e541ae3fbd8f0c5968bd820143f4",
+          "sha256": "73f4b30a6cd83bfe02a9e6fc452920b298e253afdce93a94b3923927bf979fea",
+          "bytes": 269332
+        },
+        "data/china_stocks/000800.SZ.parquet": {
+          "git_blob": "516ee68785392b505d35036d8bb9ca75758a876c",
+          "sha256": "57de85ac9180139e567cdfd5491866a235e8df3f74bcc4d8e30e1d193e4069f2",
+          "bytes": 289875
+        },
+        "data/china_stocks/000807.SZ.parquet": {
+          "git_blob": "cba750a9a9855fe4256f90202a593b08623bc90f",
+          "sha256": "7f18f78ea07a8e75f1733e8355c554b0c81ac9d739f17b4249582f5b1a54913c",
+          "bytes": 275444
+        },
+        "data/china_stocks/000831.SZ.parquet": {
+          "git_blob": "e9b52be3171dbd3d404e2eb82a0c8af045082164",
+          "sha256": "8d34c0788df432ad2ed6d2aec42639ebd5f85aa0963d9fb1d651d20af79abb07",
+          "bytes": 258912
+        },
+        "data/china_stocks/000858.SZ.parquet": {
+          "git_blob": "8c177abe67f89f33e2f00dc094c3eaaeacd94b9c",
+          "sha256": "ec8a4bf720346a0c13abebc6642418e179ea7298cbed978296100a6919f7b5e6",
+          "bytes": 350487
+        },
+        "data/china_stocks/000878.SZ.parquet": {
+          "git_blob": "811c4af1ea2b99d937fdd048e1aca694d02b47d3",
+          "sha256": "7dfbca6159dd0ee826a104c402f5463b8fb36cd5ebf6a5f20a4e1954ea175ad0",
+          "bytes": 268813
+        },
+        "data/china_stocks/000895.SZ.parquet": {
+          "git_blob": "3b23d133269cf055c601396ce98437935bc2fc2f",
+          "sha256": "7b8f5a8ace63c3b69532f7fd0debee74014b83a3e7c239d10e6a1451f84b3e25",
+          "bytes": 263098
+        },
+        "data/china_stocks/000921.SZ.parquet": {
+          "git_blob": "98ee3914a46c352c61e42ae86769b0e57d824f0f",
+          "sha256": "5f59f462dfbe86cc39515eb6159b560190221ad43476293282cd44c946358952",
+          "bytes": 316116
+        },
+        "data/china_stocks/000960.SZ.parquet": {
+          "git_blob": "253c120b74a16f51647dfeb0816d9cbad7d62dac",
+          "sha256": "732e247f64d8f5f9b0f145c2eb65f5454235d2dadfbc9c1b75055ba3838b5d8b",
+          "bytes": 259667
+        },
+        "data/china_stocks/000963.SZ.parquet": {
+          "git_blob": "c960021ac2d8d07b11d51bf21996ad3165014767",
+          "sha256": "c68607891703407e459f5e7607fd04e9614866fa57ae93893ec65de77e016544",
+          "bytes": 322103
+        },
+        "data/china_stocks/000975.SZ.parquet": {
+          "git_blob": "8e1c4d936f79680ea132be44217e5ecfbdba785f",
+          "sha256": "f875aeb17cbe9bb73ffc160e707376305038a8956e0ab9d66da1e27c26b5b648",
+          "bytes": 243319
+        },
+        "data/china_stocks/000977.SZ.parquet": {
+          "git_blob": "2722ede31499136782b84a81397554af2ac0ba47",
+          "sha256": "9541879f679356c48cd86379cfd322aac5636778ecefcd090aebee05172b7de9",
+          "bytes": 263240
+        },
+        "data/china_stocks/000983.SZ.parquet": {
+          "git_blob": "dbb035949ed00ee4c798892545b2306d2a505d6c",
+          "sha256": "09fce8bdf262a34d4c3ddc518df2dd9cf0f3e966fa2cc33296494ee12cd81a06",
+          "bytes": 320340
+        },
+        "data/china_stocks/000999.SZ.parquet": {
+          "git_blob": "5e00adbad759cd301d3f23709347ee77fc076c32",
+          "sha256": "1a79e0d2996004f5cd92bafb25aa44a1b52e66378d7290a6795a1135303577d6",
+          "bytes": 264510
+        },
+        "data/china_stocks/002025.SZ.parquet": {
+          "git_blob": "636ebfb2d825f0c85f7ec82a6bfa2df33a4ae307",
+          "sha256": "bab9b3efdea24bbd3bdeebd07f280cef14cf5b7e9313394aeb2f28efda938151",
+          "bytes": 267208
+        },
+        "data/china_stocks/002032.SZ.parquet": {
+          "git_blob": "8460b6bfe4c6fcf2d29c10eca3c17aeee17810c0",
+          "sha256": "5b99c1e6113c7e296a2cdd77a024742446d8424bdcdceb3102b2476894414a8c",
+          "bytes": 219683
+        },
+        "data/china_stocks/002046.SZ.parquet": {
+          "git_blob": "e3b585e2113ef6335ebdd7fed097467edc9c79f4",
+          "sha256": "96fd9a575ae26b2de1478a6b2c96420f6f0c8ddc878e726c62a81d68233e42ea",
+          "bytes": 210158
+        },
+        "data/china_stocks/002049.SZ.parquet": {
+          "git_blob": "f093b483a422a98a7d0dd1dff50119715e321b12",
+          "sha256": "564de2727462139779980377afe95d3fc47d4df49c421a46da1d62d94bd54c93",
+          "bytes": 208432
+        },
+        "data/china_stocks/002050.SZ.parquet": {
+          "git_blob": "969544ddb469c9630e04c42993724c1d7fafb1fe",
+          "sha256": "d2b2721cd8b5dd4096f28e2b47e04900e2836a50a7c2e7b6913937576499ff5a",
+          "bytes": 257989
+        },
+        "data/china_stocks/002056.SZ.parquet": {
+          "git_blob": "d40e9b6685fc7de7846a25f7275f91f318bb54d7",
+          "sha256": "f392b8d26a414eee4756a89058a658c8b4356ec96e4edcec0c0df1de1704e1b6",
+          "bytes": 203533
+        },
+        "data/china_stocks/002074.SZ.parquet": {
+          "git_blob": "a5ddf20d8d7b274e3c56c09ebe2f405206960014",
+          "sha256": "2e9c6aa3ac2fc50dd53b86b36d240c0e445c5212dbd71d9cd33367e9dfe28e1a",
+          "bytes": 239973
+        },
+        "data/china_stocks/002126.SZ.parquet": {
+          "git_blob": "aa89b2537f038c1e00549f9314440842a641ab32",
+          "sha256": "fbb8e58d13ad653014ce7c5742db3af17ebd274d6a431810341d853be2050f37",
+          "bytes": 192998
+        },
+        "data/china_stocks/002129.SZ.parquet": {
+          "git_blob": "09de4cd03277e6e0bfdaa4ddf334065276226682",
+          "sha256": "df040eed236828b18d4f0140ea657bcb6022f7cc11db4b07a8918f64d3e94bb5",
+          "bytes": 175281
+        },
+        "data/china_stocks/002138.SZ.parquet": {
+          "git_blob": "752a949015e635645a6ac73f9519edb396b0af29",
+          "sha256": "d36d91ab8bcd2101236d1c955dc1e3956f2f539cf238081a415ef0c02bfd3567",
+          "bytes": 195644
+        },
+        "data/china_stocks/002142.SZ.parquet": {
+          "git_blob": "ba4105889c46b01f561d50631942d9f17c0e3545",
+          "sha256": "ed5942da3db218f0690c93b520bbc8dc4bdb077b3bec17699527fd3418005ffd",
+          "bytes": 237089
+        },
+        "data/china_stocks/002155.SZ.parquet": {
+          "git_blob": "874bc0cc1ec08720ee5529e78a08d4f8b7cd1bb0",
+          "sha256": "2cf2d2dce6a5a30b41de2c7b83f02ca0ec2e28608c283edc16bf4711a100c5d5",
+          "bytes": 189107
+        },
+        "data/china_stocks/002156.SZ.parquet": {
+          "git_blob": "843098b917108aef218d0357a117733bc55ec68a",
+          "sha256": "060f6d7302aca8105f3d6e8749917cdbed496227560dfaf78f2c79aa6fa5ea7b",
+          "bytes": 189851
+        },
+        "data/china_stocks/002179.SZ.parquet": {
+          "git_blob": "edc3bc96cbc0e806c8baccbb7b30885d6f66f543",
+          "sha256": "ebe374ec0fa38db15b4fcf36b4460e968f2ccac101cee3ad758275d554c50214",
+          "bytes": 192872
+        },
+        "data/china_stocks/002230.SZ.parquet": {
+          "git_blob": "f54627d06b8649801ba878d6eb56e52ab56165e2",
+          "sha256": "861b7c15bf80b7c88ad611d2e8a5bcb90f2664310c225ab1caa048b7c43c857a",
+          "bytes": 229404
+        },
+        "data/china_stocks/002241.SZ.parquet": {
+          "git_blob": "9c130ce260752b260dd2e1cbbd670aaf22565431",
+          "sha256": "159ef4e19c7021df6fae1060cbb78967a2faa7e353153f6802775f29fc5a5b4d",
+          "bytes": 187852
+        },
+        "data/china_stocks/002273.SZ.parquet": {
+          "git_blob": "2ea25d0d8a4c8145cb48d2f130d52043ad7289f7",
+          "sha256": "b897874bac69dc30c7a67a84d468716f32e2163a0cd1e6bff9070bfea547f33f",
+          "bytes": 222182
+        },
+        "data/china_stocks/002281.SZ.parquet": {
+          "git_blob": "1d71afc69cdfbdb367c3c8acf59f3e4ae8db9ab6",
+          "sha256": "bb4e59a6e17d0fe5e1b1ba3c340cb93864b43710f454ee10a6a0fd60cf4aa94c",
+          "bytes": 172372
+        },
+        "data/china_stocks/002304.SZ.parquet": {
+          "git_blob": "775e9863a7051ab0f1797723e1c528d7423e4f1b",
+          "sha256": "f97dac623e53588451c26bb203b4e806c36c4615d976aba2f9e915f5e09db412",
+          "bytes": 172105
+        },
+        "data/china_stocks/002311.SZ.parquet": {
+          "git_blob": "6c8338e6967a052869483b72bc72b52f56e1cb02",
+          "sha256": "d143b75ed21c2ef786f31a7c4efdbc9f75e7abc1b7025918ff38fe2c42449db1",
+          "bytes": 206160
+        },
+        "data/china_stocks/002340.SZ.parquet": {
+          "git_blob": "296d68bea860731b213d8830ad283246c7b982c8",
+          "sha256": "cd47bf2a7b4321bf9134e1e4092e03071371fe815cb5f78184104bba70a00140",
+          "bytes": 138583
+        },
+        "data/china_stocks/002371.SZ.parquet": {
+          "git_blob": "0377dab4bb6f2e14e53d213040e5027a79bd1a03",
+          "sha256": "1e8edc6eb343c57117a8675086de17e052b5e7d395ee39ec72e436baa30fad0f",
+          "bytes": 169472
+        },
+        "data/china_stocks/002378.SZ.parquet": {
+          "git_blob": "3f145eee27c0288ad13b90398b0b96291f5b8f9b",
+          "sha256": "3c89288f8b96e77d9b0b3b6afa763e7bde06c15db67e562c3ffe3b8e686fba7a",
+          "bytes": 162263
+        },
+        "data/china_stocks/002379.SZ.parquet": {
+          "git_blob": "1730df6624d7b213fe32785f0137014f8d77453b",
+          "sha256": "f807ae340b91f3858b1d0df083bf80560f278bb6718be3f1b02ea8ee489677de",
+          "bytes": 137232
+        },
+        "data/china_stocks/002384.SZ.parquet": {
+          "git_blob": "21cbba55a872a46b18c2216b3f6dcaba039cb919",
+          "sha256": "21bc2a14cff5d42338964a0d846e80dc0780463951a9c6d31b784fe67c1e9e12",
+          "bytes": 160348
+        },
+        "data/china_stocks/002414.SZ.parquet": {
+          "git_blob": "63f841e139009e9cb69575bcff75e62b99943739",
+          "sha256": "614179469744df5c308160848f823348b3d8ba0d214b755292fe22170abfdf87",
+          "bytes": 195133
+        },
+        "data/china_stocks/002422.SZ.parquet": {
+          "git_blob": "4126b979b2a36664189bad92fc113189801a2a00",
+          "sha256": "55ad55e69f2da5fda88219fb0a24802ec5a2186fb78bc151b5d6665dde171be6",
+          "bytes": 164375
+        },
+        "data/china_stocks/002456.SZ.parquet": {
+          "git_blob": "137d3537c699a8affe229ab19f902f0a72ecb097",
+          "sha256": "39fdc4e62bad3997cc0501e333e61da5d854c74025f2120d5177aa182e1b89da",
+          "bytes": 145724
+        },
+        "data/china_stocks/002459.SZ.parquet": {
+          "git_blob": "2d1c125d49ecd7df5e2c78bdaf30b65779b2f749",
+          "sha256": "1143fc0a25c8c2310869c14c246e4258aec4b084b75f160a73edcf8e44ce93d2",
+          "bytes": 156553
+        },
+        "data/china_stocks/002460.SZ.parquet": {
+          "git_blob": "5f9786c7b2e65821b8dbace2396cdc552ada32c7",
+          "sha256": "051c28f5439f7d3b634faf4377f9397ce8ab34501e612561d3ffaf0a08d817c9",
+          "bytes": 198805
+        },
+        "data/china_stocks/002463.SZ.parquet": {
+          "git_blob": "5cbf2a29a2a6cb8bf9f1c2651b06507fcf7a0b13",
+          "sha256": "1ce6f472a6bdfe87c6e1fed6a2e2d26adff43ae18cf271ed8bce196d96395219",
+          "bytes": 157675
+        },
+        "data/china_stocks/002466.SZ.parquet": {
+          "git_blob": "dc7bcb5407e21a01a627a35898f7730762fdc768",
+          "sha256": "72ced8f2e3a936de286df27f09a2827989abd54b9a2e184e067b4ece954985f3",
+          "bytes": 159185
+        },
+        "data/china_stocks/002472.SZ.parquet": {
+          "git_blob": "751002015f24531135cea8c463d65c977ec7a984",
+          "sha256": "493a61c8d9df2cf3c1f22b523becd026a0c1c9e28fce89814131dcdf5ab96026",
+          "bytes": 157889
+        },
+        "data/china_stocks/002475.SZ.parquet": {
+          "git_blob": "b46d153fcc19be8accd898cb6c4ec48245b9f408",
+          "sha256": "9190440ed3e5aa207b23a8cf4c3efd20ee0c9e917a2531044143450184ce20cc",
+          "bytes": 198854
+        },
+        "data/china_stocks/002532.SZ.parquet": {
+          "git_blob": "ec46451bfe222037102720ded475b20d6cb86bdb",
+          "sha256": "c3d3060b00387c91c20f98455ab45aa603659336eb885c66a11e47c73e14a4a8",
+          "bytes": 186493
+        },
+        "data/china_stocks/002594.SZ.parquet": {
+          "git_blob": "44c6ee0739d8f1ee822678544bbc685d5c6777f9",
+          "sha256": "24f4ec346a1b0339fbb7bd869c4c25cd8d3ef2e3761f1d6cd693d4c9c1f120e5",
+          "bytes": 190368
+        },
+        "data/china_stocks/002600.SZ.parquet": {
+          "git_blob": "30072b9681f706ceee3ab9c175000ee26e61dcd6",
+          "sha256": "3823b3f21315a678cb70ecea10df7b23bb41c51fada917389e6bfcfd833d27dd",
+          "bytes": 172716
+        },
+        "data/china_stocks/002709.SZ.parquet": {
+          "git_blob": "175139b358a5065e224bddaa7b1b1245bf2132a9",
+          "sha256": "d5b7369b05b236f0db1faf7e8f2d9dd362dec33b3cf8c3327052a3d8a5fdc4fd",
+          "bytes": 158523
+        },
+        "data/china_stocks/002736.SZ.parquet": {
+          "git_blob": "f1fdeba7cdedbff9148114a0dfe567289acbf6e2",
+          "sha256": "6974f56476fca3838a19d3f1655804b6bbf7c7c2db86cb9e0b4e47e2b998e51a",
+          "bytes": 115550
+        },
+        "data/china_stocks/002747.SZ.parquet": {
+          "git_blob": "69dd02449d51ff37aae7fe0065b14885368de401",
+          "sha256": "f97da45f1b08d30b832bfc4302d246d2c75282754823dc309d1ce36288f40f1b",
+          "bytes": 113715
+        },
+        "data/china_stocks/002812.SZ.parquet": {
+          "git_blob": "edd8ff98e239c733cf710ee64e035a83a12c42bf",
+          "sha256": "bfbd6af99b542c3ed22d99f649a0eca5994a43e7962b78e8aad1f471ab1c7f9d",
+          "bytes": 99357
+        },
+        "data/china_stocks/002821.SZ.parquet": {
+          "git_blob": "6911b3760260edc8dce0ce4035f1db02ba2e02fa",
+          "sha256": "5ba0054f8c3d56b428335e3def6f6c274f05bc092378e7a87e3beadd6ff6b642",
+          "bytes": 102520
+        },
+        "data/china_stocks/002837.SZ.parquet": {
+          "git_blob": "16d717b7e341cb3a449140af8696ca7ad7a3a690",
+          "sha256": "2390c404d8051987f0465435044ed8666076ab287d7afe404e682caad4da9f81",
+          "bytes": 99068
+        },
+        "data/china_stocks/002850.SZ.parquet": {
+          "git_blob": "4f3abf25ee8b960a4d28bad2331ee17cbfed8c22",
+          "sha256": "6d930e90ecc0af2113913a5c10042f26167fbd2a89b1d2c852b4a2510fbcdc46",
+          "bytes": 99416
+        },
+        "data/china_stocks/002851.SZ.parquet": {
+          "git_blob": "3e9a04765ccdddb0117d5911bc82e709f8033f5e",
+          "sha256": "a76bc69a99a8905fce8a7fdfdeae76ab8b050b2d9739abd3f2dcfd4c53b5b9f3",
+          "bytes": 95932
+        },
+        "data/china_stocks/002916.SZ.parquet": {
+          "git_blob": "c12ff0a03ec32da904991280618ea2170c6c201c",
+          "sha256": "a4bf144b554bfcc0fc85a905e87cb02a056ae3c030a3ab07cbf92b63c1ea7085",
+          "bytes": 91997
+        },
+        "data/china_stocks/002920.SZ.parquet": {
+          "git_blob": "3ef6adcb9059038d0c8b2c2e6b6275e3f00ec467",
+          "sha256": "746055a3ceb2efd75052f08dbe2ca95cd5f1dfd0fb6db5037c87b67fde460327",
+          "bytes": 90935
+        },
+        "data/china_stocks/002938.SZ.parquet": {
+          "git_blob": "5d9cb266d8bfe3a8c5e5146d900034bc71f0778a",
+          "sha256": "4c9fd264993e1ea580800f8d54b88c21c968e781cd7a7a5983135330da1d139a",
+          "bytes": 82636
+        },
+        "data/china_stocks/300014.SZ.parquet": {
+          "git_blob": "cef3b70ac942d5aa26ff0796cc1119f5dff78e3b",
+          "sha256": "07b81402ce97559b73b4c758172bcf6d8a1cf942dde3123bb500e877242f4889",
+          "bytes": 208020
+        },
+        "data/china_stocks/300015.SZ.parquet": {
+          "git_blob": "60205e6256c0aa1de33413db1f223dae5bb83400",
+          "sha256": "09919169b46b9b65264dfefb4e5b3cfec75bb855cf74fa8541b7054f274c7b18",
+          "bytes": 210081
+        },
+        "data/china_stocks/300024.SZ.parquet": {
+          "git_blob": "3a690c9382b06e76a74159b119008da97a745206",
+          "sha256": "5763ca26394595f804f6b4d857ba3f9fb3024b0f626e729ebcf94b3c7b07bc4f",
+          "bytes": 148358
+        },
+        "data/china_stocks/300033.SZ.parquet": {
+          "git_blob": "b8c5c7d27ab7c6ad7a27438fd2275b9171a4cc08",
+          "sha256": "12812bace4b9c0b39a58281db60dc540bede0671f2936997b61fa78b1002efa7",
+          "bytes": 170735
+        },
+        "data/china_stocks/300037.SZ.parquet": {
+          "git_blob": "150a8b87f116cadec43befeb0efcd781cfd8bd39",
+          "sha256": "c2d0606b9d562dcb97302432f748c9ce16b76370a888e1e655938a88d07d07b4",
+          "bytes": 167027
+        },
+        "data/china_stocks/300059.SZ.parquet": {
+          "git_blob": "11827f772137acf3053410a446819aef7f05610a",
+          "sha256": "5a0e6fd12a0506bfd64a664c84f5a18145f526cc1be8b6847551da338428c6e1",
+          "bytes": 165800
+        },
+        "data/china_stocks/300124.SZ.parquet": {
+          "git_blob": "813570c3a9c8fa80f4a610905ec8ad1f4a36cd00",
+          "sha256": "145c5020190a788917a09ee1ace2cc7c184b488f521dcaa2833e0927dccad330",
+          "bytes": 166457
+        },
+        "data/china_stocks/300136.SZ.parquet": {
+          "git_blob": "959ae5848bb7c8575a38f583cf8eaf326ff607f9",
+          "sha256": "2fc7c2f2d83ff565b2da6b5cc12c3956a340f493f9e94d5946672a213031b937",
+          "bytes": 163159
+        },
+        "data/china_stocks/300207.SZ.parquet": {
+          "git_blob": "2ee4f74332cda7af774f50698c579983d9450240",
+          "sha256": "4ceceb13202afc54bfe62e01ed5ee1cb79d73d759608bb327ac7d4c1d122ecba",
+          "bytes": 154968
+        },
+        "data/china_stocks/300274.SZ.parquet": {
+          "git_blob": "eb6aa727568d50da0e74ada78a46ef4924e0f623",
+          "sha256": "25acf1beb5ac8c6141ec7e9a46622201802a371bc4e43de41d5b72b529998da0",
+          "bytes": 184714
+        },
+        "data/china_stocks/300308.SZ.parquet": {
+          "git_blob": "b5cd13812156a2165096ded8439b89e6346aca45",
+          "sha256": "dde349dceebeab5dc50517fbd014529b082808a4471fee5a118db55fb9b4a3ba",
+          "bytes": 142637
+        },
+        "data/china_stocks/300316.SZ.parquet": {
+          "git_blob": "f99b89b448153df84da9d273d19bdd27aedc69cf",
+          "sha256": "05ae2c8857d5f898f4772ad544747c336f82eb5614e2e94b4463b52e2b4f3eb8",
+          "bytes": 143800
+        },
+        "data/china_stocks/300339.SZ.parquet": {
+          "git_blob": "f004161cb0fe9304960616d62dde7ec93ea8f0f1",
+          "sha256": "d1f77f1c343c2eeb21388aa49b21ff06f5fb0bad6bcf952064e068ed2582aac4",
+          "bytes": 138448
+        },
+        "data/china_stocks/300347.SZ.parquet": {
+          "git_blob": "8320e09bfa3230f5fea15b925af7ae0420b5fd4e",
+          "sha256": "78b504f100beb602d9c3707c68f5cbd1cc2adc86fef76f5163ad3f7e69bab03f",
+          "bytes": 139654
+        },
+        "data/china_stocks/300394.SZ.parquet": {
+          "git_blob": "ae1d9862600d932a66da640ce6ef1b698c15eb7e",
+          "sha256": "cdd2f0dd21b16dbaf5843c8b91646631d0da8ed9f63b1b7729e667a2f7818336",
+          "bytes": 146131
+        },
+        "data/china_stocks/300418.SZ.parquet": {
+          "git_blob": "b1f28149f3548c71ccd41e5f729822731aeedb70",
+          "sha256": "c7f53516e4e43aeae38dd08aa4eb441ebbb65d2c5143fd71129ac77bd23662cf",
+          "bytes": 115226
+        },
+        "data/china_stocks/300433.SZ.parquet": {
+          "git_blob": "4da9b3f325b6a61bc212a8052d89ff7819936677",
+          "sha256": "88ac24f71a5132babe7d5a7ef3fc088309ff44dc4f632bd29c92518c3d1912d2",
+          "bytes": 117570
+        },
+        "data/china_stocks/300442.SZ.parquet": {
+          "git_blob": "41499e3625be97fd17a63f4d179851fc9c3980e6",
+          "sha256": "04d3a4cda50473e9c62a441c40b7afc43472f7332a321667bd870c3c2ced2a5e",
+          "bytes": 141061
+        },
+        "data/china_stocks/300454.SZ.parquet": {
+          "git_blob": "e6771b0e19e5e045ecfae8d90dd51d01a8fc851e",
+          "sha256": "d486ab31d777082f9761260bb5b6570c3d10b454400694a26dda07daa8ea5423",
+          "bytes": 86198
+        },
+        "data/china_stocks/300476.SZ.parquet": {
+          "git_blob": "abb93f2d36a81ec6f8f48285c2aa234ff21e1c4c",
+          "sha256": "bbe71bb17743b1f9ba7f4c6c1dd4f20cd68e5a8c9776c76da57a53c9bd3626ff",
+          "bytes": 115983
+        },
+        "data/china_stocks/300496.SZ.parquet": {
+          "git_blob": "dc7cd3230c6dd64d582e9fbe94bf4e7acb2380ec",
+          "sha256": "ad4d9b797dc23fc13fe31fa620ed5e574ce18c97c4e591d8921ef3ae4a06c27b",
+          "bytes": 110110
+        },
+        "data/china_stocks/300502.SZ.parquet": {
+          "git_blob": "88485eb0bcd69f927e2024363922a8f85b15fe09",
+          "sha256": "bfd2c6e3f7dcc59157b18db6dac31dcec70eeca5d3404849255fba38bf0c2eb0",
+          "bytes": 110458
+        },
+        "data/china_stocks/300620.SZ.parquet": {
+          "git_blob": "fddb5dd2529c32f340f4ab8443e3e5e77710643f",
+          "sha256": "47f7b114887079f91a3828933f09b1fa512c9f2753522a5b9d0da945ea480616",
+          "bytes": 98960
+        },
+        "data/china_stocks/300661.SZ.parquet": {
+          "git_blob": "7605b787f9d91fdeb3a3dd8eba78e749cc34e59f",
+          "sha256": "f10152a7bcd8dd80540b65e93c618b5b93fc73befd26acff98d2ddaf6dae5e36",
+          "bytes": 97020
+        },
+        "data/china_stocks/300748.SZ.parquet": {
+          "git_blob": "70a269e98345ab5634682ab0c4cae22df5a9d0a2",
+          "sha256": "cd2132fbed5f05b66df13c226f568cd224327e1547535bcb96c94e28586714c9",
+          "bytes": 82570
+        },
+        "data/china_stocks/300750.SZ.parquet": {
+          "git_blob": "9ed13e39fb38a902553d4d1aaa55e63442ee4d51",
+          "sha256": "f4317b3f5acb5a2942b96e9f3ce8023e7916aff8a953b017bdc64007a365bf39",
+          "bytes": 104722
+        },
+        "data/china_stocks/300751.SZ.parquet": {
+          "git_blob": "3e431d13450110c753c1df26c84c69d21e4f4fd4",
+          "sha256": "a538e2dfd69ff2da8410ec8412004e996041d4d713154c7c18ceb46ce025c44b",
+          "bytes": 99175
+        },
+        "data/china_stocks/300759.SZ.parquet": {
+          "git_blob": "dd3eaa3b70eb85a0de11e04d06e5e185ec2c3027",
+          "sha256": "c37fedc151439ff5b98ab969306b7f9f5d41c7399af0c181dc9aa82726d9e883",
+          "bytes": 79431
+        },
+        "data/china_stocks/300760.SZ.parquet": {
+          "git_blob": "f619cda04efc75b004f387dca95eebf3b765aa6d",
+          "sha256": "4a980a17d45e5c90605dcb250da875ef2faa063aa47b5ccfa80e7a6e81fa4a7e",
+          "bytes": 99967
+        },
+        "data/china_stocks/300763.SZ.parquet": {
+          "git_blob": "68462b35d055f6094b7d23902ef8d04f9dabed81",
+          "sha256": "85d2887a8c11e72b1fe68f9f43638ffddfabf2f2a2db32452367125474bec98e",
+          "bytes": 78717
+        },
+        "data/china_stocks/300782.SZ.parquet": {
+          "git_blob": "ae055c98662be2dc53c36758a7684b8b68661fee",
+          "sha256": "90be7c95f5789627a9b26c9985845011107e42878088326f150914712efd5073",
+          "bytes": 75270
+        },
+        "data/china_stocks/300803.SZ.parquet": {
+          "git_blob": "d3b5d222267f873691e74ee75d2e030f2a4d72c8",
+          "sha256": "ea7c218653de27bdf6f053f54405c58ec589f65600f3cf0b700d35e65b02a997",
+          "bytes": 86473
+        },
+        "data/china_stocks/300832.SZ.parquet": {
+          "git_blob": "0c67610e54b7d55008fa2348e1cf184330179aa7",
+          "sha256": "98477b8bf1de79b5f661122344872d75dec04004443b4c1ba309e2dbffce3875",
+          "bytes": 66874
+        },
+        "data/china_stocks/300866.SZ.parquet": {
+          "git_blob": "3d6b34f85522ad48eb3f1719c8c5c5b37f44ee5b",
+          "sha256": "0cff7e2be38c9df9fc6b4718a2612ed7b2afbaf01da92544843470bcca4e566d",
+          "bytes": 64067
+        },
+        "data/china_stocks/300896.SZ.parquet": {
+          "git_blob": "df0e255e3d04f32cc1e77a34825bb608b110d3cf",
+          "sha256": "254784bcb15e59d4fa44bee397cf91424f899bf2c381cfed68cd823f713c9b13",
+          "bytes": 76235
+        },
+        "data/china_stocks/300919.SZ.parquet": {
+          "git_blob": "f42a131f3f03b84ce3aff5e53f4b27e88f04a03b",
+          "sha256": "ff4f2acd2969381587c08c83b661b4ea8618d99a200f6b2713502c6f1b3dcab8",
+          "bytes": 61011
+        },
+        "data/china_stocks/300999.SZ.parquet": {
+          "git_blob": "e330972b3f75d1bcfa4dd851b6876016a4c992ad",
+          "sha256": "25e463a6c31407799a84627db707b40be2d9de00ee2b75d024062b989540ef93",
+          "bytes": 62508
+        },
+        "data/china_stocks/301236.SZ.parquet": {
+          "git_blob": "66c7c1e7895b4efbc754efa7c87a6a84ca70685d",
+          "sha256": "2c6fa2c5e9fe3134a3beb6282be7221a9de1eb36814b9545381489f8d074c732",
+          "bytes": 49321
+        },
+        "data/china_stocks/301269.SZ.parquet": {
+          "git_blob": "7f4bfef3a1150155af71f8413b189fd9e446f497",
+          "sha256": "35056457f5aa4927e71a525bed1c787e1ca3b69a0d75910fc7bc9f4a9dbcb5ad",
+          "bytes": 44537
+        },
+        "data/china_stocks/301358.SZ.parquet": {
+          "git_blob": "2b15838c571886c44d3b16ed45fe246fb4c57c98",
+          "sha256": "c41f26e9c20f41f897b80ae0acf0dc93fc6f73d3387b5965363a50d43e8e6d71",
+          "bytes": 40044
+        },
+        "data/china_stocks/302132.SZ.parquet": {
+          "git_blob": "d6a1aa5effde49edbc35715b6949dccfece5f11e",
+          "sha256": "8a5caf450d7b5c3d13b59204ffb9a1c6bddce05e621d286e37e89d3750e34cfa",
+          "bytes": 174187
+        },
+        "data/china_stocks/600000.SS.parquet": {
+          "git_blob": "6f2939bfd89780d966220eeb2fbc280850d87b87",
+          "sha256": "62df2d52d6d51f52fe970e6e925468ab8dc3b2c25669de214170c5ed0a9d67a9",
+          "bytes": 322715
+        },
+        "data/china_stocks/600016.SS.parquet": {
+          "git_blob": "bca18612f41bd73899879583ddd61b2ec06a1b0e",
+          "sha256": "fc95f35e5a7db3545072ba788a34491cb3819d7ee5602171901ac355cd2637d3",
+          "bytes": 295851
+        },
+        "data/china_stocks/600028.SS.parquet": {
+          "git_blob": "7906520c8935c4ecdb77ace0b4a1fbabec9f346c",
+          "sha256": "8e7d2b32b7929e44430a205ca4f3dd514a8eda6aa0b6fc0a986552f0b94adaaf",
+          "bytes": 238877
+        },
+        "data/china_stocks/600030.SS.parquet": {
+          "git_blob": "285dd65fdb2c23cd1cc7fdda1592effd027ea636",
+          "sha256": "57321d01069053c130544b64a79ad65c0a9d8bf1b3ce60a4777f1b43a2856528",
+          "bytes": 237953
+        },
+        "data/china_stocks/600036.SS.parquet": {
+          "git_blob": "c3b06716bb1c6fbeb42290b641c341edc315cd21",
+          "sha256": "8fc535a5050f4825760c14a7bfa27c6d27cd59c29f1333827e303d795ea7cfc4",
+          "bytes": 244592
+        },
+        "data/china_stocks/600050.SS.parquet": {
+          "git_blob": "1706260ebe5ea8c67a5fcebb39a0b1dee4758d10",
+          "sha256": "e6b145f13e997901ee80aed0da93f254a285f984008e57173b5672396c3c915e",
+          "bytes": 218891
+        },
+        "data/china_stocks/600060.SS.parquet": {
+          "git_blob": "800df329f3c3c76b32d9bac7aa90b60a2af20505",
+          "sha256": "c75d141522e0feba2af7ab0faa5c156dfe00cf7a8bc3de3369dde512416dc72e",
+          "bytes": 358406
+        },
+        "data/china_stocks/600066.SS.parquet": {
+          "git_blob": "adeb01f3ae67ee3217280dcfa631401fd22cab1a",
+          "sha256": "76c5c408875f5a55df07d368c92d0038036188aac4750b1e045c981cc27cc879",
+          "bytes": 292850
+        },
+        "data/china_stocks/600085.SS.parquet": {
+          "git_blob": "29d029a5456465b69297e99e8169d46ee393544b",
+          "sha256": "c33eed4cc4a4c5753fa2c996f277b8be0204c7d00b2833059713e08783a00e85",
+          "bytes": 293845
+        },
+        "data/china_stocks/600104.SS.parquet": {
+          "git_blob": "773191ffb84ee25f7b9fb67941b18f93e76e0b8e",
+          "sha256": "808d3514af92bfb1e2f4f9dc894a4c7a0242eefaab2e079084c424314d06ed43",
+          "bytes": 352135
+        },
+        "data/china_stocks/600111.SS.parquet": {
+          "git_blob": "c0096e5311849e06a26a2a76875227784ccfcee7",
+          "sha256": "49dfb2cc698ce83bed26ccac6ff3095d81c59f1ca7ccc2aa78964f0ca493d1b3",
+          "bytes": 291049
+        },
+        "data/china_stocks/600118.SS.parquet": {
+          "git_blob": "ce7014616a6c9d5ef056140398d358bf5fe1e475",
+          "sha256": "9e5101ad8b567384ebe3da92decbd712f3fe9d5b11e4a1dabc4570e0cebb491b",
+          "bytes": 291557
+        },
+        "data/china_stocks/600150.SS.parquet": {
+          "git_blob": "f7b327400ccf2a602180a1a877a6b64eba2aa4d8",
+          "sha256": "60add931328d69d3caf53d09079a499789fbf6765fa57d7ba15325098ee635a5",
+          "bytes": 340095
+        },
+        "data/china_stocks/600188.SS.parquet": {
+          "git_blob": "bef216faf52f9e29a927b0409cadacf9dfe5580c",
+          "sha256": "4052186574062192b42340d4be4f124927e737430d00182df907b3c7d4dbe654",
+          "bytes": 347534
+        },
+        "data/china_stocks/600196.SS.parquet": {
+          "git_blob": "53385d8131902edc3e8135153cb2de783bade8b5",
+          "sha256": "2ae21e6de6cb6152a24f00fd210e54810b6c4f7f7844c1bc130e344c5ba4eaa9",
+          "bytes": 346411
+        },
+        "data/china_stocks/600259.SS.parquet": {
+          "git_blob": "443e1175ed97d28bfb212f204e77a0044c75290c",
+          "sha256": "1351d64134dc8772881b60ffd30253e96a28671235ef84bf30a89539bfa2207c",
+          "bytes": 236418
+        },
+        "data/china_stocks/600276.SS.parquet": {
+          "git_blob": "6e5b31d0e34432c21eb38581444e9bf22ab489df",
+          "sha256": "8d897b288b59ba17209a802fc5b2c48272f893d4aec627f4cd3ba79535c2a689",
+          "bytes": 264467
+        },
+        "data/china_stocks/600298.SS.parquet": {
+          "git_blob": "b04098ae39d4082cec6018ab7124d83b8c598e43",
+          "sha256": "3369f27684117ae1ee0a8e4fb2cd130d0c9b45fb3470bc102f0cab22aa7fbc52",
+          "bytes": 262619
+        },
+        "data/china_stocks/600332.SS.parquet": {
+          "git_blob": "37bcca1347ef663da7c1f4cf5759d93300f2a77a",
+          "sha256": "599e7dcde898baa1fa95a545b099fde57dd06bcf2ccfeeab9313a028c46dd3f6",
+          "bytes": 304394
+        },
+        "data/china_stocks/600348.SS.parquet": {
+          "git_blob": "8f72205be71a75bd51418b2ff16bd86de44cc65d",
+          "sha256": "0d280efae5b67e3ceb3621826bf0c8ff155dfe60da60388f37e13af9a8b7e672",
+          "bytes": 279423
+        },
+        "data/china_stocks/600362.SS.parquet": {
+          "git_blob": "a45bd6586702a465b9527acc18bee5e77f3415d5",
+          "sha256": "8be14a49fe751357b794334cc6281a69c502d3ded5477eace782cee6568ca453",
+          "bytes": 304669
+        },
+        "data/china_stocks/600372.SS.parquet": {
+          "git_blob": "32d48f9bde36520bac66e1fa18d4f417a5fb019f",
+          "sha256": "40252331c6760bda85e4cce284c38aaeb6555f0bdf508c449d3f87a6589e52c0",
+          "bytes": 235474
+        },
+        "data/china_stocks/600392.SS.parquet": {
+          "git_blob": "628cc8cadbe375bfb48932ab88042c1511dc58cf",
+          "sha256": "ee54423ba995b5b0e0241c43fb268b0af96610da46ec6ef9d9754c2a26d6f5ee",
+          "bytes": 275266
+        },
+        "data/china_stocks/600418.SS.parquet": {
+          "git_blob": "68118b6f6e4f925a37104d7365329f63e1a110e5",
+          "sha256": "d90eed4903b84903babf4e4c4a09e5a9edc383a2e679081d8a0d536f800855fe",
+          "bytes": 245262
+        },
+        "data/china_stocks/600436.SS.parquet": {
+          "git_blob": "86ec71a2aa441593ccc2d9b015e0a576c1f14ff7",
+          "sha256": "a665be91882285d95330d6f13b9ac66bab8a0f0f22eab8185243790a5fc44a72",
+          "bytes": 290657
+        },
+        "data/china_stocks/600438.SS.parquet": {
+          "git_blob": "d069214ba2a547f8a56f3bd3d27166d0470e9c52",
+          "sha256": "e0982acf3cce2c66e02cf81ca4607448242d3b47325d10a5a46b8517f1ab7264",
+          "bytes": 215947
+        },
+        "data/china_stocks/600460.SS.parquet": {
+          "git_blob": "76e3f0ad4962827c7896278a4b6b2b57b9caa696",
+          "sha256": "8ea0401dc86344b41b963c5d664711c85c8d92d31016b49119c1be7aa024166a",
+          "bytes": 287747
+        },
+        "data/china_stocks/600489.SS.parquet": {
+          "git_blob": "807e697a8bc09e6a974e53a99da1fc85d056d353",
+          "sha256": "cbc5c727ab047a3df96105230bfb32d607f576abd630ad53aa446478efd59a5d",
+          "bytes": 284010
+        },
+        "data/china_stocks/600519.SS.parquet": {
+          "git_blob": "73d5f3d0e29d89d6e15a6df4b4152e9792bdf661",
+          "sha256": "b6e83eb88691d96924742ebc58362876a5c067f97c9e0f47a72d298eba9d29ef",
+          "bytes": 255262
+        },
+        "data/china_stocks/600547.SS.parquet": {
+          "git_blob": "467ee793ef073eb079493ce539a1ebe4e6776e46",
+          "sha256": "3ca829c2a3b472a86f02e7bd9246e989f46ff5d64f899529bfacb3243d088a76",
+          "bytes": 281736
+        },
+        "data/china_stocks/600549.SS.parquet": {
+          "git_blob": "eda764e679939213fdc08f3bbf4c1c71e427db39",
+          "sha256": "21ff2ce3207c6ef78e75573cb2b6ead25d4cfd021dd2770e5df98390a6a51693",
+          "bytes": 242259
+        },
+        "data/china_stocks/600570.SS.parquet": {
+          "git_blob": "abc44a029f120ae99b087442b9b1532e13cefad6",
+          "sha256": "e4459d4119da53a7c038ccadde7915afd98ec2f18b58b8f4dea78b0e99c83ab6",
+          "bytes": 230987
+        },
+        "data/china_stocks/600584.SS.parquet": {
+          "git_blob": "39493541c6ade4f3e7a4c6e37594f5519e184a01",
+          "sha256": "88c1aa5a8111f56f21bd6f5d14be3048e9dc04e166b0d9a2edbd57398aa20937",
+          "bytes": 227099
+        },
+        "data/china_stocks/600588.SS.parquet": {
+          "git_blob": "487e1886096c881b9551f234816fa0f57c882485",
+          "sha256": "3f3a173d67ba6178369a0c5ba2e50ef9a699b4fb81af9201975d3640c38bc588",
+          "bytes": 254431
+        },
+        "data/china_stocks/600600.SS.parquet": {
+          "git_blob": "7a3177ed47af1e10f97bcceda21b70291ff62f1c",
+          "sha256": "e30e751a950764f93caf03a4e9d12cf5913005e7864e0d55dc3817efdc96c6a1",
+          "bytes": 402308
+        },
+        "data/china_stocks/600660.SS.parquet": {
+          "git_blob": "d2c532d1dbb5b74e6f925c59bcda25b9e51446ea",
+          "sha256": "ede2d7bb7a240356b61fe12e24c0f06da07e5607a08c3ca485beb95ea1524157",
+          "bytes": 331975
+        },
+        "data/china_stocks/600690.SS.parquet": {
+          "git_blob": "23414a2a4af6d6bbe0c0d0dff4d4e0e32e98a4c2",
+          "sha256": "2a6166d3359e0755c1f912219c9145055690d53d9dbe21c50276b27739bc3b01",
+          "bytes": 401303
+        },
+        "data/china_stocks/600741.SS.parquet": {
+          "git_blob": "08f717ec99e27e43db42313a7675345f5c80f6e0",
+          "sha256": "728bb6a691c243f377cb8993d3b38d6f7d2293e0c5e8069060ac7759108d5837",
+          "bytes": 360370
+        },
+        "data/china_stocks/600760.SS.parquet": {
+          "git_blob": "733353780d8dcd5ab88cbd78f87d77a62b56d70c",
+          "sha256": "67da17059864d9c6557a45a0b16ea4393f932f7f226d87180ed6027018478307",
+          "bytes": 283044
+        },
+        "data/china_stocks/600809.SS.parquet": {
+          "git_blob": "11bfd7f7530585e37bdcc2d2b8c14c73bbad1e54",
+          "sha256": "c130c0043b983876d52fb3ff81e1744d52237f647afce4aa0d6f8b5be2607029",
+          "bytes": 400807
+        },
+        "data/china_stocks/600839.SS.parquet": {
+          "git_blob": "2a684235e040139770435d5e5ea189dd65518454",
+          "sha256": "2173ffece448ec60e4bccb2260b40b59673cc3df7eb766e8cf17c0ddd9e15ea0",
+          "bytes": 372987
+        },
+        "data/china_stocks/600845.SS.parquet": {
+          "git_blob": "b6398c43ec432bf1d829563cd54bd1af55f52588",
+          "sha256": "385d565e66f02090ede48a5d3f1409bebe640a2caec571b1551c4306217f5470",
+          "bytes": 313733
+        },
+        "data/china_stocks/600879.SS.parquet": {
+          "git_blob": "b2bd6a728de054cf1ed1d7f91b2f6727029b5502",
+          "sha256": "9eef4e6910565df359f11eb5b9ae7bce2d613da436ad578b778b90f1668f7a5d",
+          "bytes": 298647
+        },
+        "data/china_stocks/600887.SS.parquet": {
+          "git_blob": "f6f65021cfd050339fc41531ed874dfc5eeee79c",
+          "sha256": "a0e6eed0274338d93390e4a9a553e515e6ba54331710ddba20dc48fea362f233",
+          "bytes": 306815
+        },
+        "data/china_stocks/600893.SS.parquet": {
+          "git_blob": "01f7721388b07bd9ce340c2ab8099603c285c823",
+          "sha256": "097db48dc9c6dc8841c8b77471d271265b977a7fe1662986e3cb1c4826bdc8f6",
+          "bytes": 281800
+        },
+        "data/china_stocks/600900.SS.parquet": {
+          "git_blob": "4f0f461453545568ab8648a3aac2467167d058e5",
+          "sha256": "011a957708e1d0473c5752b73eb4d926b75af113ae8e7d0b3a109b0b98411328",
+          "bytes": 259548
+        },
+        "data/china_stocks/600919.SS.parquet": {
+          "git_blob": "b922a44dfedb53fca110be55835b9232db4b1027",
+          "sha256": "0d3a5bc1364ad0172de70ecbd42381dedbcbea24b20d0b70dd8bf199353fa3ee",
+          "bytes": 97791
+        },
+        "data/china_stocks/600925.SS.parquet": {
+          "git_blob": "481335eb6042f1a949c62006774ef75322718c20",
+          "sha256": "3042c690d10b73435fb91e4805156f9136e479c9adb9d38d54430bbd31ce58c5",
+          "bytes": 29889
+        },
+        "data/china_stocks/600938.SS.parquet": {
+          "git_blob": "fa657e13631b772a7b82c645cf9328e963c332ed",
+          "sha256": "9ed5713d1dab60c7febf1a4fcd18933ab1f533c9d1a54e492c3a0006de0fb061",
+          "bytes": 46915
+        },
+        "data/china_stocks/600941.SS.parquet": {
+          "git_blob": "9974b37e732bdcb2bb26adb48acc7b717572afe3",
+          "sha256": "6527d12ff4603794d17e2e246c022348579a12fd5877c5439ab345575c3a6417",
+          "bytes": 50813
+        },
+        "data/china_stocks/600958.SS.parquet": {
+          "git_blob": "df8079625c31eb62cc66a87b414a1dd8197649ba",
+          "sha256": "fd2c775baec13d6f43f422a0a6374d56d560f6a750c35e67b9835b20baad945b",
+          "bytes": 140766
+        },
+        "data/china_stocks/600985.SS.parquet": {
+          "git_blob": "7484c10d857023868ac8e8cce87ca05c07b9ed08",
+          "sha256": "11fb1e83fed1ce839903f89e2ddbfdcf84b82f9e002c8ab47d3156f527cd56d9",
+          "bytes": 215690
+        },
+        "data/china_stocks/600988.SS.parquet": {
+          "git_blob": "5441936d436d8ac997aa13aceb0e14f6f9a5d490",
+          "sha256": "7d5406b3b34d3e1d4c8f020034e8a99491f3fdc0b8b13af9d176421fd368f98a",
+          "bytes": 204367
+        },
+        "data/china_stocks/600999.SS.parquet": {
+          "git_blob": "a4cabdaac401d716ae542c20c478f6c6d59d9238",
+          "sha256": "a7999506f41deb15a687009f137c1d0bffcf64b5377e3947f82402673c40e31a",
+          "bytes": 205095
+        },
+        "data/china_stocks/601001.SS.parquet": {
+          "git_blob": "c519623b3102a72cbbcb71628fe683dd0617e649",
+          "sha256": "85e4e04a8bba2c3fc2971bc1aeabb6847b5edab6de13ba8d52617bbe42d1390d",
+          "bytes": 237435
+        },
+        "data/china_stocks/601009.SS.parquet": {
+          "git_blob": "bee2cb84b833f1059ca2599ff8668b5b0ed86ea0",
+          "sha256": "5e29f15ffff578151df4b033907b6afca0971ec46210752e4cb6fd87f511f801",
+          "bytes": 188257
+        },
+        "data/china_stocks/601012.SS.parquet": {
+          "git_blob": "8e634a78e8babc01b683f9b7f0d01fd38c81cf97",
+          "sha256": "4bf125406cc9a9bfa37af5742475fad076339f41cbbd85ed81decf7fed97c8a4",
+          "bytes": 143851
+        },
+        "data/china_stocks/601066.SS.parquet": {
+          "git_blob": "08a59784c06ea5921e88d6fc7f654de2835d044d",
+          "sha256": "c3af84d8099873795cf583bec3344abe91b88b483a2cb003a24205b1424053ec",
+          "bytes": 102952
+        },
+        "data/china_stocks/601088.SS.parquet": {
+          "git_blob": "dc543f0048eac37f7ce7845107451fc8b18a47a7",
+          "sha256": "91fe3b0835aaee27e001b1a2f94a4495058f83f2920ea7480bbe193f16d8fea9",
+          "bytes": 233362
+        },
+        "data/china_stocks/601100.SS.parquet": {
+          "git_blob": "0aaf8fa33675aabc3d2eb2b114f1e9ec4290b466",
+          "sha256": "d90ebca78f060e57221401faa7bd38dbc94e577a5ca7d90654d081430076ee6d",
+          "bytes": 150241
+        },
+        "data/china_stocks/601117.SS.parquet": {
+          "git_blob": "e6deb306e1d2a330524166e55e23d9f70436a1dc",
+          "sha256": "5c952879aae7d2fb544ad211190557dcd2a5f4e45b001422867d400e7c623f6f",
+          "bytes": 199816
+        },
+        "data/china_stocks/601127.SS.parquet": {
+          "git_blob": "b5dbb6fef54ee8eb16890fd3f92740d2b888d644",
+          "sha256": "be2f26fe96795c715319ad60abb57ae73063f82b14165f06e2e29bf9668d841b",
+          "bytes": 104819
+        },
+        "data/china_stocks/601138.SS.parquet": {
+          "git_blob": "f708fa3bcd784706e239ab2c520c9f03e9b6cfcc",
+          "sha256": "abd61e687bf3d80d24c62c2a4ce1e57efb8c4389a673116c6dc8fc256d6e996b",
+          "bytes": 102603
+        },
+        "data/china_stocks/601166.SS.parquet": {
+          "git_blob": "3e76a55c2804da3f965c249dd547c2cb59f97702",
+          "sha256": "c8c7b07bb814bfe5ea2ae262d1764036b92f9a1846ba847bed3b6e3650870566",
+          "bytes": 196600
+        },
+        "data/china_stocks/601168.SS.parquet": {
+          "git_blob": "f91433b800af9c99fc3f8d5874aa4ef24c5a0667",
+          "sha256": "7911febd58f75c0b8f79d9f69b71624120be44f1d6c9f48d7f15206d5e9447e7",
+          "bytes": 185768
+        },
+        "data/china_stocks/601169.SS.parquet": {
+          "git_blob": "964d07907a00dd81db0b4ccf26f819f38b013b20",
+          "sha256": "82d046858b3e2e88dbb6d2e9b073deead7146ee4368e4ba9b4ff8aa7b9d3772c",
+          "bytes": 172439
+        },
+        "data/china_stocks/601186.SS.parquet": {
+          "git_blob": "22761929ab730b37e144d9c33e3cebf0dc9b3a8c",
+          "sha256": "6ce376e90e4ced3f70023b30b2be9ada6e2c917032774d2ad0c45491c676fcea",
+          "bytes": 221546
+        },
+        "data/china_stocks/601211.SS.parquet": {
+          "git_blob": "36fdb18a995c17d79b208fddd31f4fb2a7e08cee",
+          "sha256": "3ac9d5049da83c9d0d4cf7c1ffe1cd60d5294d3a44633cd6c410dc6aefc24890",
+          "bytes": 112244
+        },
+        "data/china_stocks/601225.SS.parquet": {
+          "git_blob": "ef27d42349b116637653f8f7d069cee6fc4ee230",
+          "sha256": "972f052f9f0785a4aef5e8a2de496f2acac61b01ad681c1c0c452f785f45a422",
+          "bytes": 126004
+        },
+        "data/china_stocks/601229.SS.parquet": {
+          "git_blob": "046cc0a2f35d7818e3a34e92db2ba48334e2a91c",
+          "sha256": "e67e7214e0789eee80699821dea09e55e4da70dd82aa52ee3a6595ce1b54c213",
+          "bytes": 93680
+        },
+        "data/china_stocks/601238.SS.parquet": {
+          "git_blob": "ac26f33b13f819ceb42cfd779e7872886255c663",
+          "sha256": "e8eecff1b5dcba795785b10906b4ca58a6053514c72b1a397c97cc5004156a54",
+          "bytes": 141454
+        },
+        "data/china_stocks/601288.SS.parquet": {
+          "git_blob": "09b50432c8567432571dac1e4f108959f223c2f0",
+          "sha256": "57227f8b47eea03be8c785380637443b6c08dc45e21c38d6ca10fb476b40617c",
+          "bytes": 125915
+        },
+        "data/china_stocks/601318.SS.parquet": {
+          "git_blob": "9259fee6d2817b151a30774af7864debf7a07719",
+          "sha256": "670cb5a16797611f6befd4e6cd174984eea54bed4d5fb929465b4d1e866be8f3",
+          "bytes": 244416
+        },
+        "data/china_stocks/601319.SS.parquet": {
+          "git_blob": "39204dc39b8fde6219bdebf6ff8c6c53f2ccb5c5",
+          "sha256": "47c3da3dad75c457002175787c5c9b59e5f3c54ecafba859a080f9f0290ed806",
+          "bytes": 92280
+        },
+        "data/china_stocks/601328.SS.parquet": {
+          "git_blob": "e7af010c6758e07411958df8443c7802ea01565e",
+          "sha256": "d3e5a1757690fbc2512c195d60793143c33c25fa0b6c60c001e74b2614553b67",
+          "bytes": 174662
+        },
+        "data/china_stocks/601336.SS.parquet": {
+          "git_blob": "637d59114ba85739abbc5fe65bad4a1173182f7e",
+          "sha256": "3016658c78a3e7f4d3f1959a580188f8ea4c3e6ff2186b7150f739c09c8a770b",
+          "bytes": 183329
+        },
+        "data/china_stocks/601360.SS.parquet": {
+          "git_blob": "78070320cc9bbfed1438da686ecd609c98407e7a",
+          "sha256": "0378d8f8153df2ba3066112ba2b1d4c0cb59ad1ae9c9358c2427046684418049",
+          "bytes": 173440
+        },
+        "data/china_stocks/601377.SS.parquet": {
+          "git_blob": "cdf0f681404a89dffae4f7fda5e4129a246e2a0b",
+          "sha256": "4a5d975cbed96b1455556fdfe2ad4f9d38b8d48121bb6bdc6e74b4074280a13a",
+          "bytes": 189962
+        },
+        "data/china_stocks/601390.SS.parquet": {
+          "git_blob": "145e83180562202b75ad0048344492d3d439602e",
+          "sha256": "86ece88172942666fb94983dd5005e66961d47a0743ae150f4c34ff45dbd82af",
+          "bytes": 213114
+        },
+        "data/china_stocks/601398.SS.parquet": {
+          "git_blob": "0ac9200b28e2bb8a7e1cf41fff27aa27b7105efe",
+          "sha256": "79d145a2219c72d965780fd28addf537f457709aa74f879075ee68af4c5f0045",
+          "bytes": 173590
+        },
+        "data/china_stocks/601600.SS.parquet": {
+          "git_blob": "bf3f9437858ab8468dcae6ad9b9c817af6879013",
+          "sha256": "327bdf07174baa22b73f01a91fd41544a47275d461a4d54ba18cc0f4b2ead93f",
+          "bytes": 296046
+        },
+        "data/china_stocks/601601.SS.parquet": {
+          "git_blob": "09b362bccdbefbb528f4efd8d10d5c523238fcd2",
+          "sha256": "71c84c1a7a2151133eceeb3abcfa5208c5d9866e0bd716ed68362ec215da3b82",
+          "bytes": 234554
+        },
+        "data/china_stocks/601618.SS.parquet": {
+          "git_blob": "982b7dad37788308621e9a660b5a5bfd2ecb9f86",
+          "sha256": "cbe91d50a358eaad2aaf2fb5a487cadf97e9c4bb2ec91556b1d02f3c4ae81338",
+          "bytes": 142402
+        },
+        "data/china_stocks/601628.SS.parquet": {
+          "git_blob": "cecf2259c7498fda0f0ad591f4d2cd134ca3a7b1",
+          "sha256": "7de1fe5e9364427889625f6d334e702ff891c653662d64393258a9b3bb3d6961",
+          "bytes": 200530
+        },
+        "data/china_stocks/601633.SS.parquet": {
+          "git_blob": "623e6daad23c916d8ac981a4976293a7d09b5339",
+          "sha256": "6b5177c5b377478341998273956752bd8a40ccc54d0b3071a329aa4d07f5a66b",
+          "bytes": 184440
+        },
+        "data/china_stocks/601658.SS.parquet": {
+          "git_blob": "43cd4cb0435d50f1c55be17b4a53657bfa1dd835",
+          "sha256": "e7e3f1ec4468b8e8b822c49167a8f4de9f6e02233420bec8f1dd55c200f2b305",
+          "bytes": 75856
+        },
+        "data/china_stocks/601668.SS.parquet": {
+          "git_blob": "980369a5095d00132154e586198ae91db1f6b690",
+          "sha256": "13848bb7d113df4510f25f68166ef38b80bbd936ed35aa8e9bbc7116f306b078",
+          "bytes": 194115
+        },
+        "data/china_stocks/601669.SS.parquet": {
+          "git_blob": "b9b219ce82f95a20e1f18bcedfb1fcd7a4bc38ca",
+          "sha256": "ee44e4b34265c4a64c407ff6c6ee4036732cc7859c748177cd3f259173267e60",
+          "bytes": 134566
+        },
+        "data/china_stocks/601688.SS.parquet": {
+          "git_blob": "3e59f632d2bafdf82af9734e658f61b84628ca8b",
+          "sha256": "0f130dfbf7d973d2cec65ef90a7d483a0aad6c08174ee6a720273295e632bafc",
+          "bytes": 203093
+        },
+        "data/china_stocks/601689.SS.parquet": {
+          "git_blob": "2dfeaed76219275a9220cc37b1fdf3feb9228409",
+          "sha256": "cf479a3e5594847cfbbe77e88c2daf2816e7300010821b9783d4c2a28016567b",
+          "bytes": 118950
+        },
+        "data/china_stocks/601699.SS.parquet": {
+          "git_blob": "ec71749953dd4429269119cad533841f23e0901c",
+          "sha256": "764e6d1b2422a9d92a41f2eddd9ae7834d69f8b5375d4fbdfe7867f8f6acde53",
+          "bytes": 199928
+        },
+        "data/china_stocks/601728.SS.parquet": {
+          "git_blob": "ee33aa763c39d0d1b92c879103790fdeb8e10ace",
+          "sha256": "2ccf2140e354d312779e60a256749e8bb80ed4f529757b5c80e94e075654fc26",
+          "bytes": 59533
+        },
+        "data/china_stocks/601766.SS.parquet": {
+          "git_blob": "c45c0187ac68437cb3cf88fc7acde3a46f635c4f",
+          "sha256": "5ecba8f67d6dced9f05fdef03888dba394f278081ce9dd7d8c72cbdc5f5936f5",
+          "bytes": 211444
+        },
+        "data/china_stocks/601788.SS.parquet": {
+          "git_blob": "112d71b60e3ba9e826ddbcf2d84b5fc1fc83365d",
+          "sha256": "5e2472e586a9959614dc0c179ac337e4698d496594a58b425da02049275d717b",
+          "bytes": 208604
+        },
+        "data/china_stocks/601799.SS.parquet": {
+          "git_blob": "3b1df24e6b1ecb8ae377e54350f81c82a789bbdf",
+          "sha256": "1007d4e51ffabb771e51a462797bfdf166abba4a3eec15e5269c85bff0aa2169",
+          "bytes": 155652
+        },
+        "data/china_stocks/601800.SS.parquet": {
+          "git_blob": "d7f2d5caf01f82fd9708b74d5fc354b765f976b6",
+          "sha256": "e21a1a5d3a38c55e95bacbf1142a5265b668502ec512f42059874f76c5fb3b02",
+          "bytes": 174994
+        },
+        "data/china_stocks/601818.SS.parquet": {
+          "git_blob": "9be339eacf182e9abd89647e7693e6430cdac991",
+          "sha256": "a5f37aebd3a7c6cd456583782f4f085601ba8a7e53a89f8cec23a267be20b513",
+          "bytes": 165282
+        },
+        "data/china_stocks/601857.SS.parquet": {
+          "git_blob": "b58e220c8cac960cc58e1468499c8d4b2d5db81f",
+          "sha256": "fc6593a02d0c27aae0826a1573ab48c94d2a1227e9eaacd42bffaa2065796a40",
+          "bytes": 224485
+        },
+        "data/china_stocks/601881.SS.parquet": {
+          "git_blob": "6ee5530c9f02a4f48e398dad52bdbd75fedda49f",
+          "sha256": "d6c7ebea7f6e1533b0ecd74f10c0d2121dd107bff62bcd3bd5074d8763c86ebc",
+          "bytes": 119111
+        },
+        "data/china_stocks/601898.SS.parquet": {
+          "git_blob": "ca5d547b8a8c4f8f1004d3c3e6db5262309adb74",
+          "sha256": "5415a7cdc3b678af81d16dabc91124a13a6aaf5f1a005f0d6b743befc4215923",
+          "bytes": 223660
+        },
+        "data/china_stocks/601899.SS.parquet": {
+          "git_blob": "d0c8f889d42f3bc2c93016224446357311d3c3cf",
+          "sha256": "877a85718dbc01ea4e253ce016833e24b800c19aacebae21a490a724267ff150",
+          "bytes": 214135
+        },
+        "data/china_stocks/601919.SS.parquet": {
+          "git_blob": "836c1322dfdb6f4fae3fe9019ceb151413d435d9",
+          "sha256": "7e786c3c478f059b8e44612db20b881becc83c3631157c3f06f6ddf95b77a743",
+          "bytes": 177859
+        },
+        "data/china_stocks/601939.SS.parquet": {
+          "git_blob": "776648b91c9ed250bfed829276f0019ed2a051e2",
+          "sha256": "1063b6ee007ffbd7c99e2ee1a7201242475b23b77d780e47ccce71e4e6eae8bb",
+          "bytes": 214891
+        },
+        "data/china_stocks/601958.SS.parquet": {
+          "git_blob": "34fc1414c2b585613eb5eb6cbadb31dbbd6a9061",
+          "sha256": "f1477d26f7e5036369690dcc48672202be8247dae077b419c2633369f533a21e",
+          "bytes": 223776
+        },
+        "data/china_stocks/601988.SS.parquet": {
+          "git_blob": "e1291ab79ca4f4c18d9f1185725308477ebaedad",
+          "sha256": "0bc99fd291181fcc41bc0b501fdd35845023b9228c05fd6d1f691591565e2367",
+          "bytes": 164545
+        },
+        "data/china_stocks/601995.SS.parquet": {
+          "git_blob": "b41768d041b823a13bc2f71e95294223561071ad",
+          "sha256": "f2ce190de9238fcca11d32fe54866da9cd3b4944928add63bc4ea219d35f1a5f",
+          "bytes": 74127
+        },
+        "data/china_stocks/601998.SS.parquet": {
+          "git_blob": "2d209b31e3ac5ce4c798fb8edc3fd1801706bdd0",
+          "sha256": "cc6c9ea4e4eb9798823e8aa24eb12d77c2573fb6ad008c4c9b50b804197c2d0b",
+          "bytes": 181823
+        },
+        "data/china_stocks/603019.SS.parquet": {
+          "git_blob": "1a45e16bffdb90553f7cba51db3d2b3e5882cdb5",
+          "sha256": "7205ad8e5f8cd5d8f492eced7e1a7d4948a2d152bb940a823c994f6ca79c5295",
+          "bytes": 122430
+        },
+        "data/china_stocks/603087.SS.parquet": {
+          "git_blob": "e2388aff0d05d9ac9a16a9f2efa497970d1089e4",
+          "sha256": "667bdc060d981e1cc604ad9f46351c44d2c9ab8c93a983ec0d22345a440f06da",
+          "bytes": 65591
+        },
+        "data/china_stocks/603156.SS.parquet": {
+          "git_blob": "20300eb977a821349b7a41c86314db3d17d4540d",
+          "sha256": "57d905a7b97f8ae1c02187e78b57f9178771515189e96aa1d508407bea83630b",
+          "bytes": 107083
+        },
+        "data/china_stocks/603259.SS.parquet": {
+          "git_blob": "6d081f980ce95b147404bf697e6effe1f6cccafd",
+          "sha256": "c3b9eacdbcdeb6d080984f53565e94ba551b49a773744a9564bb982282f08266",
+          "bytes": 105835
+        },
+        "data/china_stocks/603288.SS.parquet": {
+          "git_blob": "fa8e540cea4c1b87dedaeaa5d2c4b7efc0833bdb",
+          "sha256": "ae2754383b8a53a73a50fd0eb3bbe2f5012c91f0c86a9a2f68268c3b055bb966",
+          "bytes": 129616
+        },
+        "data/china_stocks/603369.SS.parquet": {
+          "git_blob": "a310daa9696797f07ef64dd62534c586082a1376",
+          "sha256": "3c306ca85fc059a8cd891a2caa3face8cb5e847e3731e406bc6b3b4d6200d03c",
+          "bytes": 125053
+        },
+        "data/china_stocks/603486.SS.parquet": {
+          "git_blob": "6117bb05dcc2ab9f439bc7450aa91ab14f11f43e",
+          "sha256": "851814dfea5088f0d39e13d68b31cda891ef453acb6c3ef9880b11df59d7891b",
+          "bytes": 85775
+        },
+        "data/china_stocks/603501.SS.parquet": {
+          "git_blob": "883e98137383d445197d8b25d770e9160f55108a",
+          "sha256": "269cd5940ca2e05c3a0affe3cc87dc8628560a92307f544ec82bd37bbfa08bf0",
+          "bytes": 92705
+        },
+        "data/china_stocks/603659.SS.parquet": {
+          "git_blob": "ef06c2433287bad2d43551bf3b8579a8d392f653",
+          "sha256": "679a2cc57bf7f533c2977c4f7cb659c93b6d8006be023c073c3146aef065b830",
+          "bytes": 91084
+        },
+        "data/china_stocks/603799.SS.parquet": {
+          "git_blob": "1cc8d28923f05d85f19903c213630df03c5f3182",
+          "sha256": "3f028456968291528e9fa0fa7e08963eda35ebeeaaf96171443eff32cacdb697",
+          "bytes": 120311
+        },
+        "data/china_stocks/603806.SS.parquet": {
+          "git_blob": "66fb760340ef63cf87bb359bbaee676886b11495",
+          "sha256": "950187c3900b917732983fc42a2fc3c2f943c12e363b20000cc7bcb94656f857",
+          "bytes": 122639
+        },
+        "data/china_stocks/603986.SS.parquet": {
+          "git_blob": "7e479d53b204d68164eaca89e17381784e4cff05",
+          "sha256": "7beac907e1fde8c01320cfc39d96fade8627eb0e7edb9d02d10d6560882422b0",
+          "bytes": 99003
+        },
+        "data/china_stocks/603993.SS.parquet": {
+          "git_blob": "365a8564a8a5426948501617171947fb1b50b96d",
+          "sha256": "75b1b8a81f44c7eb287c12544f6c87d6a89d7c88976819712d9e68b986614b86",
+          "bytes": 167223
+        },
+        "data/china_stocks/605117.SS.parquet": {
+          "git_blob": "ccb7bf4a36c85bb5a785b9ff6ff14db3a5eb04d0",
+          "sha256": "14120f6a6633a58a99ce52ec959f012c7fea193e6f5c61dd11235825140f13de",
+          "bytes": 58343
+        },
+        "data/china_stocks/605499.SS.parquet": {
+          "git_blob": "95576a41d566574959a607addcc71489ed0732f1",
+          "sha256": "1f13185e1f52ae000a827deb293a80ff181f1210c9c0c9e5953c9aaf2f6beed2",
+          "bytes": 56388
+        },
+        "data/china_stocks/688008.SS.parquet": {
+          "git_blob": "d0be44cb97fe9115de78b11a9e08ed88eb143d7f",
+          "sha256": "992a2f3285cec98a16f8855a8a0d8d50f7daab32e6629c88538741641b24c236",
+          "bytes": 91037
+        },
+        "data/china_stocks/688012.SS.parquet": {
+          "git_blob": "c7ab44a05c0e3e18b90802d849cf1e96c600dcbb",
+          "sha256": "1aff91a941af6257b4763d8079917cdf91633d014d3c1f55fa8d08366845e291",
+          "bytes": 74995
+        },
+        "data/china_stocks/688017.SS.parquet": {
+          "git_blob": "9bd3b4d253b31748994ac8ae420a374fbb6bf01f",
+          "sha256": "9a254828cab8bcb600b4443802aca6bf52cfccfb7158a8305c8948b37cc38547",
+          "bytes": 63983
+        },
+        "data/china_stocks/688019.SS.parquet": {
+          "git_blob": "94546550e036720f6afd25b4be7676bca86138d4",
+          "sha256": "13bd4510108f4321900e7bafd30332a5039ed8ad237a2190421d4be60a10825a",
+          "bytes": 74830
+        },
+        "data/china_stocks/688036.SS.parquet": {
+          "git_blob": "d8502593ed4dbd89b3759b414a8120209fb76a23",
+          "sha256": "821c078e43e6936fd9a72622abc1ca3a71c2c03954d150b5b56d53f11ae11314",
+          "bytes": 88567
+        },
+        "data/china_stocks/688041.SS.parquet": {
+          "git_blob": "f7e22c98c76d264b8d3f4033544b1299fbd52848",
+          "sha256": "7e3ab2b09c26a72d8accef6a371b0155fb2850b39acacf1fdc638137bc32a829",
+          "bytes": 44433
+        },
+        "data/china_stocks/688072.SS.parquet": {
+          "git_blob": "02623a6b5727687371214ed5f4496a2cd6f09e73",
+          "sha256": "39dc37396b2caa1984931e66871ba3e100bed902544e8d6b808a19ecfa2dd1ff",
+          "bytes": 47801
+        },
+        "data/china_stocks/688082.SS.parquet": {
+          "git_blob": "f4a2a298d07eb37c54d771c9010febffbd799ab9",
+          "sha256": "f10d4cb9777d6fb1f7334728391a77d0827d9fcb1f3ac84ccef18da7292c6740",
+          "bytes": 62415
+        },
+        "data/china_stocks/688111.SS.parquet": {
+          "git_blob": "c2d2f8db8dc4d3a5b8cdc8effca9afa0c5fd4277",
+          "sha256": "d4ae391700ff0341d006cdfaff8e822a2017f91a282679eb936914957cda3cf3",
+          "bytes": 70428
+        },
+        "data/china_stocks/688120.SS.parquet": {
+          "git_blob": "3e2b716063adb033cb990163af670ad266de327f",
+          "sha256": "157d6e13c660f829e23ce0ee25852270f750ae86ce972c064ba4090d5b792ee6",
+          "bytes": 46910
+        },
+        "data/china_stocks/688126.SS.parquet": {
+          "git_blob": "21211ad01c13b7bfd7188e1e61fe15c2a20b3ffb",
+          "sha256": "a7d1057f58378f7cf4dc2a70c86571e226825ee6d2b78a99f78357e57e73234f",
+          "bytes": 63949
+        },
+        "data/china_stocks/688180.SS.parquet": {
+          "git_blob": "4c79275936b579d37b1ae3d2d960041e07657ebe",
+          "sha256": "ca9bb9135e1a4860df84916f6b2cd40c884053096ee2d623fb27ec66d9db8fd2",
+          "bytes": 55040
+        },
+        "data/china_stocks/688223.SS.parquet": {
+          "git_blob": "a506abb08a27bcb160adc09db94958d2bdfd7770",
+          "sha256": "7c4c5b1cf44147696a7ad832b791e91a6d83f46522bfd99ebd7298e7add98b51",
+          "bytes": 44358
+        },
+        "data/china_stocks/688235.SS.parquet": {
+          "git_blob": "37c0d34d0209413373fd414b77e993899e5e2386",
+          "sha256": "5d227ecb9201f204aa513bead8e125cc6a14e556bc767ab63e47b4e1c081bd83",
+          "bytes": 44624
+        },
+        "data/china_stocks/688249.SS.parquet": {
+          "git_blob": "591d7833e33b89e937dd41835a12c1672da09365",
+          "sha256": "64461a3abcd0944ad0cb0ae0cd31c954dadf89a234bc22f65499af97274f82d6",
+          "bytes": 36578
+        },
+        "data/china_stocks/688256.SS.parquet": {
+          "git_blob": "283755e5cdaa0871ff5fb9d143b2aaea94143016",
+          "sha256": "00471ba0c193deab41b54acc0d9b2b09d8a6599574858b903292c8c091546f2a",
+          "bytes": 65294
+        },
+        "data/china_stocks/688271.SS.parquet": {
+          "git_blob": "7ff40b6fc44067152e61686ed44158036dc08719",
+          "sha256": "e5369d02927df26d3edeb31163c6fc615af85309568cfe7bc076c8dc2017e7e9",
+          "bytes": 52489
+        },
+        "data/china_stocks/688297.SS.parquet": {
+          "git_blob": "48217ed745b10305723f987365ddb6fd0425bc21",
+          "sha256": "e0ff6224ab62360979ccdaf75a07e580dc8c112018795e3e3facb190722792af",
+          "bytes": 45755
+        },
+        "data/china_stocks/688301.SS.parquet": {
+          "git_blob": "6c510049cb3c246bc883c8cb2a2b8031a749e31d",
+          "sha256": "b25d23d237faf16b8235737e989537b63e48a0aecd934f5985fbdb47be7e6854",
+          "bytes": 63050
+        },
+        "data/china_stocks/688303.SS.parquet": {
+          "git_blob": "f539828cbda593cfa3cb9f77f6cf3a8016f67306",
+          "sha256": "4951819644f26ac903da074b44c0b9ca5a6ecf3ef117e51f4521d855a2796979",
+          "bytes": 52200
+        },
+        "data/china_stocks/688322.SS.parquet": {
+          "git_blob": "841849625808d3a2fb44ea3fc8dc036946b7b49c",
+          "sha256": "4ff429204d482942fb50769b2ace0c38a26288c25a48d38fd5d31d8cd8173efa",
+          "bytes": 39304
+        },
+        "data/china_stocks/688331.SS.parquet": {
+          "git_blob": "4fefb727426f223d546a612a0a126703e7b1a362",
+          "sha256": "d2c341109f41a786f02972660b047cb8257e2ffb36039eac6856e9938b63f058",
+          "bytes": 41914
+        },
+        "data/china_stocks/688347.SS.parquet": {
+          "git_blob": "0125d48c9549b28f2896c25cfe14af6077e6a93d",
+          "sha256": "8174d1f26c68e5614b55a8b35dcb36481bba8407fbdde61608ffe09f9154ac31",
+          "bytes": 32656
+        },
+        "data/china_stocks/688385.SS.parquet": {
+          "git_blob": "0b6718257bc0818d4f50911e315c9b7fcdfb27d2",
+          "sha256": "07f7784b8b49a5f0cf073807c4476a1f1c26e3b26fd9cbd5d2e16c73a205755d",
+          "bytes": 54919
+        },
+        "data/china_stocks/688390.SS.parquet": {
+          "git_blob": "77ebe61a7c79103e404fbf24cbfda1a0f4d4ea4f",
+          "sha256": "516f7915b7a564aa8a0c9b997381c744df435c934de547e0035133f66adfbb67",
+          "bytes": 63270
+        },
+        "data/china_stocks/688428.SS.parquet": {
+          "git_blob": "2e8ef48138d48a1bb62e035946b649228e279d76",
+          "sha256": "d20b209d553589d8e191c65ca207fd14a7de7d365a388f3349531484c8ed399d",
+          "bytes": 35418
+        },
+        "data/china_stocks/688472.SS.parquet": {
+          "git_blob": "947fa2faa1b4f36f14329408b97c498cc7ea11c8",
+          "sha256": "e13f452a111e19215487548357fdf7258e3cd12c166ea103ad6ab1901c8b7c10",
+          "bytes": 42939
+        },
+        "data/china_stocks/688506.SS.parquet": {
+          "git_blob": "4769f2390917cb449e723fb8ec6d6f0f0ff5f80b",
+          "sha256": "3ded1cb080bdb3bf31494ab14e9691a8010c3cba10ceda7ffd609d05ba59aeb9",
+          "bytes": 35344
+        },
+        "data/china_stocks/688578.SS.parquet": {
+          "git_blob": "0b8f79bd8137fc303eb0cc48056e2b790d0a1525",
+          "sha256": "9acf0ed973b25527806e987a9ce5f0b756664c6a949bfc8432048fb8b3fab488",
+          "bytes": 73496
+        },
+        "data/china_stocks/688599.SS.parquet": {
+          "git_blob": "6f93da71619bdb8750bb386341820c5a1324d8ab",
+          "sha256": "b572be4190933bf34a5dbb72b959a522e760d2dfc851abedd942a0adae34520c",
+          "bytes": 63070
+        },
+        "data/china_stocks/688617.SS.parquet": {
+          "git_blob": "1007abd8a0bc8160d8c76a9ac45fb0daae46e03b",
+          "sha256": "cc664dc477addc7462c8e3c8d0e57ec3d005da5ede4fe4434a2f022e775398cc",
+          "bytes": 59868
+        },
+        "data/china_stocks/688692.SS.parquet": {
+          "git_blob": "08a3b22e93adeefe97f58a4809151fe7527cf0e7",
+          "sha256": "de5dec42de200df2ad5f14edaa9a622481c643d882439732e4c219ae040d66df",
+          "bytes": 26429
+        },
+        "data/china_stocks/688702.SS.parquet": {
+          "git_blob": "9121a4a74771cb2ac8fe95fa6b3f70866b0f78c6",
+          "sha256": "e18c92fd7e027a0f49c65ffc6dce892bcce16f6eaad6fe906883bfdc5a7e8d3e",
+          "bytes": 30056
+        },
+        "data/china_stocks/688795.SS.parquet": {
+          "git_blob": "f70be1bbd3f375232ba9443450c531c50bc53934",
+          "sha256": "544ca93c88661a690a726618d009f88e6a58e3b0023f5e256f0d2198485429dc",
+          "bytes": 12047
+        },
+        "data/china_stocks/688802.SS.parquet": {
+          "git_blob": "ff563aa8acb27cb3aea09491f79224ab59b97ca7",
+          "sha256": "1646e5d6bf3cb7e53e0bbe895ad3d6e5817716dd352534b48590cf470894f458",
+          "bytes": 11696
+        },
+        "data/china_stocks/688981.SS.parquet": {
+          "git_blob": "f3abd42eed513a3446293cd044d3593457d779a1",
+          "sha256": "e3b12d33c901c39774bae56b1b012ed918b1a2a4f71287ec2f7dc32863cbb51d",
+          "bytes": 55040
+        }
+      },
+      "native_member_files": 280,
+      "configured_unique_members": 280,
+      "theme_count": 22,
+      "recorded_theme_count": 22,
+      "producer_file_changes_inside_temporary_root": [],
+      "producer_write_attempts_inside_temporary_root": [
+        {
+          "event": "os.mkdir",
+          "path": "data/china"
+        }
+      ],
+      "network_attempts": [],
+      "consumers": {
+        "mature": {
+          "cn_semis": {
+            "lane": "wait_pullback",
+            "reco": "enter",
+            "route": null,
+            "decision": {
+              "source_as_of": "2026-09-23",
+              "final_reco": "enter",
+              "final_label": "emerging",
+              "status": "CURRENT",
+              "source_status": "CURRENT",
+              "source_conflict": false,
+              "scope": "theme_presentation_only",
+              "stock_entry_permission": false
+            }
+          },
+          "cn_ai_compute": {
+            "lane": "wait_pullback",
+            "reco": "enter",
+            "route": null,
+            "decision": {
+              "source_as_of": "2026-09-23",
+              "final_reco": "enter",
+              "final_label": "emerging",
+              "status": "CURRENT",
+              "source_status": "CURRENT",
+              "source_conflict": false,
+              "scope": "theme_presentation_only",
+              "stock_entry_permission": false
+            }
+          },
+          "theme_availability": null,
+          "sector_count": 16,
+          "cycle_count": 53
+        },
+        "emerging": {
+          "cn_semis": {
+            "lane": "buy_now",
+            "reco": "enter",
+            "route": "theme_enter",
+            "decision": {
+              "source_as_of": "2026-09-23",
+              "final_reco": "enter",
+              "final_label": "emerging",
+              "status": "CURRENT",
+              "source_status": "CURRENT",
+              "source_conflict": false,
+              "scope": "theme_presentation_only",
+              "stock_entry_permission": false
+            }
+          },
+          "cn_ai_compute": {
+            "lane": "buy_now",
+            "reco": "enter",
+            "route": "theme_enter",
+            "decision": {
+              "source_as_of": "2026-09-23",
+              "final_reco": "enter",
+              "final_label": "emerging",
+              "status": "CURRENT",
+              "source_status": "CURRENT",
+              "source_conflict": false,
+              "scope": "theme_presentation_only",
+              "stock_entry_permission": false
+            }
+          },
+          "theme_availability": null,
+          "sector_count": 16,
+          "cycle_count": 53
+        }
+      },
+      "themes": {
+        "cn_semis": {
+          "score": 50,
+          "label": "emerging",
+          "reco": "enter",
+          "observation": {
+            "effective_as_of": "2026-09-23",
+            "configured_members": [
+              "688981.SS",
+              "688256.SS",
+              "002371.SZ",
+              "688041.SS",
+              "688347.SS",
+              "603986.SS",
+              "688012.SS",
+              "688008.SS",
+              "300782.SZ",
+              "002049.SZ",
+              "688082.SS",
+              "688072.SS",
+              "688120.SS",
+              "688126.SS",
+              "600584.SS",
+              "002156.SZ",
+              "600460.SS",
+              "603501.SS",
+              "300661.SZ",
+              "688385.SS",
+              "688019.SS",
+              "688249.SS"
+            ],
+            "configured_n": 22,
+            "in_panel_members": [
+              "688981.SS",
+              "688256.SS",
+              "002371.SZ",
+              "688041.SS",
+              "688347.SS",
+              "603986.SS",
+              "688012.SS",
+              "688008.SS",
+              "300782.SZ",
+              "002049.SZ",
+              "688082.SS",
+              "688072.SS",
+              "688120.SS",
+              "688126.SS",
+              "600584.SS",
+              "002156.SZ",
+              "600460.SS",
+              "603501.SS",
+              "300661.SZ",
+              "688385.SS",
+              "688019.SS",
+              "688249.SS"
+            ],
+            "in_panel_n": 22,
+            "observed_members": [
+              "688981.SS",
+              "688256.SS",
+              "002371.SZ",
+              "688041.SS",
+              "688347.SS",
+              "603986.SS",
+              "688012.SS",
+              "688008.SS",
+              "300782.SZ",
+              "002049.SZ",
+              "688082.SS",
+              "688072.SS",
+              "688120.SS",
+              "688126.SS",
+              "600584.SS",
+              "002156.SZ",
+              "600460.SS",
+              "603501.SS",
+              "300661.SZ",
+              "688385.SS",
+              "688019.SS",
+              "688249.SS"
+            ],
+            "observed_n": 22,
+            "missing_columns": [],
+            "missing_at_asof": [],
+            "coverage": 1.0,
+            "status": "complete",
+            "aggregate_eligible": true,
+            "min_members": 3,
+            "min_coverage": 0.6,
+            "basis": "exact_close_at_effective_as_of",
+            "authority": "measurement_only"
+          },
+          "accel_z": 0.24,
+          "ext_abs": -0.46,
+          "components": {
+            "trend": 0.07,
+            "breadth": 0.035,
+            "impulse": 0.0,
+            "mtf": 0.0,
+            "volhole": 0.25,
+            "crowding": 0.3
+          },
+          "mtf": {
+            "tf": {
+              "D": {
+                "sign": 1,
+                "rsi14": 54.0,
+                "macd_pos": true,
+                "cross_up": false,
+                "cross_dn": false,
+                "approaching_up": false,
+                "approaching_dn": false,
+                "days_to_cross": null,
+                "spark_rsi": [
+                  42,
+                  41,
+                  38,
+                  42,
+                  41,
+                  40,
+                  39,
+                  38,
+                  36,
+                  39,
+                  48,
+                  47,
+                  53,
+                  53,
+                  54,
+                  54
+                ]
+              },
+              "3D": {
+                "sign": -1,
+                "rsi14": 50.0,
+                "macd_pos": false,
+                "cross_up": false,
+                "cross_dn": false,
+                "approaching_up": true,
+                "approaching_dn": false,
+                "days_to_cross": 12,
+                "spark_rsi": [
+                  55,
+                  53,
+                  46,
+                  46,
+                  51,
+                  52,
+                  54,
+                  49,
+                  48,
+                  49,
+                  47,
+                  47,
+                  45,
+                  44,
+                  50,
+                  50
+                ]
+              },
+              "W": {
+                "sign": -1,
+                "rsi14": 54.0,
+                "macd_pos": false,
+                "cross_up": false,
+                "cross_dn": false,
+                "approaching_up": false,
+                "approaching_dn": false,
+                "days_to_cross": null,
+                "spark_rsi": [
+                  71,
+                  80,
+                  83,
+                  80,
+                  82,
+                  58,
+                  60,
+                  52,
+                  56,
+                  56,
+                  54,
+                  54,
+                  49,
+                  48,
+                  53,
+                  54
+                ]
+              },
+              "M": {
+                "sign": 1,
+                "rsi14": 61.0,
+                "macd_pos": true,
+                "cross_up": false,
+                "cross_dn": false,
+                "approaching_up": false,
+                "approaching_dn": true,
+                "days_to_cross": 65,
+                "spark_rsi": [
+                  62,
+                  64,
+                  73,
+                  80,
+                  74,
+                  68,
+                  70,
+                  75,
+                  73,
+                  60,
+                  68,
+                  75,
+                  82,
+                  60,
+                  62,
+                  61
+                ]
+              }
+            },
+            "confluence": {
+              "headline": "Unconfirmed turn within a bearish bigger picture",
+              "headline_zh": "偏空大格局内的未确认转向",
+              "sub": "Daily low forming, but the bigger trend is still bearish. Small size only; stop below 270.43.",
+              "sub_zh": "日线低点正在形成，但大趋势仍偏空。只适合小仓位；止损设于 270.43 下方。",
+              "grade": "CAUTION",
+              "grade_zh": "谨慎",
+              "short_sign": 1,
+              "mid_sign": -1,
+              "long_sign": -1,
+              "per_tf": {
+                "D": "up",
+                "3D": "down",
+                "W": "down",
+                "2W": "flat",
+                "ME": "up"
+              }
+            },
+            "momentum_score": 0.0,
+            "trend_aligned": false,
+            "ladder_state": "COUNTERTREND BOUNCE",
+            "ladder_label": "UNCONFIRMED TURN",
+            "ladder_label_zh": "未确认转向",
+            "regime": "bear",
+            "as_of": "2026-09-23",
+            "n_bars": 5770,
+            "has_monthly": true,
+            "source": "member_ohlcv"
+          },
+          "tape": {
+            "volhole": {
+              "state": "COILED_UP",
+              "label_en": "Coiled, pressing the top",
+              "label_zh": "蓄势，逼近上沿",
+              "compressed": true,
+              "bandwidth_pctile": 0.087,
+              "realized_vol_pctile": 0.25,
+              "pos_in_box": 0.764,
+              "to_upper_pct": 3.27,
+              "to_lower_pct": 11.87,
+              "breakout_up": false,
+              "breakdown": false,
+              "score": 0.25,
+              "directional": true
+            },
+            "as_of": "2026-09-23",
+            "whale": {
+              "accumulation": 44.4,
+              "trend_5d": 11.1,
+              "band": "building",
+              "label_en": "Accumulation moderate",
+              "label_zh": "吸筹水平中等",
+              "rising": true,
+              "directional": false
+            },
+            "flow": {
+              "cmf": -0.05,
+              "net_flow_5d": -85789481565.78311,
+              "net_flow_20d": -91521113860.81229,
+              "obv_rising": false,
+              "dollar_vol": 61057837479.12123,
+              "dollar_vol_surge": 0.64,
+              "inflow": false,
+              "label_en": "Net outflow (distribution)",
+              "label_zh": "净流出（派发）",
+              "directional": false
+            },
+            "danny": {
+              "score": 58.6,
+              "buy": false,
+              "buy_strong": false,
+              "sell": false,
+              "ribbon": 0,
+              "above_poc": false,
+              "directional": false
+            },
+            "danny_caveat": {
+              "en": "Descriptive positioning readout only — no directional read. Time-controlled replication retired all contrarian claims (2026-07-06): the 2021+ survivorship-honest panel was all-null (DT-W1a), and on the 64y panel the one pooled survivor (accumulation-surge fade) is null in the modern era (2011-2026 CI spans zero) and survivor-flattered (DT-W2). Values describe where the name sits; they do not predict.",
+              "zh": "仅为描述性位置读数 — 无方向性判断。控制时间因素的复检已于2026-07-06退役全部逆向解读：2021年后无幸存偏差样本全部无效应（DT-W1a）；64年样本中唯一合并显著项（吸筹激增后转弱）在2011-2026年代为零效应且受幸存偏差夸大（DT-W2）。数值仅描述所处位置，不构成预测。"
+            },
+            "coverage": {
+              "n_live": 22,
+              "n_with_volume": 22,
+              "coverage_pct": 1.0
+            }
+          },
+          "perf": {
+            "1d": {
+              "rel": 0.0042,
+              "ret": -0.0008
+            },
+            "5d": {
+              "rel": 0.0308,
+              "ret": 0.0396
+            },
+            "10d": {
+              "rel": 0.0749,
+              "ret": 0.0648
+            },
+            "20d": {
+              "rel": 0.032,
+              "ret": 0.0187
+            },
+            "60d": {
+              "rel": -0.1718,
+              "ret": -0.2534
+            },
+            "ytd": {
+              "rel": 0.4882,
+              "ret": 0.479
+            }
+          },
+          "clean_entry": {
+            "flag": false,
+            "quality": 0.35,
+            "reasons": [
+              "RSI room",
+              "above 200d trend",
+              "shallow pullback"
+            ],
+            "directional": false
+          },
+          "recorded": {
+            "score": 50,
+            "label": "emerging",
+            "reco": "enter"
+          }
+        },
+        "cn_ai_compute": {
+          "score": 55,
+          "label": "emerging",
+          "reco": "enter",
+          "observation": {
+            "effective_as_of": "2026-09-23",
+            "configured_members": [
+              "300308.SZ",
+              "300502.SZ",
+              "601138.SS",
+              "688256.SS",
+              "000977.SZ",
+              "300394.SZ",
+              "002281.SZ",
+              "603019.SS",
+              "688041.SS",
+              "688795.SS",
+              "688802.SS",
+              "300476.SZ",
+              "002463.SZ",
+              "300620.SZ",
+              "300442.SZ",
+              "688702.SS",
+              "002837.SZ"
+            ],
+            "configured_n": 17,
+            "in_panel_members": [
+              "300308.SZ",
+              "300502.SZ",
+              "601138.SS",
+              "688256.SS",
+              "000977.SZ",
+              "300394.SZ",
+              "002281.SZ",
+              "603019.SS",
+              "688041.SS",
+              "688795.SS",
+              "688802.SS",
+              "300476.SZ",
+              "002463.SZ",
+              "300620.SZ",
+              "300442.SZ",
+              "688702.SS",
+              "002837.SZ"
+            ],
+            "in_panel_n": 17,
+            "observed_members": [
+              "300308.SZ",
+              "300502.SZ",
+              "601138.SS",
+              "688256.SS",
+              "000977.SZ",
+              "300394.SZ",
+              "002281.SZ",
+              "603019.SS",
+              "688041.SS",
+              "688795.SS",
+              "688802.SS",
+              "300476.SZ",
+              "002463.SZ",
+              "300620.SZ",
+              "300442.SZ",
+              "688702.SS",
+              "002837.SZ"
+            ],
+            "observed_n": 17,
+            "missing_columns": [],
+            "missing_at_asof": [],
+            "coverage": 1.0,
+            "status": "complete",
+            "aggregate_eligible": true,
+            "min_members": 3,
+            "min_coverage": 0.6,
+            "basis": "exact_close_at_effective_as_of",
+            "authority": "measurement_only"
+          },
+          "accel_z": 0.152,
+          "ext_abs": -0.58,
+          "components": {
+            "trend": 0.134,
+            "breadth": 0.152,
+            "impulse": 0.0,
+            "mtf": 0.0,
+            "volhole": 0.25,
+            "crowding": 0.0
+          },
+          "mtf": {
+            "tf": {
+              "D": {
+                "sign": 1,
+                "rsi14": 53.0,
+                "macd_pos": true,
+                "cross_up": false,
+                "cross_dn": false,
+                "approaching_up": false,
+                "approaching_dn": false,
+                "days_to_cross": null,
+                "spark_rsi": [
+                  46,
+                  46,
+                  43,
+                  46,
+                  43,
+                  43,
+                  41,
+                  41,
+                  38,
+                  38,
+                  46,
+                  47,
+                  51,
+                  52,
+                  54,
+                  53
+                ]
+              },
+              "3D": {
+                "sign": -1,
+                "rsi14": 50.0,
+                "macd_pos": false,
+                "cross_up": false,
+                "cross_dn": false,
+                "approaching_up": true,
+                "approaching_dn": false,
+                "days_to_cross": 14,
+                "spark_rsi": [
+                  53,
+                  51,
+                  40,
+                  47,
+                  52,
+                  51,
+                  54,
+                  48,
+                  47,
+                  49,
+                  48,
+                  48,
+                  45,
+                  44,
+                  49,
+                  50
+                ]
+              },
+              "W": {
+                "sign": -1,
+                "rsi14": 52.0,
+                "macd_pos": false,
+                "cross_up": false,
+                "cross_dn": false,
+                "approaching_up": false,
+                "approaching_dn": false,
+                "days_to_cross": null,
+                "spark_rsi": [
+                  73,
+                  82,
+                  76,
+                  67,
+                  70,
+                  55,
+                  56,
+                  47,
+                  56,
+                  56,
+                  53,
+                  52,
+                  50,
+                  48,
+                  52,
+                  52
+                ]
+              },
+              "M": {
+                "sign": 1,
+                "rsi14": 66.0,
+                "macd_pos": true,
+                "cross_up": false,
+                "cross_dn": false,
+                "approaching_up": false,
+                "approaching_dn": true,
+                "days_to_cross": 42,
+                "spark_rsi": [
+                  74,
+                  80,
+                  89,
+                  90,
+                  86,
+                  86,
+                  88,
+                  89,
+                  90,
+                  80,
+                  87,
+                  89,
+                  91,
+                  64,
+                  68,
+                  66
+                ]
+              }
+            },
+            "confluence": {
+              "headline": "Unconfirmed turn within a bearish bigger picture",
+              "headline_zh": "偏空大格局内的未确认转向",
+              "sub": "Daily low forming, but the bigger trend is still bearish. Small size only; stop below 97.42.",
+              "sub_zh": "日线低点正在形成，但大趋势仍偏空。只适合小仓位；止损设于 97.42 下方。",
+              "grade": "CAUTION",
+              "grade_zh": "谨慎",
+              "short_sign": 1,
+              "mid_sign": -1,
+              "long_sign": -1,
+              "per_tf": {
+                "D": "up",
+                "3D": "down",
+                "W": "down",
+                "2W": "flat",
+                "ME": "up"
+              }
+            },
+            "momentum_score": 0.0,
+            "trend_aligned": false,
+            "ladder_state": "COUNTERTREND BOUNCE",
+            "ladder_label": "UNCONFIRMED TURN",
+            "ladder_label_zh": "未确认转向",
+            "regime": "bear",
+            "as_of": "2026-09-23",
+            "n_bars": 6488,
+            "has_monthly": true,
+            "source": "member_ohlcv"
+          },
+          "tape": {
+            "volhole": {
+              "state": "COILED_UP",
+              "label_en": "Coiled, pressing the top",
+              "label_zh": "蓄势，逼近上沿",
+              "compressed": true,
+              "bandwidth_pctile": 0.214,
+              "realized_vol_pctile": 0.083,
+              "pos_in_box": 0.677,
+              "to_upper_pct": 4.26,
+              "to_lower_pct": 9.82,
+              "breakout_up": false,
+              "breakdown": false,
+              "score": 0.25,
+              "directional": true
+            },
+            "as_of": "2026-09-23",
+            "whale": {
+              "accumulation": 30.2,
+              "trend_5d": -3.2,
+              "band": "distributing",
+              "label_en": "Accumulation low",
+              "label_zh": "吸筹水平偏低",
+              "rising": false,
+              "directional": false
+            },
+            "flow": {
+              "cmf": -0.089,
+              "net_flow_5d": -100405144741.30453,
+              "net_flow_20d": -211566200792.55746,
+              "obv_rising": false,
+              "dollar_vol": 79818496697.40698,
+              "dollar_vol_surge": 0.77,
+              "inflow": false,
+              "label_en": "Net outflow (distribution)",
+              "label_zh": "净流出（派发）",
+              "directional": false
+            },
+            "danny": {
+              "score": 43.6,
+              "buy": false,
+              "buy_strong": false,
+              "sell": true,
+              "ribbon": -1,
+              "above_poc": false,
+              "directional": false
+            },
+            "danny_caveat": {
+              "en": "Descriptive positioning readout only — no directional read. Time-controlled replication retired all contrarian claims (2026-07-06): the 2021+ survivorship-honest panel was all-null (DT-W1a), and on the 64y panel the one pooled survivor (accumulation-surge fade) is null in the modern era (2011-2026 CI spans zero) and survivor-flattered (DT-W2). Values describe where the name sits; they do not predict.",
+              "zh": "仅为描述性位置读数 — 无方向性判断。控制时间因素的复检已于2026-07-06退役全部逆向解读：2021年后无幸存偏差样本全部无效应（DT-W1a）；64年样本中唯一合并显著项（吸筹激增后转弱）在2011-2026年代为零效应且受幸存偏差夸大（DT-W2）。数值仅描述所处位置，不构成预测。"
+            },
+            "coverage": {
+              "n_live": 17,
+              "n_with_volume": 17,
+              "coverage_pct": 1.0
+            }
+          },
+          "perf": {
+            "1d": {
+              "rel": 0.0,
+              "ret": -0.005
+            },
+            "5d": {
+              "rel": 0.0334,
+              "ret": 0.0422
+            },
+            "10d": {
+              "rel": 0.051,
+              "ret": 0.0408
+            },
+            "20d": {
+              "rel": 0.0369,
+              "ret": 0.0235
+            },
+            "60d": {
+              "rel": -0.088,
+              "ret": -0.1697
+            },
+            "ytd": {
+              "rel": 0.4282,
+              "ret": 0.419
+            }
+          },
+          "clean_entry": {
+            "flag": false,
+            "quality": 0.5,
+            "reasons": [
+              "RSI room",
+              "breadth supportive",
+              "above 200d trend",
+              "shallow pullback"
+            ],
+            "directional": false
+          },
+          "recorded": {
+            "score": 55,
+            "label": "emerging",
+            "reco": "enter"
+          }
+        }
+      }
+    }
+  ],
+  "all_passed": true,
+  "limits": [
+    "Assembler qualification clock is injected, not historical availability.",
+    "Producer date.today checks use execution date; no historical-return claim.",
+    "No live data, trade, ranking or publication authority."
+  ]
+}

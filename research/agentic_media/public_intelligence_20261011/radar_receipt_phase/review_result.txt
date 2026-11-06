@@ -1,0 +1,35 @@
+Reviewing the exact diff against the supplied producer sample, focused on the spec's checklist: malformed/null/bool/nonfinite/mismatched target/displayed probability, no unsupported h5/h10 to writer, state/score preserved when probability omitted, advisory preserved, no inferred trading authority, no producer-data mutation, model/calibration/limitations preserved.
+
+**Implementation walk-through**
+
+- Base text is always assembled first (state, dominant_scare, top_score, asof), and `values` starts as `[row.get("top_score")]` — state/score is never gated on the probability branch.
+- Advisory append uses a strict compound check (`authority_tier == "advisory"` AND `can_force is False`), so the label is only preserved when both producer fields say so. No trading-authority text is generated anywhere.
+- `dd = row.get("drawdown_prob")` (no `or {}`); `evidence` is only consulted when `dd` is a dict AND `dd.get("calibration_evidence")` is a dict. So `None`, list, scalar, or missing-evidence rows fall through cleanly.
+- The qualified gate is a strict AND chain on the producer contract: `schema == "risk_radar_probability_evidence.v1"`, `evidence_class == "reconstructed_historical"`, `precision_grade is False`, target `depth == 0.05`, `price_path == "native SPY closing observations"`, `21 in target["horizons"]` (after `isinstance(target.get("horizons"), list)` — so non-list target.horizons can't KeyError), `cell.matched is True`, `type(probability) in (int, float)` (rejects bool since `type(True) is bool`, not `int`/`float`), `0 <= probability <= 1`, `math.isfinite(probability)`, `type(cell.displayed_probability) in (int, float)`, and `cell.displayed_probability == probability` (mismatch rejection).
+- `values` is only extended to `[..., probability, 5]` when qualified. h10/h5 are never read from `dd`, so they cannot reach the writer.
+- The function only consumes the row; nothing is written back, so producer data is preserved (test deep-copy equality assertion holds).
+
+**Producer sample (hash 86c1…01f0) cross-check**
+- `schema`/`evidence_class`/`precision_grade`/`target.depth`/`target.price_path`/`target.horizons`/`h21.matched`/`h21.displayed_probability`/`dd.h21` → gate passes; only h21 is admitted; the printed sentence carries "21-session", "0.19", "at least 5%", "SPY closing prices", "reconstructed historical", "not independent episodes", "not precision-grade", and the advisory suffix fires from `authority_tier: "advisory"` + `can_force: false`.
+- h5/h5_CI/h10 data in the producer sample is untouched by the function — it is not surfaced to the fact dict, satisfying "no unsupported numbers h5/h10 are supplied to writer".
+- `limitations` from the producer are summarized (not quoted) by the "reconstructed historical … not independent episodes … not precision-grade" sentence — the consumer does not promote itself to the writer of the limitations list, which is the right read-only posture.
+
+**Defensive matrix against the parametrized cases**
+- `drawdown_prob = None` → `isinstance(dd, dict)` false → omitted ✓
+- `drawdown_prob = []` → same ✓
+- `calibration_evidence = None` → omitted ✓
+- `schema/evidence_class/precision_grade/target.depth/target.horizons/price_path/cell.matched/cell.displayed_probability/h21` mutations → each is gated by a distinct conjunct, so each fails the AND chain independently ✓
+- `h21 = True` → `type(True) is bool`, not in `(int, float)` → omitted ✓ (this is the load-bearing bool check — Python's `isinstance(True, int)` would be a leak; the code uses `type(...) in (...)` exactly to avoid it)
+- `h21 = nan` → `0 <= nan` is False; also `math.isfinite(nan)` False → omitted ✓
+- `h21 = -0.1` / `1.1` → range gate fails ✓
+- Explicit-zero variant: `type(0) in (int, float)`, `0 <= 0 <= 1`, `math.isfinite(0)`, `0 == 0` → qualified, "probability 0" in text ✓
+
+**Constraints check**
+- Producer data preserved: no mutation, deep-copy equality asserted ✓
+- Model/calibration preserved: "reconstructed historical" + "not precision-grade" + "not independent episodes" appear in qualified text ✓
+- Receipt floors: probability sentence carries the loss target (5%) and the price path ("SPY closing prices") and the horizon ("21-session") ✓
+- Cadence/release gates: outside scope, not touched ✓
+- Optional issuer-context operation: not reviewed/replaced ✓
+- Advisory preserved, no trading-authority inference ✓
+
+**PASS** — the diff correctly narrows the body's evidence contract to the supplied producer sample, omits probability (without losing state/score) on every malformed branch (null/list/bool/nan/out-of-range/mismatched target or displayed/wrong schema/wrong evidence_class/precision_grade True/wrong depth/wrong horizons/wrong price_path/wrong matched/wrong displayed_probability), does not surface h5/h10 to the writer, preserves producer data and the advisory label, and adds the three pytest functions that lock those behaviors.

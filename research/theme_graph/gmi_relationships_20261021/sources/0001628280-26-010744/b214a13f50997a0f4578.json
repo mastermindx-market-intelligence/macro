@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-23T22:26:07Z",
+ "accession": "0001628280-26-010744",
+ "cik": "0001275014",
+ "doc_byte_length": 1969048,
+ "doc_sha256": "f5075f2f3a9444dfe5d38075229b6098d4a34430abe68f36837ae9c2e2a500c0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-23",
+ "form": "10-K",
+ "period_of_report": "2025-12-26",
+ "primary_document": "uctt-20251226.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1598776,
+  "byte_start": 1596830,
+  "normalized": "Lam Research Corporation37.0 %31.9 %34.0",
+  "normalized_sha256": "01613e154c77ef3283b05cc065a0cd4e398f7a20c5b64db3faa394b5b4aefac1",
+  "raw": "Lam Research Corporation</span></td><td colspan=\"2\" style=\"background-color:#cff0fc;border-top:1pt solid #000;padding:2px 0 2px 1pt;text-align:right;vertical-align:middle\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-248\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1085\">37.0</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cff0fc;border-top:1pt solid #000;padding:2px 1pt 2px 0;text-align:right;vertical-align:middle\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"background-color:#cff0fc;border-top:0.5pt solid #ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cff0fc;border-top:1pt solid #000;padding:2px 0 2px 1pt;text-align:right;vertical-align:middle\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-249\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1086\">31.9</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cff0fc;border-top:1pt solid #000;padding:2px 1pt 2px 0;text-align:right;vertical-align:middle\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"background-color:#cff0fc;border-top:0.5pt solid #ffffff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cff0fc;border-top:1pt solid #000;padding:2px 0 2px 1pt;text-align:right;vertical-align:middle\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-250\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1087\">34.0",
+  "raw_sha256": "b214a13f50997a0f4578cc0910a08fac4acdf98d446a65e569da5bb222116eb7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1275014/000162828026010744/uctt-20251226.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 108043,
+   "byte_start": 107369,
+   "context_ref": "c-250",
+   "raw": "<xbrli:context id=\"c-250\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001275014</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">uctt:LamResearchCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2022-12-31</xbrli:startDate><xbrli:endDate>2023-12-29</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "98623a80ae7e66801d430f532fc86ffb123191ef13ab77f1598cfe0e3da043d6"
+  }
+ ]
+}

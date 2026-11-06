@@ -1,0 +1,48 @@
+{
+  "original_test_ref": "2de7ccda3195c14e9334c36a2408c20eeb9ddcf7",
+  "sources": [
+    {
+      "ref": "4cb9007a6c777ce4cc66834df7c1178bd985ca61",
+      "artifact_sha256": "0bf1b5cece7b41de37c7cd5f02482242342872122f45f776283292f11fc62723",
+      "missing_watch_translations": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "original_failures": [
+        "test_weekly_body_draws_real_zh_from_published_block",
+        "test_user_facing_strings_reject_translation_pending_for_weekly"
+      ],
+      "repaired_pair_check": "passed"
+    },
+    {
+      "ref": "1aeaf6874e4d3ed8d4f76205c236994ec7a3bcb9",
+      "artifact_sha256": "0bf1b5cece7b41de37c7cd5f02482242342872122f45f776283292f11fc62723",
+      "missing_watch_translations": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "original_failures": [
+        "test_weekly_body_draws_real_zh_from_published_block",
+        "test_user_facing_strings_reject_translation_pending_for_weekly"
+      ],
+      "repaired_pair_check": "passed"
+    }
+  ],
+  "mutation_controls": [
+    {
+      "mutation": "discard available Chinese translations",
+      "caught": true
+    },
+    {
+      "mutation": "collapse missing translation slots and shift later pairs",
+      "caught": true
+    }
+  ],
+  "main_artifact_suite_cases": 78,
+  "main_artifact_suite_exit_code": 0,
+  "repaired_test_sha256": "ab14fa3c664d2a42f5729aedb64c2402e310d001529fdafe4b4742e91b315ecf"
+}
