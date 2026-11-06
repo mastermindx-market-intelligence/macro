@@ -329,6 +329,12 @@ def test_resting_sheet_leaves_the_focus_order():
     shown = ".sc-plat .cyc-detail.sc-sheet-half, .sc-plat .cyc-detail.sc-sheet-full { visibility: visible; transition-delay: 0s; }"
     assert shown in mob
     assert mob.index(shown) < mob.index(".sc-plat .cyc-detail.sc-dragging { transition: none;")
+    # cycle.css sets visibility: visible on .cyc-panel.show, and an explicit visible on a descendant
+    # overrides a hidden ancestor: the active panel's 22 controls stayed focusable at rest.
+    inherit = ".sc-plat .cyc-detail .cyc-panel.show { visibility: inherit; }"
+    assert inherit in mob
+    rules = re.sub(r"/\*.*?\*/", "", mob.replace(shown, ""), flags=re.S)
+    assert "visibility: visible" not in rules, "no sheet descendant may re-assert visible"
     js = _text("sector_cycles.js")
     body = js[js.index("handle.addEventListener(\"touchstart\", function (e) {\n      dragging = true;"):]
     body = body[:body.index("// Esc closes the sheet")]

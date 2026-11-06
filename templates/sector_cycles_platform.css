@@ -16,6 +16,10 @@
      show is immediate. A drag only starts from an open detent, so .sc-dragging stays visible (GAP-B M1). */
   .sc-plat .cyc-detail { visibility: hidden; transition: transform .42s var(--ease, ease), visibility 0s linear .42s; }
   .sc-plat .cyc-detail.sc-sheet-half, .sc-plat .cyc-detail.sc-sheet-full { visibility: visible; transition-delay: 0s; }
+  /* cycle.css sets visibility: visible on the active .cyc-panel.show, which kept its controls
+     focusable under the hidden sheet. Inside the sheet the panel inherits the sheet's state; the
+     chips' own .18s transition lets them leave about .6s after a close, once the slide-out ends. */
+  .sc-plat .cyc-detail .cyc-panel.show { visibility: inherit; }
   .sc-plat .cyc-detail.sc-dragging { transition: none; will-change: transform; }
   .sc-plat .cyc-panels { overscroll-behavior: contain; }
   .sc-plat .cyc-handle { min-height: 22px; padding: 13px 0 9px; position: relative; touch-action: none; }
