@@ -1,0 +1,36 @@
+--- a/engine/btc_inputs.py
++++ b/engine/btc_inputs.py
+@@ -158,16 +158,27 @@
+         "us_m2": _col("fred", "M2SL", "us_m2"),                 # broad money (US, $bn)
+         "china_m2_yoy": _col("china_macro", "money_supply", "m2_yoy"),  # PBoC M2 growth %
+     }
+-    # derived identities (D41)
++    # derived identities (D41). Non-positive or non-finite parents are
++    # unavailable (NaN). They must not become inf, and a supply share must
++    # not be clipped into a plausible 0 or 1.
+     if mvrv is not None and mcap is not None:
+-        d["realized_cap"] = (mcap / mvrv).rename("realized_cap")
+-        d["nupl"] = (1 - 1 / mvrv).rename("nupl")
++        mv = pd.to_numeric(mvrv, errors="coerce")
++        mc = pd.to_numeric(mcap, errors="coerce")
++        ok = np.isfinite(mv) & np.isfinite(mc) & (mv > 0) & (mc > 0)
++        d["realized_cap"] = (mc / mv).where(ok).rename("realized_cap")
++        d["nupl"] = (1 - 1 / mv).where(ok).rename("nupl")
+     if mcap is not None and stables is not None:
+-        ssr = (mcap / stables.reindex(mcap.index).ffill()).rename("ssr")
+-        d["ssr"] = ssr
++        mc = pd.to_numeric(mcap, errors="coerce")
++        den = pd.to_numeric(stables, errors="coerce").reindex(mc.index).ffill()
++        ok = np.isfinite(mc) & np.isfinite(den) & (mc > 0) & (den > 0)
++        d["ssr"] = (mc / den).where(ok).rename("ssr")
+     # supply-in-profit as a FRACTION (bgeo gives it in BTC; CM supply normalizes).
+     sip, sup = d.get("supply_in_profit"), d.get("supply")
+     if sip is not None and sup is not None:
+-        frac = (sip / sup.reindex(sip.index).ffill()).clip(0, 1)
++        num = pd.to_numeric(sip, errors="coerce")
++        den = pd.to_numeric(sup, errors="coerce").reindex(num.index).ffill()
++        ok = np.isfinite(num) & np.isfinite(den) & (den > 0)
++        frac = (num / den).where(ok)
++        frac = frac.where((frac >= 0) & (frac <= 1))
+         d["supply_in_profit_pct"] = frac.rename("supply_in_profit_pct")
+     return d

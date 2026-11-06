@@ -1,0 +1,154 @@
+{
+  "observed_at": "2026-10-14T06:03:26.571134+00:00",
+  "local_followon_head_before": "91420e27af6c98f98bff56e312ef04b86dd12b85",
+  "local_followon_head_after": "91420e27af6c98f98bff56e312ef04b86dd12b85",
+  "stable_head": true,
+  "as_of": "2026-10-14",
+  "window_days": 3,
+  "source_sha256": {
+    "engine/press/external_candidate.py": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497",
+    "engine/press/desk_planner.py": "e366e6bccd93ac9bc73e38aa8c66bcf8fef2f487e63f3bede380bd173479c3f7"
+  },
+  "artifact_sha256": {
+    "data/market_state/latest.json": "fa0222d02ff577463efbe6e843a835cc9dfaa6ad08131b95d6e4f68838cbcb29",
+    "data/gex/latest.json": "4b8fbd2592f981ec77d2d33ea4cb8504ebff237d4f448969f3f4a0d40939dec2",
+    "site/basketdata/breadth_split.json": "b8efef380bf96ee40e298df79e390797ebc425c88d708b1d5b135c90c688dc24",
+    "site/basketdata/fear_greed.json": "c2e205b1c5739bca90b5702336f8be64275f7f833cb0538d944c4537b43ecdaa",
+    "data/risk_radar/forward_log.jsonl": "86c136153424be8907189fcf06847ccd0f2d812b7d0a76832baa00651a5701f0"
+  },
+  "results": [
+    {
+      "id": "market_state_score",
+      "dated": "2026-10-12",
+      "artifact": "data/market_state/latest.json",
+      "expected_date_eligible": true,
+      "reader_accepted": true,
+      "reason": null,
+      "pass": true
+    },
+    {
+      "id": "market_state_trend",
+      "dated": "2026-10-12",
+      "artifact": "data/market_state/latest.json",
+      "expected_date_eligible": true,
+      "reader_accepted": true,
+      "reason": null,
+      "pass": true
+    },
+    {
+      "id": "market_state_risk",
+      "dated": "2026-10-12",
+      "artifact": "data/market_state/latest.json",
+      "expected_date_eligible": true,
+      "reader_accepted": true,
+      "reason": null,
+      "pass": true
+    },
+    {
+      "id": "market_state_vol",
+      "dated": "2026-10-12",
+      "artifact": "data/market_state/latest.json",
+      "expected_date_eligible": true,
+      "reader_accepted": true,
+      "reason": null,
+      "pass": true
+    },
+    {
+      "id": "market_state_breadth",
+      "dated": "2026-10-12",
+      "artifact": "data/market_state/latest.json",
+      "expected_date_eligible": true,
+      "reader_accepted": true,
+      "reason": null,
+      "pass": true
+    },
+    {
+      "id": "gex_dia",
+      "dated": "2026-10-08",
+      "artifact": "data/gex/latest.json",
+      "expected_date_eligible": false,
+      "reader_accepted": false,
+      "reason": "reviewed context is outside the current Brief window",
+      "pass": true
+    },
+    {
+      "id": "gex_iwm",
+      "dated": "2026-10-08",
+      "artifact": "data/gex/latest.json",
+      "expected_date_eligible": false,
+      "reader_accepted": false,
+      "reason": "reviewed context is outside the current Brief window",
+      "pass": true
+    },
+    {
+      "id": "gex_ndx",
+      "dated": "2026-10-08",
+      "artifact": "data/gex/latest.json",
+      "expected_date_eligible": false,
+      "reader_accepted": false,
+      "reason": "reviewed context is outside the current Brief window",
+      "pass": true
+    },
+    {
+      "id": "gex_qqq",
+      "dated": "2026-10-08",
+      "artifact": "data/gex/latest.json",
+      "expected_date_eligible": false,
+      "reader_accepted": false,
+      "reason": "reviewed context is outside the current Brief window",
+      "pass": true
+    },
+    {
+      "id": "gex_rut",
+      "dated": "2026-10-08",
+      "artifact": "data/gex/latest.json",
+      "expected_date_eligible": false,
+      "reader_accepted": false,
+      "reason": "reviewed context is outside the current Brief window",
+      "pass": true
+    },
+    {
+      "id": "gex_spx",
+      "dated": "2026-10-08",
+      "artifact": "data/gex/latest.json",
+      "expected_date_eligible": false,
+      "reader_accepted": false,
+      "reason": "reviewed context is outside the current Brief window",
+      "pass": true
+    },
+    {
+      "id": "gex_spy",
+      "dated": "2026-10-08",
+      "artifact": "data/gex/latest.json",
+      "expected_date_eligible": false,
+      "reader_accepted": false,
+      "reason": "reviewed context is outside the current Brief window",
+      "pass": true
+    },
+    {
+      "id": "breadth_split",
+      "dated": "2026-10-08",
+      "artifact": "site/basketdata/breadth_split.json",
+      "expected_date_eligible": false,
+      "reader_accepted": false,
+      "reason": "reviewed context is outside the current Brief window",
+      "pass": true
+    },
+    {
+      "id": "risk_radar",
+      "dated": "2026-10-12",
+      "artifact": "data/risk_radar/forward_log.jsonl",
+      "expected_date_eligible": true,
+      "reader_accepted": true,
+      "reason": null,
+      "pass": true
+    }
+  ],
+  "bad_hash_refused": true,
+  "inputs_unchanged": true,
+  "provider_calls": 0,
+  "staging_writes": 0,
+  "publication_writes": 0,
+  "story_admitted": false,
+  "meaning": "LOCAL reader over four exact installed-byte matches retained in the original runtime workspace; fear_greed omitted because local hash differs. Receipt identity/date eligibility only; does not establish contextual relevance, editorial quality, source rights or release acceptance."
+}

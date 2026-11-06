@@ -314,3 +314,265 @@ def test_builder_falls_open_to_the_warm_null_when_the_data_root_is_empty(tmp_pat
     monkeypatch.setattr(bwh, "_data_dir", lambda r: r / "data")
     out = bwh.build(root)
     assert "has not landed yet" in out.read_text()
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# W18B-3 — the 21-session return (r21) prints beside the tier figure
+# ══════════════════════════════════════════════════════════════════════════
+
+def _row_slice(html: str, ticker: str) -> str:
+    """One rendered name row: from its `<div class="row">` to the next one."""
+    for chunk in html.split('<div class="row">')[1:]:
+        if f'>{ticker}<' in chunk:
+            return chunk
+    raise AssertionError(f"row {ticker} not rendered")
+
+
+def test_r21_from_committed_cbrl_appears(tmp_path):
+    """A Still-running name prints its committed 21-session return (r21)."""
+    r = _row("CBRL", 1.2837748527526855, legs=[])
+    r["r21"] = 0.5760970115661621
+    r["state"] = "extended_healthy"
+    html = _render(tmp_path, _ctx({"extended_healthy": [r]}))
+    row = _row_slice(html, "CBRL")
+    assert "+58%" in row           # pc() of the committed r21, sign kept
+    assert "+58% in 21 sessions" in row   # EN caption
+    assert "近 21 个交易日 +58%" in row     # ZH caption
+
+
+def test_r21_negative_from_committed_absi_appears(tmp_path):
+    """A Character-changed name rolls over: −11% over 21 sessions on a +155%
+    six-month print — the typographic minus (U+2212), not an ASCII hyphen."""
+    r = _row("ABSI", 1.5541796684265137,
+             legs=[_leg("below_50d"), _leg("drawdown_from_high")])
+    r["r21"] = -0.11003237962722778
+    r["state"] = "breaking"
+    html = _render(tmp_path, _ctx({"breaking": [r]}))
+    row = _row_slice(html, "ABSI")
+    assert "\u221211% in 21 sessions" in row  # typographic minus kept by pc()
+    assert "+155%" in row          # the tier figure is not replaced
+
+
+def test_missing_r21_renders_no_21_session_line(tmp_path):
+    """r21 null or absent: the row omits the line entirely — no em-dash
+    placeholder, no literal "None"."""
+    r_null = _row("NULH", 0.62, legs=[])
+    r_null["r21"] = None
+    r_absent = _row("NULA", 0.62, legs=[])
+    del r_absent["r21"]
+    html = _render(tmp_path, _ctx({"extended_watch": [r_null, r_absent]}))
+    for tk in ("NULH", "NULA"):
+        row = _row_slice(html, tk)
+        assert "in 21 sessions" not in row
+        assert "近 21 个交易日" not in row
+        assert "None" not in row
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# W18 WH-W18B-2 — print the run age the producer wrote (days_in_episode)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _row_html(html: str, ticker: str) -> str:
+    """Slice the HTML to the one name row (<div class="row">) carrying ticker.
+
+    Rows are siblings, so the next row's opening div is exactly where this row's
+    markup ends (the trailing closing tags and any section tail are harmless).
+    An age printed somewhere else on the page is not this row's reading.
+    """
+    i = html.index(f'href="/stocks/{ticker}.html"')
+    start = html.rindex('<div class="row">', 0, i)
+    nxt = html.find('<div class="row">', start + len('<div class="row">'))
+    return html[start:nxt if nxt != -1 else len(html)]
+
+
+def test_days_in_episode_from_committed_shape_appears(tmp_path):
+    """The committed primary-tier CBRL row (data/top_maturation/latest.json):
+    extended_healthy, days_in_episode=55, legs=[] (producer
+    engine/top_maturation.py:1584). The page must show that 55 on THIS row,
+    in EN and in ZH — the value exists in the artifact and reaches no display.
+    """
+    r = _row("CBRL", 1.2837748527526855, legs=[])
+    r["state"] = "extended_healthy"
+    r["r21"] = 0.5760970115661621
+    r["days_in_episode"] = 55
+    html = _render(tmp_path, _ctx({"extended_healthy": [r]}))
+    row = _row_html(html, "CBRL")
+    assert "55 sessions in this run" in row
+    assert "本轮已持续 55 个交易日" in row
+
+
+def test_null_days_in_episode_does_not_invent_an_age(tmp_path):
+    """All 61 primary breaking rows tonight carry days_in_episode=null (ABSI
+    shape). Null, absent and zero print NOTHING: no "0 sessions", no age
+    derived from the spark's length, no month conversion.
+    """
+    r = _row("ABSI", 1.55, legs=[_leg("below_50d"), _leg("drawdown_from_high")])
+    r["state"] = "breaking"
+    r["days_in_episode"] = None
+    row = _row_html(_render(tmp_path, _ctx({"breaking": [r]})), "ABSI")
+    assert "in this run" not in row
+    assert "本轮已持续" not in row
+    r0 = _row("ZERO", 0.9, legs=[_leg("below_50d")])
+    r0["state"] = "breaking"
+    r0["days_in_episode"] = 0
+    row0 = _row_html(_render(tmp_path, _ctx({"breaking": [r0]})), "ZERO")
+    assert "in this run" not in row0
+    r2 = _row("DELL", 0.9, legs=[_leg("below_50d")])
+    r2["state"] = "breaking"
+    del r2["days_in_episode"]
+    html2 = _render(tmp_path, _ctx({"breaking": [r2]}))  # absent key: no crash
+    assert "in this run" not in _row_html(html2, "DELL")
+
+
+def test_compact_group_still_prints_the_age(tmp_path):
+    """Above BIG_GROUP=55 the aging groups lose the picture, never the reading
+    (:1036-1040): a row rendered compact still shows its run age.
+    """
+    rows = [_row(f"AG{i:02d}") for i in range(56)]
+    html = _render(tmp_path, _ctx({"extended_watch": rows}))
+    assert '<section class="sec grp m2 compact"' in html
+    row = _row_html(html, "AG07")
+    assert '<div class="c-sp">' not in row       # compact really dropped the spark
+    assert "88 sessions in this run" in row      # ...and not the reading
+
+
+def test_single_session_run_age_is_singular(tmp_path):
+    """A run that started this session is "1 session", never "1 sessions".
+    The committed board carries days_in_episode=1 rows, so the plural bug
+    would print on the published page. The ZH copy has no plural to get wrong.
+    """
+    r = _row("ONE1", 0.9, legs=[_leg("below_50d")])
+    r["state"] = "breaking"
+    r["days_in_episode"] = 1
+    row = _row_html(_render(tmp_path, _ctx({"breaking": [r]})), "ONE1")
+    assert "1 session in this run" in row
+    assert not re.search(r"(?<!\d)1 sessions in this run", row)
+    assert "本轮已持续 1 个交易日" in row
+    r2 = _row("TWO2", 0.9, legs=[_leg("below_50d")])
+    r2["state"] = "breaking"
+    r2["days_in_episode"] = 2
+    row2 = _row_html(_render(tmp_path, _ctx({"breaking": [r2]})), "TWO2")
+    assert "2 sessions in this run" in row2
+
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# W18B Spec 1 — the hero must not claim every listed name is inside the 10% band.
+# Producer law (engine/top_maturation.py:153-162,1461-1470,1562-1566): membership
+# is 21-session; a name NOT EXT today is kept only if it reads `breaking`. The
+# artifact already carries the count (_diagnostics.n_off_band_on_board); the page
+# may display it and nothing else.
+# ══════════════════════════════════════════════════════════════════════════════
+def _v2_tier(key, states=None, **kw):
+    """One v2 tier dict, same shape as the design-freeze helper."""
+    t = {"key": key, "readable": True,
+         "figure": {"primary": "r126", "r63": "r63", "atrz": "atr_x"}[key],
+         "library": {"track": "W", "window_start": "2022-07", "window_end": "2026-07",
+                     "horizon_td": 63, "drawdown_pct": 20},
+         "states": {k: [] for k in ("extended_healthy", "extended_watch", "thinning",
+                                    "breaking", "no_read")}}
+    for k, v in (states or {}).items():
+        t["states"][k] = v
+    t.update(kw)
+    return t
+
+
+def _absi_row():
+    """A committed primary `breaking` row: off band today, character changed."""
+    r = _row("ABSI", 1.5541796684265137,
+             legs=[_leg("below_50d"), _leg("drawdown_from_high")], analog=None,
+             spark=[11.0 - i * 0.05 for i in range(60)] + [8.4, 8.25],
+             episode_high=11.53)
+    r["r21"] = -0.11003237962722778
+    r["days_in_episode"] = None
+    return r
+
+
+_V2_DIAG = {"n_off_band_on_board": 61, "membership_window_sessions": 21,
+            "tiers": {"primary": {"n_off_band_on_board": 61},
+                      "r63": {"n_off_band_on_board": 39}}}
+_V2_DIAG_ZERO = {"n_off_band_on_board": 0, "membership_window_sessions": 21,
+                 "tiers": {"primary": {"n_off_band_on_board": 0},
+                           "r63": {"n_off_band_on_board": 0}}}
+
+
+def _v2_ctx(diagnostics=_V2_DIAG):
+    tiers = [_v2_tier("primary",
+                      {"extended_healthy": [_row("CBRL", 1.2837748527526855)],
+                       "breaking": [_absi_row()]}),
+             _v2_tier("r63", {"extended_watch": [dict(_row("FTRE", 0.5), r63=0.41)]}),
+             _v2_tier("atrz", {"extended_watch": [dict(_row("BBBH", 0.3),
+                                                       atr_x=7.2)]})]
+    kw = {"schema": "winner_health.v2", "tiers": tiers}
+    if diagnostics is not None:
+        kw["_diagnostics"] = diagnostics
+    return _ctx(**kw)
+
+
+def _hero_text(html):
+    """Visible text of the hero lede only — the shelf is sliced separately."""
+    i = html.find('<div class="hero-lede">')
+    j = html.find('<div class="shelf">')
+    assert 0 < i < j, "hero lede / shelf not found"
+    return _visible_text(html[i:j])
+
+
+def _shelf_slices(html):
+    """Raw HTML of every `.sh-row`, keyed by the tier slug in its anchor href."""
+    i = html.find('<div class="shelf">')
+    assert i > 0, "hero shelf not found"
+    parts = re.split(r'<a class="sh-row" href="#t-([a-z0-9-]+)">', html[i:])
+    return {parts[k]: parts[k + 1] for k in range(1, len(parts) - 1, 2)}
+
+
+def test_hero_does_not_claim_every_name_is_inside_the_band(tmp_path):
+    html = _render(tmp_path, _v2_ctx())
+    text = _visible_text(html, own_copy=True)
+    # (a) the board-wide claim is gone in BOTH languages, EN and zh.
+    assert "Every name here is within 10%" not in text
+    assert "这里的每一只个股" not in text
+    hero = _hero_text(html)
+    # (c) the real membership rule, with the window length read from the artifact.
+    assert "cleared one of the three bars in the last 21 sessions" in hero
+    assert "21 sessions" in hero
+    assert "listed only as Character changed" in hero
+    assert "在最近 21 个交易日内达到过三道门槛之一就会列出" in hero
+    assert "只会列在「走势已变」" in hero
+    # the "Who is here" lens no longer claims the band for the whole board.
+    assert "Every US name that cleared one of the three bars in the last 21 sessions" in hero
+    # (b) per-tier off-band counts sit on the RIGHT shelf row.
+    sl = _shelf_slices(html)
+    prim = _visible_text(sl["six-month"])
+    assert re.search(r"\b61\b no longer clear the bar today", prim), prim
+    assert "其中 61 只今天已不再达到门槛" in prim
+    assert "39" not in prim, "the r63 count leaked onto the primary row"
+    r63 = _visible_text(sl["three-month"])
+    assert re.search(r"\b39\b no longer clear the bar today", r63), r63
+    assert "其中 39 只今天已不再达到门槛" in r63
+    assert "61" not in r63, "the top-level count was read for a non-primary tier"
+    # the "Who is here" zh twin keeps the window phrase without a stray 在.
+    assert "最近 21 个交易日内达到过三道门槛之一的所有美股" in hero
+    # an aging tier with NO per-tier diagnostic prints no count at all.
+    atrz = _visible_text(sl["above-trend"])
+    assert "of them aging" in atrz
+    assert "no longer clear the bar today" not in atrz
+    assert "只今天已不再达到门槛" not in atrz
+
+
+def test_zero_or_missing_off_band_prints_no_count(tmp_path):
+    # (i) a committed zero is a zero: the band sentence is not printed at all.
+    html = _render(tmp_path, _v2_ctx(diagnostics=_V2_DIAG_ZERO))
+    text = _visible_text(html, own_copy=True)
+    assert "no longer clear the bar today" not in text
+    assert "只今天已不再达到门槛" not in text
+    assert "21 sessions" in _hero_text(html)
+    # (ii) a v1 artifact carries no _diagnostics: it must still render, and the
+    # hero must say "recently" instead of inventing a window length.
+    html1 = _render(tmp_path, _ctx({"extended_watch": [_row()]}))
+    text1 = _visible_text(html1, own_copy=True)
+    hero1 = _hero_text(html1)
+    assert "no longer clear the bar today" not in text1
+    assert "只今天已不再达到门槛" not in text1
+    assert "cleared one of the three bars recently" in hero1
+    assert "in the last" not in hero1
+    assert "只要在近期达到过三道门槛之一就会列出" in hero1

@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/news.html.j2
+manifest: mockups/evidence/news-intelligence-paper-20260927/manifest.json

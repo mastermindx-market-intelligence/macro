@@ -1,0 +1,15 @@
+schema: fundamental_forensics.metric_formulas/v1
+formula_pack_id: fundamental_forensics_qualification_formulas
+formula_pack_version: 1.0.0
+available_at: "2026-08-02T00:00:00Z"
+content_sha256: 35052bcb30a14f3316639e322b9509e6145bf48fd9f63b1293525264adf4f8b6
+
+formulas:
+  - metric_id: gross_margin
+    rule: {rule_id: formula.gross_margin/v1, version: 1.0.0, available_at: "2026-08-02T00:00:00Z", confidence: C}
+    expression: gross_profit / revenue
+    dependencies: [gross_profit, revenue]
+    output_unit: ratio
+    dependency_period_alignment: same_period
+    denominator_constraints:
+      require_positive: [revenue]
