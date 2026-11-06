@@ -183,6 +183,11 @@ def _normalize_evidence_refs(value, event_meta: dict) -> tuple[list[dict], int, 
         if event_key and event_key not in known_events:
             rejected += 1
             continue
+        # Individually known ids still must describe the same caller-owned event.
+        # Never attach one filing's source clocks to a different known event.
+        if item_id and event_key and reports_by_item.get(item_id, {}).get("event_key") != event_key:
+            rejected += 1
+            continue
         out = {"role": role}
         if item_id:
             out["item_id"] = item_id

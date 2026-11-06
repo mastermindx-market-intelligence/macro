@@ -250,3 +250,42 @@ def test_event_scout_treats_attention_as_context_not_top_or_buy():
     assert "event-first watch may precede a price cluster" in prompt
     assert "graded hypothesis" not in td._ADJ_SYSTEM
     assert "never a scored thesis" in td._ADJ_SYSTEM
+
+
+def test_known_item_cannot_be_rebound_to_a_different_known_event():
+    state = _state()
+    state["event_context"]["events"].append({
+        "event_key": "ev-other",
+        "reports": [{
+            "item_id": "item-other",
+            "source": "Other source",
+            "context_available_at": "2026-09-23T14:25:00+00:00",
+        }],
+    })
+    refs = [
+        {"item_id": "item-launch", "event_key": "ev-other", "role": "support"},
+        {"item_id": "item-launch", "role": "support"},
+        {"event_key": "ev-other", "role": "context"},
+    ]
+    payload = _thesis_payload()
+    payload["theses"][0]["evidence_refs"] = refs
+    payload["emerging_watch_evidence_refs"] = refs
+    brief = td.synthesize(state, {"panel": {"enabled": False}}, _call(payload))
+
+    thesis = brief["theses"][0]
+    for normalized, rejected in (
+        (thesis["evidence_refs"], thesis["evidence_refs_rejected_n"]),
+        (brief["emerging_watch_evidence_refs"], brief["emerging_watch_evidence_refs_rejected_n"]),
+    ):
+        assert rejected == 1
+        assert len(normalized) == 2
+        assert normalized[0]["item_id"] == "item-launch"
+        assert normalized[0]["event_key"] == "ev-launch"
+        assert normalized[0]["source"] == "Primary"
+        assert normalized[0]["context_available_at"] == "2026-09-23T14:20:00+00:00"
+        assert normalized[1] == {
+            "event_key": "ev-other",
+            "role": "context",
+            "source_snapshot_ref": "qbus@fixture",
+        }
+    assert thesis["evaluation_status"] == "prospective_anchor_required"

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from hashlib import sha256
 import json
 
 import pandas as pd
@@ -368,3 +369,85 @@ def test_non_us_gather_does_not_invent_us_sec_context(monkeypatch, tmp_path):
     monkeypatch.setattr(td._event_context, "build_sec_event_context", forbidden)
     state = td.gather_thematic_state("china", root=tmp_path)
     assert state["event_context"] is None
+
+
+def test_rights_revocation_and_corruption_override_a_warm_process_cache(tmp_path):
+    _write_rights(tmp_path)
+    registry = tmp_path / tec._theme_rights.REGISTRY_FILE
+    assert tec._theme_rights.rights_class(
+        tec.RIGHTS_FAMILY, path=registry) == "direct_display_ok"
+    initial = tec._sec_rights_posture(tmp_path)
+    assert initial["status"] == "admitted"
+
+    registry.write_text(
+        "families:\n"
+        "  sec_edgar:\n"
+        "    rights_class: internal_only\n"
+        "    auth_class: keyless_public\n"
+    )
+    revoked = tec._sec_rights_posture(tmp_path)
+    assert revoked["status"] == "not_admitted"
+    assert revoked["display_ok"] is False
+    assert revoked["model_use_ok"] is True
+    assert revoked["registry_revision"] != initial["registry_revision"]
+    assert initial["registry_revision"].startswith("rights_")
+    assert revoked["redistribution_ok"] is False
+
+    registry.write_text("families: [")
+    corrupt = tec._sec_rights_posture(tmp_path)
+    assert corrupt["status"] == "not_admitted"
+    assert corrupt["display_ok"] is False
+    assert corrupt["registry_revision"] is None
+
+    registry.unlink()
+    missing = tec._sec_rights_posture(tmp_path)
+    assert missing["status"] == "not_admitted"
+    assert missing["display_ok"] is False
+
+    _write_rights(tmp_path)
+    assert tec._sec_rights_posture(tmp_path)["status"] == "admitted"
+    (tmp_path / tec.MODEL_USE_RIGHTS_PATH).write_text(
+        "## SEC EDGAR\n\n"
+        "| Model use | Posture: **internal-only**. |\n"
+    )
+    model_revoked = tec._sec_rights_posture(tmp_path)
+    assert model_revoked["status"] == "not_admitted"
+    assert model_revoked["display_ok"] is True
+    assert model_revoked["model_use_ok"] is False
+
+
+def test_loader_fingerprints_the_same_bytes_it_parses_during_source_replacement(
+    monkeypatch, tmp_path,
+):
+    data = tmp_path / "data"
+    (data / "edgar").mkdir(parents=True)
+    (data / "baskets").mkdir(parents=True)
+    (data / "baskets" / "membership.json").write_text(json.dumps(_membership()))
+    source = data / "edgar" / "material_8k_events.parquet"
+    _events().to_parquet(source)
+    original = source.read_bytes()
+    replacement = _events().iloc[[2]].to_parquet(index=False)
+    assert replacement != original
+    _write_rights(tmp_path)
+    real_read_parquet = tec.pd.read_parquet
+
+    def replace_then_parse(value, *args, **kwargs):
+        source.write_bytes(replacement)
+        return real_read_parquet(value, *args, **kwargs)
+
+    monkeypatch.setattr(tec.pd, "read_parquet", replace_then_parse)
+    got = tec.build_sec_event_context(
+        root=tmp_path, theme_ids=["cpu_compute", "memory_storage"],
+        knowledge_cutoff=CUTOFF, max_events=10,
+    )
+
+    assert source.read_bytes() == replacement
+    assert got["status"] == "ready"
+    assert got["source_snapshot_ref"] == (
+        tec.SOURCE_PATH + "#sha256:" + sha256(original).hexdigest()
+    )
+    assert [event["reports"][0]["accession"] for event in got["events"]] == [
+        "0000000111-26-000001",
+        "0000000111-26-000002",
+        "0000000222-26-000001",
+    ]

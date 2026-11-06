@@ -19,6 +19,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from hashlib import sha256
+from io import BytesIO
 import json
 from pathlib import Path
 import re
@@ -79,14 +80,6 @@ def _date_text(value: Any) -> str | None:
     return stamp.date().isoformat()
 
 
-def _sha256_file(path: Path) -> str:
-    digest = sha256()
-    with path.open("rb") as fh:
-        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def _source_ref(path: str, digest: str) -> str:
     return f"{path}#sha256:{digest}"
 
@@ -114,24 +107,33 @@ def _model_use_admitted(repo_root: Path) -> bool:
 
 
 def _sec_rights_posture(repo_root: Path) -> dict:
-    """Consume existing source-rights owners at call time; missing admission fails closed."""
+    """Consume a fresh canonical rights snapshot; revoked or unreadable admission refuses."""
     registry_path = repo_root / _theme_rights.REGISTRY_FILE
+    revision = None
+    cls = None
+    display_ok = False
     try:
-        cls = _theme_rights.rights_class(RIGHTS_FAMILY, path=registry_path)
+        snapshot = _theme_rights.load_registry_snapshot(path=registry_path)
+        revision, registry = snapshot
+        raw_class = str((registry.get(RIGHTS_FAMILY) or {}).get("rights_class", "")).strip()
+        cls = raw_class if raw_class in _theme_rights.RIGHTS_CLASSES else None
+        _theme_rights.assert_current_emission_allowed((RIGHTS_FAMILY,), snapshot=snapshot)
+        display_ok = True
     except _theme_rights.RightsRefusal:
-        cls = None
-    internal_ok, display_ok, redistribution_ok = _theme_rights.licensing_for_family(
-        RIGHTS_FAMILY, path=registry_path)
+        pass
     model_use_ok = _model_use_admitted(repo_root)
     admitted = bool(display_ok and model_use_ok)
     return {
         "family": RIGHTS_FAMILY,
         "status": "admitted" if admitted else "not_admitted",
         "rights_class": cls,
-        "internal_ok": bool(internal_ok),
+        "registry_revision": revision,
+        "internal_ok": True,
         "display_ok": bool(display_ok),
         "model_use_ok": bool(model_use_ok),
-        "redistribution_ok": bool(redistribution_ok),
+        # This adapter never authorizes dataset redistribution, even if an owner
+        # later grants a broader permission to another consumer.
+        "redistribution_ok": False,
         "rights_ref": RIGHTS_REF,
         "model_use_rights_ref": MODEL_USE_RIGHTS_REF,
         "representation_scope": (
@@ -595,11 +597,14 @@ def build_sec_event_context(
         return out
 
     try:
-        source_digest = _sha256_file(source)
+        # Fingerprint and parse one captured source image, even if its path is
+        # atomically replaced by the incumbent collector during this call.
+        source_bytes = source.read_bytes()
+        source_digest = sha256(source_bytes).hexdigest()
         membership_bytes = membership_path.read_bytes()
         membership_digest = sha256(membership_bytes).hexdigest()
         membership = json.loads(membership_bytes)
-        events = pd.read_parquet(source)
+        events = pd.read_parquet(BytesIO(source_bytes))
     except Exception:  # noqa: BLE001
         out = _base(
             cutoff=cutoff,
