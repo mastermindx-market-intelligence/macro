@@ -72,10 +72,10 @@ def _flat(rows_seen):
 # ── registry as the ONLY source of accepted wires (§15.1-3) ──────────────────────
 
 def test_whitelist_is_the_registry_derivation():
-    assert m._MM_EVENT_TYPES == growth_registry.accepted_wires()
+    assert m._MM_EVENT_TYPES == growth_registry.accepted_wires(source="client")
     assert V1_WIRES <= set(m._MM_EVENT_TYPES)
     assert LEGACY_WIRES <= set(m._MM_EVENT_TYPES)
-    assert m._MM_V1_WIRES == growth_registry.envelope_v1_wires()
+    assert m._MM_V1_WIRES == growth_registry.envelope_v1_wires(source="client")
     assert set(m._MM_V1_WIRES) == V1_WIRES
 
 
@@ -275,3 +275,31 @@ def test_all_four_v1_wires_accept_their_canonical_payloads(captured):
     _post(events)
     rows = _flat(captured)
     assert [r["type"] for r in rows] == [e["type"] for e in events]
+
+
+@pytest.mark.parametrize("authenticated", [False, True])
+@pytest.mark.parametrize("wire,meta", [
+    ("checkout.completed", {"tier": "pro", "interval": "month", "offer_key": "",
+                            "amount_cents": 0, "is_trial": True}),
+    ("trial.started", {"tier": "pro", "trial_days": 7}),
+])
+def test_live_server_conversion_cannot_be_forged_at_collect(
+    captured, monkeypatch, tmp_path, authenticated, wire, meta,
+):
+    import copy
+    import yaml
+
+    reg = copy.deepcopy(growth_registry.registry())
+    for event in reg["events"]:
+        if event["wire"] in {"checkout.completed", "trial.started"}:
+            event.update(status="live", envelope="v1")
+    fixture = tmp_path / "growth.yml"
+    fixture.write_text(yaml.safe_dump(reg))
+    monkeypatch.setattr(m, "_MM_EVENT_TYPES", growth_registry.accepted_wires(fixture, source="client"))
+    monkeypatch.setattr(m, "_MM_V1_WIRES", growth_registry.envelope_v1_wires(fixture, source="client"))
+    monkeypatch.setattr(m, "_mm_verify_uid_cached", lambda token: pytest.fail("server forgery reached auth/insert"))
+    event = _v1_event(wire=wire, meta=meta, source="server")
+    assert growth_registry.validate_v1_event(wire, event["eid"], event["schema"], meta)[1] is None
+    headers = {"authorization": "Bearer forged-revenue"} if authenticated else {}
+    assert client.post("/api/collect", json={"events": [event]}, headers=headers).status_code == 204
+    assert _flat(captured) == []

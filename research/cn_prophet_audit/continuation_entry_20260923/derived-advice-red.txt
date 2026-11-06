@@ -1,0 +1,74 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_unavailable_dual_read_clears_derived_advice_but_keeps_source_evidence[2026-09-21T08:00:00+00:00] _
+
+clock = '2026-09-21T08:00:00+00:00'
+
+    @pytest.mark.parametrize('clock', ['2026-09-21T08:00:00+00:00', '2026-09-22T10:00:00+00:00'])
+    def test_unavailable_dual_read_clears_derived_advice_but_keeps_source_evidence(clock):
+        from bs4 import BeautifulSoup
+        ti = _continuation_fixture(final='avoid')
+        item = ti['act_now']['add_on_pullback'].pop()
+        item.update(action='avoid', action_en='AVOID')
+        ti['act_now']['reduce'] = [item]
+        cycles = [{'id': 'b-cn_example', 'kind': 'basket', 'name': 'Example leader',
+                   'phase': 'Trough', 'osc_slope': 1.2, 'pos': .3, 'rs_63d': .05}]
+        board = _continuation_board(ti, clock, cycles)
+        row, = board['display_lanes']['reduce_avoid']
+        assert row['theme_decision']['status'] == 'UNAVAILABLE'
+>       assert row['dual_read'] is False
+E       assert True is False
+
+tests/test_china_act_now.py:1397: AssertionError
+_ test_unavailable_dual_read_clears_derived_advice_but_keeps_source_evidence[2026-09-22T10:00:00+00:00] _
+
+clock = '2026-09-22T10:00:00+00:00'
+
+    @pytest.mark.parametrize('clock', ['2026-09-21T08:00:00+00:00', '2026-09-22T10:00:00+00:00'])
+    def test_unavailable_dual_read_clears_derived_advice_but_keeps_source_evidence(clock):
+        from bs4 import BeautifulSoup
+        ti = _continuation_fixture(final='avoid')
+        item = ti['act_now']['add_on_pullback'].pop()
+        item.update(action='avoid', action_en='AVOID')
+        ti['act_now']['reduce'] = [item]
+        cycles = [{'id': 'b-cn_example', 'kind': 'basket', 'name': 'Example leader',
+                   'phase': 'Trough', 'osc_slope': 1.2, 'pos': .3, 'rs_63d': .05}]
+        board = _continuation_board(ti, clock, cycles)
+        row, = board['display_lanes']['reduce_avoid']
+        assert row['theme_decision']['status'] == 'UNAVAILABLE'
+>       assert row['dual_read'] is False
+E       assert True is False
+
+tests/test_china_act_now.py:1397: AssertionError
+_ test_all_unavailable_theme_cards_have_one_visible_board_disclosure[2026-09-21T08:00:00+00:00] _
+
+clock = '2026-09-21T08:00:00+00:00'
+
+    @pytest.mark.parametrize('clock', ['2026-09-21T08:00:00+00:00', '2026-09-22T10:00:00+00:00'])
+    def test_all_unavailable_theme_cards_have_one_visible_board_disclosure(clock):
+        board = _continuation_board(_continuation_fixture(), clock)
+>       note = board['theme_data_note']
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'theme_data_note'
+
+tests/test_china_act_now.py:1411: KeyError
+_ test_all_unavailable_theme_cards_have_one_visible_board_disclosure[2026-09-22T10:00:00+00:00] _
+
+clock = '2026-09-22T10:00:00+00:00'
+
+    @pytest.mark.parametrize('clock', ['2026-09-21T08:00:00+00:00', '2026-09-22T10:00:00+00:00'])
+    def test_all_unavailable_theme_cards_have_one_visible_board_disclosure(clock):
+        board = _continuation_board(_continuation_fixture(), clock)
+>       note = board['theme_data_note']
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'theme_data_note'
+
+tests/test_china_act_now.py:1411: KeyError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_china_act_now.py::test_unavailable_dual_read_clears_derived_advice_but_keeps_source_evidence[2026-09-21T08:00:00+00:00]
+FAILED tests/test_china_act_now.py::test_unavailable_dual_read_clears_derived_advice_but_keeps_source_evidence[2026-09-22T10:00:00+00:00]
+FAILED tests/test_china_act_now.py::test_all_unavailable_theme_cards_have_one_visible_board_disclosure[2026-09-21T08:00:00+00:00]
+FAILED tests/test_china_act_now.py::test_all_unavailable_theme_cards_have_one_visible_board_disclosure[2026-09-22T10:00:00+00:00]
+4 failed, 142 deselected in 3.35s

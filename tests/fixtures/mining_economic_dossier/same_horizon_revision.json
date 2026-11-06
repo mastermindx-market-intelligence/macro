@@ -1,0 +1,63 @@
+{
+  "synthetic": true,
+  "assertion": {
+    "assertion_ref": ""
+  },
+  "event_workspace": {
+    "fictional_issuer_only": true
+  },
+  "omissions": [
+    "next_period_outlook"
+  ],
+  "authority": {
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_originate": false,
+    "can_open_entry": false
+  },
+  "domain": {
+    "anchor_theme_id": "theme:rare_earth_critical_min",
+    "slice_key": "mining_rare_earth_economics"
+  },
+  "account_generation": "synthetic-rare-earth-page-4",
+  "revision_tuple": [
+    [
+      "account_generation",
+      "synthetic-rare-earth-page-4"
+    ],
+    [
+      "source",
+      "synthetic-rare-earth-source-4"
+    ]
+  ],
+  "expected": {
+    "signed_native_blocks": [],
+    "reported_only_economics": [
+      {
+        "reason": "A same-horizon revision is not a next-period outlook."
+      }
+    ]
+  },
+  "issuer": {
+    "name": "Halide Rare Earth Corp",
+    "cik": "0000000732",
+    "fictional": true
+  },
+  "source": {
+    "url": "https://example.invalid/halide-rare-earth-revision.xhtml",
+    "rights_entitled": true,
+    "rights_revision": "synthetic-rights-rare-earth-4",
+    "basis": "Halide Rare Earth Corp fictional same-horizon revision.",
+    "digest": "synthetic-rare-earth-source-4"
+  },
+  "economics": {
+    "measure": "same-horizon guidance",
+    "value": 990,
+    "basis": "fictional management estimate",
+    "stream_threshold": 180,
+    "positive_witness": true,
+    "horizon": "fictional-year-2",
+    "revision_horizon": "fictional-year-2"
+  }
+}

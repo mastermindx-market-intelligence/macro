@@ -515,3 +515,184 @@ def test_loop_path_does_not_raise_when_publish_fails(monkeypatch, tmp_path):
     monkeypatch.setitem(poller._SIGTERM, "stop", True)
     rc = poller.main(["--offline", "--publish"])
     assert rc == 0
+
+
+# ── native parquet reads (Python-file-object abort hazard; PR #9043) ──────────
+
+def _write_one_tier_stores(tmp_path, monkeypatch):
+    """One BREADTH_TIERS tier's stores under tmp_path (30 daily rows, 3 symbols,
+    one dotted) with poller.config.data_dir pointed there. The other two tiers
+    stay absent — refresh() skips them fail-soft, so a refresh exercises exactly
+    the three parquet reads under test: constituents, full close cache, and the
+    columns=[] header check. Returns (tier_key, closes_frame)."""
+    import pandas as pd
+
+    key, ns, _univ, _label = lb.BREADTH_TIERS[0]
+    dates = pd.date_range("2026-09-01", periods=30, freq="D")
+    closes = pd.DataFrame(
+        {"AAPL": [100.0 + i for i in range(30)],
+         "MNX": [50.0 + 0.5 * i for i in range(30)],
+         "BRK.B": [400.0 + i for i in range(30)]},
+        index=dates,
+    )
+    nsdir = tmp_path / ns
+    nsdir.mkdir(parents=True)
+    closes.to_parquet(nsdir / "_closes_cache.parquet")
+    symbols = pd.Index(["AAPL", "MNX", "BRK.B"], name="symbol")
+    pd.DataFrame({"weight": [1.0, 1.0, 1.0]}, index=symbols).to_parquet(
+        nsdir / "constituents.parquet")
+    monkeypatch.setattr(poller.config, "data_dir", lambda: tmp_path)
+    return key, closes
+
+
+def test_threshold_store_reads_parquet_through_native_filesystem(monkeypatch, tmp_path):
+    """ThresholdStore's three parquet reads all reach pandas.read_parquet with
+    pyarrow's native LocalFileSystem and the threaded knobs off. pandas
+    otherwise opens plain local paths as Python file objects and hands those to
+    pyarrow; a delayed pyarrow IO-pool completion destroying such a buffer once
+    interpreter finalization has begun ends in std::terminate (SIGABRT, after
+    the output is written) — the census harness's 3/200 poller aborts (0/600 in
+    the build-lane fixture tree), PR #9043's 63/1002 -> 0/1002 on the
+    news-universe builder."""
+    import inspect
+    from pathlib import Path
+
+    import pandas
+
+    key, closes = _write_one_tier_stores(tmp_path, monkeypatch)
+    calls: list[tuple[str, dict]] = []
+    real_read_parquet = pandas.read_parquet
+    has_tpk = "to_pandas_kwargs" in inspect.signature(real_read_parquet).parameters
+    # Warm the helper's capability probe against the REAL pandas before the spy
+    # replaces pandas.read_parquet (the probe signs whatever the attribute is at
+    # first call; the spy's (path, **kwargs) signature would read as "no kwarg").
+    # Guarded so on pre-helper code the spy still sees the bare base reads.
+    try:
+        import lib.native_parquet as _npq
+        _npq._has_to_pandas_kwargs()
+    except ImportError:
+        pass
+
+    def spy(path, **kwargs):
+        calls.append((Path(path).name, dict(kwargs)))
+        return real_read_parquet(path, **kwargs)
+
+    monkeypatch.setattr(pandas, "read_parquet", spy)
+
+    store = poller.ThresholdStore()
+    store.refresh()
+
+    # all three reads happened through the spy: the columns=[] header check and
+    # the full load of the close cache, plus the constituents read
+    names = [name for name, _kwargs in calls]
+    assert names.count("_closes_cache.parquet") == 2
+    assert names.count("constituents.parquet") == 1
+    assert [kwargs.get("columns") for _name, kwargs in calls].count([]) == 1
+    for _name, kwargs in calls:
+        assert kwargs["use_threads"] is False
+        assert kwargs["pre_buffer"] is False
+        assert type(kwargs["filesystem"]).__name__ == "LocalFileSystem"
+        if has_tpk:
+            assert kwargs["to_pandas_kwargs"] == {"use_threads": False}
+        else:
+            assert "to_pandas_kwargs" not in kwargs
+    # and the stores actually loaded: last closes, last date, dot->dash keys
+    last_row = closes.iloc[-1]
+    assert store._asof[key] == closes.index.max().strftime("%Y-%m-%d")
+    for sym in closes.columns:
+        assert store.by_tier[key][lb.canonical_symbol(sym)]["prev_close"] == float(last_row[sym])
+    assert "BRK-B" in store.by_tier[key] and "BRK.B" not in store.by_tier[key]
+
+
+def test_read_parquet_native_columns_empty_keeps_index(tmp_path):
+    """columns=[] must reach pandas as [] (the refresh() header check), never be
+    dropped-to-None (a full read) or swallowed."""
+    import pandas as pd
+
+    from lib.native_parquet import read_parquet_native
+
+    frame = pd.DataFrame({"a": [1, 2, 3], "b": [4.0, 5.0, 6.0]},
+                         index=pd.date_range("2026-09-01", periods=3, freq="D"))
+    path = tmp_path / "empty_cols.parquet"
+    frame.to_parquet(path)
+    out = read_parquet_native(path, columns=[])
+    assert list(out.columns) == []
+    pd.testing.assert_index_equal(out.index, frame.index)
+
+
+def test_read_parquet_native_accepts_file_uri_and_path(tmp_path):
+    """A Path, its str, and its file: URI (as argparse's type=Path collapses
+    file:///a to file:/a) all read the same frame — the native LocalFileSystem
+    answers a URI with ArrowInvalid, so the helper must normalize file: forms
+    first (mirrors the PR #9043 URI behaviour)."""
+    import pandas as pd
+    from pathlib import Path
+
+    from lib.native_parquet import read_parquet_native
+
+    frame = pd.DataFrame({"close": [10.0, 11.0]}, index=pd.Index(["NVDA", "MMC"]))
+    path = tmp_path / "frame.parquet"
+    frame.to_parquet(path)
+    pd.testing.assert_frame_equal(read_parquet_native(path), frame)
+    pd.testing.assert_frame_equal(read_parquet_native(str(path)), frame)
+    pd.testing.assert_frame_equal(read_parquet_native(Path(path.as_uri())), frame)
+    pd.testing.assert_frame_equal(read_parquet_native(path.as_uri()), frame)
+
+
+def test_read_parquet_native_propagates_missing_file(tmp_path):
+    """No catching or mapping in the helper: a missing file surfaces as the
+    underlying OSError. Observed as FileNotFoundError on pandas 3.0.6/pyarrow
+    26 and on pandas 2.2.3/pyarrow 16.1; asserted as an OSError subclass so the
+    exact pyarrow alias stays an implementation detail."""
+    from lib.native_parquet import read_parquet_native
+
+    missing = tmp_path / "nope.parquet"
+    with pytest.raises(OSError) as exc_info:
+        read_parquet_native(missing)
+    assert issubclass(type(exc_info.value), OSError)
+    assert type(exc_info.value).__name__ == "FileNotFoundError"
+
+
+def test_read_parquet_native_probe_immune_to_read_parquet_monkeypatch(
+        monkeypatch, tmp_path, request):
+    """_has_to_pandas_kwargs signs the pandas DEFINITION SITE
+    (pandas.io.parquet.read_parquet), never the pandas.read_parquet attribute:
+    the probe is lru_cached and fires lazily, so a test that monkeypatches
+    pandas.read_parquet with a (path, **kwargs) spy before the first call would
+    otherwise cache the spy's signature as "no to_pandas_kwargs" for the rest
+    of the process and silently drop the kwarg (isolation-red at 1f231f23:
+    the arrow_pools_idle test only passed when an earlier test warmed the
+    cache first)."""
+    import inspect
+
+    import pandas
+
+    from lib import native_parquet
+
+    # Reset the lazy probe so it fires fresh INSIDE this test, under the spy;
+    # monkeypatch can undo the spy but never a cache, so clear again on the way
+    # out to leave the process exactly as this test found it.
+    native_parquet._has_to_pandas_kwargs.cache_clear()
+    request.addfinalizer(native_parquet._has_to_pandas_kwargs.cache_clear)
+
+    real = "to_pandas_kwargs" in inspect.signature(pandas.read_parquet).parameters
+    real_read_parquet = pandas.read_parquet
+    seen: list[dict] = []
+
+    def spy(path, **kwargs):
+        seen.append(dict(kwargs))
+        return real_read_parquet(path, **kwargs)
+
+    monkeypatch.setattr(pandas, "read_parquet", spy)
+
+    path = tmp_path / "frame.parquet"
+    pandas.DataFrame({"close": [10.0, 11.0]},
+                     index=pandas.Index(["NVDA", "MMC"])).to_parquet(path)
+    out = native_parquet.read_parquet_native(path)
+
+    assert len(seen) == 1
+    if real:
+        assert seen[0]["to_pandas_kwargs"] == {"use_threads": False}
+    else:
+        assert "to_pandas_kwargs" not in seen[0]
+    assert list(out["close"]) == [10.0, 11.0]

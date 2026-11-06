@@ -362,6 +362,9 @@ def test_china_anchor_neutralizes_foreign_institutions():
     assert cn._is_china_anchored("财政部再次紧急预拨8000万元中央自然灾害救灾资金")
     assert cn._is_china_anchored("证监会：依法从严打击各类跨境违法违规行为")
     assert cn._is_china_anchored("China's factory gate prices rise in June")
+    # Host / lowercase ASCII tokens casefold onto the capitalized strong list.
+    assert cn._is_china_anchored("chinadaily.com.cn")
+    assert cn._is_china_anchored("pboc cuts rates")
     # mixed China-vs-foreign story: the strong anchor wins
     assert cn._is_china_anchored("中美经贸磋商：美国财政部代表将访华")
 

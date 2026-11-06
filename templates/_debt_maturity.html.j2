@@ -1,3 +1,4 @@
+{% set _cn_valid = capital_need is mapping and capital_need.schema == 'capital_need.v1' and capital_need.version == 1 and capital_need.version is not sameas true and capital_need.authority is mapping and capital_need.authority.class == 'context_only' and capital_need.authority.display_only is sameas true and capital_need.derived is mapping and capital_need.reported is mapping -%}
 {% if debt_maturity and debt_maturity.status != 'not_applicable' %}
 <section class="mod rv" id="debt-maturity" data-panel="debt_maturity.v1">
   <div class="mod-hd">
@@ -5,24 +6,28 @@
     <span class="hint">{% if debt_maturity.period %}{{ debt_maturity.period.label }} {{ debt_maturity.period.form }}{% else %}{{ t('SEC filings', 'SEC 文件') }}{% endif %}</span>
   </div>
 
-  {% if debt_maturity.status == 'reported' or debt_maturity.status == 'no_maturity_facts' %}
+  {% if (debt_maturity.status == 'reported' and (not capital_need or (_cn_valid and capital_need.reported.debt_due))) or debt_maturity.status == 'no_maturity_facts' %}
     {% if debt_maturity.status == 'reported' %}
       {% if debt_maturity.near_share_pct is not none %}
-      <p class="dmw-lede">{{ t('About ' ~ debt_maturity.near_share_pct ~ '% of the principal it has reported — ' ~ debt_maturity.buckets[0].display ~ ' — comes due in the next 12 months.',
-                              '在已披露的到期本金中，约 ' ~ debt_maturity.near_share_pct ~ '%（' ~ debt_maturity.buckets[0].display ~ '）将在未来12个月内到期。') }}</p>
+      <p class="dmw-lede">{{ t('In the 12-month bucket following fiscal period end ' ~ debt_maturity.period.end ~ ', it reported ' ~ debt_maturity.buckets[0].display ~ ' due — about ' ~ debt_maturity.near_share_pct ~ '% of its disclosed principal.',
+                              '在财年期末 ' ~ debt_maturity.period.end ~ ' 之后12个月的区间内，已披露到期本金为 ' ~ debt_maturity.buckets[0].display ~ '，约占其披露本金的 ' ~ debt_maturity.near_share_pct ~ '%。') }}</p>
       {% else %}
-      <p class="dmw-lede">{{ t('The next 12 months are not reported in this filing. The years below are what it did report.',
-                              '本次文件未披露未来12个月的到期金额；下方为其确实披露的年度。') }}</p>
+      <p class="dmw-lede">{{ t('The 12-month bucket following fiscal period end ' ~ debt_maturity.period.end ~ ' is not reported. The years below are what the filing did report.',
+                              '文件未披露财年期末 ' ~ debt_maturity.period.end ~ ' 之后12个月区间的到期金额；下方为其确实披露的年度。') }}</p>
       {% endif %}
     {% else %}
     <p class="dmw-lede">{{ t('Its filings are available, but they do not break debt down by the year it comes due — every bucket below is unreported.',
                             '已获取该公司的 SEC 文件，但文件中未按到期年度拆分债务 —— 以下各区间均未披露。') }}</p>
     {% endif %}
+    {% if debt_maturity.period %}
+    <p class="dmw-src">{{ t('All maturity buckets are measured from fiscal period end ' ~ debt_maturity.period.end ~ ', not from today.',
+                             '所有到期区间均从财年期末 ' ~ debt_maturity.period.end ~ ' 起算，而非从今天起算。') }}</p>
+    {% endif %}
     <div class="dmw{% if debt_maturity.status != 'reported' %} dmw-no-rail{% endif %}">
       <div class="dmw-rows">
         {% for b in debt_maturity.buckets %}
         <div class="dmr{% if not b.reported %} na{% endif %}" style="--i:{{ loop.index0 }};">
-          <span class="dmr-lb">{{ t(b.label_en, b.label_zh) }}</span>
+          <span class="dmr-lb">{% if b.key == 'y1' and debt_maturity.period %}{{ t('First 12 months after period end', '报告期末之后首12个月') }}{% else %}{{ t(b.label_en, b.label_zh) }}{% endif %}</span>
           <span class="dmr-tr{% if b.reported and b.usd == 0 %} dmr-zero{% endif %}">{% if b.reported %}<i class="dmr-bar" style="--w:{{ b.share_pct }}%;"></i>{% endif %}</span>
           <span class="dmr-val">{% if b.reported %}{{ b.display }}{% else %}{{ t('not reported', '未披露') }}{% endif %}</span>
         </div>
@@ -41,16 +46,9 @@
     {% if debt_maturity.status == 'no_maturity_facts' %}
     <p class="dmw-nullwhy">{{ t('Not every company reports a year-by-year schedule. Nothing is being estimated in its place.', '并非所有公司都会披露逐年到期安排；此处不作任何估算替代。') }}</p>
     {% endif %}
-    {% if debt_maturity.status == 'reported' %}
-    <details class="dmw-detail">
-      <summary>{{ t('How this is read', '数据来源说明') }}</summary>
-      <p>{{ t('Figures are XBRL facts from one filing — no two years are mixed. Filing', '数据取自同一份文件中的 XBRL 事实，不跨文件拼接。文件') }}
-         <code>{{ debt_maturity.period.accn }}</code>, {{ t('period ending', '报告期截至') }} {{ debt_maturity.period.end }}, {{ t('unit', '单位') }} {{ debt_maturity.unit }}.
-         {{ debt_maturity.buckets_reported }}/{{ debt_maturity.buckets_total }} {{ t('buckets reported.', '个区间有披露。') }}</p>
-      <ul>{% for b in debt_maturity.buckets %}<li><code>{{ b.tag }}</code>{% if not b.reported %} — {{ b.drop_reason }}{% endif %}</li>{% endfor %}</ul>
-    </details>
-    {% endif %}
 
+  {% elif debt_maturity.status == 'reported' %}
+    <p class="dmw-null">{{ t('The debt figures are unavailable until issuer and filing inputs are verified.', '发行人与报告数据核实前，债务金额暂不可用。') }}</p>
   {% elif debt_maturity.status == 'no_filings' %}
     <p class="dmw-null">{{ t('No SEC filings available for this listing.', '该证券暂无可用的 SEC 文件。') }}</p>
     <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC. None were found for this one, so there is nothing to show yet.',
@@ -73,9 +71,154 @@
                             '我们无法确认是哪家公司为该证券提交了文件，因此未显示到期债务信息。') }}</p>
     <p class="dmw-nullwhy">{{ t('This panel only shows figures once the identity of the filer is verified. Nothing is being guessed in its place.',
                                '本面板仅在核实发行人身份后才会显示相关数据；此处不作任何猜测替代。') }}</p>
+  {% endif -%}
+
+  {% if capital_need %}
+    {% set _runway_scenario = capital_need.derived.get('scenario_runway') if _cn_valid else none %}
+    {% set _cash_fact = capital_need.reported.get('cash') if _cn_valid else none %}
+    {% set _cash_inputs = namespace(valid=_cn_valid) %}
+    {% if _cn_valid %}
+      {% for _fact in [capital_need.reported.get('cash'), capital_need.reported.get('operating_cash_flow'), capital_need.reported.get('capex'), capital_need.derived.get('free_cash_flow')] %}
+        {% if _fact is not mapping or _fact.period is not mapping or _fact.value is not number or _fact.value is sameas true or _fact.value is sameas false or not (-1.7976931348623157e308 <= _fact.value <= 1.7976931348623157e308) %}
+          {% set _cash_inputs.valid = false %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% if _cash_inputs.valid and capital_need.status in ['complete', 'partial'] and _runway_scenario is mapping and _runway_scenario.period is mapping and _runway_scenario.state in ['scenario', 'stale'] and _cash_fact is mapping and _cash_fact.state == 'observed' and _cash_fact.value is number and 0 <= _cash_fact.value <= 1.7976931348623157e308 %}
+    <div class="dmw-runway" data-panel="cash_runway.v1">
+      <p class="dmw-lede">{{ t('Cash reported at ' ~ _cash_fact.period.end ~ ': $' ~ ('%.0f'|format(_cash_fact.value)) ~ '.',
+                              '截至 ' ~ _cash_fact.period.end ~ ' 披露的现金：$' ~ ('%.0f'|format(_cash_fact.value)) ~ '。') }}
+      {% if _runway_scenario.display == 'self_funding' %}
+        {{ t('Operating cash flow exceeded or equaled equipment spending over ' ~ _runway_scenario.period.start ~ ' to ' ~ _runway_scenario.period.end ~ '; no cash burn to measure.',
+             '在 ' ~ _runway_scenario.period.start ~ ' 至 ' ~ _runway_scenario.period.end ~ ' 期间，经营现金流不低于设备支出，无可衡量的现金消耗。') }}
+      {% elif _runway_scenario.value_months is number and _runway_scenario.value_months is not sameas true and _runway_scenario.value_months is not sameas false and 0 <= _runway_scenario.value_months <= 1.7976931348623157e308 %}
+        {{ t('At the cash-burn pace reported over ' ~ _runway_scenario.period.start ~ ' to ' ~ _runway_scenario.period.end ~ ', that cash represented about ' ~ _runway_scenario.value_months ~ ' months. This scenario excludes debt payments and future financing.',
+             '按 ' ~ _runway_scenario.period.start ~ ' 至 ' ~ _runway_scenario.period.end ~ ' 期间披露的现金消耗速度，该现金约对应 ' ~ _runway_scenario.value_months ~ ' 个月。此情景不包括债务偿还与未来融资。') }}
+      {% endif %}
+      </p>
+
+    </div>
+    {% else %}
+    <p class="dmw-null">{{ t('A cash-flow scenario is unavailable until the filing inputs are verified.', '报告数据核实前，现金流情景暂不可用。') }}</p>
+    {% endif %}
+  {% elif cash_runway and cash_runway.status != 'not_applicable' -%}
+  <div class="dmw-runway" data-panel="cash_runway.v1">
+    {% if cash_runway.status == 'reported' %}
+      {% set _end = cash_runway.period.end %}
+      {% set _form = cash_runway.period.form %}
+      {% set _year_en = 'In the year ending ' ~ _end ~ ' (' ~ _form ~ ')' %}
+      {% set _year_zh = '截至 ' ~ _end ~ ' 的财年（' ~ _form ~ '）' %}
+      {% if cash_runway.runway_display == 'self_funding' %}
+      <p class="dmw-lede">{{ t(_year_en ~ ' it brought in more cash than it spent, including equipment — no burn to measure.',
+                              _year_zh ~ '其现金流入多于支出（包括设备支出），暂无可衡量的消耗。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% elif cash_runway.runway_display == 'more_than_10_years' %}
+      <p class="dmw-lede">{{ t('Cash on hand: ' ~ cash_runway.cash_display ~ '. ' ~ _year_en ~ ' it spent ' ~ cash_runway.annual_burn_display ~ ' more than it brought in after buying equipment — at that pace the cash lasts more than 10 years.',
+                              '现金及现金等价物：' ~ cash_runway.cash_display ~ '。' ~ _year_zh ~ '购买设备后的支出超过现金流入 ' ~ cash_runway.annual_burn_display ~ '，按此速度现金可支撑超过10年。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% elif cash_runway.runway_display == 'months' %}
+      {% set _n = '%.1f'|format(cash_runway.runway_months) if cash_runway.runway_months < 12 else '%d'|format(cash_runway.runway_months|round|int) %}
+      <p class="dmw-lede">{{ t('Cash on hand: ' ~ cash_runway.cash_display ~ '. ' ~ _year_en ~ ' it spent ' ~ cash_runway.monthly_burn_display ~ ' more per month than it brought in after buying equipment — at that pace the cash lasts about ' ~ _n ~ ' months.',
+                              '现金及现金等价物：' ~ cash_runway.cash_display ~ '。' ~ _year_zh ~ '每月购买设备后的支出超过现金流入约 ' ~ cash_runway.monthly_burn_display ~ '，按此速度现金可支撑约 ' ~ _n ~ ' 个月。') }}{% if cash_runway.period.stale %} · {{ t('most recent annual filing', '最近一期年度文件') }}{% endif %}</p>
+      {% endif %}
+
+    {% elif cash_runway.status == 'no_cash_facts' %}
+      <p class="dmw-null">{{ t('Its filings are available, but they do not include all three facts needed to measure cash burn — cash on hand, operating cash flow, and equipment spend.',
+                              '已获取其 SEC 文件，但文件中未包含衡量现金消耗所需的全部三项数据——现金、经营活动现金流及设备支出。') }}</p>
+      <p class="dmw-nullwhy">{{ t('Not every company reports all three of these facts. Nothing is being estimated in their place.',
+                                 '并非所有公司都会披露这三项数据；此处不作任何估算替代。') }}</p>
+
+    {% elif cash_runway.status == 'no_filings' %}
+      <p class="dmw-null">{{ t('No SEC filings available for this listing.', '该证券暂无可用的 SEC 文件。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC. None were found for this one, so there is nothing to show yet.',
+                                 '本面板仅读取发行人向 SEC 提交的文件。此处暂未找到相关文件，因此暂无可展示的内容。') }}</p>
+
+    {% elif cash_runway.status == 'not_loaded' %}
+      <p class="dmw-null">{{ t('Cash runway not loaded yet.', '现金跑道尚未加载。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel is still catching up to the SEC filings for this listing. Check back soon — nothing is being estimated in its place.',
+                                 '本面板仍在同步该证券的 SEC 文件，请稍后再查看；此处不作任何估算替代。') }}</p>
+
+    {% elif cash_runway.status == 'unresolved' %}
+      <p class="dmw-null">{{ t('We do not have an SEC filing record for this listing.', '我们目前没有该证券的 SEC 备案记录。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel only reads filings an issuer makes with the SEC, and this listing has not been matched to one.',
+                                 '本面板仅读取发行人向 SEC 提交的文件，该证券尚未匹配到对应的备案主体。') }}</p>
+
+    {% elif cash_runway.status == 'identity_mismatch' %}
+      <p class="dmw-null">{{ t('We could not confirm which company filed for this listing, so the cash runway is not shown.',
+                              '我们无法确认是哪家公司为该证券提交了文件，因此未显示现金跑道信息。') }}</p>
+      <p class="dmw-nullwhy">{{ t('This panel only shows figures once the identity of the filer is verified. Nothing is being guessed in its place.',
+                                 '本面板仅在核实发行人身份后才会显示相关数据；此处不作任何猜测替代。') }}</p>
+    {% endif %}
+  </div><!-- .dmw-runway -->
+  {% endif -%}
+
+  {% if _cn_valid and capital_need.status != 'not_applicable' -%}
+  <div class="dmw-capital-need" data-panel="capital_need.v1">
+    {% set _cover = (capital_need.derived or {}).get('near_term_cash_cover') %}
+    {% set _gap = (capital_need.derived or {}).get('near_term_cash_gap_usd') %}
+    {% set _scenario = (capital_need.derived or {}).get('scenario_runway') %}
+    {% set _debt_point = capital_need.reported.get('debt_due') %}
+    {% set _cash_point = capital_need.reported.get('cash') %}
+    {% set _pair_valid = _cash_inputs.valid and _cover is mapping and _cover.period is mapping and _debt_point is mapping and _debt_point.period is mapping and _debt_point.buckets is sequence and _debt_point.buckets is not string and _debt_point.buckets is not mapping and _cash_point is mapping and _cash_point.period is mapping and _cover.period.end == _debt_point.period.end and _cover.period.end == _cash_point.period.end and _gap is number and _gap is not sameas true and _gap is not sameas false and 0 <= _gap <= 1.7976931348623157e308 %}
+    {% set _y1 = namespace(value=none) %}
+    {% if _pair_valid %}
+      {% for _bucket in _debt_point.buckets %}
+        {% if _bucket is mapping and _bucket.key == 'y1' and _bucket.state == 'observed' %}{% set _y1.value = _bucket.value %}{% endif %}
+      {% endfor %}
+    {% endif %}
+    {% if capital_need.status == 'complete' and _pair_valid and _y1.value is number and _y1.value is not sameas true and _y1.value > 0 and _cover.state == 'derived' and _cover.value_pct is number and _cover.value_pct is not sameas true and _cover.value_pct is not sameas false and 0 <= _cover.value_pct <= 1.7976931348623157e308 %}
+    <p class="dmw-lede">{{ t('Cash reported at ' ~ _cover.period.end ~ ' covers ' ~ _cover.value_pct ~ '% of issuer-reported principal in the 12-month bucket following that fiscal period end.',
+                            '截至 ' ~ _cover.period.end ~ ' 披露的现金可覆盖该财年期末之后12个月区间内发行人已披露到期本金的 ' ~ _cover.value_pct ~ '%。') }}</p>
+    {% if _gap is number and _gap is not sameas true and _gap is not sameas false and 0 <= _gap <= 1.7976931348623157e308 %}
+    <p class="dmw-nullwhy">{{ t('Cash shortfall against that reported principal: $' ~ ('%.0f'|format(_gap)),
+                                   '相对该已披露本金的现金缺口：$' ~ ('%.0f'|format(_gap)) ~ '。') }}</p>
+    {% endif %}
+    {% elif capital_need.status == 'complete' and _pair_valid and _cover.state == 'not_applicable' and _cover.reason == 'reported_zero_y1_principal' and _cover.value_pct is none and _gap == 0 and _y1.value is number and _y1.value is not sameas false and _y1.value == 0 %}
+    <p class="dmw-null">{{ t('The filing reports zero principal in the 12-month bucket following ' ~ _cover.period.end ~ '; a cash coverage ratio does not apply.',
+                                '文件披露 ' ~ _cover.period.end ~ ' 之后12个月区间的到期本金为零，因此现金覆盖比率不适用。') }}</p>
+    {% elif capital_need.status == 'partial' %}
+    <p class="dmw-null">{{ t('Capital-need coverage is partial; incomplete or incompatible filing inputs are not combined.',
+                                '资本需求覆盖信息不完整；不会合并不完整或不兼容的报告数据。') }}</p>
+    <p class="dmw-nullwhy">{{ t('Any available cash-flow scenario is context only. Missing or incompatible inputs are not replaced with zero or a financing forecast.',
+                                   '可用现金流情景仅供参考；缺失或不兼容的输入不以零值或融资预测替代。') }}</p>
+    {% else %}
+    <p class="dmw-null">{{ t('Capital-need coverage is not available for this issuer yet.',
+                                '该发行人的资本需求覆盖信息暂不可用。') }}</p>
+    <p class="dmw-nullwhy">{{ t('Reported facts remain separate from the cash-flow scenario until identity and filing provenance are confirmed.',
+                                   '在确认身份与报告来源之前，已披露事实与现金流情景保持分离。') }}</p>
+    {% endif %}
+    {% if _scenario and _scenario.state == 'stale' %}
+    <p class="dmw-nullwhy">{{ t('The runway scenario uses a stale annual filing and is not a current coverage assertion.',
+                                   '现金跑道情景使用已过时的年度文件，不代表当前覆盖能力。') }}</p>
+    {% endif %}
+  </div><!-- .dmw-capital-need -->
+  {% endif -%}
+
+  {% if debt_maturity.status == 'reported' and (not capital_need or (_cn_valid and capital_need.reported.debt_due)) or (_cn_valid and _cash_inputs.valid and _runway_scenario is mapping and _runway_scenario.period is mapping and _cash_fact is mapping and _cash_fact.period is mapping and _cash_fact.state == 'observed') %}
+  <details class="dmw-detail">
+    <summary>{{ t('Sources and cash-flow calculation', '来源与现金流计算') }}</summary>
+    {% if debt_maturity.status == 'reported' and (not capital_need or (_cn_valid and capital_need.reported.debt_due)) %}
+      <p>{{ t('Figures are XBRL facts from one filing — no two years are mixed. Filing', '数据取自同一份文件中的 XBRL 事实，不跨文件拼接。文件') }}
+         <code>{{ debt_maturity.period.accn }}</code>, {{ t('period ending', '报告期截至') }} {{ debt_maturity.period.end }}, {{ t('unit', '单位') }} {{ debt_maturity.unit }}.
+         {% if _cn_valid and capital_need.reported.debt_due %}{{ t('Cache acquired', '缓存获取时间') }}: {% if capital_need.reported.debt_due.acquisition is mapping and capital_need.reported.debt_due.acquisition.state == 'observed' %}{{ capital_need.reported.debt_due.acquisition.fetched_at }}{% else %}{{ t('unknown', '未知') }}{% endif %}. {% endif %}
+         {{ debt_maturity.buckets_reported }}/{{ debt_maturity.buckets_total }} {{ t('buckets reported.', '个区间有披露。') }}</p>
+      <ul>{% for b in debt_maturity.buckets %}<li><code>{{ b.tag }}</code>{% if not b.reported %} — {{ b.drop_reason }}{% endif %}</li>{% endfor %}</ul>
+
+    {% endif %}
+    {% if _cn_valid and _cash_inputs.valid and _runway_scenario is mapping and _runway_scenario.period is mapping and _cash_fact is mapping and _cash_fact.period is mapping and _cash_fact.state == 'observed' %}
+        <p>{{ t('Annual period', '年度区间') }} {{ _runway_scenario.period.start }} — {{ _runway_scenario.period.end }} · USD · {{ _runway_scenario.period.form }} · <code>{{ _runway_scenario.period.accn }}</code> · {{ t('Filed', '提交日期') }} {{ _runway_scenario.period.filed }}.</p>
+        <p>{{ t('Cache acquired', '缓存获取时间') }}: {% if _cash_fact.acquisition is mapping and _cash_fact.acquisition.state == 'observed' %}{{ _cash_fact.acquisition.fetched_at }}{% else %}{{ t('unknown', '未知') }}{% endif %} · {{ t('Evaluated as of', '评估截至') }} {{ capital_need.as_of }}.</p>
+        <ul>
+          <li>{{ t('Reported operating cash flow', '已披露经营活动现金流') }}: ${{ '%.0f'|format(capital_need.reported.operating_cash_flow.value) }}</li>
+          <li>{{ t('Reported equipment spending (capex outflow)', '已披露设备支出（资本开支流出）') }}: ${{ '%.0f'|format(capital_need.reported.capex.value) }}</li>
+          <li>{{ t('Derived free cash flow (operating cash flow minus capex)', '计算所得自由现金流（经营现金流减资本开支）') }}: ${{ '%.0f'|format(capital_need.derived.free_cash_flow.value) }}</li>
+        </ul>
+        <p>{{ t('Cash is the reported balance at period end. The runway scenario holds this annual cash-flow pace constant and excludes debt payments, restricted-cash adjustments and future financing.',
+                '现金为期末已披露余额。现金跑道情景假设本年度现金流速度保持不变，不包括债务偿还、受限现金调整与未来融资。') }}</p>
+
+    {% endif %}
+  </details>
   {% endif %}
 
   <div class="mod-ft">{{ t('Research context only — reported figures from SEC filings, not a rating, a signal or investment advice.',
                            '仅供研究参考 — 数据摘自 SEC 文件披露口径，不构成评级、信号或投资建议。') }}</div>
 </section>
-{% endif %}
+{% endif -%}

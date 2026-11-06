@@ -1,0 +1,138 @@
+{
+  "schema": "mastermind.prophet_p0b_evidence_rebind.v1",
+  "proof_class": "current_integrated_source_receipt_rebind",
+  "observed_at": "2026-09-24T23:22:49.837851+00:00",
+  "source_base": "3e2e81d3fe73618961585e8eeb343a98ebcdf11b",
+  "invalidator_commit": "ac61896da96c",
+  "invalidator": "#6872 F04-X1 merged templates/_navlinks.html.j2 (explorer nav item) and the re-rendered rendered-fixture.json without re-minting the two mobile-layout receipts; tests/test_stock_dashboard_first_frame.py went red on main (ci-pack-9) and every fresh merge-ref inherited it.",
+  "rendered_fixture_sha256": "63f7a84e8aee17b1171f6bd7ddf183492893484fbec419e8ce5634a74238542e",
+  "rendered_output_bytes_unchanged": false,
+  "rendered_fixture_unchanged_by_this_rebind": true,
+  "historical_evidence_preserved": {
+    "candidate_head": "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+    "candidate_tree": "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+    "historical_screenshots_changed": false
+  },
+  "product_runtime_changed": false,
+  "production": "none",
+  "browser": {
+    "engine": "chromium",
+    "version": "151.0.7922.34",
+    "playwright": "1.62.0 (node, scratch install)"
+  },
+  "remint_commands": [
+    "python3 scripts/render_stock_dashboard_fixture.py --market all --out-dir DIR --receipt mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json  # byte-identical to committed",
+    "node scripts/verify_stock_dashboard_mobile_layout.cjs --html DIR/hk_stocks.html --site-dir site --fixture-receipt mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json --fixture-assets-dir mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data --out mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json --screenshot-dir mockups/evidence/prophet-p0b-zero-fouc --historical-head 3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86 --historical-tree b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+    "node scripts/verify_stock_dashboard_mobile_layout.cjs --html DIR/canada_stocks.html ... --out mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json (same flags)",
+    "manifest.json::repair_extension re-bound to the new fixture/receipt/screenshot digests; historical_baseline, pages/states, target, totals untouched"
+  ],
+  "changed_files": {
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+      "before_sha256": "0e61df34047c7f5ac65662da70e032cb70a01809914e28c853569b6b02e30ded",
+      "after_sha256": "6b046d02f80559fa20e081e3bf594617ff22166a5fe0832102020dac0dc34a60"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
+      "before_sha256": "d009f0d664c7195c0885e290238eef2c8e06a5e3189bb77e57b8936afdfdc901",
+      "after_sha256": "550a6b53d6551ec76d47f57d6b65b68dc9d28bbd5b6b741fd7d8644306a1022b"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
+      "before_sha256": "ee926a6f778634a04c015618b61fb0a68d1f94bc864315b160bf876d117a7b52",
+      "after_sha256": "6f15d78a01e751f96fcbddecbdee86c71a6df6e9f0c3a529e0b55d2d6db49ab3"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png": {
+      "before_sha256": "bbe1afdf665f61615ef563e2769578b113592fdd11b1eb3e1c9b288104738cec",
+      "after_sha256": "c6f83251cc2a3221a398e4d8a3e10253896b73cfa0848c896489dae3fcc68abc"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png": {
+      "before_sha256": "e00299da8181b5afdc8f4d1ce541de6f55dc0e6f7a153b6e8d85c5f8820bbb1e",
+      "after_sha256": "fbc0304e437b1f6e54656a362a7297d4c92f1be6cc8ab85d2c822d4fbf1c16ba"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png": {
+      "before_sha256": "9e19c9cd724d4201f56aa261eabe0ca768441117e993b4dab87b3be3b5c489a6",
+      "after_sha256": "ae62a1f79570aff355c1115d304f43a818d85f42764cfbb65190cab16c179d7f"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png": {
+      "before_sha256": "80146efaf2b6f852b8c6ab7a7357999d9d48b4c0a0252587c531b7a1699c63fe",
+      "after_sha256": "eb3159ccdfb84e858a4824614b3b787ae60dcb397410d2edffd9d748f997b282"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png": {
+      "before_sha256": "6e192091934fa8750c55bb780b7f392ed851ab1db0ba0c699d02b82352e69d28",
+      "after_sha256": "b262fad71a2b33067e210393bee98fdc4842d05ce5f1aad86ccf76641d86722d"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png": {
+      "before_sha256": "99e438db19a4c1c2b969fba8ed48a532f5d79ae293f922c686f10faed6b53aa2",
+      "after_sha256": "d6c70d7c7d2388adc682db6b43a6d2a78bfa4534d2276de0667bd76f66b4f51c"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png": {
+      "before_sha256": "f69e4eb940c45d9f24c0737a4c097814255f82907c236848aa11700acdd3cad7",
+      "after_sha256": "136fd5df3fb66114c10d2f97a9cc4fda88fadbe7a629196b383d75eb3f4a9360"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png": {
+      "before_sha256": "29e74e58f50dded7db5f134d312a242b0d5abd808aa96a9d314e5e81fddd7c74",
+      "after_sha256": "a75c92b9672d00525f6dbe81819fcc8aa267b8a6423766e3fd2d75bb96ed96c6"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png": {
+      "before_sha256": "448c62c2ad972817da1009d58fe3039b55ebf072c9708c008f68654681538c5b",
+      "after_sha256": "1222e1b8547642fc92588e16c505537fa2283d308869f242d8352d951efd3fe1"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png": {
+      "before_sha256": "f6637be43854c4f452ee9db3459212d3d826c3146ea86e59ff8f882ca60132f4",
+      "after_sha256": "4d9e6e32785c53dac873b5f9d3503ce7d72ac3d15281566617ceacf9d5f74d78"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png": {
+      "before_sha256": "1bbc6cde0b48405614a1ff4e663acd7f43231640bbe3ed5754a3e10ec66d7bce",
+      "after_sha256": "f76afb32ca254ef1e63b92a3c5b58df73a5ca43ff3960f9a332de8355b1b1ecb"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png": {
+      "before_sha256": "72a97a788fd12cdddf373524e75b48076712a6549d7be706d6cb1fad8c45dcd7",
+      "after_sha256": "7da4ae947d84d33f2436a1552f50a973a785603567e16742efcd6d0dbfd3cc5e"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png": {
+      "before_sha256": "bc52d67112a33a9d1909bb62da19966bc2e5c9a920ca2e62f0a7285f746b2fcf",
+      "after_sha256": "a24354464e429498b28a5ca22371c9f988a2c08baa408db9376a8e11080dd00b"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png": {
+      "before_sha256": "eaa71f9564aa4922e6ed87da4c3f9ecbc27da489d9cd6fafbaabbc64e391a8e5",
+      "after_sha256": "d3e052d64ce5c3a2a7536974dfcf4596e463e7d8c392b325f067714146d79d5f"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png": {
+      "before_sha256": "84433044c57e88b3160e51a0fca3c4e15951a8f5bfeb46042f2922054cf8fb64",
+      "after_sha256": "311a22b4bf879f91573555a049eed38e3e41c2851026c97b0967a2b35ce101f8"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png": {
+      "before_sha256": "bc54559a905972e17584bd0af0b832b583d9524906df78611cb5bc6e4bb932c3",
+      "after_sha256": "d3a438987d3fab13a98a2dce1cee8c79553dc85bc7615fddad97551a9633ac87"
+    }
+  },
+  "verification": {
+    "green": [
+      {
+        "command": "python3 -m pytest -q tests/test_stock_dashboard_first_frame.py",
+        "result": "115 passed, 89 warnings in 56.77s"
+      },
+      {
+        "command": "git status --porcelain | awk '{print $2}' | python3 scripts/check_p0b_receipt_closure.py --diff-file -",
+        "result": "closed (exit 0, no findings)"
+      },
+      {
+        "command": "python3 scripts/check_p0b_receipt_closure.py --selftest",
+        "result": "selftest OK"
+      },
+      {
+        "command": "python3 -m pytest -q tests/test_check_p0b_receipt_closure.py",
+        "result": "9 passed"
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass"
+      }
+    ],
+    "red_before": [
+      {
+        "command": "python3 -m pytest -q tests/test_stock_dashboard_first_frame.py -k 'self_binding or visual_manifest'",
+        "result": "receipts bound fixture 2875897741b5… while main's rendered-fixture.json is 63f7a84e8aee…"
+      }
+    ]
+  },
+  "gate_gap_followup": "#6872's diff trips check_p0b_receipt_closure.py locally (4 findings) yet its CI did not block — the closure job's path selection did not include the moved pins; fleet follow-up, not part of this rebind."
+}

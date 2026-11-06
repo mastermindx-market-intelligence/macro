@@ -1,0 +1,26 @@
+{
+  "schema": "mastermind.attended.focused_merge_validation.v1",
+  "started_at": "2026-10-20T05:11:06.713662+00:00",
+  "head": "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+  "incoming": "92c51f1ff800b36fc63e7869243945996ac7315c",
+  "index": "6670398b2e04ee6b571522cf7d2151385386fcf3",
+  "interpreter": "/opt/homebrew/opt/python@3.12/bin/python3.12",
+  "pytest_args": [
+    "-q",
+    "--tb=short",
+    "--basetemp",
+    "/tmp/shared-shell-css-visual-20261019T1107/macro-92c51-focused-before-tmp",
+    "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  ],
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "58cd230ecc26635f128e84eeb357401ec936800ef96c6974e43c3e171181ae29",
+    "tests/test_ci_pack.py": "e754060d1106f6c4c6403338660b6229b560fd2f475205fcc39437762fa12b4b",
+    "app/deploy/Caddyfile": "8b155501adaf1fee04f703645655c6c97f4b205b6bfac12011ef74386173436a",
+    "config/site_access.yml": "c6ae0c581eb822aa96cfbc45e412b35672703ef5a0f6c5e25cae0f4b869168ed"
+  },
+  "observer": "pytest_exception_interact only copies existing failing-test rows; no monkeypatch/assertion/selection change",
+  "observer_script_sha256": "b314d835c264da49c0b3842944385ab99da069a5d2fa493182bbd41986e0eef8"
+}

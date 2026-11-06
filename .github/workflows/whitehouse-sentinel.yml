@@ -53,6 +53,9 @@ jobs:
           METAB_KEYS_ENABLED: ${{ vars.METAB_KEYS_ENABLED }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # MO-PAID-023: activate the already-shipped UK desk on this credentialed
+          # sentinel. The engine still requires a provider and degrades fail-soft.
+          UK_POLICY_DESK_ENABLED: "1"
         run: |
           set +e
           ARGS=""
@@ -80,8 +83,8 @@ jobs:
           python -m scripts.externalize_css || echo "::warning title=externalize::pre-commit css externalize FAILED — pages may ship un-externalized (9a997e9da3f)"
           python -m scripts.optimize_assets || echo "::warning title=stamp::asset optimize FAILED — ?v= stamps may be stale"
           # data/qledger: the W5 adapter appends each activated alert's claim to the
-          # TRACKED data/qledger/claims.jsonl — it must ship with the alert, and any
-          # unstaged tracked change would abort the rebase below.
+          # TRACKED data/qledger/claims.jsonl. Staged so no unstaged tracked change aborts
+          # the rebase below; the GH001 carve after the last add decides whether it ships.
           git add data/ai_costs/usage.d data/whitehouse data/qledger site/wh_banner.json site/whitehouse.html site/whdata 2>/dev/null || true
           # UK policy desk (engine.uk_policy_brain) shares this sentinel. Separate
           # lines: `git add a b` exits 128 when either pathspec matches nothing.
@@ -95,6 +98,10 @@ jobs:
           # Separate lines: `git add a b` exits 128 when either pathspec matches nothing.
           git add --ignore-removal site/assets/css 2>/dev/null || true
           git add --ignore-removal site/assets/js 2>/dev/null || true
+          # GH001 (run 41285198348): claims.jsonl sits at GitHub's 100 MB blob limit, so one
+          # staged claim rejects the whole push, alert page included. A carved claim is not
+          # published (owner: qledger publication program). A withheld alert reds the run.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 1
           if git diff --cached --quiet; then
             echo "no White House changes this run"
             exit 0

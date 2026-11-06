@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src data:; font-src 'none'; form-action 'none'; base-uri 'none'">
+<title>Market Memory — Daily History</title>
+<style>{{ css|safe }}</style>
+</head>
+<body class="mm-page"><main class="mm-retained mmh-workbench">
+<header class="mmr-head mmh-head">
+  <div><h1><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></h1>
+  <p><span class="l-en">Inspect the past. Reveal what followed.</span><span class="l-zh">查看历史，再揭示后续表现。</span></p></div>
+  <div class="mmh-preferences"><button class="segbtn" id="mmh-theme" type="button">Light</button><button class="segbtn" id="mmh-language" type="button">中文</button></div>
+</header>
+<p class="mmh-notice"><span class="l-en">Historical research, not past Mastermind alerts or a trading recommendation.</span><span class="l-zh">历史研究，不是当时的 Mastermind 警报，也不是交易建议。</span></p>
+<section class="mmr-panel mmr-selector mmh-selector" aria-label="Historical date selection">
+  <div><label for="mmh-date"><span class="l-en">Market date</span><span class="l-zh">市场日期</span></label><input type="date" id="mmh-date" disabled></div>
+  <div><label for="mmh-symbol"><span class="l-en">Selected proxies</span><span class="l-zh">选定代理资产</span></label><select id="mmh-symbol" disabled><option value="">All selected proxies</option></select></div>
+  <div class="mmh-step"><button class="segbtn" id="mmh-prev" type="button" disabled>Previous</button><button class="segbtn" id="mmh-next" type="button" disabled>Next</button></div>
+  <p id="mmh-archive-range"></p>
+</section>
+<section class="mmr-panel mmh-reading" aria-label="Observed historical market">
+  <div class="mmh-reading-head"><div><h2 id="mmh-selected-date">—</h2><p id="mmh-status" role="status" aria-live="polite">Opening historical evidence…</p></div><button class="segbtn" id="mmh-reveal" type="button" disabled>Reveal later outcomes</button></div>
+  <p id="mmh-empty" hidden><span class="l-en">No equity-proxy observations for this exact date. No nearby values are substituted.</span><span class="l-zh">该确切日期没有观测数据。请选择其他日期；不会用邻近数据替代。</span></p>
+  <div class="mmh-table-wrap" id="mmh-state-wrap" tabindex="0" aria-label="Historical comparison table, horizontally scrollable">
+    <table id="mmh-table"><thead><tr>
+      <th scope="col"><span class="l-en">Proxy</span><span class="l-zh">代理资产</span></th>
+      <th scope="col"><span class="l-en">1-bar move</span><span class="l-zh">单次涨跌</span></th>
+      <th scope="col"><span class="l-en">21-bar move</span><span class="l-zh">21条涨跌</span></th>
+      <th scope="col"><span class="l-en">vs. 50-bar mean</span><span class="l-zh">较50条均值</span></th>
+      <th scope="col"><span class="l-en">From 252-bar high</span><span class="l-zh">距252条高点</span></th>
+      <th scope="col" id="mmh-benchmark-heading">Benchmark · 21 bars</th>
+    </tr></thead><tbody></tbody></table>
+  </div>
+  <p class="mmr-note"><span class="l-en">Bars mean stored observations, not certified exchange sessions. Missing values stay blank.</span><span class="l-zh">“条”指已保存的观测记录，并非已核实的交易所交易日；缺失值保持为空。</span></p>
+  <section id="mmh-outcomes" hidden aria-label="Explicitly revealed future outcomes">
+    <h3><span class="l-en">What followed</span><span class="l-zh">后续表现</span></h3>
+    <p class="mmr-note"><span class="l-en">Future information is now visible. This view must not be used as a blind evaluation.</span><span class="l-zh">后续信息现已显示。此视图不得用于盲测评估。</span></p>
+    <div class="mmh-table-wrap" tabindex="0"><table id="mmh-outcomes-table"><thead><tr>
+      <th scope="col"><span class="l-en">Proxy</span><span class="l-zh">代理资产</span></th>
+      <th scope="col">+1</th><th scope="col">+5</th><th scope="col">+21</th><th scope="col">+63</th>
+      <th scope="col"><span class="l-en">21-bar worst close vs. entry</span><span class="l-zh">21条内最差收盘较起点</span></th>
+    </tr></thead><tbody></tbody></table></div>
+    <p class="mmr-note"><span class="l-en">Percent returns on the selected price basis. Incomplete future horizons remain unavailable.</span><span class="l-zh">按所选价格口径计算百分比回报；后续区间不足时保持不可用。</span></p>
+  </section>
+</section>
+<section class="mmr-panel mmh-evidence" id="mmh-macro" hidden aria-label="Macro first-print chronology">
+  <h3><span class="l-en">Macro first prints</span><span class="l-zh">宏观初值记录</span></h3>
+  <p id="mmh-macro-status" class="mmr-note"></p>
+  <div class="mmh-table-wrap" tabindex="0"><table id="mmh-macro-table"><thead><tr>
+    <th scope="col"><span class="l-en">FRED series</span><span class="l-zh">FRED 序列</span></th>
+    <th scope="col"><span class="l-en">Economic period</span><span class="l-zh">经济统计期</span></th>
+    <th scope="col"><span class="l-en">Source value · units not retained</span><span class="l-zh">来源数值 · 未保留单位</span></th>
+  </tr></thead><tbody></tbody></table></div>
+  <p class="mmr-note"><span class="l-en">First-print records on the FRED vintage date, not precise release times. No consensus, surprise, or full revision history is inferred.</span><span class="l-zh">记录按 FRED 初始版本日期显示，并非精确发布时间；不推断共识、意外程度或完整修订历史。</span></p>
+</section>
+<section class="mmr-panel mmh-evidence" id="mmh-filings" hidden aria-label="Retained SEC filing context">
+  <h3><span class="l-en">Corporate filing context</span><span class="l-zh">公司披露背景</span></h3>
+  <p id="mmh-filings-status" class="mmr-note" role="status" aria-live="polite"></p>
+  <div class="mmh-table-wrap" tabindex="0" aria-label="SEC filing records, horizontally scrollable"><table id="mmh-filings-table"><thead><tr>
+    <th scope="col"><span class="l-en">Source ticker label</span><span class="l-zh">来源股票代码</span></th>
+    <th scope="col"><span class="l-en">SEC filing · CIK / accession</span><span class="l-zh">SEC 披露 · CIK / 编号</span></th>
+    <th scope="col"><span class="l-en">Report date</span><span class="l-zh">报告日期</span></th>
+    <th scope="col"><span class="l-en">Source-claimed acceptance · UTC</span><span class="l-zh">来源所载接收时间 · UTC</span></th>
+  </tr></thead><tbody></tbody></table></div>
+  <div class="mmh-step"><button class="segbtn" id="mmh-filings-prev" type="button" disabled>Previous filings</button><button class="segbtn" id="mmh-filings-next" type="button" disabled>Next filings</button></div>
+  <p class="mmr-note"><span class="l-en">All retained Item 2.02 filings on this filing date, not just the selected price proxies. Metadata does not establish the original earnings-release time, earnings surprise, historical ticker identity, or the cause of a market move.</span><span class="l-zh">显示该披露日期保留的全部 2.02 项披露，并不限于所选价格代理资产。元数据不能证明原始财报发布时间、业绩意外、历史代码身份或市场变动原因。</span></p>
+</section>
+<section class="mmr-panel mmh-evidence" id="mmh-transcripts" hidden aria-label="Reported earnings-call records">
+  <h3><span class="l-en">Earnings-call records</span><span class="l-zh">业绩电话会议记录</span></h3>
+  <p id="mmh-transcripts-status" class="mmr-note"></p>
+  <div class="mmh-table-wrap" tabindex="0"><table id="mmh-transcripts-table"><thead><tr>
+    <th scope="col"><span class="l-en">Source symbol</span><span class="l-zh">来源代码</span></th>
+    <th scope="col"><span class="l-en">Fiscal period</span><span class="l-zh">财务期间</span></th>
+    <th scope="col"><span class="l-en">Recorded date</span><span class="l-zh">记录日期</span></th>
+    <th scope="col"><span class="l-en">Source text access</span><span class="l-zh">来源文本访问</span></th>
+  </tr></thead><tbody></tbody></table></div>
+  <div class="mmh-step"><button class="segbtn" id="mmh-transcripts-prev" type="button" disabled>Previous calls</button><button class="segbtn" id="mmh-transcripts-next" type="button" disabled>Next calls</button></div>
+  <p class="mmr-note"><span class="l-en">All retained call records for this reported date, not only the selected price proxies. This offline file contains metadata, not call text. Use the exact read request with installed Data &amp; Lab to retrieve original paragraphs. Report dates and speaker labels do not establish publication timing or verified roles.</span><span class="l-zh">显示该记录日期的全部保留会议记录，并不限于所选价格代理资产。离线文件仅含元数据，不含会议正文。请通过已安装的 Data &amp; Lab 使用精确读取请求获取原始段落。记录日期和发言人标签不能证明发布时间或角色。</span></p>
+  <pre id="mmh-transcript-request" hidden aria-label="Exact Data and Lab transcript read request"></pre>
+</section>
+<details class="mmr-panel mmh-evidence" id="mmh-evidence"><summary><span class="l-en">Source evidence and limits</span><span class="l-zh">来源依据与限制</span></summary>
+  <p id="mmh-basis"></p><p id="mmh-cutoff"></p><p id="mmh-coverage-note"></p>
+  <p class="mmr-note"><span class="l-en">This explicit proxy panel does not establish whole-market breadth, historical stock membership, original news or consensus forecasts.</span><span class="l-zh">此明确选定的代理资产组合不代表全市场广度、历史成分股、原始新闻或当时的共识预测。</span></p>
+  <p class="mmr-note"><span class="l-en">Current captured historical data may include later corrections and corporate-action adjustments. Point-in-time trading eligibility is not established.</span><span class="l-zh">当前保存的历史数据可能包含后续修订及公司行动调整；尚未证明可用于严格时点评估。</span></p>
+  <pre id="mmh-provenance"></pre>
+</details>
+<noscript>This private historical research view requires JavaScript. Its Parquet archive remains readable through Data &amp; Lab.</noscript>
+</main>
+<script id="mmh-data" type="application/octet-stream" data-sha256="{{ state_sha }}">{{ state_data }}</script>
+{% if outcome_data %}<script id="mmh-outcomes-data" type="application/octet-stream" data-sha256="{{ outcome_sha }}">{{ outcome_data }}</script>{% endif %}
+{% if macro_data %}<script id="mmh-macro-data" type="application/octet-stream" data-sha256="{{ macro_payload_sha }}">{{ macro_data }}</script>{% endif %}
+{% if filing_data %}<script id="mmh-filings-data" type="application/octet-stream" data-sha256="{{ filing_payload_sha }}">{{ filing_data }}</script>{% endif %}
+{% if transcript_data %}<script id="mmh-transcripts-data" type="application/octet-stream" data-sha256="{{ transcript_payload_sha }}">{{ transcript_data }}</script>{% endif %}
+<script>{{ js|safe }}</script>
+</body></html>

@@ -1,0 +1,85 @@
+{
+  "synthetic": true,
+  "issuer": {
+    "company_id": "synthetic:halcyon",
+    "display_name": "Halcyon Flow Systems",
+    "external_ids": {
+      "cik": "0000987655"
+    }
+  },
+  "sources": [
+    {
+      "source_id": "halcyon-unknown-basis",
+      "url": "https://example.invalid/unknown-basis.json",
+      "mode": "filing",
+      "rights_state": "unknown",
+      "recorded_at": "2026-08-01T12:00:00Z"
+    }
+  ],
+  "cells": [
+    {
+      "owner_ref": "synthetic:cell:first-unknown-basis",
+      "revision": "r1",
+      "digest": "4444444444444444444444444444444444444444444444444444444444444444",
+      "semantic_selector": {
+        "statement": "segment-note",
+        "row": "flow",
+        "column": "prior-quarter"
+      },
+      "value": "11",
+      "metric": "segment_revenue",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-01-03",
+        "end": "2026-04-03",
+        "fiscal_label": "FY2026 Q1",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "flow"
+      },
+      "basis": null,
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "segment_revenue"
+      }
+    },
+    {
+      "owner_ref": "synthetic:cell:second-unknown-basis",
+      "revision": "r1",
+      "digest": "5555555555555555555555555555555555555555555555555555555555555555",
+      "semantic_selector": {
+        "statement": "segment-note",
+        "row": "flow",
+        "column": "current-quarter"
+      },
+      "value": "12",
+      "metric": "segment_revenue",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-04-03",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 Q2",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "flow"
+      },
+      "basis": null,
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "segment_revenue"
+      }
+    }
+  ]
+}

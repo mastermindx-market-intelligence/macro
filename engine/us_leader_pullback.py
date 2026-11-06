@@ -375,6 +375,12 @@ def evaluate(
     ma, roll20, anchor_pos = L["ma"], L["roll_hi_20"], L["anchor_pos"]
     since_52w, rs, kx, rising, vol = L["since_52w"], L["rs"], L["kx"], L["rising"], L["vol"]
 
+    warm_legs = (("200dma", ma), ("20d_high", roll20), ("pullback_anchor", anchor_pos),
+                 ("stoch_k", k), ("stoch_d", dd_), ("rsi_macd_hist", hist))
+    warm = np.ones(n, dtype=bool)
+    for _name, values in warm_legs:
+        warm &= np.isfinite(values)
+
     if vol is None:
         cum_pv = cum_v = None
         avwap_null = "no_volume_in_store"
@@ -417,11 +423,8 @@ def evaluate(
             rows[i] = _blank(i, f"needs {MIN_HISTORY_BARS} daily bars, has {i + 1}")
             state, state_start, ep = STATE_NONE, i, None
             continue
-        cold = [nm for nm, arr_ in (("200dma", ma), ("20d_high", roll20),
-                                    ("pullback_anchor", anchor_pos), ("stoch_k", k),
-                                    ("stoch_d", dd_), ("rsi_macd_hist", hist))
-                if not np.isfinite(arr_[i])]
-        if cold:
+        if not warm[i]:
+            cold = [nm for nm, values in warm_legs if not np.isfinite(values[i])]
             # A flat or perfectly monotonic series pins Wilder RSI, which makes the
             # StochRSI range zero and %K undefined. Name the input, never guess a state.
             rows[i] = _blank(i, "indicator not warm: " + ", ".join(cold))

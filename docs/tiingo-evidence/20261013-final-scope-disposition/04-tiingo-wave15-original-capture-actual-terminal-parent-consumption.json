@@ -1,0 +1,19 @@
+{
+  "schema": "tiingo.original_capture_actual_terminal_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T01:39:25.515485+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 43992,
+  "original_exit_code": 1,
+  "actual_original_terminal_return_consumed": true,
+  "actual_result_sha256": "1ef688ee4589509a0bfb21d6515be77d422c28974d0d75174a82112d02b7e03f",
+  "capture_method_sha256": "ae045dcd41ea78e6e5e9d5b7da59d917c59d7c94c250d3b5aacfbac6c431e051",
+  "actual_original_scope_sha256": "667cdddc5f468129459fd45040f8fe69e938ed40b8da0766b0cad7a3c929d7b3",
+  "capture_settled_at_utc": "2026-10-13T01:32:09.902280+00:00",
+  "successful_responses": 1758,
+  "attempted_requests": 1761,
+  "held_timeout_failures": 3,
+  "never_admitted_requests": 2631,
+  "all_selected_captured": false,
+  "qualified_and_quality_partition_acceptance_claimed": false,
+  "failed_requests_retried": false
+}

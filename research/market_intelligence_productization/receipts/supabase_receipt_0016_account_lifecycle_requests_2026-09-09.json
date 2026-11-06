@@ -1,0 +1,135 @@
+{
+ "label": "0016_account_lifecycle_requests",
+ "sql_file": "0016_account_lifecycle_requests.sql",
+ "applied_at": "2026-09-09T01:11:07Z",
+ "apply_status": 201,
+ "apply_result": "ok",
+ "pre": {
+  "readback_before_apply": {
+   "information_schema.tables": [],
+   "information_schema.columns": [],
+   "pg_indexes": [],
+   "pg_class c join pg_namespace n on n.oid = c.relnamespace": [],
+   "pg_policies": []
+  }
+ },
+ "post": {
+  "readback_after_apply": {
+   "information_schema.tables": [
+    {
+     "table_name": "account_lifecycle_requests"
+    }
+   ],
+   "information_schema.columns": [
+    {
+     "column_name": "id",
+     "data_type": "uuid",
+     "is_nullable": "NO"
+    },
+    {
+     "column_name": "kind",
+     "data_type": "text",
+     "is_nullable": "NO"
+    },
+    {
+     "column_name": "receipt_code",
+     "data_type": "text",
+     "is_nullable": "NO"
+    },
+    {
+     "column_name": "requested_at",
+     "data_type": "timestamp with time zone",
+     "is_nullable": "NO"
+    },
+    {
+     "column_name": "status",
+     "data_type": "text",
+     "is_nullable": "NO"
+    },
+    {
+     "column_name": "updated_at",
+     "data_type": "timestamp with time zone",
+     "is_nullable": "NO"
+    },
+    {
+     "column_name": "user_id",
+     "data_type": "uuid",
+     "is_nullable": "NO"
+    }
+   ],
+   "pg_indexes": [
+    {
+     "indexname": "account_lifecycle_one_open_deletion"
+    },
+    {
+     "indexname": "account_lifecycle_receipt_code"
+    },
+    {
+     "indexname": "account_lifecycle_requests_pkey"
+    },
+    {
+     "indexname": "account_lifecycle_user"
+    }
+   ],
+   "pg_class c join pg_namespace n on n.oid = c.relnamespace": [
+    {
+     "relrowsecurity": true
+    }
+   ],
+   "pg_policies": [
+    {
+     "policyname": "account_lifecycle_insert_own",
+     "cmd": "INSERT"
+    },
+    {
+     "policyname": "account_lifecycle_select_own",
+     "cmd": "SELECT"
+    }
+   ]
+  },
+  "applier_catalog_probe": {
+   "tables": {
+    "account_lifecycle_requests": [
+     {
+      "reg": "account_lifecycle_requests"
+     }
+    ]
+   },
+   "indexes": {
+    "account_lifecycle_receipt_code": [
+     {
+      "indexname": "account_lifecycle_receipt_code"
+     }
+    ],
+    "account_lifecycle_user": [
+     {
+      "indexname": "account_lifecycle_user"
+     }
+    ],
+    "account_lifecycle_one_open_deletion": [
+     {
+      "indexname": "account_lifecycle_one_open_deletion"
+     }
+    ]
+   },
+   "policies": {
+    "if": []
+   },
+   "rls": {
+    "account_lifecycle_requests": [
+     {
+      "relrowsecurity": true
+     }
+    ]
+   },
+   "functions": {}
+  }
+ },
+ "method": "Supabase Management API POST /v1/projects/{ref}/database/query (README raw fallback; curl User-Agent; scripts/supabase_apply.py parser bug terminal#516)",
+ "source_ref": "mastermind-terminal master 68bbe8ea6dce9dbffa868572eba0ade903c7c357 (PR #527, B-F12-4)",
+ "sha256": "3375618ac88b993e",
+ "project_ref": "{ref}",
+ "applied_by": "Meta-CEO B successor seat, session d640f3ef-1305-4b6c-aa5d-2d6d5e3dc515",
+ "applied_after": "0015_team_roles_invitations (2026-09-08T22:24:42Z)",
+ "note": "raw_apply.py printed MISSING=['if']: its create-policy regex matched the word 'if' inside the SQL comment about 'create policy if not exists'; the post readback shows both policies (account_lifecycle_select_own SELECT, account_lifecycle_insert_own INSERT), RLS enabled, 3 declared indexes plus the primary key."
+}

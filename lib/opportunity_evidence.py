@@ -529,6 +529,8 @@ def _check_constructs(slots: list[dict], registry: dict) -> list[Finding]:
         owner_ref = slot.get("owner_ref") or {}
         if is_known:
             reg_row = constructs[construct]
+            if "captured_read" in slot and construct in _CAPTURED_DRL:
+                reg_row = {**reg_row, **reg_row["captured_read"]}
             for field in ("owner", "artifact", "reader"):
                 pinned = reg_row.get(field)
                 if pinned is not None and owner_ref.get(field) != pinned:
@@ -644,6 +646,77 @@ def _check_missing_to_neutral(vector: dict, slots: list[dict]) -> list[Finding]:
     return findings
 
 
+_CAPTURED_DRL = frozenset({"drl_resid_shock", "drl_filing_coverage"})
+
+
+def _check_captured_drl(vector: dict, slots: list[dict]) -> list[Finding]:
+    """Bind a retrospective capture to one native event, never historical PIT.
+
+    This pure validator checks receipt consistency; only the native reader can
+    witness bytes. No clock or source grant can be supplied by this validator.
+    """
+    findings = []
+    asof = vector.get("asof") or {}
+    origin = asof.get("t0_evidence_ref") or {}
+    captured = [s for s in slots if "captured_read" in s]
+    def fail(path, message):
+        findings.append(_f("K3E_R022", path, message))
+    for slot in slots:
+        c = slot.get("construct")
+        if c in _CAPTURED_DRL and "captured_read" not in slot:
+            if (slot.get("known_at", {}).get("state") != "unknown"
+                    or slot.get("included_in_composition") is not False
+                    or slot.get("state") in {"observed", "modeled"}):
+                fail(f"slots[{c}]", "uncaptured DRL has no availability witness")
+    if not captured and asof.get("t0_source") != "drl_captured_read":
+        return findings
+    if not captured or asof.get("t0_source") != "drl_captured_read" or asof.get("t0_mode") != "retrospective_research":
+        fail("$.asof", "captured DRL requires its retrospective-only decision origin")
+    if len(captured) != 2 or {s.get("construct") for s in captured} != _CAPTURED_DRL:
+        fail("$.slots", "captured decision origin requires exactly the two native DRL constructs")
+    receipts = []
+    ref_ids = []
+    for slot in captured:
+        c, receipt = slot.get("construct"), slot.get("captured_read")
+        if c not in _CAPTURED_DRL or not isinstance(receipt, dict):
+            fail(f"slots[{c}]", "captured receipt belongs only to the two native DRL constructs")
+            continue
+        receipts.append(receipt)
+        identity = {"date": receipt.get("event_date"), "ticker": receipt.get("ticker"), "side": receipt.get("side")}
+        digest = {"state": "known", "sha256": receipt.get("snapshot_sha256")}
+        recorded = {"value": receipt.get("captured_at"), "grain": "datetime", "clock_class": "system_recorded", "native_field": "captured_at", "state": "known"}
+        if (origin.get("owner_store") != "price_pressure.event" or origin.get("native_identity") != identity
+                or origin.get("native_digest") != digest or origin.get("recorded_clock") != recorded):
+            fail(f"slots[{c}].captured_read", "capture tuple, digest and recording clock must equal the decision origin")
+        if slot.get("known_at") != recorded or slot.get("asof") != {"value": identity["date"], "grain": "date", "clock_class": "world_valid", "native_field": "date", "state": "known"}:
+            fail(f"slots[{c}]", "event session and capture availability must remain distinct")
+        subject = vector.get("subject") or {}
+        if subject != {"subject_type": "us_listing_symbol", "value": identity["ticker"], "identity_state": "single_owner_native", "identity_bridge": None}:
+            fail("$.subject", "capture has only a single-owner native symbol, no canonical security join")
+        ref_ids.append((slot.get("owner_ref") or {}).get("evidence_ref_id"))
+        try:
+            event_day = datetime.strptime(identity["date"], "%Y-%m-%d").date()
+            capture_day = _parse_instant(receipt["captured_at"]).date()
+            if event_day > capture_day:
+                fail(f"slots[{c}]", "event date is after the capture")
+            harvest = receipt.get("harvested_asof")
+            if harvest is not None and not event_day <= datetime.strptime(harvest, "%Y-%m-%d").date() <= capture_day:
+                fail(f"slots[{c}]", "harvest session is outside the event/capture bounds; it is not an availability clock")
+        except (TypeError, ValueError, KeyError):
+            fail(f"slots[{c}]", "capture has an invalid native date")
+        try:
+            verdict = _compare_known_at_to_asof(recorded["value"], "datetime", asof.get("value"), asof.get("grain"))
+        except (TypeError, ValueError):
+            verdict = "unknown"
+        if verdict != "before_or_equal":
+            fail(f"slots[{c}]", "capture must be at or before the vector cutoff")
+    if receipts and any(r != receipts[0] for r in receipts[1:]):
+        fail("$.slots", "the two DRL constructs must describe the same capture")
+    if ref_ids and any(r != ref_ids[0] for r in ref_ids[1:]):
+        fail("$.slots", "the two DRL constructs must cite one evidence reference")
+    return findings
+
+
 def _check_clocks(slots: list[dict], registry: dict) -> list[Finding]:
     findings: list[Finding] = []
     constructs = registry.get("constructs", {})
@@ -654,7 +727,9 @@ def _check_clocks(slots: list[dict], registry: dict) -> list[Finding]:
         reg_row = constructs.get(construct)
         if reg_row is not None:
             asof_pin = reg_row["asof_clock"]
-            known_at_pin = reg_row["known_at_clock"]
+            known_at_pin = (reg_row["captured_read"]["known_at_clock"]
+                            if "captured_read" in slot and construct in _CAPTURED_DRL
+                            else reg_row["known_at_clock"])
             clock_distinct = bool(reg_row.get("clock_distinct"))
         elif _is_decomp_construct(construct, decomp) is not None:
             asof_pin = {"native_field": "bar_date", "clock_class": "world_valid"}
@@ -1193,6 +1268,47 @@ def _check_content_hash(vector: dict) -> list[Finding]:
     return []
 
 
+def _check_earnings_context(vector: dict, slots: list[dict]) -> list[Finding]:
+    """Keep this native context isolated from ticker identity and live authority."""
+    selected = [s for s in slots if s.get("construct") == "earnings_reported_revenue" or "earnings_context" in s]
+    active = vector.get("asof", {}).get("t0_source") == "earnings_workspace_context"
+    native_subject = vector.get("subject", {}).get("subject_type") == "earnings_cik"
+    if not selected and not active and not native_subject:
+        return []
+    findings = []
+    def require(ok):
+        if not ok:
+            findings.append(_f("K3E_R023", "$", "native earnings context tuple/value/clocks/subject must match; research only"))
+    try:
+        require(len(slots) == len(selected) == 1 and active and native_subject)
+        slot = selected[0]; link = slot["earnings_context"]; asof = vector["asof"]
+        origin = asof["t0_evidence_ref"]
+        require(slot["construct"] == "earnings_reported_revenue"
+                and vector["subject"] == {"subject_type":"earnings_cik", "value":link["cik"], "identity_state":"single_owner_native", "identity_bridge":None}
+                and link["event_id"].startswith("evt_cik" + link["cik"] + "_")
+                and asof["t0_mode"] == "retrospective_research"
+                and origin["native_identity"] == {"event_id":link["event_id"], "generation_id":link["generation_id"]}
+                and origin["native_digest"] == {"state":"known", "sha256":link["workspace_sha256"]})
+        clock = lambda value, field, kind: {"value":value,"grain":"datetime","clock_class":kind,"native_field":field,"state":"known"}
+        require(slot["asof"] == clock(link["source_available_at"],"lifecycle.source_available_at","knowable")
+                and slot["known_at"] == clock(link["observed_at"],"lifecycle.observed_at","observed")
+                and origin["recorded_clock"] == clock(link["generated_at"],"generated_at","belief_or_build")
+                and _parse_instant(link["source_available_at"]) <= _parse_instant(link["observed_at"]) <= _parse_instant(link["generated_at"]) <= _parse_instant(asof["value"]))
+        fiscal = link["fiscal_period"]
+        token = str(fiscal["year"]) + ("q" + str(fiscal["quarter"]) if fiscal["quarter"] else "fy")
+        label = str(fiscal["year"]) + ("Q" + str(fiscal["quarter"]) if fiscal["quarter"] else "FY")
+        require(link["event_id"].startswith("evt_cik" + link["cik"] + "_" + token + "_")
+                and (link["observation"]["period"] == label or fiscal["calendar_end"] is not None
+                     and link["observation"]["period"] == fiscal["calendar_end"]))
+        require(slot["value_or_null"] == {k:link["observation"][k] for k in ("value","unit","basis","period")}
+                and slot["state"] == "observed" and slot["included_in_composition"] is True
+                and slot["owner_ref"]["evidence_ref_id"] is not None
+                and vector["permitted_consumers"] == ["opportunity_case_k5"])
+    except (KeyError, TypeError, ValueError, IndexError, AttributeError):
+        require(False)
+    return findings
+
+
 def validate_vector(vector: dict) -> list[Finding]:
     """Structural (JSON-Schema-subset) + semantic (K3E_R0xx) validation.
     Fail-closed: an unrecognized shape anywhere always yields a Finding
@@ -1215,6 +1331,8 @@ def validate_vector(vector: dict) -> list[Finding]:
     findings.extend(_check_missing_to_neutral(vector, slots))
     findings.extend(_check_clocks(slots, registry))
     findings.extend(_check_lookahead(vector, slots))
+    findings.extend(_check_captured_drl(vector, slots))
+    findings.extend(_check_earnings_context(vector, slots))
     findings.extend(_check_cause_hypothesis(vector, slots))
     findings.extend(_check_identity_launder(vector, slots, registry))
     findings.extend(_check_authority_leak(vector, slots, registry))
@@ -1262,7 +1380,7 @@ def _derive_inclusion(state: str, asof_clock: dict, known_at_clock: dict, cross_
     return True, None
 
 
-def _compose_one_slot(raw: dict, subject: dict, constructs: dict, decomp: dict) -> dict:
+def _compose_one_slot(raw: dict, subject: dict, constructs: dict, decomp: dict, decision_asof: dict) -> dict:
     construct = raw["construct"]
     reg_row = constructs.get(construct)
     decomp_match = _is_decomp_construct(construct, decomp) if reg_row is None else None
@@ -1274,8 +1392,11 @@ def _compose_one_slot(raw: dict, subject: dict, constructs: dict, decomp: dict) 
         default_derivation = reg_row["derivation"]
         asof_pin = reg_row["asof_clock"]
         known_at_pin = reg_row["known_at_clock"]
+        if "captured_read" in raw and construct in _CAPTURED_DRL:
+            known_at_pin = reg_row["captured_read"]["known_at_clock"]
         cross_owner_join = bool(reg_row.get("cross_owner_join"))
-        default_owner = {"owner": reg_row["owner"], "artifact": reg_row["artifact"], "reader": reg_row["reader"], "evidence_ref_id": None}
+        owner_row = reg_row["captured_read"] if "captured_read" in raw and construct in _CAPTURED_DRL else reg_row
+        default_owner = {"owner": owner_row["owner"], "artifact": owner_row["artifact"], "reader": owner_row["reader"], "evidence_ref_id": None}
     elif decomp_match is not None:
         grp_fb = decomp.get("family_binding", {})
         default_family_binding = {"kind": grp_fb.get("kind"), "family_id": grp_fb.get("family_id"), "routed_to": grp_fb.get("routed_to")}
@@ -1302,6 +1423,11 @@ def _compose_one_slot(raw: dict, subject: dict, constructs: dict, decomp: dict) 
     known_at_clock = _clock_value(raw.get("known_at"), known_at_pin)
 
     state = raw["state"]
+    if construct in _CAPTURED_DRL and "captured_read" not in raw:
+        # A native harvest session is not an availability witness.
+        known_at_clock = _clock_value({"state": "unknown"}, known_at_pin)
+        if state in ("observed", "modeled"):
+            state = "unknown"
     value_or_null = raw.get("value_or_null") if state in ("observed", "modeled") else None
 
     if state in ("observed", "modeled"):
@@ -1317,10 +1443,12 @@ def _compose_one_slot(raw: dict, subject: dict, constructs: dict, decomp: dict) 
     variation_receipt = raw.get("variation_receipt")
 
     included_in_composition, exclusion_reason = _derive_inclusion(
-        state, asof_clock, known_at_clock, cross_owner_join, subject, missingness
+        state, {**decision_asof, "state": "known"} if "captured_read" in raw or "earnings_context" in raw else asof_clock, known_at_clock, cross_owner_join, subject, missingness
     )
 
     return {
+        **({"captured_read": raw["captured_read"]} if "captured_read" in raw else {}),
+        **({"earnings_context": raw["earnings_context"]} if "earnings_context" in raw else {}),
         "construct": construct,
         "family_binding": family_binding,
         "object_class": object_class,
@@ -1412,7 +1540,7 @@ def compose_vector(
         return (1, c)
 
     ordered_raw = sorted(slots, key=_sort_key)
-    composed_slots = [_compose_one_slot(raw, subject, constructs, decomp) for raw in ordered_raw]
+    composed_slots = [_compose_one_slot(raw, subject, constructs, decomp, asof) for raw in ordered_raw]
     slots_by_construct = {s["construct"]: s for s in composed_slots}
 
     denominator = _recompute_denominator(composed_slots)

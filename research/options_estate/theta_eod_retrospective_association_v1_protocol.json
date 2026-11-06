@@ -1,0 +1,250 @@
+{
+  "schema": "options.science.theta_eod_retrospective_association/v1",
+  "study_id": "THETA-EOD-RETROSPECTIVE-ASSOCIATION-V1",
+  "status": "frozen_protocol_before_outcome_access",
+  "purpose": "Fit-free, reproducible retrospective association research using the existing daily Theta EOD/OI/Greeks archive. It is not historical alpha validation.",
+  "authority": {
+    "research_only": true,
+    "pit_status": "PIT_UNPROVEN",
+    "may_fit": false,
+    "may_train": false,
+    "may_calibrate": false,
+    "may_claim_oos": false,
+    "may_claim_option_pnl": false,
+    "may_score_rank_gate_size_trade": false
+  },
+  "source_snapshot": {
+    "theta_eod_root": "theta-ops-wt/data/thetadata_eod",
+    "adjusted_price_root": "flow-ops-wt/data/yahoo/{ROOT}.parquet",
+    "observation_semantics": "as_recorded_EOD(date) only; date, filesystem time and current archive bytes do not establish first-known availability or vendor vintage",
+    "metadata_audit_receipt": {
+      "files_inventoried": 13119,
+      "bytes_inventoried": 66282226978,
+      "roots_seen": 381,
+      "files_hashed_and_date_scanned": 240,
+      "rows_date_scanned": 311665900,
+      "known_at_fields_in_sample": 0,
+      "scope_limit": "The 240-file hash/date/schema sample is evidence about that sample only. It does not establish a whole-archive vintage conclusion.",
+      "consequence": "No feature is eligible for a PIT or decision-time availability claim. OI publication day/prior-EOD semantics and all later Greek/OI revisions remain unproven."
+    },
+    "prepare_mode": "Before any target, return, IC, p-value, financial value or summary outcome is computed, inventory every selected source file and adjusted-price file with relative path, size, SHA-256, schema columns, min/max date and selected-root coverage; scan the selected-file columns for availability/vintage fields; canonicalize and hash this whole selected-input manifest. The earlier 240-file sample is not a substitute for this whole-selected-file confirmation.",
+    "analyze_mode": "Accept only an exact byte-identical manifest hash. Any changed, missing, extra, unreadable or schema-drifted file refuses the study; no refresh, fallback, fetch or partial rerun.",
+    "date_quality_scope": "Only source observations dated 2017-01-01 through 2025-12-31 are admitted; rows outside that interval are not candidates."
+  },
+  "population": {
+    "coverage_only_roots": [
+      "SPX",
+      "SPXW"
+    ],
+    "benchmark_only_root": "SPY",
+    "scored_roots": [
+      "QQQ",
+      "IWM",
+      "DIA",
+      "XLB",
+      "XLC",
+      "XLE",
+      "XLF",
+      "XLI",
+      "XLK",
+      "XLP",
+      "XLRE",
+      "XLU",
+      "XLV",
+      "XLY",
+      "SMH",
+      "SOXX",
+      "XBI",
+      "KRE",
+      "ARKK",
+      "NVDA"
+    ],
+    "nominal_scored_root_count": 20,
+    "known_price_non_evaluable_roots": {
+      "DIA": "adjusted-price parquet absent",
+      "ARKK": "adjusted-price parquet absent"
+    },
+    "price_coverage_note": "The audited adjusted-price corpus supports 18 of the 20 scored roots historically through 2026-07-16. DIA and ARKK remain visible non-evaluable in every affected cell; no substitute price source is allowed.",
+    "duplicate_underlying_rule": "SPX and SPXW are coverage-only and never scored, preventing duplicate-underlying observations. SPY is benchmark-only and never appears in a scored cross-section."
+  },
+  "eras": [
+    {
+      "id": "Era1",
+      "start": "2017-01-01",
+      "end": "2019-12-31"
+    },
+    {
+      "id": "Era2",
+      "start": "2020-01-01",
+      "end": "2022-12-31"
+    },
+    {
+      "id": "Era3",
+      "start": "2023-01-01",
+      "end": "2025-12-31"
+    }
+  ],
+  "horizons_nyse_sessions": [
+    5,
+    21
+  ],
+  "calendar_and_label_contract": {
+    "calendar": "canonical NYSE sessions",
+    "feature_date": "t is the archive observation date only",
+    "label_start": "e0 = first canonical NYSE session strictly after t",
+    "label_end": "eh = h NYSE sessions after e0",
+    "underlying_return": "close_root(eh) / close_root(e0) - 1",
+    "benchmark_return": "close_SPY(eh) / close_SPY(e0) - 1",
+    "primary_return_target": "underlying_return - benchmark_return",
+    "volatility_target": "annualized standard deviation (ddof=1) of the h log adjusted-close one-session returns whose endpoints span e0 through eh",
+    "price_source": "native adjusted close from flow-ops-wt/data/yahoo; never Greek underlying_price",
+    "endpoint_gate": "A row is evaluable only if root and SPY each contain every canonical date from e0 through eh, with native dates exactly equal to that canonical sequence. No row-offset shift, reindex, interpolation, fill, substitute benchmark or price fetch is allowed.",
+    "era_boundary_purge": "Feature t and every label date through eh must lie within its reporting era and eh must be on or before 2025-12-31.",
+    "split_seam_guard": "Reuse the existing split-seam guard: a date whose label window crosses a registered era seam or the 2025-12-31 terminal seam is null, never carried into either side."
+  },
+  "chain_quality_and_join_contract": {
+    "identity": [
+      "date",
+      "expiration",
+      "strike",
+      "right"
+    ],
+    "join": "Greeks and OI must each be unique on identity and join one-to-one for the same root/date; duplicate or unmatched identities are excluded and counted.",
+    "required_contract_quality": [
+      "right in {C,P}",
+      "expiration > date (0DTE excluded by this research screen)",
+      "finite positive strike",
+      "finite positive same-session unadjusted Greek median spot",
+      "open_interest > 0 and finite",
+      "bid > 0",
+      "ask > 0",
+      "bid <= ask",
+      "implied_vol >= 0.005 and finite",
+      "finite underlying fields required by a feature"
+    ],
+    "exposure_quality": "For gamma/vanna/charm, use engine.exposure_math.usable_quote(iv, oi) and dealer_exposures after the additional un-crossed bid/ask, positive strike/spot, right and DTE screens; require at least 90% finite contributing-Greek coverage among usable joined contracts for that root/date/feature. OI and Greek underlying fields are feature inputs, never target prices. The long-call/short-put dealer sign is an explicit model assumption, not measured dealer inventory.",
+    "missingness": "No imputation. Emit feature/date/root reason codes and per-era denominators for absent price, join, quote, Greek coverage, tenor, calendar and support failures."
+  },
+  "primitives": {
+    "exposure_formula_owner": "engine.exposure_math.dealer_exposures",
+    "exposure_normalization": "net exposure divided by sum of absolute contract exposures of the same Greek; zero denominator is non-evaluable",
+    "atm_iv": "For a requested bucket, select the expiry nearest that bucket target, breaking ties toward the earlier expiry: near uses 15<=DTE<45 target 30; back uses 60<=DTE<120 target 90. At that exact expiry require both a call and put with valid un-crossed quotes and IV, choosing each leg whose absolute delta is nearest 0.50. ATM IV is their arithmetic mean rounded to six decimals, matching the canonical primitive. One-leg ATM is rejected; there is no tenor or leg fallback.",
+    "cw_ivspread": "Use the same-session unadjusted Greek median spot for the +/-8% moneyness screen, never adjusted close. At one exact >=7D expiry nearest 30 calendar days (ties earlier expiry), pair call and put at identical strike; require >=3 pairs, each valid/un-crossed, finite IV, abs(call_iv-put_iv)<=0.50 and positive OI. Compute sum((call_iv-put_iv)*(call_OI+put_OI))/sum(call_OI+put_OI), then freeze the canonical primitive's five-decimal rounding. Record weight_kind=oi, n_pairs and tenor_days. No short-tenor, equal-weight, volume-weight or one-leg fallback.",
+    "skew": "At one exact >=7D expiry nearest 30 calendar days (ties earlier expiry), select the put with finite valid delta in [-0.98,-0.02] nearest -0.25 and the call with finite valid delta in [0.02,0.98] nearest +0.50; both legs require valid un-crossed quotes. Skew is put_iv-call_iv rounded to four decimals, matching canonical compute_skew. No moneyness, tenor or leg fallback.",
+    "term_slope": "ATM IV at one selected 15-45D expiry minus ATM IV at one selected 60-120D expiry; both legs must satisfy the two-sided ATM rule.",
+    "d5": "Every five-session change uses exact canonical date t-5 sessions and requires that root's valid primitive at both endpoints; no five-row surrogate.",
+    "doi5": "Aggregate OI growth, not matched-contract flow: sum finite positive OI across same-date valid identities at t divided by the corresponding aggregate at t-5 canonical sessions minus one. At both endpoints enforce the identical identity, right, positive-strike and expiry>date (0DTE-excluded) policy; both aggregate totals must be finite and positive.",
+    "mom5": "adjusted_close(t) / adjusted_close(t-5 sessions) - 1; both endpoints required."
+  },
+  "contrasts": [
+    {
+      "id": "GEX_NORM_TO_FWD_RV",
+      "feature": "net_gamma / sum(abs(gamma_exposure))",
+      "target": "volatility_target",
+      "test_direction": "two_sided"
+    },
+    {
+      "id": "VEX_NORM_TO_SPY_EXCESS",
+      "feature": "net_vanna / sum(abs(vanna_exposure))",
+      "target": "primary_return_target",
+      "test_direction": "two_sided"
+    },
+    {
+      "id": "CEX_NORM_TO_SPY_EXCESS",
+      "feature": "net_charm / sum(abs(charm_exposure))",
+      "target": "primary_return_target",
+      "test_direction": "two_sided"
+    },
+    {
+      "id": "VANNA_RELIEF_TO_SPY_EXCESS",
+      "feature": "vex_norm * (-d5_atm_iv)",
+      "target": "primary_return_target",
+      "test_direction": "two_sided",
+      "kind": "named_interaction",
+      "paired_ablation": "For return-target features only, report paired same-date/root-set IC(VANNA_RELIEF)-IC(VEX_NORM) descriptively only; it has no separate p-value, BH slot or acceptance gate."
+    },
+    {
+      "id": "CW_IVSPREAD_LEVEL_TO_SPY_EXCESS",
+      "feature": "OI-weighted matched-pair call_iv-put_iv",
+      "target": "primary_return_target",
+      "test_direction": "two_sided"
+    },
+    {
+      "id": "D5_CW_IVSPREAD_TO_SPY_EXCESS",
+      "feature": "cw_ivspread(t)-cw_ivspread(t-5 sessions)",
+      "target": "primary_return_target",
+      "test_direction": "two_sided"
+    },
+    {
+      "id": "SKEW_ACCEL_TO_SPY_EXCESS",
+      "feature": "d5_skew(t)-d5_skew(t-5 sessions)",
+      "target": "primary_return_target",
+      "test_direction": "two_sided"
+    },
+    {
+      "id": "TERM_SLOPE_TO_SPY_EXCESS",
+      "feature": "atm_iv_15_45d-atm_iv_60_120d",
+      "target": "primary_return_target",
+      "test_direction": "two_sided"
+    },
+    {
+      "id": "DOI5_TO_SPY_EXCESS",
+      "feature": "sumOI(t)/sumOI(t-5 sessions)-1",
+      "target": "primary_return_target",
+      "test_direction": "two_sided"
+    },
+    {
+      "id": "MOM5_BASELINE_TO_SPY_EXCESS",
+      "feature": "adjusted_close(t)/adjusted_close(t-5 sessions)-1",
+      "target": "primary_return_target",
+      "test_direction": "two_sided",
+      "kind": "price_only_baseline",
+      "paired_ablation": "For every return-target feature, report paired same-date/root-set IC(feature)-IC(MOM5_BASELINE) descriptively only; no separate p-value, BH slot or acceptance gate. For GEX's RV target, if a price-momentum RV comparison is reported, it must use MOM5 versus the same RV target on the exact matched root/date set and is likewise descriptive only."
+    }
+  ],
+  "inference": {
+    "date_level_statistic": "For each contrast, era and horizon, calculate one Spearman rank IC across that date's eligible scored roots. A date needs at least five roots; it uses the exact contrast-specific eligible set. SPY, SPX and SPXW never enter the cross-section.",
+    "cell_estimate": "mean date-level IC; also report median IC and all coverage denominators",
+    "uncertainty": "Two-sided Newey-West test and 95% HAC confidence interval for mean date-level IC, using Student t reference with df=n_observed-1 for both p-value and interval; no post-selection between normal and t reference. Work on the full canonical era-session index: missing IC dates stay absent at their original sessions and never compress lag distance. Mean and variance denominators use n_observed IC dates. For lag l, include only observed IC-date pairs exactly l canonical sessions apart; an absent-date pair contributes a standard zero residual product, so covariance is pair-weighted over the original calendar spacing. Use lag max(floor(4*(n_observed/100)^(2/9)), 2*h), capped n_observed-2.",
+    "effective_support": "Report n_dates and effective_blocks, where effective_blocks is the count of greedily selected non-overlapping h-session label windows among eligible IC dates.",
+    "minimum_inferential_support": {
+      "min_ic_dates": 126,
+      "min_effective_blocks": 30,
+      "min_roots_per_ic_date": 5
+    },
+    "sparse_rule": "A cell failing any support threshold is NON_EVALUABLE, receives no raw p or adjusted p, stays visible and retains its predeclared multiplicity slot.",
+    "multiplicity": {
+      "family": "all 10 contrasts x 3 eras x 2 horizons",
+      "k": 60,
+      "method": "one global Benjamini-Hochberg step-up correction",
+      "alpha": 0.1,
+      "decision": "reject only when final monotone BH adjusted p <= alpha; report raw p, rank, adjusted p and reject separately",
+      "fdr_family": "options_theta_retrospective_association_v1",
+      "registration_requirement": "This real new 60-test family must be registered in config/ruling_graph.yml meta.known_fdr_families under the current Chairman research grant before analyze mode; an absent or mismatched token refuses the study."
+    },
+    "interpretation": "Era tables are stability disclosure. No pooled survivor is a fresh OOS confirmation because all included history was previously outcome-exposed."
+  },
+  "costs_and_unsupported": {
+    "cost_status": "not_estimable_and_not_applicable_to_the_primary_underlying_association",
+    "reason": "Daily EOD bid/ask is not an executable entry/exit NBBO path and the archive has no option fills, marks, fees, slippage or assignment lifecycle.",
+    "unsupported_matrix": {
+      "historical_known_at_or_vintage": "unsupported: no availability or revision fields",
+      "intraday_5m_30m_2h": "unsupported: daily archive only",
+      "measured_trade_flow_and_trade_sign": "unsupported: no attributable trade tape/NBBO-at-trade path",
+      "executable_option_pnl_and_costs": "unsupported: no entry/exit option marks/fills/cost model",
+      "dark_pool_context": "unsupported: absent from selected archive",
+      "fresh_final_oos": "unsupported: selected history was already outcome-exposed",
+      "model_training_calibration_or_serving": "out of scope and prohibited by this protocol"
+    }
+  },
+  "required_outputs": [
+    "immutable source manifest and manifest SHA-256",
+    "machine-readable all-60-cell result including NON_EVALUABLE cells",
+    "coverage and unsupported-feature matrix with reason-coded exclusions",
+    "human report stating PIT_UNPROVEN, retrospective association only, no alpha or production authority",
+    "reproduction command that refuses a non-identical manifest",
+    "95% HAC confidence interval and calendar-aware observed-pair counts for every inferential cell",
+    "selected-file availability/vintage-column scan recorded in the frozen manifest"
+  ],
+  "acceptance": "The work package is complete when the frozen-manifest run produces the required artifacts and every contrast/cell is reported as null, negative, inconclusive, research association or non-evaluable. No outcome can enable scoring, ranking, gating, sizing, alerts, portfolio use or trading."
+}

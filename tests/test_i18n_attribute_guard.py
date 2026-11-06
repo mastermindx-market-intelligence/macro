@@ -52,6 +52,12 @@ PAGES: dict[str, dict] = {
     },
     "watchlist.html.j2": {},
     "sector_central.html.j2": {"basket_member_syms": ["SPY"]},
+    "fundamental_forensics.html.j2": {
+        "state_summary": {},
+        "generated_utc": "2026-08-01T12:00:00Z",
+        "active_section": "research",
+        "active_page": "fundamental_forensics",
+    },
     "ticker_index.html.j2": {
         "rows": [],
         "n_total": 2,

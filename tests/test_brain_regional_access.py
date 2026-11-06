@@ -19,7 +19,7 @@ rather than today's inventory, except where a test explicitly reads the real rep
 from __future__ import annotations
 
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 
 import pandas as pd
 import pytest
@@ -390,19 +390,28 @@ def test_packet_carries_all_three_boards(tmp_path):
     codes = [e["code"] for e in packet["regional"]]
     assert codes == ["HK", "CN", "CA"]
     hk = packet["regional"][0]
+    assert "as_of" not in hk
+    assert hk["component_as_of"] == "2026-08-04"
     assert hk["bench_label"] == "HSI"
     assert hk["quad_name"] == "Goldilocks"
     assert hk["bench_change_pct"] == pytest.approx(2.0, abs=0.01)
 
 
-def test_each_board_renders_its_own_session_stamp(tmp_path):
-    """A Canadian print under Hong Kong's date would be a fabricated fact. These
-    boards close at different times and CA is routinely a session behind."""
-    text = mp.render_digest(mp.build_packet(_regional_root(tmp_path)), char_budget=20000)
+def test_each_board_labels_its_own_component_and_state_dates(tmp_path):
+    """Regional component vintages stay attached to their own board, while only
+    the canonical China calendar may state a completed exchange session."""
+    now = datetime(2026, 8, 5, 4, 0, tzinfo=timezone.utc)
+    text = mp.render_digest(
+        mp.build_packet(_regional_root(tmp_path), now=now),
+        char_budget=20000,
+    )
     line = next(ln for ln in text.split("\n") if ln.startswith("REGIONAL"))
-    assert "HK (2026-08-04)" in line
-    assert "CN (2026-08-04)" in line
-    assert "CA (2026-07-31)" in line
+    assert "HK (state through 2026-08-04; basket inputs through 2026-08-04)" in line
+    assert "CN (latest completed session 2026-08-04; state through 2026-08-04; " \
+           "basket inputs through 2026-08-04, current)" in line
+    assert "CA (state through 2026-07-31; basket inputs through 2026-07-31)" in line
+    assert "HK (2026-08-04)" not in line
+    assert "CA (2026-07-31)" not in line
 
 
 def test_numeric_confidence_never_reaches_the_prompt(tmp_path):

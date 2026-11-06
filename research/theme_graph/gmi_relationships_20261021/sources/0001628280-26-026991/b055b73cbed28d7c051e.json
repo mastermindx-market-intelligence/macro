@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-24T10:51:59Z",
+ "accession": "0001628280-26-026991",
+ "cik": "0001786909",
+ "doc_byte_length": 17263150,
+ "doc_sha256": "d7cc679b2a248cba7860d9fafa396859d4c941e2e5aa0a4bd63afe52fbad8da8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-24",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sbsw-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 14685420,
+  "byte_start": 14683840,
+  "normalized": "Anglo American acquired a controlling interest in JCI in 1960 and the control ultimately passed on to Anglo American Platinum in 1995 l In 1996, a PFS of the Kroondal platinum project, in which Aquarius Platinum Ltd (Aquarius) had a 45% stake, was completed. Mine development began in 1998 and an initial off-take agreement was signed with Impala Platinum Ltd that continued until 2008 l In 2000, Aquarius increased its stake in Kroondal to 100% l Between 2001 and 2003, Aquarius entered into a JV (50:50) agreement with RPM, a subsidiary of Anglo&nbsp;American Platinum (AAP), to&nbsp;extract Mineral Reserves located on adjacent Anglo American Platinum mining rights l In 2013, the extent of the Mineral Resource included in the PSA was extended, prolonging Kroondal&#8217;s LoM, and in 2016, Sibanye- Stillwater acquired the Rustenburg operation from Anglo American, as well as a 50% stake in Kroondal via the acquisition of Aquarius Platinum l In 2021, agreements with AAP were concluded allowing Kroondal to mine into the Rustenburg operation mining right and in 2022, Sibanye-Stillwater reached an agreement with AAP to take full ownership of Kroondal. All contractual obligations were fulfilled during 2023 l In January 2025, Rustenburg operation received regulatory approval and acquired all the assets and liabilities of Kroondal&nbsp;operation OUR BUSINESS SOUTHERN AFRICA OPERATIONS INTERNATIONAL OPERATIONS ANCILLARY INFORMATION PGM OPERATIONS RUSTENBURG continued SIBANYE-STILLWATER MINERAL RESOURCES AND MINERAL RESERVES 2025 34",
+  "normalized_sha256": "b4b86f76ad730ba1ee5cf87014dd25d6272690adbcfff15b1ef1008869a0dd0e",
+  "raw": " Anglo American acquired a controlling interest in JCI in 1960  and the control ultimately passed on to Anglo American Platinum  in 1995 l In 1996, a PFS of the Kroondal platinum project, in which Aquarius  Platinum Ltd (Aquarius) had a 45% stake, was completed. Mine  development began in 1998 and an initial off-take agreement was  signed with Impala Platinum Ltd that continued until 2008 l In 2000, Aquarius increased its stake in Kroondal to 100% l Between 2001 and 2003, Aquarius entered into a JV (50:50)  agreement with RPM, a subsidiary of Anglo&amp;nbsp;American Platinum  (AAP), to&amp;nbsp;extract Mineral Reserves located on adjacent Anglo  American Platinum mining rights l In 2013, the extent of the Mineral Resource included in the PSA was  extended, prolonging Kroondal&amp;#8217;s LoM, and in 2016, Sibanye- Stillwater acquired the Rustenburg operation from Anglo  American, as well as a 50% stake in Kroondal via the acquisition of  Aquarius Platinum l In 2021, agreements with AAP were concluded allowing Kroondal  to mine into the Rustenburg operation mining right and in 2022,  Sibanye-Stillwater reached an agreement with AAP to take full  ownership of Kroondal. All contractual obligations were fulfilled  during 2023 l In January 2025, Rustenburg operation received regulatory  approval and acquired all the assets and liabilities of  Kroondal&amp;nbsp;operation OUR BUSINESS SOUTHERN AFRICA  OPERATIONS INTERNATIONAL  OPERATIONS ANCILLARY  INFORMATION PGM OPERATIONS RUSTENBURG continued SIBANYE-STILLWATER MINERAL RESOURCES AND MINERAL RESERVES 2025 34 ",
+  "raw_sha256": "b055b73cbed28d7c051eb1c1daa1ea85d2b2080032d5494d535f8d6526551a83"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1786909/000162828026026991/sbsw-20251231.htm",
+ "xbrl_contexts": []
+}

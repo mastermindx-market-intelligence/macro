@@ -1,0 +1,26 @@
+{
+  "blog/index.html": {
+    "sha256": "03d2b24abacf5dcbcf10e7249055d97821f763b1f7f58874fa32741b65adf10b",
+    "bytes": 29500,
+    "title": "Blog \u2014 MastermindX",
+    "canonical": "https://www.mastermind-x.com/blog/index.html",
+    "glossary": 1,
+    "morning_edition": 1
+  },
+  "learn/index.html": {
+    "sha256": "0e3eb18609dc7e2fa4e62a7dd23232e1af87c90a233643b7726bf2bc58d4fec9",
+    "bytes": 35308,
+    "title": "Learning Center \u2014 MastermindX",
+    "canonical": "https://www.mastermind-x.com/learn/index.html",
+    "glossary": 1,
+    "morning_edition": 1
+  },
+  "tools/calculators/position-size.html": {
+    "sha256": "2056fc21bab1e571422a4a02be826b9fc1ec37c80d01bf2d3fd9a3fc3e975f58",
+    "bytes": 45748,
+    "title": "Position Size Calculator \u2014 MastermindX",
+    "canonical": "https://www.mastermind-x.com/tools/calculators/position-size.html",
+    "glossary": 1,
+    "morning_edition": 1
+  }
+}

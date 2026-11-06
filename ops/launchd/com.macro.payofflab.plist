@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  com.macro.payofflab.plist — launchd agent for the options payoff lab
+  producer (MO-A3 W2-5a). Sibling of com.macro.skewaccrual. This plist
+  does not change that lane.
+
+  The job runs ops/launchd/run_options_payoff_lab.sh. The script refreshes
+  the shared checkout /Users/chriswong/skew-ops-wt off origin/main, refuses
+  a dirty tree, hydrates data/options_payoff_lab from R2, accrues the
+  catalog, checks the artifact, and publishes that directory. It never
+  pushes to git.
+
+  SCHEDULE
+  Weekdays at 08:00 local. The skew lane fires at 05:30 local and may
+  wait up to two hours for a fresh store (six waits of twenty minutes).
+  08:00 is two and a half hours after 05:30, so this lane starts after
+  that worst case instead of sharing the checkout with the skew runner.
+  launchd has no UTC mode. The host zone is America/Los_Angeles, the
+  same assumption the skew plist uses. Weekday 1 to 5 only.
+
+  The seat copies this plist and bootstraps it. It is off until then.
+
+  ENV FILE
+  R2 credentials and THETADATA_STORE come from
+  /Users/chriswong/skew-ops-wt/.env via run_with_env.sh. No secret is
+  inlined in EnvironmentVariables.
+
+  INSTALL (the mac user who owns the store host, not root):
+    cp ops/launchd/com.macro.payofflab.plist ~/Library/LaunchAgents/
+    mkdir -p /Users/chriswong/skew-ops-state/logs
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.macro.payofflab.plist
+
+  UNINSTALL:
+    launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.macro.payofflab.plist
+    rm ~/Library/LaunchAgents/com.macro.payofflab.plist
+
+  Do not load this plist from the repo path. Copy it first.
+
+  DRY RUN (no R2 publish):
+    set -a
+    source /Users/chriswong/skew-ops-wt/.env
+    set +a
+    PAYOFF_DRY_RUN=1 /Users/chriswong/skew-ops-wt/ops/launchd/run_options_payoff_lab.sh
+
+  Logs live under /Users/chriswong/skew-ops-state/logs, outside the
+  checkout the runner wipes on every refresh.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.macro.payofflab</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/chriswong/skew-ops-wt/ops/launchd/run_with_env.sh</string>
+    <string>/Users/chriswong/skew-ops-wt/.env</string>
+    <string>/Users/chriswong/skew-ops-wt/ops/launchd/run_options_payoff_lab.sh</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/chriswong/skew-ops-wt</string>
+
+  <!--
+    08:00 local on weekdays. Two and a half hours after the skew lane's
+    05:30 start, and after that lane's worst-case two-hour freshness wait,
+    so the shared checkout is free.
+  -->
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict>
+      <key>Weekday</key><integer>1</integer>
+      <key>Hour</key><integer>8</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>2</integer>
+      <key>Hour</key><integer>8</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>3</integer>
+      <key>Hour</key><integer>8</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>4</integer>
+      <key>Hour</key><integer>8</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>5</integer>
+      <key>Hour</key><integer>8</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PYTHONPATH</key>
+    <string>/Users/chriswong/skew-ops-wt</string>
+    <key>THETADATA_STORE</key>
+    <string>/Users/chriswong/theta-ops-wt/data/thetadata_eod</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/chriswong/skew-ops-state/logs/payofflab.stdout.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/chriswong/skew-ops-state/logs/payofflab.stderr.log</string>
+
+  <key>KeepAlive</key>
+  <false/>
+
+  <key>ThrottleInterval</key>
+  <integer>60</integer>
+
+  <key>LimitLoadToSessionType</key>
+  <string>Aqua</string>
+
+</dict>
+</plist>

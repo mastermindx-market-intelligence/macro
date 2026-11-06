@@ -1,0 +1,30 @@
+{
+  "status": "SCOPED_VISUAL_ACCEPTANCE",
+  "reviewer": "Astra principal, independent of Sol CSS author",
+  "scope": "Actual Overview presentation and controls; broad programme/current-data/auth/publication not accepted",
+  "reference": "OVERVIEW_LIGHT_REFERENCE.json and archived PaperOverview desktop/mobile; separate light material treatment implemented",
+  "rest": "8canonicalcells directly visually inspected; finalARIA-button semantic update retains appearance andsourcefinal27Chrome tests pass",
+  "layout": "32font-correct responsive states pass; 24qualified/negative/denied capture states; native44px controls, no workspace overflow, runtime language isolation",
+  "additional_images": {
+    "qualified-320-dark-zh.png": "16a5b5cc4f013a85db7f8222378c914f580457551ee0b6ba63d5c8b3f602b06c",
+    "denied-320-light-en.png": "9f5af057de0a5db1305810efc7e77ddd0bfcd037011fcaafb1dc5d33701b0a72",
+    "qualified-1440-dark-en.png": "1e1853313734ddb7a3e7a13f575c83aae8eb3b13e53433bd369554c295554f4c",
+    "qualified-320-light-en.png": "4633e62ddaf30c905c1c4c0b3a169603c0a0de547762fc96655b48a5d0b96231",
+    "denied-320-light-zh.png": "e891dbc95a98bec92d04578865bf2572617c25fadadc64f29c2137a7edce7710",
+    "qualified-320-dark-en.png": "d54ad9e771ec3a54ea0c899d445806572a140938ff6b0cf0a058041daedf97c3",
+    "qualified-320-light-zh.png": "8352a65eeff0554da5d717cfbd92cefc3e3d5debac2b318fb400cbe154c2b7c9",
+    "qualified-1440-dark-zh.png": "df3bdc9af3fd136a2bb687ea7b2ae10a0855b12f3c01c8c58831df78d0011663",
+    "negative-320-dark-zh.png": "6b61e9921c9f0f2aa1009450c0dbf53939469ef7657fdc51699e329b3114c637",
+    "negative-320-light-en.png": "dd1f999cccc2dbc8c3e78cbf5673380c29cb225100aea64f7b081535497f4009",
+    "qualified-1440-light-zh.png": "0825618f6d6cdd3ef675a7100fc7faf9a3e9a4f31e133df5ac16f5e7dfb015dd",
+    "negative-320-light-zh.png": "2878b09723fe1f22e158d0d7d8f72bb6ea4c0f1e7c02b64db28d7aa07f5956bd",
+    "qualified-1440-light-en.png": "7577317d3a372072c587f0af850a994763b4c8997ed4731ca9e3b946bc38150d",
+    "denied-320-dark-zh.png": "874fb15b1aabf01107c45b6b8a4dc8f94eea32dc164f7aea5cf59d17eb3f4e43"
+  },
+  "limits": [
+    "Qualification in populated images is synthetic and not live authority",
+    "Additional populated images precede semantic aria-selected-to-aria-pressed fix; matching selectedstyle appearance unchanged; final canonical16 captures usefinalbytes",
+    "Fixture omits generated live_config.js; favicon.ico fallback404 also reported; no livequote/auth claim",
+    "Other5views are disabled pendingimplementation; no all-wavescompletion"
+  ]
+}

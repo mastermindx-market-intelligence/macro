@@ -1,0 +1,486 @@
+{
+  "schema_version": "r1-readiness-probe.v2",
+  "as_of": "2026-10-17T11:31:47Z",
+  "source_revision": "6ba54b52015131ac027fb7f220f68ccdb02261bd",
+  "cutoff": "2026-10-15T13:32:43Z",
+  "owner_receipts_path": "research/alpha_intelligence/expectation_market_dynamics/R1_OWNER_RECEIPTS_2026-10-17.json",
+  "expected_universe_sha256": "dae001f6cfda644ae9c292db5555cca599b7f7cf03455a5d56ec7cc5adc7daec",
+  "universe": {
+    "names": 1502,
+    "sha256": "dae001f6cfda644ae9c292db5555cca599b7f7cf03455a5d56ec7cc5adc7daec",
+    "matched": true
+  },
+  "sources": [
+    {
+      "path": "data/breadth/constituents.parquet",
+      "blob": "9624fd8eb31c79c443d3c507d978d64e4c2f7d95",
+      "rows": 503
+    },
+    {
+      "path": "data/midcap_breadth/constituents.parquet",
+      "blob": "45d21b8e0821ef62a176c7da93fefee9a5f4f40b",
+      "rows": 400
+    },
+    {
+      "path": "data/smallcap_breadth/constituents.parquet",
+      "blob": "e86577717184368d19bd6bc17479cbe7a1a4913d",
+      "rows": 602
+    },
+    {
+      "path": "data/reference/security_master.parquet",
+      "blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
+      "rows": 3105
+    },
+    {
+      "path": "data/reference/vendor_aliases.parquet",
+      "blob": "b76d4f88238aef60d4db8b6bb259932d021d0648",
+      "rows": 8926
+    },
+    {
+      "path": "data/reference/issuer_master.parquet",
+      "blob": "e3c2b9ac581863845674e0d656d0bb72132d9585",
+      "rows": 1931
+    },
+    {
+      "path": "data/reference/issuer_migrations.parquet",
+      "blob": "106ecdf046955e403f20dfd1f8c575bdc40abb90",
+      "rows": 3
+    },
+    {
+      "path": "data/reference/security_migrations.parquet",
+      "blob": "2e3d24fb11babaddf00767fef5a6422ed126d15b",
+      "rows": 1
+    },
+    {
+      "path": "data/symbol_directory/cik_map/2026-09-28.parquet",
+      "blob": "3e10510ed277294f3bdaa9af36f7fb232469f0c8",
+      "rows": 10428
+    },
+    {
+      "path": "data/openfigi/cusip_ticker.parquet",
+      "blob": "ecdd522c2709aedf3ea84be879c1096bd53319d3",
+      "rows": 2771
+    },
+    {
+      "path": "data/breadth/ticker_sectors.parquet",
+      "blob": "df297127698b9158fa3f26e631fd6e7e8afba3f4",
+      "rows": 1515
+    },
+    {
+      "path": "data/theme_graph/identity_resolution.parquet",
+      "blob": "3eaa94178af2ca18bb4915766869fc962fc6c44b",
+      "rows": 187937
+    },
+    {
+      "path": "data/ffiec_y9c/bhc_ticker_map.csv",
+      "blob": "8b7128d7b2363f2372bc81acc9bf2e794cb49376",
+      "rows": 23
+    },
+    {
+      "path": "data/revisions/expectation_observations.parquet",
+      "blob": "1ab00ede65aa2cc45a89b6ef408e41497c95ae87",
+      "rows": 647640
+    },
+    {
+      "path": "data/revisions/expectation_attempts.parquet",
+      "blob": "c6c8c546bb76fc0480f6225f0ccca297700f6969",
+      "rows": 11790
+    },
+    {
+      "path": "collectors/equity_revisions.py",
+      "blob": "f543f2ff2e5d4078f5ddc4626d9ba8dc98fec2f9",
+      "rows": null
+    }
+  ],
+  "coverage": {
+    "data/reference/security_master.parquet": {
+      "issuer_id": 1495,
+      "alias_dated": 3,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 1492
+    },
+    "data/reference/vendor_aliases.parquet": {
+      "issuer_id": 1495,
+      "alias_dated": 3,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 1492
+    },
+    "data/reference/issuer_migrations.parquet+security_migrations.parquet": {
+      "issuer_id": 1495,
+      "alias_dated": 3,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 1492
+    },
+    "data/symbol_directory/cik_map/2026-09-28.parquet": {
+      "issuer_id": 1497,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 0
+    },
+    "data/openfigi/cusip_ticker.parquet": {
+      "issuer_id": 896,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 0
+    },
+    "data/breadth/ticker_sectors.parquet": {
+      "issuer_id": 0,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 1468
+    },
+    "data/theme_graph/identity_resolution.parquet": {
+      "issuer_id": 776,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 0
+    },
+    "data/revisions/expectation_observations.parquet": {
+      "issuer_id": 0,
+      "alias_dated": 0,
+      "currency": 0,
+      "fye": 0,
+      "basis": 0,
+      "undated": 0
+    }
+  },
+  "publication_clock": {
+    "expectation_attempts": [
+      "attempt_id",
+      "collection_session_id",
+      "provider",
+      "ticker_compat",
+      "attempted_at",
+      "completed_at",
+      "status",
+      "http_status",
+      "latency_ms",
+      "response_payload_hash",
+      "safe_error_class",
+      "safe_error_detail",
+      "observation_count"
+    ],
+    "expectation_observations_clock_fields": {
+      "source_effective_at_nonnull": 0,
+      "source_published_at_nonnull": 0,
+      "provider_observed_at_nonnull": 647640,
+      "system_observed_at_nonnull": 647640,
+      "attempted_at_nonnull": 11790,
+      "completed_at_nonnull": 11790
+    }
+  },
+  "gaps": {
+    "G1": {
+      "metric": "issuer_id_resolved",
+      "value": {
+        "issuer_id_resolved": 1495,
+        "universe_names": 1502,
+        "unresolved": 7,
+        "cik_map_universe_tickers": 1497,
+        "cik_map_has_issuer_id_column": false,
+        "cik_map_file_rows": 10428,
+        "openfigi_universe_tickers": 896,
+        "openfigi_file_rows": 2771,
+        "identity_resolution_universe_symbols": 776
+      },
+      "gate": "issuer_id_resolved == universe.names",
+      "status": "DEGRADED_ACCEPTED",
+      "gate_status": "OPEN",
+      "owner_receipt": {
+        "present": true,
+        "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+        "form_ok": true,
+        "cutoff_ok": true,
+        "ws_active": true,
+        "uncovered_paths": [],
+        "counts_match": true,
+        "mismatches": []
+      }
+    },
+    "G2": {
+      "metric": "alias_rows_dated_le_cutoff",
+      "value": {
+        "alias_rows_dated_le_cutoff": 3,
+        "undated_alias_rows": 1492,
+        "prospective_from_undated_rows": 0,
+        "dated_symbols": [
+          "ECHO",
+          "MU",
+          "VMRK"
+        ],
+        "valid_to_without_valid_from_universe_names": [
+          "MMC"
+        ]
+      },
+      "gate": "undated_alias_rows == 0 and alias_rows_dated_le_cutoff == universe.names",
+      "status": "DEGRADED_ACCEPTED",
+      "gate_status": "OPEN",
+      "owner_receipt": {
+        "present": true,
+        "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+        "form_ok": true,
+        "cutoff_ok": true,
+        "ws_active": true,
+        "uncovered_paths": [],
+        "counts_match": true,
+        "mismatches": []
+      }
+    },
+    "G3": {
+      "metric": "currency_fye_basis_nonnull",
+      "value": {
+        "spine_columns_present": [],
+        "observation_currency_nonnull": 0,
+        "observation_fiscal_year_nonnull": 0,
+        "observation_basis_nonnull": 0
+      },
+      "gate": "security_master exposes currency, fiscal_year_end, and accounting_basis, each non-null for every issuer-resolved name",
+      "status": "DEGRADED_ACCEPTED",
+      "gate_status": "OPEN",
+      "owner_receipt": {
+        "present": true,
+        "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+        "form_ok": true,
+        "cutoff_ok": true,
+        "ws_active": true,
+        "uncovered_paths": [],
+        "counts_match": true,
+        "mismatches": []
+      }
+    },
+    "G4": {
+      "metric": "rights_class_literal",
+      "value": {
+        "literal": "UNKNOWN",
+        "line": 363,
+        "hits": [
+          {
+            "line": 363,
+            "text": "\"rights_class\": \"UNKNOWN\",  # R1-OWNER-REFUSAL line 363: no rights class is assigned (owner refusal, labeled absence); DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07 WS:ALPHA-INTELLIGENCE-INTEGRATION"
+          }
+        ],
+        "provider": [
+          {
+            "line": 86,
+            "text": "_EXPECTATION_PROVIDER = \"yfinance\""
+          }
+        ]
+      },
+      "gate": "collectors/equity_revisions.py rights_class literal is an owner-assigned class other than UNKNOWN, or the same line records an owner refusal",
+      "status": "DEGRADED_ACCEPTED",
+      "gate_status": "OPEN",
+      "owner_receipt": {
+        "present": true,
+        "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+        "form_ok": true,
+        "cutoff_ok": true,
+        "ws_active": true,
+        "uncovered_paths": [],
+        "counts_match": true,
+        "mismatches": []
+      }
+    },
+    "G5": {
+      "metric": "source_publication_clock_nonnull",
+      "value": {
+        "source_effective_at_nonnull": 0,
+        "source_published_at_nonnull": 0,
+        "observation_rows": 647640,
+        "provider_observed_at_nonnull": 647640,
+        "system_observed_at_nonnull": 647640
+      },
+      "gate": "source_effective_at_nonnull > 0 and source_published_at_nonnull > 0",
+      "status": "DEGRADED_ACCEPTED",
+      "gate_status": "OPEN",
+      "owner_receipt": {
+        "present": true,
+        "owner_ws": "ALPHA-INTELLIGENCE-INTEGRATION",
+        "form_ok": true,
+        "cutoff_ok": true,
+        "ws_active": true,
+        "uncovered_paths": [],
+        "counts_match": true,
+        "mismatches": []
+      }
+    }
+  },
+  "owner_receipts": {
+    "path": "research/alpha_intelligence/expectation_market_dynamics/R1_OWNER_RECEIPTS_2026-10-17.json",
+    "present": true,
+    "schema_version": "r1-owner-receipts.v1",
+    "blob": "697bd560c15ef538768247e65df055c8d60e29d6"
+  },
+  "cohorts": {
+    "vocabulary": {
+      "unchanged": "natural unchanged witness",
+      "changed": "same-anchor changed-value",
+      "partial_null_failure": "partial-null-failure after good",
+      "rollover": "fiscal rollover is not a revision"
+    },
+    "attempts": {
+      "logic": "Attempt-status sequence only: a later attempt for the same ticker_compat whose status is partial, null, http_401, http_403, http_429, malformed, or error, after an earlier attempt with status success and observation_count > 0. Sort is ticker_compat, attempted_at, attempt_id. This is not the owner's partial-after-good witness. A ticker can be partial on every attempt and still keep an earlier good observation value. That witness is observations.missing_after_earlier_good_value.",
+      "full_file": {
+        "rows": 11790,
+        "status": {
+          "success": 11461,
+          "null": 187,
+          "partial": 104,
+          "error": 38
+        },
+        "observation_count_sum": 647640,
+        "after_good": {
+          "partial": 0,
+          "null": 0,
+          "http_401": 0,
+          "http_403": 0,
+          "http_429": 0,
+          "malformed": 0,
+          "error": 37,
+          "other_non_success": 0
+        }
+      },
+      "effective_le_cutoff": {
+        "rows": 11190,
+        "status": {
+          "success": 10874,
+          "null": 178,
+          "partial": 100,
+          "error": 38
+        },
+        "observation_count_sum": 614544,
+        "after_good": {
+          "partial": 0,
+          "null": 0,
+          "http_401": 0,
+          "http_403": 0,
+          "http_429": 0,
+          "malformed": 0,
+          "error": 37,
+          "other_non_success": 0
+        }
+      },
+      "preservation_of_prior_good_bytes": {
+        "status": "UNMEASURABLE",
+        "reason": "One current attempts file has no parent snapshot, so it cannot show whether a later partial, null, or failure left the prior good observation bytes unchanged."
+      }
+    },
+    "observations": {
+      "unchanged": {
+        "measurable": true,
+        "logic": "correction_state == 'unchanged'. The collector writes that label only when a prior good row exists on the same grain, the period ends are not a pair of different real anchors, and value, unit, currency, and basis match.",
+        "rows_full_file": 385026,
+        "rows_effective_le_cutoff": 367371
+      },
+      "same_anchor_changed_value": {
+        "measurable": true,
+        "logic": "correction_state == 'supersedes', supersedes_observation_id joins to a row in this file, both period_end values are non-null and equal, and value differs. A supersession whose anchor is null, or whose anchors differ, is counted separately and is not this cohort.",
+        "rows_full_file": 85475,
+        "rows_effective_le_cutoff": 75565,
+        "supersedes_rows": 87557,
+        "supersedes_null_or_different_anchor": 2082,
+        "supersedes_prior_missing": 0,
+        "supersedes_metadata_only_same_anchor": 0
+      },
+      "missing_after_earlier_good_value": {
+        "measurable": true,
+        "logic": "On one grain, ordered by system_observed_at then observation_id, a row with correction_state 'missing' whose same grain has at least one earlier row with a non-null value. The earlier row is still in this file. This is the observation-grain form of partial/null after a good value. It does not prove that a good row absent from this file was never deleted.",
+        "rows_full_file": 557,
+        "rows_effective_le_cutoff": 491
+      },
+      "fiscal_rollover_not_a_revision": {
+        "measurable": true,
+        "logic": "Keep rows with a non-null value. On one grain (provider, provider_record_class, ticker_compat, metric, horizon_label_raw, observation_type), ordered by system_observed_at then observation_id, compare each row with the previous non-null-value row. Both period_end values are non-null and differ. That is the collector's newest-prior-good-row anchor test. The owner's cohort is the later row whose correction_state is original, not supersedes. fiscal_year and fiscal_period are entirely null, so a fiscal-label rollover cannot be measured. This count is the period_end comparison only.",
+        "rows_full_file": 4043,
+        "rows_effective_le_cutoff": 3539,
+        "later_correction_state": {
+          "original": 4043
+        },
+        "rows_later_state_original": 4043,
+        "rows_later_state_supersedes": 0
+      },
+      "correction_state_full_file": {
+        "unchanged": 385026,
+        "missing": 97856,
+        "supersedes": 87557,
+        "original": 77201
+      },
+      "correction_state_effective_le_cutoff": {
+        "unchanged": 367371,
+        "missing": 92829,
+        "supersedes": 77647,
+        "original": 76697
+      },
+      "currency_or_basis_change": {
+        "status": "UNMEASURABLE",
+        "reason": "currency non-null rows are 0, basis non-null rows are 0, fiscal_year non-null rows are 0, and fiscal_period non-null rows are 0. A change in those fields cannot be observed. Zero is not a measurement of no change."
+      },
+      "event_time_order": {
+        "status": "UNMEASURABLE",
+        "reason": "source_effective_at and source_published_at are entirely null. provider_observed_at and system_observed_at are capture clocks. Event-time order is excluded. Capture-time cohorts above use system_observed_at."
+      }
+    },
+    "attempt_status_full_file": {
+      "success": 11461,
+      "null": 187,
+      "partial": 104,
+      "error": 38
+    }
+  },
+  "commands": [
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/breadth/constituents.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/breadth/constituents.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/midcap_breadth/constituents.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/midcap_breadth/constituents.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/smallcap_breadth/constituents.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/smallcap_breadth/constituents.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/security_master.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/security_master.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/vendor_aliases.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/vendor_aliases.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/issuer_master.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/issuer_master.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/issuer_migrations.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/issuer_migrations.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/security_migrations.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/reference/security_migrations.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/symbol_directory/cik_map/2026-09-28.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/symbol_directory/cik_map/2026-09-28.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/openfigi/cusip_ticker.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/openfigi/cusip_ticker.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/breadth/ticker_sectors.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/breadth/ticker_sectors.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/theme_graph/identity_resolution.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/theme_graph/identity_resolution.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/ffiec_y9c/bhc_ticker_map.csv",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/ffiec_y9c/bhc_ticker_map.csv",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/revisions/expectation_observations.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/revisions/expectation_observations.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/revisions/expectation_attempts.parquet",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:data/revisions/expectation_attempts.parquet",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:collectors/equity_revisions.py",
+    "git rev-parse 6ba54b52015131ac027fb7f220f68ccdb02261bd:collectors/equity_revisions.py",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:research/alpha_intelligence/expectation_market_dynamics/R1_OWNER_RECEIPTS_2026-10-17.json",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md",
+    "git show 6ba54b52015131ac027fb7f220f68ccdb02261bd:agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md"
+  ],
+  "r1_status": "COMPLETE_DEGRADED",
+  "r1_status_reasons": []
+}

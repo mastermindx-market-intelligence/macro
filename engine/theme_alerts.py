@@ -37,6 +37,26 @@ KEEP_DAYS = 90
 # raw severity per (type, direction) — `high` becomes a 'major' band on the watch tier
 # in alert_triage; everything else reads minor. Reserve `high` for the calls that matter.
 _RECO_RANK = {"avoid": 0, "trim": 1, "hold": 2, "accumulate": 3, "enter": 4}
+# Glance-tier display names (DESIGN_DOCTRINE Law 2). Stored context keeps the
+# machine tokens; only composed headline/detail copy uses these.
+_RECO_EN = {"avoid": "Avoid", "trim": "Trim", "hold": "Hold",
+            "accumulate": "Accumulate", "enter": "Enter"}
+_RECO_ZH = {"avoid": "规避", "trim": "减仓", "hold": "持有",
+            "accumulate": "加仓", "enter": "买入"}
+_LABEL_EN = {"emerging": "emerging", "dominant": "dominant", "fading": "fading",
+             "deteriorating": "deteriorating", "neutral": "neutral"}
+_LABEL_ZH = {"emerging": "新兴", "dominant": "主导", "fading": "退潮",
+             "deteriorating": "走弱", "neutral": "中性"}
+
+
+def _reco_disp(token, zh: bool = False) -> str:
+    key = (token or "").lower()
+    return (_RECO_ZH if zh else _RECO_EN).get(key, token or "?")
+
+
+def _label_disp(token, zh: bool = False) -> str:
+    key = (token or "").lower()
+    return (_LABEL_ZH if zh else _LABEL_EN).get(key, token or "?")
 
 # ---------------------------------------------------------------------------------------
 # Asymmetric debounce — constructive side ONLY. This asymmetry is the design, not an
@@ -142,7 +162,7 @@ def compute_events(theme_intel: dict, prior: dict | None) -> list[dict]:
             labelled.add(tid)
             events.append(_ev(tid, "theme_emerging", ts, "medium",
                               f"🌱 {nm} is emerging",
-                              f"{nm} entered the EMERGING lifecycle — accelerating relative strength "
+                              f"{nm} entered the emerging phase — accelerating relative strength "
                               f"before it is extended (score {c['score']}).",
                               {"from": p.get("label"), "to": "emerging", "score": c["score"]}, "emerging",
                               f"🌱 {nz} 进入新兴阶段",
@@ -156,24 +176,24 @@ def compute_events(theme_intel: dict, prior: dict | None) -> list[dict]:
             _d = str(ts)[:10]
             events.append(_ev(tid, "theme_topping", ts, "high",
                               f"⚠️ {nm}: strength fading off the high",
-                              f"{nm} dropped from DOMINANT to FADING as of the {_d} close — momentum "
+                              f"{nm} dropped from {_label_disp('dominant')} to {_label_disp('fading')} as of the {_d} close — momentum "
                               f"cooling at a high. Historically this read flags elevated pullback risk "
                               f"over the next month, not a confirmed top — leaders inside the theme can "
-                              f"keep running. Recommendation now {c['reco'].upper()}.",
+                              f"keep running. Recommendation now {_reco_disp(c['reco'])}.",
                               {"from": "dominant", "to": "fading", "reco": c["reco"]}, "fading",
                               f"⚠️ {nz}：高位动能减弱",
                               f"{nz} 自「主导」转入「退潮」（截至 {_d} 收盘）— 高位动能降温。历史上该读数"
                               f"指向未来约一个月的回撤风险上升，并非确认见顶 — 主题内的领涨股仍可能续涨。"
-                              f"当前建议 {c['reco'].upper()}。"))
+                              f"当前建议「{_reco_disp(c['reco'], zh=True)}」。"))
         elif c["label"] == "deteriorating" and p.get("label") != "deteriorating":
             labelled.add(tid)
             events.append(_ev(tid, "theme_deteriorating", ts, "high",
                               f"🔻 {nm} is deteriorating",
-                              f"{nm} broke down into DETERIORATING — momentum and breadth weakening "
-                              f"together. Recommendation now {c['reco'].upper()}.",
+                              f"{nm} broke down into {_label_disp('deteriorating')} — momentum and breadth weakening "
+                              f"together. Recommendation now {_reco_disp(c['reco'])}.",
                               {"from": p.get("label"), "to": "deteriorating", "reco": c["reco"]}, "deteriorating",
                               f"🔻 {nz} 走弱",
-                              f"{nz} 转入「走弱」 — 动量与广度同步转弱，当前建议 {c['reco'].upper()}。"))
+                              f"{nz} 转入「走弱」 — 动量与广度同步转弱，当前建议「{_reco_disp(c['reco'], zh=True)}」。"))
 
         # --- recommendation flip (skip if a label event already narrates this basket) ---
         if c["reco"] != p.get("reco") and tid not in labelled:
@@ -182,14 +202,14 @@ def compute_events(theme_intel: dict, prior: dict | None) -> list[dict]:
             sev = "high" if into_strong else "medium"
             arrow = "↑" if up else "↓"
             events.append(_ev(tid, "reco_change", ts, sev,
-                              f"{arrow} {nm}: {p.get('reco','?').upper()} → {c['reco'].upper()}",
-                              f"Theme recommendation for {nm} changed from {p.get('reco','?').upper()} "
-                              f"to {c['reco'].upper()} (score {c['score']}, {c['label']}).",
+                              f"{arrow} {nm}: {_reco_disp(p.get('reco','?'))} → {_reco_disp(c['reco'])}",
+                              f"Theme recommendation for {nm} changed from {_reco_disp(p.get('reco','?'))} "
+                              f"to {_reco_disp(c['reco'])} (score {c['score']}, {_label_disp(c['label'])}).",
                               {"from": p.get("reco"), "to": c["reco"], "score": c["score"]},
                               c["reco"],
-                              f"{arrow} {nz}：{p.get('reco','?').upper()} → {c['reco'].upper()}",
-                              f"{nz} 的主题建议由 {p.get('reco','?').upper()} 变为 {c['reco'].upper()}"
-                              f"（评分 {c['score']}，{c['label']}）。"))
+                              f"{arrow} {nz}：{_reco_disp(p.get('reco','?'), zh=True)} → {_reco_disp(c['reco'], zh=True)}",
+                              f"{nz} 的主题建议由「{_reco_disp(p.get('reco','?'), zh=True)}」变为「{_reco_disp(c['reco'], zh=True)}」"
+                              f"（评分 {c['score']}，{_label_disp(c['label'], zh=True)}）。"))
 
     # --- leadership rotation: a new #1 score rank ---
     new_lead = next((t for t in cur.values() if t["rank"] == 1), None)
@@ -220,15 +240,15 @@ def _confirmed_emerging_event(tid: str, c: dict, frm: str, ts, held: int) -> dic
     nm, nz = c["name"], c["name_zh"]
     return _ev(tid, "theme_emerging", ts, "medium",
                f"🌱 {nm} is emerging",
-               f"{nm} entered the EMERGING lifecycle — accelerating relative strength "
+               f"{nm} entered the emerging phase — accelerating relative strength "
                f"before it is extended (score {c['score']}) — held {held} consecutive "
-               f"sessions (constructive label shifts are debounced; risk label shifts fire "
-               f"immediately).",
+               f"sessions (constructive label shifts wait for a second session; risk "
+               f"label shifts fire immediately).",
                {"from": frm, "to": "emerging", "score": c["score"], "held_sessions": held},
                "emerging",
                f"🌱 {nz} 进入新兴阶段",
                f"{nz} 进入「新兴」阶段 — 相对强度加速且尚未过度延展（评分 {c['score']}），"
-               f"已连续 {held} 个交易日确认（进取方向去抖，风险方向即时）。")
+               f"已连续 {held} 个交易日确认（进取方向需连续确认，风险方向即时）。")
 
 
 def _confirmed_reco_event(tid: str, c: dict, frm: str, ts, held: int) -> dict:
@@ -238,16 +258,16 @@ def _confirmed_reco_event(tid: str, c: dict, frm: str, ts, held: int) -> dict:
     to = c["reco"]
     sev = "high" if to == "enter" else "medium"
     return _ev(tid, "reco_change", ts, sev,
-               f"↑ {nm}: {frm.upper()} → {to.upper()}",
-               f"Theme recommendation for {nm} changed from {frm.upper()} to {to.upper()} "
-               f"(score {c['score']}, {c['label']}) — held {held} consecutive sessions "
-               f"(constructive flips are debounced; risk flips fire immediately).",
+               f"↑ {nm}: {_reco_disp(frm)} → {_reco_disp(to)}",
+               f"Theme recommendation for {nm} changed from {_reco_disp(frm)} to {_reco_disp(to)} "
+               f"(score {c['score']}, {_label_disp(c['label'])}) — held {held} consecutive sessions "
+               f"(constructive flips wait for a second session; risk flips fire immediately).",
                {"from": frm, "to": to, "score": c["score"], "held_sessions": held},
                to,
-               f"↑ {nz}：{frm.upper()} → {to.upper()}",
-               f"{nz} 的主题建议由 {frm.upper()} 变为 {to.upper()}"
-               f"（评分 {c['score']}，{c['label']}），已连续 {held} 个交易日确认"
-               f"（进取方向去抖，风险方向即时）。")
+               f"↑ {nz}：{_reco_disp(frm, zh=True)} → {_reco_disp(to, zh=True)}",
+               f"{nz} 的主题建议由「{_reco_disp(frm, zh=True)}」变为「{_reco_disp(to, zh=True)}」"
+               f"（评分 {c['score']}，{_label_disp(c['label'], zh=True)}），已连续 {held} 个交易日确认"
+               f"（进取方向需连续确认，风险方向即时）。")
 
 
 def _confirmed_lead_event(new_id: str, cur: dict, old_id: str, prior: dict, ts,

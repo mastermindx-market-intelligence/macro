@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/theme.js
+  - site/theme.js
+manifest: mockups/evidence/help-affordance-r2/manifest.json

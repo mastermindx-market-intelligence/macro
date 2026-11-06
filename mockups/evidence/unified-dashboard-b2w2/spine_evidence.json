@@ -1,0 +1,188 @@
+{
+ "schema": "mastermind.p0_evidence.v2",
+ "generated_at": "2026-09-21T00:55:00Z",
+ "tool": {
+  "module_ref": "lane capture (UD-B2-W2 round 3, m1 rev worktree)",
+  "version": "ud-b2-w2-r3",
+  "capture_method": "playwright screenshot of site/macro.html .mx-spine (8 rest cells)"
+ },
+ "target": {
+  "page": "macro.html",
+  "element": ".mx-spine",
+  "capture_head": "d9a57dd944eb54784bd71ab84f0009eef2f29fe7"
+ },
+ "axes": {
+  "viewports": {
+   "desktop": [
+    1440,
+    900
+   ],
+   "mobile": [
+    390,
+    844
+   ]
+  },
+  "locales": [
+   "en",
+   "zh"
+  ],
+  "themes": [
+   "dark",
+   "light"
+  ],
+  "access": [
+   "anonymous"
+  ],
+  "force_states": []
+ },
+ "outcome": "captured",
+ "honesty": {
+  "access": "anonymous only",
+  "gaps": "rest cells only; no hover/focus interaction cells for the spine (static rail)",
+  "authority": "this manifest indexes screenshots; it scores nothing"
+ },
+ "pages": [
+  {
+   "page_id": "macro.html",
+   "route": "/macro.html",
+   "states": [
+    {
+     "viewport": "desktop",
+     "locale": "en",
+     "theme": "dark",
+     "access": "anonymous",
+     "viewport_width": 1440,
+     "viewport_height": 900,
+     "force_state": null,
+     "captured": true,
+     "file": "spine_dark_en_desktop.png",
+     "sha256": "7952dda517333d85c8eb00e4f5add02990f12c24c17eb59382629e0c131b009e",
+     "bytes": 352819,
+     "width": 2628,
+     "height": 772,
+     "applied_locale": "en",
+     "applied_theme": "dark"
+    },
+    {
+     "viewport": "mobile",
+     "locale": "en",
+     "theme": "dark",
+     "access": "anonymous",
+     "viewport_width": 390,
+     "viewport_height": 844,
+     "force_state": null,
+     "captured": true,
+     "file": "spine_dark_en_mobile.png",
+     "sha256": "3ab074ce25e2e206e136d555a260346ad847b4a883e7b36cc90d88a81d23bed5",
+     "bytes": 370556,
+     "width": 616,
+     "height": 1582,
+     "applied_locale": "en",
+     "applied_theme": "dark"
+    },
+    {
+     "viewport": "desktop",
+     "locale": "zh",
+     "theme": "dark",
+     "access": "anonymous",
+     "viewport_width": 1440,
+     "viewport_height": 900,
+     "force_state": null,
+     "captured": true,
+     "file": "spine_dark_zh_desktop.png",
+     "sha256": "1d86d92a09e5131a3cf1105c452e9c64777e9f5f9b97f736059a3c84d4274b01",
+     "bytes": 336489,
+     "width": 2628,
+     "height": 772,
+     "applied_locale": "zh",
+     "applied_theme": "dark"
+    },
+    {
+     "viewport": "mobile",
+     "locale": "zh",
+     "theme": "dark",
+     "access": "anonymous",
+     "viewport_width": 390,
+     "viewport_height": 844,
+     "force_state": null,
+     "captured": true,
+     "file": "spine_dark_zh_mobile.png",
+     "sha256": "a1624ec81f0673379c8bad2ed968c1d775655a7f0ff76606942dfa4d05ae9f89",
+     "bytes": 322589,
+     "width": 616,
+     "height": 1480,
+     "applied_locale": "zh",
+     "applied_theme": "dark"
+    },
+    {
+     "viewport": "desktop",
+     "locale": "en",
+     "theme": "light",
+     "access": "anonymous",
+     "viewport_width": 1440,
+     "viewport_height": 900,
+     "force_state": null,
+     "captured": true,
+     "file": "spine_light_en_desktop.png",
+     "sha256": "7003bb4412cb691da6558c99e22c02b74e6afa485b21475e140dda87b89699c4",
+     "bytes": 311048,
+     "width": 2628,
+     "height": 772,
+     "applied_locale": "en",
+     "applied_theme": "light"
+    },
+    {
+     "viewport": "mobile",
+     "locale": "en",
+     "theme": "light",
+     "access": "anonymous",
+     "viewport_width": 390,
+     "viewport_height": 844,
+     "force_state": null,
+     "captured": true,
+     "file": "spine_light_en_mobile.png",
+     "sha256": "ebd545a2daee193b995f8d34edd890bba6080f97491763349cdd926aa11869e6",
+     "bytes": 352927,
+     "width": 616,
+     "height": 1582,
+     "applied_locale": "en",
+     "applied_theme": "light"
+    },
+    {
+     "viewport": "desktop",
+     "locale": "zh",
+     "theme": "light",
+     "access": "anonymous",
+     "viewport_width": 1440,
+     "viewport_height": 900,
+     "force_state": null,
+     "captured": true,
+     "file": "spine_light_zh_desktop.png",
+     "sha256": "e1a9dcde630d703735a1328bf859870405ca5cf03205ecde648908e71b750589",
+     "bytes": 301187,
+     "width": 2628,
+     "height": 772,
+     "applied_locale": "zh",
+     "applied_theme": "light"
+    },
+    {
+     "viewport": "mobile",
+     "locale": "zh",
+     "theme": "light",
+     "access": "anonymous",
+     "viewport_width": 390,
+     "viewport_height": 844,
+     "force_state": null,
+     "captured": true,
+     "file": "spine_light_zh_mobile.png",
+     "sha256": "0b942f37b43889b866ce54d8c26dad335522252623592021265d0cd8eda8521c",
+     "bytes": 293720,
+     "width": 616,
+     "height": 1480,
+     "applied_locale": "zh",
+     "applied_theme": "light"
+    }
+   ]
+  }
+ ]
+}

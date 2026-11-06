@@ -1134,3 +1134,186 @@ def test_f5_pushfxweights_ps_absent_never_fabricates_a_partial_distribution():
     fn = code[idx:code.index("\n  function ", idx + 10)]
     assert "allCurrent = modeled.length > 0 && modeled.every" in fn
     assert fn.count("window.FX.setAutoWeights({})") >= 2  # S3 abstain + F5 non-allCurrent
+
+
+# Ontology's explicit private read must not enroll the page in WatchStore sync.
+_READ_ONLY_SETUP = r"""
+var listeners = {}, calls = {client:0, session:0, query:0, writes:0};
+window.addEventListener = function (t,f) { (listeners[t] ||= []).push(f); };
+window.removeEventListener = function (t,f) { listeners[t]=(listeners[t]||[]).filter(x=>x!==f); };
+function fire(t) { (listeners[t]||[]).slice().forEach(f=>f({type:t})); }
+document.getElementById = function () { return null; };
+document.readyState = 'complete';
+var uid='owner-a', token='private-token-a';
+var row={id:'p1',user_id:'owner-a',ticker:'ABC',shares:3,entry_price:40,
+         entry_date:'2026-10-01',status:'open',created_at:'2026-10-01T12:00:00Z'};
+var response={data:[row],count:1,error:null};
+var queryGate=null, sessionHook=null, clientGate=null, querySignal=null, selected=null;
+var client={auth:{getSession:async function () {
+  calls.session++;
+  if(sessionHook) return sessionHook();
+  return {data:{session:{user:{id:uid},access_token:token}}};
+}},from:function(table) {
+  calls.query++;
+  if(table!=='portfolio_positions') throw Error('unexpected table');
+  var q={select:function(cols,opts){ selected={cols,opts}; return q; },
+    eq:function(k,v){ calls.filter=[k,v]; return q; },
+    order:function(){return q;},limit:function(n){calls.limit=n;return q;},
+    abortSignal:function(s){querySignal=s;return q;},
+    then:function(ok,no){return (queryGate||Promise.resolve(response)).then(ok,no);}};
+  return q;
+}};
+window.MDXAuth={user:function(){return uid ? {id:uid}:null;},
+  client:async function(){calls.client++; return clientGate ? await clientGate : client;},
+  onChange:function(){throw Error('sync enrollment forbidden');}};
+localStorage.getItem=function(){throw Error('anonymous/cache read forbidden');};
+localStorage.setItem=function(){calls.writes++; throw Error('write forbidden');};
+localStorage.removeItem=localStorage.setItem;
+"""
+
+
+def _readonly(js: str) -> dict:
+    return _run(_READ_ONLY_SETUP + '\nvar WS = require(' + json.dumps(str(WATCHSTORE)) + ');\n' + js)
+
+
+@needs_node
+def test_portfolio_readonly_reads_owner_without_sync_or_private_notes():
+    out = _readonly("""
+    (async()=>{const result=await WS.portfolio.readOnly(); fire('online');
+      OUT({result,calls,selected,store:__store,listeners:Object.values(listeners).map(x=>x.length)});})();
+    """)
+    assert out['result']['state'] == 'ready'
+    assert out['result']['owner_id'] == 'owner-a'
+    assert out['result']['rows'][0]['ticker'] == 'ABC'
+    assert 'user_id' not in out['result']['rows'][0]
+    assert 'notes' not in out['selected']['cols']
+    assert out['selected']['opts'] == {'count': 'exact'}
+    assert out['calls'] == {'client': 1, 'session': 2, 'query': 1, 'writes': 0,
+                            'filter': ['user_id', 'owner-a'], 'limit': 501}
+    assert out['store'] == {}
+
+
+@needs_node
+@pytest.mark.parametrize('change', ['uid=null;', "uid='owner-b';", "fire('mdx-auth');"])
+def test_portfolio_readonly_discards_auth_change_during_query(change):
+    out = _readonly("""
+    (async()=>{let done; queryGate=new Promise(r=>done=r);
+      const pending=WS.portfolio.readOnly();
+      await new Promise(r=>setTimeout(r,0));
+      CHANGE
+      done(response); const result=await pending;
+      OUT({result,writes:calls.writes,aborted:querySignal.aborted});})();
+    """.replace('CHANGE', change))
+    assert out['result']['state'] == 'error'
+    assert out['result']['rows'] is None
+    assert out['result']['owner_id'] is None
+    assert out['writes'] == 0
+    assert out['aborted'] is True
+
+
+@needs_node
+def test_portfolio_readonly_rereads_canonical_after_final_sdk_session():
+    out = _readonly("""
+    sessionHook=async()=>{if(calls.session===2) uid=null;
+      return {data:{session:{user:{id:'owner-a'},access_token:token}}};};
+    WS.portfolio.readOnly().then(result=>OUT(result));
+    """)
+    assert out['state'] == 'error'
+    assert out['rows'] is None
+
+
+@needs_node
+@pytest.mark.parametrize('change', ['uid=null;', "uid='';", "MDXAuth.user=()=>{throw Error('secret');};"])
+def test_portfolio_readonly_does_not_read_anonymous_book(change):
+    out = _readonly(change + "WS.portfolio.readOnly().then(result=>OUT({result,calls}));")
+    assert out['result']['rows'] is None
+    assert out['calls']['client'] == out['calls']['query'] == 0
+    assert 'secret' not in json.dumps(out)
+
+
+@needs_node
+def test_portfolio_readonly_client_deadline_never_starts_late_query():
+    out = _readonly("""
+    (async()=>{WS._setCloudDeadlineMs(10); let done; clientGate=new Promise(r=>done=r);
+      const result=await WS.portfolio.readOnly(); done(client);
+      await new Promise(r=>setTimeout(r,0)); OUT({result,calls});})();
+    """)
+    assert out['result']['warning'] == 'read-timeout'
+    assert out['result']['rows'] is None
+    assert out['calls']['query'] == 0
+
+
+@needs_node
+def test_portfolio_readonly_late_query_cannot_seed_last_good_cache():
+    out = _readonly("""
+    (async()=>{WS._setCloudDeadlineMs(10); let done; queryGate=new Promise(r=>done=r);
+      const old=JSON.stringify(WS.portfolio.readState());
+      const result=await WS.portfolio.readOnly(); done(response);
+      await new Promise(r=>setTimeout(r,0));
+      OUT({result,cacheUnchanged:old===JSON.stringify(WS.portfolio.readState()),calls});})();
+    """)
+    assert out['result']['warning'] == 'read-timeout'
+    assert out['cacheUnchanged'] is True
+    assert out['calls']['writes'] == 0
+
+
+@needs_node
+@pytest.mark.parametrize('mutation', [
+    'response.count=501;', 'response.count=null;', 'response.count=2;',
+    'response.data=null;', "row.user_id='owner-b';", "row.shares=NaN;",
+    'response.data=[row,row]; response.count=2;', "response.error={message:'private SQL secret'};",
+])
+def test_portfolio_readonly_partial_or_invalid_book_is_unknown(mutation):
+    out = _readonly(mutation + 'WS.portfolio.readOnly().then(result=>OUT(result));')
+    assert out['state'] == 'error'
+    assert out['rows'] is None
+    assert 'secret' not in json.dumps(out)
+
+
+@needs_node
+@pytest.mark.parametrize('event', ['pagehide', 'caller-abort'])
+def test_portfolio_readonly_lifecycle_cancellation_discards_rows(event):
+    out = _readonly("""
+    (async()=>{let done; queryGate=new Promise(r=>done=r); const abort=new AbortController();
+      const pending=WS.portfolio.readOnly({signal:abort.signal});
+      await new Promise(r=>setTimeout(r,0));
+      EVENT
+      const result=await pending; done(response);
+      OUT({result,aborted:querySignal.aborted});})();
+    """.replace('EVENT', "fire('pagehide');" if event == 'pagehide' else 'abort.abort();'))
+    assert out['result']['warning'] == 'cancelled'
+    assert out['result']['rows'] is None
+    assert out['aborted'] is True
+
+
+@needs_node
+def test_portfolio_readonly_true_empty_book_is_distinct_from_unknown():
+    out = _readonly('response={data:[],count:0,error:null}; WS.portfolio.readOnly().then(result=>OUT(result));')
+    assert out['state'] == 'ready'
+    assert out['rows'] == []
+
+
+@needs_node
+@pytest.mark.parametrize('options', ["{signal:{aborted:false}}", "{get signal(){throw Error('secret');}}",
+    "{signal:{aborted:false,addEventListener(){throw Error('secret');},removeEventListener(){}}}"])
+def test_portfolio_readonly_setup_failure_is_owned_and_cleans_listeners(options):
+    out = _readonly("""
+    (async()=>{const errors=[];process.on('unhandledRejection',e=>errors.push(String(e)));
+      const before=Object.fromEntries(Object.entries(listeners).map(([k,v])=>[k,v.length]));
+      const result=await WS.portfolio.readOnly(OPTIONS);fire('pagehide');fire('mdx-auth');
+      await new Promise(r=>setTimeout(r,0));
+      OUT({result,errors,calls,before,after:Object.fromEntries(Object.entries(listeners).map(([k,v])=>[k,v.length]))});})();
+    """.replace('OPTIONS',options))
+    assert out['result']['state']=='error' and out['result']['rows'] is None
+    assert out['errors']==[] and out['calls']['query']==0
+    assert all(n==out['before'].get(k,0) for k,n in out['after'].items())
+
+
+@needs_node
+def test_portfolio_readonly_same_owner_rotation_is_session_change_not_account_change():
+    out = _readonly("""
+    sessionHook=async()=>({data:{session:{user:{id:uid},access_token:calls.session===1?token:'rotated'}}});
+    WS.portfolio.readOnly().then(result=>OUT(result));
+    """)
+    assert out['state']=='error' and out['rows'] is None
+    assert out['warning']=='session-changed'

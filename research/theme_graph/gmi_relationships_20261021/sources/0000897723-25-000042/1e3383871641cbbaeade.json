@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-11-13T19:29:45Z",
+ "accession": "0000897723-25-000042",
+ "cik": "0000897723",
+ "doc_byte_length": 1808701,
+ "doc_sha256": "8ab5f44b0934a976c93ec3779a1376eeca6e1ccb38db86fb7a16e3c779b17692",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-13",
+ "form": "10-K",
+ "period_of_report": "2025-09-27",
+ "primary_document": "sanm-20250927.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 278290,
+  "byte_start": 278083,
+  "normalized": "Sales to our ten largest customers represented 52% of our net sales in 2025. One customer represented 10.1% of our net sales in both 2025 and 2024 and one customer represented 13.2% of our net sales in 2023.",
+  "normalized_sha256": "1e3383871641cbbaeade83c29b15f45ab78077ceaaac7531964af53fa49d5b6f",
+  "raw": "Sales to our ten largest customers represented 52% of our net sales in 2025. One customer represented 10.1% of our net sales in both 2025 and 2024 and one customer represented 13.2% of our net sales in 2023.",
+  "raw_sha256": "1e3383871641cbbaeade83c29b15f45ab78077ceaaac7531964af53fa49d5b6f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/897723/000089772325000042/sanm-20250927.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,17 @@
+{
+  "operation_key": "cn-action-template-review-887917fb-20260923",
+  "reviewed_head": "887917fbb1190ddee5dcfc76de557ddb195d0c7b",
+  "native_session_id": "1f28a3ad-22da-43f0-baa5-199e5f05fe63",
+  "status": "PARTIAL",
+  "source_blockers": 0,
+  "source_majors": 0,
+  "dark_and_light_independently_reviewed": true,
+  "independent_test_execution": false,
+  "production_acceptance": false,
+  "closure": "SOL_CLOSED_STOP_ACKNOWLEDGED",
+  "active_child": false,
+  "raw_result_sha256": "145f2d92df67f0f697d61d6e962fed3310d07211e3f5582d8db1e5ae3caa6600",
+  "raw_stop_sha256": "e8bc2006c31ecad238770e20510db394d041081b7f783af566f1219db3751c04",
+  "report_sha256": "3ac2069d19950dd2642219a221354439177ac48025508d6ba802a315102077fe",
+  "closure_sha256": "3a4212dc2952410ef1dbdb027069faa9e5441fa036a41ce233fdef34187dc89e"
+}

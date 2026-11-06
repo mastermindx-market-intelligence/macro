@@ -422,7 +422,11 @@
       if (!response.ok) return null;
       return response.json();
     }).then(function (catalog) {
-      if (!catalog || catalog.schema !== 'earnings.public_wire_routes/v1' || !catalog.routes) return;
+      var supported = catalog && (
+        catalog.schema === 'earnings.public_wire_routes/v1' ||
+        catalog.schema === 'earnings.public_wire_routes/v2'
+      );
+      if (!supported || !catalog.routes) return;
       routeCatalog = catalog;
       if (events[selectedIndex]) updateEarningsRecord(events[selectedIndex]);
     }).catch(function () {

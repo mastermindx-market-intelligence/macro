@@ -435,7 +435,8 @@ def test_case5_prophet_unavailable() -> None:
     prophet = state["legs"]["opportunity_context"]["prophet"]
     assert prophet["ref"] is None
     assert prophet["state"] == "UNAVAILABLE"
-    assert prophet["reason"] == "no current Prophet US owner output for this security"
+    assert prophet["reason"] == ss._PROPHET_REASON
+    assert prophet["reason"] == "PROPHET_OWNER_OUTPUT_ABSENT"
 
 
 def test_case6_entry_unavailable() -> None:
@@ -646,7 +647,7 @@ def test_case12_compiler_failure_with_last_good() -> None:
         "generated_at": prior["generated_at"],
         "content_sha256": prior["content_sha256"],
         "dominant_degradation": prior["dominant_degradation"],
-        "reason": "prior cycle's committed security_state.v1",
+        "reason": ss._LAST_GOOD_REASON,
     }
     assert state["coverage"]["overall_state"] == "UNAVAILABLE"
     for leg in state["legs"].values():
@@ -745,7 +746,7 @@ def test_failure_shell_for_unread_fallback_subject_refuses_owner_pass() -> None:
         "generated_at": prior["generated_at"],
         "content_sha256": prior["content_sha256"],
         "dominant_degradation": prior["dominant_degradation"],
-        "reason": "prior cycle's committed security_state.v1",
+        "reason": ss._LAST_GOOD_REASON,
     }
     validator = _validator()
     assert list(validator.iter_errors(state)) == []
@@ -771,7 +772,9 @@ def test_failure_shell_for_real_owner_subject_keeps_owner_pass_leg() -> None:
         d.startswith("OWNER_COMPOSED_SUBJECT_CURRENT_ONLY:")
         for d in identity_proof["disclosures"]
     )
-    assert "confirmed" in state["legs"]["risk"]["failed_gates"][0]["reason"]
+    assert state["legs"]["risk"]["failed_gates"][0]["reason"] == (
+        "COMPILE_FAILED_AFTER_OWNER_CONFIRMED"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -807,6 +810,7 @@ def test_failure_shell_for_unread_fallback_subject_reason_does_not_claim_owner_c
     null_reason = state["legs"]["opportunity_context"]["entry"]["null_reason"]
     gate_reason = state["legs"]["risk"]["failed_gates"][0]["reason"]
     assert null_reason == gate_reason
+    assert null_reason == "OWNER_IDENTITY_UNAVAILABLE_THIS_CYCLE"
     for text in (null_reason, gate_reason):
         assert "composed" not in text
         assert "security_state" not in text
@@ -897,7 +901,7 @@ def test_last_good_eligibility_matrix() -> None:
     assert ss._is_last_good_eligible(eligible_prior, subject=subject) is True
     assert ss.derive_last_good(eligible_prior, subject=subject) == {
         "generated_at": "2026-08-20T00:00:00Z", "content_sha256": "a" * 64,
-        "dominant_degradation": "PARTIAL", "reason": "prior cycle's committed security_state.v1",
+        "dominant_degradation": "PARTIAL", "reason": ss._LAST_GOOD_REASON,
     }
 
     # identity_proof.state != PROVEN is never eligible, regardless of
@@ -958,7 +962,7 @@ def test_last_good_carries_forward_unchanged_across_two_consecutive_failures() -
         "generated_at": success_state["generated_at"],
         "content_sha256": success_state["content_sha256"],
         "dominant_degradation": success_state["dominant_degradation"],
-        "reason": "prior cycle's committed security_state.v1",
+        "reason": ss._LAST_GOOD_REASON,
     }
 
     failure_1 = ss.compile_security_state_failure(
@@ -980,7 +984,7 @@ def test_last_good_carries_forward_unchanged_across_two_consecutive_failures() -
     assert failure_2["last_good"] == expected_snapshot
     assert failure_2["last_good"] != {
         "generated_at": failure_1["generated_at"], "content_sha256": failure_1["content_sha256"],
-        "dominant_degradation": failure_1["dominant_degradation"], "reason": "prior cycle's committed security_state.v1",
+        "dominant_degradation": failure_1["dominant_degradation"], "reason": ss._LAST_GOOD_REASON,
     }
 
 
@@ -1740,3 +1744,240 @@ def test_compile_security_state_rejects_malformed_blob_without_expected_typed_st
     inp3["now"] = "not-a-datetime"
     with pytest.raises(ss.SecurityStateCompilationError):
         ss.compile_security_state(**inp3)
+
+
+# ---------------------------------------------------------------------------
+# B-F06-1 · second issuer end to end (golden MSFT byte compare) + producer
+# owner-routing (injected records, still zero I/O)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "input_name,expected_name",
+    [
+        ("golden_aapl_input.json", "golden_aapl_expected_output.json"),
+        ("golden_msft_input.json", "golden_msft_expected_output.json"),
+    ],
+)
+def test_golden_expected_output_is_byte_exact(input_name: str, expected_name: str) -> None:
+    state = ss.compile_security_state(**_load(input_name))
+    expected = json.loads(
+        (FIXTURE_DIR / expected_name).read_text(encoding="utf-8")
+    )
+    assert state == expected
+    assert state["content_sha256"] == expected["content_sha256"]
+
+
+def test_producer_composes_listing_key_through_the_issuer_reader() -> None:
+    from datetime import date as _date
+
+    from lib.dataos.identity import IssuerMaster, VendorAliasTable
+    from scripts.security_state_producer import _read_security_state_identity_rows
+
+    class _FakeDataDir:
+        """Stands in for a real ``data/reference`` directory: same ``/`` API,
+        but ``pandas.read_parquet`` reads an in-memory frame instead of a file.
+        Zero real I/O — pure injected records, per the module's own contract.
+        """
+
+        def __init__(self, frames: dict) -> None:
+            self._frames = frames
+
+        def __truediv__(self, name: str) -> "_FakePath":
+            return _FakePath(self._frames, name)
+
+    class _FakePath:
+        def __init__(self, frames: dict, name: str) -> None:
+            self._frames = frames
+            self._name = name
+
+        def __truediv__(self, name: str) -> "_FakePath":
+            return _FakePath(self._frames, name)
+
+    import pandas as pd
+
+    real_read_parquet = pd.read_parquet
+
+    def _fake_read_parquet(path, *a, **kw):
+        if isinstance(path, _FakePath):
+            return path._frames[path._name]
+        return real_read_parquet(path, *a, **kw)
+
+    security_master_row = {
+        "security_id": "SEC:US-XNAS-MSFT", "issuer_id": "ISS:US-XNAS-MSFT",
+        "issuer_state": "RESOLVED", "issuer_cik": "789019", "listing_key": "US-XNAS-MSFT",
+    }
+    frames = {
+        "security_master.parquet": pd.DataFrame([security_master_row]),
+        "vendor_aliases.parquet": pd.DataFrame([{
+            "vendor": "store", "vendor_symbol": "MSFT", "security_id": "SEC:US-XNAS-MSFT",
+            "valid_from": None, "valid_to": None,
+        }]),
+        "issuer_master.parquet": pd.DataFrame([{
+            "issuer_id": "ISS:US-XNAS-MSFT", "cik": "0000789019",
+            "legal_name": "MICROSOFT CORP", "status": "active",
+        }]),
+        "issuer_migrations.parquet": pd.DataFrame([], columns=["security_id"]),
+        "security_migrations.parquet": pd.DataFrame([], columns=["security_id"]),
+    }
+
+    monkey_target = pd.read_parquet
+    pd.read_parquet = _fake_read_parquet
+    try:
+        inputs, failures = _read_security_state_identity_rows(
+            _FakeDataDir(frames), ("MSFT",), decision_date=_date(2026, 9, 4),
+        )
+    finally:
+        pd.read_parquet = monkey_target
+
+    assert failures == {}
+    subject = inputs["MSFT"]["subject"]
+    assert subject.listing_key == "US-XNAS-MSFT"
+    assert subject.issuer_cik == "0000789019"
+    assert ("listing_reader", "IssuerMaster.listing_key_of_security") in subject.owner_evidence
+    assert ("cik_reader", "IssuerMaster.cik_of_issuer") in subject.owner_evidence
+
+
+def _producer_frames(*, bad_listing_key: bool = False, msft_missing_alias: bool = False) -> dict:
+    import pandas as pd
+
+    listing_key = "US-XNAS-AAPL" if bad_listing_key else "US-XNAS-MSFT"
+    security_master_rows = [{
+        "security_id": "SEC:US-XNAS-MSFT", "issuer_id": "ISS:US-XNAS-MSFT",
+        "issuer_state": "RESOLVED", "issuer_cik": "789019", "listing_key": listing_key,
+    }]
+    alias_rows = []
+    if not msft_missing_alias:
+        alias_rows.append({
+            "vendor": "store", "vendor_symbol": "MSFT", "security_id": "SEC:US-XNAS-MSFT",
+            "valid_from": None, "valid_to": None,
+        })
+    security_master_rows.append({
+        "security_id": "SEC:US-XNAS-AAPL", "issuer_id": "ISS:US-XNAS-AAPL",
+        "issuer_state": "RESOLVED", "issuer_cik": "320193", "listing_key": "US-XNAS-AAPL",
+    })
+    alias_rows.append({
+        "vendor": "store", "vendor_symbol": "AAPL", "security_id": "SEC:US-XNAS-AAPL",
+        "valid_from": None, "valid_to": None,
+    })
+    return {
+        "security_master.parquet": pd.DataFrame(security_master_rows),
+        "vendor_aliases.parquet": pd.DataFrame(alias_rows),
+        "issuer_master.parquet": pd.DataFrame([
+            {"issuer_id": "ISS:US-XNAS-MSFT", "cik": "0000789019",
+             "legal_name": "MICROSOFT CORP", "status": "active"},
+            {"issuer_id": "ISS:US-XNAS-AAPL", "cik": "0000320193",
+             "legal_name": "APPLE INC", "status": "active"},
+        ]),
+        "issuer_migrations.parquet": pd.DataFrame([], columns=["security_id"]),
+        "security_migrations.parquet": pd.DataFrame([], columns=["security_id"]),
+    }
+
+
+def _run_producer_with_fake_frames(frames: dict, tickers: tuple):
+    from datetime import date as _date
+
+    import pandas as pd
+
+    from scripts.security_state_producer import _read_security_state_identity_rows
+
+    class _FakeDataDir:
+        def __init__(self, fr: dict) -> None:
+            self._frames = fr
+
+        def __truediv__(self, name: str) -> "_FakePath":
+            return _FakePath(self._frames, name)
+
+    class _FakePath:
+        def __init__(self, fr: dict, name: str) -> None:
+            self._frames = fr
+            self._name = name
+
+        def __truediv__(self, name: str) -> "_FakePath":
+            return _FakePath(self._frames, name)
+
+    real_read_parquet = pd.read_parquet
+
+    def _fake_read_parquet(path, *a, **kw):
+        if isinstance(path, _FakePath):
+            return path._frames[path._name]
+        return real_read_parquet(path, *a, **kw)
+
+    pd.read_parquet = _fake_read_parquet
+    try:
+        return _read_security_state_identity_rows(
+            _FakeDataDir(frames), tickers, decision_date=_date(2026, 9, 4),
+        )
+    finally:
+        pd.read_parquet = real_read_parquet
+
+
+def test_producer_refuses_when_owner_listing_key_disagrees_with_alias_resolution() -> None:
+    frames = _producer_frames(bad_listing_key=True)
+    inputs, failures = _run_producer_with_fake_frames(frames, ("MSFT",))
+    assert "MSFT" not in inputs
+    assert "MSFT" in failures
+    assert "listing" in failures["MSFT"].lower() or "does not render" in failures["MSFT"].lower()
+
+
+def test_producer_isolates_one_tickers_owner_refusal() -> None:
+    frames = _producer_frames(msft_missing_alias=True)
+    inputs, failures = _run_producer_with_fake_frames(frames, ("AAPL", "MSFT"))
+    assert "AAPL" in inputs
+    assert "MSFT" not in inputs
+    assert "MSFT" in failures
+
+
+def test_disclosures_never_retire_the_open_limitations() -> None:
+    joined = "\n".join(ss.DISCLOSURES)
+    assert "ISSUERMASTER_CURRENT_IDENTITY_ONLY" in joined
+    assert "ALIAS_EPOCH_VALID_FROM" in joined
+
+
+def test_disclosures_only_retire_cik_and_namespace_limits_where_the_fix_lands() -> None:
+    """MAJOR fix (B-F06-1 review): the packet's own retirement gate names
+    CIK_LEG_UNOWNED_ACCESS and NO_GENERAL_NAMESPACE_RENDERER as the two
+    disclosures this packet may retire -- and only where the code that
+    actually closes them is live. The success-path DISCLOSURES tuple may
+    retire them (issuer_cik is now read through IssuerMaster.cik_of_issuer,
+    and MSFT resolves through the same owner-routed renderer as AAPL), but a
+    failure shell composed WITHOUT a completed owner read must never claim
+    the same closure -- it never ran this cycle."""
+    joined = "\n".join(ss.DISCLOSURES)
+    assert "CIK_LEG_UNOWNED_ACCESS" not in joined
+    assert "NO_GENERAL_NAMESPACE_RENDERER" not in joined
+
+    unresolved = ss.compile_security_state_failure(
+        subject=ss.MSFT_SUBJECT, validator=_validator(), now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    unresolved_disclosures = unresolved["identity_proof"]["disclosures"]
+    unresolved_joined = "\n".join(unresolved_disclosures)
+    assert "CIK_LEG_UNOWNED_ACCESS" not in unresolved_joined
+    assert "NO_GENERAL_NAMESPACE_RENDERER" not in unresolved_joined
+    assert "OWNER_COMPOSED_SUBJECT_CURRENT_ONLY" not in unresolved_joined
+    assert "PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE" in unresolved_joined
+    assert "IDENTITY_BRIDGE_UNRESOLVED_THIS_CYCLE" in unresolved_joined
+    assert "ISSUER_LINEAGE_UNREAD" in unresolved_joined
+    assert "ALIAS_EPOCH_UNREAD" in unresolved_joined
+    # A3: no DISCLOSURES member may appear on the M1 path (reader claims on
+    # a cycle with no reader). Not tuple-equality with UNREAD_DISCLOSURES.
+    for disclosure in ss.DISCLOSURES:
+        code = disclosure.split(":", 1)[0]
+        assert disclosure not in unresolved_disclosures
+        assert not any(item.startswith(code + ":") for item in unresolved_disclosures), (
+            f"M1 disclosures must not carry DISCLOSURES member {code}: {unresolved_disclosures!r}"
+        )
+    assert unresolved["identity_proof"]["refusals"] == ["IDENTITY_UNRESOLVED"]
+    assert unresolved["identity_proof"]["equalities"] == []
+    assert unresolved["legs"]["opportunity_context"]["entry"]["null_reason"] == (
+        "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    )
+    assert unresolved["legs"]["risk"]["failed_gates"][0]["code"] == (
+        "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    )
+    assert unresolved["legs"]["risk"]["failed_gates"][0]["reason"] == (
+        "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+    )
+    assert unresolved["legs"]["opportunity_context"]["prophet"]["reason"] == (
+        "PROPHET_OWNER_OUTPUT_ABSENT"
+    )

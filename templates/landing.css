@@ -1390,6 +1390,7 @@ footer{background:#04070c;border-top:1px solid #10161f;padding:56px 0 48px;color
   .mx td.feat.has-tip.tip-open .tipbox{opacity:1;visibility:visible}
 }
 @media (max-width:680px){
+  .f-cols{flex-wrap:wrap;min-width:0;max-width:100%}
   .nav-right>a:not(.btn):not(.gearbtn){display:none}
   .nav-right{gap:10px}
   .tri3{grid-template-columns:1fr}

@@ -389,10 +389,222 @@ def _assign_map(tree: ast.AST) -> dict[str, str]:
             for target in node.targets:
                 if isinstance(target, ast.Name):
                     seen[target.id].add(ast.unparse(node.value))
+                elif isinstance(target, ast.Tuple) and len(target.elts) == 2 \
+                        and all(isinstance(e, ast.Name) for e in target.elts):
+                    # `template, page_key = ISSUER_TEMPLATE`: bind each element
+                    # to its literal so the write loop keeps its template.
+                    pair = _pair_literal(tree, node.value)
+                    if pair:
+                        seen[target.elts[0].id].add("'" + pair[0] + "'")
+                        seen[target.elts[1].id].add("'" + pair[1] + "'")
         elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) \
                 and node.value is not None:
             seen[node.target.id].add(ast.unparse(node.value))
     return {k: next(iter(v)) for k, v in seen.items() if len(v) == 1}
+
+
+_MUTATING_METHODS = frozenset({"clear", "pop", "popitem", "setdefault",
+                               "update", "append", "extend", "insert",
+                               "remove", "discard"})
+
+
+def _reassigned_or_mutated(tree: ast.AST, name: str) -> bool:
+    """True unless ``name`` is assigned exactly once and never mutated.
+
+    A mapping that is rebound, subscript-assigned or mutator-called
+    (``TABLE.update(...)``) is dynamic: the census refuses it rather than
+    attributing pages to a mapping the code may change at run time.  Read-only
+    calls (``TABLE.items()``) are not mutation.
+    """
+    assignments = 0
+    stores = 0
+    parents = {id(child): node for node in ast.walk(tree)
+               for child in ast.iter_child_nodes(node)}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and node.id == name:
+            if isinstance(node.ctx, ast.Store):
+                stores += 1
+            elif isinstance(node.ctx, ast.Del):
+                return True
+            elif isinstance(node.ctx, ast.Load):
+                parent = parents.get(id(node))
+                # Only the source shapes this parser can prove immutable:
+                # TABLE.items() and an unpack of a named literal pair. An
+                # alias, function argument or subscript can hide mutation.
+                items = (isinstance(parent, ast.Attribute)
+                         and parent.value is node and parent.attr == "items")
+                unpack = (isinstance(parent, ast.Assign)
+                          and parent.value is node and len(parent.targets) == 1
+                          and isinstance(parent.targets[0], ast.Tuple))
+                if not (items or unpack):
+                    return True
+        elif isinstance(node, ast.arg) and node.arg == name:
+            return True
+        elif getattr(node, "name", None) == name:
+            return True
+        elif isinstance(node, ast.alias) and (node.asname or node.name) == name:
+            return True
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == name:
+                    assignments += 1
+                if isinstance(target, ast.Subscript) \
+                        and isinstance(target.value, ast.Name) \
+                        and target.value.id == name:
+                    return True
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) \
+                and node.target.id == name and node.value is not None:
+            assignments += 1
+        elif isinstance(node, ast.AugAssign) and isinstance(node.target, ast.Name) \
+                and node.target.id == name:
+            return True
+        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) \
+                and node.func.attr in _MUTATING_METHODS \
+                and isinstance(node.func.value, ast.Name) \
+                and node.func.value.id == name:
+            return True
+    return assignments != 1 or stores != 1
+
+
+def _safe_template_name(template: str) -> bool:
+    """One concrete path within templates/, shared by literal bindings."""
+    return bool(re.fullmatch(r"[A-Za-z0-9_./-]+\.html\.j2", template)
+                and not template.startswith("/") and ".." not in template
+                and all(part not in ("", ".") for part in template.split("/")))
+
+
+def _literal_template_pair(value: ast.expr) -> Optional[tuple[str, str]]:
+    """A literal ``(template.html.j2, key)`` pair: both strings, no traversal.
+
+    The template must be a CONCRETE ``.html.j2`` literal — no ``..`` and no
+    brace placeholder, which would make it a format string rather than a name
+    — so a pair that could reach outside the templates directory, or that is
+    only filled in at run time, attributes nothing.
+    """
+    if not (isinstance(value, ast.Tuple) and len(value.elts) == 2
+            and all(isinstance(e, ast.Constant) and isinstance(e.value, str)
+                    for e in value.elts)):
+        return None
+    template, key = value.elts[0].value, value.elts[1].value
+    if not _safe_template_name(template) or not key:
+        return None
+    return template, key
+
+
+def _module_page_tables(tree: ast.AST) -> dict[str, dict[str, tuple[str, str]]]:
+    """Module-level render tables: ``NAME = {"page.html": ("t.html.j2", key)}``.
+
+    Accepted only when every entry is fully literal — a concrete
+    ``.html`` basename with no directory part and no ``..``, mapped to a
+    ``(template, key)`` pair of string literals — and only when NAME is
+    assigned exactly once and never mutated. Dict unpacking or another dynamic
+    entry can replace an earlier literal key, so it refuses the whole table.
+    """
+    tables: dict[str, dict[str, tuple[str, str]]] = {}
+    for name, node in _module_dict_assigns(tree).items():
+        entries: dict[str, tuple[str, str]] = {}
+        valid = True
+        for key, value in zip(node.keys, node.values):
+            if not (isinstance(key, ast.Constant) and isinstance(key.value, str)
+                    and re.fullmatch(r"[A-Za-z0-9_.-]+\.html", key.value)
+                    and ".." not in key.value and "{" not in key.value
+                    and "}" not in key.value and value is not None):
+                valid = False
+                break
+            pair = _literal_template_pair(value)
+            if pair is None:
+                valid = False
+                break
+            entries[key.value] = pair
+        if valid and entries and not _reassigned_or_mutated(tree, name):
+            tables[name] = entries
+    return tables
+
+
+def _module_dict_assigns(tree: ast.AST) -> dict[str, ast.Dict]:
+    """Module-level ``NAME = {...}`` dict literals, assigned to one name.
+
+    Trusted or not, these are the names a render loop may unpack — so a loop
+    over a REFUSED mapping can be kept out of the module-wide resolution too.
+    """
+    out: dict[str, ast.Dict] = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 \
+                and isinstance(node.targets[0], ast.Name) \
+                and isinstance(node.value, ast.Dict):
+            out[node.targets[0].id] = node.value
+    return out
+
+
+def _pair_literal(tree: ast.AST, value: ast.expr) -> Optional[tuple[str, str]]:
+    """Resolve an unpack's RHS to a literal ``(template, key)`` pair.
+
+    Accepts the pair itself, or a NAME bound exactly once at module level to
+    one (``template, page_key = ISSUER_TEMPLATE``), so a builder that unpacks
+    a named constant inside its render function keeps the template.
+    """
+    pair = _literal_template_pair(value)
+    if pair:
+        return pair
+    if isinstance(value, ast.Name):
+        for node in tree.body:
+            if isinstance(node, ast.Assign) and len(node.targets) == 1 \
+                    and isinstance(node.targets[0], ast.Name) \
+                    and node.targets[0].id == value.id:
+                pair = _literal_template_pair(node.value)
+                if pair and not _reassigned_or_mutated(tree, value.id):
+                    return pair
+                return None
+    return None
+
+
+def _loop_write_calls(node: ast.For) -> tuple[list[ast.Call], bool]:
+    """Claim all writes, but prove only one direct first write in a plain body.
+
+    GMI writes first, then records the path with append(). Conditionals,
+    break/continue, assignments and nested scopes are deliberately unsupported;
+    their writes remain gaps instead of falling back to another loop's name.
+    """
+    calls = [child for statement in node.body + node.orelse
+             for child in ast.walk(statement)
+             if isinstance(child, ast.Call) and isinstance(child.func, ast.Name)
+             and child.func.id == "write_page" and child.args]
+    direct = bool(len(calls) == 1 and node.body and not node.orelse
+                  and all(isinstance(statement, ast.Expr) for statement in node.body)
+                  and node.body[0].value is calls[0])
+    return calls, direct
+
+
+def _bound_loop_table(node: ast.For) -> Optional[tuple[str, str, str]]:
+    """``for page, (template, key) in TABLE.items():`` over a module dict.
+
+    Returns ``(table_name, page_var, template_var)`` when the loop unpacks a
+    dict — trusted or refused. Unknown mappings must also keep their lexical
+    loop out of the unsafe module-wide name substitution.
+    """
+    if not (isinstance(node.iter, ast.Call)
+            and isinstance(node.iter.func, ast.Attribute)
+            and node.iter.func.attr == "items"
+            and isinstance(node.iter.func.value, ast.Name)):
+        return None
+    if not (isinstance(node.target, ast.Tuple) and len(node.target.elts) == 2
+            and isinstance(node.target.elts[0], ast.Name)
+            and isinstance(node.target.elts[1], ast.Tuple)
+            and len(node.target.elts[1].elts) == 2
+            and all(isinstance(e, ast.Name) for e in node.target.elts[1].elts)):
+        return None
+    return (node.iter.func.value.id, node.target.elts[0].id,
+            node.target.elts[1].elts[0].id)
+
+
+def _writes_bound_page(call: ast.Call, page_var: str) -> bool:
+    """True for ``write_page(SITE / page_var, ...)`` — the one-dynamic-segment
+    shape over a site-root base this lexical binding vouches for."""
+    path = call.args[0]
+    return (isinstance(path, ast.BinOp) and isinstance(path.op, ast.Div)
+            and isinstance(path.left, ast.Name)
+            and path.left.id in _SITE_ROOT_BASES
+            and isinstance(path.right, ast.Name) and path.right.id == page_var)
 
 
 def _placeholder(expr: str) -> str:
@@ -468,6 +680,12 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
 
     Returns (resolved sites, unresolved ``(file, expression)`` pairs).  The
     unresolved list is reported as a coverage gap rather than swept away.
+
+    A render loop that unpacks a literal module-level table —
+    ``for page, (template, key) in PAGES.items():`` — binds those names
+    LEXICALLY for its body, so its write sites are resolved per table entry
+    instead of through the module-wide assign map, whose one binding for the
+    loop variable belongs to whichever other loop assigned it.
     """
     sites: list[_WriteSite] = []
     unresolved: list[tuple[str, str]] = []
@@ -481,13 +699,63 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
             continue
         names = _assign_map(tree)
         # name -> the template it renders, for `tmpl = env.get_template(...)`
-        # followed by `write_page(out, tmpl.render(...))`.
+        # followed by `write_page(out, tmpl.render(...))`, or for a name bound
+        # to a template literal (`template, _ = ISSUER_TEMPLATE`).
         rendered: dict[str, str] = {}
         for name, expr in names.items():
             found = _TEMPLATE_CALL_RE.search(expr)
-            if found:
+            if found and _safe_template_name(found.group(1)):
                 rendered[name] = found.group(1)
+                continue
+            quoted = re.fullmatch(r"""['"]([\w.\-/]+\.html\.j2)['"]""", expr)
+            if quoted and _safe_template_name(quoted.group(1)):
+                rendered[name] = quoted.group(1)
+        tables = _module_page_tables(tree)
+        handled: set[int] = set()
         for node in ast.walk(tree):
+            bound = isinstance(node, ast.For) and _bound_loop_table(node)
+            if not bound:
+                continue
+            table_name, page_var, template_var = bound
+            table = tables.get(table_name)
+            calls, direct = _loop_write_calls(node)
+            if not direct or node.iter.args or node.iter.keywords or any(
+                    isinstance(child, ast.Name)
+                    and isinstance(child.ctx, (ast.Store, ast.Del))
+                    and child.id in (page_var, template_var)
+                    for statement in node.body for child in ast.walk(statement)):
+                table = None
+            for call in calls:
+                handled.add(id(call))
+                if table is None:
+                    # The mapping is dynamic, reassigned or mutated: refuse it,
+                    # and keep the call OUT of the module-wide map too — that
+                    # map's one binding for the loop variable belongs to some
+                    # other loop.  Report the gap instead of guessing.
+                    unresolved.append((path.name, ast.unparse(call.args[0])))
+                    continue
+                if not _writes_bound_page(call, page_var):
+                    # Not the `site / page` shape this binding vouches for —
+                    # report the gap rather than substitute anything.
+                    unresolved.append((path.name, ast.unparse(call.args[0])))
+                    continue
+                call_text = ast.unparse(call)
+                literal = _TEMPLATE_CALL_RE.search(call_text)
+                if literal and not _safe_template_name(literal.group(1)):
+                    literal = None
+                bound_tmpl = re.search(r"get_template\(\s*([A-Za-z_]\w*)\s*\)",
+                                       call_text)
+                named_template = bool(bound_tmpl
+                                      and bound_tmpl.group(1) == template_var)
+                for key, (template, _key) in table.items():
+                    sites.append(_WriteSite(
+                        "/" + key, False, f"scripts/{path.name}",
+                        literal.group(1) if literal
+                        else (template if named_template else None),
+                        call.lineno))
+        for node in ast.walk(tree):
+            if id(node) in handled:
+                continue
             if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
                     and node.func.id == "write_page" and node.args):
                 continue
@@ -499,7 +767,7 @@ def scan_write_sites(scripts_dir: Path) -> tuple[list[_WriteSite], list[tuple[st
             template = None
             call_text = ast.unparse(node)
             found = _TEMPLATE_CALL_RE.search(call_text)
-            if found:
+            if found and _safe_template_name(found.group(1)):
                 template = found.group(1)
             else:
                 for name in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", call_text):

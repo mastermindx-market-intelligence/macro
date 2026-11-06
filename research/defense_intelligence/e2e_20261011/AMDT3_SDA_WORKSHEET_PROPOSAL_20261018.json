@@ -1,0 +1,80 @@
+{
+  "contract": "government_program_ontology_review_worksheet.v1",
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-10-18T04:23:08+00:00",
+  "reviewer": "Assigned Fable Defense Meta-CEO; OpenAI AI source adjudication; root01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "coverage": [
+    {
+      "scope": "public_agreement",
+      "subject_type": "source_evidence",
+      "subject_id": "ev:bc3b45478747"
+    }
+  ],
+  "rows": [
+    {
+      "action": "admit",
+      "target_kind": "evidence",
+      "candidate_row": {
+        "evidence_id": "ev:bc3b45478747",
+        "evidence_class": "official_contract_announcement",
+        "sha256": "bc3b45478747e0a2135676a2ebc80dcdd604ea43f45617a8efa16345d9ea68cb",
+        "source_url": "https://www.sda.mil/space-development-agency-issues-awards-to-build-36-accelerated-missile-defense-tracking-layer-satellites-for-tranche-3-in-support-of-golden-dome-for-america/",
+        "retrieved_from_url": "https://www.sda.mil/space-development-agency-issues-awards-to-build-36-accelerated-missile-defense-tracking-layer-satellites-for-tranche-3-in-support-of-golden-dome-for-america/",
+        "retrieved_at": "2026-10-18T02:55:55+00:00",
+        "known_at": "2026-10-18T02:55:55+00:00",
+        "claim_scopes": [
+          "public_agreement"
+        ]
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "public_agreement_assertion",
+      "candidate_row": {
+        "id": "prog-agreement:eec195ec468839fecf413ea8",
+        "revision": 1,
+        "source_url": "https://www.sda.mil/space-development-agency-issues-awards-to-build-36-accelerated-missile-defense-tracking-layer-satellites-for-tranche-3-in-support-of-golden-dome-for-america/",
+        "program_label": "Accelerated Missile Defense Tranche 3 (AMDT3)",
+        "umbrella_label": "Golden Dome for America",
+        "agreement_form": "firm_fixed_price_ota_prototype",
+        "parties": [
+          {
+            "name_literal": "L3Harris Technologies, Inc.",
+            "entity_id": null,
+            "potential_value": {
+              "value": 955,
+              "unit": "USD_million",
+              "approximate": true
+            },
+            "announced_vehicles": 18
+          },
+          {
+            "name_literal": "Sierra Space Corporation",
+            "entity_id": null,
+            "potential_value": {
+              "value": 798,
+              "unit": "USD_million",
+              "approximate": false
+            },
+            "announced_vehicles": 18
+          }
+        ],
+        "collective_value": {
+          "value": 1.75,
+          "unit": "USD_billion",
+          "approximate": true,
+          "overlaps_named_party_values": true
+        },
+        "expected_launch_year": 2028,
+        "published_on": "2026-07-13",
+        "known_at": "2026-10-18T04:23:08+00:00",
+        "verification_state": "reviewed",
+        "evidence_refs": [
+          "ev:bc3b45478747"
+        ],
+        "predecessor_id": null,
+        "succession_reason": null
+      }
+    }
+  ]
+}

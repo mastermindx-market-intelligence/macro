@@ -1,0 +1,60 @@
+{
+  "scope": "Existing installed Fabric correctness repair supporting the Paper waves",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "authority": "Chairman Oct6 instruction to audit faulty Fabric and match complexity to worker tier",
+  "faults": [
+    {
+      "path": "ext/host_pick.py",
+      "before": "lane_ceiling alone could advertise occupied Mini2 while max_active1 refused START",
+      "after": "min of validated lane_ceiling and max_active; missing or malformed limits refuse"
+    },
+    {
+      "path": "ext/remote_sub.sh",
+      "before": "remote economic guard and forwarding omitted POOL_TASK_COMPLEXITY",
+      "after": "same existing complexity field passed to launch policy and quoted remote environment"
+    }
+  ],
+  "review": {
+    "verdict": "APPROVE_SCOPED",
+    "artifact_sha256": "64fa60800135727dabadebf3c86e40fb0f525e8f3a6b35746a75da56ef32dc67"
+  },
+  "tests": {
+    "distinct_scoped_cases": 116,
+    "installed_smoke_cases": 52,
+    "baseline_regressions_failed": 3,
+    "baseline_fixture_mismatch_repaired": true
+  },
+  "live_readback": {
+    "occupied_mini2_ineligible": true,
+    "controller_launch": "rs_20261006T211612Z_90859",
+    "launch_guard_complexity": "C1_ROUTINE_BOUNDED",
+    "grok_repair_launch": "rs_20261006T211859Z_97566",
+    "repair_guard_complexity": "C2_COMPLEX_BOUNDED"
+  },
+  "routing": {
+    "routine_bounded_build": "GLM5.3Flash",
+    "very_easy_repetitive": "MiniMax",
+    "hard_or_failed_bounded": "qualified fullGLM/Grok/QwenMax with concrete witness and admitted route",
+    "concurrency": "latest user instruction supersedes earlier one-leaf programme ceiling; actual host/provider/root grants and review reserves remain",
+    "root_conserved": true
+  },
+  "limitations": [
+    "No capacity or provider-hold change.",
+    "Selector has no automatic difficulty-to-model promotion; explicit selected model and failure witness are still required.",
+    "Served model and billed usage remain unattested.",
+    "Ubuntu1 free-model run failed process census and returned no source; no model-quality conclusion.",
+    "Two-level native Sol to Fabric leaves executed; complete end-to-end domain acceptance and arbitrary recursive operator fanout are not proven."
+  ],
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/fabric-audit",
+  "reviewed_install_source": {
+    "ext/host_pick.py": "943af11ff48da95c09082e2589e1e3d1ac79dca400c4f23ff14d803cd1f494f2",
+    "ext/remote_sub.sh": "6520c8f43aaab308804e4eba0b44576ebd9b1cbcbbeb9afc8d31b61646801d41"
+  },
+  "subsequent_shared_writer_delta": {
+    "previous_reviewed_sha256": "6520c8f43aaab308804e4eba0b44576ebd9b1cbcbbeb9afc8d31b61646801d41",
+    "current_sha256": "08b99caed1932a1033e84acf20e51bb322762bbbdb722b10e4d119a81cf53382",
+    "delta": "Other concurrent writer added forwarding of POOL_AUTO_COMPACT_WINDOW_TOKENS and POOL_MAX_TURNS at14:16:37; root, task-complexity and previous repair preserved.",
+    "current_source_effect": "current originalcontroller launch saw remote command not found at line786; receipt and cleanup still valid. Source modified while shell process was running; precise causal attribution not proven.",
+    "action": "Preserve newer writer bytes; do not restore old source. Readback narrow delta only. No live-current exact old-hash claim."
+  }
+}

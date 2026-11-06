@@ -1,0 +1,32 @@
+{
+  "run_id": "market-time-machine-20261015-cli-01",
+  "root": "market-time-machine-20261015",
+  "parent": "market-time-machine-20261015",
+  "worker": "GLM on Ubuntu0",
+  "retained_stdout_sha256": "dc5c19c13e6f40207c71dbf8fad34c31d3ce824d3dfca258359bcc7620b7a5e1",
+  "artifact_export": "/Volumes/Mastermind/evidence/market-time-machine-20261015-cli-worker",
+  "accepted": true,
+  "accepted_by": "deterministic",
+  "acceptance_calls": 1,
+  "acceptance_reconciliation": "Original acceptance call was interrupted during terminal cleanup; canonical same-ID status readback confirms ACCEPTED. It was not retried.",
+  "worker_tests_in_real_checkout": 45,
+  "combined_tests_after_integration_and_reader_repair": 117,
+  "files": {
+    "scripts/market_memory_history.py": "d69c31123091c052c94b895e949b85585991e4f06afb5c47a314146f4d2de717",
+    "tests/test_market_memory_history_cli.py": "f60aafa7c90f2dd94e0fe47e05578d8e142502c450e9a98279285b6eb24b0a0e"
+  },
+  "real_reader_exit_proof": {
+    "schema": "market_memory.cli_exit_proof.v1",
+    "rc": 0,
+    "rows": 23,
+    "date": "2008-09-15",
+    "elapsed_seconds": 0.452,
+    "timeout_seconds": 15,
+    "async_dataset_scan": false,
+    "original_hang_pid": 34483,
+    "original_terminal_pid": 34454,
+    "original_terminal_cleanup": "terminated; no original process remains; Fabric acceptance separately reconciled ACCEPTED"
+  },
+  "observed_integration_defect": "Parent archive async Arrow dataset scan hung at interpreter finalization after a valid response. Replaced with bounded synchronous single-file read. Worker CLI bytes are unchanged.",
+  "independent_review_of_entire_program": false
+}

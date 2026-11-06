@@ -250,7 +250,7 @@ _WARNING_TEXT: dict[str, dict[str, str]] = {
     },
 }
 
-_PROPHET_REASON = "no current Prophet US owner output for this security"
+_PROPHET_REASON = "PROPHET_OWNER_OUTPUT_ABSENT"
 
 # Decision Spine required axes (Sol blocker 1): state + change. legs.evidence
 # REMAINS a leg but is supporting metadata for change's provenance, not its
@@ -556,7 +556,7 @@ def _run_identity_chain(
         "R4", "issuer.security_set", security_set, "expected_security_set", [subject.security_id],
     ))
     legs.append(_leg_receipt(
-        "R4", f"the owner-composed issuer's CURRENT security set is exactly {{{subject.security_id}}}",
+        "R4", "the owner-composed issuer's CURRENT security set is exactly this security",
         "data/reference/security_master.parquet",
         "scripts/security_state_producer.py::_read_security_state_identity_rows",
         [("security_set", security_set), ("count", len(security_set))],
@@ -1317,7 +1317,7 @@ def _build_risk_leg(
         })
     ladder = blob.get("ladder") if isinstance(blob.get("ladder"), Mapping) else {}
     if ladder.get("dir") == "down":
-        failed_gates.append({"code": "LADDER_DOWNTREND", "reason": "ladder.dir=down"})
+        failed_gates.append({"code": "LADDER_DOWNTREND", "reason": "LADDER_DIRECTION_DOWN"})
 
     conflicted_leg_names = [
         name for name, leg in (("evidence", evidence_leg), ("opportunity_context", opportunity_leg))
@@ -1593,7 +1593,7 @@ def compile_security_state(
     return state
 
 
-_LAST_GOOD_REASON = "prior cycle's committed security_state.v1"
+_LAST_GOOD_REASON = "PRIOR_CYCLE_COMMITTED_STATE"
 
 
 def _prior_matches_subject(
@@ -1723,6 +1723,7 @@ def compile_security_state_failure(
     *, subject: SecurityStateSubject, validator: Draft202012Validator,
     now: str,
     prior_state: Mapping[str, Any] | None = None,
+    owner_read_completed: bool = True,
 ) -> dict[str, Any]:
     """Pure fallback shell for the PRODUCER's own exception-containment boundary.
 
@@ -1739,41 +1740,40 @@ def compile_security_state_failure(
     reason is accepted at this public-output boundary.
     """
     subject = _require_subject(subject)
-    # MAJOR-2 (round-3 review, 2026-09-06): this reason string is public and
-    # feeds both the opportunity-context null_reason and the risk failed_gate
-    # below, so it must never claim owner identity was composed on the
-    # UNREAD fallback path (no reader ran for that subject at all). Bound
-    # after ``owner_unread`` is known, in plain consumer-facing language --
-    # not the internal artifact name, "compiler", or "composed" jargon the
-    # prior single string used. The schema types both destination fields as
-    # a plain string ("contracts/market_os/security_state.v1.schema.json"),
-    # so this stays EN-only; it is out of scope for this diff to add a
-    # bilingual pair for those two fields.
     owner_unread = _owner_identity_unread(subject.owner_evidence)
-    if owner_unread:
-        public_reason = (
-            "This security's information could not be updated this cycle "
-            "because ownership data was unavailable."
-        )
-    else:
-        public_reason = (
-            "This security's information could not be finished this cycle "
-            "after its ownership was confirmed."
-        )
-    blocked_summary = _bilingual(
-        "This security's state could not be compiled this cycle (a compiler failure, not an absence).",
-        "本次未能编译该证券的状态（属于编译失败，并非事件不存在）。",
-    )
-    # B2 (META-CEO ruling 2026-09-06): a fallback subject (AAPL_SUBJECT /
-    # MSFT_SUBJECT, selected when the owner-identity batch itself failed)
-    # never had an owner reader run this cycle. The R8 leg must say so —
-    # result 'fail' with an OWNER_IDENTITY_UNREAD refusal code and no
-    # fabricated reader names — rather than presenting a PASS that implies
-    # VendorAliasTable/IssuerMaster were consulted and agreed. A genuine
-    # owner-composed subject (compile_security_state raised for some OTHER
-    # reason after identity was proven) still gets the honest PASS leg.
-    # (``owner_unread`` was already computed above for ``public_reason``.)
-    if owner_unread:
+    if not owner_read_completed:
+        # Packet M1 path: the owner-identity batch read itself never ran.
+        # public_reason is a CODE, never prose — the ticker page maps it.
+        public_reason = "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+        gate_code = "OWNER_IDENTITY_BATCH_UNAVAILABLE"
+        unread_by_code = {item.split(":", 1)[0]: item for item in UNREAD_DISCLOSURES}
+        identity_proof = {
+            "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+            "legs": [_leg_receipt(
+                "R8", "owner-identity batch was unavailable this cycle; subject is the frozen "
+                "pinned allowlist mapping for this ticker, never a live owner read",
+                "SecurityStateSubject (frozen pinned allowlist config, not a producer owner receipt)",
+                "scripts/security_state_producer.py::_read_security_state_identity_rows",
+                [("subject_ticker_display", subject.ticker_display)],
+                "fail", "IDENTITY_UNRESOLVED",
+            )],
+            "equalities": [],
+            "refusals": ["IDENTITY_UNRESOLVED"],
+            "disclosures": [
+                "PINNED_IDENTITY_NOT_OWNER_READ_THIS_CYCLE: security_id, issuer_id, listing_key "
+                "and issuer_cik are the frozen allowlist mapping for this ticker; no "
+                "VendorAliasTable or IssuerMaster read ran this cycle",
+                "IDENTITY_BRIDGE_UNRESOLVED_THIS_CYCLE: the owner-backed identity chain could "
+                "not be re-proven this cycle; treat this shell as an unresolved identity, not "
+                "a confirmed one",
+                unread_by_code["ISSUER_LINEAGE_UNREAD"],
+                unread_by_code["ALIAS_EPOCH_UNREAD"],
+            ],
+        }
+    elif owner_unread:
+        # Main B2/MAJOR-2 path: fallback subject carries explicit UNREAD evidence.
+        public_reason = "OWNER_IDENTITY_UNAVAILABLE_THIS_CYCLE"
+        gate_code = "COMPILER_FAILURE"
         r8_leg = _leg_receipt(
             "R8",
             "owner identity batch failed this cycle; no owner reader ran for "
@@ -1784,31 +1784,45 @@ def compile_security_state_failure(
             [("subject_issuer_cik", subject.issuer_cik), ("owner_identity", "UNREAD")],
             "fail", "OWNER_IDENTITY_UNREAD",
         )
-        equality_right_label = "fallback_subject.issuer_cik"
-        refusals = ["COMPILER_FAILURE", "OWNER_IDENTITY_UNREAD"]
+        refusals: list[str] = []
+        refusals.append("COMPILER_FAILURE")
+        refusals.append("OWNER_IDENTITY_UNREAD")
+        identity_proof = {
+            "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+            "legs": [r8_leg],
+            "equalities": [_equality(
+                "R8", "failure_shell.subject.issuer_cik", subject.issuer_cik,
+                "fallback_subject.issuer_cik", subject.issuer_cik,
+            )],
+            "refusals": refusals,
+            "disclosures": list(UNREAD_DISCLOSURES),
+        }
     else:
-        r8_leg = _leg_receipt(
-            "R8", "failure shell retains the owner-composed current CIK without claiming a full identity-chain pass",
-            "SecurityStateSubject (producer-composed owner receipt)",
-            "scripts/security_state_producer.py::_read_security_state_identity_rows",
-            [
-                ("subject_issuer_cik", subject.issuer_cik),
-                *[(f"owner_{key}", value) for key, value in sorted(subject.owner_evidence)],
-            ],
-            "pass", None,
-        )
-        equality_right_label = "owner_subject.issuer_cik"
-        refusals = ["COMPILER_FAILURE"]
-    identity_proof = {
-        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
-        "legs": [r8_leg],
-        "equalities": [_equality(
-            "R8", "failure_shell.subject.issuer_cik", subject.issuer_cik,
-            equality_right_label, subject.issuer_cik,
-        )],
-        "refusals": refusals,
-        "disclosures": list(UNREAD_DISCLOSURES) if owner_unread else list(DISCLOSURES),
-    }
+        public_reason = "COMPILE_FAILED_AFTER_OWNER_CONFIRMED"
+        gate_code = "COMPILER_FAILURE"
+        identity_proof = {
+            "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+            "legs": [_leg_receipt(
+                "R8", "failure shell retains the owner-composed current CIK without claiming a full identity-chain pass",
+                "SecurityStateSubject (producer-composed owner receipt)",
+                "scripts/security_state_producer.py::_read_security_state_identity_rows",
+                [
+                    ("subject_issuer_cik", subject.issuer_cik),
+                    *[(f"owner_{key}", value) for key, value in sorted(subject.owner_evidence)],
+                ],
+                "pass", None,
+            )],
+            "equalities": [_equality(
+                "R8", "failure_shell.subject.issuer_cik", subject.issuer_cik,
+                "owner_subject.issuer_cik", subject.issuer_cik,
+            )],
+            "refusals": ["COMPILER_FAILURE"],
+            "disclosures": list(DISCLOSURES),
+        }
+    blocked_summary = _bilingual(
+        "This security's state could not be compiled this cycle (a compiler failure, not an absence).",
+        "本次未能编译该证券的状态（属于编译失败，并非事件不存在）。",
+    )
     state_leg = {
         "deterministic_state_refs": list(_STATE_LEG_REFS),
         "ladder_state": None, "ladder_direction": None, "values_read": [],
@@ -1827,7 +1841,7 @@ def compile_security_state_failure(
         "coverage_state": "UNAVAILABLE",
     }
     risk_leg = {
-        "risk_refs": [], "failed_gates": [{"code": "COMPILER_FAILURE", "reason": public_reason}],
+        "risk_refs": [], "failed_gates": [{"code": gate_code, "reason": public_reason}],
         "strongest_unresolved_fact": {"state": "unavailable", "leg": None, "code": None, "en": None, "zh": None},
         "coverage_state": "UNAVAILABLE",
     }

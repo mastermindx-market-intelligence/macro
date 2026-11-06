@@ -1,0 +1,40 @@
+{
+  "started_at": "2026-10-20T10:19:44.584958+00:00",
+  "argv": [
+    "git",
+    "--no-optional-locks",
+    "-C",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "fetch",
+    "--no-tags",
+    "origin",
+    "main"
+  ],
+  "scope": "normal fetch of main alone through original worktree; no index, branch, source or primary-checkout mutation",
+  "exit": 0,
+  "stdout": "",
+  "stderr": "From https://github.com/mastermindx-market-intelligence/macro\n * branch                        main       -> FETCH_HEAD\n",
+  "after": {
+    "head": {
+      "exit": 0,
+      "stdout": "e2d10f933587f58be8716505529a37f8839901f7\n",
+      "stderr": ""
+    },
+    "main": {
+      "exit": 0,
+      "stdout": "42c859546ececa797b400db0adeb8c5a22f96832\n",
+      "stderr": ""
+    },
+    "fetch_head": {
+      "exit": 0,
+      "stdout": "42c859546ececa797b400db0adeb8c5a22f96832\n",
+      "stderr": ""
+    },
+    "status": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "finished_at": "2026-10-20T10:19:47.222542+00:00"
+}

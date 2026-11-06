@@ -1,0 +1,747 @@
+{
+  "id": "press-research_desk-2026-10-11-81675c403cda",
+  "desk": "research_desk",
+  "publication": "mastermind_research",
+  "as_of": "2026-10-11",
+  "staged_at": "2026-10-11T09:26:49Z",
+  "sources": [
+    "research_vault:marketdesk-f4gxuf5mmau-53a7ed"
+  ],
+  "source_revisions": {},
+  "seed_refs": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "research_vault:marketdesk-f4gxuf5mmau-53a7ed"
+  ],
+  "slot": {
+    "id": "press-research_desk-2026-10-11-81675c403cda",
+    "desk": "research_desk",
+    "publication": "mastermind_research",
+    "byline": "Research Desk — Mastermind Research",
+    "cluster": "research-desk",
+    "as_of": "2026-10-11",
+    "model_key": "press_research",
+    "min_words": 500,
+    "max_words": 900,
+    "min_anchored_receipts": 4,
+    "allowed_links": [
+      "https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html"
+    ],
+    "story": {
+      "kind": "research_report",
+      "title_hint": "Vanda Research What Equity Flows Are Telling Us Under The Hood 16Sep2026",
+      "institution": "Vanda Research",
+      "side": "sell",
+      "published_at": "2026-09-21T19:00:53Z",
+      "tickers": [],
+      "themes": []
+    },
+    "primary_source": {
+      "kind": "first_party",
+      "name": "Mastermind Research: Vanda Research What Equity Flows Are Telling Us Under The Hood 16Sep2026",
+      "url": "https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html",
+      "ref": "research_vault:marketdesk-f4gxuf5mmau-53a7ed"
+    },
+    "sources": [
+      "research_vault:marketdesk-f4gxuf5mmau-53a7ed"
+    ],
+    "seed_refs": [
+      "artifact:data/gex/latest.json",
+      "artifact:data/market_state/latest.json",
+      "artifact:data/risk_radar/forward_log.jsonl",
+      "artifact:site/basketdata/breadth_split.json",
+      "artifact:site/basketdata/fear_greed.json",
+      "research_vault:marketdesk-f4gxuf5mmau-53a7ed"
+    ],
+    "facts": [
+      {
+        "id": "vault_point_0",
+        "text": "Institutional AI Buying Stalling: Institutional call ratios for Mag 7/SOXX AI complex stalled post-bullish positioning, signaling reduced buying pace amid slowing momentum.",
+        "ref": "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html",
+        "source_name": "Mastermind Research coverage of Vanda Research",
+        "dated": "2026-09-21"
+      },
+      {
+        "id": "vault_point_1",
+        "text": "CRWD Drives Retail AI Trend: CRWD dominates 53% of retail call activity (1M calls at 97th percentile), with retail buying underlying stock + calls, indicating new AI-themed retail trend.",
+        "ref": "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html",
+        "source_name": "Mastermind Research coverage of Vanda Research",
+        "dated": "2026-09-21"
+      },
+      {
+        "id": "vault_point_2",
+        "text": "NVDA Retail Dominance & Selectivity: NVDA accounts for 63% of SOXX retail inflows; retail selective (not indiscriminate), with 19/30 semis showing positive buying (Intel/Broadcom-led dips).",
+        "ref": "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html",
+        "source_name": "Mastermind Research coverage of Vanda Research",
+        "dated": "2026-09-21"
+      },
+      {
+        "id": "vault_point_3",
+        "text": "Fed/Geopolitics Constrain Broad Index Moves: Broader index buying requires Fed policy normalization and geopolitical tension fade; current retail flows remain bottom-up and selective.",
+        "ref": "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html",
+        "source_name": "Mastermind Research coverage of Vanda Research",
+        "dated": "2026-09-21"
+      },
+      {
+        "id": "vault_meta",
+        "text": "The report is Vanda Research research published 2026-09-21, 4 pages.",
+        "ref": "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+        "tier": "first_party",
+        "values": [
+          "4"
+        ],
+        "url": "https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html",
+        "source_name": "Mastermind Research vault",
+        "dated": "2026-09-21"
+      },
+      {
+        "id": "market_state_score",
+        "text": "Mastermind's market-state composite reads 53 of 100 (MIXED) as of 2026-10-09.",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "53"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "market_state_trend",
+        "text": "Market-state component Trend & technicals scores 70 (weight 0.24).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "70",
+          "0.24"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "market_state_risk",
+        "text": "Market-state component Risk appetite scores 27 (weight 0.18).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "27",
+          "0.18"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "market_state_vol",
+        "text": "Market-state component volatility backdrop scores 87 (weight 0.16).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "87",
+          "0.16"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "market_state_breadth",
+        "text": "Market-state component Breadth & participation scores 0 (weight 0.16).",
+        "ref": "artifact:data/market_state/latest.json",
+        "tier": "first_party",
+        "values": [
+          "0",
+          "0.16"
+        ],
+        "url": null,
+        "source_name": "Mastermind market-state engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "gex_dia",
+        "text": "DIA dealer gamma is 0.05bn net with the gamma flip at 511.14; spot sits 0.33% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "0.05",
+          "511.14",
+          "0.33",
+          "512.82"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_iwm",
+        "text": "IWM dealer gamma is -4.45bn net with the gamma flip at 289.63; spot sits -4.17% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "-4.45",
+          "289.63",
+          "-4.17",
+          "278.03"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_ndx",
+        "text": "NDX dealer gamma is 2.35bn net with the gamma flip at 30232.43; spot sits 2.07% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "2.35",
+          "30232.43",
+          "2.07",
+          "30871.8"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_qqq",
+        "text": "QQQ dealer gamma is 0.92bn net with the gamma flip at 748.96; spot sits 0.24% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "0.92",
+          "748.96",
+          "0.24",
+          "750.79"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_rut",
+        "text": "RUT dealer gamma is -2.51bn net with the gamma flip at 2878.14; spot sits -2.69% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "-2.51",
+          "2878.14",
+          "-2.69",
+          "2802.66"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_spx",
+        "text": "SPX dealer gamma is 76.9bn net with the gamma flip at 7715.74; spot sits 0.95% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "76.9",
+          "7715.74",
+          "0.95",
+          "7790.1"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "gex_spy",
+        "text": "SPY dealer gamma is 1.59bn net with the gamma flip at 775.05; spot sits 0.15% from it as of 2026-10-08.",
+        "ref": "artifact:data/gex/latest.json",
+        "tier": "first_party",
+        "values": [
+          "1.59",
+          "775.05",
+          "0.15",
+          "776.23"
+        ],
+        "url": null,
+        "source_name": "Mastermind dealer-positioning engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "breadth_split",
+        "text": "As of 2026-10-08, 62.3% of the AI cohort is above its 50-day average against 27.0% of the non-AI cohort — a 35.3 point spread.",
+        "ref": "artifact:site/basketdata/breadth_split.json",
+        "tier": "first_party",
+        "values": [
+          "62.3",
+          "27.0",
+          "35.3",
+          "26.1",
+          "74.1"
+        ],
+        "url": null,
+        "source_name": "Mastermind breadth engine",
+        "dated": "2026-10-08"
+      },
+      {
+        "id": "fear_greed",
+        "text": "The Mastermind fear/greed dial reads 52 (Neutral) as of 2026-10-09, built from 11 qualifying legs.",
+        "ref": "artifact:site/basketdata/fear_greed.json",
+        "tier": "first_party",
+        "values": [
+          "52",
+          "11"
+        ],
+        "url": null,
+        "source_name": "Mastermind sentiment engine",
+        "dated": "2026-10-09"
+      },
+      {
+        "id": "risk_radar",
+        "text": "The risk radar is in `caution` with rates the dominant scare (score 70.2); modelled 21-session drawdown probability 0.19 as of 2026-10-09.",
+        "ref": "artifact:data/risk_radar/forward_log.jsonl",
+        "tier": "first_party",
+        "values": [
+          "70.2",
+          "0.19",
+          "0.1",
+          "0.042"
+        ],
+        "url": null,
+        "source_name": "Mastermind risk radar",
+        "dated": "2026-10-09"
+      }
+    ],
+    "raw_documents": [
+      {
+        "ref": "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+        "text": "Institutional AI Buying Stalling: Institutional call ratios for Mag 7/SOXX AI complex stalled post-bullish positioning, signaling reduced buying pace amid slowing momentum. CRWD Drives Retail AI Trend: CRWD dominates 53% of retail call activity (1M calls at 97th percentile), with retail buying underlying stock + calls, indicating new AI-themed retail trend. NVDA Retail Dominance & Selectivity: NVDA accounts for 63% of SOXX retail inflows; retail selective (not indiscriminate), with 19/30 semis showing positive buying (Intel/Broadcom-led dips). Fed/Geopolitics Constrain Broad Index Moves: Broader index buying requires Fed policy normalization and geopolitical tension fade; current retail flows remain bottom-up and selective."
+      }
+    ],
+    "chronicle_context": {
+      "lines": [],
+      "narratives": [],
+      "coverage": {
+        "start": "2013-04-02",
+        "end": "2026-10-08",
+        "note": "no events in window 2026-09-27..2026-10-11; chronicle coverage is 2013-04-02..2026-10-08"
+      },
+      "budget_used": 0
+    },
+    "slug_hint": "vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20",
+    "triage": {
+      "tier": "flagship",
+      "rank": 1,
+      "w_score": 0.474833,
+      "w_score_pre_veto": 0.474833,
+      "components": {
+        "institution_tier": 0.5,
+        "cluster_density": 0.0,
+        "relevance": 0.333333,
+        "extraction_quality": 0.87625,
+        "attention_potential": 0.64,
+        "novelty": 0.5
+      },
+      "veto": null,
+      "scoring_version": "w2r.1",
+      "score_source": "planner-recomputed",
+      "datasketch_present": false,
+      "ordered": true
+    }
+  },
+  "attempts": [
+    {
+      "attempt": 0,
+      "ok": true,
+      "failed": [],
+      "our_value_share": 0.4626,
+      "max_block_jaccard": 0.0275,
+      "provider": "codex"
+    }
+  ],
+  "status": "passed",
+  "slug": "ai-flows-are-strong-but-narrow",
+  "draft": {
+    "title": "AI Flows Are Strong but Narrow",
+    "description": "Vanda sees selective retail AI demand as institutional buying slows. Our measurements show strong AI participation but weak breadth and caution.",
+    "slug": "ai-flows-are-strong-but-narrow",
+    "body_html": "<p class=\"press-byline\">Research Desk — Mastermind Research</p><p>Vanda Research’s <a href=\"https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html\">September 21 coverage</a> makes a clean distinction: retail demand remains active in selected AI names while institutional buying has lost pace. The 4-page report argues that the market is not seeing a broad, indiscriminate rush into the theme. It instead sees a concentrated search for particular exposures, with the next broad index move dependent on easier policy conditions and less geopolitical strain.</p><h2>What the desk argued</h2><p>Vanda’s central observation is that institutional call activity in the Mag 7 and SOXX-linked AI complex stalled after bullish positioning had already built. That matters because a slowdown in incremental buying can leave a popular theme dependent on a narrower set of participants. The report does not call the AI trade abandoned; it describes a change in who is supplying the marginal demand.</p><p>Retail activity provides the counterweight. CRWD represented 53% of retail call activity, with 1M calls at the 97th percentile, according to the desk’s reading. NVDA accounted for 63% of SOXX retail inflows, while 19/30 semiconductor names showed positive buying. That combination supports Vanda’s claim that retail interest is selective rather than simply chasing every name attached to the theme.</p><h2>What our data says</h2><p>Our measurements agree that the market is split. Mastermind’s market-state composite was 53 of 100, or MIXED, on 2026-10-09. Trend and technicals scored 70, but risk appetite scored 27 and breadth and participation scored 0. Those readings fit a market where price action can remain resilient in favored groups without demonstrating broad underlying participation.</p><p>The breadth data is especially consistent with Vanda’s focus on concentration. As of 2026-10-08, 62.3% of the AI cohort was above its 50-day average, compared with 27.0% of the non-AI cohort. The 35.3 point spread says leadership is real, but it also says the leadership has not spread evenly through the rest of the market.</p><p>Dealer positioning adds a second qualification. SPX dealer gamma was 76.9bn net, while SPY dealer gamma was 1.59bn net and spot sat 0.15% from its flip level. QQQ dealer gamma was 0.92bn net, with spot 0.24% from its flip level. These are conditions in which index behavior may be sensitive to relatively small changes around key levels, even as stock-specific flows continue.</p><h2>What would change the picture</h2><p>A broader improvement in participation would weaken the case that this is chiefly a concentrated AI-flow story. Our breadth measure is currently the clearest point of disagreement with a more durable, market-wide advance: it stands at 0, despite the 70 score for trend and technicals.</p><p>The risk backdrop also argues for observation over extrapolation. The risk radar remained in caution on 2026-10-09, with rates the dominant scare at 70.2 and modelled 21-session drawdown probability at 0.19. The fear/greed dial was 52, or Neutral, across 11 qualifying legs. A turn toward broader participation, alongside calmer rate pressure and sustained institutional buying, would materially alter this reading. Until then, the evidence supports watching selective AI demand rather than treating it as proof of a fully broad market move.</p><p class=\"press-footer\">Educational content — not investment advice. Markets involve risk.</p>"
+  },
+  "validator_report": {
+    "ok": true,
+    "failed": [],
+    "checks": [
+      {
+        "name": "fact_anchor",
+        "ok": true,
+        "detail": "every number and quote resolves to a source fact",
+        "metrics": {
+          "numbers_checked": 25,
+          "unanchored": [],
+          "source_pool_size": 97,
+          "unsourced_quotes": []
+        }
+      },
+      {
+        "name": "claim_scope",
+        "ok": true,
+        "detail": "not a canonical claim-scoped slot",
+        "metrics": {
+          "active": false
+        }
+      },
+      {
+        "name": "close_paraphrase",
+        "ok": true,
+        "detail": "max block/source overlap 0.028 <= 0.18",
+        "metrics": {
+          "max_block_jaccard": 0.0275,
+          "doc_jaccard": 0.005,
+          "threshold": 0.18,
+          "shingle_n": 5,
+          "worst_source": "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+          "worst_block": "Retail activity provides the counterweight. CRWD represented 53% of retail call activity, with 1M calls at the 97th perc"
+        }
+      },
+      {
+        "name": "our_value",
+        "ok": true,
+        "detail": "our-value share 46.3% (>= floor 40%) over 31 sentence(s); 21 distinct receipt(s)",
+        "metrics": {
+          "our_value_share": 0.4626,
+          "floor": 0.4,
+          "our_words": 235,
+          "total_words": 508,
+          "granularity": "sentence",
+          "receipts": 21,
+          "receipt_values": [
+            21.0,
+            53.0,
+            1.0,
+            97.0,
+            63.0,
+            19.0,
+            30.0,
+            100.0,
+            70.0,
+            27.0,
+            62.3,
+            50.0,
+            35.3,
+            76.9,
+            1.59,
+            0.15,
+            0.92,
+            0.24,
+            70.2,
+            0.19,
+            52.0
+          ],
+          "sentences": [
+            {
+              "words": 23,
+              "tier": "first_party"
+            },
+            {
+              "words": 17,
+              "tier": "neutral"
+            },
+            {
+              "words": 24,
+              "tier": "neutral"
+            },
+            {
+              "words": 4,
+              "tier": "neutral"
+            },
+            {
+              "words": 23,
+              "tier": "neutral"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 5,
+              "tier": "neutral"
+            },
+            {
+              "words": 19,
+              "tier": "first_party"
+            },
+            {
+              "words": 16,
+              "tier": "first_party"
+            },
+            {
+              "words": 20,
+              "tier": "neutral"
+            },
+            {
+              "words": 4,
+              "tier": "neutral"
+            },
+            {
+              "words": 8,
+              "tier": "neutral"
+            },
+            {
+              "words": 11,
+              "tier": "first_party"
+            },
+            {
+              "words": 16,
+              "tier": "first_party"
+            },
+            {
+              "words": 19,
+              "tier": "neutral"
+            },
+            {
+              "words": 11,
+              "tier": "neutral"
+            },
+            {
+              "words": 22,
+              "tier": "first_party"
+            },
+            {
+              "words": 25,
+              "tier": "first_party"
+            },
+            {
+              "words": 6,
+              "tier": "neutral"
+            },
+            {
+              "words": 24,
+              "tier": "first_party"
+            },
+            {
+              "words": 15,
+              "tier": "first_party"
+            },
+            {
+              "words": 22,
+              "tier": "neutral"
+            },
+            {
+              "words": 5,
+              "tier": "neutral"
+            },
+            {
+              "words": 17,
+              "tier": "neutral"
+            },
+            {
+              "words": 28,
+              "tier": "first_party"
+            },
+            {
+              "words": 9,
+              "tier": "neutral"
+            },
+            {
+              "words": 24,
+              "tier": "first_party"
+            },
+            {
+              "words": 12,
+              "tier": "first_party"
+            },
+            {
+              "words": 18,
+              "tier": "neutral"
+            },
+            {
+              "words": 21,
+              "tier": "neutral"
+            }
+          ]
+        }
+      },
+      {
+        "name": "receipts",
+        "ok": true,
+        "detail": "21 distinct anchored receipt(s) (>= minimum 4)",
+        "metrics": {
+          "receipts": 21,
+          "minimum": 4,
+          "values": [
+            21.0,
+            53.0,
+            1.0,
+            97.0,
+            63.0,
+            19.0,
+            30.0,
+            100.0,
+            70.0,
+            27.0,
+            62.3,
+            50.0,
+            35.3,
+            76.9,
+            1.59,
+            0.15,
+            0.92,
+            0.24,
+            70.2,
+            0.19,
+            52.0
+          ]
+        }
+      },
+      {
+        "name": "quote_lint",
+        "ok": true,
+        "detail": "0 quote(s), longest 0 words",
+        "metrics": {
+          "quotes": 0,
+          "max_quotes": 2,
+          "max_quote_words": 25,
+          "oversized": []
+        }
+      },
+      {
+        "name": "banned_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "advice_lexicon",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "cheese_test",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": []
+        }
+      },
+      {
+        "name": "ai_tells",
+        "ok": true,
+        "detail": "clean",
+        "metrics": {
+          "hits": [],
+          "not_only_but_also": 0,
+          "budget": 1
+        }
+      },
+      {
+        "name": "primary_source",
+        "ok": true,
+        "detail": "first-party slot: receipts carried inline (see our_value / receipts); no above-the-fold source link required",
+        "metrics": {
+          "kind": "first_party",
+          "url": "https://www.mastermind-x.com/research/vanda-research-what-equity-flows-are-telling-us-under-the-hood-16sep20-53a7ed.html",
+          "named": null,
+          "linked": null
+        }
+      },
+      {
+        "name": "link_allowlist",
+        "ok": true,
+        "detail": "1 internal link(s), all public",
+        "metrics": {
+          "internal_links": 1,
+          "offenders": [],
+          "prefixes": [
+            "/research/",
+            "/blog/",
+            "/stocks/"
+          ]
+        }
+      },
+      {
+        "name": "byline",
+        "ok": true,
+        "detail": "desk byline present",
+        "metrics": {
+          "byline": "Research Desk — Mastermind Research",
+          "block": true,
+          "text": true
+        }
+      },
+      {
+        "name": "footer",
+        "ok": true,
+        "detail": "standing footer present",
+        "metrics": {
+          "block": true,
+          "text": true,
+          "required_text": "Educational content — not investment advice. Markets involve risk."
+        }
+      },
+      {
+        "name": "frontmatter",
+        "ok": true,
+        "detail": "frontmatter matches the free-estate contract",
+        "metrics": {
+          "title_len": 30,
+          "description_len": 144,
+          "slug": "ai-flows-are-strong-but-narrow",
+          "problems": [],
+          "upstream": ""
+        }
+      },
+      {
+        "name": "length",
+        "ok": true,
+        "detail": "508 words (budget 500–900)",
+        "metrics": {
+          "words": 508,
+          "min_words": 500,
+          "max_words": 900
+        }
+      },
+      {
+        "name": "self_similarity",
+        "ok": true,
+        "detail": "max overlap with our last 30 days + staged siblings is 0.174 <= 0.18",
+        "metrics": {
+          "max_jaccard": 0.1739,
+          "threshold": 0.18,
+          "peers": 1,
+          "worst_slug": "staged:ttwo-hits-first-prophet-target-as-market-stays-mixed"
+        }
+      }
+    ],
+    "our_value_share": 0.4626,
+    "our_value_granularity": "sentence",
+    "receipts": 21,
+    "max_block_jaccard": 0.0275,
+    "doc_jaccard": 0.005,
+    "words": 508,
+    "slug": "ai-flows-are-strong-but-narrow",
+    "desk": "research_desk",
+    "publication": "mastermind_research"
+  },
+  "provider": "codex",
+  "model": "claude-sonnet-4-6"
+}

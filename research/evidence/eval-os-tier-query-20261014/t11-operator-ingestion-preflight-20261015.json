@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-10-15T10:39:12.314355+00:00",
+  "installed_head": "834534e29e260519d75ecb4d1d8f2d2a0e0c0224",
+  "admin": "MainPID=1756456\nExecMainStartTimestamp=Wed 2026-10-14 09:27:15 UTC\nActiveState=active",
+  "operator_ledger_metadata": {
+    "exists": true,
+    "bytes": 680527,
+    "mtime": "2026-09-13T08:07:31.813231+00:00"
+  },
+  "matching_systemd_or_cron_config_paths": [],
+  "scope": "Metadata and owner configuration names only; no ledger rows, outcomes, environment credentials or mutations. Absence of these matches is not a complete absence proof.",
+  "release_status": "pre-release readiness observation, not post-release numeric execution or adoption"
+}

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+import json
 
 import pytest
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -55,10 +56,12 @@ def test_2_every_row_carries_bilingual_strings_and_valid_state(tmp_path):
 
 
 def test_3_techmat_present_and_none():
-    # techmat has no producers declared at all — verify from the frozen registry
-    # directly (no filesystem needed) that its axes are unset.
+    # Annual physical context now has a native producer; this does not supply
+    # commodity prices or complete semiconductor production-chain coverage.
     techmat = next(f for f in FAMILIES if f["id"] == "techmat")
-    assert techmat["price"] is None and techmat["supply"] is None
+    assert techmat["price"] is None
+    assert techmat["supply"]["producer"] == "engine/critical_minerals_supply.py"
+    assert techmat["supply"]["contract"] == "critical_minerals_supply.v1"
 
 
 def test_3b_techmat_row_state_is_none(tmp_path):
@@ -68,6 +71,44 @@ def test_3b_techmat_row_state_is_none(tmp_path):
     assert techmat["state"] == "none"
     assert techmat["price_en"] == "Not covered yet"
     assert techmat["supply_en"] == "Not covered yet"
+
+
+def _minerals_artifact(root, *, partial=False, promoted=False):
+    (root / "engine" / "critical_minerals_supply.py").write_text("# native producer present\n")
+    source = json.loads((_REPO_ROOT / "tests/fixtures/usgs_mcs/display_context.json").read_text())
+    if partial:
+        source["commodities"] = {"cobalt": source["commodities"]["cobalt"]}
+    if promoted:
+        source["authority"]["may_size"] = True
+    path = root / "data/neuralweb/critical_minerals_supply.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(source))
+
+
+def test_annual_minerals_source_does_not_claim_prices_or_complete_supply_chain(tmp_path):
+    root = _fake_root(tmp_path)
+    _minerals_artifact(root)
+    row = next(r for r in compute_coverage_matrix(root)["rows"] if r["id"] == "techmat")
+    assert row["state"] == "partial"
+    assert row["state_en"] == "Supply context only"
+    assert row["price_en"] == "Not covered yet"
+    assert "4 of 4" in row["supply_en"] and "remain uncovered" in row["supply_en"]
+    assert row["sources"][0]["source_en"] in PUBLIC_SOURCES
+
+
+def test_partial_minerals_source_counts_only_the_qualified_rows(tmp_path):
+    root = _fake_root(tmp_path)
+    _minerals_artifact(root, partial=True)
+    row = next(r for r in compute_coverage_matrix(root)["rows"] if r["id"] == "techmat")
+    assert row["state"] == "partial" and "1 of 4" in row["supply_en"]
+    assert "4 of 4" not in row["supply_en"]
+
+
+def test_artifact_existence_cannot_promote_minerals_authority(tmp_path):
+    root = _fake_root(tmp_path)
+    _minerals_artifact(root, promoted=True)
+    row = next(r for r in compute_coverage_matrix(root)["rows"] if r["id"] == "techmat")
+    assert row["state"] == "none" and row["sources"] == []
 
 
 def test_4_covered_axis_names_existing_producer_and_public_source(tmp_path):
@@ -183,3 +224,203 @@ def test_10_partial_artifact_set_never_claims_full_multi_commodity_coverage(tmp_
     assert precious2["state"] == "partial"  # "prices only" — precious has no supply axis
     assert precious2["price_en"] == "Daily prices for gold, silver, platinum and palladium"
     assert precious2["sources"], "a complete artifact set must now cite its source"
+
+
+# ---------------------------------------------------------------------------
+# B-F09-B5-1 — semis / critical-tech source census (append-only; tests 11-20)
+# ---------------------------------------------------------------------------
+
+_CENSUS = _REPO_ROOT / "research" / "market_intelligence_productization" / \
+    "MARKET_ONTOLOGY_F09_SEMIS_SOURCE_CENSUS_2026-09-09.md"
+
+_CENSUS_START = "<!-- census-table:start -->"
+_CENSUS_END = "<!-- census-table:end -->"
+_CENSUS_HEADER = [
+    "candidate_source",
+    "sub_domain",
+    "what_it_would_cover",
+    "public_or_commercial",
+    "integrated_today",
+    "licence_required",
+    "verification_method",
+    "provenance",
+    "status",
+    "verified_negative_statement",
+]
+_STATUS_VOCAB = {
+    "PUBLIC-BUILDABLE",
+    "PUBLIC-BUILDABLE-DARK",
+    "COMMERCIAL-GATE",
+    "VERIFIED-NEGATIVE",
+    "OUT-OF-SCOPE-THIS-PACKET",
+}
+_IN_SUBDOMAINS = (
+    "ai_semiconductors",
+    "semicap_equipment",
+    "rare_earth_critical_min",
+    "nuclear_power",
+)
+_ADJACENT_SUBDOMAINS = ("solar", "grid_electrification")
+_IN_TERMINAL = {
+    "PUBLIC-BUILDABLE",
+    "PUBLIC-BUILDABLE-DARK",
+    "COMMERCIAL-GATE",
+    "VERIFIED-NEGATIVE",
+}
+_PROVENANCE_VOCAB = {"KNOWN-FROM-REPO", "KNOWN-FROM-MODEL-KNOWLEDGE"}
+_INTEGRATED_PATH = re.compile(r"^[\w./-]+\.(py|yml|yaml|md|csv):\d+$")
+_SEP_CELL = re.compile(r"^:?-+:?$")
+_FORBIDDEN_STATUS = re.compile(r"(?i)unverified|unknown|tbd|pending|n/?a")
+_MATRIX_CSV = (
+    _REPO_ROOT / "research" / "market_intelligence_productization" /
+    "MARKET_ONTOLOGY_F09_COMMODITY_COVERAGE_MATRIX_2026-09-02.csv"
+)
+
+
+def _split_md_row(line: str) -> list[str]:
+    raw = line.strip()
+    if not raw.startswith("|"):
+        return []
+    tmp = raw.replace("\\|", "\x00")
+    parts = [p.replace("\x00", "|").strip() for p in tmp.split("|")]
+    if parts and parts[0] == "":
+        parts = parts[1:]
+    if parts and parts[-1] == "":
+        parts = parts[:-1]
+    return parts
+
+
+def _census_table_rows():
+    text = _CENSUS.read_text(encoding="utf-8")
+    start = text.index(_CENSUS_START)
+    end = text.index(_CENSUS_END)
+    block = text[start + len(_CENSUS_START):end]
+    rows = []
+    for line in block.splitlines():
+        cells = _split_md_row(line)
+        if not cells:
+            continue
+        if all(_SEP_CELL.match(c) for c in cells):
+            continue
+        rows.append(cells)
+    return rows
+
+
+def _census_data_rows():
+    rows = _census_table_rows()
+    assert rows, "census table is empty"
+    header, data = rows[0], rows[1:]
+    assert header == _CENSUS_HEADER
+    return data
+
+
+def test_census_exists_and_is_marker_bounded():
+    assert _CENSUS.exists()
+    text = _CENSUS.read_text(encoding="utf-8")
+    assert text.count(_CENSUS_START) == 1
+    assert text.count(_CENSUS_END) == 1
+    assert text.index(_CENSUS_START) < text.index(_CENSUS_END)
+
+
+def test_census_table_header_is_the_frozen_ten_columns():
+    rows = _census_table_rows()
+    assert rows, "no table rows inside census markers"
+    assert rows[0] == _CENSUS_HEADER
+
+
+def test_census_every_row_status_is_in_the_closed_vocabulary():
+    for cells in _census_data_rows():
+        assert len(cells) == 10, cells
+        status = cells[8]
+        assert status, cells
+        assert status in _STATUS_VOCAB, status
+
+
+def test_census_no_row_is_left_unverified():
+    text = _CENSUS.read_text(encoding="utf-8")
+    start = text.index(_CENSUS_START)
+    end = text.index(_CENSUS_END)
+    block = text[start:end]
+    for cells in _census_data_rows():
+        status = cells[8]
+        assert not _FORBIDDEN_STATUS.search(status), status
+        assert "UNVERIFIED" not in status
+    # Literal UNVERIFIED never appears in column 9 of the table block.
+    for line in block.splitlines():
+        cells = _split_md_row(line)
+        if len(cells) != 10:
+            continue
+        if all(_SEP_CELL.match(c) for c in cells):
+            continue
+        if cells == _CENSUS_HEADER:
+            continue
+        assert "UNVERIFIED" not in cells[8], cells[8]
+
+
+def test_census_every_in_scope_subdomain_reaches_a_terminal_status():
+    by_sub = {s: [] for s in _IN_SUBDOMAINS}
+    for cells in _census_data_rows():
+        sub, status = cells[1], cells[8]
+        if sub in by_sub:
+            by_sub[sub].append(status)
+        if status == "OUT-OF-SCOPE-THIS-PACKET":
+            assert sub in _ADJACENT_SUBDOMAINS, (sub, status)
+        else:
+            if sub in _ADJACENT_SUBDOMAINS:
+                raise AssertionError(
+                    f"adjacent sub-domain {sub} must be OUT-OF-SCOPE-THIS-PACKET"
+                )
+    for sub, statuses in by_sub.items():
+        assert statuses, f"no rows for in-scope sub-domain {sub}"
+        for status in statuses:
+            assert status in _IN_TERMINAL, (sub, status)
+
+
+def test_census_commercial_gate_rows_name_vendor_and_licence_class():
+    banned = {"", "unknown", "TBD", "n/a"}
+    for cells in _census_data_rows():
+        if cells[8] != "COMMERCIAL-GATE":
+            continue
+        assert cells[0], cells
+        assert cells[5], cells
+        assert cells[3] == "COMMERCIAL", cells
+        assert cells[5] not in banned, cells[5]
+
+
+def test_census_verified_negative_rows_carry_the_search_performed():
+    for cells in _census_data_rows():
+        statement = cells[9]
+        if cells[8] == "VERIFIED-NEGATIVE":
+            assert statement != "n/a", cells
+            assert len(statement) >= 40, statement
+        else:
+            assert statement == "n/a", cells
+
+
+def test_census_every_row_has_a_verification_method_and_provenance():
+    for cells in _census_data_rows():
+        method, provenance, status = cells[6], cells[7], cells[8]
+        assert method, cells
+        assert provenance in _PROVENANCE_VOCAB, provenance
+        if provenance == "KNOWN-FROM-MODEL-KNOWLEDGE":
+            assert method == "NOT-VERIFIED-NO-NETWORK", cells
+            assert status != "PUBLIC-BUILDABLE", cells
+
+
+def test_census_integrated_today_paths_resolve_or_say_NO():
+    for cells in _census_data_rows():
+        integrated = cells[4]
+        if integrated == "NO":
+            continue
+        assert _INTEGRATED_PATH.match(integrated), integrated
+        path, _line = integrated.rsplit(":", 1)
+        assert (_REPO_ROOT / path).exists(), path
+
+
+def test_semis_matrix_row_cites_the_census():
+    lines = _MATRIX_CSV.read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 44
+    semis = [ln for ln in lines if ln.startswith("semiconductors/critical-tech")]
+    assert len(semis) == 1, semis
+    assert "MARKET_ONTOLOGY_F09_SEMIS_SOURCE_CENSUS_2026-09-09.md" in semis[0]
+

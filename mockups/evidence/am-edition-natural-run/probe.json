@@ -1,0 +1,378 @@
+{
+  "schema": "mastermind.am-edition-probe.v1",
+  "url": "https://www.mastermind-x.com/am_edition.html",
+  "probes": [
+    {
+      "theme": "dark",
+      "locale": "en",
+      "fetched_at": "2026-10-02T13:27:18.830231+00:00",
+      "response_status": 200,
+      "cache_control": "no-store",
+      "last_modified": "Fri, 02 Oct 2026 13:07:04 GMT",
+      "built_at_text": "Built at 2026-10-02T13:07:04.291288+00:00",
+      "html_lang": "en",
+      "data_theme": "dark",
+      "data_lang": "en",
+      "sky_fx_count": 0,
+      "panels": [
+        {
+          "h2": "",
+          "state_chip_texts": [
+            "US markets not yet open"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": [
+            "Built at 2026-10-02T13:07:04.291288+00:00"
+          ]
+        },
+        {
+          "h2": "Session clock",
+          "state_chip_texts": [
+            "Not yet open"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Tape since prior close",
+          "state_chip_texts": [
+            "SPY +0.96%",
+            "QQQ +1.39%",
+            "^RUT +0.35%"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Market regime",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Cross-asset view",
+          "state_chip_texts": [
+            "Mixed"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Today's calendar",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Context planes",
+          "state_chip_texts": [
+            "Not covered"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Research watch",
+          "state_chip_texts": [
+            "Stale — last known"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Owner pages & references",
+          "state_chip_texts": [
+            "Live"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "fetched_at": "2026-10-02T13:27:23.784256+00:00",
+      "response_status": 200,
+      "cache_control": "no-store",
+      "last_modified": "Fri, 02 Oct 2026 13:07:04 GMT",
+      "built_at_text": "构建时间 2026-10-02T13:07:04.291288+00:00",
+      "html_lang": "zh-CN",
+      "data_theme": "dark",
+      "data_lang": "zh",
+      "sky_fx_count": 0,
+      "panels": [
+        {
+          "h2": "",
+          "state_chip_texts": [
+            "美股尚未开盘"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": [
+            "构建时间 2026-10-02T13:07:04.291288+00:00"
+          ]
+        },
+        {
+          "h2": "交易时段",
+          "state_chip_texts": [
+            "尚未开盘"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "自前一收盘",
+          "state_chip_texts": [
+            "SPY +0.96%",
+            "QQQ +1.39%",
+            "^RUT +0.35%"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "市场周期",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "跨资产视角",
+          "state_chip_texts": [
+            "混合"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "今日日历",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "背景面",
+          "state_chip_texts": [
+            "未覆盖"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "研究观察",
+          "state_chip_texts": [
+            "已滞后 — 最新已知"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "主理页面与参考",
+          "state_chip_texts": [
+            "实时"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "fetched_at": "2026-10-02T13:27:28.544728+00:00",
+      "response_status": 200,
+      "cache_control": "no-store",
+      "last_modified": "Fri, 02 Oct 2026 13:07:04 GMT",
+      "built_at_text": "Built at 2026-10-02T13:07:04.291288+00:00",
+      "html_lang": "en",
+      "data_theme": "light",
+      "data_lang": "en",
+      "sky_fx_count": 0,
+      "panels": [
+        {
+          "h2": "",
+          "state_chip_texts": [
+            "US markets not yet open"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": [
+            "Built at 2026-10-02T13:07:04.291288+00:00"
+          ]
+        },
+        {
+          "h2": "Session clock",
+          "state_chip_texts": [
+            "Not yet open"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Tape since prior close",
+          "state_chip_texts": [
+            "SPY +0.96%",
+            "QQQ +1.39%",
+            "^RUT +0.35%"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Market regime",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Cross-asset view",
+          "state_chip_texts": [
+            "Mixed"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Today's calendar",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Context planes",
+          "state_chip_texts": [
+            "Not covered"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Research watch",
+          "state_chip_texts": [
+            "Stale — last known"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "Owner pages & references",
+          "state_chip_texts": [
+            "Live"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "fetched_at": "2026-10-02T13:27:33.495496+00:00",
+      "response_status": 200,
+      "cache_control": "no-store",
+      "last_modified": "Fri, 02 Oct 2026 13:07:04 GMT",
+      "built_at_text": "构建时间 2026-10-02T13:07:04.291288+00:00",
+      "html_lang": "zh-CN",
+      "data_theme": "light",
+      "data_lang": "zh",
+      "sky_fx_count": 0,
+      "panels": [
+        {
+          "h2": "",
+          "state_chip_texts": [
+            "美股尚未开盘"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": [
+            "构建时间 2026-10-02T13:07:04.291288+00:00"
+          ]
+        },
+        {
+          "h2": "交易时段",
+          "state_chip_texts": [
+            "尚未开盘"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "自前一收盘",
+          "state_chip_texts": [
+            "SPY +0.96%",
+            "QQQ +1.39%",
+            "^RUT +0.35%"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "市场周期",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "跨资产视角",
+          "state_chip_texts": [
+            "混合"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "今日日历",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "",
+          "state_chip_texts": [],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "背景面",
+          "state_chip_texts": [
+            "未覆盖"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "研究观察",
+          "state_chip_texts": [
+            "已滞后 — 最新已知"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        },
+        {
+          "h2": "主理页面与参考",
+          "state_chip_texts": [
+            "实时"
+          ],
+          "row_count": 0,
+          "inner_built_at_texts": []
+        }
+      ]
+    }
+  ]
+}

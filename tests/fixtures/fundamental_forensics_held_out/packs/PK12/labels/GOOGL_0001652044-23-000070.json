@@ -1,0 +1,22 @@
+[
+  {
+    "accession": "0001652044-23-000070",
+    "expected_period_end": "2023-06-30",
+    "expected_span_ref": null,
+    "expected_unit": null,
+    "expected_value_text": "We expect existing cash, cash equivalents, short-term marketable securities, cash flows from operations and financing activities to continue to be sufficient to fund our operating activities and cash commitments for investing and financing activities for at least the next 12 months and thereafter for the foreseeable future.",
+    "fiscal_year": 2023,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "GOOGL",
+    "label_class": "extract_positive",
+    "pack_id": "PK12",
+    "polarity": "positive",
+    "reason": "goog-20230630.htm | untagged | We expect existing cash, cash equivalents, short-term marketable securities, cash flows from operations and financing activities to continue to be sufficient to fund our operating activities and cash commitments for investing and financing activities for at least the next 12 months and thereafter for the foreseeable future. | MD&A Liquidity and Material Cash Requirements sentence on sufficiency for at least the next 12 months, verbatim; the planned conditional negative did not apply because the 10-Q does contain the sentence, so it is labelled positive.",
+    "section_family": "liquidity",
+    "split": "held_out",
+    "target_id": "going_concern_or_liquidity_span",
+    "target_kind": "extract",
+    "trial_id": "PK12|0001652044-23-000070|extract|going_concern_or_liquidity_span"
+  }
+]

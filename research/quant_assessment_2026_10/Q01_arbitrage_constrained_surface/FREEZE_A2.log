@@ -1,0 +1,7 @@
+AMENDMENT_A2_FILE=PREREG_AMENDMENT_A2.md
+AMENDMENT_A2_SHA256=e203ce79b3f200f15a7046476529180f2a70b968dbdb76de04d9643e789a886f
+AMENDS_PREREG_SHA256=9e152194440979b96b9ee80658c844b699ce065bd9f6c25e2a610c03c568f60b
+AMENDS_A1_SHA256=fd5bbe42ab0b7fd007b399bcbe6bb642531b524304d389ccc637180af56f9801
+AMENDMENT_A2_RECORDED_UTC=Fri Oct  9 20:32:11 UTC 2026
+TIMESTAMP_SOURCE=date -u
+AMENDMENT_A2_NOTE=finisher amendment after the independent audit (finding 7); written after runs 1 and 4 (both stopped at S3, 0 eligible sessions, S4 never ran on market data) and before any further outcome is read; binds any future S4 run; FREEZE.log, PREREG.md and PREREG_AMENDMENT.md left unedited because evaluate.py S0 checks them
