@@ -117,6 +117,19 @@ html[data-lang="zh"] .dist-far  { color:var(--ink-down, var(--down)); } /* --dow
 
 /* popover */
 .has-tip { cursor:help; border-bottom:1px dashed var(--muted); }
+
+/* Additive evidence detail: same hierarchy in both theme art directions. */
+.pivot-detail { min-width:220px; max-width:420px; white-space:normal; }
+.pivot-detail summary { min-height:40px; cursor:pointer; display:list-item; padding:8px; border-radius:6px; background:var(--panel2); }
+.pivot-detail summary:focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+.pivot-detail[open] { padding:8px; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
+html[data-theme="light"] .pivot-detail[open] { box-shadow:var(--card-shadow); }
+.pivot-detail p { margin:10px 0; overflow-wrap:anywhere; }
+.pivot-detail .pivot-meta { color:var(--muted); font-size:11px; }
+.pivot-detail dl { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; margin:8px 0; }
+.pivot-detail dt { color:var(--muted); }
+.pivot-detail dd { margin:0; overflow-wrap:anywhere; }
+
 </style>
 </head>
 <body>
@@ -183,7 +196,7 @@ html[data-lang="zh"] .dist-far  { color:var(--ink-down, var(--down)); } /* --dow
   <input type="text" id="qa-sym-filter" placeholder="symbol …" data-ph-zh="代码…" oninput="qaFilter()">
   <label for="qa-state-filter">{{ t('State:', '状态：') }}</label>
   <select id="qa-state-filter" onchange="qaFilter()">
-    <option value="">{{ t('All states', '全部状态') }}</option>
+    <option value="" data-label-en="All states" data-label-zh="全部状态">All states</option>
     <option value="HOLD_LAUNCHED">HOLD_LAUNCHED</option>
     <option value="FRESH_FIRE_DURABLE_CAND">FRESH_FIRE_DURABLE_CAND</option>
     <option value="FRESH_FIRE_TACTICAL">FRESH_FIRE_TACTICAL</option>
@@ -195,16 +208,16 @@ html[data-lang="zh"] .dist-far  { color:var(--ink-down, var(--down)); } /* --dow
   </select>
   <label for="qa-tier-filter">{{ t('Tier:', '层级：') }}</label>
   <select id="qa-tier-filter" onchange="qaFilter()">
-    <option value="">{{ t('All tiers', '全部层级') }}</option>
+    <option value="" data-label-en="All tiers" data-label-zh="全部层级">All tiers</option>
     <option value="T1">T1</option>
     <option value="T2">T2</option>
     <option value="T3">T3</option>
     <option value="T4">T4</option>
-    <option value="none">{{ t('No tier', '无层级') }}</option>
+    <option value="none" data-label-en="No tier" data-label-zh="无层级">No tier</option>
   </select>
   <label for="qa-sp-filter">{{ t('Sponsorship:', '赞助状态：') }}</label>
   <select id="qa-sp-filter" onchange="qaFilter()">
-    <option value="">{{ t('All', '全部') }}</option>
+    <option value="" data-label-en="All" data-label-zh="全部">All</option>
     <option value="tailwind">tailwind</option>
     <option value="headwind">headwind</option>
     <option value="neutral">neutral</option>
@@ -220,6 +233,7 @@ html[data-lang="zh"] .dist-far  { color:var(--ink-down, var(--down)); } /* --dow
 <thead>
 <tr>
   <th onclick="qaSort('symbol')" data-col="symbol">{{ t('Symbol','代码') }} <span class="sort-ind">↕</span></th>
+  <th>{{ t('Early-turn evidence', '早期转折证据') }}</th>
   <th onclick="qaSort('bottom_state')" data-col="bottom_state">{{ t('State','状态') }} <span class="sort-ind">↕</span></th>
   <th onclick="qaSort('overlay_flags')" data-col="overlay_flags"
     data-tip-en="EVENT_BLACKOUT = earnings within 3 days. COILED = volatility compressed. STAR = high-conviction."
@@ -300,6 +314,47 @@ html[data-lang="zh"] .dist-far  { color:var(--ink-down, var(--down)); } /* --dow
   data-hold_state="{{ hold_st if hold_st is not none else '' }}"
   data-sponsorship_state="{{ sp_st }}">
   <td class="sym">{{ sym }}</td>
+  <td>
+    {% set pc = r.get('pivot_context') %}
+    {% if pc is mapping and pc.get('schema') == 'bottom_pivot_context.v1' %}
+    <details class="pivot-detail" data-pivot-symbol="{{ sym|e }}">
+      <summary>{{ t('Inspect evidence', '查看证据') }}
+        {% if pc.get('quality') == 'available' %}{{ t(' / available', ' / 可用') }}
+        {% elif pc.get('quality') == 'partial' %}{{ t(' / partial', ' / 部分可用') }}
+        {% else %}{{ t(' / unavailable', ' / 暂不可用') }}{% endif %}
+      </summary>
+      {% set key_labels = {
+        'coiled_fire': ('Early-turn marker', '早期转折标记'),
+        'above200': ('Above 200-day trend', '位于200日趋势上方'),
+        'dist_21d_low_pct': ('Above 21-session low', '高于21日低点'),
+        'knife_score': ('Source knife-risk index', '原始飞刀风险指标'),
+        'hold_state': ('Source holding state', '原始持有状态')
+      } %}
+      {% if pc.get('quality') == 'unavailable' %}
+        <p>{{ t('No usable current evidence. Missing or stale data is not a bearish or bullish signal.', '当前没有可用证据。数据缺失或过期不等于看空或看多信号。') }}</p>
+      {% endif %}
+      <dl>
+      {% for e in pc.get('evidence', []) if e.get('field') in key_labels %}
+        {% set labels = key_labels[e.get('field')] %}
+        <dt>{{ t(labels[0], labels[1]) }}</dt>
+        <dd>{% if e.get('state') == 'observed' %}
+          {% if e.get('value') is sameas true %}{{ t('Yes', '是') }}
+          {% elif e.get('value') is sameas false %}{{ t('No', '否') }}
+          {% else %}{{ e.get('value')|e }}{% if e.get('field') == 'dist_21d_low_pct' %}%{% endif %}{% endif %}
+        {% elif e.get('state') == 'stale' %}{{ t('Stale', '已过期') }}
+        {% else %}{{ t('Unavailable', '暂不可用') }}{% endif %}</dd>
+      {% endfor %}
+      </dl>
+      <details><summary>{{ t('Source notes and limits', '数据说明与限制') }}</summary>
+        <p>{{ t(pc.get('explanation', {}).get('en', '')|e, pc.get('explanation', {}).get('zh', '')|e) }}</p>
+        <p class="pivot-meta">{{ t('The knife-risk index is an existing source measurement, not a calibrated probability.', '飞刀风险指标来自既有数据源，不是校准后的概率。') }}</p>
+      </details>
+      <p class="pivot-meta">{{ t('Daily single-stock context; not a live entry signal.', '日线个股背景，非实时入场信号。') }}<br>
+      {{ t('Evaluation cutoff: ', '评估截止时间：') }}{{ pc.get('decision_at')|e }}</p>
+      <p>{{ t('Trend repair and early timing are different questions. A moving-average reclaim is not required by this view.', '趋势修复与早期择时是不同的问题，此视图不要求先收复均线。') }}</p>
+    </details>
+    {% else %}<span class="dash">{{ t('Not captured', '尚未记录') }}</span>{% endif %}
+  </td>
   <td><span class="bs-badge bs-{{ state }}">{{ state }}</span></td>
   <td>
     {% if overlays %}
@@ -384,6 +439,8 @@ html[data-lang="zh"] .dist-far  { color:var(--ink-down, var(--down)); } /* --dow
   var phZh = symInp ? (symInp.getAttribute('data-ph-zh') || phEn) : '';
   function applyPhLang(){
     if(symInp) symInp.placeholder = document.documentElement.getAttribute('data-lang') === 'zh' ? phZh : phEn;
+    var lang = document.documentElement.getAttribute('data-lang') === 'zh' ? 'zh' : 'en';
+    document.querySelectorAll('option[data-label-en]').forEach(function(o){ o.textContent = o.getAttribute('data-label-' + lang); });
   }
   applyPhLang();
   document.addEventListener('langchange', applyPhLang);
@@ -416,7 +473,8 @@ html[data-lang="zh"] .dist-far  { color:var(--ink-down, var(--down)); } /* --dow
     // update header indicators
     document.querySelectorAll('#qa-tbl th').forEach(function(th){
       th.classList.remove('sorted');
-      th.querySelector('.sort-ind').textContent = '↕';
+      var indicator = th.querySelector('.sort-ind');
+      if(indicator) indicator.textContent = '↕';
     });
     var th = document.querySelector('#qa-tbl th[data-col="'+col+'"]');
     if(th){ th.classList.add('sorted'); th.querySelector('.sort-ind').textContent = sortAsc ? '↑' : '↓'; }

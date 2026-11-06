@@ -9,6 +9,9 @@ status: active
 program: prophet-us
 p0: US_PROPHET_ENTRY_TIMING
 repos: [macro]
+artifacts:
+  - research/signal_engine/BOTTOM_PIVOT_DELIVERY_2026_11_05.md
+  - research/evidence/bottom_pivot_delivery_20261105/verification.json
 owner: coo-fable
 class: research
 blast_radius: reversible
@@ -35,7 +38,10 @@ landmines:
   - "A first bake after any backfill looks anomalous by construction — do not read run #1 as steady state."
 do_not_redo:
   - "Queue drain was root-caused and fixed in #5370 — do not re-diagnose the queue."
-next_action: Verify the 22:30Z bake (W1).
+next_action: >-
+  Continue Chairman-assigned bottom-pivot delivery on PR 10785: qualify source release,
+  then authenticated real-path proof and existing research integration. Preserve the
+  separate historical W1 bake verification; no wave completion inferred.
 ---
 
 ## Context
@@ -43,3 +49,14 @@ next_action: Verify the 22:30Z bake (W1).
 One of five active company P0 objectives (`US_PROPHET_ENTRY_TIMING` in Mastermind
 `config/strategic_state.yml`). The backfill completed and the queue drained on 2026-08-11;
 the open question is whether the first post-backfill bake is clean.
+
+
+## November 5 Chairman-directed bottom-pivot increment
+
+The active assigned Web principal owns `bottom-pivot-delivery-20261105` / PR10785 and
+its continuation, not an archived author session. The source plan and latest dated
+handoff describe a built, locally tested evidence/replay/AI-context vertical whose
+release, live proof and predictive extension remain incomplete. Existing W0/W1/W2
+are not retroactively completed or replaced. No new workstream, runtime, collector,
+outcome ledger, ranking or trading authority is created. This source linkage is not
+protected-release acceptance.

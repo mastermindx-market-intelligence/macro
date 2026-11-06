@@ -424,7 +424,7 @@ class TestGapNotes:
 # ---------------------------------------------------------------------------
 
 class TestSizeCap:
-    def test_real_build_under_300kb(self):
+    def test_real_build_under_300kb(self, tmp_path):
         """Real build from the worktree data must produce an artifact under 300KB.
 
         Cap raised from 200KB to 300KB in Build 3 (analyst block adds rows;
@@ -434,8 +434,11 @@ class TestSizeCap:
         from engine.neuralweb.mastermind_context import CONTEXT_SIZE_CAP_BYTES  # noqa: PLC0415
         canonical = _REPO_ROOT / "data" / "neuralweb" / "mastermind_context.json"
         if not canonical.exists():
-            # Trigger a fresh build
-            build_and_write(root=_REPO_ROOT)
+            # Sparse code checkouts must not create production-plane artifacts.
+            # Exercise the writer in an isolated source tree instead.
+            _build_minimal_tree(tmp_path)
+            build_and_write(root=tmp_path, now=_NOW)
+            canonical = tmp_path / "data" / "neuralweb" / "mastermind_context.json"
         assert canonical.exists(), "mastermind_context.json not written"
         size_bytes = canonical.stat().st_size
         cap_bytes = CONTEXT_SIZE_CAP_BYTES  # 300 KB

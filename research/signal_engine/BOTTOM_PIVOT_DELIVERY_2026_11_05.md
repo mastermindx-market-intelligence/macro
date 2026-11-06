@@ -74,10 +74,10 @@ Never fit an event ex-post then describe its label as known at the low. Neither 
 
 | ID | Current boundary | Acceptance / next work |
 | --- | --- | --- |
-| BP0 | Source recovery complete; no code changed yet | Pin incumbents and failed constructions; record source-linked current assignment and preserve adjacent writers. |
-| BP1 | Ready | Freeze additive evidence contract; paid Fabric implements pure composer and adversarial fixtures on disjoint paths. Explicit null, stale, future-time, contradictory, false-bounce and no-probability tests. |
-| BP2 | Ready after contract | Integrate with existing bottom-sensor producer and consumer; demonstrate real qualified local data, with no writes to production ledgers. Register focused tests in incumbent CI owner. |
-| BP3 | Architecture frozen; source experiment pending | Implement offline causal replay through existing ruler/ledger semantics. Qualify actual data/vintages and record what is executable; no blind backfill or automatic collection. |
+| BP0 | Source recovery complete; implementation evidence below | Pin incumbents and failed constructions; record source-linked current assignment and preserve adjacent writers. |
+| BP1 | implementation_complete / local-tested, not released | Freeze additive evidence contract; paid Fabric implements pure composer and adversarial fixtures on disjoint paths. Explicit null, stale, future-time, contradictory, false-bounce and no-probability tests. |
+| BP2 | implementation_complete / local real-input degradation proved | Integrate with existing bottom-sensor producer and consumer; demonstrate real qualified local data, with no writes to production ledgers. Register focused tests in incumbent CI owner. |
+| BP3 | wrapper implemented; predictive experiment not promoted | Implement offline causal replay through existing ruler/ledger semantics. Qualify actual data/vintages and record what is executable; no blind backfill or automatic collection. |
 | BP4 | Dependent | Add market/group breadth and leadership context from incumbent source contracts, preserve scope and latency. No predictive fusion or old-PR hold removal. |
 | BP5 | Dependent | Existing UI design system, desktop/mobile, dark/light, EN/ZH, accessible missing/stale/history views. No invented market data in production proof. |
 | BP6 | Dependent | Exact-head self-check/focused CI; genuinely required formal non-author approval only; normal release; production producer-to-user proof. |
@@ -88,3 +88,41 @@ Direct principal work now: PRINCIPAL_JUDGMENT for architecture, claim boundaries
 ## Initial acceptance falsifiers
 
 Reject if any: below-MA implies unavailable early timing; unknown becomes false/zero; a future observation changes an earlier frame; failed ARMED/PRIMED becomes actionable; same-source redundant legs become independent votes; a delayed snapshot is called real-time; absent tape is called absorption; one stock is called the market bottom; retrospective output is called as-issued; expected performance appears without calibration; schema/code/CI is called production proof; a useful source slice is called completion of this programme.
+
+
+## Implementation and source-adjudication milestone (2026-11-05/06 UTC)
+
+The first vertical is implemented locally on this same source carrier, PR #10785:
+- Pure typed evidence composer, original-source binding, additive bottom-sensor producer/JSON integration and the existing QA consumer.
+- The existing immutable geometry shadow book optionally preserves exact context, writer-capture time and SHA256. A writer receipt is not vendor availability or user delivery; old rows are never backfilled.
+- An offline wrapper delegates outcome arithmetic to the existing frozen 60-session bottom ruler. It refuses backdated issuance and premature labels, preserves every unavailable call and keeps retrospective and alleged as-issued inputs distinct.
+- New tests plus incumbent regressions are enrolled in the existing code-gated `signal-gate-pair-coherence` job. No new CI runner, queue or registry.
+
+Local verification: 257 focused/context/producer/legacy regression tests passed after integration repairs; 59 existing signal-coherence tests passed separately. `run_ci_pack --validate-only` accepted the 315-job manifest. Eight fixture browser layouts passed at desktop/mobile x light/dark x EN/ZH; these are not production or calibrated prediction receipts. Exact commands, source hashes and final proof are to be recorded in the same PR evidence record before qualification.
+
+Fabric original child `bottom-pivot-context-bp1-20261105` returned terminal rc0 with matching root. Exact response SHA256 `ead48eca69a8d4d2a5b51da3a371da456f2e1ede37fbc27871a0faad244c8431`. Returned files matched their stated SHA256s. Parent integration found a real zero-numeric-value explanation crash (three end-to-end cases failed), an unnecessary hand-written timezone calendar, and a future-correction conflict issue. Parent repaired them and added regressions; the original response is NOT accepted as an independently verified complete artifact, and its claimed independent review is not adopted. No child was duplicated or relaunched. The two other original requests ended in verified thermal admission refusals before work; they were not retried or routed to another host. Parent completed the source binding and replay integrations directly.
+
+### Newer accepted research recovered; do not repeat
+
+`research/durable_pivots_20261021/README.md`, `PROTOCOL.md` and `deliverables/Durable_Pivot_Research.md` contain a completed, fixed 50-instrument retrospective study with a frozen rule set, distinct price bases, timing/coverage comparisons and retained original inputs. Its outcome is NOT universal precise-bottom certainty or aggressive sizing permission. It explicitly reports the cost of waiting for weekly crossover confirmation and sensitivity to the allowable distance from the low. Reuse the retained inputs, diagnostics and original selection; do not call a rerun on inspected results a fresh holdout.
+
+`research/bottom_signal_backtest/results/final_report.md` is explicitly TEST-LEAKED / NO INFERENCE. None of its selected best-combination numbers is admitted as evidence here. The old raw bottom radar and sector radar also do not grant new sizing or whole-market forecast authority. Unknown macro data must not silently become a permissive macro state in any future consumer.
+
+The read-only local existing-ledger audit is retained in `BOTTOM_PIVOT_BASELINE_AUDIT_2026_11_05.json`. Its 344 mature generic board-buy rows span only 11 signal dates; these are not a clean cohort of COILED or market-bottom predictions. No original issuance timestamp exists in that ledger. The audit is a qualification finding, not a claim that the new feature or an unisolated existing detector succeeded/failed.
+
+### Current production evidence boundary
+
+A read-only GET of the existing public `/api/status` succeeded. The protected `/neuralwebdata/bottom_sensors.json` returned HTTP401 without authentication; no credentials were requested, no bypass attempted, and no production data was read through another route. Local source fixtures are mixed-date/stale and cannot establish current market foresight. A source release and properly authenticated real user-path proof remain separate obligations. No trades, live alerts, predictive probabilities or production activation have occurred in this increment.
+
+
+## Integrated source qualification (current milestone)
+
+The first measured vertical now connects raw per-security sources -> existing bottom sensors -> typed JSON/parquet -> immutable existing shadow capture -> existing QA disclosure and Mastermind candidate context. The AI consumer rechecks both the original decision instant and its current clock, so unavailable or future evidence cannot become valid merely because the briefing is rebuilt. Existing 250-candidate intake and all authority booleans stay unchanged.
+
+The actual saved AI briefing was 280,608 bytes, near its 307,200-byte cap. Optional inline pivot blocks now obey that existing budget and report eligible/included/omitted counts. A saved-baseline plus synthetic-evidence capacity check preserved all 250 existing candidates and produced 303,003 bytes, with 27 inline blocks and 223 explicitly omitted for size. The complete per-name evidence remains in the incumbent bottom-sensors artifact. This is a bounded context adapter, not complete 250-name inline coverage or a new ranking.
+
+Exact engineering receipt: `research/evidence/bottom_pivot_delivery_20261105/verification.json`, including changed code/test hashes. Final combined local command: **453 tests passed, exit0**, with the data guard enabled. Eight browser interaction states passed sort, filtering, keyboard expansion, locale select labels and no page-level JS errors; representative mobile/desktop screenshots are retained beside the receipt. The existing size-cap test was repaired to use its fixture tree when a sparse checkout lacks production artifacts; the four known test-created files were hash-reconciled and removed only from this owned workspace. No production files were changed.
+
+Adjacent #9457 modifies the Mastermind market-plane portion of the same source file; this increment touches the disjoint candidate-context bottom block. Its head, release holds and original effects remain unchanged. #8257 was inspected and does not touch this file. Formal required source approval/release remains separate from local self-review.
+
+**Not complete:** public/Terminal pivot workflow, market/group/intraday adapters, current authenticated production proof, and qualified future-outcome probabilities. Existing original research is preserved, including the October21 completed multi-asset study and explicitly rejected/test-leaked constructions. No waiting-for-MA rule is introduced and no claim of an ultimate-bottom oracle is made.
