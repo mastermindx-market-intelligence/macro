@@ -88,7 +88,7 @@ import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 _CODE_ROOT = str(Path(__file__).resolve().parent.parent)
 # UNCONDITIONAL, position 0 — the conditional `if _CODE_ROOT not in sys.path`
@@ -340,8 +340,14 @@ def _print_timings(stages: dict[str, float], evaluator: dict[str, Any],
 
 def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
         state_override: str | None = None, live_override: str | None = None,
-        spool_dir: str | None = None) -> int:
-    """One pass, end to end.  Returns the process exit code."""
+        spool_dir: str | None = None,
+        opportunity_cases: Mapping[str, Mapping[str, Any]] | None = None) -> int:
+    """One pass, end to end. Returns the process exit code.
+
+    A trusted in-process caller may supply already composed research cases by
+    native episode ID. The evaluator validates them after lifecycle decisions.
+    Default/CLI absence performs no case acquisition or attachment.
+    """
     try:
         LP.assert_published_spec_hashes()
     except LP.SpecHashDrift as exc:
@@ -379,7 +385,8 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
         result = LE.run_pass(now=stamp, pack=pack, quotes=quotes, ledger=ledger,
                              state_dir=state, spool=spool,
                              intraday_reader=reader,
-                             unspooled_ok=dry_run, dry_run=dry_run)
+                             unspooled_ok=dry_run, dry_run=dry_run,
+                             opportunity_cases=opportunity_cases)
         stages["run_pass_s"] = time.perf_counter() - t_stage
     except Exception as exc:  # noqa: BLE001 — the ``failed`` receipt's producer
         # NEVER SILENT, AND NEVER A STALE ARTIFACT LEFT STANDING.  A pass that

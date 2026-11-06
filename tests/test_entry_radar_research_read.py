@@ -186,3 +186,59 @@ def test_calendar_date_requires_explicit_native_fiscal_end(published_context):
     path.write_text(json.dumps(value))
     result=rr.read_published_research(live,episode_id=episode.episode_id)
     assert result['case']['observation']['period']=='2026-06-27'
+
+
+@pytest.mark.parametrize('mode', ['absent', 'valid', 'wrong_episode'])
+def test_script_entrypoint_carries_cases_to_published_reader(tmp_path, monkeypatch, mode):
+    """Exercise host composition without live input, evaluator, or state effects."""
+    from datetime import datetime
+    from hashlib import sha256
+    from types import SimpleNamespace
+    import scripts.entry_radar_live as script
+    from engine.entry_radar import earnings_context
+
+    ledger, _, _ = ledger_with_candidate(tmp_path / 'fixture')
+    episode = next(e for e in ledger.episodes if e.state == 'CANDIDATE')
+    case = _synthetic_research_case(episode)
+    supplied = None if mode == 'absent' else {
+        episode.episode_id if mode == 'valid' else 'other': case}
+    stamp = datetime.fromisoformat(episode.candidate_at.replace('Z', '+00:00'))
+    seen = []
+    writes = []
+
+    def native_pass(**kwargs):
+        assert kwargs.get('opportunity_cases') is supplied
+        seen.append(kwargs.get('opportunity_cases'))
+        rows = [episode.to_dict()]
+        health = {'state': 'live', 'pass': {'at': episode.candidate_at}, 'inputs': {}, 'reasons': []}
+        le._attach_opportunity_cases(rows, cases=kwargs.get('opportunity_cases'), now=stamp, health=health)
+        payload = {'schema': 'entry_radar.live/v1', 'asof': episode.candidate_at,
+                   'episodes': rows, 'authority': le._authority_block(), 'health': health}
+        return SimpleNamespace(payload=payload, health=health, committed=True, timings={}, exit_code=0)
+
+    monkeypatch.setattr(script.LP, 'assert_published_spec_hashes', lambda: None)
+    monkeypatch.setattr(script.LP, 'load_pack', lambda _: None)
+    monkeypatch.setattr(script.LL.LiveEpisodeLedger, 'load',
+                        lambda _: SimpleNamespace(save=lambda: writes.append('save')))
+    monkeypatch.setattr(script.LL, 'EventSpool', lambda: None)
+    monkeypatch.setattr(script, 'load_quotes', lambda _: {})
+    monkeypatch.setattr(script, '_reader', lambda _: None)
+    monkeypatch.setattr(script.LE, 'run_pass', native_pass)
+    monkeypatch.setattr(earnings_context, 'attach_retrospective_earnings_context',
+                        lambda *a, **k: {'state': 'unavailable'})
+    monkeypatch.delenv(script._NO_PUBLISH_ENV, raising=False)
+    live = tmp_path / 'live'
+    kwargs = {} if mode == 'absent' else {'opportunity_cases': supplied}
+    assert script.run(tmp_path, now=stamp, state_override=str(tmp_path / 'state'),
+                      live_override=str(live), **kwargs) == 0
+    assert seen == [supplied] and writes == ['save']
+    raw = (live / 'entry_radar.json').read_bytes()
+    result = rr.read_published_research(live, episode_id=episode.episode_id)
+    assert result['state'] == ('published_case' if mode == 'valid' else 'unqualified')
+    assert result['source']['snapshot_sha256'] == sha256(raw).hexdigest()
+    if mode == 'valid':
+        assert result['case']['case_ref']['case_id'] == case['case_id']
+        assert result['case']['episode_binding']['candidate_at'] == episode.candidate_at
+        assert le.forward_knowledge_keys(result['case']) == []
+    else:
+        assert result['case'] is None

@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-11-05",
+  "as_of": "2026-11-06",
   "coverage": {
-    "end": "2026-11-05",
+    "end": "2026-11-06",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W45; 14 week(s) have events so far; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-08-06"
+    "start": "2026-08-07"
   },
   "iso_week": "2026-W45",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,15 +11,15 @@
     {
       "clusters": [
         {
-          "n_events": 24,
-          "source": "prophet_ledger",
-          "theme": null,
+          "n_events": 255,
+          "source": "earnings_call",
+          "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 1,
-          "source": "earnings_call",
-          "theme": "earnings",
+          "n_events": 56,
+          "source": "prophet_ledger",
+          "theme": null,
           "top_events": []
         },
         {
@@ -416,7 +416,7 @@
           "top_events": []
         },
         {
-          "n_events": 39,
+          "n_events": 40,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -587,7 +587,7 @@
           "top_events": []
         },
         {
-          "n_events": 202,
+          "n_events": 203,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -602,7 +602,18 @@
           "n_events": 2,
           "source": "research_vault",
           "theme": "McElligott",
-          "top_events": []
+          "top_events": [
+            {
+              "date": "2026-08-10",
+              "id": "cev-research_vault-b2e3d2c73fe8",
+              "kind": "report",
+              "source": "research_vault",
+              "source_ref": "marketdesk-iabsklnuj34-921c53",
+              "tickers": [],
+              "title": "Nomura: Charlie McElligott Equities Update",
+              "weight_hint": 3
+            }
+          ]
         },
         {
           "n_events": 1,
@@ -632,7 +643,18 @@
           "n_events": 1,
           "source": "regime_flip",
           "theme": "regime",
-          "top_events": []
+          "top_events": [
+            {
+              "date": "2026-08-10",
+              "id": "cev-regime_flip-3df289330159",
+              "kind": "state_flip",
+              "source": "regime_flip",
+              "source_ref": "state_log#2026-08-10#regime_china",
+              "tickers": [],
+              "title": "CHINA regime: Q3 Stagflation → Q4 Growth-scare",
+              "weight_hint": 3
+            }
+          ]
         }
       ],
       "iso_week": "2026-W33"
@@ -640,32 +662,22 @@
     {
       "clusters": [
         {
-          "n_events": 587,
+          "n_events": 96,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 275,
+          "n_events": 28,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 98,
+          "n_events": 24,
           "source": "research_vault",
           "theme": null,
           "top_events": [
-            {
-              "date": "2026-08-06",
-              "id": "cev-research_vault-2fe6ddd4e3c8",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-eglyaiphi8v-4403b5",
-              "tickers": [],
-              "title": "Goldman Sachs: Expedia Group (EXPE) Q2'26 Earnings Review Strong Execution and B2B Momentum Drive Beat and Raise Quarter",
-              "weight_hint": 3
-            },
             {
               "date": "2026-08-09",
               "id": "cev-research_vault-6172555846c3",
@@ -687,12 +699,6 @@
               "weight_hint": 3
             }
           ]
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "claims",
-          "top_events": []
         },
         {
           "n_events": 1,

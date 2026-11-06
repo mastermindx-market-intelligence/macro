@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CAVA-BULL-20260813",
-  "asof": "2026-11-04",
+  "asof": "2026-11-06",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 18.4,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 2.1,
+    "validity": 1.2,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": 0.1,
+    "dist_to_stop_r": 0.077,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 184.4,
-    "p1": -0.5999,
-    "p2": -0.3,
+    "horizon_pct_used": 188.9,
+    "p1": -0.6151,
+    "p2": -0.3076,
     "p3": null,
-    "move_r": -0.9,
+    "move_r": -0.923,
     "mfe_r": 0.11,
     "mae_r": -1.7
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 83,
-  "tau": 1.8444,
+  "days_elapsed": 85,
+  "tau": 1.8889,
   "closed": true,
   "outcome": "INVALIDATED"
 }
