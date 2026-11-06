@@ -1,7 +1,7 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-11-03",
-  "generated_at": "2026-11-05T10:07:13.136331+00:00",
+  "generated_at": "2026-11-06T09:29:39.695481+00:00",
   "is_context_only": true,
   "n_snapshots": 1371,
   "n_days": 47,
@@ -49,8 +49,8 @@
           "hit_rate": 0.488
         }
       },
-      "running_ic": -0.0424,
-      "running_ic_t_hac": -0.852,
+      "running_ic": -0.0422,
+      "running_ic_t_hac": -0.847,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -73,8 +73,8 @@
           "hit_rate": 0.61
         }
       },
-      "running_ic": -0.0984,
-      "running_ic_t_hac": -1.145,
+      "running_ic": -0.0978,
+      "running_ic_t_hac": -1.143,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -97,8 +97,8 @@
           "hit_rate": 0.531
         }
       },
-      "running_ic": -0.0511,
-      "running_ic_t_hac": -2.065,
+      "running_ic": -0.0507,
+      "running_ic_t_hac": -2.06,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     }

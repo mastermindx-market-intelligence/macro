@@ -118,5 +118,80 @@
     "terminal_contract_compatibility_only": true,
     "production_acceptance": false,
     "authenticated_browser_acceptance": false
+  },
+  "november_6_consumer_fixture_compatibility": {
+    "source_head": "60fabc3a3dc4a9e9fc78b5655e2cb3954119497e",
+    "publication_base": "296c6fc8b432252b7ef48ed375ca8f48852763ad",
+    "original_hosted_failure": {
+      "run_id": 42187372021,
+      "attempt": 1,
+      "job_id": 127806620899,
+      "failed_tests": 73,
+      "radar_failures": 7,
+      "rotation_failures": 66,
+      "exact_base": "075445df2872a877fe11049da4d35245068c3a08",
+      "automatic_base_replays_succeeded": true,
+      "artifact_id": 13493533833,
+      "artifact_finalized": true
+    },
+    "repair": {
+      "scope": "Two existing consumer fixture modules; no production source change",
+      "absolute_deadlines": "Explicit original observation deadlines in intended-live fixtures",
+      "boundary": "Actual producer expires at equality; an explicitly synthetic later-expiry copy separately preserves the inclusive carrying-TTL and nonrenewal checks",
+      "weekend": "Moved fixture deadline with its intentionally moved observation so original weekend rejection remains discriminating",
+      "all_original_test_functions_decorators_imports_preserved": true,
+      "original_assertions": 234,
+      "final_assertions": 237
+    },
+    "test_blobs": {
+      "tests/test_risk_envelope_radar_integration.py": "0d04e42888e58ef366d68cb0b13429dc64fb7a92",
+      "tests/test_rotation_risk_consumers.py": "88c97dc0f7ceaac3b01990ea70bf4514510e34ed"
+    },
+    "final_affected_selection": {
+      "process_pid": 36549,
+      "pytest_exit_code": 0,
+      "driver_exit_code": 1,
+      "passed": 169,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "pytest_elapsed_seconds": 74.55,
+      "parent_elapsed_seconds": 75.73,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "consumer_guard_receipt",
+        "tests/test_risk_envelope_radar_integration.py",
+        "tests/test_rotation_risk_consumers.py",
+        "-q",
+        "--tb=short",
+        "--basetemp=/private/tmp/macro-pr10782-consumers-x6iifyxj/pytest",
+        "--junitxml=/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-market-stress-20261105-c3/.proof_runtime/c4-consumer-clock-compat/final-consumers.xml"
+      ],
+      "source_receipt_sha256": "e39c4c78575b7dcca2c4900f0fa5c2e0f2d06bd8803f0ac7f221880931bcada2",
+      "log_sha256": "07c79ededc05bb2e6592de6f29aa0a2b1196a63b9697ce5330a5fac6fe9381c3",
+      "xml_sha256": "c167ac5339089da2a7ab781e6d743014d7c4c1a983000f9c2de4ca043dc0a354"
+    },
+    "guard_reconciliation": {
+      "process_pid": 44439,
+      "exit_code": 0,
+      "pytest_rerun": false,
+      "reason": "The receipt driver incorrectly demanded an empty baseline after all169 tests passed; canonical guard permits the two pre-existing site JS source changes. Both exact blobs and all25 measured source/dependency blobs remain unchanged after tests. Actual guards stayed active.",
+      "receipt_sha256": "3f5ad5b9964118d53bf18ed75b01030dd7f75fa4c060756c133a502a296df1d7",
+      "data_guard_baseline_entries": 2,
+      "module_guard_leaks": 0
+    },
+    "accepted_current_main_template_inputs": [
+      "templates/allocation.html.j2",
+      "templates/stockdata.js"
+    ],
+    "original_373_source_cases_reused_not_rerun": true,
+    "ci_manifest_and_existing_owners_unchanged": true,
+    "authenticated_browser_acceptance": false,
+    "production_acceptance": false,
+    "release_hold_retained": true
   }
 }
