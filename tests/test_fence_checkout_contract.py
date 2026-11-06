@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import importlib.util
 import inspect
+import json
+import os
+import shutil
+import subprocess
 import tempfile
 from pathlib import Path
 
@@ -142,7 +146,7 @@ def test_self_mod_live_check_uses_exact_synthetic_parents_and_fails_closed() -> 
         "--no-tags",
         "--no-recurse-submodules",
         "--filter=blob:none",
-        "--deepen=4096",
+        "--deepen=8192",
         '"+$TESTED_BASE_SHA:refs/ci-fence/base"',
         '"+$SUBJECT_HEAD_SHA:refs/ci-fence/head"',
         "initial bounded checkout did not reach the exact PR merge base",
@@ -422,3 +426,266 @@ def test_fork_self_mod_fence_runs_the_same_canonical_agent_os_validator() -> Non
     job = _document()["jobs"]["fork-self-mod-fence"]
     commands = [step.get("run") for step in job["steps"]]
     assert commands.count("python3 scripts/agentos.py validate") == 1
+
+
+def _fence_fixture_env() -> dict[str, str]:
+    env = {
+        key: value
+        for key, value in os.environ.items()
+        if not key.startswith("GIT_")
+    }
+    env.update(
+        GIT_CONFIG_NOSYSTEM="1",
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_ALLOW_PROTOCOL="file",
+        GIT_TERMINAL_PROMPT="0",
+        LC_ALL="C",
+    )
+    return env
+
+
+def _fence_git(directory: Path, *args: str, **kwargs) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["git", "-C", str(directory), *args],
+        env=_fence_fixture_env(),
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=30,
+        **kwargs,
+    )
+
+
+@pytest.fixture(scope="module")
+def deep_fence_origin(tmp_path_factory) -> dict:
+    """Tiny real Git histories; no network, repository data or external refs.
+
+    The valid stale pair has #8531's observed 5,645 / 3 divergence. A second
+    valid pair exceeds even the repaired allowance. A moving main ref, unrelated
+    roots and an octopus merge distinguish immutable proof from convenient refs.
+    Fast-import avoids thousands of process launches in the always-on fence.
+    """
+    origin = tmp_path_factory.mktemp("fence-origin") / "origin.git"
+    origin.mkdir()
+    _fence_git(origin, "init", "--bare", "--quiet")
+    _fence_git(origin, "config", "uploadpack.allowFilter", "true")
+    stream: list[str] = []
+    mark = 0
+
+    def commit(ref, message, parent=None, merges=(), files=()):
+        nonlocal mark
+        mark += 1
+        stream.extend(
+            [
+                f"commit refs/heads/{ref}\n",
+                f"mark :{mark}\n",
+                "committer Fence Fixture <fence@example.invalid> 1700000000 +0000\n",
+                f"data {len(message.encode('utf-8'))}\n{message}\n",
+            ]
+        )
+        if parent is not None:
+            stream.append(f"from :{parent}\n")
+        stream.extend(f"merge :{other}\n" for other in merges)
+        for path, content in files:
+            stream.append(
+                f"M 100644 inline {path}\n"
+                f"data {len(content.encode('utf-8'))}\n{content}\n"
+            )
+        stream.append("\n")
+        return mark
+
+    root = commit("root", "common root", files=(("research/common.txt", "common\n"),))
+    current = root
+    for index in range(1, 9001):
+        current = commit(
+            "main",
+            f"base-only {index}",
+            current,
+            files=(("research/main-only.txt", f"base {index}\n"),) if index == 1 else (),
+        )
+        if index == 5645:
+            measured_base = current
+    exhausted_base = current
+    for name, trailer in (("human", ""), ("loop", "\n\nLoop-Authored: fixture")):
+        subject = root
+        for index in range(1, 4):
+            subject = commit(
+                name,
+                f"{name} subject {index}" + (trailer if index == 2 else ""),
+                subject,
+                files=((".github/workflows/fixture.yml", "fixture: true\n"),)
+                if index == 1 else (),
+            )
+        commit(
+            f"merge-{name}",
+            f"tested {name} merge",
+            measured_base,
+            (subject,),
+            ((".github/workflows/fixture.yml", "fixture: true\n"),),
+        )
+        if name == "human":
+            human_head = subject
+            commit(
+                "merge-exhausted",
+                "tested exhausted merge",
+                exhausted_base,
+                (subject,),
+                ((".github/workflows/fixture.yml", "fixture: true\n"),),
+            )
+    unrelated = commit(
+        "unrelated", "unrelated root", files=(("research/unrelated.txt", "unrelated\n"),)
+    )
+    commit("merge-unrelated", "tested unrelated merge", measured_base, (unrelated,))
+    commit("merge-octopus", "invalid three-parent merge", measured_base, (human_head, unrelated))
+    commit("main", "later mutable main", exhausted_base)
+    _fence_git(origin, "fast-import", "--quiet", input="".join(stream))
+    _fence_git(origin, "symbolic-ref", "HEAD", "refs/heads/main")
+
+    def resolve(ref):
+        return _fence_git(origin, "rev-parse", f"refs/heads/{ref}").stdout.strip()
+
+    return {
+        "origin": origin,
+        "root": resolve("root"),
+        "human": resolve("human"),
+        "loop": resolve("loop"),
+        **{name: resolve(name) for name in (
+            "merge-human", "merge-loop", "merge-exhausted",
+            "merge-unrelated", "merge-octopus",
+        )},
+    }
+
+
+def _fence_checkout(tmp_path: Path, graph: dict, ref: str, *, shallow=True) -> Path:
+    checkout = tmp_path / "checkout"
+    checkout.mkdir()
+    _fence_git(checkout, "init", "--quiet")
+    _fence_git(checkout, "remote", "add", "origin", graph["origin"].as_uri())
+    depth = ["--depth=256"] if shallow else []
+    _fence_git(
+        checkout, "fetch", "--quiet", "--no-tags", "--filter=blob:none",
+        *depth, "origin", f"+{graph[ref]}:refs/fixture/tested",
+    )
+    _fence_git(checkout, "checkout", "--quiet", "--detach", "refs/fixture/tested")
+    assert _fence_git(checkout, "rev-parse", "--is-shallow-repository").stdout.strip() == (
+        "true" if shallow and ref not in {"root", "human"} else "false"
+    )
+    # Run the real unchanged policy at the workflow boundary, not a permissive stub.
+    for name in ("check_self_mod_fence.py", "ci_authority_paths.py"):
+        target = checkout / "scripts" / name
+        target.parent.mkdir(exist_ok=True)
+        shutil.copyfile(ROOT / "scripts" / name, target)
+    return checkout
+
+
+def _run_fence_live(checkout: Path, tmp_path: Path, sha: str):
+    command = _named_step(_document()["jobs"]["fence-pack"], LIVE_CHECK_STEP)["run"]
+    command = command.replace("${{ github.head_ref }}", "claude/fence-fixture")
+    runner_temp = tmp_path / "runner-temp"
+    runner_temp.mkdir()
+    trace = tmp_path / "git-trace.jsonl"
+    env = _fence_fixture_env()
+    env.update(GITHUB_SHA=sha, RUNNER_TEMP=str(runner_temp), GIT_TRACE2_EVENT=str(trace))
+    result = subprocess.run(
+        ["bash", "-c", command],
+        cwd=checkout,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=45,
+    )
+    events = [json.loads(line) for line in trace.read_text().splitlines()]
+    fetches = [
+        event["argv"]
+        for event in events
+        if event.get("event") == "start"
+        and event.get("argv", [])[1:2] == ["fetch"]
+    ]
+    return result, runner_temp / "self-mod-fence", fetches
+
+
+@pytest.mark.parametrize("kind,expected_rc", [("human", 0), ("loop", 1)])
+def test_deep_live_fence_preserves_exact_paths_and_all_subject_trailers(
+    tmp_path, deep_fence_origin, kind, expected_rc
+) -> None:
+    graph = deep_fence_origin
+    checkout = _fence_checkout(tmp_path, graph, f"merge-{kind}")
+    tested = graph[f"merge-{kind}"]
+    parents = _fence_git(checkout, "rev-list", "--parents", "-n", "1", tested).stdout.split()
+    assert len(parents) == 3
+    result, inputs, fetches = _run_fence_live(checkout, tmp_path, tested)
+
+    assert result.returncode == expected_rc, (result.stdout, result.stderr)
+    assert len(fetches) == 1
+    assert "--deepen=8192" in fetches[0]
+    assert fetches[0][-2:] == [
+        f"+{parents[1]}:refs/ci-fence/base",
+        f"+{parents[2]}:refs/ci-fence/head",
+    ]
+    assert _fence_git(checkout, "rev-parse", "HEAD").stdout.strip() == tested
+    assert _fence_git(checkout, "merge-base", *parents[1:]).stdout.strip() == graph["root"]
+    assert json.loads((inputs / "changed-files.json").read_text()) == [
+        ".github/workflows/fixture.yml"
+    ]
+    messages = (inputs / "commit-messages.txt").read_text()
+    for index in range(1, 4):
+        assert f"{kind} subject {index}" in messages
+    assert "base-only" not in messages
+    assert "common root" not in messages
+    assert "later mutable main" not in messages
+    if kind == "loop":
+        assert "Loop-Authored: fixture" in messages
+        assert "BLOCKED: loop PR" in result.stderr
+    else:
+        assert "PASS:" in result.stdout
+
+
+def test_sufficient_live_fence_history_needs_no_fetch(tmp_path, deep_fence_origin) -> None:
+    graph = deep_fence_origin
+    checkout = _fence_checkout(tmp_path, graph, "merge-human", shallow=False)
+    _fence_git(checkout, "remote", "set-url", "origin", (tmp_path / "missing.git").as_uri())
+    result, inputs, fetches = _run_fence_live(checkout, tmp_path, graph["merge-human"])
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert fetches == []
+    assert json.loads((inputs / "changed-files.json").read_text()) == [
+        ".github/workflows/fixture.yml"
+    ]
+
+
+def test_failed_live_fence_acquisition_never_reaches_policy(tmp_path, deep_fence_origin) -> None:
+    graph = deep_fence_origin
+    checkout = _fence_checkout(tmp_path, graph, "merge-human")
+    _fence_git(checkout, "remote", "set-url", "origin", (tmp_path / "missing.git").as_uri())
+    result, inputs, fetches = _run_fence_live(checkout, tmp_path, graph["merge-human"])
+    assert result.returncode != 0
+    assert "exact-parent ancestry deepening failed" in result.stderr
+    assert len(fetches) == 1
+    assert not inputs.exists()
+
+
+@pytest.mark.parametrize("ref", ["merge-exhausted", "merge-unrelated"])
+def test_unresolved_live_fence_history_stops_after_one_bounded_fetch(
+    tmp_path, deep_fence_origin, ref
+) -> None:
+    graph = deep_fence_origin
+    checkout = _fence_checkout(tmp_path, graph, ref)
+    result, inputs, fetches = _run_fence_live(checkout, tmp_path, graph[ref])
+    assert result.returncode != 0
+    assert "could not establish exact PR ancestry after bounded exact-parent deepening" in result.stderr
+    assert len(fetches) == 1
+    assert "--deepen=8192" in fetches[0]
+    assert not inputs.exists()
+
+
+@pytest.mark.parametrize("ref", ["root", "human", "merge-octopus", "symbolic-identity"])
+def test_malformed_live_fence_identity_never_fetches_or_runs_policy(
+    tmp_path, deep_fence_origin, ref
+) -> None:
+    graph = deep_fence_origin
+    checkout_ref = "merge-human" if ref == "symbolic-identity" else ref
+    checkout = _fence_checkout(tmp_path, graph, checkout_ref)
+    sha = "HEAD" if ref == "symbolic-identity" else graph[ref]
+    result, inputs, fetches = _run_fence_live(checkout, tmp_path, sha)
+    assert result.returncode != 0
+    assert fetches == []
+    assert not inputs.exists()

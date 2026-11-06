@@ -140,11 +140,14 @@ jobs:
           fi
           if ! MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA"); then
             echo "::notice title=self-mod-fence ancestry::initial bounded checkout did not reach the exact PR merge base; deepening immutable synthetic parents."
+            # #8531's exact tested pair has 5,645 base-only commits, beyond
+            # the former 4,096 allowance. Keep one finite, blobless fetch of
+            # these immutable parents; deeper/unrelated histories still fail.
             if ! git fetch \
               --no-tags \
               --no-recurse-submodules \
               --filter=blob:none \
-              --deepen=4096 \
+              --deepen=8192 \
               origin \
               "+$TESTED_BASE_SHA:refs/ci-fence/base" \
               "+$SUBJECT_HEAD_SHA:refs/ci-fence/head"; then
