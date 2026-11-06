@@ -6,11 +6,21 @@ Tracking issue: https://github.com/mastermindx-market-intelligence/macro/issues/
 Operation: `macro-always-on-shared-shell-20261105-c3`.
 Source carrier: `sol/web-macro-always-on-shared-shell-20261105-c3`.
 Product continuity: existing `WS:MARKET-OS`; existing Data OS, live orchestration, domain computation, identity, publication and release owners retain authority.
-Protected procedure pin: Mastermind `49c2e1d93e5e080b1671c98087a845e5beb09dd5`, skillpack 1.0.1, bootstrap-major 1 compatible.
+Protected procedure pin: Mastermind `770837b4317287fb36a3e7e3948ea701de67bbab`, skillpack 1.0.1, bootstrap-major 1 compatible.
 Architecture source pins: Macro `e39ec45902c1a2bb28507beb851593be6e422167`; Terminal `f9d3280a2a3ff28dd925b128231702b836c8a247`.
 Production observations: [bounded evidence](ALWAYS_ON_MACRO_EVIDENCE_2026-11-05.json).
 Input ownership and qualified source audit: [parent adjudication](ALWAYS_ON_MACRO_INPUT_RUNTIME_AUDIT_2026-11-05.md).
 Initial durable plan commit: `c7f9671d72329e3c33cccced276e969b2515d1e5`.
+
+## Current implementation frontier — 2026-11-06 source barrier
+
+The existing updater now captures its original helper/source closure, guards the fast/snapshot/bars services with one stable source lock, durably recovers the exact interrupted target, and restores each timer's original intent independently. First-adoption owner installation is atomic and separate from ordinary update. The [barrier contract](LIVE_SOURCE_BARRIER_2026-11-06.md) and [source review](LIVE_SOURCE_BARRIER_SOURCE_REVIEW_2026-11-06.json) record 33 Linux cases, 482 affected passes/28 skips, and two exact environment-specific fixture passes under Bash5/umask022. No production source, service or timer was changed. Live-setup integration is the next required implementation slice.
+
+The auxiliary capture source overlap hold is lifted only within the parent's existing Macro carrier. Exact original native status proves prelaunch execution absence; protected source explains the conservative outer false field. The original Fabric reservation, retry/dispatch/result prohibitions remain unchanged. Holdings remains protected because its original receipt does not prove absence.
+
+Terminal's exact admitted base was fetched into its verified existing source binding without changing its checkout. Original workspace allocation then returned PARTIAL/EFFECT_UNKNOWN. Expected artifacts are currently absent, but the original process receipt must establish termination before further allocation. No retry or rehome is authorized.
+
+Macro PR10780 remains unarmed. CI command denial, runtime transfer, complete captured input adapter, generation-backed Terminal/API integration, authenticated beta proof and remaining estate waves are still open. The earlier beta1311 refresh release remains accepted and is not repeated.
 
 ## 1. Chairman outcome and governing predecessors
 

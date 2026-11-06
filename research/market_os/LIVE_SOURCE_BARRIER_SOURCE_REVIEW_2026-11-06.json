@@ -1,0 +1,60 @@
+{
+  "schema": "macro.live_source_barrier.source_review.v1",
+  "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",
+  "source_base": "5a8513cab16dd0a7fe2a10a5960fd2c4c1b9ac58",
+  "law_pin": "770837b4317287fb36a3e7e3948ea701de67bbab",
+  "recorded_at": "2026-11-06T15:56:38.859871+00:00",
+  "files_sha256": {
+    "app/deploy/update.sh": "ec120f26257aebde56def9fc6f760721c135039e2083f4e798a412e953ab7401",
+    "app/deploy/setup.sh": "b1b1123e90ca143cfbce469904b486aee1f43a86ab17e8a5745627da61ad3857",
+    "app/deploy/bootstrap_repo.sh": "9b682ef5b02999df16ce3dd5bc9a6c2fb6b2a359761c3aaf24b1fc8d9b5b04c3",
+    "app/deploy/macro-live-fast.service": "a9b21d6173d6b0d8ef20fae246776a17447aae39194317aeecbd5bbbb63ac4f4",
+    "app/deploy/macro-live-snapshot.service": "7e05972be909fc5d8ef74e525aa4cd0f94367d1263b7793cacc7df045f2722ec",
+    "app/deploy/macro-live-bars.service": "ff9412b981868c7bd337345d09d1d0ad70f88acb6fe7df903670d274ded0f9cc",
+    "tests/test_deploy_live_source_barrier.py": "24b9fcb7506a0e7d89c70671093fc785c58c47623dab68399342eeace8d4654b",
+    "tests/test_deploy_git_history.py": "2ba79513986f3b5c9501070fdcd9f5d3549977a613af33885771a982eaa879df",
+    "tests/test_deploy_git_store_maintenance.py": "70b47ef2812967e3bd90b59694b51af313000071bdac9e813d5d81a85befdc0f",
+    "tests/test_deploy_update_self_heal.py": "6c068f5529e119b163cf87faf1624109975f1368e90ce772d8d598508de54b52",
+    "tests/test_market_memory_options_deploy.py": "3b4b86e23a83fcc05f216c8a110c927249c08cd28f13baadeec05df26fbf4fb8"
+  },
+  "linux": {
+    "passed": 33,
+    "exit_code": 0,
+    "tested_updater_sha256": "d662b84e3b0249fa820e2dbbdb286dd2a5b696de89323a2b9cfe661fbdf74e8f",
+    "test_sha256": "24b9fcb7506a0e7d89c70671093fc785c58c47623dab68399342eeace8d4654b",
+    "studio_log_sha256": "893357fe940965ad3e3f221dda3e84daf1f980222daeb453f138900961edb217",
+    "linux_log_sha256": "bf4d559b9efed090c7f38a3b05a999ace3c82df710f193a1574c32676deaf06c",
+    "receipt": "/tmp/mmx-live-source-barrier-linux-20261106-03.json",
+    "scope": "Isolated Linux fixture manager; real flock/exec/Git, not production systemd acceptance"
+  },
+  "affected": {
+    "passed": 482,
+    "skipped": 28,
+    "failed": 2,
+    "log_sha256": "9af09115dc30d5eaeb16f1ece6505344a0274a7d852560703695c8bbd87ef819",
+    "receipt": "/tmp/mmx-live-source-updater-affected-20261106-v2.json"
+  },
+  "targeted_environment_requalification": {
+    "exit_code": 0,
+    "elapsed_seconds": 5.055,
+    "log_sha256": "db69cf808829a373cc5cd856ff60ca15c0228ccc8455f5eb425eff4639f03db4",
+    "suite": [
+      "tests/test_deploy_update_self_heal.py::test_autosave_caddy_uses_publication_only_from_fresh_updater[True]",
+      "tests/test_market_memory_options_deploy.py::test_legacy_api_dropin_migration_is_exact_and_fail_closed"
+    ],
+    "bash": "5.3.9",
+    "fixture_umask": "022",
+    "source_sha256": "ec120f26257aebde56def9fc6f760721c135039e2083f4e798a412e953ab7401"
+  },
+  "post_linux_changes": [
+    "Restore Self-update comment marker required by existing fixture extraction",
+    "Add seven cached API dependencies to incumbent restart path selection; affected source tests pass"
+  ],
+  "existing_caddy_gate_sha256": "a9e593457d9381ce073d265ca02b38609e2a38820cb9390eb131925c2799cf25",
+  "required_next": [
+    "live-setup purpose and recovery integration",
+    "CI registration capability resolution",
+    "existing protected release and actual service/browser proof"
+  ],
+  "production_mutation": false
+}

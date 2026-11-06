@@ -1,9 +1,9 @@
 {
   "schema": "macro.always_on_commissions.v1",
   "root_id": "macro-always-on-shared-shell-20261105-c3",
-  "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+  "protected_law_sha": "770837b4317287fb36a3e7e3948ea701de67bbab",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T14:45:23.950871+00:00",
+  "recorded_at": "2026-11-06T15:56:38.859871+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -1465,11 +1465,19 @@
       "operation_id": "macro-always-on-terminal-generation-20261106-c3",
       "repository": "terminal",
       "base_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
-      "status": "REFUSED",
-      "effect_state": "NOT_APPLIED",
-      "code": "REPOSITORY_SOURCE_UNAVAILABLE",
-      "bounded_diagnostic": "mmx-workspace executable not found in current shell PATH; exact source cause unproven",
-      "retry_or_rehome": false
+      "status": "PARTIAL",
+      "effect_state": "EFFECT_UNKNOWN",
+      "code": "WORKSPACE_ACQUISITION_UNQUALIFIED",
+      "bounded_diagnostic": "Exact original status says workspace not registered. Both owner-declared destinations, exact branch and matching Git registration absent at read time. Original acquisition process completion remains unproven; status NOT_APPLIED describes only that read, not acquire.",
+      "retry_or_rehome": false,
+      "prior_status": "REFUSED/NOT_APPLIED/REPOSITORY_SOURCE_UNAVAILABLE",
+      "source_preparation": {
+        "exact_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+        "fetch_exit": 0,
+        "source_head_unchanged": "ec1e45ec29ced091b3721da77702d57e720ae588",
+        "receipt": "/tmp/mmx-terminal-source-preparation-bb65839-20261106.json"
+      },
+      "next": "Locate original acquisition action/process receipt; preserve original operation and no duplicate allocation"
     },
     "sector_context_inputs": {
       "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",
@@ -1483,20 +1491,16 @@
       "remaining": "Actual source binding, resolved Market State, genuine OHLCV/holdings and auxiliary closure remain required; existing CI/Terminal/browser/effect fences unchanged."
     },
     "source_barrier_recovery_ruling": {
-      "state": "DESIGN_READY_SOURCE_IMPLEMENTATION_REQUIRED",
+      "state": "CORE_UPDATER_SOURCE_QUALIFIED_SETUP_INTEGRATION_REQUIRED",
       "recorded_at": "2026-11-06T14:45:23.950871+00:00",
       "pending_requirements": [
-        "Preserve updater fd9 and Options guards/finalizers",
-        "Stable fd8 lock and fail-closed pending marker",
-        "Install and attest guarded six-unit definitions before first reset; drain old unwrapped services",
-        "Original target recovery before mutable helper imports",
-        "Exact reset and all corresponding mirror copies inside exclusive window",
-        "Original independent timer intent and later masks/disable actions preserved across crash",
-        "Setup joins incumbent mutation owner and keeps its finalizer"
+        "live-setup joins same installed owner/journal with explicit setup purpose",
+        "Crash-safe package readiness, smoke and captured timer restoration",
+        "Existing CI/release and real path acceptance"
       ],
       "unresolved": [
-        "Source implementation and Linux crash/first-adoption qualification",
-        "Real release and activation remain gated"
+        "No production activation",
+        "No estate-wide source/venv isolation"
       ],
       "no_deployment": true,
       "helper_closure": {
@@ -1508,7 +1512,9 @@
       "implementation_choice": "Embedded installed macro-update owner with early closed --live-lane branch; no separately installed helper pair",
       "first_adoption": "Existing setup.sh install-only under fd9, no bootstrap/reset; ordinary updater separately invoked after readback",
       "owner_replacement": "Atomic rename/fsync at both existing install sites; refuse any unresolved journal; bind executing /proc/$$/fd/255 digest",
-      "scope": "Three service readers and their three timers; no estate-wide source isolation claim"
+      "scope": "Three service readers and their three timers; no estate-wide source isolation claim",
+      "contract": "research/market_os/LIVE_SOURCE_BARRIER_2026-11-06.md",
+      "proof": "research/market_os/LIVE_SOURCE_BARRIER_SOURCE_REVIEW_2026-11-06.json"
     },
     "member_ohlcv_private_generation": {
       "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",
@@ -1531,6 +1537,34 @@
       "existing_real_cache_smoke_skips": 2,
       "deliberate_entry_config_freshness_fix": true,
       "remaining": "Actual auxiliary capture, protected holdings, complete adapter and runtime/native activation"
+    },
+    "auxiliary_capture_admission_20261106": {
+      "run_id": "macro-always-on-20261106-c3-auxiliary-capture-01",
+      "root_id": "macro-always-on-shared-shell-20261105-c3",
+      "source_brief": "https://github.com/mastermindx-market-intelligence/macro/pull/10780#issuecomment-6687616377",
+      "base_sha": "5a8513cab16dd0a7fe2a10a5960fd2c4c1b9ac58",
+      "controller_pid": 53561,
+      "state": "REQUEST_REFUSED_BEFORE_LAUNCH",
+      "outer_root_verified": false,
+      "worker_start_proven": false,
+      "inner_execution_absence_proven": true,
+      "outer_execution_absence_proven": false,
+      "controller_wrapper_exit": 0,
+      "controller_internal_exit": 75,
+      "result_available": false,
+      "retry_authorized": false,
+      "dispatch_authorized": false,
+      "result_consumption_authorized": false,
+      "disposition": "Original native request/run/root/parent match and report prelaunch execution absence. Protected fabric-backend source confirms outer conservative field. Existing Macro custody, exact head and absent auxiliary target files verified. Only the parent-imposed source-overlap hold is lifted; no Fabric retry, dispatch, result consumption, lifecycle release or effect substitution.",
+      "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+      "failure_classification": "PRELAUNCH_REFUSAL_CAUSE_UNRESOLVED",
+      "protected_source_pin": "770837b4317287fb36a3e7e3948ea701de67bbab",
+      "request_root_and_parent_correlated": true,
+      "native_effect_evidence": "OWNER_REPORTS_EXECUTION_ABSENCE",
+      "outer_field_semantics": "Conservatively hardcoded by fabric_status; not contradictory worker activity evidence",
+      "source_overlap_hold": "PARENT_PROVISIONAL_HOLD_LIFTED",
+      "controller_reservation": "UNCHANGED_NO_RELEASE_OR_REPLAY",
+      "direct_work_reason": "NO_ELIGIBLE_PRE_EFFECT_WORKER; principal source work authorized in existing Macro carrier"
     }
   }
 }

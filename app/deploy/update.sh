@@ -6,6 +6,783 @@
 # instead of waiting on a once-a-night pull.
 set -euo pipefail
 APP_DIR="/opt/macro"
+# BEGIN LIVE_SOURCE_OWNER
+# The source transaction belongs to macro-update. This embedded stdlib program
+# runs before checkout imports and remains available after an interrupted reset.
+live_source_control() {
+	/usr/bin/python3 -I -S - "/proc/$$/fd/255" "$@" <<'MMX_LIVE_SOURCE_PY'
+import configparser
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import stat
+import subprocess
+import sys
+import uuid
+
+APP = Path("/opt/macro")
+OWNER = Path("/usr/local/bin/macro-update")
+LOCK = Path("/run/lock/macro-live-source.lock")
+STATE = Path("/var/lib/macro-live/state")
+PENDING = STATE / "source-update.pending"
+CAPSULES = STATE / "source-update-capsules"
+UNIT_DIR = Path("/etc/systemd/system")
+CGROUP = Path("/sys/fs/cgroup")
+BOOT_ID = Path("/proc/sys/kernel/random/boot_id")
+LANES = ("fast", "snapshot", "bars")
+UNITS = tuple("macro-live-" + lane + suffix for lane in LANES
+              for suffix in (".service", ".timer"))
+HELPERS = tuple("market-memory-options-" + name + ".sh"
+                for name in ("unit-boundary", "runtime-fence", "dropin-migration"))
+PHASES = ("PREPARED", "GUARDS_READY", "MUTATING", "SOURCE_READY", "RESTORING")
+READY = ("SOURCE_READY", "RESTORING")
+SYSTEMCTL = "/usr/bin/systemctl"
+GIT = "/usr/bin/git"
+SYNC = "/usr/bin/sync"
+BASH = "/usr/bin/bash"
+ROOT_UID = 0
+ROOT_GID = 0
+MAX_MANIFEST = 4 * 1024 * 1024
+MAX_OWNER = 2 * 1024 * 1024
+
+
+class Refusal(RuntimeError):
+    pass
+
+
+class EffectNeedsReadback(Refusal):
+    """A rename/unlink became visible but its final durability/readback failed."""
+
+
+def require(condition, reason):
+    if not condition:
+        raise Refusal(reason)
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def exact_keys(value, keys, name):
+    require(type(value) is dict and set(value) == set(keys), name + " fields")
+
+
+def closed_json(raw):
+    def pairs(items):
+        out = {}
+        for k, v in items:
+            require(k not in out, "duplicate JSON key")
+            out[k] = v
+        return out
+    return json.loads(raw, object_pairs_hook=pairs,
+                      parse_constant=lambda value: (_ for _ in ()).throw(Refusal("nonfinite JSON")))
+
+
+def directory(path, *, create=False, sticky=False):
+    """Walk all ancestors without following symlinks; root owns every entry."""
+    path = Path(path)
+    require(path.is_absolute() and ".." not in path.parts, "noncanonical directory")
+    current = Path("/")
+    for part in path.parts[1:]:
+        current /= part
+        try:
+            s = current.lstat()
+        except FileNotFoundError:
+            if not create:
+                raise
+            current.mkdir(mode=0o755 if current in (STATE.parent, STATE) else 0o700)
+            sync_dir(current.parent)
+            s = current.lstat()
+        require(stat.S_ISDIR(s.st_mode) and (s.st_uid, s.st_gid) in
+                ((0, 0), (ROOT_UID, ROOT_GID)),
+                "unsafe directory: " + str(current))
+        writable = s.st_mode & 0o022
+        allowed_sticky = sticky and current == path and bool(s.st_mode & stat.S_ISVTX)
+        require(not writable or allowed_sticky, "writable directory: " + str(current))
+    return path
+
+
+def sync_dir(path):
+    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def safe_read(path, limit, *, mode=None):
+    path = Path(path)
+    directory(path.parent)
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        before = os.fstat(fd)
+        require(stat.S_ISREG(before.st_mode) and before.st_uid == ROOT_UID
+                and before.st_gid == ROOT_GID and before.st_nlink == 1
+                and not before.st_mode & 0o022, "unsafe file: " + str(path))
+        if mode is not None:
+            require(stat.S_IMODE(before.st_mode) == mode, "unexpected file mode: " + str(path))
+        require(0 <= before.st_size <= limit, "oversized file: " + str(path))
+        with os.fdopen(os.dup(fd), "rb") as stream:
+            data = stream.read(limit + 1)
+        after = os.fstat(fd)
+        require(len(data) <= limit and (before.st_dev, before.st_ino, before.st_size,
+                before.st_mtime_ns, before.st_ctime_ns) == (after.st_dev, after.st_ino,
+                after.st_size, after.st_mtime_ns, after.st_ctime_ns),
+                "file changed during capture: " + str(path))
+        return data
+    finally:
+        os.close(fd)
+
+
+def atomic_write(path, data, mode):
+    path = Path(path)
+    directory(path.parent)
+    try:
+        s = path.lstat()
+    except FileNotFoundError:
+        s = None
+    if s is not None:
+        require(stat.S_ISREG(s.st_mode) and s.st_uid == ROOT_UID and s.st_gid == ROOT_GID
+                and s.st_nlink == 1 and not s.st_mode & 0o022, "unsafe replacement: " + str(path))
+    temp = path.parent / ("." + path.name + "." + uuid.uuid4().hex)
+    fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, mode)
+    published = False
+    try:
+        os.fchmod(fd, mode)
+        os.fchown(fd, ROOT_UID, ROOT_GID)
+        with os.fdopen(os.dup(fd), "wb") as stream:
+            stream.write(data)
+            stream.flush()
+        os.fsync(fd)
+        os.replace(temp, path)
+        published = True
+        sync_dir(path.parent)
+    except OSError as exc:
+        if published:
+            raise EffectNeedsReadback("replacement visible at " + str(path) +
+                                     "; expected sha256=" + sha(data) + "; " + str(exc)) from exc
+        raise
+    finally:
+        os.close(fd)
+        if temp.exists():
+            temp.unlink()
+
+
+def json_write(path, value):
+    atomic_write(path, (json.dumps(value, sort_keys=True, separators=(",", ":"),
+                                  allow_nan=False) + "\n").encode(), 0o600)
+
+
+def run(args, *, accepted=(0,), input=None):
+    result = subprocess.run(args, input=input, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE, check=False)
+    require(result.returncode in accepted,
+            "command failed (" + str(result.returncode) + "): " + " ".join(map(str, args[:3])))
+    return result.stdout.decode("utf-8", "strict").strip()
+
+
+def git(*args):
+    return run([GIT, "-C", str(APP), *args])
+
+
+def source_revision(value):
+    require(type(value) is str and re.fullmatch(r"[0-9a-f]{40}", value), "invalid source revision")
+    return value
+
+
+def owner_bytes(script_fd):
+    # /proc/self/fd/255 in this child is not the executing Bash file.
+    require(re.fullmatch(r"/proc/[1-9][0-9]*/fd/255", script_fd), "executing owner descriptor missing")
+    fd = os.open(script_fd, os.O_RDONLY | os.O_NONBLOCK)
+    try:
+        s = os.fstat(fd)
+        require(stat.S_ISREG(s.st_mode) and s.st_uid == ROOT_UID and s.st_gid == ROOT_GID
+                and not s.st_mode & 0o022 and 0 < s.st_size <= MAX_OWNER, "unsafe executing owner")
+        with os.fdopen(os.dup(fd), "rb") as stream:
+            data = stream.read(MAX_OWNER + 1)
+        after = os.fstat(fd)
+        require(len(data) == s.st_size and len(data) <= MAX_OWNER and
+                (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns) ==
+                (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns),
+                "executing owner changed during capture")
+        return data
+    finally:
+        os.close(fd)
+
+
+def owner_identity(script_fd, *, candidate=False):
+    data = owner_bytes(script_fd)
+    if not candidate:
+        require(data == safe_read(OWNER, MAX_OWNER, mode=0o755), "installed/executing owner mismatch")
+    return sha(data)
+
+
+def boot_identity():
+    value = BOOT_ID.read_text().strip()
+    require(re.fullmatch(r"[0-9a-f-]{36}", value), "invalid boot identity")
+    return value
+
+
+def object_bytes(revision, rel):
+    result = subprocess.run([GIT, "-C", str(APP), "show", revision + ":" + rel],
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    require(result.returncode == 0, "missing captured target object: " + rel)
+    return result.stdout
+
+
+def unit_show(unit, prop):
+    require(unit in UNITS, "foreign unit")
+    return run([SYSTEMCTL, "show", "-p", prop, "--value", unit])
+
+
+def unit_enabled(unit):
+    value = run([SYSTEMCTL, "is-enabled", unit], accepted=(0, 1, 3, 4))
+    require(value in ("enabled", "disabled", "enabled-runtime", "masked", "masked-runtime",
+                      "static", "not-found"), "unknown unit enablement: " + unit)
+    return value
+
+
+
+def reviewed_unit_shape(name, body):
+    """Closed core-unit shape: every executable command is the guarded entry."""
+    parser = configparser.ConfigParser(interpolation=None, strict=True)
+    parser.optionxform = str
+    try:
+        parser.read_string(body.decode("utf-8", "strict"))
+    except (configparser.Error, UnicodeError) as exc:
+        raise Refusal("invalid target unit syntax: " + name) from exc
+    service = name.endswith(".service")
+    expected_sections = {"Unit", "Service" if service else "Timer", "Install"}
+    require(set(parser.sections()) == expected_sections and not parser.defaults(), "foreign unit sections: " + name)
+    allowed = {
+        "Unit": {"Description", "After", "Wants"},
+        "Service": {"Type", "WorkingDirectory", "EnvironmentFile", "ExecStart", "TimeoutStartSec",
+                    "Nice", "CPUWeight", "CPUQuota", "MemoryHigh", "MemoryMax", "IOWeight",
+                    "NoNewPrivileges", "PrivateTmp"},
+        "Timer": {"OnBootSec", "OnUnitActiveSec", "OnCalendar", "AccuracySec",
+                  "RandomizedDelaySec", "Persistent", "Unit"},
+        "Install": {"WantedBy"},
+    }
+    for section in parser.sections():
+        require(set(parser[section]) <= allowed[section]
+                and all("\n" not in value and "\\" not in value for value in parser[section].values()),
+                "foreign execution hook/continuation in target unit: " + name)
+    lane = name.removeprefix("macro-live-").rsplit(".", 1)[0]
+    if service:
+        required = {"Type": "oneshot", "WorkingDirectory": "/opt/macro",
+                    "EnvironmentFile": "-/etc/macro-live.env",
+                    "ExecStart": "/usr/local/bin/macro-update --live-lane " + lane,
+                    "NoNewPrivileges": "true", "PrivateTmp": "true"}
+        require(all(parser["Service"].get(key) == value for key, value in required.items()),
+                "target service is not exclusively guarded: " + name)
+        require(parser["Install"].get("WantedBy") == "multi-user.target", "foreign service target")
+    else:
+        require(parser["Timer"].get("Unit") == "macro-live-" + lane + ".service"
+                and parser["Install"].get("WantedBy") == "timers.target", "foreign timer target")
+
+def unit_inventory():
+    directory(UNIT_DIR)
+    states = {}
+    for unit in UNITS:
+        path = UNIT_DIR / unit
+        try:
+            s = path.lstat()
+        except FileNotFoundError:
+            s = None
+        load = unit_show(unit, "LoadState")
+        absent = s is None and load == "not-found"
+        if not absent:
+            require(s is not None and stat.S_ISREG(s.st_mode) and s.st_uid == ROOT_UID
+                    and s.st_gid == ROOT_GID and not s.st_mode & 0o022,
+                    "partial, masked or foreign installation: " + unit)
+            require(load in ("loaded", "not-found"), "ambiguous manager state: " + unit)
+            require(not unit_show(unit, "DropInPaths"), "foreign live-unit drop-ins: " + unit)
+        states[unit] = {"absent": absent}
+    count = sum(int(v["absent"]) for v in states.values())
+    require(count in (0, len(UNITS)), "partial live-unit installation")
+    if count == len(UNITS):
+        public = STATE.parent / "public"
+        try:
+            public.lstat()
+        except FileNotFoundError:
+            pass
+        else:
+            raise Refusal("live public footprint without all six units")
+        return "absent", {}
+    timers = {}
+    for lane in LANES:
+        unit = "macro-live-" + lane + ".timer"
+        enabled = unit_enabled(unit)
+        require(enabled in ("enabled", "disabled"), "masked/foreign timer intent: " + unit)
+        active = unit_show(unit, "ActiveState")
+        require(active in ("active", "inactive"), "transitional/failed timer intent: " + unit)
+        timers[unit] = {"enabled": enabled, "active": active == "active"}
+    return "present", timers
+
+
+def pending_exists():
+    try:
+        directory(PENDING.parent)
+    except FileNotFoundError:
+        return False
+    try:
+        PENDING.lstat()
+    except FileNotFoundError:
+        return False
+    return True
+
+
+def read_pending(owner):
+    if not pending_exists():
+        return None
+    journal = closed_json(safe_read(PENDING, 65536, mode=0o600))
+    exact_keys(journal, ("schema", "attempt", "manifest_sha256", "phase", "restoration", "mirrors"), "journal")
+    require(journal["schema"] == "macro.live-source-update.v1"
+            and type(journal["attempt"]) is str and re.fullmatch(r"[0-9a-f]{32}", journal["attempt"])
+            and journal["phase"] in PHASES, "invalid source journal")
+    capsule = CAPSULES / journal["attempt"]
+    raw = safe_read(capsule / "manifest.json", MAX_MANIFEST, mode=0o600)
+    require(sha(raw) == journal["manifest_sha256"], "capsule manifest mismatch")
+    manifest = closed_json(raw)
+    exact_keys(manifest, ("schema", "attempt", "owner_sha256", "old", "new", "changed",
+                         "boot_id", "enrollment", "timers", "service_cgroups", "members"), "manifest")
+    require(manifest["schema"] == journal["schema"] and manifest["attempt"] == journal["attempt"]
+            and manifest["owner_sha256"] == owner, "incompatible transaction owner")
+    source_revision(manifest["old"])
+    source_revision(manifest["new"])
+    require(type(manifest["changed"]) is list and len(manifest["changed"]) <= 20000
+            and all(type(x) is str and x and "\n" not in x and "\x00" not in x
+                    and len(x) <= 4096 for x in manifest["changed"]), "invalid changed-path capture")
+    require(type(manifest["boot_id"]) is str and re.fullmatch(r"[0-9a-f-]{36}", manifest["boot_id"]),
+            "invalid captured boot identity")
+    require(manifest["enrollment"] in ("absent", "present"), "invalid enrollment")
+    timer_names = {"macro-live-" + x + ".timer" for x in LANES} if manifest["enrollment"] == "present" else set()
+    exact_keys(manifest["timers"], timer_names, "timer intent")
+    exact_keys(journal["restoration"], timer_names, "timer restoration")
+    for unit in timer_names:
+        value = manifest["timers"][unit]
+        exact_keys(value, ("enabled", "active"), "timer intent")
+        require(value["enabled"] in ("enabled", "disabled")
+                and type(value["active"]) is bool, "invalid timer intent")
+        require(journal["restoration"][unit] in ("pending", "starting", "restored"), "invalid restoration phase")
+    services = {unit for unit in UNITS if unit.endswith(".service")} if manifest["enrollment"] == "present" else set()
+    exact_keys(manifest["service_cgroups"], services, "original service cgroups")
+    for unit, group in manifest["service_cgroups"].items():
+        require(type(group) is str and (not group or
+                (group.startswith("/") and ".." not in Path(group).parts and Path(group).name == unit)),
+                "invalid original service cgroup")
+    exact_keys(journal["mirrors"], ("site", "news", "research"), "mirror progress")
+    require(all(value in ("pending", "complete", "absent", "not-required")
+                for value in journal["mirrors"].values()), "invalid mirror progress")
+    if manifest["old"] == manifest["new"]:
+        require(set(journal["mirrors"].values()) == {"not-required"}, "unexpected no-change mirror")
+    else:
+        require("not-required" not in journal["mirrors"].values(), "missing changed-source mirrors")
+        if journal["phase"] in READY:
+            require(journal["mirrors"]["site"] == "complete" and
+                    all(value in ("complete", "absent") for value in journal["mirrors"].values()),
+                    "incomplete ready mirror receipts")
+    members = {("helpers/" + x) for x in HELPERS} | {("units/" + x) for x in UNITS}
+    exact_keys(manifest["members"], members, "capsule members")
+    for rel, digest in manifest["members"].items():
+        require(type(digest) is str and re.fullmatch(r"[0-9a-f]{64}", digest), "invalid member digest")
+        data = safe_read(capsule / rel, 256 * 1024, mode=0o600)
+        require(sha(data) == digest, "changed capsule member: " + rel)
+    return journal, manifest, capsule
+
+
+def entry_capture(owner):
+    old = source_revision(git("rev-parse", "HEAD"))
+    data = {}
+    for name in HELPERS:
+        rel = "app/deploy/" + name
+        body = safe_read(APP / rel, 256 * 1024)
+        require(body == object_bytes(old, rel), "checkout helper is not complete at HEAD: " + name)
+        data[name] = body
+    directory(CAPSULES, create=True)
+    capsule = CAPSULES / uuid.uuid4().hex
+    directory(capsule, create=True)
+    directory(capsule / "helpers", create=True)
+    for name, body in data.items():
+        atomic_write(capsule / "helpers" / name, body, 0o600)
+    json_write(capsule / "entry.json", {"owner_sha256": owner, "old": old,
+                                      "helpers": {name: sha(body) for name, body in data.items()}})
+    return capsule
+
+
+def entry_read(owner, attempt, old):
+    require(re.fullmatch(r"[0-9a-f]{32}", attempt), "invalid entry capsule")
+    capsule = CAPSULES / attempt
+    entry = closed_json(safe_read(capsule / "entry.json", 65536, mode=0o600))
+    exact_keys(entry, ("owner_sha256", "old", "helpers"), "entry capture")
+    require(entry["owner_sha256"] == owner and entry["old"] == old, "entry/source mismatch")
+    exact_keys(entry["helpers"], HELPERS, "entry helpers")
+    data = {}
+    for name in HELPERS:
+        body = safe_read(capsule / "helpers" / name, 256 * 1024, mode=0o600)
+        require(sha(body) == entry["helpers"][name], "changed entry helper")
+        data["helpers/" + name] = body
+    return capsule, data
+
+
+def write_journal(journal):
+    json_write(PENDING, journal)
+
+
+def prepare(owner, old, new, attempt):
+    require(not pending_exists(), "pending transaction already exists")
+    old, new = source_revision(old), source_revision(new)
+    require(git("rev-parse", "HEAD") == old, "source changed before preparation")
+    require(git("rev-parse", new + "^{commit}") == new, "target commit unavailable")
+    capsule, data = entry_read(owner, attempt, old)
+    enrollment, timers = unit_inventory()
+    changed = git("diff", "--name-only", old, new).splitlines()
+    require(len(changed) <= 20000 and all("\n" not in x and len(x) <= 4096 for x in changed),
+            "changed-path capture too large")
+    for name in UNITS:
+        body = object_bytes(new, "app/deploy/" + name)
+        require(0 < len(body) <= 65536, "invalid target unit size")
+        reviewed_unit_shape(name, body)
+        data["units/" + name] = body
+    directory(capsule / "units", create=True)
+    for rel, body in data.items():
+        if rel.startswith("units/"):
+            atomic_write(capsule / rel, body, 0o600)
+    manifest = {"schema": "macro.live-source-update.v1", "attempt": attempt,
+                "owner_sha256": owner, "old": old, "new": new, "changed": changed,
+                "boot_id": boot_identity(), "enrollment": enrollment, "timers": timers,
+                "service_cgroups": {unit: unit_show(unit, "ControlGroup") for unit in UNITS
+                                   if unit.endswith(".service")} if enrollment == "present" else {},
+                "members": {rel: sha(body) for rel, body in data.items()}}
+    raw = (json.dumps(manifest, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n").encode()
+    require(len(raw) <= MAX_MANIFEST, "oversized manifest")
+    atomic_write(capsule / "manifest.json", raw, 0o600)
+    sync_dir(capsule)
+    sync_dir(CAPSULES)
+    journal = {"schema": manifest["schema"], "attempt": attempt, "manifest_sha256": sha(raw),
+               "phase": "PREPARED", "restoration": {unit: "pending" for unit in timers},
+               "mirrors": {name: "not-required" if old == new else "pending"
+                           for name in ("site", "news", "research")}}
+    write_journal(journal)
+    return capsule
+
+
+def open_lock():
+    directory(LOCK.parent, sticky=True)
+    fd = os.open(LOCK, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+    try:
+        verify_lock(fd)
+    except BaseException:
+        os.close(fd)
+        raise
+    return fd
+
+
+def verify_lock(fd):
+    directory(LOCK.parent, sticky=True)
+    st, named = os.fstat(fd), LOCK.lstat()
+    require(stat.S_ISREG(st.st_mode) and stat.S_ISREG(named.st_mode)
+            and st.st_uid == ROOT_UID and st.st_gid == ROOT_GID
+            and stat.S_IMODE(st.st_mode) == 0o600 and st.st_nlink == 1
+            and (st.st_dev, st.st_ino) == (named.st_dev, named.st_ino), "unsafe/replaced source lock")
+
+
+def check_cgroup(unit, captured=""):
+    require(unit in UNITS and unit.endswith(".service"), "foreign cgroup unit")
+    directory(CGROUP)
+    # Only the admitted unified hierarchy supplies this proof. A missing
+    # interface is not an empty process population.
+    require((CGROUP / "cgroup.controllers").is_file()
+            and not (CGROUP / "cgroup.controllers").is_symlink(), "unified cgroup interface unavailable")
+    groups = {captured, unit_show(unit, "ControlGroup"), "/system.slice/" + unit} - {""}
+    for value in groups:
+        require(value.startswith("/") and ".." not in Path(value).parts and Path(value).name == unit,
+                "invalid original/current control group")
+        group_root = CGROUP / value.lstrip("/")
+        try:
+            directory(group_root)
+        except FileNotFoundError:
+            continue
+        def walk_error(error):
+            raise error
+        for current, dirs, files in os.walk(group_root, followlinks=False, onerror=walk_error):
+            current = Path(current)
+            require(not any((current / name).is_symlink() for name in dirs), "symlink cgroup subtree")
+            procs = current / "cgroup.procs"
+            try:
+                metadata = procs.lstat()
+            except FileNotFoundError:
+                try:
+                    current.lstat()
+                except FileNotFoundError:
+                    continue
+                raise Refusal("cgroup process-membership interface unavailable")
+            require(stat.S_ISREG(metadata.st_mode), "invalid cgroup process file")
+            require(not procs.read_text().strip(), "live service cgroup remains populated")
+
+
+def recovery_target(manifest):
+    require(git("rev-parse", "HEAD") in (manifest["old"], manifest["new"]),
+            "foreign HEAD during original source transaction")
+
+
+def source_ready(manifest):
+    require(git("rev-parse", "HEAD") == manifest["new"], "HEAD differs from captured target")
+    # Runtime data artifacts have separate owners. This source fence is bounded
+    # to the three core lanes and does not assert estate-wide writer isolation.
+    run([GIT, "-C", str(APP), "diff", "--quiet", "--no-ext-diff", manifest["new"], "--",
+         "*.py", "*.sh", "*.yml", "*.yaml", "*.toml", "app/deploy"])
+    run([SYNC, "-f", str(APP)])
+    for name, target in (("site", APP / "site.served"), ("news", APP / "press_news.served"),
+                         ("research", APP / "press_research.served")):
+        try:
+            directory(target)
+        except FileNotFoundError:
+            continue
+        run([SYNC, "-f", str(target)])
+
+
+def record_mirror(journal, manifest, name, outcome):
+    require(journal["phase"] == "MUTATING" and name in ("site", "news", "research")
+            and outcome in ("complete", "absent"), "invalid mirror completion")
+    source = APP / "site" if name == "site" else APP / "properties" / name
+    destination = APP / "site.served" if name == "site" else APP / ("press_" + name + ".served")
+    if outcome == "absent":
+        require(name != "site", "main site mirror cannot be absent")
+        try:
+            source.lstat()
+        except FileNotFoundError:
+            pass
+        else:
+            raise Refusal("mirror source is present")
+    else:
+        directory(source)
+        directory(destination)
+        run([SYNC, "-f", str(destination)])
+    journal["mirrors"][name] = outcome
+    write_journal(journal)
+
+
+def restore(journal, manifest, capsule):
+    require(journal["phase"] in READY, "source is not ready for timer restoration")
+    source_ready(manifest)
+    journal["phase"] = "RESTORING"
+    write_journal(journal)
+    boot_changed = boot_identity() != manifest["boot_id"]
+    held = []
+    for unit, intent in manifest["timers"].items():
+        try:
+            require(unit_enabled(unit) == intent["enabled"], "timer enablement changed; preserving " + unit)
+            active = unit_show(unit, "ActiveState")
+            require(active in ("active", "inactive"), "timer is in a foreign/transitional state: " + unit)
+            progress = journal["restoration"][unit]
+            if boot_changed and intent["enabled"] == "disabled" and intent["active"]:
+                raise Refusal("manual timer activation does not survive a boot: " + unit)
+            if intent["active"]:
+                if active == "inactive":
+                    require(progress == "pending", "ambiguous/withdrawn timer restoration: " + unit)
+                    journal["restoration"][unit] = "starting"
+                    write_journal(journal)
+                    run([SYSTEMCTL, "start", unit])
+                    require(unit_enabled(unit) == intent["enabled"] and unit_show(unit, "ActiveState") == "active",
+                            "timer restoration failed: " + unit)
+            else:
+                require(active == "inactive", "inactive timer intent changed: " + unit)
+            journal["restoration"][unit] = "restored"
+            write_journal(journal)
+        except (Refusal, OSError) as exc:
+            held.append(str(exc))
+    for unit, intent in manifest["timers"].items():
+        try:
+            require(unit_enabled(unit) == intent["enabled"] and
+                    unit_show(unit, "ActiveState") == ("active" if intent["active"] else "inactive"),
+                    "timer changed during restoration: " + unit)
+        except (Refusal, OSError) as exc:
+            held.append(str(exc))
+    require(not held, "; ".join(dict.fromkeys(held)))
+    json_write(capsule / "completion.json", {"schema": journal["schema"], "attempt": journal["attempt"],
+                                           "new": manifest["new"], "phase": "COMPLETE"})
+    PENDING.unlink()
+    try:
+        sync_dir(PENDING.parent)
+    except OSError as exc:
+        raise EffectNeedsReadback("journal retirement visible for attempt " + journal["attempt"] +
+                                 "; reconcile pending absence and completion receipt; " + str(exc)) from exc
+
+
+def replace_owner(script_fd, revision, *, adoption=False):
+    require(not pending_exists(), "cannot replace owner while a transaction is unresolved")
+    revision = source_revision(revision)
+    data = object_bytes(revision, "app/deploy/update.sh")
+    require(0 < len(data) <= MAX_OWNER, "invalid owner candidate")
+    require(b"# BEGIN LIVE_SOURCE_OWNER" in data and b"# END LIVE_SOURCE_OWNER" in data,
+            "candidate has no embedded source owner")
+    if adoption:
+        require(owner_bytes(script_fd) == data, "adoption candidate is not the exact selected Git object")
+    else:
+        require(safe_read(APP / "app/deploy/update.sh", MAX_OWNER) == data,
+                "checkout owner differs from selected Git object")
+    run([BASH, "-n"], input=data)
+    fd = open_lock()
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        verify_lock(fd)
+        require(not pending_exists(), "source transaction appeared before owner replacement")
+        owner_identity(script_fd, candidate=adoption)
+        atomic_write(OWNER, data, 0o755)
+        if safe_read(OWNER, MAX_OWNER, mode=0o755) != data:
+            raise EffectNeedsReadback("installed owner readback mismatch; expected sha256=" + sha(data))
+    finally:
+        os.close(fd)
+    print(sha(data))
+
+
+def main(argv):
+    require(os.geteuid() == ROOT_UID, "source owner requires root")
+    script_fd, action, *args = argv
+    if action == "adopt-owner":
+        require(len(args) == 1, "adopt-owner arguments")
+        owner_identity(script_fd, candidate=True)
+        replace_owner(script_fd, args[0], adoption=True)
+        return
+    owner = owner_identity(script_fd)
+    if action == "run":
+        require(len(args) == 1 and args[0] in LANES, "unknown live lane")
+        try:
+            os.close(9)
+        except OSError:
+            pass
+        fd = open_lock()
+        if fd != 8:
+            os.dup2(fd, 8, inheritable=True)
+            os.close(fd)
+        else:
+            os.set_inheritable(8, True)
+        fcntl.flock(8, fcntl.LOCK_SH)
+        verify_lock(8)
+        # The installed owner may have changed while this invocation waited.
+        owner = owner_identity(script_fd)
+        found = read_pending(owner)
+        if found:
+            journal, manifest, _ = found
+            require(journal["phase"] in READY, "source update is pending: " + journal["phase"])
+            require(git("rev-parse", "HEAD") == manifest["new"], "ready transaction HEAD mismatch")
+        os.execv(str(APP / ".venv/bin/python"),
+                 [str(APP / ".venv/bin/python"), "-m", "scripts.vps_live_orchestrator", "--lane", args[0]])
+    elif action == "lock-path":
+        fd = open_lock()
+        os.close(fd)
+        print(LOCK)
+    elif action in ("lock", "unlock"):
+        verify_lock(8)
+        fcntl.flock(8, fcntl.LOCK_EX if action == "lock" else fcntl.LOCK_UN)
+        verify_lock(8)
+    elif action == "preflight":
+        found = read_pending(owner)
+        if found:
+            recovery_target(found[1])
+            print("1\n" + str(found[2]))
+        else:
+            print("0\n" + str(entry_capture(owner)))
+    elif action == "enrollment":
+        print(unit_inventory()[0])
+    elif action == "prepare":
+        require(len(args) == 3, "prepare arguments")
+        print(prepare(owner, *args))
+    elif action == "cgroup":
+        require(len(args) == 1, "cgroup arguments")
+        found = read_pending(owner)
+        require(found is not None, "missing original cgroup capture")
+        check_cgroup(args[0], found[1]["service_cgroups"].get(args[0], ""))
+    elif action == "replace-owner":
+        require(len(args) == 1, "replace-owner arguments")
+        replace_owner(script_fd, args[0])
+    elif action == "fsync-units":
+        for unit in UNITS:
+            path = UNIT_DIR / unit
+            safe_read(path, 65536, mode=0o644)
+            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+            try:
+                os.fsync(fd)
+            finally:
+                os.close(fd)
+        sync_dir(UNIT_DIR)
+    else:
+        found = read_pending(owner)
+        require(found is not None, "missing source transaction")
+        journal, manifest, capsule = found
+        if action == "get":
+            require(len(args) == 1 and args[0] in ("old", "new", "changed", "phase", "enrollment"), "get arguments")
+            value = journal["phase"] if args[0] == "phase" else manifest[args[0]]
+            print("\n".join(value) if type(value) is list else value)
+        elif action == "verify-target":
+            recovery_target(manifest)
+        elif action == "guards":
+            require(journal["phase"] not in READY, "cannot re-enter mutation after source readiness")
+            journal["phase"] = "GUARDS_READY"
+            write_journal(journal)
+        elif action == "mutating":
+            require(journal["phase"] == "GUARDS_READY", "guards were not admitted")
+            journal["phase"] = "MUTATING"
+            write_journal(journal)
+        elif action == "mirror":
+            require(len(args) == 2, "mirror arguments")
+            record_mirror(journal, manifest, *args)
+        elif action == "ready":
+            require(journal["phase"] == "MUTATING" or
+                    (journal["phase"] == "GUARDS_READY" and manifest["old"] == manifest["new"]),
+                    "source mutation has not completed")
+            require(manifest["old"] == manifest["new"] or
+                    (journal["mirrors"]["site"] == "complete" and
+                     all(value in ("complete", "absent") for value in journal["mirrors"].values())),
+                    "mirror completion is unproven")
+            source_ready(manifest)
+            journal["phase"] = "SOURCE_READY"
+            write_journal(journal)
+        elif action == "verify-ready":
+            require(journal["phase"] in READY, "source is not ready")
+            source_ready(manifest)
+        elif action == "restore":
+            restore(journal, manifest, capsule)
+        else:
+            raise Refusal("unknown source-owner action")
+
+
+if __name__ == "__main__":
+    try:
+        main(sys.argv[1:])
+    except EffectNeedsReadback as exc:
+        print("macro-update: source barrier effect requires readback: " + str(exc), file=sys.stderr)
+        sys.exit(75)
+    except (Refusal, OSError, ValueError, KeyError, TypeError) as exc:
+        print("macro-update: source barrier refused: " + str(exc), file=sys.stderr)
+        sys.exit(75)
+MMX_LIVE_SOURCE_PY
+}
+
+# Closed service entry: no updater mutex, checkout helper, fetch, reset, status
+# writer or fall-through. Python exit statuses (including 75) remain failures.
+if [ "$#" -ge 1 ] && [ "$1" = --live-lane ]; then
+	[ "$#" -eq 2 ] || exit 2
+	case "$2" in fast|snapshot|bars) ;; *) exit 2 ;; esac
+	# Close the waiting Bash wrapper's inherited mutex copy as well.
+	exec 9>&-
+	live_source_control run "$2"
+	exit $?
+fi
+# First adoption is install-only. It never resets the checkout or invokes the
+# ordinary updater while still holding fd9. setup.sh supplies an exact Git object.
+if [ "$#" -ge 1 ] && [ "$1" = --install-source-owner ]; then
+	[ "$#" -eq 2 ] && [[ "$2" =~ ^[0-9a-f]{40}$ ]] || exit 2
+	exec 9>/var/lock/macro-update.lock
+	flock -n 9 || { echo "macro-update: owner adoption is busy" >&2; exit 75; }
+	live_source_control adopt-owner "$2"
+	exit $?
+fi
+# END LIVE_SOURCE_OWNER
 # Attended recovery of a source baseline which was installed but never adopted
 # by the complete API-managed Caddy configuration. Normal cron has no arguments.
 CADDY_SOURCE_BASELINE=""
@@ -43,9 +820,14 @@ reconcile_ohlc_delivery() {
 }
 # END OHLC_DELIVERY_RECONCILE
 
-source "$APP_DIR/app/deploy/market-memory-options-unit-boundary.sh"
-source "$APP_DIR/app/deploy/market-memory-options-runtime-fence.sh"
-source "$APP_DIR/app/deploy/market-memory-options-dropin-migration.sh"
+# Resolve recovery before executing any mutable checkout helper. A new entry
+# captures the exact HEAD helpers; a pending entry uses its original capsule.
+LIVE_SOURCE_ENTRY=$(live_source_control preflight)
+LIVE_SOURCE_PENDING="${LIVE_SOURCE_ENTRY%%$'\n'*}"
+LIVE_SOURCE_CAPSULE="${LIVE_SOURCE_ENTRY#*$'\n'}"
+source "$LIVE_SOURCE_CAPSULE/helpers/market-memory-options-unit-boundary.sh"
+source "$LIVE_SOURCE_CAPSULE/helpers/market-memory-options-runtime-fence.sh"
+source "$LIVE_SOURCE_CAPSULE/helpers/market-memory-options-dropin-migration.sh"
 
 OPTIONS_TIMER_WAS_ENABLED=0
 if systemctl is-enabled macro-market-memory-options.timer >/dev/null 2>&1; then
@@ -103,6 +885,113 @@ stop_unit_and_verify_inactive() {
 	esac
 }
 # END W1B5_UNIT_STOP_HELPERS
+
+
+# BEGIN LIVE_SOURCE_TRANSACTION
+LIVE_SOURCE_UNITS=(
+	macro-live-fast.service macro-live-fast.timer
+	macro-live-snapshot.service macro-live-snapshot.timer
+	macro-live-bars.service macro-live-bars.timer
+)
+LIVE_SOURCE_ACTIVE=0
+LIVE_SOURCE_REPLAY=0
+LIVE_SOURCE_ENROLLMENT=""
+
+live_source_units_ready() {
+	local directory=$1 unit lane
+	for unit in "${LIVE_SOURCE_UNITS[@]}"; do
+		mm_loaded_unit_ready "$directory/$unit" "/etc/systemd/system/$unit" "$unit" || return 1
+		case "$unit" in
+			*.service)
+				lane=${unit#macro-live-}; lane=${lane%.service}
+				grep -Fxq "ExecStart=/usr/local/bin/macro-update --live-lane $lane" "$directory/$unit" || return 1
+				;;
+		esac
+	done
+}
+
+live_source_begin() {
+	local phase unit directory lock_path
+	local -a sources
+	if [ "$LIVE_SOURCE_PENDING" -eq 0 ]; then
+		LIVE_SOURCE_ENROLLMENT=$(live_source_control enrollment)
+		if [ "$OLD" = "$NEW" ]; then
+			if [ "$LIVE_SOURCE_ENROLLMENT" = absent ] || live_source_units_ready "$APP_DIR/app/deploy"; then
+				return 0
+			fi
+		fi
+		LIVE_SOURCE_CAPSULE=$(live_source_control prepare "$OLD" "$NEW" "${LIVE_SOURCE_CAPSULE##*/}")
+		LIVE_SOURCE_PENDING=1
+	else
+		LIVE_SOURCE_ENROLLMENT=$(live_source_control get enrollment)
+	fi
+	phase=$(live_source_control get phase)
+	directory="$LIVE_SOURCE_CAPSULE/units"
+	lock_path=$(live_source_control lock-path)
+	# Open without truncate/unlink; the embedded owner checks this very fd's inode.
+	exec 8<>"$lock_path"
+	live_source_control lock
+	live_source_control verify-target
+	case "$phase" in
+		SOURCE_READY|RESTORING)
+			if [ "$LIVE_SOURCE_ENROLLMENT" = present ]; then
+				live_source_units_ready "$directory"
+			fi
+			live_source_control verify-ready
+			live_source_control unlock
+			exec 8>&-
+			# No reset, mirrors or new fetch on this branch. Restoration may hold
+			# the journal, which also prevents the later self-install.
+			live_source_control restore
+			LIVE_SOURCE_PENDING=0
+			return 0
+			;;
+	esac
+	if [ "$LIVE_SOURCE_ENROLLMENT" = present ]; then
+		sources=()
+		for unit in "${LIVE_SOURCE_UNITS[@]}"; do
+			mm_unit_repair_inputs_safe "$directory/$unit" "/etc/systemd/system/$unit"
+			sources+=("$directory/$unit")
+		done
+		systemd-analyze verify "${sources[@]}"
+		# Admit guarded manager definitions before any reset. A late start then
+		# waits on fd8; an older unwrapped process is stopped and drained below.
+		for unit in "${LIVE_SOURCE_UNITS[@]}"; do
+			install -m 0644 "$directory/$unit" "/etc/systemd/system/$unit"
+		done
+		systemctl daemon-reload
+		live_source_control fsync-units
+		live_source_units_ready "$directory"
+		for unit in macro-live-fast.timer macro-live-snapshot.timer macro-live-bars.timer; do
+			stop_unit_and_verify_inactive "$unit" "/etc/systemd/system/$unit"
+		done
+		for unit in macro-live-fast.service macro-live-snapshot.service macro-live-bars.service; do
+			stop_unit_and_verify_inactive "$unit" "/etc/systemd/system/$unit"
+			live_source_control cgroup "$unit"
+		done
+	fi
+	# Re-do guard admission and draining on every incomplete-source recovery,
+	# including a new boot. A phase value alone is not a current process proof.
+	live_source_control guards
+	LIVE_SOURCE_ACTIVE=1
+	LIVE_SOURCE_REPLAY=1
+}
+
+live_source_finish() {
+	[ "$LIVE_SOURCE_ACTIVE" -eq 1 ] || return 0
+	if [ "$LIVE_SOURCE_ENROLLMENT" = present ]; then
+		live_source_units_ready "$LIVE_SOURCE_CAPSULE/units"
+	fi
+	live_source_control ready
+	live_source_control unlock
+	exec 8>&-
+	# Restore immediately after the coherent source is available, before the
+	# ordinary updater's unrelated package/network/reconciliation work.
+	live_source_control restore
+	LIVE_SOURCE_PENDING=0
+	LIVE_SOURCE_ACTIVE=0
+}
+# END LIVE_SOURCE_TRANSACTION
 
 # BEGIN W1B5_RECIPROCAL_STOP
 stop_reciprocal_market_memory_writers() {
@@ -330,22 +1219,34 @@ fi
 # would abort the tick here before the reconciliation below. From here on a
 # refused tick is a no-change tick: nothing below resets or pulls.
 # BEGIN MACRO_UPDATE_PULL_SELECT
-if [ "$DISK_REFUSED" -eq 0 ]; then
-	git -C "$APP_DIR" fetch -q origin main
-fi
-OLD=$(git -C "$APP_DIR" rev-parse HEAD)
-if [ "$DISK_REFUSED" -eq 1 ]; then
-	NEW=$OLD
+if [ "$LIVE_SOURCE_PENDING" -eq 1 ]; then
+	# Recovery retains the original target and original changed-path meaning.
+	# No network or FETCH_HEAD may redirect an unfinished source transaction.
+	OLD=$(live_source_control get old)
+	NEW=$(live_source_control get new)
 else
-	NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
+	if [ "$DISK_REFUSED" -eq 0 ]; then
+		git -C "$APP_DIR" fetch -q origin main
+	fi
+	OLD=$(git -C "$APP_DIR" rev-parse HEAD)
+	if [ "$DISK_REFUSED" -eq 1 ]; then
+		NEW=$OLD
+	else
+		NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
+	fi
 fi
 # END MACRO_UPDATE_PULL_SELECT
 CHANGED=""
 REPO_UPDATED=0
 RECONCILED=0
+if [ "$LIVE_SOURCE_PENDING" -eq 1 ]; then
+	CHANGED=$(live_source_control get changed)
+elif [ "$OLD" != "$NEW" ]; then
+	CHANGED=$(git -C "$APP_DIR" diff --name-only "$OLD" "$NEW")
+fi
+live_source_begin
 
 if [ "$OLD" != "$NEW" ]; then
-	CHANGED=$(git -C "$APP_DIR" diff --name-only "$OLD" "$NEW")
 	# BEGIN W1B5_PRE_RESET_GUARD
 	# Git rewrites tracked files in place. Stop the credentialed writer before
 	# replacing any byte in its exact runtime/source-contract closure.
@@ -363,7 +1264,9 @@ if [ "$OLD" != "$NEW" ]; then
 		stop_reciprocal_market_memory_writers
 	fi
 	# END W1B5_PRE_RESET_GUARD
-	git -C "$APP_DIR" reset --hard -q FETCH_HEAD
+	if [ "$LIVE_SOURCE_REPLAY" -eq 1 ]; then
+	live_source_control mutating
+	git -C "$APP_DIR" reset --hard -q "$NEW"
 	REPO_UPDATED=1
 
 	# BEGIN MOVERS_BEFORE_MIRROR_GUARD
@@ -393,6 +1296,7 @@ if [ "$OLD" != "$NEW" ]; then
 	reconcile_ohlc_delivery
 	# Exclusion also protects a refused/foreign OHLC path from --delete.
 	rsync -a --delete --min-size=1 --exclude=/ohlc "$APP_DIR/site/" "$APP_DIR/site.served/"
+	live_source_control mirror site complete
 
 	# Press properties (D14 W1.5) — same atomic-publish contract as site.served,
 	# and for the same reason: `git reset --hard` above rewrites changed files IN
@@ -413,12 +1317,21 @@ if [ "$OLD" != "$NEW" ]; then
 	if [ -d "$APP_DIR/properties/news" ]; then
 		mkdir -p "$APP_DIR/press_news.served"
 		rsync -a --delete --min-size=1 "$APP_DIR/properties/news/" "$APP_DIR/press_news.served/"
+		live_source_control mirror news complete
+	else
+		live_source_control mirror news absent
 	fi
 	if [ -d "$APP_DIR/properties/research" ]; then
 		mkdir -p "$APP_DIR/press_research.served"
 		rsync -a --delete --min-size=1 "$APP_DIR/properties/research/" "$APP_DIR/press_research.served/"
+		live_source_control mirror research complete
+	else
+		live_source_control mirror research absent
 	fi
+	fi
+	REPO_UPDATED=1
 fi
+live_source_finish
 
 # Reconcile artifact selection even when the repository did not change.
 # A successful later check does not erase an earlier refusal in this run.
@@ -454,21 +1367,13 @@ fi
 # have drifted an installed unit/config. Reconciliation below is deliberately
 # idempotent and must also run on a repository no-op.
 
-# Self-update: setup.sh installs this script ONCE at provisioning; without this
-# block a repo-side fix to update.sh only reaches the box when an operator
-# re-runs setup.sh by hand. `install` unlinks the destination first, so the
-# RUNNING copy (bash holds an fd on the old inode) is untouched — the new
-# version simply takes over from the next cron tick. `bash -n` gates a
-# syntax-broken file from ever being installed. Runs BEFORE the Caddyfile
-# block so a script fix still lands even if a bad Caddyfile aborts the run.
+# Self-update: install captured, syntax-checked source with atomic rename and directory fsync.
+# Any unresolved source journal (including held restoration) refuses replacement.
+# The running Bash descriptor retains its predecessor inode for the rest of this tick.
 if ! cmp -s "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update; then
-	if bash -n "$APP_DIR/app/deploy/update.sh"; then
-		install -m 0755 "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update
-		RECONCILED=1
-		echo "macro-update: self-updated from repo"
-	else
-		echo "macro-update: refusing self-update — bash -n failed" >&2
-	fi
+	live_source_control replace-owner "$NEW"
+	RECONCILED=1
+	echo "macro-update: self-updated from captured source"
 fi
 
 # Caddyfile: reinstall + validate + reload ONLY when it actually changed (a bad
@@ -1549,7 +2454,7 @@ API_RESTART_NEEDED=0
 # Private Plan serving imports the exact identity/terms readers at load time and
 # the incumbent expiry bridge/payoff closure on request; all remain process-cached.
 # BEGIN MACRO_API_RESTART_TRIGGER
-if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources|plans)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/(equity_earnings|sec_document_spine|sec_request_pacer)\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|brain_visuals|brain_financial_views|brain_financial_reader|rotation_risk_context|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|market_memory_episode_comparison|market_memory_episode_features|market_memory_episode_retrieval|market_memory_operating_cortex_service|market_memory_retained_context_cohort|market_memory_retained_use|market_memory_retained_catalog|market_memory_retained_saved|market_memory_retained_legacy_guard|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights|curation_assertion|economic_context|issuer_economic_context|native_disclosure_propagation|identity|identity_resolution|ontology|probation|security_navigation)\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_release/(__init__|binding|receipts|figures|filing_key)\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|economic_interpretation|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|news_events|ontology_explorer|ontology_portfolio|ontology_theme|ontology_scenario|ontology_scenario_runtime|transmission_chains|prophet_integrity|risk_envelope|options_issue_desk|options_matrix_retention|options_hub_retention|options_scenario_capture|options_nbbo_cohort|options_plan_expiry|options_payoff|greeks|intraday_greeks|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/(canon|confluence_tiers|entry_primitives|hysteresis|indicators|path_personality|path_risk_signals|prophet_early_observations|session_anchor|session_digest|stock_technicals|technicals|us_candidate_episode|us_candidate_episode_intake)\.py|engine/stock_identity/(__init__|authority|fingerprint|plane)\.py|engine/entry_radar/(__init__|c5_adapter|challengers|contracts|detectors|earnings_context|entry_events|four_hour|g0_adapter|indicator_core|indicator_ingest|live_ledger|live_pack|quote_context|readings|research_read|spool)\.py|engine/entry_radar/replay/identity_observation_snapshot\.py|engine/price_pressure/(__init__|research)\.py|lib/(options_source_receipts|quote_native_metadata|evidence_foundation|opportunity_case|opportunity_evidence|economic_propagation|economic_propagation_v2)\.py|contracts/opportunity_evidence/(vector\.v1\.schema|slot_registry\.v1)\.json|contracts/evidence_foundation/reference\.v1\.schema\.json|contracts/economic_propagation/(propagation_hypothesis\.v[12]\.schema|generator_registry\.v1)\.json|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/institutional_census/.*\.py|lib/(institutional_13f_adapter|institutional_intelligence|rotation_observation_notification)\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/company_theme_exposure/(__init__|contracts)\.py|engine/market_ontology/(__init__|exposure_map|bea_gvc_current|semiconductor_owner_bundle|semiconductor_theme_research|semiconductor_witness_scope|theme_research_binding|theme_research_mounts|theme_research_registry|workspace_projection)\.py|engine/(expectation_state|k3e_expectation_surface|theme_context)\.py|scripts/query_k3e_expectation_surface\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|authorized_shares|capacity|capacity_joint|document_terms|event_spine|funding|issuer_state_contracts|listing_facts|projection|reference_qualification|registration_integration|registration_lifecycle|rule_applicability|saved_scenario_store|saved_scenarios|scenario_composition|scenario_export|scenario_inputs|share_basis|source_identity|state_bundle|state_changes|supply_scenarios|transactions|variable_terms|verified_projection_generation)\.py|engine/alert_delivery_drain\.py|lib/frozen_delivery_client\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|sbir_progression|defense_economics|defense_interpretation|research_state|candidate_grader|program_theme_publication|program_theme_context|program_theme_disclosure|program_ontology|budget_allocation_context|identity_atlas|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1|government_revenue_identity_atlas\.v1)\.schema\.json|contracts/theme_graph/(identity_resolution|probation_proposal)\.v1\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state|catalyst_lifecycle|catalyst_packets|catalyst_admission|catalyst_scan|catalyst_source_adapter|catalyst_source_cycle|catalyst_source_store|attribution)\.py|config/catalyst_pilot_universe\.json|lib/dataos/.*\.py|lib/(config|shared_shell|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|cn_calendar|hk_calendar|market_session|tsx_calendar|us_cash_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py|engine/capital_need\.py|engine/coiled\.py|engine/conditions\.py|engine/cycles\.py|engine/dannytrades\.py|engine/dannytrades_chip\.py|engine/debt_maturity\.py|engine/demand_chain\.py|engine/dispersion\.py|engine/donor\.py|engine/earnings_blackout\.py|engine/entry_signal\.py|engine/event_atlas\.py|engine/extension\.py|engine/gex_confirm\.py|engine/grading\.py|engine/hold\.py|engine/htf_durability\.py|engine/i18n\.py|engine/ledger_lane\.py|engine/mtf_upturn\.py|engine/name_score\.py|engine/name_score_grader\.py|engine/options_ivspread\.py|engine/playbook\.py|engine/pullback_zone\.py|engine/risk_sizing\.py|engine/setups\.py|engine/signal_gate\.py|engine/signal_quality\.py|engine/stock_events\.py|engine/stock_fundamentals\.py|engine/stock_macro_sensitivity\.py|engine/stock_score\.py|engine/stock_view\.py|engine/ticker_alerts\.py|engine/us_board_rank\.py|engine/valuation\.py|engine/valuation_scenario\.py|engine/vol_forecast\.py|engine/vol_squeeze\.py|engine/washout_turn\.py|lib/delisted_symbols\.py|lib/store\.py|lib/ticker_popularity\.py|scripts/build_debt_maturity\.py|scripts/build_stock_library\.py|scripts/security_state_producer\.py|engine/news_common\.py|engine/medtech/(events|publication)\.py|engine/market_os/macro_workspaces/(__init__|contract|registry)\.py|engine/qual_extraction\.py|engine/research_intelligence/(__init__|extractor|projection|schema|selection|store|vault_adapter)\.py|lib/macro_suite_(disclosure|labels|view|zh_parity)\.py|scripts/build_macro_suite_pages\.py|contracts/market_os/macro_workspace_snapshot\.v1\.schema\.json|lib/treasury_daily_history\.py)$' <<<"$CHANGED" || \
+if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources|plans)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/(equity_earnings|sec_document_spine|sec_request_pacer)\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|brain_visuals|brain_financial_views|brain_financial_reader|rotation_risk_context|brain_native_inputs|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|market_memory_episode_comparison|market_memory_episode_features|market_memory_episode_retrieval|market_memory_operating_cortex_service|market_memory_retained_context_cohort|market_memory_retained_use|market_memory_retained_catalog|market_memory_retained_saved|market_memory_retained_legacy_guard|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights|curation_assertion|economic_context|issuer_economic_context|native_disclosure_propagation|identity|identity_resolution|ontology|probation|security_navigation)\.py|engine/qbus_news_.*\.py|engine/qkernel\.py|engine/earnings_catalyst\.py|engine/sue\.py|engine/earnings_release/(__init__|binding|receipts|figures|filing_key)\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|economic_interpretation|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|news_events|ontology_explorer|ontology_portfolio|ontology_theme|ontology_scenario|ontology_scenario_runtime|transmission_chains|prophet_integrity|risk_envelope|options_issue_desk|options_matrix_retention|options_hub_retention|options_scenario_capture|options_nbbo_cohort|options_plan_expiry|options_payoff|greeks|intraday_greeks|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/(canon|confluence_tiers|entry_primitives|hysteresis|indicators|path_personality|path_risk_signals|prophet_early_observations|session_anchor|session_digest|stock_technicals|technicals|us_candidate_episode|us_candidate_episode_intake)\.py|engine/stock_identity/(__init__|authority|fingerprint|plane)\.py|engine/entry_radar/(__init__|c5_adapter|challengers|contracts|detectors|earnings_context|entry_events|four_hour|g0_adapter|indicator_core|indicator_ingest|live_ledger|live_pack|quote_context|readings|research_read|spool)\.py|engine/entry_radar/replay/identity_observation_snapshot\.py|engine/price_pressure/(__init__|research)\.py|lib/(options_source_receipts|quote_native_metadata|evidence_foundation|opportunity_case|opportunity_evidence|economic_propagation|economic_propagation_v2)\.py|contracts/opportunity_evidence/(vector\.v1\.schema|slot_registry\.v1)\.json|contracts/evidence_foundation/reference\.v1\.schema\.json|contracts/economic_propagation/(propagation_hypothesis\.v[12]\.schema|generator_registry\.v1)\.json|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/institutional_census/.*\.py|lib/(institutional_13f_adapter|institutional_intelligence|rotation_observation_notification)\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/company_theme_exposure/(__init__|contracts)\.py|engine/market_ontology/(__init__|exposure_map|bea_gvc_current|semiconductor_owner_bundle|semiconductor_theme_research|semiconductor_witness_scope|theme_research_binding|theme_research_mounts|theme_research_registry|workspace_projection)\.py|engine/(expectation_state|k3e_expectation_surface|theme_context)\.py|scripts/query_k3e_expectation_surface\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|authorized_shares|capacity|capacity_joint|document_terms|event_spine|funding|issuer_state_contracts|listing_facts|projection|reference_qualification|registration_integration|registration_lifecycle|rule_applicability|saved_scenario_store|saved_scenarios|scenario_composition|scenario_export|scenario_inputs|share_basis|source_identity|state_bundle|state_changes|supply_scenarios|transactions|variable_terms|verified_projection_generation)\.py|engine/alert_delivery_drain\.py|lib/frozen_delivery_client\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|sbir_progression|defense_economics|defense_interpretation|research_state|candidate_grader|program_theme_publication|program_theme_context|program_theme_disclosure|program_ontology|budget_allocation_context|identity_atlas|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1|government_revenue_identity_atlas\.v1)\.schema\.json|contracts/theme_graph/(identity_resolution|probation_proposal)\.v1\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state|catalyst_lifecycle|catalyst_packets|catalyst_admission|catalyst_scan|catalyst_source_adapter|catalyst_source_cycle|catalyst_source_store|attribution)\.py|config/catalyst_pilot_universe\.json|lib/dataos/.*\.py|lib/(config|shared_shell|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|cn_calendar|hk_calendar|market_session|tsx_calendar|us_cash_calendar|exchange_holidays|user_prefs|tiers|team_membership)\.py|engine/capital_need\.py|engine/coiled\.py|engine/conditions\.py|engine/cycles\.py|engine/dannytrades\.py|engine/dannytrades_chip\.py|engine/debt_maturity\.py|engine/demand_chain\.py|engine/dispersion\.py|engine/donor\.py|engine/earnings_blackout\.py|engine/entry_signal\.py|engine/event_atlas\.py|engine/extension\.py|engine/gex_confirm\.py|engine/grading\.py|engine/hold\.py|engine/htf_durability\.py|engine/i18n\.py|engine/ledger_lane\.py|engine/mtf_upturn\.py|engine/name_score\.py|engine/name_score_grader\.py|engine/options_ivspread\.py|engine/playbook\.py|engine/pullback_zone\.py|engine/risk_sizing\.py|engine/setups\.py|engine/signal_gate\.py|engine/signal_quality\.py|engine/stock_events\.py|engine/stock_fundamentals\.py|engine/stock_macro_sensitivity\.py|engine/stock_score\.py|engine/stock_view\.py|engine/ticker_alerts\.py|engine/us_board_rank\.py|engine/valuation\.py|engine/valuation_scenario\.py|engine/vol_forecast\.py|engine/vol_squeeze\.py|engine/washout_turn\.py|lib/delisted_symbols\.py|lib/store\.py|lib/ticker_popularity\.py|scripts/build_debt_maturity\.py|scripts/build_stock_library\.py|scripts/security_state_producer\.py|engine/news_common\.py|engine/medtech/(events|publication)\.py|engine/market_os/macro_workspaces/(__init__|contract|registry)\.py|engine/qual_extraction\.py|engine/research_intelligence/(__init__|extractor|projection|schema|selection|store|vault_adapter)\.py|lib/macro_suite_(disclosure|labels|view|zh_parity)\.py|scripts/build_macro_suite_pages\.py|contracts/market_os/macro_workspace_snapshot\.v1\.schema\.json|lib/treasury_daily_history\.py|engine/sector_native_view\.py|lib/sector_(action_preview|generation_contract|generation_wire|history_contract)\.py|scripts/(check_sector_intelligence_freshness|vps_live_orchestrator)\.py)$' <<<"$CHANGED" || \
    [ "$API_DEPS_UPDATED" -eq 1 ]; then
 	API_RESTART_NEEDED=1
 
@@ -2176,30 +3081,9 @@ if [ "${W2C_LANE_FROZEN:-0}" -eq 1 ]; then
 fi
 # END W2C_LANE_FROZEN_CONTINUE
 
-# Live-plane systemd definitions are installed by live-setup.sh. Once that setup
-# has happened, keep unit/resource/timer changes tracking main automatically.
-# Python task code needs no restart because every lane is a fresh oneshot process.
-if systemctl is-enabled macro-live-fast.timer >/dev/null 2>&1 && \
-   echo "$CHANGED" | grep -qE '^app/deploy/macro-live-(fast|snapshot|bars)\.(service|timer)$'; then
-	LIVE_UNIT_SOURCES=()
-	for UNIT in \
-		macro-live-fast.service macro-live-fast.timer \
-		macro-live-snapshot.service macro-live-snapshot.timer \
-		macro-live-bars.service macro-live-bars.timer
-	do
-		LIVE_UNIT_SOURCES+=("$APP_DIR/app/deploy/$UNIT")
-	done
-	if systemd-analyze verify "${LIVE_UNIT_SOURCES[@]}"; then
-		for UNIT_SOURCE in "${LIVE_UNIT_SOURCES[@]}"; do
-			UNIT=$(basename "$UNIT_SOURCE")
-			install -m 0644 "$UNIT_SOURCE" "/etc/systemd/system/$UNIT"
-		done
-		systemctl daemon-reload
-		systemctl restart macro-live-fast.timer macro-live-snapshot.timer macro-live-bars.timer
-	else
-		echo "macro-update: refusing live-plane unit update — systemd-analyze verify failed" >&2
-	fi
-fi
+# The fixed fast/snapshot/bars definitions are reconciled by
+# LIVE_SOURCE_TRANSACTION before reset, including no-change repair ticks.
+# Their independent timer intents are already restored; do not restart them here.
 
 # PROPHET LIVE evaluator lane (research/PROPHET_LIVE_INTRADAY_SIGNALS_MASTERPLAN_BY_FABLE.md
 # §4.2a). Its own block, not a fourth entry in the list above, for two reasons: the

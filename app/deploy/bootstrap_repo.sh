@@ -46,6 +46,29 @@ case "$MACRO_REPO_URL" in
 esac
 
 if [ -d "$TARGET/.git" ]; then
+	# Existing /opt/macro live readers are governed by the installed updater.
+	# Neither a disabled fast timer nor a partial unit set permits direct reset.
+	if [ "$TARGET" = /opt/macro ]; then
+		for unit in macro-live-fast.service macro-live-fast.timer \
+			macro-live-snapshot.service macro-live-snapshot.timer \
+			macro-live-bars.service macro-live-bars.timer
+		do
+			if [ -e "/etc/systemd/system/$unit" ] || [ -L "/etc/systemd/system/$unit" ]; then
+				log "FATAL: live-plane footprint present; use /usr/local/bin/macro-update"
+				exit 1
+			fi
+			load_state=$(systemctl show -p LoadState --value "$unit") || exit 1
+			[ "$load_state" = not-found ] || {
+				log "FATAL: loaded live-plane footprint; use /usr/local/bin/macro-update"; exit 1;
+			}
+		done
+		for footprint in /var/lib/macro-live/public /var/lib/macro-live/state/source-update.pending; do
+			if [ -e "$footprint" ] || [ -L "$footprint" ]; then
+				log "FATAL: live-plane state present; preserve the original updater transaction"
+				exit 1
+			fi
+		done
+	fi
 	log "target $TARGET already has a checkout — converging onto the governed remote"
 	git -C "$TARGET" remote set-url origin "$MACRO_REPO_URL"
 	git -C "$TARGET" config core.sshCommand "$MACRO_SSH_COMMAND"
