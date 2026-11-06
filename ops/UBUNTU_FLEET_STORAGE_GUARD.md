@@ -15,7 +15,7 @@ The production Macro CI resource guard blocks new runner admission when root fil
 ## Task tree (editorial, not Executive Jobs)
 
 - **FSG.P1 — Disk census and selective recovery (accepted host evidence):** The 2026-11-01 on-host fleet cleanup on Ubuntu0–3 was verified and recorded at each `~/.mastermind-evidence/fleet-storage-triage-20261101.txt`. Preserve those logs and the reconstruction manifests. Ubuntu4 had adequate headroom.
-- **FSG.P2 — Pressure monitor implementation (implementation complete, review owed):** `scripts/ubuntu_storage_guard.py`; six standard-library tests `tests/test_ubuntu_storage_guard.py`; systemd service/timer. Atomic latest-status receipt, runner-unit census, rapid-growth trend, FIF scratch count, and archived-journal size limit only. Preserve `source_delete_enabled=false`.
+- **FSG.P2 — Pressure monitor implementation (implementation complete, review owed):** `scripts/ubuntu_storage_guard.py`; 15 standard-library tests `tests/test_ubuntu_storage_guard.py`; systemd service/timer. Atomic latest-status receipt, runner-unit census, rapid-growth trend, FIF scratch count, and archived-journal size limit only. Preserve `source_delete_enabled=false`.
 - **FSG.P3 — Host canary and installation evidence (host proof, not code acceptance):** Ubuntu2 canary verified; Ubuntu0, Ubuntu1 and Ubuntu3 installed the exact same payload SHA-256 `9edffd86e42364dad62a0a0e9c87390cb6d20847df52ea62e3e9a1498279bf99`. Each local one-shot exited zero, its timer was active, and `/var/lib/mastermind-storage-guard/latest.json` was read back. Natural subsequent timer firing, trend sampling and long-run reliability remain to verify.
 - **FSG.P4 — Source review/release (ready for independent review):** A non-author reviews the script, test coverage, systemd sandbox, no-delete property, installation/runbook, and adjacent fleet-storage source law. Normal CI, merge and deployed source-version reconciliation remain separate gates.
 - **FSG.P5 — Stop the dominant growth producer (blocked on ownership and producer-specific evidence):** The observed Ubuntu1 `/tmp/fif-shipprep` creates repeated ~13 GiB materialized trees. Apply source-aware sparse/reusable checkout construction or explicit disposable-scratch lifecycle in its owning producer, prove it with active-session preservation and real CLI worker execution. Do not turn the sentinel into a second GC, widen the Mac sweeper roots, delete human-driven trees by age, or disable the CI guard.
@@ -31,6 +31,28 @@ python3 -m unittest -v tests/test_ubuntu_storage_guard.py
 ```
 
 The root-owned status path contains the latest sample only (journald records scheduled firings). The oneshot is scheduled every 20 minutes with randomized delay, CPU nice 15 and idle I/O. It remains a storage **observer**, not a runtime/job/lease control plane. With `--vacuum` it can delete **archived journal files only**, and only when root storage is in a warning or worse condition. If that subprocess fails, the receipt records the error; it does not fall back to source deletion.
+
+## Scratch inventory scope
+
+The source correction recognizes a stage with non-symlink `.github/` and
+`scripts/` directories either directly at its root or inside its real `tree/`
+directory. It checks only those bounded markers through directory descriptors
+opened without following symlinks; it does not recursively walk stage contents.
+Sparse extracts need neither `data/` nor `site/`. A stage is counted once if
+both layouts are present, with the nested layout taking precedence.
+
+`materialized_tree_dirs` is the sum of `nested_tree_dirs` and
+`direct_source_dirs`; `unclassified_stage_dirs` records other immediate real
+directories, including empty or partial layouts. An inspection error returns
+`inventory: incomplete` instead of a misleading complete low count. Layout
+recognition does not establish a complete archive, an inactive writer, or
+permission to delete anything. Age remains an observation only.
+
+The ordinary PR code gate runs the guard tests in the existing
+`self-mod-fence` job. Tests isolate observations and mock all maintenance
+subprocesses while checking the written private receipt. This source correction
+does not update the historically installed service payload; source release and
+any later installation reconciliation remain separate.
 
 ## Boundaries
 

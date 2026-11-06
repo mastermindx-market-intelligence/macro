@@ -285,6 +285,38 @@ lanes:
           publishes capacity_inputs.json or nothing. Fatal like the state step;
           runs before the checkpoint that stages both outputs.
           outputs: [data/capital_structure/capacity_inputs.json]
+      - id: build_capital_structure_state_changes
+        module: scripts.build_capital_structure_state_changes
+        note: >
+          Offline typed change desk (SPEC_U2 U2-3). Diffs the PREVIOUS
+          published state generation (captured to $RUNNER_TEMP before the
+          state step overwrites it) against tonight's, plus the two capacity
+          inputs bundles when both are retained, and atomically publishes ONE
+          state_changes.json or nothing. Fatal for its own checkpoint (the
+          commit gate names it); an absent or unreadable previous bundle is
+          the stated baseline, never a synthesized diff. The same fact the
+          private change-desk API serves, produced once per generation so the
+          monitor and the API never disagree about what changed. Context-only;
+          it re-derives no component answer and carries no rank, size, gate,
+          trade, or Prophet authority.
+          outputs: [data/capital_structure/state_changes.json]
+      - id: run_capital_structure_saved_scenario_monitor
+        module: scripts.run_capital_structure_saved_scenario_monitor
+        note: >
+          Enqueue-only saved-scenario monitor (SPEC_U2 U2-3). Classifies every
+          saved row offline against tonight's generation through the same
+          composition the evaluate route owes (assemble_scenario_inputs + the
+          S0 composer), and enqueues typed restore outcomes — correction, new
+          events, source outage — onto the incumbent alert_outbox for the
+          existing drain, deduped by a frozen fire_event_id and recorded on
+          the row only after its own enqueue succeeds. Fail-soft (typed
+          unavailable, zero rows) and dormant unless BOTH
+          CS_SAVED_SCENARIO_ENABLE=1 AND ALERT_DRAIN_ENABLE=1; arming the
+          secret and applying the saved-scenarios table DDL are human-only
+          enrollment (SPEC_U2 §3). Writes nothing into the tree. A missing
+          state bundle is the outage SIGNAL itself, once per generation gap.
+          No number ever enters a notification email.
+          outputs: []
 
   # ── daily.yml / collect_tail ─────────────────────────────────────────────
   # 2026-07-14 collect split: the slow post-adapter accrual band (ThetaData

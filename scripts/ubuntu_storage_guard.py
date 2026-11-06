@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import stat
 import subprocess
 import sys
 import time
@@ -91,32 +92,80 @@ def systemd_units() -> dict[str, str]:
     return out
 
 
+def _source_markers_present(directory_fd: int) -> bool:
+    """Recognize a source layout without following links or walking its contents."""
+    for name in (".github", "scripts"):
+        try:
+            mode = os.stat(name, dir_fd=directory_fd, follow_symlinks=False).st_mode
+        except FileNotFoundError:
+            return False
+        if not stat.S_ISDIR(mode):
+            return False
+    return True
+
+
 def scratch_snapshot(root: str = "/tmp/fif-shipprep") -> dict:
     target = Path(root)
-    if not target.is_dir() or target.is_symlink():
+    try:
+        if not stat.S_ISDIR(target.lstat().st_mode):
+            return {"present": False}
+    except (FileNotFoundError, NotADirectoryError):
         return {"present": False}
+    except OSError:
+        return {"present": True, "inventory": "incomplete"}
     now = time.time()
     dirs = 0
-    materialized = 0
+    nested = 0
+    direct = 0
     old = 0
     newest = None
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
     try:
-        for item in os.scandir(target):
-            if not item.is_dir(follow_symlinks=False):
-                continue
-            dirs += 1
-            st = item.stat(follow_symlinks=False)
-            newest = max(newest or 0, st.st_mtime)
-            if now - st.st_mtime > 24 * 3600:
-                old += 1
-            if os.path.isdir(item.path + "/tree") and not os.path.islink(item.path + "/tree"):
-                materialized += 1
+        root_fd = os.open(target, flags)
+        try:
+            with os.scandir(root_fd) as entries:
+                for item in entries:
+                    if not item.is_dir(follow_symlinks=False):
+                        continue
+                    stage_fd = os.open(item.name, flags, dir_fd=root_fd)
+                    try:
+                        st = os.fstat(stage_fd)
+                        dirs += 1
+                        newest = max(newest or 0, st.st_mtime)
+                        if now - st.st_mtime > 24 * 3600:
+                            old += 1
+                        try:
+                            tree_mode = os.stat(
+                                "tree", dir_fd=stage_fd, follow_symlinks=False
+                            ).st_mode
+                        except FileNotFoundError:
+                            tree_mode = 0
+                        has_nested = False
+                        if stat.S_ISDIR(tree_mode):
+                            tree_fd = os.open("tree", flags, dir_fd=stage_fd)
+                            try:
+                                has_nested = _source_markers_present(tree_fd)
+                            finally:
+                                os.close(tree_fd)
+                        # Count a stage once, even if both layouts are present.
+                        if has_nested:
+                            nested += 1
+                        elif _source_markers_present(stage_fd):
+                            direct += 1
+                    finally:
+                        os.close(stage_fd)
+        finally:
+            os.close(root_fd)
     except OSError:
+        # A partial inspection must not be reported as a complete low count.
         return {"present": True, "inventory": "incomplete"}
     return {
         "present": True,
         "subdirs": dirs,
-        "materialized_tree_dirs": materialized,
+        "materialized_tree_dirs": nested + direct,
+        "nested_tree_dirs": nested,
+        "direct_source_dirs": direct,
+        "unclassified_stage_dirs": dirs - nested - direct,
         "older_than_24h": old,
         "newest_age_minutes": (
             round((now - newest) / 60, 1) if newest else None

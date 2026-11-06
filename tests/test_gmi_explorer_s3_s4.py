@@ -3,10 +3,13 @@
 Renders the REAL model and its specimen variants through ``render_site`` (the
 production path) and pins, per page:
 
-- S3 empty state (live: no edges): five zero species chips, none on, the
-  honest empty band, the link panel in the model's kind with both facts shown
-  (admitted AND not permitted — G-UI-10), the coverage empty panel.
-- S3 edges state: the relgrid hero and the ``#excerpt`` receipt.
+- S3 empty state (the live model with its edges removed — the live envelope
+  is wired since DEC:GMI-RELATIONSHIP-ENVELOPE-CONTRACT): five zero species
+  chips, none on, the honest empty band, the link panel in the model's kind
+  with both facts shown (admitted AND not permitted — G-UI-10), the coverage
+  empty panel.
+- S3 edges state: the relgrid hero and the ``#excerpt`` receipt; the live
+  model renders the same present branch from the committed envelope.
 - S3 held-link branch (G-UI-9): ``held_variant(edges_variant(m))`` is the
   specimen's exact state — the panel flips to the held mark and words.
 - Page law on every render: one h1, no ``title=``, no script inside ``main``,
@@ -21,6 +24,7 @@ production path) and pins, per page:
 """
 from __future__ import annotations
 
+import copy
 import json
 import os
 import re
@@ -60,9 +64,10 @@ def proof_model(tmp_path_factory) -> dict:
 
 @pytest.fixture(scope="module")
 def pages(proof_model, tmp_path_factory) -> dict:
-    """Rendered S3/S4 for the live model, the held variant and the edges variant."""
+    """Rendered S3/S4 for the live model, its no-edges copy, the held and edges variants."""
     out: dict[tuple[str, str], str] = {}
     sites: dict[str, dict] = {"live": proof_model,
+                              "empty": _no_edges(proof_model),
                               "held": held_variant(proof_model),
                               "edges": edges_variant(proof_model)}
     for name, variant in sites.items():
@@ -74,13 +79,20 @@ def pages(proof_model, tmp_path_factory) -> dict:
     return out
 
 
+def _no_edges(model: dict) -> dict:
+    """The S3 empty state: the live model as if no edges file were committed."""
+    out = copy.deepcopy(model)
+    out.update(edges=[], edges_state="empty", edge_package=None, party_names={})
+    return out
+
+
 def _main(html: str) -> str:
     return html.split("<main", 1)[1].split("</main>", 1)[0]
 
 
 # ---------------------------------------------------------------- S3 states
-def test_s3_live_empty_state(pages) -> None:
-    html = _main(pages[("live", S3)])
+def test_s3_empty_state(pages) -> None:
+    html = _main(pages[("empty", S3)])
     assert html.count("gmi-spec gmi-spec--zero") == 5
     assert "gmi-spec--on" not in html
     assert 'aria-pressed="true"' not in html
@@ -101,6 +113,17 @@ def test_s3_edges_state(pages) -> None:
     assert "No documented relationships yet" not in html
 
 
+def test_s3_live_state_reads_the_envelope(pages) -> None:
+    """The committed v1 envelope renders the present branch at display tier."""
+    model = pages["models"]["live"]
+    assert model["edges_state"] == "present" and model["edges"]
+    html = _main(pages[("live", S3)])
+    assert "gmi-relgrid" in html
+    assert "No documented relationships yet" not in html
+    assert "尚无已记录的关系" not in html
+    assert "Display only — never a rank, size or gate input" in html
+
+
 def test_s3_edge_parties_carry_the_name_rule(pages) -> None:
     """Seat GAP 21: an edge party reads its directory name, never a bare ticker
     when the directory knows it — the same rule as an issuer's own name."""
@@ -110,7 +133,10 @@ def test_s3_edge_parties_carry_the_name_rule(pages) -> None:
     head = _main(pages[("edges", S3)]).split('id="rel-h"', 1)[1].split("</div>", 1)[0]
     assert "Skyworks" in head and "Apple" in head
     assert ">SWKS<" not in head and ">AAPL<" not in head
-    assert pages["models"]["live"]["party_names"] == {}
+    assert pages["models"]["empty"]["party_names"] == {}
+    live = pages["models"]["live"]
+    assert set(live["party_names"]) == {e[side]["issuer_id"] for e in live["edges"]
+                                        for side in ("from", "to")}
 
 
 def test_s3_held_link_branch(proof_model, tmp_path) -> None:
@@ -125,7 +151,7 @@ def test_s3_held_link_branch(proof_model, tmp_path) -> None:
 
 
 # ---------------------------------------------------------------- page law
-@pytest.mark.parametrize("variant", ["live", "held", "edges"])
+@pytest.mark.parametrize("variant", ["live", "empty", "held", "edges"])
 @pytest.mark.parametrize("page", [S3, S4])
 def test_page_law(pages, variant, page) -> None:
     main = _main(pages[(variant, page)])
