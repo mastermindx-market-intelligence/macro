@@ -1,0 +1,31 @@
+{
+ "schema": "fif.expected_run/v1",
+ "canonical_bytes": "kernel_minted_not_gold",
+ "canonical_sha256": "kernel_minted_not_gold",
+ "run_id": "kernel_minted_not_gold",
+ "attested": false,
+ "historical_attestation": "unavailable_until_d2_admission",
+ "view": "as_filed",
+ "source_accession": "0000070858-26-000394",
+ "knowledge_time": "2026-08-01T00:44:20.000Z",
+ "knowledge_time_source": "sec_submissions_witness.json:acceptanceDateTime",
+ "coverage": {
+  "source_fact_records": 175,
+  "distinct_fact_occurrences": 64,
+  "facts_with_source_clock": 175,
+  "normalized_observations": 64,
+  "normalization_issues": 0,
+  "statement_vintages": 1,
+  "selected_statement_vintages": 1,
+  "findings_triggered": 0,
+  "findings_clear": 0,
+  "findings_not_evaluable": 5
+ },
+ "finding_states": {
+  "accruals_trending_up": "not_evaluable",
+  "capital_intensity_rising": "not_evaluable",
+  "inventory_build": "not_evaluable",
+  "margin_compression_despite_revenue_growth": "not_evaluable",
+  "receivables_stretch": "not_evaluable"
+ }
+}

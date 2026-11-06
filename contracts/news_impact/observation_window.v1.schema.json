@@ -1,0 +1,1313 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/news_impact/observation_window.v1.schema.json",
+  "title": "Observation window v1 \u2014 at-origin vs landmark measurement with no outcome leak",
+  "description": "Market observation contract. at_origin uses only data available before the decision; landmark may use price and news up to the landmark and starts the outcome window after it. information_cutoff is required. Delayed-entry policies are test arms relative to first admissible feed receipt. Residual coefficients are fitted on a window ending at or before the cutoff. The target is excluded from its peer set. Coincident events are recorded as ambiguous attribution. full_session_return_used is false for at_origin. Output is context_only.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/observation_window.v1"
+    }
+  ],
+  "$defs": {
+    "text_safe": {
+      "type": "string",
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "(?i)\\b(ignore|disregard|forget|override)\\s+(all\\s+|any\\s+|the\\s+|every\\s+)?(previous|prior|above|preceding|earlier)\\b"
+          },
+          {
+            "pattern": "(?i)(^|[\\n\\r>\\\"'\\]\\[}{|])\\s*(system|assistant|developer|user|tool|function)\\s*[:\uff1a]"
+          },
+          {
+            "pattern": "(?i)system\\s*prompt"
+          },
+          {
+            "pattern": "(?i)\\b(https?|ftps?|wss?|file|javascript|vbscript|gopher|hxxps?|hxtp)\\s*:"
+          },
+          {
+            "pattern": "(?i)^\\s*(?=^[^_\\s]*$)(www\\.)?[a-z0-9][a-z0-9\\-]*(\\.[a-z0-9][a-z0-9\\-]*)*\\.[a-z]{2,4}(:\\d+)?(/[^\\s]*)?\\s*$"
+          },
+          {
+            "pattern": "(?i)(~\\/\\.|/(etc|usr|bin|sbin|tmp|var|root|home|opt|dev|proc|lib)\\b|\\$\\(|`|\\brm\\s+-rf\\b|\\bcurl\\b|\\bwget\\b|\\bchmod\\b|\\bbash\\s+-c\\b|\\bsh\\s+-c\\b|\\bpowershell\\b|\\bnc\\s+-e\\b|\\|\\s*sh\\b)"
+          },
+          {
+            "pattern": "[A-Za-z0-9+/=]{40,}"
+          },
+          {
+            "pattern": "(!\\[|\\]\\(\\s*[a-z0-9.])"
+          },
+          {
+            "pattern": "[\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u206f\ufeff\ufff9-\ufffb]"
+          },
+          {
+            "pattern": "(?i)(<\\||\\[/?inst\\]|<<\\s*sys\\s*>>|<\\s*/?\\s*system\\s*>|###\\s*(system|assistant|instruction|user)\\b)"
+          },
+          {
+            "pattern": "(?i)\\b(switch|swap|route|redirect)\\s+(to\\s+)?(the\\s+)?(provider|model|llm|api|endpoint|engine)\\b|\\buse\\s+(the\\s+|another\\s+)?(provider|model|llm)\\s+\\S+\\s+(instead|exclusively)\\b|\\binstead\\s+(use|call|switch|route)\\b|\\buse\\s+(the\\s+|another\\s+)?(provider|model|llm)\\b(?:\\s+\\S+){0,3}\\s+(this|extraction|task|instead|only)\\b"
+          },
+          {
+            "pattern": "(?i)(new|updated|revised|obey)\\s+(the\\s+)?(instructions?|directives?|commands?)\\b|\\byou\\s+are\\s+now\\b|\\brespond\\s+(with|only)\\b|\\bdo\\s+not\\s+tell\\b|\\bkeep\\s+(this|it)\\s+(secret|confidential)\\b|exfiltrat|\\bwebhook\\b|\\bapi[_ ]?key\\b|\\bsecret\\s+key\\b|\\bbearer\\s+[a-z0-9._\\-]{8,}\\b|\\bset\\s+(may_rank|may_size|may_gate|prophet_authority)\\b|\\bmaster\\s+prompt\\b|\\b(reveal|print|dump|repeat|output)\\s+(the\\s+)?(master\\s+|system\\s+)?prompt\\b"
+          },
+          {
+            "pattern": "(?i)[s\u0455]ystem\\s*[:\uff1a]|[a\u0430]ssistant\\s*[:\uff1a]"
+          }
+        ]
+      }
+    },
+    "company_id": {
+      "type": "string",
+      "minLength": 14,
+      "maxLength": 14,
+      "pattern": "^cik:(?!0{10}$)[0-9]{10}$"
+    },
+    "locator_text_span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "sub_kind",
+        "segment_index",
+        "span_start_byte",
+        "span_end_byte"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "text_span"
+        },
+        "sub_kind": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "segment_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "span_start_byte": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50000000
+        },
+        "span_end_byte": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50000000
+        },
+        "chapter": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "speaker": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "role": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "locator_table_cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "table_cell"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "table": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            {
+              "$ref": "#/$defs/text_safe",
+              "minLength": 1,
+              "maxLength": 32
+            }
+          ]
+        },
+        "row": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "column": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "cell_ref": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "note": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    },
+    "locator_slide_region": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "slide_region"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "region": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "note": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_sha256",
+        "segment_index",
+        "segment_sha256",
+        "segment_bytes",
+        "span_start_byte",
+        "span_end_byte",
+        "text_sha256"
+      ],
+      "properties": {
+        "source_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "segment_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "segment_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "segment_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50000000
+        },
+        "span_start_byte": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50000000
+        },
+        "span_end_byte": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50000000
+        },
+        "text_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "source_span_v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "authority",
+        "span_id",
+        "document_id",
+        "document_version",
+        "locator",
+        "text_sha256",
+        "display_excerpt",
+        "rights_profile",
+        "receipt_state",
+        "receipt",
+        "unreplayable_reason"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "source_span.v1"
+        },
+        "authority": {
+          "type": "string",
+          "const": "context_only"
+        },
+        "span_id": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "document_id": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "document_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "locator": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/locator_text_span"
+            },
+            {
+              "$ref": "#/$defs/locator_table_cell"
+            },
+            {
+              "$ref": "#/$defs/locator_slide_region"
+            }
+          ]
+        },
+        "text_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "display_excerpt": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/text_safe"
+            }
+          ],
+          "maxLength": 500
+        },
+        "rights_profile": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "receipt_state": {
+          "type": "string",
+          "enum": [
+            "byte_replayed",
+            "address_only"
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/receipt"
+            }
+          ]
+        },
+        "unreplayable_reason": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/text_safe"
+            }
+          ],
+          "maxLength": 240
+        }
+      },
+      "if": {
+        "properties": {
+          "receipt_state": {
+            "const": "byte_replayed"
+          }
+        },
+        "required": [
+          "receipt_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "receipt": {
+            "$ref": "#/$defs/receipt"
+          },
+          "text_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "unreplayable_reason": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "receipt",
+          "text_sha256"
+        ]
+      },
+      "else": {
+        "properties": {
+          "receipt": {
+            "type": "null"
+          },
+          "text_sha256": {
+            "type": "null"
+          },
+          "unreplayable_reason": {
+            "$ref": "#/$defs/text_safe",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "required": [
+          "unreplayable_reason"
+        ]
+      }
+    },
+    "field_absence.v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "authority",
+        "reason",
+        "subject",
+        "detail",
+        "missing_fields"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "field_absence.v1"
+        },
+        "authority": {
+          "type": "string",
+          "const": "context_only"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 32,
+          "enum": [
+            "not_stated",
+            "stated_without_number",
+            "range_only",
+            "redacted_rights",
+            "parse_failed"
+          ]
+        },
+        "owner_reason": {
+          "type": "string",
+          "maxLength": 48,
+          "enum": [
+            "no_source_document",
+            "no_transcript",
+            "no_primary_release",
+            "no_span_addressable_evidence",
+            "document_bytes_not_held",
+            "scanned_image_no_text_layer",
+            "unjoinable_filing_identity",
+            "speaker_unresolvable",
+            "slide_family_discontinued",
+            "superseded_by_duplicate",
+            "missing_basis",
+            "missing_units",
+            "unit_mismatch",
+            "cross_check_conflict",
+            "missing_period",
+            "missing_source"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "detail": {
+          "$ref": "#/$defs/text_safe",
+          "maxLength": 240
+        },
+        "missing_fields": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/text_safe",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        }
+      }
+    },
+    "owner_typed_absence_v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "authority",
+        "reason",
+        "subject",
+        "detail",
+        "missing_fields",
+        "event_id",
+        "document_id"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "typed_absence.v1"
+        },
+        "authority": {
+          "type": "string",
+          "const": "context_only"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 48,
+          "enum": [
+            "no_source_document",
+            "no_transcript",
+            "no_primary_release",
+            "no_span_addressable_evidence",
+            "document_bytes_not_held",
+            "scanned_image_no_text_layer",
+            "unjoinable_filing_identity",
+            "speaker_unresolvable",
+            "slide_family_discontinued",
+            "superseded_by_duplicate",
+            "missing_basis",
+            "missing_units",
+            "unit_mismatch",
+            "cross_check_conflict",
+            "missing_period",
+            "missing_source"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "detail": {
+          "$ref": "#/$defs/text_safe",
+          "maxLength": 240
+        },
+        "missing_fields": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/text_safe",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "event_id": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/text_safe",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          ]
+        },
+        "document_id": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/text_safe",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          ]
+        }
+      }
+    },
+    "absence_union": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/field_absence.v1"
+        },
+        {
+          "$ref": "#/$defs/owner_typed_absence_v1"
+        }
+      ]
+    },
+    "evidence_span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claimed_quote",
+        "span"
+      ],
+      "properties": {
+        "claimed_quote": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "span": {
+          "$ref": "#/$defs/source_span_v1"
+        }
+      }
+    },
+    "evidence_absence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claimed_quote",
+        "absence"
+      ],
+      "properties": {
+        "claimed_quote": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "absence": {
+          "$ref": "#/$defs/field_absence.v1"
+        }
+      }
+    },
+    "evidence": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/evidence_span"
+        },
+        {
+          "$ref": "#/$defs/evidence_absence"
+        }
+      ]
+    },
+    "prophet_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_rank",
+        "may_size",
+        "may_gate",
+        "prophet_authority"
+      ],
+      "properties": {
+        "may_rank": {
+          "const": false
+        },
+        "may_size": {
+          "const": false
+        },
+        "may_gate": {
+          "const": false
+        },
+        "prophet_authority": {
+          "const": false
+        }
+      }
+    },
+    "channel_hint": {
+      "type": "string",
+      "maxLength": 40,
+      "enum": [
+        "revenue_demand",
+        "margin_cost",
+        "capital_allocation",
+        "moat_duration",
+        "strategic_option",
+        "financial_incentives_survival",
+        "market_only"
+      ]
+    },
+    "fiscal_period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "year",
+        "quarter",
+        "calendar_end",
+        "period_kind"
+      ],
+      "properties": {
+        "year": {
+          "type": "integer",
+          "minimum": 2000,
+          "maximum": 2100
+        },
+        "quarter": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "enum": [
+            1,
+            2,
+            3,
+            4,
+            null
+          ]
+        },
+        "calendar_end": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "period_kind": {
+          "type": "string",
+          "maxLength": 16,
+          "enum": [
+            "quarter",
+            "half_year",
+            "nine_months",
+            "fiscal_year",
+            "multi_year"
+          ]
+        },
+        "end_year": {
+          "type": "integer",
+          "minimum": 2000,
+          "maximum": 2100
+        }
+      },
+      "if": {
+        "properties": {
+          "period_kind": {
+            "const": "quarter"
+          }
+        },
+        "required": [
+          "period_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "quarter": {
+            "enum": [
+              1,
+              2,
+              3,
+              4
+            ]
+          }
+        },
+        "required": [
+          "quarter"
+        ]
+      },
+      "else": {
+        "properties": {
+          "quarter": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    "observation_id": {
+      "type": "string",
+      "minLength": 28,
+      "maxLength": 28,
+      "pattern": "^obs_[0-9a-f]{24}$"
+    },
+    "fact_id": {
+      "type": "string",
+      "minLength": 29,
+      "maxLength": 29,
+      "pattern": "^fact_[0-9a-f]{24}$"
+    },
+    "iso_datetime": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 40,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "mode": {
+      "type": "string",
+      "maxLength": 16,
+      "enum": [
+        "at_origin",
+        "landmark"
+      ]
+    },
+    "delayed_entry_policy": {
+      "type": "string",
+      "maxLength": 40,
+      "enum": [
+        "feed_receipt",
+        "plus_60s",
+        "plus_900s",
+        "next_rth_open",
+        "same_session_close_1600_et",
+        "next_rth_open_plus_one_session"
+      ]
+    },
+    "test_purpose": {
+      "type": "string",
+      "maxLength": 32,
+      "enum": [
+        "none",
+        "source_delay",
+        "research_time",
+        "gap_open",
+        "session_close_landmark",
+        "stale_news_treatment"
+      ]
+    },
+    "attribution_state": {
+      "type": "string",
+      "maxLength": 32,
+      "enum": [
+        "unambiguous_single_event",
+        "ambiguous_coincident",
+        "unmeasured"
+      ]
+    },
+    "return_unit": {
+      "type": "string",
+      "maxLength": 16,
+      "enum": [
+        "simple_return",
+        "log_return"
+      ]
+    },
+    "factor_id": {
+      "type": "string",
+      "maxLength": 32,
+      "enum": [
+        "market",
+        "documented_peer_residual"
+      ]
+    },
+    "collinear_factor_id": {
+      "type": "string",
+      "maxLength": 32,
+      "enum": [
+        "sector",
+        "mag7",
+        "gpu_theme"
+      ]
+    },
+    "fitted_leg": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "factor_id",
+        "fitted_coefficient",
+        "window_bars"
+      ],
+      "properties": {
+        "factor_id": {
+          "$ref": "#/$defs/factor_id"
+        },
+        "fitted_coefficient": {
+          "type": "number"
+        },
+        "window_bars": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 2520
+        }
+      }
+    },
+    "residual_fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "fit_start",
+        "fit_end",
+        "legs",
+        "unused_collinear_factors"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "const": "ols_trailing_pre_cutoff"
+        },
+        "fit_start": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "fit_end": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "legs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/fitted_leg"
+          }
+        },
+        "unused_collinear_factors": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "factor_id",
+              "absence"
+            ],
+            "properties": {
+              "factor_id": {
+                "$ref": "#/$defs/collinear_factor_id"
+              },
+              "absence": {
+                "$ref": "#/$defs/field_absence.v1"
+              }
+            }
+          }
+        }
+      }
+    },
+    "return_measured": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "unit",
+        "value",
+        "window_start",
+        "window_end"
+      ],
+      "properties": {
+        "form": {
+          "type": "string",
+          "const": "measured"
+        },
+        "unit": {
+          "$ref": "#/$defs/return_unit"
+        },
+        "value": {
+          "type": "number"
+        },
+        "window_start": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "window_end": {
+          "$ref": "#/$defs/iso_datetime"
+        }
+      }
+    },
+    "return_absent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "absence"
+      ],
+      "properties": {
+        "form": {
+          "type": "string",
+          "const": "unmeasured"
+        },
+        "absence": {
+          "$ref": "#/$defs/field_absence.v1"
+        }
+      }
+    },
+    "peer_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection",
+        "member_ids",
+        "excluded_target_id",
+        "target_excluded"
+      ],
+      "properties": {
+        "selection": {
+          "type": "string",
+          "const": "documented_exposure"
+        },
+        "member_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/company_id"
+          }
+        },
+        "excluded_target_id": {
+          "$ref": "#/$defs/company_id"
+        },
+        "target_excluded": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "coincident_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fact_id",
+        "company_id",
+        "observed_at"
+      ],
+      "properties": {
+        "fact_id": {
+          "$ref": "#/$defs/fact_id"
+        },
+        "company_id": {
+          "$ref": "#/$defs/company_id"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/iso_datetime"
+        }
+      }
+    },
+    "observation_window.v1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "authority",
+        "prophet_flags",
+        "unsolicited_instruction_detected",
+        "observation_id",
+        "mode",
+        "source_fact_id",
+        "target_company_id",
+        "first_admissible_feed_receipt",
+        "delayed_entry_policy",
+        "test_purpose",
+        "entry_timestamp",
+        "information_cutoff",
+        "decision_timestamp",
+        "outcome_start",
+        "outcome_end",
+        "matched_window_start",
+        "matched_window_end",
+        "full_session_return_used",
+        "absolute_response",
+        "residual_response",
+        "residual_fit",
+        "peer_set",
+        "coincident_events",
+        "attribution_state",
+        "observed_at",
+        "source_available_at",
+        "display_summary"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "observation_window.v1"
+        },
+        "authority": {
+          "type": "string",
+          "const": "context_only"
+        },
+        "prophet_flags": {
+          "$ref": "#/$defs/prophet_flags"
+        },
+        "unsolicited_instruction_detected": {
+          "type": "boolean",
+          "const": false
+        },
+        "observation_id": {
+          "$ref": "#/$defs/observation_id"
+        },
+        "mode": {
+          "$ref": "#/$defs/mode"
+        },
+        "source_fact_id": {
+          "$ref": "#/$defs/fact_id"
+        },
+        "target_company_id": {
+          "$ref": "#/$defs/company_id"
+        },
+        "first_admissible_feed_receipt": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "delayed_entry_policy": {
+          "$ref": "#/$defs/delayed_entry_policy"
+        },
+        "test_purpose": {
+          "$ref": "#/$defs/test_purpose"
+        },
+        "entry_timestamp": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "information_cutoff": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "decision_timestamp": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "outcome_start": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "outcome_end": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "matched_window_start": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "matched_window_end": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "full_session_return_used": {
+          "type": "boolean"
+        },
+        "absolute_response": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/return_measured"
+            },
+            {
+              "$ref": "#/$defs/return_absent"
+            }
+          ]
+        },
+        "residual_response": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/return_measured"
+            },
+            {
+              "$ref": "#/$defs/return_absent"
+            }
+          ]
+        },
+        "residual_fit": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/residual_fit"
+            },
+            {
+              "$ref": "#/$defs/field_absence.v1"
+            }
+          ]
+        },
+        "peer_set": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/peer_set"
+            },
+            {
+              "$ref": "#/$defs/field_absence.v1"
+            }
+          ]
+        },
+        "coincident_events": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/coincident_event"
+          }
+        },
+        "attribution_state": {
+          "$ref": "#/$defs/attribution_state"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "source_available_at": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "display_summary": {
+          "$ref": "#/$defs/text_safe",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "at_origin"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "full_session_return_used": {
+                "const": false
+              }
+            },
+            "required": [
+              "full_session_return_used"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "coincident_events": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "coincident_events"
+            ]
+          },
+          "then": {
+            "properties": {
+              "attribution_state": {
+                "const": "ambiguous_coincident"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "delayed_entry_policy": {
+                "const": "next_rth_open_plus_one_session"
+              }
+            },
+            "required": [
+              "delayed_entry_policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "test_purpose": {
+                "const": "stale_news_treatment"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "delayed_entry_policy": {
+                "const": "plus_60s"
+              }
+            },
+            "required": [
+              "delayed_entry_policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "test_purpose": {
+                "const": "source_delay"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "delayed_entry_policy": {
+                "const": "plus_900s"
+              }
+            },
+            "required": [
+              "delayed_entry_policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "test_purpose": {
+                "const": "research_time"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "delayed_entry_policy": {
+                "const": "next_rth_open"
+              }
+            },
+            "required": [
+              "delayed_entry_policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "test_purpose": {
+                "const": "gap_open"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "delayed_entry_policy": {
+                "const": "same_session_close_1600_et"
+              }
+            },
+            "required": [
+              "delayed_entry_policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "test_purpose": {
+                "const": "session_close_landmark"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "delayed_entry_policy": {
+                "const": "feed_receipt"
+              }
+            },
+            "required": [
+              "delayed_entry_policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "test_purpose": {
+                "const": "none"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

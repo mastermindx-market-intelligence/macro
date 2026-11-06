@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2025-11-25T21:02:50Z",
+ "accession": "0000006281-25-000153",
+ "cik": "0000006281",
+ "doc_byte_length": 2363627,
+ "doc_sha256": "4e312f689cc55d7ec170389b1cc7810ff0bee8e651a0ed7dcaabe5f08c68627a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-25",
+ "form": "10-K",
+ "period_of_report": "2025-11-01",
+ "primary_document": "adi-20251101.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1415593,
+  "byte_start": 1414151,
+  "normalized": "Distributor 2*12%10%",
+  "normalized_sha256": "2c9cb2f99487e864ac9caf88b4725257651b5cd243caa9a62f61623c90374d1b",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><div><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">Distributor 2</span></div></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-133\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-660\">12</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-134\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-661\">10</ix:nonFraction>%</span></td></tr>",
+  "raw_sha256": "814889f4212316b76918db9a4e64769cceae51b18aba26b5b963175477f7a853"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/6281/000000628125000153/adi-20251101.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 66298,
+   "byte_start": 65619,
+   "context_ref": "c-133",
+   "raw": "<xbrli:context id=\"c-133\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000006281</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">adi:Distributor2Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-10-29</xbrli:startDate><xbrli:endDate>2024-11-02</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "8b66bcea65ba0d6693ee287aca22eb579ada9e2956a1a3ed35202a23422244b9"
+  },
+  {
+   "byte_end": 66977,
+   "byte_start": 66298,
+   "context_ref": "c-134",
+   "raw": "<xbrli:context id=\"c-134\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000006281</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">adi:Distributor2Member</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2022-10-30</xbrli:startDate><xbrli:endDate>2023-10-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7c51fd9f91d0a5791bfe16c4f5ec6db3962c82d50f18d36961314a0454e557ad"
+  }
+ ]
+}

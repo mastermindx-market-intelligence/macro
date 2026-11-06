@@ -1,0 +1,598 @@
+{
+ "exact_leg_compatibility": {
+  "byte_identical": true,
+  "digest_chain_date": "2026-08-13",
+  "new_engine_or_lib_modules_on_import": [
+   "engine.options_arbfree_surface"
+  ],
+  "options_skew_callables_unchanged": true,
+  "options_skew_sha256_after": "8f68ad06c29ff9e05d6f4a710912b12a8523344d3b84a22524867e4711b38dce",
+  "options_skew_sha256_expected": "8f68ad06c29ff9e05d6f4a710912b12a8523344d3b84a22524867e4711b38dce",
+  "options_skew_vars_unchanged": true,
+  "q01_authority": {
+   "may_alert": false,
+   "may_deploy": false,
+   "may_display": false,
+   "may_rank": false,
+   "may_score": false
+  },
+  "q01_module_preloaded_before_check": false,
+  "q01_research_only": true,
+  "skew_map_digest_after_import": "a60bf3354098c5da1cee07ba1f36b9cfbaec0969a7dc4d0d48947e40ab09b18c",
+  "skew_map_digest_before_import": "a60bf3354098c5da1cee07ba1f36b9cfbaec0969a7dc4d0d48947e40ab09b18c"
+ },
+ "fields": [
+  "otm_put_iv",
+  "atm_call_iv",
+  "skew",
+  "spot",
+  "tenor_days",
+  "n_strikes"
+ ],
+ "input_hash_mismatches": [],
+ "mismatch_examples": [
+  {
+   "date": "2026-06-24",
+   "fields": {
+    "atm_call_iv": [
+     "0.7298",
+     "0.9013"
+    ],
+    "n_strikes": [
+     "8",
+     "7"
+    ],
+    "otm_put_iv": [
+     "0.8775",
+     "0.8465"
+    ],
+    "skew": [
+     "0.1477",
+     "-0.0547"
+    ],
+    "spot": [
+     "16.46",
+     "18.19"
+    ],
+    "tenor_days": [
+     "23.0",
+     "23.0"
+    ]
+   },
+   "underlying": "ALM"
+  },
+  {
+   "date": "2026-06-24",
+   "fields": {
+    "atm_call_iv": [
+     "0.9997",
+     "1.1235"
+    ],
+    "n_strikes": [
+     "18",
+     "20"
+    ],
+    "otm_put_iv": [
+     "1.082",
+     "1.0955"
+    ],
+    "skew": [
+     "0.0822",
+     "-0.028"
+    ],
+    "spot": [
+     "9.35",
+     "9.71"
+    ],
+    "tenor_days": [
+     "30.0",
+     "30.0"
+    ]
+   },
+   "underlying": "CRML"
+  },
+  {
+   "date": "2026-06-24",
+   "fields": {
+    "atm_call_iv": [
+     "0.9887",
+     "0.9292"
+    ],
+    "n_strikes": [
+     "5",
+     "5"
+    ],
+    "otm_put_iv": [
+     "0.9091",
+     "1.0061"
+    ],
+    "skew": [
+     "-0.0796",
+     "0.0768"
+    ],
+    "spot": [
+     "4.62",
+     "4.91"
+    ],
+    "tenor_days": [
+     "30.0",
+     "30.0"
+    ]
+   },
+   "underlying": "NB"
+  },
+  {
+   "date": "2026-06-24",
+   "fields": {
+    "atm_call_iv": [
+     "0.7132",
+     "0.8692"
+    ],
+    "n_strikes": [
+     "10",
+     "8"
+    ],
+    "otm_put_iv": [
+     "0.8215",
+     "0.7462"
+    ],
+    "skew": [
+     "0.1083",
+     "-0.123"
+    ],
+    "spot": [
+     "21.12",
+     "22.33"
+    ],
+    "tenor_days": [
+     "23.0",
+     "23.0"
+    ]
+   },
+   "underlying": "PPTA"
+  },
+  {
+   "date": "2026-06-26",
+   "fields": {
+    "atm_call_iv": [
+     "0.8888",
+     "0.9349"
+    ],
+    "n_strikes": [
+     "8",
+     "8"
+    ],
+    "otm_put_iv": [
+     "0.8179",
+     "0.8061"
+    ],
+    "skew": [
+     "-0.0709",
+     "-0.1288"
+    ],
+    "spot": [
+     "16.28",
+     "16.45"
+    ],
+    "tenor_days": [
+     "20.0",
+     "21.0"
+    ]
+   },
+   "underlying": "ALM"
+  },
+  {
+   "date": "2026-06-26",
+   "fields": {
+    "atm_call_iv": [
+     "1.237",
+     "1.0397"
+    ],
+    "n_strikes": [
+     "21",
+     "19"
+    ],
+    "otm_put_iv": [
+     "2.0197",
+     "1.0248"
+    ],
+    "skew": [
+     "0.7826",
+     "-0.0149"
+    ],
+    "spot": [
+     "9.99",
+     "9.26"
+    ],
+    "tenor_days": [
+     "27.0",
+     "28.0"
+    ]
+   },
+   "underlying": "CRML"
+  },
+  {
+   "date": "2026-06-26",
+   "fields": {
+    "atm_call_iv": [
+     "0.906",
+     "0.7489"
+    ],
+    "n_strikes": [
+     "4",
+     "4"
+    ],
+    "otm_put_iv": [
+     "0.8135",
+     "0.9025"
+    ],
+    "skew": [
+     "-0.0925",
+     "0.1537"
+    ],
+    "spot": [
+     "4.55",
+     "4.6"
+    ],
+    "tenor_days": [
+     "27.0",
+     "28.0"
+    ]
+   },
+   "underlying": "NB"
+  },
+  {
+   "date": "2026-06-26",
+   "fields": {
+    "atm_call_iv": [
+     "0.7646",
+     "0.6837"
+    ],
+    "n_strikes": [
+     "10",
+     "10"
+    ],
+    "otm_put_iv": [
+     "0.737",
+     "0.7751"
+    ],
+    "skew": [
+     "-0.0276",
+     "0.0914"
+    ],
+    "spot": [
+     "21.34",
+     "21.2"
+    ],
+    "tenor_days": [
+     "20.0",
+     "21.0"
+    ]
+   },
+   "underlying": "PPTA"
+  },
+  {
+   "date": "2026-06-30",
+   "fields": {
+    "atm_call_iv": [
+     "0.7942",
+     "0.8649"
+    ],
+    "n_strikes": [
+     "8",
+     "8"
+    ],
+    "otm_put_iv": [
+     "0.7666",
+     "0.7617"
+    ],
+    "skew": [
+     "-0.0276",
+     "-0.1032"
+    ],
+    "spot": [
+     "16.56",
+     "16.14"
+    ],
+    "tenor_days": [
+     "16.0",
+     "17.0"
+    ]
+   },
+   "underlying": "ALM"
+  },
+  {
+   "date": "2026-06-30",
+   "fields": {
+    "atm_call_iv": [
+     "1.0334",
+     "0.829"
+    ],
+    "n_strikes": [
+     "21",
+     "21"
+    ],
+    "otm_put_iv": [
+     "1.1915",
+     "1.1422"
+    ],
+    "skew": [
+     "0.1581",
+     "0.3132"
+    ],
+    "spot": [
+     "10.25",
+     "10.27"
+    ],
+    "tenor_days": [
+     "30.0",
+     "31.0"
+    ]
+   },
+   "underlying": "CRML"
+  }
+ ],
+ "per_date": [
+  {
+   "date": "2026-06-15",
+   "extra_in_recompute": 10,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 10,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-06-17",
+   "extra_in_recompute": 10,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 10,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-06-18",
+   "extra_in_recompute": 343,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 343,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-06-24",
+   "extra_in_recompute": 351,
+   "match": 0,
+   "mismatch": 4,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 355,
+   "snapshot_rows": 4
+  },
+  {
+   "date": "2026-06-26",
+   "extra_in_recompute": 352,
+   "match": 0,
+   "mismatch": 4,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 356,
+   "snapshot_rows": 4
+  },
+  {
+   "date": "2026-06-30",
+   "extra_in_recompute": 352,
+   "match": 0,
+   "mismatch": 4,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 356,
+   "snapshot_rows": 4
+  },
+  {
+   "date": "2026-07-01",
+   "extra_in_recompute": 350,
+   "match": 0,
+   "mismatch": 5,
+   "missing_in_recompute": 1,
+   "recomputed_underlyings": 355,
+   "snapshot_rows": 6
+  },
+  {
+   "date": "2026-07-02",
+   "extra_in_recompute": 350,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 5,
+   "recomputed_underlyings": 350,
+   "snapshot_rows": 5
+  },
+  {
+   "date": "2026-07-07",
+   "extra_in_recompute": 138,
+   "match": 0,
+   "mismatch": 229,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 367,
+   "snapshot_rows": 229
+  },
+  {
+   "date": "2026-07-08",
+   "extra_in_recompute": 367,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 367,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-07-09",
+   "extra_in_recompute": 367,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 367,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-07-10",
+   "extra_in_recompute": 79,
+   "match": 0,
+   "mismatch": 287,
+   "missing_in_recompute": 1,
+   "recomputed_underlyings": 366,
+   "snapshot_rows": 288
+  },
+  {
+   "date": "2026-07-13",
+   "extra_in_recompute": 41,
+   "match": 0,
+   "mismatch": 327,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 368,
+   "snapshot_rows": 327
+  },
+  {
+   "date": "2026-07-15",
+   "extra_in_recompute": 369,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 369,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-07-17",
+   "extra_in_recompute": 367,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 367,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-07-20",
+   "extra_in_recompute": 40,
+   "match": 0,
+   "mismatch": 329,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 369,
+   "snapshot_rows": 329
+  },
+  {
+   "date": "2026-07-21",
+   "extra_in_recompute": 39,
+   "match": 0,
+   "mismatch": 330,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 369,
+   "snapshot_rows": 330
+  },
+  {
+   "date": "2026-07-22",
+   "extra_in_recompute": 40,
+   "match": 0,
+   "mismatch": 330,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 370,
+   "snapshot_rows": 330
+  },
+  {
+   "date": "2026-07-23",
+   "extra_in_recompute": 370,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 370,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-07-24",
+   "extra_in_recompute": 370,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 370,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-07-27",
+   "extra_in_recompute": 40,
+   "match": 0,
+   "mismatch": 330,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 370,
+   "snapshot_rows": 330
+  },
+  {
+   "date": "2026-07-28",
+   "extra_in_recompute": 39,
+   "match": 0,
+   "mismatch": 331,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 370,
+   "snapshot_rows": 331
+  },
+  {
+   "date": "2026-07-29",
+   "extra_in_recompute": 39,
+   "match": 0,
+   "mismatch": 331,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 370,
+   "snapshot_rows": 331
+  },
+  {
+   "date": "2026-07-30",
+   "extra_in_recompute": 39,
+   "match": 0,
+   "mismatch": 331,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 370,
+   "snapshot_rows": 331
+  },
+  {
+   "date": "2026-08-06",
+   "extra_in_recompute": 40,
+   "match": 0,
+   "mismatch": 330,
+   "missing_in_recompute": 1,
+   "recomputed_underlyings": 370,
+   "snapshot_rows": 331
+  },
+  {
+   "date": "2026-08-10",
+   "extra_in_recompute": 369,
+   "match": 0,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 369,
+   "snapshot_rows": 0
+  },
+  {
+   "date": "2026-08-12",
+   "extra_in_recompute": 39,
+   "match": 331,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 370,
+   "snapshot_rows": 331
+  },
+  {
+   "date": "2026-08-13",
+   "extra_in_recompute": 39,
+   "match": 330,
+   "mismatch": 0,
+   "missing_in_recompute": 0,
+   "recomputed_underlyings": 369,
+   "snapshot_rows": 330
+  }
+ ],
+ "state": "NOT_FULLY_REPRODUCED",
+ "tolerance_abs": 1e-09,
+ "totals": {
+  "extra_in_recompute": 5349,
+  "match": 661,
+  "mismatch": 3502,
+  "missing_in_recompute": 8,
+  "rows": 4171
+ }
+}

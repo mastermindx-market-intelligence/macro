@@ -1,0 +1,9 @@
+# Original sector-counsel actual measurement and repair review — 2026-10-20
+
+NONBLOCKING for the measured5664->5671 repair. Adviser consumed actual four-node run05:11:06.713662–05:14:34.874291Z,3PASS/1FAIL203.68s, solebuild-freeweight5671>5664, stableindex6670398b2e04ee6b571522cf7d2151385386fcf3. No packing-after result was consumed by this review; root must qualify that actual result separately.
+
+Rows index135/5796/10, buildfree134/5671/10, plan128/5545/10; incoming commandweights for exactsameIDs5789/5664/5538. Adviser independently compared all complete ID arrays with prior0f05 receipt, preserving order, and confirmed+3 each. Attribution IDs match producing rows. Only incoming-to-candidate differences are data-base-shim7->12(+5) and unrun-nav-chrome30->32(+2); they fully explain seven. No separate incoming-tree inference run claimed.
+
+Adviser independently reconstructed finaltest bytes from verifiedcandidate using only5664->5671 and exacthistory insertion. BeforeSHAe754060d1106f6c4c6403338660b6229b560fd2f475205fcc39437762fa12b4b; afterSHA c2d6a318a0e91681bb1cb9367575014ac5ab3f87ff550ea398db15bdfef8754d; appliedindex9f468349fe2bd9b27eede0003fcfd62051f0d25f. No assertion/selector/jobcount/packlimit/unrelatedceiling change found. Repair script's AST and only-test-path fences reviewed; no testexecution/source edit/workflow/host operation byadviser.
+
+Verified artifact hashes: focusedlog2826B c46112dadf1ccbb6c57f39af5fd4d6f6148d12550f59d38bb3a797538778c693; probes9466a1d58d6ffaf17d1a2c0a6f6ea8829d3d9b77afec53a5a6827015e0f10f23; attribution0523b09afd206bc3eb7beed0a3484444ee56ae10dc05578e1a73357df312f083; summary1e5c900707310fa4db9d20ae522ae21510210e1d4103509361e871b5d26cf547; patch1807B52d4d20ec4df2448ace557eee0c71e4309455243522ea9822e037089b4ac393c; repairreceiptcbc09dfb1d8cf8202134740b8fdd4ad4a2fe31909d3c157bf0d0b1f10e9c50b0; repairscriptd5e7b4e34eeb698fa26982596cbab9e01bb16d3440ff0807a4426670b218b806.
