@@ -1,0 +1,47 @@
+{
+  "requested": {
+    "name": "desktop-en-light-focus",
+    "viewport": "desktop",
+    "locale": "en",
+    "theme": "light",
+    "access": "anonymous",
+    "viewport_width": 1440,
+    "viewport_height": 900,
+    "force_state": "news_focus",
+    "kind": "focus",
+    "selector": "#ndSearch"
+  },
+  "observed": {
+    "aggregate_connection": "Stream connected",
+    "applied_locale": "en",
+    "applied_theme": "light",
+    "captured_at": "2026-10-19T02:10:34.654Z",
+    "company_connection": "\u516c\u53f8\u65b0\u95fb\u66f4\u65b0\u5df2\u8fde\u63a5",
+    "company_update_visible": false,
+    "desk_width": 1379.53125,
+    "document_width": 1440,
+    "focus_applied": true,
+    "focus_visible": true,
+    "hover_applied": false,
+    "target_background": "rgba(0, 0, 0, 0)",
+    "target_outline": "color(srgb 0.159686 0.354667 0.917647) solid 2px",
+    "target_present": true,
+    "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0",
+    "viewport_height": 900,
+    "viewport_width": 1440,
+    "visible_dialog": null
+  },
+  "native_screenshot": {
+    "format": "JPEG",
+    "sha256": "7ea92dd1294f080dedceac5c1c2ce5516f407657acb029117399f98911f62455",
+    "bytes": 149142,
+    "pixel_preserving_png_reencode": true
+  },
+  "image": {
+    "file": "desktop-en-light-focus.png",
+    "bytes": 590468,
+    "sha256": "7a37c5a4704b0c1afa62ac3e324f16f44827b6ad833043e07699023e00852652",
+    "width": 1440,
+    "height": 900
+  }
+}

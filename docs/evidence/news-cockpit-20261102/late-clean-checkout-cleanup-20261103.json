@@ -1,0 +1,13 @@
+{
+  "schema": "news.late-clean-checkout-cleanup.v1",
+  "completed_at": "2026-11-03T07:36:52.992247+00:00",
+  "tested_head": "2a50cfbed676232758ce149a6bd6c32a6fabb574",
+  "comparison_checkout": "/private/tmp/news-nov3-clean-ci-26baacec5a00",
+  "removed": true,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "original_source_head": "2a50cfbed676232758ce149a6bd6c32a6fabb574",
+  "original_ignored_aapl_sha256": "bc155d9112cc1504230efb103d8fe08a4f0601130eb7d023f6851c9cf94caf00",
+  "original_workspace_preserved": true
+}

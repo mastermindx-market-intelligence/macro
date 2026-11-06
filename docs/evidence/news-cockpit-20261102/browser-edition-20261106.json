@@ -1,0 +1,68 @@
+{
+  "schema": "news.real-edition-browser.v1",
+  "source_commit": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+  "news_sha256": "9b33e1ea6ec878c22689645b0a49d97595ff71a3663d70bdbeebbdae94f7a65b",
+  "seed_stories": 44,
+  "environment": "Real Chromium and owner-generated cached reporting; local static server; API authentication explicitly unavailable and external requests blocked",
+  "production_proof": false,
+  "checks": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "language": "en",
+      "theme": "dark",
+      "visible_reports": 37,
+      "reader_matches_selected_report": true,
+      "search_and_clear": true,
+      "no_horizontal_overflow": true,
+      "dimensions": {
+        "client": 1440,
+        "scroll": 1440
+      },
+      "edition_disclosure_observed": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "language": "zh",
+      "theme": "light",
+      "visible_reports": 37,
+      "reader_matches_selected_report": true,
+      "search_and_clear": true,
+      "no_horizontal_overflow": true,
+      "dimensions": {
+        "client": 390,
+        "scroll": 390
+      },
+      "edition_disclosure_observed": null
+    }
+  ],
+  "page_errors": [],
+  "missing_local_resources": [],
+  "blocked_external_hosts": [],
+  "browser": "156.0.8078.81",
+  "passed": true,
+  "static_server_closed": true,
+  "recorded_at": "2026-11-06T01:16:38.846609+00:00",
+  "screenshots": [
+    {
+      "file": "mobile-reader-light-zh.png",
+      "sha256": "3c9780833904d2149d1908df60d9e2ef77f0a087fabdb7e5d43c6bcdeda39c0c",
+      "retained_file": "edition-mobile-reader-light-zh-20261106.png"
+    },
+    {
+      "file": "desktop-dark-en.png",
+      "sha256": "d456a156cbbbf60c72f3261daa56eaaccee8b8acbcfc11da459e037dc589d519",
+      "retained_file": "edition-desktop-dark-en-20261106.png"
+    },
+    {
+      "file": "mobile-light-zh.png",
+      "sha256": "4402f7593aae060f6fe75f97536a5c524890ae2d7b90233adebb679f7b29fd50",
+      "retained_file": "edition-mobile-light-zh-20261106.png"
+    }
+  ]
+}

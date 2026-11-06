@@ -1,0 +1,70 @@
+{
+  "source_parent": "a32b568a5488df28da226232e43c9ddf4998a0e6",
+  "incoming_main": "b4a0ae4e08fb0a78e156d445f9b2078a0489cffc",
+  "merge_base": "0feedfc5e722b3d7f86b53ca91b511cbad052886",
+  "registered_jobs": 372,
+  "unique_yaml_keys": true,
+  "comparison_counts": {
+    "incoming_only_or_unchanged": 404,
+    "news_only": 1
+  },
+  "mixed_fields": [
+    {
+      "path": "/jobs/bea-gvc-current-descriptive-consumer/paths",
+      "base": 936,
+      "news": 951,
+      "main": 1034,
+      "merged": 1049,
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/crypto-assistant-context/paths",
+      "base": 915,
+      "news": 931,
+      "main": 1015,
+      "merged": 1031,
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/research-price-panel/paths",
+      "base": 1114,
+      "news": 1129,
+      "main": 1234,
+      "merged": 1249,
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/fif-kernel-guards/paths",
+      "base": 1003,
+      "news": 1006,
+      "main": 1107,
+      "merged": 1110,
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/c19-wp32-integrated-answer-correction-denial-pins/paths",
+      "base": 932,
+      "news": 947,
+      "main": 1031,
+      "merged": 1046,
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/ticker-news-qbus/paths",
+      "base": 1045,
+      "news": 1061,
+      "main": 1171,
+      "merged": 1187,
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/c19-wp22-dhi-traversal/paths",
+      "base": 947,
+      "news": 962,
+      "main": 1047,
+      "merged": 1062,
+      "additive_multiset_exact": true
+    }
+  ],
+  "problems": []
+}

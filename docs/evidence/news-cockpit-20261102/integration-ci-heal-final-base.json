@@ -1,0 +1,79 @@
+{
+  "source_parent": "18e8ea64638de31d7e01f934a3f3db8ccf3aeb0c",
+  "incoming_main": "5085667c12c0366a9249ad699e082d37e02d1143",
+  "prior_composed_main": "fd27c31a045c27974b8c8f0231d8d45e856508fc",
+  "prior_composed_tree": "97a1bb564ba920c03428c35529c85719b1eef790",
+  "unilateral_incoming_paths_restored_exactly": 13967,
+  "overlapping_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "app/deploy/update.sh",
+    "site/news.html"
+  ],
+  "incoming_restart_union_verified": true,
+  "incoming_ci_test_executable_ast_exact": true,
+  "prior_fd_check": "intentional News CI-test docstrings retained; executable AST identical to fd27",
+  "superseded_binary_diff": "stopped during read-only git diff; index97a1bb and unstaged/unmerged empty verified before this composition",
+  "accepted_incremental_delta_paths": 13970,
+  "non_shared_incoming_blobs_exact": true,
+  "manifest_additive_union_verified": true,
+  "mixed_manifest_fields": [
+    {
+      "path": "/jobs/c19-wp32-integrated-answer-correction-denial-pins/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/research-price-panel/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/bea-gvc-current-descriptive-consumer/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/ontology-explorer/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/eval-os-a1/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/options-matrix-code/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/crypto-assistant-context/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/ticker-news-qbus/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/catalyst-loop-integrated/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/fif-kernel-guards/paths",
+      "additive_multiset_exact": true
+    },
+    {
+      "path": "/jobs/c19-wp22-dhi-traversal/paths",
+      "additive_multiset_exact": true
+    }
+  ],
+  "registered_jobs": 375,
+  "artifact_before_sha256": "9dedd77f97e64aa4cbaab63804dba4694bf74cb56814110d4c9ed848f432d0de",
+  "artifact_after_sha256": "14601f425cac15399fb65746eadc0877b4759a6303f9ff389f01bf310e52d746",
+  "canonical_finalizer_fixed_point": true,
+  "preserved_context_sha256": {
+    "reporting_seed": "af3749d343622526c2abfa6e70bc54ccabbc85948e2cf8a6e86e1fe4226b1071",
+    "calendar_edition": "983358700d4c93787bca6f39f52325913f5cc7be333a44b81e1be91827e74023",
+    "event_impact": "96e26bd9ca51f9ee90a3673320034486aeddc64d1e69485ceebc179a581b917a"
+  },
+  "news_source_templates_unchanged": true,
+  "ci_eight_path_repair_retained": true,
+  "validation": "focused current-head and hosted checks pending",
+  "not_applied_to_paper": true,
+  "not_deployed": true
+}

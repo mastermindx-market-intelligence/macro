@@ -1,0 +1,84 @@
+{
+  "schema": "news.late-packing-admission.v1",
+  "recorded_at": "2026-11-03T07:14:33.792162+00:00",
+  "measured_source_head": "26baacec5a00a8e904c0c8c52bd21eecca7f08b5",
+  "incoming_local_base": "19a896b97ae20f2c12475a0207678f92dc4f335b",
+  "hosted_tested_merge": "06b35e1adb2dd65c7195e13ef02080e3fee6ae6c",
+  "hosted_base": "135e371359aa612f6218ef319fedf42a1535473b",
+  "hosted_run_id": 41592734870,
+  "hosted_job_id": 125773577428,
+  "hosted_findings": {
+    "introduced": 3,
+    "inherited": 0,
+    "newly_selected_jobs": [],
+    "only_axes": [
+      "weight"
+    ]
+  },
+  "old_packing_probes": [
+    [
+      "templates/index.html",
+      137,
+      5909
+    ],
+    [
+      "scripts/build_free_content.py",
+      138,
+      5924
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      131,
+      5665
+    ]
+  ],
+  "new_packing_probes": [
+    [
+      "templates/index.html",
+      137,
+      5919
+    ],
+    [
+      "scripts/build_free_content.py",
+      138,
+      5934
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      131,
+      5675
+    ]
+  ],
+  "unchanged_job_caps": [
+    137,
+    138,
+    131
+  ],
+  "unchanged_pack_cap": 10,
+  "sole_weight_delta": {
+    "job": "collector-registry",
+    "incoming": 17,
+    "candidate": 27
+  },
+  "counterfactual": "Incoming-main manifest on same candidate source/inventory, not historical main-source execution.",
+  "selected_job_ids_identical": true,
+  "executable_ast_delta": "Exactly three PACKING_PROBES weight constants; all other executable AST is unchanged.",
+  "test_source_before_sha256": "79446264ef4ad8b7628bd5f07878c509f3cf773bae50b644abd1eea330de6434",
+  "test_source_after_sha256": "06c9c7525b1e070c6b77fb9c0e5d091b93c1813c4f5638ae721efe00752df5eb",
+  "hosted_log": "docs/evidence/news-cockpit-20261102/late-hosted-contract-delta-20261103.log.gz",
+  "hosted_log_encoding": "gzip",
+  "hosted_raw_log_sha256": "2d6d02615f959394d96aa0232d9372c0ad95055648402a9f333339631bda564a",
+  "hosted_stored_log_sha256": "a3d2e490032d84e9bdb9e75860b195338d737768256d379744ef5dd8270a3ce0",
+  "clean_qualification": {
+    "receipt": "docs/evidence/news-cockpit-20261102/late-clean-canonical-20261103.json",
+    "sha256": "7a2fb118ce100d735641868e53f9806737331e4e42185de4036ca63a5c49958a",
+    "head": "26baacec5a00a8e904c0c8c52bd21eecca7f08b5",
+    "closure_findings": {},
+    "registry_unique_jobs": 379,
+    "same_selected_job_ids": true,
+    "collector_selected_once_each": true,
+    "qualified": true,
+    "duration_seconds": 464.234
+  },
+  "qualified_at": "2026-11-03T07:18:43.803712+00:00"
+}

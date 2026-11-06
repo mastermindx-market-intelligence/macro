@@ -1,0 +1,44 @@
+{
+  "schema": "news.current-main-integration.v1",
+  "recorded_at": "2026-11-03T03:35:44.658845+00:00",
+  "head": "11c6b0ff6ea09b339ecf357f8b696be292329eee",
+  "tree": "ea52ab51857aa7d3553342bad906e9ee3f375dd7",
+  "parents": [
+    "fbdbfcbfbb61ae7f05933060e7724e4cbc9bd134",
+    "9f33cc8ab9a9eab438405167b5f6a4e1e3f061ed"
+  ],
+  "accepted_main": "9f33cc8ab9a9eab438405167b5f6a4e1e3f061ed",
+  "managed_commit_action_ref": "d57547635761e4248ca4b0683c042e0b5423842740f5cdd52943e07d38397753",
+  "prior_guard_result": {
+    "status": "REFUSED",
+    "effect_state": "NOT_APPLIED",
+    "code": "PROTECTED_BASE_MISMATCH_OR_UNAVAILABLE",
+    "requested_base": "4725eadec5222e42bd10c253091e995e2071f9f1",
+    "then_observed_protected_main": "9f33cc8ab9a9eab438405167b5f6a4e1e3f061ed"
+  },
+  "prior_tested_prepared_tree": "855701345cb8d5702e81d7f99b5957f4513628b1",
+  "changes_after_that_prepared_tree": [
+    ".github/ci/legacy-jobs.yml",
+    "agentos/decisions/DEC-GMI-ISSUER-DISPLAY-NAME-SOURCE.md",
+    "agentos/decisions/DEC-GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT.md",
+    "engine/company_intelligence/relationships/envelope.py",
+    "research/theme_graph/micro_owner_dispositions.yml",
+    "research/theme_graph/micro_owner_review_2026-11-02.json",
+    "research/theme_graph/micro_owner_review_2026-11-02.md",
+    "research/theme_graph/micro_owner_review_2026_11_02_overlap.py",
+    "scripts/gmi_explorer/model.py",
+    "tests/test_gmi_coverage_proof.py",
+    "tests/test_gmi_explorer_model.py",
+    "tests/test_gmi_explorer_shared.py",
+    "tests/test_relationship_m2_envelope.py"
+  ],
+  "news_source_changes_after_that_tree": [],
+  "source_artifact_sha256": {
+    "templates/news.html.j2": "c54dd492e4156acc4277b39caf96b1e66d8b39788dbe06b440cc59b3a9afa91f",
+    "templates/news_desk.css": "4a12a0e0569a38ff3b038b6b7a963baf047c713722b957d28684addbf5fb920f",
+    "templates/news_desk.js": "b14afaff50c4c47e5ccfb4b9446d5b0eacb17d3d012b604eb002b5c98319d8d4",
+    "site/news.html": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf"
+  },
+  "daily_workflow_bytes": 482604,
+  "release_state": "SOURCE_ONLY; original review hold and normal release gates remain active"
+}

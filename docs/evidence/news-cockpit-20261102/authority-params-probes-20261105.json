@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://example.gov:443\\pub/press/pr/release.html",
+    "parsed_path": "/press/pr/release.html",
+    "before_admitted": 1,
+    "browser_path": "/pub/press/pr/release.html",
+    "browser_rc": 0
+  },
+  {
+    "url": "https://example.gov/press/pr/item;ignore\\..\\..\\..\\pub\\html\\release.html",
+    "parsed_path": "/press/pr/item",
+    "before_admitted": 1,
+    "browser_path": "/pub/html/release.html",
+    "browser_rc": 0
+  },
+  {
+    "url": "https://example.gov/press/pr/item;ignore%5c..%5c..%5c..%5cpub%5chtml%5crelease.html",
+    "parsed_path": "/press/pr/item",
+    "before_admitted": 1,
+    "browser_path": "/press/pr/item;ignore%5c..%5c..%5c..%5cpub%5chtml%5crelease.html",
+    "browser_rc": 0
+  }
+]

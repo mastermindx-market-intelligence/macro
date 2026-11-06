@@ -1,0 +1,102 @@
+{
+  "schema": "news.ci-repair-baseline.v1",
+  "head": "eabea011188707542abd839d96eb0f4ef22f7b38",
+  "integrated_main": "96633a798efda34d899e1b135487c89b596215fc",
+  "returncode": 1,
+  "seconds": 8.04,
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "tests/test_macro_command_copy_law.py::test_committed_payloads_have_zero_plain_fallbacks",
+    "tests/test_macro_command_copy_law.py::test_zh_l_zh_spans_are_translated",
+    "tests/test_build_live_quotes.py::test_the_board_leg_has_headroom_over_the_cap",
+    "-q"
+  ],
+  "board_symbols": 415,
+  "board_cap": 640,
+  "board_inputs": [
+    {
+      "path": "site/us_stocks.html",
+      "blob": "26f5d2a85af3abfaf916759cc95fb92d8408c86e"
+    },
+    {
+      "path": "site/premiumdata/us_stocks.json",
+      "blob": "a3169783e25934e8a6c440191dd9d4f4d5874f75"
+    },
+    {
+      "path": "site/china_stocks.html",
+      "blob": "b83416c1ba5c7ae5ec901091788d5ab9e1cdc9cd"
+    },
+    {
+      "path": "site/hk_stocks.html",
+      "blob": "de5c9b5c0949922d3e88bebf4230c1fd8c4c15a2"
+    },
+    {
+      "path": "site/canada_stocks.html",
+      "blob": "5d05c66e323457cd7f34fff43a84a2b2c311fcb4"
+    },
+    {
+      "path": "site/crypto.html",
+      "blob": "ad1d0bd14962a934977020ae22ebe1a8d950a516"
+    },
+    {
+      "path": "site/macro.html",
+      "blob": "0932797d7304d6a6dafc4b1b160db78c576f97c7"
+    },
+    {
+      "path": "site/canada.html",
+      "blob": "7307c6d3cafe5f72f05071a35f6a23c786c03974"
+    },
+    {
+      "path": "site/china.html",
+      "blob": "3f724034c960aa42238c7e8414854bcd291617e4"
+    },
+    {
+      "path": "site/commodities.html",
+      "blob": "229a0d965f618b365b94d2f0b643f69c8be607a4"
+    },
+    {
+      "path": "site/hk.html",
+      "blob": "5843085ba83ceb274ccc0250449a2b9eeb1eabe5"
+    }
+  ],
+  "materialized": [
+    "site/us_stocks.html",
+    "site/premiumdata/us_stocks.json",
+    "site/china_stocks.html",
+    "site/hk_stocks.html",
+    "site/canada_stocks.html",
+    "site/crypto.html",
+    "site/macro.html",
+    "site/canada.html",
+    "site/china.html",
+    "site/commodities.html",
+    "site/hk.html"
+  ],
+  "producer_probes": [
+    {
+      "depth": true,
+      "breadth": false,
+      "reading": {
+        "en": "Details for this reading are being prepared.",
+        "zh": "该读数的说明正在整理中。"
+      },
+      "is_fallback": true,
+      "details_retained": true
+    },
+    {
+      "depth": false,
+      "breadth": true,
+      "reading": {
+        "en": "Details for this reading are being prepared.",
+        "zh": "该读数的说明正在整理中。"
+      },
+      "is_fallback": true,
+      "details_retained": true
+    }
+  ],
+  "raw_log_sha256": "2b48a6bcef0bb5ed3a1b5752d8bcb6f30464e1862df19b2bb2c9f7b918f68334",
+  "stored_log": "ci-regression-baseline-20261106.log.gz",
+  "stored_log_sha256": "ae78ffb2d5c31ff66de8457445bce60748c786236c74b75a85094b8a85192921"
+}

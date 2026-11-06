@@ -1,0 +1,19 @@
+{
+  "captured_at": "2026-10-19T02:04:22.832Z",
+  "close_focus": true,
+  "close_focus_visible": true,
+  "connection_state": "connected",
+  "locale": "zh",
+  "settings_visibility": "hidden",
+  "story_modal": true,
+  "story_rect": {
+    "height": 844,
+    "width": 390
+  },
+  "theme": "light",
+  "url": "https://hip-parks-talk.loca.lt/news.html#story=preview-story-0",
+  "warning_background": "color(srgb 0.983529 0.968471 0.946118)",
+  "warning_border": "rgb(192, 196, 205)",
+  "warning_text": "你阅读期间，此报道已发生变化。下方展示最新可用依据。",
+  "warning_visible": true
+}

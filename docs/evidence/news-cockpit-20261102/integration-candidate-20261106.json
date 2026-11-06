@@ -1,0 +1,65 @@
+{
+  "schema": "news.integration-candidate.v1",
+  "source_head": "eabea011188707542abd839d96eb0f4ef22f7b38",
+  "protected_base": "96633a798efda34d899e1b135487c89b596215fc",
+  "resolved": [
+    "site/news.html"
+  ],
+  "resolution": "retain accepted News implementation artifact; incoming structured data remains included",
+  "remaining_unmerged": [],
+  "source_artifact_sha256": "ea0a47dbd83e8cc664fa9f99769fcfbb86b3a4f8dba1a9adc77e333864e9ee8b",
+  "direct_execution_reason": "PRINCIPAL_JUDGMENT and UNIQUE_APPROVED_ACCESS: original source integration and bounded owner-render repair, one workspace writer",
+  "recorded_at": "2026-11-06T00:35:59.622441+00:00",
+  "prior_head": "eabea011188707542abd839d96eb0f4ef22f7b38",
+  "integrated_main": "96633a798efda34d899e1b135487c89b596215fc",
+  "protected_law_pin": "0efd0744ac705ddc24880acde1cb4ac6e8c55d05",
+  "only_merge_conflict": "site/news.html; resolved to accepted original News artifact",
+  "source_composition": {
+    "app_main_exact_base_plus_news_router": true,
+    "deployment_exact_base_plus_intelligence_history": true,
+    "shell_syntax_passed": true
+  },
+  "old_ci": {
+    "run": 41995766593,
+    "tested_merge": "36fbaede2d114b36dd40b8d3cf3558188daecb51",
+    "base": "80136935b4d28caeda6c6a50eb385797190fdc32",
+    "pack9_job": 127142898488,
+    "status": "11 of 12 packs passed; pack9 and gate failed",
+    "failures": [
+      "business_activity English/Chinese fallback copy",
+      "business_activity untranslated Contraction",
+      "415 board symbols exceed 85 percent of prior 480 cap"
+    ],
+    "semantic_comparison": "head and exact-base failure signatures differ; not claimed inherited or green"
+  },
+  "upstream_quote_fix": {
+    "commit": "d7843f7f37b45072a17aa341c6789bcf51b295f8",
+    "pr": 10755,
+    "current_cap": 640,
+    "actual_board_symbols": 415,
+    "unchanged_headroom_threshold": 0.85
+  },
+  "owned_source_files_sha256": {
+    "lib/macro_suite_labels.py": "ac90fb7bf40abc0da237048a222814efa9b14ce2bb891a27477e6171b6f15d31",
+    "site/macro_business_activity.html": "af3ae39992f76cc7cfeaad12021dae45bfd238fbfea9fbe9be23d7d8c6173353",
+    "site/news.html": "ea0a47dbd83e8cc664fa9f99769fcfbb86b3a4f8dba1a9adc77e333864e9ee8b",
+    "app/main.py": "6a714895b65e20d2ef2cd62159095ea9d829f8bdcae54b7417c680307876edb8",
+    "app/deploy/update.sh": "9f15c85d540bd686f582e89639b1f55e1d6c9d94b5da8a4ecb7877f981032470"
+  },
+  "local_results": {
+    "copy_law_and_quote": "147 passed, 3 skipped, 6 retained warnings",
+    "final_news_and_exact_regressions": "165 passed, 7 retained warnings"
+  },
+  "worker_fences": {
+    "review": "news-9612-f07ba3-source-review-20261022 unchanged",
+    "renderer_proposal": "news-9612-render-owner-20261105-c1-v1 EFFECT_UNKNOWN / root unverified / retry, dispatch and result consumption false; no replay or consumption"
+  },
+  "publication_state": "prepared local integration; commit/push readback follows",
+  "scope": "same operation, original branch and workspace; Draft/HOLD; no Ready, label arming, merge, deployment or formal approval",
+  "next": [
+    "Complete and publish this integration through original branch",
+    "Consume current-head hosted CI",
+    "Attempt existing canonical full-site render in an isolated source/data snapshot; no renderer refactor or frozen-result consumption",
+    "Preserve release holds and distinguish local render from authenticated production proof"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "mission": "news-cockpit-rebuild-20261018-astra-01",
+  "date": "2026-10-18",
+  "scope": "local verification before publication; production pending",
+  "python": {
+    "command": "python3 -m pytest -q tests/test_research_news_intake.py tests/test_news_page_render.py tests/test_marketing_intelligence_desk.py tests/test_news_desk_api.py tests/test_gdelt_client.py tests/test_news_desk_js.py",
+    "passed": 185,
+    "warnings": 2,
+    "seconds": 14.04
+  },
+  "mounted_js": {
+    "command": "npm --prefix tests/news-desk test",
+    "passed": 26,
+    "aggregate_cases": 14,
+    "company_cases": 12,
+    "seconds": 2.176,
+    "fixture": "site/news.html",
+    "jsdom": "26.1.0"
+  },
+  "pure_js": {
+    "aggregate_assertions": 15,
+    "company_assertions": 4,
+    "included_in_python_as_wrapper_cases": 2,
+    "double_count_warning": "Do not add pure child assertions to their two pytest wrappers as independent tests."
+  },
+  "builds": [
+    {
+      "command": "python3 -m scripts.build_site",
+      "exit_code": 0,
+      "seconds": 5002.41
+    },
+    {
+      "command": "python3 -m scripts.build_public_pages",
+      "exit_code": 0,
+      "seconds": 1.0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "site/news.html",
+      "bytes": 266390,
+      "sha256": "8e7162217f61fa4cf9e6edef95c1d64e92607ee6b654e15c2941cc6e4970cdf7",
+      "canonical_build_sha256": "ab1a5eda61a84a8273d486ddf3a28906761895ffaa22eb77dd4e7c7f94f9abac",
+      "post_build_formatting": "trailing whitespace only"
+    },
+    {
+      "path": "site/plans.html",
+      "bytes": 115994,
+      "sha256": "95764cbd0668d75b9a4eb86de65545af4a46aee132b7cc9c27edcf4a0122bb47",
+      "canonical_build_sha256": "8ccbc724a70cacee7df6de4d1bb3b9c734ebbd63db648e9d0b208dc75b5b0935",
+      "post_build_formatting": "trailing whitespace only"
+    }
+  ]
+}

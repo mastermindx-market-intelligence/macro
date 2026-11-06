@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_gmi_explorer_model.py",
+    "-k",
+    "read_edges",
+    "-q"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 4.55,
+  "log": "docs/evidence/news-cockpit-20261102/integration-gmi-envelope-20261103.log",
+  "log_sha256": "1861a9ebbe4da14f5232deaf5084023a5578ed379c21ee480462acdba60a477f",
+  "scope": "Accepted-main read_edges boundary fix; complete GMI pages remain deferred to hosted CI because the managed checkout omits their data and site assets."
+}

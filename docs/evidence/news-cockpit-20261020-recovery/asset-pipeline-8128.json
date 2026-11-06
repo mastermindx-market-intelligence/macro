@@ -1,0 +1,37 @@
+{
+  "main": "8128e4085d8aa346c969de186f05694afbbe6274",
+  "method": "Canonical externalize(site_dir) in isolated two-page staging tree; canonical make_optimizer(actual site) and write_page for final two-page output. No global sweep/pruning of the real site.",
+  "pages": {
+    "news.html": {
+      "before_sha256": "a26e2d68ea8c2a7b101afca5bd1f67715c39bc883ca025f5395801170b7fa923",
+      "after_sha256": "0718c4c61139cd5d7a6882f06da0322b73e350be0308cfe4e69efeaed7235e17",
+      "before_bytes": 361027,
+      "after_bytes": 321331,
+      "inline_styles": 0,
+      "preloads": 1
+    },
+    "plans.html": {
+      "before_sha256": "2f0122460d8e267db835bba7d3fa7a4024cc428d23c530497e227b641b0acc29",
+      "after_sha256": "c8104b953485c46a2a3af5c1efddb39db429b09edf76fd583008be62ff0bf589",
+      "before_bytes": 116479,
+      "after_bytes": 79167,
+      "inline_styles": 0,
+      "preloads": 0
+    }
+  },
+  "new_assets": {
+    "assets/css/17c15c21.css": {
+      "sha256": "17c15c21896e380b01e52053c9a315788f59b7f1e27f0008c665d72085b72ca7",
+      "bytes": 12511
+    },
+    "assets/css/5009dcb0.css": {
+      "sha256": "5009dcb056049dded1eacba4c18728139417930f0c7de0677631ef567bef1893",
+      "bytes": 24976
+    },
+    "assets/css/ad8c38c0.css": {
+      "sha256": "ad8c38c0718702649db4d0f909162b083aea89291230bc4ac8b49f2c6e80d931",
+      "bytes": 39981
+    }
+  },
+  "sparse_asset_recovery": "First optimizer pass lacked tracked shared site files in sparse working tree. Materialized exact tracked CSS/JS and asset directories; reran canonical optimizer. First preview 404 was templates-only fixture asset routing, not a production receipt."
+}

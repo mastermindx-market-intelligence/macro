@@ -1,0 +1,67 @@
+{
+  "assembler": {
+    "not_before": "2026-10-19T01:59:00Z",
+    "path": "mockups/evidence/news-cockpit-20261019/assemble_manifest.py",
+    "result": "pass",
+    "sha256": "00a4161e451fb8c34c9fa8146931b69573cb6f8709814b5fecf1b8a8e3f379f5"
+  },
+  "capture_adapter": {
+    "path": "mockups/evidence/news-cockpit-20261019/capture-browser.js",
+    "sha256": "38ea551fb8df7caa013ef1280583eefdab944ba216bb8cf4ea21e4feeac23e29"
+  },
+  "checked_at": "2026-10-19T02:17:23.552136Z",
+  "checks": {
+    "owners_for_templates_news_desk_css": [],
+    "validate_interaction_evidence_hover_focus": [],
+    "validate_manifest_evidence": [],
+    "validate_receipt_shape": []
+  },
+  "counts": {
+    "accepted_cells": 14,
+    "additional_mobile_ui_cells": 2,
+    "mandatory_hover_focus_cells": 4,
+    "mandatory_rest_cells": 8
+  },
+  "evidence_limits": [
+    "Only the final 14 actual capture records are included; earlier unsuccessful preview attempts are explicit gaps.",
+    "The two accepted mobile extra views have separate hashed DOM observations and observed visible focus.",
+    "The capture adapter did not collect user-agent or network-completeness metrics. Preview timings in context are attributed to the release owner.",
+    "The canonical generated News HTML was not present in this local mirror; page_tree_sha and repository commit provenance are not asserted."
+  ],
+  "guard": {
+    "canonical_module_ref": "scripts/check_ui_visual_evidence.py",
+    "copy_normalization": "Exactly one transfer-added terminal LF was removed after its removal was proven to restore the release-owner-supplied canonical SHA-256. No semantic change was made.",
+    "local_copy": "/workspace/scratch/bac670b87633/inspection/scripts/check_ui_visual_evidence.py",
+    "sha256": "c1604698d38e6f6bb8079f468e11caa581d8efacc9ed53413c6c34a96f1dcf1a"
+  },
+  "manifest": {
+    "path": "mockups/evidence/news-cockpit-20261019/manifest.json",
+    "sha256": "3aeb835056eab8c0d0cbd697c6d2c61e04177f0e6ef11c8a0a4a68d6371250e5"
+  },
+  "receipt": {
+    "path": "mockups/evidence/news-cockpit-20261019/EVIDENCE.yml",
+    "sha256": "a6677daac2e0abfb64682cad9d1f572171ec37e809aaf1bc12900b4092adbfb1"
+  },
+  "result": "pass",
+  "scope": "Focused validation of this actual receipt using unchanged canonical guard functions. The release owner supplied the material path templates/news_desk.css and required hover/focus classification. This check does not classify a full Git diff, evaluate other receipts, or attest CI, publication, production, taste, or complete optional UI coverage.",
+  "unaccepted_optional_views": [
+    {
+      "captured": false,
+      "dimension": "force_state",
+      "locale": "en",
+      "reason": "This optional desktop company view was not accepted. The release owner reported preview group-request timeouts and UI clearing during capture attempts. No accepted PNG exists; the view is excluded from captured states and totals.",
+      "theme": "dark",
+      "value": "company_buffered",
+      "viewport": "desktop"
+    },
+    {
+      "captured": false,
+      "dimension": "force_state",
+      "locale": "zh",
+      "reason": "This optional desktop company view was not accepted. The release owner reported preview group-request timeouts and UI clearing during capture attempts. No accepted PNG exists; the view is excluded from captured states and totals.",
+      "theme": "light",
+      "value": "company_buffered",
+      "viewport": "desktop"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "news.canonical-page-check.v1",
+  "source_commit": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+  "news_sha256": "9b33e1ea6ec878c22689645b0a49d97595ff71a3663d70bdbeebbdae94f7a65b",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "tests/test_news_page_render.py",
+    "-q"
+  ],
+  "returncode": 0,
+  "seconds": 18.56,
+  "raw_log_sha256": "701b16c71dd0c9ae710faa8910e718ea67bbebf2149f3abee8e0ee0880ef2f2c"
+}

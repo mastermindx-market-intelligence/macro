@@ -1,0 +1,36 @@
+{
+  "schema": "news.canonical-isolated-render.v1",
+  "source_commit": "12bb56c5ad8773b49d998ed39787d8d6d8651f61",
+  "original_workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/news-cockpit-rebuild-20261018-astra-01",
+  "render_root": "/Volumes/Mastermind 2/tmp/news9612-covering-render-12bb56c5-20261106",
+  "state": "BUILD_RETURNED",
+  "started_at": "2026-11-06T00:47:20.178923+00:00",
+  "network_policy": "macOS sandbox-exec deny network*, validated with EPERM; no live acquisition or paid model requests permitted",
+  "input_policy": "full immutable Git archive; real committed inputs; archive file times are commit time, not acquisition evidence",
+  "claim_boundary": "canonical local News rendering; not deployed, authenticated production proof or fresh live acquisition",
+  "archive_returncode": 0,
+  "extract_returncode": 0,
+  "archive_seconds": 162.37,
+  "input_sha256": {
+    "data/regime/latest.json": "5b9bdeba56d4ae3306474aa33e5c2b851ba7c7493f7eb49a7f88403effc59a5e",
+    "data/regime/regime_history.parquet": "089fe667448af5450d66c108ae533cd5c269f4b69ea743e003e016994f24da71",
+    "data/macro/official_news_cache/official_v3_2026-11-05.json": "bad8a0c795ea55fc1f7df543417c9ccd06456ddc39a995b7150351ac36db6a0a",
+    "data/macro/news_rss_cache/news_rss_v2_2026-11-05.json": "9bedb5bef55a5a04c053dcdb5376af8a9e61a5be43a63fcd06443256b2246f7d"
+  },
+  "news_before_sha256": "ea0a47dbd83e8cc664fa9f99769fcfbb86b3a4f8dba1a9adc77e333864e9ee8b",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network*)",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "scripts.build_site"
+  ],
+  "returncode": -15,
+  "build_seconds": 544.62,
+  "finished_at": "2026-11-06T00:59:07.172899+00:00",
+  "raw_log_sha256": "f8bcdb54210625109cde3026198fa6d1911009656dd48fde1c19b22ce22d4131",
+  "news_after_sha256": "ea0a47dbd83e8cc664fa9f99769fcfbb86b3a4f8dba1a9adc77e333864e9ee8b",
+  "news_changed": false,
+  "news_bytes": 372815
+}

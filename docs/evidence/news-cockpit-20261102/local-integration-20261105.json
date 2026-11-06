@@ -1,0 +1,16 @@
+{
+  "schema": "news.local-integration-parents.v1",
+  "returncode": 0,
+  "before": "fd3799842269da0c7b442bbb9b54a22b6ef805ce",
+  "head": "e7a99ccaaf5afea167d3d6a6cf5aad5cab0a692e",
+  "parents": [
+    "fd3799842269da0c7b442bbb9b54a22b6ef805ce",
+    "883c4654fad55b7b61ef036587ded53fc103e1f9"
+  ],
+  "before_tree": "84f79977503c5b9f32d3c662d64849898e5fb638",
+  "after_tree": "84f79977503c5b9f32d3c662d64849898e5fb638",
+  "merge_head_cleared": true,
+  "clean": true,
+  "normal_hooks": true,
+  "published": false
+}

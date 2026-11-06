@@ -1,0 +1,75 @@
+{
+  "source_head": "fd3799842269da0c7b442bbb9b54a22b6ef805ce",
+  "same_tree_integrated_head": "e7a99ccaaf5afea167d3d6a6cf5aad5cab0a692e",
+  "path": {
+    "stage": "source path repair including authority and params",
+    "command": "python3.14 -m pytest -q tests/test_research_news_intake.py",
+    "returncode": 0,
+    "seconds": 12.84
+  },
+  "integration": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_news_page_render.py",
+      "tests/test_news_desk_api.py",
+      "tests/test_gdelt_client.py",
+      "tests/test_news_desk_js.py"
+    ],
+    "returncode": 0,
+    "seconds": 30.0
+  },
+  "mounted": {
+    "command": "npm --prefix tests/news-desk test",
+    "returncode": 0,
+    "seconds": 13.95
+  },
+  "pass_counts": {
+    "source_intake": 78,
+    "page_api_client": 183,
+    "mounted_desk_company": 71,
+    "new_refresh_cases": 5
+  },
+  "warnings": {
+    "source_intake": 12,
+    "page_api_client": 13,
+    "meaning": "Warnings retained in full logs; include existing pytest temporary-directory cleanup and dependency deprecation messages."
+  },
+  "baseline": {
+    "path_rejections_failed_before_fix": 16,
+    "allowed_host_controls_passed_before_fix": 15,
+    "additional_authority_params_cases_admitted_before_fix": 3,
+    "refresh_behavior_failures_before_fix": 4,
+    "refresh_fixture_correction": "The missing-publication-clock case initially used the default time filter, which intentionally hides unknown dates. It was corrected to all-time filtering; no freshness implementation change was needed."
+  },
+  "logs": {
+    "source-path-baseline-20261105.log.gz": {
+      "raw_sha256": "b6a86ce9c51a3536e806f6a1608905ee2d448d14249b3b4d4ac8105ec83aa7a1",
+      "stored_sha256": "3370403d68294f9440f289c84f7cb6870e6a241344ebdc8ccafcb16e5e918ed1"
+    },
+    "source-path-regression-20261105.log.gz": {
+      "raw_sha256": "380de398225e14ac424bd365398d1eca1dd0594853741a93b5154c57c28211ae",
+      "stored_sha256": "05137812b50435cb0c49c0328512b6c12c8f8a6e978b77a4694c195964bf1532"
+    },
+    "refresh-regression-baseline-20261105.log.gz": {
+      "raw_sha256": "59a6f65446c16acd01728084cfc346dc2cbb5eee90f667175b0f786079031770",
+      "stored_sha256": "05f82681ce385008a1869b354ff2d300834e38bb0889eee99e56aefb9f2209a3"
+    },
+    "refresh-regression-20261105.log.gz": {
+      "raw_sha256": "a64b5f4f4f2586895aad2381622e5934888054c137eab5616d343af15bada00e",
+      "stored_sha256": "9a34a9515cbb3c75cd1d26dba3094a0bea9e3daaf20f7d4a232e8401d40656b4"
+    },
+    "mounted-20261105.log.gz": {
+      "raw_sha256": "f5bea2b0c2ae31a68718b1db4328fd022acbdb7ef1c29d748edb582bf7c68935",
+      "stored_sha256": "bf16b69400916b3d7059e22d501a66e1ec15f5bdfe42b2cb0be8f258fa522f61"
+    },
+    "integration-20261105.log.gz": {
+      "raw_sha256": "340fbed0d8302dfb58bdf62a52016c474266ee18faf41a550744f42cf31b4286",
+      "stored_sha256": "76ec43ca4bbcdca642c72c2d819442e4fd26ab3d190a8c8af00d0a9fbaabf056"
+    }
+  },
+  "syntax_and_focused_diff_check": "passed",
+  "production_acceptance": false
+}

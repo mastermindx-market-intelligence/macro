@@ -1,0 +1,284 @@
+{
+  "operation": "news-cockpit-rebuild-20261018-astra-01",
+  "head_parent": "fbdbfcbfbb61ae7f05933060e7724e4cbc9bd134",
+  "protected_base": "4725eadec5222e42bd10c253091e995e2071f9f1",
+  "resolved_conflict": "site/news.html",
+  "resolution": "Retain verified News source artifact, canonical finalize with accepted-main code; preserve reporting, Calendar and event-impact blocks. Normal covering render remains required.",
+  "artifact_before": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf",
+  "artifact_after": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf",
+  "artifact_bytes": 372371,
+  "canonical_fixed_point": true,
+  "preserved_context_sha256": {
+    "ndSeed": "af3749d343622526c2abfa6e70bc54ccabbc85948e2cf8a6e86e1fe4226b1071",
+    "ndCalendar": "983358700d4c93787bca6f39f52325913f5cc7be333a44b81e1be91827e74023",
+    "ndImpact": "96e26bd9ca51f9ee90a3673320034486aeddc64d1e69485ceebc179a581b917a"
+  },
+  "ci_registry_job_count": 378,
+  "ci_registry_delta_from_main": {
+    "bea-gvc-current-descriptive-consumer": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/accounts.py",
+          "engine/marketing/authority.py",
+          "engine/marketing/campaign_compiler.py",
+          "engine/marketing/charter.py",
+          "engine/marketing/claims.py",
+          "engine/marketing/cmo.py",
+          "engine/marketing/departments.py",
+          "engine/marketing/economics.py",
+          "engine/marketing/events.py",
+          "engine/marketing/ledgers.py",
+          "engine/marketing/opportunity_bus.py",
+          "engine/marketing/publication.py",
+          "engine/marketing/state.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    },
+    "c19-wp32-integrated-answer-correction-denial-pins": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/accounts.py",
+          "engine/marketing/authority.py",
+          "engine/marketing/campaign_compiler.py",
+          "engine/marketing/charter.py",
+          "engine/marketing/claims.py",
+          "engine/marketing/cmo.py",
+          "engine/marketing/departments.py",
+          "engine/marketing/economics.py",
+          "engine/marketing/events.py",
+          "engine/marketing/ledgers.py",
+          "engine/marketing/opportunity_bus.py",
+          "engine/marketing/publication.py",
+          "engine/marketing/state.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    },
+    "c19-wp22-dhi-traversal": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/accounts.py",
+          "engine/marketing/authority.py",
+          "engine/marketing/campaign_compiler.py",
+          "engine/marketing/charter.py",
+          "engine/marketing/claims.py",
+          "engine/marketing/cmo.py",
+          "engine/marketing/departments.py",
+          "engine/marketing/economics.py",
+          "engine/marketing/events.py",
+          "engine/marketing/ledgers.py",
+          "engine/marketing/opportunity_bus.py",
+          "engine/marketing/publication.py",
+          "engine/marketing/state.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    },
+    "options-matrix-code": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    },
+    "fif-kernel-guards": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/campaign_compiler.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    },
+    "collector-registry": {
+      "steps": {
+        "main": [
+          {
+            "uses": "actions/checkout@v4"
+          },
+          {
+            "uses": "actions/setup-python@v5",
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "install minimal deps",
+            "run": "pip install pytest pandas numpy pyyaml requests"
+          },
+          {
+            "name": "china_news collector tests (incl. adapter-registered-without-akshare)",
+            "run": "python -m pytest tests/test_china_news.py -q"
+          },
+          {
+            "name": "optional news provider semantics and actual ordering consumer",
+            "run": "python -m pytest tests/test_news_ai_feed_contract.py tests/test_build_news.py -q"
+          },
+          {
+            "name": "strict SEC filing parser, extraction, and sealed attestation contracts",
+            "run": "python -m pytest \\\n  tests/test_sec_filing_parser.py \\\n  tests/test_fundamental_forensics_ixbrl_extraction.py \\\n  tests/test_fundamental_forensics_attestation.py -q\n"
+          },
+          {
+            "name": "adapter registry must stay populated",
+            "run": "python -c \"from scripts.collect import all_adapters; n = len(all_adapters()); assert n > 100, f'adapter registry gutted: only {n} adapters registered'; print(f'{n} adapters registered')\"\n"
+          }
+        ],
+        "candidate": [
+          {
+            "uses": "actions/checkout@v4"
+          },
+          {
+            "uses": "actions/setup-python@v5",
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "install minimal deps",
+            "run": "pip install pytest pandas numpy pyyaml requests jinja2 fastapi httpx"
+          },
+          {
+            "name": "china_news collector tests (incl. adapter-registered-without-akshare)",
+            "run": "python -m pytest tests/test_china_news.py -q"
+          },
+          {
+            "name": "optional news provider semantics and actual ordering consumer",
+            "run": "python -m pytest tests/test_news_ai_feed_contract.py tests/test_build_news.py -q"
+          },
+          {
+            "name": "News desk intake and authenticated delivery contracts",
+            "run": "python -m pytest tests/test_research_news_intake.py tests/test_news_desk_api.py tests/test_gdelt_client.py tests/test_news_desk_js.py -q"
+          },
+          {
+            "name": "Mounted News desk and company lifecycle contracts",
+            "run": "npm --prefix tests/news-desk ci --ignore-scripts --no-audit --no-fund\nnpm --prefix tests/news-desk test\n"
+          },
+          {
+            "name": "strict SEC filing parser, extraction, and sealed attestation contracts",
+            "run": "python -m pytest \\\n  tests/test_sec_filing_parser.py \\\n  tests/test_fundamental_forensics_ixbrl_extraction.py \\\n  tests/test_fundamental_forensics_attestation.py -q\n"
+          },
+          {
+            "name": "adapter registry must stay populated",
+            "run": "python -c \"from scripts.collect import all_adapters; n = len(all_adapters()); assert n > 100, f'adapter registry gutted: only {n} adapters registered'; print(f'{n} adapters registered')\"\n"
+          }
+        ]
+      }
+    },
+    "ontology-explorer": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    },
+    "crypto-assistant-context": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/__init__.py",
+          "engine/marketing/accounts.py",
+          "engine/marketing/authority.py",
+          "engine/marketing/campaign_compiler.py",
+          "engine/marketing/charter.py",
+          "engine/marketing/claims.py",
+          "engine/marketing/cmo.py",
+          "engine/marketing/departments.py",
+          "engine/marketing/economics.py",
+          "engine/marketing/events.py",
+          "engine/marketing/ledgers.py",
+          "engine/marketing/opportunity_bus.py",
+          "engine/marketing/publication.py",
+          "engine/marketing/state.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    },
+    "research-price-panel": {
+      "paths": {
+        "added": [
+          "engine/marketing/accounts.py",
+          "engine/marketing/authority.py",
+          "engine/marketing/campaign_compiler.py",
+          "engine/marketing/charter.py",
+          "engine/marketing/claims.py",
+          "engine/marketing/cmo.py",
+          "engine/marketing/departments.py",
+          "engine/marketing/economics.py",
+          "engine/marketing/events.py",
+          "engine/marketing/ledgers.py",
+          "engine/marketing/opportunity_bus.py",
+          "engine/marketing/publication.py",
+          "engine/marketing/state.py",
+          "engine/marketing/intelligence_history.py",
+          "app/news_desk.py"
+        ],
+        "removed": []
+      }
+    },
+    "ticker-news-qbus": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/__init__.py",
+          "engine/marketing/accounts.py",
+          "engine/marketing/authority.py",
+          "engine/marketing/campaign_compiler.py",
+          "engine/marketing/charter.py",
+          "engine/marketing/claims.py",
+          "engine/marketing/cmo.py",
+          "engine/marketing/departments.py",
+          "engine/marketing/economics.py",
+          "engine/marketing/events.py",
+          "engine/marketing/ledgers.py",
+          "engine/marketing/opportunity_bus.py",
+          "engine/marketing/publication.py",
+          "engine/marketing/state.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    },
+    "catalyst-loop-integrated": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    },
+    "eval-os-a1": {
+      "paths": {
+        "added": [
+          "app/news_desk.py",
+          "engine/marketing/intelligence_history.py"
+        ],
+        "removed": []
+      }
+    }
+  },
+  "ci_test_executable_ast_matches_main": true,
+  "daily_workflow_bytes": 482604,
+  "raw_worktree_preflight": {
+    "news": "744 passed;13 warnings",
+    "mounted": "66 passed;0 failed/skipped",
+    "workflow_size": "3 passed; daily482604<=487000",
+    "gmi_envelope": "10 passed;11 deselected",
+    "full_gmi": "Environment-limited: data/symbol_directory/snapshots and site/gmi.css omitted;26 passed,72 skipped,6 failed,16 errors. Hosted full-tree proof remains required.",
+    "closure": "Unaccepted raw-worktree observation names ignored untracked site/stockdata/AAPL.json; the canonical exact-HEAD tracked inventory must adjudicate it. The ignored file was not changed.",
+    "packing": "Raw-worktree free-content5881 exceeds5877; canonical exact-HEAD measurement remains required before any disposition."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "operation": "news-cockpit-rebuild-20261018-astra-01",
+  "baseline_head": "2141bb12d38557c1c42ae6c8e41e7c5f53b840fc",
+  "kind": "canonical_source_artifact_composition",
+  "not_a_fresh_data_build": true,
+  "not_applied_to_paper": true,
+  "not_deployed": true,
+  "before_sha256": "d68b35719b9b94f7fe8c86332ff31d72d0d06bec85dcd268fd9f7da238c4f798",
+  "after_sha256": "730f128a655fac79a83828fdc90c21cc7a083f2b055fd7ef9284099690a13ca0",
+  "bytes": 369748,
+  "canonical_finalizer_fixed_point": true,
+  "preserved_context_sha256": {
+    "reporting_seed": "af3749d343622526c2abfa6e70bc54ccabbc85948e2cf8a6e86e1fe4226b1071",
+    "calendar_edition": "983358700d4c93787bca6f39f52325913f5cc7be333a44b81e1be91827e74023",
+    "event_impact": "96e26bd9ca51f9ee90a3673320034486aeddc64d1e69485ceebc179a581b917a"
+  },
+  "static_blocks_rendered_from_current_template": [
+    "nd-header",
+    "nd-toolbar",
+    "ndFilters",
+    "ndWorkspace"
+  ],
+  "sources": {
+    "news.html.j2": "00591324cc1c7ce6d0bbb3958d7d78e43586d7b9fd3345e20660a0ad24f4a9ca",
+    "news_desk.css": "5506207de3fc31f8d6989489a49d8e717e5dd63cbb2d47aa64d7cf1e28c3b5f2",
+    "news_desk.js": "b14afaff50c4c47e5ccfb4b9446d5b0eacb17d3d012b604eb002b5c98319d8d4"
+  },
+  "calendar_note": "The committed edition is preserved; the corrected calendar consumer is exercised by full-template tests and applies on the normal covering render."
+}

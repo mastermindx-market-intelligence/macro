@@ -1,0 +1,39 @@
+{
+  "mission": "news-cockpit-rebuild-20261018-astra-01",
+  "observed_at": "2026-10-20T19:54:44.230168+00:00",
+  "parent": "8d76db52deff82eedd7e6d79711eb7c9caa30cc5",
+  "disposition": "Preserve original local bytes as explicit bounded CI-repair commit; no reset/stash, no Shared Shell generated-page copy; active assigned project owner adopts only the two failing Labor-page guard repairs.",
+  "owner_comparison": {
+    "pr": 7949,
+    "comment": 6299829502,
+    "published_comparison_commit": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+    "equivalence": "Same missing-information-is-not-neutral rule; wording and test implementation differ, not claimed byte-identical. Shared Shell navigation/asset edits are excluded."
+  },
+  "paths": {
+    "lib/macro_suite_labels.py": {
+      "working_sha256": "1ad1675d3c862f25c3854a3e08e277b259cdb91845dc239e8ddd75a811abd1fd",
+      "head_blob": "95ff18d778d43d0a62e5b9059aa7921f4d94e8a3"
+    },
+    "site/macro_labor_markets.html": {
+      "working_sha256": "5fae200a1bf7e915a07f226e0c2af4bc53ddd710c123c05cc99bcc28ca880fbb",
+      "head_blob": "9f2aaa50d350404badee2572653cd742264c460b"
+    },
+    "tests/test_macro_command_copy_law.py": {
+      "working_sha256": "c7744a665a297028f97d0c360b303543ed06ed39e4a8746838afe6472cf2da33",
+      "head_blob": "7a290ad54f2af6bf7f64bc39b7740ab0bf26f83d"
+    }
+  },
+  "original_diff_sha256": "7f44bbf13e7edd433b1853a6a7d4f2b9aed1f212947dbd3358991a3311e15690",
+  "verification": {
+    "passed": 3,
+    "exit_code": 0,
+    "command": "python3 -m pytest -q tests/test_macro_command_copy_law.py::test_labor_coverage_refusal_is_plain_without_changing_source_pair tests/test_macro_command_copy_law.py::test_all_fifteen_built_pages_are_clean_outside_details tests/test_macro_command_copy_law.py::test_user_facing_numbers_have_no_machine_floats",
+    "log_sha256": "45b1b81d3350d5856953f7ec6f77f85d01dfb521916c4cd2799078a18bdaac54"
+  },
+  "not_claimed": [
+    "original author identity",
+    "Shared Shell adoption",
+    "hosted CI acceptance",
+    "deployment"
+  ]
+}

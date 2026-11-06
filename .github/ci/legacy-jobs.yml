@@ -414,6 +414,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/live_status_projection.py"
       - "app/catalyst_opportunity.py"
       - "engine/catalyst_opportunity/projection.py"
@@ -831,6 +832,20 @@ jobs:
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/market_ontology/exposure_map.py"
       - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/marketing/chart_render.py"
       - "engine/marketing/confluence_source.py"
       - "engine/marketing/logo_cache.py"
@@ -2595,6 +2610,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/live_status_projection.py"
       - "app/catalyst_opportunity.py"
       - "engine/catalyst_opportunity/projection.py"
@@ -3358,6 +3374,20 @@ jobs:
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "engine/market_ontology/__init__.py"
       - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/oracle/__init__.py"
       - "engine/press/__init__.py"
       - "engine/seasonality/__init__.py"
@@ -3667,6 +3697,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/live_status_projection.py"
       - "app/catalyst_opportunity.py"
       - "engine/catalyst_opportunity/projection.py"
@@ -4081,6 +4112,20 @@ jobs:
       - "engine/manager_quality.py"
       - "engine/manager_trades.py"
       - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/marketing/chart_render.py"
       - "engine/marketing/confluence_source.py"
       - "engine/marketing/logo_cache.py"
@@ -8130,6 +8175,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "app/news_desk.py"
+      - "engine/marketing/intelligence_history.py"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -12577,6 +12624,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
@@ -12943,6 +12991,8 @@ jobs:
       - "engine/manager_quality.py"
       - "engine/manager_trades.py"
       - "engine/marketing/__init__.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/marketing/accounts.py"
       - "engine/marketing/authority.py"
       - "engine/marketing/chart_render.py"
@@ -13681,12 +13731,18 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyyaml requests
+        run: pip install pytest pandas numpy pyyaml requests jinja2 fastapi httpx
       - name: china_news collector tests (incl. adapter-registered-without-akshare)
         run: python -m pytest tests/test_china_news.py -q
       - name: optional news provider semantics and actual ordering consumer
         # Source-only fixtures: no live data, vendor credentials or activation.
         run: python -m pytest tests/test_news_ai_feed_contract.py tests/test_build_news.py -q
+      - name: News desk intake and authenticated delivery contracts
+        run: python -m pytest tests/test_research_news_intake.py tests/test_news_desk_api.py tests/test_gdelt_client.py tests/test_news_desk_js.py -q
+      - name: Mounted News desk and company lifecycle contracts
+        run: |
+          npm --prefix tests/news-desk ci --ignore-scripts --no-audit --no-fund
+          npm --prefix tests/news-desk test
       - name: strict SEC filing parser, extraction, and sealed attestation contracts
         run: |
           python -m pytest \
@@ -16609,6 +16665,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/news_desk.py"
+      - "engine/marketing/intelligence_history.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -30894,6 +30952,7 @@ jobs:
       - app/intelligence_hub_market_pulse.py
       - app/mailer.py
       - app/main.py
+      - "app/news_desk.py"
       - app/live_status_projection.py
       - app/market_memory.py
       - app/marketing_emails.py
@@ -31013,6 +31072,21 @@ jobs:
       - contracts/theme_graph/theme_state_generation_read.v1.schema.json
       - contracts/theme_graph/theme_state_use_read.v1.schema.json
       - engine/__init__.py
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/marketing/intelligence_history.py"
       - engine/_text_scrub.py
       - engine/activist.py
       - engine/ai_desk.py
@@ -40640,6 +40714,20 @@ jobs:
       - "engine/fundamental_forensics/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/oracle/__init__.py"
       - "engine/press/__init__.py"
       - "engine/seasonality/__init__.py"
@@ -40726,6 +40814,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
@@ -44062,6 +44151,7 @@ jobs:
       - "app/intelligence_hub_market_pulse.py"
       - "app/mailer.py"
       - "app/main.py"
+      - "app/news_desk.py"
       - "app/live_status_projection.py"
       - "app/market_memory.py"
       - "app/marketing_emails.py"
@@ -44179,6 +44269,21 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/__init__.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/_text_scrub.py"
       - "engine/activist.py"
       - "engine/ai_desk.py"
@@ -45114,6 +45219,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/news_desk.py"
+      - "engine/marketing/intelligence_history.py"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -50306,6 +50413,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "app/news_desk.py"
+      - "engine/marketing/intelligence_history.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"

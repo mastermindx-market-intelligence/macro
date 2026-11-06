@@ -1,0 +1,114 @@
+{
+  "operation": "news-cockpit-rebuild-20261018-astra-01",
+  "date_utc": "2026-11-03",
+  "environment": "Chrome extension browser; authorized temporary fixture preview; not production",
+  "fixture": "scripts/news_desk_preview.py; 14 illustrative live stories and one retained report; no production database",
+  "source_sha256": {
+    "templates/news.html.j2": "c54dd492e4156acc4277b39caf96b1e66d8b39788dbe06b440cc59b3a9afa91f",
+    "templates/news_desk.css": "4a12a0e0569a38ff3b038b6b7a963baf047c713722b957d28684addbf5fb920f",
+    "templates/news_desk.js": "b14afaff50c4c47e5ccfb4b9446d5b0eacb17d3d012b604eb002b5c98319d8d4"
+  },
+  "viewports": [
+    {
+      "requested": [
+        320,
+        740
+      ],
+      "client_width": 309,
+      "scroll_width": 309,
+      "desk_height": 530,
+      "feed_client_height": 243.5,
+      "feed_scroll_height": 2076,
+      "feed_scroll_top_at_end": 1832,
+      "document_scroll_y_at_end": 0
+    },
+    {
+      "requested": [
+        390,
+        844
+      ],
+      "client_width": 379,
+      "scroll_width": 379,
+      "desk_height": 634,
+      "theme_and_language": [
+        "dark/en",
+        "light/zh"
+      ]
+    },
+    {
+      "requested": [
+        1440,
+        1000
+      ],
+      "client_width": 1429,
+      "scroll_width": 1429,
+      "theme_and_language": [
+        "dark/en",
+        "light/en"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "narrow filter footer",
+      "result": "PASS",
+      "evidence": "277px dialog, 275px footer; Cancel96x44 and Apply140x44 remain in viewport while fields scroll"
+    },
+    {
+      "name": "staged time and region",
+      "result": "PASS",
+      "evidence": "24h/Europe leaves feed at14 until Apply; Cancel restores168h/all and focus ndFilterOpen; Apply shows2 matching European reports and Filters(2); Reset restores14"
+    },
+    {
+      "name": "narrow feed scroll",
+      "result": "PASS",
+      "evidence": "Scrolled feed to1832 with page scrollY0; final report and Compare reachable; Workspace44px; title wraps without collision"
+    },
+    {
+      "name": "reader stability",
+      "result": "PASS",
+      "evidence": "Brief, Sources and Timeline retain headline wrapping and tab position after stable gutter and nonshrinking header fixes"
+    },
+    {
+      "name": "save, compare, investigation",
+      "result": "PASS",
+      "evidence": "Save story becomes Saved; two selected reports appear side by side with source clocks and evidence; created fixture investigation has2 references and Open question relation"
+    },
+    {
+      "name": "retained history stale export",
+      "result": "PASS",
+      "evidence": "Five-minute export guard shows unavailable and no stale result body; no production guard weakened"
+    },
+    {
+      "name": "retained history normal refresh",
+      "result": "PASS",
+      "evidence": "Refreshed owned fixture export clock while preserving all15 publication clocks; Restart search for retained returns1/1 history-only report"
+    },
+    {
+      "name": "Escape focus return",
+      "result": "PASS",
+      "evidence": "Esc closes history dialog and returns focus to ndHistoryOpen"
+    },
+    {
+      "name": "theme and localization",
+      "result": "PASS",
+      "evidence": "Shared settings switch dark/light and English/Chinese; mobile Chinese titles and controls render without horizontal overflow"
+    },
+    {
+      "name": "console",
+      "result": "PASS",
+      "evidence": "No captured warning/error entries at final visual read"
+    }
+  ],
+  "screenshots_manifest": "visual-manifest-20261103.json",
+  "limitations": [
+    "Illustrative fixture data is not current reporting or production freshness proof.",
+    "No production deployment or signed-in production acceptance is asserted.",
+    "Company API fixture does not represent every history/detail endpoint; mounted aggregate/company tests supply separate interaction coverage."
+  ],
+  "browser_cleanup": "Confirmed: dark/English and native1585x1088 viewport restored; QA tab closed (subsequent tab list empty); owned previewPID10225 and public tunnelPID65825 absent after termination.",
+  "temporary_preview_processes": {
+    "10225": "absent",
+    "65825": "absent"
+  }
+}

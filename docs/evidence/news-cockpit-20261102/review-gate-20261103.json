@@ -1,0 +1,62 @@
+{
+  "schema": "news.release-review-gate.v1",
+  "observed_at": "2026-11-03T03:39:56Z",
+  "source_head": "707c0ec06948d6df6e1f64525d8e9e32d046749a",
+  "review_routing_law_pin": "ea4f893103a1c0354f28843241848cae91336bd7",
+  "review_routing_law": "docs/SESSION_INDEPENDENT_REVIEW_ROUTING.md",
+  "original_carrier_status": {
+    "schema": "mastermind.fabric_mcp.v1",
+    "action": "fabric_status",
+    "run_id": "news-9612-f07ba3-source-review-20261022",
+    "effective_run_id": "news-9612-f07ba3-source-review-20261022",
+    "expected_root_id": "news-cockpit-rebuild-20261018-astra-01",
+    "status": {
+      "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+      "acceptance_state": "UNVERIFIED",
+      "accepted": null,
+      "accepted_by": null,
+      "lineage_state": "VERIFIED_TERMINAL",
+      "parent_run_id": "news-cockpit-rebuild-20261018-astra-01",
+      "rc": 1,
+      "result_available": true,
+      "result_bytes": 690,
+      "root_id": "news-cockpit-rebuild-20261018-astra-01",
+      "run_id": "news-9612-f07ba3-source-review-20261022",
+      "schema": "mastermind.fabric_task_status.v1",
+      "signal": "other",
+      "state": "TERMINAL",
+      "continuation": {
+        "requested_run_id": "news-9612-f07ba3-source-review-20261022",
+        "effective_run_id": "news-9612-f07ba3-source-review-20261022",
+        "prior_attempts": [],
+        "controller_return": "RECORDED",
+        "controller_reason": "continuation_evidence_unqualified"
+      }
+    },
+    "parent_recovery": {
+      "schema": "mastermind.fabric_parent_recovery_projection.v1",
+      "requested_run_id": "news-9612-f07ba3-source-review-20261022",
+      "effective_run_id": "news-9612-f07ba3-source-review-20261022",
+      "root_verified": true,
+      "request_correlation_only": false,
+      "disposition": "RECONCILE_TERMINAL_FAILURE",
+      "parent_attention_required": true,
+      "wake_proven": false,
+      "retry_authorized": false,
+      "dispatch_authorized": false,
+      "result_consumption_authorized": false
+    },
+    "root_verified": true,
+    "execution_absence_proven": false,
+    "retry_allowed": false
+  },
+  "formal_github_reviews": [],
+  "recovery_tools_observed": [
+    "fabric_status",
+    "fabric_result",
+    "fabric_capabilities",
+    "fabric_accept"
+  ],
+  "disposition": "Original review remains unverified and execution-ineligible. No retry, new reviewer route, self-approval, merge or deployment is authorized by this evidence.",
+  "next_gate": "Lawful disposition of the original terminal review effect, independent final-source acceptance, and non-author formal GitHub approval; then the normal release path."
+}

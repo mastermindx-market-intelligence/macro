@@ -233,10 +233,67 @@ def _parse_articles(raw_json: dict) -> list[dict]:
     return out
 
 
+def _bounded_articles(options: dict, total_timeout_s: float) -> "tuple[list | None, str | None]":
+    """Killable envelope around this same owner, including its shared pace gate.
+
+    A socket timeout cannot bound a trickling body or waiting for another
+    process's throttle lock. Exec a short-lived child (safe from collector
+    threads), retain the incumbent stamp/breaker, and reap it on expiry.
+    """
+    import os
+    import selectors
+    import subprocess
+    import sys
+
+    deadline = time.monotonic() + max(0.05, min(30.0, float(total_timeout_s)))
+    options = dict(options)
+    if options.get("cache_path") is not None:
+        options["cache_path"] = str(options["cache_path"])
+    options["max_response_bytes"] = min(4 * 1024 * 1024, int(options.get("max_response_bytes") or 1024 * 1024))
+    payload = json.dumps(options, ensure_ascii=False)
+    if len(payload.encode()) > 8192:
+        return None, "request_too_large"
+    code = ("import json,sys; from engine.gdelt_client import get_articles; "
+            "print(json.dumps(get_articles(**json.loads(sys.argv[1])),ensure_ascii=False))")
+    process = subprocess.Popen([sys.executable, "-c", code, payload],
+                               cwd=str(Path(__file__).resolve().parents[1]),
+                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    result = bytearray()
+    try:
+        with selectors.DefaultSelector() as selector:
+            selector.register(process.stdout, selectors.EVENT_READ)
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0 or not selector.select(remaining):
+                    return None, "deadline_exceeded"
+                chunk = os.read(process.stdout.fileno(), 16384)
+                if not chunk:
+                    break
+                result.extend(chunk)
+                if len(result) > options["max_response_bytes"] * 2 + 65536:
+                    return None, "response_too_large"
+        if process.wait(timeout=max(0.01, deadline - time.monotonic())):
+            return None, "fetch_error"
+        articles, reason = json.loads(result)
+        if articles is not None and not isinstance(articles, list):
+            return None, "fetch_error"
+        return articles, reason
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return None, "fetch_error"
+    finally:
+        if process.poll() is None:
+            process.kill()
+        process.wait(timeout=1)
+        process.stdout.close()
+
+
 def get_articles(
     params: dict,
     *,
     timeout: int = 30,
+    max_attempts: int = 3,
+    max_response_bytes: int | None = None,
+    total_timeout_s: float | None = None,
     cache_path: "str | Path | None" = None,
     cache_ttl_s: "int | None" = None,
     min_interval: "float | None" = None,
@@ -272,6 +329,10 @@ def get_articles(
                          failure, 'no_articles' when the response was valid but
                          empty.
     """
+    if total_timeout_s is not None:
+        return _bounded_articles(dict(params=params, timeout=timeout, max_attempts=max_attempts,
+            max_response_bytes=max_response_bytes, cache_path=cache_path, cache_ttl_s=cache_ttl_s,
+            min_interval=min_interval), total_timeout_s)
     interval = min_interval if min_interval is not None else _min_interval()
 
     # ── cache read ──────────────────────────────────────────────────────────
@@ -301,15 +362,26 @@ def get_articles(
     # ── fetch with throttle + bounded retry ─────────────────────────────────
     import requests  # local import — requests is a runtime dep, not always present at import time
 
-    RETRY_SLEEPS = (30, 75)   # sleep before retry[0], sleep before retry[1]
+    RETRY_SLEEPS = (30, 75)[:max(0, min(3, int(max_attempts)) - 1)]   # sleep before retry[0], sleep before retry[1]
     r = None
     reason: str | None = None
 
     for attempt in range(len(RETRY_SLEEPS) + 1):   # 0, 1, 2 → up to 3 attempts
         _throttle(interval)
         try:
+            request_options = {"stream": True} if max_response_bytes is not None else {}
             r = requests.get(GDELT_URL, params=params, timeout=timeout,
-                             headers={"User-Agent": _UA})
+                             headers={"User-Agent": _UA}, **request_options)
+            if max_response_bytes is not None:
+                bounded = bytearray()
+                try:
+                    for chunk in r.iter_content(chunk_size=16384):
+                        bounded.extend(chunk)
+                        if len(bounded) > max_response_bytes:
+                            return None, "response_too_large"
+                    r._content = bytes(bounded)
+                finally:
+                    r.close()
         except Exception as e:  # noqa: BLE001 — network error
             log.warning("gdelt_client: network error on attempt %d: %s", attempt, e)
             reason = "fetch_error"

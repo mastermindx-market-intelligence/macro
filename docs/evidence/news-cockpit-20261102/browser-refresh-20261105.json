@@ -1,0 +1,43 @@
+{
+  "schema": "news.browser-refresh-acceptance.v1",
+  "environment": "Chromium with incumbent illustrative preview through in-process ASGI; intercepted browser transport, fixture-auth API, not production",
+  "head": "fd3799842269da0c7b442bbb9b54a22b6ef805ce",
+  "checks": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "loaded_reporting": 14,
+      "poll_failure_disclosed": true,
+      "reader_and_filter_retained": true,
+      "zh_banner_translated": true,
+      "polite_status": true,
+      "valid_snapshot_recovered": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "first_load_failure_truthful": true,
+      "zh_banner_translated": true,
+      "no_horizontal_overflow": true,
+      "dimensions": {
+        "client": 390,
+        "scroll": 390
+      },
+      "valid_snapshot_recovered": true
+    }
+  ],
+  "production_proof": false,
+  "browser": "151.0.7922.34",
+  "page_errors": [],
+  "source_sha256": {
+    "news.html.j2": "44b10db4d430d2b6819d64bc4e4fee8a14230da109b734266170280c778a5290",
+    "news_desk.js": "eb69c07b45cdc36331144517b774fdb65385fdd9658593b02cfd401be4e2010d",
+    "news_desk.css": "4a12a0e0569a38ff3b038b6b7a963baf047c713722b957d28684addbf5fb920f"
+  },
+  "passed": true,
+  "fixture_transport_closed": true
+}

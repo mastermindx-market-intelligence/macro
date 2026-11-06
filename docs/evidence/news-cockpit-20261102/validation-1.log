@@ -1,0 +1,97 @@
+
+> macro-news-desk-tests@1.0.0 test
+> NODE_PATH=./node_modules node --test ../test_news_desk_mounted.cjs ../test_news_company_mounted.cjs
+
+✔ company requests use bearer auth and never persist licensed rows (428.928125ms)
+✔ stream changes trigger authoritative snapshots, buffer new groups, and apply corrections (137.9475ms)
+✔ rights revocation clears reporting and activity immediately (117.285584ms)
+✔ sign-out fences an already pending response and clears both content and source names (140.464458ms)
+✔ earlier pages pause the change stream and recheck authorization (117.136292ms)
+✔ unchanged snapshots keep the focused headline and source group DOM (194.929667ms)
+✔ a lost connection clears protected content and offers bounded recovery (156.325292ms)
+✔ closing a company workspace aborts delivery and removes in-memory reporting (91.188792ms)
+✔ corrections preserve two-story order until the reader restores latest order (88.244333ms)
+✔ an expanded source group stays open through correction and superseded request failure (103.954667ms)
+✔ a stream rate limit retains its 60-second retry boundary (113.494125ms)
+✔ automatic 429 retry preserves its deadline after background suspension (86.907667ms)
+✔ automatic 429 retry preserves its deadline after BFCache restoration (111.64025ms)
+✔ a missing stream endpoint does not enter a terminal-error retry loop (87.523833ms)
+✔ quiet company stream renews authorization after45s: 200 (119.324333ms)
+✔ quiet company stream renews authorization after45s: 401 (100.480625ms)
+✔ quiet company stream renews authorization after45s: 403 (123.39825ms)
+✔ new arrivals buffer, but existing report amendments update immediately (509.1545ms)
+✔ removed live content stays unavailable across language, save and redraw (250.994459ms)
+✔ auth loss clears open coverage and mobile modal protected state (233.457459ms)
+✔ initial stream handshake deadline preserves reporting and fences obsolete frames after polling (302.734083ms)
+✔ heartbeat expiry schedules an actual generation-fenced recovery (184.579792ms)
+✔ repeated stream errors switch to bounded polling and language changes retain its deadline (243.086917ms)
+✔ language changes retain the live channel and current failure wording (208.597291ms)
+✔ mobile save, detail tabs and updates preserve usable focus (158.126ms)
+✔ mobile story Tab confinement follows actual sequential focus order (145.3615ms)
+✔ closed shared dialogs allow search shortcuts while a visible dialog owns them (206.602166ms)
+✔ CSS-hidden shared dialogs leave the mobile story focus trap active (130.525416ms)
+✔ breakpoint changes synchronize modal semantics (122.726708ms)
+✔ an amended read story reappears in Unread (134.572417ms)
+✔ live snapshots preserve the focused headline and lost rows recover to the feed (116.557333ms)
+✔ detail tabs support arrows, Home and End after DOM replacement (125.414542ms)
+✔ live-only deep links select their exact story after the first snapshot (200.715417ms)
+✔ timeline uses retained editorial and source amendment events with honest clocks (123.327708ms)
+✔ shared authentication events immediately clear the desk and fence previous streams (115.713709ms)
+✔ a native dialog above a mobile story owns Tab and Escape (129.999541ms)
+✔ comparison refreshes corrections in place, keeps distinct clocks and never revives a removed report (362.54575ms)
+✔ the comparison selection is limited to three reader-chosen reports (269.224375ms)
+✔ named investigations persist IDs and reader relationships, then resolve corrections and missing references (445.286083ms)
+✔ stable investigation IDs survive the feed's visual duplicate collapse (153.915417ms)
+✔ mobile investigation inputs retain focus and unfinished text through live updates and language changes (182.283042ms)
+✔ monitoring has a silent baseline and one inbox update per report across overlapping targets (151.315292ms)
+✔ monitoring enable, pause, reset and auth renewal never replay earlier reporting (192.000334ms)
+✔ retained search is deliberate, literal and paginated with the same query and no live arrivals (148.304709ms)
+✔ a changed history descriptor clears an open historical comparison and preserves saved IDs (162.473833ms)
+✔ returning to an open comparison closes later dialogs and a new query clears its historical body immediately (199.010416ms)
+✔ a 409 history cursor clears prior results and needs an explicit restart (132.618792ms)
+✔ a newer history page waits for the accepted live descriptor without rendering its bodies (147.259208ms)
+✔ a fresh accepted snapshot permits a deliberate retry after a transient history revision (141.727125ms)
+✔ history pagination rejects a changed match total within the same revision (141.583666ms)
+✔ retained search generations abort and ignore superseded queries (139.663833ms)
+✔ retained search has a real deadline even when a late fixture ignores abort (140.140791ms)
+✔ history HTTP 401 clears protected dialogs and fences the active stream (180.819667ms)
+✔ history HTTP 403 clears protected dialogs and fences the active stream (234.186041ms)
+✔ a 503 retained page does not keep the last successful historical body (148.129042ms)
+✔ coverage keeps missing collection counters unknown and updates an open disclosure without taking focus (160.938708ms)
+✔ embedded News sign-in delegates once to the shell while initialization is pending (154.126125ms)
+✔ News sign-in retains standalone and modified-link navigation (138.972833ms)
+✔ News sign-in respects a previously handled click (136.352042ms)
+✔ a claimed News sign-in never starts a second route after shell refusal or failure (105.682959ms)
+✔ mobile filters stage changes until Apply and count time and region (128.422375ms)
+✔ cancelled mobile filter changes do not alter the feed or saved scope (127.844791ms)
+✔ responsive controls preserve applied filters and return focus to a visible trigger (113.571083ms)
+✔ mobile workspace keeps coverage and reading density available (128.070334ms)
+✔ story triggers expose the current reader selection to assistive technology (138.369083ms)
+✖ resizing an open filter sheet keeps keyboard focus inside its dialog (125.975292ms)
+ℹ tests 66
+ℹ suites 0
+ℹ pass 65
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9633.206792
+
+✖ failing tests:
+
+test at ../test_news_desk_mounted.cjs:496:1
+✖ resizing an open filter sheet keeps keyboard focus inside its dialog (125.975292ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  '' !== 'ndFilterOpen'
+  
+      at TestContext.<anonymous> (/Volumes/Mastermind 2/agent-workspaces/macro/web/news-cockpit-rebuild-20261018-astra-01/tests/test_news_desk_mounted.cjs:502:37)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'ndFilterOpen',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

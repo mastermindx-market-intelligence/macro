@@ -1,0 +1,72 @@
+{
+  "schema": "news.late-integration-focused.v1",
+  "head": "360c9f11ef6d98e42c561177f42bc0fcd14cd2c8",
+  "tree": "2e0ea545ae43943da271c034c50ab0e384e5a7c4",
+  "accepted_main": "19a896b97ae20f2c12475a0207678f92dc4f335b",
+  "started_at": "2026-11-03T06:42:30.897182+00:00",
+  "test_command": [
+    "pytest.main",
+    "-q",
+    "tests/test_theme_research_api.py::test_paid_theme_research_routes_are_mounted_on_production_app",
+    "tests/test_theme_research_api.py::test_theme_research_routes_are_unique_against_existing_themes_prefix",
+    "tests/test_news_desk_api.py",
+    "tests/test_deploy_update_self_heal.py::test_import_cached_module_triggers_api_restart",
+    "tests/test_deploy_update_self_heal.py::test_non_api_path_does_not_trigger_api_restart",
+    "tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex",
+    "tests/test_deploy_update_self_heal.py::test_load_time_closure_probe_is_not_vacuous"
+  ],
+  "source_sha256": {
+    "app/main.py": "6a714895b65e20d2ef2cd62159095ea9d829f8bdcae54b7417c680307876edb8",
+    "app/deploy/update.sh": "7f276f318f2f8825150efe0532a87348956cdf73397d8024708432ac9e0f5c5d",
+    ".github/workflows/ci.yml": "57d481d67c62ed27e3d5959eb090dd38079cbbbb5ad28c8b027d08c22c82dc2b",
+    "templates/news.html.j2": "c54dd492e4156acc4277b39caf96b1e66d8b39788dbe06b440cc59b3a9afa91f",
+    "templates/news_desk.css": "4a12a0e0569a38ff3b038b6b7a963baf047c713722b957d28684addbf5fb920f",
+    "templates/news_desk.js": "b14afaff50c4c47e5ccfb4b9446d5b0eacb17d3d012b604eb002b5c98319d8d4",
+    "site/news.html": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf"
+  },
+  "pytest_exit_code": 0,
+  "production_routes": {
+    "/api/news-desk/snapshot": {
+      "method": "get",
+      "mounted": true
+    },
+    "/api/news-desk/stream": {
+      "method": "get",
+      "mounted": true
+    },
+    "/api/news-desk/coverage": {
+      "method": "get",
+      "mounted": true
+    },
+    "/api/news-desk/history": {
+      "method": "get",
+      "mounted": true
+    },
+    "/api/themes/v1/research/query": {
+      "method": "post",
+      "mounted": true
+    },
+    "/api/themes/v1/research/evidence": {
+      "method": "post",
+      "mounted": true
+    }
+  },
+  "all_required_routes_mounted": true,
+  "duration_seconds": 62.454,
+  "completed_at": "2026-11-03T06:43:33.351537+00:00",
+  "source_unchanged": true,
+  "head_unchanged": true,
+  "log": "docs/evidence/news-cockpit-20261102/late-integration-focused-20261103.log.gz",
+  "log_sha256": "ef9b589a3f697b7750268a0e706e9a4e963356211401c6bc3d6ce2a306a9f4cf",
+  "passed": true,
+  "pytest_summary": {
+    "passed": 330,
+    "warnings": 27,
+    "seconds": 60.57
+  },
+  "log_encoding": "gzip",
+  "raw_log_sha256": "87308fe33c3f886c30b5aa6d8411efd38907485f1437fd63c64e2e6e5caa6363",
+  "raw_log_bytes": 14060,
+  "stored_log_bytes": 1442,
+  "lossless_log_roundtrip_verified": true
+}

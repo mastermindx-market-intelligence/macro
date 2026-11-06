@@ -1,0 +1,110 @@
+{
+  "operation": "news-cockpit-rebuild-20261018-astra-01",
+  "head_parent": "fbdbfcbfbb61ae7f05933060e7724e4cbc9bd134",
+  "merge_parent": "4725eadec5222e42bd10c253091e995e2071f9f1",
+  "source_sha256": {
+    "templates/news.html.j2": "c54dd492e4156acc4277b39caf96b1e66d8b39788dbe06b440cc59b3a9afa91f",
+    "templates/news_desk.css": "4a12a0e0569a38ff3b038b6b7a963baf047c713722b957d28684addbf5fb920f",
+    "templates/news_desk.js": "b14afaff50c4c47e5ccfb4b9446d5b0eacb17d3d012b604eb002b5c98319d8d4",
+    "site/news.html": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf",
+    "app/news_desk.py": "5b54dd30a5cb2fd4891f24d0f6649a04f81ce00f85f6eb66fefed6822d8f55d6",
+    "engine/marketing/intelligence_history.py": "a9d640a2ab7dccbc53f68df9e45f898e1cf8a9b08c1b975c4033e06f1aa4f41f",
+    "scripts/gmi_explorer/model.py": "8011697151ef1ea8605de409e0f12cb3f1adcccbd914b99f89e97738f91f0848",
+    ".github/ci/legacy-jobs.yml": "db531c3d5cba19b06464ebddc2a8f8444b77da05c8798fbf29d2f62684a6b990",
+    ".github/workflows/daily.yml": "5b336195425e1c097e3ba1359c852c50cda4273ea708bb9bca258a229bbfabd8",
+    "tests/test_ci_pack.py": "0c41af56d3f93489d73ed1f46bfce3c3e35b40d6fcc027c0940d95634905fa57"
+  },
+  "results": [
+    {
+      "name": "integration-news",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_news_page_render.py",
+        "tests/test_news_desk_js.py",
+        "tests/test_news_desk_api.py",
+        "tests/test_research_news_intake.py",
+        "tests/test_marketing_intelligence_desk.py",
+        "tests/test_gdelt_client.py",
+        "tests/test_deploy_update_self_heal.py",
+        "tests/test_news_translate_render_gate.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 65.38,
+      "log": "docs/evidence/news-cockpit-20261102/integration-news-20261103.log",
+      "log_sha256": "c71c9b06f0dfccb79d61d25571234691585c8342aaa8daa10776e6fe48520bf1",
+      "tail": "iswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16/test_race_check_refuses_profil4/system/control-dependencies/efe61663674a462839933410bb08d12d104852e60835041c7d22e486c02b71ed\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16/test_race_check_refuses_profil4/system/control-dependencies/efe61663674a462839933410bb08d12d104852e60835041c7d22e486c02b71ed'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16/test_race_check_refuses_profil4/system/control-dependencies\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16/test_race_check_refuses_profil4/system/control-dependencies'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16/test_race_check_refuses_profil4/system\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16/test_race_check_refuses_profil4/system'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16/test_race_check_refuses_profil4\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16/test_race_check_refuses_profil4'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-c33b6d5d-48f8-4085-bb2d-c89a3a488d16'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n744 passed, 13 warnings in 63.24s (0:01:03)\n"
+    },
+    {
+      "name": "integration-ci",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+        "tests/test_workflow_file_size.py"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 167.63,
+      "log": "docs/evidence/news-cockpit-20261102/integration-ci-20261103.log.gz",
+      "log_sha256": "000a27450a4e2f5f182f36876f47d2e730c4f7a32c2631da57fe7a6ddfbf0a2e",
+      "tail": "61663674a462839933410bb08d12d104852e60835041c7d22e486c02b71ed'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-39c91c07-fc36-4e97-b287-b70bb2948d48/test_race_check_refuses_profil4/system/control-dependencies\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-39c91c07-fc36-4e97-b287-b70bb2948d48/test_race_check_refuses_profil4/system/control-dependencies'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-39c91c07-fc36-4e97-b287-b70bb2948d48/test_race_check_refuses_profil4/system\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-39c91c07-fc36-4e97-b287-b70bb2948d48/test_race_check_refuses_profil4/system'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-39c91c07-fc36-4e97-b287-b70bb2948d48/test_race_check_refuses_profil4\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-39c91c07-fc36-4e97-b287-b70bb2948d48/test_race_check_refuses_profil4'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-39c91c07-fc36-4e97-b287-b70bb2948d48\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-39c91c07-fc36-4e97-b287-b70bb2948d48'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n\nNOTE: sparse worktree \u2014 .agents, .codex, .cursor, browser, calibration, content, data, finviz_themes, knowledge, orch, plugins, properties, requirements, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure\nFAILED tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs\n2 failed, 3 passed, 12 warnings in 165.57s (0:02:45)\n",
+      "log_encoding": "gzip; log_sha256 addresses exact uncompressed bytes",
+      "stored_log_sha256": "606a19164400f41cf01fcc5f36b4fbe0d35d68bb14c61d3c0ef342bb5d46c310"
+    },
+    {
+      "name": "integration-gmi",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_gmi_explorer_model.py",
+        "tests/test_gmi_explorer_shared.py",
+        "tests/test_gmi_explorer_assets.py",
+        "tests/test_gmi_reason_codes.py",
+        "tests/test_gmi_explorer_s2.py",
+        "tests/test_gmi_explorer_s1_s5.py",
+        "tests/test_gmi_explorer_s3_s4.py",
+        "-q"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 5.38,
+      "log": "docs/evidence/news-cockpit-20261102/integration-gmi-20261103.log.gz",
+      "log_sha256": "1e1022d5ca3ac6fdd39ed938a0c401af9798590895d68a6329bf813666eb8a89",
+      "tail": "e_check_refuses_profil4'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-e8d5ab38-67ad-40ef-a01e-0d02ac3bca89\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-e8d5ab38-67ad-40ef-a01e-0d02ac3bca89'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n\nNOTE: sparse worktree \u2014 .agents, .codex, .cursor, browser, calibration, content, data, finviz_themes, knowledge, orch, plugins, properties, requirements, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_gmi_explorer_assets.py::test_pairs_byte_identical - FileNot...\nFAILED tests/test_gmi_explorer_s1_s5.py::test_s5_ten_cards_in_specimen_order[live]\nFAILED tests/test_gmi_explorer_s1_s5.py::test_s5_ten_cards_in_specimen_order[held]\nFAILED tests/test_gmi_explorer_s1_s5.py::test_s5_ten_cards_in_specimen_order[edges]\nFAILED tests/test_gmi_explorer_s1_s5.py::test_s3_envelope_receipt[live] - Fil...\nFAILED tests/test_gmi_explorer_s1_s5.py::test_s3_envelope_receipt[edges] - Fi...\nERROR tests/test_gmi_explorer_s1_s5.py::test_issuer_page_per_issuer - FileNot...\nERROR tests/test_gmi_explorer_s1_s5.py::test_s1_hygiene_live_and_held - FileN...\nERROR tests/test_gmi_explorer_s1_s5.py::test_s1_live_is_admitted_branch - Fil...\nERROR tests/test_gmi_explorer_s1_s5.py::test_s1_held_is_held_branch - FileNot...\nERROR tests/test_gmi_explorer_s1_s5.py::test_s1_receipt_is_closed_details - F...\nERROR tests/test_gmi_explorer_s1_s5.py::test_s1_no_excerpt_text_when_not_granted\nERROR tests/test_gmi_explorer_s1_s5.py::test_s1_unset_values_are_plain_words\nERROR tests/test_gmi_explorer_s1_s5.py::test_s5_hygiene_all_renders - FileNot...\nERROR tests/test_gmi_explorer_s1_s5.py::test_s5_noindex - FileNotFoundError: ...\nERROR tests/test_gmi_explorer_s1_s5.py::test_s5_deck_none_branch - FileNotFou...\nERROR tests/test_gmi_explorer_s1_s5.py::test_s5_deck_present_branch - FileNot...\nERROR tests/test_gmi_explorer_s1_s5.py::test_s3_live_receipt_names_the_committed_package\nERROR tests/test_gmi_explorer_s1_s5.py::test_s3_receipt_drops_the_display_only_claim_if_any_authority_is_true\nERROR tests/test_gmi_explorer_s1_s5.py::test_s3_no_receipt_without_a_package\nERROR tests/test_gmi_explorer_s1_s5.py::test_s3_coverage_panel_counts_the_searched_companies\nERROR tests/test_gmi_explorer_s1_s5.py::test_s3_hero_possessive - FileNotFoun...\n6 failed, 26 passed, 72 skipped, 12 warnings, 16 errors in 4.33s\n",
+      "log_encoding": "gzip; log_sha256 addresses exact uncompressed bytes",
+      "stored_log_sha256": "827bb2a0a404016b5e5e3e5ab8ed0e29b31ac2db24002fb93cd6e95432db74f8"
+    },
+    {
+      "name": "integration-mounted",
+      "command": [
+        "npm",
+        "--prefix",
+        "tests/news-desk",
+        "test"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 6.43,
+      "log": "docs/evidence/news-cockpit-20261102/integration-mounted-20261103.log",
+      "log_sha256": "6d78462076dde4e1c49a20b44125f2ca1996bc5e5230b275d848174262633624",
+      "tail": "eader-chosen reports (148.464417ms)\n\u2714 named investigations persist IDs and reader relationships, then resolve corrections and missing references (204.472416ms)\n\u2714 stable investigation IDs survive the feed's visual duplicate collapse (131.20025ms)\n\u2714 mobile investigation inputs retain focus and unfinished text through live updates and language changes (131.75925ms)\n\u2714 monitoring has a silent baseline and one inbox update per report across overlapping targets (112.855292ms)\n\u2714 monitoring enable, pause, reset and auth renewal never replay earlier reporting (123.145166ms)\n\u2714 retained search is deliberate, literal and paginated with the same query and no live arrivals (100.801417ms)\n\u2714 a changed history descriptor clears an open historical comparison and preserves saved IDs (120.786042ms)\n\u2714 returning to an open comparison closes later dialogs and a new query clears its historical body immediately (146.007875ms)\n\u2714 a 409 history cursor clears prior results and needs an explicit restart (95.5245ms)\n\u2714 a newer history page waits for the accepted live descriptor without rendering its bodies (94.966917ms)\n\u2714 a fresh accepted snapshot permits a deliberate retry after a transient history revision (97.678959ms)\n\u2714 history pagination rejects a changed match total within the same revision (95.184792ms)\n\u2714 retained search generations abort and ignore superseded queries (94.46775ms)\n\u2714 retained search has a real deadline even when a late fixture ignores abort (92.750084ms)\n\u2714 history HTTP 401 clears protected dialogs and fences the active stream (155.902083ms)\n\u2714 history HTTP 403 clears protected dialogs and fences the active stream (145.3895ms)\n\u2714 a 503 retained page does not keep the last successful historical body (89.31275ms)\n\u2714 coverage keeps missing collection counters unknown and updates an open disclosure without taking focus (94.704541ms)\n\u2714 embedded News sign-in delegates once to the shell while initialization is pending (80.444ms)\n\u2714 News sign-in retains standalone and modified-link navigation (82.2745ms)\n\u2714 News sign-in respects a previously handled click (77.246584ms)\n\u2714 a claimed News sign-in never starts a second route after shell refusal or failure (80.004375ms)\n\u2714 mobile filters stage changes until Apply and count time and region (87.907291ms)\n\u2714 cancelled mobile filter changes do not alter the feed or saved scope (84.90725ms)\n\u2714 responsive controls preserve applied filters and return focus to a visible trigger (96.39825ms)\n\u2714 mobile workspace keeps coverage and reading density available (84.991167ms)\n\u2714 story triggers expose the current reader selection to assistive technology (77.660708ms)\n\u2714 resizing an open filter sheet keeps keyboard focus inside its dialog (78.927542ms)\n\u2139 tests 66\n\u2139 suites 0\n\u2139 pass 66\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 6182.18475\n"
+    },
+    {
+      "name": "integration-shell",
+      "command": [
+        "bash",
+        "-n",
+        "app/deploy/update.sh"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01,
+      "log": "docs/evidence/news-cockpit-20261102/integration-shell-20261103.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tail": ""
+    }
+  ]
+}
