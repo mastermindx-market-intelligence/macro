@@ -6,6 +6,7 @@ closes) and the ABSTAIN-ALL variant (observations=None); every asserted value
 is recomputed from the observation set / engine output, never typed.
 """
 import importlib.util
+import json
 import re
 import sys
 from html.parser import HTMLParser
@@ -75,6 +76,7 @@ def _specimen_html():
 
 def _panel_chunks(html, view, horizon=None, basis=None):
     """Inner HTML of every panel of one view (optionally one context)."""
+    html = FX.expand_deferred_for_assertions(html)
     pattern = re.compile(
         r'<section class="intl-gs__panel intl-gs__view intl-gs__view--' + view
         + r'"([^>]*)>(.*?)(?=<section class="intl-gs__panel|<p><a href="#intl-legacy-research")',
@@ -105,17 +107,26 @@ class _TextAndAttrs(HTMLParser):
         super().__init__()
         self.text = []
         self.attrs = []
+        self._inert_json = False
 
     def handle_starttag(self, tag, attrs):
+        if tag == "script" and (dict(attrs).get("type") or "").strip().lower() == "application/json":
+            self._inert_json = True
         for name, value in attrs:
             if value is not None:
                 self.attrs.append((tag, name, value))
 
+    def handle_endtag(self, tag):
+        if tag == "script":
+            self._inert_json = False
+
     def handle_data(self, data):
-        self.text.append(data)
+        if not self._inert_json:
+            self.text.append(data)
 
 
 def _scan(html):
+    html = FX.expand_deferred_for_assertions(html)
     parser = _TextAndAttrs()
     parser.feed(html)
     return parser
@@ -786,11 +797,11 @@ def test_a14_no_raw_iso_and_clean_attributes():
         for tag, attr, value in scan.attrs:
             if tag == "time":
                 assert attr != "data-checked"
-    production_times = re.findall(r"<time([^>]*)>", _production_html())
+    production_times = re.findall(r"<time([^>]*)>", FX.expand_deferred_for_assertions(_production_html()))
     assert production_times, "the production variant carries clock instants"
     for attrs in production_times:
         assert "datetime=" in attrs, attrs
-    for attrs in re.findall(r"<time([^>]*)>", _abstain_html()):
+    for attrs in re.findall(r"<time([^>]*)>", FX.expand_deferred_for_assertions(_abstain_html())):
         assert "datetime=" in attrs, attrs
     for name in ("scanner.html.j2", "coverage.html.j2", "_gs_scanner_macros.html.j2",
                  "_gs_snapshot.html.j2"):
@@ -975,7 +986,7 @@ class TestIntlTooltipLocale:
     def test_native_renderers_emit_localized_keyboard_reachable_tooltips_and_consumer(self, pages, name, selector):
         from tests.intl_gs_fixture_site import tooltip_document
         CJK = re.compile(r"[一-鿿㐀-䶿]")
-        soup = tooltip_document(pages[name])
+        soup = tooltip_document(FX.expand_deferred_for_assertions(pages[name]))
         assert soup.select_one('script[src="theme.js"]') is not None
         nodes = soup.select(selector)
         assert nodes, (name, selector)
@@ -983,3 +994,21 @@ class TestIntlTooltipLocale:
             assert "title" not in node.attrs and node.get("tabindex") == "0"
             assert node["data-tip-en"] and node["data-tip-zh"]
         assert not [(n.name, n["title"]) for n in soup.select("[title]") if CJK.search(n["title"])]
+
+
+def test_deferred_inspection_keeps_visible_iso_and_bad_attribute_failures():
+    html = _production_html()
+    pattern = re.compile(r'<script type="application/json" data-im-deferred-payload>(.*?)</script>', re.DOTALL)
+    carrier = next(match for match in pattern.finditer(html)
+                   if json.loads(match.group(1))["view"] == "coverage")
+    payload = json.loads(carrier.group(1))
+    insert = payload["markup"].index(">") + 1
+    canary = '<p title="&lt;span class=l-en&gt;">2000-01-01T00:00</p>'
+    payload["markup"] = payload["markup"][:insert] + canary + payload["markup"][insert:]
+    raw = json.dumps(payload, ensure_ascii=False).replace("<", "\\u003c")
+    replacement = '<script type="application/json" data-im-deferred-payload>' + raw + '</script>'
+    mutated = html[:carrier.start()] + replacement + html[carrier.end():]
+    inspected = _scan(mutated)
+    assert any(RAW_ISO_TEXT.search(text) for text in inspected.text)
+    assert any("<" in value or (name != "class" and ("l-en" in value or "l-zh" in value))
+               for _tag, name, value in inspected.attrs)

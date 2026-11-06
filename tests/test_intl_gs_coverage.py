@@ -7,9 +7,12 @@ from engine.intl_global_acceptance_matrix.acceptance_matrix(...)['coverage_board
 numbers.
 """
 import importlib.util
+import json
 import re
 import sys
 from pathlib import Path
+
+import pytest
 
 REPO = Path(__file__).resolve().parents[1]
 if str(REPO) not in sys.path:
@@ -58,6 +61,7 @@ def _payload(tmp_path, horizon="1m", basis="usd_unhedged"):
 
 
 def _coverage_panel(html, horizon="1m", basis="usd_unhedged"):
+    html = FX.expand_deferred_for_assertions(html)
     pattern = re.compile(
         r'<section class="intl-gs__panel intl-gs__view intl-gs__view--coverage"'
         r'([^>]*)>(.*?)(?=<section class="intl-gs__panel|<p><a href="#intl-legacy-research")',
@@ -407,3 +411,27 @@ def test_render_reuse_failed_render_is_not_cached_and_keeps_exception_identity()
     assert stub.calls == 2, stub.calls
     assert namespace["_production_html"]() is recovered
     assert stub.calls == 2, stub.calls
+
+
+@pytest.mark.parametrize("fault", ["missing", "malformed", "schema", "context", "basis", "generation", "duplicate"])
+def test_deferred_coverage_inspection_refuses_inconsistent_payload(fault):
+    html = _production_html()
+    pattern = re.compile(r'<script type="application/json" data-im-deferred-payload>(.*?)</script>', re.DOTALL)
+    carrier = next(match for match in pattern.finditer(html)
+                   if json.loads(match.group(1))["view"] == "coverage")
+    payload = json.loads(carrier.group(1))
+    if fault == "missing":
+        replacement = ""
+    elif fault == "malformed":
+        replacement = '<script type="application/json" data-im-deferred-payload>{</script>'
+    elif fault == "duplicate":
+        replacement = carrier.group(0) * 2
+    else:
+        field = {"schema": "schema", "context": "context_id", "basis": "basis", "generation": "generation"}[fault]
+        payload[field] = "foreign-inspection-context"
+        raw = json.dumps(payload, ensure_ascii=False).replace("<", "\\u003c")
+        replacement = '<script type="application/json" data-im-deferred-payload>' + raw + '</script>'
+    mutated = html[:carrier.start()] + replacement + html[carrier.end():]
+    assert mutated != html
+    with pytest.raises(ValueError, match="deferred payload refused"):
+        _coverage_panel(mutated)
