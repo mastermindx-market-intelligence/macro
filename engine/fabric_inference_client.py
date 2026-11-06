@@ -15,6 +15,7 @@ Closing a connection is never represented as proof of provider cancellation.
 from __future__ import annotations
 
 import http.client
+import hashlib
 import json
 import math
 import re
@@ -23,7 +24,7 @@ import ssl
 import threading
 import time
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from types import SimpleNamespace
 from urllib.parse import urlsplit
 
@@ -38,6 +39,11 @@ _NATIVE_ID = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}\Z")
 LEGACY_PROTOCOL = "openai_chat_v1"
 NATIVE_PROTOCOL = "native_application_v1"
 NATIVE_SCHEMA = "mastermind.fabric_application.v1"
+AUTO_SCHEMA = "mastermind.fabric_application.v2"
+AUTO_INSPECTION_SCHEMA = "mastermind.fabric_application_inspection.v2"
+AUTO_BINDING_SCHEMA = "mastermind.fabric_application_binding.v2"
+AUTO_POOLS = frozenset({"go", "bailian", "codex-native", "claude-native",
+                        "glm", "minimax", "grok", "cursor", "ocfree"})
 MAX_NATIVE_TOKENS = 10 ** 12
 _CALL_KEYS = frozenset({"model", "messages", "system", "tools", "tool_choice",
                         "max_tokens", "temperature", "stop_sequences", "request_id"})
@@ -49,7 +55,7 @@ class FabricInferenceError(RuntimeError):
 
     def __init__(self, code: str, *, effect_unknown: bool = False, status_code=None,
                  disposition=None, request_id=None, observed_usage=None,
-                 serving_model=None):
+                 serving_model=None, application_observation=None):
         super().__init__(code)
         self.code = code
         self.effect_unknown = effect_unknown
@@ -58,6 +64,7 @@ class FabricInferenceError(RuntimeError):
         self.request_id = request_id
         self.observed_usage = observed_usage
         self.serving_model = serving_model
+        self.application_observation = application_observation
 
 
 @dataclass(frozen=True)
@@ -92,6 +99,17 @@ class Message:
     content: list
     stop_reason: str
     usage: Usage
+    application_observation: ApplicationObservation | None = None
+
+
+@dataclass(frozen=True)
+class ApplicationObservation:
+    """A validated immutable response observation; reading it performs no effect."""
+    _encoded: str = field(repr=False)
+
+    @property
+    def document(self):
+        return json.loads(self._encoded)
 
 
 def _refuse(code="fabric_request_invalid", *, unknown=False):
@@ -235,7 +253,7 @@ def _messages(messages, system):
 
 
 def _request(kwargs, model, streaming):
-    if set(kwargs) - _CALL_KEYS or kwargs.get("model") != model:
+    if set(kwargs) - _CALL_KEYS or "model" not in kwargs or kwargs["model"] != model:
         _refuse()
     request_id = kwargs.get("request_id")
     if not _safe_id(request_id):
@@ -524,6 +542,87 @@ def _native_envelope(response, payload, *, operation_id, request_id, closing=Fal
         observed_usage=usage, serving_model=model)
 
 
+def _canonical_auto(value):
+    try:
+        return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                          ensure_ascii=False, allow_nan=False)
+    except (ValueError, TypeError, UnicodeError, OverflowError, RecursionError):
+        _refuse("fabric_auto_document_invalid")
+
+
+def validate_auto_route_scope(value):
+    """Validate the wire restriction; A alone grants and selects actual routes."""
+    if (type(value) is not dict or set(value) != {"schema", "pools"}
+            or value["schema"] != "mastermind.application_route_scope.v1"):
+        _refuse("fabric_auto_scope_invalid")
+    pools = value["pools"]
+    if (type(pools) is not list or not 1 <= len(pools) <= len(AUTO_POOLS)
+            or any(type(pool) is not str or pool not in AUTO_POOLS for pool in pools)
+            or pools != sorted(set(pools))):
+        _refuse("fabric_auto_scope_invalid")
+    encoded = _canonical_auto(value)
+    return json.loads(encoded), hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def validate_auto_inspection(value):
+    fields = {"schema", "requested_model", "route_scope", "route_scope_digest",
+              "output_limit_mode", "cap_id", "capability_id", "workload_policy", "transport_identity"}
+    if (type(value) is not dict or set(value) != fields
+            or value["schema"] != AUTO_INSPECTION_SCHEMA or value["requested_model"] is not None
+            or value["output_limit_mode"] != "hard_maximum"
+            or not all(_safe_id(value[key]) for key in ("cap_id", "capability_id"))
+            or type(value["workload_policy"]) is not dict):
+        _refuse("fabric_auto_inspection_invalid")
+    scope, digest = validate_auto_route_scope(value["route_scope"])
+    if (value["route_scope_digest"] != digest or type(value["transport_identity"]) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", value["transport_identity"]) is None):
+        _refuse("fabric_auto_inspection_invalid")
+    encoded = _canonical_auto(value)
+    if len(encoded.encode("utf-8")) > 32768:
+        _refuse("fabric_auto_inspection_invalid")
+    return json.loads(encoded)
+
+
+def _auto_request_digest(payload):
+    encoded = _canonical_auto({"path": "/v1/chat/completions", "payload": payload}).encode("utf-8")
+    if len(encoded) > MAX_REQUEST_BYTES:
+        _refuse("fabric_request_too_large")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _auto_route(value, inspection, original):
+    fields = {"schema", "requested_model", "route_scope", "route_scope_digest", "selection_digest",
+              "request_digest", "routed_request_digest", "pool", "selected_model", "mode", "protocol",
+              "driver", "profile", "source", "recipe_digest", "output_contract"}
+    if (type(value) is not dict or set(value) != fields
+            or value["schema"] != "mastermind.fabric_application_route.v1"
+            or value["requested_model"] is not None or original.get("model") is not None
+            or value["route_scope"] != inspection["route_scope"]
+            or value["route_scope_digest"] != inspection["route_scope_digest"]
+            or value["pool"] not in inspection["route_scope"]["pools"]
+            or not all(_safe_id(value[key]) for key in
+                       ("selected_model", "mode", "driver", "profile", "source"))
+            or type(value["protocol"]) is not str
+            or value["protocol"] not in {"chat", "responses", "harness"}
+            or value["output_contract"] != {"mode": "hard_maximum", "max_tokens": original["max_tokens"]}):
+        _refuse("fabric_auto_route_invalid", unknown=True)
+    for key in ("selection_digest", "request_digest", "routed_request_digest"):
+        if type(value[key]) is not str or re.fullmatch(r"[0-9a-f]{64}", value[key]) is None:
+            _refuse("fabric_auto_route_invalid", unknown=True)
+    recipe = value["recipe_digest"]
+    if ((value["pool"] == "go" and (recipe is not None or value["protocol"] != "chat"))
+            or value["pool"] != "go" and (type(recipe) is not str
+                or re.fullmatch(r"[0-9a-f]{64}", recipe) is None)
+            or value["pool"] == "bailian" and value["protocol"] != "responses"
+            or value["pool"] not in {"go", "bailian"} and value["protocol"] != "harness"):
+        _refuse("fabric_auto_route_invalid", unknown=True)
+    if (value["request_digest"] != _auto_request_digest(original)
+            or value["routed_request_digest"] != _auto_request_digest(
+                dict(original, model=value["selected_model"]))):
+        _refuse("fabric_auto_request_commitment_invalid", unknown=True)
+    return json.loads(_canonical_auto(value))
+
+
 class _StreamText:
     type = "text"
 
@@ -738,10 +837,14 @@ class FabricInferenceClient:
 
     def __init__(self, *, base_url: str, proxy_token: str, model: str, timeout_s=None,
                  protocol=LEGACY_PROTOCOL, operation_id=None, close_timeout_s=5,
-                 prior_admission_possible=False, native_recipe_digest=None):
+                 prior_admission_possible=False, native_recipe_digest=None, auto_inspection=None):
         if protocol not in {LEGACY_PROTOCOL, NATIVE_PROTOCOL}:
             _refuse("fabric_protocol_invalid")
         native = protocol == NATIVE_PROTOCOL
+        automatic = auto_inspection is not None
+        inspection = validate_auto_inspection(auto_inspection) if automatic else None
+        if automatic and (not native or model is not None or native_recipe_digest is not None):
+            _refuse("fabric_auto_binding_invalid")
         if native_recipe_digest is not None and (not native or not isinstance(native_recipe_digest, str)
                 or re.fullmatch(r"[0-9a-f]{64}", native_recipe_digest) is None):
             _refuse("fabric_recipe_invalid")
@@ -766,7 +869,7 @@ class FabricInferenceClient:
             _refuse("fabric_binding_invalid")
         if native and proxy_token.startswith(("v1.", "app1.", "app2.")):
             _refuse("fabric_binding_invalid")
-        if not _safe_id(model):
+        if not automatic and not _safe_id(model):
             _refuse("fabric_model_invalid")
         if timeout_s is None:
             # B's admission5s + fresh-quota4s + provider60s and bounded
@@ -781,6 +884,8 @@ class FabricInferenceClient:
         self._url, self._timeout = url, float(timeout_s)
         self._native, self.operation_id = native, operation_id
         self._native_recipe_digest = native_recipe_digest
+        self._auto_inspection = _canonical_auto(inspection) if automatic else None
+        self._auto_turn_identity = self._auto_last_observation = None
         # Trusted restoration state comes from the existing caller/turn owner,
         # never from parsing an ID or probing during construction/inspection.
         self._prior_admission_possible = prior_admission_possible
@@ -791,6 +896,104 @@ class FabricInferenceClient:
         self._close_result, self._failure_error = None, None
         self._attempted_ids = set()
         self.messages = self
+
+    @property
+    def auto_inspection(self):
+        return json.loads(self._auto_inspection) if self._auto_inspection is not None else None
+
+    @property
+    def application_observation(self):
+        return self._auto_last_observation
+
+    def _auto_result(self, response, payload, request_id, original_body):
+        """Validate one original routed result before exposing its answer or identity."""
+        if (response.status != 200 and type(payload) is dict
+                and type(payload.get("application")) is dict
+                and payload["application"].get("schema") == NATIVE_SCHEMA):
+            # Only receipt-only recovery, pre-admission refusal and unknown
+            # turn state can omit fresh route evidence. A v1 fresh terminal
+            # cannot settle AUTO without its original/routed commitments.
+            original = _native_envelope(response, payload,
+                operation_id=self.operation_id, request_id=request_id)
+            if original.disposition == "terminal" or original.observed_usage is not None:
+                raise FabricInferenceError("fabric_auto_route_missing", effect_unknown=True,
+                    disposition="effect_unknown", status_code=response.status,
+                    request_id=request_id, observed_usage=original.observed_usage,
+                    serving_model=original.serving_model)
+            raise original
+        required = {"schema", "disposition", "turn_id", "request_id", "dispatch_permitted",
+                    "effect_unknown", "routing", "usage", "serving_model"}
+        if (type(payload) is not dict or type(payload.get("application")) is not dict
+                or set(payload["application"]) != required):
+            _refuse("fabric_auto_envelope_invalid", unknown=True)
+        state = payload["application"]
+        if state["schema"] != AUTO_SCHEMA:
+            _refuse("fabric_auto_envelope_invalid", unknown=True)
+        base = {key: value for key, value in state.items() if key != "routing"}
+        base["schema"] = NATIVE_SCHEMA
+        outcome = None
+        if response.status != 200:
+            if set(payload) - {"application", "error"}:
+                _refuse("fabric_auto_envelope_invalid", unknown=True)
+            error_payload = {"application": base}
+            if "error" in payload:
+                error_payload["error"] = payload["error"]
+            outcome = _native_envelope(response, error_payload,
+                operation_id=self.operation_id, request_id=request_id)
+        else:
+            if (state["disposition"] != "terminal" or state["dispatch_permitted"] is not False
+                    or state["effect_unknown"] is not False or state["turn_id"] != self.operation_id
+                    or state["request_id"] != request_id or "error" in payload
+                    or type(state["usage"]) is not dict
+                    or set(state["usage"]) != {"input_tokens", "output_tokens"}):
+                _refuse("fabric_auto_envelope_invalid", unknown=True)
+            _native_header(response, "X-MM-Application-Disposition", "terminal")
+            _native_header(response, "X-MM-Application-Turn-ID", self.operation_id)
+            _native_header(response, "X-MM-Application-Request-ID", request_id)
+        usage = _usage({"prompt_tokens": state["usage"]["input_tokens"],
+                        "completion_tokens": state["usage"]["output_tokens"]})
+        served = state["serving_model"] if _safe_id(state["serving_model"]) else None
+        original = _load_json(original_body, unknown=False)
+        try:
+            routing = _auto_route(state["routing"], json.loads(self._auto_inspection), original)
+            turn = {key: value for key, value in routing.items()
+                    if key not in {"request_digest", "routed_request_digest", "output_contract"}}
+            turn["output_limit_mode"] = routing["output_contract"]["mode"]
+            commitment = _canonical_auto(turn)
+            with self._lock:
+                if self._auto_turn_identity is not None and self._auto_turn_identity != commitment:
+                    _refuse("fabric_auto_turn_changed", unknown=True)
+                self._auto_turn_identity = commitment
+        except (FabricInferenceError, TypeError, ValueError, KeyError, OverflowError, RecursionError) as exc:
+            # Counts survive every malformed JSON route type after the envelope
+            # is correlated. No positive pool attribution or answer is attached.
+            error = exc if isinstance(exc, FabricInferenceError) else FabricInferenceError(
+                "fabric_auto_route_invalid", effect_unknown=True)
+            error.effect_unknown = True
+            error.observed_usage, error.serving_model = usage, served
+            error.request_id = request_id
+            raise error from None
+        observation = ApplicationObservation(_canonical_auto({
+            "schema": "mastermind.fabric_application_observation.v2",
+            "disposition": state["disposition"], "effect_unknown": state["effect_unknown"],
+            "turn_id": self.operation_id, "request_id": request_id, "routing": routing,
+            "serving_model": served,
+            "usage": {"input_tokens": usage.input_tokens, "output_tokens": usage.output_tokens}}))
+        self._auto_last_observation = observation
+        if outcome is not None:
+            outcome.application_observation = observation
+            raise outcome
+        try:
+            if served != routing["selected_model"] or payload.get("model") != served:
+                _refuse("fabric_auto_served_model_mismatch", unknown=True)
+            message = _completion(payload, served)
+            if message.usage != usage:
+                _refuse("fabric_auto_usage_mismatch", unknown=True)
+            return replace(message, application_observation=observation)
+        except Exception:
+            raise FabricInferenceError("fabric_native_terminal_unusable",
+                disposition="terminal", request_id=request_id, observed_usage=usage,
+                serving_model=served, application_observation=observation) from None
 
     def _failure(self, exc):
         error = exc if isinstance(exc, FabricInferenceError) else FabricInferenceError(
@@ -867,6 +1070,8 @@ class FabricInferenceClient:
                 # Translation can expand user/tool history into more wire rows.
                 if len(_load_json(body, unknown=False)["messages"]) > 512:
                     _refuse("fabric_request_invalid")
+                if self._auto_inspection is not None:
+                    _auto_request_digest(_load_json(body, unknown=False))
             with self._lock:
                 if self._closed:
                     _refuse("fabric_operation_closed")
@@ -886,6 +1091,8 @@ class FabricInferenceClient:
                 headers["X-MM-Application-Turn-ID"] = self.operation_id
                 if self._native_recipe_digest is not None:
                     headers["X-MM-Application-Recipe-Digest"] = self._native_recipe_digest
+                if self._auto_inspection is not None:
+                    headers["X-MM-Application-Route-Scope-Digest"] = json.loads(self._auto_inspection)["route_scope_digest"]
             exchange = self._exchange("/v1/chat/completions", body, headers,
                 timeout=self._timeout, admission=self._native)
             response = exchange.response
@@ -895,12 +1102,15 @@ class FabricInferenceClient:
             self._response_type(exchange, "text/event-stream" if streaming else "application/json")
             if self._native:
                 if response.status != 200:
+                    if self._auto_inspection is not None:
+                        self._auto_result(response, _load_json(exchange.body()), request_id, body)
                     raise _native_envelope(response, _load_json(exchange.body()),
                         operation_id=self.operation_id, request_id=request_id)
                 _native_header(response, "X-MM-Application-Disposition", "terminal")
                 _native_header(response, "X-MM-Application-Turn-ID", self.operation_id)
                 _native_header(response, "X-MM-Application-Request-ID", request_id)
             exchange.request_id = request_id
+            exchange.original_body = body
             return exchange
         except Exception as exc:
             if exchange is not None:
@@ -918,9 +1128,11 @@ class FabricInferenceClient:
         payload = None
         try:
             payload = _load_json(exchange.body())
+            if self._auto_inspection is not None:
+                return self._auto_result(exchange.response, payload, exchange.request_id, exchange.original_body)
             return _completion(payload, self.model)
         except Exception as exc:
-            if self._native and isinstance(payload, dict) and "application" not in payload:
+            if self._native and self._auto_inspection is None and isinstance(payload, dict) and "application" not in payload:
                 # A complete correlated original terminal can be unusable as an
                 # answer while still carrying observed model/token evidence.
                 exc = FabricInferenceError("fabric_native_terminal_unusable",

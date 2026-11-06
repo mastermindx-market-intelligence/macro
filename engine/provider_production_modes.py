@@ -666,8 +666,8 @@ class _ApplicationFabricTransport:
 
     base_url: str
     secret_ref: str
-    provider_id: str
-    model: str
+    provider_id: str | None
+    model: str | None
     cost_basis: str
     cap_id: str
     capability_id: str
@@ -676,6 +676,7 @@ class _ApplicationFabricTransport:
     protocol: str = "openai_chat_v1"
     native_recipe_digest: str | None = None
     metadata_read: bool = False
+    automatic: bool = False
 
 
 # Closed application implementations remain held until independently qualified
@@ -757,6 +758,32 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         application_allowed=False,
         metadata_read=False,
     ),
+
+    "native_fabric_application_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_FABRIC_APPLICATION_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:go_application", capability_id="fabric_application_go",
+        protocol="native_application_v1", metadata_read=True, automatic=True),
+    "native_fabric_mastermind_text_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1", secret_ref="MASTERMIND_FABRIC_APPLICATION_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:go_mastermind_text", capability_id="fabric_application_go_mastermind_text",
+        protocol="native_application_v1", automatic=True),
+    "native_fabric_mastermind_chat_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1", secret_ref="MASTERMIND_FABRIC_CHAT_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:go_mastermind_chat", capability_id="fabric_application_go_mastermind_chat",
+        protocol="native_application_v1", automatic=True),
+    "native_fabric_macro_brain_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_BRAIN_FABRIC_APPLICATION_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:go_macro_brain", capability_id="fabric_application_go_macro_brain",
+        protocol="native_application_v1", automatic=True),
+    "native_fabric_macro_ask_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1", secret_ref="MACRO_ASK_FABRIC_APPLICATION_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:go_macro_ask", capability_id="fabric_application_go_macro_ask",
+        protocol="native_application_v1", automatic=True),
 }
 _APPLICATION_MODE_IDS = frozenset({"shared_fabric"})
 @dataclass(frozen=True)
@@ -764,16 +791,17 @@ class _ServiceFabricRelation:
     lane: str
     workload: str
     transport_id: str
+    automatic_transport_id: str | None = None
 
 _SERVICE_FABRIC_RELATIONS = {
     "mastermind_text_fabric": _ServiceFabricRelation(
-        "mastermind-text", "site_batch", "native_go_mastermind_text_v1"),
+        "mastermind-text", "site_batch", "native_go_mastermind_text_v1", "native_fabric_mastermind_text_auto_v1"),
     "mastermind_chat_fabric": _ServiceFabricRelation(
-        "mastermind-chat", "site_interactive", "native_go_mastermind_chat_v1"),
+        "mastermind-chat", "site_interactive", "native_go_mastermind_chat_v1", "native_fabric_mastermind_chat_auto_v1"),
     "macro_brain_fabric": _ServiceFabricRelation(
-        "brain", "site_interactive", "native_go_macro_brain_v1"),
+        "brain", "site_interactive", "native_go_macro_brain_v1", "native_fabric_macro_brain_auto_v1"),
     "macro_ask_fabric": _ServiceFabricRelation(
-        "ask-brain", "site_interactive", "native_go_macro_ask_v1"),
+        "ask-brain", "site_interactive", "native_go_macro_ask_v1", "native_fabric_macro_ask_auto_v1"),
 }
 _APPLICATION_RECORD_KEYS = _APPLICATION_MODE_IDS | frozenset(_SERVICE_FABRIC_RELATIONS)
 _APPLICATION_ID = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}\Z")
@@ -800,6 +828,11 @@ class _ApplicationFabricMode:
     qualification_ref: str | None
     qualified_until: float | None
     admin_pool_view: bool = False
+    route_scope_json: str | None = None
+
+    @property
+    def route_scope(self):
+        return json.loads(self.route_scope_json) if self.route_scope_json is not None else None
 
     @property
     def secret_ref(self) -> str:
@@ -820,8 +853,10 @@ def _application_fabric_mode(mode_id: str, root: Path) -> _ApplicationFabricMode
     raw = records.get(mode_id)
     if raw is None:
         _application_refuse("fabric_application_binding_missing")
-    if not isinstance(raw, dict) or set(raw) not in (_APPLICATION_RECORD_FIELDS,
-                                                   _APPLICATION_RECORD_FIELDS | {"admin_pool_view"}):
+    if not isinstance(raw, dict) or set(raw) not in (
+            _APPLICATION_RECORD_FIELDS, _APPLICATION_RECORD_FIELDS | {"admin_pool_view"},
+            _APPLICATION_RECORD_FIELDS | {"route_scope"},
+            _APPLICATION_RECORD_FIELDS | {"admin_pool_view", "route_scope"}):
         _application_refuse("fabric_application_binding_invalid")
     if type(raw.get("admin_pool_view", False)) is not bool:
         _application_refuse("fabric_application_metadata_permission_invalid")
@@ -829,14 +864,25 @@ def _application_fabric_mode(mode_id: str, root: Path) -> _ApplicationFabricMode
     if not isinstance(transport_id, str):
         _application_refuse("fabric_application_transport_invalid")
     relation = _SERVICE_FABRIC_RELATIONS.get(mode_id)
-    if relation is not None and transport_id != relation.transport_id:
+    if relation is not None and transport_id not in (relation.transport_id, relation.automatic_transport_id):
         _application_refuse("fabric_application_transport_invalid")
     if relation is None and mode_id in _APPLICATION_MODE_IDS and transport_id in {
-            rel.transport_id for rel in _SERVICE_FABRIC_RELATIONS.values()}:
+            value for rel in _SERVICE_FABRIC_RELATIONS.values()
+            for value in (rel.transport_id, rel.automatic_transport_id)}:
         _application_refuse("fabric_application_transport_invalid")
     transport = _APPLICATION_FABRIC_TRANSPORTS.get(transport_id)
     if type(transport) is not _ApplicationFabricTransport:
         _application_refuse("fabric_application_transport_unregistered")
+    if ("route_scope" in raw) != transport.automatic:
+        _application_refuse("fabric_application_route_variant_invalid")
+    route_scope_json = None
+    if transport.automatic:
+        from engine.fabric_inference_client import validate_auto_route_scope
+        try:
+            scope, _ = validate_auto_route_scope(raw["route_scope"])
+            route_scope_json = json.dumps(scope, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        except Exception:
+            _application_refuse("fabric_application_route_scope_invalid")
     if any(raw[k] != getattr(transport, k) for k in _APPLICATION_IDENTITY_FIELDS):
         _application_refuse("fabric_application_identity_mismatch")
     if type(raw["enabled"]) is not bool or type(raw["application_allowed"]) is not bool:
@@ -852,7 +898,7 @@ def _application_fabric_mode(mode_id: str, root: Path) -> _ApplicationFabricMode
         _application_refuse("fabric_application_qualification_invalid")
     return _ApplicationFabricMode(
         transport, raw["enabled"], raw["application_allowed"], qualification, ref, until,
-        raw.get("admin_pool_view", False),
+        raw.get("admin_pool_view", False), route_scope_json,
     )
 
 
@@ -989,6 +1035,11 @@ class ApplicationFabricFactory:
                     ("fabric",), (),
                 )
         transport = mode.transport
+        if transport.automatic and (transport.protocol != "native_application_v1"
+                or transport.model is not None or transport.provider_id is not None
+                or transport.cost_basis != "unknown" or transport.native_recipe_digest is not None
+                or mode.route_scope is None):
+            _application_refuse("fabric_application_auto_contract_invalid")
         if transport.protocol not in {"openai_chat_v1", "native_application_v1"}:
             _application_refuse("fabric_application_protocol_invalid")
         if transport.native_recipe_digest is not None and (
@@ -1028,7 +1079,7 @@ class ApplicationFabricFactory:
             _application_refuse("fabric_application_metadata_not_permitted")
         decision = self.workload_decision()
         self._capability(transport)
-        return mode, transport, self._commit_inspection(self._inspection_identity(transport, decision))
+        return mode, transport, self._commit_inspection(self._inspection_identity(transport, decision, mode.route_scope))
 
     def prepare_admin_pool_reader(self):
         """Trusted startup only: resolve through the incumbent secret boundary once."""
@@ -1042,7 +1093,19 @@ class ApplicationFabricFactory:
             FabricPoolViewReader(base_url=transport.base_url, proxy_token=credential))
 
     @staticmethod
-    def _inspection_identity(transport, decision) -> dict:
+    def _inspection_identity(transport, decision, route_scope=None) -> dict:
+        if transport.automatic:
+            from engine.fabric_inference_client import AUTO_INSPECTION_SCHEMA, validate_auto_route_scope
+            scope, digest = validate_auto_route_scope(route_scope)
+            private = {**{key: getattr(transport, key) for key in _APPLICATION_IDENTITY_FIELDS},
+                "protocol": transport.protocol, "requested_model": None,
+                "route_scope": scope, "output_limit_mode": "hard_maximum"}
+            return {"schema": AUTO_INSPECTION_SCHEMA, "requested_model": None,
+                "route_scope": scope, "route_scope_digest": digest, "output_limit_mode": "hard_maximum",
+                "cap_id": transport.cap_id, "capability_id": transport.capability_id,
+                "workload_policy": decision.receipt(),
+                "transport_identity": hashlib.sha256(json.dumps(private, sort_keys=True,
+                    separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode()).hexdigest()}
         return {
             "provider": transport.provider_id,
             "model": transport.model,
@@ -1065,7 +1128,13 @@ class ApplicationFabricFactory:
         # A snapshot only narrows an already eligible owner. It grants nothing.
         fields = {"provider", "model", "cap_id", "capability_id", "cost_basis",
                   "workload_policy", "transport_identity"}
-        if type(identity) is not dict or set(identity) != fields:
+        if type(identity) is dict and identity.get("schema") == "mastermind.fabric_application_inspection.v2":
+            from engine.fabric_inference_client import validate_auto_inspection
+            try:
+                identity = validate_auto_inspection(identity)
+            except Exception:
+                _application_refuse("fabric_application_inspection_invalid")
+        elif type(identity) is not dict or set(identity) != fields:
             _application_refuse("fabric_application_inspection_invalid")
         try:
             return json.dumps(identity, sort_keys=True, separators=(",", ":"),
@@ -1094,7 +1163,7 @@ class ApplicationFabricFactory:
         Missing credentials may still prevent that later fill.
         """
         mode, transport, decision = self._eligibility(caller_cfg)
-        identity = self._inspection_identity(transport, decision)
+        identity = self._inspection_identity(transport, decision, mode.route_scope)
         if (self._inspection_commitment is not None
                 and self._inspection_commitment != self._commit_inspection(identity)):
             _application_refuse("fabric_application_identity_changed")
@@ -1107,7 +1176,7 @@ class ApplicationFabricFactory:
         mode, transport, decision = self._eligibility(caller_cfg)
         if (self._inspection_commitment is not None
                 and self._inspection_commitment != self._commit_inspection(
-                    self._inspection_identity(transport, decision))):
+                    self._inspection_identity(transport, decision, mode.route_scope))):
             _application_refuse("fabric_application_identity_changed")
         from engine.fabric_inference_client import (
             FabricInferenceClient, NATIVE_PROTOCOL, validate_native_operation_id,
@@ -1127,12 +1196,17 @@ class ApplicationFabricFactory:
 
         client = FabricInferenceClient(
             base_url=transport.base_url, proxy_token=credential, model=transport.model,
+            **({"auto_inspection": self._inspection_identity(transport, decision, mode.route_scope)}
+               if transport.automatic else {}),
             **({"timeout_s": timeout} if timeout is not None else {}),
             **({"protocol": NATIVE_PROTOCOL, "operation_id": operation_id,
                 "prior_admission_possible": prior_admission_possible,
                 **({"native_recipe_digest": transport.native_recipe_digest}
                    if transport.native_recipe_digest is not None else {})} if native else {}),
         )
+        if transport.automatic:
+            return ({"schema": "mastermind.fabric_application_binding.v2", "client": client,
+                     "inspection": self._inspection_identity(transport, decision, mode.route_scope)}, decision)
         return ({"client": client, "model": transport.model,
                  "provider": transport.provider_id, "cost_basis": transport.cost_basis,
                  "cap_id": transport.cap_id}, decision)
