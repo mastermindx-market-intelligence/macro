@@ -203,6 +203,20 @@ def test_catalyst_window_keeps_30_trading_days_and_drops_the_rest():
     assert trading_days_between(as_of, date(2027, 3, 1)) > CATALYST_WINDOW_TRADING_DAYS
 
 
+def test_expired_window_does_not_hide_the_next_estimated_catalyst():
+    issuer = _state("US-XNAS-DEMO", "DEMO", window_start="2026-10-31")
+    windows = issuer["legs"]["catalyst"]["next_observables"]
+    windows.extend([
+        {**windows[0], "window_start": "2026-11-10", "window_end": "2026-11-12"},
+        {**windows[0], "window_start": "2026-11-05", "window_end": "2026-11-06"},
+    ])
+    row = compile_research_screener([issuer], as_of="2026-11-02")["rows"][0]
+    assert row["catalyst"] is not None
+    assert row["catalyst"]["window_start"] == "2026-11-05"
+    assert row["catalyst"]["window_end"] == "2026-11-06"
+    assert row["catalyst"]["kind"] == "estimated_window"
+
+
 def test_per_lens_null_when_owner_is_missing():
     payload = compile_research_screener(
         [_state("US-XNAS-AAPL", "AAPL", name="Apple")],
