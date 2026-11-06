@@ -1,0 +1,61 @@
+{
+  "schema": "research.ukmto_warning_issue_vs_incident.v0",
+  "as_of_utc": "2026-10-16T09:34:19.187285Z",
+  "state": "SOURCE_ONLY_PARTIAL_NOT_CERTIFIED",
+  "evidence_type": "Original UKMTO PDFs and date-stamped public social timeline; PDF screenshots inspected",
+  "source_day_of_interest": "2026-10-06",
+  "items": [
+    {
+      "number": "156-26",
+      "public_product_day": "2026-10-05",
+      "incident_day": "2026-10-05",
+      "incident_time_utc": "16:37",
+      "url": "https://www.ukmto.org/-/media/ukmto/products/20261005-ukmto_warning_156_26.pdf?rev=300523122300421a82d029ca830b6a16",
+      "identity": "unknown_tanker_engine_room_fire",
+      "first_public_issue_time_utc": "UNKNOWN"
+    },
+    {
+      "number": "157-26",
+      "public_product_day": "2026-10-06",
+      "incident_day": "2026-10-05",
+      "incident_time_utc": "TBC",
+      "url": "https://www.ukmto.org/-/media/ukmto/products/20261006-ukmto_warning_157-26.pdf?rev=3d1f886d7479403b970c9f5ad8194eee",
+      "identity": "unknown_oil_tanker_outbound",
+      "first_public_issue_time_utc": "UNKNOWN_EARLIER_THAN_OR_EQUAL_TO_X_POST_NOT_PROVEN_EXACT",
+      "official_x_post_url": "https://x.com/UK_MTO/status/2107444098806546566",
+      "official_x_post_snowflake_utc": "2026-10-06T12:13:22.230Z"
+    },
+    {
+      "number": "158-26",
+      "public_product_day": "2026-10-07",
+      "incident_day": "2026-10-07",
+      "incident_time_utc": "19:00",
+      "url": "https://www.ukmto.org/-/media/ukmto/products/20261007-ukmto_warning_158-26.pdf?rev=3df160b409f54ef4bedbbd2c0ac535fc",
+      "identity": "unknown_tanker_north_of_qatar",
+      "first_public_issue_time_utc": "UNKNOWN"
+    },
+    {
+      "number": "159-26",
+      "public_product_day": "2026-10-08",
+      "incident_day": "2026-10-06",
+      "incident_time_utc": "17:09",
+      "url": "https://www.ukmto.org/-/media/ukmto/products/20261008-ukmto_warning_159_26.pdf?rev=526ce69ddc60480c944d0671033bf52e",
+      "identity": "unknown_crude_tanker",
+      "first_public_issue_time_utc": "UNKNOWN_EARLIER_THAN_OR_EQUAL_TO_X_POST_NOT_PROVEN_EXACT",
+      "official_x_post_url": "https://x.com/UK_MTO/status/2108209410615246911",
+      "official_x_post_snowflake_utc": "2026-10-08T14:54:26.784Z"
+    }
+  ],
+  "limitations": [
+    "Product file date and public social post date corroborate UTC calendar issue day, not precise UTC issue timestamp",
+    "Source timeline may not cover all advisories/special notes; archive negative completeness not proved",
+    "UKMTO 157 Oct5 incident may or may not be same attack as other Oct5 tanker or India-identified Oct6 On Peace",
+    "No actual market returns or HSI read"
+  ],
+  "method": {
+    "tweet_snowflake_ms": "(int(tweet_id)>>22)+1288834974657",
+    "epoch_unix_ms": 1288834974657,
+    "evidence_link_resolver": "DailyJournal article links to exact official @UK_MTO status; direct X reader returned 403",
+    "key_limit": "X post creation timestamp is not necessarily earliest public industry email or PDF creation time"
+  }
+}

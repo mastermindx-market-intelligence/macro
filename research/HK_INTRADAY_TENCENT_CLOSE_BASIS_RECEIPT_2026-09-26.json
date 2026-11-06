@@ -1,0 +1,23 @@
+{
+  "schema": "research.hk_intraday_tencent_close_basis_receipt.v1",
+  "generated_date": "2026-09-26",
+  "state": "SOURCE_SEMANTIC_RECEIPT_FROZEN / NON_TARGET_CANARY_ONLY / TARGET_PRICES_UNREAD",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "source_amendment": "research/HK_INTRADAY_HANDOFF_SOURCE_AMENDMENT_V2_2026-09-26.json",
+  "coverage_manifest": "research/HK_INTRADAY_HANDOFF_COVERAGE_MANIFEST_V2_2026-09-26.json",
+  "canary": {
+    "symbol": "00005",
+    "estate_ticker": "0005.HK",
+    "session": "2026-09-25",
+    "historical_day_query_clock": "16:00",
+    "historical_day_query_price": 157.6,
+    "live_hkMinute_final_clock": "16:08",
+    "live_hkMinute_final_price": 157.6,
+    "live_16_00_row_present": false,
+    "equality": true
+  },
+  "ruling": "For this Tencent HK source, the historical day/query terminal row labeled 16:00 may be used as the provider's session-close representation because the non-target canary proves it equals the same-session live closing-auction terminal price. Treat the 16:00 timestamp as a provider-normalized close label, not a literal 16:00 trade time.",
+  "target_prices_read_before_receipt": false,
+  "geometry_change": false,
+  "production_authority": false
+}

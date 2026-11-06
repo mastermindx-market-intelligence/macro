@@ -1,0 +1,61 @@
+{
+  "schema": "research.narrative_repricing_v2_evaluation_split.v1",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "manifest_path": "research/NARRATIVE_REPRICING_V2_SOURCE_MANIFEST_2026-09-25.json",
+  "manifest_freeze_commit": "ede68d99e40fd6184483a8e696dab267077c74cf",
+  "prospective_holdout_cutoff": "2026-09-25T10:29:50Z",
+  "policy": {
+    "inspected_events_never_holdout": true,
+    "pre_cutoff_events_never_prospective_holdout": true,
+    "post_cutoff_eligible_events_default_to_holdout": true,
+    "holdout_may_not_tune_features_thresholds_or_models": true,
+    "promotion_owned_by_existing_evaluation_authority": true
+  },
+  "training": [
+    "2026-06-15-us-iran-first-phase-mou-china-confirmation",
+    "2026-06-16-china-notes-us-iran-mou-hormuz-reopening",
+    "2026-06-22-trump-strait-open-negotiating",
+    "2026-07-09-renewed-strikes-hormuz-traffic-halts",
+    "2026-07-13-trump-attacking-hormuz-capabilities",
+    "2026-08-03-iran-oman-temporary-hormuz-route",
+    "2026-08-08-irgc-reopening-conditioned-on-us",
+    "2026-08-09-iran-oman-deal-final-stages",
+    "2026-08-10-iran-links-hormuz-reopening-to-us-concessions",
+    "2026-08-11-oman-iran-talks-advanced-stage"
+  ],
+  "development": [
+    "2026-08-15-hormuz-reopening-depends-on-us-conditions",
+    "2026-08-17-iran-says-mou-deadline-lost-relevance",
+    "2026-08-18-qatar-hormuz-deal-could-restart-talks",
+    "2026-08-19-iran-hormuz-remains-closed-until-us-commitments",
+    "2026-08-26-qatar-contacts-ongoing-revive-talks",
+    "2026-09-01-bessent-quiet-china-russia-iran-conversations",
+    "2026-09-15-hormuz-tanker-mine-explosion-claim"
+  ],
+  "contaminated_development_evidence": [
+    "2026-07-20-mediators-ten-day-ceasefire-proposal",
+    "2026-09-14-us-seeks-step-by-step-iran-agreement",
+    "2026-09-22-trump-momentum-for-iran-deal",
+    "2026-09-24-us-iran-phased-hormuz-deal"
+  ],
+  "prospective_holdout": {
+    "event_ids": [],
+    "admission_rule": "event.available_at > prospective_holdout_cutoff and event passes the frozen source/event eligibility law before outcome access",
+    "note": "Future events append through the existing source/experiment owner; this file does not create a watcher or collector."
+  },
+  "first_pass_measurement_rule": {
+    "rationale": "Avoid outcome-tuned impulse-end detection in the first development pass.",
+    "causal_features": [
+      "signed causal-proxy return over trailing 60 minutes before available_at",
+      "signed causal-proxy return over trailing 240 minutes before available_at",
+      "signed causal-proxy return from prior regular-session close where available",
+      "signed causal-proxy move from available_at to +5 minutes"
+    ],
+    "response_feature": "response cohort return minus benchmark return from +5 minutes to +35 minutes",
+    "secondary_response_horizons_minutes": [
+      15,
+      60
+    ],
+    "note": "All signs are defined from the event's predeclared expected causal direction. No threshold is selected from September 24."
+  }
+}

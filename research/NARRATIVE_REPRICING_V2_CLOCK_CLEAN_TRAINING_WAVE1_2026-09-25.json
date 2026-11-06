@@ -1,0 +1,145 @@
+{
+  "schema": "research.narrative_repricing_v2_clock_clean_training_wave1.v1",
+  "generated_at": "2026-09-25T12:00:00Z",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "source_clock_audit_commit": "17966036f6835e81cd650a6d5815210ea91cb78e",
+    "evaluation_split_commit": "0b8a8fd0a9ccc963d0091eee0203e32025906087",
+    "original_manifest_freeze_commit": "ede68d99e40fd6184483a8e696dab267077c74cf"
+  },
+  "authority": {
+    "research_only": true,
+    "production_inert": true,
+    "may_rank": false,
+    "may_alert": false,
+    "may_trade": false
+  },
+  "measurement_rule": {
+    "inherited_from": "research/NARRATIVE_REPRICING_V2_EVALUATION_SPLIT_2026-09-25.json",
+    "causal_features": [
+      "signed causal-proxy return over trailing 60 minutes before available_at",
+      "signed causal-proxy return over trailing 240 minutes before available_at",
+      "signed causal-proxy move from available_at to +5 minutes"
+    ],
+    "response_feature": "SMH return minus QQQ return from +5 minutes to +35 minutes",
+    "secondary_response_horizons_minutes": [
+      15,
+      60
+    ],
+    "no_threshold_selection_in_wave1": true,
+    "note": "Wave 1 measures the preregistered features descriptively. It does not select thresholds or redefine first impulse."
+  },
+  "primary_training_events": [
+    {
+      "event_id": "2026-08-04-bessent-may-have-hormuz-deal-tomorrow",
+      "available_at": "2026-08-04T11:43:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "exact_market_feed_utc"
+    },
+    {
+      "event_id": "2026-08-05-hormuz-agreement-approaching",
+      "available_at": "2026-08-05T19:54:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "exact_live_feed_utc"
+    },
+    {
+      "event_id": "2026-08-06-iran-oman-broad-framework",
+      "available_at": "2026-08-06T08:28:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "exact_live_feed_utc"
+    },
+    {
+      "event_id": "2026-08-06-oman-iran-reach-strait-agreement",
+      "available_at": "2026-08-06T19:53:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "exact_live_feed_utc"
+    },
+    {
+      "event_id": "2026-08-07-us-official-expects-hormuz-deal-soon",
+      "available_at": "2026-08-07T19:00:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "exact_live_feed_utc"
+    },
+    {
+      "event_id": "2026-08-09-iran-oman-deal-final-stages",
+      "available_at": "2026-08-09T11:43:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "corrected_reuters_republisher_utc"
+    },
+    {
+      "event_id": "2026-08-21-oman-iran-navigation-talks",
+      "available_at": "2026-08-21T16:22:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "exact_live_feed_utc"
+    },
+    {
+      "event_id": "2026-08-25-iran-oman-management-final-stages",
+      "available_at": "2026-08-25T07:41:00Z",
+      "direction": "relief",
+      "family": "iran_oman_hormuz_navigation",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "exact_live_feed_utc"
+    },
+    {
+      "event_id": "2026-09-16-iran-fm-peaceful-solution",
+      "available_at": "2026-09-16T09:39:00Z",
+      "direction": "relief",
+      "family": "us_iran_diplomatic_reengagement",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "exact_live_feed_utc"
+    }
+  ],
+  "control_events": [
+    {
+      "event_id": "2026-09-22-iran-could-open-hormuz-seven-days",
+      "available_at": "2026-09-22T09:14:00Z",
+      "direction": "relief",
+      "family": "us_iran_hormuz_deescalation",
+      "causal_proxy": "USO",
+      "response": "SMH",
+      "benchmark": "QQQ",
+      "source_clock_quality": "exact_live_feed_utc",
+      "control_role": "later_reported_denial_candidate"
+    }
+  ],
+  "exclusions": [
+    "All already_inspected_pilot events remain development/diagnostic only.",
+    "Rows marked clock_unresolved or non-incremental in the source-clock audit are not measured in wave 1.",
+    "No event is shifted to a different minute after observing a return."
+  ]
+}

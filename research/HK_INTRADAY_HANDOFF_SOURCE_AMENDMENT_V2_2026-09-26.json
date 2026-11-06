@@ -1,0 +1,115 @@
+{
+  "schema": "research.hk_intraday_handoff_source_amendment.v2",
+  "generated_date": "2026-09-26",
+  "state": "SOURCE_CAPABILITY_AMENDMENT_FROZEN / DEVELOPMENT_ONLY / PROSPECTIVE_COMPATIBLE / PRODUCTION_INERT / NO_TRADING_AUTHORITY",
+  "operation": "geopolitical-relief-event-study-20260924-sol-001",
+  "carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "branch": "sol/geopolitical-relief-event-study-20260924",
+    "parent_head": "f03399a024d55d821c80884eaeb87294c82ab2f3",
+    "protected_master_pin": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
+    "skillpack_index_blob": "94d1af402598894372858793a5b1931019c5fa77"
+  },
+  "supersedes_source_only": {
+    "parent_spec": "research/HK_INTRADAY_HANDOFF_CANDIDATE_SPEC_2026-09-26.json",
+    "parent_source_family": "incumbent CN/HK runtime AkShare -> Eastmoney Hong Kong intraday endpoint",
+    "parent_geometry_changed": false,
+    "parent_candidates_changed": false,
+    "parent_benchmarks_changed": false,
+    "reason": "The frozen Eastmoney/AkShare source became consistently unavailable with RemoteDisconnected on the non-target HSBC canary before any target HK intraday outcome was read. A browser-header hypothesis was also falsified on the same non-target canary. This amendment changes only the source capability and timing semantics; it does not select on target returns."
+  },
+  "source": {
+    "owner_repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "owner_branch": "master",
+    "owner_commit": "3cb7dbd8e89cd5d932fd07b2961ca79a0847d552",
+    "owner_file": "terminal/lib/intradaySources.ts",
+    "owner_file_blob": "239f61a9eaba438ce5ea6f277590938302dc7474",
+    "implementation": "fetchTencentHK",
+    "family": "Tencent HK one-minute tick history via web.ifzq.gtimg.cn day/query + hkMinute/query",
+    "auth": "keyless_no_auth",
+    "persistence": "none_research_reads_existing_owner",
+    "historical_depth_observed": "approximately five recent HK sessions; days parameter does not buy deeper history under the incumbent adapter contract",
+    "raw_row_semantics": "market-local HHMM, last price, cumulative volume and turnover; raw close/price points are suitable for return geometry, but adapter OHLC is synthesized from prior close and must not be treated as true intraminute OHLC",
+    "timestamp_semantics": "Terminal uses HK market-local wall-clock as a display epoch, not a true UTC instant. Research measurement must keep the HK session clock explicitly market-local and must not compare this display epoch numerically to UTC source clocks.",
+    "latency_semantics": "HK source is typically delayed; this amendment authorizes retrospective research measurement only, not a real-time prediction or alert claim."
+  },
+  "non_target_canary": {
+    "symbol": "00005",
+    "estate_ticker": "0005.HK",
+    "role": "non-target infrastructure canary",
+    "observed_at_session_date": "2026-09-26",
+    "endpoints": [
+      "https://web.ifzq.gtimg.cn/appstock/app/day/query?code=hk00005&days=5",
+      "https://web.ifzq.gtimg.cn/appstock/app/hkMinute/query?code=hk00005"
+    ],
+    "http_status": 200,
+    "day_blocks": 5,
+    "day_dates": [
+      "20260925",
+      "20260924",
+      "20260923",
+      "20260922",
+      "20260921"
+    ],
+    "latest_session_rows": 332,
+    "latest_session_first_clock": "09:30 HKT",
+    "latest_session_last_clock": "16:08 HKT",
+    "target_prices_inspected": false
+  },
+  "frozen_candidates": {
+    "targets": [
+      {
+        "symbol": "00981",
+        "estate_ticker": "0981.HK",
+        "name": "SMIC"
+      },
+      {
+        "symbol": "01347",
+        "estate_ticker": "1347.HK",
+        "name": "Hua Hong Semiconductor"
+      }
+    ],
+    "primary_benchmark": {
+      "symbol": "02800",
+      "estate_ticker": "2800.HK",
+      "name": "Tracker Fund of Hong Kong"
+    },
+    "sensitivity_benchmark": {
+      "symbol": "03033",
+      "estate_ticker": "3033.HK",
+      "name": "CSOP Hang Seng TECH ETF"
+    }
+  },
+  "coverage_gate": {
+    "law": "After this amendment commit only, query the frozen target/benchmark symbols and inspect timestamp/date coverage only. Inclusion is based solely on whether the event's next HK session open and first 30 minutes are present; never on return sign or magnitude.",
+    "target_basket_rule": "equal-weight all frozen target candidates that pass timestamp coverage",
+    "primary_benchmark_rule": "2800.HK must pass the same timestamp coverage or the primary HK-intraday endpoint is DATA_GAP",
+    "sensitivity_rule": "3033.HK remains secondary and cannot replace 2800.HK."
+  },
+  "measurement_if_coverage_passes": {
+    "primary": "previous target cash close -> first five-minute target return after the next HK open, equal-weighted across covered frozen targets, residualized versus 2800.HK on identical market-local clock geometry",
+    "secondary": [
+      "first 5m -> +30m continuation",
+      "same residual versus 3033.HK technology sensitivity benchmark"
+    ],
+    "price_basis": "use raw Tencent minute price points; do not use synthesized OHLC highs/lows as observed market OHLC",
+    "clock_law": "source event available_at remains UTC and is never shifted to HK open; HK outcome geometry is measured on the next observed HK cash session using explicit HKT wall-clock labels",
+    "missingness": "missing required open/+5/+30 points or benchmark coverage = DATA_GAP; no forward fill or source substitution"
+  },
+  "contamination_and_authority": {
+    "source_selected_before_target_read": true,
+    "target_intraday_outcomes_read_before_freeze": false,
+    "existing_daily_HSI_development_outcomes_already_open": true,
+    "prospective_v2_holdout": "UNTOUCHED",
+    "production_authority": false,
+    "may_rank": false,
+    "may_alert": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_execute": false,
+    "may_write_qledger": false,
+    "may_write_chronicle": false,
+    "may_write_market_memory": false
+  }
+}

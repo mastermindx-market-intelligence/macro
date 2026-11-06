@@ -1,0 +1,769 @@
+{
+  "schema": "research.source_only_oct6_candidate_triage.v0",
+  "source_date": "2026-10-06",
+  "created_at_utc": "2026-10-12T05:06:37.052974Z",
+  "state": "PARTIAL_UNCERTIFIED",
+  "status_reason": "Public web search and direct article inspection do not constitute complete Reuters/wire or UKMTO census. Earliest public clocks and full required channels remain under review.",
+  "canonical_carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 8012,
+    "head_observed": "b4ef0fef620e2a41993dc2eeb27ffb1e85955482"
+  },
+  "source_scope": {
+    "epoch2_activation_utc": "2026-10-06T04:31:47Z",
+    "day_closed_utc": "2026-10-07T00:00:00Z",
+    "markets_outcomes": "NOT_READ_FOR_THIS_TRIAGE",
+    "hsi_target": "NOT_READ"
+  },
+  "rows": [
+    {
+      "id": "20261006-moscow-region-mass-drone-attack",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Russia/Ukraine",
+      "wire_first_mirror_at": "2026-10-06T07:49:00Z",
+      "earliest_public_clock": "UNRESOLVED_EARLIER_OFFICIAL_MAY_EXIST",
+      "headline": "Ukraine large-scale drones against Moscow region; official mayor regional reports; fuel depot strike blogger-only unconfirmed",
+      "source_url": "https://www.marketscreener.com/news/ukrainian-drones-kill-two-in-moscow-region-injure-nine-more-governor-says-ce785dd8df8ef522",
+      "disposition": "EXCLUDE_BASE_DRONE_WAVE_PRE_EPOCH2",
+      "reason": "Moscow-local 05:23 Oct6 Interfax article on official Sobyanin 650-drone statement = 02:23Z, over 2h before Epoch2 activation 04:31:47Z. Original first mayor posts may predate it. Later Reuters 07:49Z is retrospective/confirmation, not new event. Any independent material later action must be independently identified with its own earliest public clock. Unconfirmed fuel-depot claim remains excluded.",
+      "parent_cluster": "russia-ukraine-drones-2026-10-06",
+      "earlier_source_url": "https://www.interfax.ru/moscow/1120531",
+      "earlier_source_local": "2026-10-06T05:23:00+03:00",
+      "interfax_source_upper_bound_at": "2026-10-06T02:23:00Z"
+    },
+    {
+      "id": "20261006-zelenskiy-updated-intelligence-warning",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Russia/Ukraine",
+      "wire_first_mirror_at": "2026-10-06T17:31:00Z",
+      "earliest_public_clock": "NOT_LATER_THAN_2026-10-06T10:45:07Z",
+      "headline": "Zelenskiy says fresh intelligence indicates Russia preparing massive attack",
+      "source_url": "https://uk.marketscreener.com/news/ukraine-s-zelenskiy-says-intelligence-shows-russia-is-preparing-massive-attack-ce785dd9dd89f424",
+      "disposition": "CANDIDATE_SOURCE_CLOCK_FOUND_MATERIALITY_UNRESOLVED",
+      "reason": "Original Zelenskiy official 10:45:07Z post carries same updated intelligence; any evening re-report cannot be reanchored to 17:31Z. Need check any still-earlier exact official issue and whether warning materially changed known Oct4 Russian escalation. Exclude future Oct7 realized strikes from materiality judgment.",
+      "parent_cluster": "russia-ukraine-threat-warning-2026-10-06",
+      "point_in_time_source_control": "OCT6_OFFICIAL_VINTAGE_ONLY_NO_USE_OF_OCT7_ACTUAL_ATTACK_REPORTS",
+      "official_source_url": "https://szru.gov.ua/en/news-media/news/weve-got-updated-intel-on-russias-preparations-for-a-massive-strike--address-by-the-president",
+      "corroborating_reuters_1731_mirror": "https://uk.marketscreener.com/news/ukraine-s-zelenskiy-says-intelligence-shows-russia-is-preparing-massive-attack-ce785dd9dd89f424",
+      "other_reuters_syndication_at": "2026-10-06T17:52:00Z",
+      "original_official_post_url": "https://t.me/V_Zelenskiy_official/21236",
+      "original_official_post_iso": "2026-10-06T10:45:07Z",
+      "clock_basis": "Original official @V_Zelenskiy_official/21236 Telegram source datetime=2026-10-06T10:45:07+00:00; content says updated intelligence Russia preparing massive strike. Syndicated evening Reuters later at ~17:31-17:52Z repeats this risk update. Do not move first public clock to evening."
+    },
+    {
+      "id": "20261006-yemen-bab-mandeb-counterattack-followthrough",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Yemen/Red Sea",
+      "wire_first_mirror_at": "2026-10-06T18:00:00Z",
+      "earliest_public_clock": "UNRESOLVED_EARLIER_LOCAL_REPORT_MAY_EXIST",
+      "headline": "Saudi-backed Yemeni government troops consolidate Oct5 territory recapture and continue fighting near Bab el-Mandeb",
+      "source_url": "https://www.marketscreener.com/news/yemeni-government-fighters-recorded-driving-vehicles-over-houthi-opponents-ce785dd9dd8bf523",
+      "disposition": "EXCLUDE_BASE_EVENT_PRE_ACTIVATION_TUESDAY_DETAIL_UNRESOLVED",
+      "reason": "A separate Reuters syndication published October 6 07:26 IST = 01:56Z (pre-activation), describing the Monday recapture; this parent event is not clean Epoch2. Only a materially distinct and independently timed Tuesday operation could be a candidate. Original 18:00Z mirror is not first-public event clock.",
+      "parent_cluster": "yemen-houthi-bab-el-mandeb-2026-10-05",
+      "earlier_source_url": "https://www.moneycontrol.com/world/yemen-forces-retake-bab-el-mandeb-coast-from-houthis-as-fighting-intensifies-article-14045227.html",
+      "earlier_mirror_at": "2026-10-06T01:56:00Z"
+    },
+    {
+      "id": "20261006-iran-us-enrichment-demand-vance",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Iran/Hormuz",
+      "wire_first_mirror_at": "2026-10-06T22:37:00Z",
+      "earliest_public_clock": "UNRESOLVED_POSSIBLY_PRIOR_PUBLIC_POLICY",
+      "headline": "US Vice President Vance tells Reuters Iran must materially reduce enrichment for war-ending deal",
+      "source_url": "https://www.marketscreener.com/news/in-interview-us-vice-president-vance-says-iran-must-cut-enrichment-to-end-war-ce785dd9df8cf523",
+      "disposition": "CANDIDATE_UNRESOLVED",
+      "reason": "Interview occurred Oct5; determine if materially new binding policy or restatement, and first decision-eligible public clock The currently accessible Reuters mirror updated 2026-10-07 09:57 EDT and contains an Oct7 Iranian official reaction that is NOT contemporaneously knowable on Oct6; use first-edition archive only for event statement. 22:37Z was after 20:00Z regular U.S. cash close; no clock movement.",
+      "parent_cluster": "us-iran-nuclear-war-negotiations-2026",
+      "first_reuters_mirror_publication_at": "2026-10-06T22:37:00Z",
+      "article_later_modified_at": "2026-10-07T13:57:00Z",
+      "text_vintage_state": "OCT7_EDIT_CONTAINS_OCT7_IRANIAN_OFFICIAL_REACTION_NOT_KNOWABLE_OCT6",
+      "vintage_correction_at": "2026-10-12T05:10:50.359242Z",
+      "us_cash_session_state": "OCT6_US_CASH_CLOSED_AT_20:00Z_BEFORE_22:37Z_SOURCE_CLOCK",
+      "session_policy": "KEEP_ORIGINAL_22:37Z_ANCHOR; NO_NEXT_DAY_REANCHOR; minute-window completeness to be judged only if lawfully opened after full certification"
+    },
+    {
+      "id": "20261006-ukmto-159-hormuz-tanker",
+      "event_class": "physical_energy_shipping_security",
+      "region": "Iran/Hormuz",
+      "wire_first_mirror_at": null,
+      "earliest_public_clock": "NOT_PROVEN_ON_OCT6; UKMTO_WARNING_159_REPORTED_ISSUED_OCT8",
+      "headline": "UKMTO 159-26 later reports tanker hit Oct6; warning reportedly issued Oct8",
+      "source_url": "https://www.ukmto.org/",
+      "secondary_source_url": "https://cedarnews.net/newstasks/1040240/oil-tanker-hit-by-unknown-projectile-in-strait-of-hormuz-ukmto-says/",
+      "disposition": "LATE_SOURCE_EXCLUDE_FROM_OCT6",
+      "reason": "Original UKMTO issue clock not obtained from authenticated archive but at least October 8 separate Anadolu newsroom and Cedar source published for Oct6 incident 17:09Z, both describing UKMTO delayed report; contemporaneous Oct6 public original not established. Do not confuse different UKMTO warning 157-26 about Oct5 tanker incident which Anadolu reported on Oct6. Primary one-page UKMTO PDF itself confirms attack occurred Oct6 17:09Z; product filename dated Oct8 and official UK_MTO warning post Oct8. Precise first publication time Oct8 not exposed, but publication was not authenticated for Oct6; keep late-source exclusion. This does not rule out unknown independent contemporaneous third-party Oct6 source.",
+      "parent_cluster": "hormuz-tanker-projectiles-2026-10",
+      "incident_at": "2026-10-06T17:09:00Z",
+      "incident_at_is_not_availability": true,
+      "anadolu_corrob_issue_at": "2026-10-08_DATE_ONLY",
+      "anadolu_original_report": "https://www.anadoluajansi.gov.tr/en/middle-east/crude-oil-tanker-struck-by-unknown-projectile-in-strait-of-hormuz-uk-maritime-agency/4082560",
+      "ukmto_original_pdf_url": "https://www.ukmto.org/-/media/ukmto/products/20261008-ukmto_warning_159_26.pdf?rev=526ce69ddc60480c944d0671033bf52e",
+      "ukmto_original_pdf_public_product_date": "2026-10-08",
+      "ukmto_official_social_source": "https://nitter.rdrama.net/UK_MTO",
+      "ukmto_official_social_warning_post_date": "2026-10-08",
+      "ukmto_original_pdf_incident_date": "2026-10-06",
+      "ukmto_original_pdf_incident_time_utc": "2026-10-06T17:09:00Z",
+      "ukmto_pdf_verification": "Direct original UKMTO one-page warning 159-26 PDF opened and visually verified: 06OCT2026 1709UTC incident, time-late report; official PDF original product URL begins 20261008 and @UK_MTO timeline posts WARNING 159 Oct8. The PDF itself does not display a separate Issue Date field. Never conflate product date with incident date or claim exact publication clock.",
+      "ukmto_original_social_post_url": "https://x.com/UK_MTO/status/2108209410615246911",
+      "ukmto_original_social_post_identifier": "2108209410615246911",
+      "ukmto_original_social_post_snowflake_utc": "2026-10-08T14:54:26.784Z",
+      "social_clock_proof": "Official @UK_MTO original X URL and ID in DailyJournal source media links, X Snowflake time decoded by ((tweet_id>>22)+1288834974657), corroborated by news site showing date/local posting time. URL not directly rendered in web reader (403), so post timestamp is a conditional platform-ID provenance upper bound, not independently retrieved website publication or original industry distribution time."
+    },
+    {
+      "id": "20261006-gaza-routine-strikes",
+      "event_class": "ceasefire_deescalation_or_escalation",
+      "region": "Israel/Gaza",
+      "wire_first_mirror_at": "2026-10-06T10:12:00Z",
+      "earliest_public_clock": "UNRESOLVED_EARLIER_LOCAL_REPORT_MAY_EXIST",
+      "headline": "Two Palestinians killed in continued Israeli strikes; separate strikes in Gaza City",
+      "source_url": "https://www.marketscreener.com/news/israeli-strikes-kill-two-people-in-gaza-medics-say-ce785dd8d08af026",
+      "disposition": "PROVISIONAL_EXCLUDE_ROUTINE_CONTINUATION",
+      "reason": "No documented materially new ceasefire or operational risk-channel change beyond near-daily ongoing strikes",
+      "parent_cluster": "gaza-post-ceasefire-strikes-2026"
+    },
+    {
+      "id": "20261006-taiwan-unchanged-us-arms-package",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Taiwan/China",
+      "wire_first_mirror_at": "2026-10-06T02:13:00Z",
+      "earliest_public_clock": "PRE_EPOCH2_ACTIVATION",
+      "headline": "Taiwan defense minister says no knowledge of new U.S. arms-sales restructuring and commitments unchanged",
+      "source_url": "https://au.marketscreener.com/news/taiwan-says-it-has-not-heard-new-us-arms-sales-will-be-carved-into-smaller-chunks-ce785dd8dc88f424",
+      "disposition": "EXCLUDE_NO_CHANGE_PRE_ACTIVATION",
+      "reason": "No material policy change; Reuters mirror 13:13 AEDT Oct6 translates 02:13Z, before Epoch2 activation",
+      "parent_cluster": "taiwan-us-arms-sales-existing-package"
+    },
+    {
+      "id": "20261006-ukraine-grain-ship-black-sea-monday",
+      "event_class": "physical_energy_shipping_security",
+      "region": "Russia/Ukraine",
+      "wire_first_mirror_at": "2026-10-06T01:27:00Z",
+      "earliest_public_clock": "POSSIBLY_OCT5_ISSUE",
+      "headline": "Guardian Oct6 briefing repeats Oct5 Russian drone strike on Turkish-owned grain vessel in Black Sea",
+      "source_url": "https://www.theguardian.com/world/2026/oct/06/ukraine-war-briefing-kyiv-claims-half-of-russias-oil-refining-capacity-destroyed",
+      "disposition": "EXCLUDE_FROM_CLEAN_EPOCH2_PRE_ACTIVATION",
+      "reason": "Guardian published Oct6 01:27Z prior to activation; report concerned Oct5 event, earlier public clock may exist",
+      "parent_cluster": "black-sea-grain-vessel-2026-10-05"
+    },
+    {
+      "id": "20261006-saudi-pakistan-turkey-defence-pact-activation",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Yemen/Red Sea",
+      "wire_first_mirror_at": "2026-10-06T10:02:17Z",
+      "earliest_public_clock": "BEFORE_EPOCH2_ACTIVATION_UNRESOLVED_EXACT_MON_OCT5",
+      "headline": "Saudi Arabia, Pakistan and Turkey invoke Mecca mutual defence pact after Houthi attacks; joint statement late Monday Oct5",
+      "source_url": "https://www.ft.com/content/f94db6c5-1ad2-4bbf-9fec-4a4ef1e99dba",
+      "disposition": "EXCLUDE_BASE_ANNOUNCEMENT_PRE_ACTIVATION",
+      "reason": "FT Oct6 article reports tri-government joint statement published late Monday Oct5. Cannot select by later article clock. Independently new Oct6 deployment action, if any, needs separate first-public source.",
+      "parent_cluster": "saudi-houthi-defence-pact-2026-10-05"
+    },
+    {
+      "id": "20261006-bulgaria-eez-two-commercial-vessels-drones",
+      "event_class": "physical_energy_shipping_security",
+      "region": "Russia/Ukraine-Black Sea/Bulgaria",
+      "headline": "Two commercial vessels ALFA WATAN and ABLE struck by drones in Bulgarian exclusive economic zone; first ship sank, crew of second rescued",
+      "source_url": "https://www.bgnes.com/politics/drones-strike-two-ships-in-bulgarian-waters-ferry-rescues-crew-of-one-as-other-sinks",
+      "source_kind": "Bulgarian BGNES newsroom local, directly inspected in web results",
+      "source_published_local": "2026-10-06T09:36:00+03:00",
+      "verified_publication_upper_bound_utc": "2026-10-06T06:04:00Z",
+      "earliest_public_clock": "UNRESOLVED_EARLIER_OFFICIAL_MAY_EXIST_NOT_LATER_THAN_2026-10-06T06:04:00Z",
+      "other_source_url": "https://www.bta.bg/en/news/bulgaria/1218507-two-merchant-ships-attacked-by-sea-and-aerial-drones-in-bulgaria-s-exclusive-eco",
+      "other_source_published_local": "2026-10-06T11:43:00+03:00",
+      "disposition": "CANDIDATE_UNRESOLVED_PENDING_EARLIEST_PUBLICATION_AND_GRANULARITY",
+      "reason": "One joint drone incident affecting two distinct civilian vessels: may represent one material operational campaign with two damaged hulls. At least one attributable 06:36Z press source post-activation, but earliest Bulgarian maritime distress/public release could predate it. No proven Russian perpetrator at initial Oct6 Bulgarian government disclosure; Zelensky later attributed and Bulgarian defense minister later said unproven. Distinguish onset/distress 03:00 Sofia local from public available_at. Must not split row opportunistically for sample size. Varna24 Oct6 09:04 Bulgarian EEST = 06:04Z predates BGNES 09:36 EEST=06:36Z by 32m. First-public port/authority release may be earlier. Keep old BGNES as independently attributable later corroboration, not source clock. BNR first-hand local reporter at 09:04 EEST is stronger contemporaneous proof than later Bulgarian PM statement; earliest other public report still not conclusively excluded.",
+      "parent_cluster": "black-sea-civilian-shipping-attacks-oct5-oct6-2026",
+      "incident_time_local": "2026-10-06T03:00:00+03:00",
+      "source_state": "SOURCE_UNRESOLVED",
+      "market_outcomes_read": false,
+      "varnapress_source_url": "https://www.varna24.bg/novini/varna/Dronove-poraziha-dva-koraba-krai-Byala-Varnensko-3035372",
+      "varnapress_original_published_local": "2026-10-06T09:04:00+03:00",
+      "varnapress_publication_upper_bound_utc": "2026-10-06T06:04:00Z",
+      "bulgarian_national_radio_original": "https://bnrnews.bg/burgas/post/537840/udareni-ot-dronove-korabi-v-cherno-more-teche-spasitelna-aktsiya-na-80-mili-ot-byala",
+      "bulgarian_national_radio_publication_local": "2026-10-06T09:04:00+03:00",
+      "bulgarian_national_radio_publication_upper_bound_utc": "2026-10-06T06:04:00Z",
+      "source_first_public_basis": "At least BNR Bulgarian National Radio firsthand rescue-operation report at 09:04 EEST=06:04Z, independently matched Varna24 same minute; drone attribution explicitly described as unconfirmed in early BNR. BTA PM confirmation 11:35 EEST=08:35Z. Distress call 04:00 EEST=01:00Z is not itself proof of public disclosure."
+    },
+    {
+      "id": "20261006-odesa-marshall-islands-rapeseed-oil-vessel",
+      "event_class": "physical_energy_shipping_security",
+      "region": "Russia/Ukraine-Black Sea/Odesa",
+      "headline": "Odesa governor reports separate Russian UAV strike on Marshall Islands flagged rapeseed-oil merchant ship: 1 killed and 7 injured",
+      "source_url": "https://en.lb.ua/news/2026/10/06/44226_odesa_regional_administration.html",
+      "source_kind": "LB.ua contemporary copy attributing Odesa governor Oleh Kiper; direct article source",
+      "source_published_local": "2026-10-06T11:27:00+03:00",
+      "verified_publication_upper_bound_utc": "2026-10-06T08:27:00Z",
+      "earliest_public_clock": "NOT_LATER_THAN_2026-10-06T08:14:16Z",
+      "other_source_url": "https://www.pravda.com.ua/eng/news/2026/10/06/8056674/",
+      "other_source_published_local": "2026-10-06T12:09:00+03:00",
+      "disposition": "CANDIDATE_PRIMARY_SOURCE_VERIFIED_FURTHER_CENSUS_PENDING",
+      "reason": "Original Odesa OVA head Oleh Kiper Telegram post 21439 datetime=2026-10-06T08:14:16+00:00 (public), earlier than LB 08:27Z and Ukrainska Pravda 09:09Z, with vessel cargo/casualty details. Remains contingent on exhaustive earlier official/wire clock search and final day census.",
+      "parent_cluster": "black-sea-civilian-shipping-attacks-oct5-oct6-2026",
+      "source_state": "SOURCE_UNRESOLVED",
+      "market_outcomes_read": false,
+      "original_official_post_url": "https://t.me/odeskaODA/21439",
+      "original_official_post_iso": "2026-10-06T08:14:16Z"
+    },
+    {
+      "id": "20261006-aframax-rio-sochi-oil-tanker-fire-drone-attack",
+      "event_class": "physical_energy_shipping_security",
+      "region": "Russia/Ukraine-Black-Sea/Sochi",
+      "headline": "Liberian flagged crude-oil tanker Aframax Rio set ablaze off Sochi by suspected/then confirmed unmanned surface craft; 23 crew rescued",
+      "source_url": "https://malaysia.news.yahoo.com/russia-says-tanker-crew-rescued-200409790.html",
+      "wire_first_mirror_at": "2026-10-06T20:04:00Z",
+      "other_source_url": "https://www.theins.co/news/297968",
+      "other_source_time_as_published": "2026-10-06 17:43 (site timezone requires verifying; likely Moscow but do NOT assume exact UTC)",
+      "other_source_url2": "https://meduza.io/en/news/2026/10/06/oil-tanker-burns-off-coast-of-sochi-blanketing-the-city-in-black-smoke",
+      "official_source_family": "Russian Sirius municipality / Russian Transport Ministry in Max or Telegram, original exact issue times unresolved",
+      "earliest_public_clock": "UNRESOLVED_SOCIAL_OR_ORIGINAL_OFFICIAL_BEFORE_APPROX_2026-10-06T17:00Z",
+      "disposition": "CANDIDATE_UNRESOLVED_POST_OCT6_DISCOVERY_RETROSPECTIVE_ISSUE",
+      "reason": "Critically this is an Oct6 maritime event, not Oct7 despite many following-day articles. Reuters syndication 20:04Z October6. Sirius municipality confirmed fire before Russian Transport Ministry later described unmanned sea-craft attack. Earlier social monitoring and local press may have been first to disclose fire. Need separate fire first-public vs attack confirmation and frozen material event ID. The incident ~18:00 Moscow local is NOT public availability clock; avoid reanchoring based on Reuters or Oct7 reporting. No proof of attacker identity as Ukraine from official press. Retrospective Kommersant Oct7 states official Sirius fire notification roughly 20:00 Moscow Oct6 => about 17:00Z; city social posts roughly one hour earlier. Do NOT use later Reuters 20:04Z or Russian transport ministry attack confirmation at Interfax 22:18 Moscow=19:18Z as original event clock. Fire first public and later unmanned-boat cause must be separated.",
+      "parent_cluster": "black-sea-civilian-shipping-attacks-oct5-oct6-2026",
+      "source_state": "SOURCE_UNRESOLVED",
+      "markets_outcomes_read": false,
+      "sochi_initial_authority_source_upper_bound_utc": "2026-10-06T17:00:00Z_APPROX",
+      "sochi_first_official_basis": "Kommersant post-incident Oct7 retrospective states first official notices around 20:00 Oct6 Moscow local (UTC+3), about 17:00Z, original Max message not directly verified",
+      "sochi_first_monitoring_upper_bound_utc": "UNRESOLVED_SOCIAL_POSTS_AT_LEAST_ONE_HOUR_BEFORE_OFFICIAL",
+      "verified_corroborating_source": "https://www.kommersant.ru/doc/9008173/"
+    },
+    {
+      "id": "20261006-russian-mod-yuzhny-fuel-tanker-attack-claim",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Russia/Ukraine-Black-Sea/Pivdennyi",
+      "headline": "Russian Defence Ministry says UAVs hit military fuel transport tanker in Ukrainian port Yuzhny/Pivdennyi Oct6",
+      "source_url": "https://www.interfax.ru/russia/1120699",
+      "wire_first_mirror_at": "2026-10-06T15:53:00Z",
+      "publication_clock_basis": "Interfax dated 2026-10-06 18:53 Moscow local=15:53Z; Russia MoD original channel timestamp may be earlier",
+      "earliest_public_clock": "UNRESOLVED_EARLIER_RUSSIAN_MOD_RELEASE",
+      "disposition": "POTENTIAL_SAME_EVENT_AS_ODESA_RAPESEED_VESSEL_OR_SEPARATE_UNRESOLVED",
+      "reason": "Conflicting description of tanker allegedly carrying military fuels in Pivdennyi port versus Odesa governor first-public post 08:14:16Z of Marshall-Islands flagged rapeseed-oil vessel. No vessel ID or independent corroboration from Russian claim. Do not count twice or treat cargo claim as verified. Only if identity mismatch and new material event/clock proven may it form separate source row.",
+      "parent_cluster": "black-sea-civilian-shipping-attacks-oct5-oct6-2026",
+      "source_state": "SOURCE_CONFOUNDED",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-taiwan-mnd-routine-pla-daily-activity",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Taiwan/China",
+      "headline": "Taiwan Ministry of National Defense daily PLA vessel/aircraft census, Oct6 publication",
+      "source_url": "https://air.mnd.gov.tw/EN/News/News_Detail.aspx?CID=214&ID=59283",
+      "source_published_date": "2026-10-06",
+      "first_public_clock": "UNRESOLVED_ISSUE_TIME_NOT_REQUIRED_FOR_EXCLUSION",
+      "disposition": "EXCLUDE_ROUTINE_DAILY_NO_MATERIAL_CHANGE",
+      "reason": "Routine 6am Oct5\u20136 (UTC+8) activity statement: 8 PLA navy ships and 8 official ships, zero PLA aircraft, no announced escalation/new policy. Official source calendar date is not an exact public time and underlying observation window is not source disclosure time. Preserve as searched negative-control row, not an independent geopolitical event.",
+      "parent_cluster": "taiwan-strait-routine-mnd-daily",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-saudi-airports-jazan-najran-oct5-incident-oct6-confirmation",
+      "event_class": "ceasefire_deescalation_or_escalation",
+      "region": "Yemen/Red Sea/Saudi",
+      "headline": "Oct5 Saudi Jazan and Najran airport attacks confirmed by Saudi aviation authority Oct6 with three minor injuries",
+      "source_url": "https://news-ajel.com/en/saudi/article-3aae210d",
+      "first_attributable_oct6_report_local": "2026-10-06T07:53:00+03:00",
+      "first_oct6_report_upper_bound_utc": "2026-10-06T04:53:00Z",
+      "prior_public_claim_source": "https://www.shafaq.com/en/Middle-East/Houthis-target-Saudi-airports-warn-airlines",
+      "prior_public_claim_published_at": "2026-10-05T21:05:20Z",
+      "prior_original_houthi_post": "https://x.com/Yah_Saree/status/2107201659990331430",
+      "earliest_public_clock": "NO_LATER_THAN_2026-10-05T21:05:20Z_FOR_SOUTHERN_REGION_CLAIM; EXACT_JAZAN_NAJRAN_AIRPORT_DETAILS_UNRESOLVED",
+      "disposition": "SOURCE_CONFOUNDED_PRIOR_CLAIM_AND_NEW_GACA_CONFIRMATION",
+      "reason": "Houthi Oct5 statement named sites in Najran/Jazan and airports elsewhere; Saudi GACA Oct6 identified particular Jazan/Najran airports and casualties. Frozen original event definition must distinguish preactivation attack campaign from newly material confirmed airport damage, without silently upgrading a later confirmation to a new clean event. No market outcomes read.",
+      "parent_cluster": "houthi-saudi-airport-strike-campaign-oct5-oct6",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-gaza-oct7-anniversary-commemoration",
+      "event_class": "ceasefire_deescalation_or_escalation",
+      "region": "Israel/Gaza",
+      "headline": "October 6 commemorative reporting before Oct7 anniversary",
+      "source_url": "https://www.reuters.com/",
+      "earliest_public_clock": "OCT6_DAY_LEVEL_NOT_NEEDED_FOR_EXCLUSION",
+      "disposition": "EXCLUDE_NON_MATERIAL_COMMEMORATION",
+      "reason": "Remembrance coverage is not an attributed operational risk-channel change under frozen narrative family definitions. Worker found it but no source eligibility.",
+      "parent_cluster": "gaza-oct7-anniversary-2026",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-yemen-taiz-encirclement-ctpsummary",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Yemen/Red Sea",
+      "headline": "CTP/ISW October 6 analytic summary of Houthi encirclement of Taiz City",
+      "source_url": "https://understandingwar.org/",
+      "earliest_public_clock": "UNRESOLVED_ANALYSIS_IS_NOT_ORIGINAL_ATTRIBUTABLE_OPERATION_SOURCE",
+      "disposition": "SOURCE_UNRESOLVED_UNDERLYING_OPERATION_DATE_AND_WIRE",
+      "reason": "Original attributable Oct6 operation disclosure and distinctness from Oct5 Mokha/Bab el Mandeb campaign not verified; analyst summary alone cannot set earliest public event clock.",
+      "parent_cluster": "yemen-taiz-houthi-campaign-oct2026",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-houthi-riyadh-aden-airport-followups",
+      "event_class": "ceasefire_deescalation_or_escalation",
+      "region": "Yemen/Red Sea/Saudi",
+      "headline": "Potential separate Riyadh and Aden airport strike claims from Oct6 to Oct7",
+      "source_url": "https://www.aljazeera.com/news/liveblog/2026/10/7/iran-war-live-yemen-forces-claim-control-over-strategic-taiz-mountain-peak",
+      "earliest_public_clock": "UNRESOLVED_CROSSES_OCT6_OCT7_UTC_DAY_BOUNDARY",
+      "disposition": "SOURCE_UNRESOLVED_MIXED_TIME_EVENTS_NO_OCT6_ADMISSION",
+      "reason": "Worker saw later reports, not a source-clock-resolved Oct6 event. Houthi Riyadh claims predate and follow Oct6; Aden details belong separate local timelines. Do not combine events or backdate future news.",
+      "parent_cluster": "houthi-saudi-yemen-airport-strikes-oct5-oct7",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-saudi-east-west-pipeline-restored-5point8mbpd",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Iran/Hormuz-Saudi/Red-Sea",
+      "headline": "Saudi energy minister announces East-West pipeline restored operating capacity to 5.8 million barrels per day after prior September damage",
+      "source_url": "https://saudigazette.com.sa/article/665162/saudi-arabia/saudi-arabia-restores-east-west-pipeline-capacity-to-58-million-bpd",
+      "verified_press_publication_local": "2026-10-06T12:39:00+03:00",
+      "verified_publication_upper_bound_utc": "2026-10-06T09:39:00Z",
+      "first_public_clock": "UNRESOLVED_EARLIER_MINISTER_SPEECH_AT_GCC_FORUM",
+      "another_source_url": "https://www.gulf-times.com/article/735013/region/saudi-energy-minister-says-oil-pumped-through-east-west-pipeline-reached-58-million-barrels",
+      "disposition": "CANDIDATE_OFFICIAL_FIRST_FIGURE_MATERIALITY_CONFOUNDED",
+      "reason": "Oct6 13:00 GST (09:00Z) original Al Hadath posted minister 5.8m bpd; Newsquawk 09:06Z corroborates. Yet Argus reported 5.5m on Oct1, Bloomberg reported close to 6m on Oct2 and normal operation Oct5. Oct6 minister official precise number/recovery confirmation may not be a materially distinct risk-channel operational change; exclude unless blinded source-only decision demonstrates new information beyond prior reports. Original speech/live-TV release may precede AlHadath page. No US/HK outcomes read. Argus Oct6 notes first official government throughput figure, but prior sources quantified same operating range. The distinction between new official confirmation and genuinely new operational risk-channel change remains unadjudicated; no admission.",
+      "parent_cluster": "saudi-petroline-sept11-damage-restoration-2026",
+      "market_outcomes_read": false,
+      "alhadath_original_source_url": "https://www.alhadath.net/2026/10/06/\u0627\u0644\u0627\u0645\u064a\u0631-\u0639\u0628\u062f\u0627\u0644\u0639\u0632\u064a\u0632-\u0628\u0646-\u0633\u0644\u0645\u0627\u0646-58-\u0645\u0644\u064a\u0648\u0646-\u0628\u0631\u0645\u064a\u0644-\u062a\u0645\u0631-\u0639\u0628\u0631-\u062e\u0637-\u0634\u0631\u0642-\u063a\u0631\u0628-\u062d\u0627\u0644\u064a\u0627-",
+      "alhadath_original_publication_local": "2026-10-06T13:00:00+04:00",
+      "alhadath_original_first_public_upper_bound_utc": "2026-10-06T09:00:00Z",
+      "newsquawk_feed_source_url": "https://www.newsquawk.com/headlines/saudi-energy-minister-says-58mln-bpd-is-currently-flowing-through-the-east-west-pipeline-al-hadath-reports",
+      "newsquawk_feed_time_utc": "2026-10-06T09:06:00Z",
+      "earliest_public_clock": "NO_LATER_THAN_2026-10-06T09:00:00Z_AlHadath_SITE_OR_LIVE_BROADCAST_POSSIBLY_EARLIER",
+      "earlier_related_disclosures": [
+        {
+          "time_utc": "2026-10-01T15:58:00Z",
+          "source_url": "https://www.newsquawk.com/headlines/crude-flows-through-saudi-arabias-east-west-pipeline-have-recovered-to-around-55mln-bpd-according-to-argus-citing-a-source-allowing-for-a-restart-of-exports-from-the-red-sea-port-of-yanbu",
+          "claim": "Argus sources flows resumed ~5.5m bpd"
+        },
+        {
+          "time_utc": "2026-10-02T11:34:00Z",
+          "source_url": "https://www.newsquawk.com/headlines/saudi-arabia-pumping-close-to-6mln-bpd-oil-on-east-west-pipeline-has-about-45mln-bpd-pipeline-flow-available-for-export",
+          "claim": "Bloomberg sources flows already near 6m bpd"
+        },
+        {
+          "time_utc": "2026-10-05T08:50:00Z",
+          "source_url": "https://www.newsquawk.com/headlines/saudi-arabias-east-west-pipeline-is-flowing-as-normal-bloomberg-reports-citing-sources",
+          "claim": "Bloomberg pipeline flowing normally after new disruption rumor Oct5"
+        },
+        {
+          "time_utc": "2026-10-05T09:00:00Z",
+          "source_url": "https://www.newsquawk.com/headlines/saudi-arabias-east-west-oil-pipeline-flows-have-not-been-interrupted-according-to-a-source-cited-by-reuters",
+          "claim": "Reuters source says flows uninterrupted"
+        }
+      ],
+      "argus_original_corroboration": "https://www.worldports.org/saudi-east-west-pipeline-at-5-8mn-b-d-energy-minister/",
+      "material_novelty_detail": "Argus Oct6 said first throughput figure offered by Saudi government/Aramco since attack; earlier Oct1/Oct2 private/press reports already estimated ~5.5-6m bpd. New authoritative attribution may be material, but operational capacity delta cannot be inferred without frozen, blinded novelty test."
+    },
+    {
+      "id": "20261006-raf-fairford-us-b1-withdrawal-iran-plot-recap",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Iran/UK-military",
+      "headline": "Reuters Oct6 sources attribute earlier US B-1 withdrawal from RAF Fairford to suspected Iranian drone plot",
+      "source_url": "https://www.marketscreener.com/news/iran-drone-plot-fears-led-us-to-remove-bombers-from-uk-base-us-officials-say-ce785dd9db8cfe21",
+      "reuters_first_mirror_at_utc": "2026-10-06T14:48:00Z",
+      "earlier_public_source_url": "https://www.brecorder.com/live/iran-israel-war",
+      "prior_public_at": "2026-10-05_DAY_WITHDRAWAL_AND_IRAN_LINK_ALREADY_PUBLISHED",
+      "disposition": "EXCLUDE_BASE_OPERATION_PRE_ACTIVATION_REUTERS_FOLLOWUP",
+      "reason": "US withdrawal was already publicly documented Oct5, including a suspected Iran-linked drone plot; Oct6 Reuters two unnamed-official attribution is a later confirmation unless independently proved to add materially distinct operational action. No retroactive re-anchoring to Oct6 Reuters story.",
+      "parent_cluster": "raf-fairford-iran-plot-bomber-redeployment-sept-oct2026",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-eu-von-der-leyen-condemns-black-sea-attacks",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Russia/Ukraine-Black-Sea/EU",
+      "headline": "EU Commission president calls attacks on civilian shipping in Bulgarian economic zone unacceptable",
+      "source_url": "https://www.marketscreener.com/news/attacks-on-civilian-shipping-in-black-sea-are-unacceptable-eu-s-von-der-leyen-says-ce785dd8d080f523",
+      "reuters_first_mirror_at_utc": "2026-10-06T11:04:00Z",
+      "disposition": "EXCLUDE_GENERIC_CONDEMNATION_NOT_MATERIAL_POLICY",
+      "reason": "A moral/diplomatic statement about the already captured Bulgarian maritime attacks; no independently reported policy/operational adjustment or new physical event. Does not add a second sample row.",
+      "parent_cluster": "black-sea-civilian-shipping-attacks-oct5-oct6-2026",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261005-romania-royad-mammadov-fire-later-reuters-rss-duplicate",
+      "event_class": "physical_energy_shipping_security",
+      "region": "Russia/Ukraine-Black-Sea/Romania",
+      "headline": "Romanian authorities confirmed Royad Mammadov ship fire and two deaths on Oct5, later reindexed in Google News RSS as Oct6 07:00Z",
+      "source_url": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/05/two-dead-11-rescued-in-serious-maritime-incident-in-black-sea-romania-says",
+      "verified_article_date": "2026-10-05",
+      "rss_pubdate": "2026-10-06T07:00:00Z_BAD_GOOGLE_INDEX",
+      "disposition": "EXCLUDE_PRE_ACTIVATION_OUT_OF_SOURCE_DAY",
+      "reason": "Google News RSS historical Oct6 query falsely marked Oct5 Reuters wire as Oct6 07:00Z. Clear evidence RSS feed timestamp cannot be used as earliest source clock or certify day completeness. Oct5 event belongs to prior day and cannot become Epoch2 source row.",
+      "parent_cluster": "black-sea-civilian-shipping-attacks-oct5-oct6-2026",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-india-confirms-on-peace-tanker-12-injured",
+      "event_class": "physical_energy_shipping_security",
+      "region": "Iran/Hormuz",
+      "headline": "India says MT On Peace was struck earlier on October 6, 2026; twelve injured; UKMTO Monday notices may describe different ship/attack",
+      "source_url": "https://www.marketscreener.com/news/attack-on-oil-tanker-leaves-12-injured-indian-ministry-says-ce785dd9d888ff23",
+      "reuters_first_mirror_at_utc": "2026-10-06T12:46:00Z",
+      "prior_ukmto_warning": "UKMTO 156-26 incident 05 Oct16:37Z released Oct5; UKMTO 157-26 incident dated Oct5 (time TBC), official warning file/product dated Oct6. Vessel identities NOT given in either notice. India MEA describes MT On Peace attacked earlier Oct6; do not collapse identities or substitute event date.",
+      "earliest_public_clock": "NO_LATER_THAN_2026-10-06T10:47:00Z_POSSIBLY_EARLIER_OMANI_OFFICIAL_OR_MEAX",
+      "disposition": "CANDIDATE_CONFLICTING_PRIMARY_INCIDENT_DATES_IDENTITY_AND_NOVELTY_UNRESOLVED",
+      "reason": "Oct8 Panama Maritime Authority official flag-state statement for IMO 9893204 says the On Peace reported being struck Oct5 at 19:30 UTC while sailing Sitrah to Fujairah, contrasting with India MEA original Oct6 statement using \"earlier today\". UKMTO #156 incident Oct5 16:37 UTC is NOT same reported time, #157 incident Oct5 time TBC could be same but no vessel identifier. This later retrospective correction cannot be inserted into information set as known on Oct6. First Oct6 public identified-vessel upper bound remains 10:47Z, not a proven new Oct6 physical incident. Freeze disputed chronology and source materiality. No market outcome use.",
+      "parent_cluster": "hormuz-oil-tanker-attacks-oct5-to-oct6-identity-unresolved",
+      "market_outcomes_read": false,
+      "primary_official_url": "https://www.mea.gov.in/press-releases?dtl%2F41848%2FStatement_on_the_attack_on_a_commercial_vessel_MT_On_Peace_off_the_coast_of_Oman=",
+      "official_text_quoted_via_embassy_listing": "India MEA official Oct6 statement: vessel MT On Peace (IMO 9893204) was attacked earlier today; source https://www.indemb-oman.gov.in/whats-new/ and official MEA release. Original HTML returns 403 in web preview; embassy indexed statement dated Oct6.",
+      "first_verified_press_publication_local": "2026-10-06T16:17:00+05:30",
+      "first_verified_press_upper_bound_utc": "2026-10-06T10:47:00Z",
+      "first_verified_press_source": "https://www.moneycontrol.com/news/india/india-condemns-attack-on-panama-flagged-ship-off-oman-11-indian-crew-members-injured-14045820.html",
+      "panama_flag_state_primary_url": "https://www.amp.gob.pa/noticias/notas-de-prensa/amp-informa-sobre-el-incidente-sufrido-por-la-nave-on-peace/",
+      "panama_flag_state_statement_published_day": "2026-10-08",
+      "panama_flag_state_reported_incident_time_utc": "2026-10-05T19:30:00Z",
+      "panama_flag_state_vessel_imo": "9893204",
+      "india_mea_statement_reported_incident_day": "2026-10-06",
+      "incident_date_dispute": "CONFLICTING_OFFICIAL_SOURCES_PANAMA_OCT5_VS_INDIA_OCT6",
+      "first_public_clock": "NO_LATER_THAN_2026-10-06T10:47:00Z_FOR_IDENTIFIED_ON_PEACE_MEAX_REPORT; OCT5_UNNAMED_UKMTO_156_157_IDENTITY_NOT_PROVEN"
+    },
+    {
+      "id": "20261006-ukmto-157-late-warning-of-oct5-tanker",
+      "event_class": "physical_energy_shipping_security",
+      "region": "Iran/Hormuz",
+      "headline": "UKMTO WARNING 157-26 published Oct6 for an unidentified tanker attack listed as occurring Oct5, time unknown",
+      "source_url": "https://www.ukmto.org/-/media/ukmto/products/20261006-ukmto_warning_157-26.pdf?rev=3d1f886d7479403b970c9f5ad8194eee",
+      "source_type": "original_ukmto_single_page_pdf",
+      "incident_day": "2026-10-05",
+      "incident_time_utc": "TBC",
+      "first_public_issue_day": "2026-10-06",
+      "issue_time_utc": "UNKNOWN",
+      "original_pdf_has_issue_clock": false,
+      "official_social_ukmto_post_day": "2026-10-06",
+      "earliest_public_clock": "OCT6_SOURCE_ISSUE_DAY_PROVEN_EXACT_TIME_UNKNOWN",
+      "disposition": "SOURCE_CONFOUNDED_PREEXISTING_PHYSICAL_EVENT_NEW_REPORT_OCT6_NEEDS_NOVELTY_CLOCK",
+      "reason": "Warning 157-26 official filename dated Oct6 and UK_MTO social post dated Oct6, but PDF incident date Oct5 (time TBC). It is a time-late report, no ship ID. Warning 156-26 independently listed Oct5 16:37Z attack causing an engine room fire; same-vessel identity not established. Warning 157 may or may not be linked to India MT On Peace identified Oct6. It must be included in Oct6 source issue-day sweep, but cannot automatically become a distinct Oct6 material event; avoid time travel and duplication.",
+      "parent_cluster": "hormuz-oil-tanker-attacks-oct5-to-oct6-identity-unresolved",
+      "market_outcomes_read": false,
+      "ukmto_original_social_post_url": "https://x.com/UK_MTO/status/2107444098806546566",
+      "ukmto_original_social_post_identifier": "2107444098806546566",
+      "ukmto_original_social_post_snowflake_utc": "2026-10-06T12:13:22.230Z",
+      "social_clock_proof": "Official @UK_MTO original X URL and ID in DailyJournal source media links, X Snowflake time decoded by ((tweet_id>>22)+1288834974657), corroborated by news site showing date/local posting time. URL not directly rendered in web reader (403), so post timestamp is a conditional platform-ID provenance upper bound, not independently retrieved website publication or original industry distribution time."
+    },
+    {
+      "id": "20261006-israel-katz-gaza-military-readiness-order",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Israel/Gaza",
+      "headline": "Israeli defense minister orders higher IDF readiness in Gaza on Oct6 in anticipation of Hamas activity on Oct7 anniversary",
+      "source_url": "https://www.timesofisrael.com/liveblog_entry/katz-says-military-on-alert-ahead-of-possible-hamas-attacks-on-oct-7-anniversary/",
+      "first_verified_publication_local": "2026-10-06T09:47:00+03:00",
+      "first_verified_publication_upper_bound_utc": "2026-10-06T06:47:00Z",
+      "source_attribution": "The Times of Israel direct liveblog 09:47 Israel DST Oct6 quotes original Israeli Defense Minister Israel Katz public statement; original minister/IDF release may have been earlier",
+      "later_corroborating_source": "https://www.jpost.com/israel-news/defense-news/article-910754",
+      "later_corroborating_local": "2026-10-06T11:45:00+03:00",
+      "related_public_source": "https://www.gov.il/en/pages/spoke-start061026",
+      "earliest_public_clock": "NOT_LATER_THAN_2026-10-06T06:47:00Z_ORIGINAL_KATZ_OFFICE_RELEASE_UNRESOLVED",
+      "disposition": "CANDIDATE_POST_ACTIVATION_OFFICIAL_READINESS_ORDER_MATERIALITY_AND_FIRST_SOURCE_UNRESOLVED",
+      "reason": "Distinct official operational instruction to increase military readiness in Gaza based on warning of possible Hamas attacks on Oct7; not mere commemoration or routine Gaza strike. ToI published 09:47 Israel local=06:47Z after Epoch2 activation 04:31:47Z, original Katz statement may precede and novel operational level versus baseline readiness requires blinded appraisal. Prime minister Oct6 cabinet warning relates to same general anniversary threat and should not become a separate independent event without distinct policy. No post-Oct6 realized attacks/market outcomes may affect selection.",
+      "parent_cluster": "gaza-israel-oct7-anniversary-threat-alert-2026",
+      "market_outcomes_read": false
+    },
+    {
+      "id": "20261006-israel-katz-west-bank-pa-war-contingency-order",
+      "event_class": "official_policy_or_operational_change",
+      "region": "Israel/West Bank/Palestinian Authority",
+      "headline": "Israeli Defense Minister Katz publicly details IDF readiness order and contingency plan for possible armed confrontation involving Palestinian Authority forces",
+      "source_url": "https://www.timesofisrael.com/liveblog_entry/katz-to-ministers-idf-preparing-for-possibility-of-war-with-palestinian-authority/",
+      "first_verified_publication_local": "2026-10-06T14:33:00+03:00",
+      "first_verified_publication_upper_bound_utc": "2026-10-06T11:33:00Z",
+      "original_official_source": "Israeli defense minister office statement at Oct6 weekly cabinet meeting; original full transcript/issue time not independently fetched",
+      "earliest_public_clock": "NOT_LATER_THAN_2026-10-06T11:33:00Z; EARLIER_OFFICIAL_ISSUE_UNRESOLVED",
+      "disposition": "CANDIDATE_POST_ACTIVATION_OFFICIAL_WEST_BANK_CONTINGENCY_NOVELTY_UNRESOLVED",
+      "reason": "Source-specific public disclosure Oct6 14:33 Israel summer time=11:33 UTC described IDF instructed to prepare for possible war scenario with Palestinian Authority security forces and a detailed contingency plan. This is a *conditional military plan/statement*, not actual initiation of war or verified PA attack. Katz threatened full-scale war on the PA in September, so October6 incremental material operational novelty must be assessed against earlier threats on frozen source-only information. Separate West Bank scenario from morning Gaza anniversary readiness, but link parent broad Israeli security cabinet cluster to avoid artificial independence. No US/HSI market outcomes read.",
+      "related_prior_statement": "Katz September 2026 public threat of full-scale war if Palestinian Authority attacks, reported by The Times of Israel",
+      "parent_cluster": "israel-west-bank-pa-contingency-security-posture-2026",
+      "related_same_day_cluster": "gaza-israel-oct7-anniversary-threat-alert-2026",
+      "market_outcomes_read": false
+    }
+  ],
+  "channel_coverage": {
+    "reuters_wire": "PARTIAL",
+    "ukmto": "PARTIAL_WARNING_159_LATE_CLOCK",
+    "official_families": "PARTIAL"
+  },
+  "certify_source_day_allowed": false,
+  "us_measurement_allowed": false,
+  "hsi_outcome_read_allowed": false,
+  "corrections": [
+    {
+      "at_utc": "2026-10-12T05:08:03.057953Z",
+      "target_id": "20261006-yemen-bab-mandeb-counterattack-followthrough",
+      "old_disposition": "CANDIDATE_UNRESOLVED",
+      "new_disposition": "EXCLUDE_BASE_EVENT_PRE_ACTIVATION_TUESDAY_DETAIL_UNRESOLVED",
+      "basis": "Earlier Reuters syndication source pre-Epoch2 activation boundary; no retroactive later-clock promotion."
+    },
+    {
+      "at_utc": "2026-10-12T05:09:53.778617Z",
+      "target_id": "20261006-moscow-region-mass-drone-attack",
+      "old_disposition": "CANDIDATE_UNRESOLVED",
+      "new_disposition": "EXCLUDE_BASE_DRONE_WAVE_PRE_EPOCH2",
+      "basis": "Direct source https://www.interfax.ru/moscow/1120531 published Oct6 05:23 Moscow (UTC+3) = 02:23 UTC before source epoch activation."
+    },
+    {
+      "at_utc": "2026-10-12T05:10:50.359242Z",
+      "target_id": "20261006-iran-us-enrichment-demand-vance",
+      "old_disposition": "CANDIDATE_UNRESOLVED",
+      "new_disposition": "CANDIDATE_UNRESOLVED",
+      "basis": "Reuters MarketScreener Oct6 18:37 EDT published, Oct7 09:57 EDT modified; no future Iranian response in Oct6 source universe; no posthoc retiming."
+    },
+    {
+      "at_utc": "2026-10-12T05:17:23.334418Z",
+      "target_id": "20261006-zelenskiy-updated-intelligence-warning",
+      "old_disposition": "CANDIDATE_UNRESOLVED",
+      "new_disposition": "CANDIDATE_SOURCE_CLOCK_FOUND_MATERIALITY_UNRESOLVED",
+      "basis": "Original official Telegram https://t.me/V_Zelenskiy_official/21236 embedded timestamp 2026-10-06T10:45:07Z; later Reuters evening repeat cannot reset source clock."
+    },
+    {
+      "at_utc": "2026-10-12T05:17:23.334418Z",
+      "target_id": "20261006-odesa-marshall-islands-rapeseed-oil-vessel",
+      "old_disposition": "CANDIDATE_UNRESOLVED_PENDING_EARLIEST_PUBLICATION",
+      "new_disposition": "CANDIDATE_PRIMARY_SOURCE_VERIFIED_FURTHER_CENSUS_PENDING",
+      "basis": "Original official Odesa Telegram @odeskaODA/21439 embedded ISO 2026-10-06T08:14:16Z."
+    },
+    {
+      "at_utc": "2026-10-12T05:21:16.751639Z",
+      "target_id": "20261006-bulgaria-eez-two-commercial-vessels-drones",
+      "new_earliest_observed_publication_upper_bound": "2026-10-06T06:04:00Z",
+      "previous_upper_bound": "2026-10-06T06:36:00Z",
+      "basis": "Varna24 Oct6 09:04 local Bulgarian daylight time at https://www.varna24.bg/novini/varna/Dronove-poraziha-dva-koraba-krai-Byala-Varnensko-3035372, first original-authority issue time still unresolved."
+    },
+    {
+      "at_utc": "2026-10-12T05:21:51.821773Z",
+      "target_id": "20261006-aframax-rio-sochi-oil-tanker-fire-drone-attack",
+      "basis": "Kommersant Oct7 cites earliest official Sirius post ~20:00 local Oct6 and social ~1h earlier; timestamp approximate not certified",
+      "new_earliest_public_clock": "UNRESOLVED_BEFORE_APPROX_17Z"
+    },
+    {
+      "at_utc": "2026-10-12T05:22:18.005692Z",
+      "target_id": "20261006-bulgaria-eez-two-commercial-vessels-drones",
+      "new_evidence": "Independent Bulgarian National Radio original newsroom 09:04 EEST = 06:04Z, matches Varna24, stronger primary-origin verification",
+      "clock_unchanged": "2026-10-06T06:04:00Z"
+    },
+    {
+      "at_utc": "2026-10-12T05:28:43.314643Z",
+      "target_id": "20261006-ukmto-159-hormuz-tanker",
+      "prior": "LATE_SOURCE_EXCLUDE_FROM_OCT6",
+      "new": "LATE_SOURCE_EXCLUDE_FROM_OCT6",
+      "basis": "Anadolu Oct8 explicit delayed UKMTO 159 report with incident Oct6 17:09Z; separate Anadolu Oct6 story is warning 157 from Oct5, not evidence for 159."
+    },
+    {
+      "at_utc": "2026-10-15T18:02:12.778953Z",
+      "target_id": "20261006-saudi-east-west-pipeline-restored-5point8mbpd",
+      "prior_disposition": "CANDIDATE_MATERIAL_OPERATIONAL_CAPACITY_BUT_ORIGINAL_SPEECH_CLOCK_UNRESOLVED",
+      "new_disposition": "CANDIDATE_FIRST_PUBLIC_CLOCK_0900Z_UPPER_BOUND_MATERIALITY_CONFOUNDED",
+      "publication_upper_bound_utc": "2026-10-06T09:00:00Z",
+      "reason": "Al Hadath page posted 13:00 GST Oct6 (UTC+4) =09:00Z, ahead of Newsquawk 09:06Z and Saudi Gazette 09:39Z. Prior Oct1/Oct2/Oct5 capacity already near current, so materiality unresolved."
+    },
+    {
+      "at_utc": "2026-10-16T00:02:16.650260Z",
+      "target_id": "20261006-ukmto-159-hormuz-tanker",
+      "new_source_verification": "DIRECT_ORIGINAL_UKMTO_WARNING_PDF_AND_OFFICIAL_SOCIAL_TIMELINE",
+      "issued_date_evidence": "2026-10-08",
+      "incident_clock": "2026-10-06T17:09:00Z",
+      "note": "Date is publication-day bound, NOT exact issue time."
+    },
+    {
+      "at_utc": "2026-10-16T00:02:16.650260Z",
+      "target_id": "20261006-saudi-east-west-pipeline-restored-5point8mbpd",
+      "new_detail": "FIRST_OFFICIAL_SAUDI_THROUGHPUT_FIGURE_VS_PRIOR_PRIVATE_SOURCES",
+      "disposition": "CANDIDATE_OFFICIAL_FIRST_FIGURE_MATERIALITY_CONFOUNDED"
+    },
+    {
+      "at_utc": "2026-10-16T09:28:40.960819Z",
+      "target_id": "20261006-india-confirms-on-peace-tanker-12-injured",
+      "prior_disposition": "POTENTIAL_NEWS_UPDATE_TO_OCT5_SAME_EVENT_NOT_NEW_ATTACK",
+      "new_disposition": "CANDIDATE_SOURCE_CLOCK_AFTER_ACTIVATION_BUT_EVENT_IDENTITY_AND_NOVELTY_UNRESOLVED",
+      "basis": "MEA Oct6 official describes On Peace attacked earlier that same day; The Maritime Executive reports discrepancy with UKMTO Monday time-late warning and says incident identity cannot be assumed. First observed contemporaneous media upper bound 10:47Z; no verified identity match with warning 156/157."
+    },
+    {
+      "at_utc": "2026-10-16T09:34:19.187285Z",
+      "target_id": "20261006-ukmto-157-late-warning-of-oct5-tanker",
+      "update": "Official UKMTO 157-26 social post X URL/ID with decoded platform creation timestamp",
+      "post_id": "2107444098806546566",
+      "post_utc": "2026-10-06T12:13:22.230Z",
+      "is_original_first_publication": false,
+      "reason": "Public official X post date/time provides witnessed latest-public-by bound only. The warning PDF may have been sent to industry or published earlier."
+    },
+    {
+      "at_utc": "2026-10-16T09:34:19.187285Z",
+      "target_id": "20261006-ukmto-159-hormuz-tanker",
+      "update": "Official UKMTO 159-26 social post X URL/ID with decoded platform creation timestamp",
+      "post_id": "2108209410615246911",
+      "post_utc": "2026-10-08T14:54:26.784Z",
+      "is_original_first_publication": false,
+      "reason": "Public official X post date/time provides witnessed latest-public-by bound only. The warning PDF may have been sent to industry or published earlier."
+    },
+    {
+      "at_utc": "2026-10-16T09:51:41.069530Z",
+      "target_id": "20261006-india-confirms-on-peace-tanker-12-injured",
+      "prior_disposition": "CANDIDATE_SOURCE_CLOCK_AFTER_ACTIVATION_BUT_EVENT_IDENTITY_AND_NOVELTY_UNRESOLVED",
+      "new_disposition": "CANDIDATE_CONFLICTING_PRIMARY_INCIDENT_DATES_IDENTITY_AND_NOVELTY_UNRESOLVED",
+      "new_primary_conflict": "Panama AMP flag-state official Oct8 says On Peace hit Oct5 19:30Z; India MEA Oct6 says struck earlier today; do not use Oct8 retrospective to claim it was publicly known Oct6",
+      "source_url": "https://www.amp.gob.pa/noticias/notas-de-prensa/amp-informa-sobre-el-incidente-sufrido-por-la-nave-on-peace/"
+    }
+  ],
+  "discoveries": [
+    {
+      "at_utc": "2026-10-12T05:13:44.237194Z",
+      "description": "Two additional contemporary Oct6 maritime event families found by explicit source-only Black Sea search; protect against repeated Epoch1 omissions. Both have first-public clock unresolved despite bounded contemporary publication upper bounds.",
+      "added_ids": [
+        "20261006-bulgaria-eez-two-commercial-vessels-drones",
+        "20261006-odesa-marshall-islands-rapeseed-oil-vessel"
+      ],
+      "disposition": "NOT_CERTIFIED"
+    },
+    {
+      "at_utc": "2026-10-12T05:15:39.120399Z",
+      "target_id": "20261006-zelenskiy-updated-intelligence-warning",
+      "disposition": "STILL_UNRESOLVED",
+      "description": "Contemporaneous Oct6 official address corroborated, first exact video publication time unverified; explicit forward-event leakage quarantine."
+    },
+    {
+      "at_utc": "2026-10-12T05:19:10.145969Z",
+      "added_ids": [
+        "20261006-aframax-rio-sochi-oil-tanker-fire-drone-attack"
+      ],
+      "description": "Oct7 media rollover for Oct6 Sochi tanker attack. Earliest local public clock unknown, Reuters Oct6 20:04Z upper bound; avoid future-day migration",
+      "disposition": "NOT_CERTIFIED"
+    },
+    {
+      "at_utc": "2026-10-12T05:21:51.821773Z",
+      "added_ids": [
+        "20261006-russian-mod-yuzhny-fuel-tanker-attack-claim"
+      ],
+      "description": "Oct6 Russian MoD claimed different cargo description, dedupe and independent vessel identification required before admission",
+      "disposition": "PENDING_CONFOUNDED"
+    },
+    {
+      "at_utc": "2026-10-12T05:23:27.135180Z",
+      "added_ids": [
+        "20261006-taiwan-mnd-routine-pla-daily-activity"
+      ],
+      "description": "Direct official Taiwan MND daily source included as explicit routine-exclusion; no claim of complete all-region family sweep."
+    },
+    {
+      "at_utc": "2026-10-16T09:28:40.960819Z",
+      "added_ids": [
+        "20261006-ukmto-157-late-warning-of-oct5-tanker"
+      ],
+      "description": "Original UKMTO 157 PDF and Oct6 issue-day chain; unlike incident-list date, product day belongs Oct6 disclosure cohort. Original Indian MEA contradicts prior Oct5 duplicate assumption for MT On Peace."
+    },
+    {
+      "at_utc": "2026-10-16T09:51:41.069530Z",
+      "added_ids": [
+        "20261006-israel-katz-gaza-military-readiness-order"
+      ],
+      "description": "Independent original news-source review found Israeli military readiness order overlooked by Reuters/UKMTO-only recall. Source after activation but original first issue and materiality unresolved; source only."
+    },
+    {
+      "at_utc": "2026-10-16T09:56:20.872030Z",
+      "added_ids": [
+        "20261006-israel-katz-west-bank-pa-war-contingency-order"
+      ],
+      "description": "Oct6 ToI original liveblog 14:33 local: official West Bank PA contingency briefing, conditional risk plan; September prior warning makes novelty unresolved.",
+      "disposition": "NOT_CERTIFIED"
+    }
+  ],
+  "worker_reconciliation": {
+    "worker_run_id": "pattern-epoch2-oct6-census-001",
+    "worker_status": "TERMINAL_RC0",
+    "worker_original_return_bytes": 11114,
+    "worker_conclusion": "SOURCE_CENSUS_INCOMPLETE",
+    "completed_reconciled_at_utc": "2026-10-15T17:41:44.639963Z",
+    "reconciliations": [
+      {
+        "worker": "A",
+        "manual": "20261006-moscow-region-mass-drone-attack",
+        "ruling": "WORKER_TIME_ELIGIBILITY_REJECTED",
+        "proof": "Interfax original Oct6 05:23 MSK=02:23Z pre-activation",
+        "worker_claim": "postactivation likely, timestamp unresolved",
+        "status": "PRE_ACTIVATION_BASE_EVENT"
+      },
+      {
+        "worker": "B",
+        "manual": "20261006-saudi-airports-jazan-najran-oct5-incident-oct6-confirmation",
+        "ruling": "DOWNGRADED_FROM_ADMIT_ELIGIBLE_TO_SOURCE_CONFOUNDED",
+        "proof": "Shafaq Oct5 21:05:20Z Houthi claim; Ajel GACA Oct6 07:53 AST=04:53Z exact airports/casualties",
+        "status": "MATERIAL_DELTA_AND_FIRST_PUBLIC_UNRESOLVED"
+      },
+      {
+        "worker": "C",
+        "manual": "20261006-iran-us-enrichment-demand-vance",
+        "ruling": "CLOCK_UPPER_BOUND_RESOLVED_NOT_OCT5_INFERRED",
+        "proof": "Reuters syndicated MarketScreener Oct6 22:37Z, Yahoo Oct6 22:39Z, Investing Oct6 18:41 US clock; interview Oct5 not publication time. Later Oct7 edited Iranian reaction excluded.",
+        "status": "OCT6_2237Z_PUBLICATION_SUBJECT_TO_EARLIER_ORIGINAL_CHECK"
+      },
+      {
+        "worker": "D",
+        "manual": "20261006-gaza-routine-strikes",
+        "ruling": "ROUTINE_CONTINUATION_PROVISIONAL_EXCLUSION",
+        "proof": "Same daily ongoing attacks without documented separately material new escalation; keep negative disposition visible",
+        "status": "EXCLUDE_UNLESS_NEW_OPERATION_EVIDENCE"
+      },
+      {
+        "worker": "E",
+        "manual": "20261006-ukmto-159-hormuz-tanker",
+        "ruling": "LATE_PUBLISHED_OCT8_NOT_OCT6",
+        "proof": "UKMTO official @UK_MTO Oct8 social feed warning #159; not UKMTO #157 on Oct6 for prior Oct5 attack; UKMTO live incident date misleads",
+        "status": "EXCLUDE_FROM_OCT6"
+      },
+      {
+        "worker": "F",
+        "manual": "20261006-gaza-oct7-anniversary-commemoration",
+        "ruling": "NON_EVENT_EXCLUDE",
+        "status": "EXCLUDE"
+      },
+      {
+        "worker": "G",
+        "manual": "20261006-yemen-taiz-encirclement-ctpsummary",
+        "ruling": "ORIGINAL_SOURCE_NOT_FOUND",
+        "status": "UNRESOLVED"
+      },
+      {
+        "worker": "H",
+        "manual": "20261006-houthi-riyadh-aden-airport-followups",
+        "ruling": "CROSS_DAY_NO_SINGLE_CLOCK",
+        "status": "UNRESOLVED"
+      },
+      {
+        "worker": "I",
+        "manual": "20261006-taiwan-mnd-routine-pla-daily-activity",
+        "ruling": "OFFICIAL_NEGATIVE_SOURCE_ADDED_NOT_COMPLETE_CENSUS",
+        "proof": "Taiwan MND Oct6 daily unchanged/routine activity and separate unchanged arms package earlier",
+        "status": "EXCLUDE_ROUTINE_NOT_NEGATIVE_COMPLETE"
+      }
+    ],
+    "new_rows": [
+      "20261006-saudi-airports-jazan-najran-oct5-incident-oct6-confirmation",
+      "20261006-gaza-oct7-anniversary-commemoration",
+      "20261006-yemen-taiz-encirclement-ctpsummary",
+      "20261006-houthi-riyadh-aden-airport-followups"
+    ],
+    "independence": "Worker output independently compared with prior M2 original-channel source-only investigation; conflicting clocks preserved."
+  },
+  "source_discovery_methods": [
+    {
+      "at_utc": "2026-10-15T17:53:20.161528Z",
+      "method": "Existing incumbent Google News RSS architecture replayed read-only for Reuters article discovery (not certification) plus manual original/syndicate direct page clocks",
+      "artifact": "oct6-google-news-rss-discovery.json",
+      "artifact_sha256": "9ae54a3e1f7be7199c62ba1721d9241943c2253aa6701a56d86c1e1afd59252c",
+      "request_query_count": 5,
+      "query_results_per_query": [
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "unique_result_count": 275,
+      "quality_limit": "Google News pubDate sometimes 07:00Z placeholder and incorrectly indexed Oct5 wire on Oct6; never original first-public clock",
+      "new_rows": [
+        "20261006-saudi-east-west-pipeline-restored-5point8mbpd",
+        "20261006-raf-fairford-us-b1-withdrawal-iran-plot-recap",
+        "20261006-eu-von-der-leyen-condemns-black-sea-attacks",
+        "20261005-romania-royad-mammadov-fire-later-reuters-rss-duplicate",
+        "20261006-india-confirms-on-peace-tanker-12-injured"
+      ]
+    }
+  ]
+}

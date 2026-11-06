@@ -1,0 +1,906 @@
+{
+  "control_side": "prior",
+  "controls_sha256": "6370cf6c4396e2d3c5bcaaf0b883f1138ceb7c53bee5d5a7599643b363b8e8a3",
+  "github_sha": "4195fca8aa466297d45ffa8d6c598f8ca023c60f",
+  "hsi_outcomes_read": false,
+  "measurements": [
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": -22.773363
+      },
+      "control_anchor_at": "2026-09-25T13:55:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-09-28-russia-jet-drone-escalation-kyiv-dnipro",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": -53.173633,
+        "SMH": -103.862196,
+        "SPY": -30.40027
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": -50.688563
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 1,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    },
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": null
+      },
+      "control_anchor_at": "2026-09-25T06:41:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-09-29-israel-kills-north-gaza-hamas-armed-wing-chief",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": null,
+        "SMH": null,
+        "SPY": null
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": null
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 2,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    },
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": null
+      },
+      "control_anchor_at": "2026-09-25T04:42:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-09-30-russia-launches-heavy-ukraine-energy-grid-assault",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": null,
+        "SMH": null,
+        "SPY": null
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": null
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 3,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    },
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": null
+      },
+      "control_anchor_at": "2026-09-25T06:17:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-10-01-three-hormuz-tankers-hit-by-projectiles",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": null,
+        "SMH": null,
+        "SPY": null
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": null
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 4,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    },
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": 4.094716
+      },
+      "control_anchor_at": "2026-09-25T20:07:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-10-01-saudi-coalition-intercepts-four-drones-two-missiles",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": 5.909927,
+        "SMH": 7.09571,
+        "SPY": 1.815211
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": 1.185783
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 4,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    },
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": null
+      },
+      "control_anchor_at": "2026-09-25T04:16:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-10-02-yemen-government-twenty-taiz-strikes",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": null,
+        "SMH": null,
+        "SPY": null
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": null
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 5,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    },
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": 0.545481
+      },
+      "control_anchor_at": "2026-09-25T16:03:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-10-02-saudi-plans-houthi-offensive-red-sea",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": -4.897587,
+        "SMH": -0.821733,
+        "SPY": -5.443068
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": 4.075854
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 5,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    },
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": -5.797832
+      },
+      "control_anchor_at": "2026-09-25T12:24:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-10-03-riyadh-aramco-fire-houthi-claim",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": -18.907394,
+        "SMH": -13.840592,
+        "SPY": -13.109562
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": 5.066802
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 6,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    },
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": -10.839404
+      },
+      "control_anchor_at": "2026-09-25T12:11:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-10-04-yemen-government-major-offensive-launch",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": -18.499155,
+        "SMH": -29.327151,
+        "SPY": -7.659751
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": -10.827996
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 6,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    },
+    {
+      "authority": {
+        "context_only": true,
+        "may_alert": false,
+        "may_execute": false,
+        "may_gate": false,
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "may_write_chronicle": false,
+        "may_write_market_memory": false,
+        "may_write_qledger": false,
+        "tier": "research"
+      },
+      "challenger_v1_1": {
+        "construction": "QQQ_minus_SPY",
+        "eligible": true,
+        "return_bps": null
+      },
+      "control_anchor_at": "2026-09-25T07:25:00Z",
+      "control_date": "2026-09-25",
+      "control_side": "prior",
+      "event_id": "2026-10-05-yemen-forces-seize-bab-el-mandeb-positions",
+      "geometry": {
+        "bar_tolerance_minutes": 2,
+        "end_offset_minutes": 35,
+        "reanchor_allowed": false,
+        "start_offset_minutes": 5
+      },
+      "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+      "nuisance_baselines_bps": {
+        "QQQ": null,
+        "SMH": null,
+        "SPY": null
+      },
+      "persistence": "none_stdout_only",
+      "primary_v1": {
+        "construction": "SMH_minus_QQQ",
+        "eligible": true,
+        "return_bps": null
+      },
+      "schema": "research.cross_session_transfer_control_us_measurement.v1",
+      "session_distance": 6,
+      "sources": {
+        "QQQ": {
+          "endpoint": "/v2/aggs/ticker/QQQ/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 898,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "QQQ"
+        },
+        "SMH": {
+          "endpoint": "/v2/aggs/ticker/SMH/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-25T23:58:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 612,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SMH"
+        },
+        "SPY": {
+          "endpoint": "/v2/aggs/ticker/SPY/range/1/minute/2026-09-25/2026-09-25",
+          "first_close_known_at": "2026-09-25T08:01:00Z",
+          "last_close_known_at": "2026-09-26T00:00:00Z",
+          "params": {
+            "adjusted": "true",
+            "limit": 50000,
+            "sort": "asc"
+          },
+          "row_count": 884,
+          "session": "2026-09-25",
+          "source": "massive_polygon_stocks_rest_minute_aggs",
+          "symbol": "SPY"
+        }
+      }
+    }
+  ],
+  "schema": "research.cross_session_prospective_control_us_measurements.v1",
+  "source_admission_sha256": "ecec37ae4c0f22127dfa10bef274f2a014e936e1eb5e229edfaea2abc5d2aa2e",
+  "vendor_bars_persisted": false,
+  "workflow_receipt": {
+    "run_id": 37411125402,
+    "job_id": 112099577162,
+    "artifact_id": 11389625739,
+    "artifact_digest": "sha256:8993c6c03e93333b7377301888301f69d2bb9bd4493abe37faf0cf570ba572e7",
+    "conclusion": "success",
+    "normal_bars_job": "skipped",
+    "event_us_job": "skipped"
+  },
+  "measurement_summary": {
+    "selected_prior_controls": 10,
+    "valid_primary": 5,
+    "valid_challenger": 5,
+    "hsi_outcomes_read": false
+  }
+}
