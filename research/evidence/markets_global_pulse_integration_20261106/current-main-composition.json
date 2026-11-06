@@ -1,0 +1,271 @@
+{
+  "schema": "c4.markets.current-main-composition.v1",
+  "base": "1d7068eb12b810c5aa9b0439468fdccaa5a512c6",
+  "original_head": "b0b5bcc40f29584669577f1c4eca29a1036f5986",
+  "baseline": {
+    "schema": "c4.markets.baseline-render.v1",
+    "base": "1d7068eb12b810c5aa9b0439468fdccaa5a512c6",
+    "expected_html_blob": "8d0ca22b2f161afe93b605fd7eacbaaa55e87570",
+    "expected_sha256": "265f514782eb40dd22e1ab4d11af68f8c36e6cca86d1271e2cd5373111c4d4a7",
+    "actual_sha256": "265f514782eb40dd22e1ab4d11af68f8c36e6cca86d1271e2cd5373111c4d4a7",
+    "byte_identical": true,
+    "strip_views": {
+      "us": {
+        "verdict": "RISK_OFF",
+        "caveat_en": "",
+        "caveat_zh": "",
+        "display_only": true,
+        "market": "us",
+        "ms_history": []
+      },
+      "hk": {
+        "verdict": "RISK_OFF",
+        "caveat_en": "Display-only and lighter than the US read: HK has no leading Risk Radar, no VIX term structure (VHSI stands in), and the downturn gauges are uncalibrated. HK is heavily globally driven — US/EM beta and the HKD peg. Context, not a forecast.",
+        "caveat_zh": "仅供展示，较美股版更轻量：港股没有领先的风险雷达、没有 VIX 期限结构（以 VHSI 替代），下行指标未经校准。港股高度受全球驱动 — 美股／新兴市场贝塔与港元联汇。是背景，而非预测。",
+        "display_only": true,
+        "market": "hk",
+        "ms_history": []
+      },
+      "cn": {
+        "verdict": "RISK_OFF",
+        "caveat_en": "Display-only and lighter than the US read: China has no leading Risk Radar, no VIX term structure (QVIX + margin froth stand in), no HY credit spread, and the downturn gauges are uncalibrated. It reads what has already turned — context, not a forecast.",
+        "caveat_zh": "仅供展示，较美股版更轻量：A股没有领先的风险雷达、没有 VIX 期限结构（以 QVIX 与融资拥挤替代）、没有高收益信用利差，且下行指标未经校准。它读取的是已经转向的信号 — 是背景，而非预测。",
+        "display_only": true,
+        "market": "cn",
+        "ms_history": []
+      }
+    },
+    "lifted_css": [
+      "43732ec2"
+    ],
+    "templates": {
+      "markets.html.j2": {
+        "sha256": "7ae3d28e21505a786b2aecbc0858d66ee6dfda953dbcd8e8ce1bc766b87cc4b0",
+        "blob": "9bb95b6040ec4d97618dfb6a0d4d3288bf11a001"
+      },
+      "_seo_head.html.j2": {
+        "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+        "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8"
+      },
+      "_site_nav.html.j2": {
+        "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+        "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d"
+      },
+      "_navlinks.html.j2": {
+        "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+        "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837"
+      },
+      "_cycle_locked_slot.html.j2": {
+        "sha256": "ab0cc091e06b416942b673df1a4ca1337fc1088dbe5f7d4bce9dfcfd7355aa13",
+        "blob": "250df6a86c00f795e9a5332e46a40b2b5e75105b"
+      },
+      "_market_regime_strip.html.j2": {
+        "sha256": "dfd5eb3646913051a442fc727b73a83818400cd3e281fe262002c08586c20e33",
+        "blob": "6b719532db52ece6901bf1a87a4dff99b12cb025"
+      }
+    },
+    "asset_count": 21
+  },
+  "candidate_html_blob": "3b97597c69da214627d8141335472059770d414f",
+  "candidate_html_sha256": "9ae8c36b41668bc7186c01d3608403e0e0615f6a395a8079285f5b97619ede5e",
+  "candidate_data_blob": "83248faa83e11f6fc847ad52bd957fdefe87f310",
+  "candidate_data_sha256": "e9cd303777450766670a26c8b93262a8e68b60c5b8cb8d8775ecdd8943d50d07",
+  "data_conservation": {
+    "all_global_data_equal_except_curation_asof": true,
+    "previous_curation_asof": "2026-11-06",
+    "new_curation_asof": null,
+    "exports": {
+      "MARKET_META": 4,
+      "MARKET_PHASES": 5,
+      "MARKETS": 11
+    }
+  },
+  "preserved_asset_sha256": {
+    "shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "wh_banner.js": "b1207f443ebc4cb9be03a3e22c57aaf78d76539b28a75ce8ac3ffef11b01932f",
+    "stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "data_base.js": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+    "navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "theme.js": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+    "regimedata/regime_prior.js": "012f341525bc86c2c5d34d0829e4cf6b2ac38eb891a195c7af0eec3394290d22",
+    "mm_charts.js": "244eb76905e552fb17cb24f69600fcbd4fd15f6c28d70f98a96774007630d031",
+    "shared_shell_bridge.js": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+    "cycle.css": "231bf145f094e64b082aad1a4f55ea36dc2d0cfc54493763d7dfdec65e8b6d5c",
+    "assets/css/43732ec2.css": "43732ec2eae906b360fbf7f9161e4a0da176b775fbbbf3be8520e34afd545678",
+    "marketsdata/markets_engine.js": "58ca631743af6e0e879f25a9e9c800b68c484d78c828cc7101a24b132c41bcde",
+    "product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "markets_i18n.js": "b83891fc5c77af6cbe1ba5266527d1dfc681045c71a0e363510f6cce7009478a",
+    "live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+  },
+  "engine_blob": "85cb00a77529e39746f8a757e31cdc78a748223b",
+  "asset_references": [
+    {
+      "url": "shared_shell.css?v=b1918cca",
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "shared_shell_bridge.js?v=071ef720",
+      "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "theme.css?v=9bd171a6",
+      "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "cycle.css?v=4",
+      "sha256": "231bf145f094e64b082aad1a4f55ea36dc2d0cfc54493763d7dfdec65e8b6d5c",
+      "content_hash_verified": false,
+      "legacy_version_preserved": true
+    },
+    {
+      "url": "markets.css?v=f42a23c8",
+      "sha256": "f42a23c85775aae6a9887bc451d4b0278f840b0ca8f4c8ffa1270143d9a6b91c",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "assets/css/43732ec2.css?v=43732ec2",
+      "sha256": "43732ec2eae906b360fbf7f9161e4a0da176b775fbbbf3be8520e34afd545678",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "product-nav-icons.css?v=432f6a45",
+      "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "navigation-refresh.css?v=edfd821b",
+      "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "navigation-refresh.css?v=edfd821b",
+      "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "logo_config.js?v=b37d33d3",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "stock-logos.js?v=cc29be53",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "live_config.js?v=52943e92",
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "live.js?v=f8cda39d",
+      "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "assets/css/43732ec2.css?v=43732ec2",
+      "sha256": "43732ec2eae906b360fbf7f9161e4a0da176b775fbbbf3be8520e34afd545678",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "regimedata/regime_prior.js?v=012f3415",
+      "sha256": "012f341525bc86c2c5d34d0829e4cf6b2ac38eb891a195c7af0eec3394290d22",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "markets_i18n.js?v=b83891fc",
+      "sha256": "b83891fc5c77af6cbe1ba5266527d1dfc681045c71a0e363510f6cce7009478a",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "markets_data.js?v=e9cd3037",
+      "sha256": "e9cd303777450766670a26c8b93262a8e68b60c5b8cb8d8775ecdd8943d50d07",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "marketsdata/markets_engine.js?v=58ca6317",
+      "sha256": "58ca631743af6e0e879f25a9e9c800b68c484d78c828cc7101a24b132c41bcde",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "mm_charts.js?v=244eb769",
+      "sha256": "244eb76905e552fb17cb24f69600fcbd4fd15f6c28d70f98a96774007630d031",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "markets_app.js?v=061ed62e",
+      "sha256": "061ed62e594952f5c2e53fae96e78c0caabb67ab0707535334cb2d263af210d0",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "theme.js?v=3c193891",
+      "sha256": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    },
+    {
+      "url": "wh_banner.js?v=b1207f44",
+      "sha256": "b1207f443ebc4cb9be03a3e22c57aaf78d76539b28a75ce8ac3ffef11b01932f",
+      "content_hash_verified": true,
+      "legacy_version_preserved": false
+    }
+  ],
+  "legacy_version_references_preserved": [
+    "cycle.css?v=4"
+  ],
+  "changed_paths": [
+    "scripts/build_markets.py",
+    "scripts/refresh_markets_now.py",
+    "site/markets.css",
+    "site/markets.html",
+    "site/markets_app.js",
+    "site/markets_data.js",
+    "templates/markets.html.j2",
+    "tests/test_markets_cyc_stage_mobile.py",
+    "tests/test_markets_regime_strip.py"
+  ],
+  "unmerged": [],
+  "feature_diff_check_exit": 0,
+  "main_or_price_refresh_called": false,
+  "qualification_note": "Original render process87320 produced byte-identical baseline and candidate, then rejected unchanged legacy cycle.css?v=4 with an overbroad all-version-is-a-hash assertion before source mutation. This continuation reused both actual renders, verifies every 8-hex content hash and proves non-hash legacy versions plus their bytes unchanged from accepted main. No renderer, producer or refresh replay.",
+  "test_trailing_newline_normalizations": [
+    {
+      "path": "tests/test_markets_cyc_stage_mobile.py",
+      "before_sha256": "41403b0332b4a16135dd6702a06e4035891d443a7b9cdbc3deef7e06cef7af92",
+      "after_sha256": "53cb41a82d50c6ba8ad37156828afa053809d7fdaa0383e20fb9af725609450d",
+      "ast_identical": true
+    },
+    {
+      "path": "tests/test_markets_regime_strip.py",
+      "before_sha256": "a098da6d5053fa29a283b4c28792c579a6d362d5c4c14d633b6ebee498507a60",
+      "after_sha256": "b46b29ea44f93a1191d90466db458867839f9d44eac23900445237e1e56714a9",
+      "ast_identical": true
+    }
+  ],
+  "resumption_note": "Both rendered conflict resolutions were already staged by process92676; its final feature diff check found trailing blank lines in the two inherited feature test files. Only those terminal blank lines were removed; Python ASTs are identical. No merge, renderer or source-publication replay."
+}

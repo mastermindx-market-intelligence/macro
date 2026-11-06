@@ -5,8 +5,11 @@
    (workflow market-cycles-REAL), as of ~2026-06-25. */
 (function(){
   "use strict";
+  // The old global date was advanced by price-only refreshes. The original
+  // research is approximate, so its exact curation date is unverified.
+  // now.asOf dates prices only; valuation.asOf must date valuations themselves.
   window.MARKET_META = {
-  "asOf": "2026-11-06",
+  "asOf": null,
   "today": 2026.48,
   "xDomain": [
     2000,

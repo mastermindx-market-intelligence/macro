@@ -1,0 +1,130 @@
+{
+  "schema": "c4.markets.source-qualification.v1",
+  "pr": 7594,
+  "publication_branch": "sol/markets-global-regime-compact-20260921",
+  "expected_original_head": "b0b5bcc40f29584669577f1c4eca29a1036f5986",
+  "integration_base": "1d7068eb12b810c5aa9b0439468fdccaa5a512c6",
+  "qualification_operation": "github-pr-sweep-2028-c4-pr7594-repair",
+  "qualification_branch_must_not_be_pushed": "sol/web-github-pr-sweep-2028-c4-pr7594-repair",
+  "mastermind_law_pin": "3551bf914bc3cab6117f93377ba89ac1d9c3c30a",
+  "source_paths": [
+    "scripts/build_markets.py",
+    "scripts/refresh_markets_now.py",
+    "site/markets.css",
+    "site/markets.html",
+    "site/markets_app.js",
+    "site/markets_data.js",
+    "templates/markets.html.j2",
+    "tests/test_markets_cyc_stage_mobile.py",
+    "tests/test_markets_regime_strip.py"
+  ],
+  "source_sha256": {
+    "scripts/build_markets.py": "5f6761d235f2d3694819db406e7d98d70802c4d5e43b6cc032dbd0e0d113a188",
+    "scripts/refresh_markets_now.py": "a1cbcc74e7dca58cc03ebcc315c262c7c434a612c2cc8e7f3954fb63accfbab9",
+    "site/markets.css": "f42a23c85775aae6a9887bc451d4b0278f840b0ca8f4c8ffa1270143d9a6b91c",
+    "site/markets.html": "9ae8c36b41668bc7186c01d3608403e0e0615f6a395a8079285f5b97619ede5e",
+    "site/markets_app.js": "061ed62e594952f5c2e53fae96e78c0caabb67ab0707535334cb2d263af210d0",
+    "site/markets_data.js": "e9cd303777450766670a26c8b93262a8e68b60c5b8cb8d8775ecdd8943d50d07",
+    "templates/markets.html.j2": "0ca935384bd2317d90de50713c4c128ec387a63b3862793193cfaf66fd4b2dcc",
+    "tests/test_markets_cyc_stage_mobile.py": "53cb41a82d50c6ba8ad37156828afa053809d7fdaa0383e20fb9af725609450d",
+    "tests/test_markets_regime_strip.py": "b46b29ea44f93a1191d90466db458867839f9d44eac23900445237e1e56714a9"
+  },
+  "distinct_pytest_cases_qualified": 82,
+  "initial_run": {
+    "passed": 81,
+    "failed": 1,
+    "skipped": 0,
+    "failure": "Sparse-omitted persisted US snapshot; no source assertion failure established"
+  },
+  "materialized_input_recheck": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "inputs": {
+      "us": {
+        "path": "data/market_state/latest.json",
+        "blob": "81a188e43cbcae868ac20552fa5d455231e17206",
+        "sha256": "f594629df2308baf9ea05b5d50afa6ee51dcc22681d84b6fb4d8c3b449f18eec",
+        "asof": "2026-11-05",
+        "verdict": "RISK_OFF"
+      },
+      "hk": {
+        "path": "data/hk_market_state/latest.json",
+        "blob": "c45c44061bfb3ab9c6305f74630c03e99a0e28c8",
+        "sha256": "495baa1fc14b2c5752139d9fccf3640be64fd92ec4098e3c0d247ee636f997e6",
+        "asof": "2026-11-04",
+        "verdict": "RISK_OFF"
+      },
+      "cn": {
+        "path": "data/china_market_state/latest.json",
+        "blob": "6893472f14336611fd7b3b51084b827fe45ee144",
+        "sha256": "029f9c89003cac39f1aa6ea85f5911a2e61f00aeefa83d23aa2df75ee0ff3af9",
+        "asof": "2026-11-04",
+        "verdict": "RISK_OFF"
+      }
+    }
+  },
+  "existing_browser_cases": "executed successfully in the initial81 passes; no browser skips",
+  "baseline_render_byte_identical": true,
+  "data_conservation": {
+    "all_global_data_equal_except_curation_asof": true,
+    "previous_curation_asof": "2026-11-06",
+    "new_curation_asof": null,
+    "exports": {
+      "MARKET_META": 4,
+      "MARKET_PHASES": 5,
+      "MARKETS": 11
+    }
+  },
+  "engine_blob": "85cb00a77529e39746f8a757e31cdc78a748223b",
+  "asset_reference_count": 22,
+  "legacy_version_references_preserved": [
+    "cycle.css?v=4"
+  ],
+  "producer_or_price_refresh_called_for_page_rebuild": false,
+  "ci_owner": "existing markets-regime-strip; command, manifest and budgets unchanged",
+  "future_published_head_ci": "pending natural source publication",
+  "merge_or_production_acceptance": false,
+  "files": {
+    "baseline-render.json": {
+      "sha256": "485f48f0681813330c3e582e1a8ae8a6145f527d31fb77e34dc7ed1f5889436a",
+      "bytes": 3055
+    },
+    "current-main-composition.json": {
+      "sha256": "b6b571d17e63a1897b5e9bc7e41bf3c17df151a48c279635d8acb1795b1cbfd6",
+      "bytes": 12344
+    },
+    "current-main-merge.json": {
+      "sha256": "516b45ff1b77dbd74260159a236f7c0d4f88714d255ab1e517f6a5b674a93c87",
+      "bytes": 1107
+    },
+    "current-main-merge.log": {
+      "sha256": "d22830b0afcbe47eb0ec753312e0253dec9f3aa7d92a1683515a0b97142e7b6f",
+      "bytes": 246
+    },
+    "focused-qualification.json": {
+      "sha256": "44852ce283c80b785956521ca5c31fc73bfebaa73819a5a5c3bccf08bb33df62",
+      "bytes": 3232
+    },
+    "persisted-input-recheck.json": {
+      "sha256": "f2d60e3ee88b20d2ed43dddb71e2a9804c0503a25b38cca5114a519bbeee2e91",
+      "bytes": 1833
+    },
+    "persisted-recheck.log": {
+      "sha256": "b40307e8f303809355413848a6a81c33b612281ff8e50f28e7426da7a0593d34",
+      "bytes": 98
+    },
+    "test-newline-normalization.json": {
+      "sha256": "d4862aa47e6a496d1772b0429e626b17abfe96430c5760e923f2b4777901748d",
+      "bytes": 531
+    },
+    "focused-qualification.log.gz": {
+      "sha256": "f9aaa5c6834ce55a2b17521ed173c43363849a99ffb06c0091c50b4c6dcfbade",
+      "bytes": 588,
+      "encoding": "gzip",
+      "decoded_sha256": "d0a891a01c933a22c6381ba5c0ad670ee0667853098a16c5b2faab2a511c7830",
+      "decoded_bytes": 1480
+    }
+  },
+  "evidence_encoding_note": "The exact initial pytest log contains diagnostic indentation on an empty line. It is preserved byte-for-byte as deterministic gzip; decompression reproduces the original logged SHA-256. No test output was edited."
+}

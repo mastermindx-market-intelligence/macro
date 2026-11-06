@@ -1,0 +1,14 @@
+[
+  {
+    "path": "tests/test_markets_cyc_stage_mobile.py",
+    "before_sha256": "41403b0332b4a16135dd6702a06e4035891d443a7b9cdbc3deef7e06cef7af92",
+    "after_sha256": "53cb41a82d50c6ba8ad37156828afa053809d7fdaa0383e20fb9af725609450d",
+    "ast_identical": true
+  },
+  {
+    "path": "tests/test_markets_regime_strip.py",
+    "before_sha256": "a098da6d5053fa29a283b4c28792c579a6d362d5c4c14d633b6ebee498507a60",
+    "after_sha256": "b46b29ea44f93a1191d90466db458867839f9d44eac23900445237e1e56714a9",
+    "ast_identical": true
+  }
+]

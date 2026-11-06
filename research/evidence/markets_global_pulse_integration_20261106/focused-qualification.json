@@ -1,0 +1,38 @@
+{
+  "schema": "c4.markets.focused-qualification.v1",
+  "base": "1d7068eb12b810c5aa9b0439468fdccaa5a512c6",
+  "original_head": "b0b5bcc40f29584669577f1c4eca29a1036f5986",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_markets_regime_strip.py",
+    "tests/test_markets_cyc_stage_mobile.py",
+    "-q",
+    "-rs",
+    "--basetemp",
+    "/tmp/macro-pr7594-c4-20261106/pytest",
+    "--cache-clear",
+    "-o",
+    "cache_dir=/tmp/macro-pr7594-c4-20261106/pytest-cache"
+  ],
+  "exit_code": 1,
+  "runtime_seconds": 29.78,
+  "log_sha256": "d0a891a01c933a22c6381ba5c0ad670ee0667853098a16c5b2faab2a511c7830",
+  "log_tail": "..........F............................................................. [ 87%]\n..........                                                               [100%]\n=================================== FAILURES ===================================\n________________ test_live_tree_copy_follows_persisted_verdict _________________\n\n    def test_live_tree_copy_follows_persisted_verdict():\n        from scripts.build_markets import _persisted_ms_view\n    \n        views = {\n            \"us\": _persisted_ms_view(\"us\"),\n            \"hk\": _persisted_ms_view(\"hk\"),\n            \"cn\": _persisted_ms_view(\"cn\"),\n        }\n        vm = {\n            \"market_state\": views[\"us\"],\n            \"hk_market_state\": views[\"hk\"],\n            \"cn_market_state\": views[\"cn\"],\n        }\n        strip = _strip(render_strip(vm))\n        for market, view in views.items():\n            kind = _kind(view)\n            verdict = view.get(\"verdict\") if isinstance(view, dict) else None\n            print(f\"LIVE {market} verdict={verdict!r} branch={kind}\")\n>           assert view is not None, market\nE           AssertionError: us\nE           assert None is not None\n\ntests/test_markets_regime_strip.py:351: AssertionError\n----------------------------- Captured stdout call -----------------------------\nLIVE us verdict=None branch=missing\n\nNOTE: sparse worktree \u2014 data, mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n1 failed, 81 passed in 28.76s\n",
+  "source_sha256": {
+    "scripts/build_markets.py": "5f6761d235f2d3694819db406e7d98d70802c4d5e43b6cc032dbd0e0d113a188",
+    "scripts/refresh_markets_now.py": "a1cbcc74e7dca58cc03ebcc315c262c7c434a612c2cc8e7f3954fb63accfbab9",
+    "site/markets.css": "f42a23c85775aae6a9887bc451d4b0278f840b0ca8f4c8ffa1270143d9a6b91c",
+    "site/markets.html": "9ae8c36b41668bc7186c01d3608403e0e0615f6a395a8079285f5b97619ede5e",
+    "site/markets_app.js": "061ed62e594952f5c2e53fae96e78c0caabb67ab0707535334cb2d263af210d0",
+    "site/markets_data.js": "e9cd303777450766670a26c8b93262a8e68b60c5b8cb8d8775ecdd8943d50d07",
+    "templates/markets.html.j2": "0ca935384bd2317d90de50713c4c128ec387a63b3862793193cfaf66fd4b2dcc",
+    "tests/test_markets_cyc_stage_mobile.py": "53cb41a82d50c6ba8ad37156828afa053809d7fdaa0383e20fb9af725609450d",
+    "tests/test_markets_regime_strip.py": "b46b29ea44f93a1191d90466db458867839f9d44eac23900445237e1e56714a9"
+  },
+  "source_unchanged": true,
+  "current_engine_unchanged": true,
+  "unstaged_paths": [],
+  "untracked_unignored": []
+}

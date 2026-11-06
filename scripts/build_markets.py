@@ -308,7 +308,22 @@ def main() -> int:
         log.warning("build_markets: no engine records matched — check country_cycles.json path")
         return 1
 
-    # ---- 4. Render HTML shell ----
+    # ---- 4. Copy committed page assets ----
+    for asset in PAGE_ASSETS:
+        src = root / "templates" / asset
+        if src.exists():
+            shutil.copy2(src, site / asset)
+
+    # ---- 5. Refresh the `now` stanzas (level / %-off-ATH) from on-disk parquets ----
+    # Fail-soft: a missing/stale series is skipped; the hand-written value is kept.
+    try:
+        from scripts.refresh_markets_now import refresh as _refresh_now
+        n = _refresh_now(config.data_dir(), site / "markets_data.js")
+        log.info("refresh_markets_now: patched %d market(s)", n)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("refresh_markets_now failed (non-fatal): %s", exc)
+
+    # ---- 6. Render and stamp the final assets (including refreshed prices) ----
     env = Environment(
         loader=FileSystemLoader(str(root / "templates")),
         autoescape=False,  # macro pages emit raw HTML; _navlinks uses |safe
@@ -344,21 +359,6 @@ def main() -> int:
     except Exception as exc:  # noqa: BLE001
         log.warning("build_markets: asset stamp failed (%s); page left unstamped", exc)
     write_page(site / "markets.html", html, encoding="utf-8")
-
-    # ---- 5. Copy committed page assets ----
-    for asset in PAGE_ASSETS:
-        src = root / "templates" / asset
-        if src.exists():
-            shutil.copy2(src, site / asset)
-
-    # ---- 6. Refresh the `now` stanzas (level / %-off-ATH) from on-disk parquets ----
-    # Fail-soft: a missing/stale series is skipped; the hand-written value is kept.
-    try:
-        from scripts.refresh_markets_now import refresh as _refresh_now
-        n = _refresh_now(config.data_dir(), site / "markets_data.js")
-        log.info("refresh_markets_now: patched %d market(s)", n)
-    except Exception as exc:  # noqa: BLE001
-        log.warning("refresh_markets_now failed (non-fatal): %s", exc)
 
     log.info(
         "built site/markets.html and site/marketsdata/markets_engine.js "

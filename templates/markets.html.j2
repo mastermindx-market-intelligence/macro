@@ -14,7 +14,7 @@
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="cycle.css?v=4">
-<link rel="stylesheet" href="markets.css?v=6">
+<link rel="stylesheet" href="markets.css">
 </head>
 <body>
 {% include "_site_nav.html.j2" %}
@@ -24,26 +24,49 @@
     <div class="ht">
       <div class="cyc-kicker"><span class="hb"></span> <span class="l-en">Global Market Cycles</span><span class="l-zh">全球市场周期</span></div>
       <h1 class="cyc-title"><span class="l-en">Where every market stands</span><span class="l-zh">各市场所处位置</span></h1>
-      <p class="cyc-sub"><span class="l-en">Eleven national equity markets on one clock — the US, UK, Europe, Japan, China, Hong Kong,
-        Taiwan, India, Canada, South Korea and Australia. The y-axis is a <b>cycle oscillator (0–100)</b>: high = extended near record highs,
-        low = washed-out deep below them. Nine markets are engine-backed (country_cycles pos_v2);
-        US and Europe show analyst estimates until their proxies are added to the engine.
-        Observed history (solid), projection (dashed + uncertainty cone), and curated valuations with as-of dates
-        — so you see not just <em>when</em> in the cycle each market sits, but how <em>cheap or rich</em> it is there.
-        Projections here are windows, not certainties — re-drawn nightly as new data lands.</span><span class="l-zh">十一个国家股市同框 —— 美国、英国、欧洲、日本、中国、香港、台湾、印度、加拿大、韩国与澳大利亚。纵轴是<b>周期振荡器（0–100）</b>：高=接近历史高点（拉伸），低=深跌超卖。九个市场使用引擎数据（country_cycles pos_v2）；美国与欧洲的代理 ETF 尚未入引擎，显示分析师估算。实线为历史，虚线（含锥形区间）为预测，并附带标注截止日期的精选估值 —— 让你不仅看到每个市场处于周期的<em>哪个阶段</em>，还能看到它在该位置是<em>便宜还是昂贵</em>。这里的预测是时间窗口，而非确定性结论——每晚随新数据重新计算。</span></p>
+      <p class="cyc-sub"><span class="l-en">Eleven national equity markets on one cycle oscillator. Nine positions are engine-backed; US and Europe remain clearly marked analyst estimates. History, projections and valuation stay separate below.</span><span class="l-zh">十一个国家股市共用一套周期振荡器。九个市场使用引擎位置；美国与欧洲仍明确标注为分析师估算。历史、预测与估值在下方保持分离。</span></p>
     </div>
     <div class="cyc-ctrls">
-      <span class="cyc-asof"><span class="l-en">As of</span><span class="l-zh">截至</span> <span id="cyc-asof">…</span></span>
+      <span class="cyc-asof"><span class="l-en">Price observations</span><span class="l-zh">价格观测</span> <span id="cyc-asof">…</span></span>
     </div>
   </header>
 
   {% with lock_renderer='markets_app.js', lock_fill='cyc-cards',
-    lock_hide='.cyc-stage,.mkt-grid,.cyc-cards-hd,#cyc-cards,.cyc-asof',
+    lock_hide='.global-regime-pulse,.cyc-stage,.mkt-grid,.cyc-cards-hd,#cyc-cards,.cyc-asof',
     lock_en="Members get where each market sits on one clock, "
     ~ "each market's scorecard, and the valuation map.",
     lock_zh='会员可查看各市场在同一张时钟上的位置、每个市场的记分卡，以及估值地图。' %}
   {% include "_cycle_locked_slot.html.j2" %}
   {% endwith %}
+
+  <section class="global-regime-pulse" id="global-regime-pulse" aria-labelledby="global-regime-pulse-label">
+    <div class="grp-copy">
+      <div class="grp-eyebrow">
+        <span class="l-en">Global equity cycle · measured spread</span><span class="l-zh">全球股市周期 · 实测分布</span>
+        <span class="grp-asof" id="global-regime-pulse-asof"></span>
+      </div>
+      <h2 class="grp-label" id="global-regime-pulse-label">—</h2>
+      <p class="grp-summary" id="global-regime-pulse-summary"></p>
+      <div class="grp-metrics" id="global-regime-pulse-metrics"></div>
+    </div>
+    <div class="grp-map">
+      <div class="grp-map-head">
+        <span class="l-en">One scale, eleven equity markets</span><span class="l-zh">同一标尺，十一个股市</span>
+        <small><span class="l-en">0 washed-out · 100 extended</span><span class="l-zh">0 深度回落 · 100 高位拉伸</span></small>
+      </div>
+      <div class="grp-axis-labels" aria-hidden="true">
+        <span><span class="l-en">Lower cycle</span><span class="l-zh">周期低位</span></span>
+        <span><span class="l-en">Mid-cycle</span><span class="l-zh">周期中段</span></span>
+        <span><span class="l-en">Extended</span><span class="l-zh">高位拉伸</span></span>
+      </div>
+      <div class="grp-track" id="global-regime-pulse-track" aria-label="Cross-market cycle positions"></div>
+      <div class="grp-source-key">
+        <span><i class="grp-source-dot engine" aria-hidden="true"></i><span class="l-en">engine-backed</span><span class="l-zh">引擎数据</span></span>
+        <span><i class="grp-source-dot estimate" aria-hidden="true"></i><span class="l-en">analyst estimate</span><span class="l-zh">分析师估算</span></span>
+      </div>
+      <div class="grp-buckets" id="global-regime-pulse-buckets"></div>
+    </div>
+  </section>
 
   <section class="cyc-stage">
     <div class="cyc-hero">
@@ -113,13 +136,12 @@
 <script src="marketsdata/markets_engine.js"></script>
 <script src="mm_charts.js"></script>
 <script src="markets_app.js"></script>
-<script>document.addEventListener('DOMContentLoaded',function(){try{document.getElementById('cyc-asof').textContent=(window.MARKET_META||{}).asOf||'';}catch(e){}});</script>
 <script>
 /* W4.5 regime-prior reconciliation banner for markets.html.
    Two layers: (0) CONTRADICTION — curated market regime_claim quad (us / hk carry a
    US-quad premise) vs the live engine quad, from MARKETS_ENGINE.regime_disagreement,
    softened to amber when the engine read is itself provisional; (1) prior stale/partial;
-   (2) MARKET_META.asOf > 30 days old. Dual-span EN/zh — no t() in attributes.
+   (2) curated narrative date is unknown or at least 14 days old. Dual-span EN/zh — no t() in attributes.
    Runs on DOMContentLoaded so the deferred data scripts are guaranteed loaded. */
 document.addEventListener('DOMContentLoaded',function(){
   try{
@@ -143,17 +165,19 @@ document.addEventListener('DOMContentLoaded',function(){
       var zhMsg='体制数据状态为'+ps+'（'+staleSrcs.join('、')+'）——部分组件可能未反映最新构建。';
       msgs.push({en:enMsg,zh:zhMsg,cls:'stale-amber'});
     }
-    // 2. Curated market prose staleness (>30d from MARKET_META.asOf)
-    var curatedAsOf=meta.asOf||null;
-    if(curatedAsOf){
-      var d=new Date(curatedAsOf+'T00:00:00Z');
-      var daysDiff=Math.round((Date.now()-d.getTime())/86400000);
-      if(daysDiff>30){
-        var cls2=daysDiff>60?'stale-red':'stale-amber';
-        var enMsg2='Market narrative notes last updated '+curatedAsOf+' ('+daysDiff+'d ago) — may not reflect the live regime ('+((prior.quad||'?'))+' '+((prior.liquidity||''))+').';
-        var zhMsg2='市场叙述最后更新于 '+curatedAsOf+'（已 '+daysDiff+' 天）——可能未反映实时体制（当前：'+(prior.quad||'?')+' '+(prior.liquidity||'')+'）。';
-        msgs.push({en:enMsg2,zh:zhMsg2,cls:cls2});
-      }
+    // 2. MARKET_META.asOf dates curated content only; price refresh never advances it.
+    var curatedAsOf=meta.asOf;
+    var stamp=typeof curatedAsOf==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(curatedAsOf)
+      ? Date.parse(curatedAsOf+'T00:00:00Z') : NaN;
+    var daysDiff=Math.floor((Date.now()-stamp)/86400000);
+    if(!Number.isFinite(stamp)||new Date(stamp).toISOString().slice(0,10)!==curatedAsOf||daysDiff<0){
+      msgs.push({en:'Market narrative curation date is unverified. Fresh price observations do not update curated notes.',
+        zh:'市场叙事的精选日期待核实。最新价格观测不会更新精选叙事。',cls:'stale-amber'});
+    }else if(daysDiff>=14){
+      var cls2=daysDiff>=60?'stale-red':'stale-amber';
+      var enMsg2='Market narrative notes last updated '+curatedAsOf+' ('+daysDiff+'d ago) — may not reflect the live regime ('+((prior.quad||'?'))+' '+((prior.liquidity||''))+').';
+      var zhMsg2='市场叙述最后更新于 '+curatedAsOf+'（已 '+daysDiff+' 天）——可能未反映实时体制（当前：'+(prior.quad||'?')+' '+(prior.liquidity||'')+'）。';
+      msgs.push({en:enMsg2,zh:zhMsg2,cls:cls2});
     }
     if(!msgs.length){host.innerHTML='';return;}
     var html='';
@@ -165,32 +189,6 @@ document.addEventListener('DOMContentLoaded',function(){
     });
     host.innerHTML=html;
   }catch(e){}
-});
-</script>
-<script>
-/* markets_data.js staleness banner — INTL-47.
-   markets_data.js is a hand-curated static file; its MARKET_META.asOf is the
-   authoritative freshness date. Show a visible warning when >5 days old so the
-   reader is never misled by stale "now" blocks (level / %-off-ATH / valuations).
-   Runs on DOMContentLoaded — markets_data.js is deferred (see load-order note). */
-document.addEventListener('DOMContentLoaded',function(){
-  try {
-    var asOf = (window.MARKET_META||{}).asOf;
-    if (!asOf) return;
-    var msPerDay = 86400000;
-    var ageDays = Math.floor((Date.now() - new Date(asOf).getTime()) / msPerDay);
-    if (ageDays <= 5) return;
-    var b = document.createElement('div');
-    b.id = 'mkt-stale-banner';
-    b.style.cssText = 'margin:8px 0 4px;padding:7px 14px;border-radius:8px;background:rgba(217,119,6,.14);border:1px solid rgba(217,119,6,.35);color:var(--ink-warn, var(--warn,#8a5c00));font-size:13px;line-height:1.4;display:flex;gap:8px;align-items:center';
-    b.innerHTML = '<span style="font-size:16px">&#9888;</span>'
-      + '<span class="l-en"><b>Market snapshot data is ' + ageDays + ' days old</b> (as of ' + asOf + ').'
-      + ' Live levels, % off ATH and valuations may be stale — verify before acting.</span>'
-      + '<span class="l-zh"><b>市场快照数据已有 ' + ageDays + ' 天</b>（截至 ' + asOf + '）。'
-      + '实时价位、偏离历史高点幅度及估值数据可能已过期，操作前请核实。</span>';
-    var wrap = document.querySelector('.cyc-wrap');
-    if (wrap) wrap.insertBefore(b, wrap.firstChild);
-  } catch(e) {}
 });
 </script>
 <script src="theme.js"></script>

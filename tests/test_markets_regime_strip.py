@@ -654,3 +654,197 @@ def test_template_site_sync_passes():
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     print(proc.stdout.strip())
+
+
+# Price-only refresh must not renew the separately curated portions of this page.
+def _market_assignments(source):
+    values = {}
+    for name in ("MARKET_META", "MARKETS"):
+        start = source.index("=", source.index("window." + name)) + 1
+        values[name] = json.JSONDecoder().raw_decode(source[start:].lstrip())[0]
+    return values["MARKET_META"], values["MARKETS"]
+
+
+def _clock_fixture_source():
+    meta = {"asOf": "2026-06-25", "regime": {"headline": "CURATED NARRATIVE"}}
+    now = {
+        "level": 100, "asOf": "2026-06-25", "ath": 110, "athDate": "2026-06",
+        "pctFromATH": -9.1, "ytd": 2, "ret1y": 3, "pos": 40,
+        "phase": "Recovery", "phaseLabel": "CURATED PHASE",
+        "read": "CURATED READ", "confidence": "low",
+    }
+    markets = [
+        {"id": market, "now": dict(now), "valuation": {"forwardPE": 12, "note": "CURATED VALUATION"}}
+        for market in ("us", "china")
+    ]
+    return "window.MARKET_META = " + json.dumps(meta) + ";\nwindow.MARKETS = " + json.dumps(markets) + ";\n"
+
+
+def _freeze_refresh_date(monkeypatch):
+    from datetime import date
+    import scripts.refresh_markets_now as refresh_module
+
+    class FrozenDate(date):
+        @classmethod
+        def today(cls):
+            return cls(2026, 11, 6)
+
+    monkeypatch.setattr(refresh_module, "date", FrozenDate)
+    return refresh_module
+
+
+def _write_price_fixture(root, folder, ticker, end):
+    import pandas as pd
+
+    path = root / folder / (ticker + ".parquet")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        {"close": [100.0 + i for i in range(30)]},
+        index=pd.date_range(end=end, periods=30, freq="D"),
+    ).to_parquet(path)
+
+
+@pytest.mark.parametrize("kind", ["missing", "stale"])
+def test_zero_observation_refresh_preserves_all_curated_bytes(tmp_path, monkeypatch, kind):
+    refresh_module = _freeze_refresh_date(monkeypatch)
+    data = tmp_path / "data"
+    if kind == "stale":
+        for folder, ticker in refresh_module._TICKER_MAP.values():
+            _write_price_fixture(data, folder, ticker, "2026-06-25")
+    target = tmp_path / "markets_data.js"
+    before = _clock_fixture_source()
+    target.write_text(before)
+    assert refresh_module.refresh(data, target) == 0
+    assert target.read_text() == before
+
+
+def test_partial_price_refresh_preserves_other_market_and_every_curated_field(tmp_path, monkeypatch):
+    refresh_module = _freeze_refresh_date(monkeypatch)
+    data = tmp_path / "data"
+    _write_price_fixture(data, "yahoo", "_GSPC", "2026-11-05")
+    target = tmp_path / "markets_data.js"
+    target.write_text(_clock_fixture_source())
+    before_meta, before_markets = _market_assignments(target.read_text())
+    assert refresh_module.refresh(data, target) == 1
+    meta, markets = _market_assignments(target.read_text())
+    assert meta == before_meta
+    assert markets[1] == before_markets[1]
+    assert markets[0]["valuation"] == before_markets[0]["valuation"]
+    assert markets[0]["now"]["asOf"] == "2026-11-05"
+    assert markets[0]["now"]["level"] == 129
+    mutable = {"level", "asOf", "ath", "athDate", "pctFromATH"}
+    assert {k: v for k, v in markets[0]["now"].items() if k not in mutable} == {
+        k: v for k, v in before_markets[0]["now"].items() if k not in mutable
+    }
+
+
+def test_price_refresh_dry_run_preserves_source_bytes(tmp_path, monkeypatch):
+    refresh_module = _freeze_refresh_date(monkeypatch)
+    data = tmp_path / "data"
+    _write_price_fixture(data, "yahoo", "_GSPC", "2026-11-05")
+    target = tmp_path / "markets_data.js"
+    before = _clock_fixture_source()
+    target.write_text(before)
+    assert refresh_module.refresh(data, target, dry_run=True) == 1
+    assert target.read_text() == before
+
+
+def _run_narrative_warning(as_of, *, prior=None, disagreement=None):
+    source = (TEMPLATES / "markets.html.j2").read_text()
+    blocks = re.findall(r"<script>([\s\S]*?)</script>", source)
+    matches = [block for block in blocks if "var host=document.getElementById('regime-prior-banner')" in block]
+    assert len(matches) == 1
+    payload = json.dumps({
+        "meta": {"asOf": as_of}, "prior": prior or {},
+        "engine": {"regime_disagreement": disagreement},
+    })
+    script = r"""
+const input=INPUT;
+Date.now=()=>Date.parse("2026-11-06T12:00:00Z");
+var host={innerHTML:""};
+var window={MARKET_META:input.meta,REGIME_PRIOR:input.prior,MARKETS_ENGINE:input.engine};
+var document={getElementById(){return host;},addEventListener(name,fn){fn();}};
+""".replace("INPUT", payload)
+    proc = subprocess.run(
+        ["node", "-e", script + matches[0] + "\nconsole.log(JSON.stringify(host.innerHTML));"],
+        cwd=ROOT, check=False, capture_output=True, text=True,
+    )
+    assert proc.returncode == 0, proc.stderr
+    return json.loads(proc.stdout)
+
+
+@pytest.mark.parametrize("as_of", [None, "", "invalid", "2026-02-30", "2027-01-01"])
+def test_narrative_warning_executes_unknown_or_invalid_curation_dates(as_of):
+    html = _run_narrative_warning(as_of)
+    assert "curation date is unverified" in html
+    assert "精选日期待核实" in html
+    assert "Fresh price observations do not update curated notes" in html
+
+
+@pytest.mark.parametrize("as_of,warning", [
+    ("2026-11-06", False), ("2026-10-24", False),
+    ("2026-10-23", True), ("2026-09-07", True),
+])
+def test_narrative_warning_preserves_early_curation_age_threshold(as_of, warning):
+    html = _run_narrative_warning(as_of)
+    assert bool(html) is warning
+    if warning:
+        assert as_of in html and "Market narrative notes last updated" in html
+        if as_of == "2026-09-07":
+            assert "stale-red" in html
+
+
+def test_curation_repair_preserves_prior_and_disagreement_warnings():
+    html = _run_narrative_warning(
+        "2026-11-06",
+        prior={"status": "stale", "sources": {"rates": {"status": "unavailable"}}},
+        disagreement={"banner_en": "CLAIM_CONFLICT", "banner_zh": "叙事冲突", "cls": "stale-red"},
+    )
+    assert "CLAIM_CONFLICT" in html and "叙事冲突" in html
+    assert "Regime data is stale (rates)" in html
+    assert "curation date is unverified" not in html
+
+
+def test_observation_warning_has_one_slot_and_one_renderer():
+    template = (TEMPLATES / "markets.html.j2").read_text()
+    app = (ROOT / "site" / "markets_app.js").read_text()
+    assert template.count('id="mkt-stale-banner"') == 1
+    assert "b.id = 'mkt-stale-banner'" not in template
+    assert "function renderStalenessBanner()" in app
+    assert 'var asOf = (c.now || {}).asOf' in app
+
+
+@pytest.mark.parametrize("refresh_prices", [False, True])
+def test_builder_stamps_final_assets_after_copy_and_price_refresh(tmp_path, monkeypatch, refresh_prices):
+    import scripts.build_markets as build_markets
+    import scripts.build_regime_prior as build_regime_prior
+    from lib import config
+
+    _freeze_refresh_date(monkeypatch)
+    templates = tmp_path / "templates"
+    site = tmp_path / "site"
+    templates.mkdir()
+    site.mkdir()
+    (templates / "markets.html.j2").write_text(
+        '<!DOCTYPE html><html><head></head><body><script src="markets_data.js"></script></body></html>'
+    )
+    # Exercise the existing copy seam as well as the real parquet refresher.
+    (templates / "markets_data.js").write_text(_clock_fixture_source())
+    (site / "markets_data.js").write_text("window.MARKET_META={};window.MARKETS=[];")
+    if refresh_prices:
+        _write_price_fixture(tmp_path / "data", "yahoo", "_GSPC", "2026-11-05")
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(config, "load", lambda: {"storage": {"site_dir": "site", "data_dir": "data"}})
+    monkeypatch.setattr(build_regime_prior, "emit", lambda **_kw: None)
+    monkeypatch.setattr(build_markets, "_load_country_cycles", lambda _site: {})
+    monkeypatch.setattr(build_markets, "_build_engine_js", lambda *_args: 1)
+    monkeypatch.setattr(build_markets, "_regime_disagreement", lambda _path: None)
+    monkeypatch.setattr(build_markets, "_persisted_ms_view", lambda _market: None)
+    assert build_markets.main() == 0
+    asset = (site / "markets_data.js").read_bytes()
+    html = (site / "markets.html").read_text()
+    digest = hashlib.sha256(asset).hexdigest()[:8]
+    assert f'src="markets_data.js?v={digest}" defer' in html
+    meta, markets = _market_assignments(asset.decode())
+    assert meta["asOf"] == "2026-06-25"
+    assert markets[0]["now"]["asOf"] == ("2026-11-05" if refresh_prices else "2026-06-25")

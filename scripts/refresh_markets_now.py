@@ -197,18 +197,11 @@ def refresh(data_root: Path, markets_data_js: Path, *, dry_run: bool = False) ->
                  patch["level"], patch["asOf"], patch["pctFromATH"])
         updated += 1
 
-    # Update the top-level MARKET_META.asOf to today
-    today_str = date.today().isoformat()
-    js_text = re.sub(
-        r'("asOf"\s*:\s*)"[^"]*"',
-        r'\g<1>"' + today_str + '"',
-        js_text,
-        count=1,   # only the first one (in MARKET_META)
-    )
+    # Price observations do not renew curated narrative, returns or valuations.
 
     if not dry_run:
         markets_data_js.write_text(js_text, encoding="utf-8")
-        log.info("wrote updated markets_data.js (asOf=%s, %d markets patched)", today_str, updated)
+        log.info("wrote updated markets_data.js (%d market price observations patched)", updated)
 
     return updated
 

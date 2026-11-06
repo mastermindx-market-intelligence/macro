@@ -1,0 +1,26 @@
+{
+  "phase": "current_main_feature_composition",
+  "base": "1d7068eb12b810c5aa9b0439468fdccaa5a512c6",
+  "feature_head": "b0b5bcc40f29584669577f1c4eca29a1036f5986",
+  "merge_base": "9531f6b11780a95ab53a084435c7a19357214bb5",
+  "git_exit_code": 1,
+  "runtime_seconds": 74.6,
+  "merge_head": "b0b5bcc40f29584669577f1c4eca29a1036f5986",
+  "unmerged": [
+    "site/markets.html",
+    "site/markets_data.js"
+  ],
+  "staged_paths": [
+    "M\tscripts/build_markets.py",
+    "M\tscripts/refresh_markets_now.py",
+    "M\tsite/markets.css",
+    "U\tsite/markets.html",
+    "M\tsite/markets_app.js",
+    "U\tsite/markets_data.js",
+    "M\ttemplates/markets.html.j2",
+    "M\ttests/test_markets_cyc_stage_mobile.py",
+    "M\ttests/test_markets_regime_strip.py"
+  ],
+  "log_sha256": "d22830b0afcbe47eb0ec753312e0253dec9f3aa7d92a1683515a0b97142e7b6f",
+  "log_tail": "Auto-merging site/markets.html\nCONFLICT (content): Merge conflict in site/markets.html\nAuto-merging site/markets_data.js\nCONFLICT (content): Merge conflict in site/markets_data.js\nAutomatic merge failed; fix conflicts and then commit the result.\n"
+}

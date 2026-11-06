@@ -378,12 +378,24 @@
     return '<span class="cc-eng-chip cc-eng-opinion">' + t("position: analyst estimate (no engine record)", "位置：分析师估算（无引擎记录）") + '</span>';
   }
 
+  function ageDaysOf(asOf) {
+    if (typeof asOf !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(asOf)) return null;
+    var stamp = Date.parse(asOf + "T00:00:00Z");
+    if (!Number.isFinite(stamp) || new Date(stamp).toISOString().slice(0, 10) !== asOf) return null;
+    var age = Math.floor((Date.now() - stamp) / 86400000);
+    return age >= 0 ? age : null;
+  }
+  function curatedDateLabel() {
+    return ageDaysOf(META.asOf) == null
+      ? t("Curation date unverified", "精选日期待核实")
+      : t("Curated as of ", "精选截至 ") + META.asOf;
+  }
+
   /* W3.5: valuation staleness chip — curated valuations carry an as-of date. */
   function valStaleChip(c) {
-    var asOf = (c.valuation || {}).asOf || c.now.asOf || META.asOf || "";
-    if (!asOf) return "";
-    var asOfYear = yf(asOf);
-    var ageDays = Math.round((TODAY - asOfYear) * 365.25);
+    var asOf = (c.valuation || {}).asOf;
+    var ageDays = ageDaysOf(asOf);
+    if (ageDays == null) return '<span class="cc-val-age cc-val-stale-amber">' + t("Valuation date unverified", "估值日期待核实") + '</span>';
     if (ageDays < 14) return '<span class="cc-val-age">' + t("valuations as of " + asOf, "估值截至 " + asOf) + '</span>';
     var cls = ageDays >= 60 ? "cc-val-stale-red" : "cc-val-stale-amber";
     return '<span class="cc-val-age ' + cls + '">' + t("valuations as of " + asOf + " (" + ageDays + "d old)", "估值截至 " + asOf + "（已 " + ageDays + " 天）") + '</span>';
@@ -495,6 +507,88 @@
       '<div class="disp-cell"><div class="disp-k">' + t("Dispersion (σ)", "离散度 (σ)") + '</div><div class="disp-v">' + sd.toFixed(0) + '</div><div class="disp-n">' + sdNote + '</div></div>' +
       '<div class="disp-cell"><div class="disp-k">' + t("At the highs", "处于高位") + '</div><div class="disp-v">' + atHighs + ' / ' + CYCLES.length +
         '</div><div class="disp-n">' + t(washed + " washed-out / recovering", washed + " 个超卖/复苏中") + '</div></div>';
+  }
+
+  /* ---- compact global regime pulse ---------------------------------------- */
+  function renderGlobalPulse() {
+    var host = document.getElementById("global-regime-pulse");
+    if (!host || !CYCLES || !CYCLES.length) return;
+
+    var points = CYCLES.map(function (c) {
+      var ep = engPos(c);
+      return { c: c, p: Math.round(nowPosOf(c)), source: ep.source };
+    }).sort(function (a, b) { return b.p - a.p; });
+    var n = points.length;
+    var ps = points.map(function (x) { return x.p; });
+    var mean = ps.reduce(function (sum, v) { return sum + v; }, 0) / n;
+    var sd = Math.sqrt(ps.reduce(function (sum, v) { return sum + Math.pow(v - mean, 2); }, 0) / n);
+    // Reuse the page's existing zone() boundaries: >=82 is "at the highs";
+    // <42 is below the mid-cycle band. Do not invent a second bucketing scale.
+    var highCut = 82;
+    var lowerCut = 42;
+    var highs = points.filter(function (x) { return x.p >= highCut; });
+    var lower = points.filter(function (x) { return x.p < lowerCut; });
+    var engineN = points.filter(function (x) { return x.source === "engine"; }).length;
+    var label = sd >= 22 ? t("Wide dispersion", "分化显著")
+      : highs.length >= Math.ceil(n * 0.6) ? t("Broadly extended", "整体偏高位")
+      : lower.length >= Math.ceil(n * 0.4) ? t("Lower-cycle clustering", "周期低位聚集")
+      : t("Mixed cycle map", "周期位置分化");
+
+    var dispersion = sd >= 22 ? t("wide", "较宽")
+      : sd >= 13 ? t("moderate", "适中") : t("tight", "较窄");
+    var summary = t(
+      highs.length + " of " + n + " markets are near cycle highs; " +
+        lower.length + " are lower-cycle or washed-out. Dispersion is " + dispersion +
+        ". This is a distribution, not a fused global risk score.",
+      n + " 个市场中有 " + highs.length + " 个接近周期高位；" +
+        lower.length + " 个处于周期低位或深度回落。当前离散度" + dispersion +
+        "。这里展示的是分布，不是融合后的全球风险评分。"
+    );
+
+    var asof = (window.MARKETS_ENGINE || {}).as_of;
+    document.getElementById("global-regime-pulse-label").textContent = label;
+    document.getElementById("global-regime-pulse-summary").textContent = summary;
+    document.getElementById("global-regime-pulse-asof").textContent =
+      (ageDaysOf(asof) == null ? t("Engine date unverified", "引擎日期待核实") : t("Engine through ", "引擎截至 ") + asof) +
+      " · " + curatedDateLabel();
+
+    var metrics = document.getElementById("global-regime-pulse-metrics");
+    metrics.innerHTML =
+      '<span><b>' + highs.length + ' / ' + n + '</b>' + t(" near highs", " 高位") + '</span>' +
+      '<span><b>' + lower.length + ' / ' + n + '</b>' + t(" lower cycle", " 低位") + '</span>' +
+      '<span><b>σ ' + sd.toFixed(0) + '</b>' + t(" dispersion", " 离散度") + '</span>' +
+      '<span><b>' + engineN + ' / ' + n + '</b>' + t(" engine-backed", " 引擎数据") + '</span>';
+
+    var track = document.getElementById("global-regime-pulse-track");
+    track.innerHTML = points.map(function (x) {
+      var src = x.source === "engine" ? "engine" : "estimate";
+      var srcLabel = x.source === "engine" ? t("engine-backed", "引擎数据") : t("analyst estimate", "分析师估算");
+      var aria = shrt(x.c) + " · " + x.p + " / 100 · " + srcLabel;
+      return '<button class="grp-dot ' + src + '" data-id="' + x.c.id +
+        '" data-source="' + src + '" style="left:' + x.p + '%" aria-label="' + aria +
+        '" title="' + aria + '"><span></span></button>';
+    }).join("");
+
+    function bucket(titleEn, titleZh, items) {
+      return '<div class="grp-bucket"><b>' + t(titleEn, titleZh) + '</b><div>' +
+        items.map(function (x) {
+          var src = x.source === "engine" ? "engine" : "estimate";
+          return '<button class="grp-market-chip ' + src + '" data-id="' + x.c.id +
+            '" data-source="' + src + '">' + shrt(x.c) + ' <span>' + x.p + '</span></button>';
+        }).join("") + '</div></div>';
+    }
+    var buckets = document.getElementById("global-regime-pulse-buckets");
+    buckets.innerHTML =
+      bucket("At the highs", "高位", points.filter(function (x) { return x.p >= highCut; })) +
+      bucket("Mid / late cycle", "周期中后段", points.filter(function (x) { return x.p >= lowerCut && x.p < highCut; })) +
+      bucket("Lower cycle", "周期低位", points.filter(function (x) { return x.p < lowerCut; }));
+
+    host.querySelectorAll("[data-id]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setFocus(button.getAttribute("data-id"));
+        if (window.innerWidth <= 880) expandSheet(true);
+      });
+    });
   }
 
   /* ---- VALUATION map ----------------------------------------------------- */
@@ -631,12 +725,18 @@
         '<p class="cyc-arche">' + arche(c) + '</p>' +
       '</div>' +
       '<div class="cyc-grp cyc-grp-3 mkt-col-data">' +
-        '<div class="cyc-lbl">' + t("Curated snapshot · ", "精选快照 · ") + (c.now.asOf || META.asOf) + '</div>' +
+        '<div class="cyc-lbl">' + t("Price observations · ", "价格观测 · ") + (ageDaysOf(c.now.asOf) == null ? t("date unverified", "日期待核实") : c.now.asOf) + '</div>' +
         '<div class="cyc-facts">' +
           fact(t("Level", "点位"), c.now.level != null ? num(c.now.level) : null) +
           fact(t("All-time high", "历史高点"), c.now.ath != null ? num(c.now.ath) + (c.now.athDate ? " · " + fmtMon(c.now.athDate) : "") : null) +
           fact(t("% off ATH", "距高点"), c.now.pctFromATH != null ? pct(c.now.pctFromATH) + ' <span class="fv-note">' + t("(stat only, not plotted pos)", "（统计项，非图中位置）") + '</span>' : null) +
+        '</div>' +
+        '<div class="cyc-lbl cyc-lbl-mt">' + curatedDateLabel() + '</div>' +
+        '<div class="cyc-facts">' +
           fact(t("1-yr return", "一年回报"), c.now.ret1y != null ? pct(c.now.ret1y) : (c.now.ytd != null ? pct(c.now.ytd) + t(" YTD", " 年初至今") : null)) +
+        '</div>' +
+        '<div class="cyc-lbl cyc-lbl-mt">' + valStaleChip(c) + '</div>' +
+        '<div class="cyc-facts">' +
           fact(t("Fwd P/E", "预期市盈率"), v.forwardPE != null ? v.forwardPE.toFixed(1) + "×" : (v.trailingPE != null ? v.trailingPE.toFixed(1) + "× (ttm)" : null)) +
           fact(v.cape != null ? "CAPE" : t("Div yield", "股息率"), v.cape != null ? v.cape.toFixed(0) + (v.divYield != null ? "  ·  " + v.divYield.toFixed(1) + "% " + t("yld", "股息") : "") : (v.divYield != null ? v.divYield.toFixed(1) + "%" : null)) +
         '</div>' +
@@ -705,16 +805,14 @@
       return '<div class="xc-row"><div class="xc-rh">' + title + '<span>' + note + '</span></div><div class="xc-chips">' + chips + '</div></div>';
     }
     def.innerHTML = '' +
-      '<div class="cyc-grp cyc-grp-full">' +
-        '<div class="cyc-lbl">' + t("Global-equity regime · ", "全球股市格局 · ") + META.asOf + (regField("asOfNote") ? ' · <span style="text-transform:none;letter-spacing:0;font-weight:500">' + regField("asOfNote") + '</span>' : '') + (regIsNullZh() ? '<span class="rg-null-chip">中文版待更新</span>' : '') + '</div>' +
+      '<details class="cyc-grp cyc-grp-3 rg-context">' +
+        '<summary class="cyc-lbl">' + t("Macro context · curated", "宏观背景 · 精选") + (regIsNullZh() ? '<span class="rg-null-chip">中文版待更新</span>' : '') + '</summary>' +
+        '<p class="rg-context-note">' + curatedDateLabel() + (regField("asOfNote") ? ' · ' + regField("asOfNote") : '') + '</p>' +
         '<div class="rg-head' + (regIsNullZh() ? ' is-null' : '') + '"><div class="rg-label">' + regField("label") + '</div><div class="rg-sub">' + regField("sub") + '</div></div>' +
         '<p class="rg-headline">' + regField("headline") + '</p>' +
-      '</div>' +
-      '<div class="cyc-grp cyc-grp-3">' +
-        '<div class="cyc-lbl">' + t("Conditions", "宏观条件") + '</div>' +
         '<div class="rg-stats">' + stats + '</div>' +
         '<p class="rg-tilt">' + regField("tilt") + '</p>' +
-      '</div>' +
+      '</details>' +
       '<div class="cyc-grp cyc-grp-3">' +
         '<div class="cyc-lbl">' + t("Where the markets stand", "各市场所处位置") + '</div>' +
         '<div class="xc-map">' +
@@ -767,23 +865,33 @@
     handle.addEventListener("touchend", function () { dragging = false; });
   }
 
-  /* ---- staleness banner (W0.1) -------------------------------------------
-     When more than 14 days have passed since the dataset was last curated,
-     show an amber (14–59 d) or red (≥ 60 d) banner near the page header.
-     Uses dual-span t() so no translated text appears in HTML attributes. */
+  /* Price observations use each market's own date. Re-renders share this
+     one host; a fresh market cannot erase another market's stale/unknown date. */
   function renderStalenessBanner() {
     var host = document.getElementById("mkt-stale-banner");
     if (!host) return;
-    var asOf = META.asOf || "";
-    var asOfYear = asOf ? yf(asOf) : TODAY;
-    var days = Math.round((TODAY - asOfYear) * 365.25);
-    if (days < 14) { host.innerHTML = ""; return; }
-    var cls = days >= 60 ? "stale-red" : "stale-amber";
-    // Plain-text content only — no translated text in attributes (house rule).
-    host.innerHTML = '<div class="stale-banner ' + cls + '">' +
-      t("Curated dataset as of " + asOf + " — " + days + " days old",
-        "精选数据截至 " + asOf + " — 已 " + days + " 天未更新") +
-      '</div>';
+    var dated = [], stale = [], unknown = [];
+    CYCLES.forEach(function (c) {
+      var asOf = (c.now || {}).asOf, age = ageDaysOf(asOf);
+      if (age == null) unknown.push(c);
+      else { dated.push(asOf); if (age > 5) stale.push(c); }
+    });
+    dated.sort();
+    var header = document.getElementById("cyc-asof");
+    if (header) header.textContent = dated.length
+      ? dated[0] + (dated[0] !== dated[dated.length - 1] ? " – " + dated[dated.length - 1] : "") +
+        (unknown.length ? t(" · some dates unverified", " · 部分日期待核实") : "")
+      : t("dates unverified", "日期待核实");
+    if (!stale.length && !unknown.length && CYCLES.length) { host.innerHTML = ""; return; }
+    var messages = [];
+    if (stale.length) messages.push(t(
+      stale.length + " of " + CYCLES.length + " market price observations are more than 5 days old (oldest " + dated[0] + ").",
+      CYCLES.length + " 个市场中有 " + stale.length + " 个价格观测已超过 5 天（最早 " + dated[0] + "）。"));
+    if (unknown.length || !CYCLES.length) messages.push(t(
+      "Some market price observation dates are unverified.", "部分市场价格观测日期待核实。"));
+    host.innerHTML = '<div class="stale-banner stale-amber">' + messages.join(" ") + ' ' +
+      t("These dates cover prices and distance from highs; curated returns, narrative and valuations have separate dates.",
+        "这些日期仅对应价格与距高点幅度；精选回报、叙事及估值另有日期。") + '</div>';
   }
 
   /* ---- language re-render ------------------------------------------------- */
@@ -794,6 +902,7 @@
     mountCards();
     renderSnapSort(); renderSnapshot(); renderDispersion();
     renderScatter();
+    renderGlobalPulse();
     buildDefaultPanel();
     renderStalenessBanner();
     applyGroupFilter();
@@ -807,6 +916,7 @@
     if (!META || !CYCLES) return;
     mountChips();
     mountHero();
+    renderGlobalPulse();
     buildDefaultPanel();
     renderSnapSort();
     mountSnapshot();
