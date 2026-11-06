@@ -8,6 +8,7 @@ retained rows and broke the IDs they were written with.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 
@@ -23,10 +24,15 @@ from engine.capital_structure.source_identity import (
 from engine.capital_structure.source_ledger_io import (
     LEGACY_SOURCE_LEDGER_FILENAME,
     SOURCE_LEDGER_FILENAME,
+    SOURCE_LEDGER_PART_PATTERN,
     decode_source_ledger,
     encode_source_ledger,
     read_source_ledger,
+    read_source_ledger_parts,
+    source_ledger_part_name,
+    source_ledger_part_names,
     source_ledger_path,
+    source_ledger_receipt,
     write_source_ledger,
 )
 
@@ -213,3 +219,180 @@ def test_incident_hash_identifies_the_exact_pair_of_back_filled_keys() -> None:
     # Neither key on its own accounts for the observed digest.
     assert not drifted(file_number_provenance=None).startswith(INCIDENT_EXPECTED_PREFIX)
     assert not drifted(collection_scope=None).startswith(INCIDENT_EXPECTED_PREFIX)
+
+
+# ── sharding (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY) ─────────────────────
+# The single-file ledger crossed GitHub's 100 MiB blob limit on 2026-09-27 and every
+# nightly through 10-09 compiled a generation and lost it at push (GH001). The ledger
+# is now one append-only byte stream stored across source_manifest.jsonl (part 1)
+# and source_manifest.part-NNNN.jsonl continuation parts. Sealed parts are never
+# rewritten; the logical ledger is the ordered concatenation.
+
+
+def _records(count: int, start: int = 0) -> list[dict]:
+    # Single-digit indexes keep every canonical line the same length, which is
+    # what makes ``_roll_for`` exact.
+    assert start + count <= 10
+    return [
+        _record(f"shard:{index}:complete-submission.txt")
+        for index in range(start, start + count)
+    ]
+
+
+def _roll_for(records: list[dict], lines_per_part: int) -> int:
+    """A roll size that seals a part after ``lines_per_part`` canonical lines."""
+    line = len(encode_source_ledger(records[:1]))
+    # _split_line_aligned cuts at the first newline at or after roll_bytes-1, so a
+    # roll one byte past N-1 full lines closes each part after exactly N lines.
+    return (lines_per_part - 1) * line + 1
+
+
+def _part_bytes(path: Path) -> dict[str, bytes]:
+    return {
+        part.name: part.read_bytes()
+        for part in sorted(path.parent.iterdir())
+        if part.name == path.name or SOURCE_LEDGER_PART_PATTERN.match(part.name)
+    }
+
+
+def test_part_names_are_contiguous_from_0002_and_ignore_staging_names() -> None:
+    names = [
+        SOURCE_LEDGER_FILENAME,
+        "source_manifest.part-0003.jsonl",
+        "source_manifest.part-0002.jsonl",
+        "source_manifest.part-0002.tmp.jsonl",  # _atomic_write staging, never a part
+        "source_manifest.parquet",
+        "telemetry.json",
+    ]
+    assert source_ledger_part_names(names) == [
+        "source_manifest.part-0002.jsonl",
+        "source_manifest.part-0003.jsonl",
+    ]
+    assert source_ledger_part_name(2) == "source_manifest.part-0002.jsonl"
+    with pytest.raises(ValueError):
+        source_ledger_part_name(1)
+    with pytest.raises(ManifestIdentityError, match="not contiguous"):
+        source_ledger_part_names([SOURCE_LEDGER_FILENAME, "source_manifest.part-0003.jsonl"])
+    with pytest.raises(ManifestIdentityError, match="below the first continuation"):
+        source_ledger_part_names(["source_manifest.part-0001.jsonl"])
+
+
+def test_write_rolls_into_line_aligned_parts_that_read_back_in_order(tmp_path: Path) -> None:
+    records = _records(7)
+    path = source_ledger_path(tmp_path)
+    write_source_ledger(records, path, roll_bytes=_roll_for(records, 3))
+
+    parts = _part_bytes(path)
+    assert list(parts) == [
+        SOURCE_LEDGER_FILENAME,
+        "source_manifest.part-0002.jsonl",
+        "source_manifest.part-0003.jsonl",
+    ]
+    assert all(body.endswith(b"\n") for body in parts.values()), "parts are line-aligned"
+    assert [body.count(b"\n") for body in parts.values()] == [3, 3, 1]
+    assert b"".join(parts.values()) == encode_source_ledger(records)
+    assert read_source_ledger(path) == records
+    assert [part.name for part, _body in read_source_ledger_parts(path)] == list(parts)
+    assert not list(tmp_path.glob("*.tmp.jsonl")), "staging files are replaced, never left"
+
+
+def test_append_extends_the_active_part_and_never_rewrites_a_sealed_one(tmp_path: Path) -> None:
+    first = _records(4)
+    path = source_ledger_path(tmp_path)
+    roll = _roll_for(first, 3)
+    write_source_ledger(first, path, roll_bytes=roll)
+    before = _part_bytes(path)
+    assert [body.count(b"\n") for body in before.values()] == [3, 1]
+
+    grown = first + _records(4, start=4)
+    write_source_ledger(grown, path, roll_bytes=roll)
+    after = _part_bytes(path)
+    assert after[SOURCE_LEDGER_FILENAME] == before[SOURCE_LEDGER_FILENAME], "part 1 is sealed"
+    assert after["source_manifest.part-0002.jsonl"].startswith(
+        before["source_manifest.part-0002.jsonl"]
+    ), "the active part is extended, not replaced"
+    assert [body.count(b"\n") for body in after.values()] == [3, 3, 2]
+    assert read_source_ledger(path) == grown
+
+
+def test_a_sealed_part_that_the_new_body_does_not_extend_is_refused(tmp_path: Path) -> None:
+    records = _records(6)
+    path = source_ledger_path(tmp_path)
+    roll = _roll_for(records, 3)
+    write_source_ledger(records, path, roll_bytes=roll)
+    before = _part_bytes(path)
+
+    reordered = [records[1], records[0], *records[2:]]  # valid rows, different sealed bytes
+    with pytest.raises(ManifestIdentityError, match="sealed"):
+        write_source_ledger(reordered, path, roll_bytes=roll)
+    assert _part_bytes(path) == before, "a refused write leaves every part untouched"
+
+
+def test_receipt_is_the_single_file_receipt_while_unsharded(tmp_path: Path) -> None:
+    records = _records(3)
+    path = source_ledger_path(tmp_path)
+    write_source_ledger(records, path)
+    body = path.read_bytes()
+    digest = hashlib.sha256(body).hexdigest()
+    assert source_ledger_receipt(path) == {
+        "rows": body.count(b"\n"),
+        "bytes": len(body),
+        "sha256": digest,
+        "parts": [
+            {
+                "name": SOURCE_LEDGER_FILENAME,
+                "bytes": len(body),
+                "rows": body.count(b"\n"),
+                "sha256": digest,
+            }
+        ],
+    }
+    assert body.count(b"\n") == len(records)
+    assert source_ledger_receipt(source_ledger_path(tmp_path / "absent")) is None
+
+
+def test_receipt_covers_every_part_in_ledger_order(tmp_path: Path) -> None:
+    records = _records(7)
+    path = source_ledger_path(tmp_path)
+    write_source_ledger(records, path, roll_bytes=_roll_for(records, 3))
+    parts = _part_bytes(path)
+    logical = b"".join(parts.values())
+
+    receipt = source_ledger_receipt(path)
+    assert receipt["sha256"] == hashlib.sha256(logical).hexdigest()
+    assert receipt["rows"] == logical.count(b"\n") == len(records)
+    assert receipt["bytes"] == len(logical)
+    assert [part["name"] for part in receipt["parts"]] == list(parts)
+    assert [part["sha256"] for part in receipt["parts"]] == [
+        hashlib.sha256(body).hexdigest() for body in parts.values()
+    ]
+
+
+def test_continuation_parts_without_part_one_are_a_corrupt_ledger(tmp_path: Path) -> None:
+    path = source_ledger_path(tmp_path)
+    path.with_name("source_manifest.part-0002.jsonl").write_bytes(b'{"manifest_id":"x"}\n')
+    with pytest.raises(ManifestIdentityError, match="absent but continuation parts exist"):
+        read_source_ledger(path)
+    with pytest.raises(ManifestIdentityError, match="absent but continuation parts exist"):
+        source_ledger_receipt(path)
+
+
+def test_a_gap_in_the_continuation_parts_is_a_corrupt_ledger(tmp_path: Path) -> None:
+    path = source_ledger_path(tmp_path)
+    path.write_bytes(b'{"manifest_id":"a"}\n')
+    path.with_name("source_manifest.part-0003.jsonl").write_bytes(b'{"manifest_id":"c"}\n')
+    with pytest.raises(ManifestIdentityError, match="not contiguous"):
+        read_source_ledger(path)
+    with pytest.raises(ManifestIdentityError, match="not contiguous"):
+        source_ledger_receipt(path)
+
+
+def test_staging_files_beside_the_ledger_are_never_read_as_parts(tmp_path: Path) -> None:
+    records = _records(2)
+    path = source_ledger_path(tmp_path)
+    write_source_ledger(records, path)
+    path.with_name("source_manifest.part-0002.tmp.jsonl").write_bytes(b"{not json\n")
+    assert read_source_ledger(path) == records
+    assert [part["name"] for part in source_ledger_receipt(path)["parts"]] == [
+        SOURCE_LEDGER_FILENAME
+    ]

@@ -1,24 +1,24 @@
 {
   "schema": "ai_desk_track_record.v1",
-  "as_of": "2026-09-06",
-  "scored_total": 6,
-  "open": 38,
+  "as_of": "2026-10-17",
+  "scored_total": 44,
+  "open": 27,
   "unscored_soft": 0,
-  "expired": 0,
+  "expired": 3,
   "overall": {
-    "n": 6,
-    "hits": 4,
-    "misses": 2,
-    "hit_rate": 0.667,
-    "dir_accuracy": 0.333
+    "n": 44,
+    "hits": 40,
+    "misses": 4,
+    "hit_rate": 0.909,
+    "dir_accuracy": 0.705
   },
   "by_conviction": {
     "high": {
-      "n": 4,
-      "hits": 2,
+      "n": 19,
+      "hits": 17,
       "misses": 2,
-      "hit_rate": 0.5,
-      "dir_accuracy": 0.25
+      "hit_rate": 0.895,
+      "dir_accuracy": 0.842
     },
     "medium": {
       "n": 0,
@@ -37,11 +37,11 @@
   },
   "by_kind": {
     "rel_return": {
-      "n": 6,
-      "hits": 4,
-      "misses": 2,
-      "hit_rate": 0.667,
-      "dir_accuracy": 0.333
+      "n": 44,
+      "hits": 40,
+      "misses": 4,
+      "hit_rate": 0.909,
+      "dir_accuracy": 0.705
     },
     "level": {
       "n": 0,
@@ -53,69 +53,112 @@
   },
   "by_regime": {
     "Reflation": {
-      "n": 6,
-      "hits": 4,
-      "misses": 2,
-      "hit_rate": 0.667,
-      "dir_accuracy": 0.333
+      "n": 41,
+      "hits": 37,
+      "misses": 4,
+      "hit_rate": 0.902,
+      "dir_accuracy": 0.707
+    },
+    "Stagflation": {
+      "n": 3,
+      "hits": 3,
+      "misses": 0,
+      "hit_rate": 1.0,
+      "dir_accuracy": 0.667
     }
   },
-  "calibration_note": "6 scored, hit-rate 0.667 (directional accuracy 0.333). High-conviction calls: 2/4 holding. Sample is tiny \u2014 treat conviction as provisional and lean low.",
+  "calibration_note": "44 scored, hit-rate 0.909 (directional accuracy 0.705). High-conviction calls: 17/19 holding.",
   "recent": [
     {
-      "id": "2026-07-31-nb-memory_storage",
-      "subject": "memory_storage",
+      "id": "2026-09-10-nb-space_economy",
+      "subject": "space_economy",
       "lean": "cautious",
-      "conviction": "high",
+      "conviction": "med",
       "outcome": "hit",
-      "realized": -0.024,
-      "check_by": "2026-08-31"
+      "realized": -0.0099,
+      "check_by": "2026-10-11"
     },
     {
-      "id": "2026-07-31-nb-us_sector_comm",
-      "subject": "us_sector_comm",
+      "id": "2026-09-11-nb-semicap_equipment",
+      "subject": "semicap_equipment",
       "lean": "constructive",
       "conviction": "med",
       "outcome": "hit",
-      "realized": 0.0045,
-      "check_by": "2026-08-31"
+      "realized": 0.0189,
+      "check_by": "2026-10-12"
     },
     {
-      "id": "2026-07-31-nb-us_sector_health",
-      "subject": "us_sector_health",
+      "id": "2026-09-08-nb-semicap_equipment",
+      "subject": "semicap_equipment",
       "lean": "cautious",
       "conviction": "med",
       "outcome": "hit",
-      "realized": 0.0424,
-      "check_by": "2026-08-31"
+      "realized": 0.0268,
+      "check_by": "2026-10-09"
     },
     {
-      "id": "2026-07-31-nb-ai_software",
-      "subject": "ai_software",
+      "id": "2026-09-04-nb-semicap_equipment",
+      "subject": "semicap_equipment",
+      "lean": "constructive",
+      "conviction": "med",
+      "outcome": "hit",
+      "realized": 0.1094,
+      "check_by": "2026-10-05"
+    },
+    {
+      "id": "2026-09-03-nb-silver_miners",
+      "subject": "silver_miners",
       "lean": "cautious",
       "conviction": "high",
       "outcome": "hit",
-      "realized": 0.0034,
-      "check_by": "2026-08-31"
+      "realized": -0.1306,
+      "check_by": "2026-10-04"
     },
     {
-      "id": "2026-07-31-nb-obesity_glp1",
-      "subject": "obesity_glp1",
-      "lean": "cautious",
-      "conviction": "high",
-      "outcome": "miss",
-      "realized": 0.0576,
-      "check_by": "2026-08-31"
+      "id": "2026-09-03-nb-semicap_equipment",
+      "subject": "semicap_equipment",
+      "lean": "constructive",
+      "conviction": "med",
+      "outcome": "hit",
+      "realized": 0.1104,
+      "check_by": "2026-10-04"
     },
     {
-      "id": "2026-07-31-nb-managed_care",
-      "subject": "managed_care",
+      "id": "2026-08-31-nb-big_pharma",
+      "subject": "big_pharma",
       "lean": "cautious",
       "conviction": "high",
-      "outcome": "miss",
-      "realized": 0.0576,
-      "check_by": "2026-08-31"
+      "outcome": "hit",
+      "realized": -0.0579,
+      "check_by": "2026-10-01"
+    },
+    {
+      "id": "2026-08-31-nb-silver_miners",
+      "subject": "silver_miners",
+      "lean": "cautious",
+      "conviction": "high",
+      "outcome": "hit",
+      "realized": -0.0972,
+      "check_by": "2026-10-01"
+    },
+    {
+      "id": "2026-08-28-nb-silver_miners",
+      "subject": "silver_miners",
+      "lean": "cautious",
+      "conviction": "high",
+      "outcome": "hit",
+      "realized": -0.1125,
+      "check_by": "2026-09-28"
+    },
+    {
+      "id": "2026-08-28-nb-semicap_equipment",
+      "subject": "semicap_equipment",
+      "lean": "constructive",
+      "conviction": "med",
+      "outcome": "hit",
+      "realized": 0.0872,
+      "check_by": "2026-09-28"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 6 \u6761\uff0c\u547d\u4e2d\u7387 0.667\uff08\u65b9\u5411\u51c6\u786e\u7387 0.333\uff09\u3002\u9ad8\u7f6e\u4fe1\u5224\u65ad\uff1a2/4 \u4ecd\u6210\u7acb\u3002\u6837\u672c\u6781\u5c0f \u2014\u2014 \u5c06\u7f6e\u4fe1\u89c6\u4e3a\u6682\u5b9a\u5e76\u4fdd\u6301\u504f\u4f4e\u3002"
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 44 \u6761\uff0c\u547d\u4e2d\u7387 0.909\uff08\u65b9\u5411\u51c6\u786e\u7387 0.705\uff09\u3002\u9ad8\u7f6e\u4fe1\u5224\u65ad\uff1a17/19 \u4ecd\u6210\u7acb\u3002"
 }
