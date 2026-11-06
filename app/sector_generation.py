@@ -71,7 +71,6 @@ truthful qualification. A date in this response is always the source's date.
 """
 from __future__ import annotations
 
-import json
 import logging
 import re
 from collections.abc import Mapping, Sequence
@@ -84,11 +83,11 @@ from fastapi.responses import JSONResponse, Response
 
 from app.paywall import paywall_check
 from app.regwall import regwall_check
+from lib.sector_generation_wire import (
+    MAX_ENCODED_BYTES, SCHEMA, SectorGenerationTooLarge, encode_sector_generation,
+)
 
 log = logging.getLogger("macro.sector_generation")
-
-#: Response schema of a successful read.
-SCHEMA = "sector_generation.read/v1"
 
 #: Response schema of every failure.
 ERROR_SCHEMA = "sector_generation.error/v1"
@@ -131,7 +130,6 @@ RESOURCES_BY_AUDIENCE: dict[str, tuple[str, ...]] = {
 
 #: Hard ceiling on the encoded response body. A larger projection is refused
 #: rather than truncated: a partially served generation is not a generation.
-MAX_ENCODED_BYTES = 4 * 1024 * 1024
 
 #: Every response — success and failure — is private, uncacheable and
 #: cookie-varying. Nothing here may be cached by a shared proxy.
@@ -423,22 +421,17 @@ def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
             generation = _coerce_generation(result, audience=audience)
             if generation is None:
                 return _error(503, ERROR_GENERATION_UNAVAILABLE)
-            body = {
-                "schema": SCHEMA,
-                "audience": audience,
-                "source_session": generation.source_session,
-                "published_at": generation.published_at,
-                "qualification": generation.qualification,
-                "projection": generation.payload,
-            }
-            encoded = json.dumps(
-                body, allow_nan=False, separators=(",", ":"), ensure_ascii=False
-            ).encode("utf-8")
+            encoded = encode_sector_generation(
+                audience=audience, source_session=generation.source_session,
+                published_at=generation.published_at,
+                qualification=generation.qualification,
+                projection=generation.payload, max_encoded_bytes=MAX_ENCODED_BYTES,
+            )
+        except SectorGenerationTooLarge:
+            return _error(503, ERROR_GENERATION_TOO_LARGE)
         except Exception as exc:  # noqa: BLE001 — every malformed reader fails closed
             log.warning("sector_generation: reader envelope failed (%s)", type(exc).__name__)
             return _error(503, ERROR_GENERATION_UNAVAILABLE)
-        if len(encoded) > MAX_ENCODED_BYTES:
-            return _error(503, ERROR_GENERATION_TOO_LARGE)
         return Response(content=encoded, media_type="application/json", headers=_HEADERS)
 
     return router

@@ -1,6 +1,6 @@
 # Coherent Sector generation HTTP envelope
 
-Status: source integration under PR #10780; the application route and production reader are not installed by this change. No live API or beta acceptance is claimed.
+Status: source integration under PR #10780. The concrete verified-snapshot reader is implemented and locally tested; application mounting and production binding remain inactive. No live API or beta acceptance is claimed.
 
 ## Existing authorities
 
@@ -58,4 +58,4 @@ Parent changes add the missing action-board gate, align metadata with the actual
 
 ## Installation still owed
 
-The parent must bind the single verified generation reader to semantically qualified Sector outputs, prove correct audience projection and coherent input identities, mount the router through the existing application owner, connect the incumbent Terminal BFF, satisfy required CI and release controls, and prove the authenticated beta journey. Unit fixtures and a locally constructed projection are not a running production data source.
+`app/sector_generation_reader.py::SectorGenerationReader(generations_root=absolute_private_root)` now connects the single verified snapshot facade to shared Sector semantics, canonical audience projection and this HTTP envelope. The complete-response encoder is shared with admission preflight; the original publication receipt and current evaluation clock remain distinct. See `research/market_os/SECTOR_GENERATION_READER_CONTRACT_2026-11-06.md`. The parent still must produce qualified live Sector outputs, mount this router through the existing application owner, connect the incumbent Terminal BFF, satisfy required CI and release controls, and prove the authenticated beta journey. Unit fixtures and a locally constructed projection are not a running production data source.

@@ -788,7 +788,8 @@ def test_entire_reader_envelope_fails_closed_with_private_headers(failure, caplo
             payload = BrokenMapping()
         else:
             payload = _payload({"value": 1})
-            real_dumps = sg.json.dumps
+            from lib import sector_generation_wire as wire
+            real_dumps = wire.json.dumps
 
             def exhausted_serializer(value, *args, **kwargs):
                 # The process recursion limit varies with application imports.
@@ -798,7 +799,7 @@ def test_entire_reader_envelope_fails_closed_with_private_headers(failure, caplo
                     raise RecursionError(secret)
                 return real_dumps(value, *args, **kwargs)
 
-            monkeypatch.setattr(sg.json, "dumps", exhausted_serializer)
+            monkeypatch.setattr(wire.json, "dumps", exhausted_serializer)
         reader = FixtureReader(result=sg.SectorGeneration(
             payload=payload, source_session=SOURCE_SESSION,
             published_at=PUBLISHED_AT, qualification="accepted",

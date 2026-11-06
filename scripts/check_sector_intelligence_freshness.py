@@ -19,7 +19,7 @@ from typing import Any, Callable
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from lib import nyse_calendar  # noqa: E402
+from lib import market_session  # noqa: E402
 # Shared by the build gate and the external served-generation observer.
 ARTIFACT_PATHS = (
     "basketdata/baskets.json",
@@ -120,6 +120,69 @@ def _check_hash(
         )
 
 
+
+def check_action_board(action: dict[str, Any]) -> list[str]:
+    """Shared semantic shape check; both publication surfaces use the same lanes."""
+    board = action.get("action_board")
+    if not isinstance(board, dict):
+        return ["site/basketdata/action_board.json:action_board must be an object"]
+    lane_count = sum(
+        len(board.get(lane) or [])
+        for lane in _ACTION_LANES
+        if isinstance(board.get(lane) or [], list)
+    )
+    total = board.get("total")
+    if not isinstance(total, int):
+        total = lane_count
+    if total <= 0 or lane_count <= 0:
+        return ["Sector Intelligence action board is empty"]
+    return []
+
+
+def check_basket_dependency(action: dict[str, Any], baskets_raw: bytes) -> list[str]:
+    """The board must name the exact captured baskets bytes, including revisions."""
+    errors: list[str] = []
+    _check_hash("site/basketdata/action_board.json:baskets_sha256",
+                action.get("baskets_sha256"), _sha256(baskets_raw), errors)
+    return errors
+
+
+def evaluate_session_age(
+    as_of: date, *, now: datetime | None = None, max_sessions_behind: int = 1,
+) -> dict[str, Any]:
+    """Shared source-session policy over the published US calendar and one clock.
+
+    This helper does not read artifacts or decide whether a generation is coherent.
+    It raises on unavailable or unverified calendar coverage. The legacy evaluator preserves its error
+    vocabulary; native consumers can distinguish invalid, developing and old data.
+    The existing default budget remains one completed session.
+    """
+    observed_at = datetime.now(timezone.utc) if now is None else now
+    today = market_session.market_local_date("US", observed_at)
+    if not market_session.calendar_verified("US", today.year):
+        raise ValueError("published US calendar is unverified")
+    expected = market_session.expected_session("US", observed_at)
+    # An exact lag across missing annual notices must not be called verified.
+    first_year = min(as_of.year, expected.year, today.year)
+    last_year = max(as_of.year, expected.year, today.year)
+    if not all(market_session.calendar_verified("US", year)
+               for year in range(first_year, last_year + 1)):
+        raise ValueError("published US calendar coverage is incomplete")
+    latest = today if market_session.is_session_date("US", today) else expected
+    behind = market_session.missed_sessions("US", as_of, expected)
+    return {
+        "as_of": as_of,
+        "sessions_behind": behind,
+        "latest_possible_session": latest,
+        "expected_session": expected,
+        "calendar_verified": True,
+        "is_session": market_session.is_session_date("US", as_of),
+        "future": as_of > latest,
+        "developing": as_of > expected,
+        "age_breach": behind > max_sessions_behind,
+    }
+
+
 def evaluate(
     root: Path,
     *,
@@ -156,20 +219,7 @@ def evaluate(
         )
     if action is not None:
         _require_date("site/basketdata/action_board.json:as_of", action.get("as_of"), errors, dates)
-        board = action.get("action_board")
-        if not isinstance(board, dict):
-            errors.append("site/basketdata/action_board.json:action_board must be an object")
-        else:
-            lane_count = sum(
-                len(board.get(lane) or [])
-                for lane in _ACTION_LANES
-                if isinstance(board.get(lane) or [], list)
-            )
-            total = board.get("total")
-            if not isinstance(total, int):
-                total = lane_count
-            if total <= 0 or lane_count <= 0:
-                errors.append("Sector Intelligence action board is empty")
+        errors.extend(check_action_board(action))
     if sector is not None:
         _require_date("site/sectordata/sector_central.json:as_of", sector.get("as_of"), errors, dates)
     if premium is not None:
@@ -189,12 +239,7 @@ def evaluate(
     actual_baskets_sha = _sha256(baskets_raw) if baskets_raw is not None else None
     actual_action_sha = _sha256(action_raw) if action_raw is not None else None
     if actual_baskets_sha is not None and action is not None:
-        _check_hash(
-            "site/basketdata/action_board.json:baskets_sha256",
-            action.get("baskets_sha256"),
-            actual_baskets_sha,
-            errors,
-        )
+        errors.extend(check_basket_dependency(action, baskets_raw))
     if premium is not None and actual_baskets_sha is not None:
         _check_hash(
             "site/premiumdata/sector_central.json:baskets_sha256",
@@ -238,8 +283,10 @@ def evaluate(
     calendar_unavailable = False
     if common_as_of is not None:
         try:
-            sessions_behind = nyse_calendar.sessions_behind(common_as_of, now)
-            latest_possible_session = nyse_calendar.session_date(now)
+            age = evaluate_session_age(common_as_of, now=now,
+                                       max_sessions_behind=max_sessions_behind)
+            sessions_behind = age["sessions_behind"]
+            latest_possible_session = age["latest_possible_session"]
         except Exception as exc:  # noqa: BLE001 - calendar failure is fail closed here
             calendar_unavailable = True
             errors.append(f"NYSE calendar unavailable: {exc!r}")

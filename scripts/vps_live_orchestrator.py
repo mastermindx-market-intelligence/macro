@@ -287,6 +287,22 @@ class GenerationArtifact:
 
 
 @dataclass(frozen=True)
+class GenerationValidationContext:
+    """Captured values for final domain admission under the publication owner.
+
+    Admission time is sampled once after member capture. The publication string
+    is the actual target manifest's original value, including on retained reuse.
+    Metadata is privately detached; members are verified bytes, not paths to reopen.
+    """
+    domain: str
+    generation_id: str
+    input_identity: Mapping[str, Any]
+    members: Mapping[str, bytes]
+    published_at: str
+    admission_time: datetime
+
+
+@dataclass(frozen=True)
 class GenerationRequest:
     """The declared identity of one candidate generation.
 
@@ -305,6 +321,7 @@ class GenerationRequest:
     artifacts: tuple[GenerationArtifact, ...]
     input_identity: Mapping[str, Any]
     computed_at: str | None = None
+    bundle_validator: Callable[[GenerationValidationContext], str | None] | None = None
 
 
 @dataclass(frozen=True)
@@ -1331,6 +1348,8 @@ def publish_generation(
         return rejected(error)
     if not isinstance(request.source_revision, str) or not request.source_revision.strip():
         return rejected("source_revision is empty")
+    if request.bundle_validator is not None and not callable(request.bundle_validator):
+        return rejected("bundle validator is not callable")
     if not artifacts:
         return rejected("generation has no artifacts")
     if len(artifacts) > MAX_GENERATION_ARTIFACTS:
@@ -1488,6 +1507,7 @@ def _publish_generation_locked(
         return rejected(f"could not prepare the staging directory: {exc}")
 
     captured: list[dict[str, Any]] = []
+    captured_member_bytes: dict[str, bytes] = {}
     total_bytes = 0
     written_dirs: set[Path] = set()
     try:
@@ -1516,6 +1536,8 @@ def _publish_generation_locked(
                     raise GenerationRejected(
                         f"artifact {artifact.name!r} failed validation: {error}"
                     )
+            if request.bundle_validator is not None:
+                captured_member_bytes[artifact.name] = data
             captured.append(
                 {
                     "name": artifact.name,
@@ -1527,6 +1549,7 @@ def _publish_generation_locked(
         # re-read and compared once every validator has run. A validator that
         # rewrote its own target, or an earlier member, is caught here.
         captured = _verify_staged_set(staging, captured)
+        publication_time = _publication_clock(now)
     except GenerationRejected as exc:
         shutil.rmtree(staging, ignore_errors=True)
         return rejected(str(exc))
@@ -1542,7 +1565,7 @@ def _publish_generation_locked(
         input_identity=input_identity,
         captured=captured,
     )
-    published_at = _publication_clock(now).isoformat()
+    published_at = publication_time.isoformat()
     manifest = {
         "schema": GENERATION_SCHEMA,
         "domain": domain,
@@ -1555,6 +1578,35 @@ def _publish_generation_locked(
         "published_at": published_at,
         "artifacts": _generation_artifact_rows(captured),
     }
+
+    def admit_bundle(target: Mapping[str, Any], retained: Path | None = None) -> str | None:
+        if request.bundle_validator is None:
+            return None
+        try:
+            context = GenerationValidationContext(
+                domain=domain, generation_id=generation_id,
+                input_identity=MappingProxyType(json.loads(
+                    _canonical_json(target["input_identity"]))),
+                members=MappingProxyType(dict(captured_member_bytes)),
+                published_at=target.get("published_at"),
+                admission_time=publication_time,
+            )
+            error = request.bundle_validator(context)
+            if error:
+                return "bundle failed validation: " + str(error)
+            # A callback cannot rewrite the staged bytes it just admitted.
+            _verify_staged_set(staging, captured)
+            if retained is not None:
+                checked, verify_error = _verify_retained_generation(
+                    retained, domain=domain, expected_content_id=content_id)
+                # published_at is deliberately outside content_id. Compare the
+                # complete verified manifest as well, so its original receipt
+                # cannot change after domain admission.
+                if verify_error or checked != target:
+                    return "retained generation changed during bundle admission"
+        except Exception as exc:  # noqa: BLE001 - domain admission fails closed
+            return "bundle validator raised " + type(exc).__name__
+        return None
 
     final = domain_dir / generation_id
     if final.exists() or final.is_symlink():
@@ -1588,6 +1640,10 @@ def _publish_generation_locked(
                 f"generation {generation_id!r} is not reusable: "
                 f"{verify_error or 'it could not be verified'}"
             )
+        admission_error = admit_bundle(verified, retained=final)
+        if admission_error:
+            shutil.rmtree(staging, ignore_errors=True)
+            return rejected(admission_error)
         shutil.rmtree(staging, ignore_errors=True)
         if current_content_id == content_id:
             return GenerationPublishResult(
@@ -1604,6 +1660,10 @@ def _publish_generation_locked(
         target_manifest = verified
         target_dir = final
     else:
+        admission_error = admit_bundle(manifest)
+        if admission_error:
+            shutil.rmtree(staging, ignore_errors=True)
+            return rejected(admission_error)
         try:
             atomic_write_json(
                 staging / _GENERATION_MANIFEST_NAME,
