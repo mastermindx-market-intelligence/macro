@@ -22,7 +22,7 @@ import subprocess
 import sys
 import time
 
-from scripts.ci_apt_cold_acquisition import AcquisitionRefused, Archive, ChildResult, acquire_and_install, make_download_plan
+from scripts.ci_apt_cold_acquisition import AcquisitionRefused, Archive, ChildResult, DownloadPlan, acquire_and_install, make_download_plan
 from scripts.ci_apt_native_plan import qualified_direct_packages
 from scripts.ci_apt_native_stage import LIMIT, NativeUnknown, RESULT_PREFIX, observe_command, sanitize_reported_errors
 
@@ -112,6 +112,7 @@ def failed_download_summaries(records) -> list[list]:
 
 
 TIMING_PREFIX = "CI_NATIVE_ACQUISITION_TIMING="
+EVIDENCE_PREFIX = "CI_NATIVE_ACQUISITION_EVIDENCE="
 # Completion-only phase attribution emitted by the UNPRIVILEGED adapter to its
 # own stderr. Fixed enum; never a child result field, never parsed by any stage
 # contract, and never emitted inside a privileged stage/bootstrap/child channel.
@@ -176,6 +177,77 @@ def _emit_inventory(plan):
     try:
         _emit_timing({"phase": "inventory", "archive_count": len(plan.transaction),
                       "archive_bytes": sum(archive.size for archive in plan.transaction)})
+    except Exception:
+        pass
+
+
+def _emit_acquisition_evidence(record):
+    """Outer diagnostic channel only; never part of a privileged child response."""
+    try:
+        stream = _timing_sink()
+        stream.write(EVIDENCE_PREFIX + json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n")
+        stream.flush()
+    except Exception:
+        pass  # diagnostics cannot replace the original operation or result
+
+
+def _emit_inventory_evidence(plan, expected_sources, transaction_digest=None):
+    """Retain complete validated public identities, without URI or filename.
+
+    The original owner has already qualified the helper bytes and native plan.
+    Revalidation here only constrains disclosure; it never admits acquisition.
+    One JSON record keeps a partially written inventory from claiming completeness.
+    """
+    try:
+        if (type(plan) is not DownloadPlan or type(expected_sources) is not dict or
+                any(type(name) is not str for name in expected_sources) or
+                set(expected_sources) != set(BOUND_FILES) or
+                any(type(value) is not str or not re.fullmatch(r"[0-9a-f]{64}", value)
+                    for value in expected_sources.values())):
+            return None
+        if (any(type(archive) is not Archive or
+                any(type(getattr(archive, field)) is not str for field in
+                    ("package", "version", "package_architecture", "archive_architecture", "sha256", "filename", "uri"))
+                for archive in plan.transaction) or
+                make_download_plan(plan.transaction, concurrency=plan.concurrency) != plan):
+            return None
+        rows = [{"index": index, "package": archive.package, "version": archive.version,
+                 "package_architecture": archive.package_architecture,
+                 "archive_architecture": archive.archive_architecture,
+                 "size": archive.size, "sha256": archive.sha256}
+                for index, archive in enumerate(plan.transaction)]
+        digest = hashlib.sha256(json.dumps(rows, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        native_digest = (transaction_digest if type(transaction_digest) is str and
+                         re.fullmatch(r"[0-9a-f]{64}", transaction_digest) else None)
+        _emit_acquisition_evidence({"kind": "inventory", "inventory_sha256": digest,
+                                    "native_transaction_sha256": native_digest,
+                                    "helper_source_sha256": dict(expected_sources), "archives": rows})
+        return digest
+    except Exception:
+        return None
+
+
+def _emit_download_evidence(index, records, inventory_digest, plan):
+    """Only actually returned native fields; HTTP status/cause is not exposed."""
+    try:
+        if (type(plan) is not DownloadPlan or type(plan.transaction) is not tuple or
+                type(index) is not int or not 0 <= index < len(plan.transaction) <= 128 or type(records) is not dict or
+                type(inventory_digest) is not str or not re.fullmatch(r"[0-9a-f]{64}", inventory_digest)):
+            return
+        row = records.get(index)
+        if (type(row) is not dict or row.get("mode") != "download" or
+                type(row.get("index")) is not int or row["index"] != index or
+                type(row.get("outcome")) is not str or type(row.get("settlement")) is not str or
+                row.get("outcome") not in _TIMING_OUTCOMES or row.get("settlement") not in _TIMING_SETTLEMENTS):
+            return
+        code = row.get("returncode")
+        if (type(code) is not int or not -255 <= code <= 255 or
+                (code == 0) != (row["outcome"] == "passed" and row["settlement"] == "settled")):
+            code = None
+        errors = sanitize_reported_errors(row["reported_errors"]) if "reported_errors" in row else None
+        _emit_acquisition_evidence({"kind": "download", "inventory_sha256": inventory_digest,
+                                    "index": index, "outcome": row["outcome"], "settlement": row["settlement"],
+                                    "returncode": code, "reported_errors": errors, "http_status": "unknown"})
     except Exception:
         pass
 
@@ -248,6 +320,7 @@ class NativeAptBackend:
         self.records = {}
         self.handles = {}
         self.download_timing = {}  # diagnostic-only launch timestamps, never a ledger
+        self.evidence_inventory_sha256 = None  # diagnostic binding, never acquisition authority
 
     def now(self):
         return time.monotonic()
@@ -261,6 +334,7 @@ class NativeAptBackend:
             if state is None or state["emitted"]:
                 return
             state["emitted"] = True
+            _emit_download_evidence(index, self.records, self.evidence_inventory_sha256, self.plan)
             elapsed = _diag_elapsed_ms(state["started_ns"], _diag_now())
             _emit_phase("download", archive_index=index, elapsed_ms=elapsed, observation=observation,
                         outcome=outcome, settlement=settlement)
@@ -491,6 +565,8 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
             raise NativeUnknown("RESOLUTION_UNPROVEN", resolved.get("child_pid"), resolved["outcome"])
         backend.plan = make_download_plan(tuple(Archive(**row) for row in resolved["archives"]))
         _emit_inventory(backend.plan)
+        backend.evidence_inventory_sha256 = _emit_inventory_evidence(backend.plan, expected_sources,
+                                                                    resolved.get("transaction_sha256"))
         result = acquire_and_install(backend.plan, backend, deadline=deadline)
         installation = result.installation
         if result.initial_download_failure is not None:

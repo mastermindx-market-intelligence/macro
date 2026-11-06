@@ -285,7 +285,10 @@ class TimingSink:
     def flush(self):
         if self.fail: raise RuntimeError('sink unavailable')
     def records(self):
-        return [json.loads(line[len(SETUP.TIMING_PREFIX):]) for line in self.lines]
+        return [json.loads(line[len(SETUP.TIMING_PREFIX):]) for line in self.lines if line.startswith(SETUP.TIMING_PREFIX)]
+    def evidence_records(self):
+        prefix = 'CI_NATIVE_ACQUISITION_EVIDENCE='
+        return [json.loads(line[len(prefix):]) for line in self.lines if line.startswith(prefix)]
 
 VALID_ROW = {'package':'libx11-6','version':'2:1.8.7-1build1','package_architecture':'amd64',
              'archive_architecture':'amd64','filename':'libx11-6_2%3a1.8.7-1build1_amd64.deb',
@@ -369,7 +372,7 @@ def test_validated_inventory_emits_exact_count_and_bytes_with_no_payload_sentine
     assert result['outcome']=='passed'
     inventory=[r for r in sink.records() if r['phase']=='inventory']
     assert inventory==[{'phase':'inventory','archive_count':1,'archive_bytes':262144}]
-    text=''.join(sink.lines)
+    text=''.join(line for line in sink.lines if line.startswith(SETUP.TIMING_PREFIX))
     for sentinel in ('archive.ubuntu.com','libx11','%3a','.deb','a'*64,'sudo','/tmp/ci-apt','SECRET','https','ubuntu','playwright','chromium'):
         assert sentinel not in text
     assert {r['phase'] for r in sink.records()} <= set(SETUP.TIMING_PHASES)|{'inventory'}
@@ -530,8 +533,11 @@ def test_child_result_channel_stays_exact_single_prefixed_line(monkeypatch):
     with pytest.raises(SETUP.NativeUnknown):SETUP.parsed_result(0,SETUP.TIMING_PREFIX.encode()+b'{"phase":"update"}\\n',mode='update')
     result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=browser)
     assert result['outcome']=='passed'
-    assert all(line.startswith(SETUP.TIMING_PREFIX) and 'CI_APT_NATIVE_RESULT' not in line for line in sink.lines)
-    assert all(json.loads(line[len(SETUP.TIMING_PREFIX):])['phase'] in set(SETUP.TIMING_PHASES)|{'inventory'} for line in sink.lines)
+    assert all(line.startswith((SETUP.TIMING_PREFIX, SETUP.EVIDENCE_PREFIX)) and 'CI_APT_NATIVE_RESULT' not in line for line in sink.lines)
+    assert all(record['phase'] in set(SETUP.TIMING_PHASES)|{'inventory'} for record in sink.records())
+    assert all(record['kind'] in {'inventory', 'download'} for record in sink.evidence_records())
+    with pytest.raises(SETUP.NativeUnknown):
+        SETUP.parsed_result(0, SETUP.EVIDENCE_PREFIX.encode()+b'{}\n', mode='update')
 
 def test_source_binding_caps_and_dynamic_adapter_digest_binding_unchanged():
     expected=sources()
@@ -611,3 +617,193 @@ def test_raised_exception_metadata_cannot_claim_success(monkeypatch):
     line = sink.records()[0]
     assert line['observation'] == 'raised'
     assert line['outcome'] is None and line['settlement'] is None
+
+
+# Safe original-input evidence is a separate outer diagnostic, never child state.
+def evidence_plan(count=9):
+    rows = []
+    for index in range(count):
+        name = f'font-fixture-{index}'
+        rows.append(SETUP.Archive(name, '1.0', 'amd64', 'all', f'{name}_1.0_all.deb',
+                                 index+1, hashlib.sha256(str(index).encode()).hexdigest(),
+                                 f'https://archive.ubuntu.com/ubuntu/pool/main/f/{name}_1.0_all.deb'))
+    return SETUP.make_download_plan(tuple(rows))
+
+
+def test_complete_evidence_inventory_preserves_all_original_indices_and_exact_source_binding(monkeypatch):
+    sink = TimingSink(); monkeypatch.setattr(SETUP, '_timing_sink', lambda:sink)
+    plan = evidence_plan(); expected = sources()
+    assert plan.schedule != tuple(range(9))
+    digest = SETUP._emit_inventory_evidence(plan, expected)
+    [record] = sink.evidence_records()
+    assert record['kind'] == 'inventory' and record['helper_source_sha256'] == expected
+    assert [r['index'] for r in record['archives']] == list(range(9))
+    for index, row in enumerate(record['archives']):
+        source = plan.transaction[index]
+        assert row == {'index':index,'package':source.package,'version':source.version,
+                       'package_architecture':source.package_architecture,'archive_architecture':source.archive_architecture,
+                       'size':source.size,'sha256':source.sha256}
+    assert digest == record['inventory_sha256'] == hashlib.sha256(json.dumps(record['archives'],sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    raw = ''.join(sink.lines)
+    assert not any(value in raw for value in ('https:', 'archive.ubuntu.com', '.deb', 'uri', 'filename', 'sudo'))
+
+
+@pytest.mark.parametrize('fault', ['hash','name','version','uri-secret','size','count','source-name','source-hash','source-extra','source-value'])
+def test_invalid_or_secret_bearing_inventory_metadata_emits_nothing(monkeypatch, fault):
+    from dataclasses import replace
+    sink=TimingSink(); monkeypatch.setattr(SETUP,'_timing_sink',lambda:sink)
+    plan=evidence_plan(); expected=sources()
+    changes={'hash':{'sha256':'SECRET'},'name':{'package':'SECRET:credential'},
+             'version':{'version':'1.0\nSECRET'},'uri-secret':{'uri':'https://SECRET:credential@private.invalid/a.deb'},
+             'size':{'size':True}}
+    if fault in changes:
+        rows=(replace(plan.transaction[0],**changes[fault]),*plan.transaction[1:])
+        plan=replace(plan,transaction=rows)
+    elif fault=='count':plan=replace(plan,transaction=plan.transaction*15)
+    elif fault=='source-name':expected={'SECRET': 'a'*64}
+    elif fault=='source-hash':expected[SETUP.BOUND_FILES[0]]='SECRET https://private.invalid'
+    elif fault=='source-extra':expected['SECRET']='a'*64
+    else:expected[SETUP.BOUND_FILES[0]]={'raw':'SECRET:credential'}
+    assert SETUP._emit_inventory_evidence(plan,expected) is None
+    assert sink.lines == []
+
+
+@pytest.mark.parametrize('code,errors,expected_code,expected_errors', [
+    (100,['PERMISSION','FETCH'],100,['PERMISSION','FETCH']),
+    (100,['FETCH'],100,['FETCH']),
+    ('SECRET',['SECRET'],None,['UNCLASSIFIED']),
+    (True,{'secret':'credential'},None,['UNCLASSIFIED']),
+    (0,['AUTH','AUTH'],None,['UNCLASSIFIED']),
+    (100000,['UNCLASSIFIED','AUTH'],None,['UNCLASSIFIED']),
+])
+def test_download_evidence_only_retains_observed_finite_fields_not_raw_or_http_guesses(monkeypatch,code,errors,expected_code,expected_errors):
+    sink=TimingSink();monkeypatch.setattr(SETUP,'_timing_sink',lambda:sink)
+    row={'mode':'download','index':3,'outcome':'failed','settlement':'settled','returncode':code,
+         'reported_errors':errors,'http_status':403,'raw':'SECRET https://private.invalid user:credential',
+         'child_pid':'SECRET','argv':['sudo','SECRET'],'uri':'https://SECRET:credential@private.invalid'}
+    SETUP._emit_download_evidence(3,{3:row},'a'*64,evidence_plan())
+    assert sink.evidence_records()==[{'kind':'download','inventory_sha256':'a'*64,'index':3,'outcome':'failed',
+                                      'settlement':'settled','returncode':expected_code,'reported_errors':expected_errors,'http_status':'unknown'}]
+    raw=''.join(sink.lines)
+    assert not any(value in raw for value in ('SECRET','credential','private.invalid','sudo','403'))
+
+
+@pytest.mark.parametrize('changes', [{'index':True},{'index':4},{'mode':'SECRET'},{'outcome':'SECRET'},{'settlement':'SECRET'}])
+def test_unqualified_download_records_cannot_claim_an_observed_result(monkeypatch,changes):
+    sink=TimingSink();monkeypatch.setattr(SETUP,'_timing_sink',lambda:sink)
+    row={'mode':'download','index':3,'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':['FETCH']}
+    SETUP._emit_download_evidence(3,{3:{**row,**changes}},'a'*64,evidence_plan())
+    assert sink.lines==[]
+
+
+def test_unknown_native_result_does_not_invent_returncode_error_category_or_http_status(monkeypatch):
+    sink=TimingSink();monkeypatch.setattr(SETUP,'_timing_sink',lambda:sink)
+    row={'mode':'download','index':0,'outcome':'timed_out','settlement':'unknown','child_pid':4242}
+    SETUP._emit_download_evidence(0,{0:row},'a'*64,evidence_plan())
+    [record]=sink.evidence_records()
+    assert record['outcome']=='timed_out' and record['settlement']=='unknown'
+    assert record['returncode'] is None and record['reported_errors'] is None and record['http_status']=='unknown'
+    assert 'child_pid' not in record
+
+
+def test_interrupted_later_child_preserves_original_inventory_and_prior_return_without_false_settlement(monkeypatch):
+    sink=TimingSink();monkeypatch.setattr(SETUP,'_timing_sink',lambda:sink)
+    monkeypatch.setattr(SETUP.time,'monotonic',lambda:100)
+    plan=evidence_plan(2);backend=SETUP.NativeAptBackend('/tmp/ci-apt-fixture',{},plan)
+    backend.evidence_inventory_sha256=SETUP._emit_inventory_evidence(plan,sources())
+    pipes={};launched=[];_fake_download_child(monkeypatch,pipes,launched)
+    first=backend.launch(0,('original',),600);second=backend.launch(1,('original',),600)
+    os.write(pipes[0]['write'],pipes[0]['payload']);os.close(pipes[0]['write'])
+    assert backend.collect({0:first,1:second},600)[0].settlement=='settled'
+    retained=list(sink.evidence_records())
+    assert [r['kind'] for r in retained]==['inventory','download'] and retained[1]['index']==0
+    os.write(pipes[1]['write'],b'PARTIAL SECRET https://private.invalid\n');os.close(pipes[1]['write'])
+    with pytest.raises(SETUP.NativeUnknown):backend.collect({1:second},600)
+    assert sink.evidence_records()==retained
+    assert backend.records[0]['settlement']=='settled' and 1 not in backend.records
+    assert launched==[0,1] and 'SECRET' not in ''.join(sink.lines)
+
+
+def test_safe_evidence_sink_failure_and_clock_failure_do_not_change_original_flow(monkeypatch):
+    events,holder,sink,browser=timing_runtime(monkeypatch,sink=TimingSink(fail=True),archive_rows=[VALID_ROW])
+    monkeypatch.setattr(SETUP,'_diag_now',lambda:(_ for _ in ()).throw(RuntimeError('SECRET clock failure')))
+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=browser)
+    assert result['outcome']=='passed' and result['timeout_settlement'] is None
+    assert [e[0] for e in events]==['capture-observe','bootstrap','update','resolve','acquire','install','browser','cleanup']
+    assert all(e[1]==600 for e in events if e[0] in {'update','resolve','install','cleanup'})
+    assert sink.lines==[]
+
+
+@pytest.mark.parametrize('native_digest', ['b'*64,None,True,{'raw':'SECRET'},'SECRET https://private.invalid'])
+def test_native_frozen_transaction_digest_is_observed_only_when_valid_and_never_reconstructed(monkeypatch,native_digest):
+    sink=TimingSink();monkeypatch.setattr(SETUP,'_timing_sink',lambda:sink)
+    SETUP._emit_inventory_evidence(evidence_plan(),sources(),native_digest)
+    [record]=sink.evidence_records()
+    assert record['native_transaction_sha256']==('b'*64 if native_digest=='b'*64 else None)
+    assert 'SECRET' not in ''.join(sink.lines)
+
+
+def test_actual_setup_boundary_retains_full_inventory_and_original_failed_result_under_same_deadline(monkeypatch):
+    plan=evidence_plan();expected=sources()
+    events,holder,sink,browser=timing_runtime(monkeypatch,archive_rows=[row.__dict__ for row in plan.transaction])
+    def acquire(original,backend,*,deadline):
+        assert deadline==600 and original==plan
+        backend.records[3]={'mode':'download','index':3,'outcome':'failed','settlement':'settled',
+                            'returncode':100,'reported_errors':['PERMISSION','FETCH'],'raw':'SECRET'}
+        backend.download_timing[3]={'started_ns':holder['ns'],'emitted':False}
+        backend._finish_download(3,observation='returned',outcome='failed',settlement='settled')
+        return AcquisitionResult('failed','settled',(),(),'never_started','NATIVE_DOWNLOAD_FAILED')
+    monkeypatch.setattr(SETUP,'acquire_and_install',acquire)
+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=expected,browser_stream=lambda *a,**k:pytest.fail('original failure cannot start browser'))
+    assert result['outcome']=='failed' and result['timeout_settlement'] is None
+    records=sink.evidence_records()
+    assert len(records)==2, 'original full inventory and observed failed download must be retained'
+    inventory,download=records
+    assert len(inventory['archives'])==9 and inventory['helper_source_sha256']==expected
+    assert inventory['native_transaction_sha256'] is None
+    assert download['index']==3 and download['inventory_sha256']==inventory['inventory_sha256']
+    assert download['reported_errors']==['PERMISSION','FETCH'] and download['http_status']=='unknown'
+    assert [e[0] for e in events]==['capture-observe','bootstrap','update','resolve']
+    assert all(e[1]==600 for e in events) and 'SECRET' not in ''.join(sink.lines)
+
+
+@pytest.mark.parametrize('field', ['package','version','outcome','settlement'])
+def test_evidence_disclosure_rejects_string_subclasses_with_forged_enum_comparison(monkeypatch,field):
+    from dataclasses import replace
+    class Forged(str):
+        def __eq__(self,other):return True
+        __hash__=str.__hash__
+    sink=TimingSink();monkeypatch.setattr(SETUP,'_timing_sink',lambda:sink)
+    plan=evidence_plan()
+    if field in {'package','version'}:
+        plan=replace(plan,transaction=(replace(plan.transaction[0],**{field:Forged('SECRET')}),*plan.transaction[1:]))
+        assert SETUP._emit_inventory_evidence(plan,sources()) is None
+    else:
+        row={'mode':'download','index':0,'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':['FETCH']}
+        SETUP._emit_download_evidence(0,{0:{**row,field:Forged('SECRET')}},'a'*64,plan)
+    assert sink.lines==[]
+
+
+def test_download_evidence_cannot_bind_a_foreign_index_to_a_smaller_original_inventory(monkeypatch):
+    sink=TimingSink();monkeypatch.setattr(SETUP,'_timing_sink',lambda:sink)
+    row={'mode':'download','index':3,'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':['FETCH']}
+    SETUP._emit_download_evidence(3,{3:row},'a'*64,evidence_plan(2))
+    assert sink.lines==[]
+
+
+def test_interrupted_metadata_write_does_not_remove_prior_complete_evidence_or_change_result(monkeypatch):
+    class InterruptedSink(TimingSink):
+        def write(self,text):
+            if self.lines:
+                self.lines.append(text[:20])
+                raise OSError('SECRET interrupted output')
+            return super().write(text)
+    sink=InterruptedSink();monkeypatch.setattr(SETUP,'_timing_sink',lambda:sink)
+    plan=evidence_plan();digest=SETUP._emit_inventory_evidence(plan,sources())
+    complete=sink.lines[0]
+    row={'mode':'download','index':0,'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':['FETCH']}
+    assert SETUP._emit_download_evidence(0,{0:row},digest,plan) is None
+    assert sink.lines[0]==complete and len(sink.lines)==2
+    assert json.loads(complete[len(SETUP.EVIDENCE_PREFIX):])['kind']=='inventory'
+    assert 'SECRET' not in ''.join(sink.lines)
+    with pytest.raises(json.JSONDecodeError):json.loads(sink.lines[1])
