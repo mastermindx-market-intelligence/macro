@@ -59,3 +59,7 @@ Parent changes add the missing action-board gate, align metadata with the actual
 ## Installation still owed
 
 `app/sector_generation_reader.py::SectorGenerationReader(generations_root=absolute_private_root)` now connects the single verified snapshot facade to shared Sector semantics, canonical audience projection and this HTTP envelope. The complete-response encoder is shared with admission preflight; the original publication receipt and current evaluation clock remain distinct. See `research/market_os/SECTOR_GENERATION_READER_CONTRACT_2026-11-06.md`. The parent still must produce qualified live Sector outputs, mount this router through the existing application owner, connect the incumbent Terminal BFF, satisfy required CI and release controls, and prove the authenticated beta journey. Unit fixtures and a locally constructed projection are not a running production data source.
+
+## Complete native projection
+
+The canonical projector now includes allowlisted core and reconstructed history in the same authorized data hash as Brief and board. Identity mappings, source dates, measured counts and response bounds are validated before publication. See `research/market_os/SECTOR_COMPLETE_NATIVE_GENERATION_2026-11-06.md`. This does not activate a runtime reader or Terminal binding.

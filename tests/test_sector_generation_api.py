@@ -823,8 +823,8 @@ def test_actual_native_projection_preserves_explicit_older_brief_baseline(audien
 
     source, baseline = "2026-11-05", "2026-11-03"
     inputs = SectorViewInputs(
-        central={"as_of": source},
-        cycles={"meta": {"asOf": source}},
+        central={"as_of": source, "sectors": [{"id": "xlv", "ticker": "XLV", "kind": "sector", "name": "Health Care"}]},
+        cycles={"meta": {"asOf": source, "rs_history": {"schema": "sector_cycles.rs_history.v1", "mode": "reconstructed_price_history", "naturally_observed": False, "basis": "tr", "benchmark": "SPY", "horizons_sessions": [21, 63], "max_points_per_sector": 252}}, "sectors": [{"id": "xlv", "ticker": "XLV", "kind": "sector", "rs_history": [], "turns": []}]},
         baskets={"as_of": baseline, "theme_intel": {"as_of": baseline}},
         handoff={"theme_context": {"as_of": baseline, "leadership": {
             "state": "steady", "strength": [],

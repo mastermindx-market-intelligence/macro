@@ -39,7 +39,8 @@ def bundle():
         "kind": "theme", "href": f"basket/{lane}-{i}.html",
         "private_debug": "PRIVATE_SOURCE_VALUE"} for i in range(n)]
     documents = [
-        {"as_of": SOURCE}, {"meta": {"asOf": SOURCE}},
+        {"as_of": SOURCE, "sectors": [{"id": "xlv", "ticker": "XLV", "kind": "sector", "name": "Health Care"}]},
+        {"meta": {"asOf": SOURCE, "rs_history": {"schema": "sector_cycles.rs_history.v1", "mode": "reconstructed_price_history", "naturally_observed": False, "basis": "tr", "benchmark": "SPY", "horizons_sessions": [21, 63], "max_points_per_sector": 252}}, "sectors": [{"id": "xlv", "ticker": "XLV", "kind": "sector", "rs_history": [], "turns": []}]},
         {"as_of": SOURCE, "theme_intel": {"as_of": SOURCE}},
         {"theme_context": {"as_of": SOURCE, "leadership": {
             "state": "rotating", "days_in_state": 3,
@@ -229,8 +230,9 @@ def test_retained_generation_ages_without_republication_or_read_side_writes(tmp_
 
 def test_current_core_cannot_hide_an_expired_declared_brief_baseline(bundle):
     raw, identity = deepcopy(bundle)
-    raw[MEMBERS[0]] = _encoded({"as_of": "2026-11-05"})
-    raw[MEMBERS[1]] = _encoded({"meta": {"asOf": "2026-11-05"}})
+    central, cycles = json.loads(raw[MEMBERS[0]]), json.loads(raw[MEMBERS[1]])
+    central["as_of"] = cycles["meta"]["asOf"] = "2026-11-05"
+    raw[MEMBERS[0]], raw[MEMBERS[1]] = _encoded(central), _encoded(cycles)
     identity["sector_view"].update(source_session="2026-11-05", baseline_session=SOURCE)
     projected = contract.project_sector_bundle(**_arguments((raw, identity),
         now=datetime(2026, 11, 5, 23, tzinfo=timezone.utc),
@@ -362,7 +364,7 @@ def test_preflight_reserves_retained_receipt_and_qualification_width(bundle):
         contract.preflight_sector_bundle(**_arguments(large))
 
 
-@pytest.mark.parametrize("failure", ["dependency", "identity", "stale", "degraded"])
+@pytest.mark.parametrize("failure", ["dependency", "identity", "stale", "degraded", "core", "history"])
 def test_semantic_admission_rejection_preserves_previous_selection(tmp_path, bundle, failure):
     _, prior, root = _publish(tmp_path, bundle)
     assert prior.status == "published"
@@ -375,6 +377,11 @@ def test_semantic_admission_rejection_preserves_previous_selection(tmp_path, bun
         changed[0][MEMBERS[4]] = _encoded(action)
     elif failure == "identity":
         del changed[1]["sector_view"]
+    elif failure in ("core", "history"):
+        index = 0 if failure == "core" else 1
+        document = json.loads(changed[0][MEMBERS[index]])
+        document["sectors"][0]["ticker"] = "XLK"
+        changed[0][MEMBERS[index]] = _encoded(document)
     else:
         changed[1]["sector_view"]["source_qualification"] = failure
     _, refused, _ = _publish(tmp_path, changed, generation_id="g2", expected=prior.content_id)

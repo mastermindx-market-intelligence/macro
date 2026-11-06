@@ -48,6 +48,9 @@ from engine import cycle_phase_age
 from engine.cycle_rhythm import RHYTHM_SCHEMA, estimate_kinds, rhythm_window
 from engine.inputs import yahoo_closes
 from lib import config
+from lib.sector_history_contract import (
+    RS_HISTORY_HORIZONS, RS_HISTORY_MAX_POINTS, RS_HISTORY_MODE, RS_HISTORY_SCHEMA,
+)
 
 log = logging.getLogger(__name__)
 
@@ -592,7 +595,6 @@ def _taper_points(s: pd.Series, recent_start: pd.Timestamp, value_fn=None) -> li
     return out
 
 
-RS_HISTORY_MAX_POINTS = 252
 _RS_MIN_ROWS = 210
 # Sessions a missing benchmark close may be carried forward inside the shared RS
 # formula.  Unbounded, one stale holiday row silently prices every later session
@@ -2054,12 +2056,12 @@ def _compute_captured(inputs: SectorCyclesInputs, *,
             # ONCE per payload (records carry only the report_ref pointer).
             "live_hazard_parity": live_hazard_parity,
             "rs_history": {
-                "schema": "sector_cycles.rs_history.v1",
-                "mode": "reconstructed_price_history",
+                "schema": RS_HISTORY_SCHEMA,
+                "mode": RS_HISTORY_MODE,
                 "naturally_observed": False,
                 "basis": "tr",
                 "benchmark": benchmark,
-                "horizons_sessions": [21, 63],
+                "horizons_sessions": list(RS_HISTORY_HORIZONS),
                 "max_points_per_sector": RS_HISTORY_MAX_POINTS,
                 "as_of": str(last_ts.date()),
                 "min_history_sessions": _RS_MIN_ROWS,

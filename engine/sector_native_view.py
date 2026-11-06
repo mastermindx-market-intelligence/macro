@@ -1,4 +1,4 @@
-"""Pure Sector Brief/action-board projection for a selected runtime generation.
+"""Pure Sector core/history/Brief/action-board projection for a selected runtime generation.
 
 The caller supplies one verified, coherent input set and performs authorization.
 This module never loads data, reads configuration, takes the current time, grades
@@ -17,8 +17,17 @@ from typing import Any, Literal
 from urllib.parse import urlsplit
 
 from lib.sector_action_preview import _ACTNOW_LANES, partition_actnow
+from lib.sector_history_contract import (
+    RS_HISTORY_HORIZONS, RS_HISTORY_MAX_POINTS, RS_HISTORY_MODE, RS_HISTORY_SCHEMA,
+)
 
 MAX_VIEW_BYTES = 4 * 1024 * 1024
+# These are explicit bounds of the native representation, not a new source cohort.
+MAX_CORE_SECTORS = 100
+MAX_HISTORY_TURNS = 256
+_SECTOR_ID = re.compile(r"[a-z][a-z0-9_-]{0,79}\Z")
+_SECTOR_TICKER = re.compile(r"[A-Z][A-Z0-9]*(?:[.-][A-Z0-9]+)?\Z")
+_MEASURED_READ_SCHEMA = "leadership_rotation_context.measured_group_read/v1"
 _TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}\Z")
 _GROUP_FIELDS = (
     "id", "name", "name_zh", "category", "health", "desk_score", "breadth",
@@ -205,6 +214,196 @@ def _board(board: Any, *, audience: str, preview_rows: int) -> dict:
     return {"lanes": lanes, "total": total, "locked": withheld_total}
 
 
+def _typed_fields(doc: Any, *, strings=(), numbers=(), booleans=(), code: str) -> dict:
+    """Copy only the declared nullable fields; no coercion or zero substitution."""
+    if not isinstance(doc, dict):
+        raise SectorViewUnavailable(code)
+    out = {}
+    for keys, expected in ((strings, str), (numbers, (int, float)), (booleans, bool)):
+        for key in keys:
+            if key not in doc:
+                continue
+            value = doc[key]
+            if value is not None:
+                if not isinstance(value, expected):
+                    raise SectorViewUnavailable(code)
+                if expected == (int, float) and (isinstance(value, bool) or not math.isfinite(value)):
+                    raise SectorViewUnavailable(code)
+            out[key] = value
+    return out
+
+
+def _sector_identity(row: Any, code: str) -> tuple[str, str]:
+    if (not isinstance(row, dict) or row.get("kind") != "sector"
+            or not isinstance(row.get("id"), str) or not _SECTOR_ID.fullmatch(row["id"])
+            or not isinstance(row.get("ticker"), str)
+            or not _SECTOR_TICKER.fullmatch(row["ticker"])):
+        raise SectorViewUnavailable(code)
+    return row["id"], row["ticker"]
+
+
+def _bounded_records(value: Any, limit: int, code: str) -> list:
+    if (not isinstance(value, list) or len(value) > limit
+            or any(not isinstance(row, dict) for row in value)):
+        raise SectorViewUnavailable(code)
+    return value
+
+
+def _measured_read(value: Any, source: str) -> dict:
+    code = "invalid_measured_read"
+    if (not isinstance(value, dict) or value.get("schema") != _MEASURED_READ_SCHEMA
+            or value.get("status") not in ("available", "partial", "unavailable")):
+        raise SectorViewUnavailable(code)
+    out = _typed_fields(value, strings=("schema", "status", "reason"), code=code)
+    containers = ("generation", "cohort", "groups")
+    if not any(key in value for key in containers):
+        # This exact outage stub is emitted by the canonical central adapter.
+        if value["status"] != "unavailable" or value.get("reason") != "projection_error":
+            raise SectorViewUnavailable(code)
+        return out
+    if not all(key in value for key in containers):
+        raise SectorViewUnavailable(code)
+    out["generation"] = _typed_fields(value["generation"], strings=("session_end", "benchmark"), code=code)
+    out["cohort"] = _typed_fields(value["cohort"], numbers=("expected_n", "measured_n"), code=code)
+    if _session(out["generation"].get("session_end")) != source:
+        raise SectorViewUnavailable("mixed_measured_session")
+    if out["generation"].get("benchmark") != "SPY":
+        raise SectorViewUnavailable(code)
+    expected, measured = out["cohort"].get("expected_n"), out["cohort"].get("measured_n")
+    horizon = value["cohort"].get("horizon")
+    if (type(expected) is not int or type(measured) is not int
+            or not 0 <= measured <= expected <= MAX_CORE_SECTORS or expected == 0
+            or horizon not in ("rs_21d", "rs_63d")):
+        raise SectorViewUnavailable(code)
+    status = "available" if measured == expected else "partial" if measured else "unavailable"
+    if value["status"] != status:
+        raise SectorViewUnavailable(code)
+    out["groups"], seen, ranks = [], set(), []
+    for row in _bounded_records(value["groups"], MAX_CORE_SECTORS, code):
+        ident = row.get("group_id")
+        if not isinstance(ident, str) or not _SECTOR_TICKER.fullmatch(ident) or ident in seen:
+            raise SectorViewUnavailable(code)
+        seen.add(ident)
+        group = _typed_fields(row, strings=("group_id", "name_en", "name_zh"), code=code)
+        current = _typed_fields(row.get("current"), strings=("status", "reason"),
+                                numbers=("rank", "rs_21d", "rs_63d"), code=code)
+        if current.get("status") == "measured":
+            if (type(current.get("rank")) is not int or current["rank"] < 1
+                    or current.get(horizon) is None or current.get("reason") is not None):
+                raise SectorViewUnavailable(code)
+            ranks.append(current["rank"])
+        elif current.get("status") == "unmeasured":
+            if (current.get("rank") is not None or not current.get("reason")
+                    or current.get(horizon) is not None):
+                raise SectorViewUnavailable(code)
+        else:
+            raise SectorViewUnavailable(code)
+        group["current"] = current
+        out["groups"].append(group)
+    if len(seen) != expected or sorted(ranks) != list(range(1, measured + 1)):
+        raise SectorViewUnavailable(code)
+    return out
+
+
+def _core(central: dict, source: str) -> tuple[dict, dict[str, str]]:
+    code = "invalid_sector_core"
+    rows, identities, tickers = [], {}, set()
+    source_rows = _bounded_records(central.get("sectors"), MAX_CORE_SECTORS, code)
+    if not source_rows:
+        raise SectorViewUnavailable(code)
+    for row in source_rows:
+        ident, ticker = _sector_identity(row, code)
+        if ident in identities or ticker in tickers or not isinstance(row.get("name"), str) or not row["name"]:
+            raise SectorViewUnavailable(code)
+        identities[ident] = ticker
+        tickers.add(ticker)
+        item = _typed_fields(row, strings=("id", "ticker", "kind", "name", "name_zh", "accent"), code=code)
+        for block, strings, numbers, booleans in (
+            ("momentum", ("lead",), ("rs_21d", "rs_63d", "rs_21d_rank", "rs_rank"), ("above_200d",)),
+            ("heat", (), ("heat_1M", "breadth_pct", "adv", "dec"), ()),
+            ("rotation", ("state", "state_plain_en", "state_plain_zh"), (), ()),
+            ("conviction", ("label_en",), (), ()),
+            ("cycle", ("phaseLabel",), (), ()),
+        ):
+            if block in row:
+                item[block] = None if row[block] is None else _typed_fields(
+                    row[block], strings=strings, numbers=numbers, booleans=booleans, code=code)
+        for block, fields, minimum in (("momentum", ("rs_21d_rank", "rs_rank"), 1),
+                                        ("heat", ("adv", "dec"), 0)):
+            for key in fields:
+                value = (item.get(block) or {}).get(key)
+                if value is not None and (value < minimum or value % 1 != 0):
+                    raise SectorViewUnavailable(code)
+        rows.append(item)
+    out = {"as_of": source, "sectors": rows}
+    if "measured_read" in central:
+        out["measured_read"] = _measured_read(central["measured_read"], source)
+    return out, identities
+
+
+def _history(cycles: dict, source: str, core_ids: dict[str, str]) -> dict:
+    code = "invalid_sector_history"
+    meta = cycles.get("meta")
+    contract = meta.get("rs_history") if isinstance(meta, dict) else None
+    expected = {
+        "schema": RS_HISTORY_SCHEMA, "mode": RS_HISTORY_MODE,
+        "naturally_observed": False, "basis": "tr", "benchmark": "SPY",
+        "horizons_sessions": list(RS_HISTORY_HORIZONS),
+        "max_points_per_sector": RS_HISTORY_MAX_POINTS,
+    }
+    if (not isinstance(contract, dict)
+            or any(contract.get(key) != value for key, value in expected.items())
+            or contract.get("naturally_observed") is not False
+            or type(contract.get("max_points_per_sector")) is not int
+            or type(contract.get("horizons_sessions")) is not list
+            or any(type(v) is not int for v in contract["horizons_sessions"])
+            or ("as_of" in contract and contract["as_of"] != source)
+            or meta.get("benchmark", "SPY") != "SPY"):
+        raise SectorViewUnavailable(code)
+    rows, identities, tickers = [], set(), set()
+    core_by_ticker = {ticker: ident for ident, ticker in core_ids.items()}
+    source_rows = _bounded_records(cycles.get("sectors"), MAX_CORE_SECTORS, code)
+    if not source_rows:
+        raise SectorViewUnavailable(code)
+    for row in source_rows:
+        ident, ticker = _sector_identity(row, code)
+        if ident in identities or ticker in tickers:
+            raise SectorViewUnavailable(code)
+        identities.add(ident)
+        tickers.add(ticker)
+        if ((ident in core_ids and core_ids[ident] != ticker)
+                or (ticker in core_by_ticker and core_by_ticker[ticker] != ident)):
+            raise SectorViewUnavailable("mixed_sector_identity")
+        points, prior = [], ""
+        for point in _bounded_records(row.get("rs_history"), RS_HISTORY_MAX_POINTS, code):
+            day = _session(point.get("date"))
+            if day > source or day <= prior:
+                raise SectorViewUnavailable(code)
+            prior = day
+            projected = _typed_fields(point, strings=("date",), numbers=("rs_21d", "rs_63d"), code=code)
+            if any(projected.get(key) is None for key in ("rs_21d", "rs_63d")):
+                raise SectorViewUnavailable(code)
+            points.append(projected)
+        turns, prior = [], ""
+        for turn in _bounded_records(row.get("turns"), MAX_HISTORY_TURNS, code):
+            day = _session(turn.get("date"))
+            if (day > source or day <= prior or turn.get("k") not in ("peak", "trough")
+                    or type(turn.get("major")) is not bool or type(turn.get("provisional")) is not bool):
+                raise SectorViewUnavailable(code)
+            prior = day
+            projected = _typed_fields(turn, strings=("date", "k"), numbers=("mag_pct",),
+                                      booleans=("major", "provisional"), code=code)
+            if projected.get("mag_pct") is not None and projected["mag_pct"] < 0:
+                raise SectorViewUnavailable(code)
+            turns.append(projected)
+        rows.append({"id": ident, "ticker": ticker, "kind": "sector", "rs_history": points, "turns": turns})
+    if identities != set(core_ids):
+        raise SectorViewUnavailable("mixed_sector_identity")
+    # Missing observations stay explicitly empty. Never complete them from
+    # another generation, infer observations, or export raw price/cycle internals.
+    return {"meta": {"asOf": source, "rs_history": deepcopy(expected)}, "sectors": rows}
+
+
 def project_sector_view(
     inputs: SectorViewInputs,
     receipt: SectorViewReceipt,
@@ -286,10 +485,14 @@ def project_sector_view(
         "price_basis": "not_declared_by_chart",
         "series": series,
     }
+    core, core_ids = _core(inputs.central, receipt.source_session)
+    history = _history(inputs.cycles, receipt.source_session, core_ids)
     factor = inputs.handoff.get("factor_season")
     data = {
         "schema": "sector_native_view.v1",
         "audience": audience,
+        "core": core,
+        "history": history,
         "brief": {
             "as_of": baseline,
             "status": "declared_older_baseline" if baseline != receipt.source_session else "available",
