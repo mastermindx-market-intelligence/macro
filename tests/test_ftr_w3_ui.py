@@ -22,7 +22,11 @@ All artifacts are display-tier / de-escalation only (FT-R1, FT-R2).
 """
 from __future__ import annotations
 
+import json
+import os
 import re
+import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -584,3 +588,137 @@ def test_basket_holdings_use_canonical_scroll_wrapper_before_late_load():
         text = page.read_text(encoding="utf-8")
         assert text.count(wrapper) == 1, page
         assert old not in text, page
+
+
+# A pulse older than 12 hours must name the day it stopped. The clock below is
+# fixed, and the node process runs with TZ=UTC so the stamp does not drift.
+_TAPE_NOW = "2026-08-15T18:30:00.000Z"
+_TAPE_STALE = "2026-08-12T17:45:00.000Z"
+_TAPE_FRESH = "2026-08-15T17:30:00.000Z"
+
+
+def _require_node() -> None:
+    if shutil.which("node"):
+        return
+    pytest.skip("node is not on PATH locally")
+
+
+def _dtp_state_source() -> str:
+    src = _src("sector_central.html.j2")
+    match = re.search(r"function _dtpState\(pulse\)\{.*?\n  \}", src, re.S)
+    assert match, "_dtpState moved; repoint the tape as-of guard"
+    return match.group(0)
+
+
+def _run_dtp_state(pulse: dict) -> dict:
+    """Evaluate the template's _dtpState with Date.now fixed."""
+    _require_node()
+    script = _dtp_state_source()
+    script += "\nDate.now=function(){return Date.parse("
+    script += json.dumps(_TAPE_NOW)
+    script += ");};\nvar pulse="
+    script += json.dumps(pulse)
+    script += ";\nvar st=_dtpState(pulse);\n"
+    script += "var ts=pulse.as_of_quotes||pulse.as_of_utc||'';\n"
+    script += "var monthDay='',timeOnly='',monthShort='',monthLong='',day='';\n"
+    script += "if(ts&&String(ts).length>10){\n"
+    script += "  var d=new Date(ts);\n"
+    script += "  var opt={month:'short',day:'numeric',hour:'2-digit',"
+    script += "minute:'2-digit',timeZoneName:'short'};\n"
+    script += "  monthDay=d.toLocaleString([],opt);\n"
+    script += "  timeOnly=d.toLocaleTimeString([],{hour:'2-digit',"
+    script += "minute:'2-digit',timeZoneName:'short'});\n"
+    script += "  monthShort=d.toLocaleString([],{month:'short'});\n"
+    script += "  monthLong=d.toLocaleString([],{month:'long'});\n"
+    script += "  day=String(d.getUTCDate());\n"
+    script += "}\n"
+    script += "process.stdout.write(JSON.stringify({en:st.en,zh:st.zh,"
+    script += "cls:st.cls,asof:st.asofStr,live:st.live,monthDay:monthDay,"
+    script += "timeOnly:timeOnly,monthShort:monthShort,monthLong:monthLong,"
+    script += "day:day}));\n"
+    env = dict(os.environ)
+    env["TZ"] = "UTC"
+    proc = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=env,
+    )
+    assert proc.returncode == 0, proc.stderr + proc.stdout
+    return json.loads(proc.stdout)
+
+
+def _tape_pulse(mode: str, ts: str, **extra: object) -> dict:
+    pulse = {
+        "mode": mode,
+        "session": "rth",
+        "as_of_utc": ts,
+        "as_of_quotes": ts,
+    }
+    pulse.update(extra)
+    return pulse
+
+
+def _assert_month_and_day(got: dict) -> None:
+    assert got["asof"] == got["monthDay"], got
+    assert got["day"] in got["asof"], got
+    named = got["monthShort"] in got["asof"] or got["monthLong"] in got["asof"]
+    assert named, got
+    assert got["asof"] != got["timeOnly"], got
+
+
+def test_stale_tape_asof_is_calendar_date():
+    """Live file, three days old, no settled close: state plus month and day."""
+    got = _run_dtp_state(_tape_pulse("live", _TAPE_STALE))
+    assert got["en"] == "LAST SESSION · SETTLED", got
+    assert got["zh"] == "上一交易时段 · 已收盘", got
+    _assert_month_and_day(got)
+    assert got["day"] == "12", got
+
+
+def test_stale_delayed_tape_asof_holds_month_and_day():
+    got = _run_dtp_state(_tape_pulse("delayed", _TAPE_STALE))
+    assert got["en"] == "LAST SESSION · SETTLED", got
+    assert got["zh"] == "上一交易时段 · 已收盘", got
+    _assert_month_and_day(got)
+    assert got["day"] == "12", got
+
+
+def test_fresh_live_tape_asof_has_no_month():
+    got = _run_dtp_state(_tape_pulse("live", _TAPE_FRESH))
+    assert got["en"] == "LIVE · 15-MIN DELAYED", got
+    assert got["zh"] == "实盘 · 15分钟延迟", got
+    assert got["asof"] == got["timeOnly"], got
+    assert got["monthShort"] not in got["asof"], got
+    assert got["monthLong"] not in got["asof"], got
+
+
+def test_fresh_settled_close_asof_holds_today():
+    got = _run_dtp_state(
+        _tape_pulse("last_rth", _TAPE_FRESH, settled_close=True)
+    )
+    assert got["en"] == "POST-MARKET · SETTLED CLOSE", got
+    assert got["zh"] == "盘后 · 当日收盘", got
+    _assert_month_and_day(got)
+    assert got["day"] == "15", got
+
+
+def test_stale_date_only_stamp_is_unchanged():
+    day = "2026-08-12"
+    got = _run_dtp_state(_tape_pulse("live", day))
+    assert got["en"] == "LAST SESSION · SETTLED", got
+    assert got["zh"] == "上一交易时段 · 已收盘", got
+    assert got["asof"] == day, got
+
+
+def test_stale_gate_runs_before_the_stamp_is_formatted():
+    fn = _dtp_state_source()
+    stale_at = fn.find("var stale=")
+    stamp_at = fn.find("if(ts.length<=10)")
+    assert 0 <= stale_at < stamp_at
+    gate = "else if(stale||(mode==='last_rth'&&pulse.settled_close))"
+    assert gate in fn
+    tail = fn[fn.find("if(stale)"):]
+    assert "LAST SESSION · SETTLED" in tail
+    assert "asofStr:asofStr" in tail

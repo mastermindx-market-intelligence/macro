@@ -1,0 +1,16 @@
+{
+  "observed_at": "2026-10-12T22:03:39.034268+00:00",
+  "prior_head": "ba599a70fb747290f54abdbd4f1e6acaed9b9d2e",
+  "prior_ci_run": 38310079309,
+  "prior_ci_conclusion": "success",
+  "controller_run": 38313651542,
+  "admitted_head": "ff37582d18cb6b4ac27ae760da76963f1962e287",
+  "main_parent": "37ccd914a3694e8fb5e2bdb92fcf32df110f2105",
+  "current_ci_run": 38313710071,
+  "current_ci_state": "in_progress",
+  "source_hashes_unchanged": 21,
+  "page_hashes_unchanged": 3,
+  "protected_merge": null,
+  "installation_executed": false,
+  "public_browser_accepted": false
+}

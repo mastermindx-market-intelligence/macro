@@ -229,7 +229,8 @@ def test_case_1_a_blocked_lane_never_reads_as_a_finished_mission(tmp_path, capsy
     _on_every_surface(
         "BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue",
         "ALL_SCOPED_LANES_BLOCKED",
-        "must name the lanes it checked",
+        "nonterminal",
+        "canonical owner",
     )
 
 
@@ -334,10 +335,11 @@ def test_case_5_when_direct_execution_is_unlawful_the_stop_is_named_not_silent()
     _on_every_surface(
         "ALL_SCOPED_LANES_BLOCKED",
         "EXACT_HUMAN_GATE",
-        "never a silent stop",
-        "second worker on a contested artifact",
+        "PLATFORM_FAILURE",
+        "EFFECT_UNKNOWN",
+        "canonical owner",
     )
-    _on_every_surface("naming the exact missing thing")
+    _on_every_surface("bounded worker")
 
 
 # --------------------------------------------------------------------------------------
@@ -398,6 +400,29 @@ def test_case_7_a_record_of_work_is_never_the_outcome_it_describes(monkeypatch, 
     assert "reaches only `CI`" in overclaim
 
     _on_every_surface("never the outcome it describes")
+
+
+def test_case_7b_all_scoped_lanes_blocked_is_a_diagnostic_not_an_exit(
+    monkeypatch, tmp_path, capsys
+):
+    """HOOK regression for the recurring "five blockers therefore I stop" failure.
+
+    The hook need not decide whether the blockers are real. The session supplied the
+    declaration itself, so refusing that declaration is auditable and does not create a
+    lane/custody control plane.
+    """
+    final = (
+        "D1 is merged. D2/D3/D4 wait on another owner's shared base. "
+        "Upstream collection is another seat's work. No lane remains.\n"
+        "SESSION END: ALL_SCOPED_LANES_BLOCKED"
+    )
+    emitted = _stop_emission_before_any_probe(monkeypatch, capsys, tmp_path, final)
+    assert emitted is not None
+    assert emitted["decision"] == "block"
+    assert "SHIP LOOP all_scoped_lanes_blocked" in emitted["reason"]
+    assert "diagnostic, not a stopping state" in emitted["reason"]
+    assert "route it to the canonical owner" in emitted["reason"]
+    assert "'Not my lane'" in emitted["reason"]
 
 
 # --------------------------------------------------------------------------------------
@@ -550,7 +575,7 @@ def test_the_session_start_injection_actually_carries_the_law(tmp_path, capsys):
         "DO_NOT_REDO unless materially invalidated",
         "reconciled on the same carrier",
         "SESSION END:",
-        "MORE_WORK_EXISTS is never a valid stopping state",
+        "MORE_WORK_EXISTS plus ALL_SCOPED_LANES_BLOCKED are never valid stopping states",
     ):
         assert clause in context, f"the bootstrap injection dropped {clause!r}"
     # The full closed vocabulary, so a session is told the whole set, not a subset.
@@ -572,11 +597,14 @@ def test_the_session_end_vocabulary_is_closed_and_identical_in_code_and_law():
         "PROVEN_OUTCOME",
         "EXACT_HUMAN_GATE",
         "EFFECT_UNKNOWN",
+        "PLATFORM_FAILURE",
         "ALL_SCOPED_LANES_BLOCKED",
         "DURABLE_EXECUTION_RUNNING",
         "MORE_WORK_EXISTS",
     }
-    assert GUARD.NON_TERMINAL_SESSION_END_STATES == frozenset({"MORE_WORK_EXISTS"})
+    assert GUARD.NON_TERMINAL_SESSION_END_STATES == frozenset(
+        {"MORE_WORK_EXISTS", "ALL_SCOPED_LANES_BLOCKED"}
+    )
 
     decoys = (
         "CHECKPOINT_WRITTEN",
@@ -591,7 +619,9 @@ def test_the_session_end_vocabulary_is_closed_and_identical_in_code_and_law():
             assert state.lower() in text, f"{relative} does not name the end state {state}"
         for decoy in decoys:
             assert decoy.lower() not in text, f"{relative} added an escape state: {decoy}"
-        assert _clause("MORE_WORK_EXISTS is never a valid stopping state") in text, relative
+        assert "more_work_exists" in text, relative
+        assert "all_scoped_lanes_blocked" in text, relative
+        assert "nonterminal" in text or "never valid stopping states" in text, relative
         assert _clause("MORE_WORK_EXISTS is a valid") not in text, relative
 
 
@@ -619,19 +649,19 @@ def test_a_declaration_is_required_and_a_quotation_is_not_one():
 def test_the_refusal_is_escapable_through_the_ordinary_any_code_ladder(tmp_path, capsys):
     """A gate with no reachable exit is how the remedy becomes the incident.
 
-    `more_work_exists` is deliberately INTERNAL — the session can always satisfy it by
-    finishing the work or reclassifying honestly — so it carries the high 10-consecutive
-    ceiling rather than the low external one, and it is not in `EXTERNAL_BLOCKERS`.
+    Both self-declared nonterminal states are INTERNAL: a session can satisfy them by
+    continuing, routing the blocker, or reclassifying an exact external boundary. They
+    use the existing high any-code ceiling rather than inventing a new trap.
     """
-    assert GUARD.MORE_WORK_EXISTS not in GUARD.EXTERNAL_BLOCKERS
-
-    path = _state(tmp_path)
-    payload = {"stop_hook_active": True, "last_assistant_message": "SHIP LOOP BLOCKED: evidence"}
-    for _ in range(9):
-        GUARD._block(path, GUARD._load(path), payload, GUARD.MORE_WORK_EXISTS, "still open")
-        assert json.loads(capsys.readouterr().out.strip())["decision"] == "block"
-    GUARD._block(path, GUARD._load(path), payload, GUARD.MORE_WORK_EXISTS, "still open")
-    assert capsys.readouterr().out.strip() == "", "the any-code ladder must release at 10"
+    for code in (GUARD.MORE_WORK_EXISTS, GUARD.ALL_SCOPED_LANES_BLOCKED):
+        assert code not in GUARD.EXTERNAL_BLOCKERS
+        path = _state(tmp_path / code)
+        payload = {"stop_hook_active": True, "last_assistant_message": "SHIP LOOP BLOCKED: evidence"}
+        for _ in range(9):
+            GUARD._block(path, GUARD._load(path), payload, code, "still open")
+            assert json.loads(capsys.readouterr().out.strip())["decision"] == "block"
+        GUARD._block(path, GUARD._load(path), payload, code, "still open")
+        assert capsys.readouterr().out.strip() == "", "the any-code ladder must release at 10"
 
 
 def test_a_repeat_block_reads_as_a_no_delta_cycle(tmp_path, capsys):

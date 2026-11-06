@@ -1,0 +1,5 @@
+# P12.T42 — Morning Edition plain tab title
+
+Root commission: correct the diagnosed markup-in-title defect only. Protected base2e17ae66, sourceblobs match title-guard-product-diagnosis SHAe573d6c465c6f4de3d90ace6f766e5c4b28fa492e8ff62f619fc3a7e0347287e. Sole owned clean SSD branch, bounded current task/process/PR census; existing10607/10600/Caddy and frozen5b untouched.
+
+Use actual pure render_html with the unchanged retained published site/am_edition.json. Before product change save native output; new regression must fail on literal span markup in title RCDATA. Change one template line to existing English/Chinese words as plain text, retain exact as_of. Re-render same input: regression GREEN, title source+render guard GREEN, exact full HTML outside title/body byte parity, payload and source hashes. Existing emitted site/am_edition.html remains unchanged/unemitted; broad inherited4821 guard failures remain. No body/source/rights/date/engine/data/collector change, no acquisition or browser, no PR/push/CI/provider/host effect. Local commit+minimal proof return for root normal-release adjudication.
