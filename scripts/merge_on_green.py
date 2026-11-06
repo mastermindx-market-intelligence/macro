@@ -46,10 +46,12 @@ looks at PRs. Pending, red, missing, or non-ancestral baseline evidence pauses
 ordinary merges. Exactly one explicitly labelled `main-red-repair` PR may be
 considered per sweep, and it still needs every one of its own checks green. That
 is the escape hatch which prevents a circuit breaker from deadlocking its repair.
-Its refresh is reserved the same way (S8, 2026-11-06): while the baseline is red,
-one `update-branch` per sweep is admitted for that labelled repair even when the
-repo-wide workload census leaves no ordinary slot, because the runs holding those
-slots belong to pulls that cannot merge until the repair does.
+Its refresh is reserved the same way (S8, 2026-11-06): while the baseline is red
+and the workload census was actually read, at most one EXTRA CI run per sweep is
+admitted for that labelled repair even when the census leaves no ordinary slot,
+because the runs holding those slots belong to pulls that cannot merge until the
+repair does. (A definitive no-op refunds the reserve, so the bound is +1 workload,
+not literally one write.)
 
 TOKENS. Reads use `READ_TOKEN` (in Actions the job's own `GITHUB_TOKEN`, whose
 per-repository quota is separate from the shared account pool that
@@ -411,9 +413,10 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # a negative allowance back to eight.  That directly defeated the repo-wide circuit
 # breaker and re-created the CI stampede it was meant to stop.
 HIGH_LOAD_LEASE_THRESHOLD = 1
-#: S8 (2026-11-06): one `update-branch` per sweep reserved for the tier-0
-#: `main-red-repair` candidate while the integration baseline is red, admitted
-#: even when the repo-wide workload census leaves zero ordinary slots. Observed
+#: S8 (2026-11-06): one extra CI run per sweep reserved for the tier-0
+#: `main-red-repair` candidate while the integration baseline is red and the
+#: workload census was readable, admitted even when that census leaves zero
+#: ordinary slots (a definitive no-op refunds it; the bound is +1 workload). Observed
 #: live 2026-11-06 01:44Z (sweeps 42145276056 / 42145126686): 17 in-flight
 #: pull-request ci.yml runs against the flat cap of 8 left "0/0 effective CI
 #: workload slot(s)", so the one pull request that repairs main's red atom
@@ -4291,8 +4294,11 @@ class SweepBudget:
         while the sweep established a red integration baseline
         (``repair_reserve_authorized``), at most ``repair_reserve`` times per sweep,
         and still inside ``refresh_authorized`` and the bounded attempt budget. The
-        reserve does not claim the durable lease: it is one write per sweep for one
-        labelled pull, and the sweep itself is serialized by refresh authority.
+        reserve does not claim the durable lease: it is at most one extra CI run per
+        sweep for one labelled pull (a definitive no-op refunds it), and the sweep
+        itself is serialized by refresh authority. In the single-slot band the same
+        fallback applies when another pull holds the durable lease: a foreign lease
+        must not starve the repair any more than a saturated census may.
         """
         self.last_take_used_reserve = False
         if (
@@ -4301,19 +4307,24 @@ class SweepBudget:
         ):
             return False
         if self.refreshes_used >= self.max_refreshes:
-            if not self.repair_reserve_available(repair_candidate):
-                return False
-            self.repair_reserve_used += 1
-            self.refresh_attempts_used += 1
-            self.last_take_used_reserve = True
-            return True
+            return self._take_repair_reserve(repair_candidate)
         if self.requires_refresh_lease:
-            if pull is None or self.refresh_lease is None:
-                return False
-            if not self.refresh_lease.claim(pull):
-                return False
+            if (
+                pull is None
+                or self.refresh_lease is None
+                or not self.refresh_lease.claim(pull)
+            ):
+                return self._take_repair_reserve(repair_candidate)
         self.refreshes_used += 1
         self.refresh_attempts_used += 1
+        return True
+
+    def _take_repair_reserve(self, repair_candidate: bool) -> bool:
+        if not self.repair_reserve_available(repair_candidate):
+            return False
+        self.repair_reserve_used += 1
+        self.refresh_attempts_used += 1
+        self.last_take_used_reserve = True
         return True
 
     def repair_reserve_available(self, repair_candidate: bool) -> bool:
@@ -6859,10 +6870,11 @@ def attempt_update_branch(
             "refresh — no update-branch write attempted, no refresh budget spent.",
         )
         return "declined"
-    # The repair label is read from the listing the sweep ordered tier 0 on AND
-    # the fresh authorized read, so a label GitHub has not yet echoed back on the
-    # live payload cannot silently demote the repair to an ordinary pull.
-    repair_candidate = MAIN_RED_REPAIR_LABEL in (label_names(pull) | label_names(live))
+    # The repair label is read from the fresh authorized payload only: it is the
+    # same read that already decides the arm label, and a label present in the
+    # older listing but gone from the live pull was removed in between — the
+    # reserve must not honor a label the pull no longer carries.
+    repair_candidate = MAIN_RED_REPAIR_LABEL in label_names(live)
     if not budget.take_refresh(live, repair_candidate=repair_candidate):
         return refresh_deferred(pull.get("number"), why, budget)
     if budget.last_take_used_reserve:
@@ -8548,9 +8560,16 @@ def main() -> int:
         )
         return 1
 
-    # S8 (2026-11-06): the reserved repair refresh exists only while main is red;
-    # under any other baseline the repair label buys no extra workload.
-    budget.repair_reserve_authorized = baseline_state == "red"
+    # S8 (2026-11-06): the reserved repair refresh exists only while main is red
+    # AND the repo-wide workload census was actually read. Under any other baseline
+    # the repair label buys no extra workload, and an unreadable census or lease
+    # still means zero NEW workload for every pull, repair included — the reserve
+    # bounds a saturated census that was observed, never one that could not be.
+    budget.repair_reserve_authorized = (
+        baseline_state == "red"
+        and active_pr_proofs is not None
+        and bool(refresh_lease.readable)
+    )
 
     semantic_main = None
     semantic_main_gap = ""

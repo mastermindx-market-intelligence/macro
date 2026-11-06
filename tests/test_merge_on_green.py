@@ -815,8 +815,13 @@ def _fake_api(
     annotations=None,
     hold_comments=None,
     hold_comments_status=200,
+    live_labels=None,
 ):
     """Route every `_request` call by method+URL and record what was sent.
+
+    `live_labels` maps a pull number to the label tuple its live re-read carries
+    (default: `merge-on-green` only), so a test can make the authorized payload
+    agree — or deliberately disagree — with the listing the sweep ordered on.
 
     `update_status` defaults to 422 — GitHub's "I cannot fast-forward this"
     answer — so a test that does not opt in keeps the old behaviour: a refused
@@ -998,7 +1003,7 @@ def _fake_api(
             if pull_status >= 400:
                 return pull_status, None
             number = int(url.rstrip("/").rsplit("/", 1)[1])
-            live = _pull(number)
+            live = _pull(number, labels=(live_labels or {}).get(number, ("merge-on-green",)))
             live.update({"state": "open", "draft": False, "merged": False})
             live.update(dict(pull_payload or {}))
             return pull_status, live
@@ -8983,8 +8988,14 @@ def _red_main_budget(max_refreshes=0):
     return budget
 
 
+_S8_REPAIR_LABELS = ("merge-on-green", MOG.MAIN_RED_REPAIR_LABEL)
+# The live authorized read must carry the repair label too: the reserve reads the
+# label from that payload only (a stale listing label buys nothing).
+_S8_LIVE_LABELS = {10759: _S8_REPAIR_LABELS, 10760: _S8_REPAIR_LABELS}
+
+
 def _repair_pull(number=10759):
-    return _pull(number, labels=("merge-on-green", MOG.MAIN_RED_REPAIR_LABEL))
+    return _pull(number, labels=_S8_REPAIR_LABELS)
 
 
 def _sweep_stale(pull, budget):
@@ -9007,7 +9018,11 @@ def test_the_main_red_repair_takes_the_reserved_refresh_when_workload_slots_are_
     after it are both deferred exactly as before."""
     pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
     calls = _fake_api(
-        monkeypatch, check_pages=pages, update_status=202, main_commits=_STALE_MAIN
+        monkeypatch,
+        check_pages=pages,
+        update_status=202,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
     )
     budget = _red_main_budget()
     verdicts = [
@@ -9028,7 +9043,11 @@ def test_the_reserved_repair_refresh_exists_only_while_the_baseline_is_red(monke
     the sweep leaves ``repair_reserve_authorized`` False and the old cap holds."""
     pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
     calls = _fake_api(
-        monkeypatch, check_pages=pages, update_status=202, main_commits=_STALE_MAIN
+        monkeypatch,
+        check_pages=pages,
+        update_status=202,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
     )
     budget = _red_main_budget()
     budget.repair_reserve_authorized = False
@@ -9044,7 +9063,11 @@ def test_the_reserved_repair_refresh_still_needs_serialized_authority_and_attemp
     refresh authority or the never-refunded attempt counter."""
     pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
     calls = _fake_api(
-        monkeypatch, check_pages=pages, update_status=202, main_commits=_STALE_MAIN
+        monkeypatch,
+        check_pages=pages,
+        update_status=202,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
     )
     unauthorized = _red_main_budget()
     unauthorized.refresh_authorized = False
@@ -9062,12 +9085,112 @@ def test_a_definitive_conflict_on_the_repair_refunds_the_reserve_not_an_ordinary
     """A refund after GitHub proves the write created no run must return the slot
     that was taken — the reserve — and never manufacture an ordinary one."""
     pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
-    _fake_api(monkeypatch, check_pages=pages, update_status=422, main_commits=_STALE_MAIN)
+    _fake_api(
+        monkeypatch,
+        check_pages=pages,
+        update_status=422,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
+    )
     budget = _red_main_budget()
     _sweep_stale(_repair_pull(), budget)
     assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 0, 1)
     # The reserve is whole again: a second labelled repair in the same sweep may use it.
     assert budget.repair_reserve_available(True)
+
+
+def test_a_stale_listing_label_does_not_grant_the_reserve_once_the_live_pull_dropped_it(
+    monkeypatch,
+):
+    """The listing the sweep ordered on still says `main-red-repair`; the fresh
+    authorized read no longer does. The label was removed in between, so the pull is
+    an ordinary one for the reserve: deferred at 0/0, no update-branch written."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202, main_commits=_STALE_MAIN
+    )  # no live_labels: the live payload carries merge-on-green only
+    budget = _red_main_budget()
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert not [c for c in calls if c[1].endswith("/update-branch")]
+    assert budget.repair_reserve_used == 0 and budget.repair_reserve_available(True)
+
+
+def test_a_foreign_refresh_lease_in_the_single_slot_band_falls_back_to_the_reserve(
+    monkeypatch, capsys
+):
+    """With exactly one census slot the durable lease is required. Another pull
+    owns it, so the ordinary path cannot claim; under a red baseline the labelled
+    repair still gets its one refresh through the reserve instead of waiting a full
+    CI run for the lease to drain — the same deadlock, one slot higher."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch,
+        check_pages=pages,
+        update_status=202,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=1)
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = MOG.RefreshLease("acme/widgets", "read", "write", owner_number=7195)
+    assert _sweep_stale(_repair_pull(), budget) == "re-proving"
+    updated = [c for c in calls if c[1].endswith("/update-branch")]
+    assert len(updated) == 1 and "/pulls/10759/" in updated[0][1]
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 1, 1)
+    assert budget.last_take_used_reserve
+    assert "using the reserved repair refresh (1/1 this sweep)" in capsys.readouterr().out
+    # An ordinary pull behind the same foreign lease is still deferred: the fallback
+    # is for the labelled repair only.
+    assert budget.take_refresh(_pull(7300), repair_candidate=False) is False
+    assert budget.refreshes_used == 0
+
+
+@pytest.mark.parametrize(
+    ("baseline", "census", "lease_readable", "expected"),
+    [
+        ("red", 17, True, True),
+        ("green", 17, True, False),
+        ("pending", 17, True, False),
+        ("red", None, True, False),  # census unreadable: zero NEW workload, repair included
+        ("red", 17, False, False),  # lease unreadable: same
+    ],
+)
+def test_the_sweep_authorizes_the_reserve_only_for_a_red_baseline_with_a_readable_census(
+    monkeypatch, baseline, census, lease_readable, expected
+):
+    """The one line that wires the reserve to the baseline, exercised through
+    ``main()``: red + readable census -> authorized; anything else -> not."""
+    monkeypatch.setenv("GH_REPO", "acme/widgets")
+    monkeypatch.setenv("READ_TOKEN", "read")
+    monkeypatch.setenv("MERGE_TOKEN", "write")
+    monkeypatch.setattr(MOG, "labeled_pulls", lambda *_a: [_repair_pull()])
+    monkeypatch.setattr(MOG, "integration_baseline_state", lambda *_a: (baseline, "run"))
+    monkeypatch.setattr(MOG.ProofFreshness, "build", classmethod(lambda *_a, **_k: _freshness()))
+    monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a, **_k: True)
+    monkeypatch.setattr(
+        MOG,
+        "prepare_refresh_lease",
+        lambda repo, read, write, pulls: (
+            MOG.RefreshLease(repo, read, write, readable=lease_readable),
+            pulls,
+        ),
+    )
+
+    def in_flight(*_a):
+        if census is None:
+            raise RuntimeError("census API down")
+        return census
+
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", in_flight)
+    seen: list[bool] = []
+
+    def record(_repo, _pull, _read, _write, _freshness, _proof, budget, *_a, **_k):
+        seen.append(budget.repair_reserve_authorized)
+        return "refresh-deferred"
+
+    monkeypatch.setattr(MOG, "sweep_pull", record)
+    MOG.main()
+    assert seen == [expected], (baseline, census, lease_readable, seen)
 
 
 def test_update_branch_is_fail_closed_when_no_serialized_budget_is_passed(
