@@ -992,3 +992,177 @@ def test_prospective_audit_publishes_frozen_readiness_without_validating_legacy_
     assert r["promotion_review_eligible"] is False
     assert r["current_model_validated"] is False
     assert r["public_validation_ready"] is False
+
+
+# EW numerical support, frozen October-31 contract; synthetic data only.
+# These are not prospective scorecards, forecasts, power or economic results.
+
+def _legacy_bootstrap_reference(values, block, seed, draws=2000):
+    import math
+    import random
+    vals = [float(v) for v in values]
+    if not vals or any(not math.isfinite(v) for v in vals):
+        return None, None
+    n = len(vals); block = max(1, min(int(block), n)); rng = random.Random(int(seed))
+    means = []
+    for _ in range(int(draws)):
+        sample = []
+        for _b in range(math.ceil(n / block)):
+            start = rng.randrange(n)
+            sample.extend(vals[(start + j) % n] for j in range(block))
+        means.append(sum(sample[:n]) / n)
+    return means, [round(sc._quantile(means, .05), 8), round(sc._quantile(means, .95), 8)]
+
+
+@pytest.mark.parametrize('values,block,seed', [
+    ([.1, -.2, .3, .7, -.4], 3, 20261052),
+    ([0.0], 21, 1), ([.5] * 23, 5, 71),
+    ([(-1.)**i * (i + 1) / 31 for i in range(31)], 21, 20261052),
+    ([0.1, 0.2, -0.7], 0, -7),
+])
+def test_ew_bootstrap_retains_original_samples_and_bounds(values, block, seed):
+    means, bounds = _legacy_bootstrap_reference(values, block, seed)
+    assert sc._moving_block_mean_samples(values, block, seed) == means
+    assert sc._moving_block_mean_ci(values, block, seed) == bounds
+
+
+def _ew_input():
+    y = [0, 0, 1, 0, 1, 1, 0] * 5
+    candidate = [.1 if value == 0 else .9 for value in y]
+    return y, candidate, {'baseline-a': [.5] * len(y), 'baseline-b': [.4] * len(y)}
+
+
+def test_ew_paired_brier_statistics_uses_shared_resamples_and_native_quantile():
+    y, p, refs = _ew_input()
+    out = sc.ew_paired_brier_statistics(y, p, refs, horizon=21)
+    assert out['status'] == 'COMPUTED' and out['draws'] == 2000 and out['block'] == 21
+    assert out['seed'] == 20261052 and out['row_count'] == len(y)
+    for name, baseline in refs.items():
+        diffs = [(a - z)**2 - (b - z)**2 for z, a, b in zip(y, p, baseline)]
+        means, _ = _legacy_bootstrap_reference(diffs, 21, 20261052)
+        row = out['comparisons'][name]
+        assert row['bootstrap_means'] == means
+        assert row['mean_delta'] == pytest.approx(sum(diffs) / len(y))
+        assert row['tail_fraction_nonnegative'] == sum(x >= 0 for x in means) / 2000
+        assert row['upper_bound_strict_look'] == sc._quantile(means, 1 - .05 / 6)
+        assert row['upper_bound_stepdown_look'] == sc._quantile(means, 1 - .05 / 3)
+    residuals = [a - z for a, z in zip(p, y)]
+    means, _ = _legacy_bootstrap_reference(residuals, 21, 20261052)
+    assert out['calibration']['bootstrap_means'] == means
+    assert out['calibration']['interval90'] == [sc._quantile(means, .05), sc._quantile(means, .95)]
+
+
+def test_ew_equal_predictions_do_not_become_positive_skill():
+    y, p, _ = _ew_input()
+    out = sc.ew_paired_brier_statistics(y, p, {'same': p}, horizon=5)
+    assert out['comparisons']['same']['mean_delta'] == 0
+    assert out['comparisons']['same']['tail_fraction_nonnegative'] == 1
+    assert out['intersection_union_tail_fraction'] == 1
+    assert out['primary_horizon'] is False
+
+
+def test_ew_bad_comparator_cannot_hide_failure_against_better_one():
+    y, p, _ = _ew_input()
+    out = sc.ew_paired_brier_statistics(y, p, {'easy': [.5] * len(y), 'better': y}, horizon=21)
+    assert out['comparisons']['easy']['tail_fraction_nonnegative'] == 0
+    assert out['comparisons']['better']['tail_fraction_nonnegative'] == 1
+    assert out['intersection_union_tail_fraction'] == 1
+
+
+def test_ew_calibration_exposes_systematic_bias():
+    out = sc.ew_paired_brier_statistics([0] * 35, [.2] * 35, {'base': [.5] * 35}, horizon=21)
+    assert out['calibration']['mean_residual'] == pytest.approx(.2)
+    assert out['calibration']['interval90'][0] > 0
+    assert out['calibration']['contains_zero'] is False
+    assert out['scientific_acceptance'] is False
+
+
+@pytest.mark.parametrize('change,reason', [
+    (lambda y,p,b: (y[:-1],p,b), 'unaligned_complete_rows_required'),
+    (lambda y,p,b: (y,p[:-1],b), 'unaligned_complete_rows_required'),
+    (lambda y,p,b: (y,p,{}), 'comparators_required'),
+    (lambda y,p,b: (y,p,{'missing': None}), 'unaligned_complete_rows_required'),
+    (lambda y,p,b: (y,[float('nan')] + p[1:],b), 'probability_out_of_range'),
+    (lambda y,p,b: (y,[True] + p[1:],b), 'probability_out_of_range'),
+    (lambda y,p,b: (y,[1.1] + p[1:],b), 'probability_out_of_range'),
+    (lambda y,p,b: (y,p,{'bad': [-.1] + p[1:]}), 'probability_out_of_range'),
+    (lambda y,p,b: ([None] + y[1:],p,b), 'binary_outcomes_required'),
+    (lambda y,p,b: ([True] + y[1:],p,b), 'binary_outcomes_required'),
+])
+def test_ew_unqualified_rows_never_get_dropped_or_substituted(change, reason):
+    y,p,b = change(*_ew_input())
+    out = sc.ew_paired_brier_statistics(y,p,b,horizon=21)
+    assert out['status'] == 'UNAVAILABLE' and out['reasons'] == [reason]
+    assert not out['comparisons']
+
+
+@pytest.mark.parametrize('horizon', [0, 1, 20, 22, '21', True])
+def test_ew_unregistered_horizon_cannot_silently_change_definition(horizon):
+    with pytest.raises(ValueError, match='registered_horizon_required'):
+        sc.ew_paired_brier_statistics(*_ew_input(), horizon=horizon)
+
+
+def test_ew_order_seed_and_inputs_are_deterministic():
+    import copy
+    y,p,b = _ew_input(); original = copy.deepcopy((y,p,b))
+    first = sc.ew_paired_brier_statistics(y,p,b,horizon=10)
+    second = sc.ew_paired_brier_statistics(y,p,dict(reversed(list(b.items()))),horizon=10)
+    assert first == second and (y,p,b) == original
+    assert list(first['comparisons']) == sorted(b)
+
+
+def test_ew_stats_open_no_files_or_model_artifacts(monkeypatch):
+    def forbidden(*a, **kw): raise AssertionError('math cannot open source or outcomes')
+    monkeypatch.setattr('builtins.open', forbidden)
+    out = sc.ew_paired_brier_statistics(*_ew_input(), horizon=21)
+    assert out['status'] == 'COMPUTED'
+    assert out['statistics_only'] and not out['scientific_acceptance']
+    assert not out['source_qualification_checked'] and not out['maturity_checked']
+    assert all(v is False for v in out['authority'].values())
+
+
+def test_ew_vectors_above_work_budget_refused_before_bootstrap():
+    out = sc.ew_paired_brier_statistics([0] * 5001, [.5] * 5001, {'b': [.5] * 5001}, horizon=21)
+    assert out['reasons'] == ['bounded_rows_required']
+
+
+def test_ew_holm_uses_registered_two_family_three_look_thresholds():
+    out = sc.ew_holm_levels({'grey_deer_ew_mkt_v1': .002, 'grey_deer_ew_rs_v1': .012}, look=1)
+    assert out['look_alpha'] == .05 / 3 and out['family_count'] == 2
+    rows = {r['family']: r for r in out['families']}
+    assert rows['grey_deer_ew_mkt_v1']['alpha'] == .05 / 6
+    assert rows['grey_deer_ew_rs_v1']['alpha'] == .05 / 3
+    assert all(r['numerical_null_rejected'] for r in rows.values())
+    assert out['scientific_acceptance'] is False
+
+
+def test_ew_absent_family_never_earns_holm_stepdown_credit():
+    out = sc.ew_holm_levels({'grey_deer_ew_rs_v1': .012}, look=2)
+    rows = {r['family']: r for r in out['families']}
+    assert rows['grey_deer_ew_rs_v1']['alpha'] == .05 / 6
+    assert rows['grey_deer_ew_rs_v1']['numerical_null_rejected'] is False
+    assert rows['grey_deer_ew_mkt_v1']['status'] == 'UNAVAILABLE'
+
+
+def test_ew_failed_first_family_blocks_the_second_holm_step():
+    out = sc.ew_holm_levels({'grey_deer_ew_mkt_v1': .01, 'grey_deer_ew_rs_v1': .012}, look=3)
+    assert all(not row['numerical_null_rejected'] for row in out['families'])
+    assert out['families'][1]['status'] == 'STEP_DOWN_BLOCKED'
+
+
+@pytest.mark.parametrize('fractions,look', [({}, 0), ({}, 4), ({}, True),
+    ({'unknown_family': .001}, 1), ({'grey_deer_ew_mkt_v1': float('nan')}, 1),
+    ({'grey_deer_ew_mkt_v1': True}, 1), ({'grey_deer_ew_mkt_v1': -.1}, 1)])
+def test_ew_holm_rejects_changed_family_or_look_and_malformed_tails(fractions, look):
+    with pytest.raises(ValueError): sc.ew_holm_levels(fractions, look=look)
+
+
+def test_ew_complete_absence_is_not_evidence_of_no_effect():
+    out = sc.ew_holm_levels({}, look=1)
+    assert len(out['families']) == 2
+    assert all(r['status'] == 'UNAVAILABLE' and not r['numerical_null_rejected'] for r in out['families'])
+
+
+def test_ew_support_does_not_activate_registered_reader():
+    from scripts import grey_deer_ew_forecast_reader as reader
+    assert reader.SCORER_IMPLEMENTED is False
