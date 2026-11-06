@@ -1,0 +1,24 @@
+{
+  "schema": "forex_r26.native_4hour_research_capture.v1",
+  "program": "forex-r26-native-completion-20261020-sol-001",
+  "source_head": "57bb2f29a4bb341ef32eaa04d5cd058e1045b53d",
+  "request_path": "/tiingo/fx/eurusd/prices?endDate=2026-10-20&resampleFreq=4hour&startDate=2026-10-19",
+  "plan_sha256": "14ecfd1ad7a6c98f5576babfbbff3fdba3accb1a0aa2f22538dcc5eb03369264",
+  "started_at": "2026-10-21T22:45:20.703087+00:00",
+  "finished_at": "2026-10-21T22:45:21.032128+00:00",
+  "seconds": 0.329,
+  "request_budget": 1,
+  "result": {
+    "attempted": 1,
+    "ok": 1,
+    "new": 1,
+    "failed": 0,
+    "row_hints": 7,
+    "bytes": 809,
+    "errors": []
+  },
+  "purpose": "Research qualification only through existing Tiingo ingestion/archive owner; no raw prices or credentials published.",
+  "eligible_finalized_4h": 0,
+  "product_feed_admitted": false,
+  "direct_execution_reason": "UNIQUE_APPROVED_ACCESS: existing authenticated local archive owner; no worker credential transfer or alternate source."
+}

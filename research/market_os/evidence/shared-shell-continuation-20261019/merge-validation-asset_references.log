@@ -1,0 +1,1 @@
+check_site_asset_refs: OK — every template-decided href/src under site resolves (0 pre-existing gap(s) pinned, 0 unrendered ticker link(s) reported).

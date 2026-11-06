@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "-m",
+    "pytest",
+    "tests/test_dataos_registry.py",
+    "tests/test_tiingo_produced_contracts.py",
+    "-q"
+  ],
+  "completed_at_utc": "2026-10-22T02:42:14.695935+00:00",
+  "exit_code": 0,
+  "log": "research/forex_r26_2026-10-20/source_evidence/registry-chairman-approval-tests.log",
+  "log_sha256": "229267cb99b4576e71bdd9c476a55480f9dd5c18946ae79419dd7fc65946f499",
+  "schema": "forex_r26.validation.v1",
+  "source_sha256": {
+    "config/dataset_registry.yml": "927694555eca9cdf6b9e665e440aefb1e5cbd74ae17fcf882f383c7fdb821869"
+  },
+  "started_at_utc": "2026-10-22T02:42:10.255118+00:00"
+}

@@ -26,6 +26,11 @@ BROWSER_RECEIPT = ROOT / "scripts" / "verify_stock_dashboard_mobile_layout.cjs"
 FIXTURE_RECIPE = ROOT / "scripts" / "render_stock_dashboard_fixture.py"
 EVIDENCE_DIR = ROOT / "mockups" / "evidence" / "prophet-p0b-zero-fouc"
 FIXTURE_ASSETS = EVIDENCE_DIR / "inputs" / "browser-data"
+FONT_PIN = FIXTURE_ASSETS / "p0b-font-pin"
+BROWSER_RECEIPTS = {
+    "hk": EVIDENCE_DIR / "mobile-layout.json",
+    "ca": EVIDENCE_DIR / "mobile-layout-canada.json",
+}
 
 MARKETS = {
     "hk": {
@@ -1646,7 +1651,11 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
             "live/quotes.json",
         },
     }
-    assert loaded_fixture_assets == expected_frozen_assets[market]
+    pinned_fonts = {
+        str((FONT_PIN / name).relative_to(FIXTURE_ASSETS))
+        for name in json.loads(_read(FONT_PIN / "font-pin.json"))["files"]
+    }
+    assert loaded_fixture_assets == expected_frozen_assets[market] | pinned_fonts
     assert {row["state"] for row in browser["states"]} >= {
         "en-dark",
         "en-light",
@@ -2172,6 +2181,110 @@ def test_hk_mobile_owner_surfaces_cannot_widen_the_document() -> None:
     assert "content: attr(data-label-zh);" in css
     assert 'data-label-en="' in template
     assert 'data-label-zh="' in template
+
+
+def test_both_receipts_were_measured_by_one_browser_build() -> None:
+    """Layout numbers and screenshot bytes move with the Chromium build, so
+    both receipts name one build and the closure check tells a re-minter it.
+    """
+    from scripts import check_p0b_receipt_closure as receipt_closure
+
+    browsers = [json.loads(_read(path))["browser"] for path in BROWSER_RECEIPTS.values()]
+    assert browsers[0] == browsers[1]
+    assert {"engine", "version"} <= set(browsers[0])
+    assert browsers[0]["version"] in receipt_closure.environment_hint(ROOT)
+
+
+def test_verifier_refuses_any_chromium_but_the_receipts_build() -> None:
+    """The version string alone does not name a binary: the receipts also pin
+    the launched headless shell's sha256, the Playwright release and the host.
+    """
+    source = _read(BROWSER_RECEIPT)
+    pin = re.search(r'^const CHROMIUM_PIN = "([^"]+)";$', source, re.M)
+    playwright = re.search(r'^const PLAYWRIGHT_PIN = "([^"]+)";$', source, re.M)
+    host = re.search(r'^const HOST_PIN = \{platform: "([^"]+)", arch: "([^"]+)"\};$', source, re.M)
+    executable = re.search(
+        r'^const BROWSER_EXECUTABLE_PIN = \{\n  name: "([^"]+)",\n  sha256: "([0-9a-f]{64})",\n\};$',
+        source,
+        re.M,
+    )
+    assert pin and playwright and host and executable
+    for guard in (
+        "browserVersion !== CHROMIUM_PIN",
+        "browserExecutable.name !== BROWSER_EXECUTABLE_PIN.name",
+        "browserExecutable.sha256 !== BROWSER_EXECUTABLE_PIN.sha256",
+        "playwrightVersion !== PLAYWRIGHT_PIN",
+        "process.platform !== HOST_PIN.platform",
+        "process.arch !== HOST_PIN.arch",
+    ):
+        assert guard in source, guard
+    for path in BROWSER_RECEIPTS.values():
+        assert json.loads(_read(path))["browser"] == {
+            "engine": "chromium",
+            "version": pin.group(1),
+            "executable": {"name": executable.group(1), "sha256": executable.group(2)},
+            "playwright": playwright.group(1),
+            "platform": host.group(1),
+            "arch": host.group(2),
+        }
+
+
+@pytest.mark.parametrize("market", BROWSER_RECEIPTS)
+def test_browser_receipts_were_measured_with_only_committed_fonts(market: str) -> None:
+    """System fonts differ between hosts; every glyph comes from a pinned file."""
+    receipt = json.loads(_read(BROWSER_RECEIPTS[market]))
+    manifest_path = FONT_PIN / "font-pin.json"
+    manifest = json.loads(_read(manifest_path))
+    pin = receipt["font_pin"]
+    assert pin["manifest"] == {
+        "path": str(manifest_path.relative_to(ROOT)),
+        "sha256": _sha256(manifest_path),
+    }
+    assert pin["stylesheet"] == manifest["stylesheet"] == "/p0b-font-pin/pin.css"
+    assert pin["platform_fonts"] == []
+    assert pin["audited_pages"] > 0
+    assert pin["audited_nodes"] > 0
+    verifier = _read(BROWSER_RECEIPT)
+    assert "FONT_AUDIT.unanswered.size" in verifier
+    # A walk waits out structural DOM churn, so a slower host is not refused
+    # for a node an interaction removed mid-walk.
+    for event in ("DOM.childNodeRemoved", "DOM.pseudoElementRemoved", "DOM.childNodeInserted"):
+        assert f'"{event}"' in verifier
+    # Two separate guards: the settle loop re-fetches until a quiet window, and a
+    # walk the document changed under is retried rather than counted.
+    assert "} while (structuralEvents !== seen && Date.now() < deadline);" in verifier
+    assert "changed = structuralEvents !== seen;" in verifier
+    assert "if (missing.length || changed) continue;" in verifier
+    for name, digest in manifest["files"].items():
+        assert _sha256(FONT_PIN / name) == digest
+        assert receipt["loaded_assets"][str((FONT_PIN / name).relative_to(ROOT))] == digest
+    for name, digest in manifest["site_faces"].items():
+        assert _sha256(ROOT / "site" / name) == digest
+    stylesheet = _read(FONT_PIN / "pin.css")
+    assert "local(" not in stylesheet
+    served = set(re.findall(r'url\("/([^"]+)"\)', stylesheet))
+    assert served == {f"p0b-font-pin/{name}" for name in manifest["files"] if name != "pin.css"} | set(
+        manifest["site_faces"]
+    )
+
+
+def test_font_pin_gives_platform_ui_families_san_francisco_line_metrics() -> None:
+    """Inter stands in for SF; ``line-height: normal`` must keep SF's box height.
+
+    Without the overrides the Canada desktop action panel grows to 240.45px and
+    fails its <= 240 acceptance bound, which was set against macOS rendering.
+    """
+    manifest = json.loads(_read(FONT_PIN / "font-pin.json"))
+    sf = manifest["sf_metric_families"]
+    assert sf["families"] == ["-apple-system", "system-ui", "SF Pro Text", "SF Pro Display"]
+    assert sf["descriptors"] == (
+        "ascent-override:96.6796875%;descent-override:21.09375%;line-gap-override:0%"
+    )
+    faces = re.findall(r"@font-face\{([^}]*)\}", _read(FONT_PIN / "pin.css"))
+    for face in faces:
+        family = re.search(r'font-family:"([^"]+)"', face).group(1)
+        base = re.search(r'url\("/fonts/Inter-\d+\.woff2"\)', face)
+        assert (sf["descriptors"] in face) == bool(base and family in sf["families"]), face
 
 
 def test_mobile_layout_receipt_has_valid_javascript() -> None:

@@ -1,0 +1,20 @@
+{
+  "schema": "eval_os.a1_publication_readback.v1",
+  "recorded_at": "2026-10-14T13:11:09.310369+00:00",
+  "branch": "claude/eval-os-a1-evidence-view-20260828",
+  "remote_head": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "method": "git ls-remote origin refs/heads/claude/eval-os-a1-evidence-view-20260828",
+  "exec_session": 51961,
+  "exit_code": 0,
+  "ci_observed_before": "2026-10-14T13:08:15Z",
+  "ci_run": 38568750084,
+  "ci_head": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "ci_plan": "IN_PROGRESS",
+  "contract_delta": "IN_PROGRESS",
+  "authority_main": "SUCCESS",
+  "fence_pack": "SUCCESS",
+  "inactive_pilot_context": "FAILURE",
+  "pr_state": "OPEN",
+  "merge_state": "UNSTABLE",
+  "scope": "Source publication and an initial pending-check observation only; no protected merge or live acceptance."
+}
