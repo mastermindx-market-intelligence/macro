@@ -1,0 +1,26 @@
+{
+  "observed_at": "2026-10-14T05:24:32.634760+00:00",
+  "review_run": "mmx-press-research-pool-review-20261014-001",
+  "root": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "parent": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "reviewer_pool": "minimax",
+  "reviewer_host": "ubuntu1",
+  "review_verdict": "PASS",
+  "review_kind": "supplied exact diff and source inspection; no reviewer execution",
+  "runtime_sha256": {
+    "engine/press/desk_planner.py": "e366e6bccd93ac9bc73e38aa8c66bcf8fef2f487e63f3bede380bd173479c3f7"
+  },
+  "final_test_sha256": {
+    "tests/test_press_research_triage.py": "0f3b39c1edca264c9bca3787e30e8ea7e56fcd42ce2dfa19d79b8a852a8890d2"
+  },
+  "packet_sha256": "1927be9aab197fe48740dd19583fa51d2910c29888cf23c9265973350be99ba2",
+  "result_sha256": "bd16a26f1eaf42698dab4cd49478248f712329a954fe5f8e31b6697efe28ed45",
+  "parent_adjudication": [
+    "Runtime bytes remain exactly those reviewed.",
+    "Negative pool control documents retained limit; the six red regressions discriminate the repair.",
+    "Post-review test-only tightening compares the complete fixture file inventory, including new paths.243 triage/runner tests pass with1existing sparse-site skip.",
+    "Review statement of an upstream rights gate is not adopted as proof of source rights. This intake change grants no rights or publication authority.",
+    "Reviewer compared supplied context and diff; parent independently verified actual file hashes.",
+    "Original failed issuer-context review is unchanged and not replaced."
+  ]
+}

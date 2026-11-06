@@ -1,0 +1,37 @@
+{
+  "started_at": "2026-10-20T14:22:03.415107+00:00",
+  "head_before": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "incoming": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "expected_tree": "de860bd0a15f83f9b530bd6c1fe7f932f078d5a6",
+  "proof_receipt_sha256": "8df8f97739519da15d29109b581cdfc25e9478cc9ce04cb719efab0fdd59ee64",
+  "remote_pr": {
+    "autoMergeRequest": null,
+    "headRefOid": "e2d10f933587f58be8716505529a37f8839901f7",
+    "labels": [
+      {
+        "id": "LA_kwDOS4LjIs8AAAACtokucA",
+        "name": "merge-blocked",
+        "description": "Sweeper found a genuine red or merge conflict \u2014 needs a session/operator",
+        "color": "d93f0b"
+      }
+    ],
+    "state": "OPEN"
+  },
+  "commit_attempted": true,
+  "purpose": "Complete original pending ordinary N2 merge and preserve exact proof; newer main preflight and single normal same-branch push remain pending.",
+  "commit_started_at": "2026-10-20T14:22:03.417243+00:00",
+  "finished_at": "2026-10-20T14:22:12.508715+00:00",
+  "commit_exit": 0,
+  "head_after": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "parents_after": [
+    "ae3e6bc547361b632223e7e9bde73128b399035e",
+    "5c2d0a04afd19642d2dab483885d46c73b7baed4"
+  ],
+  "tree_after": "de860bd0a15f83f9b530bd6c1fe7f932f078d5a6",
+  "status_after": [],
+  "log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-complete-merge.log",
+    "bytes": 120,
+    "sha256": "34ec518834c8d8e73a5f31ccd141703854439710d2d9622e23fa87b175e02674"
+  }
+}

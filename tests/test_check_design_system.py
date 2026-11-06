@@ -45,6 +45,22 @@ def write_template(root: Path, name: str, body: str) -> Path:
     ("color-literal", "a.css", ".x{color:#ff0044}"),
     ("color-literal", "a2.css", ".x{color:rgb(1,2,3)}"),
     ("color-literal", "a3.css", ".x{color:hsl(10,20%,30%)}"),
+    # CSS Color 4/5 functions (PR #7554 review gap): the color-mix entry is
+    # the motivating exemplar — every argument is a token and it must STILL
+    # fire, because the mix itself is the colour decision.
+    ("color-literal", "a4.css",
+     ".x{border-color:color-mix(in srgb,var(--up) 40%,var(--line))}"),
+    ("color-literal", "a5.css", ".x{color:oklch(0.7 0.1 250)}"),
+    ("color-literal", "a6.css", ".x{color:oklab(0.6 0.1 -0.1)}"),
+    ("color-literal", "a7.css", ".x{color:lab(52.2% 40.16 59.5)}"),
+    ("color-literal", "a8.css", ".x{color:lch(52.2% 72.2 50)}"),
+    ("color-literal", "a9.css", ".x{color:hwb(194 0% 0%)}"),
+    ("color-literal", "a10.css", ".x{color:color(display-p3 1 0.5 0)}"),
+    ("color-literal", "a11.css", ".x{color:color(from var(--x) srgb r g b)}"),
+    ("color-literal", "a12.css", ".x{color:light-dark(white,black)}"),
+    ("color-literal", "a13.css",
+     ".x{color:oklch(from var(--accent) l c h / 50%)}"),
+    ("color-literal", "a14.css", ".x{color:lab(from var(--x) l a b)}"),
     ("font-family-literal", "b.css", ".x{font-family:Helvetica,sans-serif}"),
     ("radius-literal", "c.css", ".x{border-radius:7px}"),
     ("literal-custom-property", "d.css", ":root{--brand:#123456}"),
@@ -97,6 +113,46 @@ def test_a_derived_custom_property_passes_but_a_literal_fallback_does_not() -> N
 def test_radius_token_passes_and_zero_is_inert() -> None:
     assert DS.scan_text(f"{TEMPLATES}/c.css", ".x{border-radius:var(--r-3)}") == []
     assert DS.scan_text(f"{TEMPLATES}/c.css", ".x{border-radius:0}") == []
+
+
+def test_ambiguous_colour_function_names_do_not_fire_on_prose_or_js() -> None:
+    """`lab`/`lch`/`color`/`light-dark` are guarded by argument shape.
+
+    Every line here is a shape MEASURED in today's estate (2026-09-20): a JS
+    label helper in options.html.j2, prose comments in theme.css and
+    sector_central/canada/dashboard, and a chart-library method call.  None
+    may fire rule 1 — a false positive on an added line blocks a PR.
+    """
+    body = "\n".join([
+        "+ lab(lo, 'floor', '下方墙') + lab(mag, 'magnet', '磁吸位')",
+        "/* factor/index lab (factors, baskets) */",
+        "<span>Coincident color (display context, capped)</span>",
+        "/* VIS-05: glow keyed to verdict color (--ms-c set by .ms-green) */",
+        "chart.color(value)",
+        "/* light-dark (two art directions, not one skin) */",
+    ])
+    findings = DS.scan_text(f"{TEMPLATES}/prose.html.j2", body)
+    assert [f for f in findings if f.rule == "color-literal"] == []
+
+
+def test_enforce_added_blocks_a_newly_added_color_mix(tmp_path: Path, capsys) -> None:
+    """Pins the PR #7554 review gap: a token-composed color-mix on an ADDED
+    line reported blocking=0 under the old rgb/hsl-only FUNC_COLOR_RE."""
+    line = ".hero{background:color-mix(in srgb,var(--accent) 12%,transparent)}"
+    write_template(tmp_path, "hero.html.j2", line + "\n")
+    diff_path = tmp_path / "design.diff"
+    diff_path.write_text(
+        "diff --git a/templates/hero.html.j2 b/templates/hero.html.j2\n"
+        "--- a/templates/hero.html.j2\n"
+        "+++ b/templates/hero.html.j2\n"
+        "@@ -0,0 +1,1 @@\n"
+        f"+{line}\n",
+        encoding="utf-8")
+    code = DS.main(["--mode", "enforce-added", "--root", str(tmp_path),
+                    "--diff-file", str(diff_path)])
+    out = capsys.readouterr().out
+    assert code == 1
+    assert "color-mix" in out
 
 
 def test_jinja_expressions_and_fragment_refs_are_not_colour_literals() -> None:
