@@ -51,11 +51,16 @@ Public API:
 from __future__ import annotations
 
 import json
+import copy
+import hashlib
 import logging
 import os
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
+from scripts.metabolism_journal import (FabricHeld, guard_legacy_route, legacy_provider_call,
+    native_publication_guard, _merge_owner_state)
 
 log = logging.getLogger(__name__)
 
@@ -148,7 +153,7 @@ _PROPOSAL_REQUIRED_FIELDS = frozenset({
 
 def _repo_root(root: Path | None = None) -> Path:
     if root is not None:
-        return Path(root)
+        return Path(root).absolute()
     return Path(__file__).resolve().parent.parent.parent
 
 
@@ -314,10 +319,8 @@ def _read_audit_state(market: str, root: Path) -> dict:
     (set by run_audit's post-audit stamp).
     """
     try:
-        p = _state_path(market, root)
-        if not p.exists():
-            return {}
-        raw = _read_json(p) or {}
+        from scripts.metabolism_journal import read_owner_state
+        raw = read_owner_state(root, "market", market)
         # F2: if the auditor's canonical key is absent but the organ alias is present,
         # promote the organ alias so downstream readers see a unified cursor.
         if _STATE_KEY_GRADED not in raw and _STATE_KEY_GRADED_ORGAN in raw:
@@ -754,12 +757,65 @@ def audit_due_emitter(root: Path | None = None, cycle_id: str | None = None) -> 
 # LLM invocation (Opus-tier, hard-law; NEVER raise)
 # ---------------------------------------------------------------------------
 
+def _audit_messages(context: dict, market: str, cycle_id: str) -> tuple[str, str]:
+    blocks = context.get("blocks", {})
+    data_gaps = context.get("data_gaps", [])
+
+    system = (
+        "You are the Standout Auditor — a stateless Opus analyst that reads "
+        "evidence packs from the standout attribution pipeline and writes "
+        "structured post-mortems.\n\n"
+        "INERTNESS GUARANTEE: you write one artifact only. You dispatch nothing, "
+        "grant nothing, open no PR, change no lobe roster, emit no signal, score, "
+        "rank, or escalation. You are inert under AUTONOMY_PAUSED.\n\n"
+        f"SA-R13 LAW (verbatim): {_SA_R13_VERBATIM}\n\n"
+        "Your output MUST be a single JSON object with these keys:\n"
+        "  per_cohort_postmortems: list of objects {cohort, outcome_cause_analysis, "
+        "process_fault_analysis, remedy_class}\n"
+        "  hypotheses: list of objects {rank, description, lane, fitness_contract, "
+        "falsifiable_claim} where lane in ['standout_review', 'experiment book', 'code fix']\n"
+        "  honesty_notes: string — what cannot be concluded at current effective n\n"
+        "  market: string\n"
+        "  cycle_id: string\n\n"
+        "For hypotheses with lane='standout_review', also include: "
+        "{market, param, delta_steps, rationale_ref, proposer} in the object — "
+        "these become proposal files.\n\n"
+        "fitness_contract must carry check_by >= sensor maturity_date "
+        "(US: 2026-09-15, CN: 2026-10-15).\n"
+        "Never use the word 'validated' in user-facing text."
+    )
+
+    user_parts = [
+        f"MARKET: {market}",
+        f"CYCLE_ID: {cycle_id}",
+        "",
+    ]
+    if data_gaps:
+        user_parts.append(f"DATA GAPS (honest null disclosure): {json.dumps(data_gaps)}")
+        user_parts.append("")
+
+    for block_name in (
+        "scoreboard", "evidence_packs", "coverage_monitor",
+        "concordance", "fitness_card", "prior_postmortems",
+        "nw_mission", "sa_r13",
+    ):
+        block_val = blocks.get(block_name, "(absent)")
+        user_parts.append(f"=== {block_name.upper()} ===")
+        user_parts.append(block_val)
+        user_parts.append("")
+
+    user_parts.append("Write your structured post-mortem JSON now.")
+    user = "\n".join(user_parts)
+    return system, user
+
+
 def _invoke_auditor_llm(
     context: dict,
     market: str,
     cycle_id: str,
     cfg: dict[str, Any] | None = None,
     model_caller: Callable | None = None,
+    *, root: Path | None = None,
 ) -> tuple[str | None, str | None]:
     """Call the Opus-tier LLM for the audit post-mortem.
 
@@ -767,63 +823,21 @@ def _invoke_auditor_llm(
     model_caller: optional injection point for tests (signature: (system, user) -> str | None).
     """
     try:
-        blocks = context.get("blocks", {})
-        data_gaps = context.get("data_gaps", [])
-
-        system = (
-            "You are the Standout Auditor — a stateless Opus analyst that reads "
-            "evidence packs from the standout attribution pipeline and writes "
-            "structured post-mortems.\n\n"
-            "INERTNESS GUARANTEE: you write one artifact only. You dispatch nothing, "
-            "grant nothing, open no PR, change no lobe roster, emit no signal, score, "
-            "rank, or escalation. You are inert under AUTONOMY_PAUSED.\n\n"
-            f"SA-R13 LAW (verbatim): {_SA_R13_VERBATIM}\n\n"
-            "Your output MUST be a single JSON object with these keys:\n"
-            "  per_cohort_postmortems: list of objects {cohort, outcome_cause_analysis, "
-            "process_fault_analysis, remedy_class}\n"
-            "  hypotheses: list of objects {rank, description, lane, fitness_contract, "
-            "falsifiable_claim} where lane in ['standout_review', 'experiment book', 'code fix']\n"
-            "  honesty_notes: string — what cannot be concluded at current effective n\n"
-            "  market: string\n"
-            "  cycle_id: string\n\n"
-            "For hypotheses with lane='standout_review', also include: "
-            "{market, param, delta_steps, rationale_ref, proposer} in the object — "
-            "these become proposal files.\n\n"
-            "fitness_contract must carry check_by >= sensor maturity_date "
-            "(US: 2026-09-15, CN: 2026-10-15).\n"
-            "Never use the word 'validated' in user-facing text."
-        )
-
-        user_parts = [
-            f"MARKET: {market}",
-            f"CYCLE_ID: {cycle_id}",
-            "",
-        ]
-        if data_gaps:
-            user_parts.append(f"DATA GAPS (honest null disclosure): {json.dumps(data_gaps)}")
-            user_parts.append("")
-
-        for block_name in (
-            "scoreboard", "evidence_packs", "coverage_monitor",
-            "concordance", "fitness_card", "prior_postmortems",
-            "nw_mission", "sa_r13",
-        ):
-            block_val = blocks.get(block_name, "(absent)")
-            user_parts.append(f"=== {block_name.upper()} ===")
-            user_parts.append(block_val)
-            user_parts.append("")
-
-        user_parts.append("Write your structured post-mortem JSON now.")
-        user = "\n".join(user_parts)
+        guard_legacy_route(_repo_root(root), "standout", market, ["market:"+market], cfg=cfg)
+        system, user = _audit_messages(context, market, cycle_id)
 
         # Injected model_caller (test seam)
         if model_caller is not None:
             try:
                 result = model_caller(system, user)
+                guard_legacy_route(_repo_root(root), "standout", market, ["market:"+market], cfg=cfg)
                 if isinstance(result, str):
                     return result, "injected"
                 return None, "injected_returned_none"
+            except FabricHeld:
+                raise
             except Exception as exc:  # noqa: BLE001
+                guard_legacy_route(_repo_root(root), "standout", market, ["market:"+market])
                 log.warning("standout_auditor: injected model_caller failed: %s", exc)
                 return None, "injected_error"
 
@@ -860,7 +874,7 @@ def _invoke_auditor_llm(
                 )
                 return (text or None), None, resp
 
-            text, reason, provider = llm_auth.make_call(
+            text, reason, provider = legacy_provider_call(_repo_root(root), "standout", market, ["market:"+market],
                 providers, _do_call, context="standout_auditor"
             )
             # PR-R8: model-not-found fallback — retry ONCE with the Opus fallback
@@ -881,13 +895,16 @@ def _invoke_auditor_llm(
                     deepseek_model=fallback_conf.get("deepseek_model"),
                 )
                 if fallback_providers:
-                    text, reason, provider = llm_auth.make_call(
+                    text, reason, provider = legacy_provider_call(_repo_root(root), "standout", market, ["market:"+market],
                         fallback_providers, _do_call, context="standout_auditor_fallback"
                     )
                     if text is not None:
                         log.info("standout_auditor: fallback %r served", _OPUS_MODEL)
             return text, provider
+        except FabricHeld:
+            raise
         except Exception as exc:  # noqa: BLE001
+            guard_legacy_route(_repo_root(root), "standout", market, ["market:"+market])
             log.warning("standout_auditor: LLM invocation failed: %s", exc)
             # PR-R8: on any exception with the deliberation model, retry once with Opus
             if active_model != _OPUS_MODEL:
@@ -899,7 +916,7 @@ def _invoke_auditor_llm(
                         deepseek_model=fb_conf.get("deepseek_model"),
                     )
                     if fb_providers:
-                        text2, reason2, provider2 = _la2.make_call(
+                        text2, reason2, provider2 = legacy_provider_call(_repo_root(root), "standout", market, ["market:"+market],
                             fb_providers, _do_call, context="standout_auditor_fallback"
                         )
                         if text2 is not None:
@@ -908,11 +925,17 @@ def _invoke_auditor_llm(
                                 _OPUS_MODEL,
                             )
                             return text2, provider2
+                except FabricHeld:
+                    raise
                 except Exception as exc2:  # noqa: BLE001
+                    guard_legacy_route(_repo_root(root), "standout", market, ["market:"+market])
                     log.warning("standout_auditor: fallback retry also failed: %s", exc2)
             return None, "llm_error"
 
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
+        guard_legacy_route(_repo_root(root), "standout", market, ["market:"+market])
         log.warning("standout_auditor: _invoke_auditor_llm: %s", exc)
         return None, "fatal_error"
 
@@ -959,6 +982,8 @@ def _write_proposals(
     cycle_id: str,
     root: Path,
     dry_run: bool = False,
+    *,
+    _fabric_operation=None,
 ) -> list[str]:
     """Extract 'standout_review' hypotheses and write proposal files.
 
@@ -970,6 +995,9 @@ def _write_proposals(
     dry_run=True: writes to shadow proposals dir (never real proposals/).
     Returns list of written paths.  NEVER raises.
     """
+    if _fabric_operation is not None:
+        return [str(root / item["path"]) for item in _fabric_operation.record["business"]["intent"]["files"]
+                if item["kind"] == "proposal" and _write_selected_artifact(_fabric_operation, item)]
     written: list[str] = []
     rejected_hypotheses: list[dict] = []
     try:
@@ -1086,12 +1114,16 @@ def _emit_hypothesis_bus_rows(
     cycle_id: str,
     root: Path,
     dry_run: bool = False,
+    *,
+    _fabric_operation=None,
 ) -> list[str]:
     """Emit insight_bus rows for experiment/code-fix hypotheses.
 
     dry_run=True: writes to the shadow bus file (never appends the real bus).
     Returns list of emitted insight_ids.  NEVER raises.
     """
+    if _fabric_operation is not None:
+        return _append_selected_bus(_fabric_operation)
     emitted: list[str] = []
     try:
         from engine.metabolism.insight_bus import (  # type: ignore[import]
@@ -1141,6 +1173,244 @@ def _emit_hypothesis_bus_rows(
 
 
 # ---------------------------------------------------------------------------
+# Selected composition in the existing market-state and artifact owners.
+# ---------------------------------------------------------------------------
+
+def _standout_selection(root, market, cycle_id, kind, model_caller, dry_run):
+    from scripts.metabolism_journal import guard_saved, selected_factory, _owner_path, FabricHeld
+    _owner_path(root, "journal", cycle_id)  # Validate the actual artifact component.
+    guard_saved(root, "market", market, kind, ["market:"+market])
+    factory, _ = selected_factory(root, kind, _LLM_CFG)
+    if factory is not None and (dry_run or model_caller is not None):
+        raise FabricHeld("standout_durable_owner_required")
+    return factory is not None
+
+
+def _source_bytes(path, root):
+    from scripts.metabolism_journal import _parent_fd, _OwnedBytes
+    try:
+        with _parent_fd(path, root) as (parent, check):
+            return _OwnedBytes(parent, path.name, check).read()
+    except FileNotFoundError:
+        return {"raw": None, "identity": None, "mode": 0o600}
+
+
+def _source_receipt(path, root):
+    item = _source_bytes(path, root)
+    raw = item["raw"]
+    return {"sha256": hashlib.sha256(raw).hexdigest() if raw is not None else None,
+            "bytes": len(raw) if raw is not None else None,
+            "identity": list(item["identity"]) if item["identity"] is not None else None}
+
+
+def _cohort_sources(market, root):
+    paths = [_attribution_path(market, root), _evidence_path(market, root),
+             _scoreboard_path(market, root), _fitness_path(market, root), _nw_mission_path(root)]
+    paths.extend(sorted((root/"data/standout_audit/postmortems").glob(market+"-*.json"), reverse=True)
+                 [:_MAX_PRIOR_POSTMORTEMS])
+    return {str(path.relative_to(root)): _source_receipt(path, root) for path in paths}
+
+
+def _selected_text(value, bound=4000):
+    from scripts.metabolism_journal import FabricHeld
+    if (type(value) is not str or not value.strip() or len(value) > bound
+            or re.search(r"\bvalidated\b", value, re.IGNORECASE)):
+        raise FabricHeld("standout_business_response_invalid")
+
+
+def _cohort_plan(text, market, cycle_id, ts, root, operation):
+    from scripts.metabolism_journal import strict_json, fabric_json, FabricHeld
+    from engine import standout_review
+    from engine.metabolism.insight_bus import build_row
+    pm = strict_json(text)
+    if (type(pm) is not dict or set(pm) != {"per_cohort_postmortems", "hypotheses", "honesty_notes", "market", "cycle_id"}
+            or pm["market"] != market or pm["cycle_id"] != cycle_id
+            or type(pm["per_cohort_postmortems"]) is not list or not 1 <= len(pm["per_cohort_postmortems"]) <= 32
+            or type(pm["hypotheses"]) is not list or len(pm["hypotheses"]) > 32):
+        raise FabricHeld("standout_business_response_invalid")
+    _selected_text(pm["honesty_notes"])
+    for cohort in pm["per_cohort_postmortems"]:
+        if type(cohort) is not dict or set(cohort) != {"cohort", "outcome_cause_analysis", "process_fault_analysis", "remedy_class"}:
+            raise FabricHeld("standout_business_response_invalid")
+        for value in cohort.values():
+            _selected_text(value)
+    files, bus, ranks = [], [], set()
+    pm_relative = f"data/standout_audit/postmortems/{market}-{cycle_id}.json"
+    for i, hyp in enumerate(pm["hypotheses"]):
+        required = {"rank", "description", "lane", "fitness_contract", "falsifiable_claim"}
+        if type(hyp) is not dict or hyp.get("lane") not in ("standout_review", "experiment book", "code fix"):
+            raise FabricHeld("standout_business_response_invalid")
+        if hyp["lane"] == "standout_review":
+            required |= {"market", "param", "delta_steps", "rationale_ref", "proposer"}
+        if (set(hyp) != required or type(hyp["rank"]) is not int or hyp["rank"] < 1
+                or hyp["rank"] in ranks or type(hyp["fitness_contract"]) is not dict):
+            raise FabricHeld("standout_business_response_invalid")
+        ranks.add(hyp["rank"])
+        for key in ("description", "falsifiable_claim"):
+            _selected_text(hyp[key])
+        contract = hyp["fitness_contract"]
+        check_by = contract.get("check_by")
+        maturity = "2026-09-15" if market == "us" else "2026-10-15"
+        if (type(check_by) is not str or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", check_by)
+                or datetime.fromisoformat(check_by).date().isoformat() < maturity
+                or len(fabric_json(contract)) > 8000):
+            raise FabricHeld("standout_fitness_contract_invalid")
+        if hyp["lane"] == "standout_review":
+            if hyp["market"] != market or type(hyp["delta_steps"]) is not int:
+                raise FabricHeld("standout_proposal_invalid")
+            for key in ("param", "rationale_ref", "proposer"):
+                _selected_text(hyp[key], 1000)
+            proposal = {"schema": "standout_review.proposal.v1", "ts": ts, "market": market,
+                "param": hyp["param"], "delta_steps": hyp["delta_steps"], "rationale_ref": hyp["rationale_ref"],
+                "proposer": "standout_auditor", "cycle_id": cycle_id, "hypothesis_rank": i,
+                "description": hyp["description"], "fitness_contract": copy.deepcopy(contract)}
+            cfg = standout_review._load_config(root)
+            if cfg is None or standout_review._validate_proposal(proposal, standout_review._get_whitelist(cfg)):
+                raise FabricHeld("standout_proposal_invalid")
+            files.append({"kind": "proposal", "path": f"data/standout_review/proposals/{market}-{cycle_id}-prop{i:03d}.json",
+                          "document": proposal})
+        else:
+            row = build_row(emitter=f"standout_auditor.{market}",
+                kind="health_transition" if hyp["lane"] == "experiment book" else "contradiction",
+                severity="low", entities=[f"site-{market}-standouts", "hypothesis:"+str(i), "cycle:"+cycle_id],
+                evidence_ref=pm_relative, summary=f"[{hyp['lane']}] hypothesis from {market.upper()} postmortem {cycle_id}: {hyp['description'][:200]}",
+                cycle_id=cycle_id, ts=ts)
+            bus.append(row)
+    pm.update(schema=SCHEMA_POSTMORTEM, ts=ts, provider="fabric", model=operation.record["receipt"]["served_model"],
+              fabric_operation_id=operation.record["operation_id"], authority="research_only", direct_authority=False)
+    files.insert(0, {"kind": "postmortem", "path": pm_relative, "document": pm})
+    return {"files": files, "bus": bus}
+
+
+def _artifact_bytes(item):
+    from scripts.metabolism_journal import fabric_json
+    return (fabric_json(item["document"])+"\n").encode()
+
+
+def _preflight_artifacts(root, plan):
+    from scripts.metabolism_journal import FabricHeld
+    for item in plan["files"]:
+        raw = _source_bytes(root/item["path"], root)["raw"]
+        if raw is not None:
+            raise FabricHeld("standout_existing_artifact_conflict")
+        item["preimage"] = {"state": "absent"}
+
+
+def _write_selected_artifact(operation, item):
+    from scripts.metabolism_journal import owned_bytes, _state_document, _records, _parent_fd, _OwnedBytes, FabricHeld
+    if item not in operation.record["business"]["intent"]["files"]:
+        raise FabricHeld("standout_artifact_outside_intent")
+    root, path = operation.root, operation.root/item["path"]
+    with owned_bytes(root, "market", operation.unit) as owner:
+        document = _state_document(owner.read(), "market", operation.unit)
+        if _records(document).get(operation.record["operation_id"]) != operation.record:
+            raise FabricHeld("standout_original_changed")
+        with _parent_fd(path, root, create=True, durable=True) as (parent, check):
+            file = _OwnedBytes(parent, path.name, check)
+            if item.get("preimage") != {"state": "absent"}:
+                raise FabricHeld("standout_artifact_preimage_invalid")
+            raw = _artifact_bytes(item)
+            after = file.publish_absent(raw)
+            receipt = {"path": item["path"], "sha256": hashlib.sha256(raw).hexdigest(),
+                       "bytes": len(raw), "identity": list(after["identity"])}
+    if not hasattr(operation, "_written_artifacts"):
+        operation._written_artifacts = {}
+    operation._written_artifacts[item["path"]] = receipt
+    return receipt
+
+
+def _selected_file_receipts(root, plan, expected):
+    from scripts.metabolism_journal import FabricHeld
+    receipts = []
+    for item in plan["files"]:
+        actual = _source_bytes(root/item["path"], root)
+        if actual["raw"] != _artifact_bytes(item):
+            raise FabricHeld("standout_artifact_readback_unknown")
+        receipts.append({"path": item["path"], "sha256": hashlib.sha256(actual["raw"]).hexdigest(),
+                         "bytes": len(actual["raw"]), "identity": list(actual["identity"])})
+    if receipts != expected:
+        raise FabricHeld("standout_artifact_identity_changed")
+    return receipts
+
+
+def _append_selected_bus(operation):
+    from scripts.metabolism_journal import FabricHeld, fabric_digest
+    from engine.metabolism.insight_bus import append_row
+    emitted, receipts = [], []
+    for row in operation.record["business"]["intent"]["bus"]:
+        receipt = {}
+        if not append_row(row, root=operation.root, expected_absent_id=row["insight_id"], receipt=receipt):
+            raise FabricHeld("standout_bus_publication_unknown")
+        if receipt.get("row_digest") != fabric_digest(row) or receipt.get("insight_id") != row["insight_id"]:
+            raise FabricHeld("standout_bus_readback_unknown")
+        emitted.append(row["insight_id"])
+        receipts.append(receipt)
+    operation._bus_receipts = receipts
+    return emitted
+
+
+def _run_selected_audit(market, cycle_id, root):
+    from scripts.metabolism_journal import FabricInvocation, FabricHeld, read_owner_state, _records, fabric_digest
+    import pandas as pd
+    state = read_owner_state(root, "market", market)
+    for old in _records(state).values():
+        if old["kind"] == "standout" and old["state"] == "complete" and old["logical"].get("cycle_id") == cycle_id:
+            _selected_file_receipts(root, old["business"]["intent"], old["business"]["outcome"]["files"])
+            return {**old["business"]["outcome"]["result"], "reused": True}
+    if _source_bytes(root/f"data/standout_audit/postmortems/{market}-{cycle_id}.json", root)["raw"] is not None:
+        raise FabricHeld("standout_existing_cycle_unqualified")
+    before = _cohort_sources(market, root)
+    source_key = fabric_digest({name: item["sha256"] for name, item in before.items()
+                               if name in {str(_attribution_path(market, root).relative_to(root)),
+                                           str(_evidence_path(market, root).relative_to(root)),
+                                           str(_scoreboard_path(market, root).relative_to(root))}})
+    for old in _records(state).values():
+        if old["kind"] == "standout" and old["state"] == "complete" and old["logical"].get("source_key") == source_key:
+            _selected_file_receipts(root, old["business"]["intent"], old["business"]["outcome"]["files"])
+            return {**old["business"]["outcome"]["result"], "reused": True}
+    frame = pd.read_parquet(_attribution_path(market, root), columns=[_DATE_COL[market]])
+    dates = pd.to_datetime(frame[_DATE_COL[market]], errors="raise")
+    if dates.empty or dates.isna().any():
+        raise FabricHeld("standout_cutoff_unqualified")
+    cutoff = dates.max().date().isoformat()
+    context = build_context(market, root=root)
+    if _cohort_sources(market, root) != before:
+        raise FabricHeld("standout_input_changed")
+    expected_cursor = {key: state.get(key) for key in (_STATE_KEY_GRADED, _STATE_KEY_PM_CYCLE)}
+    context["blocks"]["evidence_packs"] += "\nCaptured attribution cutoff: "+cutoff
+    system, user = _audit_messages(context, market, cycle_id)
+    operation = FabricInvocation(root, "standout", market,
+        {"cycle_id": cycle_id, "source_key": source_key, "sources": before, "cutoff": cutoff,
+         "expected_cursor": expected_cursor}, ["market:"+market], system, user, 6000, cfg=_LLM_CFG)
+    if operation.reused:
+        _selected_file_receipts(root, operation.record["business"]["intent"], operation.record["business"]["outcome"]["files"])
+        return {**operation.record["business"]["outcome"]["result"], "reused": True}
+    try:
+        text = operation.call()
+        ts = context["ts"]
+        plan = _cohort_plan(text, market, cycle_id, ts, root, operation)
+        plan["files"][0]["document"]["data_gaps"] = context["data_gaps"]
+        plan["cutoff"] = cutoff
+        _preflight_artifacts(root, plan)
+        operation.publication_intent(plan)
+        _write_selected_artifact(operation, plan["files"][0])
+        pm = plan["files"][0]["document"]
+        proposals = _write_proposals(pm, market, cycle_id, root, _fabric_operation=operation)
+        emitted = _emit_hypothesis_bus_rows(pm, market, cycle_id, root, _fabric_operation=operation)
+        receipts = _selected_file_receipts(root, plan, [operation._written_artifacts[item["path"]] for item in plan["files"]])
+        result = {"schema": SCHEMA_POSTMORTEM, "market": market, "cycle_id": cycle_id, "status": "ok",
+            "artifact": str(root/plan["files"][0]["path"]), "note": f"Fabric postmortem; {len(proposals)} proposals; {len(emitted)} insight rows",
+            "data_gaps": context["data_gaps"], "cutoff": cutoff, "model": operation.record["receipt"]["served_model"]}
+        operation.complete({"result": result, "files": receipts, "insight_ids": emitted, "bus_receipts": operation._bus_receipts},
+            owner_updates={_STATE_KEY_GRADED: cutoff, _STATE_KEY_PM_CYCLE: cycle_id, "last_run_utc": ts},
+            expected_owner_values=expected_cursor)
+        return result
+    except Exception:
+        operation.hold("standout_business_publication_held")
+        raise
+
+
+# ---------------------------------------------------------------------------
 # run_audit (NEVER raise)
 # ---------------------------------------------------------------------------
 
@@ -1177,8 +1447,12 @@ def run_audit(
         repo = _repo_root(root)
         ts = _now_utc()
 
+        from scripts.metabolism_journal import guard_saved
+        guard_saved(repo, "market", market, "standout", ["market:"+market])
+
         # ── F1: dry_run contract — true by construction ───────────────────
         if dry_run:
+            _standout_selection(repo, market, cycle_id, "standout", model_caller, dry_run)
             # (b) dry_run requires an injected model_caller — NEVER reaches real LLM
             if model_caller is None:
                 return {
@@ -1196,7 +1470,7 @@ def run_audit(
 
             # Invoke LLM via injected caller only (no real provider waterfall)
             reply_text, provider = _invoke_auditor_llm(
-                context, market, cycle_id, model_caller=model_caller
+                context, market, cycle_id, model_caller=model_caller, root=repo
             )
 
             if not reply_text:
@@ -1225,6 +1499,7 @@ def run_audit(
                 "dry_run": True,
             })
 
+            guard_legacy_route(repo, "standout", market, ["market:"+market])
             # (a) ALL writes → shadow dir; real stores NEVER touched
             # Postmortem: atomic temp→rename, keep-first per (market, cycle_id)
             pm_dir = _shadow_postmortems_dir(repo, cycle_id)
@@ -1324,12 +1599,15 @@ def run_audit(
                     "note": "guard unavailable, fail-closed — audit skipped",
                 }
 
+        if _standout_selection(repo, market, cycle_id, "standout", model_caller, dry_run):
+            return _run_selected_audit(market, cycle_id, repo)
+
         # ── Build context ──────────────────────────────────────────────────
         context = build_context(market, root=repo)
 
         # ── Invoke LLM ────────────────────────────────────────────────────
         reply_text, provider = _invoke_auditor_llm(
-            context, market, cycle_id, model_caller=model_caller
+            context, market, cycle_id, model_caller=model_caller, root=repo
         )
 
         if not reply_text:
@@ -1370,115 +1648,110 @@ def run_audit(
             "data_gaps": context.get("data_gaps", []),
         })
 
-        # ── Write postmortem artifact (F1f: atomic, keep-first) ───────────
-        pm_dir = _postmortems_dir(repo)
-        pm_path = pm_dir / f"{market}-{cycle_id}.json"
-        artifact_path = None
-        try:
-            # F1(f): keep-first — if this (market, cycle_id) postmortem already exists, skip
-            if pm_path.exists():
-                log.info(
-                    "standout_auditor: postmortem already exists at %s — skipping write "
-                    "(keep-first per market/cycle_id)",
-                    pm_path,
-                )
-                artifact_path = str(pm_path)
-            else:
-                # Atomic write: temp file in same dir, then os.replace
-                import tempfile as _tempfile
-                tmp_fd, tmp_name = _tempfile.mkstemp(
-                    dir=str(pm_dir), prefix=f".{market}-{cycle_id}-", suffix=".tmp"
-                )
-                try:
-                    with os.fdopen(tmp_fd, "w", encoding="utf-8") as fh:
-                        fh.write(json.dumps(pm, indent=2, default=str))
-                    os.replace(tmp_name, str(pm_path))
-                    artifact_path = str(pm_path)
-                except Exception:  # noqa: BLE001
-                    try:
-                        os.unlink(tmp_name)
-                    except Exception:  # noqa: BLE001
-                        pass
-                    raise
-            log.info(
-                "standout_auditor: postmortem written to %s (provider=%s)",
-                pm_path, provider,
-            )
-        except Exception as exc:  # noqa: BLE001
-            log.warning("standout_auditor: write postmortem %s: %s", pm_path, exc)
-
-        # ── Write standout_review proposal files ──────────────────────────
-        if not pm.get("parse_failed"):
-            proposal_paths = _write_proposals(pm, market, cycle_id, repo, dry_run=False)
-            pm["_proposal_files"] = proposal_paths
-        else:
-            proposal_paths = []
-
-        # ── Emit insight_bus rows for other hypotheses ────────────────────
-        if not pm.get("parse_failed"):
-            emitted_ids = _emit_hypothesis_bus_rows(pm, market, cycle_id, repo, dry_run=False)
-            pm["_insight_bus_ids"] = emitted_ids
-        else:
-            emitted_ids = []
-
-        # ── F2: advance the audit cursor in the state file ────────────────
-        # Write last_audit_graded_as_of and last_postmortem_cycle_id so that
-        # subsequent audit_due() calls see an advanced cursor and do not
-        # immediately re-trigger (the cursor was never written before this fix).
-        # NEVER raises (NEVER-RAISE contract).
-        try:
-            sp = _state_path(market, repo)
-            sp.parent.mkdir(parents=True, exist_ok=True)
-            existing_state: dict = {}
-            if sp.exists():
-                try:
-                    existing_state = json.loads(sp.read_text(encoding="utf-8"))
-                except Exception:  # noqa: BLE001
-                    existing_state = {}
-            # Read the current max date from the attribution parquet to stamp cursor
-            date_col = _DATE_COL.get(market, "as_of")
-            new_graded_asof: str | None = None
+        with native_publication_guard(repo, "market", market, "standout", ["market:"+market]) as legacy_owner:
+            # ── Write postmortem artifact (F1f: atomic, keep-first) ───────────
+            pm_dir = _postmortems_dir(repo)
+            pm_path = pm_dir / f"{market}-{cycle_id}.json"
+            artifact_path = None
             try:
-                attr_p = _attribution_path(market, repo)
-                if attr_p.exists():
-                    import pandas as pd  # type: ignore[import]
-                    _df = pd.read_parquet(str(attr_p), columns=[date_col])
-                    if not _df.empty:
-                        new_graded_asof = str(_df[date_col].max())
-            except Exception:  # noqa: BLE001
-                pass
-            existing_state[_STATE_KEY_GRADED] = new_graded_asof or ts
-            existing_state[_STATE_KEY_PM_CYCLE] = cycle_id
-            existing_state["last_run_utc"] = ts
-            sp.write_text(json.dumps(existing_state, indent=2, default=str), encoding="utf-8")
-            log.info(
-                "standout_auditor: audit cursor advanced → %s=%s, %s=%s",
-                _STATE_KEY_GRADED, existing_state[_STATE_KEY_GRADED],
-                _STATE_KEY_PM_CYCLE, cycle_id,
-            )
-        except Exception as exc:  # noqa: BLE001
-            log.warning("standout_auditor: failed to write audit state cursor: %s", exc)
+                # F1(f): keep-first — if this (market, cycle_id) postmortem already exists, skip
+                if pm_path.exists():
+                    log.info(
+                        "standout_auditor: postmortem already exists at %s — skipping write "
+                        "(keep-first per market/cycle_id)",
+                        pm_path,
+                    )
+                    artifact_path = str(pm_path)
+                else:
+                    # Atomic write: temp file in same dir, then os.replace
+                    import tempfile as _tempfile
+                    tmp_fd, tmp_name = _tempfile.mkstemp(
+                        dir=str(pm_dir), prefix=f".{market}-{cycle_id}-", suffix=".tmp"
+                    )
+                    try:
+                        with os.fdopen(tmp_fd, "w", encoding="utf-8") as fh:
+                            fh.write(json.dumps(pm, indent=2, default=str))
+                        os.replace(tmp_name, str(pm_path))
+                        artifact_path = str(pm_path)
+                    except Exception:  # noqa: BLE001
+                        try:
+                            os.unlink(tmp_name)
+                        except Exception:  # noqa: BLE001
+                            pass
+                        raise
+                log.info(
+                    "standout_auditor: postmortem written to %s (provider=%s)",
+                    pm_path, provider,
+                )
+            except Exception as exc:  # noqa: BLE001
+                log.warning("standout_auditor: write postmortem %s: %s", pm_path, exc)
 
-        return {
-            "schema": SCHEMA_POSTMORTEM,
-            "market": market,
-            "cycle_id": cycle_id,
-            "status": "ok" if artifact_path else "write_failed",
-            "artifact": artifact_path,
-            "note": (
-                f"postmortem written; {len(proposal_paths)} proposals; "
-                f"{len(emitted_ids)} insight_bus rows; provider={provider}"
-            ),
-            "data_gaps": context.get("data_gaps", []),
-        }
+            # ── Write standout_review proposal files ──────────────────────────
+            if not pm.get("parse_failed"):
+                proposal_paths = _write_proposals(pm, market, cycle_id, repo, dry_run=False)
+                pm["_proposal_files"] = proposal_paths
+            else:
+                proposal_paths = []
+
+            # ── Emit insight_bus rows for other hypotheses ────────────────────
+            if not pm.get("parse_failed"):
+                emitted_ids = _emit_hypothesis_bus_rows(pm, market, cycle_id, repo, dry_run=False)
+                pm["_insight_bus_ids"] = emitted_ids
+            else:
+                emitted_ids = []
+
+            # ── F2: advance the audit cursor in the state file ────────────────
+            # Write last_audit_graded_as_of and last_postmortem_cycle_id so that
+            # subsequent audit_due() calls see an advanced cursor and do not
+            # immediately re-trigger (the cursor was never written before this fix).
+            # NEVER raises (NEVER-RAISE contract).
+            try:
+                existing_state: dict = {}
+                # Read the current max date from the attribution parquet to stamp cursor
+                date_col = _DATE_COL.get(market, "as_of")
+                new_graded_asof: str | None = None
+                try:
+                    attr_p = _attribution_path(market, repo)
+                    if attr_p.exists():
+                        import pandas as pd  # type: ignore[import]
+                        _df = pd.read_parquet(str(attr_p), columns=[date_col])
+                        if not _df.empty:
+                            new_graded_asof = str(_df[date_col].max())
+                except Exception:  # noqa: BLE001
+                    pass
+                existing_state[_STATE_KEY_GRADED] = new_graded_asof or ts
+                existing_state[_STATE_KEY_PM_CYCLE] = cycle_id
+                existing_state["last_run_utc"] = ts
+                _merge_owner_state(legacy_owner, "market", market, existing_state)
+                log.info(
+                    "standout_auditor: audit cursor advanced → %s=%s, %s=%s",
+                    _STATE_KEY_GRADED, existing_state[_STATE_KEY_GRADED],
+                    _STATE_KEY_PM_CYCLE, cycle_id,
+                )
+            except Exception as exc:  # noqa: BLE001
+                log.warning("standout_auditor: failed to write audit state cursor: %s", exc)
+
+            return {
+                "schema": SCHEMA_POSTMORTEM,
+                "market": market,
+                "cycle_id": cycle_id,
+                "status": "ok" if artifact_path else "write_failed",
+                "artifact": artifact_path,
+                "note": (
+                    f"postmortem written; {len(proposal_paths)} proposals; "
+                    f"{len(emitted_ids)} insight_bus rows; provider={provider}"
+                ),
+                "data_gaps": context.get("data_gaps", []),
+            }
 
     except Exception as exc:  # noqa: BLE001
+        from scripts.metabolism_journal import FabricHeld
         log.warning("standout_auditor: run_audit(%s, %s): %s", market, cycle_id, exc)
         return {
             "schema": SCHEMA_POSTMORTEM,
             "market": market,
             "cycle_id": cycle_id,
-            "status": "error",
+            "status": "held" if isinstance(exc, FabricHeld) else "error",
             "artifact": None,
             "note": f"run_audit failed: {exc}",
             "data_gaps": [],
@@ -1512,14 +1785,27 @@ _AUTOPSY_TIMING_STATES = frozenset({
 })
 
 
-def _autopsy_cap_from_config(root: Path) -> int:
+def _autopsy_cap_from_config(root: Path, *, selected=False) -> int:
     """Read prophet.autopsy_cap_per_cycle from config.yml, fail-soft to 12."""
     try:
+        if selected:
+            import yaml
+            from scripts.metabolism_journal import FabricHeld
+            raw = _source_bytes(root/"config.yml", root)["raw"]
+            data = {} if raw is None else yaml.safe_load(raw)
+            if type(data) is not dict or type(data.get("prophet", {})) is not dict:
+                raise FabricHeld("standout_cap_invalid")
+            cap = data.get("prophet", {}).get("autopsy_cap_per_cycle", 12)
+            if type(cap) is not int or not 1 <= cap <= 25:
+                raise FabricHeld("standout_cap_invalid")
+            return cap
         from lib import config as _cfg  # noqa: PLC0415
         data = _cfg.load()
         cap = data.get("prophet", {}).get("autopsy_cap_per_cycle", 12)
         return int(cap)
     except Exception:  # noqa: BLE001
+        if selected:
+            raise
         return 12
 
 
@@ -1568,7 +1854,7 @@ def select_autopsy_picks(
 
         # Identify excess column for ranking
         excess_col = None
-        for candidate in ("excess_spy", "excess_21d", "excess_sector"):
+        for candidate in ("excess_spy", "excess_21d", "excess_sector", "fwd_excess"):
             if candidate in df.columns:
                 excess_col = candidate
                 break
@@ -1590,11 +1876,7 @@ def select_autopsy_picks(
         seen: set[tuple] = set()
         result: list[dict] = []
         for row in [*mandatory_list, *top_k_rows, *bottom_k_rows]:
-            key = (
-                str(row.get("ticker", "")),
-                str(row.get("as_of", row.get("entry_date", ""))),
-                str(row.get("lane", "")),
-            )
+            key = _pick_id(row)
             if key not in seen:
                 seen.add(key)
                 result.append(row)
@@ -1609,47 +1891,34 @@ def select_autopsy_picks(
 def _pick_id(row: dict) -> str:
     """Build a stable pick identifier from the attribution row."""
     ticker = str(row.get("ticker", "")).replace("/", "_").replace(" ", "_")
+    if "date" in row and "as_of" not in row and "entry_date" not in row:
+        date = str(row["date"]).split("T")[0].split(" ")[0]
+        return f"{ticker}-{date}-{row.get('board_definition', 'legacy')}-h{row.get('horizon', 'unknown')}"
     asof = str(row.get("as_of", row.get("entry_date", "unknown"))).split("T")[0]
     lane = str(row.get("lane", "default"))
     return f"{ticker}-{asof}-{lane}"
 
 
-def _invoke_autopsy_llm(
-    market: str,
-    picks: list[dict],
-    cycle_id: str,
-    model_caller: Callable | None,
-    root: Path,
-) -> list[dict]:
-    """Invoke LLM for per-pick autopsies in a single batched call.
+def _pick_autopsy_prompt(market: str, picks: list[dict], cycle_id: str) -> str:
+    # Build the batch prompt
+    picks_summary = []
+    for i, pick in enumerate(picks):
+        picks_summary.append(
+            f"Pick {i+1}: {pick.get('ticker')} | "
+                f"date={pick.get('as_of', pick.get('entry_date', pick.get('date', '?')))} | "
+            f"lane={pick.get('lane', '?')} | "
+            f"outcome_cause={pick.get('outcome_cause', '?')} | "
+            f"process_fault={pick.get('process_fault', '?')} | "
+                f"{'fwd_excess' if 'fwd_excess' in pick else 'excess_spy'}={pick.get('fwd_excess', pick.get('excess_spy', '?'))} | "
+            f"sector={pick.get('sector', '?')} | "
+            f"board_tenure_days={pick.get('board_tenure_days', '?')} | "
+            f"quad_hard_label={pick.get('quad_hard_label', '?')} | "
+            f"terminal_state={pick.get('terminal_state_clean8_21', '?')}"
+        )
 
-    Returns a list of parsed autopsy dicts (one per pick).  ``model_caller`` is
-    required by the dry-run caller; the armed path uses the shared provider
-    waterfall when it is None.  NEVER raises.
-    """
-    if not picks:
-        return []
+    picks_text = "\n".join(picks_summary)
 
-    try:
-        # Build the batch prompt
-        picks_summary = []
-        for i, pick in enumerate(picks):
-            picks_summary.append(
-                f"Pick {i+1}: {pick.get('ticker')} | "
-                f"date={pick.get('as_of', pick.get('entry_date', '?'))} | "
-                f"lane={pick.get('lane', '?')} | "
-                f"outcome_cause={pick.get('outcome_cause', '?')} | "
-                f"process_fault={pick.get('process_fault', '?')} | "
-                f"excess_spy={pick.get('excess_spy', '?')} | "
-                f"sector={pick.get('sector', '?')} | "
-                f"board_tenure_days={pick.get('board_tenure_days', '?')} | "
-                f"quad_hard_label={pick.get('quad_hard_label', '?')} | "
-                f"terminal_state={pick.get('terminal_state_clean8_21', '?')}"
-            )
-
-        picks_text = "\n".join(picks_summary)
-
-        prompt = f"""You are Prophet Trade Memory, reviewing {len(picks)} matured
+    prompt = f"""You are Prophet Trade Memory, reviewing {len(picks)} matured
 {market.upper()} picks from audit cycle {cycle_id}.
 
 Separate deterministic facts from inference. Reconstruct first-, second-, and
@@ -1676,7 +1945,7 @@ For EACH pick, you MUST produce:
   external_unforeseeable | external_foreseeable_unpriced | not_a_failure
 - lesson: 1 sentence tagging which engines/books surfaced or missed this
 - engines_credit: 1 sentence naming which books/organs were role models or laggards
-- causal_chain: ordered list of causal factors with order 1, 2, or 3; layer;
+- causal_chain: ordered list of causal factors with order 1, 2, or 3; layer; factor;
   mechanism; evidence_status; timing_status; counterfactual; and evidence_refs
 - alternate_explanations and missing_evidence: lists of strings
 - signal_hypotheses: measurable research ideas with feature_key, feature,
@@ -1706,16 +1975,42 @@ Each object must have exactly these keys:
   missing_evidence (list)
   signal_hypotheses (list)
 """
+    return prompt
+
+
+def _invoke_autopsy_llm(
+    market: str,
+    picks: list[dict],
+    cycle_id: str,
+    model_caller: Callable | None,
+    root: Path,
+) -> list[dict]:
+    """Invoke LLM for per-pick autopsies in a single batched call.
+
+    Returns a list of parsed autopsy dicts (one per pick).  ``model_caller`` is
+    required by the dry-run caller; the armed path uses the shared provider
+    waterfall when it is None.  NEVER raises.
+    """
+    if not picks:
+        return []
+
+    try:
+        guard_legacy_route(root, "pick_autopsies", market, ["market:"+market])
+        prompt = _pick_autopsy_prompt(market, picks, cycle_id)
 
         reply_text = None
         if model_caller is not None:
             try:
                 result = model_caller(prompt)
+                guard_legacy_route(root, "pick_autopsies", market, ["market:"+market])
                 if isinstance(result, tuple):
                     reply_text = result[0]
                 else:
                     reply_text = str(result) if result else None
+            except FabricHeld:
+                raise
             except Exception as exc:  # noqa: BLE001
+                guard_legacy_route(root, "pick_autopsies", market, ["market:"+market])
                 log.warning("standout_auditor: autopsy LLM call failed: %s", exc)
                 return []
         else:
@@ -1752,7 +2047,7 @@ Each object must have exactly these keys:
                     )
                     return text or None, None, response
 
-                reply_text, reason, _provider = llm_auth.make_call(
+                reply_text, reason, _provider = legacy_provider_call(root, "pick_autopsies", market, ["market:"+market],
                     providers, _do_call, context="prophet_pick_autopsy"
                 )
                 if (
@@ -1766,10 +2061,13 @@ Each object must have exactly these keys:
                         deepseek_model=conf.get("deepseek_model"),
                     )
                     if fallback:
-                        reply_text, _reason, _provider = llm_auth.make_call(
+                        reply_text, _reason, _provider = legacy_provider_call(root, "pick_autopsies", market, ["market:"+market],
                             fallback, _do_call, context="prophet_pick_autopsy_fallback"
                         )
+            except FabricHeld:
+                raise
             except Exception as exc:  # noqa: BLE001
+                guard_legacy_route(root, "pick_autopsies", market, ["market:"+market])
                 log.warning(
                     "standout_auditor: production autopsy LLM call failed: %s",
                     type(exc).__name__,
@@ -1880,9 +2178,69 @@ Each object must have exactly these keys:
             result_list.append(row)
         return result_list
 
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
+        guard_legacy_route(root, "pick_autopsies", market, ["market:"+market])
         log.warning("standout_auditor: _invoke_autopsy_llm: %s", exc)
         return []
+
+
+def _pick_document(market, pick, llm_block, cycle_id, model, ts, today):
+    pick_id = _pick_id(pick)
+    # LLM block — _invoke_autopsy_llm has already validated/rejected the verdict:
+    # valid enum → mitigation_verdict holds the value (no mitigation_verdict_raw)
+    # invalid enum → mitigation_verdict = "invalid", mitigation_verdict_raw = original string
+    # missing → mitigation_verdict = "" (empty string)
+    llm_doc: dict = {
+        "summary": llm_block.get("summary", llm_block.get("root_cause", "")),
+        "root_cause": llm_block.get("root_cause", ""),
+        "mitigation_verdict": llm_block.get("mitigation_verdict", ""),
+        "lesson": llm_block.get("lesson", ""),
+        "engines_credit": llm_block.get("engines_credit", ""),
+        "causal_chain": llm_block.get("causal_chain", []),
+        "alternate_explanations": llm_block.get("alternate_explanations", []),
+        "missing_evidence": llm_block.get("missing_evidence", []),
+        "signal_hypotheses": llm_block.get("signal_hypotheses", []),
+        "authority": "research_only",
+        "direct_authority": False,
+    }
+
+    # Validate verdict; applies when llm_block came directly from LLM without parse stage
+    # (e.g. constructed externally).  If already "invalid" with a raw, pass through.
+    verdict = llm_doc["mitigation_verdict"]
+    if "mitigation_verdict_raw" in llm_block:
+        # Already processed by _invoke_autopsy_llm — carry the raw value through
+        llm_doc["mitigation_verdict_raw"] = llm_block["mitigation_verdict_raw"]
+    elif verdict not in _MITIGATION_VERDICTS and verdict != "invalid":
+        # Direct construction: reject and record raw string
+        llm_doc["mitigation_verdict"] = "invalid" if verdict else ""
+        if verdict:
+            llm_doc["mitigation_verdict_raw"] = str(verdict)[:200]
+
+    doc = {
+        "schema": SCHEMA_PICK_AUTOPSY,
+        "market": market,
+        "pick_id": pick_id,
+        "ticker": pick.get("ticker"),
+        "entry_date": pick.get("as_of", pick.get("entry_date", pick.get("date"))),
+        "ledger_key": {
+            "ticker": pick.get("ticker"),
+            "as_of": pick.get("as_of", pick.get("entry_date", pick.get("date"))),
+            "lane": pick.get("lane"),
+            "horizon": pick.get("horizon"),
+        },
+        "attribution": {k: v for k, v in pick.items()
+                        if not k.startswith("_")},
+        "llm": llm_doc,
+        "authority": "research_only",
+        "direct_authority": False,
+        "model": model,
+        "cycle_id": cycle_id,
+        "asof": today,
+        "ts": ts,
+    }
+    return doc
 
 
 def _write_pick_autopsies(
@@ -1893,12 +2251,17 @@ def _write_pick_autopsies(
     model: str,
     root: Path,
     dry_run: bool = False,
+    *,
+    _fabric_operation=None,
 ) -> list[str]:
     """Write per-pick autopsy artifacts.
 
     One file per pick at data/standout_audit/pick_autopsies/<market>/<pick_id>.json.
     Returns list of written file paths.  NEVER raises.
     """
+    if _fabric_operation is not None:
+        return [str(root/item["path"]) for item in _fabric_operation.record["business"]["intent"]["files"]
+                if item["kind"] == "pick_autopsy" and _write_selected_artifact(_fabric_operation, item)]
     written: list[str] = []
     ts = _now_utc()
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -1924,59 +2287,7 @@ def _write_pick_autopsies(
         pick_id = _pick_id(pick)
         autopsy_path = autopsy_dir / f"{pick_id}.json"
 
-        # LLM block — _invoke_autopsy_llm has already validated/rejected the verdict:
-        # valid enum → mitigation_verdict holds the value (no mitigation_verdict_raw)
-        # invalid enum → mitigation_verdict = "invalid", mitigation_verdict_raw = original string
-        # missing → mitigation_verdict = "" (empty string)
-        llm_block = llm_by_idx.get(i) or {}
-        llm_doc: dict = {
-            "summary": llm_block.get("summary", llm_block.get("root_cause", "")),
-            "root_cause": llm_block.get("root_cause", ""),
-            "mitigation_verdict": llm_block.get("mitigation_verdict", ""),
-            "lesson": llm_block.get("lesson", ""),
-            "engines_credit": llm_block.get("engines_credit", ""),
-            "causal_chain": llm_block.get("causal_chain", []),
-            "alternate_explanations": llm_block.get("alternate_explanations", []),
-            "missing_evidence": llm_block.get("missing_evidence", []),
-            "signal_hypotheses": llm_block.get("signal_hypotheses", []),
-            "authority": "research_only",
-            "direct_authority": False,
-        }
-
-        # Validate verdict; applies when llm_block came directly from LLM without parse stage
-        # (e.g. constructed externally).  If already "invalid" with a raw, pass through.
-        verdict = llm_doc["mitigation_verdict"]
-        if "mitigation_verdict_raw" in llm_block:
-            # Already processed by _invoke_autopsy_llm — carry the raw value through
-            llm_doc["mitigation_verdict_raw"] = llm_block["mitigation_verdict_raw"]
-        elif verdict not in _MITIGATION_VERDICTS and verdict != "invalid":
-            # Direct construction: reject and record raw string
-            llm_doc["mitigation_verdict"] = "invalid" if verdict else ""
-            if verdict:
-                llm_doc["mitigation_verdict_raw"] = str(verdict)[:200]
-
-        doc = {
-            "schema": SCHEMA_PICK_AUTOPSY,
-            "market": market,
-            "pick_id": pick_id,
-            "ticker": pick.get("ticker"),
-            "entry_date": pick.get("as_of", pick.get("entry_date")),
-            "ledger_key": {
-                "ticker": pick.get("ticker"),
-                "as_of": pick.get("as_of", pick.get("entry_date")),
-                "lane": pick.get("lane"),
-                "horizon": pick.get("horizon"),
-            },
-            "attribution": {k: v for k, v in pick.items()
-                            if not k.startswith("_")},
-            "llm": llm_doc,
-            "authority": "research_only",
-            "direct_authority": False,
-            "model": model,
-            "cycle_id": cycle_id,
-            "asof": today,
-            "ts": ts,
-        }
+        doc = _pick_document(market, pick, llm_by_idx.get(i) or {}, cycle_id, model, ts, today)
 
         try:
             import tempfile as _tempfile  # noqa: PLC0415
@@ -2008,6 +2319,145 @@ def _write_pick_autopsies(
     return written
 
 
+def _qualified_pick_id(row, market):
+    from scripts.metabolism_journal import FabricHeld
+    date_key = "date" if market == "cn" else ("as_of" if "as_of" in row else "entry_date")
+    ticker, date = row.get("ticker"), row.get(date_key)
+    if (type(ticker) is not str or not re.fullmatch(r"[A-Za-z0-9.^_-]{1,32}", ticker)
+            or type(date) is not str or not re.fullmatch(r"\d{4}-\d{2}-\d{2}(?:[T ].*)?", date)):
+        raise FabricHeld("standout_pick_identity_invalid")
+    datetime.fromisoformat(date.replace("Z", "+00:00"))
+    if market == "cn":
+        if ("as_of" in row or "entry_date" in row or type(row.get("horizon")) is not int
+                or not 1 <= row["horizon"] <= 365 or type(row.get("board_definition")) is not str
+                or not re.fullmatch(r"[A-Za-z0-9_-]{1,96}", row["board_definition"])):
+            raise FabricHeld("standout_pick_identity_invalid")
+    elif type(row.get("lane")) is not str or not row["lane"]:
+        raise FabricHeld("standout_pick_identity_invalid")
+    result = _pick_id(row)
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,220}", result) or ".." in result:
+        raise FabricHeld("standout_pick_identity_invalid")
+    return result
+
+
+def _existing_pick(root, market, pick):
+    from scripts.metabolism_journal import strict_json, FabricHeld, fabric_digest
+    pick_id = _qualified_pick_id(pick, market)
+    candidates = [root/f"data/standout_audit/pick_autopsies/{market}/{pick_id}.json"]
+    if market == "cn":
+        candidates.append(root/f"data/standout_audit/pick_autopsies/cn/{pick['ticker']}-unknown-default.json")
+    for index, path in enumerate(candidates):
+        raw = _source_bytes(path, root)["raw"]
+        if raw is None:
+            continue
+        document = strict_json(raw)
+        if (type(document) is not dict or document.get("schema") != SCHEMA_PICK_AUTOPSY
+                or document.get("market") != market or type(document.get("attribution")) is not dict):
+            raise FabricHeld("standout_existing_pick_ambiguous")
+        original = document["attribution"]
+        original_id = _qualified_pick_id(original, market)
+        if original_id != pick_id:
+            if index == 0:
+                raise FabricHeld("standout_existing_pick_conflict")
+            continue
+        if fabric_digest(original) != fabric_digest(pick) or not document.get("model"):
+            raise FabricHeld("standout_existing_pick_conflict")
+        from engine.neuralweb.trade_memory import validate_autopsy_payload
+        llm = document.get("llm")
+        required = {"summary", "mitigation_verdict", "lesson", "engines_credit", "causal_chain",
+                    "alternate_explanations", "missing_evidence", "signal_hypotheses"}
+        if type(llm) is not dict or not required <= set(llm):
+            raise FabricHeld("standout_existing_pick_unqualified")
+        candidate = {key: copy.deepcopy(llm[key]) for key in required}
+        candidate["pick_index"] = 1
+        # Completed artifacts include deterministic non-authority stamps.
+        if type(candidate["signal_hypotheses"]) is list:
+            for hypothesis in candidate["signal_hypotheses"]:
+                if type(hypothesis) is dict:
+                    if hypothesis.pop("direct_authority", False) is not False:
+                        raise FabricHeld("standout_existing_pick_unqualified")
+        validate_autopsy_payload(candidate, pick=True)
+        return True
+    return False
+
+
+def _run_selected_pick_autopsies(market, cycle_id, root):
+    from scripts.metabolism_journal import FabricInvocation, FabricHeld, strict_json, read_owner_state, _records, fabric_digest
+    from engine.neuralweb.trade_memory import validate_autopsy_payload
+    import pandas as pd
+    path = _attribution_path(market, root)
+    source = _source_receipt(path, root)
+    frame = pd.read_parquet(path)
+    # Preserve nulls explicitly; pandas scalars/dates become their canonical JSON forms.
+    rows = strict_json(frame.to_json(orient="records", date_format="iso"))
+    ids = [_qualified_pick_id(row, market) for row in rows]
+    if len(set(ids)) != len(ids):
+        raise FabricHeld("standout_pick_identity_ambiguous")
+    completed = [record for record in _records(read_owner_state(root, "market", market)).values()
+                 if record["kind"] == "pick_autopsies" and record["state"] == "complete"]
+    eligible = []
+    for row, pick_id in zip(rows, ids):
+        prior = [record for record in completed if "pick:"+pick_id in record["scope"]]
+        if prior:
+            for original in prior:
+                matching = [saved for saved in original["logical"]["picks"] if _qualified_pick_id(saved, market) == pick_id]
+                if len(matching) != 1 or fabric_digest(matching[0]) != fabric_digest(row):
+                    raise FabricHeld("standout_completed_pick_input_changed")
+                _selected_file_receipts(root, original["business"]["intent"], original["business"]["outcome"]["files"])
+            continue
+        if not _existing_pick(root, market, row):
+            eligible.append(row)
+    cap = _autopsy_cap_from_config(root, selected=True)
+    picks = select_autopsy_picks(market, pd.DataFrame(eligible), cap=cap)
+    # Selection reintroduces pandas NaN/scalars; only this honest null projection is sent.
+    picks = strict_json(pd.DataFrame(picks).to_json(orient="records", date_format="iso"))
+    if _source_receipt(path, root) != source:
+        raise FabricHeld("standout_input_changed")
+    if not picks:
+        return {"schema": SCHEMA_PICK_AUTOPSY, "market": market, "cycle_id": cycle_id,
+                "status": "no_picks", "note": "No new qualified picks", "written": []}
+    system = ("You are a private, research-only Prophet postmortem writer. "
+              "Return strict JSON and follow every authority boundary in the user prompt.")
+    prompt = _pick_autopsy_prompt(market, picks, cycle_id)
+    ids = [_qualified_pick_id(row, market) for row in picks]
+    operation = FabricInvocation(root, "pick_autopsies", market,
+        {"cycle_id": cycle_id, "source": source, "picks": picks, "cap": cap},
+        ["market:"+market]+["pick:"+key for key in ids], system, prompt, 6000, cfg=_LLM_CFG)
+    if operation.reused:
+        _selected_file_receipts(root, operation.record["business"]["intent"], operation.record["business"]["outcome"]["files"])
+        return {**operation.record["business"]["outcome"]["result"], "reused": True}
+    try:
+        text = operation.call()
+        values = strict_json(text)
+        if type(values) is not list or len(values) != len(picks):
+            raise FabricHeld("standout_pick_response_invalid")
+        for i, item in enumerate(values, 1):
+            validate_autopsy_payload(item, pick=True)
+            if item["pick_index"] != i:
+                raise FabricHeld("standout_pick_response_invalid")
+            item["root_cause"] = item["summary"]
+        ts, today = _now_utc(), _today_utc()
+        model = operation.record["receipt"]["served_model"]
+        files = []
+        for pick, result in zip(picks, values):
+            document = _pick_document(market, pick, result, cycle_id, model, ts, today)
+            document["fabric_operation_id"] = operation.record["operation_id"]
+            files.append({"kind": "pick_autopsy", "path": f"data/standout_audit/pick_autopsies/{market}/{_pick_id(pick)}.json",
+                          "document": document})
+        plan = {"files": files, "bus": []}
+        _preflight_artifacts(root, plan)
+        operation.publication_intent(plan)
+        written = _write_pick_autopsies(market, picks, values, cycle_id, model, root, _fabric_operation=operation)
+        receipts = _selected_file_receipts(root, plan, [operation._written_artifacts[item["path"]] for item in plan["files"]])
+        result = {"schema": SCHEMA_PICK_AUTOPSY, "market": market, "cycle_id": cycle_id,
+            "status": "ok", "note": f"{len(written)} complete Fabric pick autopsies", "written": written, "model": model}
+        operation.complete({"result": result, "files": receipts})
+        return result
+    except Exception:
+        operation.hold("standout_business_publication_held")
+        raise
+
+
 def run_pick_autopsies(
     market: str,
     cycle_id: str,
@@ -2031,6 +2481,11 @@ def run_pick_autopsies(
     """
     try:
         repo = _repo_root(root)
+
+        from scripts.metabolism_journal import guard_saved
+        guard_saved(repo, "market", market, "pick_autopsies", ["market:"+market])
+        if dry_run:
+            _standout_selection(repo, market, cycle_id, "pick_autopsies", model_caller, dry_run)
 
         if dry_run and model_caller is None:
             return {
@@ -2065,6 +2520,9 @@ def run_pick_autopsies(
                         "note": "guard unavailable, fail-closed",
                         "written": [],
                     }
+
+        if _standout_selection(repo, market, cycle_id, "pick_autopsies", model_caller, dry_run):
+            return _run_selected_pick_autopsies(market, cycle_id, repo)
 
         # Read attribution parquet
         attr_path = _attribution_path(market, repo)
@@ -2140,12 +2598,15 @@ def run_pick_autopsies(
             }
 
         # Write artifacts — record which model actually served (PR-R8 traceability)
-        written = _write_pick_autopsies(
-            market, picks, llm_results, cycle_id,
-            model=_get_deliberation_model(),
-            root=repo,
-            dry_run=dry_run,
-        )
+        model = _get_deliberation_model()
+        if dry_run:
+            guard_legacy_route(repo, "pick_autopsies", market, ["market:"+market])
+            written = _write_pick_autopsies(market, picks, llm_results, cycle_id,
+                                            model=model, root=repo, dry_run=True)
+        else:
+            with native_publication_guard(repo, "market", market, "pick_autopsies", ["market:"+market]):
+                written = _write_pick_autopsies(market, picks, llm_results, cycle_id,
+                                                model=model, root=repo, dry_run=False)
 
         return {
             "schema": SCHEMA_PICK_AUTOPSY,
@@ -2160,13 +2621,14 @@ def run_pick_autopsies(
         }
 
     except Exception as exc:  # noqa: BLE001
+        from scripts.metabolism_journal import FabricHeld
         log.warning("standout_auditor: run_pick_autopsies(%s, %s): %s",
                     market, cycle_id, exc)
         return {
             "schema": SCHEMA_PICK_AUTOPSY,
             "market": market,
             "cycle_id": cycle_id,
-            "status": "error",
+            "status": "held" if isinstance(exc, FabricHeld) else "error",
             "note": f"run_pick_autopsies failed: {exc}",
             "written": [],
         }

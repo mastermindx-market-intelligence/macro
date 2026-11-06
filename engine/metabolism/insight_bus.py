@@ -141,18 +141,40 @@ def _load_bus_rows(bus_path: Path) -> list[dict]:
 
 # ── Append ─────────────────────────────────────────────────────────────────────
 
-def append_row(row: dict, root: Path | None = None) -> bool:
+def _strict_bus_rows(raw):
+    from scripts.metabolism_journal import strict_json
+    if raw and not raw.endswith(b"\n"):
+        raise ValueError("insight_bus_partial_tail")
+    rows = [strict_json(line) for line in (raw or b"").splitlines() if line.strip()]
+    if any(type(row) is not dict for row in rows):
+        raise ValueError("insight_bus_invalid_row")
+    return rows
+
+
+def append_row(row: dict, root: Path | None = None, *, expected_absent_id: str | None = None,
+               receipt: dict | None = None) -> bool:
     """Append one row to the insight bus.  Returns True on success.
 
     NEVER-RAISE: any failure returns False and logs a warning.
     """
     try:
         repo = _repo_root(root)
-        bus_path = repo / BUS_PATH
-        bus_path.parent.mkdir(parents=True, exist_ok=True)
-        line = json.dumps(row, ensure_ascii=False) + "\n"
-        with bus_path.open("a", encoding="utf-8") as fh:
-            fh.write(line)
+        from scripts.metabolism_journal import owned_bytes, fabric_digest
+        if type(row) is not dict or receipt is not None and type(receipt) is not dict:
+            raise ValueError("insight_bus_append_invalid")
+        with owned_bytes(repo, "bus", "bus") as owner:
+            before = owner.read()
+            raw = before["raw"] or b""
+            rows = _strict_bus_rows(raw)
+            if expected_absent_id is not None:
+                if (not expected_absent_id or expected_absent_id != row.get("insight_id")
+                        or any(item.get("insight_id") == expected_absent_id for item in rows)):
+                    raise ValueError("insight_bus_original_unknown")
+            line = (json.dumps(row, ensure_ascii=False, allow_nan=False)+"\n").encode()
+            after = owner.replace(before, raw+line)
+            if receipt is not None:
+                receipt.update(insight_id=row.get("insight_id"), row_digest=fabric_digest(row),
+                               owner="insight_bus", identity=list(after["identity"]))
         return True
     except Exception as exc:  # noqa: BLE001
         log.warning("insight_bus.append_row: failed — %s", exc)
@@ -545,7 +567,21 @@ def comeback_clock_emitter(root: Path | None = None, cycle_id: str | None = None
 _ARCHIVE_DIR_REL = Path("data") / "metabolism" / "insight_bus_archive"
 
 
-def compact_bus(
+def compact_bus(root: Path | None = None, retention_days: int = 90, max_open_rows: int = 500) -> dict:
+    """Compact and archive under the same physical transaction used by append."""
+    try:
+        from scripts.metabolism_journal import owned_bytes
+        repo = _repo_root(root)
+        if not (repo / BUS_PATH).exists():
+            return {"retained": 0, "archived": 0, "errors": []}
+        with owned_bytes(repo, "bus", "bus") as owner:
+            return _compact_bus_locked(owner, root=repo, retention_days=retention_days, max_open_rows=max_open_rows)
+    except Exception as exc:
+        log.warning("compact_bus: owner transaction failed — %s", type(exc).__name__)
+        return {"retained": 0, "archived": 0, "errors": [type(exc).__name__]}
+
+
+def _compact_bus_locked(owner,
     root: Path | None = None,
     retention_days: int = 90,
     max_open_rows: int = 500,
@@ -573,10 +609,8 @@ def compact_bus(
     try:
         repo = _repo_root(root)
         bus_path = repo / BUS_PATH
-        if not bus_path.exists():
-            return summary
-
-        rows = _load_bus_rows(bus_path)
+        before = owner.read()
+        rows = _strict_bus_rows(before["raw"])
         if not rows:
             return summary
 
@@ -649,7 +683,6 @@ def compact_bus(
         # Write archive rows grouped by month
         archive_dir = repo / _ARCHIVE_DIR_REL
         try:
-            archive_dir.mkdir(parents=True, exist_ok=True)
             by_month: dict[str, list[dict]] = {}
             for r in to_archive:
                 try:
@@ -664,9 +697,19 @@ def compact_bus(
 
             for month, month_rows in by_month.items():
                 archive_path = archive_dir / f"{month}.jsonl"
-                with archive_path.open("a", encoding="utf-8") as fh:
-                    for r in month_rows:
-                        fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+                from scripts.metabolism_journal import _parent_fd, _OwnedBytes, fabric_json
+                import re
+                if not re.fullmatch(r"\d{4}-(?:0[1-9]|1[0-2])", month):
+                    raise ValueError("insight_bus_archive_month_invalid")
+                with _parent_fd(archive_path, repo, create=True, durable=True) as (parent, check):
+                    archive = _OwnedBytes(parent, archive_path.name, check, byte_limit=None)
+                    original = archive.read()
+                    existing_rows = _strict_bus_rows(original["raw"])
+                    existing = {fabric_json(row) for row in existing_rows}
+                    additions = [row for row in month_rows if fabric_json(row) not in existing]
+                    if additions:
+                        appended = "".join(json.dumps(row, ensure_ascii=False, allow_nan=False)+"\n" for row in additions).encode()
+                        archive.replace(original, (original["raw"] or b"")+appended)
         except Exception as exc:  # noqa: BLE001
             log.warning("compact_bus: archive write failed — %s", exc)
             summary["errors"].append(str(exc))
@@ -680,17 +723,7 @@ def compact_bus(
             new_content = "".join(
                 json.dumps(r, ensure_ascii=False) + "\n" for r in to_keep
             )
-            tmp_fd, tmp_name = tempfile.mkstemp(dir=bus_path.parent, suffix=".tmp")
-            try:
-                with os.fdopen(tmp_fd, "w", encoding="utf-8") as fh:
-                    fh.write(new_content)
-                os.replace(tmp_name, bus_path)
-            except Exception:  # noqa: BLE001
-                try:
-                    os.unlink(tmp_name)
-                except Exception:  # noqa: BLE001
-                    pass
-                raise
+            owner.replace(before, new_content.encode())
         except Exception as exc:  # noqa: BLE001
             log.warning("compact_bus: live-file rewrite failed — %s", exc)
             summary["errors"].append(str(exc))

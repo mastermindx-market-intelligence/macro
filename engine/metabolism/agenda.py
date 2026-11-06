@@ -85,6 +85,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from scripts.metabolism_journal import FabricHeld, guard_native_route, native_provider_call
 
 from engine.metabolism.orchestrator_brain import _build_orchestrator_system  # noqa: PLC2403
 from engine.metabolism.insight_bus import get_open_rows  # noqa: F401
@@ -448,6 +449,7 @@ def _call_llm(
     system_prompt: str,
     user_prompt: str,
     max_tokens: int = 2000,
+    *, root: Path | None = None, cycle_id: str = "agenda-model",
 ) -> tuple[str | None, str | None, str | None]:
     """Call the LLM via llm_auth.make_call.
 
@@ -455,8 +457,6 @@ def _call_llm(
     NEVER-RAISE.
     """
     try:
-        from engine.llm_auth import make_call  # noqa: PLC0415
-
         def _call_fn(client: Any, model: str) -> tuple[str | None, str | None]:
             resp = client.messages.create(
                 model=model,
@@ -467,7 +467,10 @@ def _call_llm(
             text = resp.content[0].text if resp.content else None
             return text, None
 
-        return make_call(providers, _call_fn, context="metabolism_agenda")
+        return native_provider_call(_repo_root(root), "agenda", cycle_id, ["agenda"],
+                                    providers, _call_fn, context="metabolism_agenda")
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
         log.warning("agenda._call_llm: failed — %s", exc)
         return None, f"llm_error: {exc}", None
@@ -528,6 +531,8 @@ def build_agenda(
             model=model,
             max_docket_size=max_docket_size,
         )
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
         log.warning("agenda.build_agenda: fatal — %s", exc)
         return {
@@ -553,6 +558,8 @@ def _build_agenda_inner(
 ) -> dict[str, Any]:
     """Inner builder — allowed to raise; wrapped by build_agenda."""
     repo = _repo_root(root)
+    guard_native_route(repo, "agenda", cycle_id, ["agenda"],
+                       model_requested=bool(providers) or model is not None)
 
     # 1. Load budget config for max_docket_size + prior de-rank thresholds (R-V8-11)
     prior_demote_min_n: int = 5
@@ -640,12 +647,14 @@ def _build_agenda_inner(
     raw_items: list[dict] = []
 
     if providers:
+        guard_native_route(repo, "agenda", cycle_id, ["agenda"], providers=providers)
         text, degraded_reason, provider_used = _call_llm(
             providers=providers,
             system_prompt=system_prompt,
             user_prompt=user_prompt,
             max_tokens=2000,
         )
+        guard_native_route(repo, "agenda", cycle_id, ["agenda"], providers=providers, reason=degraded_reason)
         raw_items = _parse_llm_items(text)
     else:
         degraded_reason = "no_provider"

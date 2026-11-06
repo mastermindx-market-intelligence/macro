@@ -304,6 +304,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -2478,6 +2479,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -3559,6 +3561,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -6223,6 +6226,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/earnings_transcript_intake.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
@@ -7645,6 +7649,7 @@ jobs:
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       # Derived-closure coverage (compose with origin/main 7abc73b9): these
       # concrete paths enter this job's own import closure through upstream
       # modules. `scope: exclusive` means declared paths REPLACE inference,
@@ -8164,6 +8169,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -9297,6 +9303,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "engine/provider_workload_policy.py"
@@ -12438,6 +12445,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -15010,6 +15018,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/rotation_observation_notification.py"
@@ -16729,6 +16738,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -19209,6 +19219,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/earnings_transcript_intake.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
@@ -24135,6 +24146,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/earnings_transcript_intake.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
@@ -27162,6 +27174,7 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/earnings_transcript_intake.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
@@ -27806,6 +27819,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "engine/provider_workload_policy.py"
@@ -28661,6 +28675,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "engine/provider_workload_policy.py"
@@ -29274,6 +29289,7 @@ jobs:
     # Derived with infer_job_scopes for both suites; no packing ceilings changed.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "app/**"
       - "collectors/**"
       - "config/**"
@@ -30419,6 +30435,10 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/codex_lane/runner.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "scripts/metabolism_journal.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -30952,6 +30972,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -32843,6 +32864,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "scripts/company_intelligence_publication_evidence.py"
       - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
@@ -33686,6 +33708,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "engine/provider_workload_policy.py"
@@ -34328,6 +34351,7 @@ jobs:
     # fallback domains that otherwise select unrelated homepage/Prophet probes.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "admin/**"
       - "app/**"
       - "collectors/**"
@@ -34901,6 +34925,7 @@ jobs:
     # Exact named dependency closure; retain all commands and only drop opaque fallback.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -35257,6 +35282,7 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/earnings_transcript_intake.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
@@ -35872,6 +35898,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/earnings_transcript_intake.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
@@ -37224,6 +37251,7 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -37376,6 +37404,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/earnings_transcript_intake.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
@@ -39174,7 +39203,7 @@ jobs:
               -o "$native_target"
           done
           MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_fixture_root" python -m pytest \
-            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_fabric_commodity_influence.py tests/test_fabric_response_eval.py tests/test_fabric_marketing_review.py tests/test_fabric_marketing_copywriter.py tests/test_fabric_application_deadlines.py tests/test_fabric_marketing_breaking.py tests/test_fabric_marketing_fomc.py tests/test_fabric_marketing_hot_reply.py tests/test_fabric_admin_pool_view.py tests/test_fabric_admin_pool_server.py tests/test_fabric_marketing_cold_read.py tests/test_fabric_press_writer.py tests/test_fabric_uk_policy_brain.py tests/test_fabric_intelligence_desk.py tests/test_publish_time_fabric_composition.py tests/test_native_go_application_recipe.py tests/test_specialty_current_fabric_composition.py tests/test_earnings_current_fabric_composition.py tests/test_cortex_fabric_composition.py tests/test_fabric_diagnostic_scripts.py tests/test_fabric_whitehouse_brain.py tests/test_fabric_research_runners.py \
+            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_fabric_commodity_influence.py tests/test_fabric_response_eval.py tests/test_fabric_marketing_review.py tests/test_fabric_marketing_copywriter.py tests/test_fabric_application_deadlines.py tests/test_fabric_marketing_breaking.py tests/test_fabric_marketing_fomc.py tests/test_fabric_marketing_hot_reply.py tests/test_fabric_admin_pool_view.py tests/test_fabric_admin_pool_server.py tests/test_fabric_marketing_cold_read.py tests/test_fabric_press_writer.py tests/test_fabric_uk_policy_brain.py tests/test_fabric_intelligence_desk.py tests/test_publish_time_fabric_composition.py tests/test_native_go_application_recipe.py tests/test_specialty_current_fabric_composition.py tests/test_earnings_current_fabric_composition.py tests/test_cortex_fabric_composition.py tests/test_fabric_diagnostic_scripts.py tests/test_fabric_whitehouse_brain.py tests/test_fabric_research_runners.py tests/test_metabolism_fabric_composition.py \
             tests/test_fabric_inference_client.py tests/test_fabric_consumer_composition.py \
             tests/test_fabric_gateway_composition.py tests/test_orchestrator_fabric_composition.py tests/test_fabric_application_binding.py \
             tests/test_fabric_shared_default.py tests/test_master_brain_fabric_composition.py \
@@ -40580,6 +40609,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "engine/provider_workload_policy.py"
@@ -41135,6 +41165,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -44465,6 +44496,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -45745,6 +45777,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"
@@ -47465,6 +47498,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47770,6 +47804,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -50988,6 +51023,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/neuralweb/trade_memory_store.py"
+      - "scripts/metabolism_journal.py"
       - "engine/provider_capacity.py"
       - engine/fabric_inference_client.py
       - "config/provider_workloads.v1.json"

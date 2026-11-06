@@ -58,6 +58,16 @@ def _maybe_resummary(root: Path, dry_run: bool) -> None:
         from engine.metabolism.memory import (  # type: ignore[import]
             _needs_resummary, load_recent_lessons, resummary_lessons, LESSONS_BYTE_CAP,
         )
+        from scripts.metabolism_journal import guard_saved, selected_factory, native_publication_guard
+        # The stable journal unit keeps an earlier source-version hold visible
+        # across scheduler dates, force flags and selection removal.
+        guard_saved(root, "journal", "dream-resummary", "dream", ["lessons"])
+        factory, _ = selected_factory(root, "dream")
+        if factory is not None:
+            if dry_run or not _needs_resummary(root):
+                return
+            _run_fabric_resummary(root)
+            return
         if not _needs_resummary(root):
             return
 
@@ -71,7 +81,8 @@ def _maybe_resummary(root: Path, dry_run: bool) -> None:
         # Attempt LLM-assisted summarization (display-only)
         summary_text = _request_llm_summary(raw_lessons, root)
         if summary_text:
-            ok = resummary_lessons(summary_text, root)
+            with native_publication_guard(root, "journal", "dream-resummary", "dream", ["lessons"]):
+                ok = resummary_lessons(summary_text, root)
             if ok:
                 log.info("dream: lessons.jsonl resummary complete")
             else:
@@ -82,9 +93,38 @@ def _maybe_resummary(root: Path, dry_run: bool) -> None:
                 "[anti-rot marker] LLM summary unavailable — raw tail preserved. "
                 "Lessons before the tail were compressed out to prevent context-rot."
             )
-            resummary_lessons(marker, root)
+            with native_publication_guard(root, "journal", "dream-resummary", "dream", ["lessons"]):
+                resummary_lessons(marker, root)
     except Exception as exc:  # noqa: BLE001
         log.warning("dream._maybe_resummary: %s", exc)
+
+
+def _run_fabric_resummary(root: Path) -> None:
+    from scripts.metabolism_journal import FabricHeld, FabricInvocation
+    from engine.metabolism.memory import capture_lessons_for_resummary, resummary_lessons
+    source, discarded = capture_lessons_for_resummary(root)
+    system = (
+        "Summarize the complete older lessons supplied below in at most 300 words. "
+        "This is display-only advisory memory. It cannot alter gates, thresholds, "
+        "signals, scores, trade authority or escalation. State what worked, what failed "
+        "and what to avoid repeating. Never use the word 'validated'. Plain text only."
+    )
+    user = "Complete older lesson rows that will be replaced by this summary:\n\n" + discarded
+    operation = FabricInvocation(root, "dream", "dream-resummary",
+        {"lessons_source": source, "prompt_version": "actual-prefix-v1"}, ["lessons"],
+        system, user, 800)
+    if operation.reused:
+        return
+    text = operation.call()
+    if len(text.split()) > 350 or "validated" in text.lower():  # Banned claim wording.
+        operation.hold("metabolism_summary_contract_invalid")
+        raise FabricHeld("metabolism_summary_contract_invalid")
+    operation.publication_intent({"owner": "lessons", "expected_source": source})
+    receipt = {}
+    if not resummary_lessons(text, root, expected_source=source, receipt=receipt):
+        operation.hold("metabolism_lessons_publication_held")
+        raise FabricHeld("metabolism_lessons_publication_held")
+    operation.complete({"status": "compressed", "receipt": receipt})
 
 
 def _request_llm_summary(raw_lessons: str, root: Path) -> str | None:
@@ -93,10 +133,15 @@ def _request_llm_summary(raw_lessons: str, root: Path) -> str | None:
     DISPLAY-TIER ONLY — the summary is advisory context for the next cycle;
     it never alters gates, thresholds, or authority surfaces.
 
-    Returns the summary text, or None if the LLM is unavailable.  NEVER raises.
+    Returns text or None for native unavailability. An original Fabric hold
+    propagates to the outer boundary, which must not publish a fallback marker.
     """
+    from scripts.metabolism_journal import FabricHeld, guard_saved
     try:
         from engine import llm_auth  # type: ignore[import]
+        guard_saved(root, "journal", "dream-resummary", "dream", ["lessons"])
+        if "MM_PROVIDER_APPLICATION_MODE" in os.environ:
+            raise FabricHeld("metabolism_durable_context_required")
 
         cfg: dict[str, Any] = {
             "provider_order": ["oauth", "anthropic"],
@@ -135,6 +180,8 @@ def _request_llm_summary(raw_lessons: str, root: Path) -> str | None:
 
         text, _, _ = llm_auth.make_call(providers, _do_call, context="metabolism_dream_resummary")
         return text
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
         log.warning("dream._request_llm_summary: %s", exc)
         return None
