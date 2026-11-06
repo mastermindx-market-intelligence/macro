@@ -39318,6 +39318,18 @@ jobs:
     if: ${{ false }}
     gate: code
     paths:
+      - "tests/test_china_sector_detail_links.py"
+      - "templates/china.html.j2"
+      - "engine/i18n.py"
+      - "config.yml"
+      - "site/china.html"
+      - "site/sectors/*.html"
+      - "site/assets/css/*.css"
+      - "templates/_cmd_hero.css.j2"
+      - "templates/_market_state.css.j2"
+      - "templates/_risk_radar_card.css.j2"
+      - "templates/_risk_radar_dlg.css.j2"
+      - "templates/_aibrief_css.j2"
       - "tests/test_act_now_board_assembler.py"
       - "tests/test_action_board_lane_split.py"
       - "tests/test_alert_coverage_recurrence.py"
@@ -39344,6 +39356,8 @@ jobs:
         run: python -m pytest tests/test_okx_retail.py -q
       - name: CN risk-backdrop chip — renders, degrades, and stays out of macro mode
         run: python -m pytest tests/test_w5b_edge_chips.py -q
+      - name: China macro sector detail navigation — template and current paired artifact
+        run: python -m pytest tests/test_china_sector_detail_links.py -q
       # P0B exact-source correction (2026-09-06): 14 builder/template cases are
       # hermetic and belong in the PR code gate.  The one generated-page case
       # remains in unrun-intl-collectors, which continues to run all 15 in data.
