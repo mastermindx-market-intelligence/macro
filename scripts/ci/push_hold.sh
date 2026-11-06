@@ -488,7 +488,7 @@ _push_hold_apply_ref() {
       can_apply=0
       [ -n "$why" ] || why="worktree is dirty for ${PH_PATH}"
     fi
-  done < "$PUSH_HOLD_WORK/ent.$n"
+  done < "$PUSH_HOLD_WORK/ent.$n" || return 1
   if [ "$all_landed" -eq 1 ]; then
     if _push_hold_delete_remote "$ref"; then
       echo "hold ${ref} already landed on HEAD; deleted ${ref}"
@@ -519,7 +519,7 @@ _push_hold_apply_ref() {
       _push_hold_mark_unreconciled "$ref" "wrote ${path} but bytes do not match ${PH_BLOB}"
       return 1
     fi
-  done < "$PUSH_HOLD_WORK/ent.$n"
+  done < "$PUSH_HOLD_WORK/ent.$n" || return 1
   if ! _push_hold_record_recovered "$n"; then
     _push_hold_mark_unreconciled "$ref" "could not record recovery"
     return 1
@@ -1002,7 +1002,10 @@ push_hold_oversize_staged() {
       _push_hold_mark_unreconciled "$ref" "could not record verified hold" || true
       return 2
     fi
-  done < "$PUSH_HOLD_WORK/hold_paths" || return 2
+  done < "$PUSH_HOLD_WORK/hold_paths" || {
+    _push_hold_mark_unreconciled "$ref" "could not record verified hold" || true
+    return 2
+  }
 
   reset_failed=0
   while IFS= read -r path; do

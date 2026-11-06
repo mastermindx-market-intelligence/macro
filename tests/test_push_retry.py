@@ -3749,7 +3749,8 @@ def test_us_board_unreadable_state_cannot_hide_an_unreconciled_ref(tmp_path, blo
         marker.chmod(0o600)
 
 
-def test_us_board_failed_held_record_keeps_custody_and_blocks_publication(tmp_path):
+@pytest.mark.parametrize("record_failure", ["append", "input_read"])
+def test_us_board_failed_held_record_keeps_custody_and_blocks_publication(tmp_path, record_failure):
     bare, repo = _us_board_clone(tmp_path)
     held = b"old\n" + b"R" * 60
     board = repo / "data/us_board_ledger/snapshots.jsonl"
@@ -3771,8 +3772,14 @@ def test_us_board_failed_held_record_keeps_custody_and_blocks_publication(tmp_pa
         'if [ "${1:-}" = "push" ]; then printf "%s\\n" push >> "$PUSH_CALLS"; fi\n'
         'if [ "${1:-}" = "ls-remote" ] && [ "${2:-}" = "--refs" ]; then\n'
         '  "$REAL_GIT" "$@" || exit "$?"\n'
-        '  : > "$FAULT_STATE/held"\n'
-        '  chmod 400 "$FAULT_STATE/held"\n'
+        '  if [ "$RECORD_FAILURE" = "append" ]; then\n'
+        '    : > "$FAULT_STATE/held"\n'
+        '    chmod 400 "$FAULT_STATE/held"\n'
+        '  else\n'
+        '    fault="$FAULT_STATE/work/hold_paths"\n'
+        '    if [ ! -f "$fault" ]; then fault="$FAULT_STATE/work/take"; fi\n'
+        '    chmod 000 "$fault"\n'
+        '  fi\n'
         '  exit 0\n'
         'fi\n'
         'exec "$REAL_GIT" "$@"\n'
@@ -3780,13 +3787,19 @@ def test_us_board_failed_held_record_keeps_custody_and_blocks_publication(tmp_pa
     wrapper.chmod(0o755)
     env.update({
         "PATH": f"{fake_bin}:{os.environ['PATH']}", "REAL_GIT": real_git,
-        "PUSH_CALLS": str(calls), "FAULT_STATE": str(state),
+        "PUSH_CALLS": str(calls), "FAULT_STATE": str(state), "RECORD_FAILURE": record_failure,
     })
     try:
         result = _run_us_board_commit(repo, **env)
         assert result.returncode == 1, result.stdout + result.stderr
-        assert "could not record verified hold" in result.stdout
-        assert not os.access(state / "held", os.W_OK)
+        if record_failure == "append":
+            fault_record = state / "held"
+            assert not os.access(fault_record, os.W_OK)
+        else:
+            fault_record = state / "work/hold_paths"
+            if not fault_record.exists():
+                fault_record = state / "work/take"
+            assert not os.access(fault_record, os.R_OK)
         [ref] = _hold_refs(bare)
         entries, _ = _manifest(bare, ref)
         assert _rebuild(bare, ref, entries[0]) == held
@@ -3794,16 +3807,17 @@ def test_us_board_failed_held_record_keeps_custody_and_blocks_publication(tmp_pa
         assert _git_output(repo, "write-tree") == before_index
         assert board.read_bytes() == held
         assert rotation.read_text() == "small later projection\n"
-        assert ref in (state / "unreconciled").read_text()
         assert calls.read_text().splitlines() == ["push"]
 
-        (state / "held").chmod(0o600)
+        fault_record.chmod(0o600)
         board.write_text("short\n")
         _git_output(repo, "add", "data/us_board_ledger")
         later_index = _git_output(repo, "write-tree")
         second = _run_us_board_commit(repo, **env)
         assert second.returncode == 1, second.stdout + second.stderr
         assert "unreconciled recovery state blocks" in second.stdout
+        assert "could not record verified hold" in result.stdout
+        assert ref in (state / "unreconciled").read_text()
         assert _git_output(repo, "write-tree") == later_index
         assert _git_output(bare, "rev-parse", "main") == before_main
         assert _hold_refs(bare) == [ref]
@@ -3811,7 +3825,7 @@ def test_us_board_failed_held_record_keeps_custody_and_blocks_publication(tmp_pa
     finally:
         if state.exists():
             state.chmod(0o700)
-            for name in ("held", "unreconciled"):
+            for name in ("held", "unreconciled", "work/hold_paths", "work/take"):
                 if (state / name).exists():
                     (state / name).chmod(0o600)
 
@@ -3882,3 +3896,45 @@ def test_us_board_settlement_cannot_delete_custody_using_stale_unwriteable_evide
         assert "settlement" in (state / "unreconciled").read_text()
     finally:
         stale.chmod(0o600)
+
+
+def test_us_board_recovery_unreadable_entries_cannot_retire_custody(tmp_path):
+    bare, repo = _us_board_clone(tmp_path)
+    held = b"old\n" + b"R" * 60
+    (repo / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+    first = _run_us_board_commit(repo, **_hold_env(tmp_path, "1307"))
+    assert first.returncode == 1, first.stdout + first.stderr
+    [ref] = _hold_refs(bare)
+    lane = _clone_of(bare, tmp_path / "next-lane")
+    before_main = _git_output(bare, "rev-parse", "main")
+    before_index = _git_output(lane, "write-tree")
+    env = _hold_env(tmp_path, "1308")
+    real_mkdir = subprocess.run(["which", "mkdir"], capture_output=True, text=True, check=True).stdout.strip()
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    wrapper = fake_bin / "mkdir"
+    wrapper.write_text(
+        "#!/bin/bash\n"
+        '"$REAL_MKDIR" "$@" || exit "$?"\n'
+        'for arg in "$@"; do\n'
+        '  case "$arg" in */work/rb.*)\n'
+        '    n=${arg##*.}; chmod 000 "$(dirname "$arg")/ent.$n" ;;\n'
+        '  esac\n'
+        'done\n'
+    )
+    wrapper.chmod(0o755)
+    env.update({"PATH": f"{fake_bin}:{os.environ['PATH']}", "REAL_MKDIR": real_mkdir})
+    state = Path(env["RUNNER_TEMP"]) / "push_hold.1308.us_board_ledgers"
+    try:
+        result = _run_us_board_commit(lane, "--recover", **env)
+        assert result.returncode == 1, result.stdout + result.stderr
+        assert _hold_refs(bare) == [ref]
+        assert _git_output(bare, "rev-parse", "main") == before_main
+        assert _git_output(lane, "write-tree") == before_index
+        assert (lane / "data/us_board_ledger/snapshots.jsonl").read_text() == "old\n"
+        assert (state / "unreconciled").read_text().strip()
+        entries, _ = _manifest(bare, ref)
+        assert _rebuild(bare, ref, entries[0]) == held
+    finally:
+        for path in (state / "work").glob("ent.*"):
+            path.chmod(0o600)
