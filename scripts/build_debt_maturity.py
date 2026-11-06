@@ -15,7 +15,7 @@ Responsibilities, and only these:
      data/edgar/ticker_cik_ledger.json first, falling back to the
      issuer_master reference parquet's own cik column.
   2. Read (and, online, refresh) a small per-issuer cache of exactly the six
-     debt-maturity XBRL tags this feature needs, in the real SEC XBRL
+     debt-maturity XBRL tags (and three cash-runway tags), in the real SEC XBRL
      companyfacts shape engine/debt_maturity.py already expects:
      ``{"cik": <int>, "facts": {"us-gaap": {<tag>: {"units": {"USD": [...]}}}}}``.
      The cache lives under its own bounded path
@@ -47,11 +47,11 @@ with ``confirmed_no_filings: true`` so a caller can tell the two apart:
     facts through -> engine's own ``no_maturity_facts`` / ``reported`` status
 
 ``refresh_cache_for_cik`` has two call modes. Standalone (``full_companyfacts``
-omitted) fetches the six bounded tags itself from SEC's companyconcept API --
+omitted) fetches the nine bounded tags itself from SEC's companyconcept API --
 used by backfill/ad-hoc tooling. Wired (``full_companyfacts`` supplied by a
 caller that already fetched the filer's full companyfacts document in the SAME
 nightly step -- ``collectors/edgar_facts.py``'s per-issuer companyfacts fetch,
-which this producer is wired into) reuses that payload instead of six more
+which this producer is wired into) reuses that payload instead of nine more
 network round trips; passing ``full_companyfacts=None`` there means the
 caller's own fetch positively confirmed (an HTTP 404 on the full companyfacts
 document, not a timeout) that this CIK carries no SEC filings at all.
@@ -72,11 +72,21 @@ log = logging.getLogger(__name__)
 # own fetch already ran and positively found nothing for this CIK).
 _UNSET: Any = object()
 
-# Only these six tags are ever requested -- the "bounded" half of "bounded
+# Only these tags are ever requested -- the "bounded" half of "bounded
 # ingestion producer": this module has no path to any other XBRL concept.
 from engine.debt_maturity import BUCKETS as _BUCKETS  # noqa: E402
 
 _TAGS = tuple(tag for _key, tag, _en, _zh in _BUCKETS)
+
+# Runway tags (cash runway, packet B-F09-3 second slice).
+_RUNWAY_TAGS = (
+    "CashAndCashEquivalentsAtCarryingValue",
+    "NetCashProvidedByUsedInOperatingActivities",
+    "PaymentsToAcquirePropertyPlantAndEquipment",
+)
+
+# Combined fetch tuple: six ladder tags + three runway tags.
+_ALL_TAGS = _TAGS + _RUNWAY_TAGS
 
 _SEC_COMPANYCONCEPT_URL = (
     "https://data.sec.gov/api/xbrl/companyconcept/CIK{cik}/us-gaap/{tag}.json"
@@ -158,8 +168,9 @@ def _load_issuer_master_ticker_cik_map_cached(im_path: Path) -> dict[str, str]:
 def resolve_cik(ticker: str) -> str | None:
     """Resolve `ticker` -> canonical 10-digit CIK, or None if unresolvable.
 
-    Tries the committed ticker->CIK ledger first (a flat ``{ticker: cik}`` or
-    ``{ticker: {"cik": ...}}`` JSON map), then falls back to the
+    Tries the committed ``{"tickers": {ticker: cik}}`` ledger first, with
+    legacy flat ``{ticker: cik}`` / ``{ticker: {"cik": ...}}`` support,
+    then falls back to the
     issuer_master reference parquet's own ticker/cik columns. Never matches
     on company name. The ledger and the parquet's ticker->cik map are each
     parsed once per distinct path and cached for the life of the process (see
@@ -173,7 +184,10 @@ def resolve_cik(ticker: str) -> str | None:
     if ledger_path.exists():
         ledger = _load_ledger_cached(ledger_path)
         if isinstance(ledger, dict):
-            entry = ledger.get(ticker)
+            # The canonical EDGAR ledger wraps its map alongside a note.
+            # A malformed wrapper is not a license to treat metadata as CIKs.
+            entries = ledger.get("tickers") if "tickers" in ledger else ledger
+            entry = entries.get(ticker) if isinstance(entries, dict) else None
             cik_val: Any = entry.get("cik") if isinstance(entry, dict) else entry
             if cik_val:
                 try:
@@ -230,7 +244,7 @@ def load_cached_facts(cik: str) -> dict[str, Any] | None:
 
 
 def _write_cache_from_full_companyfacts(cik: str, full_companyfacts: Mapping[str, Any] | None) -> bool:
-    """Wired-mode cache write: slim the six bounded tags out of an
+    """Wired-mode cache write: slim the nine bounded tags out of an
     already-fetched full companyfacts document (no network call here at all).
 
     ``full_companyfacts=None`` means the caller's own fetch positively
@@ -253,7 +267,7 @@ def _write_cache_from_full_companyfacts(cik: str, full_companyfacts: Mapping[str
         else:
             usgaap = ((full_companyfacts or {}).get("facts") or {}).get("us-gaap") or {}
             slim: dict[str, Any] = {}
-            for tag in _TAGS:
+            for tag in _ALL_TAGS:
                 node = usgaap.get(tag)
                 if node and node.get("units"):
                     slim[tag] = {"units": node["units"]}
@@ -278,7 +292,7 @@ def refresh_cache_for_cik(
       nightly step -- no network call happens here. This is the mode
       ``collectors/edgar_facts.py`` calls for every issuer its own build
       already companyfacts-fetches (packet B-F09-3 B1 wiring).
-    * Standalone (``full_companyfacts`` omitted): fetches the six bounded
+    * Standalone (``full_companyfacts`` omitted): fetches the nine bounded
       debt-maturity tags itself from SEC's public companyconcept API (one
       small per-tag document each) -- used by ad-hoc/backfill tooling, never
       by the render path. Best-effort: a total network failure across every
@@ -302,7 +316,7 @@ def refresh_cache_for_cik(
     got_any = False
     any_clean_response = False
     n_clean_responses = 0
-    for tag in _TAGS:
+    for tag in _ALL_TAGS:
         url = _SEC_COMPANYCONCEPT_URL.format(cik=cik, tag=tag)
         try:
             resp = sess.get(url, timeout=timeout, headers={"User-Agent": "mastermind-x debt-maturity/1.0"})
@@ -312,7 +326,7 @@ def refresh_cache_for_cik(
         # answer) counts as a completed round trip -- round-2 review MAJOR-2.
         # A 401/403/429/5xx is a throttle/auth failure, not an answer: it must
         # fall through exactly like a network exception (never set
-        # any_clean_response), or a systematic rate-limit across all six tags
+        # any_clean_response), or a systematic rate-limit across all nine tags
         # would satisfy `not got_any` below and write a fabricated
         # confirmed_no_filings the panel renders as a positive claim.
         if resp.status_code not in (200, 404):
@@ -337,12 +351,12 @@ def refresh_cache_for_cik(
     # `confirmed_no_filings` is a positive claim the panel renders as "No SEC
     # filings available for this listing." -- it must never be set off a
     # PARTIAL cycle. The gate used to be `not got_any` alone, so one 404
-    # (routine -- SEC 404s a tag an issuer does not report) plus five 429s
+    # (routine -- SEC 404s a tag an issuer does not report) plus eight 429s
     # left `any_clean_response=True`, `got_any=False`, and wrote a fabricated
-    # confirmed_no_filings off five unanswered requests. Every one of the six
+    # confirmed_no_filings off eight unanswered requests. Every one of the nine
     # tags must have completed (200 or 404) -- not merely at least one --
     # before "found nothing" can be trusted as "asked and got nothing".
-    if not got_any and n_clean_responses == len(_TAGS):
+    if not got_any and n_clean_responses == len(_ALL_TAGS):
         merged["confirmed_no_filings"] = True
     cache_dir = _cache_dir()
     cache_dir.mkdir(parents=True, exist_ok=True)

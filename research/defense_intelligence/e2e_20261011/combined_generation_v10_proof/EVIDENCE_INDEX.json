@@ -1,0 +1,393 @@
+{
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/BUILD_RECEIPT.json": {
+    "sha256": "768ce259a28fb5d8eed1c20094e47ae99a1881ca8023efaf29b6f112a4ad9d97",
+    "bytes": 11183
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/SOURCE_FREEZE.json": {
+    "sha256": "6e8206cdb8cb20bb63ce07233c17d0b4b4a07cba65eada03887f696fc3c5ea42",
+    "bytes": 3141
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/FINAL_CONFIG.json": {
+    "sha256": "a1673910393ddbbdaf3c79fe3c6ece633fbad27a9886d51717dbca98c90263ea",
+    "bytes": 10154
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/TIMING.json": {
+    "sha256": "30080f3f01bf4cddf7be7f9dc2e1eeda5ad840d174be7cf134459e233f96c7bf",
+    "bytes": 59650
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/TIMING.log": {
+    "sha256": "5cf2c2cac02095b0ee72e5741b3b2cdf49f3f46b2f8aca9428dd92a07bfc488f",
+    "bytes": 1892
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/PACKAGING.log": {
+    "sha256": "bf67805312562291065770c79caf0208053f509c5d6961ace513f87683b0e8d3",
+    "bytes": 9591
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/INITIAL_SUBJECT_RED.log.gz": {
+    "encoding": "gzip_lossless_original",
+    "original_sha256": "6160aad35101a9023c43f50e3025ca18c598642a909c20f2ce6328e8fc93f67a",
+    "original_bytes": 4318,
+    "sha256": "c14bc09da8b2f4de1608dcd192e91514554fb07475ec14de3c7b412c1cc2b213",
+    "bytes": 1271
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/INITIAL_SUBJECT_GREEN.log": {
+    "sha256": "c19ee21f34b4fbac3928d6e740f9003f9b8840cb822c57054c5e3684ef141f47",
+    "bytes": 3700
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/DEEPLINK.json": {
+    "sha256": "2b482dd004dab6c0273175032fb977bb6d8f2deb30acb9d58cec10f536a1e06f",
+    "bytes": 1102
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/CI_CLOSURE.json": {
+    "sha256": "df0996639932c3a078e8f5337b6676deacb4cbd05aec9338afe2fd14e49d1e9f",
+    "bytes": 36
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/CI_PATH_PLACEMENT.json": {
+    "sha256": "936ba6d0b8480b645ae18b77c25a4c31a091c61fba8d915a00ac518d2ace7dac",
+    "bytes": 947
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/MAIN_INTEGRATION.json": {
+    "sha256": "b63650ed58ebc7dcb2052e5608fdbee0bfd2bbfd3e66011d82b4ec523862c438",
+    "bytes": 1051
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/serve_final_asgi_shutdown_receipts.py": {
+    "sha256": "fc3ef543241497131dad04872a2c2c83cb2abe8aaa0849097a4631d5b0c751f4",
+    "bytes": 5555
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/REQUESTS.json": {
+    "sha256": "f84f2ac6adde59d7d3901d367529d3ea47e03c58b56a040fab58d00b22638a84",
+    "bytes": 286829
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/V9_REVIEW_UNACCEPTED.json": {
+    "sha256": "54edb92f351da55339c9ad266468b33efe9e9bc51ecc0d539713d7c619a897f5",
+    "bytes": 911
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/V9_REVIEW_RETAINED.txt": {
+    "sha256": "fb91fc65e6223efc3f8e11b5012ccbf75292f0cab891473166b535ac3924f652",
+    "bytes": 1407
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/MATRIX_BAD_URL_RETAINED.json": {
+    "sha256": "15f6ee136d4341b09be30a40b4446726d197e13ebad86e9112bf20663f599312",
+    "bytes": 15546
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/ROOT_BROWSER_ADJUDICATION.json": {
+    "sha256": "7634a5fc73fd3b28ce60bceec05bdf4e28a0fceb0b24493595260665d48404ad",
+    "bytes": 1893
+  },
+  "mockups/evidence/defense-v10-local/96cf09f20f9b70b2--investor-focus.png": {
+    "sha256": "96cf09f20f9b70b23ac18c8272f224c4f3031c94b743736e200980a927a54c40",
+    "bytes": 903690
+  },
+  "mockups/evidence/defense-v10-local/49742b6fb58f52f1--investor-focus.png": {
+    "sha256": "49742b6fb58f52f138d1727855cba690ecda7651736af3a63694383ab25f470d",
+    "bytes": 774036
+  },
+  "mockups/evidence/defense-v10-local/EVIDENCE.yml": {
+    "sha256": "21be1772cb89c022f0c8daae5a9f737f29dd99bd332b4b8e72b5b83856cc9a11",
+    "bytes": 1086
+  },
+  "mockups/evidence/defense-v10-local/INPUT_RECEIPT.json": {
+    "sha256": "13e164fd1efc95f8df389ade245109fde84179036bdd10d6b16f681d0a7035a3",
+    "bytes": 17063
+  },
+  "mockups/evidence/defense-v10-local/f8e9d25465519f69.png": {
+    "sha256": "f8e9d25465519f6980e363690e3483b59930e3a35507f49bc753d818be00c99e",
+    "bytes": 831462
+  },
+  "mockups/evidence/defense-v10-local/8a61bac80b6ff1f6.png": {
+    "sha256": "8a61bac80b6ff1f69ab08ba0be070f07744cfae789a8ae8fe25ccf63d5af78c3",
+    "bytes": 908184
+  },
+  "mockups/evidence/defense-v10-local/2914578cc19da4c0.png": {
+    "sha256": "2914578cc19da4c0cb6c1e88ce14aaade6ad5de8661a76f76dda6c370535b5f6",
+    "bytes": 831762
+  },
+  "mockups/evidence/defense-v10-local/QUALIFICATION_SCOPE.json": {
+    "sha256": "0d488b830595cb42f5025a2f5ea36d116b25538f732779f15cafd2b644d7b012",
+    "bytes": 478
+  },
+  "mockups/evidence/defense-v10-local/beacdb0cf926c5cd.png": {
+    "sha256": "beacdb0cf926c5cd7dd53c72ec3feed357a08e84fc30a39da7323e1207c85936",
+    "bytes": 846937
+  },
+  "mockups/evidence/defense-v10-local/82a80ca222c89fa3--investor-focus.png": {
+    "sha256": "82a80ca222c89fa3206be13eda09b29c172d68402737d1ad3b28b7120c6d4235",
+    "bytes": 914001
+  },
+  "mockups/evidence/defense-v10-local/682a0010290b1414.png": {
+    "sha256": "682a0010290b1414d9aee7063084863545cfe32a0c734e4954ef1e6ee5528c81",
+    "bytes": 824024
+  },
+  "mockups/evidence/defense-v10-local/cd99289771318505--investor-focus.png": {
+    "sha256": "cd9928977131850573d97bf7d6990ce920722ea7366bc4490318fad8d7c484ed",
+    "bytes": 799350
+  },
+  "mockups/evidence/defense-v10-local/smells.json": {
+    "sha256": "90bf9882828bb0a87206c2053e91641ed039d135e5667909b0ddd19d8574cfb7",
+    "bytes": 3673
+  },
+  "mockups/evidence/defense-v10-local/SERVER_RECEIPT.json": {
+    "sha256": "5cb43cc7e62231b4f6fee431acc799917ef64845c133f0bf59770a11fd086b24",
+    "bytes": 35751
+  },
+  "mockups/evidence/defense-v10-local/461dee4a65c1991a--investor-focus.png": {
+    "sha256": "461dee4a65c1991ad72b0cfc9c9c5afee786d9b4176e6816bcba5312a3bbc935",
+    "bytes": 784586
+  },
+  "mockups/evidence/defense-v10-local/READINESS.json": {
+    "sha256": "ad5ed1bd40c42957382a9f286d86f953508d225d3a0426c8506d318979f0b66d",
+    "bytes": 5934
+  },
+  "mockups/evidence/defense-v10-local/b4cfe2530bad7e8b.png": {
+    "sha256": "b4cfe2530bad7e8b4ba17914279b02ed978f0c19aee26a9b02d4f5a00507feda",
+    "bytes": 838688
+  },
+  "mockups/evidence/defense-v10-local/99793466db66f1a6--investor-focus.png": {
+    "sha256": "99793466db66f1a65d3f9bf25a207b86a247a25178a6f570928293cb4920c740",
+    "bytes": 796066
+  },
+  "mockups/evidence/defense-v10-local/manifest.json": {
+    "sha256": "3a7df3e2b3607fa6339a193e354436d49360aa51b0f27c0eef82580b00963ca0",
+    "bytes": 19607
+  },
+  "mockups/evidence/defense-v10-local/7c1ee5adf8e3be21--investor-focus.png": {
+    "sha256": "7c1ee5adf8e3be21095bab987d8a1bc9293e074fee4a5e1d975fbe4a3011b61e",
+    "bytes": 781836
+  },
+  "mockups/evidence/defense-v10-local/58c4b965b90ea32d.png": {
+    "sha256": "58c4b965b90ea32d89397bb7162096d6282b61a92dfaf6e8f6c3b28891fdee90",
+    "bytes": 998331
+  },
+  "mockups/evidence/defense-v10-local/4a7411959e150e9e--investor-focus.png": {
+    "sha256": "4a7411959e150e9eddb48e661260c3c627cd6b8b2fcde1bb4db196177607b135",
+    "bytes": 787516
+  },
+  "mockups/evidence/defense-v10-local/296a06cf66dc2dc3.png": {
+    "sha256": "296a06cf66dc2dc38f595b384e0cbb17b791595736caf8a8da8a10a595384b8e",
+    "bytes": 816654
+  },
+  "mockups/evidence/defense-v10-local/10ccc2176a89018f--investor-focus.png": {
+    "sha256": "10ccc2176a89018ff7836b2e7a0b47305580778059e2fa4c39d12900cf4036d2",
+    "bytes": 879760
+  },
+  "mockups/evidence/defense-v10-local/9a86a12513ddf0c5--investor-focus.png": {
+    "sha256": "9a86a12513ddf0c54d8ee20fce61efe70615408b18836aed123d60c6ee20dc5e",
+    "bytes": 829877
+  },
+  "mockups/evidence/defense-v10-local/0b645c4ea07080d7--investor-focus.png": {
+    "sha256": "0b645c4ea07080d732ec71eb0dbfac0dbb8a223877e901a2ee72db8b54d2f5b8",
+    "bytes": 786530
+  },
+  "mockups/evidence/defense-v10-local/bf455aca9198eaff--investor-focus.png": {
+    "sha256": "bf455aca9198eaff3309d92615c603338adf4804ef1442178cc7414fe4eceb55",
+    "bytes": 800007
+  },
+  "mockups/evidence/defense-v10-local/a9b8e95837160073.png": {
+    "sha256": "a9b8e95837160073a3348c9bb8f3dd2c0b9068c6cedc976c8bb32b3e35a3ffff",
+    "bytes": 853574
+  },
+  "mockups/evidence/defense-v10-local/1e675a7a8a7fcfb9.png": {
+    "sha256": "1e675a7a8a7fcfb984e38be1ea7c4d41cf2faa3a305d27bb2b046c42cf0c8435",
+    "bytes": 971374
+  },
+  "mockups/evidence/defense-v10-local/CELL_GEOMETRY.json": {
+    "sha256": "da4853d4bdc7058cd8f43e48e7dc897dbf99fe4a750b6a892e0d2838bd9298b5",
+    "bytes": 6462
+  },
+  "mockups/evidence/defense-v10-local/d0c60b5e64bd21ca.png": {
+    "sha256": "d0c60b5e64bd21ca24cf328d2a44f4f77765dded284d8465deb3610ec2276ca0",
+    "bytes": 976253
+  },
+  "mockups/evidence/defense-v10-local/31f78a7e31104d5e.png": {
+    "sha256": "31f78a7e31104d5e6d98d3cab2142701e88a61f6f34680d7f74cdff31a4f758c",
+    "bytes": 860305
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-dark-en-sources-open.png": {
+    "sha256": "a399d51345ec677aeeb8f8e844af91a32ede03204db66d5991bc3f039ab9f75b",
+    "bytes": 86073
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-dark-zh-footer.png": {
+    "sha256": "f21a0433205782142aeb9c9c0f685f8d26f383ba69a765d8ce4c90ba8e0a4380",
+    "bytes": 335806
+  },
+  "mockups/evidence/defense-v10-local/density/390x600-dark-en-themes.png": {
+    "sha256": "f37cad5f717560cc0addd2268f6f0463e673fba988ce33cd12e91c2dbf4b039a",
+    "bytes": 73587
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-light-en-footer.png": {
+    "sha256": "965de2b3233f74148f82eda947d0191859a909e9a2be5742f7059a7023843b2e",
+    "bytes": 323716
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-dark-zh-themes.png": {
+    "sha256": "1998a47543d096d47b652c7f4602b92e8b29ceccf75283cbc69e8b3db43a3684",
+    "bytes": 112955
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-light-en-themes.png": {
+    "sha256": "0c9605e21f42d40d8222141699b4bf01b394a1905e2aa7ddbcacbf922f49db71",
+    "bytes": 98174
+  },
+  "mockups/evidence/defense-v10-local/density/390x600-light-en-sources-open.png": {
+    "sha256": "36493e0806db9880fdbf7f7087f482a94b65993ddb59af786b433246585cf747",
+    "bytes": 65555
+  },
+  "mockups/evidence/defense-v10-local/density/RESULT.json": {
+    "sha256": "14a56b91230de4ba447669e01a1c6cb0e3dd81b6b50e9d7c448beba48543e3e2",
+    "bytes": 15481
+  },
+  "mockups/evidence/defense-v10-local/density/390x600-light-en-themes.png": {
+    "sha256": "85914f5660d6b0120101766224054f05af378f6731eee199dddcab80a29f55e6",
+    "bytes": 74067
+  },
+  "mockups/evidence/defense-v10-local/density/A40-program.png": {
+    "sha256": "33ddd093c7e6839c43f8e03613527604fc8ab92ea09af6b71a4b2861be7c2f59",
+    "bytes": 321484
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-dark-en-themes.png": {
+    "sha256": "92bcad51c1b4a65d05886611573ebecc488ef5fa547ced5c5d3885c9b24b88b2",
+    "bytes": 159642
+  },
+  "mockups/evidence/defense-v10-local/density/390x600-light-en-queue-end.png": {
+    "sha256": "60c0b6049b3ed5ad4adb9bde8727ac2512b29de3be4fc875a16c2a02d086430b",
+    "bytes": 82761
+  },
+  "mockups/evidence/defense-v10-local/density/390x600-dark-en-sources-open.png": {
+    "sha256": "a5cf5d27f8c59e948ca4ac2626104967ca011dda9b71c1eaa7d35e3cb17784bf",
+    "bytes": 66200
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-dark-en-footer.png": {
+    "sha256": "530e25d793e7b0575c8dec8ea13aa6af86ecdc9e20a442bd0b6f7d8f4309e1d6",
+    "bytes": 127175
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-light-en-sources-open.png": {
+    "sha256": "ce6653710f7094183156564a6c067456a34341ffa67c4c48755f08ee49aa0a69",
+    "bytes": 135270
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-light-zh-themes.png": {
+    "sha256": "3171e764f3626778a494aaf26cae6055a080987ebfff296c75e18b63a461e1db",
+    "bytes": 187272
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-light-en-sources-open.png": {
+    "sha256": "09b2126d27defd4e630428770434f8c6b01fe1a531b61817967da621c6186ec7",
+    "bytes": 85762
+  },
+  "mockups/evidence/defense-v10-local/density/390x600-dark-en-queue-end.png": {
+    "sha256": "f8f5f198ac247d19fb05b44482fb5d91df08dfd623416bed33586f0c448b8a34",
+    "bytes": 88475
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-light-zh-footer.png": {
+    "sha256": "5df6833f0cbb0eaf24197e1b0bf9e82ea1665e13686a12809f342ae1af3d6f77",
+    "bytes": 130549
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-dark-zh-sources-open.png": {
+    "sha256": "131db3654e1c9157f4217eb295116f25f4553b9da5fe5faf2abe84f221ddcab1",
+    "bytes": 130238
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-dark-zh-footer.png": {
+    "sha256": "2efe631e34e5bfe102b5b0d30707b1fa4e2f9c6fb0374b6496c0bb1e036ca195",
+    "bytes": 132713
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-dark-zh-sources-open.png": {
+    "sha256": "a41e84b63182c1d34a332531e12d73d3cc4bd35aa2d5fc19cd43c8faeb47f2dd",
+    "bytes": 83215
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-light-en-themes.png": {
+    "sha256": "ab94bf6e0c0a84d35416c0841778406f4174eb80bf7a7aea9afce2f9cf637ab1",
+    "bytes": 159850
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-dark-en-queue-end.png": {
+    "sha256": "7875cbcbbd7638e6cc57e322e956dd1ccc8305fae9abd2b59aa3fa68c7b18d31",
+    "bytes": 331775
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-light-en-queue-end.png": {
+    "sha256": "686c9ae1cd497fe7710d0926f3699002c5f23b0177d72dff1f5f87f577202934",
+    "bytes": 127431
+  },
+  "mockups/evidence/defense-v10-local/density/390x600-dark-en-footer.png": {
+    "sha256": "2ac907231f26ad6e534d2529aac79bf652811a40c6c14cf110108dacf79da4d9",
+    "bytes": 81501
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-dark-zh-themes.png": {
+    "sha256": "ee5e24055e611718f7ef04c931857e62a8e24ba941b24a7a733f9a52b1ba139b",
+    "bytes": 188675
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-light-zh-queue-end.png": {
+    "sha256": "41a0a0e1ad2701060e3ba96869e2107fd9c75af6ff204b65a3727e1284484b9d",
+    "bytes": 323379
+  },
+  "mockups/evidence/defense-v10-local/density/390x600-light-en-footer.png": {
+    "sha256": "86287324d24b100b5350c31cefa923cdf2fdee60a50f62a25b6292c88ad98339",
+    "bytes": 79035
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-dark-en-queue-end.png": {
+    "sha256": "c5ee79247230893d10fc2e26e02f4e3aac7eeaededd39f43a946826d41307176",
+    "bytes": 129683
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-light-en-footer.png": {
+    "sha256": "5c6ea321a5593ae3e132c7131dd50ab32b3562f9708e4aee8389058af3c67957",
+    "bytes": 125167
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-light-zh-footer.png": {
+    "sha256": "4ec57c9d7415c0ef29841070a141e5e27944ed3d3f666a51138f51fed1538142",
+    "bytes": 323869
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-dark-zh-queue-end.png": {
+    "sha256": "cb2638da5491049a816f59a3bc05b9ca1f802aed46d855282a96a8b71d14ada9",
+    "bytes": 135620
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-dark-en-themes.png": {
+    "sha256": "b3cfbf9f443a6362051c1a043d872ffd253e7bf51b653c7989cc7cb6941c1e59",
+    "bytes": 98148
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-light-zh-sources-open.png": {
+    "sha256": "088914f60a34e4af853706e38bca348c4cd6921daae474e805cf1610266d4998",
+    "bytes": 130433
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-dark-en-footer.png": {
+    "sha256": "459bcae446869547bb9ae15e83c41fa03cdcf5baeda2aa00d41ab0dc86edf2ac",
+    "bytes": 337122
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-light-zh-sources-open.png": {
+    "sha256": "5433cd7a3a0bdd5458e0982c8ed67fa064e8ce78c7bb30aa718172c4bfc4427b",
+    "bytes": 82468
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-dark-zh-queue-end.png": {
+    "sha256": "b5243436c3d883bca67b49c9484e66652862cc2741563206b49a7f3863274d39",
+    "bytes": 335822
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-light-zh-queue-end.png": {
+    "sha256": "245a2ebbafee0601af3cbae7b2ed3c77be098a957783c482aa4a12f4f969915c",
+    "bytes": 132394
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-dark-en-sources-open.png": {
+    "sha256": "b06ea9a12f9e10d72fd6c1a259598b16aba22e881427d4923cd42bc553a506f4",
+    "bytes": 135486
+  },
+  "mockups/evidence/defense-v10-local/density/390x844-light-zh-themes.png": {
+    "sha256": "e06b9d16a361cd160f981ff552acc067c70942b2f0943c5fe48bfd8e522b77bf",
+    "bytes": 112269
+  },
+  "mockups/evidence/defense-v10-local/density/1440x1000-light-en-queue-end.png": {
+    "sha256": "d4c622688007e5016076a2bce1a30e6e6f3993f30f05d6e52b602f67c3fecb41",
+    "bytes": 318232
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/final-candidate-proof.receipt.json": {
+    "sha256": "4ac462a7c7cde4836a8dc6c0a44b2f2930d3071e65f008bd20522cd68db4ae46",
+    "bytes": 843564
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/ROOT_PROOF_ADJUDICATION.json": {
+    "sha256": "dc35dd0914b484a355605606c806b0fd931457b076d537099890cec19763657f",
+    "bytes": 1143
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/final-candidate-proof.log.collection.sealed-6356e69440aecc60": {
+    "sha256": "6356e69440aecc60163657d293531a1cc8f08af10962ff84d12dc8bc7e0ade5e",
+    "bytes": 12685
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/final-candidate-proof.log.xml.sealed-b9f56a8335347ec3": {
+    "sha256": "b9f56a8335347ec38e09ef7c72270c7de023acf9ba9cb8cbebc2b536aca44da8",
+    "bytes": 17418
+  },
+  "research/defense_intelligence/e2e_20261011/combined_generation_v10_proof/final-candidate-proof.log.sealed-99e944fe2dfb55ae": {
+    "sha256": "99e944fe2dfb55ae19e8d319933a1adfd23cfeac5b789b486950d5d21e4aabd8",
+    "bytes": 9901
+  }
+}

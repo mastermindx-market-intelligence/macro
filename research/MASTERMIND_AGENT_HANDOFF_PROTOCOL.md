@@ -181,6 +181,18 @@ surprised you and are marked as reviewer judgment rather than dressed up as chec
 | 6 | `do_not_redo` omits an investigation that consumed real time | reviewer | The single highest-value field: the org's own measure is that 55–80% of proposals duplicate settled work. Presence is required; completeness is a human call. |
 | 7 | `changed` lists paths with no `what` | ✅ `bad-changed-entry` | A diff is already in git; the handoff exists to say *why* each path moved. |
 
+**Historical writer references are not current liveness.** A handoff whose sole
+next action is to ask an old original parent/writer to finish is not actionable
+merely because that actor authored a PR. Under a current valid assignment, the
+currently assigned receiver inspects the exact PR/workspace, real source-writer
+custody, live lease, and pending effects, then advances permitted work without
+waiting for an archived chat. Actual STARTed or EFFECT_UNKNOWN work stays
+on its original carrier until lawful reconciliation; exact-session proof targets
+remain exact and may hold only dependent effects. Without a present assignment,
+identify the real delivery/admission gate rather than self-assigning a writer.
+Judging the reachability and adequacy of next_actions remains reviewer judgment,
+not a new schema hard-fail, lease authority, retry control, or background executor.
+
 **Who reviews.** The reviewer of items 3, 4 and 6 is the next session to claim the
 workstream — it is the only reader whose interest is aligned, and it finds out
 immediately whether the handoff was any good. A handoff that fails one of them is
@@ -246,3 +258,27 @@ do-not-redo, no per-path reason.
 
 Every claim carries its command; the unverified item is named; the landmine is stated; the
 scope boundary is explicit.
+
+
+## W4 advisory assistance
+
+`python3 scripts/agentos.py ship-report` checks only the existing exact branch claim and
+canonical handoff records. A handoff for another branch, an untracked file, dirty content,
+invalid frontmatter, or a handoff commit older than the current claim does not satisfy the reminder. A separate native Stop adapter emits
+only an optional `systemMessage` and exits zero; malformed/oversized native input returns
+`{}`. An absent or malformed Agent OS store is an unavailable observation, never permission
+to block work. A source launcher may delegate this read-only report once to a verified
+worktree in the same Git store; foreign, missing or repeated delegation is a silent no-op.
+
+PostToolUse capture occurs before the next ordinary commit, not after Stop has approved a
+clean tree. It creates no handoff on the session's behalf: the author still records what
+changed, proof, limitations and a usable next action. `ship-capture`, `claim` and `release`
+are helpers for the existing schema, not lifecycle machinery. Their output distinguishes
+an uncommitted edit from durable organizational knowledge. Publication and cold recovery
+must be verified separately.
+
+Native hook input/output is based on the official Claude Code hooks reference,
+https://code.claude.com/docs/en/hooks (verified 2026-10-04): successful Bash PostToolUse
+provides `tool_input.command` and `tool_response.stdout`/`interrupted`; a Stop advisory
+uses `systemMessage`. Tests exercise that contract and preserve the existing Stop guard.
+A protocol fixture is not evidence that every native fleet client has installed the source.

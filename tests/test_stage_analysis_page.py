@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -300,10 +302,8 @@ def test_no_target_week_renders_unavailable_not_warming_up(tmp_path):
     html = render(REPO, fixture=fx)
 
     assert "Stage read unavailable" in html
-    # Scoped to the HERO. The bare words "Warming up" also live in the client-side
-    # screener-table empty state, which is a DIFFERENT surface and still carries
-    # first-run copy for a mature-lane failure — tracked as PR B scope (spec §8),
-    # not something this assertion should mask.
+    # Scoped to the HERO. Load-failure empty states on the screener/board no
+    # longer say "Warming up" (W7 r2 m1); the hero still owns first-run copy.
     assert "The first stage read runs tonight" not in html, (
         "the hero must not describe a mature-lane failure as a first run")
     assert "The arc fills in once the weekly classification lands" not in html
@@ -539,3 +539,1137 @@ def test_hero_clock_can_wrap_on_narrow_viewports():
     assert ".asof .clk{display:inline-block}" in html
     # Dates themselves must never break mid-token.
     assert ".asof b{" in html and "white-space:nowrap}" in html
+
+
+# ---------------------------------------------------------------------------
+# W7 round 1 — P0 truth blockers + pipeline strings
+# ---------------------------------------------------------------------------
+
+_W7_PIPELINE_BAN = (
+    "ingestion-health",
+    "摄取健康",
+    "source heartbeat",
+    "数据源心跳",
+    "data contract",
+    "数据合约",
+    "call generation",
+    "批次",
+    "history generation",
+    "Historical lane",
+    "历史数据通道",
+    "committed latest-call fallback",
+    "ECtone0_100",
+    "Try All regions",
+    "generated tonight",
+    "今晚生成",
+)
+
+
+def test_w7_screener_showing_uses_current_population_not_raw_length():
+    """M1: the current population is the page's one canonical count.
+
+    Hero counts exclude stale; the Screener must not use RAW.length as the
+    of-N denominator. Stale rows print as a labelled slice. Unknown rows
+    (stage_current null) are a third labelled slice, shown only when >0.
+    """
+    html = _render_with_fixture()
+    assert "stale shown for context" in html
+    assert "只过时数据仅供参考" in html
+    assert "function isCurrentRow" in html
+    assert "function isStaleRow" in html
+    assert "function isUnknownRow" in html
+    assert "row.stage_current===true" in html
+    assert "row.stage_current===false" in html
+    assert "of <b>'+denom.toLocaleString()+'</b> current" in html
+    assert "isCurrentRow(r)&&regionOf(r)===region" in html
+    assert "unresolved" in html
+    assert "阶段周未能判定" in html
+
+
+def test_w7_research_and_altdata_own_empty_states():
+    """C1: Research items:0 names the Research surface, never Earnings."""
+    html = _render_with_fixture()
+    assert "function resEmpty()" in html
+    assert "function altEmpty()" in html
+    assert "Company primers are being written" in html
+    assert "公司简介正在撰写中" in html
+    assert "The Screener and Stage Board are unaffected" in html
+    assert "host.innerHTML=resEmpty()" in html
+    assert "host.innerHTML=altEmpty()" in html
+    assert "host.innerHTML=ernEmpty()" not in html
+
+
+def test_w7_research_empty_never_says_earnings_unavailable():
+    html = _render_with_fixture()
+    res_fn = html.split("function resEmpty()", 1)[1].split("function ", 1)[0]
+    assert "Earnings data unavailable" not in res_fn
+    assert "Earnings calls aren" not in res_fn
+    assert "财报数据不可用" not in res_fn
+    assert "Company primers are being written" in res_fn
+
+
+def test_w7_one_published_ec_scale_on_the_page():
+    """M3: one 0–100 / 0–10 vocabulary; client-side conversions deleted."""
+    html = _render_with_fixture()
+    assert "(row.ec_sent+1)/2*100" not in html
+    assert "(r.ec_sent+1)/2*100" not in html
+    assert "sent30/30*100" not in html
+    assert "ECtone0_100" not in html
+    assert "'EC Tone'" in html
+    assert "<small>/100</small>" in html
+    assert "<small>/30</small>" not in html
+    assert "Call tone 0–100 over result 0–10" in html
+    assert "Call tone 0–30 over result 0–10" not in html
+    assert "ec_sent is a −1..1" not in html
+
+
+def test_w7_region_control_is_honest():
+    """M2: four uncovered region buttons disabled; no phantom All; US eyebrow."""
+    html = _render_with_fixture()
+    assert "US market weather" in html
+    assert "美股市场天气" in html
+    assert "var REGION_COVERED={US:1}" in html
+    assert "US coverage only for now; other markets land when their price feed is wired" in html
+    assert "目前仅覆盖美股；其他市场待行情接入后上线" in html
+    assert "Try All regions" not in html
+    assert "可切换到「全部」地区" not in html
+    assert "if(r==='all')" not in html
+    assert "exact==='all'" not in html
+    assert "r==='all'" not in html
+
+
+def test_w7_pipeline_strings_removed_from_page():
+    """C2–C4/M6: ernEmpty AND the populated-table health banner."""
+    html = _render_with_fixture()
+    for banned in _W7_PIPELINE_BAN:
+        assert banned not in html, f"banned pipeline string still on page: {banned!r}"
+    assert "Earnings calls aren" in html
+    assert "财报电话会暂时无法加载" in html
+    assert "Our earnings feed is down; the Screener, Stage Board and Industries are unaffected." in html
+    assert "showing the last complete set of earnings calls" in html
+
+
+def test_w7_indempty_is_the_file_arm():
+    """C7: region arm unreachable after M2; file arm, no 'generated tonight'."""
+    html = _render_with_fixture()
+    ind = html.split("function indEmpty()", 1)[1].split("function ", 1)[0]
+    assert "Industry rankings aren" in ind
+    assert "The file for this view didn" in ind
+    assert "generated tonight" not in ind
+    assert "Try another region" not in ind
+    assert "今晚生成" not in ind
+
+
+# ---------------------------------------------------------------------------
+# W7 round 2 — one tone vocabulary, region-scoped denom, unknown bucket
+# ---------------------------------------------------------------------------
+
+_needs_node = pytest.mark.skipif(
+    shutil.which("node") is None, reason="node not on PATH",
+)
+
+_WORD_TO_CHIP = {
+    "Upbeat": "c-up",
+    "Balanced": "c-info",
+    "Guarded": "c-amb",
+    "Downbeat": "c-dn",
+}
+
+
+def _extract_js_fn(html: str, name: str) -> str:
+    marker = f"function {name}("
+    start = html.index(marker)
+    nxt = html.find("\n  function ", start + 1)
+    if nxt < 0:
+        raise AssertionError(f"could not bound function {name}")
+    return html[start:nxt].rstrip()
+
+
+def test_w7_r2_retired_desk_gauge_cutoffs_are_gone():
+    """B1: 67/37/13 and the Screener's 66/45 table must not survive."""
+    html = _render_with_fixture()
+    assert "function toneBand(" in html
+    assert "sent>=72" in html
+    assert "sent>=47" in html
+    assert "sent>=28" in html
+    assert "sent>=67" not in html
+    assert "sent>=37" not in html
+    assert "sent>=13" not in html
+    assert "pct>=66" not in html
+    assert "pct>=45" not in html
+    assert "ernSortKey='ec_sent'" in html
+    assert "ernSortKey='ec_combined'" not in html
+
+
+def test_w7_r2_load_failure_empty_states_name_the_surface():
+    """m1: a genuine fetch failure is not a first-run warm-up."""
+    html = _render_with_fixture()
+    assert "Screener isn" in html
+    assert "选股器暂时无法加载" in html
+    assert "The board isn" in html
+    assert "榜单暂时无法加载" in html
+    screener_fn = html.split("function loadScreener()", 1)[1].split(
+        "/* =====================================================================", 1)[0]
+    assert "Warming up" not in screener_fn
+    assert "Stage Board and Industries are unaffected" in screener_fn
+    board_fn = html.split("function renderBoard()", 1)[1].split(
+        "function renderBoardProv()", 1)[0]
+    assert "Warming up" not in board_fn
+    assert "Screener and Industries are unaffected" in board_fn
+
+
+@_needs_node
+def test_w7_r2_earnings_read_and_screener_chip_agree():
+    """B1: one published number → one word / one chip class, including the
+    reviewer's divergent cells (38.9, 46, 66.5)."""
+    from engine.earnings_qual import publish_ec_tone
+
+    html = _render_with_fixture()
+    stubs = (
+        "function TT(en,zh){return en;}\n"
+        "function isZH(){return false;}\n"
+    )
+    fns = "\n".join(_extract_js_fn(html, n) for n in (
+        "esc", "chip", "toneBand", "toneClass", "toneWord", "ecSent",
+    ))
+    published = []
+    for desk in range(-10, 31):
+        p = publish_ec_tone(desk, native="desk30")
+        if p is not None:
+            published.append(p)
+    published.extend([38.9, 46, 66.5, 72.2, 47.2, 27.8, 0, 50, 100, 71.9, 47.0, 28.0, 27.9])
+    published = sorted(set(published))
+    harness = stubs + fns + """
+var cases = """ + json.dumps(published) + """;
+var WORD_TO_CHIP = """ + json.dumps(_WORD_TO_CHIP) + """;
+var out = cases.map(function(v){
+  var word = toneWord(v)[0];
+  var html = ecSent(v);
+  var m = html.match(/class="chip ([^"]+)"/);
+  var cls = m ? m[1] : null;
+  return {v:v, word:word, cls:cls, ok: WORD_TO_CHIP[word]===cls};
+});
+process.stdout.write(JSON.stringify(out));
+"""
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    rows = json.loads(res.stdout)
+    diverged = [r for r in rows if not r["ok"]]
+    assert not diverged, f"Read word vs chip class diverged: {diverged[:8]!r}"
+    by_v = {r["v"]: r for r in rows}
+    assert by_v[38.9]["word"] == "Guarded" and by_v[38.9]["cls"] == "c-amb"
+    assert by_v[46]["word"] == "Guarded" and by_v[46]["cls"] == "c-amb"
+    assert by_v[66.5]["word"] == "Balanced" and by_v[66.5]["cls"] == "c-info"
+    assert by_v[72.2]["word"] == "Upbeat" and by_v[72.2]["cls"] == "c-up"
+    # r4: band the printed integer, so 27.8 → 28 = Guarded (28 is the amb cutoff).
+    assert by_v[27.8]["word"] == "Guarded" and by_v[27.8]["cls"] == "c-amb"
+    assert by_v[71.9]["word"] == "Upbeat" and by_v[71.9]["cls"] == "c-up"
+
+
+@_needs_node
+def test_w7_r2_showing_denominator_is_region_scoped_is_true():
+    """M1/M2/M3: rendered denom is the fixture's region-scoped is-True count,
+    not RAW.length, not unknown, not another region's current rows."""
+    html = _render_with_fixture()
+    start = html.index("var currentPop=") + len("var currentPop=")
+    end = html.index(";});", start) + 3
+    expr = html[start:end]
+    assert "isCurrentRow(r)&&regionOf(r)===region" in expr, expr
+    fns = "\n".join(_extract_js_fn(html, n) for n in (
+        "regionOf", "isCurrentRow", "isStaleRow", "isUnknownRow",
+    ))
+    raw = [
+        {"ticker": "AAPL", "region": "USA", "stage_current": True},
+        {"ticker": "MSFT", "region": "USA", "stage_current": True},
+        {"ticker": "SILA", "region": "USA", "stage_current": False},
+        {"ticker": "UNK", "region": "USA", "stage_current": None},
+        {"ticker": "BBVA.MC", "region": "EUROPE", "stage_current": None,
+         "source": "seed"},
+        {"ticker": "SAP.DE", "region": "EUROPE", "stage_current": True},
+    ]
+    harness = fns + """
+var RAW = """ + json.dumps(raw) + """;
+var region = 'US';
+var currentPop = """ + expr + """;
+var VIEW = RAW.filter(function(r){return regionOf(r)===region;});
+var out = {
+  denom: currentPop.length,
+  rawLength: RAW.length,
+  nCur: VIEW.filter(isCurrentRow).length,
+  nStale: VIEW.filter(isStaleRow).length,
+  nUnknown: VIEW.filter(isUnknownRow).length,
+  tickers: currentPop.map(function(r){return r.ticker;}).sort()
+};
+process.stdout.write(JSON.stringify(out));
+"""
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}\nexpr={expr}"
+    out = json.loads(res.stdout)
+    assert out["rawLength"] == 6
+    assert out["denom"] == 2, (
+        f"US current denom must be 2 (AAPL+MSFT), got {out!r} via {expr}")
+    assert out["tickers"] == ["AAPL", "MSFT"]
+    assert out["nCur"] == 2
+    assert out["nStale"] == 1
+    assert out["nUnknown"] == 1  # UNK only; EU rows are other-region
+    assert out["denom"] != out["rawLength"]
+
+
+# ---------------------------------------------------------------------------
+# W7 round 3 — evidence-gate pins (Setup / CSV / TAG_META / RS / skeleton / tips)
+# ---------------------------------------------------------------------------
+
+def test_w7_r3_setup_prints_plain_word_not_enum():
+    """M8: Setup column shows Cleanest/Solid at rest; T1/T2 live in the tip."""
+    html = _render_with_fixture()
+    assert "Cleanest" in html
+    assert "最干净" in html
+    assert "Solid" in html
+    assert "较扎实" in html
+    assert "T1 — cleanest setup tier" in html
+    assert "T2 — solid setup tier" in html
+    assert "esc(r.gate_tier)" not in html
+
+
+def test_w7_r3_csv_headers_are_display_names_both_lanes():
+    """M13: CSV header is the same vocabulary the table teaches, both lanes."""
+    html = _render_with_fixture()
+    csv_fn = html.split("function exportCSV()", 1)[1].split("function ", 1)[0]
+    assert "ECtone0_100" not in csv_fn
+    assert "IndPctile" not in csv_fn
+    assert "'Call tone'" in csv_fn
+    assert "'Earnings result'" in csv_fn
+    assert "'Trend quality'" in csv_fn
+    assert "'财报语气'" in csv_fn
+    assert "'综合评分'" in csv_fn
+    assert "isZH()" in csv_fn
+
+
+def test_w7_r3_tag_meta_covers_live_slugs_and_zh_fallback_is_not_english():
+    """M4: TAG_META covers the live slugs; ZH fallback is not title-cased English."""
+    html = _render_with_fixture()
+    for slug in (
+        "guidance_raise", "macro_sensitivity", "capital_allocation",
+        "credit_quality", "regional_banks", "loan_growth",
+        "net_interest_margin", "commercial_banking", "wealth_management",
+        "cost_control", "supply_constraint",
+    ):
+        assert f"'{slug}'" in html, f"TAG_META missing {slug}"
+    assert "'ai':{en:'AI',zh:'人工智能'" in html
+    assert "'m&a':{en:'M&A',zh:'并购'" in html
+    assert "function tagNeutralZh(" in html
+    ern = html.split("function ernTagLabel(", 1)[1].split("function ", 1)[0]
+    assert "TAG_META[slug]" in ern
+    assert "tagNeutralZh" in ern
+
+
+def test_w7_r3_industries_ranking_headers_are_plain_words():
+    """M7: Ranking headers are plain words in both lanes; RS jargon is gone."""
+    html = _render_with_fixture()
+    assert "RS momentum" not in html
+    assert "RS动能" not in html
+    assert "RS accel" not in html
+    assert "RS加速" not in html
+    assert "Trend strength" in html
+    assert "趋势强度" in html
+    assert "Still speeding up" in html
+    assert "是否仍在加速" in html
+
+
+def test_w7_r3_loading_states_are_wordless_skeletons():
+    """C14: six loading hosts are wordless skeletons at table geometry."""
+    html = _render_with_fixture()
+    assert html.count('class="sk-load"') >= 6
+    assert "Loading the universe" not in html
+    assert "正在加载全市场" not in html
+    assert "Loading the board" not in html
+    assert "Loading industries" not in html
+
+
+def test_w7_r3_filter_tips_are_keyboard_and_pointer_reachable():
+    """C9 + §14: nine filter ? buttons carry bilingual tips and a pointerdown path."""
+    html = _render_with_fixture()
+    assert html.count('class="tip-q"') >= 10  # 9 filters + region
+    assert "Industry rank ≥" in html
+    assert "Trend quality ≥" in html
+    assert "Call tone ≥" in html
+    assert "Earnings result ≥" in html
+    assert "pointerdown" in html
+    assert "tip-open" in html
+    assert "w7-r3-light" in html
+
+
+# ---------------------------------------------------------------------------
+# W7 round 4 — truthful Alt-Data chips, canonical EC accent, printed-integer band
+# ---------------------------------------------------------------------------
+
+def test_w7_r4_hero_and_showing_share_unresolved(tmp_path):
+    """m2: one word for the third bucket, both lanes. 'unknown' is gone from the
+    popreceipt; the showing line already said unresolved."""
+    base = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    base["population"] = {
+        "current": 8, "stale": 1, "unknown": 2, "status": "ok",
+    }
+    fx = tmp_path / "pop.json"
+    fx.write_text(json.dumps(base), encoding="utf-8")
+    html = render(REPO, fixture=fx)
+    receipt = html.split('class="popreceipt"', 1)[1].split("</div>", 1)[0]
+    assert "unresolved" in receipt
+    assert "未能判定" in receipt
+    assert "unknown" not in receipt
+    assert "未知" not in receipt
+    showing_fn = html.split("function applyView()", 1)[1].split(
+        "function isStaleRow", 1)[0]
+    assert "</b> unresolved" in showing_fn
+    assert "</b> unknown" not in showing_fn
+
+
+def test_w7_r4_no_adhoc_ec_accent_cut():
+    """M3: the drawer accent is toneBand, never an ad-hoc 55-class cut."""
+    html = _render_with_fixture()
+    assert "function ecHiClass(" in html
+    assert "pct>=55" not in html
+    assert "pct >= 55" not in html
+    assert ">=55?'pos'" not in html
+    assert ">=55 ? 'pos'" not in html
+
+
+def test_w7_r4_light_hides_the_aurora():
+    """m4: light re-authors atmosphere as the cool canvas; .aura is display:none."""
+    html = _render_with_fixture()
+    block = html.split("w7-r3-light", 1)[1].split("@keyframes rise", 1)[0]
+    assert ".aura{display:none}" in block
+    assert ".aura{opacity:.28}" not in block
+
+
+def test_w7_r4_altdata_empty_copy_is_observable_only():
+    """B1: empty-state region never claims the feed is wired or live."""
+    html = _render_with_fixture()
+    empty_fn = _extract_js_fn(html, "altEmpty")
+    why_fn = _extract_js_fn(html, "altEmptyWhy")
+    cap_block = html.split("if(cap&&nTopics===0)", 1)[1].split("var prov=", 1)[0]
+    col_empty = _extract_js_fn(html, "altColumn")
+    # Per-source empty list item only — strip the head/flag join.
+    col_empty = col_empty.split("if(!items)", 1)[1]
+    region = empty_fn + "\n" + why_fn + "\n" + cap_block + "\n" + col_empty
+    assert "No trending topics to show right now." in region
+    assert "暂无热门话题可显示。" in region
+    assert "feeds haven" in region and "t updated" in region
+    assert "数据源尚未更新" in region
+    for banned in ("wired", "live", "实时"):
+        assert banned not in region, f"empty-state region still says {banned!r}"
+    assert "drawing attention" not in region
+    assert "数据源已接通" not in region
+
+
+@_needs_node
+def test_w7_r4_altdata_chip_four_branches_both_lanes():
+    """B1: absent / seed_only / live+rows / live+empty, EN and ZH."""
+    html = _render_with_fixture()
+    stubs = (
+        "function TT(en,zh){return isZH()?zh:en;}\n"
+        "function LT(en,zh){return isZH()?zh:en;}\n"
+        "var _zh=false; function isZH(){return _zh;}\n"
+        "function esc(s){return String(s);}\n"
+    )
+    fns = "\n".join(_extract_js_fn(html, n) for n in ("altFlag",))
+    harness = stubs + fns + r"""
+function chipText(html){
+  if(!html) return '';
+  var m = html.match(/>([^<]+)<\/span>/);
+  return m ? m[1] : html;
+}
+function cls(html){
+  if(!html) return '';
+  var m = html.match(/class="([^"]+)"/);
+  return m ? m[1] : '';
+}
+var cases = [
+  {name:'absent', src:null, n:0},
+  {name:'no_asof', src:{}, n:0},
+  {name:'seed_only', src:{seed_only:true}, n:0},
+  {name:'live_rows', src:{asof:'2026-09-10'}, n:3},
+  {name:'live_empty', src:{asof:'2026-09-10'}, n:0}
+];
+var out = {en:{}, zh:{}};
+_zh=false;
+cases.forEach(function(c){
+  var h=altFlag(c.src, c.n);
+  out.en[c.name]={text:chipText(h), cls:cls(h), html:h};
+});
+_zh=true;
+cases.forEach(function(c){
+  var h=altFlag(c.src, c.n);
+  out.zh[c.name]={text:chipText(h), cls:cls(h), html:h};
+});
+process.stdout.write(JSON.stringify(out));
+"""
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    out = json.loads(res.stdout)
+    # absent / no asof → outage, never a freshness word
+    for lane, absent_word, seed_word, live_word in (
+        ("en", "not updating", "seed only", "live"),
+        ("zh", "未更新", "仅种子", "实时"),
+    ):
+        abs_ = out[lane]["absent"]
+        noasof = out[lane]["no_asof"]
+        seed = out[lane]["seed_only"]
+        rows = out[lane]["live_rows"]
+        empty = out[lane]["live_empty"]
+        assert abs_["text"] == absent_word and abs_["cls"] == "outageflag", abs_
+        assert noasof["text"] == absent_word and noasof["cls"] == "outageflag", noasof
+        assert seed["text"] == seed_word and seed["cls"] == "seedflag", seed
+        assert rows["text"] == live_word and rows["cls"] == "liveflag", rows
+        assert empty["html"] == "" and empty["text"] == "", empty
+        assert abs_["text"] != live_word
+        assert noasof["text"] != live_word
+        assert seed["text"] != live_word
+        assert empty["text"] != live_word
+
+
+@_needs_node
+def test_w7_r4_ec_hi_balanced_is_neutral_and_round_then_band():
+    """M3: tone 50 and 60 share Balanced + no pos/neg. m3: 71.5..71.9 print 72=upbeat."""
+    html = _render_with_fixture()
+    stubs = (
+        "function TT(en,zh){return en;}\n"
+        "function isZH(){return false;}\n"
+    )
+    fns = "\n".join(_extract_js_fn(html, n) for n in (
+        "esc", "chip", "toneBand", "toneClass", "toneWord", "ecHiClass", "ecSent",
+    ))
+    harness = stubs + fns + """
+var out = {
+  t50: {word: toneWord(50)[0], hi: ecHiClass(50), band: toneBand(50)},
+  t60: {word: toneWord(60)[0], hi: ecHiClass(60), band: toneBand(60)},
+  t72: {word: toneWord(72)[0], hi: ecHiClass(72), band: toneBand(72)},
+  t27: {word: toneWord(27)[0], hi: ecHiClass(27), band: toneBand(27)},
+  rounds: {}
+};
+[71.5, 71.6, 71.7, 71.8, 71.9].forEach(function(v){
+  var pct = Math.round(v);
+  var html = ecSent(v);
+  var tip = (html.match(/data-tip-en="([^"]+)"/)||[])[1] || '';
+  out.rounds[String(v)] = {pct:pct, word:toneWord(v)[0], tip:tip, band:toneBand(v)};
+});
+process.stdout.write(JSON.stringify(out));
+"""
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    out = json.loads(res.stdout)
+    assert out["t50"]["word"] == out["t60"]["word"] == "Balanced"
+    assert out["t50"]["hi"] == out["t60"]["hi"] == ""
+    assert out["t50"]["band"] == out["t60"]["band"] == "mid"
+    assert out["t72"]["hi"] == "pos" and out["t72"]["word"] == "Upbeat"
+    assert out["t27"]["hi"] == "neg" and out["t27"]["word"] == "Downbeat"
+    for v, row in out["rounds"].items():
+        assert row["pct"] == 72, row
+        assert row["word"] == "Upbeat", (v, row)
+        assert row["band"] == "up", (v, row)
+        assert "(72 = upbeat)" in row["tip"], (v, row)
+
+
+
+# ---------------------------------------------------------------------------
+# W18-E lane E1 — Spec 1 (the benchmark-week alarm in the hero) + F6 (daily copy)
+# ---------------------------------------------------------------------------
+
+_W18E1_WARN = {
+    "status": "warn", "issues": ["benchmark_week_divergence"],
+    "spy_stage_week": "2026-10-16", "population_modal_week": "2026-10-09",
+    "current": 2681, "stale": 73, "unknown": 0, "total": 2754,
+    "current_coverage_pct": 97.3, "data_session": "2026-10-14",
+    "target_week_source": "population_mode_benchmark_ahead",
+    "week_histogram": [
+        {"week": "2026-10-09", "n": 2681}, {"week": "2026-10-02", "n": 32},
+        {"week": "2026-07-10", "n": 6}, {"week": "2026-06-26", "n": 4},
+    ],
+}
+
+_W18E1_NO_TARGET_WEEK = {
+    "status": "no_target_week", "target_stage_week": None,
+    "target_week_source": "unresolved", "spy_stage_week": None,
+    "population_modal_week": None, "current": 0, "stale": 0, "unknown": 2741,
+    "total": 2741, "current_coverage_pct": None, "data_session": None,
+    "week_histogram": [], "issues": ["no_target_week"],
+}
+
+
+def _w18e1_pop(tmp_path: Path, population: dict) -> str:
+    """Render with one synthetic population record (no site/ or data/ reads)."""
+    base = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    base["population"] = population
+    base["target_stage_week"] = population.get("population_modal_week")
+    base["data_session"] = population.get("data_session")
+    fx = tmp_path / "w18e1_pop.json"
+    fx.write_text(json.dumps(base), encoding="utf-8")
+    return render(REPO, fixture=fx)
+
+
+def _w18e1_hero(html: str) -> str:
+    """The hero .asof block, sliced from its container to the hero <section>."""
+    return html.split('<div class="asof">', 1)[1].split('<section class="hero', 1)[0]
+
+
+def test_w18e1_warn_population_discloses_benchmark_week_divergence(tmp_path):
+    """F1: engine/stage_analysis.py:1949-1966 warns when the benchmark's completed
+    week differs from the population mode, and records no cause — the hero must
+    print the recorded values, never an invented explanation."""
+    hero = _w18e1_hero(_w18e1_pop(tmp_path, _W18E1_WARN))
+    assert "completed week is 2026-10-16" in hero, "the alarm never reaches the page"
+    assert "latest completed week is 2026-10-09" in hero
+    assert "The cross-section uses the names" in hero
+    assert "截面以股票自身的周为准" in hero
+    assert "97.3% of names are on the current week." in hero
+    assert "97.3% 的股票处于当前周。" in hero
+    assert "2026-10-09: 2,681 · 2026-10-02: 32 · 2026-07-10: 6" in hero
+    assert "按已完成周统计股票数：" in hero
+    assert "2026-06-26" not in hero, "the histogram must cap at three buckets"
+    assert "benchmark_week_divergence" not in hero, "raw issue key in user copy"
+
+
+def test_w18e1_ready_population_prints_no_divergence_line(tmp_path):
+    """The alarm is scoped to status == 'warn' (kills the always-render mutant)."""
+    ready = dict(_W18E1_WARN, status="ready", issues=[], spy_stage_week="2026-10-09")
+    hero = _w18e1_hero(_w18e1_pop(tmp_path, ready))
+    assert "2,681 current · 73 stale · 0 unresolved" in hero
+    assert "completed week is" not in hero
+    assert "% of names are on" not in hero
+    assert "的股票处于当前周" not in hero
+    assert "Names by completed week" not in hero
+    assert "按已完成周统计股票数" not in hero
+
+
+def test_w18e1_coverage_only_warn_prints_pct_but_no_divergence(tmp_path):
+    """The other warn reason (coverage below the floor, :1960-1962) prints the pct
+    line only: both weeks are present and equal, so no divergence may render."""
+    warn = dict(_W18E1_WARN, issues=["current_coverage_below_floor"],
+                spy_stage_week="2026-10-09", current_coverage_pct=55.0)
+    hero = _w18e1_hero(_w18e1_pop(tmp_path, warn))
+    assert "55.0% of names are on the current week." in hero
+    assert "55.0% 的股票处于当前周。" in hero
+    assert "completed week is" not in hero
+    assert "Names by completed week" not in hero
+    assert "按已完成周统计股票数" not in hero
+
+
+def test_w18e1_warn_keeps_the_receipt_and_no_target_week_copy(tmp_path):
+    """Additive only: the pinned first popreceipt still reads exactly as before,
+    and the no_target_week hero keeps its unavailable copy with no new line."""
+    receipt = _w18e1_hero(_w18e1_pop(tmp_path, _W18E1_WARN)).split(
+        'class="popreceipt"', 1)[1].split("</div>", 1)[0]
+    assert "2,681 current · 73 stale · 0 unresolved" in receipt
+    base = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    base["target_stage_week"] = None
+    base.setdefault("market", {})["weather"] = None
+    base["population"] = _W18E1_NO_TARGET_WEEK
+    fx = tmp_path / "w18e1_notw.json"
+    fx.write_text(json.dumps(base), encoding="utf-8")
+    html = render(REPO, fixture=fx)
+    assert "Stage read unavailable" in html
+    assert "completed week is" not in _w18e1_hero(html)
+    assert "% of names are on" not in _w18e1_hero(html)
+
+
+def test_w18e1_daily_board_copy_matches_the_producer():
+    """F6: the page copy promised a daily read "once intraday history is wired",
+    a cause the producer never records — engine/stage_analysis.py:1683-1688 says
+    the classifier is weekly-native over completed bars and no separate daily
+    stage machine exists yet."""
+    fn = _extract_js_fn(_render_with_fixture(), "renderBoardProv")
+    assert "completed weekly bars" in fn
+    assert "intraday history" not in fn
+    assert "日线视图：分类器读取已完成的周线" in fn
+    assert "待接入日内历史" not in fn
+
+
+
+# ---------------------------------------------------------------------------
+# W18-E lane 2 (Spec 2) — Industries tab prints its own coverage receipt
+# ---------------------------------------------------------------------------
+
+def test_w18e2_render_industries_appends_the_coverage_note():
+    """Spec 2 wiring: renderIndustries() appends indCoverageNote() inline."""
+    html = _render_with_fixture()
+    fn = _extract_js_fn(html, "renderIndustries")
+    assert "indCoverageNote()" in fn
+    assert "host.innerHTML=html+indCoverageNote();" in fn
+    _extract_js_fn(html, "indCoverageNote")
+
+# Committed coverage receipt (site/stagedata/industry_ranks.json @ seed
+# 69dd6e77; industry_flows.json carries the identical block).
+_w18e2_COVERAGE = {
+    "status": "ready", "non_vacuous": True, "input_rows": 2681,
+    "taxonomy_rows": 1798, "taxonomy_coverage_pct": 67.1, "eligible_rows": 1798,
+    "rs_change_rows": 1797, "rs_change_coverage_pct": 99.9, "output_rows": 74,
+    "regions": ["USA"], "issues": [],
+    "freshness": {"expected_asof": "2026-10-18", "source_asof": "2026-10-14",
+                  "status": "current", "plane": "stage_week",
+                  "expected_stage_week": "2026-10-09", "source_stage_week": "2026-10-09"},
+    "floors": {"taxonomy_coverage_pct": 50.0, "rs_change_coverage_pct": 25.0},
+}
+
+_W18E2_EN = ("Coverage: 1,798 of 2,681 names (67.1%) have an industry; names "
+             "without one are left out. 74 groups shown, stage week ended 2026-10-09.")
+_W18E2_ZH = ("覆盖：2,681 只股票中有 1,798 只（67.1%）有行业归属，没有行业归属的股票不计入。"
+             "显示 74 个组，阶段周截至 2026-10-09。")
+
+
+@_needs_node
+def test_w18e2_coverage_note_reads_the_real_receipt():
+    """Spec 2: ranking/flows print the committed receipt; heat views silent.
+    m5: the eligible_rows=1700 variant must still print 1,798 (taxonomy_rows)."""
+    html = _render_with_fixture()
+    fns = "\n".join(_extract_js_fn(html, n) for n in ("esc", "LT", "indCoverageNote"))
+    harness = "function isZH(){return false;}\n" + fns + """
+var COV = """ + json.dumps(_w18e2_COVERAGE) + """;
+var ALT = JSON.parse(JSON.stringify(COV)); ALT.eligible_rows = 1700;
+var IND = {ranks: {coverage: COV}, flows: {coverage: COV}}, indView = 'ranking';
+var out = {ranking: indCoverageNote()};
+indView = 'flows'; out.flows = indCoverageNote();
+indView = 'heatmap'; out.heatmap = indCoverageNote();
+indView = 'echeat'; out.echeat = indCoverageNote();
+IND = {ranks: {coverage: ALT}, flows: {coverage: ALT}};
+indView = 'ranking'; out.eligible = indCoverageNote();
+process.stdout.write(JSON.stringify(out));
+"""
+    res = subprocess.run(["node", "-e", harness], capture_output=True, text=True, timeout=30)
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    out = json.loads(res.stdout)
+    for key in ("ranking", "flows"):
+        s = out[key]
+        assert "<p class=\"provfoot\">" in s and _W18E2_EN in s and _W18E2_ZH in s, (key, s)
+        for needle in ("1,798", "2,681", "67.1%", "74", "2026-10-09"):
+            assert needle in s, (key, needle, s)
+    assert out["heatmap"] == "" and out["echeat"] == "", out
+    assert "1,798" in out["eligible"] and "1,700" not in out["eligible"], out["eligible"]
+
+
+@_needs_node
+def test_w18e2_coverage_note_fails_closed():
+    """No receipt / vacuous / null fields print ''; [] prints no Flags;
+    issue tokens print verbatim; no undefined / null / NaN leaks."""
+    html = _render_with_fixture()
+    fns = "\n".join(_extract_js_fn(html, n) for n in ("esc", "LT", "indCoverageNote"))
+    harness = "function isZH(){return false;}\n" + fns + """
+var COV = """ + json.dumps(_w18e2_COVERAGE) + """;
+var IND = null, indView = 'ranking', cases = {};
+function cov(mut){var c=JSON.parse(JSON.stringify(COV));mut(c);return c;}
+function run(v){IND={ranks:{coverage:v}};return indCoverageNote();}
+cases.missing = run(null);
+cases.vacuous = run(cov(function(c){c.non_vacuous=false;}));
+cases.nullTax = run(cov(function(c){c.taxonomy_rows=null;}));
+cases.nullInput = run(cov(function(c){c.input_rows=null;}));
+cases.nullPct = run(cov(function(c){c.taxonomy_coverage_pct=null;}));
+cases.emptyIssues = run(COV);
+cases.flagged = run(cov(function(c){c.issues=['taxonomy_below_floor'];}));
+cases.noRows = run(cov(function(c){c.output_rows=null;}));
+cases.noWeek = run(cov(function(c){c.freshness={};}));
+process.stdout.write(JSON.stringify(cases));
+"""
+    res = subprocess.run(["node", "-e", harness], capture_output=True, text=True, timeout=30)
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    cases = json.loads(res.stdout)
+    for key in ("missing", "vacuous", "nullTax", "nullInput", "nullPct"):
+        assert cases[key] == "", (key, cases[key])
+    assert "Flags" not in cases["emptyIssues"], cases["emptyIssues"]
+    assert "标记" not in cases["emptyIssues"], cases["emptyIssues"]
+    assert "Flags: taxonomy_below_floor" in cases["flagged"], cases["flagged"]
+    assert "标记：taxonomy_below_floor" in cases["flagged"], cases["flagged"]
+    assert "1,798" in cases["noRows"], cases["noRows"]
+    assert "groups shown" not in cases["noRows"] and "个组" not in cases["noRows"]
+    assert "stage week ended 2026-10-09" in cases["noRows"], cases["noRows"]
+    assert "74 groups shown" in cases["noWeek"], cases["noWeek"]
+    assert "stage week" not in cases["noWeek"], cases["noWeek"]
+    for key, s in cases.items():
+        for leak in ("undefined", "null", "NaN"):
+            assert leak not in s, (key, leak, s)
+
+
+def test_w18e2_coverage_note_has_no_style_literals():
+    """Spec 2 constraint: .provfoot reuse only; no style/hex/rgb literals."""
+    html = _render_with_fixture()
+    body = _extract_js_fn(html, "indCoverageNote")
+    for banned in ("style=", "color-mix(", "rgb(", "#"):
+        assert banned not in body, banned
+
+
+
+# ---------------------------------------------------------------------------
+# W18 lane E3 — the Flows table prints the RS level, not only the change
+# ---------------------------------------------------------------------------
+
+# Dict literals copied from the committed seed industry_flows.json rows.
+_w18e3_HCT = {"industry_name": "Health Care Technology", "n": 10, "state": "LEADING",
+  "turn_flag": None, "sata_mean": 5.9, "rs_chg_4w_median": 13.145,
+  "rs_level_median": -9.385, "breadth_4w_pct": 90.0, "stage2_count": 6,
+  "stage4_count": 1, "stage2_stage4_ratio": 6.0, "fresh_stage2_pct": 10.0,
+  "stage2_median_age_wks": 7.0}
+_w18e3_ADS = {"industry_name": "Advertising", "n": 10, "state": "BREAKING",
+  "turn_flag": None, "sata_mean": 5.2, "rs_chg_4w_median": -2.72,
+  "rs_level_median": 1.155, "breadth_4w_pct": 30.0, "stage2_count": 6,
+  "stage4_count": 3, "stage2_stage4_ratio": 2.0, "fresh_stage2_pct": 0.0,
+  "stage2_median_age_wks": 20.5}
+
+
+def _w18e3_flowcols(html: str) -> str:
+    """The shipped FLOWCOLS literal (header order is the contract)."""
+    start = html.index("  var FLOWCOLS=[")
+    return html[start:html.index("\n  ];", start)]
+
+
+def _w18e3_header_cells(table_html: str) -> list:
+    thead = table_html.split("<thead>", 1)[1].split("</thead>", 1)[0]
+    return re.findall(r"<th\b.*?</th>", thead, re.S)
+
+
+def _w18e3_row_cells(table_html: str, name: str) -> list:
+    body = table_html.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
+    for tr in re.findall(r"<tr>.*?</tr>", body, re.S):
+        cells = re.findall(r"<td\b.*?</td>", tr, re.S)
+        if cells and name in re.sub(r"<[^>]+>", "", cells[0]):
+            return cells
+    raise AssertionError(f"row not found: {name}")
+
+
+def _w18e3_cell_text(cell: str) -> str:
+    return re.sub(r"<[^>]+>", "", cell).strip()
+
+
+def _w18e3_header_index(heads: list, needle: str) -> int:
+    hits = [i for i, h in enumerate(heads) if needle in h]
+    assert len(hits) == 1, (needle, hits)
+    return hits[0]
+
+
+def _w18e3_indflows_html(grain: str, rows: list) -> str:
+    """Run the shipped indFlows() in node with stubs; returns the table html."""
+    html = _render_with_fixture()
+    names = ("esc", "LT", "chip", "sataChip", "rsDeltaCell", "breadthCell",
+             "divBar", "flowState", "turnCell", "pickRegion", "dataRegion",
+             "indCalibNote", "indFlows")
+    key = ("industry_regions" if grain == "industry"
+           else "sub_industry_regions")
+    harness = (
+        "function isZH(){return false;}\n"
+        "function indEmpty(){return 'IND-EMPTY';}\n"
+        "var region='US', indFlowGrain='" + grain + "', "
+        "flowSortKey='rs_chg_4w_median', flowSortDir=-1;\n"
+        "var IND={flows:{\"" + key + "\":{USA:" + json.dumps(rows) + "}}};\n"
+        + _w18e3_flowcols(html) + "\n  ];\n"
+        + "\n".join(_extract_js_fn(html, n) for n in names) + "\n"
+        + "process.stdout.write(JSON.stringify({html:indFlows()}));\n"
+    )
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    return json.loads(res.stdout)["html"]
+
+
+def test_w18e3_flows_table_prints_the_rs_level_not_only_the_change():
+    """The change column alone misreads: HCT prints +13.1 change while its
+    median member lags (rs_level_median -9.385). The level must be printed."""
+    html = _render_with_fixture()
+    cols = _w18e3_flowcols(html)
+    assert "k:'rs_level_median'" in cols
+    assert cols.index("k:'rs_chg_4w_median'") < cols.index("k:'rs_level_median'")
+    assert cols.index("k:'rs_level_median'") < cols.index("k:'breadth_4w_pct'")
+    body = _extract_js_fn(html, "indFlows")
+    assert "r.rs_level_median" in body
+    assert body.index("rsDeltaCell(r.rs_chg_4w_median)") < body.index("r.rs_level_median")
+
+
+@_needs_node
+def test_w18e3_level_cell_sits_under_its_header():
+    table = _w18e3_indflows_html("industry", [_w18e3_HCT, _w18e3_ADS])
+    heads = _w18e3_header_cells(table)
+    hct = _w18e3_row_cells(table, "Health Care Technology")
+    ads = _w18e3_row_cells(table, "Advertising")
+    assert len(heads) == len(hct) == len(ads)
+    li = _w18e3_header_index(heads, "RS level")
+    assert 'data-fk="rs_level_median"' in heads[li]
+    assert _w18e3_cell_text(hct[li]) == "-9.4"
+    assert _w18e3_cell_text(ads[li]) == "+1.2"
+    di = _w18e3_header_index(heads, "RS Δ4w")
+    assert "+13.1" in _w18e3_cell_text(hct[di])
+    assert "-2.7" in _w18e3_cell_text(ads[di])
+
+
+@_needs_node
+def test_w18e3_level_survives_the_sub_industry_grain():
+    table = _w18e3_indflows_html("sub", [_w18e3_HCT, _w18e3_ADS])
+    assert "IND-EMPTY" not in table
+    heads = _w18e3_header_cells(table)
+    hct = _w18e3_row_cells(table, "Health Care Technology")
+    ads = _w18e3_row_cells(table, "Advertising")
+    assert len(heads) == len(hct) == len(ads)
+    li = _w18e3_header_index(heads, "RS level")
+    assert _w18e3_cell_text(hct[li]) == "-9.4"
+    assert _w18e3_cell_text(ads[li]) == "+1.2"
+
+
+@_needs_node
+def test_w18e3_null_level_renders_an_em_dash():
+    row = dict(_w18e3_ADS, rs_level_median=None)
+    table = _w18e3_indflows_html("industry", [row])
+    heads = _w18e3_header_cells(table)
+    cells = _w18e3_row_cells(table, "Advertising")
+    assert len(heads) == len(cells)
+    li = _w18e3_header_index(heads, "RS level")
+    text = _w18e3_cell_text(cells[li])
+    assert text == "—", text
+    for bad in ("0", "null", "NaN"):
+        assert bad not in text
+
+
+def test_w18e3_flows_headers_stay_plain_words():
+    cols = _w18e3_flowcols(_render_with_fixture())
+    start = cols.index("k:'rs_level_median'")
+    entry = cols[cols.rfind("\n", 0, start) + 1: cols.index("},", start) + 2]
+    low = entry.lower()
+    for banned in ("z-score", "percentile", "mansfield", "rs momentum",
+                   "rs accel", "rs动能", "rs加速"):
+        assert banned not in low, (banned, entry)
+    assert "en:'RS level'" in entry and "zh:'相对强度水平'" in entry
+    assert "a level, not a change" in entry
+
+
+# ---------------------------------------------------------------------------
+# W18-E lane 4 (SGA-W18E-4) — industry Ranking and Flows state their own
+# producer calibration. The dicts below are copied verbatim from the
+# committed site/stagedata calibration blocks quoted in the commission;
+# no test ever reads site/ or data/.
+# ---------------------------------------------------------------------------
+
+_W18E4_RANK_CAL = {
+    "target": "stageanalysis_industry_ranks_weekly (EquityDesk)",
+    "note": "rank rho ~0.4 (USA .36 / EUR .49 / ASIA .43); quartile-bucket "
+            "agreement ~35% — measured, ordinal only",
+    "yardstick": "Historical comparison only — the EquityDesk dataset is NOT "
+                 "an input to the shipping calculation.",
+}
+_W18E4_FLOW_CAL = {
+    "target": "industry_flows / subindustry_flows (EquityDesk)",
+    "note": "counts/ratios/sata/age are aggregation-arithmetic checks (our "
+            "groupby reproduces their aggregates given the same per-name "
+            "inputs — plumbing, not fidelity); breadth/rs_chg use our RS "
+            "window (corr ~0.75); state label agreement ~70% (measured, "
+            "5-class)",
+}
+_W18E4_EN = "How this compares with an outside yardstick:"
+_W18E4_ZH = "与外部参照的比较（英文原文）："
+_W18E4_RANK_ROW = ("{industry_name:'Advertising',rank:1,industry_percentile:90,"
+                   "z_mom:0.5,z_rsroc:0.1,bucket:'Leading',n:10}")
+_W18E4_FLOW_ROW = ("{industry_name:'Advertising',state:'LEADING',turn_flag:"
+                   "'bounce',n:10,sata_mean:6.2,rs_chg_4w_median:1.5,"
+                   "breadth_4w_pct:55,stage2_count:6,stage4_count:2,"
+                   "stage2_stage4_ratio:3,fresh_stage2_pct:20,"
+                   "stage2_median_age_wks:5}")
+
+
+def _w18e4_node(html: str, harness: str) -> str:
+    res = subprocess.run(["node", "-e", harness], capture_output=True,
+                         text=True, timeout=30)
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    return res.stdout
+
+
+def _w18e4_rank_harness(html: str, ranks_js: str) -> str:
+    stubs = ("function isZH(){return false;}\nvar region='US';\n"
+             "function indEmpty(){return '<empty/>';}\n"
+             "function chip(v,cls,e,z){return '<c>'+String(v)+'</c>';}\n"
+             "var IND={ranks:" + ranks_js + "};\n")
+    fns = "\n".join(_extract_js_fn(html, n) for n in (
+        "esc", "LT", "pickRegion", "dataRegion", "pctileChip", "zcell",
+        "bucketChip", "indCalibNote", "indRanking"))
+    return stubs + fns + "\nprocess.stdout.write(indRanking());\n"
+
+
+def _w18e4_flow_harness(html: str, flows_js: str) -> str:
+    fc = html.index("  var FLOWCOLS=[")
+    flowcols = html[fc:html.index("\n  ];", fc) + 6]
+    stubs = ("function isZH(){return false;}\nvar region='US';\n"
+             "function indEmpty(){return '<empty/>';}\n"
+             "var indFlowGrain='industry';\n"
+             "var flowSortKey='rs_chg_4w_median';\nvar flowSortDir=-1;\n"
+             "var IND={flows:" + flows_js + "};\n")
+    fns = "\n".join(_extract_js_fn(html, n) for n in (
+        "esc", "LT", "chip", "sataChip", "rsDeltaCell", "breadthCell",
+        "divBar", "flowState", "turnCell", "pickRegion", "dataRegion",
+        "indCalibNote", "indFlows"))
+    return (stubs + fns + "\n" + flowcols +
+            "\nprocess.stdout.write(indFlows());\n")
+
+
+def test_w18e4_ranking_and_flows_read_their_calibration():
+    """Pin: both sub-cap builders read the artifact's own calibration block,
+    and neither touches method / target / all_region_note."""
+    html = _render_with_fixture()
+    rankfn = _extract_js_fn(html, "indRanking")
+    flowfn = _extract_js_fn(html, "indFlows")
+    assert "calibration" in rankfn
+    assert "calibration" in flowfn
+    for fn in (rankfn, flowfn):
+        assert "method" not in fn
+        assert ".target" not in fn
+        assert "all_region_note" not in fn
+
+
+@_needs_node
+def test_w18e4_ranking_discloses_its_own_calibration():
+    """Spec 4: the ranking subcap carries note+yardstick verbatim, with the
+    EN label and the ZH label twin; method.live never reaches the output."""
+    html = _render_with_fixture()
+    ranks = ("{regions:{USA:[" + _W18E4_RANK_ROW + "]},calibration:"
+             + json.dumps(_W18E4_RANK_CAL, ensure_ascii=False)
+             + ",method:{live:'per-region z-scores'}}")
+    out = _w18e4_node(html, _w18e4_rank_harness(html, ranks))
+    assert "rank rho ~0.4" in out
+    assert "quartile-bucket agreement ~35%" in out
+    assert "NOT an input to the shipping calculation" in out
+    assert _W18E4_EN in out
+    assert _W18E4_ZH in out
+    assert "z-score" not in out
+    assert "EquityDesk)" not in out
+
+
+@_needs_node
+def test_w18e4_flows_discloses_state_label_agreement():
+    """Spec 4: the flows subcap carries the committed calibration note."""
+    html = _render_with_fixture()
+    flows = ("{industry_regions:{USA:[" + _W18E4_FLOW_ROW + "]},calibration:"
+             + json.dumps(_W18E4_FLOW_CAL, ensure_ascii=False) + "}")
+    out = _w18e4_node(html, _w18e4_flow_harness(html, flows))
+    assert "state label agreement ~70%" in out
+    assert "plumbing, not fidelity" in out
+
+
+@_needs_node
+def test_w18e4_calibration_missing_renders_nothing():
+    """Fail-open: absent calibration or an empty note → no label, no stray
+    punctuation, no undefined/null in either subcap."""
+    html = _render_with_fixture()
+    base_r = "{regions:{USA:[" + _W18E4_RANK_ROW + "]}"
+    for ranks in (base_r + "}", base_r + ",calibration:{note:''}}"):
+        out = _w18e4_node(html, _w18e4_rank_harness(html, ranks))
+        assert _W18E4_EN not in out
+        assert _W18E4_ZH not in out
+        assert "undefined" not in out
+        assert "null" not in out
+    base_f = "{industry_regions:{USA:[" + _W18E4_FLOW_ROW + "]}"
+    for flows in (base_f + "}", base_f + ",calibration:{note:''}}"):
+        out = _w18e4_node(html, _w18e4_flow_harness(html, flows))
+        assert _W18E4_EN not in out
+        assert _W18E4_ZH not in out
+        assert "undefined" not in out
+        assert "null" not in out
+
+
+
+# ---------------------------------------------------------------------------
+# W18-E lane 5 — the EC heatmap stops calling a tone+result sum "Call tone"
+# ---------------------------------------------------------------------------
+
+_w18e5_cells = [{"combined": 34.23, "count": 17}]
+
+
+def _w18e5_ec_slice() -> str:
+    """indEcHeat() as authored. The slice also carries the FLOWCOLS literal;
+    nothing in this lane asserts about FLOWCOLS."""
+    return _extract_js_fn(_render_with_fixture(), "indEcHeat")
+
+
+def _w18e5_value_lines():
+    """The value / ramp / disp expressions, copied byte-for-byte from the seed."""
+    return (
+        "var v=indEcMode==='combined'?c.combined:c.count;",
+        "var col=t>=0.5?'color-mix(in srgb,var(--s2) '"
+        "+Math.round((t-0.5)*2*100)+'%,var(--s3))'"
+        ":'color-mix(in srgb,var(--s4) '"
+        "+Math.round((1-t*2)*100)+'%,var(--s3))';",
+        "var disp=indEcMode==='combined'?Math.round(v):v;",
+    )
+
+
+def test_w18e5_ec_heat_metric_is_not_labelled_call_tone():
+    """F5: the combined grid renders tone+result, so it must not say "tone".
+    Scoped to indEcHeat — "Call tone" stays legitimate on the 0-100 Screener."""
+    s = _w18e5_ec_slice()
+    assert "LT('Call tone','电话会语气')" not in s
+    assert "Call score (tone + result)" in s
+    assert "电话会综合分（语气＋表现）" in s
+    assert "LT('Recent earnings-call tone by industry.'" not in s
+    assert "Greener = more upbeat calls that week" not in s
+    assert "越绿＝当周语气越正面" not in s
+    assert "LT('cautious','谨慎')" not in s
+    assert "LT('upbeat','正面')" not in s
+    assert "higher score" in s
+    assert "综合分较高" in s
+
+
+def test_w18e5_ec_heat_names_the_combined_composition():
+    """The tip states the producer sum (engine/earnings_qual.py:2219-2221):
+    sent + perf per call, averaged — not the Screener's 0-100 tone scale."""
+    s = _w18e5_ec_slice()
+    btn = s[s.index('data-ecm="combined"'):s.index('data-ecm="count"')]
+    m_en = re.search(r'data-tip-en="([^"]*)"', btn)
+    m_zh = re.search(r'data-tip-zh="([^"]*)"', btn)
+    assert m_en and m_zh, btn
+    assert "added together" in m_en.group(1), m_en.group(1)
+    assert "not the 0–100 tone scale" in m_en.group(1), m_en.group(1)
+    assert "相加" in m_zh.group(1), m_zh.group(1)
+    assert "title=" not in s
+    # Committed sibling record (site/stagedata/ec_industry.json, 2026-05-08,
+    # Communications Equipment): the per-call sum, averaged by industry.
+    rec = {"avg_earnings_call_sent": 23.105, "avg_earnings_call_perf": 6.0,
+           "avg_earnings_call_combined": 29.105}
+    summed = rec["avg_earnings_call_sent"] + rec["avg_earnings_call_perf"]
+    assert abs(summed - rec["avg_earnings_call_combined"]) < 0.01, rec
+
+
+def test_w18e5_ec_heat_ramp_and_value_unchanged():
+    """Label-only: the value, range and ramp bytes are untouched (no rescale)."""
+    s = _w18e5_ec_slice()
+    for line in _w18e5_value_lines():
+        assert line in s, line
+
+
+@_needs_node
+def test_w18e5_ec_heat_renders_the_new_label():
+    """node: combined mode prints 34 under the score label; count mode prints 17."""
+    html = _render_with_fixture()
+    fns = "\n".join(_extract_js_fn(html, n) for n in (
+        "esc", "LT", "dataRegion", "indEcHeat",
+    ))
+    ind = json.dumps({"ec": {"regions": {"USA": {"weeks": ["2026-10-09"],
+        "rows": [{"industry": "Aerospace & Defense",
+                   "cells": _w18e5_cells}]}}}})
+    harness = (
+        "function isZH(){return false;}\n"
+        "function indEmpty(){return '<i>IND_EMPTY</i>';}\n"
+        + fns
+        + "\nvar region='US',indEcMode='combined',IND=" + ind + ";\n"
+        + "var out={combined:indEcHeat()};"
+        + "indEcMode='count';out.count=indEcHeat();\n"
+        + "process.stdout.write(JSON.stringify(out));\n"
+    )
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    out = json.loads(res.stdout)
+    assert "Call score (tone + result)" in out["combined"], out["combined"]
+    assert ">34<" in out["combined"], out["combined"]
+    assert ">Call tone<" not in out["combined"], out["combined"]
+    assert ">17<" in out["count"], out["count"]
+    assert "Fresh calls" in out["count"], out["count"]

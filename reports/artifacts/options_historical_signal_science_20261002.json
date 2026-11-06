@@ -1,0 +1,820 @@
+{
+  "cells": [
+    {
+      "absent_at_source_snapshot": 1798,
+      "all_source_episodes": 9641,
+      "complete": 7314,
+      "complete_target_aligned": 7314,
+      "horizon": "h60",
+      "outcome_rows_observed": 7843,
+      "statistics_decimal_underlying_proxy": {
+        "count": 7314,
+        "eligible_session_count": 15,
+        "eligible_ticker_count": 50,
+        "equal_session_mean": 0.0014488453033507794,
+        "mean": 0.001066062909488652,
+        "median": 0.00030253500000000004,
+        "q10": -0.00696012,
+        "q90": 0.01082339
+      },
+      "stratum": "ALL",
+      "target_aligned": false,
+      "terminal_incomplete": 529
+    },
+    {
+      "absent_at_source_snapshot": 1798,
+      "all_source_episodes": 9641,
+      "complete": 7314,
+      "complete_target_aligned": 0,
+      "horizon": "h60",
+      "outcome_rows_observed": 7843,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "ALL",
+      "target_aligned": true,
+      "terminal_incomplete": 529
+    },
+    {
+      "absent_at_source_snapshot": 1152,
+      "all_source_episodes": 6158,
+      "complete": 4667,
+      "complete_target_aligned": 4667,
+      "horizon": "h60",
+      "outcome_rows_observed": 5006,
+      "statistics_decimal_underlying_proxy": {
+        "count": 4667,
+        "eligible_session_count": 15,
+        "eligible_ticker_count": 48,
+        "equal_session_mean": 0.0015879332871406894,
+        "mean": 0.0012182014163274052,
+        "median": 0.00049187,
+        "q10": -0.00731482,
+        "q90": 0.011890754000000206
+      },
+      "stratum": "C",
+      "target_aligned": false,
+      "terminal_incomplete": 339
+    },
+    {
+      "absent_at_source_snapshot": 1152,
+      "all_source_episodes": 6158,
+      "complete": 4667,
+      "complete_target_aligned": 0,
+      "horizon": "h60",
+      "outcome_rows_observed": 5006,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "C",
+      "target_aligned": true,
+      "terminal_incomplete": 339
+    },
+    {
+      "absent_at_source_snapshot": 646,
+      "all_source_episodes": 3483,
+      "complete": 2647,
+      "complete_target_aligned": 2647,
+      "horizon": "h60",
+      "outcome_rows_observed": 2837,
+      "statistics_decimal_underlying_proxy": {
+        "count": 2647,
+        "eligible_session_count": 15,
+        "eligible_ticker_count": 46,
+        "equal_session_mean": 0.0010765687130659836,
+        "mean": 0.0007978232376275028,
+        "median": 1.939e-05,
+        "q10": -0.0060618,
+        "q90": 0.00933269
+      },
+      "stratum": "P",
+      "target_aligned": false,
+      "terminal_incomplete": 190
+    },
+    {
+      "absent_at_source_snapshot": 646,
+      "all_source_episodes": 3483,
+      "complete": 2647,
+      "complete_target_aligned": 0,
+      "horizon": "h60",
+      "outcome_rows_observed": 2837,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "P",
+      "target_aligned": true,
+      "terminal_incomplete": 190
+    },
+    {
+      "absent_at_source_snapshot": 1606,
+      "all_source_episodes": 9641,
+      "complete": 7569,
+      "complete_target_aligned": 7569,
+      "horizon": "eod",
+      "outcome_rows_observed": 8035,
+      "statistics_decimal_underlying_proxy": {
+        "count": 7569,
+        "eligible_session_count": 15,
+        "eligible_ticker_count": 54,
+        "equal_session_mean": 0.0014921130599621485,
+        "mean": 0.0029220553018892855,
+        "median": 0.0014432,
+        "q10": -0.01021671,
+        "q90": 0.01806183
+      },
+      "stratum": "ALL",
+      "target_aligned": false,
+      "terminal_incomplete": 466
+    },
+    {
+      "absent_at_source_snapshot": 1606,
+      "all_source_episodes": 9641,
+      "complete": 7569,
+      "complete_target_aligned": 0,
+      "horizon": "eod",
+      "outcome_rows_observed": 8035,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "ALL",
+      "target_aligned": true,
+      "terminal_incomplete": 466
+    },
+    {
+      "absent_at_source_snapshot": 1004,
+      "all_source_episodes": 6158,
+      "complete": 4848,
+      "complete_target_aligned": 4848,
+      "horizon": "eod",
+      "outcome_rows_observed": 5154,
+      "statistics_decimal_underlying_proxy": {
+        "count": 4848,
+        "eligible_session_count": 15,
+        "eligible_ticker_count": 52,
+        "equal_session_mean": 0.0017802389251777996,
+        "mean": 0.0032509250783828384,
+        "median": 0.00167224,
+        "q10": -0.01021671,
+        "q90": 0.01923586
+      },
+      "stratum": "C",
+      "target_aligned": false,
+      "terminal_incomplete": 306
+    },
+    {
+      "absent_at_source_snapshot": 1004,
+      "all_source_episodes": 6158,
+      "complete": 4848,
+      "complete_target_aligned": 0,
+      "horizon": "eod",
+      "outcome_rows_observed": 5154,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "C",
+      "target_aligned": true,
+      "terminal_incomplete": 306
+    },
+    {
+      "absent_at_source_snapshot": 602,
+      "all_source_episodes": 3483,
+      "complete": 2721,
+      "complete_target_aligned": 2721,
+      "horizon": "eod",
+      "outcome_rows_observed": 2881,
+      "statistics_decimal_underlying_proxy": {
+        "count": 2721,
+        "eligible_session_count": 15,
+        "eligible_ticker_count": 47,
+        "equal_session_mean": 0.0008619106181373096,
+        "mean": 0.002336108710033076,
+        "median": 0.00056555,
+        "q10": -0.01021671,
+        "q90": 0.01678589
+      },
+      "stratum": "P",
+      "target_aligned": false,
+      "terminal_incomplete": 160
+    },
+    {
+      "absent_at_source_snapshot": 602,
+      "all_source_episodes": 3483,
+      "complete": 2721,
+      "complete_target_aligned": 0,
+      "horizon": "eod",
+      "outcome_rows_observed": 2881,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "P",
+      "target_aligned": true,
+      "terminal_incomplete": 160
+    },
+    {
+      "absent_at_source_snapshot": 2356,
+      "all_source_episodes": 9641,
+      "complete": 7285,
+      "complete_target_aligned": 7285,
+      "horizon": "1d",
+      "outcome_rows_observed": 7285,
+      "statistics_decimal_underlying_proxy": {
+        "count": 7285,
+        "eligible_session_count": 14,
+        "eligible_ticker_count": 54,
+        "equal_session_mean": 0.0026532550559112624,
+        "mean": 0.0039061300150995196,
+        "median": 0.00262709,
+        "q10": -0.02609636,
+        "q90": 0.03851893
+      },
+      "stratum": "ALL",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 2356,
+      "all_source_episodes": 9641,
+      "complete": 7285,
+      "complete_target_aligned": 0,
+      "horizon": "1d",
+      "outcome_rows_observed": 7285,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "ALL",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 1497,
+      "all_source_episodes": 6158,
+      "complete": 4661,
+      "complete_target_aligned": 4661,
+      "horizon": "1d",
+      "outcome_rows_observed": 4661,
+      "statistics_decimal_underlying_proxy": {
+        "count": 4661,
+        "eligible_session_count": 14,
+        "eligible_ticker_count": 52,
+        "equal_session_mean": 0.0017638200034909058,
+        "mean": 0.002226267449045269,
+        "median": 0.00149107,
+        "q10": -0.0298787,
+        "q90": 0.03727093
+      },
+      "stratum": "C",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 1497,
+      "all_source_episodes": 6158,
+      "complete": 4661,
+      "complete_target_aligned": 0,
+      "horizon": "1d",
+      "outcome_rows_observed": 4661,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "C",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 859,
+      "all_source_episodes": 3483,
+      "complete": 2624,
+      "complete_target_aligned": 2624,
+      "horizon": "1d",
+      "outcome_rows_observed": 2624,
+      "statistics_decimal_underlying_proxy": {
+        "count": 2624,
+        "eligible_session_count": 14,
+        "eligible_ticker_count": 46,
+        "equal_session_mean": 0.00439248697838285,
+        "mean": 0.006890062721036586,
+        "median": 0.00379196,
+        "q10": -0.01899398,
+        "q90": 0.03851893
+      },
+      "stratum": "P",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 859,
+      "all_source_episodes": 3483,
+      "complete": 2624,
+      "complete_target_aligned": 0,
+      "horizon": "1d",
+      "outcome_rows_observed": 2624,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "P",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 3387,
+      "all_source_episodes": 9641,
+      "complete": 6254,
+      "complete_target_aligned": 6254,
+      "horizon": "3d",
+      "outcome_rows_observed": 6254,
+      "statistics_decimal_underlying_proxy": {
+        "count": 6254,
+        "eligible_session_count": 12,
+        "eligible_ticker_count": 53,
+        "equal_session_mean": 0.011436061461387745,
+        "mean": 0.00723839820754717,
+        "median": 0.00179823,
+        "q10": -0.0298787,
+        "q90": 0.05415162
+      },
+      "stratum": "ALL",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 3387,
+      "all_source_episodes": 9641,
+      "complete": 6254,
+      "complete_target_aligned": 0,
+      "horizon": "3d",
+      "outcome_rows_observed": 6254,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "ALL",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 2176,
+      "all_source_episodes": 6158,
+      "complete": 3982,
+      "complete_target_aligned": 3982,
+      "horizon": "3d",
+      "outcome_rows_observed": 3982,
+      "statistics_decimal_underlying_proxy": {
+        "count": 3982,
+        "eligible_session_count": 12,
+        "eligible_ticker_count": 51,
+        "equal_session_mean": 0.010290432361082295,
+        "mean": 0.00552617358613762,
+        "median": 0.00167419,
+        "q10": -0.03041708,
+        "q90": 0.05263099
+      },
+      "stratum": "C",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 2176,
+      "all_source_episodes": 6158,
+      "complete": 3982,
+      "complete_target_aligned": 0,
+      "horizon": "3d",
+      "outcome_rows_observed": 3982,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "C",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 1211,
+      "all_source_episodes": 3483,
+      "complete": 2272,
+      "complete_target_aligned": 2272,
+      "horizon": "3d",
+      "outcome_rows_observed": 2272,
+      "statistics_decimal_underlying_proxy": {
+        "count": 2272,
+        "eligible_session_count": 12,
+        "eligible_ticker_count": 44,
+        "equal_session_mean": 0.01318990596074787,
+        "mean": 0.01023931301496479,
+        "median": 0.0035821250000000002,
+        "q10": -0.02483538,
+        "q90": 0.05415162
+      },
+      "stratum": "P",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 1211,
+      "all_source_episodes": 3483,
+      "complete": 2272,
+      "complete_target_aligned": 0,
+      "horizon": "3d",
+      "outcome_rows_observed": 2272,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "P",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 4199,
+      "all_source_episodes": 9641,
+      "complete": 5442,
+      "complete_target_aligned": 5442,
+      "horizon": "5d",
+      "outcome_rows_observed": 5442,
+      "statistics_decimal_underlying_proxy": {
+        "count": 5442,
+        "eligible_session_count": 10,
+        "eligible_ticker_count": 52,
+        "equal_session_mean": 0.009492689982188088,
+        "mean": 0.009705610547592797,
+        "median": 0.00950719,
+        "q10": -0.04278853,
+        "q90": 0.06209854
+      },
+      "stratum": "ALL",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 4199,
+      "all_source_episodes": 9641,
+      "complete": 5442,
+      "complete_target_aligned": 0,
+      "horizon": "5d",
+      "outcome_rows_observed": 5442,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "ALL",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 2654,
+      "all_source_episodes": 6158,
+      "complete": 3504,
+      "complete_target_aligned": 3504,
+      "horizon": "5d",
+      "outcome_rows_observed": 3504,
+      "statistics_decimal_underlying_proxy": {
+        "count": 3504,
+        "eligible_session_count": 10,
+        "eligible_ticker_count": 50,
+        "equal_session_mean": 0.006413156515657837,
+        "mean": 0.006569434994292238,
+        "median": 0.00852789,
+        "q10": -0.04336137,
+        "q90": 0.05989338
+      },
+      "stratum": "C",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 2654,
+      "all_source_episodes": 6158,
+      "complete": 3504,
+      "complete_target_aligned": 0,
+      "horizon": "5d",
+      "outcome_rows_observed": 3504,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "C",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 1545,
+      "all_source_episodes": 3483,
+      "complete": 1938,
+      "complete_target_aligned": 1938,
+      "horizon": "5d",
+      "outcome_rows_observed": 1938,
+      "statistics_decimal_underlying_proxy": {
+        "count": 1938,
+        "eligible_session_count": 10,
+        "eligible_ticker_count": 42,
+        "equal_session_mean": 0.014255637715108942,
+        "mean": 0.015375971300309599,
+        "median": 0.01455576,
+        "q10": -0.033774772999999966,
+        "q90": 0.06300288
+      },
+      "stratum": "P",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 1545,
+      "all_source_episodes": 3483,
+      "complete": 1938,
+      "complete_target_aligned": 0,
+      "horizon": "5d",
+      "outcome_rows_observed": 1938,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "P",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 6330,
+      "all_source_episodes": 9641,
+      "complete": 3311,
+      "complete_target_aligned": 3311,
+      "horizon": "10d",
+      "outcome_rows_observed": 3311,
+      "statistics_decimal_underlying_proxy": {
+        "count": 3311,
+        "eligible_session_count": 5,
+        "eligible_ticker_count": 48,
+        "equal_session_mean": 0.0016621610673217813,
+        "mean": 0.009728952340682575,
+        "median": 0.00403203,
+        "q10": -0.04060839,
+        "q90": 0.08777629
+      },
+      "stratum": "ALL",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 6330,
+      "all_source_episodes": 9641,
+      "complete": 3311,
+      "complete_target_aligned": 0,
+      "horizon": "10d",
+      "outcome_rows_observed": 3311,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "ALL",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 4118,
+      "all_source_episodes": 6158,
+      "complete": 2040,
+      "complete_target_aligned": 2040,
+      "horizon": "10d",
+      "outcome_rows_observed": 2040,
+      "statistics_decimal_underlying_proxy": {
+        "count": 2040,
+        "eligible_session_count": 5,
+        "eligible_ticker_count": 46,
+        "equal_session_mean": 0.0007112267041224829,
+        "mean": 0.008364793950980392,
+        "median": 0.00304527,
+        "q10": -0.04280102,
+        "q90": 0.08777629
+      },
+      "stratum": "C",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 4118,
+      "all_source_episodes": 6158,
+      "complete": 2040,
+      "complete_target_aligned": 0,
+      "horizon": "10d",
+      "outcome_rows_observed": 2040,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "C",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 2212,
+      "all_source_episodes": 3483,
+      "complete": 1271,
+      "complete_target_aligned": 1271,
+      "horizon": "10d",
+      "outcome_rows_observed": 1271,
+      "statistics_decimal_underlying_proxy": {
+        "count": 1271,
+        "eligible_session_count": 5,
+        "eligible_ticker_count": 40,
+        "equal_session_mean": 0.0028144179219283085,
+        "mean": 0.01191847485444532,
+        "median": 0.0097015,
+        "q10": -0.03507087,
+        "q90": 0.0984875
+      },
+      "stratum": "P",
+      "target_aligned": false,
+      "terminal_incomplete": 0
+    },
+    {
+      "absent_at_source_snapshot": 2212,
+      "all_source_episodes": 3483,
+      "complete": 1271,
+      "complete_target_aligned": 0,
+      "horizon": "10d",
+      "outcome_rows_observed": 1271,
+      "statistics_decimal_underlying_proxy": {
+        "count": 0,
+        "eligible_session_count": 0,
+        "eligible_ticker_count": 0,
+        "equal_session_mean": null,
+        "mean": null,
+        "median": null,
+        "q10": null,
+        "q90": null
+      },
+      "stratum": "P",
+      "target_aligned": true,
+      "terminal_incomplete": 0
+    }
+  ],
+  "limitations": [
+    "Rows are repeated/dependent across 15 sessions; equal-session mean is weighting disclosure only.",
+    "All observed complete rows have target_aligned=false; true cells are retained as empty registered cells.",
+    "Stored receipt/evidence arithmetic and schema are validated, but mutable Polygon source files were not reopened or replayed.",
+    "Absent rows remain explicit source-snapshot missingness and are not imputed."
+  ],
+  "protocol_path": "/private/tmp/options-science-20261002/episode-descriptive-protocol.json",
+  "protocol_sha256": "ae3576837efdc66ef47d4cfdcf288c63a3b9938599c83d87d13c356af42b4ae8",
+  "schema": "options.science.episode_descriptive_result/v1",
+  "scope": {
+    "campaign_ledgers_read": false,
+    "m1_archive_access": false,
+    "mutable_price_cache_replayed": false,
+    "option_pnl": false,
+    "tests_pvalues_fits_alpha_claims": false
+  },
+  "source_commit": "dc4fd0766709188cba8d16a9fc16479c0e9c110f",
+  "source_pins": {
+    "data/options_signal_episode/episodes.jsonl": "79277635aeb5578a346727e9e2cb34be6d19bcfe",
+    "data/options_signal_episode/outcomes_h60.jsonl": "a5242c60f81e2ca591bc3dc6a687e6b78ff6dc8c",
+    "data/options_signal_episode/outcomes_session.jsonl": "c73ec6998a03b193e219dffa62f668e9eb426420",
+    "engine/options_episode_coverage.py": "f5df2c9ad6978f86e6d90b742d1c999365557cb4",
+    "engine/options_signal_episode_contract.py": "22e97d1e589ad7e18dc0e235d554d494e31eca1e",
+    "engine/session_digest.py": "ab6123652ccff38de3f8276dda3a2b485db3dd1a",
+    "lib/nyse_calendar.py": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3"
+  },
+  "validation_provenance": {
+    "commit": "dc4fd0766709188cba8d16a9fc16479c0e9c110f",
+    "meaning": "Validates stored JSON schema, retained price-evidence arithmetic, clocks, path commitments and receipt fields. It does not reopen/replay the mutable underlying Polygon parquet or independently authenticate the referenced source-file digest against source bytes.",
+    "schema": "options.science.metric_replayable_receipt_audit/v1",
+    "scope": {
+      "campaign_rows_read": false,
+      "mutable_price_cache_replayed": false,
+      "return_aggregations": false,
+      "source_price_file_bytes_read": false
+    },
+    "validators": {
+      "episode_full_schema_and_semantics": {
+        "elapsed_seconds": 0.945,
+        "error_count": 0,
+        "error_samples": [],
+        "rows": 9641,
+        "validated": 9641
+      },
+      "h60_full_schema_metric_evidence_and_episode_join": {
+        "elapsed_seconds": 2.505,
+        "error_count": 0,
+        "error_samples": [],
+        "rows": 7843,
+        "validated": 7843
+      },
+      "session_full_schema_metric_evidence_and_episode_join": {
+        "elapsed_seconds": 14.473,
+        "error_count": 0,
+        "error_samples": [],
+        "rows": 30327,
+        "validated": 30327
+      }
+    }
+  }
+}

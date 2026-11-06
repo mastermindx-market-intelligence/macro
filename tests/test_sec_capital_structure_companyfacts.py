@@ -2807,3 +2807,60 @@ def test_twenty_four_admissions_account_for_fetch_write_and_readback_in_receipt_
     }
     assert heartbeat["run_byte_accounting"] == accounting
     assert int(heartbeat["run_bytes"]) == accounting["total_bytes"]
+
+
+# ── sharded source ledger (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY) ──────────
+def _ledger_line(manifest_id: str) -> bytes:
+    return json.dumps({"manifest_id": manifest_id, "source_id": manifest_id}).encode() + b"\n"
+
+
+def test_source_manifest_ledger_reads_continuation_parts_in_ledger_order(tmp_path):
+    ledger = tmp_path / "source_manifest.jsonl"
+    ledger.write_bytes(_ledger_line("a") + _ledger_line("b"))
+    (tmp_path / "source_manifest.part-0003.jsonl").write_bytes(_ledger_line("d"))
+    (tmp_path / "source_manifest.part-0002.jsonl").write_bytes(_ledger_line("c"))
+    (tmp_path / "source_manifest.part-0002.tmp.jsonl").write_bytes(b"{not a part\n")
+    cap = companyfacts.MAX_ANCHOR_LEDGER_BYTES
+
+    records = companyfacts._read_source_manifest_ledger(ledger, ["manifest_id"], max_bytes=cap)
+    assert [record["manifest_id"] for record in records] == ["a", "b", "c", "d"]
+
+    with companyfacts._open_absolute_directory(tmp_path) as parent_fd:
+        via_fd = companyfacts._read_source_manifest_ledger(
+            ledger, ["manifest_id"], max_bytes=cap, parent_fd=parent_fd,
+        )
+    assert via_fd == records
+
+
+def test_source_manifest_ledger_refuses_a_gap_in_the_parts(tmp_path):
+    ledger = tmp_path / "source_manifest.jsonl"
+    ledger.write_bytes(_ledger_line("a"))
+    (tmp_path / "source_manifest.part-0003.jsonl").write_bytes(_ledger_line("c"))
+    with pytest.raises(companyfacts.CompanyFactsIntakeError, match="not contiguous"):
+        companyfacts._read_source_manifest_ledger(
+            ledger, ["manifest_id"], max_bytes=companyfacts.MAX_ANCHOR_LEDGER_BYTES,
+        )
+
+
+def test_source_manifest_ledger_refuses_orphan_continuation_parts(tmp_path):
+    cap = companyfacts.MAX_ANCHOR_LEDGER_BYTES
+    (tmp_path / "source_manifest.part-0002.jsonl").write_bytes(_ledger_line("c"))
+    with pytest.raises(
+        companyfacts.CompanyFactsIntakeError, match="absent but continuation parts exist",
+    ):
+        companyfacts._read_source_manifest_ledger(
+            tmp_path / "source_manifest.jsonl", ["manifest_id"], max_bytes=cap,
+        )
+    assert companyfacts._read_source_manifest_ledger(
+        tmp_path / "absent" / "source_manifest.jsonl", ["manifest_id"], max_bytes=cap,
+    ) == []
+
+
+def test_source_manifest_ledger_byte_cap_applies_to_every_part(tmp_path):
+    ledger = tmp_path / "source_manifest.jsonl"
+    ledger.write_bytes(_ledger_line("a"))
+    (tmp_path / "source_manifest.part-0002.jsonl").write_bytes(_ledger_line("b" * 64))
+    with pytest.raises(companyfacts.CompanyFactsIntakeError, match="exceeds byte cap"):
+        companyfacts._read_source_manifest_ledger(
+            ledger, ["manifest_id"], max_bytes=len(_ledger_line("a")) + 8,
+        )

@@ -1,0 +1,27 @@
+{
+  "schema": "paper.im00.supplied.workspace.evidence.v1",
+  "status": "SCOPED_SOURCE_ACCEPTED_NOT_OPTED_IN",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "engine/intl_workspace_overview.py": "39f1280b94a7a9580f383b8220902a0960bbab2087b3fd5c7204ef33ba71167b",
+    "tests/test_intl_workspace_overview.py": "b3f1edaf59506be2e003f4e4ed1f9b01132310074bbaacf1b872c25fe34a59fc"
+  },
+  "independent_review": {
+    "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM00_SUPPLIED_ADAPTER_REVIEW_R1.json",
+    "sha256": "9626949652ef41bdedb76f5790bf8fbf0191d3050a5c094a9a38c31b863382ac",
+    "run": "paper-01a1101f-supplied-adapter-review-r1",
+    "verdict": "PASS_SCOPED",
+    "tests": "49 Overview+61 qualifier,11 independent counterchecks,43 retained unopted builder;29 new cases RED on absent API"
+  },
+  "parent_validation": "121 Overview/qualifier/actual-builder tests PASS. Initial parentRED28 new cases; reviewer independently reproduced all29 including later horizoncase.",
+  "contract": "Optional closed evidence envelope uses existing snapshot/records/qualifier only. Version2 uses opaque caller UUIDv4 publication generation on root config and panel sidecars; numerical source stays nullable per actual permitted horizon/basis. Legacy closes-only remains v1 unknown.",
+  "architecture": {
+    "ruling": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM00_PARTIAL_SOURCE_RULING.json",
+    "sha256": "cd3e1aa70608841780416f564803cdb51d4267e174bf726af04ba1ece7999b64"
+  },
+  "limits": [
+    "Current builder is deliberately unopted. Version-aware consumer integration is required before supplied mode is mounted.",
+    "Generation is replay identity only; caller renews on content or disclosure changes. No persistent cross-call nonce authority added.",
+    "Synthetic grants prove composition, not genuine producer/adjustment/completed-session/numerical-disclosure evidence."
+  ]
+}

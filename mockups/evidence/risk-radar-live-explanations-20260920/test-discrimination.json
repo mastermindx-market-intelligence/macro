@@ -1,0 +1,21 @@
+{
+  "base": "96d3ddf6d500796573c0269da867409026586d94",
+  "method": "Same assertions, original Git template and JS bytes; no source checkout modified.",
+  "rows": [
+    {
+      "test": "test_source_causes_and_older_input_caveat_are_visible",
+      "candidate": "PASS",
+      "parent": "FAIL_AS_EXPECTED"
+    },
+    {
+      "test": "test_existing_risk_button_carries_separate_internals_hint",
+      "candidate": "PASS",
+      "parent": "FAIL_AS_EXPECTED"
+    },
+    {
+      "test": "test_live_feed_reaches_existing_button_and_visible_reason",
+      "candidate": "PASS",
+      "parent": "FAIL_AS_EXPECTED"
+    }
+  ]
+}

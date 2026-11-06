@@ -1,0 +1,24 @@
+{
+  "semantic_head": "7665039b6eae9deb5fecb574ce958565de60ef74",
+  "input_ref": "4bf1b3aee532114b0c67e06c532b6e4ed7884549",
+  "procedure_pin": "0f4aeae4d25f3770474a7ac70e0ce12af6e2d075",
+  "source_sha256": {
+    "engine/us_candidate_lanes.py": "7e4d727f934f87e80ff4d9ac1b1d9d5389abb1dad77fa49d1bd103ae7161d7c2",
+    "engine/us_context_vector.py": "24d5d39cfc41331c090e1f6dfb3ff7efd34f3845c86219f8142a4a7b4914c424",
+    "scripts/build_site.py": "18cb44cd8360318b9ce5f1a9d00457d6d07ce4a539e01988a775edcc7fdaafeb",
+    "templates/_us_candidate_pool.html.j2": "1e3b45f5c130a586223b575e21fc422441e2ea89fa840277823bc5d9b3311500",
+    "templates/_us_candidate_pool_rows.html.j2": "a58b67f6f24dc203f8a7609ca35942a3185220e325a666dae8d96ca55832a9c3",
+    "templates/dashboard.html.j2": "6fc825c565b4033b820cab174ffdd3a3bb8fa3c72d981b94d706e89515700bcf",
+    "templates/theme.css": "62b49cc08ccfd6a7d124d6a415e05f1767f1278f295be4279882cdabdedc2eb7",
+    "templates/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "scripts/capture_page_evidence.py": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+  },
+  "proof_script_sha256": "c4fc359ed1b8843ac43253fee5bbbf487976de1db53757c7214512156cbdae73",
+  "native_capture_states": 16,
+  "failed_responses": 0,
+  "console_errors": 0,
+  "expanded_views": 8,
+  "authenticated": false,
+  "deployed": false,
+  "readonly_input_fixture": true
+}

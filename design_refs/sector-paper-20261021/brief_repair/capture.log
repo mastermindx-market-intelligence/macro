@@ -1,0 +1,41 @@
+# wave-2 capture 2026-10-22T07:35Z — headless Chrome 1x; pixel samples (x,y)->RGB at (30,300),(30,h/2),(w-40,h-60),(300,135); overflow probe data-w=390 data-ovf="" on every mobile cell
+23-brief-desktop-light-en.png 1440x2730 (30,300)=(247,248,250) (30,1365)=(247,248,250) (1400,2670)=(247,248,250) (300,135)=(247,248,250)
+24-brief-desktop-dark-en.png 1440x2730 (30,300)=(15,17,21) (30,1365)=(15,17,21) (1400,2670)=(15,17,21) (300,135)=(15,17,21)
+25-brief-mobile-dark-zh.png 390x4511 (30,300)=(15,17,21) (30,2255)=(24,27,33) (350,4451)=(15,17,21) (300,135)=(31,27,49) probe data-w="390" data-ovf=""
+26-brief-mobile-light-en.png 390x4686 (30,300)=(247,248,250) (30,2343)=(255,255,255) (350,4626)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf=""
+27-coverage-matrix-desktop-light-en.png 1440x1026 (30,300)=(247,248,250) (30,513)=(247,248,250) (1400,966)=(247,248,250) (300,135)=(238,241,246)
+32-brief-desktop-light-zh.png 1440x2752 (30,300)=(247,248,250) (30,1376)=(247,248,250) (1400,2692)=(247,248,250) (300,135)=(247,248,250)
+33-brief-desktop-dark-zh.png 1440x2752 (30,300)=(15,17,21) (30,1376)=(15,17,21) (1400,2692)=(15,17,21) (300,135)=(15,17,21)
+37-brief-mobile-dark-en.png 390x4903 (30,300)=(15,17,21) (30,2451)=(24,27,33) (350,4843)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf=""
+
+# wave 3 (SIC-V3-C04..C06, C08, C10, C12, C13, C15) 2026-11-01 — Brief specimen re-render (lane criteria, lane-provenance drawer, regime-read drawer, coverage title, two-line 390 rows, board 38); probe = components/board_probe.py, ZH faces = components/zh_latin_grep.py with brief_repair/zh_face_latin_allow.txt
+23-brief-desktop-light-en.png 1440x2752 (30,300)=(247,248,250) (30,1376)=(247,248,250) (1400,2692)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=brief
+24-brief-desktop-dark-en.png 1440x2752 (30,300)=(15,17,21) (30,1376)=(15,17,21) (1400,2692)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=brief
+25-brief-mobile-dark-zh.png 390x4604 (30,300)=(15,17,21) (30,2302)=(24,27,33) (350,4544)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf="" switcher=6 current=brief zh-latin=0
+26-brief-mobile-light-en.png 390x4625 (30,300)=(247,248,250) (30,2312)=(255,255,255) (350,4565)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=brief
+32-brief-desktop-light-zh.png 1440x2777 (30,300)=(247,248,250) (30,1388)=(247,248,250) (1400,2717)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=brief zh-latin=0
+33-brief-desktop-dark-zh.png 1440x2777 (30,300)=(15,17,21) (30,1388)=(15,17,21) (1400,2717)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=brief zh-latin=0
+37-brief-mobile-dark-en.png 390x4860 (30,300)=(15,17,21) (30,2430)=(24,27,33) (350,4800)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf="" switcher=6 current=brief
+38-brief-mobile-light-zh.png 390x4604 (30,300)=(247,248,250) (30,2302)=(255,255,255) (350,4544)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=brief zh-latin=0
+
+# wave 4 (SIC-V4-C01, C05) 2026-11-01 — Brief specimen re-render with the engine ZH doctrine vocabulary on the stance chips (DOCTRINE_STANCES at 46160ab4f6a8); PNG bytes unchanged except where a chip string changed; probe = components/board_probe.py; zh_latin_grep.py tokenizer per SIC-V4-C05 (letter+digit/punct tokens, lone letters) with brief_repair/zh_face_latin_allow.txt — the GLP- entry is spelled GLP-1 under the new tokenizer for the same production basket term, no entry added or removed (AI, GLP-1, ETF).
+23-brief-desktop-light-en.png 1440x2752 (30,300)=(247,248,250) (30,1376)=(247,248,250) (1400,2692)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=brief
+24-brief-desktop-dark-en.png 1440x2752 (30,300)=(15,17,21) (30,1376)=(15,17,21) (1400,2692)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=brief
+25-brief-mobile-dark-zh.png 390x4604 (30,300)=(15,17,21) (30,2302)=(24,27,33) (350,4544)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf="" switcher=6 current=brief zh-latin=0
+26-brief-mobile-light-en.png 390x4625 (30,300)=(247,248,250) (30,2312)=(255,255,255) (350,4565)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=brief
+27-coverage-matrix-desktop-light-en.png 1440x1026 (30,300)=(247,248,250) (30,513)=(247,248,250) (1400,966)=(247,248,250) (300,135)=(238,241,246) (index board: coverage matrix — no switcher/overflow probe, not a coverage cell)
+32-brief-desktop-light-zh.png 1440x2777 (30,300)=(247,248,250) (30,1388)=(247,248,250) (1400,2717)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=brief zh-latin=0
+33-brief-desktop-dark-zh.png 1440x2777 (30,300)=(15,17,21) (30,1388)=(15,17,21) (1400,2717)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=brief zh-latin=0
+37-brief-mobile-dark-en.png 390x4860 (30,300)=(15,17,21) (30,2430)=(24,27,33) (350,4800)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf="" switcher=6 current=brief
+38-brief-mobile-light-zh.png 390x4604 (30,300)=(247,248,250) (30,2302)=(255,255,255) (350,4544)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=brief zh-latin=0
+
+# wave 5 (SIC-ADJ-03, SIC-V5-C04/C05/C11) 2026-11-02 — Brief boards NOT re-rendered (PNG bytes unchanged since wave 4: 23/24 1440x2752 · 25/38 390x4604 · 26 390x4625 · 27 1440x1026 · 32/33 1440x2777 · 37 390x4860); the ZH faces 25/32/33/38 re-probed under the SIC-ADJ-03 zh-latin scope (components/zh_latin_grep.py: <details> skipped wholesale, <code> on a face counts, ALLOW unchanged) with brief_repair/zh_face_latin_allow.txt — AI, GLP-1, ETF exempted (production zh basket names and deck copy); every ZH line states its scope and exempted tokens; probe = components/board_probe.py
+23-brief-desktop-light-en.png 1440x2752 (30,300)=(247,248,250) (30,1376)=(247,248,250) (1400,2692)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=brief
+24-brief-desktop-dark-en.png 1440x2752 (30,300)=(15,17,21) (30,1376)=(15,17,21) (1400,2692)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=brief
+25-brief-mobile-dark-zh.png 390x4604 (30,300)=(15,17,21) (30,2302)=(24,27,33) (350,4544)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf="" switcher=6 current=brief zh-latin=0 skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR+AI,ETF,GLP-1
+26-brief-mobile-light-en.png 390x4625 (30,300)=(247,248,250) (30,2312)=(255,255,255) (350,4565)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=brief
+27-coverage-matrix-desktop-light-en.png 1440x1026 (30,300)=(247,248,250) (30,513)=(247,248,250) (1400,966)=(247,248,250) (300,135)=(238,241,246) (index board: coverage matrix — no switcher/overflow probe, not a coverage cell)
+32-brief-desktop-light-zh.png 1440x2777 (30,300)=(247,248,250) (30,1388)=(247,248,250) (1400,2717)=(247,248,250) (300,135)=(247,248,250) probe data-w="1440" data-ovf="" switcher=6 current=brief zh-latin=0 skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR+AI,ETF,GLP-1
+33-brief-desktop-dark-zh.png 1440x2777 (30,300)=(15,17,21) (30,1388)=(15,17,21) (1400,2717)=(15,17,21) (300,135)=(15,17,21) probe data-w="1440" data-ovf="" switcher=6 current=brief zh-latin=0 skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR+AI,ETF,GLP-1
+37-brief-mobile-dark-en.png 390x4860 (30,300)=(15,17,21) (30,2430)=(24,27,33) (350,4800)=(15,17,21) (300,135)=(31,27,50) probe data-w="390" data-ovf="" switcher=6 current=brief
+38-brief-mobile-light-zh.png 390x4604 (30,300)=(247,248,250) (30,2302)=(255,255,255) (350,4544)=(247,248,250) (300,135)=(240,238,250) probe data-w="390" data-ovf="" switcher=6 current=brief zh-latin=0 skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR+AI,ETF,GLP-1

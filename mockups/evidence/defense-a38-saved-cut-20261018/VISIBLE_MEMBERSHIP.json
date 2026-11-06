@@ -1,0 +1,28 @@
+{
+  "queue": [
+    "govws-22f2ee53487e1e6c760c13e0",
+    "govws-c508052203fa16646432f23d",
+    "govws-8d61bab7f7e3725b512ab14d",
+    "govws-e21b0e3916c35e927f1a71a2",
+    "govws-3bb4119b021aa47478e17b68",
+    "govws-5782688dc6f127a17aef06ce",
+    "govws-6f73721105265002065db21c",
+    "govws-ffecd233fa17021795c5ea4a",
+    "govws-251078da311494963ac95f83",
+    "govws-b9c3cdbb997332f7b2b0b89c"
+  ],
+  "saved": [
+    "govws-22f2ee53487e1e6c760c13e0",
+    "govws-c508052203fa16646432f23d",
+    "govws-8d61bab7f7e3725b512ab14d",
+    "govws-e21b0e3916c35e927f1a71a2",
+    "govws-3bb4119b021aa47478e17b68",
+    "govws-5782688dc6f127a17aef06ce",
+    "govws-6f73721105265002065db21c",
+    "govws-ffecd233fa17021795c5ea4a",
+    "govws-251078da311494963ac95f83",
+    "govws-b9c3cdbb997332f7b2b0b89c"
+  ],
+  "scope": "Retained matching records: 10 · Source window: 500 / 1191 · Source cap: 500 · Freshness at save: partial\n\nDevice-local saved evidence window, not the current workspace. Source clocks and revisions below are the values retained at save time.\n\nEvidence date: 2026-10-16\nKnown to Mastermind: 2026-10-15T01:51:37.472913+00:00\nSource build: 2026-10-16T01:52:43.565231+00:00\nDevice copy: 2026-10-19T11:30:42.731Z\nWorkspace: grw2-120d87bf4021f8d3610168df\nSaved filters: {\"mode\":\"changes\",\"truth\":\"defense\",\"q\":\"\",\"agency\":\"\",\"ticker\":\"LMT\"}\nFirst-seen revision history is not an official complete SAM amendment archive.\nListed-company relationships are rule-based exposure candidates unless separately reviewed.\nExpiry watches are deterministic inferences, never official recompete dates.\nAward-change events are copied only from receipt-bound v2 award-event projections.\nWorkspace events and facets are capped; coverage discloses any records omitted by that cap.\n\nAmounts retain their source meanings; they",
+  "selected": "govws-22f2ee53487e1e6c760c13e0"
+}

@@ -34,6 +34,7 @@ from __future__ import annotations
 import html
 import json
 import logging
+import os
 import re
 import xml.etree.ElementTree as ET
 from collections import Counter
@@ -88,7 +89,7 @@ MACRO_THEMES: dict[str, list[str]] = {
 }
 # theme display labels (EN, ZH)
 THEME_LABEL: dict[str, tuple[str, str]] = {
-    "monetary": ("PBoC", "央行"), "inflation": ("Inflation", "物价"),
+    "monetary": ("Monetary policy", "货币政策"), "inflation": ("Inflation", "物价"),
     "growth": ("Growth", "增长"), "credit": ("Credit", "信用"),
     "fiscal": ("Fiscal/Trade", "财政/贸易"), "policy": ("Policy", "政策"),
     "politics": ("Politics", "政治/地缘"), "tech": ("Tech", "科技"),
@@ -246,8 +247,18 @@ def _cfg() -> dict:
 
 
 def enabled() -> bool:
-    """Master switch for the Eastmoney flash fetch + LLM brief. The policy-tone leg
-    is keyless (reads the stored series) and surfaces regardless."""
+    """Master switch for live headline fetches on data-owning lanes.
+
+    Site-only rerenders still surface the stored policy-tone leg, but they must
+    never reach Eastmoney/RSS/GDELT/official-page network sources.  Their output
+    is intentionally a truthful tone-only degradation until the nightly refresh
+    advances the committed headline caches.
+    """
+    if (
+        os.environ.get("RENDER_NO_DRIP") == "1"
+        or os.environ.get("CHINA_FAST_RENDER") == "1"
+    ):
+        return False
     return bool(_cfg().get("enabled", False))
 
 
@@ -685,7 +696,11 @@ def _is_china_anchored(text: str) -> bool:
     context at all (a UK piece renders HM Treasury as plain 财政部). PURE."""
     blob = text or ""
     neut = _FOREIGN_CB.sub("", blob)
-    if any(tok in neut for tok in _CN_ANCHOR_STRONG):
+    # ASCII tokens in _CN_ANCHOR_STRONG are capitalized ("China","PBoC"); hosts
+    # and some wires arrive lowercased. Casefold both sides so chinadaily.com.cn
+    # and "pboc cuts rates" still match. CJK tokens are unchanged by casefold.
+    neut_cf = neut.casefold()
+    if any(tok.casefold() in neut_cf for tok in _CN_ANCHOR_STRONG):
         return True
     if _FOREIGN_CB.search(blob):
         return False

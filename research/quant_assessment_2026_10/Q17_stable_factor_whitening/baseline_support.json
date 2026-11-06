@@ -1,0 +1,1581 @@
+{
+ "data_root": "/Users/chriswong/Documents/Cluade/macro-main/data",
+ "incumbent_stdout_lines": 6,
+ "inputs_sha256": {
+  "collectors/edgar.py": "d6e3be060fc7ade17e31551795f25806ac414fe5ec7988c31039acc9c7dbba7c",
+  "collectors/edgar_eps.py": "b1c7e02997ee41184994df618178eccd1179abcfa156ed8c118f5aadfb8efb50",
+  "config.yml": "b8963682e5f2fe209cee1a604f19e51bbce232992d75c0b26c60a615600a310f",
+  "data/breadth/_closes_cache.parquet": "ad37acc0a0d4881f7f3f777c247d3b68d6e395ec351cddd90684aa5862e27ae3",
+  "data/breadth/constituents.parquet": "ecdd7e77ac36198b45c4ff6b854e7a46281bd3504d82540853f29c09a1f64aaf",
+  "data/edgar/eps_quarterly.parquet": "0330aa2e6f7518abdcad1e3ad063558480adaae6d6bbe6c6475efda6a307be9a",
+  "data/edgar/fundamentals_panel.parquet": "9af85734e4e3ca64500aba8c61e3b5a7080e15f9912beba150e1bafd8b8bebc4",
+  "data/midcap_breadth/_closes_cache.parquet": "5b7d0ab221fe9c04ea24401fe94a45e2caf6eda9ced250a538c743378c5db920",
+  "data/midcap_breadth/constituents.parquet": "0527370c62ee9a805228873bbaecd8bf8e33d86c18f28877a36b07fe70f2af5f",
+  "data/smallcap_breadth/_closes_cache.parquet": "eb40492c9f7dbb8a1ffc3ef353fcee281515630122abbe180223118d225c9135",
+  "data/smallcap_breadth/constituents.parquet": "c7461d5d2931ad0b746cd99206f63dd46a13d260c965ffa7c81029cab27ffd2e",
+  "data/yahoo/SPY.parquet": "6c785d556c22e20f85f89f55597b10469f0fc4c40a577b8efb04bc11964a3152",
+  "engine/equity_factors.py": "084745c4a6d5e42a01a04a49407a98300bf1cbbacc229aaceb51913a5ebcd681",
+  "engine/factor_orthogonal.py": "c0662c0aee92a337ba94ed98d03fb1a7c6d5ffe18f077711a692b6a084701f23",
+  "engine/factor_stable_whitening.py": "ac6d5098735f1616428b9c9fe9851b7584514e0939206e4ad78f7a18abf18cc7",
+  "engine/sue.py": "26ca53977e87ac00bef6593c6fd520802604f98bef55c41740467f63f081974c",
+  "lib/closes_panel.py": "70bc2c1bb6a15dc677e88c12ee78b1c492afb2bbf75846860cf9d13fc6518496",
+  "lib/store.py": "f69c9171babfb4453c10c9edab9b2b206ef86abd2e328637fcae61569753b61d"
+ },
+ "real_support": {
+  "close_panel_columns": 1551,
+  "close_panel_first": "2023-09-05",
+  "close_panel_tip": "2026-10-08",
+  "incumbent_call": {
+   "asof": "2026-09-30",
+   "returned_input_unchanged": false,
+   "seconds": 0.0019,
+   "shape": [
+    1529,
+    8
+   ]
+  },
+  "month_ends": 37,
+  "per_month": [
+   {
+    "asof": "2023-09-29",
+    "complete_rows_on_those_legs": 685,
+    "coverage": {
+     "accruals": 0.927,
+     "investment": 0.99,
+     "low_beta": 0.6473,
+     "low_vol": 0.0,
+     "payout": 0.5007,
+     "profitability": 0.4284,
+     "quality": 0.9726,
+     "sue": 0.9357,
+     "value": 0.587
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1494,
+    "partial_rows_on_those_legs": 808,
+    "seconds": 5.01,
+    "status": "ok"
+   },
+   {
+    "asof": "2023-10-31",
+    "complete_rows_on_those_legs": 682,
+    "coverage": {
+     "accruals": 0.927,
+     "investment": 0.99,
+     "low_beta": 0.6479,
+     "low_vol": 0.0,
+     "payout": 0.5007,
+     "profitability": 0.4284,
+     "quality": 0.9726,
+     "sue": 0.9344,
+     "value": 0.587
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1494,
+    "partial_rows_on_those_legs": 811,
+    "seconds": 4.54,
+    "status": "ok"
+   },
+   {
+    "asof": "2023-11-30",
+    "complete_rows_on_those_legs": 689,
+    "coverage": {
+     "accruals": 0.9264,
+     "investment": 0.9893,
+     "low_beta": 0.6475,
+     "low_vol": 0.0,
+     "payout": 0.5003,
+     "profitability": 0.4288,
+     "quality": 0.9726,
+     "sue": 0.9398,
+     "value": 0.5866
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1495,
+    "partial_rows_on_those_legs": 805,
+    "seconds": 4.84,
+    "status": "ok"
+   },
+   {
+    "asof": "2023-12-29",
+    "complete_rows_on_those_legs": 684,
+    "coverage": {
+     "accruals": 0.9264,
+     "investment": 0.9893,
+     "low_beta": 0.6475,
+     "low_vol": 0.0,
+     "payout": 0.5003,
+     "profitability": 0.4288,
+     "quality": 0.9726,
+     "sue": 0.9331,
+     "value": 0.5866
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1495,
+    "partial_rows_on_those_legs": 810,
+    "seconds": 4.7,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-01-31",
+    "complete_rows_on_those_legs": 689,
+    "coverage": {
+     "accruals": 0.9258,
+     "investment": 0.9886,
+     "low_beta": 0.6471,
+     "low_vol": 0.0,
+     "payout": 0.5,
+     "profitability": 0.4285,
+     "quality": 0.9726,
+     "sue": 0.9378,
+     "value": 0.5862
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1496,
+    "partial_rows_on_those_legs": 806,
+    "seconds": 4.81,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-02-29",
+    "complete_rows_on_those_legs": 690,
+    "coverage": {
+     "accruals": 0.9258,
+     "investment": 0.9886,
+     "low_beta": 0.6477,
+     "low_vol": 0.0,
+     "payout": 0.5,
+     "profitability": 0.4285,
+     "quality": 0.9726,
+     "sue": 0.9418,
+     "value": 0.5862
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1496,
+    "partial_rows_on_those_legs": 805,
+    "seconds": 4.68,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-03-28",
+    "complete_rows_on_those_legs": 688,
+    "coverage": {
+     "accruals": 0.9258,
+     "investment": 0.9886,
+     "low_beta": 0.6477,
+     "low_vol": 0.0,
+     "payout": 0.5,
+     "profitability": 0.4285,
+     "quality": 0.9726,
+     "sue": 0.9378,
+     "value": 0.5862
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1496,
+    "partial_rows_on_those_legs": 807,
+    "seconds": 4.7,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-04-30",
+    "complete_rows_on_those_legs": 686,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6448,
+     "low_vol": 0.6409,
+     "payout": 0.5007,
+     "profitability": 0.4286,
+     "quality": 0.9821,
+     "sue": 0.9266,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 825,
+    "seconds": 4.76,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-05-31",
+    "complete_rows_on_those_legs": 683,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6448,
+     "low_vol": 0.6422,
+     "payout": 0.5007,
+     "profitability": 0.4286,
+     "quality": 0.9821,
+     "sue": 0.9266,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 828,
+    "seconds": 5.0,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-06-28",
+    "complete_rows_on_those_legs": 681,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6462,
+     "low_vol": 0.6422,
+     "payout": 0.5,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.922,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 830,
+    "seconds": 5.06,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-07-31",
+    "complete_rows_on_those_legs": 696,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6468,
+     "low_vol": 0.6429,
+     "payout": 0.5,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.9411,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 815,
+    "seconds": 5.94,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-08-30",
+    "complete_rows_on_those_legs": 699,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6468,
+     "low_vol": 0.6435,
+     "payout": 0.5,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.9425,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 812,
+    "seconds": 5.33,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-09-30",
+    "complete_rows_on_those_legs": 700,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6481,
+     "low_vol": 0.6442,
+     "payout": 0.5,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.9444,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 811,
+    "seconds": 5.76,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-10-31",
+    "complete_rows_on_those_legs": 699,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6495,
+     "low_vol": 0.6442,
+     "payout": 0.5,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.9425,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 812,
+    "seconds": 5.11,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-11-29",
+    "complete_rows_on_those_legs": 701,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6495,
+     "low_vol": 0.6448,
+     "payout": 0.5,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.9451,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 810,
+    "seconds": 5.39,
+    "status": "ok"
+   },
+   {
+    "asof": "2024-12-31",
+    "complete_rows_on_those_legs": 700,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6495,
+     "low_vol": 0.6448,
+     "payout": 0.5,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.9431,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 811,
+    "seconds": 5.18,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-01-31",
+    "complete_rows_on_those_legs": 695,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6495,
+     "low_vol": 0.6462,
+     "payout": 0.5,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.9365,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 816,
+    "seconds": 5.41,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-02-28",
+    "complete_rows_on_those_legs": 684,
+    "coverage": {
+     "accruals": 0.9345,
+     "investment": 0.9874,
+     "low_beta": 0.6495,
+     "low_vol": 0.6462,
+     "payout": 0.5,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.9259,
+     "value": 0.5899
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 827,
+    "seconds": 5.27,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-03-31",
+    "complete_rows_on_those_legs": 701,
+    "coverage": {
+     "accruals": 0.9352,
+     "investment": 0.9881,
+     "low_beta": 0.9755,
+     "low_vol": 0.6468,
+     "payout": 0.7731,
+     "profitability": 0.4279,
+     "quality": 0.9821,
+     "sue": 0.9418,
+     "value": 0.8876
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1512,
+    "partial_rows_on_those_legs": 810,
+    "seconds": 5.28,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-04-30",
+    "complete_rows_on_those_legs": 702,
+    "coverage": {
+     "accruals": 0.9369,
+     "investment": 0.9928,
+     "low_beta": 0.9731,
+     "low_vol": 0.6445,
+     "payout": 0.7733,
+     "profitability": 0.4231,
+     "quality": 0.9823,
+     "sue": 0.9382,
+     "value": 0.8936
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1522,
+    "partial_rows_on_those_legs": 819,
+    "seconds": 5.51,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-05-30",
+    "complete_rows_on_those_legs": 694,
+    "coverage": {
+     "accruals": 0.9369,
+     "investment": 0.9928,
+     "low_beta": 0.9731,
+     "low_vol": 0.6465,
+     "payout": 0.7733,
+     "profitability": 0.4231,
+     "quality": 0.9823,
+     "sue": 0.9343,
+     "value": 0.8936
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1522,
+    "partial_rows_on_those_legs": 827,
+    "seconds": 5.45,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-06-30",
+    "complete_rows_on_those_legs": 692,
+    "coverage": {
+     "accruals": 0.9369,
+     "investment": 0.9934,
+     "low_beta": 0.9737,
+     "low_vol": 0.6472,
+     "payout": 0.7746,
+     "profitability": 0.4225,
+     "quality": 0.9823,
+     "sue": 0.929,
+     "value": 0.8936
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1522,
+    "partial_rows_on_those_legs": 829,
+    "seconds": 5.5,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-07-31",
+    "complete_rows_on_those_legs": 703,
+    "coverage": {
+     "accruals": 0.9369,
+     "investment": 0.9934,
+     "low_beta": 0.9737,
+     "low_vol": 0.6472,
+     "payout": 0.7746,
+     "profitability": 0.4225,
+     "quality": 0.9823,
+     "sue": 0.9428,
+     "value": 0.8936
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1522,
+    "partial_rows_on_those_legs": 818,
+    "seconds": 5.52,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-08-29",
+    "complete_rows_on_those_legs": 706,
+    "coverage": {
+     "accruals": 0.9369,
+     "investment": 0.9934,
+     "low_beta": 0.9737,
+     "low_vol": 0.6472,
+     "payout": 0.7746,
+     "profitability": 0.4225,
+     "quality": 0.9823,
+     "sue": 0.9468,
+     "value": 0.8936
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1522,
+    "partial_rows_on_those_legs": 815,
+    "seconds": 6.35,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-09-30",
+    "complete_rows_on_those_legs": 707,
+    "coverage": {
+     "accruals": 0.9363,
+     "investment": 0.9928,
+     "low_beta": 0.9731,
+     "low_vol": 0.6474,
+     "payout": 0.7741,
+     "profitability": 0.4222,
+     "quality": 0.9823,
+     "sue": 0.9488,
+     "value": 0.893
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1523,
+    "partial_rows_on_those_legs": 815,
+    "seconds": 5.81,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-10-31",
+    "complete_rows_on_those_legs": 1078,
+    "coverage": {
+     "accruals": 0.9363,
+     "investment": 0.9928,
+     "low_beta": 0.9744,
+     "low_vol": 0.9724,
+     "payout": 0.7741,
+     "profitability": 0.4222,
+     "quality": 0.9823,
+     "sue": 0.9448,
+     "value": 0.893
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1523,
+    "partial_rows_on_those_legs": 445,
+    "seconds": 5.77,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-11-28",
+    "complete_rows_on_those_legs": 1072,
+    "coverage": {
+     "accruals": 0.9363,
+     "investment": 0.9928,
+     "low_beta": 0.9744,
+     "low_vol": 0.9724,
+     "payout": 0.7741,
+     "profitability": 0.4222,
+     "quality": 0.9823,
+     "sue": 0.9363,
+     "value": 0.893
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1523,
+    "partial_rows_on_those_legs": 451,
+    "seconds": 5.82,
+    "status": "ok"
+   },
+   {
+    "asof": "2025-12-31",
+    "complete_rows_on_those_legs": 1087,
+    "coverage": {
+     "accruals": 0.9363,
+     "investment": 0.9928,
+     "low_beta": 0.975,
+     "low_vol": 0.9724,
+     "payout": 0.7741,
+     "profitability": 0.4222,
+     "quality": 0.9823,
+     "sue": 0.9527,
+     "value": 0.893
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1523,
+    "partial_rows_on_those_legs": 436,
+    "seconds": 6.09,
+    "status": "ok"
+   },
+   {
+    "asof": "2026-01-30",
+    "complete_rows_on_those_legs": 1078,
+    "coverage": {
+     "accruals": 0.9357,
+     "investment": 0.9928,
+     "low_beta": 0.975,
+     "low_vol": 0.9731,
+     "payout": 0.7741,
+     "profitability": 0.4222,
+     "quality": 0.9823,
+     "sue": 0.9435,
+     "value": 0.893
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1523,
+    "partial_rows_on_those_legs": 445,
+    "seconds": 6.64,
+    "status": "ok"
+   },
+   {
+    "asof": "2026-02-27",
+    "complete_rows_on_those_legs": 1064,
+    "coverage": {
+     "accruals": 0.9357,
+     "investment": 0.9928,
+     "low_beta": 0.975,
+     "low_vol": 0.9731,
+     "payout": 0.7741,
+     "profitability": 0.4222,
+     "quality": 0.9823,
+     "sue": 0.9311,
+     "value": 0.893
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1523,
+    "partial_rows_on_those_legs": 459,
+    "seconds": 6.1,
+    "status": "ok"
+   },
+   {
+    "asof": "2026-03-31",
+    "complete_rows_on_those_legs": 1080,
+    "coverage": {
+     "accruals": 0.9357,
+     "investment": 0.9928,
+     "low_beta": 0.975,
+     "low_vol": 0.9731,
+     "payout": 0.7728,
+     "profitability": 0.4222,
+     "quality": 0.9823,
+     "sue": 0.9501,
+     "value": 0.8936
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1523,
+    "partial_rows_on_those_legs": 443,
+    "seconds": 5.91,
+    "status": "ok"
+   },
+   {
+    "asof": "2026-04-30",
+    "complete_rows_on_those_legs": 1057,
+    "coverage": {
+     "accruals": 0.9326,
+     "investment": 0.9954,
+     "low_beta": 0.9732,
+     "low_vol": 0.9705,
+     "payout": 0.7605,
+     "profitability": 0.4182,
+     "quality": 0.9777,
+     "sue": 0.9404,
+     "value": 0.894
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1528,
+    "partial_rows_on_those_legs": 470,
+    "seconds": 6.11,
+    "status": "ok"
+   },
+   {
+    "asof": "2026-05-29",
+    "complete_rows_on_those_legs": 1082,
+    "coverage": {
+     "accruals": 0.93,
+     "investment": 0.9954,
+     "low_beta": 0.9771,
+     "low_vol": 0.9706,
+     "payout": 0.76,
+     "profitability": 0.4166,
+     "quality": 0.9778,
+     "sue": 0.4663,
+     "value": 0.8973
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1529,
+    "partial_rows_on_those_legs": 446,
+    "seconds": 6.03,
+    "status": "ok"
+   },
+   {
+    "asof": "2026-06-30",
+    "complete_rows_on_those_legs": 1037,
+    "coverage": {
+     "accruals": 0.9294,
+     "investment": 0.9954,
+     "low_beta": 0.9908,
+     "low_vol": 0.9712,
+     "payout": 0.7652,
+     "profitability": 0.4166,
+     "quality": 0.9778,
+     "sue": 0.9346,
+     "value": 0.9071
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1529,
+    "partial_rows_on_those_legs": 492,
+    "seconds": 6.26,
+    "status": "ok"
+   },
+   {
+    "asof": "2026-07-31",
+    "complete_rows_on_those_legs": 1036,
+    "coverage": {
+     "accruals": 0.9294,
+     "investment": 0.9954,
+     "low_beta": 0.9967,
+     "low_vol": 0.9719,
+     "payout": 0.7593,
+     "profitability": 0.4166,
+     "quality": 0.9778,
+     "sue": 0.9431,
+     "value": 0.898
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1529,
+    "partial_rows_on_those_legs": 493,
+    "seconds": 6.26,
+    "status": "ok"
+   },
+   {
+    "asof": "2026-08-31",
+    "complete_rows_on_those_legs": 1034,
+    "coverage": {
+     "accruals": 0.9294,
+     "investment": 0.9954,
+     "low_beta": 0.9993,
+     "low_vol": 0.9719,
+     "payout": 0.7567,
+     "profitability": 0.4166,
+     "quality": 0.9778,
+     "sue": 0.9464,
+     "value": 0.896
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1529,
+    "partial_rows_on_those_legs": 495,
+    "seconds": 6.57,
+    "status": "ok"
+   },
+   {
+    "asof": "2026-09-30",
+    "complete_rows_on_those_legs": 1036,
+    "coverage": {
+     "accruals": 0.9294,
+     "investment": 0.9954,
+     "low_beta": 0.9993,
+     "low_vol": 0.9719,
+     "payout": 0.7554,
+     "profitability": 0.4166,
+     "quality": 0.9778,
+     "sue": 0.9496,
+     "value": 0.8947
+    },
+    "incumbent_would_fallback": false,
+    "legs_cov_ge_50pct": [
+     "value",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "legs_present": [
+     "value",
+     "profitability",
+     "quality",
+     "investment",
+     "payout",
+     "low_vol",
+     "low_beta",
+     "accruals",
+     "sue"
+    ],
+    "n_rows": 1529,
+    "partial_rows_on_those_legs": 493,
+    "seconds": 6.63,
+    "status": "ok"
+   }
+  ]
+ },
+ "runtime_seconds": 212.0,
+ "synthetic_controls": {
+  "near_duplicate": {
+   "fallback_returned_input": false,
+   "max_abs_diff_vs_challenger_restatement": 3.637090628672013e-13,
+   "nan_pattern_equal": true,
+   "partial_rows": 0,
+   "partial_rows_emitted_complete_by_incumbent": 0
+  },
+  "partial_missing": {
+   "fallback_returned_input": false,
+   "max_abs_diff_vs_challenger_restatement": 4.440892098500626e-16,
+   "nan_pattern_equal": true,
+   "partial_rows": 89,
+   "partial_rows_emitted_complete_by_incumbent": 89
+  },
+  "thin": {
+   "fallback_returned_input": true,
+   "max_abs_diff_vs_challenger_restatement": 0.0,
+   "nan_pattern_equal": true,
+   "partial_rows": 0,
+   "partial_rows_emitted_complete_by_incumbent": 0
+  },
+  "well_conditioned": {
+   "fallback_returned_input": false,
+   "max_abs_diff_vs_challenger_restatement": 0.0,
+   "nan_pattern_equal": true,
+   "partial_rows": 0,
+   "partial_rows_emitted_complete_by_incumbent": 0
+  }
+ }
+}

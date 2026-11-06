@@ -553,3 +553,21 @@ class TestMom20:
         bench = pd.Series(np.ones(n), index=idx)
         m20 = _mom20(px, bench)
         assert m20 == 0.0
+
+
+def test_write_latest_wall_clock_fallback_is_not_a_settled_session(tmp_path):
+    """RB02 #4: when score_and_rank fell back to date.today() the record carries
+    asof_clock="wall_clock"; write_latest must then stamp session=None and
+    clock="wall_clock" so session_alignment() refuses it, while a settled as-of
+    keeps session=asof and clock="settled_daily_session"."""
+    from engine.us_sector_rotation import write_latest
+    out = write_latest([{"ticker": "XLK", "asof": "2026-10-21", "asof_clock": "wall_clock"}], root=tmp_path)
+    payload = json.loads(Path(out).read_text(encoding="utf-8"))
+    assert payload["asof"] == "2026-10-21"
+    assert payload["session"] is None and payload["clock"] == "wall_clock"
+    out = write_latest([{"ticker": "XLK", "asof": "2026-10-20"}], root=tmp_path)
+    payload = json.loads(Path(out).read_text(encoding="utf-8"))
+    assert payload["session"] == "2026-10-20" and payload["clock"] == "settled_daily_session"
+    out = write_latest([], root=tmp_path)
+    payload = json.loads(Path(out).read_text(encoding="utf-8"))
+    assert payload["session"] is None and payload["clock"] == "settled_daily_session"

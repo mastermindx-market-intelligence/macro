@@ -1,0 +1,617 @@
+{
+  "schema": "prophet.trade_plan/v1",
+  "id": "AKR-BULL-20261021",
+  "asof": "2026-10-23",
+  "recorded_at": "2026-10-23",
+  "asset": "AKR",
+  "direction": "BULL",
+  "thesis": "AKR \u2014 conviction 11/100 (neutral) Entry grade: light. Drivers: earnings \u00b7 insider \u00b7 revisions. Cautions: Accounting quality is worth a second look.; Earnings in 4 days. The result can override the setup, so size down.. Trust tier: Event edge: insider buying (lone FDR survivor) + earnings-surprise PEAD context + revisions \u2014 a confluence read, not a standalone alpha. DISPLAY-ONLY: machine-generated from factor scores; no forward return guarantee; display-tier artifact.",
+  "thesis_zh": "AKR \u2014 \u786e\u4fe1\u5ea6 11/100\uff08\u4e2d\u6027\uff09 \u5165\u573a\u8bc4\u7ea7: light\u3002 \u9a71\u52a8\u56e0\u7d20: earnings \u00b7 insider \u00b7 revisions\u3002 \u6ce8\u610f\u4e8b\u9879: \u8d22\u52a1\u8d28\u91cf\u503c\u5f97\u518d\u6838\u67e5\u4e00\u6b21\u3002; 4 \u5929\u540e\u516c\u5e03\u8d22\u62a5\u3002\u4e1a\u7ee9\u7ed3\u679c\u53ef\u80fd\u538b\u8fc7\u6280\u672f\u5f62\u6001\uff0c\u5b9c\u51cf\u5c0f\u4ed3\u4f4d\u3002\u3002 \u53ef\u4fe1\u5ea6: \u4e8b\u4ef6\u9a71\u52a8\u4f18\u52bf\uff1a\u5185\u90e8\u4eba\u4e70\u5165\uff08\u552f\u4e00\u901a\u8fc7 FDR \u7684\u56e0\u5b50\uff09\uff0b\u76c8\u5229\u8d85\u9884\u671f PEAD \u80cc\u666f\uff0b\u8bc4\u7ea7\u8c03\u6574 \u2014 \u7efc\u5408\u53c2\u8003\uff0c\u975e\u72ec\u7acb\u8d85\u989d\u6536\u76ca\u3002 \u4ec5\u4f9b\u5c55\u793a\uff1a\u7531\u56e0\u5b50\u5206\u6570\u673a\u5668\u751f\u6210\uff1b\u65e0\u524d\u77bb\u6536\u76ca\u4fdd\u8bc1\uff1b\u5c55\u793a\u5c42\u7ea7\u8f93\u51fa\u3002",
+  "source_engines": [
+    "us_standouts_buy_lane",
+    "neural_web"
+  ],
+  "trigger": 18.78,
+  "entry": 18.78,
+  "invalidation": 17.54,
+  "targets": [
+    20.64,
+    22.5
+  ],
+  "horizon_days": 45,
+  "min_hold_days": 10,
+  "tranche": 1,
+  "option_contract": null,
+  "stage_tilt": {
+    "leash": 1.0,
+    "eligible": false,
+    "stage_at_entry": 4,
+    "ec_sent": 25.0,
+    "ec_call_date": "2026-04-29",
+    "ec_source_state": "available",
+    "ec_source_path": "data/earnings_calls/history.parquet",
+    "ec_source_tier": "r2_history",
+    "ec_source_generation": {
+      "generation_id": "90f7fc48ca22a49c0ae25f5c",
+      "published_at": "2026-10-23T06:46:20.274020+00:00",
+      "rows": 50982
+    },
+    "ec_source_reason": null,
+    "bear_gate": false,
+    "provisional": true,
+    "demoted": false,
+    "basis": "PSQ 2026-07-20 quality re-grade; provisional \u2014 forward-shadow checked (~2026-12)"
+  },
+  "management_ref": "prophet/state/AKR-BULL-20261021.json",
+  "authority_tier": "display",
+  "reliability": {
+    "plan": "display \u2014 us_standouts buy-lane originated; display-only until forward ledger gate passes",
+    "option_premium": "null \u2014 symbol not in ThetaData store"
+  },
+  "formation_date": "2026-10-21",
+  "signal_date": "2026-10-22",
+  "confirmed_date": null,
+  "observed_date": "2026-10-22",
+  "signal_tier": "T1",
+  "signal_date_basis": "tier_event_date",
+  "signal_provisional": true,
+  "source_marker_date": "2026-10-21",
+  "price_basis_date": "2026-10-22",
+  "entry_date": "2026-10-22",
+  "what_to_do_now": [
+    "Wait for a pullback into the $18.38\u2013$18.50 zone before starting. No entry above $18.78; the plan waits at the band rather than paying the last print.",
+    "Keep the first tranche small; there is no need to rush. Exit on a close below $17.54.",
+    "If the zone fills, scale in gradually toward T1 ($20.64)."
+  ],
+  "what_to_do_now_zh": [
+    "\u7b49\u5f85\u4ef7\u683c\u56de\u843d\u81f3 $18.38\u2013$18.50 \u533a\u95f4\u518d\u5efa\u4ed3\u3002\u4e0d\u8981\u5728 $18.78 \u4e4b\u4e0a\u4e70\u5165\uff1b\u8ba1\u5212\u5728\u533a\u95f4\u7b49\u5f85\uff0c\u800c\u975e\u6309\u6700\u65b0\u4ef7\u8ffd\u5165\u3002",
+    "\u9996\u7b14\u4fdd\u6301\u5c0f\u4ed3\u4f4d\uff0c\u65e0\u9700\u6025\u4e8e\u5165\u573a\u3002\u6536\u76d8\u8dcc\u7834 $17.54 \u5373\u79bb\u573a\u3002",
+    "\u82e5\u533a\u95f4\u88ab\u89e6\u53ca\uff0c\u53ef\u9010\u6b65\u52a0\u4ed3\u81f3 T1\uff08$20.64\uff09\u3002"
+  ],
+  "profit_plan": [
+    {
+      "level": 20.64,
+      "label": "T1",
+      "action": "Scale out 40%, trail stop to entry",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 22.5,
+      "label": "T2",
+      "action": "Close remaining 60%, exit full position",
+      "status": "PENDING"
+    }
+  ],
+  "profit_plan_zh": [
+    {
+      "level": 20.64,
+      "label": "T1",
+      "action": "\u51cf\u4ed3 40%\uff0c\u5c06\u6b62\u635f\u4e0a\u79fb\u81f3\u5165\u573a\u4f4d",
+      "status": "ACTIVE"
+    },
+    {
+      "level": 22.5,
+      "label": "T2",
+      "action": "\u5e73\u4ed3\u5269\u4f59 60%\uff0c\u5168\u90e8\u79bb\u573a",
+      "status": "PENDING"
+    }
+  ],
+  "_signal_date": "2026-10-22",
+  "_priority_score": 47.8,
+  "_conviction_score": 11,
+  "_act_level": 0,
+  "_r_unit": 1.24,
+  "_gate_go": false,
+  "admission_class": "patience",
+  "entry_status": "bounce_wait",
+  "selection_era": "anticipation-v1-2026-08-08",
+  "entry_basis": {
+    "basis_date": "2026-10-22",
+    "basis_source": "staleness_price_through",
+    "run_asof": "2026-10-23",
+    "lag": 1,
+    "lag_basis": "sessions",
+    "max_lag": 3,
+    "state": "current",
+    "signal_basis_date": "2026-10-21",
+    "signal_lag_sessions": 1,
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "entry_zone": {
+    "schema": "prophet.entry_zone/v1",
+    "low": 18.38,
+    "high": 18.5,
+    "chase_above": 18.78,
+    "pct_from_entry": -1.81,
+    "zone_class": "reset_band",
+    "stance": "wait",
+    "basis": "the 10- and 20-day average band under the last price, from the entry ladder",
+    "basis_zh": "\u6700\u65b0\u4ef7\u4e0b\u65b9\u7684 10 \u65e5\u4e0e 20 \u65e5\u5747\u7ebf\u533a\u95f4\uff0c\u6765\u81ea\u5165\u573a\u9636\u68af",
+    "price_basis_date": "2026-10-22",
+    "expiry_sessions": 33,
+    "expiry_date": "2026-12-08",
+    "conversion_class": "washout",
+    "conversion_evidence": "the board reads this as a name coming off a low",
+    "conversion_evidence_zh": "\u770b\u677f\u628a\u5b83\u5f52\u5165\u4f4e\u4f4d\u56de\u5347\u7684\u4e00\u7c7b",
+    "converts_on_expiry": true,
+    "extension": {
+      "daily_stoch_k": 92.59,
+      "htf_stoch_k": 41.3,
+      "daily_extended": true,
+      "htf_extended": false,
+      "both_extended": false,
+      "threshold": 80.0,
+      "htf_timeframe": 3,
+      "source": "price_store_stoch_rsi",
+      "reason": null,
+      "asof": "2026-10-22"
+    },
+    "leader_pullback": {
+      "leader_pullback": false,
+      "state": null,
+      "pullback_high": null,
+      "days_in_state": null,
+      "construction_era": null,
+      "state_asof": null,
+      "context_states": [
+        "PULLBACK",
+        "RESET_TURN"
+      ],
+      "source": "unavailable",
+      "reason": "ticker is outside the leader-pullback organ's universe"
+    },
+    "era": "anticipation-v1-2026-08-08"
+  },
+  "early_turn": {
+    "fired": false,
+    "reason": "signature fired but no licensing context \u2014 a naked dot is not a starter admission",
+    "timeframes": [
+      1
+    ],
+    "washout_state": null,
+    "leader_pullback_source": "unavailable",
+    "union_fired": false,
+    "union_legs": [
+      "relaxed_cross"
+    ],
+    "union_texture": {},
+    "basket_context_chip": null
+  },
+  "source_origin": {
+    "schema": "prophet.plan_source_origin/v1",
+    "owner_ref": "scripts/build_stock_library.py::main",
+    "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+    "source_binding": {
+      "source_sha256": "sha256:8ae9156aabb387dc3de338bdd9558264aaca01bdac08e52aab4b53f0eb7d578a",
+      "pair_id": "54b00eed8daf4dd49a824e1ede6655e4",
+      "market_session": "2026-10-22",
+      "ordered_rows": [
+        {
+          "selection_index": 0,
+          "row_receipt": "sha256:b190208f4aecfd2d9bdaf794444ac7cad7a715bc8c1aadd7201a8b2dcdf33937"
+        },
+        {
+          "selection_index": 1,
+          "row_receipt": "sha256:6d1758ebd40e2664aadfc717183b95d5cf7a8c32ed67d8d20551c5438f8dd4d3"
+        },
+        {
+          "selection_index": 2,
+          "row_receipt": "sha256:66a0bb104e46acbe6173ad6be413aec07272d62da2069f233804d1c6920da6b4"
+        },
+        {
+          "selection_index": 3,
+          "row_receipt": "sha256:24542b4beca701fe9d06d9f81b3e710880a37302c0788f7f81b2c2890b7d4e2d"
+        },
+        {
+          "selection_index": 4,
+          "row_receipt": "sha256:1b191469de81f3cd20804476ed462bcdd3dad9c7fc27134e35fd0f6b5945d8a7"
+        },
+        {
+          "selection_index": 5,
+          "row_receipt": "sha256:fdd6fcba8068288cb609bc2064c25629ca017baf467b0a0cfc915316524ce7b1"
+        },
+        {
+          "selection_index": 6,
+          "row_receipt": "sha256:80ad8ae16d8bcb73e1d1b56ce9109c7f96aea5002316dfb561e5fad51b0c9f1f"
+        },
+        {
+          "selection_index": 7,
+          "row_receipt": "sha256:01f28c142300b1dd002c595fc96f562d4cd874a8fc5746358548adfe7fb5a470"
+        },
+        {
+          "selection_index": 8,
+          "row_receipt": "sha256:924d82d9f3b9fdcd32442b7643d28f384e02fd5df5b0398ff66422fdbfc51cc5"
+        },
+        {
+          "selection_index": 9,
+          "row_receipt": "sha256:92eb97387bb05050b389137f66495a3e4b8dc1a946234ec32f7e8ee8885faaec"
+        },
+        {
+          "selection_index": 10,
+          "row_receipt": "sha256:0d7b0a928b8939321791f57dc6880bdaad17679c79db8c6ec8ec614eb3ad04f2"
+        },
+        {
+          "selection_index": 11,
+          "row_receipt": "sha256:32f306283e11728e926623eed6ea3dd4a922a1d099f4fa787534cb1ef30fe5c6"
+        },
+        {
+          "selection_index": 12,
+          "row_receipt": "sha256:31f52b877e50777b171b9e443acdb92323cde558fda2e2420c7af2b0c806931a"
+        },
+        {
+          "selection_index": 13,
+          "row_receipt": "sha256:df102fb4b306b91a825b1c27addc681eb08e3203dd917a408d1d7ecde961039b"
+        },
+        {
+          "selection_index": 14,
+          "row_receipt": "sha256:21b7be40cc17392c31cc1b253fe9befc4617c2e646fb19f759b02f7323594442"
+        },
+        {
+          "selection_index": 15,
+          "row_receipt": "sha256:4f6e562b837539763daac4c5536a1932f31395d1fae23b8a03b6c2a6e1d318af"
+        },
+        {
+          "selection_index": 16,
+          "row_receipt": "sha256:b7f45cac5a0faa154cd5c9ece29d512f6fde4d8f7357bbd02c9feae3455a04a5"
+        },
+        {
+          "selection_index": 17,
+          "row_receipt": "sha256:61ad6d0d9f3d685bdc12915443c54fa6b19c3c61c8d39c7a3849eff12184057d"
+        },
+        {
+          "selection_index": 18,
+          "row_receipt": "sha256:b9bc78ce18af7296671925aa96694b4edecc7457911ea6f2725c282df0e43caf"
+        },
+        {
+          "selection_index": 19,
+          "row_receipt": "sha256:1f1887a234e3f15e62de87039f62ffdeeeab101164b6b718c4ca8df4b6396fb4"
+        },
+        {
+          "selection_index": 20,
+          "row_receipt": "sha256:d4ebd72dac624e54d5c69d329e5ac66beb801fc3b102b63b5a5014a185ac4d7b"
+        },
+        {
+          "selection_index": 21,
+          "row_receipt": "sha256:cafe10d3e0e20b65f3f13b3f52ee39d05240987fd62ab37ba0b6b806af3848f9"
+        },
+        {
+          "selection_index": 22,
+          "row_receipt": "sha256:01e7fb4576703ba57971c310e677ddd6c0635d42ea15b408a303cb6316269a97"
+        },
+        {
+          "selection_index": 23,
+          "row_receipt": "sha256:765d38acf87891673d8c33b089b405e907903718a650a0f27e3d87e7ec4a7e65"
+        },
+        {
+          "selection_index": 24,
+          "row_receipt": "sha256:a93a275778ef0247e9fee9a234a12480ef7f6e525add95d4a90fa2564ae64e84"
+        },
+        {
+          "selection_index": 25,
+          "row_receipt": "sha256:f59a28f362468f89ba5d83cbed20f17230cfd8f4c43166fd2f67d2b8c9f070b4"
+        },
+        {
+          "selection_index": 26,
+          "row_receipt": "sha256:a04d96c7ac948dbaf753a7fe04908cb720f6e40a890432756a83ee03ecd1948d"
+        },
+        {
+          "selection_index": 27,
+          "row_receipt": "sha256:81e836bb399b780655e7ed977c1772484c2ea0f00e1bf5fe1eb59f5275e481ea"
+        },
+        {
+          "selection_index": 28,
+          "row_receipt": "sha256:05b3c98cd6ba0cb0efa055df2d8384af63b51350b25c2e7b9b4173d47dfcd71b"
+        },
+        {
+          "selection_index": 29,
+          "row_receipt": "sha256:a969987133411fb4b4fa22de85b9ec3ea62dd03f64960576dfa796bbb791f088"
+        },
+        {
+          "selection_index": 30,
+          "row_receipt": "sha256:4b79aaeb54da92c48af792404afc93ee73e1492b26962d0f4f38b7f8bca0b169"
+        },
+        {
+          "selection_index": 31,
+          "row_receipt": "sha256:36dfc24c117b8fe99bd1ab7f163c860f311e211f6d4b3e6199b316959f6c3ce7"
+        },
+        {
+          "selection_index": 32,
+          "row_receipt": "sha256:482c7f5fd434dbabac5a6d47bcdb6f19da1680bc47e9a1aaa84407d0c24c8235"
+        },
+        {
+          "selection_index": 33,
+          "row_receipt": "sha256:dda20fb6e6228365037b43a8ce8dad73789c61e1cb933a39dfb98d21f588c05e"
+        },
+        {
+          "selection_index": 34,
+          "row_receipt": "sha256:80c0d98aa1fa5ff7a816299fb78ec5380ed248fb2fcefe3cbd927d000389e99a"
+        },
+        {
+          "selection_index": 35,
+          "row_receipt": "sha256:6ad111c80a9518277b0d936d5f926d30c1a42711d6398bdd8e2eb71ed56ce8d5"
+        },
+        {
+          "selection_index": 36,
+          "row_receipt": "sha256:d47876a3b2b953b1ff1f55ce54935fc7965262f53be619cb1bc70ef1febc1f36"
+        },
+        {
+          "selection_index": 37,
+          "row_receipt": "sha256:3edb8ae66e9f29cabd2012f1c09f1481702629b8455657cbbb7355f0d30a65ed"
+        },
+        {
+          "selection_index": 38,
+          "row_receipt": "sha256:478888c11779721d2feaeffab14737891072e044b5786f9a29fbd7f249f16031"
+        },
+        {
+          "selection_index": 39,
+          "row_receipt": "sha256:2e6f988abfcc9c5d17f9ab56c8688f7d4935b3a1848632d114ed4886fadf2f5c"
+        },
+        {
+          "selection_index": 40,
+          "row_receipt": "sha256:7c04889d793918c3664c98a1c9d959d33d6ac19cc6ce33bb2d1108a3893d3e77"
+        },
+        {
+          "selection_index": 41,
+          "row_receipt": "sha256:c52cddff7462aba0df2435b8270d842340a80d3377e0ab2b03cbcd13f4c0e654"
+        },
+        {
+          "selection_index": 42,
+          "row_receipt": "sha256:07843bf2152b05c921dea7275e99ee33e42e00fa4c2e97df028588413c7b11e4"
+        },
+        {
+          "selection_index": 43,
+          "row_receipt": "sha256:4be9b1e06bfd3cd8105c7198775d9774eaca3199c5497b832699269e1b1fbe7c"
+        },
+        {
+          "selection_index": 44,
+          "row_receipt": "sha256:fea4253afc4f014c03088a9ed4a1b5ddc00e575b7623dcf7fc39a9fb955b3bd8"
+        },
+        {
+          "selection_index": 45,
+          "row_receipt": "sha256:f5b2dee964a23a95ca0013684dbb4e911f69172a1bd6fd63484d1cff7726da4f"
+        },
+        {
+          "selection_index": 46,
+          "row_receipt": "sha256:f63b9034742ca26695f5d5af03774718ed0b4b007f7aabd010a2e39b27be3d68"
+        },
+        {
+          "selection_index": 47,
+          "row_receipt": "sha256:8fa64b2ca1209fbefc7ec57f5441b51022ff938f2244020ae5fdb948e5996d15"
+        },
+        {
+          "selection_index": 48,
+          "row_receipt": "sha256:74c79eecc172d32e2771c9b6fd5fa7cae2fcfeda87532f5d9b377f4440a90d60"
+        },
+        {
+          "selection_index": 49,
+          "row_receipt": "sha256:f1f3be19292be4eb235ba0b46b84180794e58e8d8c70881fc4982a535fc6eea6"
+        },
+        {
+          "selection_index": 50,
+          "row_receipt": "sha256:f8ab3254ec094d7140c65bf525ace163c52b99e72da2304a9939ed2a271fe52c"
+        },
+        {
+          "selection_index": 51,
+          "row_receipt": "sha256:d6c7b8217b1b0d7034079c5765e04e2b9c2e2e71a971100cee2fd84eca3e5bb0"
+        },
+        {
+          "selection_index": 52,
+          "row_receipt": "sha256:f1a200578a68b33de74f740b79974589a78596d6896f0890aeab56c88cd9dfb6"
+        },
+        {
+          "selection_index": 53,
+          "row_receipt": "sha256:bd0c4b5f3097650261d2c090b0286c61f2d2db23f0767309aaa5c371fe180f0f"
+        },
+        {
+          "selection_index": 54,
+          "row_receipt": "sha256:69c662c6ef1b245888bf790d771e9c103b8ee6045ccb326edc90997ca9b7d6d6"
+        },
+        {
+          "selection_index": 55,
+          "row_receipt": "sha256:303d253240e426dac8a725291d456c959cacd16e83631e74600ba09edffd7af2"
+        },
+        {
+          "selection_index": 56,
+          "row_receipt": "sha256:3f1037b047397629c92f5442ced87c6068c64052caf8f07b12f6875151043980"
+        },
+        {
+          "selection_index": 57,
+          "row_receipt": "sha256:bfe4afa7794f6a05c76a7389e15675aa3c02a1a4fa428ebff98d70577f4cb483"
+        },
+        {
+          "selection_index": 58,
+          "row_receipt": "sha256:b2755bdaa304b9ea43d9c3c51a068d04a3ac016b56d458061bbc6eb7ac3ae1f8"
+        },
+        {
+          "selection_index": 59,
+          "row_receipt": "sha256:3eea11dc349343ffb6c79e390322a1cbc8310191ebe24350df26d70b73f01a91"
+        },
+        {
+          "selection_index": 60,
+          "row_receipt": "sha256:d324164ef503e1e55af93d0f91844ddac475c0ee072b456e424b5776be500644"
+        },
+        {
+          "selection_index": 61,
+          "row_receipt": "sha256:71e4d2275ddd540796e3bd69bb6c3fb174fe0805b961ba6200efbb4276032e3c"
+        },
+        {
+          "selection_index": 62,
+          "row_receipt": "sha256:b6b29bb12580965225a36351bc77df119dd74b288457c1a03ed7252f5f37cfe5"
+        },
+        {
+          "selection_index": 63,
+          "row_receipt": "sha256:a3fc2d41bd79998eb37ba328c187635b1f3c6aeb44ce87b665d698a2f31621dc"
+        },
+        {
+          "selection_index": 64,
+          "row_receipt": "sha256:a88313779fe6db89cae7ef27ca5673922830bac7738619a0c3e9664285c60a1a"
+        },
+        {
+          "selection_index": 65,
+          "row_receipt": "sha256:ab320006ff7466babf19a45c84aa564a9df99430f07f59a5c5541ba58ce8756d"
+        },
+        {
+          "selection_index": 66,
+          "row_receipt": "sha256:40bf48490d2315dd947657f5a863d4e6c790ceb33f0485370c438d008d71a4c6"
+        },
+        {
+          "selection_index": 67,
+          "row_receipt": "sha256:837ac325310f52ef342bd7c8a8bde8854e949e1880ca9f48dfc5e2d27ef064ce"
+        },
+        {
+          "selection_index": 68,
+          "row_receipt": "sha256:c8df76861bafd335756d2becb0bf167adb10592ce000f3ab12c0c76b8dcd147f"
+        },
+        {
+          "selection_index": 69,
+          "row_receipt": "sha256:c69ca065485e08308e8adb7a5d9f15c1cf64a5a430e1cb2c4c810321e3211a2f"
+        },
+        {
+          "selection_index": 70,
+          "row_receipt": "sha256:a8c4c6f312a226ca87d9e88eed45f599639ee60fb1b6a230954d52c30eb831d6"
+        },
+        {
+          "selection_index": 71,
+          "row_receipt": "sha256:f599947969f3eafbd6476f4da2cc8d36a37e99849d2f64f6706e5573d782f42b"
+        },
+        {
+          "selection_index": 72,
+          "row_receipt": "sha256:b658165fad54d72077aca6b259d2a708640c6bc691f3f9876c4d27a841b989e5"
+        },
+        {
+          "selection_index": 73,
+          "row_receipt": "sha256:f77474c44c98baef760f2010cb5d93d90d441981124bb6bff9ee36426690df29"
+        },
+        {
+          "selection_index": 74,
+          "row_receipt": "sha256:ea3ebdab48ec7dd735c846e5f0af4d4e1088d0179dc7d0b54742f99e71c09c4c"
+        },
+        {
+          "selection_index": 75,
+          "row_receipt": "sha256:a8340bec9aab7468228decab3cd015e0085146581a253ee68726df8686a45092"
+        },
+        {
+          "selection_index": 76,
+          "row_receipt": "sha256:c8c1115460bb23b9ca0bd465a330ef090626fe7b34768a55fe84054d93f508fa"
+        },
+        {
+          "selection_index": 77,
+          "row_receipt": "sha256:911f23374ad34c1b3042998b5f203f1e32ccfb66db213431780236951331feb1"
+        },
+        {
+          "selection_index": 78,
+          "row_receipt": "sha256:e9b55b7f89ef37f8b9509d1a65674b4fd4a55bd3a593e6536f4c372f4ac28657"
+        },
+        {
+          "selection_index": 79,
+          "row_receipt": "sha256:e8a43e4c989a99eca09808a567a53e2cd123659b101033696637e0d441b57e78"
+        },
+        {
+          "selection_index": 80,
+          "row_receipt": "sha256:28b40858faf4c6b6e53372fa99ff8e76740c40b659242252b0ce5d109ace8f56"
+        },
+        {
+          "selection_index": 81,
+          "row_receipt": "sha256:ce889d83a6ffa21045ab9df831b4584a13f4b65682aa2ef50637a291c3bf1e43"
+        },
+        {
+          "selection_index": 82,
+          "row_receipt": "sha256:89e5d4d9d70830a29d3286eaf93f54a093c1a152f2a9311a59f1922ae75d6886"
+        },
+        {
+          "selection_index": 83,
+          "row_receipt": "sha256:539ba2481e5985021743c005b63635b044c4984d06335f91fee66ea099e20c89"
+        },
+        {
+          "selection_index": 84,
+          "row_receipt": "sha256:bda2993db6bea8c5c669f25006f1a76ef2297fdbb6c3bf0ca63607b7b31a811e"
+        },
+        {
+          "selection_index": 85,
+          "row_receipt": "sha256:46dbaa14e092af7f0c67551006b4ed48a4e9048ae04effa4422469d3e1ce4253"
+        },
+        {
+          "selection_index": 86,
+          "row_receipt": "sha256:c932a2cbbe3468529a77ddb278cc3f07924b856387960f2c961eafab0e7e8a61"
+        },
+        {
+          "selection_index": 87,
+          "row_receipt": "sha256:91debeed921962277a1dc99a6da3ae2c7b784a4c579a73b6618c8eae38befa32"
+        },
+        {
+          "selection_index": 88,
+          "row_receipt": "sha256:e05fe750dcd6bc0a1ff7c8c2904a2ed3941080b82d89ae85cbdd74217a03fe0a"
+        },
+        {
+          "selection_index": 89,
+          "row_receipt": "sha256:b531b340c2ef46572e879fd99dfeb9a32b8b7eb72ee580baee4594c24a82cc70"
+        },
+        {
+          "selection_index": 90,
+          "row_receipt": "sha256:f90cf9c55c78a73b33d72c47a5f9355dd551ddd29f5fb380186e7ca5ff6b5c71"
+        },
+        {
+          "selection_index": 91,
+          "row_receipt": "sha256:4f4e1de214bf2f3e098d0e3c8678c7962407d903820ce0ecef3b26596959576f"
+        },
+        {
+          "selection_index": 92,
+          "row_receipt": "sha256:18b2505f95d37c4608f74ec64d0c24aeeb517e2d1fced887fbcc2cd795080bfd"
+        },
+        {
+          "selection_index": 93,
+          "row_receipt": "sha256:f96c2537dbdc27f9fbb446521fff53656874ce66db37be2423a308d979800395"
+        },
+        {
+          "selection_index": 94,
+          "row_receipt": "sha256:4b2d9c0b1470f6cfa152250351a6b66999197976c8a8ac384f7bb1d34a94ca09"
+        },
+        {
+          "selection_index": 95,
+          "row_receipt": "sha256:a5462005a7f13e700f535341b2227c146b6838e94e51a738974300e8a058647e"
+        },
+        {
+          "selection_index": 96,
+          "row_receipt": "sha256:6f4aa1a7d6217de2c81a17d5ec6c75c75d67407a8223692520afa560af0975d8"
+        },
+        {
+          "selection_index": 97,
+          "row_receipt": "sha256:f7875a174a815f9f52f574bdc15e7485ab8904d4a9e8918ee5c5df2614c646ce"
+        },
+        {
+          "selection_index": 98,
+          "row_receipt": "sha256:dd638b062f35b115a5a97553bed8287aa693c81f5b784be56b3938bd3ec92a38"
+        },
+        {
+          "selection_index": 99,
+          "row_receipt": "sha256:e60489bf708607d92c28f0a6ece042c50936373864133de33fb2d0f6055ea447"
+        },
+        {
+          "selection_index": 100,
+          "row_receipt": "sha256:0bf9629c625a11ef44fb7e0f35add87606141b848ae152957b3a6aca7ba5d404"
+        },
+        {
+          "selection_index": 101,
+          "row_receipt": "sha256:789976d2179a9c0f372dbabbd01d8230a6cde540b844a0ab505ab7e88f93c086"
+        },
+        {
+          "selection_index": 102,
+          "row_receipt": "sha256:7f8c784b1a97ee75cabf57f4dd8bb212c7852aa8e413f1e35633b301e22d8773"
+        },
+        {
+          "selection_index": 103,
+          "row_receipt": "sha256:9e2478d1fbf51024596ef53cec0a1694cef9cae8732a062da9d9dee407f8ed88"
+        },
+        {
+          "selection_index": 104,
+          "row_receipt": "sha256:b698295cd6e4db575a2f51574befe5951521b267a4380c78d114456220e7ddea"
+        }
+      ],
+      "selection_receipt": "sha256:4ddc4560ad00b86d81d79db151583dcd1b54b899d86afcb52c5c30d52d7ea2dc",
+      "schema": "prophet.today_selection_source_binding/v1",
+      "receipt_kind": "EXACT_DISPLAYED_SOURCE"
+    },
+    "selection_index": 69,
+    "row_receipt": "sha256:c69ca065485e08308e8adb7a5d9f15c1cf64a5a430e1cb2c4c810321e3211a2f"
+  }
+}

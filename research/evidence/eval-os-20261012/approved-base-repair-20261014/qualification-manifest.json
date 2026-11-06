@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-14T16:06:34.754825+00:00",
+  "tested_commit": "7e3157596cdb009445ebe7db6ff3eef6a5b81d96",
+  "records": [
+    {
+      "file": "integrated-qualification.json",
+      "sha256": "9318e618e3287ad67bb99dca2fb39389a98d21f50d395ceaec578cc38dddb2e2",
+      "bytes": 14097,
+      "decoded_sha256": "9318e618e3287ad67bb99dca2fb39389a98d21f50d395ceaec578cc38dddb2e2",
+      "encoding": "identity"
+    },
+    {
+      "file": "integrated-qualification.log.gz",
+      "sha256": "987fb085b634dc1c99c021c5b7be5295323d757fd2afdf559b058923497d5abc",
+      "bytes": 2301,
+      "decoded_sha256": "abfb1eb9fdce051da96e3dbbf0caee5b6c87c2550cbc15b1b4d0886388a27470",
+      "encoding": "gzip"
+    },
+    {
+      "file": "integrated-focused-tests.xml.gz",
+      "sha256": "33995d1e54d7fad599b117036a56996289e9a5e6e60a0c5dc36e868e78ee6842",
+      "bytes": 3469,
+      "decoded_sha256": "555e2dd86fa7f217f19c31293b5b89f7e654f2ff0fdacbc19ba9b021073e624d",
+      "encoding": "gzip"
+    },
+    {
+      "file": "integrated-focused-tests.log.gz",
+      "sha256": "91e8a57349172668304a4897ece68550b0664e51244212fa01f2295dc65a04b6",
+      "bytes": 681,
+      "decoded_sha256": "ac62ef4f5259df563a5c24aba454f38cc74a076e263a456d1798321b36b1e72c",
+      "encoding": "gzip"
+    },
+    {
+      "file": "integrated-theme-tests.xml.gz",
+      "sha256": "a7c7ae008b0c141dce640787dadc35f9e5a939636ed17ffca787a97e36c26033",
+      "bytes": 502,
+      "decoded_sha256": "e87cb9f8535172ff53a152f782ec96a8f76c25ca9081388f9aaef07c8c95971e",
+      "encoding": "gzip"
+    },
+    {
+      "file": "integrated-theme-tests.log.gz",
+      "sha256": "7203841b71fc06f4d89fa0d849a4f64c6cfb2bda80e56ba930a67062da468347",
+      "bytes": 662,
+      "decoded_sha256": "6e0d1cce8141094770363ffb4a99984059b7172018ee29ffc41e7cacbabdf531",
+      "encoding": "gzip"
+    },
+    {
+      "file": "focused-test-summary.json",
+      "sha256": "4b1ff840f4bdb64a6374af111f2237b63beb34da71b000b2912bef12f2fafcbd",
+      "bytes": 852,
+      "decoded_sha256": "4b1ff840f4bdb64a6374af111f2237b63beb34da71b000b2912bef12f2fafcbd",
+      "encoding": "identity"
+    },
+    {
+      "file": "17-file-incoming-impact.json",
+      "sha256": "76d9276e8cf58042c8c781a39a026be5ccb5174bb4bbf013428d3b3be32c9ad8",
+      "bytes": 4070,
+      "decoded_sha256": "76d9276e8cf58042c8c781a39a026be5ccb5174bb4bbf013428d3b3be32c9ad8",
+      "encoding": "identity"
+    },
+    {
+      "file": "qualify_integrated_source.py",
+      "sha256": "49c2a96cbf9c8c6a3605940de0ad87e434fe3b0abb86672ea992a95085f9f5ef",
+      "bytes": 2221,
+      "decoded_sha256": "49c2a96cbf9c8c6a3605940de0ad87e434fe3b0abb86672ea992a95085f9f5ef",
+      "encoding": "identity"
+    }
+  ],
+  "verdict": "LOCAL_SOURCE_QUALIFIED_NOT_HOSTED_CI_OR_RELEASE"
+}

@@ -1,0 +1,990 @@
+{
+  "at": "2026-10-19T11:42:05.589352+00:00",
+  "completion": {
+    "at": "2026-10-19T11:36:51.208419+00:00",
+    "exit": 0,
+    "pid": 90189
+  },
+  "manifest_sha256": "4bd3631fbddac5adabd876dbdc6b6b4139d8bd7dcf9073a3e92c7b948911928f",
+  "totals": {
+    "pages": 2,
+    "states_attempted": 16,
+    "states_captured": 16
+  },
+  "cells": [
+    {
+      "cell_id": "about.html|desktop|zh|light|anonymous",
+      "screenshot_sha256": "e43fc9bc6a0aa303e20e317934038bc3a5da06bf2f66f8ce7713af07b3e30b99",
+      "console_error_count": 2,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/billing/offers/founding_pro",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 50,
+      "payload_bytes_total": 6866697,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(247, 248, 250)",
+        "body_color": "rgb(28, 36, 48)",
+        "content_color": "rgb(28, 36, 48)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 102,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "macro.html|desktop|zh|dark|anonymous",
+      "screenshot_sha256": "5ce44e3f37291d96402f65ab33838d14cc63067d4552b6a421aa73cd61dfe3e4",
+      "console_error_count": 9,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/macrodata/release_forecast.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/quotes.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/overlay.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_state.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_envelope.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/release_publications.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        }
+      ],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 89,
+      "payload_bytes_total": 7404104,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(10, 12, 17)",
+        "body_color": "rgb(200, 208, 220)",
+        "content_color": "rgb(200, 208, 220)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 248,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "macro.html|mobile|en|dark|anonymous",
+      "screenshot_sha256": "854eb5b5a1c95a227273cb42cb03ae30ebef3185171a866b167df0f09470fd15",
+      "console_error_count": 9,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/macrodata/release_forecast.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/quotes.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/overlay.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/release_publications.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_envelope.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_state.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        }
+      ],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 88,
+      "payload_bytes_total": 9102282,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(10, 12, 17)",
+        "body_color": "rgb(200, 208, 220)",
+        "content_color": "rgb(200, 208, 220)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 478,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "about.html|mobile|zh|dark|anonymous",
+      "screenshot_sha256": "66c8ca3dc7dfea5eaa9978df6c2b5960a3c1ff4a88b6f58953d69dec08b107a0",
+      "console_error_count": 2,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/billing/offers/founding_pro",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 50,
+      "payload_bytes_total": 6306410,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(247, 248, 250)",
+        "body_color": "rgb(28, 36, 48)",
+        "content_color": "rgb(28, 36, 48)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 102,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "about.html|mobile|en|light|anonymous",
+      "screenshot_sha256": "f485cafea067be20eb2e417e2a2d998676fa06a0929ad58b26f4d287e07c2478",
+      "console_error_count": 2,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/billing/offers/founding_pro",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 49,
+      "payload_bytes_total": 6733606,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(247, 248, 250)",
+        "body_color": "rgb(28, 36, 48)",
+        "content_color": "rgb(28, 36, 48)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 509,
+      "horizontal_overflow": true,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "about.html|mobile|zh|light|anonymous",
+      "screenshot_sha256": "fbe07d62b9e8d989d2081dd852704064cc4c3702b7cfe96d9dbe6490dba962bc",
+      "console_error_count": 2,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/billing/offers/founding_pro",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 50,
+      "payload_bytes_total": 6971688,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(247, 248, 250)",
+        "body_color": "rgb(28, 36, 48)",
+        "content_color": "rgb(28, 36, 48)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 102,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "macro.html|mobile|zh|light|anonymous",
+      "screenshot_sha256": "e1599bd05ce39f57d41c1eec2ada24abd0dd0b2b0f24b93b01dbed7804e4199d",
+      "console_error_count": 9,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/macrodata/release_forecast.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/quotes.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/overlay.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_state.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/release_publications.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_envelope.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        }
+      ],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 88,
+      "payload_bytes_total": 8281224,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(232, 235, 241)",
+        "body_color": "rgb(46, 57, 80)",
+        "content_color": "rgb(46, 57, 80)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 224,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "macro.html|desktop|zh|light|anonymous",
+      "screenshot_sha256": "e5013323bf0b574b0f356f1bb354b9779638f3a65938952da48e4cc54aec4a3b",
+      "console_error_count": 9,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/macrodata/release_forecast.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/quotes.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/overlay.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/release_publications.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_envelope.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_state.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        }
+      ],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 89,
+      "payload_bytes_total": 7671338,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(232, 235, 241)",
+        "body_color": "rgb(46, 57, 80)",
+        "content_color": "rgb(46, 57, 80)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 248,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "macro.html|mobile|zh|dark|anonymous",
+      "screenshot_sha256": "c561872f081455672cbf88d038d9555367d150f1c7dc26ce89d3c7260dd33194",
+      "console_error_count": 9,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/macrodata/release_forecast.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/quotes.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/overlay.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_state.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_envelope.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/release_publications.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        }
+      ],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 88,
+      "payload_bytes_total": 7780078,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(10, 12, 17)",
+        "body_color": "rgb(200, 208, 220)",
+        "content_color": "rgb(200, 208, 220)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 224,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "about.html|desktop|en|dark|anonymous",
+      "screenshot_sha256": "9a2a990ac000a03b257beb4543a6484bcd091ff16a8362314a0f80804d1f121f",
+      "console_error_count": 2,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/billing/offers/founding_pro",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 49,
+      "payload_bytes_total": 6522330,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(247, 248, 250)",
+        "body_color": "rgb(28, 36, 48)",
+        "content_color": "rgb(28, 36, 48)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 509,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "macro.html|desktop|en|light|anonymous",
+      "screenshot_sha256": "05c35e7dd425abc0603ec381af43eccf6b7f6bb5bd97f1251860b2642cd0f877",
+      "console_error_count": 9,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/macrodata/release_forecast.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/quotes.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/overlay.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_state.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_envelope.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/release_publications.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        }
+      ],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 89,
+      "payload_bytes_total": 8570280,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(232, 235, 241)",
+        "body_color": "rgb(46, 57, 80)",
+        "content_color": "rgb(46, 57, 80)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 514,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "about.html|desktop|en|light|anonymous",
+      "screenshot_sha256": "ec9ca84a631e3a1bb5a42bf4ae1d7ea0cf50e37b9eeffee00436e0305e93557a",
+      "console_error_count": 2,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/billing/offers/founding_pro",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 49,
+      "payload_bytes_total": 7390776,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(247, 248, 250)",
+        "body_color": "rgb(28, 36, 48)",
+        "content_color": "rgb(28, 36, 48)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 509,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "about.html|mobile|en|dark|anonymous",
+      "screenshot_sha256": "645fb4397df00480f6bbb424a4e18763ae9a848512fa2a68c23bf94fab7c751f",
+      "console_error_count": 2,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/billing/offers/founding_pro",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 49,
+      "payload_bytes_total": 6681606,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(247, 248, 250)",
+        "body_color": "rgb(28, 36, 48)",
+        "content_color": "rgb(28, 36, 48)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 509,
+      "horizontal_overflow": true,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "macro.html|desktop|en|dark|anonymous",
+      "screenshot_sha256": "6afe1eca553d05c24fd4434195273126616be23a602a16feac06f8fcaaff58d4",
+      "console_error_count": 9,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/macrodata/release_forecast.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/quotes.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/overlay.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_state.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_envelope.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/release_publications.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        }
+      ],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 89,
+      "payload_bytes_total": 7021212,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(10, 12, 17)",
+        "body_color": "rgb(200, 208, 220)",
+        "content_color": "rgb(200, 208, 220)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 514,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "macro.html|mobile|en|light|anonymous",
+      "screenshot_sha256": "7a834c51b2df23d970af2074bea9bafe8c0b38eaac6bdeb4d4cda91b1fa92e3e",
+      "console_error_count": 9,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/macrodata/release_forecast.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/quotes.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/overlay.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_state.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/risk_envelope.json?<redacted>",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/live/release_publications.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/brain/me",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        },
+        {
+          "url": "ws://127.0.0.1:3110/ws/tape",
+          "behavior": "closed"
+        }
+      ],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 88,
+      "payload_bytes_total": 8687248,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(232, 235, 241)",
+        "body_color": "rgb(46, 57, 80)",
+        "content_color": "rgb(46, 57, 80)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 478,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    },
+    {
+      "cell_id": "about.html|desktop|zh|dark|anonymous",
+      "screenshot_sha256": "728236371ad0bfa3c31a659a54384f5194264878da94b2521a8fd28c1e05d961",
+      "console_error_count": 2,
+      "request_failures": [
+        {
+          "url": "http://127.0.0.1:3100/data/manifest.json",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        },
+        {
+          "url": "http://127.0.0.1:3110/api/billing/offers/founding_pro",
+          "method": "GET",
+          "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+        }
+      ],
+      "blocked_websockets": [],
+      "failed_http_responses": [],
+      "unreadable_body_sizes": [],
+      "request_count": 50,
+      "payload_bytes_total": 6375832,
+      "presentation": {
+        "root_background": "rgba(0, 0, 0, 0)",
+        "body_background": "rgb(247, 248, 250)",
+        "body_color": "rgb(28, 36, 48)",
+        "content_color": "rgb(28, 36, 48)"
+      },
+      "observer_field_count": 15,
+      "visible_words": 102,
+      "horizontal_overflow": false,
+      "cleanup": {
+        "context_closed": true,
+        "browser_closed": true,
+        "errors": []
+      }
+    }
+  ],
+  "console_error_count": 88,
+  "blocked_websocket_count": 24,
+  "horizontal_overflow_cells": [
+    "about.html|mobile|en|light|anonymous",
+    "about.html|mobile|en|dark|anonymous"
+  ],
+  "narrow_css_scope_only": true,
+  "application_release_acceptance": false,
+  "scope_notes": [
+    "88 fixture-policy-blocked HTTP requests and console errors; no claim of a network-clean product session.",
+    "24 tape stream connection attempts explicitly closed by fixture policy.",
+    "2 About mobile English states report horizontal overflow; focused diagnostic locates inherited footer at 405.625px right edge on 390px viewport.",
+    "About inherited light-only canvas in both shell themes."
+  ]
+}

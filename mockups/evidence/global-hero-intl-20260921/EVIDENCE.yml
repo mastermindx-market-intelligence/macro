@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/intl.html.j2
+  - templates/_unified_dashboard_hero.html.j2
+  - site/intl.html
+manifest: mockups/evidence/global-hero-intl-20260921/manifest.json

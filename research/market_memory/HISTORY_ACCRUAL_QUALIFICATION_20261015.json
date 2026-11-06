@@ -1,0 +1,35 @@
+{
+  "collector_or_scheduler_changed": false,
+  "existing_owner_scope_checks": [
+    {
+      "job": "research-price-panel",
+      "missing": [],
+      "note": "derived scopes for 1/1 jobs"
+    },
+    {
+      "job": "dataos-web-workspace",
+      "missing": [],
+      "note": "derived scopes for 1/1 jobs"
+    },
+    {
+      "job": "dataos-foundation",
+      "missing": [],
+      "note": "derived scopes for 1/1 jobs"
+    }
+  ],
+  "final_review_id": "market-time-machine-accrual-20261015-review-03",
+  "final_review_state": "ACTIVE_OR_WAITING",
+  "live_installed_market_tail": "HISTORY_REAL_EXTENSION_PROOF_20261015.json",
+  "live_installed_stock_tail": "HISTORY_STOCK_EXTENSION_PROOF_20261015.json",
+  "old_review": "HISTORY_ACCRUAL_REVIEW_20261015.json",
+  "persistent_scheduling_hold_preserved": true,
+  "schema": "market_memory.history_accrual_source_qualification.v1",
+  "source_base": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+  "source_not_yet_merged": true,
+  "source_sha256": "ebe9d5869f8d7405a2d96e9b1c724696f5ba3382caee648bc615f81a77ed1179",
+  "tests": {
+    "new_negative_before_positive_after": 22,
+    "passed": 456,
+    "seconds": 30.7
+  }
+}

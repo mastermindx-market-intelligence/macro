@@ -1,0 +1,269 @@
+{
+ "auditor": "seat model (claude-opus-5-5), 2026-10-14",
+ "classes": {
+  "MATCH": "The headline reports an event of the routed template family at the resolved issuer, and at least one attached filing reports that event.",
+  "NO_EVENT": "The headline reports no issuer event of the template family (market report, commentary, list, quote page, solicitation).",
+  "OTHER_EVENT": "The headline event is real and the resolved issuer is its subject, but no attached filing reports it.",
+  "WRONG_ISSUER": "The resolved issuer is not the subject of the headline."
+ },
+ "verdicts": [
+  {
+   "case_id": "0203c8f4b17e7c32",
+   "class": "NO_EVENT",
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer."
+  },
+  {
+   "case_id": "04e9f4e9c5dd7348",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Investor commentary on income stocks; no new issuer action."
+  },
+  {
+   "case_id": "12888188eeb43572",
+   "class": "NO_EVENT",
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer."
+  },
+  {
+   "case_id": "13f9cd891072561f",
+   "class": "WRONG_ISSUER",
+   "kind": "partner_named",
+   "note": "The resolved issuer is a partner named in the headline; the event belongs to another company."
+  },
+  {
+   "case_id": "24274c667413e1be",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "The one attached filing reports trial data; the filing for the headline's capital action is not attached."
+  },
+  {
+   "case_id": "26a0b5728c9f940d",
+   "class": "MATCH",
+   "kind": "",
+   "note": ""
+  },
+  {
+   "case_id": "285ee21452d75ab7",
+   "class": "WRONG_ISSUER",
+   "kind": "other_company_subject",
+   "note": "The headline reports another company's results; the resolved issuer is only mentioned."
+  },
+  {
+   "case_id": "33d6ad63bcc2d8b0",
+   "class": "WRONG_ISSUER",
+   "kind": "single_letter_ticker",
+   "note": "A one-letter ticker resolved to an unrelated issuer; the issuer-in-headline flag was a false positive."
+  },
+  {
+   "case_id": "3deeaaf696829728",
+   "class": "NO_EVENT",
+   "kind": "solicitation",
+   "note": "Law-firm investor solicitation; no issuer action."
+  },
+  {
+   "case_id": "40f141dfd2278bf5",
+   "class": "NO_EVENT",
+   "kind": "listicle",
+   "note": "Stock list article; no issuer action."
+  },
+  {
+   "case_id": "42230fc4062d9c43",
+   "class": "WRONG_ISSUER",
+   "kind": "other_company_subject",
+   "note": "The headline reports another company's outlook; the resolved issuer is a customer it implies."
+  },
+  {
+   "case_id": "5fa111268385f5a4",
+   "class": "MATCH",
+   "kind": "",
+   "note": ""
+  },
+  {
+   "case_id": "6102dc48fd128d00",
+   "class": "MATCH",
+   "kind": "",
+   "note": ""
+  },
+  {
+   "case_id": "6a09a069e13a1772",
+   "class": "NO_EVENT",
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer."
+  },
+  {
+   "case_id": "6e93f9d1021b542c",
+   "class": "MATCH",
+   "kind": "",
+   "note": ""
+  },
+  {
+   "case_id": "70c3eca15231c1d4",
+   "class": "MATCH",
+   "kind": "",
+   "note": ""
+  },
+  {
+   "case_id": "77c504d5e4bdab9f",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Question-form commentary; the attached body happens to carry guidance, the headline reports no event."
+  },
+  {
+   "case_id": "8209ca03e15e8472",
+   "class": "NO_EVENT",
+   "kind": "quote_page",
+   "note": "Price-quote page; no issuer action."
+  },
+  {
+   "case_id": "8794d6338edc0821",
+   "class": "MATCH",
+   "kind": "",
+   "note": "The offering filing is attached alongside an earnings filing from the prior day."
+  },
+  {
+   "case_id": "8b682d052c40a37f",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Sector income-stock commentary; no issuer action."
+  },
+  {
+   "case_id": "8f74b5aea8f72cec",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Income arithmetic article about the issuer; no issuer action."
+  },
+  {
+   "case_id": "913f696c23cbedaa",
+   "class": "MATCH",
+   "kind": "",
+   "note": "The earnings release attached carries the capital-return action the headline reports."
+  },
+  {
+   "case_id": "9357a11376cad73c",
+   "class": "WRONG_ISSUER",
+   "kind": "common_word_ticker",
+   "note": "Political news; a common English word resolved as a ticker."
+  },
+  {
+   "case_id": "947b73a0f2f0baf1",
+   "class": "MATCH",
+   "kind": "",
+   "note": "Commentary on a reported event; the attached filing reports that event."
+  },
+  {
+   "case_id": "a956da6ec7ae61e2",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Income-stock commentary; no issuer action."
+  },
+  {
+   "case_id": "aa7ae83ba3d0ec5c",
+   "class": "MATCH",
+   "kind": "",
+   "note": ""
+  },
+  {
+   "case_id": "ac30ce21b19aca45",
+   "class": "MATCH",
+   "kind": "",
+   "note": "The underwriting filing two days later is attached; a second attached filing reports acquisition financials."
+  },
+  {
+   "case_id": "ae73860ac3011770",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Fund commentary; no issuer action."
+  },
+  {
+   "case_id": "b0673e2868c44e9f",
+   "class": "MATCH",
+   "kind": "",
+   "note": "The attached filing reports the same tender program."
+  },
+  {
+   "case_id": "b95967705eb0bb54",
+   "class": "WRONG_ISSUER",
+   "kind": "name_collision_private",
+   "note": "A private firm shares the resolved issuer's name; the issuer-in-headline flag was a false positive."
+  },
+  {
+   "case_id": "ba2654d517ab8024",
+   "class": "MATCH",
+   "kind": "",
+   "note": ""
+  },
+  {
+   "case_id": "ba3d331c50a63bad",
+   "class": "NO_EVENT",
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer."
+  },
+  {
+   "case_id": "c87c5cb167eb7969",
+   "class": "WRONG_ISSUER",
+   "kind": "private_subject",
+   "note": "The headline's subject is a private firm; the resolved issuer is not it."
+  },
+  {
+   "case_id": "d00c34e9532199fb",
+   "class": "MATCH",
+   "kind": "",
+   "note": "The headline names a product, not the issuer; the issuer-in-headline flag was a false negative."
+  },
+  {
+   "case_id": "d7f5b33520e46491",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "The one attached filing reports preliminary results; the capital-action filing is not attached."
+  },
+  {
+   "case_id": "d907d9ae55928fad",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "The attached filing reports an asset-acquisition closing and its financing; the capital-return filing is not attached."
+  },
+  {
+   "case_id": "ded7194dd8a45431",
+   "class": "MATCH",
+   "kind": "",
+   "note": ""
+  },
+  {
+   "case_id": "e0f7bc4b304d9f0b",
+   "class": "NO_EVENT",
+   "kind": "market_report",
+   "note": "Industry market-research release; it reports no event at the resolved issuer."
+  },
+  {
+   "case_id": "e6fe76f584bb4332",
+   "class": "NO_EVENT",
+   "kind": "commentary",
+   "note": "Income-stock commentary; no issuer action."
+  },
+  {
+   "case_id": "ebe79d38ec54ba71",
+   "class": "MATCH",
+   "kind": "",
+   "note": ""
+  },
+  {
+   "case_id": "69cdff734be8096d",
+   "class": "OTHER_EVENT",
+   "kind": "event_filing_absent",
+   "note": "Motivating card M3: the headline reports a product expansion; the attached filing reports a different event."
+  },
+  {
+   "case_id": "942a8b6e282f8f76",
+   "class": "NO_EVENT",
+   "kind": "quote_page",
+   "note": "Motivating card M7: price-quote page; no issuer action."
+  },
+  {
+   "case_id": "cda8daa3f5309de6",
+   "class": "WRONG_ISSUER",
+   "kind": "single_letter_ticker",
+   "note": "Motivating card M9: a one-letter ticker resolved to an unrelated issuer."
+  }
+ ]
+}

@@ -1,0 +1,109 @@
+{
+  "source_commit": "1df73c1ac9289a21e192aeb50088a4f9119aee82",
+  "source_path": "data/flow_signals/ledger.parquet",
+  "source_sha256": "c14b99cf92c29467d40a823a42e1b8974f018233c76b70d917b403f7a3898b62",
+  "input_bytes_unchanged": true,
+  "stats_seconds": 0.1351,
+  "stats": {
+    "n_rows": 92574,
+    "source_clock_coverage": {
+      "schema": "flow_signals.clock_coverage/v1",
+      "authority": "diagnostic_only",
+      "rows_total": 92574,
+      "status_counts": {
+        "ordered": 0,
+        "partial": 0,
+        "unavailable": 0,
+        "invalid": 0,
+        "legacy_unknown": 92574,
+        "unrecognized": 0
+      },
+      "field_non_null": {
+        "observed_at": 0,
+        "decision_at": 0,
+        "available_at": 0,
+        "published_at": 0,
+        "source_snapshot_asof": 0
+      }
+    },
+    "n_sessions": 44,
+    "dte_bucket_counts": {
+      "1_7d": 36059,
+      "8_30d": 21254,
+      "31_90d": 19464,
+      "0d": 15797
+    },
+    "events_per_day": {
+      "2026-07-13": 4509,
+      "2026-07-14": 4441,
+      "2026-07-15": 4819,
+      "2026-07-16": 5556,
+      "2026-07-17": 5585,
+      "2026-07-20": 3732,
+      "2026-07-21": 4897,
+      "2026-07-24": 4180,
+      "2026-07-27": 4782,
+      "2026-07-28": 3618,
+      "2026-07-29": 4850,
+      "2026-07-30": 4212,
+      "2026-07-31": 4545,
+      "2026-08-03": 863,
+      "2026-08-04": 1048,
+      "2026-08-05": 981,
+      "2026-08-06": 546,
+      "2026-08-07": 1005,
+      "2026-08-11": 307,
+      "2026-08-12": 515,
+      "2026-08-20": 2190,
+      "2026-08-21": 494,
+      "2026-08-24": 482,
+      "2026-08-25": 409,
+      "2026-08-26": 475,
+      "2026-08-27": 789,
+      "2026-08-28": 384,
+      "2026-08-31": 466,
+      "2026-09-02": 589,
+      "2026-09-03": 842,
+      "2026-09-04": 769,
+      "2026-09-08": 898,
+      "2026-09-09": 811,
+      "2026-09-10": 570,
+      "2026-09-11": 588,
+      "2026-09-14": 656,
+      "2026-09-15": 119,
+      "2026-09-17": 739,
+      "2026-09-18": 509,
+      "2026-09-21": 5500,
+      "2026-09-22": 2161,
+      "2026-09-23": 2280,
+      "2026-09-24": 2319,
+      "2026-09-25": 2544
+    },
+    "last_ts": "2026-09-25T19:59:59+00:00"
+  },
+  "actual_native_gate_clock_coverage": {
+    "schema": "flow_signals.clock_coverage/v1",
+    "authority": "diagnostic_only",
+    "rows_total": 92574,
+    "status_counts": {
+      "ordered": 0,
+      "partial": 0,
+      "unavailable": 0,
+      "invalid": 0,
+      "legacy_unknown": 92574,
+      "unrecognized": 0
+    },
+    "field_non_null": {
+      "observed_at": 0,
+      "decision_at": 0,
+      "available_at": 0,
+      "published_at": 0,
+      "source_snapshot_asof": 0
+    }
+  },
+  "mode": "OFFLINE_READ_ONLY_DIAGNOSTIC",
+  "production_enabled": false,
+  "model_fit": false,
+  "outcomes_or_prices_read": false,
+  "authority": "diagnostic_only"
+}

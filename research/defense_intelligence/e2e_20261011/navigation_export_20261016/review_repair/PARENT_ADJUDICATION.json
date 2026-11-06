@@ -1,0 +1,21 @@
+{
+  "run_id": "defense-navigation-acceptance-review-01a13300-a",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "subject_head": "bf821833b10a3a5cc1ba4c5a288d9c64ebb77bb2",
+  "repair_source": "4fcd00874485",
+  "retained_stdout_sha256": "a1a1cfe1385d1eccb4be92a77671a98535028caa1caae0da1def64863fdff621",
+  "verdict": "REVIEW_RETURN_ACCEPTED_AFTER_PARENT_REPRODUCTION_AND_REPAIR",
+  "findings": {
+    "F1": "Reproduced EN and ZH against full native controller. Filtered candidate now renders the explicit filtered panel and cannot substitute a different candidate.",
+    "F2": "Reproduced string/null/bool amount values. CSV basis withheld with unavailable numeric value; exact JSON value preserved. No numeric-string coercion.",
+    "F3": "Reproduced ISO datetime/null/invalid date. Filename uses YYYY-MM-DD or undated.",
+    "F4": "Reachable: native search had no maxlength. Reproduced input and history paths; both use120char cap. Native input preserves trailing whitespace while typing multiword query; stored query trims consistently."
+  },
+  "checks": {
+    "before": "10 introduced adversarial cases failed on original source",
+    "after": "112 native UI/briefcase/FMS cases passed; includes11 new cases",
+    "ci_failure": "Exact stale FMS callback subtraction fixture repaired; same8192byte bound and symbol-removal assertions retained"
+  },
+  "scope": "Review of changed navigation/export source and bounded repairs; not new production, privacy, economic, scientific or entire-product independent acceptance.",
+  "uncovered_falsifiers": "Reviewer explicitly lacked some runtime wrappers; parent real-controller tests execute them. Other notes are conditional or pre-existing and no admission/source/URL semantics was widened."
+}

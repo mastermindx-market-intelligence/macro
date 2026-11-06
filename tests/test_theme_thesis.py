@@ -37,6 +37,7 @@ _LIVE_COPY_RELPATHS = (
     "config/theme_thesis_registry.yml",
     "config/theme_crosswalk.yml",
     "site/basketdata/foresight_cascade.json",
+    "data/foresight/log.jsonl",
     "data/neuralweb/theme_state.json",
     "data/neuralweb/theme_thesis_ledger.jsonl",
     "data/neuralweb/theme_thesis_ledger.jsonl.envelope.json",
@@ -135,6 +136,44 @@ class TestRegistryCompleteness:
             assert version_part.isdigit(), (
                 f"thesis_id {tid!r} version part {version_part!r} must be numeric"
             )
+
+    def test_semantic_repair_preserves_existing_thesis_identity(self, theses):
+        """Changing evaluator semantics must not fork the append-only thesis identity."""
+        by_theme = {t["theme_id"]: t["thesis_id"] for t in theses}
+        assert by_theme["ai_semiconductors"] == "ai_semiconductors.v1"
+        assert by_theme["memory_storage"] == "memory_storage.v1"
+
+    def test_cpu_memory_claims_are_product_specific_not_permanent(self, theses):
+        """Lane B claim review must remove unsupported permanent CPU/memory assertions."""
+        by_theme = {t["theme_id"]: t for t in theses}
+        ai = by_theme["ai_semiconductors"]
+        memory = by_theme["memory_storage"]
+
+        def claim_text(thesis):
+            parts = [
+                thesis["variant_perception_en"],
+                thesis["mechanism_en"],
+                thesis["driver"]["description"],
+            ]
+            parts.extend(x["why"] for x in thesis["winner_classes"])
+            parts.extend(x["why"] for x in thesis["loser_classes"])
+            parts.extend(x["rule_en"] for x in thesis["falsifiers"])
+            return " ".join(parts).lower()
+
+        combined = claim_text(ai) + " " + claim_text(memory)
+        for unsupported in (
+            "two producers",
+            "two-supplier",
+            "18-24 months",
+            "being crowded out by gpu capex",
+            "only hbm-capable",
+        ):
+            assert unsupported not in combined, unsupported
+
+        assert "product-specific" in combined
+        assert "cpu-specific" in combined
+        assert "customer capex" in combined
+        assert "supplier/product exposure" in combined
 
 
 # ---------------------------------------------------------------------------
@@ -423,43 +462,299 @@ class TestFalsifierEvaluation:
         result = evaluator._eval_falsifier(spec, foresight, {}, "solar")
         assert result["state"] == evaluator.STATE_FIRED
 
-    def test_fired_stage_regression(self, evaluator):
-        """Stage 'in' check → FIRED when stage matches glut or watch."""
-        spec = {
+    def _stage_regression_spec(self):
+        return {
             "id": "test_stage",
-            "rule_en": "stage regressed",
+            "rule_en": "stage regressed with independent deterioration",
             "check": {
                 "kind": "stage_regression",
                 "source_artifact": "site/basketdata/foresight_cascade.json",
                 "field": "stage",
                 "op": "in",
                 "threshold": ["GLUT-RISK", "WATCH"],
-                "window_d": None,
+                "prior_stage_in": ["RE-RATING", "ACCELERATING", "BROADENING", "PRECIPICE", "WATCH"],
+                "watch_prior_stage_in": ["RE-RATING"],
+                "watch_deterioration_field": "bottleneck_band",
+                "watch_deterioration_in": ["LOOSE"],
+                "window_d": 60,
             },
             "qualitative": False,
         }
-        foresight = self._make_foresight("ai_semiconductors", stage="WATCH")
-        result = evaluator._eval_falsifier(spec, foresight, {}, "ai_semiconductors")
+
+    def _history_row(self, asof, *, stage="RE-RATING", revision_breadth=0.3, ts=None):
+        return {
+            "theme": "ai_semiconductors",
+            "asof": asof,
+            "ts": ts or f"{asof}T01:00:00+00:00",
+            "stage": stage,
+            "bottleneck_band": "TIGHT (text)",
+            "revision_breadth": revision_breadth,
+        }
+
+    def test_neutral_watch_after_rerating_is_armed(self, evaluator):
+        """WATCH alone means scarcity was not confirmed; it is not deterioration."""
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="WATCH", bottleneck_band="NEUTRAL",
+        )
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[self._history_row("2026-09-01")],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_ARMED
+        assert result["reason_code"] == "WATCH_WITHOUT_INDEPENDENT_DETERIORATION"
+
+    def test_prolonged_watch_uses_predecessor_of_current_stage_run(self, evaluator):
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="WATCH", bottleneck_band="LOOSE",
+        )
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[
+                self._history_row("2026-09-01", stage="RE-RATING"),
+                self._history_row("2026-09-08", stage="WATCH"),
+                self._history_row("2026-09-15", stage="WATCH"),
+            ],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_FIRED
+        assert result["evidence"]["prior_stage"] == "RE-RATING"
+
+    def test_watch_with_loose_bottleneck_after_rerating_fires(self, evaluator):
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="WATCH", bottleneck_band="LOOSE",
+        )
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[self._history_row("2026-09-01")],
+            evaluation_as_of="2026-09-16",
+        )
         assert result["state"] == evaluator.STATE_FIRED
 
-    def test_armed_stage_still_broadening(self, evaluator):
-        """Stage 'in' check → ARMED when stage is BROADENING (not in list)."""
+    def test_glut_risk_after_rerating_fires(self, evaluator):
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="GLUT-RISK", bottleneck_band="LOOSE",
+        )
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[self._history_row("2026-09-01")],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_FIRED
+
+    def test_history_sensitive_check_without_snapshot_clock_is_data_missing(self, evaluator):
+        result = evaluator._eval_falsifier(
+            self._two_print_spec(),
+            self._make_foresight("ai_semiconductors", revision_breadth=-0.2),
+            {},
+            "ai_semiconductors",
+            foresight_history=[self._history_row("2026-09-01", revision_breadth=-0.2)],
+            evaluation_as_of=None,
+        )
+        assert result["state"] == evaluator.STATE_DATA_MISSING
+        assert result["reason_code"] == "OBSERVATION_CLOCK_MISSING"
+
+    def test_stage_regression_missing_current_stage_is_data_missing(self, evaluator):
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight(
+            "ai_semiconductors", bottleneck_band="LOOSE",
+        )
+        foresight["ai_semiconductors"].pop("stage", None)
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[self._history_row("2026-09-01")],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_DATA_MISSING
+        assert result["reason_code"] == "CURRENT_STAGE_MISSING"
+
+    def test_watch_missing_deterioration_field_is_data_missing(self, evaluator):
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight("ai_semiconductors", stage="WATCH")
+        foresight["ai_semiconductors"].pop("bottleneck_band", None)
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[self._history_row("2026-09-01")],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_DATA_MISSING
+        assert result["reason_code"] == "WATCH_DETERIORATION_FIELD_MISSING"
+
+    def test_stage_target_without_prior_distinct_print_is_data_missing(self, evaluator):
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="GLUT-RISK", bottleneck_band="LOOSE",
+        )
+        result = evaluator._eval_falsifier(
+            spec, foresight, {}, "ai_semiconductors",
+            foresight_history=[], evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_DATA_MISSING
+
+    @pytest.mark.parametrize(
+        "prior_stage",
+        ["RE-RATING", "ACCELERATING", "BROADENING", "PRECIPICE", "WATCH"],
+    )
+    def test_glut_risk_accepts_each_named_predecessor(self, evaluator, prior_stage):
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="GLUT-RISK", bottleneck_band="LOOSE",
+        )
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[self._history_row("2026-09-01", stage=prior_stage)],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_FIRED
+        assert result["reason_code"] == "STAGE_REGRESSION_WITH_ECONOMIC_DETERIORATION"
+        assert result["evidence"]["prior_stage"] == prior_stage
+
+    @pytest.mark.parametrize("bad_stage", [None, "", "   ", 7])
+    def test_stage_regression_missing_historical_stage_is_data_missing(
+        self, evaluator, bad_stage
+    ):
+        spec = self._stage_regression_spec()
+        prior = self._history_row("2026-09-01", stage="WATCH")
+        if bad_stage is None:
+            prior.pop("stage", None)
+        else:
+            prior["stage"] = bad_stage
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="GLUT-RISK", bottleneck_band="LOOSE",
+        )
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[prior],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_DATA_MISSING
+        assert result["fired"] is False
+        assert result["reason_code"] == "PRIOR_STAGE_MISSING"
+        assert result["evidence"]["prior_stage"] is None
+
+    def test_stage_regression_requires_named_predecessor(self, evaluator):
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="WATCH", bottleneck_band="LOOSE",
+        )
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[self._history_row("2026-09-01", stage="BROADENING")],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_ARMED
+        assert result["reason_code"] == "REQUIRED_PREDECESSOR_NOT_PRESENT"
+
+    def _two_print_spec(self):
         spec = {
-            "id": "test_stage2",
-            "rule_en": "stage still ok",
+            "id": "test_two_print",
+            "rule_en": "two distinct negative breadth prints",
             "check": {
-                "kind": "stage_regression",
+                "kind": "consecutive_threshold",
                 "source_artifact": "site/basketdata/foresight_cascade.json",
-                "field": "stage",
-                "op": "in",
-                "threshold": ["GLUT-RISK", "WATCH"],
-                "window_d": None,
+                "field": "revision_breadth",
+                "op": "lt",
+                "threshold": -0.05,
+                "window_d": 60,
+                "consecutive_prints": 2,
             },
             "qualitative": False,
         }
-        foresight = self._make_foresight("ai_semiconductors", stage="BROADENING")
-        result = evaluator._eval_falsifier(spec, foresight, {}, "ai_semiconductors")
+        return spec
+
+    def test_two_distinct_negative_prints_fire(self, evaluator):
+        result = evaluator._eval_falsifier(
+            self._two_print_spec(),
+            self._make_foresight("ai_semiconductors", revision_breadth=-0.1),
+            {},
+            "ai_semiconductors",
+            foresight_history=[
+                self._history_row("2026-09-09", revision_breadth=-0.2),
+                self._history_row("2026-09-16", revision_breadth=-0.1),
+            ],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_FIRED
+
+    def test_repeated_same_date_print_is_not_two_prints(self, evaluator):
+        one = self._history_row("2026-09-16", revision_breadth=-0.2)
+        result = evaluator._eval_falsifier(
+            self._two_print_spec(),
+            self._make_foresight("ai_semiconductors", revision_breadth=-0.2),
+            {},
+            "ai_semiconductors",
+            foresight_history=[one, dict(one)],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_DATA_MISSING
+
+    def test_current_projection_supersedes_same_date_history_corrections(self, evaluator):
+        result = evaluator._eval_falsifier(
+            self._two_print_spec(),
+            self._make_foresight("ai_semiconductors", revision_breadth=0.2),
+            {},
+            "ai_semiconductors",
+            foresight_history=[
+                self._history_row("2026-09-09", revision_breadth=-0.2),
+                self._history_row(
+                    "2026-09-16", revision_breadth=-0.2,
+                    ts="2026-09-16T01:00:00+00:00",
+                ),
+                self._history_row(
+                    "2026-09-16", revision_breadth=-0.1,
+                    ts="2026-09-16T02:00:00+00:00",
+                ),
+            ],
+            evaluation_as_of="2026-09-16",
+        )
         assert result["state"] == evaluator.STATE_ARMED
+        assert result["evidence"]["corrections_superseded"] == 2
+        assert result["evidence"]["observations"][-1]["value"] == 0.2
+
+    def test_stale_history_is_data_missing(self, evaluator):
+        result = evaluator._eval_falsifier(
+            self._two_print_spec(),
+            self._make_foresight("ai_semiconductors", revision_breadth=-0.2),
+            {},
+            "ai_semiconductors",
+            foresight_history=[
+                self._history_row("2026-05-01", revision_breadth=-0.2),
+                self._history_row("2026-05-08", revision_breadth=-0.2),
+            ],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_DATA_MISSING
 
     # ── DATA_MISSING path ──────────────────────────────────────────────────
 

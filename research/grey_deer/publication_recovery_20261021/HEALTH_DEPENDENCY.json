@@ -1,0 +1,310 @@
+{
+  "schema": "grey_deer.release_health_dependency.v1",
+  "programme": "MAS-258",
+  "observed_runtime": {
+    "observed_at": "2026-10-21T10:23:18.001042+00:00",
+    "pid": "3972732",
+    "http_observations": [
+      {
+        "path": "/health",
+        "exception_type": "TimeoutError",
+        "elapsed_seconds": 6.148,
+        "error": "timed out"
+      },
+      {
+        "path": "/api/market_view",
+        "http_status": 200,
+        "bytes": 15145,
+        "elapsed_seconds": 0.333
+      },
+      {
+        "path": "/favicon.ico",
+        "exception_type": "HTTPError",
+        "elapsed_seconds": 0.303,
+        "error": "HTTP Error 404: Not Found"
+      }
+    ],
+    "process": {
+      "Name": "uvicorn",
+      "State": "S (sleeping)",
+      "VmSize": "2333852 kB",
+      "VmRSS": "163720 kB",
+      "Threads": "17"
+    },
+    "wait_channel_counts": {
+      "0": 1,
+      "futex_wait_queue": 14,
+      "io_sq_thread": 1,
+      "hrtimer_nanosleep": 1
+    },
+    "loadavg": "2.76 2.12 1.74 4/384 4067012",
+    "application_mutations_invoked": false
+  },
+  "related_preflight": "RUNTIME_PREFLIGHT_2026-10-21T102054Z.json",
+  "installed_source": "fe7afd0111141bae27927715e709d074fea729e2",
+  "macro_dependency_source": "ca7edbcf50df21bd321bffa3433e5f105d3335da",
+  "source_path": [
+    "app.main._runtime_health",
+    "brain.client.available",
+    "brain.cli_bridge.available",
+    "brain.provider_waterfall.available",
+    "brain.provider_waterfall.provider_rungs"
+  ],
+  "source_finding": "Installed availability calls the complete provider ranking path. The current Macro dependency reads the full provider ledger in is_cooling and window_load. This is a demonstrated source mechanism, not a live sampled-stack attribution of this timeout.",
+  "incumbent": {
+    "pr": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/668",
+    "head": "9a524adaa7624e497170f0869bad23bd98e65fcc",
+    "branch": "sol/health-liveness-fastpath-20260915-sol-001",
+    "draft": false,
+    "state": "open",
+    "source_paths": [
+      "brain/provider_waterfall.py",
+      "tests/test_provider_waterfall.py"
+    ],
+    "scope": "Lightweight presence and lane-authorized availability; actual reasoning ranking remains unchanged.",
+    "test_gate": {
+      "run": 35021156981,
+      "check": 104556863537,
+      "conclusion": "success"
+    },
+    "security_gate": {
+      "run": 35021156617,
+      "aggregate_check": 104557176781,
+      "conclusion": "failure",
+      "summary": "6 new high-severity alerts",
+      "annotations": {
+        "check": 104557176781,
+        "head": "9a524adaa7624e497170f0869bad23bd98e65fcc",
+        "read_only_native_process": 10082,
+        "retrieval": "Existing authorized M2 GitHub CLI read; connector lacks annotation endpoint support. No alert mutation, waiver, rerun or source write.",
+        "count": 6,
+        "findings": [
+          {
+            "path": "brain/runlog.py",
+            "start_line": 67,
+            "end_line": 67,
+            "annotation_level": "failure",
+            "title": "Clear-text storage of sensitive information",
+            "message": "This expression stores [sensitive data (password)](1) as clear text.\nThis expression stores [sensitive data (password)](2) as clear text.",
+            "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/9a524adaa7624e497170f0869bad23bd98e65fcc/brain/runlog.py"
+          },
+          {
+            "path": "scripts/demo_research.py",
+            "start_line": 27,
+            "end_line": 27,
+            "annotation_level": "failure",
+            "title": "Clear-text logging of sensitive information",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/9a524adaa7624e497170f0869bad23bd98e65fcc/scripts/demo_research.py"
+          },
+          {
+            "path": "scripts/dryrun_desk.py",
+            "start_line": 49,
+            "end_line": 49,
+            "annotation_level": "failure",
+            "title": "Clear-text logging of sensitive information",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/9a524adaa7624e497170f0869bad23bd98e65fcc/scripts/dryrun_desk.py"
+          },
+          {
+            "path": "scripts/dryrun_diag.py",
+            "start_line": 28,
+            "end_line": 28,
+            "annotation_level": "failure",
+            "title": "Clear-text logging of sensitive information",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/9a524adaa7624e497170f0869bad23bd98e65fcc/scripts/dryrun_diag.py"
+          },
+          {
+            "path": "scripts/dryrun_strat_raw.py",
+            "start_line": 26,
+            "end_line": 26,
+            "annotation_level": "failure",
+            "title": "Clear-text logging of sensitive information",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/9a524adaa7624e497170f0869bad23bd98e65fcc/scripts/dryrun_strat_raw.py"
+          },
+          {
+            "path": "scripts/review_ticker.py",
+            "start_line": 115,
+            "end_line": 115,
+            "annotation_level": "failure",
+            "title": "Clear-text logging of sensitive information",
+            "message": "This expression logs [sensitive data (password)](1) as clear text.",
+            "blob_href": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/9a524adaa7624e497170f0869bad23bd98e65fcc/scripts/review_ticker.py"
+          }
+        ],
+        "changed_pr_paths": [
+          "brain/provider_waterfall.py",
+          "tests/test_provider_waterfall.py"
+        ],
+        "disposition": "All six annotated sink locations are outside the two changed PR paths. This does not prove irrelevance or a false positive: the original taint paths and current source must be adjudicated by the incumbent/security review. The failed security gate remains binding."
+      }
+    },
+    "governance_note": "Existing September16 source-custody comment 5694717832 names the incumbent and excludes competing writer, source transfer or deployment authority.",
+    "local_custody": "Fresh canonical M2 census found no original health-liveness workspace. Absence on this host is not proof that no owner exists elsewhere.",
+    "root_action": "Read-only dependency reconciliation; no edit, takeover, alert suppression, rerun, merge or deployment."
+  },
+  "related_active_owner": {
+    "pr": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/715",
+    "head": "d0330d0443ae8494da3c57cb71fb4c19af98d940",
+    "scope": "Existing BOT renewal provider result and scheduler health work; ordinary auto-merge was already enabled.",
+    "limit": "Its owner-reported live revoked-auth evidence and source changes are not credential recovery or a new root production attestation."
+  },
+  "boundary": "Release health gate remains unresolved: the strict curl -m6 check timed out after6.002257 seconds and a later rehearsal preflight timed out at10 seconds. The earlier200 observation remains valid only at its recorded scope. Neither successful isolated startup nor a responsive different route replaces real release health.",
+  "next_action": "Incumbent/security owner must resolve exact #668 findings with legitimate gate evidence and a complete accepted health response. Retain original source custody. A new release/recovery qualification must follow a real implementation, composition or accepted-contract change; do not repeat the unchanged pair to obtain a favorable sample.",
+  "followup_observations": [
+    {
+      "during": "2026-10-21T10:39:25.558184+00:00 through 2026-10-21T10:39:39.059369+00:00",
+      "source": "INTEGRATED_REHEARSAL_RESULT.json production_before.health",
+      "http_status": 200,
+      "status": "ok",
+      "paper_only": true,
+      "reasoning_policy_ok": true,
+      "scheduled_runtime_ok": true,
+      "commit": "fe7afd0111141bae27927715e709d074fea729e2",
+      "latency_measured": false,
+      "timeout_seconds": 10,
+      "strict_six_second_budget": "NOT_PROVED"
+    },
+    {
+      "file": "COMPOSED_HEALTH_PREFLIGHT.json",
+      "schema": "grey_deer.strict_health_observation.v1",
+      "observed_at": "2026-10-21T10:57:57.843180+00:00",
+      "installed": "fe7afd0111141bae27927715e709d074fea729e2",
+      "service_before": {
+        "MainPID": "3972732",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+      },
+      "curl_exit": 28,
+      "http_status": 0,
+      "curl_seconds": 6.002257,
+      "elapsed_seconds": 6.031364149414003,
+      "budget_seconds": 6,
+      "error": "curl: (28) Operation timed out after 6002 milliseconds with 0 bytes received\n",
+      "body_sha256": null,
+      "health": null,
+      "service_after": {
+        "MainPID": "3972732",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+      },
+      "service_identity_unchanged": true,
+      "contract_passed": false,
+      "limitations": [
+        "One observed request, not a latency/reliability SLO.",
+        "Earlier timed-out observations are retained.",
+        "No production mutation or provider/portfolio request invoked."
+      ]
+    },
+    {
+      "during": "2026-10-21T10:59:54.253313+00:00 through 2026-10-21T11:00:39.266917+00:00",
+      "source": "COMPOSED_REHEARSAL_RESULT.json production_before.health",
+      "exception_type": "TimeoutError",
+      "error": "timed out",
+      "timeout_seconds": 10
+    }
+  ],
+  "c3_source_triage": {
+    "ruling": "HOLD; plausible source repair, dependency uncleared",
+    "reviewer": "publisher_contract_review",
+    "head": "9a524adaa7624e497170f0869bad23bd98e65fcc",
+    "source_findings": [
+      "provider_waterfall.available returns literal booleans through configured Codex or lane-authorized OAuth presence, without provider_rungs or _oauth_pool_candidates; actual reasoning ranking is unchanged.",
+      "Three added tests guard the ranking-free availability path; they are not a six-second full-route latency guarantee.",
+      "The five script sinks print availability/enabled results; demo_research and review_ticker additionally print cli_path. runlog.py:67 is a generic JSON sink for caller-provided detail and extra without evident boundary redaction."
+    ],
+    "limits": [
+      "Actual installed discover_present_keys and resolve implementations and latency not established by this review.",
+      "No live sampled-stack attribution of the entire health timeout.",
+      "Boolean-return signatures and out-of-diff sink locations do not clear taint-flow findings.",
+      "Configuration presence does not establish usable authentication, remaining quota or a completed provider request."
+    ],
+    "required_closure": [
+      "Exact analysis revision/rule IDs/alert fingerprints and redacted source-to-sink flows for six findings, including same-configuration base comparison.",
+      "Evidence-backed incumbent/security resolution and legitimate successful exact-candidate security gate.",
+      "Exact-composition full health-route proof within the existing six-second budget, plus explicit baseline recovery-health disposition."
+    ],
+    "source_custody_transferred": false,
+    "security_clearance": false,
+    "production_authorized": false
+  },
+  "ownership_recovery": {
+    "method": "Read-only original-carrier and canonical-record reconciliation under the existing Mastermind recovery procedure",
+    "branch": "sol/health-liveness-fastpath-20260915-sol-001",
+    "head": "9a524adaa7624e497170f0869bad23bd98e65fcc",
+    "source_custody_note": 5694717832,
+    "github_code_search": {
+      "queries": [
+        "health-liveness-fastpath-20260915-sol-001",
+        "Mastermind/pull/668"
+      ],
+      "matches": 0,
+      "limitation": "Search-index absence is not owner/execution absence."
+    },
+    "canonical_checkout_search": {
+      "process": 81014,
+      "revision": "372167df82364a22a9b40badf825204435598a41",
+      "scopes": [
+        "docs",
+        "research",
+        "config"
+      ],
+      "matches": 2,
+      "paths": [
+        "research/grey_deer/consumer_comparison_20261017/MASTERmind_SOURCE_CUSTODY_2026-10-18.json",
+        "research/grey_deer/consumer_comparison_20261017/MASTERmind_SOURCE_CUSTODY_REFRESH_2026-10-18_0746.json"
+      ],
+      "conclusion": "Only existing source-custody census entries identified; no original operational root/run was established by these reads."
+    },
+    "procedure_reference_capability": "The recovery skill main page was readable; its requested authority-boundaries companion returned 'skill environment is not available for this callback' on two exact reads. No health modification or authority inference was made.",
+    "original_operational_identity": "UNESTABLISHED",
+    "source_transfer": false,
+    "retry_or_replacement_dispatch": false,
+    "scope": "Finite read-only custody inquiry; retained incumbent branch, source and security gate."
+  },
+  "paired_actual_route": {
+    "file": "ISOLATED_HEALTH_ROUTE_SUMMARY.json",
+    "full_report_file": "ISOLATED_HEALTH_ROUTE_RESULT.json",
+    "full_report_sha256": "20fcbded4f383dbe33f1cfcf0351f1f1bbc9862bdfa7e61a08c472485417d166",
+    "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+    "baseline": "fe7afd0111141bae27927715e709d074fea729e2",
+    "execution_completed": true,
+    "paired_helper_contract_passed": false,
+    "candidate_deadline": "request_6s / no complete response",
+    "baseline_elapsed_seconds": 5.988967098,
+    "production_release_ready": false
+  },
+  "paired_route_review": {
+    "design_reviewer": "/root/release_contract_review",
+    "implementation_ruling": "ACCEPTED after full source read and finite snapshot/presence clarifications",
+    "interpretation_reviewer": "/root/risk_contract_review",
+    "interpretation_ruling": "ACCEPTED for isolated response-contract evidence; no authentication or production claim",
+    "actual_result_reviewer": "/root/release_contract_review",
+    "actual_result_ruling": "ACCEPTED — paired lane complete; retain candidate negative; no unchanged rerun warranted",
+    "specific_limits": [
+      "Candidate timeout supplies neither HTTP status/body nor a precise failure-location attribution.",
+      "The single cold-process pair does not establish a source regression or its cause.",
+      "Read counts belong only to the phase that retained them.",
+      "Baseline 5.988967098-second isolated pass does not clear the observed live timeout, authentication, TCP/uvicorn, active-job contention or recovery health.",
+      "Actual paused state is retained even when literal scheduler.running and scheduled_runtime_ok are true.",
+      "No full-release qualification of later protected 7ab47f0 is inferred."
+    ]
+  },
+  "later_read_only_metadata_receipt": {
+    "action": "One intended exact existing-carrier read of code-scanning alert metadata for the six already observed sink paths",
+    "result": "No output, process ID or dispatch receipt returned before orchestrator interruption; tool reported aborted by user after1123.8s.",
+    "interruption_actor": "root orchestrator; not a user instruction to stop the project",
+    "command_start": "UNVERIFIED",
+    "github_dispatch": "UNVERIFIED",
+    "completion": "UNVERIFIED",
+    "permission_denial_observed": false,
+    "new_rule_or_alert_identifiers_verified": false,
+    "taint_flow_evidence_returned": false,
+    "retry_performed": false,
+    "disposition": "Existing six-finding security HOLD unchanged. This transport loss is not a provider/permission refusal and not successful metadata retrieval."
+  }
+}

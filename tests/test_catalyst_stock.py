@@ -351,6 +351,52 @@ def test_precompute_degraded_not_cached():
         cs._cfg, cs.brief_for_ticker = oc, obrief
 
 
+def test_build_stock_briefs_all_no_context_is_failure():
+    """A batch with targets but zero deterministic context is a dark capability."""
+    from engine import stock_desk
+    from scripts import build_stock_briefs as builder
+
+    old_targets = builder._targets
+    old_enabled = cs.enabled
+    old_precompute = cs.precompute_briefs
+    old_desk_enabled = stock_desk.enabled
+    builder._targets = lambda: ["AAA", "BBB"]
+    cs.enabled = lambda: True
+    cs.precompute_briefs = lambda targets, root=None: [
+        {"ticker": ticker, "degraded_reason": "no_context"} for ticker in targets
+    ]
+    stock_desk.enabled = lambda: False
+    try:
+        assert builder.main() == 1
+    finally:
+        builder._targets = old_targets
+        cs.enabled = old_enabled
+        cs.precompute_briefs = old_precompute
+        stock_desk.enabled = old_desk_enabled
+
+
+def test_build_stock_briefs_empty_result_is_failure():
+    """Targets plus zero emitted briefs is a failed capability, not an honest no-op."""
+    from engine import stock_desk
+    from scripts import build_stock_briefs as builder
+
+    old_targets = builder._targets
+    old_enabled = cs.enabled
+    old_precompute = cs.precompute_briefs
+    old_desk_enabled = stock_desk.enabled
+    builder._targets = lambda: ["AAA", "BBB"]
+    cs.enabled = lambda: True
+    cs.precompute_briefs = lambda targets, root=None: []
+    stock_desk.enabled = lambda: False
+    try:
+        assert builder.main() == 1
+    finally:
+        builder._targets = old_targets
+        cs.enabled = old_enabled
+        cs.precompute_briefs = old_precompute
+        stock_desk.enabled = old_desk_enabled
+
+
 def test_render_markdown():
     md = cs.render_markdown({"ticker": "AAPL", "name": "Apple Inc", "model": "deepseek-v4-pro",
                              "summary": "TL;DR", "drivers": ["d1"], "risks": ["r1"],

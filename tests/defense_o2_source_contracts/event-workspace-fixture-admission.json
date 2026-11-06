@@ -1,0 +1,26 @@
+{
+  "status": "structure_verified_local_owner_prepared_admission_held",
+  "adapter": "/Volumes/Mastermind/evidence/defense-investor-01a13303/owner_adapter/defense_economics_producer.py",
+  "adapter_sha256": "0fb180c99a51c9c5ae3949bf0fd0f67dc4ce695843da0b114c92b0dd73b0352e",
+  "marker_path": "/Volumes/Mastermind/evidence/defense-investor-01a13303/owner_adapter/local_owner/data/company_intelligence/event_workspaces/manifest.json",
+  "marker_sha256": "f608fcae63b1a5814504fc78ec34875148a5640818d550cbd9a4a33b6dec3833",
+  "workspace_sha256": "42fbc33fdce1db6a47911bf120874f8190afc79bbf7daf97a79b598bd113aa9c",
+  "qualified_fact_ids": [
+    "evt_cik0000936468_2026q2_results:defense_segment_sales",
+    "evt_cik0000936468_2026q2_results:defense_segment_operating_profit",
+    "evt_cik0000936468_2026q2_results:defense_segment_margin",
+    "evt_cik0000101829_2026q2_results:defense_segment_sales",
+    "evt_cik0000101829_2026q2_results:defense_segment_operating_profit",
+    "evt_cik0000101829_2026q2_results:defense_segment_margin",
+    "evt_cik0001133421_2026q2_results:defense_segment_sales",
+    "evt_cik0001133421_2026q2_results:defense_segment_operating_profit",
+    "evt_cik0001133421_2026q2_results:defense_segment_margin",
+    "evt_cik0000202058_2026q2_results:defense_segment_sales",
+    "evt_cik0000202058_2026q2_results:defense_segment_margin"
+  ],
+  "qualified_at": "2026-10-13T03:41:12.337178+00:00",
+  "source_available_at": "2026-07-23T10:30:57Z",
+  "house_observed_at": "2026-10-13T02:42:07Z",
+  "production_serving": false,
+  "hold_reason": "O3 current-quarter Reported-column geometry review is pending; prepared fixture is not accepted economic evidence"
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "tiingo.prefix03.partial_resume_exact_source_review/v1",
+  "recorded_at_utc": "2026-10-13T21:13:52.790951+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "candidate": "tiingo-wave15-continuation04-prefix03-partial-resume-bound03.py",
+  "candidate_sha256": "4931c2c2b8445e30d6af95b6536e1e6898f41ff22e4088b906229ba2ab715cc3",
+  "verdict": "PASS_EXACT_SOURCE_CONDITIONAL_ON_SEPARATE_LAUNCH_BINDING",
+  "prior_source_review_sha256": "cde59f3d612a131d81f1aefac06d380c7f1255488e3dd0de4bd515d799747f2c",
+  "prior_reuse_ruling_sha256": "7403ab4aff058d20a2dcb056d01ab9654c1ff8abb382ddd4d6e9ec0ed03d8fd6",
+  "actual_inventory_sha256": "f1b329c4eca28e4fa480cc355d73873879a2c576c8994a2dc219b751b6698c4f",
+  "actual_inventory_parent_sha256": "1b02fc6c1b35b8fd4931e56639521b738ce5526fa9a111f7bd14ee6b6ff98c31",
+  "delta_verified": "Only final selector conservation audit changed from exact previously reviewed bound02. Every new output must belong to an originally absent slot; all3448 slots now checked against protected digest, intended new digest, or true continued absence.",
+  "H1_resolution": "PASS",
+  "inert_exact_AST_audit_tests": [
+    {
+      "case": "own_new_and_unchanged_protected",
+      "expected_accept": true,
+      "actual_accept": true,
+      "pass": true
+    },
+    {
+      "case": "changed_protected",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass": true
+    },
+    {
+      "case": "unexpected_alternate",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass": true
+    },
+    {
+      "case": "new_path_outside_inventory",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass": true
+    },
+    {
+      "case": "new_path_claims_protected",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass": true
+    },
+    {
+      "case": "missing_intended_output",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass": true
+    }
+  ],
+  "other_source_acceptance_reused_from_prior_review": true,
+  "accepted_complete_reuse_count": 536,
+  "missing_only_materializer_count": 326,
+  "complete_reader_lineage_reused_from_actual52142": true,
+  "original_preflight_method_sha256": "49c3e277752add221fa1a6848cee0ffdea88ed057d224f5859e22c8a09884a64",
+  "original91287_exit_code": null,
+  "original91287_terminal_consumed": false,
+  "required_next_gates": [
+    "Separately reviewed exact wrapper02 launch packet binds this source SHA, original root, qualify03 mode, exclusive output paths and frozen input expectations",
+    "Fresh scoped same-carrier writer custody/source/storage evidence before launch; no replay of original49 qualifier",
+    "Consume actual new qualifier subprocess/native outcomes and exact qualification output with truthful distinct provenance",
+    "Coverage launch binds actual accepted new qualifier return and exact q bytes; fresh coverage and final closure remain required"
+  ],
+  "runtime_qualification_claimed": false,
+  "launch_packet_admitted": false,
+  "candidate_module_executed": false,
+  "accepted_reader_rows_rescanned": false,
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "process_signals": 0,
+  "delegation": false
+}

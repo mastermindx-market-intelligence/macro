@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-14T16:10:56.684026+00:00",
+  "parent": "d15e7ac3f0bd9ea7ee9f203f96f0a9469c6357fb",
+  "proposal_commit": "89dfc3b6d4818cc78d943c0da1ce9172655336a2",
+  "qualified_a1": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+  "preview_rc": 0,
+  "preview_tree": "2a017d659ad9fd4b73b237082de600a72bb0017c",
+  "job_count": 314,
+  "all_definitions_and_path_multisets_preserved": true,
+  "moved_lines": 10,
+  "anchor": "admin/theme_tokens.py",
+  "proposed_manifest_sha256": "cee3780118c3024e716a1aa1578b12e24d86f081500e026c8d995dd2f27c139c",
+  "no_branch_mutation": true
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "paper.im06.history-reader.evidence.v1",
+  "status": "SCOPED_SOURCE_ACCEPTED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "engine/international_macro_dashboard.py": "d16e76b8b0a6ba67bdae989adaf37083cb10d3f932b5de190aa38a1409451683",
+    "tests/test_intl_history_read_receipt.py": "8b2af8e2e56ac84b1cf0aca488b1bc63fbeabb8783953ff84640f26dc1560047"
+  },
+  "review": {
+    "run": "paper-01a1101f-im06-history-reader-review-r2",
+    "artifact": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM06_HISTORY_READER_REVIEW_R2.json",
+    "sha256": "fa4d04a9a828da067251bddb7ab183bd5d57c8e1a0703dc2b3deff38d9091d76",
+    "verdict": "PASS_SCOPED",
+    "counts": "25 independent PASS (20 retained adapted checks +5 stat-seam checks); author24/25 on Python3.12, missingParquetfixturebeforecandidate"
+  },
+  "parent": {
+    "new_cases": "25PASS on Python3.14 including actualParquetroundtrip",
+    "original_red": "23FAIL absentAPI beforeimplementation",
+    "regression": "146PASS3FAIL; same3FAIL reproduced with exactoldreader; sparse-generatedroute/data dossier failures not resolved by this vertical",
+    "repair": "Python3.14 Path.exists swallowed PermissionError; explicitstat now distinguishes FileNotFoundError from allotherstat/readfailures"
+  },
+  "before_after": "load_history_result returns typed ready/empty/missing/failed/invalid/unsupported receipt preserving the original valid frame; oldload_history remains one-call DataFrame/None wrapper. No sort/fill or datawriter.",
+  "limits": [
+    "Acquisition clock is not first-known vintage or financial source version.",
+    "Internal DataFrame is not public disclosure JSON.",
+    "No History projection/UI, rights, live data, publication or fullprogramme acceptance."
+  ]
+}

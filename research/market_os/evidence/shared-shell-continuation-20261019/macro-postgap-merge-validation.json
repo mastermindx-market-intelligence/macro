@@ -1,0 +1,118 @@
+{
+  "started_at": "2026-10-20T00:44:13.622092+00:00",
+  "head": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "incoming": "6397b97031640de2a0bdd850bfebc520e7458b41",
+  "index_tree": "586960f5b84d6d7a1e662d95f99941242ee7edaf",
+  "ui_diff_sha256": "98dad332320d8b0cb02bdffd866e639ab871f340c9f44cc2a406fa38a96ad5e7",
+  "checks": [
+    {
+      "name": "navigation",
+      "argv": [
+        "node",
+        "--test",
+        "tests/js/shared_shell_navigation_adapters.test.cjs",
+        "tests/js/shared_shell_owner_adapters.test.cjs"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.212,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/postgap-validation-navigation.log",
+      "log_sha256": "ed7010409187742e8743f9a11f8ce14a03391405ed4f862d8f450c1450fd1c6b",
+      "summary": "e behavior (0.7395ms)\n\u2714 intl_stock.html.j2: candidate present but pre-INIT queues without any Location mutation or stale handler run (0.545458ms)\n\u2714 intl_stock.html.j2: active bridge accepted fragment transition runs the real fromHash exactly once (0.252792ms)\n\u2714 intl_stock.html.j2: refusal never escapes (no raw assignment, no handler) (0.637208ms)\n\u2714 intl_stock.html.j2: same-market adapter dispatches no synthetic hashchange (0.04375ms)\n\u2714 intl_stock.html.j2: standalone hashchange kept AND mmx:shell-location listener added (0.16575ms)\n\u2714 finance_intelligence: no bridge keeps standalone hash write (natural hashchange) (0.908333ms)\n\u2714 finance_intelligence: same-hash arrival still calls handleHash once with no navigation (0.390875ms)\n\u2714 finance_intelligence: queued (pre-INIT) hand-off mutates nothing and skips the handler (0.347958ms)\n\u2714 finance_intelligence: accepted synchronous transition runs handleHash once (0.350167ms)\n\u2714 finance_intelligence: refusal performs no raw fallback and no handler run (0.293458ms)\n\u2714 finance_intelligence: hashchange kept + shell-location listener added (0.271833ms)\n\u2714 baskets_china.html.j2: stub redirect honors presence gate, queue and refusal without raw escape (1.129584ms)\n\u2714 baskets_china.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched (0.180667ms)\n\u2714 subsector_rotation_china.html.j2: stub redirect honors presence gate, queue and refusal without raw escape (1.734292ms)\n\u2714 subsector_rotation_china.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched (0.204125ms)\n\u2714 flow_desk.html.j2: stub redirect honors presence gate, queue and refusal without raw escape (1.380792ms)\n\u2714 flow_desk.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched (0.163792ms)\n\u2714 flow_leaders.html.j2: stub redirect honors presence gate, queue and refusal without raw escape (1.480209ms)\n\u2714 flow_leaders.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched (0.10075ms)\n\u2714 options_screener.html.j2: stub redirect honors presence gate, queue and refusal without raw escape (1.408917ms)\n\u2714 options_screener.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched (0.140416ms)\n\u2714 subsector_rotation.html.j2: stub redirect honors presence gate, queue and refusal without raw escape (1.222041ms)\n\u2714 subsector_rotation.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched (0.087041ms)\n\u2714 vector_allocation.html.j2: stub redirect honors presence gate, queue and refusal without raw escape (0.929167ms)\n\u2714 vector_allocation.html.j2: redirect meta refresh is inside head <noscript> and unrelated meta untouched (0.081292ms)\n\u2714 baskets.html.j2: theme-detail and fallback redirects queue pre-INIT with zero Location calls (0.900667ms)\n\u2714 baskets.html.j2: meta refresh wrapped, robots meta untouched (0.034542ms)\n\u2714 gex: symbol dest carried verbatim; meta rewrite is the guarded no-op it now is (0.911375ms)\n\u2714 gex: meta refresh wrapped in noscript; robots untouched (0.030083ms)\n\u2714 terminal_overlay host-off fallback: standalone unchanged; handled/refused never raw (1.226542ms)\n\u2714 terminal_overlay no-root fallback: standalone unchanged; handled/refused never raw (0.813833ms)\n\u2714 terminal_overlay no-frame fallback: standalone unchanged; handled/refused never raw (0.829959ms)\n\u2714 no adapter gates the bridge on .active anywhere in the touched sources (5.568667ms)\n\u2714 every touched source gates on window.MMXSharedShell presence and falls back only when absent (4.677ms)\n\u2714 theme.js bridge helpers exist and carry NO presented-state prerequisite (4.979875ms)\n\u2714 candidate exists while the bridge is NOT yet presenting: applyingContext is observed anyway (1.901292ms)\n\u2714 INITIAL bridge apply (presented=false, applyingContext=true): no storage writes, no account write, repaint + emit + existing handlers, no flourish, Auto survives (2.26925ms)\n\u2714 LATER bridge apply (presented=true, applyingContext=true): same no-write repaint semantics (1.639ms)\n\u2714 user-driven theme choice while the shell presents keeps the EXACT legacy persistence + flourish + pref-sync write (5.747959ms)\n\u2714 standalone (no candidate): byte-equivalent legacy behavior incl. late server prefs with the _prefSyncing loop guard (2.053625ms)\n\u2714 candidate present (pre-INIT window included): late _applyServerPrefs never fights the parent context (3.82575ms)\n\u2714 setter exception during a bridge apply: bridge finally clears suppression; the apply persisted nothing; a later user choice still persists (2.02925ms)\n\u2714 _mmOpenOnboard is the single auth seam: fixed tokens, claims pre-INIT (queue-safe), never opens an in-frame sheet or lazy-loads the script (1.91825ms)\n\u2714 standalone _mmOpenOnboard keeps the legacy sheet route and lazy-load fallback (3.333125ms)\n\u2714 _openSDash is the single settings seam: 'settings' intent only, section never forwarded, dash never built; exactly one intent per entry (1.677416ms)\n\u2714 standalone _openSDash still builds and shows the dashboard (1.7605ms)\n\u2714 theme.js guard topology: seam count is exact and public auth/settings exports stay guard-free (0.594083ms)\n\u2714 account.js helpers exist and carry NO presented-state prerequisite (0.929958ms)\n\u2714 late account hydration never overrides a qualified parent context (pre-INIT included) (0.450333ms)\n\u2714 standalone applyPrefs still hydrates exactly as before (0.382667ms)\n\u2714 persistPref queues NOTHING during a bridge apply (initial window included) but keeps the user-edit queue (0.445458ms)\n\u2714 claimsPref stays exactly symmetric with the persistPref guard (single-owner handshake) (0.39075ms)\n\u2714 account.js guard wiring and the untouched MMAccount export (0.105ms)\n\u2714 onboard _mmShellHandoff: existence-keyed, fixed tokens only, false without a candidate, no presented read (1.289833ms)\n\u2714 openSheet is the single sheet seam: every opener hands off, opts never cross, no in-frame build, upgrade lane unreachable (0.504208ms)\n\u2714 standalone openSheet keeps the exact legacy modes/opts flow (sign-in/sign-up/upgrade routing intact) (0.538625ms)\n\u2714 onboard guards are centralized: exactly two _mmShellHandoff sites, export line byte-identical (0.489875ms)\n\u2714 storage hygiene: nowhere does the adapter introduce a parallel preference key (1.989791ms)\n\u2714 adapter adds no browser/runtime requirements: extracted seams never reference fetch/XHR/cookie/timer APIs beyond the incumbent ones (0.683125ms)\n\u2139 tests 78\n\u2139 suites 0\n\u2139 pass 78\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 109.2645\n"
+    },
+    {
+      "name": "pairs",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 1.13,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/postgap-validation-pairs.log",
+      "log_sha256": "117c1e68ccd077885dce699c63d0e0b63039301c2fb8d051d0b8f735d21ab203",
+      "summary": "template\u2194site sync OK (131 pairs checked)\n"
+    },
+    {
+      "name": "ci_inventory",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/run_ci_pack.py",
+        "--workflow",
+        ".github/ci/legacy-jobs.yml",
+        "--validate-only"
+      ],
+      "exit": 0,
+      "duration_seconds": 1.139,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/postgap-validation-ci_inventory.log",
+      "log_sha256": "d8b9092c4e95b7f301202b893654a20fbf7dd99eda1acecc0391e234c82d6d2f",
+      "summary": "::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed\nValidated 329 legacy jobs; 329 in scope (full suite: changed-file set unavailable); pack weights=[7191, 7191]; selected pack 0 (164 jobs).\nSelected jobs: microstructure-pressure-response-r0, integrated-answer-v0, c19-wp19-integrated-answer-pins, crypto-shelves, board-shadow-substrate, board-contradictions, signal-gate-pair-coherence, gh-annotation-line-start, am-edition-producer, all-exports-resolve, path-prune-lint, rebase-css-autoresolve, conflict-markers, signal-contract, trial-budgets, local-projections, breakdown-control-seed-determinism, gmi-classification-axes, cycle-ontology-js, tier-gate, regwall-boundary, lens-tap-boundary, flow-surface, cycle-grading-stats, engine-render-guards, international-workspace-foundation, stock-dashboard-first-frame, prophet-lab, attested-history-guards, express-render-guards, fif-kernel-guards, collector-registry, capital-structure-intelligence, covenant-headroom, china-native-collectors, china-board-breadth, china-search-universe, synapse-read-gate, neural-web, intelligence-registry, neural-web-core, cn-standout-audit, rlt-rebalance-calendar-pulse, nyse-calendar-freshness, dag-conformance, quant-q06-sparse-cal, ontology-explorer, research-factory-authority, market-memory-e0-contract, research-codegen-runtime-qualification, options-catalyst-links, options-payoff-lab-consumer, options-signal-campaign-v2, uk-policy-desk, finance-intelligence, broad-etf-flows, china-native-w2, house-law-registry, research-screener, vintage-pin-fence, validated-claims, validated-claims-contract, template-site-sync, data-base-shim, self-mod-fence, font-ui-defined, ratio-lens, leadership-rotation-contract, leadership-rotation-science, hk-confirming-turn, hk-leadership, quant-q10-offex-residual, hkrv-w3-banner, basket-staleness-warn, ftr-tape-surfaces, live-flow-ops, sanctions-map-page, itr-turn-rotation, nw-lobe-unfreeze, sa-w4-improvement-lanes, codex-research-engine, admin-live-runs, ccw-w1-data-spine, ccw-w2-gspread-engine, ccw-w3-credit-momentum, ccw-w6-study-s1, site-gate, pick-lab-liquidity, ric-d0-fed-path-provenance, ric-e0-retrospective-runners, collect-identity, biocatalyst-evidence, biocatalyst-worker, biocatalyst-deploy-integration, biocatalyst-regulatory, publish-r2-client, chart-render, chart-render-data, quant-q15-noise-robust-rv, public-render-fastlane, unrun-vector-dsr, unrun-oracle-desk, unrun-intl-libraries, quant-q16-delayed-aci, govrev-program-ontology, information-to-price-eval-receipts, unrun-factor-research, unrun-serving-admin, geo-enrich-credential-boundary, unrun-ops-workers, unrun-nav-chrome, unrun-builders-stores, unrun-site-surfaces, unrun-release-forecast, unrun-neuralweb-cortex, unrun-vector-baskets, washout-turn-organ, prophet-anticipation-intake, coiled-mtf-anchor-era, unrun-page-guards, quant-q18-async-session-cov, earnings-economic-source-selection, unrun-prophet-learning-loop, unrun-brain-gateway, unrun-macro-panels, quant-q19-first-passage-ambiguity, unrun-inline-js-guard, unrun-template-chips, unrun-pit-probes, unrun-dark-guards, ohlc-basis-coherence, unrun-government-revenue-grader, entry-radar-identity-snapshot, zh-filing-term, earnings-release-identity, group-pulse, leadership-rotation-countercases, falsifier-tripwires, options-nbbo-cohort, product-experience-registry, product-experience-capture, dataos-acceptance, dataos-foundation, no-client-supplied-identity, unrun-cell-b-v2-buyback-census, market-os-macro-workspaces, options-skew-engine, recurring-briefs, skew-accrual-lane, mining-economic-dossier, industrials-result-cash, pb-d-event-quality, company-relationship-candidates, news-impact-contracts, site20-s4-chart-brief-js, single-name-coverage-profiles, sni-s1-residual, sni-public-exposure-scan, sni-acceptance-evidence, ric-f0-a10-canonical-calendar, c19-wp24-superseded-generations, c19-wp24-dtc-map, c19-wp15-operating-driver-pins, c19-short-pressure-availability\n"
+    },
+    {
+      "name": "ui_evidence",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-postgap-merged-ui.diff"
+      ],
+      "exit": 1,
+      "duration_seconds": 0.73,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/postgap-validation-ui_evidence.log",
+      "log_sha256": "1ff14c42bdeba2c1b81f87355c8ff482f50ee88fe1198d5e205d3888a11760fb",
+      "summary": "::error title=ui-visual-evidence::ui-visual-evidence guard REFUSED: sparse worktree \u2014 mockups not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n"
+    },
+    {
+      "name": "whitespace",
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "6397b97031640de2a0bdd850bfebc520e7458b41"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.648,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/postgap-validation-whitespace.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": ""
+    },
+    {
+      "name": "core_and_deploy",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/tmp/shared-shell-css-visual-20261019T1107/pytest-postgap-merged",
+        "tests/test_shared_shell_injection.py",
+        "tests/test_regwall_json_gate.py",
+        "tests/test_deploy_update_self_heal.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 22.301,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/postgap-validation-core_and_deploy.log",
+      "log_sha256": "dd1cd0a865ccec586fb3ea614828d6a5aa87995e47bfc540130e57e7de71dacd",
+      "summary": "........................................................................ [ 21%]\n........................................................................ [ 42%]\n........................................................................ [ 63%]\n........................................................................ [ 84%]\n....................................................                     [100%]\n340 passed in 21.12s\n"
+    },
+    {
+      "name": "asset_references",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_site_asset_refs.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 38.532,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/postgap-validation-asset_references.log",
+      "log_sha256": "f81665991a8ff188dec690772ac58380a0e07e84cee13a8fcb6752eaa96e2a63",
+      "summary": "check_site_asset_refs: OK \u2014 every template-decided href/src under site resolves (0 pre-existing gap(s) pinned, 0 unrendered ticker link(s) reported).\n"
+    }
+  ],
+  "scope": "Local merged-source verification only; no renderer, deploy or new browser evidence",
+  "programme_complete": false,
+  "completed_at": "2026-10-20T00:44:52.372862+00:00",
+  "index_tree_after": "586960f5b84d6d7a1e662d95f99941242ee7edaf",
+  "unstaged_after": "",
+  "unmerged_after": "",
+  "pass": false
+}

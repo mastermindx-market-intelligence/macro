@@ -1,0 +1,36 @@
+{
+  "chairman_inputs": {
+    "diagnostic.md": "sha256:fb3ea2ee05cbd7c94ff0e8599680d90b3141ca387b298ccf52a97005fe6f3f6a",
+    "evidence.json": "sha256:c2bfda05d5479c05245283983b4d153f57bd604150bf0159643dc23ee25a74b7"
+  },
+  "procedure_pin": "3e66e43258f34db240d5bff76f54148c7af84ee4",
+  "product_pin": "4bf1b3aee532114b0c67e06c532b6e4ed7884549",
+  "source_checks": {
+    "site/factordata/us_standouts.json": {
+      "supplied_blob": "75dbaa49f475214580fee22fac3322b6913a7fd1",
+      "audited_blob": "75dbaa49f475214580fee22fac3322b6913a7fd1",
+      "current_snapshot_blob": "75dbaa49f475214580fee22fac3322b6913a7fd1",
+      "match": true
+    },
+    "site/factordata/china_standouts.json": {
+      "supplied_blob": "bb2538f8cf025af297403cd0262cc82a2a52d8aa",
+      "audited_blob": "bb2538f8cf025af297403cd0262cc82a2a52d8aa",
+      "current_snapshot_blob": "bb2538f8cf025af297403cd0262cc82a2a52d8aa",
+      "match": true
+    },
+    "site/factordata/signal_gate.json": {
+      "supplied_blob": "93156752ea2eeab19b89547215adfb7df65346a5",
+      "audited_blob": "93156752ea2eeab19b89547215adfb7df65346a5",
+      "current_snapshot_blob": "93156752ea2eeab19b89547215adfb7df65346a5",
+      "match": true
+    },
+    "config/theme_thesis_registry.yml": {
+      "supplied_blob": "141bd4f971b4d7a47b40d4acc250eea502508844",
+      "audited_blob": "141bd4f971b4d7a47b40d4acc250eea502508844",
+      "current_snapshot_blob": "141bd4f971b4d7a47b40d4acc250eea502508844",
+      "match": true
+    }
+  },
+  "authority_changed": false,
+  "production_deployed": false
+}

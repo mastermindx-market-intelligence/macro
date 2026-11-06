@@ -202,8 +202,8 @@ def test_a_research_resident_suite_is_in_scope() -> None:
     """The suites this guard could not see: written beside their instrument
     because the packet that shipped them was fenced to files-only."""
     discovered = set(GUARD.discover_suites())
-    assert "research/prophet_us_audit/test_label_grading_battery.py" in discovered
-    assert "research/signal_engine/test_buy_filters.py" in discovered
+    assert "research/prophet_us_audit/test_label_grading_battery.py" in discovered  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+    assert "research/signal_engine/test_buy_filters.py" in discovered  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
 
 
 def test_a_seeded_suite_outside_tests_reads_skip_only_when_its_lane_is_thin(
@@ -240,13 +240,55 @@ def test_a_seeded_suite_outside_tests_reads_skip_only_when_its_lane_is_thin(
     assert rows and all(r["status"] == "OK" for r in rows)
 
 
+def test_a_suite_with_no_working_copy_is_read_through_git(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """discover_suites() finds suites the checkout omits by reading them from git.
+
+    contract-delta's CI checkout leaves out site/ and data/ and runs this census
+    on every PR, so the census has to read a suite's bytes the same way. Reading
+    the missing file raised FileNotFoundError. Once one such suite reached main,
+    every PR's contract-delta would red (found by the Opus review of this change).
+    """
+    rel = "data/packet/test_seeded_guard.py"  # never written: no working copy
+    source = (
+        "import pytest\n\n\n"
+        "def test_needs_pandas():\n"
+        '    pytest.importorskip("pandas")\n'
+    )
+    read: list[tuple[str, Path | None]] = []
+
+    def from_git(name: str, root: Path | None = None) -> str | None:
+        read.append((name, root))
+        return source if name == rel else None
+
+    monkeypatch.setattr(GUARD, "ROOT", tmp_path)
+    monkeypatch.setattr(GUARD, "discover_suites", lambda: [rel])
+    monkeypatch.setattr(GUARD, "suite_source", from_git)
+    thin = _fixture_jobs(("thin", f"pytest {rel}", "pip install pytest pyyaml"))
+    rows = [r for r in GUARD.census(thin) if r["test"] == rel]
+    assert read == [(rel, tmp_path)]
+    assert [(r["gate"], r["status"]) for r in rows] == [("pandas", "SKIP-ONLY")]
+
+
+def test_an_unreadable_discovered_suite_refuses_rather_than_reading_clean(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    rel = "data/gone/test_seeded_guard.py"
+    monkeypatch.setattr(GUARD, "ROOT", tmp_path)
+    monkeypatch.setattr(GUARD, "discover_suites", lambda: [rel])
+    monkeypatch.setattr(GUARD, "suite_source", lambda name, root=None: None)
+    with pytest.raises(RuntimeError, match=rel):
+        GUARD.census([])
+
+
 def test_a_test_shaped_cli_instrument_is_never_censused() -> None:
     """Widening by FILENAME would have added three permanent false work items."""
     discovered = set(GUARD.discover_suites())
     for rel in (
-        "research/cn_prophet_audit/sector_intel_exante_test.py",
-        "research/signal_engine/test_breadth_consume.py",
-        "research/signal_engine/test_buyfilter.py",
+        "research/cn_prophet_audit/sector_intel_exante_test.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+        "research/signal_engine/test_breadth_consume.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+        "research/signal_engine/test_buyfilter.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
     ):
         assert (ROOT / rel).is_file(), f"{rel} moved; re-derive the classification"
         assert rel not in discovered
@@ -259,9 +301,9 @@ def test_a_test_shaped_cli_instrument_is_never_censused() -> None:
         ("python -m pytest tests/test_ci_pack.py -q", {"tests/test_ci_pack.py"}),
         # Outside tests/ — unnameable before the widening.
         ("python -m pytest research/signal_engine/test_buy_filters.py -q",
-         {"research/signal_engine/test_buy_filters.py"}),
+         {"research/signal_engine/test_buy_filters.py"}),  # ci-trigger-closure: data — run-step text fixture name, never opened
         ("python -m pytest scripts/research/test_run_w4_controls_fingerprints.py -q",
-         {"scripts/research/test_run_w4_controls_fingerprints.py"}),
+         {"scripts/research/test_run_w4_controls_fingerprints.py"}),  # ci-trigger-closure: data — run-step text fixture name, never opened
         # The *_test.py shape pytest also collects.
         ("python -m pytest research/pkt/thing_test.py -q",
          {"research/pkt/thing_test.py"}),
@@ -282,7 +324,7 @@ def test_a_job_naming_one_directorys_suite_does_not_claim_another() -> None:
          "pip install pytest")
     )
     rows = [r for r in GUARD.census(jobs)
-            if r["test"] == "research/signal_engine/test_buy_filters.py"]
+            if r["test"] == "research/signal_engine/test_buy_filters.py"]  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
     assert all(not r["naming_jobs"] for r in rows)
 
 

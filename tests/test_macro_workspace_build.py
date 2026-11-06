@@ -158,7 +158,7 @@ def _fake_receipt(availability_state: str) -> dict:
             "state_id": "C",
             "state_label": {"en": "Easy funding / Weak support"},
             "quadrant": {"x": 10.0, "y": 20.0},
-            "one_month_vector": {"dx": None, "dy": None, "status": "ABSENT", "null_reason": "WARMUP"},
+            "one_month_vector": {"dx": None, "dy": None, "status": "ABSENT", "null_reason": "WARMUP", "x_axis_id": None, "y_axis_id": None},
         },
         "availability": {"state": availability_state, "contradiction": {"present": False}},
     }

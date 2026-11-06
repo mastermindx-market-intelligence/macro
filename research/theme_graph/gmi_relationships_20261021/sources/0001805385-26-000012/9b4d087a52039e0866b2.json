@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-10T20:09:34Z",
+ "accession": "0001805385-26-000012",
+ "cik": "0001805385",
+ "doc_byte_length": 2165388,
+ "doc_sha256": "7d2d30d352dcf560b0a1c9c3691edecc8a71e88e827392b865c4822ea1846e0e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-10",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "evlv-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1300144,
+  "byte_start": 1299751,
+  "normalized": "The Company has assessed whether it operates as the principal or as an agent in relation to the sale of product made by Columbia Tech to the Company's resellers pursuant to the Distribution and License Agreement. The Company considered various factors, including but not limited to, inventory risk, discretion in establishing pricing, and which entity is primarily responsible for fulfillment.",
+  "normalized_sha256": "9b4d087a52039e0866b24fc06a5b008e96f110f7256611ba63d6e63ee464d1e2",
+  "raw": "The Company has assessed whether it operates as the principal or as an agent in relation to the sale of product made by Columbia Tech to the Company's resellers pursuant to the Distribution and License Agreement. The Company considered various factors, including but not limited to, inventory risk, discretion in establishing pricing, and which entity is primarily responsible for fulfillment.",
+  "raw_sha256": "9b4d087a52039e0866b24fc06a5b008e96f110f7256611ba63d6e63ee464d1e2"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1805385/000180538526000012/evlv-20251231.htm",
+ "xbrl_contexts": []
+}

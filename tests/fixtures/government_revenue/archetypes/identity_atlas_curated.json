@@ -1,0 +1,191 @@
+{
+  "contract": "government_revenue_identity_atlas_curated.v1",
+  "schema_version": "1.1.0",
+  "generated_at": "2026-10-13T07:54:08.066798+00:00",
+  "issuers": {
+    "LMT": {
+      "ownership_qualifications": [
+        {
+          "entity_id": "legal:ula:united-launch-alliance",
+          "ownership_interest": 0.5,
+          "accounting_basis": "equity_method",
+          "source_as_of": "2026-06-28",
+          "effective_interval_state": "disclosed_snapshot_only",
+          "known_at": "2026-10-13T05:36:47.904824+00:00",
+          "valid_from": "2026-06-28T00:00:00+00:00",
+          "valid_to": null,
+          "review_state": "reviewed",
+          "rights_state": "unknown",
+          "evidence": [
+            {
+              "publisher": "SEC",
+              "record_id": "0001628280-26-049411:R19.htm",
+              "url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026049411/R19.htm",
+              "content_sha256": "854cf0d3e6815ef851377af550f8830e7ca10368ffeb2ff5417fe2b1a44dbbf2",
+              "retained_representation": "source_response_bytes"
+            }
+          ],
+          "documentary_counterparties": [
+            {
+              "name_as_printed": "The Boeing Company",
+              "ownership_interest": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    "BAESY": {
+      "company_name": "BAE Systems plc",
+      "attribution_reason_en": "Source-native foreign listing observations do not establish a reviewed exact recipient path or Data OS listing admission.",
+      "attribution_reason_zh": "境外上市原生来源观测不构成已审核的精确收款方路径或Data OS上市身份准入。",
+      "listing_qualifications": [
+        {
+          "native_identity": {
+            "issuer_registry": "Companies House England and Wales",
+            "issuer_native_id": "01470151",
+            "issuer_name_as_printed": "BAE Systems plc",
+            "venue": "London Stock Exchange",
+            "symbol": "BA.LN",
+            "security_kind": "ordinary_share"
+          },
+          "ordinary_shares_per_adr": null,
+          "quote_currency": null,
+          "source_as_of": null,
+          "effective_interval_state": "not_established",
+          "known_at": "2026-10-13T05:36:47.904824+00:00",
+          "valid_from": null,
+          "valid_to": null,
+          "review_state": "reviewed",
+          "rights_state": "unknown",
+          "evidence": [
+            {
+              "publisher": "BAE Systems",
+              "record_id": "bae:shareholder-faq:company-01470151",
+              "url": "https://www.baesystems.com/investors/shareholder-faqs",
+              "content_sha256": "01010d0cda5c4027b43a5c600eedbee0b1416f5e3bdd77de496e49e4ec7f772b",
+              "retained_representation": "reviewed_web_extract"
+            }
+          ]
+        },
+        {
+          "native_identity": {
+            "issuer_registry": "Companies House England and Wales",
+            "issuer_native_id": "01470151",
+            "issuer_name_as_printed": "BAE Systems plc",
+            "venue": "OTC",
+            "symbol": "BAESY",
+            "security_kind": "adr"
+          },
+          "ordinary_shares_per_adr": 4,
+          "quote_currency": "USD",
+          "source_as_of": null,
+          "effective_interval_state": "not_established",
+          "known_at": "2026-10-13T05:36:47.904824+00:00",
+          "valid_from": null,
+          "valid_to": null,
+          "review_state": "reviewed",
+          "rights_state": "unknown",
+          "evidence": [
+            {
+              "publisher": "BAE Systems",
+              "record_id": "bae:shareholder-faq:company-01470151",
+              "url": "https://www.baesystems.com/investors/shareholder-faqs",
+              "content_sha256": "01010d0cda5c4027b43a5c600eedbee0b1416f5e3bdd77de496e49e4ec7f772b",
+              "retained_representation": "reviewed_web_extract"
+            },
+            {
+              "publisher": "BAE Systems",
+              "record_id": "bae:adr:BAESY",
+              "url": "https://www.baesystems.com/investors/adr-information",
+              "content_sha256": "1ca08337c0d41822e7bf0e57e9105229174a038141d8acb5bacaf931cae3b076",
+              "retained_representation": "reviewed_web_extract"
+            },
+            {
+              "publisher": "J.P. Morgan",
+              "record_id": "jpm:drprofile:05523R107",
+              "url": "https://www.adr.com/drprofile/05523R107",
+              "content_sha256": "4a55f871a39d1c04d45d3fa969ba5b987aa22413d0b51066fe68c8d54ba115ed",
+              "retained_representation": "reviewed_browser_extract"
+            },
+            {
+              "publisher": "SEC",
+              "record_id": "0000895564-26-000004:index",
+              "url": "https://www.sec.gov/Archives/edgar/data/895564/0000895564-26-000004-index.htm",
+              "content_sha256": "4ea876211b586f0f84d2acd63d68fcaea1fd90e4cd0c83209d84c4888c4afb04",
+              "retained_representation": "reviewed_web_extract"
+            },
+            {
+              "publisher": "SEC / existing Data OS observation",
+              "record_id": "dataos:cik-map:2026-10-05:BAESY",
+              "url": "https://www.sec.gov/files/company_tickers.json",
+              "content_sha256": "4e3c77cd11156abbf82c62159a09efc24d3028e44434696e6f7fb43a1931552b",
+              "retained_representation": "existing_owner_observation_extract"
+            }
+          ],
+          "research_identity_qualification": {
+            "scope": "government_revenue_identity_context",
+            "review_state": "reviewed",
+            "rights_state": "unknown",
+            "known_at": "2026-10-13T07:54:08.066798+00:00",
+            "valid_from": null,
+            "valid_to": null,
+            "filer": {
+              "cik": "0000895564",
+              "legal_name": "BAE SYSTEMS PLC /FI/"
+            },
+            "ticker_cik_observation": {
+              "symbol": "BAESY",
+              "cik": "0000895564",
+              "legal_name": "BAE SYSTEMS PLC /FI/",
+              "snapshot": "2026-10-05",
+              "owner_path": "data/symbol_directory/cik_map/2026-10-05.parquet",
+              "owner_sha256": "5b817069fbee57a6616095e58b3b2ba759f55eb3f1cbf866fc62e0f0f55230b9"
+            },
+            "depositary_program": {
+              "symbol": "BAESY",
+              "venue": "OTC",
+              "security_kind": "adr",
+              "security_isin": "US05523R1077",
+              "underlying_isin": "GB0002634946",
+              "underlying_symbol_as_printed": "BA/",
+              "underlying_venue_as_printed": "London",
+              "ordinary_shares_per_adr": 4,
+              "depositary_as_printed": "JPM",
+              "sponsorship_as_printed": "S"
+            },
+            "source_record_ids": {
+              "filer": "0000895564-26-000004:index",
+              "ticker_cik_observation": "dataos:cik-map:2026-10-05:BAESY",
+              "depositary_program": "jpm:drprofile:05523R107"
+            }
+          }
+        }
+      ]
+    },
+    "SPR": {
+      "company_name": "Spirit AeroSystems Holdings, Inc.",
+      "public_security_state": "listing_terminated",
+      "listing_events": [
+        {
+          "event": "acquisition_close",
+          "acquirer": "The Boeing Company",
+          "effective_at": "2025-12-08",
+          "headline_en": "Boeing completed its acquisition of Spirit AeroSystems Holdings, Inc. on 2025-12-08; SPR ceased to trade as an independent public security and is absent from the Stock Identity universe snapshot.",
+          "headline_zh": "波音公司于2025年12月8日完成对Spirit AeroSystems Holdings, Inc.的收购；SPR不再作为独立上市证券交易，也不在Stock Identity全样本快照中。",
+          "evidence": [
+            {
+              "publisher": "SEC",
+              "record_id": "sec:12927:0001628280-25-055825:ba-20251208.htm",
+              "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828025055825/ba-20251208.htm"
+            },
+            {
+              "publisher": "SEC",
+              "record_id": "sec:1364885:0001104659-25-119096:tm2532915d1_8k.htm",
+              "url": "https://www.sec.gov/Archives/edgar/data/1364885/000110465925119096/tm2532915d1_8k.htm"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

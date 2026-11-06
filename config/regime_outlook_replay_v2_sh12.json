@@ -1,0 +1,4822 @@
+{
+  "schema_version": "regime_outlook_replay.v1",
+  "label": "hindsight reconstruction on revised data; not point-in-time; not evidence of skill",
+  "rule": "R-I",
+  "seen_history_row": "SH-12",
+  "mapping_version": "VERDICT_MAPPING_V2",
+  "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
+  "truncation_rule": "frame = engine.inputs.build_features(pit_basis='release', pit_as_of=d).loc[:d]; last index must be <= d; producers read the last row",
+  "revised_columns_caveat": [
+    "nfci",
+    "anfci",
+    "infl_exp_5y",
+    "indeed_postings",
+    "pct_above_200",
+    "net_liquidity_bn",
+    "zq_front"
+  ],
+  "output_path": "config/regime_outlook_replay_v2_sh12.json",
+  "history_legend": {
+    "read": "owner produced a non-null leaf at the date; the composer read it",
+    "owner_null": "owner produced its guarded null for the leaf at the date (the composer reads it as missing/owner_default_on_missing)",
+    "partial_history": "owner read from a reduced source set at the date (labour: 2 of 3 votes; Indeed IHLIDXUS begins 2020-02)",
+    "insufficient_history": "no stored history for the owner's sources at the date (labour: <=1 of 3 votes); read withheld, never approximated",
+    "not_in_replay": "letter outside the R-I replay (L/B/D/C) or field not assembled by the replay",
+    "producer_error": "owner decision function raised at the date"
+  },
+  "dates": [
+    "2018-10-31",
+    "2019-08-30",
+    "2022-06-30",
+    "2022-10-31"
+  ],
+  "per_date": [
+    {
+      "date": "2018-10-31",
+      "frame": {
+        "sha256": "0b4a06625ebed420122d8454d060cf536377e9931ec6bed567ce7cbce9358fd8",
+        "rows": 23699,
+        "cols": 148,
+        "first": "1927-12-30T00:00:00",
+        "last": "2018-10-31T00:00:00"
+      },
+      "letters": {
+        "L": {
+          "status": "unavailable",
+          "reason": "no_point_in_time_membership_and_no_as_of_seam",
+          "fields": {
+            "L.state": "not_produced:no_point_in_time_membership_and_no_as_of_seam"
+          }
+        },
+        "B": {
+          "status": "unavailable",
+          "reason": "rate_futures_history_starts_2026_03_16",
+          "fields": {
+            "B.fed_path.implied_cuts_12m": "not_produced:rate_futures_history_starts_2026_03_16"
+          }
+        },
+        "D": {
+          "status": "unavailable",
+          "reason": "producer_not_pinned",
+          "fields": {}
+        },
+        "C": {
+          "status": "unavailable",
+          "reason": "producer_not_pinned",
+          "fields": {}
+        },
+        "T": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "T.state.inflation.direction": "produced",
+            "T.state.inflation.regime": "produced",
+            "T.state.expectations.anchoring": "produced",
+            "T.state.rates.direction": "produced",
+            "T.state.rates.regime": "produced",
+            "T.breakeven_decomp.direction": "produced",
+            "T.breakeven_decomp.trend": "produced",
+            "T.yield_curve.regime.term_premium_dir": "produced_null",
+            "T.yield_momentum.series.2y.turn_watch": "produced_null",
+            "T.yield_momentum.series.5y.turn_watch": "produced_null",
+            "T.yield_momentum.series.10y.turn_watch": "produced_null",
+            "T.yield_momentum.series.20y.turn_watch": "produced_null",
+            "T.yield_momentum.series.30y.turn_watch": "produced_null"
+          }
+        },
+        "R": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "R.conditions.labor_nowcast.read": "unavailable:single_vote",
+            "R.conditions.financial_conditions.state": "produced",
+            "R.conditions.complacency.breadth_div": "produced",
+            "R.liquidity_quality.label": "produced",
+            "R.liquidity_quality.stress_overlay.confirming_stress": "produced"
+          },
+          "labor_votes": 1
+        },
+        "M": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "M.components.breadth.tone": "produced"
+          }
+        }
+      },
+      "state_families": [
+        {
+          "family_id": "growth_and_inflation",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.inflation.direction",
+            "T.state.inflation.regime",
+            "R.conditions.labor_nowcast.read",
+            "T.state.inflation.eci_comp_yoy"
+          ]
+        },
+        {
+          "family_id": "rates_and_discounting",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.expectations.anchoring",
+            "T.state.rates.direction",
+            "T.state.rates.regime",
+            "T.breakeven_decomp.direction",
+            "T.breakeven_decomp.trend",
+            "T.yield_curve.regime.term_premium_dir",
+            "T.yield_momentum.series.2y.turn_watch",
+            "T.yield_momentum.series.5y.turn_watch",
+            "T.yield_momentum.series.10y.turn_watch",
+            "T.yield_momentum.series.20y.turn_watch",
+            "T.yield_momentum.series.30y.turn_watch",
+            "B.fed_path.implied_cuts_12m",
+            "T.yield_curve.regime.key"
+          ]
+        },
+        {
+          "family_id": "liquidity_and_financing",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.financial_conditions.state",
+            "R.liquidity_quality.label",
+            "R.liquidity_quality.stress_overlay.confirming_stress",
+            "R.liquidity_quality.stress_overlay.hy_oas_pct",
+            "R.conditions.financial_conditions.trend",
+            "R.liquidity_quality.stress_overlay.nfci_trend"
+          ]
+        },
+        {
+          "family_id": "market_structure",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.complacency.breadth_div",
+            "M.components.breadth.tone",
+            "D.state"
+          ]
+        },
+        {
+          "family_id": "leadership_and_fundamentals",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "L.state"
+          ]
+        },
+        {
+          "family_id": "valuation_and_exposures",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "volatility_correlation_positioning",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "D.avg_corr"
+          ]
+        },
+        {
+          "family_id": "flows_and_reflexive_effects",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "cross_asset_and_regional",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "T.dollar_channel.usd_dir",
+            "C.assets.oil.trend"
+          ]
+        },
+        {
+          "family_id": "change_and_outlook",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": []
+        }
+      ],
+      "paths": [
+        {
+          "path_id": "orderly_disinflation",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "OD-1",
+              "statement_id": "core_inflation_recent_below_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-2",
+              "statement_id": "expectations_drifting_down",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-3",
+              "statement_id": "labour_firm",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "OD-4",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-5",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-7",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-8",
+              "statement_id": "inflation_composition",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "OD-3",
+              "next_scheduled": null,
+              "owner_ref": "engine/conditions.py:738-748"
+            },
+            {
+              "condition_id": "OD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "growth_deterioration",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "GD-1",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-2",
+              "statement_id": "labour_cooling",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "GD-3",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-4",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-5",
+              "statement_id": "real_activity_weakening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-6",
+              "statement_id": "earnings_context",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-7",
+              "statement_id": "dollar_behaviour",
+              "evidence_ids": [
+                "T.dollar_channel.usd_dir"
+              ],
+              "reading": "unknown",
+              "reason": "unknown_date"
+            },
+            {
+              "condition_id": "GD-8",
+              "statement_id": "credit_spreads_wide_level",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.hy_oas_pct"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "real_activity",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "earnings",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "dollar",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GD-2",
+              "next_scheduled": null,
+              "owner_ref": "engine/conditions.py:738-748"
+            },
+            {
+              "condition_id": "GD-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "renewed_inflation_pressure",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "RI-1",
+              "statement_id": "core_inflation_recent_above_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-2",
+              "statement_id": "core_inflation_above_owner_band",
+              "evidence_ids": [
+                "T.state.inflation.regime"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-3",
+              "statement_id": "expectations_drifting_up",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-4",
+              "statement_id": "breakevens_rising",
+              "evidence_ids": [
+                "T.breakeven_decomp.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-5",
+              "statement_id": "wages_services_firming",
+              "evidence_ids": [
+                "T.state.inflation.eci_comp_yoy"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "RI-6",
+              "statement_id": "market_prices_rate_rises_12m",
+              "evidence_ids": [
+                "B.fed_path.implied_cuts_12m"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "RI-7",
+              "statement_id": "inflation_broadening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "RI-8",
+              "statement_id": "oil_mechanism",
+              "evidence_ids": [
+                "C.assets.oil.trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "wages_services",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "oil",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "RI-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-6",
+              "next_scheduled": null,
+              "owner_ref": "engine/fed_path.py:32,131-132,155-158"
+            },
+            {
+              "condition_id": "RI-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "long_end_premium_shock",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "LP-1",
+              "statement_id": "term_premium_rising",
+              "evidence_ids": [
+                "T.yield_curve.regime.term_premium_dir"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "LP-2",
+              "statement_id": "real_yields_rising",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "LP-4",
+              "statement_id": "curve_steepening_long_end",
+              "evidence_ids": [
+                "T.yield_curve.regime.key"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            },
+            {
+              "condition_id": "LP-5",
+              "statement_id": "issuance_demand_deteriorating",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-6",
+              "statement_id": "term_premium_models_agree",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-7",
+              "statement_id": "long_end_rise_not_explained_by_policy",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "issuance_and_demand",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LP-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/yield_curve.py:522-523"
+            },
+            {
+              "condition_id": "LP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "technical_pause",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "TP-1",
+              "statement_id": "turn_forming_10y",
+              "evidence_ids": [
+                "T.yield_momentum.series.10y.turn_watch"
+              ],
+              "reading": "unknown",
+              "reason": "owner_default_on_missing"
+            },
+            {
+              "condition_id": "TP-4",
+              "statement_id": "positioning_stretched",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-5",
+              "statement_id": "later_macro_not_confirmed",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-6",
+              "statement_id": "breadth_confirms_turn",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "positioning",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "macro_confirmation",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "TP-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/yield_momentum.py:159-182,274-275,297-300"
+            },
+            {
+              "condition_id": "TP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "continued_selective_concentration",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "SC-1",
+              "statement_id": "index_near_high_breadth_low",
+              "evidence_ids": [
+                "R.conditions.complacency.breadth_div"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-2",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-3",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-4",
+              "statement_id": "cap_weight_ahead_of_equal_weight",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "SC-5",
+              "statement_id": "same_leaders_persist",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "concentration",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "SC-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "SC-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "genuine_broadening",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "GB-1",
+              "statement_id": "breadth_component_strong",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GB-2",
+              "statement_id": "dispersion_falling_without_correlation_rising",
+              "evidence_ids": [
+                "D.state",
+                "D.avg_corr"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "GB-3",
+              "statement_id": "revision_breadth_widening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GB-4",
+              "statement_id": "participation_rising_fixed_universe",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "dispersion",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "revision_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GB-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "internal_leadership_handoff",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "LH-1",
+              "statement_id": "leader_damage_monitor_intact",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "LH-2",
+              "statement_id": "leaders_turning_over_inside_theme",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LH-3",
+              "statement_id": "theme_participation_holding",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LH-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/leadership_crack.py:40-58,237-288,319-323,342"
+            },
+            {
+              "condition_id": "LH-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LH-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "deterioration_spreading_to_leaders",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "DS-1",
+              "statement_id": "leader_damage_monitor_cracking_or_broken",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "DS-2",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-3",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-4",
+              "statement_id": "correlation_rising_with_dispersion",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "vocabulary_not_audited"
+            },
+            {
+              "condition_id": "DS-5",
+              "statement_id": "funding_credit_worsening",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.trend",
+                "R.liquidity_quality.stress_overlay.nfci_trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "correlation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "DS-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/leadership_crack.py:40-58,237-288,319-323,342"
+            },
+            {
+              "condition_id": "DS-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "DS-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        }
+      ],
+      "readings": [
+        {
+          "id": "T.state.inflation.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "cooling"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.inflation.regime",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "regime": "at target"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.expectations.anchoring",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "anchoring": "anchored"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.rates.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "rising"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.rates.regime",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "regime": "restrictive"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.breakeven_decomp.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "falling"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.breakeven_decomp.trend",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "trend": "downtrend"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.yield_curve.regime.term_premium_dir",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.2y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.5y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.10y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.20y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.30y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "R.conditions.labor_nowcast.read",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "unavailable:single_vote",
+          "history": "insufficient_history"
+        },
+        {
+          "id": "R.conditions.financial_conditions.state",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "state": "loose"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.conditions.complacency.breadth_div",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "breadth_div": false
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.liquidity_quality.label",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "label": "stress-expansion"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.liquidity_quality.stress_overlay.confirming_stress",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "confirming_stress": true
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "M.components.breadth.tone",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "tone": "bad"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "L.state",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "not_produced:no_point_in_time_membership_and_no_as_of_seam",
+          "history": "not_in_replay"
+        },
+        {
+          "id": "B.fed_path.implied_cuts_12m",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "not_produced:rate_futures_history_starts_2026_03_16",
+          "history": "insufficient_history"
+        }
+      ],
+      "evidence_summary": {
+        "available": 12,
+        "missing": 13,
+        "unknown": 5
+      }
+    },
+    {
+      "date": "2019-08-30",
+      "frame": {
+        "sha256": "82257a00ac370b000901dd8daff61f5995379558aafb29ea5dc81bbee9df7ade",
+        "rows": 23916,
+        "cols": 148,
+        "first": "1927-12-30T00:00:00",
+        "last": "2019-08-30T00:00:00"
+      },
+      "letters": {
+        "L": {
+          "status": "unavailable",
+          "reason": "no_point_in_time_membership_and_no_as_of_seam",
+          "fields": {
+            "L.state": "not_produced:no_point_in_time_membership_and_no_as_of_seam"
+          }
+        },
+        "B": {
+          "status": "unavailable",
+          "reason": "rate_futures_history_starts_2026_03_16",
+          "fields": {
+            "B.fed_path.implied_cuts_12m": "not_produced:rate_futures_history_starts_2026_03_16"
+          }
+        },
+        "D": {
+          "status": "unavailable",
+          "reason": "producer_not_pinned",
+          "fields": {}
+        },
+        "C": {
+          "status": "unavailable",
+          "reason": "producer_not_pinned",
+          "fields": {}
+        },
+        "T": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "T.state.inflation.direction": "produced",
+            "T.state.inflation.regime": "produced",
+            "T.state.expectations.anchoring": "produced",
+            "T.state.rates.direction": "produced",
+            "T.state.rates.regime": "produced",
+            "T.breakeven_decomp.direction": "produced",
+            "T.breakeven_decomp.trend": "produced",
+            "T.yield_curve.regime.term_premium_dir": "produced",
+            "T.yield_momentum.series.2y.turn_watch": "produced_null",
+            "T.yield_momentum.series.5y.turn_watch": "produced_null",
+            "T.yield_momentum.series.10y.turn_watch": "produced_null",
+            "T.yield_momentum.series.20y.turn_watch": "produced_null",
+            "T.yield_momentum.series.30y.turn_watch": "produced_null"
+          }
+        },
+        "R": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "R.conditions.labor_nowcast.read": "unavailable:single_vote",
+            "R.conditions.financial_conditions.state": "produced",
+            "R.conditions.complacency.breadth_div": "produced",
+            "R.liquidity_quality.label": "produced",
+            "R.liquidity_quality.stress_overlay.confirming_stress": "produced"
+          },
+          "labor_votes": 1
+        },
+        "M": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "M.components.breadth.tone": "produced"
+          }
+        }
+      },
+      "state_families": [
+        {
+          "family_id": "growth_and_inflation",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.inflation.direction",
+            "T.state.inflation.regime",
+            "R.conditions.labor_nowcast.read",
+            "T.state.inflation.eci_comp_yoy"
+          ]
+        },
+        {
+          "family_id": "rates_and_discounting",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.expectations.anchoring",
+            "T.state.rates.direction",
+            "T.state.rates.regime",
+            "T.breakeven_decomp.direction",
+            "T.breakeven_decomp.trend",
+            "T.yield_curve.regime.term_premium_dir",
+            "T.yield_momentum.series.2y.turn_watch",
+            "T.yield_momentum.series.5y.turn_watch",
+            "T.yield_momentum.series.10y.turn_watch",
+            "T.yield_momentum.series.20y.turn_watch",
+            "T.yield_momentum.series.30y.turn_watch",
+            "B.fed_path.implied_cuts_12m",
+            "T.yield_curve.regime.key"
+          ]
+        },
+        {
+          "family_id": "liquidity_and_financing",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.financial_conditions.state",
+            "R.liquidity_quality.label",
+            "R.liquidity_quality.stress_overlay.confirming_stress",
+            "R.liquidity_quality.stress_overlay.hy_oas_pct",
+            "R.conditions.financial_conditions.trend",
+            "R.liquidity_quality.stress_overlay.nfci_trend"
+          ]
+        },
+        {
+          "family_id": "market_structure",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.complacency.breadth_div",
+            "M.components.breadth.tone",
+            "D.state"
+          ]
+        },
+        {
+          "family_id": "leadership_and_fundamentals",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "L.state"
+          ]
+        },
+        {
+          "family_id": "valuation_and_exposures",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "volatility_correlation_positioning",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "D.avg_corr"
+          ]
+        },
+        {
+          "family_id": "flows_and_reflexive_effects",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "cross_asset_and_regional",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "T.dollar_channel.usd_dir",
+            "C.assets.oil.trend"
+          ]
+        },
+        {
+          "family_id": "change_and_outlook",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": []
+        }
+      ],
+      "paths": [
+        {
+          "path_id": "orderly_disinflation",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "OD-1",
+              "statement_id": "core_inflation_recent_below_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-2",
+              "statement_id": "expectations_drifting_down",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-3",
+              "statement_id": "labour_firm",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "OD-4",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-5",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-7",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-8",
+              "statement_id": "inflation_composition",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "not_discriminating"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "OD-3",
+              "next_scheduled": null,
+              "owner_ref": "engine/conditions.py:738-748"
+            },
+            {
+              "condition_id": "OD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "growth_deterioration",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "GD-1",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-2",
+              "statement_id": "labour_cooling",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "GD-3",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-4",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-5",
+              "statement_id": "real_activity_weakening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-6",
+              "statement_id": "earnings_context",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-7",
+              "statement_id": "dollar_behaviour",
+              "evidence_ids": [
+                "T.dollar_channel.usd_dir"
+              ],
+              "reading": "unknown",
+              "reason": "unknown_date"
+            },
+            {
+              "condition_id": "GD-8",
+              "statement_id": "credit_spreads_wide_level",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.hy_oas_pct"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "real_activity",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "earnings",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "dollar",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GD-2",
+              "next_scheduled": null,
+              "owner_ref": "engine/conditions.py:738-748"
+            },
+            {
+              "condition_id": "GD-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "renewed_inflation_pressure",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "RI-1",
+              "statement_id": "core_inflation_recent_above_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-2",
+              "statement_id": "core_inflation_above_owner_band",
+              "evidence_ids": [
+                "T.state.inflation.regime"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-3",
+              "statement_id": "expectations_drifting_up",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-4",
+              "statement_id": "breakevens_rising",
+              "evidence_ids": [
+                "T.breakeven_decomp.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-5",
+              "statement_id": "wages_services_firming",
+              "evidence_ids": [
+                "T.state.inflation.eci_comp_yoy"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "RI-6",
+              "statement_id": "market_prices_rate_rises_12m",
+              "evidence_ids": [
+                "B.fed_path.implied_cuts_12m"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "RI-7",
+              "statement_id": "inflation_broadening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "RI-8",
+              "statement_id": "oil_mechanism",
+              "evidence_ids": [
+                "C.assets.oil.trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "not_discriminating"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "wages_services",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "oil",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "RI-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-6",
+              "next_scheduled": null,
+              "owner_ref": "engine/fed_path.py:32,131-132,155-158"
+            },
+            {
+              "condition_id": "RI-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "long_end_premium_shock",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "LP-1",
+              "statement_id": "term_premium_rising",
+              "evidence_ids": [
+                "T.yield_curve.regime.term_premium_dir"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "LP-2",
+              "statement_id": "real_yields_rising",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "LP-4",
+              "statement_id": "curve_steepening_long_end",
+              "evidence_ids": [
+                "T.yield_curve.regime.key"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            },
+            {
+              "condition_id": "LP-5",
+              "statement_id": "issuance_demand_deteriorating",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-6",
+              "statement_id": "term_premium_models_agree",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-7",
+              "statement_id": "long_end_rise_not_explained_by_policy",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "issuance_and_demand",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "technical_pause",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "TP-1",
+              "statement_id": "turn_forming_10y",
+              "evidence_ids": [
+                "T.yield_momentum.series.10y.turn_watch"
+              ],
+              "reading": "unknown",
+              "reason": "owner_default_on_missing"
+            },
+            {
+              "condition_id": "TP-4",
+              "statement_id": "positioning_stretched",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-5",
+              "statement_id": "later_macro_not_confirmed",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-6",
+              "statement_id": "breadth_confirms_turn",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "positioning",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "macro_confirmation",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "TP-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/yield_momentum.py:159-182,274-275,297-300"
+            },
+            {
+              "condition_id": "TP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "continued_selective_concentration",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "SC-1",
+              "statement_id": "index_near_high_breadth_low",
+              "evidence_ids": [
+                "R.conditions.complacency.breadth_div"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-2",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-3",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-4",
+              "statement_id": "cap_weight_ahead_of_equal_weight",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "SC-5",
+              "statement_id": "same_leaders_persist",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "concentration",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "SC-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "SC-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "genuine_broadening",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "GB-1",
+              "statement_id": "breadth_component_strong",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "GB-2",
+              "statement_id": "dispersion_falling_without_correlation_rising",
+              "evidence_ids": [
+                "D.state",
+                "D.avg_corr"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "GB-3",
+              "statement_id": "revision_breadth_widening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GB-4",
+              "statement_id": "participation_rising_fixed_universe",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "not_discriminating"
+            },
+            {
+              "evidence_family_id": "dispersion",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "revision_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GB-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "internal_leadership_handoff",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "LH-1",
+              "statement_id": "leader_damage_monitor_intact",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "LH-2",
+              "statement_id": "leaders_turning_over_inside_theme",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LH-3",
+              "statement_id": "theme_participation_holding",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LH-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/leadership_crack.py:40-58,237-288,319-323,342"
+            },
+            {
+              "condition_id": "LH-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LH-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "deterioration_spreading_to_leaders",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "DS-1",
+              "statement_id": "leader_damage_monitor_cracking_or_broken",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "DS-2",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-3",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-4",
+              "statement_id": "correlation_rising_with_dispersion",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "vocabulary_not_audited"
+            },
+            {
+              "condition_id": "DS-5",
+              "statement_id": "funding_credit_worsening",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.trend",
+                "R.liquidity_quality.stress_overlay.nfci_trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "correlation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "DS-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/leadership_crack.py:40-58,237-288,319-323,342"
+            },
+            {
+              "condition_id": "DS-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "DS-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        }
+      ],
+      "readings": [
+        {
+          "id": "T.state.inflation.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "steady"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.inflation.regime",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "regime": "at target"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.expectations.anchoring",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "anchoring": "anchored"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.rates.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "falling"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.rates.regime",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "regime": "accommodative"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.breakeven_decomp.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "falling"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.breakeven_decomp.trend",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "trend": "downtrend"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.yield_curve.regime.term_premium_dir",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "term_premium_dir": "falling"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.yield_momentum.series.2y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.5y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.10y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.20y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.30y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "R.conditions.labor_nowcast.read",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "unavailable:single_vote",
+          "history": "insufficient_history"
+        },
+        {
+          "id": "R.conditions.financial_conditions.state",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "state": "loose"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.conditions.complacency.breadth_div",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "breadth_div": false
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.liquidity_quality.label",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "label": "contracting"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.liquidity_quality.stress_overlay.confirming_stress",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "confirming_stress": false
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "M.components.breadth.tone",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "tone": "warn"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "L.state",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "not_produced:no_point_in_time_membership_and_no_as_of_seam",
+          "history": "not_in_replay"
+        },
+        {
+          "id": "B.fed_path.implied_cuts_12m",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "not_produced:rate_futures_history_starts_2026_03_16",
+          "history": "insufficient_history"
+        }
+      ],
+      "evidence_summary": {
+        "available": 13,
+        "missing": 12,
+        "unknown": 5
+      }
+    },
+    {
+      "date": "2022-06-30",
+      "frame": {
+        "sha256": "d283060c8a6a64abd35bf17d77e6b9a6b9c2829f7f1e27cbde675d436c1021a3",
+        "rows": 24655,
+        "cols": 148,
+        "first": "1927-12-30T00:00:00",
+        "last": "2022-06-30T00:00:00"
+      },
+      "letters": {
+        "L": {
+          "status": "unavailable",
+          "reason": "no_point_in_time_membership_and_no_as_of_seam",
+          "fields": {
+            "L.state": "not_produced:no_point_in_time_membership_and_no_as_of_seam"
+          }
+        },
+        "B": {
+          "status": "unavailable",
+          "reason": "rate_futures_history_starts_2026_03_16",
+          "fields": {
+            "B.fed_path.implied_cuts_12m": "not_produced:rate_futures_history_starts_2026_03_16"
+          }
+        },
+        "D": {
+          "status": "unavailable",
+          "reason": "producer_not_pinned",
+          "fields": {}
+        },
+        "C": {
+          "status": "unavailable",
+          "reason": "producer_not_pinned",
+          "fields": {}
+        },
+        "T": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "T.state.inflation.direction": "produced",
+            "T.state.inflation.regime": "produced",
+            "T.state.expectations.anchoring": "produced",
+            "T.state.rates.direction": "produced",
+            "T.state.rates.regime": "produced",
+            "T.breakeven_decomp.direction": "produced",
+            "T.breakeven_decomp.trend": "produced",
+            "T.yield_curve.regime.term_premium_dir": "produced",
+            "T.yield_momentum.series.2y.turn_watch": "produced_null",
+            "T.yield_momentum.series.5y.turn_watch": "produced_null",
+            "T.yield_momentum.series.10y.turn_watch": "produced_null",
+            "T.yield_momentum.series.20y.turn_watch": "produced_null",
+            "T.yield_momentum.series.30y.turn_watch": "produced_null"
+          }
+        },
+        "R": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "R.conditions.labor_nowcast.read": "partial:2_of_3_votes",
+            "R.conditions.financial_conditions.state": "produced",
+            "R.conditions.complacency.breadth_div": "produced",
+            "R.liquidity_quality.label": "produced",
+            "R.liquidity_quality.stress_overlay.confirming_stress": "produced"
+          },
+          "labor_votes": 2
+        },
+        "M": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "M.components.breadth.tone": "produced"
+          }
+        }
+      },
+      "state_families": [
+        {
+          "family_id": "growth_and_inflation",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.inflation.direction",
+            "T.state.inflation.regime",
+            "R.conditions.labor_nowcast.read",
+            "T.state.inflation.eci_comp_yoy"
+          ]
+        },
+        {
+          "family_id": "rates_and_discounting",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.expectations.anchoring",
+            "T.state.rates.direction",
+            "T.state.rates.regime",
+            "T.breakeven_decomp.direction",
+            "T.breakeven_decomp.trend",
+            "T.yield_curve.regime.term_premium_dir",
+            "T.yield_momentum.series.2y.turn_watch",
+            "T.yield_momentum.series.5y.turn_watch",
+            "T.yield_momentum.series.10y.turn_watch",
+            "T.yield_momentum.series.20y.turn_watch",
+            "T.yield_momentum.series.30y.turn_watch",
+            "B.fed_path.implied_cuts_12m",
+            "T.yield_curve.regime.key"
+          ]
+        },
+        {
+          "family_id": "liquidity_and_financing",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.financial_conditions.state",
+            "R.liquidity_quality.label",
+            "R.liquidity_quality.stress_overlay.confirming_stress",
+            "R.liquidity_quality.stress_overlay.hy_oas_pct",
+            "R.conditions.financial_conditions.trend",
+            "R.liquidity_quality.stress_overlay.nfci_trend"
+          ]
+        },
+        {
+          "family_id": "market_structure",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.complacency.breadth_div",
+            "M.components.breadth.tone",
+            "D.state"
+          ]
+        },
+        {
+          "family_id": "leadership_and_fundamentals",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "L.state"
+          ]
+        },
+        {
+          "family_id": "valuation_and_exposures",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "volatility_correlation_positioning",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "D.avg_corr"
+          ]
+        },
+        {
+          "family_id": "flows_and_reflexive_effects",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "cross_asset_and_regional",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "T.dollar_channel.usd_dir",
+            "C.assets.oil.trend"
+          ]
+        },
+        {
+          "family_id": "change_and_outlook",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": []
+        }
+      ],
+      "paths": [
+        {
+          "path_id": "orderly_disinflation",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "OD-1",
+              "statement_id": "core_inflation_recent_below_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-2",
+              "statement_id": "expectations_drifting_down",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-3",
+              "statement_id": "labour_firm",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "unknown",
+              "reason": "owner_default_on_missing"
+            },
+            {
+              "condition_id": "OD-4",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-5",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-7",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-8",
+              "statement_id": "inflation_composition",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "not_discriminating"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "OD-3",
+              "next_scheduled": null,
+              "owner_ref": "engine/conditions.py:738-748"
+            },
+            {
+              "condition_id": "OD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "growth_deterioration",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "GD-1",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-2",
+              "statement_id": "labour_cooling",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "unknown",
+              "reason": "owner_default_on_missing"
+            },
+            {
+              "condition_id": "GD-3",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-4",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-5",
+              "statement_id": "real_activity_weakening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-6",
+              "statement_id": "earnings_context",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-7",
+              "statement_id": "dollar_behaviour",
+              "evidence_ids": [
+                "T.dollar_channel.usd_dir"
+              ],
+              "reading": "unknown",
+              "reason": "unknown_date"
+            },
+            {
+              "condition_id": "GD-8",
+              "statement_id": "credit_spreads_wide_level",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.hy_oas_pct"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "real_activity",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "earnings",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "dollar",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GD-2",
+              "next_scheduled": null,
+              "owner_ref": "engine/conditions.py:738-748"
+            },
+            {
+              "condition_id": "GD-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "renewed_inflation_pressure",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "RI-1",
+              "statement_id": "core_inflation_recent_above_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-2",
+              "statement_id": "core_inflation_above_owner_band",
+              "evidence_ids": [
+                "T.state.inflation.regime"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-3",
+              "statement_id": "expectations_drifting_up",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-4",
+              "statement_id": "breakevens_rising",
+              "evidence_ids": [
+                "T.breakeven_decomp.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-5",
+              "statement_id": "wages_services_firming",
+              "evidence_ids": [
+                "T.state.inflation.eci_comp_yoy"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "RI-6",
+              "statement_id": "market_prices_rate_rises_12m",
+              "evidence_ids": [
+                "B.fed_path.implied_cuts_12m"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "RI-7",
+              "statement_id": "inflation_broadening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "RI-8",
+              "statement_id": "oil_mechanism",
+              "evidence_ids": [
+                "C.assets.oil.trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "wages_services",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "oil",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "RI-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-6",
+              "next_scheduled": null,
+              "owner_ref": "engine/fed_path.py:32,131-132,155-158"
+            },
+            {
+              "condition_id": "RI-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "long_end_premium_shock",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "LP-1",
+              "statement_id": "term_premium_rising",
+              "evidence_ids": [
+                "T.yield_curve.regime.term_premium_dir"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "LP-2",
+              "statement_id": "real_yields_rising",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "LP-4",
+              "statement_id": "curve_steepening_long_end",
+              "evidence_ids": [
+                "T.yield_curve.regime.key"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            },
+            {
+              "condition_id": "LP-5",
+              "statement_id": "issuance_demand_deteriorating",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-6",
+              "statement_id": "term_premium_models_agree",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-7",
+              "statement_id": "long_end_rise_not_explained_by_policy",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "issuance_and_demand",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "technical_pause",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "TP-1",
+              "statement_id": "turn_forming_10y",
+              "evidence_ids": [
+                "T.yield_momentum.series.10y.turn_watch"
+              ],
+              "reading": "unknown",
+              "reason": "owner_default_on_missing"
+            },
+            {
+              "condition_id": "TP-4",
+              "statement_id": "positioning_stretched",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-5",
+              "statement_id": "later_macro_not_confirmed",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-6",
+              "statement_id": "breadth_confirms_turn",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "positioning",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "macro_confirmation",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "TP-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/yield_momentum.py:159-182,274-275,297-300"
+            },
+            {
+              "condition_id": "TP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "continued_selective_concentration",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "SC-1",
+              "statement_id": "index_near_high_breadth_low",
+              "evidence_ids": [
+                "R.conditions.complacency.breadth_div"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-2",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-3",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-4",
+              "statement_id": "cap_weight_ahead_of_equal_weight",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "SC-5",
+              "statement_id": "same_leaders_persist",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "concentration",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "SC-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "SC-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "genuine_broadening",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "GB-1",
+              "statement_id": "breadth_component_strong",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GB-2",
+              "statement_id": "dispersion_falling_without_correlation_rising",
+              "evidence_ids": [
+                "D.state",
+                "D.avg_corr"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "GB-3",
+              "statement_id": "revision_breadth_widening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GB-4",
+              "statement_id": "participation_rising_fixed_universe",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "dispersion",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "revision_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GB-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "internal_leadership_handoff",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "LH-1",
+              "statement_id": "leader_damage_monitor_intact",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "LH-2",
+              "statement_id": "leaders_turning_over_inside_theme",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LH-3",
+              "statement_id": "theme_participation_holding",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LH-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/leadership_crack.py:40-58,237-288,319-323,342"
+            },
+            {
+              "condition_id": "LH-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LH-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "deterioration_spreading_to_leaders",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "DS-1",
+              "statement_id": "leader_damage_monitor_cracking_or_broken",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "DS-2",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-3",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-4",
+              "statement_id": "correlation_rising_with_dispersion",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "vocabulary_not_audited"
+            },
+            {
+              "condition_id": "DS-5",
+              "statement_id": "funding_credit_worsening",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.trend",
+                "R.liquidity_quality.stress_overlay.nfci_trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "mixed"
+            },
+            {
+              "evidence_family_id": "correlation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "DS-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/leadership_crack.py:40-58,237-288,319-323,342"
+            },
+            {
+              "condition_id": "DS-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "DS-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        }
+      ],
+      "readings": [
+        {
+          "id": "T.state.inflation.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "steady"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.inflation.regime",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "regime": "above target"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.expectations.anchoring",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "anchoring": "drifting down"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.rates.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "rising"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.rates.regime",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "regime": "restrictive"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.breakeven_decomp.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "falling"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.breakeven_decomp.trend",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "trend": "downtrend"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.yield_curve.regime.term_premium_dir",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "term_premium_dir": "stable"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.yield_momentum.series.2y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.5y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.10y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.20y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.30y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "R.conditions.labor_nowcast.read",
+          "status": "partial",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {
+            "read": "labor mixed"
+          },
+          "replay_mark": "partial:2_of_3_votes",
+          "history": "partial_history"
+        },
+        {
+          "id": "R.conditions.financial_conditions.state",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "state": "loose"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.conditions.complacency.breadth_div",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "breadth_div": false
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.liquidity_quality.label",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "label": "contracting"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.liquidity_quality.stress_overlay.confirming_stress",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "confirming_stress": true
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "M.components.breadth.tone",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "tone": "bad"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "L.state",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "not_produced:no_point_in_time_membership_and_no_as_of_seam",
+          "history": "not_in_replay"
+        },
+        {
+          "id": "B.fed_path.implied_cuts_12m",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "not_produced:rate_futures_history_starts_2026_03_16",
+          "history": "insufficient_history"
+        }
+      ],
+      "evidence_summary": {
+        "available": 13,
+        "missing": 11,
+        "unknown": 6
+      }
+    },
+    {
+      "date": "2022-10-31",
+      "frame": {
+        "sha256": "574cec372430d6841e66d0725a41f6922e0b6e086c4e08fc2ad0ca55dbf34e1d",
+        "rows": 24742,
+        "cols": 148,
+        "first": "1927-12-30T00:00:00",
+        "last": "2022-10-31T00:00:00"
+      },
+      "letters": {
+        "L": {
+          "status": "unavailable",
+          "reason": "no_point_in_time_membership_and_no_as_of_seam",
+          "fields": {
+            "L.state": "not_produced:no_point_in_time_membership_and_no_as_of_seam"
+          }
+        },
+        "B": {
+          "status": "unavailable",
+          "reason": "rate_futures_history_starts_2026_03_16",
+          "fields": {
+            "B.fed_path.implied_cuts_12m": "not_produced:rate_futures_history_starts_2026_03_16"
+          }
+        },
+        "D": {
+          "status": "unavailable",
+          "reason": "producer_not_pinned",
+          "fields": {}
+        },
+        "C": {
+          "status": "unavailable",
+          "reason": "producer_not_pinned",
+          "fields": {}
+        },
+        "T": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "T.state.inflation.direction": "produced",
+            "T.state.inflation.regime": "produced",
+            "T.state.expectations.anchoring": "produced",
+            "T.state.rates.direction": "produced",
+            "T.state.rates.regime": "produced",
+            "T.breakeven_decomp.direction": "produced",
+            "T.breakeven_decomp.trend": "produced",
+            "T.yield_curve.regime.term_premium_dir": "produced",
+            "T.yield_momentum.series.2y.turn_watch": "produced_null",
+            "T.yield_momentum.series.5y.turn_watch": "produced_null",
+            "T.yield_momentum.series.10y.turn_watch": "produced_null",
+            "T.yield_momentum.series.20y.turn_watch": "produced_null",
+            "T.yield_momentum.series.30y.turn_watch": "produced_null"
+          }
+        },
+        "R": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "R.conditions.labor_nowcast.read": "partial:2_of_3_votes",
+            "R.conditions.financial_conditions.state": "produced",
+            "R.conditions.complacency.breadth_div": "produced",
+            "R.liquidity_quality.label": "produced",
+            "R.liquidity_quality.stress_overlay.confirming_stress": "produced"
+          },
+          "labor_votes": 2
+        },
+        "M": {
+          "status": "reconstructed",
+          "reason": null,
+          "fields": {
+            "M.components.breadth.tone": "produced"
+          }
+        }
+      },
+      "state_families": [
+        {
+          "family_id": "growth_and_inflation",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.inflation.direction",
+            "T.state.inflation.regime",
+            "R.conditions.labor_nowcast.read",
+            "T.state.inflation.eci_comp_yoy"
+          ]
+        },
+        {
+          "family_id": "rates_and_discounting",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": [
+            "T.state.expectations.anchoring",
+            "T.state.rates.direction",
+            "T.state.rates.regime",
+            "T.breakeven_decomp.direction",
+            "T.breakeven_decomp.trend",
+            "T.yield_curve.regime.term_premium_dir",
+            "T.yield_momentum.series.2y.turn_watch",
+            "T.yield_momentum.series.5y.turn_watch",
+            "T.yield_momentum.series.10y.turn_watch",
+            "T.yield_momentum.series.20y.turn_watch",
+            "T.yield_momentum.series.30y.turn_watch",
+            "B.fed_path.implied_cuts_12m",
+            "T.yield_curve.regime.key"
+          ]
+        },
+        {
+          "family_id": "liquidity_and_financing",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.financial_conditions.state",
+            "R.liquidity_quality.label",
+            "R.liquidity_quality.stress_overlay.confirming_stress",
+            "R.liquidity_quality.stress_overlay.hy_oas_pct",
+            "R.conditions.financial_conditions.trend",
+            "R.liquidity_quality.stress_overlay.nfci_trend"
+          ]
+        },
+        {
+          "family_id": "market_structure",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "R.conditions.complacency.breadth_div",
+            "M.components.breadth.tone",
+            "D.state"
+          ]
+        },
+        {
+          "family_id": "leadership_and_fundamentals",
+          "coverage": "partial",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "L.state"
+          ]
+        },
+        {
+          "family_id": "valuation_and_exposures",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "volatility_correlation_positioning",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "D.avg_corr"
+          ]
+        },
+        {
+          "family_id": "flows_and_reflexive_effects",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": []
+        },
+        {
+          "family_id": "cross_asset_and_regional",
+          "coverage": "not_covered",
+          "reason": "no_admitted_owner_field",
+          "evidence_ids": [
+            "T.dollar_channel.usd_dir",
+            "C.assets.oil.trend"
+          ]
+        },
+        {
+          "family_id": "change_and_outlook",
+          "coverage": "covered",
+          "reason": null,
+          "evidence_ids": []
+        }
+      ],
+      "paths": [
+        {
+          "path_id": "orderly_disinflation",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "OD-1",
+              "statement_id": "core_inflation_recent_below_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-2",
+              "statement_id": "expectations_drifting_down",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-3",
+              "statement_id": "labour_firm",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "unknown",
+              "reason": "owner_default_on_missing"
+            },
+            {
+              "condition_id": "OD-4",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-5",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-7",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "OD-8",
+              "statement_id": "inflation_composition",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "not_discriminating"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "OD-3",
+              "next_scheduled": null,
+              "owner_ref": "engine/conditions.py:738-748"
+            },
+            {
+              "condition_id": "OD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "growth_deterioration",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "GD-1",
+              "statement_id": "real_yields_falling",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-2",
+              "statement_id": "labour_cooling",
+              "evidence_ids": [
+                "R.conditions.labor_nowcast.read"
+              ],
+              "reading": "unknown",
+              "reason": "owner_default_on_missing"
+            },
+            {
+              "condition_id": "GD-3",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-4",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GD-5",
+              "statement_id": "real_activity_weakening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-6",
+              "statement_id": "earnings_context",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GD-7",
+              "statement_id": "dollar_behaviour",
+              "evidence_ids": [
+                "T.dollar_channel.usd_dir"
+              ],
+              "reading": "unknown",
+              "reason": "unknown_date"
+            },
+            {
+              "condition_id": "GD-8",
+              "statement_id": "credit_spreads_wide_level",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.hy_oas_pct"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "labour",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "real_activity",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "earnings",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "dollar",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GD-2",
+              "next_scheduled": null,
+              "owner_ref": "engine/conditions.py:738-748"
+            },
+            {
+              "condition_id": "GD-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GD-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "renewed_inflation_pressure",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "RI-1",
+              "statement_id": "core_inflation_recent_above_12m",
+              "evidence_ids": [
+                "T.state.inflation.direction"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-2",
+              "statement_id": "core_inflation_above_owner_band",
+              "evidence_ids": [
+                "T.state.inflation.regime"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-3",
+              "statement_id": "expectations_drifting_up",
+              "evidence_ids": [
+                "T.state.expectations.anchoring"
+              ],
+              "reading": "not_discriminating",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-4",
+              "statement_id": "breakevens_rising",
+              "evidence_ids": [
+                "T.breakeven_decomp.direction"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "RI-5",
+              "statement_id": "wages_services_firming",
+              "evidence_ids": [
+                "T.state.inflation.eci_comp_yoy"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "RI-6",
+              "statement_id": "market_prices_rate_rises_12m",
+              "evidence_ids": [
+                "B.fed_path.implied_cuts_12m"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "RI-7",
+              "statement_id": "inflation_broadening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "RI-8",
+              "statement_id": "oil_mechanism",
+              "evidence_ids": [
+                "C.assets.oil.trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "core_pce",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "wages_services",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "inflation_breadth",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "oil",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "RI-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-6",
+              "next_scheduled": null,
+              "owner_ref": "engine/fed_path.py:32,131-132,155-158"
+            },
+            {
+              "condition_id": "RI-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "RI-8",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "long_end_premium_shock",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "LP-1",
+              "statement_id": "term_premium_rising",
+              "evidence_ids": [
+                "T.yield_curve.regime.term_premium_dir"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "LP-2",
+              "statement_id": "real_yields_rising",
+              "evidence_ids": [
+                "T.state.rates.direction"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "LP-4",
+              "statement_id": "curve_steepening_long_end",
+              "evidence_ids": [
+                "T.yield_curve.regime.key"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            },
+            {
+              "condition_id": "LP-5",
+              "statement_id": "issuance_demand_deteriorating",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-6",
+              "statement_id": "term_premium_models_agree",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LP-7",
+              "statement_id": "long_end_rise_not_explained_by_policy",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "issuance_and_demand",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "policy_pricing",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LP-7",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "technical_pause",
+          "family": "rates",
+          "conditions": [
+            {
+              "condition_id": "TP-1",
+              "statement_id": "turn_forming_10y",
+              "evidence_ids": [
+                "T.yield_momentum.series.10y.turn_watch"
+              ],
+              "reading": "unknown",
+              "reason": "owner_default_on_missing"
+            },
+            {
+              "condition_id": "TP-4",
+              "statement_id": "positioning_stretched",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-5",
+              "statement_id": "later_macro_not_confirmed",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "TP-6",
+              "statement_id": "breadth_confirms_turn",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "treasury_curve",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "positioning",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "macro_confirmation",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "TP-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/yield_momentum.py:159-182,274-275,297-300"
+            },
+            {
+              "condition_id": "TP-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "TP-6",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "continued_selective_concentration",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "SC-1",
+              "statement_id": "index_near_high_breadth_low",
+              "evidence_ids": [
+                "R.conditions.complacency.breadth_div"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-2",
+              "statement_id": "credit_stress_flag_off",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-3",
+              "statement_id": "financial_conditions_loose",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "fits",
+              "reason": null
+            },
+            {
+              "condition_id": "SC-4",
+              "statement_id": "cap_weight_ahead_of_equal_weight",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "SC-5",
+              "statement_id": "same_leaders_persist",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "fits"
+            },
+            {
+              "evidence_family_id": "concentration",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "SC-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "SC-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "genuine_broadening",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "GB-1",
+              "statement_id": "breadth_component_strong",
+              "evidence_ids": [
+                "M.components.breadth.tone"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "GB-2",
+              "statement_id": "dispersion_falling_without_correlation_rising",
+              "evidence_ids": [
+                "D.state",
+                "D.avg_corr"
+              ],
+              "reading": "unknown",
+              "reason": "no_owner_verdict"
+            },
+            {
+              "condition_id": "GB-3",
+              "statement_id": "revision_breadth_widening",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "GB-4",
+              "statement_id": "participation_rising_fixed_universe",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "participation",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "dispersion",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "revision_breadth",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "GB-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "GB-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "internal_leadership_handoff",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "LH-1",
+              "statement_id": "leader_damage_monitor_intact",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "LH-2",
+              "statement_id": "leaders_turning_over_inside_theme",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            },
+            {
+              "condition_id": "LH-3",
+              "statement_id": "theme_participation_holding",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "no_admitted_owner_field"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "leader_turnover",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "participation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "LH-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/leadership_crack.py:40-58,237-288,319-323,342"
+            },
+            {
+              "condition_id": "LH-2",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "LH-3",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        },
+        {
+          "path_id": "deterioration_spreading_to_leaders",
+          "family": "market_structure",
+          "conditions": [
+            {
+              "condition_id": "DS-1",
+              "statement_id": "leader_damage_monitor_cracking_or_broken",
+              "evidence_ids": [
+                "L.state"
+              ],
+              "reading": "unknown",
+              "reason": "missing"
+            },
+            {
+              "condition_id": "DS-2",
+              "statement_id": "credit_stress_flag_on",
+              "evidence_ids": [
+                "R.liquidity_quality.stress_overlay.confirming_stress"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-3",
+              "statement_id": "financial_conditions_tight",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.state"
+              ],
+              "reading": "does_not_fit",
+              "reason": null
+            },
+            {
+              "condition_id": "DS-4",
+              "statement_id": "correlation_rising_with_dispersion",
+              "evidence_ids": [],
+              "reading": "unknown",
+              "reason": "vocabulary_not_audited"
+            },
+            {
+              "condition_id": "DS-5",
+              "statement_id": "funding_credit_worsening",
+              "evidence_ids": [
+                "R.conditions.financial_conditions.trend",
+                "R.liquidity_quality.stress_overlay.nfci_trend"
+              ],
+              "reading": "unknown",
+              "reason": "sign_only_verdict"
+            }
+          ],
+          "family_readings": [
+            {
+              "evidence_family_id": "leader_damage",
+              "reading": "unknown"
+            },
+            {
+              "evidence_family_id": "credit_and_funding",
+              "reading": "does_not_fit"
+            },
+            {
+              "evidence_family_id": "correlation",
+              "reading": "unknown"
+            }
+          ],
+          "watch": [
+            {
+              "condition_id": "DS-1",
+              "next_scheduled": null,
+              "owner_ref": "engine/leadership_crack.py:40-58,237-288,319-323,342"
+            },
+            {
+              "condition_id": "DS-4",
+              "next_scheduled": null,
+              "owner_ref": null
+            },
+            {
+              "condition_id": "DS-5",
+              "next_scheduled": null,
+              "owner_ref": null
+            }
+          ]
+        }
+      ],
+      "readings": [
+        {
+          "id": "T.state.inflation.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "steady"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.inflation.regime",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "regime": "above target"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.expectations.anchoring",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "anchoring": "anchored"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.rates.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "rising"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.state.rates.regime",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "regime": "restrictive"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.breakeven_decomp.direction",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "direction": "rising"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.breakeven_decomp.trend",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "trend": "choppy"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.yield_curve.regime.term_premium_dir",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "term_premium_dir": "rising"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "T.yield_momentum.series.2y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.5y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.10y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.20y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "T.yield_momentum.series.30y.turn_watch",
+          "status": "missing",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {},
+          "replay_mark": "produced_null",
+          "history": "owner_null"
+        },
+        {
+          "id": "R.conditions.labor_nowcast.read",
+          "status": "partial",
+          "issues": [
+            "owner_default_on_missing"
+          ],
+          "values": {
+            "read": "labor mixed"
+          },
+          "replay_mark": "partial:2_of_3_votes",
+          "history": "partial_history"
+        },
+        {
+          "id": "R.conditions.financial_conditions.state",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "state": "loose"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.conditions.complacency.breadth_div",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "breadth_div": false
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.liquidity_quality.label",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "label": "stress-expansion"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "R.liquidity_quality.stress_overlay.confirming_stress",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "confirming_stress": false
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "M.components.breadth.tone",
+          "status": "available",
+          "issues": [],
+          "values": {
+            "tone": "bad"
+          },
+          "replay_mark": "produced",
+          "history": "read"
+        },
+        {
+          "id": "L.state",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "not_produced:no_point_in_time_membership_and_no_as_of_seam",
+          "history": "not_in_replay"
+        },
+        {
+          "id": "B.fed_path.implied_cuts_12m",
+          "status": "missing",
+          "issues": [],
+          "values": {},
+          "replay_mark": "not_produced:rate_futures_history_starts_2026_03_16",
+          "history": "insufficient_history"
+        }
+      ],
+      "evidence_summary": {
+        "available": 13,
+        "missing": 11,
+        "unknown": 6
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "paper.intl.compare_catalogue_evidence.v1",
+  "status": "SCOPED_SOURCE_ACCEPTED",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "lib/intl_compare_view.py": "4f331b0ef4c670b763a4e5a0fee2bc93b91e7b8aa401a755a2e7cf71dc66ebc2",
+    "tests/test_intl_compare_view.py": "8dc1abded506e8920423b3436014ecda86afe1c431d5fb6f6ceccb2a2508001e"
+  },
+  "outcome": "One public row per canonical configured slot and one linear server-ordered cohort catalogue per exact Overview context. Denied slots remain identity-free. Client selection can filter cohorts without financial math or precomputed subsets.",
+  "tests": {
+    "parent": {
+      "total": 119,
+      "compare": 55,
+      "inspector": 44,
+      "overview": 20,
+      "log": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_CATALOGUE_GREEN.log"
+    },
+    "independent": {
+      "focused": 55,
+      "additional_counterchecks": 10,
+      "review": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/IM02_CATALOGUE_REVIEW_R1.json",
+      "review_sha256": "3af12ca52306d5f870b8645183d5672f359b3a54014df0e320ef37004594fd7b"
+    },
+    "selection_equivalence": "517 ordered selections exercised inside one of the 15 new tests, not 517 tests.",
+    "red": "All 15 new cases fail before catalogue implementation; previous 40 tests retained."
+  },
+  "routing": {
+    "build_request": "paper-01a1101f-compare-catalogue-build-r1",
+    "refusal": "NONE no eligible full GLM mode; parent bounded implementation exception",
+    "review_run": "paper-01a1101f-compare-catalogue-review-r1",
+    "accepted_by": "reviewer"
+  },
+  "limits": [
+    "Additive source acceptance only, not renderer, interaction, source rights or production publication.",
+    "Original table reason-only run remains retained separately; no duplicate/replay/cancellation."
+  ]
+}

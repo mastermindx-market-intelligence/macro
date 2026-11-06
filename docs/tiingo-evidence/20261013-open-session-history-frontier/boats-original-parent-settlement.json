@@ -1,0 +1,47 @@
+{
+  "active_eod_qualification_writer": false,
+  "actual_result": {
+    "acceptance_requires_original_raw_and_receipt_audit": true,
+    "bytes": 448959986,
+    "connections": 1,
+    "coverage_proven": false,
+    "first_gap_stops_without_reconnection": true,
+    "full_session_coverage": false,
+    "observer_outcome": {
+      "archived_bytes": 448959986,
+      "archived_segments": 2000,
+      "last_segment_bytes": 227146,
+      "stop_reason": null
+    },
+    "production_consumer_acceptance": false,
+    "r2_publication": false,
+    "raw_messages": 2000000,
+    "run_id": "tiingo-boats-raw-20261013-01a12ab6",
+    "schema": "tiingo_attended_raw_boats_result.v1",
+    "segments": 2000,
+    "settled_at_utc": "2026-10-13T00:09:30.437188+00:00",
+    "transport_breaks": 0
+  },
+  "actual_result_sha256": "9b2e2b45178cf31ca50c018f453ffb74416b59778398b094ff3bfc56184014bb",
+  "actual_scope_sha256": "3595b565238aa71b42810041d5eb1fc0a9318f61c2239b34145cd9bfad140983",
+  "complete_session_or_production_consumer_acceptance_claimed": false,
+  "original_exit_code": 0,
+  "original_log_sha256": "95f813b3e79abbe878400f8b236942db12b0e7cae139235c90a2deed2acf02b2",
+  "original_terminal_return_consumed": true,
+  "original_tool_session_id": 90361,
+  "prelaunch_parent_path_typo_corrected_from_existing_source_binding": true,
+  "previous_eod_window_original_terminal_return_consumed": true,
+  "prior_eod_window_acceptance_sha256": "4d6a5272f8d269a463d6bca55e52767ff5502d0661628ade75b4b7fcbb17b6f3",
+  "public_or_runtime_effect": false,
+  "qualification_source_pins_freshly_verified": {
+    "lib/dataos/temporal.py": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+    "lib/dataos/tiingo_boats_tape.py": "98f3f3768edfc109ae645671bb217a2ea9673afcf78ccc787836310d09443db5",
+    "lib/dataos/tiingo_reader.py": "fb7a2834f37f2e1c76e00250ea5c60a9cdbab73c598a855e37e1b8a54672e976",
+    "lib/dataos/tiingo_views.py": "62e98c024b9c9019ed4b5d25818873463a6a0c1d4464ef3f3961f05677c6deb1",
+    "scripts/tiingo_materialize.py": "c554f9693cec7287d6953dc5a1a6d28c13012c85000af38fc0b607c0dc411500"
+  },
+  "qualifier_not_launched_by_failed_read_only_parent_preflight": true,
+  "raw_and_reader_qualification_still_required": true,
+  "recorded_at_utc": "2026-10-13T00:10:59.413303+00:00",
+  "schema": "tiingo_actual_original_boats_capture_parent_settlement.v1"
+}

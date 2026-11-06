@@ -1,0 +1,28 @@
+{
+  "attempt": 1,
+  "candidate": "9df735bbeaa8d0f4d4967296270bfb2246a5212f",
+  "connector_decoded_character_count": 30749,
+  "failed_gate_remains_failed": true,
+  "independent_ci_packet_retains": "bounded excerpts and raw-log hash, not full log body",
+  "job_id": 113803335510,
+  "native_readback_verified_at": "2026-10-09T12:43:00.855991+00:00",
+  "new_candidate_ci_not_claimed": true,
+  "operation_id": "gmi-economic-observations-20261009-pro-003",
+  "principal_observed_original_transport_bytes": false,
+  "prior_native_cli_attempt": {
+    "allow_escape_sequences_override_used": false,
+    "exit_code": 1,
+    "log_or_receipt_file_written": false,
+    "pid": 60183,
+    "reason": "gh refused terminal escape sequences in log response"
+  },
+  "readback_git_blob": "97c3b985d3be07307383f583f159c85f2902bda7",
+  "representation": "GitHub connector decoded Unicode string encoded as UTF-8 without normalization; bytes match independently recorded original raw-log length and SHA-256",
+  "retained_byte_length": 30995,
+  "retained_path": "research/theme_graph/economic_network_execution_20261009/continuation_pro_003/native_validation/pr8711-original-contract-delta-001.log",
+  "retained_sha256": "85fe520d6cb4f29cafe4f990a792bb7c28218742ac72a54e17710f0858666334",
+  "run_id": 37925499382,
+  "safer_structured_read": "github_fetch_workflow_job_logs decoded content, separately retained and hashed",
+  "schema": "economic_network.failed_gate_log_retention/v1",
+  "tested_merge": "c852221c2bc4d8275c11c686094ccbf472f82ad9"
+}

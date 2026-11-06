@@ -1,0 +1,22 @@
+{
+  "schema": "qbus.news_rights_receipt.v1",
+  "status": "approved",
+  "receipt_id": "rights-alpaca-benzinga-news-2026-10-11",
+  "source": "benzinga",
+  "provider": "alpaca",
+  "product_id": "macro-ticker-news",
+  "audiences": ["site_full"],
+  "effective_at": "2026-10-11T00:00:00Z",
+  "expires_at": "2027-10-11T00:00:00Z",
+  "owner_ref": "MI Meta-CEO seat fd47d431 under Chairman delegation 2026-10-11; basis = Alpaca Market Data agreement (Benzinga news via data.alpaca.markets), docs/QUAL_DATA_COMPLIANCE.md:23 (ticker-tagged headlines only, no bodies re-stored), config/press_sources.yml alpaca lane precedent, DEC-TICKER-NEWS-ALPACA-BENZINGA-RIGHTS-BASIS",
+  "capabilities": {
+    "internal_ingestion": true,
+    "historical_retention": true,
+    "headline_display": true,
+    "source_link_display": true,
+    "teaser_display": true,
+    "derivative_processing": true,
+    "body_display": false,
+    "image_display": false
+  }
+}

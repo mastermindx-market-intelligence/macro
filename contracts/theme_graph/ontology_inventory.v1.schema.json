@@ -1,0 +1,297 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority_ceiling",
+    "asof",
+    "knowledge_cutoff",
+    "filters",
+    "ordering",
+    "availability",
+    "counts",
+    "facets",
+    "snapshot_sha256",
+    "page",
+    "items",
+    "limitations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "gmi.theme_ontology_inventory/v1"
+    },
+    "authority_ceiling": {
+      "const": "research_internal_only"
+    },
+    "asof": {
+      "type": "string",
+      "format": "date"
+    },
+    "knowledge_cutoff": {
+      "type": "string",
+      "format": "date"
+    },
+    "filters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_family",
+        "mapping",
+        "curation"
+      ],
+      "properties": {
+        "source_family": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mapping": {
+          "enum": [
+            "all",
+            "mapped",
+            "unmapped"
+          ]
+        },
+        "curation": {
+          "enum": [
+            "all",
+            "with_proposals",
+            "without_proposals",
+            "proposed",
+            "ratified",
+            "rejected"
+          ]
+        }
+      }
+    },
+    "ordering": {
+      "const": "EXACT_NODE_ID"
+    },
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "reason"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "OK",
+            "EMPTY",
+            "NO_MATCH",
+            "GRAPH_UNAVAILABLE"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "counts": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "visible",
+        "matching",
+        "returned",
+        "mapped",
+        "unmapped",
+        "with_proposals",
+        "without_proposals"
+      ],
+      "properties": {
+        "visible": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "matching": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "returned": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mapped": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmapped": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "with_proposals": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "without_proposals": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "facets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_family",
+        "mapping_state",
+        "curation_state",
+        "node_status"
+      ],
+      "properties": {
+        "source_family": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "mapping_state": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "curation_state": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "node_status": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "snapshot_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "offset",
+        "limit",
+        "next_offset"
+      ],
+      "properties": {
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "next_offset": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "node",
+          "source_family",
+          "rights",
+          "canonical_mapping",
+          "curation",
+          "neighborhood_counts",
+          "neighborhood_query",
+          "neighborhood_sha256"
+        ],
+        "properties": {
+          "node": {
+            "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json#/$defs/node"
+          },
+          "source_family": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rights": {
+            "anyOf": [
+              {
+                "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json#/$defs/rights"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "canonical_mapping": {
+            "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json#/properties/canonical_mapping"
+          },
+          "curation": {
+            "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json#/properties/curation"
+          },
+          "neighborhood_counts": {
+            "$ref": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json#/properties/counts"
+          },
+          "neighborhood_query": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "node_id",
+              "asof",
+              "knowledge_cutoff"
+            ],
+            "properties": {
+              "node_id": {
+                "type": "string"
+              },
+              "asof": {
+                "type": "string",
+                "format": "date"
+              },
+              "knowledge_cutoff": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          },
+          "neighborhood_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/ontology_inventory.v1.schema.json",
+  "title": "Read-only local-concept ontology inventory v1",
+  "description": "Disposable research projection. Reuses ontology node, mapping, curation and rights contracts. Mapping and proposal status stay separate; no graph admission or approval."
+}

@@ -1,0 +1,171 @@
+{
+  "observed_at": "2026-10-20T04:42:31.468006+00:00",
+  "scope": "fresh read-only service, source, runtime pointer, public DNS/TLS observation; no bootstrap or repair",
+  "services": {
+    "terminal.service": {
+      "argv": [
+        "systemctl",
+        "show",
+        "terminal.service",
+        "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+      ],
+      "exit": 0,
+      "stdout": "MainPID=2336355\nExecMainStartTimestampMonotonic=7552363880288\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+      "stderr": ""
+    },
+    "terminal-beta.service": {
+      "argv": [
+        "systemctl",
+        "show",
+        "terminal-beta.service",
+        "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+      ],
+      "exit": 0,
+      "stdout": "MainPID=2427329\nExecMainStartTimestampMonotonic=7560285026653\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+      "stderr": ""
+    }
+  },
+  "beta_source_HEAD": {
+    "argv": [
+      "git",
+      "--no-optional-locks",
+      "-C",
+      "/opt/terminal/.gitsrc-beta",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit": 0,
+    "stdout": "e45bde2cac07ac3b29285ff70c40d68900fad62c\n",
+    "stderr": ""
+  },
+  "runtime_pointer": {
+    "path": "/opt/terminal/beta/.runtime-accepted",
+    "resolved": "/var/lib/mastermind-terminal-beta/source-provisioned/runtime-accepted-e45bde2cac07ac3b29285ff70c40d68900fad62c-c62950826aca6fd8.json",
+    "bytes": 1481,
+    "sha256": "698204ef4ad72a1bfa896110af875df080bf773687150890e8a2322bd6b452d7",
+    "uid": 0,
+    "gid": 0,
+    "mode": "0o640",
+    "nlink": 1
+  },
+  "source_pointer": {
+    "path": "/opt/terminal/beta/.source-provisioned",
+    "resolved": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+    "bytes": 1841,
+    "sha256": "9aac8ec8c132eecf4d2664d8f1e18e8a6bffce5f6d7176e4021b15d6d953cfa4",
+    "uid": 0,
+    "gid": 0,
+    "mode": "0o640",
+    "nlink": 1
+  },
+  "beta_build": [
+    {
+      "path": "/opt/terminal/beta/terminal/.deployment-id",
+      "resolved": "/opt/terminal/beta/terminal/.deployment-id",
+      "bytes": 41,
+      "sha256": "50b75a482303cb7ee99bd439d6d1a002aa0cc9c2d120e210655cf097c7509675",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "nlink": 1,
+      "text": "e45bde2cac07ac3b29285ff70c40d68900fad62c"
+    },
+    {
+      "path": "/opt/terminal/beta/terminal/.next/BUILD_ID",
+      "resolved": "/opt/terminal/beta/terminal/.next/BUILD_ID",
+      "bytes": 20,
+      "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "nlink": 1,
+      "text": "build-TfctsWXpff2fKS"
+    }
+  ],
+  "production_build": [
+    {
+      "path": "/opt/terminal/terminal/.deployment-id",
+      "resolved": "/opt/terminal/terminal/.deployment-id",
+      "bytes": 41,
+      "sha256": "a1de37a5aa06f0ccc88262e926da53a5825264fa6eccfa56812fc7746a9db241",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "nlink": 1,
+      "text": "50a8c01553ee92731a53dfcff36256308cfb5f0e"
+    },
+    {
+      "path": "/opt/terminal/terminal/.next/BUILD_ID",
+      "resolved": "/opt/terminal/terminal/.next/BUILD_ID",
+      "bytes": 20,
+      "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230",
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "nlink": 1,
+      "text": "build-TfctsWXpff2fKS"
+    }
+  ],
+  "production_owner": {
+    "path": "/opt/terminal/terminal-build.sh",
+    "resolved": "/opt/terminal/terminal-build.sh",
+    "bytes": 196115,
+    "sha256": "6d05d3d5745e0e0a29262c89ba61cf881c2605201cce5b0fc85a52bde0e42ec8",
+    "uid": 0,
+    "gid": 0,
+    "mode": "0o755",
+    "nlink": 1
+  },
+  "caddy": {
+    "path": "/etc/caddy/Caddyfile",
+    "resolved": "/etc/caddy/Caddyfile",
+    "bytes": 74011,
+    "sha256": "17aefed0146aad5e022062873c1a36fd5416176e8ae7c02cc965454c2bda3023",
+    "uid": 0,
+    "gid": 0,
+    "mode": "0o644",
+    "nlink": 1
+  },
+  "status": {
+    "status": 200,
+    "headers": {
+      "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self' https://mastermind-x.com https://www.mastermind-x.com; form-action 'self'; frame-src 'self' https://www.mastermind-x.com; script-src 'self' 'unsafe-inline' https://www.mastermind-x.com; style-src 'self' 'unsafe-inline' https://www.mastermind-x.com; img-src 'self' data: blob: https://*.r2.dev; font-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://qt.gtimg.cn https://web.ifzq.gtimg.cn https://ifzq.gtimg.cn; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "cache-control": "private, no-store, max-age=0",
+      "content-type": "application/json",
+      "x-robots-tag": "noindex, nofollow",
+      "Date": "Tue, 20 Oct 2026 04:42:31 GMT",
+      "Connection": "close",
+      "Transfer-Encoding": "chunked"
+    },
+    "raw_sha256": "1ba3581e1c5cbe82393b587b8a9ce70569872911a2ab0e9a91f8799d1b8170d1",
+    "body": {
+      "enabled": true,
+      "protocol": "mmx.shared-shell.v1",
+      "buildId": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+      "bridgeVersion": "20261018.1",
+      "documentVersion": "20261018.1",
+      "registrySha256": "5307ea5a7964fde609a8f20f1af30b6bf483b7631f7232e5db74f9ef1d710023"
+    }
+  },
+  "pending_exists": false,
+  "beta_stages": [],
+  "root_free": 36765310976,
+  "terminal_mount_free": 16176545792,
+  "beta_after": {
+    "argv": [
+      "systemctl",
+      "show",
+      "terminal-beta.service",
+      "--property=ActiveState,SubState,UnitFileState,MainPID,ExecMainStartTimestampMonotonic"
+    ],
+    "exit": 0,
+    "stdout": "MainPID=2427329\nExecMainStartTimestampMonotonic=7560285026653\nActiveState=active\nSubState=running\nUnitFileState=enabled\n",
+    "stderr": ""
+  }
+}

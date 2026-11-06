@@ -1,0 +1,23 @@
+# account.js sha256 647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be
+# S1-01 theme/language preference persistence browser acceptance — variant=main page=site/alerts.html (local-only, fictional fixtures)
+# result: 7 pass / 13 fail
+PASS J1 Esc closes the account dialog :: 
+FAIL J1 theme then language (EN start) -> ONE POST carrying both :: [{'lang': 'zh'}]
+FAIL J1 server holds both final values :: {'theme': 'dark', 'lang': 'zh'}
+FAIL J1 both fields acknowledged on the account root :: (None, None)
+FAIL J7 reload keeps theme=light lang=zh :: ('dark', 'zh')
+PASS J7 reload + account hydration sends no write :: 0
+PASS J1/J7 no page errors :: []
+FAIL J1z language then theme (ZH start) -> ONE POST carrying both :: [{'theme': 'dark'}]
+FAIL J1z server holds both final values :: {'theme': 'dark', 'lang': 'zh'}
+FAIL J2 light,dark,lang,light -> ONE POST {theme:light,lang:zh} :: [{'theme': 'light'}]
+FAIL J3 HTTP 400 marks theme failed (not acked) :: None
+PASS J3 server unchanged :: {'theme': 'dark', 'lang': 'en'}
+PASS J4 requests carry light then dark :: [{'theme': 'light'}, {'theme': 'dark'}]
+FAIL J4 second write starts only after the first returns :: overlap=True
+FAIL J4 final server theme = last edit (dark) :: {'theme': 'light', 'lang': 'en'}
+FAIL J4 theme acknowledged :: None
+PASS J5 server prefs hydrate theme+lang :: ('light', 'zh')
+PASS J5 hydration sends no write :: []
+FAIL J6 pending theme of account A is not sent after switch to B :: [('b.fictional@example.test', {'theme': 'light'})]
+FAIL J8 keyboard theme(Enter)+language(Space) -> ONE POST with both :: [{'lang': 'zh'}]

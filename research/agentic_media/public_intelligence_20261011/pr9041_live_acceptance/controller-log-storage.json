@@ -1,0 +1,8 @@
+{
+  "encoding": "gzip",
+  "artifact": "protected-landing-controller.log.gz",
+  "uncompressed_name": "protected-landing-controller.log",
+  "raw_sha256": "297472a2d7c761685a58c6dd56993797d3b8f8def8cafbba0bad5c2233f1d64b",
+  "compressed_sha256": "893cf78434a035ddd289291749fc452823a1540ba584f9a08292ea43c3f83e35",
+  "reason": "Retain exact controller bytes, including trailing tabs, without text-diff whitespace errors."
+}

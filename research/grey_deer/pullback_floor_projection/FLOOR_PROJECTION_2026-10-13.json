@@ -1,0 +1,1964 @@
+{
+  "calendar_days_per_year": 365.25,
+  "cohorts": {
+    "A_spy": {
+      "horizons": {
+        "h10": {
+          "counts": {
+            "clusters": 8,
+            "episodes": 6,
+            "event_dates": 36,
+            "event_months": 9,
+            "event_rows": 36,
+            "exposure_years": 3.9524,
+            "n_tickers": 1,
+            "non_event_rows": 960,
+            "origins": 996,
+            "sessions": 996
+          },
+          "label_lag_years": 0.0397,
+          "rates_per_year": {
+            "clusters": 2.0241,
+            "episodes": 1.5181,
+            "event_dates": 9.1084,
+            "event_months": 2.2771,
+            "event_rows": 9.1084,
+            "non_event_rows": 242.8916
+          },
+          "scenarios": [
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 7.014,
+                "p10_years": 4.2852,
+                "p90_years": 12.7017,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.6805,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.8333,
+                  "p10_years": 0.8333,
+                  "p90_years": 0.8333,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 2.1922,
+                  "p10_years": 1.5297,
+                  "p90_years": 3.1102,
+                  "reason": null,
+                  "share_last": 0.0055,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.2442,
+                  "p10_years": 0.2082,
+                  "p90_years": 0.2845,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 2.3028,
+                  "p10_years": 1.0898,
+                  "p90_years": 4.7385,
+                  "reason": null,
+                  "share_last": 0.0556,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 6.2521,
+                  "p10_years": 3.263,
+                  "p90_years": 12.3456,
+                  "reason": null,
+                  "share_last": 0.6805,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 4.199,
+                  "p10_years": 2.3399,
+                  "p90_years": 7.5858,
+                  "reason": null,
+                  "share_last": 0.2585,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 1.0
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 14.0089,
+                "p10_years": 8.5214,
+                "p90_years": 25.3179,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.6865,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.8333,
+                  "p10_years": 0.8333,
+                  "p90_years": 0.8333,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 4.3381,
+                  "p10_years": 3.0146,
+                  "p90_years": 6.1471,
+                  "reason": null,
+                  "share_last": 0.0057,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.4485,
+                  "p10_years": 0.378,
+                  "p90_years": 0.5305,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 4.5854,
+                  "p10_years": 2.1321,
+                  "p90_years": 9.3922,
+                  "reason": null,
+                  "share_last": 0.053,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 12.4778,
+                  "p10_years": 6.5681,
+                  "p90_years": 24.4292,
+                  "reason": null,
+                  "share_last": 0.6865,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 8.352,
+                  "p10_years": 4.682,
+                  "p90_years": 15.2859,
+                  "reason": null,
+                  "share_last": 0.2547,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 0.5
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 3.5305,
+                "p10_years": 2.1459,
+                "p90_years": 6.3896,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.6813,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.8333,
+                  "p10_years": 0.8333,
+                  "p90_years": 0.8333,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 1.1175,
+                  "p10_years": 0.7891,
+                  "p90_years": 1.5735,
+                  "reason": null,
+                  "share_last": 0.0058,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.1421,
+                  "p10_years": 0.1243,
+                  "p90_years": 0.1621,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 1.1691,
+                  "p10_years": 0.5568,
+                  "p90_years": 2.3574,
+                  "reason": null,
+                  "share_last": 0.0496,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 3.1508,
+                  "p10_years": 1.6602,
+                  "p90_years": 6.1983,
+                  "reason": null,
+                  "share_last": 0.6813,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 2.1265,
+                  "p10_years": 1.1928,
+                  "p90_years": 3.8522,
+                  "reason": null,
+                  "share_last": 0.2633,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 2.0
+            }
+          ],
+          "source_counts": {
+            "clusters": 8,
+            "episodes": 6,
+            "event_months": 9,
+            "events": 36,
+            "origins": 996
+          }
+        },
+        "h21": {
+          "counts": {
+            "clusters": 9,
+            "episodes": 7,
+            "event_dates": 117,
+            "event_months": 16,
+            "event_rows": 117,
+            "exposure_years": 3.9087,
+            "n_tickers": 1,
+            "non_event_rows": 868,
+            "origins": 985,
+            "sessions": 985
+          },
+          "label_lag_years": 0.0833,
+          "rates_per_year": {
+            "clusters": 2.3025,
+            "episodes": 1.7909,
+            "event_dates": 29.933,
+            "event_months": 4.0934,
+            "event_rows": 29.933,
+            "non_event_rows": 222.067
+          },
+          "scenarios": [
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 5.5369,
+                "p10_years": 3.296,
+                "p90_years": 10.1185,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.8429,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.877,
+                  "p10_years": 0.877,
+                  "p90_years": 0.877,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.7396,
+                  "p10_years": 0.5586,
+                  "p90_years": 0.9711,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.3071,
+                  "p10_years": 0.2675,
+                  "p90_years": 0.3517,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 2.0787,
+                  "p10_years": 1.009,
+                  "p90_years": 4.1337,
+                  "reason": null,
+                  "share_last": 0.078,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 5.3755,
+                  "p10_years": 2.9191,
+                  "p90_years": 10.0768,
+                  "reason": null,
+                  "share_last": 0.8429,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 2.422,
+                  "p10_years": 1.4557,
+                  "p90_years": 3.9654,
+                  "reason": null,
+                  "share_last": 0.0791,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 1.0
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 10.8683,
+                "p10_years": 6.5354,
+                "p90_years": 20.2123,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.84,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.877,
+                  "p10_years": 0.877,
+                  "p90_years": 0.877,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 1.3948,
+                  "p10_years": 1.031,
+                  "p90_years": 1.8671,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.5307,
+                  "p10_years": 0.4519,
+                  "p90_years": 0.6202,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 4.0472,
+                  "p10_years": 1.9471,
+                  "p90_years": 8.1212,
+                  "reason": null,
+                  "share_last": 0.0764,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 10.568,
+                  "p10_years": 5.7204,
+                  "p90_years": 20.1307,
+                  "reason": null,
+                  "share_last": 0.84,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 4.7804,
+                  "p10_years": 2.8114,
+                  "p90_years": 7.8643,
+                  "reason": null,
+                  "share_last": 0.0835,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 0.5
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 2.8141,
+                "p10_years": 1.6927,
+                "p90_years": 5.1394,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.8403,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0014,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.877,
+                  "p10_years": 0.877,
+                  "p90_years": 0.877,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.4113,
+                  "p10_years": 0.3204,
+                  "p90_years": 0.5276,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.1951,
+                  "p10_years": 0.176,
+                  "p90_years": 0.2176,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 1.085,
+                  "p10_years": 0.5518,
+                  "p90_years": 2.1163,
+                  "reason": null,
+                  "share_last": 0.0798,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 2.7261,
+                  "p10_years": 1.4893,
+                  "p90_years": 5.1233,
+                  "reason": null,
+                  "share_last": 0.8403,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 1.2524,
+                  "p10_years": 0.7743,
+                  "p90_years": 2.0269,
+                  "reason": null,
+                  "share_last": 0.0786,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 2.0
+            }
+          ],
+          "source_counts": {
+            "clusters": 9,
+            "episodes": 7,
+            "event_months": 16,
+            "events": 117,
+            "origins": 985
+          }
+        },
+        "h5": {
+          "counts": {
+            "clusters": 4,
+            "episodes": 4,
+            "event_dates": 11,
+            "event_months": 5,
+            "event_rows": 11,
+            "exposure_years": 3.9722,
+            "n_tickers": 1,
+            "non_event_rows": 990,
+            "origins": 1001,
+            "sessions": 1001
+          },
+          "label_lag_years": 0.0198,
+          "rates_per_year": {
+            "clusters": 1.007,
+            "episodes": 1.007,
+            "event_dates": 2.7692,
+            "event_months": 1.2587,
+            "event_rows": 2.7692,
+            "non_event_rows": 249.2308
+          },
+          "scenarios": [
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 12.4813,
+                "p10_years": 7.7955,
+                "p90_years": 23.344,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.4502,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.8135,
+                  "p10_years": 0.8135,
+                  "p90_years": 0.8135,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 6.9979,
+                  "p10_years": 4.3949,
+                  "p90_years": 11.4363,
+                  "reason": null,
+                  "share_last": 0.1774,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.219,
+                  "p10_years": 0.1841,
+                  "p90_years": 0.2584,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 4.4604,
+                  "p10_years": 1.9209,
+                  "p90_years": 10.5998,
+                  "reason": null,
+                  "share_last": 0.0989,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 9.1977,
+                  "p10_years": 4.523,
+                  "p90_years": 20.2015,
+                  "reason": null,
+                  "share_last": 0.4502,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 7.4446,
+                  "p10_years": 3.803,
+                  "p90_years": 15.4436,
+                  "reason": null,
+                  "share_last": 0.2734,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 1.0
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 24.9327,
+                "p10_years": 15.5828,
+                "p90_years": 46.54,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.4511,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.8135,
+                  "p10_years": 0.8135,
+                  "p90_years": 0.8135,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 14.0106,
+                  "p10_years": 8.6833,
+                  "p90_years": 22.8349,
+                  "reason": null,
+                  "share_last": 0.1742,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.4177,
+                  "p10_years": 0.3488,
+                  "p90_years": 0.4989,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 8.8906,
+                  "p10_years": 3.743,
+                  "p90_years": 21.5698,
+                  "reason": null,
+                  "share_last": 0.0988,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 18.4098,
+                  "p10_years": 8.9976,
+                  "p90_years": 40.0851,
+                  "reason": null,
+                  "share_last": 0.4511,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 14.8846,
+                  "p10_years": 7.6133,
+                  "p90_years": 30.9207,
+                  "reason": null,
+                  "share_last": 0.2759,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 0.5
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 6.2552,
+                "p10_years": 3.9079,
+                "p90_years": 11.7375,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.4478,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.8135,
+                  "p10_years": 0.8135,
+                  "p90_years": 0.8135,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 3.5171,
+                  "p10_years": 2.2095,
+                  "p90_years": 5.7323,
+                  "reason": null,
+                  "share_last": 0.18,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.1195,
+                  "p10_years": 0.102,
+                  "p90_years": 0.1393,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 2.2605,
+                  "p10_years": 0.9638,
+                  "p90_years": 5.3756,
+                  "reason": null,
+                  "share_last": 0.0997,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 4.5988,
+                  "p10_years": 2.26,
+                  "p90_years": 10.2081,
+                  "reason": null,
+                  "share_last": 0.4478,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 3.7421,
+                  "p10_years": 1.9301,
+                  "p90_years": 7.7355,
+                  "reason": null,
+                  "share_last": 0.2725,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 2.0
+            }
+          ],
+          "source_counts": {
+            "clusters": 4,
+            "episodes": 4,
+            "event_months": 5,
+            "events": 11,
+            "origins": 1001
+          }
+        }
+      },
+      "id": "A_spy",
+      "label": "SPY-only forward lane",
+      "panel": false
+    },
+    "B_panel_d9": {
+      "horizons": {
+        "h10": {
+          "counts": {
+            "clusters": 20,
+            "episodes": 4,
+            "event_dates": 395,
+            "event_months": 44,
+            "event_rows": 1168,
+            "exposure_years": 3.9484,
+            "n_tickers": 14,
+            "non_event_rows": 12762,
+            "origins": 13930,
+            "sessions": 995
+          },
+          "d9": {
+            "episode_windows": [
+              [
+                294,
+                645
+              ],
+              [
+                666,
+                805
+              ],
+              [
+                808,
+                977
+              ],
+              [
+                994,
+                1315
+              ]
+            ],
+            "longest_quiet_sessions": 51,
+            "max_inter_event_gap": 52,
+            "n_event_dates": 395,
+            "n_gaps": 394,
+            "n_separating_gaps": 3,
+            "n_windows": 4,
+            "planning_status": "renewals_observed",
+            "quiet_sessions_required": 31,
+            "separation_gap_sessions": 32,
+            "window_lengths": [
+              352,
+              140,
+              170,
+              322
+            ]
+          },
+          "label_lag_years": 0.0397,
+          "rates_per_year": {
+            "clusters": 5.0653,
+            "episodes": 1.0131,
+            "event_dates": 100.0402,
+            "event_months": 11.1437,
+            "event_rows": 295.8151,
+            "non_event_rows": 3232.1849
+          },
+          "scenarios": [
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 9.3242,
+                "p10_years": 4.5422,
+                "p90_years": 20.2975,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.9992,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.0992,
+                  "p10_years": 0.0992,
+                  "p90_years": 0.0992,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.1062,
+                  "p10_years": 0.0886,
+                  "p90_years": 0.1275,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.055,
+                  "p10_years": 0.0524,
+                  "p90_years": 0.058,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 0.9607,
+                  "p10_years": 0.4914,
+                  "p90_years": 1.7432,
+                  "reason": null,
+                  "share_last": 0.0007,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 9.3242,
+                  "p10_years": 4.5422,
+                  "p90_years": 20.2975,
+                  "reason": null,
+                  "share_last": 0.9992,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 0.9021,
+                  "p10_years": 0.5764,
+                  "p90_years": 1.3758,
+                  "reason": null,
+                  "share_last": 0.0001,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 1.0
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 18.3992,
+                "p10_years": 9.0942,
+                "p90_years": 40.1791,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.9992,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.0992,
+                  "p10_years": 0.0992,
+                  "p90_years": 0.0992,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.1726,
+                  "p10_years": 0.1377,
+                  "p90_years": 0.2146,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.0704,
+                  "p10_years": 0.0651,
+                  "p90_years": 0.0763,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 1.8639,
+                  "p10_years": 0.9387,
+                  "p90_years": 3.4348,
+                  "reason": null,
+                  "share_last": 0.0008,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 18.3992,
+                  "p10_years": 9.0942,
+                  "p90_years": 40.1791,
+                  "reason": null,
+                  "share_last": 0.9992,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 1.7731,
+                  "p10_years": 1.1175,
+                  "p90_years": 2.7222,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 0.5
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 4.6058,
+                "p10_years": 2.2691,
+                "p90_years": 10.1798,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.998,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0018,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.0992,
+                  "p10_years": 0.0992,
+                  "p90_years": 0.0992,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.0729,
+                  "p10_years": 0.0642,
+                  "p90_years": 0.0836,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.0474,
+                  "p10_years": 0.0461,
+                  "p90_years": 0.0488,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 0.4965,
+                  "p10_years": 0.2669,
+                  "p90_years": 0.8897,
+                  "reason": null,
+                  "share_last": 0.0003,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 4.6058,
+                  "p10_years": 2.2691,
+                  "p90_years": 10.1798,
+                  "reason": null,
+                  "share_last": 0.998,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 0.4722,
+                  "p10_years": 0.3094,
+                  "p90_years": 0.707,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 2.0
+            }
+          ],
+          "source_counts": {
+            "clusters": 20,
+            "episodes": 4,
+            "event_months": 44,
+            "events": 395,
+            "origins": 13930,
+            "ticker_events": 1168
+          }
+        },
+        "h21": {
+          "counts": {
+            "clusters": 5,
+            "episodes": 1,
+            "event_dates": 625,
+            "event_months": 46,
+            "event_rows": 2726,
+            "exposure_years": 3.9048,
+            "n_tickers": 14,
+            "non_event_rows": 11050,
+            "origins": 13776,
+            "sessions": 984
+          },
+          "d9": {
+            "episode_windows": [
+              [
+                294,
+                1319
+              ]
+            ],
+            "longest_quiet_sessions": 37,
+            "max_inter_event_gap": 38,
+            "n_event_dates": 625,
+            "n_gaps": 624,
+            "n_separating_gaps": 0,
+            "n_windows": 1,
+            "planning_status": "not_reachable",
+            "quiet_sessions_required": 42,
+            "rejected_independent_poisson": {
+              "historical_episodes": 1,
+              "median_years": 32.0509,
+              "p10_years": 11.1894,
+              "p90_years": 135.2143,
+              "reason": "zero separating gaps; the single window is not a renewal",
+              "used_for_planning": false
+            },
+            "renewal_posterior": {
+              "mean_status": "infinite",
+              "mean_years": null,
+              "median_additional_gaps": 23718,
+              "median_years": 148.4185,
+              "model": "jeffreys_beta_binomial_zero_successes",
+              "n_gaps": 624,
+              "p10_additional_gaps": 3741,
+              "p10_years": 23.4098,
+              "p90_additional_gaps": 691796,
+              "p90_years": 4329.0043,
+              "separations_needed": 9,
+              "successes_observed": 0
+            },
+            "separation_gap_sessions": 43,
+            "window_lengths": [
+              1026
+            ]
+          },
+          "label_lag_years": 0.0833,
+          "rates_per_year": {
+            "clusters": 1.2805,
+            "episodes": 0.2561,
+            "event_dates": 160.061,
+            "event_months": 11.7805,
+            "event_rows": 698.122,
+            "non_event_rows": 2829.878
+          },
+          "scenarios": [
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": null,
+                "p10_years": null,
+                "p90_years": null,
+                "reason": "a floor is not reachable",
+                "status": "not_reachable"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 1.0,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.1429,
+                  "p10_years": 0.1429,
+                  "p90_years": 0.1429,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.1116,
+                  "p10_years": 0.1042,
+                  "p90_years": 0.1204,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.1009,
+                  "p10_years": 0.0979,
+                  "p90_years": 0.1043,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 3.6095,
+                  "p10_years": 1.6448,
+                  "p90_years": 7.9508,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": null,
+                  "p10_years": null,
+                  "p90_years": null,
+                  "reason": "zero_separating_gaps",
+                  "share_last": 1.0,
+                  "status": "not_reachable"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 0.9079,
+                  "p10_years": 0.5943,
+                  "p90_years": 1.3409,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 1.0
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": null,
+                "p10_years": null,
+                "p90_years": null,
+                "reason": "a floor is not reachable",
+                "status": "not_reachable"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 1.0,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.1429,
+                  "p10_years": 0.1429,
+                  "p90_years": 0.1429,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.1396,
+                  "p10_years": 0.1248,
+                  "p90_years": 0.1575,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.1184,
+                  "p10_years": 0.1124,
+                  "p90_years": 0.1252,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 7.1841,
+                  "p10_years": 3.2036,
+                  "p90_years": 15.8695,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": null,
+                  "p10_years": null,
+                  "p90_years": null,
+                  "reason": "zero_separating_gaps",
+                  "share_last": 1.0,
+                  "status": "not_reachable"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 1.714,
+                  "p10_years": 1.0934,
+                  "p90_years": 2.5976,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 0.5
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": null,
+                "p10_years": null,
+                "p90_years": null,
+                "reason": "a floor is not reachable",
+                "status": "not_reachable"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 1.0,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.1429,
+                  "p10_years": 0.1429,
+                  "p90_years": 0.1429,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.0974,
+                  "p10_years": 0.0938,
+                  "p90_years": 0.1019,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.0921,
+                  "p10_years": 0.0906,
+                  "p90_years": 0.0938,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 1.8451,
+                  "p10_years": 0.8554,
+                  "p90_years": 4.0688,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": null,
+                  "p10_years": null,
+                  "p90_years": null,
+                  "reason": "zero_separating_gaps",
+                  "share_last": 1.0,
+                  "status": "not_reachable"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 0.4911,
+                  "p10_years": 0.3358,
+                  "p90_years": 0.7089,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 2.0
+            }
+          ],
+          "source_counts": {
+            "clusters": 5,
+            "episodes": 1,
+            "event_months": 46,
+            "events": 625,
+            "origins": 13776,
+            "ticker_events": 2726
+          }
+        },
+        "h5": {
+          "counts": {
+            "clusters": 31,
+            "episodes": 11,
+            "event_dates": 175,
+            "event_months": 35,
+            "event_rows": 405,
+            "exposure_years": 3.9683,
+            "n_tickers": 14,
+            "non_event_rows": 13595,
+            "origins": 14000,
+            "sessions": 1000
+          },
+          "d9": {
+            "episode_windows": [
+              [
+                294,
+                371
+              ],
+              [
+                372,
+                432
+              ],
+              [
+                434,
+                463
+              ],
+              [
+                531,
+                592
+              ],
+              [
+                594,
+                638
+              ],
+              [
+                672,
+                702
+              ],
+              [
+                736,
+                799
+              ],
+              [
+                822,
+                972
+              ],
+              [
+                997,
+                1023
+              ],
+              [
+                1073,
+                1120
+              ],
+              [
+                1125,
+                1310
+              ]
+            ],
+            "longest_quiet_sessions": 93,
+            "max_inter_event_gap": 94,
+            "n_event_dates": 175,
+            "n_gaps": 174,
+            "n_separating_gaps": 10,
+            "n_windows": 11,
+            "planning_status": "renewals_observed",
+            "quiet_sessions_required": 26,
+            "separation_gap_sessions": 27,
+            "window_lengths": [
+              78,
+              61,
+              30,
+              62,
+              45,
+              31,
+              64,
+              151,
+              27,
+              48,
+              186
+            ]
+          },
+          "label_lag_years": 0.0198,
+          "rates_per_year": {
+            "clusters": 7.812,
+            "episodes": 2.772,
+            "event_dates": 44.1,
+            "event_months": 8.82,
+            "event_rows": 102.06,
+            "non_event_rows": 3425.94
+          },
+          "scenarios": [
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 3.4522,
+                "p10_years": 1.9992,
+                "p90_years": 6.0087,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.9754,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0008,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.0794,
+                  "p10_years": 0.0794,
+                  "p90_years": 0.0794,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.2119,
+                  "p10_years": 0.1615,
+                  "p90_years": 0.2751,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.0343,
+                  "p10_years": 0.0318,
+                  "p90_years": 0.0371,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 0.6178,
+                  "p10_years": 0.3224,
+                  "p90_years": 1.0848,
+                  "reason": null,
+                  "share_last": 0.0019,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 3.4519,
+                  "p10_years": 1.9741,
+                  "p90_years": 6.0087,
+                  "reason": null,
+                  "share_last": 0.9754,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 1.1151,
+                  "p10_years": 0.6936,
+                  "p90_years": 1.7299,
+                  "reason": null,
+                  "share_last": 0.0219,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 1.0
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 6.8989,
+                "p10_years": 3.9884,
+                "p90_years": 12.1164,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.9791,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.0794,
+                  "p10_years": 0.0794,
+                  "p90_years": 0.0794,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.4049,
+                  "p10_years": 0.3017,
+                  "p90_years": 0.5329,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.0488,
+                  "p10_years": 0.0439,
+                  "p90_years": 0.0544,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 1.2073,
+                  "p10_years": 0.6102,
+                  "p90_years": 2.159,
+                  "reason": null,
+                  "share_last": 0.002,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 6.8981,
+                  "p10_years": 3.9382,
+                  "p90_years": 12.1164,
+                  "reason": null,
+                  "share_last": 0.9791,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 2.1974,
+                  "p10_years": 1.3546,
+                  "p90_years": 3.412,
+                  "reason": null,
+                  "share_last": 0.0189,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 0.5
+            },
+            {
+              "all_floors": {
+                "floor": "all_floors",
+                "median_years": 1.7387,
+                "p10_years": 1.0001,
+                "p90_years": 3.0161,
+                "reason": null,
+                "status": "ok"
+              },
+              "binding_floor": "episodes",
+              "binding_share": 0.8911,
+              "floors": [
+                {
+                  "floor": "issued_sessions",
+                  "median_years": 1.0,
+                  "p10_years": 1.0,
+                  "p90_years": 1.0,
+                  "reason": null,
+                  "share_last": 0.0999,
+                  "status": "ok"
+                },
+                {
+                  "floor": "calendar_days",
+                  "median_years": 0.8214,
+                  "p10_years": 0.8214,
+                  "p90_years": 0.8214,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "graded_rows",
+                  "median_years": 0.0794,
+                  "p10_years": 0.0794,
+                  "p90_years": 0.0794,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "events",
+                  "median_years": 0.1164,
+                  "p10_years": 0.0906,
+                  "p90_years": 0.148,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "non_events",
+                  "median_years": 0.0271,
+                  "p10_years": 0.0258,
+                  "p90_years": 0.0285,
+                  "reason": null,
+                  "share_last": 0.0,
+                  "status": "ok"
+                },
+                {
+                  "floor": "clusters",
+                  "median_years": 0.3175,
+                  "p10_years": 0.1688,
+                  "p90_years": 0.5611,
+                  "reason": null,
+                  "share_last": 0.0006,
+                  "status": "ok"
+                },
+                {
+                  "floor": "episodes",
+                  "median_years": 1.7385,
+                  "p10_years": 0.9854,
+                  "p90_years": 3.0161,
+                  "reason": null,
+                  "share_last": 0.8911,
+                  "status": "ok"
+                },
+                {
+                  "floor": "event_months",
+                  "median_years": 0.5669,
+                  "p10_years": 0.3554,
+                  "p90_years": 0.8806,
+                  "reason": null,
+                  "share_last": 0.0084,
+                  "status": "ok"
+                }
+              ],
+              "rate_scale": 2.0
+            }
+          ],
+          "source_counts": {
+            "clusters": 31,
+            "episodes": 11,
+            "event_months": 35,
+            "events": 175,
+            "origins": 14000,
+            "ticker_events": 405
+          }
+        }
+      },
+      "id": "B_panel_d9",
+      "label": "14-ticker panel forward lane under D9",
+      "panel": true
+    }
+  },
+  "episode_lookback_sessions": 21,
+  "event_months_model": "separate Poisson approximation of distinct event-months",
+  "exposure": "sessions/252; panel sessions = origins/n_tickers",
+  "floors_required": {
+    "calendar_days": 300,
+    "clusters": 5,
+    "episodes": 10,
+    "event_months": 10,
+    "events": 20,
+    "graded_rows": 200,
+    "issued_sessions": 252,
+    "non_events": 50
+  },
+  "inputs": {
+    "stage1": {
+      "git_blob_sha": "2727fb2c4645a001e0b160c69105b663f615ab2b",
+      "path": "research/grey_deer/PULLBACK_STAGE1_RESULTS_2026-10-11.json",
+      "sha_source": "git rev-parse HEAD:<path>"
+    },
+    "stage1b": {
+      "git_blob_sha": "57759d08796575f225861735cb995cdccff09cde",
+      "path": "research/grey_deer/pullback_stage1b/PULLBACK_STAGE1B_RESULTS.json",
+      "sha_source": "git rev-parse HEAD:<path>"
+    }
+  },
+  "jeffreys": "Gamma(shape=count+0.5, rate=exposure_years); waiting time Gamma(shape=n_required, rate=lambda)",
+  "label": "EXPLORATORY",
+  "n_draws": 20000,
+  "quantile_method": "numpy linear quantile of posterior-predictive draws",
+  "rate_scales": [
+    1.0,
+    0.5,
+    2.0
+  ],
+  "schema": "grey_deer_pullback_floor_projection/v1",
+  "seed": 20261013,
+  "sessions_per_year": 252
+}

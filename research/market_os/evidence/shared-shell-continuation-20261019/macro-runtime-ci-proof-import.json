@@ -1,0 +1,581 @@
+{
+  "schema": "mastermind.attended.proof_import.v1",
+  "finished_at": "2026-10-20T03:31:29.846809+00:00",
+  "source_index_before": "1996dbf7a6b9f754c67ed5726bcd4d505482b80b",
+  "index_after": "c2113799d267cc5fb339d145cfb078464e4e701b",
+  "old_indexed_files": 129,
+  "new_indexed_files": 204,
+  "added_files": [
+    {
+      "file": "beta-namespace-fresh-inputs.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fresh-inputs.json",
+      "bytes": 1269,
+      "sha256": "3439c1d1e96447069f9f18589e0b6537dc8b80e3c1aeb043bd5d89d1294defee",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fresh-inputs.stderr",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fresh-inputs.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-binding.json.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-binding.json",
+      "bytes": 14379,
+      "sha256": "fed75c6ff775d635404ec362c85bee66cb4143042aafd3c3f4ff761bc734086b",
+      "encoding": "gzip",
+      "original_bytes": 52875,
+      "original_sha256": "fd9be964fdd173048acd679051e15cfef906aff6c0a32b2bbb0048a136c90148"
+    },
+    {
+      "file": "beta-namespace-fs-child-stderr-recovered.txt",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-child-stderr-recovered.txt",
+      "bytes": 48,
+      "sha256": "6988da67d7a9ba80ad644fba7086262b55cd6163d2826a1a68f56a76ab42f727",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-entry-refusal-postread.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-entry-refusal-postread.json",
+      "bytes": 1039,
+      "sha256": "ab2b31772fc249674e1152ebd390f54eb5d8a07013bf9e20b6fa72ed2011adfa",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-entry-refusal-postread.stderr",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-entry-refusal-postread.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-invocation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-invocation.json",
+      "bytes": 1247,
+      "sha256": "dd824049f91b76c02869433594b2b46cce6ee57dac1817a3c18b72334dca67fe",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-probe-v2.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-probe-v2.py",
+      "bytes": 48421,
+      "sha256": "7f7e3179b6f46844e13f293d78be6c4019c8564d2cc3109f45cd3e5e5089c5a5",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-probe.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-probe.py",
+      "bytes": 48345,
+      "sha256": "f3c6e3b9e8f8e34b43d8cba1c0779e6feeb09f885cfb354996a9c75cb605d059",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-receipt.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-receipt.json",
+      "bytes": 2186,
+      "sha256": "198521546ba2ac26507a3f49b9aab11b15edaf20ff5daaa3d9ad05eb61520263",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-stage.stderr",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-stage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-stage.stdout.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-stage.stdout.json",
+      "bytes": 298,
+      "sha256": "7e5f7a69ca4056fe46450525e32b03e97c0bc8a82b18fd0894c63e2b3d0aaa73",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-stderr",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-stdout.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-stdout.json",
+      "bytes": 19712,
+      "sha256": "440316f3ed272cc744bb8340a7c2747433b00f998c4d4801e62374a0a1d5b606",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-v2-binding.json.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-v2-binding.json",
+      "bytes": 14380,
+      "sha256": "ce9240a7c751e14487ae410c9a6ca192915475011400834e7f461bebf2824696",
+      "encoding": "gzip",
+      "original_bytes": 52875,
+      "original_sha256": "7e9b812fa264611279183202c4eb576984bb8d2e8b5fd70dedbd6b34152efd2b"
+    },
+    {
+      "file": "beta-namespace-fs-v2-invocation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-v2-invocation.json",
+      "bytes": 1252,
+      "sha256": "8281efe06ddf56b2e65289f07c337af0cba491a4f09d85398d761f48e34ca19c",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-v2-receipt.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-v2-receipt.json",
+      "bytes": 2181,
+      "sha256": "dba1a6a384e8bb58dc6a56120cf84ffd24bc8db0784e5dd982b2a9e44f741b18",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-v2-stage.stderr",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-v2-stage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-v2-stage.stdout.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-v2-stage.stdout.json",
+      "bytes": 298,
+      "sha256": "40c84d672822bc9f3727bdaab394206fd3148cd26627157475f0443ef4b5e252",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-v2-stderr",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-v2-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-v2-stdout.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-v2-stdout.json",
+      "bytes": 30072,
+      "sha256": "6a402fc92a8a65e3e18569342214a0034866d9b427afdeaf23aa8db3c98b7d5e",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-validate.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-validate.py",
+      "bytes": 10985,
+      "sha256": "2831c7ccadf15aa09460a948d08b6f4b63081970e889f2cc6d745f585458ef70",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-fs-validation.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-fs-validation.log",
+      "bytes": 657,
+      "sha256": "cf23897e530cb96460f96a7f98c456ea42d074735ed2a7b2592f78b8a11d35cf",
+      "encoding": "gzip",
+      "original_bytes": 1380,
+      "original_sha256": "a6b8cb995132634ef05ac3e06519d28216314a61372f255bcf3d928894649c7d"
+    },
+    {
+      "file": "beta-namespace-installed-tools.receipt.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-installed-tools.receipt.json",
+      "bytes": 214,
+      "sha256": "6af4bed687345ca18ac2f53ff2fc84b4af66c487ae879c274e029f0a52579bcf",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-installed-tools.stderr",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-installed-tools.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-installed-tools.stdout.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-installed-tools.stdout.json",
+      "bytes": 3468,
+      "sha256": "752fd58ea079a7e377cebb9a2e93ae4582efe29ed978a60bd2e9af5c7f8a24f2",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-wdns-installed-control.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-wdns-installed-control.json",
+      "bytes": 799,
+      "sha256": "c7ec86a5cc8beee0609bfb6ea77dbfc926fcbc7e43102d070e0e18b497457826",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-namespace-wdns-installed-control.stderr",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-namespace-wdns-installed-control.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-protected-93-bootstrap-invocation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-bootstrap-invocation.json",
+      "bytes": 1154,
+      "sha256": "217a8eaebde011a2245b4fd6b4977079c9d943fb44968b8c25c808741d13daff",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-protected-93-bootstrap-result.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-bootstrap-result.json",
+      "bytes": 746,
+      "sha256": "67a37686d231e063a9f06897bf755a9788605be874c85e6a10cb06cb15f6c51b",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-protected-93-bootstrap.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-bootstrap.log",
+      "bytes": 5104,
+      "sha256": "4d065459a1948137e474d792ef191b50c1ee4250e1feae6b421bcf994a2347ce",
+      "encoding": "gzip",
+      "original_bytes": 15043,
+      "original_sha256": "b4de2cac7cbc581a44a9ee7c46af7e250d0cb28c5be453bb81054a5c911b2afa"
+    },
+    {
+      "file": "beta-protected-93-entry.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-entry.py",
+      "bytes": 10784,
+      "sha256": "13f0a8b871f3b33a8e51645c56cac7ee95a99e3545644b1c3d16f45ee35182a5",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-protected-93-full-success-proof-comment.md.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-full-success-proof-comment.md",
+      "bytes": 14872,
+      "sha256": "472a84932177dd21c9bf71a05455603d8f6acded5e5220041e90d873a06627b1",
+      "encoding": "gzip",
+      "original_bytes": 62656,
+      "original_sha256": "f4fd862bccde8e360032887b126ef7e1c758ca0b7e02169abbc2eb1ecbb699c3"
+    },
+    {
+      "file": "beta-protected-93-private-stage.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-private-stage.py",
+      "bytes": 2578,
+      "sha256": "e2193259ed0037412e6d1cb19c37653aae0f0076967653f2dc221ef16dca43ba",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-protected-93-success-postread-v3.binding.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-success-postread-v3.binding.json",
+      "bytes": 808,
+      "sha256": "6e89ce1ac148cfec9e26163c344f0986b2fb41955950030a5ee0bea3748ddf92",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-protected-93-success-postread-v3.receipt.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-success-postread-v3.receipt.json",
+      "bytes": 898,
+      "sha256": "1fc6e31ff35d38eb75050f881811f4f9d99a36d910b51eaf0ba9ee28f24d02ec",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-protected-93-success-postread-v3.stderr",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-success-postread-v3.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-protected-93-success-postread-v3.stdout.json.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-success-postread-v3.stdout.json",
+      "bytes": 8035,
+      "sha256": "f7bc63b87033b710e61d988b61290e9195c81c47d0041db0f8ae4d96a7c9678d",
+      "encoding": "gzip",
+      "original_bytes": 39295,
+      "original_sha256": "d18c7b0ffe2c7dbe988a5fcdf96a66385df66b27ba0307d55e38360fb92286f2"
+    },
+    {
+      "file": "beta-protected-success-postread-v3.py",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-success-postread-v3.py",
+      "bytes": 39480,
+      "sha256": "b0b87c37bc3cdf07900b51fc60025f756ac40a6663bddbafda027dc30a51d899",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-public-dns-tls-0149.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-public-dns-tls-0149.json",
+      "bytes": 8035,
+      "sha256": "a5d5e2268d1d6f974412a78082da7a0a563862cdc89e63a70f7bc6144bfb82de",
+      "encoding": "identity"
+    },
+    {
+      "file": "beta-public-recursive-dns-0156.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/beta-public-recursive-dns-0156.json",
+      "bytes": 2167,
+      "sha256": "945356108bef0c69ebb01d365fa74b967b5ffa921ad1464e46577eda6af5528b",
+      "encoding": "identity"
+    },
+    {
+      "file": "browser-resume-public-beta-observation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/browser-resume-public-beta-observation.json",
+      "bytes": 1329,
+      "sha256": "02b118697d1a3a6a9818aa527107916db8fea7a7f5be9bb87a2774ef3dc34cd5",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-b98-ci-pack-1-118400090203.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-ci-pack-1-118400090203.log",
+      "bytes": 42634,
+      "sha256": "101a23d2881f56b60b85114f6c3115b9fe73d829c292bcdbf53deb5bfab9e041",
+      "encoding": "gzip",
+      "original_bytes": 171269,
+      "original_sha256": "17076e5458236d49c5508ad419d0547efaefd0e3b7f6298005891c9471288597"
+    },
+    {
+      "file": "macro-b98-contract-delta-118399691090.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-contract-delta-118399691090.log",
+      "bytes": 8103,
+      "sha256": "d950393b351c4aab71d9722e28e65538105425880f401745ff7e8d90cadf0287",
+      "encoding": "gzip",
+      "original_bytes": 31218,
+      "original_sha256": "6cc90021622a9f7c8aeb4f5bca6f7c30dfa0aaeab5c83246e1b61abe594e909b"
+    },
+    {
+      "file": "macro-b98-contract-delta-reconcile.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-contract-delta-reconcile.json",
+      "bytes": 5018,
+      "sha256": "c9af9240307daae37b75d77bc17d1cc2bffe7557cd9523a5c27f6f2830ee74b6",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-b98-d528-actual-merge-status.txt.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-d528-actual-merge-status.txt",
+      "bytes": 7015,
+      "sha256": "7c5b0874e45ff16d367ef30ece1b383605f28d4f4877c0443ae3ef8555ac425c",
+      "encoding": "gzip",
+      "original_bytes": 43345,
+      "original_sha256": "e16a2ba62388c4f60480b5cd4d707c99755b66db98fc26e791a8c6b358aaf02a"
+    },
+    {
+      "file": "macro-b98-d528-actual-merge.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-d528-actual-merge.json",
+      "bytes": 2388,
+      "sha256": "7fdc53e58d788f44f753b23d00db7875868504408ee635b4189c1ba03d7b8bdc",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-b98-d528-actual-merge.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-d528-actual-merge.log",
+      "bytes": 301,
+      "sha256": "a1772e3bfc31c13a01bc68e24b92e5808a17238dac91168a1c14d21cc5dec133",
+      "encoding": "gzip",
+      "original_bytes": 773,
+      "original_sha256": "e0508faf5a6a6365e10ebd7776b44e8b1660732209d12cf6fa2b181b679216f6"
+    },
+    {
+      "file": "macro-b98-d528-candidate-first-read-failure.txt",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-d528-candidate-first-read-failure.txt",
+      "bytes": 1060,
+      "sha256": "5e738e16b862c08a24883da3f021f04182172490fc1249ce99b042929adce817",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-b98-d528-two-page-candidates.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-d528-two-page-candidates.json",
+      "bytes": 9079,
+      "sha256": "f644e3921ac929c90edc8c3c4a63112c8411709452247539d5955f98b8292dae",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-b98-hosted-ci-jobs-39352502392.json.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-hosted-ci-jobs-39352502392.json",
+      "bytes": 3422,
+      "sha256": "3c455d059af8d0b9f0a5c62806f7e161ea8d5e7cfa1b0a91b2cb07c0cd23cc7a",
+      "encoding": "gzip",
+      "original_bytes": 59695,
+      "original_sha256": "df42715b71a1a17458f32c0e93112a69b28ca332ffb35c4a45ddce9909f4a37d"
+    },
+    {
+      "file": "macro-b98-incoming-main-paths.txt.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-incoming-main-paths.txt",
+      "bytes": 6960,
+      "sha256": "331f51360896b59d3b2a39ef579accf0d9f75f7080a0cfed1cedbdf140067bdd",
+      "encoding": "gzip",
+      "original_bytes": 39811,
+      "original_sha256": "212d440e852734a66f8235c079d00a818c9e52480df6253910ea380cb8953cbb"
+    },
+    {
+      "file": "macro-b98-incoming-merge-preview.txt",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-incoming-merge-preview.txt",
+      "bytes": 1226,
+      "sha256": "0ceac93b2088cb6e15f1e8101eafced343c5aba20c639b84b745efa638addd7f",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-ci-focused-after-invocation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-ci-focused-after-invocation.json",
+      "bytes": 1241,
+      "sha256": "5425cae868489eb0dd21de8f7f04ddcdf739561220c3b6b59e8034eeee8a90a2",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-ci-focused-after.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-ci-focused-after.json",
+      "bytes": 1951,
+      "sha256": "31f6814bcf7e455f9348b1db4789c4d8a252381e2b02c6e012d9b213581243a3",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-ci-focused-after.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-ci-focused-after.log",
+      "bytes": 62,
+      "sha256": "5c3798843f009e228df43b0447719daeda0a9c5720aa6e79ab02be44e6b5a3d8",
+      "encoding": "gzip",
+      "original_bytes": 110,
+      "original_sha256": "825293057ed0425d1641351d06775e65eba5816d04c3f6ce285435d0022c01e4"
+    },
+    {
+      "file": "macro-d528-ci-focused-before-invocation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-ci-focused-before-invocation.json",
+      "bytes": 973,
+      "sha256": "8c4814354a9643593d11347150b5d49a6f0f54438ada3de702718ac5fe1fb2dd",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-ci-focused-before.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-ci-focused-before.json",
+      "bytes": 1686,
+      "sha256": "54d12d9fff33a99d2224974b1cbed58bc687a5dccad8ca27bfc417bd198e32ec",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-ci-focused-before.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-ci-focused-before.log",
+      "bytes": 18223,
+      "sha256": "19dd328dfce98cbec4e65ad4be1148a5682aca8a0a6393a473a7105a89639390",
+      "encoding": "gzip",
+      "original_bytes": 56419,
+      "original_sha256": "d57c31b644d4a7ddf9681220a4ff8de97f7406b8d2ad7ddeca6ec694b859f1b4"
+    },
+    {
+      "file": "macro-d528-ci-history-wording.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-ci-history-wording.json",
+      "bytes": 853,
+      "sha256": "81b7e889f90f5c87edc1df42a5e7b14e9983c78ec4a7f3392bf6357e2e7c1511",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-contract-delta-invocation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-contract-delta-invocation.json",
+      "bytes": 1169,
+      "sha256": "fb33c88e5e6f9197699d095b9106add56d8fbd24604dd176fccf191e5618ef5b",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-contract-delta.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-contract-delta.json",
+      "bytes": 1551,
+      "sha256": "dfe5b64c53abace6ff47130c10d1a9d18a469c4709b697b85b7034d10a7eb192",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-contract-delta.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-contract-delta.log",
+      "bytes": 332,
+      "sha256": "bda028f449451c767a423359daf00bb291606556225f84ac0e97a56d4b7d99d2",
+      "encoding": "gzip",
+      "original_bytes": 753,
+      "original_sha256": "5f5a9540ff4004b131508a2cbd6f54efde4ac550275989bbd2a57f5b186b5c4a"
+    },
+    {
+      "file": "macro-d528-final-ci-repair-review.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-final-ci-repair-review.json",
+      "bytes": 2959,
+      "sha256": "5e9fb23461f575572990fb961e40d2b855223b977f73bc8960c632844c2a9896",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-minimal-ci-repair-v2.patch",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-minimal-ci-repair-v2.patch",
+      "bytes": 2556,
+      "sha256": "42dec7c9a86bdd21ae12732213341cb77c763ee0a25174edc4dd2636e9ed169b",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-minimal-ci-repair.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-minimal-ci-repair.json",
+      "bytes": 1308,
+      "sha256": "3bf55d4afe5cafdb6e16f3c76d1b87e8fd8134aeef3f496483a31809ef9179ba",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-minimal-ci-repair.patch",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-minimal-ci-repair.patch",
+      "bytes": 2557,
+      "sha256": "b0daebe5c60a125bc8c2a89afddef9bdb68e143f1602ab450762cd8e3f79a224",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-prepublication-remote-fence.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-prepublication-remote-fence.json",
+      "bytes": 17074,
+      "sha256": "9872abe3343af4e18365af28ff18acc4263133b636a47544ba7d6ae971e80601",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-d528-proof-import-first-refusal.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-proof-import-first-refusal.json",
+      "bytes": 902,
+      "sha256": "868e62950a6e14f9b266142b1d4149a4938f1217d11f5d617911549dba251b96",
+      "encoding": "identity"
+    },
+    {
+      "file": "macro-evidence-supplement-0131.md.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-evidence-supplement-0131.md",
+      "bytes": 22469,
+      "sha256": "391b7765aeb26687ee84dda50cbcf97f473aeeb1c5c2dfb482ae3e858ee81455",
+      "encoding": "gzip",
+      "original_bytes": 63194,
+      "original_sha256": "11b45f36a87e3ba8f47780314bc100cb8785b82d5a5ae93d4d39d21af1930127"
+    },
+    {
+      "file": "macro-full-checkpoint-0135-before-runtime-acceptance.md.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-full-checkpoint-0135-before-runtime-acceptance.md",
+      "bytes": 21904,
+      "sha256": "772ded340335037dd9dfaa9b7c5cada8ef3c6b6d1eecefe1d9c1499ff54345cd",
+      "encoding": "gzip",
+      "original_bytes": 64067,
+      "original_sha256": "f59fffc5ef8bacfadddb2c33bdd1696dc492042a0a16e8593c57b18268ca59f9"
+    },
+    {
+      "file": "macro-full-checkpoint-0148-before-filesystem-ci.md.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-full-checkpoint-0148-before-filesystem-ci.md",
+      "bytes": 22319,
+      "sha256": "6edf3abb4806a8491599b62f3297255c8c537bacd5478864fc8a5fc2df63d032",
+      "encoding": "gzip",
+      "original_bytes": 64675,
+      "original_sha256": "676319e8b3ef58aa78051cbbd976131f995974a51d1d4d5dba914025dc40e9b8"
+    },
+    {
+      "file": "macro-postgap-commit-push.json.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-postgap-commit-push.json",
+      "bytes": 5099,
+      "sha256": "0fb263eb26a7cfd7c8058fa909f019a745bfc2de4147d6159e6c37e602aefc20",
+      "encoding": "gzip",
+      "original_bytes": 54770,
+      "original_sha256": "500a5498e1c5228573a933764d111bc22072c83c3c568fdea6e33e9da55d557f"
+    },
+    {
+      "file": "macro-runtime-ci-proof-addendum.md",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-runtime-ci-proof-addendum.md",
+      "bytes": 12263,
+      "sha256": "19b7e2e35e9a8d965eda1310f9205a59c088f7d10c2faec4790f6b9f0dfff231",
+      "encoding": "identity"
+    },
+    {
+      "file": "terminal-original-release-owner-checkpoint-0218.md",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/terminal-original-release-owner-checkpoint-0218.md",
+      "bytes": 11319,
+      "sha256": "6685d0436ce647eeb5441a3fdb0f230d22bd801937055a65cb248fa19f67fd5e",
+      "encoding": "identity"
+    }
+  ],
+  "manifest_sha256": "931c0df87bd4134c7300283a60e936e05a2b0ec649ce9985738e45f4b77159fb",
+  "handoff_sha256": "21355d6cfde81b5a8c273d80e96653d95be2b052194e6c419dfa649cd46e0832",
+  "old_historical_body_preserved": true,
+  "old_rows_preserved_except_appended_readme": true,
+  "all_raw_and_compressed_hashes_pass": true,
+  "source_implementation_edited": false,
+  "committed": false,
+  "pushed": false
+}

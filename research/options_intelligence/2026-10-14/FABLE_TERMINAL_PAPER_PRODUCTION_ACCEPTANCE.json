@@ -1,0 +1,577 @@
+{
+  "schema": "fable.terminal.paper.production_acceptance.v1",
+  "observed_at": "2026-10-14T10:55:12.449320+00:00",
+  "owner": "01a10340-ddc1-7e41-9b42-9c8543c28c3d",
+  "status": "ACCEPTED_SCOPED_PP1_PP2_PAPER_PRODUCTION",
+  "terminal_prs": [
+    723,
+    1001
+  ],
+  "original_merge": "3cefe15f801b2185e181ac31c092a88897270f82",
+  "accepted_repair_head": "580b05f17bc776a1393fb4ffed0f64250a7206a2",
+  "final_merge": "f3f5d90df6d3b08227389dbeb512018697f2e634",
+  "source_qualification": {
+    "identical_blobs_and_modes": 26,
+    "mismatches": 0,
+    "ci_run": 38532730679,
+    "ci_result": "SUCCESS"
+  },
+  "deployment": {
+    "started_at": "2026-10-14T10:35:45.565561+00:00",
+    "finished_at": "2026-10-14T10:45:00.166434+00:00",
+    "target": "f3f5d90df6d3b08227389dbeb512018697f2e634",
+    "state": "RETURNED",
+    "returncode": 0,
+    "log_bytes": 18359,
+    "log_sha256": "c1c7d07ebf7803768ab79ab0b9ab096ef44127fee20bf05f467d10076a3ec7a8"
+  },
+  "health_status": 307,
+  "installed_marker": "f3f5d90df6d3b08227389dbeb512018697f2e634",
+  "served_deployments": [
+    "f3f5d90df6d3b08227389dbeb512018697f2e634"
+  ],
+  "build_id": "build-TfctsWXpff2fKS",
+  "build_id_limitation": "Existing builder reuses BUILD_ID; exact installed git marker and served script dpl bind release identity.",
+  "canonical_return": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-6166760394",
+  "authenticated_consumer": "Existing authorized saved admin test account; ordinary sign-in and visible account panel verified. No credential/token exported.",
+  "page_cases": [
+    {
+      "path": "page-desktop-en-final.json",
+      "rows": 7,
+      "columns": 3,
+      "source": "EOD2026-10-12↻",
+      "selection": [
+        {
+          "label": "778, 2026-10-12: −2.86B $ / +1% spot",
+          "rect": {
+            "bottom": 552.953125,
+            "height": 32,
+            "top": 520.953125,
+            "width": 242.515625,
+            "x": 361.40625,
+            "y": 520.953125
+          },
+          "value": "-2858.088963"
+        }
+      ]
+    },
+    {
+      "path": "page-desktop-zh-final.json",
+      "rows": 7,
+      "columns": 3,
+      "source": "收盘2026-10-12↻",
+      "selection": [
+        {
+          "label": "778, 2026-10-12: −2.86B 美元 / 现价上涨1%",
+          "rect": {
+            "bottom": 552.953125,
+            "height": 32,
+            "top": 520.953125,
+            "width": 273.875,
+            "x": 267.328125,
+            "y": 520.953125
+          },
+          "value": "-2858.088963"
+        }
+      ]
+    },
+    {
+      "path": "page-tablet-en-final.json",
+      "rows": 6,
+      "columns": 3,
+      "source": "EOD2026-10-12↻",
+      "selection": [
+        {
+          "label": "778, 2026-10-12: −2.86B $ / +1% spot",
+          "rect": {
+            "bottom": 564.453125,
+            "height": 44,
+            "top": 520.453125,
+            "width": 117.6875,
+            "x": 147.921875,
+            "y": 520.453125
+          },
+          "value": "-2858.088963"
+        }
+      ]
+    },
+    {
+      "path": "page-tablet-zh-final.json",
+      "rows": 6,
+      "columns": 3,
+      "source": "收盘2026-10-12↻",
+      "selection": [
+        {
+          "label": "778, 2026-10-12: −2.86B 美元 / 现价上涨1%",
+          "rect": {
+            "bottom": 564.453125,
+            "height": 44,
+            "top": 520.453125,
+            "width": 132.96875,
+            "x": 102.0625,
+            "y": 520.453125
+          },
+          "value": "-2858.088963"
+        }
+      ]
+    },
+    {
+      "path": "page-mobile-en-final.json",
+      "rows": 7,
+      "columns": 3,
+      "source": "EOD2026-10-12↻",
+      "selection": [
+        {
+          "label": "778, 2026-10-12: −2.86B $ / +1% spot",
+          "rect": {
+            "bottom": 639,
+            "height": 44,
+            "top": 595,
+            "width": 86.46875,
+            "x": 109.546875,
+            "y": 595
+          },
+          "value": "-2858.088963"
+        }
+      ]
+    },
+    {
+      "path": "page-mobile-zh-final.json",
+      "rows": 7,
+      "columns": 3,
+      "source": "收盘2026-10-12↻",
+      "selection": [
+        {
+          "label": "778, 2026-10-12: −2.86B 美元 / 现价上涨1%",
+          "rect": {
+            "bottom": 639,
+            "height": 44,
+            "top": 595,
+            "width": 97.734375,
+            "x": 75.75,
+            "y": 595
+          },
+          "value": "-2858.088963"
+        }
+      ]
+    }
+  ],
+  "chart_cases": [
+    {
+      "size": "desktop",
+      "language": "en",
+      "result": "PASS",
+      "scope": "DOM state coherence; actual rendered line/candle/pin pixels require parent review"
+    },
+    {
+      "size": "tablet",
+      "language": "en",
+      "result": "PASS",
+      "grid": {
+        "height": 309,
+        "left": 0,
+        "top": 1980,
+        "width": 469
+      },
+      "detent": "initial",
+      "source": "EOD SNAPSHOT2026-10-12↻SourcesMap build2026-10-13T23:00:09.564118+00:00End-of-day prices2026-10-12Option greeks2026-10-12Open-interest publication2026-10-12Previous open-interest publication2026-10-09Latest open-interest publication2026-10-13Spot price clockunavailable"
+    },
+    {
+      "size": "mobile",
+      "language": "en",
+      "result": "PASS",
+      "grid": {
+        "height": 362,
+        "left": 0,
+        "top": 1935,
+        "width": 337
+      },
+      "detent": "full",
+      "source": "EOD SNAPSHOT2026-10-12↻SourcesMap build2026-10-13T23:00:09.564118+00:00End-of-day prices2026-10-12Option greeks2026-10-12Open-interest publication2026-10-12Previous open-interest publication2026-10-09Latest open-interest publication2026-10-13Spot price clockunavailable"
+    },
+    {
+      "size": "desktop",
+      "language": "zh",
+      "result": "PASS",
+      "scope": "DOM state coherence; actual rendered line/candle/pin pixels require parent review"
+    },
+    {
+      "size": "tablet",
+      "language": "zh",
+      "result": "PASS",
+      "grid": {
+        "height": 309,
+        "left": 0,
+        "top": 1980,
+        "width": 469
+      },
+      "detent": "initial",
+      "source": "收盘快照2026-10-12↻数据来源热力图生成时间2026-10-13T23:00:09.564118+00:00收盘价格2026-10-12期权希腊值2026-10-12持仓量发布日2026-10-12上一持仓量发布日2026-10-09最新持仓量发布日2026-10-13现价时间不可用"
+    },
+    {
+      "size": "mobile",
+      "language": "zh",
+      "result": "PASS",
+      "grid": {
+        "height": 362,
+        "left": 0,
+        "top": 1935,
+        "width": 337
+      },
+      "detent": "full",
+      "source": "收盘快照2026-10-12↻数据来源热力图生成时间2026-10-13T23:00:09.564118+00:00收盘价格2026-10-12期权希腊值2026-10-12持仓量发布日2026-10-12上一持仓量发布日2026-10-09最新持仓量发布日2026-10-13现价时间不可用"
+    }
+  ],
+  "visual_adjudication": [
+    "All six real page views show map and source/scope before history, with cyan/violet exposure and real partial coverage. Desktop320px/tablet288px adjacent inspector, localized selected action and no page scroll. Strict sticky-th counter passes7/6/7 rows and3columns.",
+    "Actual EN/ZH desktop Line and returned Candles render with the same778 strike pin; cleanup removes the yellow marker. No production hooks or private chart census were injected.",
+    "Tablet and phone EN/ZH park and return retain actual node/root/source, grid scroll and initial/full detent. Parked chart displays778 pin and44px return chip. Cleanup clears each pin.",
+    "Actual data93strikes/19expiries and default3expiry scope replace illustrative Paper15/8. Existing Terminal shell and page Inspect/chart pin distinction remain accepted adaptations."
+  ],
+  "limitations": [
+    "Scoped PP1/PP2 Paper parity, not pixel-identical mockup shell or whole Fable programme completion.",
+    "Installed BUILD_ID is reused by existing builder; exact git deployment marker and served dplSHA bind release identity.",
+    "Phone chart journey retains existing document scroll state; no claim of zero chart-page scrolling. Page layout cases independently prove zero document/wrapper scrolling.",
+    "Original browser connection timeout occurred after retained Chinese candle-return capture and before cleanup. Same tab was recovered, actual pinned state inspected, then cleanup completed; no duplicate deployment."
+  ],
+  "retained_files": [
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-en-candles-pin.jpg",
+      "sha256": "903b0fae72ce5b3dedd2ec77dc08b2afe0fbbf5646b8412c46be1a99e888a488",
+      "bytes": 151443
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-en-candles-pin.json",
+      "sha256": "4f6496ae6da5fa08e258d2a472c4f7dce8702435a5c3713e8432fb50878e7444",
+      "bytes": 3666
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-en-candles-returned-pin.jpg",
+      "sha256": "de20b2e990c515442cd2506e88e2d383e236568044d90c75384b8023f4d2e814",
+      "bytes": 150717
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-en-candles-returned-pin.json",
+      "sha256": "c13a72ca2f2fa4ce7a320c2ac03a2d3d77842ac324d9766acd3c60c173c8e32b",
+      "bytes": 3666
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-en-cleanup.jpg",
+      "sha256": "887ce8bc689137f11d54ec03b93c0f0c66a662e873de1fd38127335792e0d578",
+      "bytes": 153245
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-en-cleanup.json",
+      "sha256": "f3affa673a2073c3689befc82179b34ede7cfa287a4451d63a5c33a3e7f344a9",
+      "bytes": 3673
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-en-line-pin.jpg",
+      "sha256": "5ba64e1e1ce47f7cbfac9125957ebd7efe9e77bebefb1436a2037e2260432838",
+      "bytes": 148116
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-en-line-pin.json",
+      "sha256": "4ff73a0424b4dd38367d68d8b2c6c0212e40afbfe18f3da4dad140c48e71cd1d",
+      "bytes": 3663
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-zh-candles-pin.jpg",
+      "sha256": "c6e25dcc7a032692a007a1583a41dee65baea0426204bca9ca1678b2918bc555",
+      "bytes": 154075
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-zh-candles-pin.json",
+      "sha256": "b0df7be36b3d28707519fe6d7587eb9f28e407e99b4243dfe27cacf8238dee2d",
+      "bytes": 3812
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-zh-candles-returned-pin.jpg",
+      "sha256": "43ba90ca13a23a98cc44221526f5b4ba9514f63d2847f413a51a2e1020dbce1f",
+      "bytes": 153350
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-zh-candles-returned-pin.json",
+      "sha256": "9a217abba577bd7930745657b6291a75c2242b74c43092abe622cc8851218cb1",
+      "bytes": 3812
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-zh-cleanup.jpg",
+      "sha256": "78522605191012267befc637b4207fb6dff0c2a5ee1993a2eee3ed74c6b5dda0",
+      "bytes": 154811
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-zh-cleanup.json",
+      "sha256": "f8676e8cc64fa31cce9fa0961aa88e0557fada1f1eb592a663a8f75772a6c6a0",
+      "bytes": 3825
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-zh-line-pin.jpg",
+      "sha256": "aa6e37ea721c32e191e0171f3fc521f8da116861811ed960e0eda551d9f6d199",
+      "bytes": 151090
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-desktop-zh-line-pin.json",
+      "sha256": "64334a99f301542565e4fcadcc6d9ecfb76b37cfb85b17543166b0233d9024c4",
+      "bytes": 3812
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-en-before-park.jpg",
+      "sha256": "9b8272aebbea2b97ccc31eb3a4b4224edfc8bc21a4090580384f24a559895a03",
+      "bytes": 35927
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-en-before-park.json",
+      "sha256": "e4362432b0e77b4d6884a7d7a1856d345e6427926dda76028e22308a7a0e3e85",
+      "bytes": 3830
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-en-cleanup.jpg",
+      "sha256": "8598365a7163f25313d50d817f27a44561328fd654a17bab3b8c49f3b0341554",
+      "bytes": 32943
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-en-cleanup.json",
+      "sha256": "8535bd892b4734a7ef5134ee2d60c8f1525d9fc972708c70ec6b6157d28cb7eb",
+      "bytes": 3835
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-en-parked.jpg",
+      "sha256": "2e271e400dbbd07800d1274d6fc5377b8b6dcb1c513ee0c561348d9890de1996",
+      "bytes": 41312
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-en-parked.json",
+      "sha256": "b36b070c3e938c4353a5e74511aeaeb99de0ba002032a6e06368c921d47bcdff",
+      "bytes": 4059
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-en-returned.jpg",
+      "sha256": "d2d6fff79500f11c59cb4585626d19d81e2c1fdc06ff1f584e46a2b82c202ff1",
+      "bytes": 35933
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-en-returned.json",
+      "sha256": "28f2aa6adbd62155cd08348163a69f03e4f809781bf6716d72111ddc5df5b86b",
+      "bytes": 3830
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-zh-before-park.jpg",
+      "sha256": "84f32a77b2452c441b3ccccd3c0756b10b87559b81d09b544cf3d352afec0839",
+      "bytes": 34735
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-zh-before-park.json",
+      "sha256": "3d07c8459e31c502106499364061e0428aa0c61756fde647405acf679c4d28c3",
+      "bytes": 3855
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-zh-cleanup.jpg",
+      "sha256": "bea7a6954df477c682a0367b9d34888acbf99927379c2f33fefe354030a2d1e1",
+      "bytes": 34249
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-zh-cleanup.json",
+      "sha256": "5dd20dbd6e8f9dfb02114ae3f433929f918b1f211ebc1168f7a5deb4b3091598",
+      "bytes": 3868
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-zh-parked.jpg",
+      "sha256": "f01c9fc494108db3e1691b80f4ee6bf87dbc5948d5a8e7c163defcc1be795055",
+      "bytes": 39434
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-zh-parked.json",
+      "sha256": "7d711e3fe52e2f26ff43b72603333660bc7494b65ec13b3c03628e4542b2bc7f",
+      "bytes": 4081
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-zh-returned.jpg",
+      "sha256": "1fcafb6fa22a453bf0db2eabf9468e41d92130a71f660489233b0a1988e81c23",
+      "bytes": 34730
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-mobile-zh-returned.json",
+      "sha256": "0c567f02bcc081d90614aa7116cfc293bb7f6e2000298cedb67dc910e92af6a9",
+      "bytes": 3855
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-en-before-park.jpg",
+      "sha256": "0e7bff211cf385a7ba49a2eed6f2c2b1979d7cf3db8e961c7fb10e3a5e114a50",
+      "bytes": 80847
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-en-before-park.json",
+      "sha256": "a3bc7ba7c9f389e4bc7c8a62937bb2ccce15b9bdd932464b1109dcbb3529df94",
+      "bytes": 3823
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-en-cleanup.jpg",
+      "sha256": "bf4bfe1ffa6a055676aa2f3bc1b77709a5cf129ce5bdcbbaefe8a0d3fa815bd5",
+      "bytes": 79926
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-en-cleanup.json",
+      "sha256": "ea2c5ef43516412520385cb68ccaae85d74fe5bfbafaa9379f90e96fc08a70f2",
+      "bytes": 3830
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-en-parked.jpg",
+      "sha256": "3f02adb93434cd723efcbbbf60d4e3b296e0f5461d35eb8e3a831527428a0a94",
+      "bytes": 82469
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-en-parked.json",
+      "sha256": "ee68d46f9a29801e5b68d1a1ce0095354dec8694af4cc8ea71a2785016003753",
+      "bytes": 4055
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-en-returned.jpg",
+      "sha256": "c0366071746a8294ba34b3e29b667200c5456ff025ab3002e657c98e7df79642",
+      "bytes": 80939
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-en-returned.json",
+      "sha256": "7d873f59b0b3d6381b6940d8fda268dd158f44940756daae42dc6fd019f51a86",
+      "bytes": 3823
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-zh-before-park.jpg",
+      "sha256": "3c6bcc1e80f417ef2f43584185f92b79df53be6a9072d857d9136f420ccd19f9",
+      "bytes": 83062
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-zh-before-park.json",
+      "sha256": "c664ce3c8e8d7a1b3d81e96ca3cb14c6163392cbbd694fd3c0e19fbab5867a93",
+      "bytes": 3958
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-zh-cleanup.jpg",
+      "sha256": "efecfba08f2bd5e6e7a7d5cf021f8e7e09d2d3f273435f484478c3073bbc26ea",
+      "bytes": 82165
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-zh-cleanup.json",
+      "sha256": "1d40e9d7486e272f9cfc69cb81cd7f83867af08fb0a05ca4e4914c90c9fbace4",
+      "bytes": 3971
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-zh-parked.jpg",
+      "sha256": "7b35b89b25fb55e0ee29db209cd0cd2e337868c7a7075835798aa301e7beae7e",
+      "bytes": 80756
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-zh-parked.json",
+      "sha256": "2ea00475d8cff27515329f64bc4eded18f9e61c201348257622ac976d87c621a",
+      "bytes": 4187
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-zh-returned.jpg",
+      "sha256": "75f93824d85cd95da211c3c6e164c8c5c7adfd86e1adc0b9042eae8f21a510d5",
+      "bytes": 83191
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/chart-tablet-zh-returned.json",
+      "sha256": "c1b6a0adba0d301e9cb0bfe051c7d57cdb407ec353ecd8873d991cb6e3bd98b4",
+      "bytes": 3958
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-desktop-en-final.jpg",
+      "sha256": "2eacf6dd4a681fcc2d7512e715e82565d97a877a5344464924a9a3aa98f043ca",
+      "bytes": 100354
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-desktop-en-final.json",
+      "sha256": "adcac77018226e38db0fe336e36cd70826097137cbf3e14b89eabc620f437dd7",
+      "bytes": 8607
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-desktop-zh-final.jpg",
+      "sha256": "96e2d8e319cc51e4736feea35f42b928e307dccadb765fddc6d9f47d81c736cd",
+      "bytes": 97542
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-desktop-zh-final.json",
+      "sha256": "5aef03c806a30bdc31a1626501f51f322d139ca4e6698efde946e1b956da92a1",
+      "bytes": 8623
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-mobile-en-final.jpg",
+      "sha256": "973ca3e48615caa80a9efbc38c800df50ac07a876d1cf49a06a7ac0a4225ceb5",
+      "bytes": 36953
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-mobile-en-final.json",
+      "sha256": "75835d32a8fc0dd9f25958046c20aeca8deea9c01556746621a09c5dd707476a",
+      "bytes": 8514
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-mobile-zh-final.jpg",
+      "sha256": "478def645a7f16c5d65ff3abc87c87bf9570bb492ad12bd9781fee92c618e2ca",
+      "bytes": 36277
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-mobile-zh-final.json",
+      "sha256": "1e57c8ca3fff9ba8a8b9518ac80d4de4158e3112e527b7c2ec1ed12d2161977d",
+      "bytes": 8534
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-tablet-en-final.jpg",
+      "sha256": "70c6940660ee526fa7034c6a04a59aacf4a3aa823f643a342586de1119064797",
+      "bytes": 84252
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-tablet-en-final.json",
+      "sha256": "edb5beaae8d0fc3eb83c88172c9597bf110deaad8c401677888cf110bd13f7f6",
+      "bytes": 8557
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-tablet-zh-final.jpg",
+      "sha256": "d9fc3229c3db438c8f5baff8c0b95203ab773674a6b032630cfa09186535ec49",
+      "bytes": 79651
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/page-tablet-zh-final.json",
+      "sha256": "b455d815f75af253e8b71edf5a08cdab1d314b2c080a2805e60b961e4f08d7fe",
+      "bytes": 8571
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/phone-inspect-en.jpg",
+      "sha256": "198224cbbf142e1abbd4f220ecdc0c2923e2dc177d77ee45de8002a6b7b1dcff",
+      "bytes": 41003
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/pr1001-production-final-acceptance-20261014.json",
+      "sha256": "ddefbfbc231a61211f501579919f0be4ada9152bd07c4daec6caa45b221babc2",
+      "bytes": 16812
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/pr1001-merged-release-f3f5d90d-20261014.json",
+      "sha256": "5cdbd8900e0ac895e59ad30ae75ec1d1970d20044de8488f04fa70d215272b32",
+      "bytes": 14699
+    },
+    {
+      "path": "research/options_intelligence/2026-10-14/terminal-paper-production-f3f5d90d/FABLE_PAPER_PARITY_ACCEPTED_CONTRACT_20261013.md",
+      "sha256": "bb5a6ceb6dee2e617cea12061f1d3b289069f6d1799f8f8c5dd5b226bc237c12",
+      "bytes": 11290
+    }
+  ],
+  "authentication_evidence": {
+    "local_only": "authenticated-account.json",
+    "sha256": "f2f45b3eae50fa6661e456e091d1536c155359309887ce7bce9137ee36ce3445",
+    "bytes": 288
+  },
+  "fabric_provenance": {
+    "original_carrier_workers": "Accepted IDs remain in original checkpoint and source evidence; no replay.",
+    "tablet_worker": "fable-pr723-tablet-row-boundary-20261014",
+    "routing": "Normal router selected GLM5.3flash on ubuntu1, admitted and observed launch.",
+    "terminal_result": "Provider429 weekly/monthly quota; rc1,836bytes retained, no artifact, not accepted.",
+    "disposition": "Parent performed bounded reversible row-alignment repair after actual capacity failure; no replacement worker or account/host switch."
+  },
+  "closed_prior_work": {
+    "matrix": "Two natural sessions and genuine older/newer withholding accepted; final Macro9189 merged a3f3afa1e1268908a54263043f21048c1b5bc1b4.",
+    "flow": "NaturalOct12 recovery and authenticated Tape advancement accepted; records9010mergedafa55cda4fb0aeebc557b0533ccffa280fa9efcb.",
+    "producers_rerun": false
+  },
+  "records_delivery": "This evidence is delivered by one ordinary Macro records PR. Its actual protected merge and byte equality are recorded afterward on the same canonical return/checkpoint; this file does not preclaim its own merge."
+}

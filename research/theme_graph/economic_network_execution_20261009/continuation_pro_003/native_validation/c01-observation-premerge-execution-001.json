@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "-I",
+    "-B",
+    "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/c01-observation-pro-003-harness-v1.py",
+    "--source-manifest",
+    "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/c01-observation-pro-003-source-premerge-001.json",
+    "--source-manifest-sha256",
+    "e955ec0f462369f42b0d3689360682d1a30dcbcea63bf090d935db73b2c9d293",
+    "--harness-sha256",
+    "871b539f94fb3b55de9c12e11fadd78c99920ea034503e755eb6bb7f1ea57b74",
+    "--store-root",
+    "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/c01-observation-pro-003-store-premerge-001",
+    "--private-output",
+    "/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/c01-observation-pro-003-private-premerge-001.json"
+  ],
+  "finished_at": "2026-10-09T11:34:49.929352+00:00",
+  "harness_exit_code": 0,
+  "harness_pid": 19244,
+  "harness_reconciled": true,
+  "head_after": "6b58f15adae3b1d402d9993c52609d00083f1453",
+  "head_before": "6b58f15adae3b1d402d9993c52609d00083f1453",
+  "ignored_after": [],
+  "operation_id": "gmi-economic-observations-20261009-pro-003",
+  "public_receipt": {
+    "byte_length": 8373,
+    "path": "/Users/chriswong/Library/Caches/Mastermind/economic-observations-20261009-pro-003/principal/c01-observation-premerge-public-001.json",
+    "sha256": "85aca2ac1e822349b287b0ac54b2e5d94513d4cd97c70ce0e5d5908d1bb108e9"
+  },
+  "schema": "economic_network.native_proof_execution/v1",
+  "started_at": "2026-10-09T11:34:41.662963+00:00",
+  "stderr": {
+    "byte_length": 0,
+    "path": "/Users/chriswong/Library/Caches/Mastermind/economic-observations-20261009-pro-003/principal/c01-observation-premerge-stderr-001.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "worktree_clean_after": true,
+  "wrapper_pid": 19227
+}

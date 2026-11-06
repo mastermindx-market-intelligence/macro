@@ -1,0 +1,16 @@
+
+tests/test_market_packet.py:1853: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_build_basket_pulse.py::test_rejected_observation_cannot_roll_back_the_comparison_baseline[older_source]
+FAILED tests/test_build_basket_pulse.py::test_rejected_observation_cannot_roll_back_the_comparison_baseline[older_build]
+FAILED tests/test_build_basket_pulse.py::test_rejected_observation_cannot_roll_back_the_comparison_baseline[missing_benchmark]
+FAILED tests/test_build_basket_pulse.py::test_stale_comparison_has_source_age_not_a_live_signal
+FAILED tests/test_market_packet.py::test_intraday_consumer_rejects_inconsistent_session_or_arithmetic[change0]
+FAILED tests/test_market_packet.py::test_intraday_consumer_rejects_inconsistent_session_or_arithmetic[change1]
+FAILED tests/test_market_packet.py::test_intraday_consumer_rejects_inconsistent_session_or_arithmetic[change2]
+FAILED tests/test_market_packet.py::test_intraday_consumer_rejects_inconsistent_session_or_arithmetic[change3]
+FAILED tests/test_market_packet.py::test_intraday_consumer_rejects_inconsistent_session_or_arithmetic[change4]
+FAILED tests/test_market_packet.py::test_intraday_consumer_freshness_budget_boundary
+10 failed, 1 passed, 296 deselected in 4.71s

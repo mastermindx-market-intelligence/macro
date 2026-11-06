@@ -1,0 +1,17 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_eval_os_acceptance_runs_on_ordinary_code_prs _______________
+
+    def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
+        """A data-only Neural Web job must not make an A1 code PR falsely green."""
+        jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
+>       assert "eval-os-a1" in jobs, "Eval OS acceptance needs an ordinary PR code job"
+E       AssertionError: Eval OS acceptance needs an ordinary PR code job
+E       assert 'eval-os-a1' in {'company-intelligence-private-runtime': LegacyJob(job_id='company-intelligence-private-runtime', definition={'if': '$.../test_live_flow_recovery.py', 'tests/test_live_flow_tiering.py'), fallback_paths=(), exclusive=True, gate='code'), ...}
+
+tests/test_ci_pack.py:4781: AssertionError
+
+NOTE: sparse worktree — data, mockups, plugins, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ci_pack.py::test_eval_os_acceptance_runs_on_ordinary_code_prs
+1 failed in 3.39s

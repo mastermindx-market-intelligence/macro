@@ -1,0 +1,17 @@
+{
+  "schema": "market_memory.history_receipt_projection.v1",
+  "source_receipts_copied_byte_identically": true,
+  "archives_or_manifest_modified": false,
+  "receipts": [
+    {
+      "ref": "web_test_runs:market-time-machine-20261015-receipts/history-v2-receipt.json",
+      "bytes": 830,
+      "sha256": "0cee65f7dfc147241c5a3e221a5636f8846d7be51de58b772c831f7ab0afdbb7"
+    },
+    {
+      "ref": "web_test_runs:market-time-machine-20261015-receipts/macro-first-print-receipt.json",
+      "bytes": 1718,
+      "sha256": "79dd1bfca0c189c9ee73c5df5f778d264b92b72296c92c16479d90ce08d15f2e"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "scope": "Only explicit existing-artifact header clock progression in curator; no canonical or production fact write",
+  "worker": "defense-curator-clock-fix-01a13300-a",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "verdict": "accepted_with_parent_correction",
+  "original_reproduction": "5 failed",
+  "worker_verification": "6 passed, 1 failed: leading whitespace accepted by shared parser",
+  "parent_correction": "Require parsed.isoformat() == explicit; preserve all rows, monotone clocks, unchanged absent-target path",
+  "validation": "329 passed, 1 skipped; includes forward progression, backward/invalid refusals, omitted clocks, check-only no-write",
+  "retained_stdout_sha256": "124a4fdd711f79ea740b2e38338119e3897f298fe7bbbb18da2cefcab888b798",
+  "source_sha256": "c90c5c0a33d9f92cdac886c34558a106be9129dfe0a6e593a3b5fb64ad44a7f3",
+  "test_sha256": "d4373d15dabcdcaa40aaf6bcbd78a78f0319998d3688239b8ff0f09d69f7ee56"
+}
