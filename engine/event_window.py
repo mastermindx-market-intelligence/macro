@@ -17,8 +17,10 @@ DISCIPLINE (honoring RIC-R3, RIC-R6, research/DO_NOT_REBUILD.md):
   • Display context: "is_context_only": True on every emitted dict.
 
 Date spines:
-  - FOMC: static 1994→ announcement-era list checked against the Fed archive.
-  - CPI/PPI/NFP: _SCHED_2026 from engine/event_calendar.py (same static table).
+  - FOMC: 2000–2025 Fed-archive announcement days + canonical
+    engine/event_calendar.py _FOMC for 2026+, read at call time.
+  - CPI/PPI/NFP: read at call time from engine/event_calendar.py _SCHED_2026
+    (the canonical calendar; no local copy).
   - OPEX expiration days: engine/opex.expiration_days() — no duplication.
 
 Phase labels (frozen at W0, RIC-R6):
@@ -42,6 +44,7 @@ import numpy as np
 import pandas as pd
 
 from engine.validation import newey_west_tstat
+from engine import event_calendar as _canonical_calendar
 
 log = logging.getLogger(__name__)
 
@@ -57,12 +60,12 @@ ERA1_SPLIT = pd.Timestamp("2010-01-01")   # pre-2010 vs 2010+
 ERA2_SPLIT = pd.Timestamp("2021-01-01")   # 2021+ slice (post-pandemic)
 
 # ---------------------------------------------------------------------------
-# Static FOMC announcement dates 1994→ (announcement era)
-# Source: Federal Reserve archive + event_calendar.py _FOMC for 2026.
+# Fed-archive announcement days 2000–2025; 2026+ is read at call time from
+# engine/event_calendar.py (_FOMC, via fomc_decision_dates) — the canonical
+# calendar; no local copy.
 # Only the LAST DAY (announcement / press conference day) is included.
-# We include only 2000+ for the practical SPY-history window.
 # ---------------------------------------------------------------------------
-_FOMC_ANNOUNCEMENT_DATES: list[str] = [
+_FOMC_ARCHIVE_PRE_CANONICAL: list[str] = [
     # 2000
     "2000-02-02", "2000-03-21", "2000-05-16", "2000-06-28", "2000-08-22",
     "2000-10-03", "2000-11-15", "2000-12-19",
@@ -142,26 +145,19 @@ _FOMC_ANNOUNCEMENT_DATES: list[str] = [
     # 2025
     "2025-01-29", "2025-03-19", "2025-05-07", "2025-06-18", "2025-07-30",
     "2025-09-17", "2025-10-29", "2025-12-10",
-    # 2026 (from event_calendar.py _FOMC)
-    "2026-01-28", "2026-03-18", "2026-04-29", "2026-06-17", "2026-07-29",
-    "2026-09-16", "2026-10-28", "2026-12-09",
 ]
 
-# CPI release days (month -> day-of-month) for 2026 (mirrored from event_calendar)
-_CPI_2026: dict[int, int] = {
-    1: 13, 2: 11, 3: 11, 4: 10, 5: 12, 6: 10,
-    7: 14, 8: 12, 9: 11, 10: 14, 11: 10, 12: 10,
-}
-# PPI release days
-_PPI_2026: dict[int, int] = {
-    1: 14, 2: 12, 3: 12, 4: 14, 5: 13, 6: 11,
-    7: 15, 8: 13, 9: 10, 10: 15, 11: 13, 12: 15,
-}
-# NFP release days (exact published dates, not naive first-Friday)
-_NFP_2026: dict[int, int] = {
-    1: 9, 2: 6, 3: 6, 4: 3, 5: 8, 6: 5,
-    7: 2, 8: 7, 9: 4, 10: 2, 11: 6, 12: 4,
-}
+
+def _fomc_announcement_dates() -> list[str]:
+    """Archive (2000–2025) + canonical FOMC decision days, read at call time; sorted, de-duplicated."""
+    canonical = _canonical_calendar.fomc_decision_dates(date.min, date.max)
+    return sorted(set(_FOMC_ARCHIVE_PRE_CANONICAL) | {d.isoformat() for d in canonical})
+
+
+def _canonical_sched(etype: str) -> dict[int, int]:
+    """Month -> day-of-month CY2026 schedule for CPI/PPI/NFP, read at call time from the canonical
+    calendar (engine/event_calendar.py _SCHED_2026). Never cached, never copied into this module."""
+    return dict(_canonical_calendar._SCHED_2026.get(etype, {}))
 
 
 # ---------------------------------------------------------------------------
@@ -172,7 +168,7 @@ def _fomc_dates(index: pd.DatetimeIndex) -> set[pd.Timestamp]:
     lo = index.min()
     hi = index.max()
     out: set[pd.Timestamp] = set()
-    for ds in _FOMC_ANNOUNCEMENT_DATES:
+    for ds in _fomc_announcement_dates():
         t = pd.Timestamp(ds)
         if lo <= t <= hi:
             out.add(t)
@@ -189,7 +185,7 @@ def _static_release_dates(sched: dict[int, int],
     the schedule (2026).  Pre-2026 dates are left untagged — the phase tag for
     those rows falls through to 'quiet' for CPI/PPI/NFP phases, which is the
     honest result given we do not have the real historical release calendar.
-    FOMC phases (sourced from _FOMC_ANNOUNCEMENT_DATES) are unaffected.
+    FOMC phases (sourced from _fomc_announcement_dates()) are unaffected.
     """
     lo = index.min()
     hi = index.max()
@@ -272,9 +268,9 @@ def tag(dates: pd.DatetimeIndex | Sequence) -> pd.DataFrame:
 
     # Build event-day sets
     fomc_set = _fomc_dates(idx)
-    cpi_set = _static_release_dates(_CPI_2026, idx)
-    ppi_set = _static_release_dates(_PPI_2026, idx)
-    nfp_set = _static_release_dates(_NFP_2026, idx)
+    cpi_set = _static_release_dates(_canonical_sched("CPI"), idx)
+    ppi_set = _static_release_dates(_canonical_sched("PPI"), idx)
+    nfp_set = _static_release_dates(_canonical_sched("NFP"), idx)
     claims_set = _claims_days(idx)
     opex_set = _opex_days(idx)
 

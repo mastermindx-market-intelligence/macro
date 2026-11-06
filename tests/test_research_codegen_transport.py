@@ -90,10 +90,12 @@ def ok(stdout=b"", stderr=b"", rc=0, observed=None):
 
 
 def absent(cid):
+    """Installed closed absence protocol: rc 1, known empty JSON stdout,
+    single container-specific daemon error line for this exact full id."""
     return EngineCommandResult(
         1,
-        b"",
-        f"Error: No such object: {cid}".encode("ascii"),
+        b"[]\n",
+        f"Error response from daemon: No such container: {cid}\n".encode("ascii"),
         30.0,
         4096,
     )
@@ -702,9 +704,17 @@ def test_remove_exception_is_retained(plan):
         ),
         (
             EngineCommandResult(
-                1, b"", f"No such object: {FOREIGN_CID}".encode(), 30.0, 4096
+                1, b"",
+                f"Error response from daemon: No such container: {FOREIGN_CID}\n".encode(),
+                30.0, 4096,
             ),
             "foreign-id-marker",
+        ),
+        (
+            EngineCommandResult(
+                1, b"", f"Error: No such object: {CID}\n".encode(), 30.0, 4096
+            ),
+            "old-generic-object-grammar",
         ),
         (
             EngineCommandResult(
@@ -717,6 +727,29 @@ def test_remove_exception_is_retained(plan):
                 None, b"", b"", 30.0, 4096, output_truncated=True
             ),
             "inspect-truncated",
+        ),
+        (
+            EngineCommandResult(
+                None, b"", f"Error response from daemon: No such container: {CID}\n".encode(),
+                30.0, 4096,
+            ),
+            "unreaped-client",
+        ),
+        (
+            EngineCommandResult(
+                1, b"", f"Error response from daemon: No such container: {CID}\n".encode(),
+                30.0, 4096, error_type="OSError",
+            ),
+            "collector-error",
+        ),
+        (
+            EngineCommandResult(
+                0, b"",
+                json.dumps([{CID: {"Id": CID}}]).encode() +
+                f"Error response from daemon: No such container: {CID}\n".encode(),
+                30.0, 4096,
+            ),
+            "current-object-rc0-never-absence",
         ),
     ],
 )
@@ -739,6 +772,138 @@ def test_inspect_exception_retains_uncertainty(plan):
     attempt = TransportOrchestrator(engine).execute(TransportSession(plan))
     assert attempt.state is AttemptState.CLEANUP_UNCERTAIN
     assert "absence check failed" in attempt.detail
+
+
+# --------------------------------------------------------------------------
+# Closed installed absence grammar: precise acceptance and discrimination
+# --------------------------------------------------------------------------
+
+ABSENCE_ERROR_LINE = (
+    f"Error response from daemon: No such container: {CID}\n".encode()
+)
+
+
+def test_dormant_engine_still_refuses_inspect_before_any_process(
+    monkeypatch, plan
+):
+    def _no_popen(*args, **kwargs):
+        raise AssertionError("Popen must never be called while dormant")
+
+    monkeypatch.setattr(transport.subprocess, "Popen", _no_popen)
+    engine = SubprocessDockerEngine(plan.docker_binary)
+    with pytest.raises(TransportDormantError) as excinfo:
+        engine.run(
+            build_inspect_argv(plan, CID),
+            deadline_seconds=1.0,
+            output_cap_bytes=4096,
+        )
+    assert "no process call was made" in str(excinfo.value)
+
+
+def test_absence_parser_accepts_installed_grammar_on_both_channels():
+    assert transport.parse_container_absence(b"[]\n", ABSENCE_ERROR_LINE, CID)
+    assert transport.parse_container_absence(
+        b"[]\n" + ABSENCE_ERROR_LINE, b"", CID
+    )
+    assert transport.parse_container_absence(b"", ABSENCE_ERROR_LINE, CID)
+    assert transport.parse_container_absence(
+        b"", ABSENCE_ERROR_LINE.rstrip(b"\n"), CID
+    )
+
+
+@pytest.mark.parametrize(
+    "stdout, stderr, cid, label",
+    [
+        (b"", b"", CID, "empty-payload"),
+        (
+            b"",
+            f"Error response from daemon: No such container: {FOREIGN_CID}\n".encode(),
+            CID,
+            "wrong-id",
+        ),
+        (
+            b"",
+            f"Error response from daemon: No such container: {CID[:63]}\n".encode(),
+            CID,
+            "short-id-payload",
+        ),
+        (b"x" + ABSENCE_ERROR_LINE, b"", CID, "embedded-prefix"),
+        (ABSENCE_ERROR_LINE.rstrip(b"\n") + b"y\n", b"", CID, "embedded-suffix"),
+        (
+            b"",
+            ABSENCE_ERROR_LINE.rstrip(b"\n") + b" (retrying)\n",
+            CID,
+            "annotated-error-line",
+        ),
+        (
+            b"",
+            f"Error: No such object: {CID}\n".encode(),
+            CID,
+            "generic-object-grammar",
+        ),
+        (
+            b"",
+            b"the log mentioned No such container: " + CID.encode() + b" in transit\n",
+            CID,
+            "arbitrary-text-contains-phrase",
+        ),
+        (
+            b"",
+            ABSENCE_ERROR_LINE + b"Error response from daemon: authorization denied\n",
+            CID,
+            "extra-error-line",
+        ),
+        (
+            b"",
+            b"Error response from daemon: Permission denied\n",
+            CID,
+            "permission-line-only",
+        ),
+        (b"", b"No such container: " + b"f" * 63 + b"\n", "f" * 63, "short-cid-argument"),
+    ],
+)
+def test_absence_parser_refuses_every_non_installed_form(
+    stdout, stderr, cid, label
+):
+    assert transport.parse_container_absence(stdout, stderr, cid) is False, label
+
+
+@pytest.mark.parametrize(
+    "stdout, stderr",
+    [
+        (b"x" + ABSENCE_ERROR_LINE, b""),
+        (ABSENCE_ERROR_LINE.rstrip(b"\n") + b"y\n", b""),
+        (
+            b"",
+            ABSENCE_ERROR_LINE.rstrip(b"\n") + b" (retrying)\n",
+        ),
+        (
+            b"",
+            b"the log mentioned No such container: " + CID.encode() + b" in transit\n",
+        ),
+        (
+            b"",
+            ABSENCE_ERROR_LINE + b"Error response from daemon: authorization denied\n",
+        ),
+    ],
+)
+def test_weak_substring_predicate_fails_these_negatives(stdout, stderr):
+    combined = stdout + stderr
+    weak = (b"No such container" in combined) and (
+        CID.encode("ascii") in combined
+    )
+    assert weak is True, "probe precondition: weak predicate would accept"
+    assert transport.parse_container_absence(stdout, stderr, CID) is False
+
+
+def test_old_no_such_object_predicate_fails_installed_protocol():
+    combined = b"" + ABSENCE_ERROR_LINE
+    old_predicate = (b"No such object" in combined) and (
+        CID.encode("ascii") in combined
+    )
+    assert old_predicate is False
+    assert not hasattr(transport, "CONTAINER_ABSENCE_MARKER")
+    assert transport.parse_container_absence(b"", combined, CID) is True
 
 
 # --------------------------------------------------------------------------
@@ -1099,3 +1264,15 @@ def test_contradictory_create_receipt_never_cleans_either_id(plan):
     owner = TransportOrchestrator(engine)
     assert owner.reconcile(plan, receipt) is receipt
     assert subcommands(engine) == ["create"]
+
+
+@pytest.mark.parametrize("raw", [
+    ABSENCE_ERROR_LINE + ABSENCE_ERROR_LINE,
+    b"[]\n[]\n" + ABSENCE_ERROR_LINE,
+    ABSENCE_ERROR_LINE + b"[]\n",
+    b"[]\n" + ABSENCE_ERROR_LINE + b"\n",
+    b"[]\r\n" + ABSENCE_ERROR_LINE,
+    b"[]\n\n" + ABSENCE_ERROR_LINE,
+])
+def test_absence_parser_rejects_duplicate_reordered_or_extra_blank_lines(raw):
+    assert not transport.parse_container_absence(raw, b"", CID)

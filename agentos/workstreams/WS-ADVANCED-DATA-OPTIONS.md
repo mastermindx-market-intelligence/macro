@@ -6,9 +6,12 @@ objective: >
   standalone anticipation and risk intelligence lobe with bounded Prophet confluence.
   Done = ranked, falsifiable, receipt-backed EOD signals with explicit no-signal/degraded
   states, production-proven per slice (AD-0…AD-15 per the committed recovery masterplan).
+  This existing knowledge-plane anchor also maps the distinct original 3D Options Research
+  Lab A–G programme: five admitted-data or honest-capability lenses, shared selection/clock/
+  evidence, saved investigation and dated deployed acceptance; the EOD programme is preserved.
 status: active
 program: options-intelligence
-repos: [macro]
+repos: [macro, terminal]
 owner: coo-fable
 class: research
 blast_radius: reversible
@@ -143,6 +146,67 @@ waves:
     status: todo
     depends_on: [AD-1]
     next_action: CLOSED until AD-1 production acceptance. Do not start.
+  - id: LAB-A
+    title: Lab A — admitted isolation and understood source baseline
+    status: done
+    next_action: >
+      Retain original programme source and accepted Terminal846/1079/1183 lineage.
+      Native workspace and installed1183 evidence are accepted for their exact scope;
+      this does not clear the original Web preflight or later browser refusals.
+  - id: LAB-B
+    title: Lab B — typed adapter, shared selection, exact 2D slice and inspector
+    status: done
+    depends_on: [LAB-A]
+    next_action: >
+      Reuse admitted Matrix consumer, null/zero and percent-IV handling, bounded exclusions,
+      root/session withdrawal, exact table and at-most-three ordered comparisons.
+      Source coordinate keys are not exchange contract IDs; missing clocks stay unknown.
+  - id: LAB-C
+    title: Lab C — lazy bounded 3D Chain renderer with exact 2D parity
+    status: done
+    depends_on: [LAB-B]
+    next_action: >
+      Reuse accepted lazy Three renderer, stable picking, framing, resource-disposal,
+      exact-slice fallback and scoped native performance evidence. Preserve original
+      performance limits and frozen9ebed955; do not infer all-hardware FPS acceptance.
+  - id: LAB-D
+    title: Lab D — admitted metrics and raw/fitted volatility
+    status: in_progress
+    depends_on: [LAB-B]
+    next_action: >
+      Raw published IV is implemented; fitted/model/quote/gamma inputs remain explicitly
+      unavailable until existing producers supply qualified units, identity and provenance.
+      Reconcile current producer contracts without vendor acquisition, invented clocks,
+      second calibration service or retry of frozen HTTP/auth review61394.
+  - id: LAB-E
+    title: Lab E — shared-clock replay, corrections and dated package evidence
+    status: todo
+    depends_on: [LAB-B]
+    next_action: >
+      Qualify a current source-only consumer seam from existing replay/archive and print
+      interfaces, retaining expiry/side/root/session, correction and availability gaps.
+      The inspected Exposure replay reducer retains strike/net exposure only and cannot
+      substitute for contract Chain frames. No second clock/store or invented package IDs.
+  - id: LAB-F
+    title: Lab F — explicit Plan assumptions, grounded assistant and saved investigation
+    status: in_progress
+    depends_on: [LAB-B]
+    next_action: >
+      Terminal1183 exact-contract shortlist/blank-Plan navigation is merged and installed;
+      retain zero Matrix transfer, pin retention and draft-clearing semantics. Actual
+      browser acceptance is held by the original extension-UI refusal. Grounded assistant
+      and entry-debit/pre-expiry consumers need existing admitted evidence/valuation;
+      Save/reopen remains the existing IW2 persistence integration, with T03k UNKNOWN held.
+  - id: LAB-G
+    title: Lab G — qualification, serialized release and real production acceptance
+    status: in_progress
+    depends_on: [LAB-C, LAB-D, LAB-E, LAB-F]
+    next_action: >
+      Preserve exact1183 fd010145 OFF installation and earlier scoped production proofs.
+      Complete remaining EN/ZH, dark/light, responsive, keyboard/zoom/reduced-motion,
+      renderer-failure, source parity and performance obligations only on lawful paths.
+      Original tab1925934589 extension-UI refusal/current custody unresolved; no retry,
+      alternate profile/carrier, synthetic production proof or reopening of closed CI.
 landmines:
   - >-
     The ThetaData Terminal license allows ONE terminal instance
@@ -218,6 +282,10 @@ next_action: >
   consumer/availability path needed by downstream Options Alpha PIT composition.
   AD-2 remains CLOSED until AD-1 production acceptance. Broken R2 sync is not an
   AD-1T2 prerequisite unless new evidence proves it necessary.
+  In parallel, import the original Lab A–G mapping through the existing supported
+  index-html-implementation buffer, preserve accepted1183 and exact held effects, and
+  consume next --explain. Start eligible source-only LAB-E contract qualification;
+  this knowledge mapping neither starts AD-2 nor grants activation/browser access.
 artifacts:
   - research/ADVANCED_DATA_OPTIONS_EOD_DARK_POOL_INTELLIGENCE_OS_MASTERPLAN_2026-08-17.md
   - research/ADVANCED_DATA_OPTIONS_EOD_AD0_CURRENT_STATE_AND_CAPABILITY_LEDGER_2026-08-17.md
@@ -255,3 +323,79 @@ coverage blocker is the T1 spine's 48-root daily refresh
 whole-year refresh with a full-universe one-session incremental maintainer —
 the ~19h full-universe estimate was a property of the whole-year re-pull
 design, not of one-day vendor throughput (Sol ruling, AD-1T1 handoff §0).
+
+
+## 3D Options Research Lab — original A–G source mapping
+
+This is a **record-location mapping**, commissioned by
+[Mastermind1842 comment6621763091](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1842#issuecomment-6621763091).
+It does not redefine the EOD programme, adopt MARKET-OS, or transfer a runtime lease.
+The original Lab root is `01a118f3-fc4e-7941-b432-03703dccd19b`; the Options
+implementation parent remains [Terminal599](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599).
+The parent owns its separate structural-adoption decision, not this subsection.
+
+### Source and accepted boundaries
+
+- [Original implementation-handoff.md, §§3–8](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/fd010145839b9f833275198c3c38bc1a825fbe46/docs/options-research-lab/implementation-handoff.original.md)
+  is the original read-model, interaction, A–G, eighteen-counterexample and acceptance ruler.
+  Its October7 execution-state prose is historical; it does not reopen accepted stages.
+- [Implementation and retained evidence](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/fd010145839b9f833275198c3c38bc1a825fbe46/docs/options-research-lab/IMPLEMENTATION.md)
+  preserves source evolution and qualified evidence with original limitations.
+- [1183 navigation evidence](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/fd010145839b9f833275198c3c38bc1a825fbe46/terminal/docs/verification/lab-plan-handoff-20261030/README.md)
+  retains 34 affected unit cases, twelve synthetic browser journeys and repair evidence.
+  Later [actual installation](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1183#issuecomment-6542876078)
+  and [Lab scoped acceptance](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1151#issuecomment-6542883161)
+  establish `PASS_SCOPED_OFF_INSTALLATION`, not authenticated Lab-to-Plan acceptance.
+- Protected Terminal `f528a219cc5d73e94e058575e3df83d689632bf9` was inspected for this mapping.
+  The Lab directory, original dossier, Hub, Plan panel and Plan draft source are unchanged
+  from accepted1183 `fd010145`; unchanged accepted checks are reused, not rerun.
+
+| Original stage/outcome | Existing interface and retained disposition | Remaining acceptance / exact hold |
+|---|---|---|
+| A: admission, isolation, baseline | Existing native workspace and original846→1079→1183 source/CI/install chain; LAB-A done | Historical Web refusal remains action-scoped; no replay to prove admission |
+| B: typed adapter, selection, 2D reference | `researchLabAdapter.ts`, `researchVolatility.ts`, `OptionsResearchLab.tsx`; LAB-B source consumer accepted | Coordinate keys remain coordinates; absent availability/OI/deliverable metadata cannot be manufactured |
+| C: Chain, lazy GPU, picking and fallback | `ResearchScene.tsx`, exact table, inspector and existing e2e; LAB-C accepted implementation | Keep bounded native resource/performance limits, original860ms tail and frozenperformance9ebed955 separate from any wider claim |
+| D: enriched metrics and Volatility | `ResearchVolatilitySlice.tsx`, host `useEodContext`, existing producer/type conventions | Raw IV only; no fitted terrain, gamma, executable quote or model comparison without qualified records. Frozen61394 review/publication/lease UNKNOWN is not replaced |
+| E: Replay/change and Flow/packages | Existing `surfaceContract.ts`, shared Surface/Replay, `exposureReplayFrames.ts`, original print/package interfaces | Current Exposure reducer drops expiry/side; no contract-frame promotion. Source-only seam qualification is eligible; archive/provider/runtime effects remain separately gated |
+| F: Scenario, assistant, saved investigation | Existing Plan draft/payoff, host zero-argument shortlist callback, existing grounding and IW2 investigation writer | Navigation installed; real browser journey unproven. Explicit assumptions/costs and admitted pre-expiry valuation required. Assistant immutable evidence binding and saved exact recovery remain obligations; Save OFF/T03k UNKNOWN |
+| G: qualifications and production | Existing test/evidence/CI/merge/serialized builder and authenticated browser path | 1183 installation accepted; original production extension UI refusal plus tab custody unresolved. No alternate browser/reader or repetitive closed-proof execution |
+
+### Invariants retained across every lens
+
+Chain, Volatility, Replay/change, Flow/packages and Scenario retain one compatible
+selection, filters, clock and evidence state. The host owns root, Matrix read/cache/stream
+and replay lifecycle. Full contract identity, time/availability/OI lineage, quantity units,
+quotes, model provenance and view/capability semantics from original§3 remain obligations,
+not browser-generated data. Unknown is not zero; observed/build time is not availability.
+One click pins; explicit comparison permits at most three ordered selections. Root/session
+or access changes withdraw incompatible data, inspector and assistant context. Table/2D
+remains exact under WebGL failure; filters disclose out-of-filter selection; scale/camera
+transforms stay named/reversible. Exact dated evidence, not a ticker alone, grounds prints
+and assistant questions. Plan is a manually chosen hypothesis, never an inferred fill.
+IW2 alone persists/reopens the investigation; no parallel pricer, clock, store or lifecycle.
+
+All eighteen original§6 counterexamples remain in scope: null/zero; IV conversion once;
+put/gamma sign; volume/OI interpretation; knowledge cutoff; OI lag; corrections; matched
+A/B universes; quote timing; package association; deliverable/multiplier; settlement/DTE;
+fit holes; model/units mismatch; GPU fallback; root-context withdrawal; one subscription;
+and entitlement withdrawal. Historical test results are not blanket acceptance of these
+obligations against new inputs. Preserve actual 1440×900/820×1180/390×844/320 evidence,
+dark/light and EN/ZH art direction, keyboard/touch, 200% zoom, reduced motion, exact
+real-data parity, 1K/5K/20K performance and bounded idle/resource evidence from original§7.
+
+### Scoped held effects and next independent action
+
+The original [production extension-UI refusal](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1182#issuecomment-6540385685)
+remains held. [Bounded diagnosis](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1151#issuecomment-6566948869)
+is not clearance, owner transfer or a global prohibition. Preserve review61394/no verdict,
+publication/lease UNKNOWN, T03k UNKNOWN, test-export destination refusal, OCC403/MDM and
+other retained denials; no retry/replacement/alternate carrier. Chairman commercial Theta
+rights attestation is approved; actual enrollment and authenticated use remain separate.
+
+The next independent original-plan action is LAB-E **source-only** qualification of a
+lossless existing replay/archive-to-Lab interface: enumerate supplied identity/time fields,
+falsify any strike-only promotion, and identify the exact existing read seam. Do not add
+an endpoint, issue a provider read, replay a publisher, invent a clock or enable a lens.
+Then bind and consume the supported task selector against this mapping, preserving seed,
+accepted work and exact blocked effects. MMOS owns the composite-binding CLI; do not
+implement a substitute or hand-edit TASKS.json. A task-buffer result is not runtime grant.

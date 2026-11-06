@@ -595,10 +595,15 @@ def test_existing_parser_and_encoding_policies_match_for_identical_complete_byte
     put(tmp_path, CLAIMS_REL, raw)
     put(tmp_path, "data/qledger/grades.jsonl", b"")
     put(tmp_path, "data/qledger/falsifier_evaluations.jsonl", b'{"claim_id":"valid","outcome":"CONFIRMED"}\n')
-    # Preserve the tracked reader's exact legacy text contract without Git fallback.
-    def tracked(root, relative):
-        return (root / relative).read_text(encoding="utf-8"), "fixture-legacy"
-    monkeypatch.setattr(registry, "read_tracked", tracked)
+    # Compare the parser on identical complete bytes, deliberately excluding
+    # legacy Git fallback. The loader now streams; patch that transport seam,
+    # not the obsolete whole-text callback. Actual fallback parity is covered
+    # in test_qledger_remaining_reader_compatibility.
+    def strict_legacy(root):
+        import io
+        text = (root / CLAIMS_REL).read_text(encoding="utf-8")
+        return registry._summarise_qledger(io.StringIO(text), "fixture-legacy")[0]
+    monkeypatch.setattr(registry, "_load_legacy_qledger", strict_legacy)
     legacy = outcome(lambda: read_policy(name, tmp_path))
     binding = FixtureBinding(tmp_path, limits, raw, tail=None)
     with bound(binding):
@@ -632,7 +637,9 @@ def test_legacy_missing_and_registry_null_contracts_are_unchanged(tmp_path, monk
     assert "logical_snapshot_complete" not in row
     marker = "fixture:legacy-unreadable"
     callback = Mock(return_value=(None, marker))
-    monkeypatch.setattr(registry, "read_tracked", callback)
+    monkeypatch.setattr(registry, "_READ_CACHE", {})
+    monkeypatch.setattr(registry, "_read_tracked_uncached", callback)
+    registry.read_tracked(tmp_path, registry.CLAIMS_REL)
     result = registry._load_qledger(tmp_path)
     assert result.rows is result.horizons is None and result.source == marker
     callback.assert_called_once_with(tmp_path, registry.CLAIMS_REL)

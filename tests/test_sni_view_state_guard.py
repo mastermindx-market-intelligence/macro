@@ -561,8 +561,9 @@ def test_a31_issuer_trailing_space():
     before = _base()
     after = _after(before, issuer_id=ISSUER_ID + " ")
     verdict = check_view_transition(before, after, change=None)
-    _assert_refused(verdict, "ISSUER_CHANGED")
-    assert verdict.changed_axes == ("issuer_id",)
+    # FAMILY TEXT RULE v2: a padded id is ABSENT, never a different valid id.
+    _assert_only(verdict, "FIELD_MISSING")
+    assert verdict.changed_axes == ()
 
 
 def test_a31_issuer_case_mismatch():
@@ -588,8 +589,9 @@ def test_a31_counter_trailing_space():
     before = _base()
     after = _after(before, counter_id=COUNTER_ID + " ")
     verdict = check_view_transition(before, after, change=None)
-    _assert_refused(verdict, "COUNTER_CHANGED")
-    assert verdict.changed_axes == ("counter_id",)
+    # FAMILY TEXT RULE v2: a padded id is ABSENT, never a different valid id.
+    _assert_only(verdict, "FIELD_MISSING")
+    assert verdict.changed_axes == ()
 
 
 def test_a31_counter_case_mismatch():
@@ -635,7 +637,9 @@ def test_a31_lang_trailing_space_unknown():
     before = _base()
     after = _after(before, lang="en ")
     verdict = check_view_transition(before, after, change="lang")
-    _assert_only(verdict, "LANG_UNKNOWN")
+    # FAMILY TEXT RULE v2: a padded lang is ABSENT as well as unknown.
+    _assert_refused(verdict, "FIELD_MISSING", "LANG_UNKNOWN")
+    assert verdict.reasons == ("FIELD_MISSING", "LANG_UNKNOWN")
 
 
 def test_a31_viewport_case_unknown():

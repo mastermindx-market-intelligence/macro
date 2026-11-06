@@ -53,6 +53,7 @@ __all__ = [
     "build_start_argv",
     "build_stop_argv",
     "collect_process",
+    "parse_container_absence",
     "parse_container_id",
 ]
 
@@ -84,7 +85,15 @@ INSPECT_DEADLINE_SECONDS = 30.0
 _TMPFS_MOUNT = "/tmp"
 _TMPFS_MODE = "rw,noexec,nosuid"
 
-CONTAINER_ABSENCE_MARKER = b"No such object"
+# Closed installed absence grammar for the container-specific inspect path.
+# Captured read-only from the admitted host interface (docker CLI 29.1.3,
+# `inspect --type container <missing full id>`): rc 1, known empty JSON
+# stdout "[]", and the single retained daemon error line below.  The generic
+# autodetect "No such object" form is a different protocol and is refused.
+CONTAINER_ABSENCE_STDOUT_LINE = b"[]"
+CONTAINER_ABSENCE_ERROR_LINE_PREFIX = (
+    "Error response from daemon: No such container: "
+)
 
 _CONTAINER_ID_RE = re.compile(r"\A[0-9a-f]{64}\Z")
 _OPERATION_ID_RE = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\Z")
@@ -271,6 +280,30 @@ def parse_container_id(stdout: object) -> Optional[str]:
     if _CONTAINER_ID_RE.fullmatch(stripped) is None:
         return None
     return stripped
+
+
+def parse_container_absence(stdout: object, stderr: object, cid: object) -> bool:
+    """Decide container-specific absence with the closed installed grammar.
+
+    Accepts only the exact retained daemon error line for this exact full
+    64-hex id -- ``Error response from daemon: No such container: <cid>`` --
+    plus at most the known empty JSON stdout ``[]``.  Any other line, wrong
+    id, embedded or partial id, generic ``No such object`` text, extra error
+    payload or permission text is refused.  Retained bytes are only split on
+    newlines for matching; they are never normalized or re-stamped.
+    """
+    if type(stdout) is not bytes or type(stderr) is not bytes:
+        return False
+    if type(cid) is not str or _CONTAINER_ID_RE.fullmatch(cid) is None:
+        return False
+    error_line = (CONTAINER_ABSENCE_ERROR_LINE_PREFIX + cid).encode("ascii")
+    lines = (stdout + stderr).split(b"\n")
+    if lines and lines[-1] == b"":
+        lines.pop()
+    # The installed container-specific command emits one error, optionally
+    # preceded by its one empty-JSON stdout line.  Repeated or reordered
+    # lines are a different/contradictory control response, never absence.
+    return lines in ([error_line], [CONTAINER_ABSENCE_STDOUT_LINE, error_line])
 
 
 # --------------------------------------------------------------------------
@@ -760,8 +793,7 @@ class TransportOrchestrator:
                   and not inspected.timed_out and not inspected.output_truncated
                   and inspected.observed_container_id in (None, cid)
                   and inspected.returncode == 1
-                  and CONTAINER_ABSENCE_MARKER in (inspected.stdout + inspected.stderr)
-                  and cid.encode("ascii") in (inspected.stdout + inspected.stderr))
+                  and parse_container_absence(inspected.stdout, inspected.stderr, cid))
         complete = (stop_ok or kill_ok) and remove_ok and absent
         failures = []
         if not (stop_ok or kill_ok): failures.append("stop/kill state unknown: " + (kill_problem or "nonzero or unconfirmed"))
