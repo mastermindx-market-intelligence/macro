@@ -165,12 +165,12 @@ def test_release_radar_fetch_targets_correct_path():
 
 
 def test_release_radar_fetch_uses_no_cache():
-    """On-demand runtime preserves the house no-cache release-data fetch."""
+    """On-demand runtime preserves the accepted no-store forecast refresh."""
     runtime = (ROOT / "templates" / "release_radar.js").read_text(encoding="utf-8")
     idx = runtime.find("release_forecast.json")
     assert idx >= 0
     nearby = runtime[max(0, idx-60):idx+100]
-    assert "no-cache" in nearby
+    assert "no-store" in nearby
 
 
 def test_release_radar_footnote_bilingual():
@@ -281,6 +281,9 @@ def test_r40_combined_basis_honesty_copy_reaches_render_and_generated_macro():
         assert "Blend of '+esc(combNStr)+' inputs" in surface
         assert "Blend of '+esc(combNStr)+' models" not in surface
 
+
+
+_FIXTURE_PATH = ROOT / "site" / "macrodata" / "release_forecast_fixture_v2.json"
 
 
 def _rr_section_src() -> str:
@@ -623,3 +626,15 @@ def test_fixture_confidence_components_v2_weights_sum_to_one():
             f"confidence_components_v2 weights sum to {total}, expected 1.0 "
             f"for release={item.get('release')}"
         )
+
+
+def test_release_radar_loader_content_stamp_matches_the_shipped_runtime():
+    """An intra-day runtime change must invalidate the dynamic immutable URL."""
+    import hashlib
+
+    source = (ROOT / "templates" / "release_radar.js").read_bytes()
+    shipped = (ROOT / "site" / "release_radar.js").read_bytes()
+    template = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    assert shipped == source
+    version = hashlib.sha256(source).hexdigest()[:8]
+    assert f"release_radar.js?v={version}" in template

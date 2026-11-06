@@ -1,0 +1,1227 @@
+{
+  "max_abs_diff_macd": 8.526512829121202e-14,
+  "max_abs_diff_signal": 7.860379014346108e-14,
+  "cross_count_canon": 415,
+  "cross_count_pine": 415,
+  "cross_date_mismatches": 0,
+  "bars3d_canon": 1069,
+  "bars3d_manual": 1069,
+  "bars3d_mismatches": 1069,
+  "bars2d_canon": 1604,
+  "bars2d_manual": 1604,
+  "bars2d_mismatches": 1603,
+  "served_vs_canon": {
+    "note": "Served path is engine.technicals.rsi (ewm alpha=1/n, min_periods=n, adjust=True default; engine/technicals.py:26-31) plus pandas ewm(span, min_periods=span) default adjust=True (engine/signal_quality.py:68-75; engine/confluence_tiers.py:255-262). 3D grid is engine.signal_quality._tf_grid (engine/signal_quality.py:109-156, called at :176-184). No module on the gate path imports engine.canon.",
+    "spy_daily": {
+      "n": 8477,
+      "first": "1993-01-29",
+      "last": "2026-10-02",
+      "max_abs_diff_macd_after_400": 3.21159730347631e-05,
+      "max_abs_diff_signal_after_400": 3.167919552460319e-05,
+      "n_compared_macd_after_400": 8077,
+      "n_compared_signal_after_400": 8077,
+      "max_abs_diff_macd_full": 0.5931894460276439,
+      "max_abs_diff_signal_full": 0.5644622446347958,
+      "n_compared_macd_full": 8404,
+      "n_compared_signal_full": 8400,
+      "max_abs_diff_macd_first_400": 0.5931894460276439,
+      "max_abs_diff_signal_first_400": 0.5644622446347958,
+      "n_compared_macd_first_400": 327,
+      "cross_count_canon_full": 435,
+      "cross_count_served_full": 435,
+      "cross_date_mismatches_full": 0,
+      "cross_count_canon_after_400": 415,
+      "cross_count_served_after_400": 415,
+      "cross_date_mismatches_after_400": 0
+    },
+    "spy_3d_tf_grid": {
+      "n": 2828,
+      "first": "1993-01-29",
+      "last": "2026-09-30",
+      "max_abs_diff_macd_after_400": 3.3715458975791535e-05,
+      "max_abs_diff_signal_after_400": 3.7733401444972614e-05,
+      "n_compared_macd_after_400": 2428,
+      "n_compared_signal_after_400": 2428,
+      "max_abs_diff_macd_full": 1.0758870114828554,
+      "max_abs_diff_signal_full": 0.9335089972416633,
+      "n_compared_macd_full": 2755,
+      "n_compared_signal_full": 2751,
+      "max_abs_diff_macd_first_400": 1.0758870114828554,
+      "max_abs_diff_signal_first_400": 0.9335089972416633,
+      "n_compared_macd_first_400": 327,
+      "cross_count_canon_full": 142,
+      "cross_count_served_full": 142,
+      "cross_date_mismatches_full": 2,
+      "cross_count_canon_after_400": 126,
+      "cross_count_served_after_400": 126,
+      "cross_date_mismatches_after_400": 0
+    },
+    "per_ticker_3d_tf_grid": [
+      {
+        "n": 1069,
+        "first": "2014-01-02",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": 1.2386290478616502e-05,
+        "max_abs_diff_signal_after_400": 1.2025975887119955e-05,
+        "n_compared_macd_after_400": 669,
+        "n_compared_signal_after_400": 669,
+        "max_abs_diff_macd_full": 1.083166442699806,
+        "max_abs_diff_signal_full": 1.2104857579481574,
+        "n_compared_macd_full": 996,
+        "n_compared_signal_full": 992,
+        "max_abs_diff_macd_first_400": 1.083166442699806,
+        "max_abs_diff_signal_first_400": 1.2104857579481574,
+        "n_compared_macd_first_400": 327,
+        "cross_count_canon_full": 47,
+        "cross_count_served_full": 47,
+        "cross_date_mismatches_full": 0,
+        "cross_count_canon_after_400": 30,
+        "cross_count_served_after_400": 30,
+        "cross_date_mismatches_after_400": 0,
+        "ticker": "A",
+        "daily_rows": 3207,
+        "tf_grid_bars": 1069
+      },
+      {
+        "n": 29,
+        "first": "2026-06-03",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": null,
+        "max_abs_diff_signal_after_400": null,
+        "n_compared_macd_after_400": 0,
+        "n_compared_signal_after_400": 0,
+        "max_abs_diff_macd_full": null,
+        "max_abs_diff_signal_full": null,
+        "n_compared_macd_full": 0,
+        "n_compared_signal_full": 0,
+        "max_abs_diff_macd_first_400": null,
+        "max_abs_diff_signal_first_400": null,
+        "n_compared_macd_first_400": 0,
+        "cross_count_canon_full": 0,
+        "cross_count_served_full": 0,
+        "cross_date_mismatches_full": 0,
+        "cross_count_canon_after_400": null,
+        "cross_count_served_after_400": null,
+        "cross_date_mismatches_after_400": null,
+        "ticker": "AADX",
+        "daily_rows": 85,
+        "tf_grid_bars": 29
+      },
+      {
+        "n": 1069,
+        "first": "2014-01-02",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": 0.00013335247476931045,
+        "max_abs_diff_signal_after_400": 0.0001424759025442368,
+        "n_compared_macd_after_400": 669,
+        "n_compared_signal_after_400": 669,
+        "max_abs_diff_macd_full": 5.546484234167025,
+        "max_abs_diff_signal_full": 5.417136587664319,
+        "n_compared_macd_full": 996,
+        "n_compared_signal_full": 992,
+        "max_abs_diff_macd_first_400": 5.546484234167025,
+        "max_abs_diff_signal_first_400": 5.417136587664319,
+        "n_compared_macd_first_400": 327,
+        "cross_count_canon_full": 45,
+        "cross_count_served_full": 44,
+        "cross_date_mismatches_full": 1,
+        "cross_count_canon_after_400": 31,
+        "cross_count_served_after_400": 31,
+        "cross_date_mismatches_after_400": 0,
+        "ticker": "AAL",
+        "daily_rows": 3207,
+        "tf_grid_bars": 1069
+      },
+      {
+        "n": 1005,
+        "first": "2014-10-09",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": 9.918832985533754e-05,
+        "max_abs_diff_signal_after_400": 0.00010541828302290668,
+        "n_compared_macd_after_400": 605,
+        "n_compared_signal_after_400": 605,
+        "max_abs_diff_macd_full": 3.885357504989855,
+        "max_abs_diff_signal_full": 3.77431295411648,
+        "n_compared_macd_full": 932,
+        "n_compared_signal_full": 928,
+        "max_abs_diff_macd_first_400": 3.885357504989855,
+        "max_abs_diff_signal_first_400": 3.77431295411648,
+        "n_compared_macd_first_400": 327,
+        "cross_count_canon_full": 45,
+        "cross_count_served_full": 45,
+        "cross_date_mismatches_full": 2,
+        "cross_count_canon_after_400": 29,
+        "cross_count_served_after_400": 29,
+        "cross_date_mismatches_after_400": 0,
+        "ticker": "AAMI",
+        "daily_rows": 3013,
+        "tf_grid_bars": 1005
+      },
+      {
+        "n": 1069,
+        "first": "2014-01-02",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": 9.01375595745435e-05,
+        "max_abs_diff_signal_after_400": 9.390692808963763e-05,
+        "n_compared_macd_after_400": 669,
+        "n_compared_signal_after_400": 669,
+        "max_abs_diff_macd_full": 4.912685795073607,
+        "max_abs_diff_signal_full": 4.619130624709332,
+        "n_compared_macd_full": 996,
+        "n_compared_signal_full": 992,
+        "max_abs_diff_macd_first_400": 4.912685795073607,
+        "max_abs_diff_signal_first_400": 4.619130624709332,
+        "n_compared_macd_first_400": 327,
+        "cross_count_canon_full": 48,
+        "cross_count_served_full": 48,
+        "cross_date_mismatches_full": 0,
+        "cross_count_canon_after_400": 33,
+        "cross_count_served_after_400": 33,
+        "cross_date_mismatches_after_400": 0,
+        "ticker": "AAOI",
+        "daily_rows": 3207,
+        "tf_grid_bars": 1069
+      },
+      {
+        "n": 1069,
+        "first": "2014-01-02",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": 2.5446850628441098e-05,
+        "max_abs_diff_signal_after_400": 2.8411328832689264e-05,
+        "n_compared_macd_after_400": 669,
+        "n_compared_signal_after_400": 669,
+        "max_abs_diff_macd_full": 2.236705727423839,
+        "max_abs_diff_signal_full": 2.0407386833805257,
+        "n_compared_macd_full": 996,
+        "n_compared_signal_full": 992,
+        "max_abs_diff_macd_first_400": 2.236705727423839,
+        "max_abs_diff_signal_first_400": 2.0407386833805257,
+        "n_compared_macd_first_400": 327,
+        "cross_count_canon_full": 41,
+        "cross_count_served_full": 41,
+        "cross_date_mismatches_full": 0,
+        "cross_count_canon_after_400": 30,
+        "cross_count_served_after_400": 30,
+        "cross_date_mismatches_after_400": 0,
+        "ticker": "AAP",
+        "daily_rows": 3207,
+        "tf_grid_bars": 1069
+      },
+      {
+        "n": 1069,
+        "first": "2014-01-02",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": 5.860023924952884e-05,
+        "max_abs_diff_signal_after_400": 6.250484666026068e-05,
+        "n_compared_macd_after_400": 669,
+        "n_compared_signal_after_400": 669,
+        "max_abs_diff_macd_full": 3.279781016395134,
+        "max_abs_diff_signal_full": 2.939487216476104,
+        "n_compared_macd_full": 996,
+        "n_compared_signal_full": 992,
+        "max_abs_diff_macd_first_400": 3.279781016395134,
+        "max_abs_diff_signal_first_400": 2.939487216476104,
+        "n_compared_macd_first_400": 327,
+        "cross_count_canon_full": 46,
+        "cross_count_served_full": 47,
+        "cross_date_mismatches_full": 5,
+        "cross_count_canon_after_400": 28,
+        "cross_count_served_after_400": 28,
+        "cross_date_mismatches_after_400": 0,
+        "ticker": "AAPL",
+        "daily_rows": 3207,
+        "tf_grid_bars": 1069
+      },
+      {
+        "n": 137,
+        "first": "2025-02-13",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": null,
+        "max_abs_diff_signal_after_400": null,
+        "n_compared_macd_after_400": 0,
+        "n_compared_signal_after_400": 0,
+        "max_abs_diff_macd_full": 6.032256731316146,
+        "max_abs_diff_signal_full": 5.551221113324129,
+        "n_compared_macd_full": 64,
+        "n_compared_signal_full": 60,
+        "max_abs_diff_macd_first_400": 6.032256731316146,
+        "max_abs_diff_signal_first_400": 5.551221113324129,
+        "n_compared_macd_first_400": 64,
+        "cross_count_canon_full": 2,
+        "cross_count_served_full": 2,
+        "cross_date_mismatches_full": 2,
+        "cross_count_canon_after_400": null,
+        "cross_count_served_after_400": null,
+        "cross_date_mismatches_after_400": null,
+        "ticker": "AARD",
+        "daily_rows": 411,
+        "tf_grid_bars": 137
+      },
+      {
+        "n": 1069,
+        "first": "2014-01-02",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": 1.0025214727704679e-05,
+        "max_abs_diff_signal_after_400": 9.31732728082224e-06,
+        "n_compared_macd_after_400": 669,
+        "n_compared_signal_after_400": 669,
+        "max_abs_diff_macd_full": 0.7077415757315748,
+        "max_abs_diff_signal_full": 0.6888869240575772,
+        "n_compared_macd_full": 996,
+        "n_compared_signal_full": 992,
+        "max_abs_diff_macd_first_400": 0.7077415757315748,
+        "max_abs_diff_signal_first_400": 0.6888869240575772,
+        "n_compared_macd_first_400": 327,
+        "cross_count_canon_full": 50,
+        "cross_count_served_full": 50,
+        "cross_date_mismatches_full": 2,
+        "cross_count_canon_after_400": 34,
+        "cross_count_served_after_400": 34,
+        "cross_date_mismatches_after_400": 0,
+        "ticker": "AAT",
+        "daily_rows": 3207,
+        "tf_grid_bars": 1069
+      },
+      {
+        "n": 890,
+        "first": "2016-02-24",
+        "last": "2026-09-30",
+        "max_abs_diff_macd_after_400": 8.796373456476658e-05,
+        "max_abs_diff_signal_after_400": 9.552545799262901e-05,
+        "n_compared_macd_after_400": 490,
+        "n_compared_signal_after_400": 490,
+        "max_abs_diff_macd_full": 5.9621362390643995,
+        "max_abs_diff_signal_full": 5.841156337270839,
+        "n_compared_macd_full": 817,
+        "n_compared_signal_full": 813,
+        "max_abs_diff_macd_first_400": 5.9621362390643995,
+        "max_abs_diff_signal_first_400": 5.841156337270839,
+        "n_compared_macd_first_400": 327,
+        "cross_count_canon_full": 39,
+        "cross_count_served_full": 37,
+        "cross_date_mismatches_full": 6,
+        "cross_count_canon_after_400": 22,
+        "cross_count_served_after_400": 22,
+        "cross_date_mismatches_after_400": 0,
+        "ticker": "ABAT",
+        "daily_rows": 2668,
+        "tf_grid_bars": 890
+      }
+    ]
+  },
+  "max_abs_diff_macd_date": "2006-11-16",
+  "max_abs_diff_signal_date": "2006-11-20",
+  "n_compared_macd": 8077,
+  "n_compared_signal": 8077,
+  "warmup_sessions_skipped": 400,
+  "spy_sessions": 8477,
+  "spy_first": "1993-01-29",
+  "spy_last": "2026-10-02",
+  "cross_count_canon_full_series": 435,
+  "cross_count_pine_full_series": 439,
+  "cross_dates_only_canon": [],
+  "cross_dates_only_pine": [],
+  "agree_to_1e-6": true,
+  "ema_rma_explanation": "engine.canon.ema is pandas ewm(span, adjust=False, min_periods=span) (engine/canon.py:343-350), so the first `span` RSI bars of each EMA are NaN in the output even though the recursive state is running. Pine EMA here seeds with the first finite value and emits from that bar (no min_periods). engine.canon.rma SMA-seeds on the first n finite values then recurses with alpha=1/n and carries the previous value through a NaN (engine/canon.py:311-340); the Pine RMA in code/pine_rsi_macd.py matches that seed. engine.canon.rsi is RMA(gain)/RMA(loss) with those RMAs (engine/canon.py:353-362). A residual after session 400, if any, is therefore EMA min_periods / seed-bar disagreement decaying as (1-alpha)^t, not a different RSI formula. Pine RMA (code/pine_rsi_macd.py) is ta.sma of the first n finite values then (src+(n-1)*prev)/n \u2014 not a transcription of engine.canon.rma's loop. Production board code does NOT call engine.canon.rsi_macd: scripts/build_stock_library.py:234,3745 -> engine/signal_gate.py:65-67,379,468 -> engine/signal_quality.py:68-75 and engine/confluence_tiers.py:255-262 use engine.technicals.rsi (ewm alpha=1/n, min_periods=n; engine/technicals.py:26-31) and pandas ewm default adjust=True.",
+  "bar_source": "data/baskets/ohlcv first 10 names alphabetically (no SPY OHLCV)",
+  "bar_tickers": [
+    "A",
+    "AADX",
+    "AAL",
+    "AAMI",
+    "AAOI",
+    "AAP",
+    "AAPL",
+    "AARD",
+    "AAT",
+    "ABAT"
+  ],
+  "bars3d_mismatches_open_label": 0,
+  "bars3d_first_three_mismatches": [
+    {
+      "i": 0,
+      "canon_date": "2014-01-02",
+      "canon_close": 36.510986328125,
+      "manual_date": "2014-01-06",
+      "manual_close": 36.510986328125
+    },
+    {
+      "i": 1,
+      "canon_date": "2014-01-07",
+      "canon_close": 37.65196228027344,
+      "manual_date": "2014-01-09",
+      "manual_close": 37.65196228027344
+    },
+    {
+      "i": 2,
+      "canon_date": "2014-01-10",
+      "canon_close": 38.59954071044922,
+      "manual_date": "2014-01-14",
+      "manual_close": 38.59954071044922
+    }
+  ],
+  "bars2d_mismatches_open_label": 0,
+  "bars2d_first_three_mismatches": [
+    {
+      "i": 0,
+      "canon_date": "2014-01-02",
+      "canon_close": 36.69148254394531,
+      "manual_date": "2014-01-03",
+      "manual_close": 36.69148254394531
+    },
+    {
+      "i": 1,
+      "canon_date": "2014-01-06",
+      "canon_close": 37.03312301635742,
+      "manual_date": "2014-01-07",
+      "manual_close": 37.03312301635742
+    },
+    {
+      "i": 2,
+      "canon_date": "2014-01-08",
+      "canon_close": 37.65196228027344,
+      "manual_date": "2014-01-09",
+      "manual_close": 37.65196228027344
+    }
+  ],
+  "derive_drops_trailing_incomplete_bucket": false,
+  "derive_date_label": "open (first finite-close session); engine/bar_derive.py:270-285",
+  "manual_spec_date_label": "last session date (A1 spec)",
+  "per_ticker": [
+    {
+      "ticker": "A",
+      "rows": 3207,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 1069,
+        "bars_manual_last_date": 1069,
+        "bars_manual_open_date": 1069,
+        "mismatches_last_date": 1069,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 36.510986328125,
+            "manual_date": "2014-01-06",
+            "manual_close": 36.510986328125
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-07",
+            "canon_close": 37.65196228027344,
+            "manual_date": "2014-01-09",
+            "manual_close": 37.65196228027344
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-10",
+            "canon_close": 38.59954071044922,
+            "manual_date": "2014-01-14",
+            "manual_close": 38.59954071044922
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 1604,
+        "bars_manual_last_date": 1604,
+        "bars_manual_open_date": 1604,
+        "mismatches_last_date": 1603,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 36.69148254394531,
+            "manual_date": "2014-01-03",
+            "manual_close": 36.69148254394531
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-06",
+            "canon_close": 37.03312301635742,
+            "manual_date": "2014-01-07",
+            "manual_close": 37.03312301635742
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-08",
+            "canon_close": 37.65196228027344,
+            "manual_date": "2014-01-09",
+            "manual_close": 37.65196228027344
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    },
+    {
+      "ticker": "AADX",
+      "rows": 85,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 29,
+        "bars_manual_last_date": 29,
+        "bars_manual_open_date": 29,
+        "mismatches_last_date": 28,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 1,
+            "canon_date": "2026-06-04",
+            "canon_close": 19.219999313354492,
+            "manual_date": "2026-06-08",
+            "manual_close": 19.219999313354492
+          },
+          {
+            "i": 2,
+            "canon_date": "2026-06-09",
+            "canon_close": 22.09000015258789,
+            "manual_date": "2026-06-11",
+            "manual_close": 22.09000015258789
+          },
+          {
+            "i": 3,
+            "canon_date": "2026-06-12",
+            "canon_close": 22.1299991607666,
+            "manual_date": "2026-06-16",
+            "manual_close": 22.1299991607666
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 43,
+        "bars_manual_last_date": 43,
+        "bars_manual_open_date": 43,
+        "mismatches_last_date": 42,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2026-06-03",
+            "canon_close": 18.600000381469727,
+            "manual_date": "2026-06-04",
+            "manual_close": 18.600000381469727
+          },
+          {
+            "i": 1,
+            "canon_date": "2026-06-05",
+            "canon_close": 19.219999313354492,
+            "manual_date": "2026-06-08",
+            "manual_close": 19.219999313354492
+          },
+          {
+            "i": 2,
+            "canon_date": "2026-06-09",
+            "canon_close": 18.40999984741211,
+            "manual_date": "2026-06-10",
+            "manual_close": 18.40999984741211
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    },
+    {
+      "ticker": "AAL",
+      "rows": 3207,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 1069,
+        "bars_manual_last_date": 1069,
+        "bars_manual_open_date": 1069,
+        "mismatches_last_date": 1069,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 25.482297897338867,
+            "manual_date": "2014-01-06",
+            "manual_close": 25.482297897338867
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-07",
+            "canon_close": 27.735448837280273,
+            "manual_date": "2014-01-09",
+            "manual_close": 27.735448837280273
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-10",
+            "canon_close": 27.216947555541992,
+            "manual_date": "2014-01-14",
+            "manual_close": 27.216947555541992
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 1604,
+        "bars_manual_last_date": 1604,
+        "bars_manual_open_date": 1604,
+        "mismatches_last_date": 1603,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 25.02035903930664,
+            "manual_date": "2014-01-03",
+            "manual_close": 25.02035903930664
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-06",
+            "canon_close": 25.369173049926758,
+            "manual_date": "2014-01-07",
+            "manual_close": 25.369173049926758
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-08",
+            "canon_close": 27.735448837280273,
+            "manual_date": "2014-01-09",
+            "manual_close": 27.735448837280273
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    },
+    {
+      "ticker": "AAMI",
+      "rows": 3013,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 1005,
+        "bars_manual_last_date": 1005,
+        "bars_manual_open_date": 1005,
+        "mismatches_last_date": 1004,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 1,
+            "canon_date": "2014-10-10",
+            "canon_close": 12.80592155456543,
+            "manual_date": "2014-10-14",
+            "manual_close": 12.80592155456543
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-10-15",
+            "canon_close": 12.769331932067871,
+            "manual_date": "2014-10-17",
+            "manual_close": 12.769331932067871
+          },
+          {
+            "i": 3,
+            "canon_date": "2014-10-20",
+            "canon_close": 13.446213722229004,
+            "manual_date": "2014-10-22",
+            "manual_close": 13.446213722229004
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 1507,
+        "bars_manual_last_date": 1507,
+        "bars_manual_open_date": 1507,
+        "mismatches_last_date": 1506,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-10-09",
+            "canon_close": 12.687006950378418,
+            "manual_date": "2014-10-10",
+            "manual_close": 12.687006950378418
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-10-13",
+            "canon_close": 12.80592155456543,
+            "manual_date": "2014-10-14",
+            "manual_close": 12.80592155456543
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-10-15",
+            "canon_close": 12.723596572875977,
+            "manual_date": "2014-10-16",
+            "manual_close": 12.723596572875977
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    },
+    {
+      "ticker": "AAOI",
+      "rows": 3207,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 1069,
+        "bars_manual_last_date": 1069,
+        "bars_manual_open_date": 1069,
+        "mismatches_last_date": 1069,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 14.329999923706055,
+            "manual_date": "2014-01-06",
+            "manual_close": 14.329999923706055
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-07",
+            "canon_close": 14.15999984741211,
+            "manual_date": "2014-01-09",
+            "manual_close": 14.15999984741211
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-10",
+            "canon_close": 13.880000114440918,
+            "manual_date": "2014-01-14",
+            "manual_close": 13.880000114440918
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 1604,
+        "bars_manual_last_date": 1604,
+        "bars_manual_open_date": 1604,
+        "mismatches_last_date": 1603,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 14.350000381469727,
+            "manual_date": "2014-01-03",
+            "manual_close": 14.350000381469727
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-06",
+            "canon_close": 14.739999771118164,
+            "manual_date": "2014-01-07",
+            "manual_close": 14.739999771118164
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-08",
+            "canon_close": 14.15999984741211,
+            "manual_date": "2014-01-09",
+            "manual_close": 14.15999984741211
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    },
+    {
+      "ticker": "AAP",
+      "rows": 3207,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 1069,
+        "bars_manual_last_date": 1069,
+        "bars_manual_open_date": 1069,
+        "mismatches_last_date": 1069,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 96.7026138305664,
+            "manual_date": "2014-01-06",
+            "manual_close": 96.7026138305664
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-07",
+            "canon_close": 98.21629333496094,
+            "manual_date": "2014-01-09",
+            "manual_close": 98.21629333496094
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-10",
+            "canon_close": 101.71939849853516,
+            "manual_date": "2014-01-14",
+            "manual_close": 101.71939849853516
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 1604,
+        "bars_manual_last_date": 1604,
+        "bars_manual_open_date": 1604,
+        "mismatches_last_date": 1603,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 97.63677215576172,
+            "manual_date": "2014-01-03",
+            "manual_close": 97.63677215576172
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-06",
+            "canon_close": 97.89628601074219,
+            "manual_date": "2014-01-07",
+            "manual_close": 97.89628601074219
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-08",
+            "canon_close": 98.21629333496094,
+            "manual_date": "2014-01-09",
+            "manual_close": 98.21629333496094
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    },
+    {
+      "ticker": "AAPL",
+      "rows": 3207,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 1069,
+        "bars_manual_last_date": 1069,
+        "bars_manual_open_date": 1069,
+        "mismatches_last_date": 1069,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 16.825542449951172,
+            "manual_date": "2014-01-06",
+            "manual_close": 16.825542449951172
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-07",
+            "canon_close": 16.596324920654297,
+            "manual_date": "2014-01-09",
+            "manual_close": 16.596324920654297
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-10",
+            "canon_close": 16.90163803100586,
+            "manual_date": "2014-01-14",
+            "manual_close": 16.90163803100586
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 1604,
+        "bars_manual_last_date": 1604,
+        "bars_manual_open_date": 1604,
+        "mismatches_last_date": 1603,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 16.734289169311523,
+            "manual_date": "2014-01-03",
+            "manual_close": 16.734289169311523
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-06",
+            "canon_close": 16.705211639404297,
+            "manual_date": "2014-01-07",
+            "manual_close": 16.705211639404297
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-08",
+            "canon_close": 16.596324920654297,
+            "manual_date": "2014-01-09",
+            "manual_close": 16.596324920654297
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    },
+    {
+      "ticker": "AARD",
+      "rows": 411,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 137,
+        "bars_manual_last_date": 137,
+        "bars_manual_open_date": 137,
+        "mismatches_last_date": 137,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2025-02-13",
+            "canon_close": 13.5600004196167,
+            "manual_date": "2025-02-18",
+            "manual_close": 13.5600004196167
+          },
+          {
+            "i": 1,
+            "canon_date": "2025-02-19",
+            "canon_close": 13.739999771118164,
+            "manual_date": "2025-02-21",
+            "manual_close": 13.739999771118164
+          },
+          {
+            "i": 2,
+            "canon_date": "2025-02-24",
+            "canon_close": 13.109999656677246,
+            "manual_date": "2025-02-26",
+            "manual_close": 13.109999656677246
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 206,
+        "bars_manual_last_date": 206,
+        "bars_manual_open_date": 206,
+        "mismatches_last_date": 205,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2025-02-13",
+            "canon_close": 13.300000190734863,
+            "manual_date": "2025-02-14",
+            "manual_close": 13.300000190734863
+          },
+          {
+            "i": 1,
+            "canon_date": "2025-02-18",
+            "canon_close": 14.899999618530273,
+            "manual_date": "2025-02-19",
+            "manual_close": 14.899999618530273
+          },
+          {
+            "i": 2,
+            "canon_date": "2025-02-20",
+            "canon_close": 13.739999771118164,
+            "manual_date": "2025-02-21",
+            "manual_close": 13.739999771118164
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    },
+    {
+      "ticker": "AAT",
+      "rows": 3207,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 1069,
+        "bars_manual_last_date": 1069,
+        "bars_manual_open_date": 1069,
+        "mismatches_last_date": 1069,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 19.369417190551758,
+            "manual_date": "2014-01-06",
+            "manual_close": 19.369417190551758
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-07",
+            "canon_close": 19.142913818359375,
+            "manual_date": "2014-01-09",
+            "manual_close": 19.142913818359375
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-10",
+            "canon_close": 19.583688735961914,
+            "manual_date": "2014-01-14",
+            "manual_close": 19.583688735961914
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 1604,
+        "bars_manual_last_date": 1604,
+        "bars_manual_open_date": 1604,
+        "mismatches_last_date": 1603,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 0,
+            "canon_date": "2014-01-02",
+            "canon_close": 19.430633544921875,
+            "manual_date": "2014-01-03",
+            "manual_close": 19.430633544921875
+          },
+          {
+            "i": 1,
+            "canon_date": "2014-01-06",
+            "canon_close": 19.589805603027344,
+            "manual_date": "2014-01-07",
+            "manual_close": 19.589805603027344
+          },
+          {
+            "i": 2,
+            "canon_date": "2014-01-08",
+            "canon_close": 19.142913818359375,
+            "manual_date": "2014-01-09",
+            "manual_close": 19.142913818359375
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    },
+    {
+      "ticker": "ABAT",
+      "rows": 2668,
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "3d": {
+        "bars_canon": 890,
+        "bars_manual_last_date": 890,
+        "bars_manual_open_date": 890,
+        "mismatches_last_date": 889,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 1,
+            "canon_date": "2016-02-25",
+            "canon_close": 6.449999809265137,
+            "manual_date": "2016-02-29",
+            "manual_close": 6.449999809265137
+          },
+          {
+            "i": 2,
+            "canon_date": "2016-03-01",
+            "canon_close": 6.0,
+            "manual_date": "2016-03-03",
+            "manual_close": 6.0
+          },
+          {
+            "i": 3,
+            "canon_date": "2016-03-04",
+            "canon_close": 7.5,
+            "manual_date": "2016-03-08",
+            "manual_close": 7.5
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      },
+      "2d": {
+        "bars_canon": 1335,
+        "bars_manual_last_date": 1335,
+        "bars_manual_open_date": 1335,
+        "mismatches_last_date": 1333,
+        "mismatches_open_date": 0,
+        "len_equal_last": true,
+        "len_equal_open": true,
+        "first_three_mismatches_last_date": [
+          {
+            "i": 1,
+            "canon_date": "2016-02-25",
+            "canon_close": 6.150000095367432,
+            "manual_date": "2016-02-26",
+            "manual_close": 6.150000095367432
+          },
+          {
+            "i": 2,
+            "canon_date": "2016-02-29",
+            "canon_close": 6.449999809265137,
+            "manual_date": "2016-03-01",
+            "manual_close": 6.449999809265137
+          },
+          {
+            "i": 3,
+            "canon_date": "2016-03-02",
+            "canon_close": 6.0,
+            "manual_date": "2016-03-03",
+            "manual_close": 6.0
+          }
+        ],
+        "first_three_mismatches_open_date": [],
+        "drops_trailing_incomplete": false,
+        "production_date_label": "open (first finite-close session in the bucket)",
+        "spec_date_label": "last session in the bucket"
+      }
+    }
+  ],
+  "spy_yahoo_columns": [
+    "close_price",
+    "close",
+    "volume"
+  ]
+}

@@ -31,7 +31,10 @@
              target="_blank" rel="noopener"
              onclick="event.stopPropagation()">{{ r.ticker }}</a>
           {% if r.cross_border %}<span class="xb-mark" title="Cross-border / ADR / foreign issuer">&#x1F310;</span>{% endif %}
-          {% if r.live %}<span class="live-mark" title="Confirmed in our EDGAR feed">&#x2713; {{ t('live','实时') }}</span>{% endif %}
+          {% if r.live %}
+          <span class="live-mark" title="Confirmed in our EDGAR feed">&#x2713;
+            {{ t('In filings', '披露中') }}</span>
+          {% endif %}
           <div class="rc-company">{{ r.company }}</div>
           <div class="rc-mc">{{ r.mc }}</div>
         </div>

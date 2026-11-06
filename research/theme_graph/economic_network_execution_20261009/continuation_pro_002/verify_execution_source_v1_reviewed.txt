@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+"""Principal Git/source receipt for this operation's retained-source proofs.
+
+This is an explicit research verification tool, not an admission or CI controller.
+It reads Git and, only for the accepted phase, GitHub metadata through the existing
+gh account. It creates one exclusive receipt outside the repository. It never
+fetches, commits, changes a branch, captures a source, or modifies retained inputs.
+"""
+
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path, PurePosixPath
+import re
+import subprocess
+import sys
+
+import yaml
+
+sys.dont_write_bytecode = True
+ROOT = Path('/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-network-native-reader-20261009-pro-002')
+CACHE = Path('/Users/chriswong/Library/Caches/Mastermind/economic-network-native-reader-20261009/principal')
+REPOSITORY = 'mastermindx-market-intelligence/macro'
+OPERATION = 'gmi-economic-network-native-reader-20261009-pro-002'
+BASE = '41c1516fa803504c30ca2d5d067a71899fca3e8d'
+FROZEN = {
+    '.github/ci/legacy-jobs.yml': '62598df9610b898e182abfae61da60bb06e417416125314d72379f9dd2706a64',
+    'collectors/sec_document_spine.py': '1c6fec647373372858f4ad5fc0b6a88d9da84d605f5d14e8e148ac2ee7e8a3e5',
+    'engine/fundamental_forensics/sec_document_spine.py': 'ee240863943823e598083f45164c6a288e9098292a47a454cc70898c2bdf8366',
+    'engine/fundamental_forensics/filing_attestation.py': '1b2693a9bbff66761a573a8c1bd5d32b352a2d43719407e2864fda6e725d0a47',
+    'engine/company_intelligence/pinned_relationship_candidates.py': 'afafacb978face2775c769844a2773e04a5cb5b755aacd6c9724d7e51eb07cb7',
+    'engine/company_intelligence/relationship_candidates.py': 'a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55',
+    'tests/test_sec_document_spine.py': '050022e3e0d39ec644763d4b9377a3386bde7a81e33dbcf4495f5cc4cbd8f4bb',
+    'tests/test_company_pinned_relationship_candidates.py': '08fa9e22f7c35681b2fd97ccd97796a01a98988b05b8d047c8368ff24f6eb669',
+    'tests/test_company_relationship_review_set.py': '67636cc6eca4f9be84b383bb44b4835a3dc8447f6b288e2e99073f61182ce212',
+}
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def command(args):
+    process = subprocess.run(args, cwd=ROOT, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, check=False)
+    require(process.returncode == 0, 'read-only command failed: ' + args[0])
+    return process.stdout
+
+
+def git(*args):
+    return command(['git', *args])
+
+
+def sha(content):
+    return hashlib.sha256(content).hexdigest()
+
+
+def relative_path(value):
+    require(type(value) is str and value and '\\' not in value, 'invalid relative path')
+    path = PurePosixPath(value)
+    require(not path.is_absolute() and '..' not in path.parts and str(path) == value,
+            'noncanonical relative path')
+    return value
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--phase', required=True, choices=(
+        'PREMERGE_FROZEN_CANDIDATE', 'POSTMERGE_ACCEPTED_SOURCE'))
+    parser.add_argument('--reviewed-head', required=True)
+    parser.add_argument('--output', required=True)
+    parser.add_argument('--pr', type=int)
+    args = parser.parse_args()
+    require(re.fullmatch('[0-9a-f]{40}', args.reviewed_head) is not None,
+            'invalid reviewed commit')
+    output = Path(args.output)
+    require(output.is_absolute() and '..' not in output.parts and output.is_relative_to(CACHE),
+            'receipt must use the operation principal cache')
+    require(output.parent.is_dir() and not output.exists(), 'receipt output is not exclusive')
+    require(git('rev-parse', '--show-toplevel').decode().strip() == str(ROOT), 'wrong workspace')
+    require(git('rev-parse', 'HEAD').decode().strip() == args.reviewed_head, 'workspace head moved')
+    require(not git('status', '--porcelain=v1', '--untracked-files=all'), 'working tree is dirty')
+    ignored = git('ls-files', '--others', '--ignored', '--exclude-standard').decode().splitlines()
+    require(not ignored, 'ignored files require explicit custody reconciliation')
+    require(subprocess.run(['git', 'merge-base', '--is-ancestor', BASE, args.reviewed_head],
+                           cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0,
+            'reviewed commit does not include the integrated base')
+
+    owned = git('diff', '--name-only', BASE, args.reviewed_head).decode().splitlines()
+    require(owned and len(owned) == len(set(owned)), 'missing or duplicate owned paths')
+    require(set(FROZEN) <= set(owned), 'owned census omits a frozen implementation path')
+    for path in owned:
+        relative_path(path)
+        require(path in FROZEN or path == 'agentos/decisions/DEC-GMI-ECONOMIC-NETWORK-READER-AND-REVIEW-CONTINUATION.md'
+                or path.startswith('research/theme_graph/economic_network_execution_20261009/continuation_pro_002/'),
+                'unreviewed path in owned census')
+
+    manifest = yaml.safe_load((ROOT / '.github/ci/legacy-jobs.yml').read_bytes())
+    jobs = manifest.get('jobs')
+    require(type(jobs) is dict, 'unrecognized CI manifest jobs shape')
+    owner = jobs.get('company-relationship-candidates')
+    require(type(owner) is dict, 'missing existing CI owner')
+    paths = owner.get('paths')
+    require(type(paths) is list and len(paths) == 69 and len(set(paths)) == 69,
+            'reviewed CI dependency census changed')
+    require(all(type(path) is str and not any(c in path for c in '*?[') for path in paths),
+            'CI owner contains nonliteral dependency paths')
+    dependencies = sorted(set(paths) | {'tests/test_sec_document_spine.py',
+                                       'tests/test_fundamental_forensics_attestation.py'})
+    require(len(dependencies) == 71, 'unexpected dependency union')
+
+    accepted = fresh = merged_at = pr_url = None
+    upstream_contains = False
+    refs = [args.reviewed_head]
+    if args.phase == 'POSTMERGE_ACCEPTED_SOURCE':
+        require(args.pr is not None and args.pr > 0, 'accepted phase requires exact PR')
+        pull = json.loads(command(['gh', 'api', f'repos/{REPOSITORY}/pulls/{args.pr}']))
+        require(pull.get('merged') is True and pull.get('state') == 'closed', 'PR is not merged')
+        require(pull.get('head', {}).get('sha') == args.reviewed_head, 'accepted PR head differs')
+        require(pull.get('base', {}).get('ref') == 'main', 'unexpected PR base')
+        accepted, merged_at, pr_url = pull['merge_commit_sha'], pull['merged_at'], pull['html_url']
+        fresh = json.loads(command(['gh', 'api', f'repos/{REPOSITORY}/branches/main']))['commit']['sha']
+        require(git('rev-parse', 'origin/main').decode().strip() == fresh,
+                'fresh GitHub main is not the fetched upstream ref')
+        upstream_contains = subprocess.run(['git', 'merge-base', '--is-ancestor', accepted, fresh],
+                                          cwd=ROOT, stdout=subprocess.DEVNULL,
+                                          stderr=subprocess.DEVNULL).returncode == 0
+        require(upstream_contains, 'accepted merge is not in fresh upstream')
+        refs.extend([accepted, fresh])
+    elif args.pr is not None:
+        pr_url = f'https://github.com/{REPOSITORY}/pull/{args.pr}'
+
+    snapshots = {}
+    for path in sorted(set(owned) | set(dependencies)):
+        relative_path(path)
+        file = ROOT / path
+        require(file.is_file() and not file.is_symlink(), 'source path is not a regular file')
+        content = file.read_bytes()
+        for ref in refs:
+            require(git('show', ref + ':' + path) == content, 'source equality failed: ' + path)
+        digest = sha(content)
+        if path in FROZEN:
+            require(digest == FROZEN[path], 'reviewed source digest changed: ' + path)
+        snapshots[path] = {'path': path, 'bytes': len(content), 'sha256': digest}
+
+    require(git('rev-parse', 'HEAD').decode().strip() == args.reviewed_head, 'head moved during verification')
+    require(not git('status', '--porcelain=v1', '--untracked-files=all'), 'tree changed during verification')
+    for path, row in snapshots.items():
+        require(sha((ROOT / path).read_bytes()) == row['sha256'], 'source changed during verification')
+    owned_equality = 'reviewed_workspace_equal' if args.phase == 'PREMERGE_FROZEN_CANDIDATE' else 'all_four_locations_equal'
+    receipt = {
+        'schema': 'economic_network.frozen_source_candidate.v1' if args.phase == 'PREMERGE_FROZEN_CANDIDATE'
+                  else 'economic_network.accepted_source_delivery.v1',
+        'phase': args.phase, 'status': 'PASS', 'repository': REPOSITORY,
+        'operation_id': OPERATION, 'code_root': str(ROOT), 'working_tree_clean': True,
+        'ignored_file_count': len(ignored), 'reviewed_head': args.reviewed_head,
+        'execution_workspace_head': args.reviewed_head, 'integrated_base': BASE,
+        'verified_at': datetime.now(timezone.utc).isoformat(), 'pr': pr_url,
+        'accepted_merge_sha': accepted, 'fresh_upstream_sha': fresh,
+        'merged_at': merged_at, 'upstream_contains_merge': upstream_contains,
+        'owned_file_count': len(owned),
+        'owned_files': [dict(snapshots[p], **{owned_equality: True}) for p in sorted(owned)],
+        'dependency_count': len(dependencies),
+        'dependencies': [dict(snapshots[p], all_locations_equal=True) for p in dependencies],
+        'compared_locations': ['reviewed_commit', 'execution_workspace'] if len(refs) == 1 else
+                              ['reviewed_commit', 'accepted_merge', 'fresh_upstream', 'execution_workspace'],
+        'native_fact_admission': False, 'production_reader_custody': False,
+        'historical_system_replay': False, 'rights_admission': False,
+        'served_product_proof': False, 'predictive_authority': False,
+        'limitations': ['Principal read-and-compare witness; no atomic filesystem or runtime custody claim.',
+                        'Third-party runtime and installed dependencies are not fully pinned by this receipt.'],
+    }
+    content = (json.dumps(receipt, indent=2, sort_keys=True) + '\n').encode()
+    with output.open('xb') as stream:
+        stream.write(content)
+    require(output.read_bytes() == content, 'receipt readback mismatch')
+    print(json.dumps({'status': 'PASS', 'phase': args.phase, 'receipt': str(output),
+                      'receipt_bytes': len(content), 'receipt_sha256': sha(content),
+                      'owned_file_count': len(owned), 'dependency_count': len(dependencies),
+                      'reviewed_head': args.reviewed_head, 'accepted_merge_sha': accepted,
+                      'fresh_upstream_sha': fresh}, sort_keys=True))
+
+
+if __name__ == '__main__':
+    main()

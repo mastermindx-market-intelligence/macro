@@ -1,6 +1,5 @@
-/* Release Radar runtime — lazy-loaded by macro.html on Events dialog demand.
- * Extracted from dashboard.html.j2 to keep ~94 KB of parse/execute work off the
- * mobile dashboard critical path. Keep this file Jinja-free and same-origin.
+/* Release Radar initializes only after authenticated Events-dialog demand.
+ * Keep this current runtime Jinja-free and paired with its shipped asset.
  */
 (function(){
     'use strict';
@@ -22,6 +21,7 @@
     var _rrInlineSwapTimer = null;
     /* INT-03: focus management — track invoker for restore on close */
     var _rrModalInvoker = null;
+    var _rrOpenItem = null;
 
     /* ---- base helpers ---- */
     function esc(s){ return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -205,45 +205,144 @@
       return '<div class="rr-policy">'+items.join('')+'</div>';
     }
 
-    /* scoreboard sub-block */
-    function scoreboardBlock(lastScored){
-      if (!lastScored || !Array.isArray(lastScored) || !lastScored.length) {
-        return '<div class="rr-scoreboard">'
-          +'<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>'
+    function rrTrackMiss(v){
+      if (v == null || !isFinite(Number(v))) return '—';
+      var n = Number(v);
+      return Math.abs(n) >= 10 ? n.toFixed(1) : n.toFixed(2);
+    }
+    function rrTrackMissCi(e){
+      var ci = e && e.mae_ours_ci;
+      if (e == null || e.mae_ours == null || !Array.isArray(ci) || ci.length !== 2) return '—';
+      return rrTrackMiss(e.mae_ours)+' ('+rrTrackMiss(ci[0])+'–'+rrTrackMiss(ci[1])+')';
+    }
+    function rrTrackEarly(e, tr){
+      var n = String(e.clean_n);
+      if (e.early) return {en:'Early, n = '+n, zh:'早期，n = '+n};
+      return {en:'n = '+n+', verdict pending', zh:'n = '+n+'，结论待定'};
+    }
+    function rrTrackRecordBlock(tr){
+      var title = '<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>';
+      if (!tr || typeof tr !== 'object' || !Array.isArray(tr.releases)) {
+        return '<div class="rr-scoreboard">'+title
           +'<div class="rr-empty">'
-          +'<span class="l-en">Forward accrual began 2026-07 — no scored prints yet.</span>'
-          +'<span class="l-zh">自2026年7月起正向评分积累中，暂无已评分数据。</span>'
-          +'</div>'
+          +'<span class="l-en">Scored history isn\'t in this build yet.</span>'
+          +'<span class="l-zh">本次构建暂无评分记录。</span>'
+          +'</div></div>';
+      }
+      var withheld = (tr.accuracy_claim === 'withheld_until_clean_aligned_forward_evidence');
+      var noteEn = withheld
+        ? 'Accuracy isn\'t claimed yet. Each release shows how many forecasts were scored against the official first print.'
+        : 'Each release shows how many forecasts were scored against the official first print.';
+      var noteZh = withheld
+        ? '暂不声称准确度。每项数据显示按官方首次公布值评分的预测次数。'
+        : '每项数据显示按官方首次公布值评分的预测次数。';
+      var out = '<div class="rr-scoreboard">'+title
+        +'<div class="rr-tr-note">'
+        +'<span class="l-en">'+esc(noteEn)+'</span>'
+        +'<span class="l-zh">'+esc(noteZh)+'</span>'
+        +'</div>';
+      if (!tr.releases.length) {
+        out += '<div class="rr-empty">'
+          +'<span class="l-en">No release has been scored yet.</span>'
+          +'<span class="l-zh">暂无已评分的数据。</span>'
+          +'</div>';
+      } else {
+        var thead = '<tr>'
+          +'<th><span class="l-en">Release</span><span class="l-zh">数据</span></th>'
+          +'<th><span class="l-en">Scored</span><span class="l-zh">已评分</span></th>'
+          +'<th><span class="l-en">Vs first print</span><span class="l-zh">对照首次公布值</span></th>'
+          +'<th><span class="l-en">Avg miss (95% range)</span><span class="l-zh">平均误差（95%区间）</span></th>'
+          +'<th><span class="l-en">No-change miss</span><span class="l-zh">不变假设误差</span></th>'
+          +'<th><span class="l-en">Status</span><span class="l-zh">状态</span></th>'
+          +'</tr>';
+        var statusFor = function(st){
+          if (st === 'no_clean_scores') return {en:'No clean scores', zh:'暂无有效评分'};
+          if (st === 'benchmark_only') return {en:'Benchmark only', zh:'仅基准'};
+          if (st === 'proxy_or_mixed_target') return {en:'Not comparable yet', zh:'尚不可比'};
+          if (st === 'accruing') return {en:'Accruing '+tr.display_min_n, zh:'积累中'};
+          if (st === 'interval_pending') return {en:'Range pending', zh:'误差区间待定'};
+          return {en:'—', zh:'—'};
+        };
+        var rows = tr.releases.map(function(e){
+          var st = statusFor(e.display_state);
+          var statusEn = st.en;
+          var statusZh = st.zh;
+          if (e.display_state === 'accruing') {
+            statusEn = 'Accruing '+e.clean_n+'/'+tr.display_min_n;
+            statusZh = '积累中 '+e.clean_n+'/'+tr.display_min_n;
+          }
+          if (e.display_state === 'display_only') {
+            var lab = rrTrackEarly(e, tr);
+            statusEn = lab.en;
+            statusZh = lab.zh;
+          }
+          return '<tr><td>'+relName(e.release,'')+'</td>'
+            +'<td>'+esc(String(e.clean_n))+'</td>'
+            +'<td>'+esc(String(e.first_print_matched_n))+'</td>'
+            +'<td>'+esc(rrTrackMissCi(e))+'</td>'
+            +'<td>'+esc(rrTrackMiss(e.mae_naive_prior))+'</td>'
+            +'<td><span class="l-en">'+esc(statusEn)+'</span><span class="l-zh">'+esc(statusZh)+'</span></td></tr>';
+        }).join('');
+        out += '<table class="rr-track-table"><thead>'+thead+'</thead><tbody>'+rows+'</tbody></table>';
+      }
+      if (tr.score_receipts && tr.score_receipts.superseded_n > 0) {
+        var sn = tr.score_receipts.superseded_n;
+        out += '<div class="rr-tr-foot">'
+          +'<span class="l-en">'+esc(String(sn))+' earlier scores are kept as superseded, not erased.</span>'
+          +'<span class="l-zh">'+esc(String(sn))+'条早期评分已保留为已取代记录，未删除。</span>'
           +'</div>';
       }
-      var byRel = {};
-      lastScored.forEach(function(row){
-        var k = (row.release||'other').toLowerCase();
-        if (!byRel[k]) byRel[k] = {n:0, mae_ours:0, mae_naive:0, skew_hits:0};
-        byRel[k].n += 1;
-        if (row.our_mae != null) byRel[k].mae_ours += Number(row.our_mae);
-        if (row.naive_mae != null) byRel[k].mae_naive += Number(row.naive_mae);
-        if (row.skew_hit) byRel[k].skew_hits += 1;
-      });
-      var thead = '<tr>'
-        +'<th><span class="l-en">Release</span><span class="l-zh">数据</span></th>'
-        +'<th><span class="l-en">n</span><span class="l-zh">n</span></th>'
-        +'<th><span class="l-en">MAE ours</span><span class="l-zh">本方MAE</span></th>'
-        +'<th><span class="l-en">MAE naive</span><span class="l-zh">朴素MAE</span></th>'
-        +'<th><span class="l-en">Skew hit%</span><span class="l-zh">偏态命中%</span></th>'
-        +'</tr>';
-      var rows = Object.keys(byRel).map(function(k){
-        var g = byRel[k];
-        var maeO = g.n ? (g.mae_ours/g.n).toFixed(3) : '—';
-        var maeN = g.n ? (g.mae_naive/g.n).toFixed(3) : '—';
-        var skhit = g.n ? (g.skew_hits/g.n*100).toFixed(0)+'%' : '—';
-        return '<tr><td>'+relName(k,'')+'</td><td>'+g.n+'</td>'
-          +'<td>'+esc(maeO)+'</td><td>'+esc(maeN)+'</td><td>'+esc(skhit)+'</td></tr>';
-      }).join('');
-      return '<div class="rr-scoreboard">'
-        +'<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>'
-        +'<table class="rr-track-table"><thead>'+thead+'</thead><tbody>'+rows+'</tbody></table>'
-        +'</div>';
+      return out+'</div>';
+    }
+    function rrTrackRecordLine(tr, releaseType){
+      var rel = releaseType || '';
+      if (!tr || typeof tr !== 'object' || !Array.isArray(tr.releases)) {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">No scored history for this release yet.</span>'
+          +'<span class="l-zh">该数据暂无评分记录。</span></div>';
+      }
+      var entry = null;
+      for (var i = 0; i < tr.releases.length; i++) {
+        if (tr.releases[i].release === rel) { entry = tr.releases[i]; break; }
+      }
+      if (!entry) {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">No scored history for this release yet.</span>'
+          +'<span class="l-zh">该数据暂无评分记录。</span></div>';
+      }
+      var st = entry.display_state;
+      if (st === 'no_clean_scores') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">No clean scores yet. Earlier scores used an inconsistent target and are kept as superseded.</span>'
+          +'<span class="l-zh">暂无有效评分。早期评分口径不一致，已保留为已取代记录。</span></div>';
+      }
+      if (st === 'benchmark_only') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">Benchmark only: '+esc(String(entry.clean_n))+' prints scored, no house forecast to grade.</span>'
+          +'<span class="l-zh">仅基准：已评分'+esc(String(entry.clean_n))+'次，无本方预测可评。</span></div>';
+      }
+      if (st === 'proxy_or_mixed_target') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(String(entry.clean_n))+' scored, '+esc(String(entry.first_print_matched_n))+' against the official first print. Not comparable yet.</span>'
+          +'<span class="l-zh">已评分'+esc(String(entry.clean_n))+'次，其中'+esc(String(entry.first_print_matched_n))+'次对照官方首次公布值。尚不可比。</span></div>';
+      }
+      if (st === 'accruing') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(String(entry.clean_n))+' of '+esc(String(tr.display_min_n))+' scored against the official first print. The error and its range show from '+esc(String(tr.display_min_n))+'; a verdict needs '+esc(String(tr.verdict_min_n))+'.</span>'
+          +'<span class="l-zh">已按官方首次公布值评分'+esc(String(entry.clean_n))+'/'+esc(String(tr.display_min_n))+'次。满'+esc(String(tr.display_min_n))+'次显示误差及其区间，满'+esc(String(tr.verdict_min_n))+'次方下结论。</span></div>';
+      }
+      if (st === 'interval_pending') {
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(String(entry.clean_n))+' scored against the official first print. The error shows once its range is computed.</span>'
+          +'<span class="l-zh">已按官方首次公布值评分'+esc(String(entry.clean_n))+'次。误差区间计算完成后显示误差。</span></div>';
+      }
+      if (st === 'display_only') {
+        var lab = rrTrackEarly(entry, tr);
+        return '<div class="rr-tr-line">'
+          +'<span class="l-en">'+esc(lab.en)+', scored against the official first print. Average miss '+esc(rrTrackMissCi(entry))+' vs '+esc(rrTrackMiss(entry.mae_naive_prior))+' for a no-change guess. Not a verdict.</span>'
+          +'<span class="l-zh">'+esc(lab.zh)+'，对照官方首次公布值评分。平均误差'+esc(rrTrackMissCi(entry))+'，不变假设为'+esc(rrTrackMiss(entry.mae_naive_prior))+'。非结论。</span></div>';
+      }
+      return '<div class="rr-tr-line"><span class="l-en">—</span><span class="l-zh">—</span></div>';
     }
 
     /* component breakdown bar — reads contribution_pp (cpi_bridge schema) or contrib_pp (legacy) */
@@ -328,11 +427,11 @@
         +'<div class="rr-conf-seg-residual" style="width:'+pR+'%"></div>'
         +'</div>'
         +'<div class="rr-conf-legend">'
-        +'<span><span class="rr-conf-leg-dot" style="background:color-mix(in srgb,var(--up) 70%,transparent)"></span>'
+        +'<span><span class="rr-conf-leg-dot" style="background:var(--up);opacity:.7"></span>'
         +'<span class="l-en">Known '+pK+'%</span><span class="l-zh">已知 '+pK+'%</span></span>'
-        +'<span><span class="rr-conf-leg-dot" style="background:color-mix(in srgb,var(--warn) 65%,transparent)"></span>'
+        +'<span><span class="rr-conf-leg-dot" style="background:var(--warn);opacity:.65"></span>'
         +'<span class="l-en">Proxy '+pP+'%</span><span class="l-zh">代理 '+pP+'%</span></span>'
-        +'<span><span class="rr-conf-leg-dot" style="background:color-mix(in srgb,var(--muted) 40%,transparent)"></span>'
+        +'<span><span class="rr-conf-leg-dot" style="background:var(--muted);opacity:.4"></span>'
         +'<span class="l-en">Residual '+pR+'%</span><span class="l-zh">残差 '+pR+'%</span></span>'
         +'</div>'
         +'</div>';
@@ -431,7 +530,7 @@
         var cite = f.cite || '';
         return '<span class="rr-quirk-chip"'
           +(cite?' data-cite="'+esc(cite)+'"':'')+' aria-label="'+esc(cite)+'">'
-          +'<span class="rr-quirk-icon">&#9888;</span>'
+          +'<span class="rr-quirk-icon">⚠</span>'
           +'<span class="l-en">'+esc(en)+'</span>'
           +'<span class="l-zh">'+esc(zh)+'</span>'
           +'</span>';
@@ -517,6 +616,19 @@
     /* MRI-R24: v3_factor challenger shadow row */
     function v3FactorRow(v3, isClaims, isNfp){
       if (!v3) return '';
+      /* RIC-M0: a withdrawn claim shows no number, only a plain note */
+      if (v3.claim_withdrawn){
+        return '<div class="rr-shadow-row">'
+          +'<div class="rr-shadow-label">'
+          +'<span class="l-en">V3 Factor · comparison model</span>'
+          +'<span class="l-zh">V3 因子 · 对比模型</span>'
+          +'</div>'
+          +'<div class="rr-shadow-retired">'
+          +'<span class="l-en">Withdrawn: on the first-print retest it did worse than its simple baseline, so no number is shown.</span>'
+          +'<span class="l-zh">已撤下：首发值复测中不及简单基准，故不显示数值。</span>'
+          +'</div>'
+          +'</div>';
+      }
       var useK = isClaims || isNfp;
       var ptStr = v3.point != null ? (useK ? fmtK(v3.point) : fmtNum(v3.point,2)) : '—';
       var warning = v3.warning || '';
@@ -605,15 +717,16 @@
         String(pit.reason||'').indexOf('no_data') !== -1 ||
         (proj.p10 == null && proj.p90 == null)
       );
-      var daysTo = item.days_to != null ? item.days_to : null;
-      var daysLabel = daysTo != null
-        ? ('<span class="l-en">in '+esc(daysTo)+'d</span>'
-           +'<span class="l-zh">'+esc(daysTo)+'天后</span>')
-        : ('<span class="l-en">awaiting date</span><span class="l-zh">待日期</span>');
+      var daysTo = _rrDaysUntil(item.release_date);
+      var labels = daysTo === null ? null : _rrCountdownLabels(daysTo);
+      var daysLabel = labels
+        ? '<span class="l-en">'+esc(labels.en)+'</span>'
+          +'<span class="l-zh">'+esc(labels.zh)+'</span>'
+        : '<span class="l-en">awaiting date</span><span class="l-zh">待日期</span>';
 
       /* --- no_data card: compact one-liner --- */
       if (isNoData){
-        return '<div class="rr-card" data-rr-rel="'+esc(rel)+'" data-rr-rt="'+esc(rt)+'">'
+        return '<div class="rr-card" data-rr-rel="'+esc(rel)+'" data-rr-rt="'+esc(rt)+'" data-rr-date="'+esc(item.release_date||'')+'">'
           +'<div class="rr-card-head">'
           +'<span class="rr-card-name">'+relName(rel,rt)+'</span>'
           +'<span class="rr-countdown">'+daysLabel+'</span>'
@@ -711,7 +824,7 @@
           +(chip?'<div class="rr-chips-row">'+chip+'</div>':'');
       }
 
-      return '<div class="rr-card" data-rr-rel="'+esc(rel)+'" data-rr-rt="'+esc(rt)+'">'
+      return '<div class="rr-card" data-rr-rel="'+esc(rel)+'" data-rr-rt="'+esc(rt)+'" data-rr-date="'+esc(item.release_date||'')+'">'
         +'<div class="rr-card-head">'
         +'<span class="rr-card-name">'+relName(rel, rt)+'</span>'
         +'<span class="rr-card-period">'+esc(item.period||'')+'</span>'
@@ -763,7 +876,7 @@
       svgParts.push('<line x1="'+xOf(p10)+'" y1="22" x2="'+xOf(p10)+'" y2="34" stroke="var(--muted)" stroke-width="1.5"/>');
       svgParts.push('<line x1="'+xOf(p90)+'" y1="22" x2="'+xOf(p90)+'" y2="34" stroke="var(--muted)" stroke-width="1.5"/>');
       /* p25-p75 shaded box */
-      svgParts.push('<rect x="'+boxL+'" y="20" width="'+(boxR-boxL)+'" height="16" fill="color-mix(in srgb,var(--up) 28%,transparent)" rx="2"/>');
+      svgParts.push('<rect x="'+boxL+'" y="20" width="'+(boxR-boxL)+'" height="16" fill="var(--up)" fill-opacity=".28" rx="2"/>');
       /* benchmark ticks (muted) */
       ticks.forEach(function(t){
         svgParts.push('<line x1="'+t.x+'" y1="15" x2="'+t.x+'" y2="41" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2,2"/>');
@@ -1149,10 +1262,7 @@
         tab3 += '<div class="rr-grp"><div class="rr-grp-label">'
           +'<span class="l-en">Track record</span><span class="l-zh">历史评分</span>'
           +'</div>'
-          +'<div class="rr-empty">'
-          +'<span class="l-en">Accruing — first scored prints land this month.</span>'
-          +'<span class="l-zh">积累中 — 本月首批评分数据到来。</span>'
-          +'</div>'
+          + rrTrackRecordLine(_rrTrackRecord, item.release_type || '')
           +'</div>';
         /* NFP revision context */
         if (isNfp && item.revision_context){
@@ -1317,10 +1427,10 @@
             +'<span class="l-en">Capture health</span><span class="l-zh">采集健康</span>'
             +'</div>'
             +'<div class="rr-health-strip">'
-            +'<span class="l-en"><span class="rr-health-warn">&#9888;</span> '+captureHealth.past_due_unscored.length+' past-due unscored: '
+            +'<span class="l-en"><span class="rr-health-warn">⚠</span> '+captureHealth.past_due_unscored.length+' past-due unscored: '
             +captureHealth.past_due_unscored.map(function(u){return esc((u.release||'')+'/'+(u.period||'')+' ('+u.reason+')');}).join(', ')
             +'</span>'
-            +'<span class="l-zh"><span class="rr-health-warn">&#9888;</span> '+captureHealth.past_due_unscored.length+' 待评分: '
+            +'<span class="l-zh"><span class="rr-health-warn">⚠</span> '+captureHealth.past_due_unscored.length+' 待评分: '
             +captureHealth.past_due_unscored.map(function(u){return esc((u.release||'')+'/'+(u.period||''));}).join(', ')
             +'</span>'
             +'</div></div>';
@@ -1339,6 +1449,66 @@
     /* ---- modal open / close / tab switching ---- */
     var _rrItems = [];
     var _captureHealth = null;
+    var _rrTrackRecord = null;
+    var _rrForecastAsOf = null;
+    var _rrForecastFailed = false;
+
+    /* Publication facts and model projections have separate writers. Do not
+       describe a stale nightly model snapshot as an up-to-date live estimate. */
+    function _rrSnapshotNotice(){
+      var ts = Date.parse(_rrForecastAsOf || '');
+      var age = Date.now() - ts;
+      var delayed = !isFinite(ts) || age > 36 * 60 * 60 * 1000 || age < -300000;
+      if (!delayed && !_rrForecastFailed) return null;
+      if (!isFinite(ts)) return {
+        en:'Forecast projection data unavailable or undated; no live model estimate is verified.',
+        zh:'模型预测数据不可用或缺少日期；尚无可核验的实时预测。'
+      };
+      var label = isFinite(ts) ? new Date(ts).toLocaleDateString('en-US', {
+        timeZone:'America/New_York', year:'numeric', month:'short', day:'numeric'
+      }) : 'unknown date';
+      return {
+        en: (_rrForecastFailed ? 'Forecast refresh unavailable. ' : '') +
+          'Last model snapshot: ' + label +
+          '. Projections are last-known, not live; official release results update separately.',
+        zh: (_rrForecastFailed ? '模型预测刷新暂不可用。' : '') +
+          '模型快照日期：' + label +
+          '。此处为上次已知预测，非实时预测；官方发布结果独立更新。'
+      };
+    }
+    function _rrUpdateSnapshotNotice(){
+      var value = _rrSnapshotNotice();
+      ['rr-content', 'rr-inline-body', 'rr-modal-title-block'].forEach(function(id){
+        var host = document.getElementById(id);
+        if (!host) return;
+        var node = host.querySelector('[data-rr-snapshot-note]');
+        if (!value){ if (node) node.remove(); return; }
+        if (!node){
+          node = document.createElement('div');
+          node.className = 'rr-inline-empty-line';
+          node.setAttribute('data-rr-snapshot-note','1');
+          node.setAttribute('role','status');
+          var en = document.createElement('span');
+          en.className = 'l-en';
+          var zh = document.createElement('span');
+          zh.className = 'l-zh';
+          node.appendChild(en); node.appendChild(zh);
+          host.insertBefore(node,host.firstChild);
+        }
+        node.querySelector('.l-en').textContent = value.en;
+        node.querySelector('.l-zh').textContent = value.zh;
+      });
+    }
+    function _rrUpdateCountdowns(){
+      document.querySelectorAll('.rr-card[data-rr-date], #rr-modal-title-block[data-rr-date]').forEach(function(card){
+        var days = _rrDaysUntil(card.getAttribute('data-rr-date'));
+        var labels = days === null ? null : _rrCountdownLabels(days);
+        var en = card.querySelector('.rr-countdown .l-en');
+        var zh = card.querySelector('.rr-countdown .l-zh');
+        if (en) en.textContent = labels ? labels.en : 'awaiting date';
+        if (zh) zh.textContent = labels ? labels.zh : '待日期';
+      });
+    }
 
     /* ---- modal open / close ---- */
     function _rrPeriodLabels(period){
@@ -1359,13 +1529,36 @@
       if (month < 1 || month > 12) return {en:raw,zh:raw};
       return {en:'Releases '+months[month-1]+' '+day,zh:month+'月'+day+'日发布'};
     }
+    /* A rendered forecast snapshot can be days old. Calendar countdowns use the
+       reader's current New York calendar day, never its baked days_to field. */
+    function _rrEasternDay(){
+      try {
+        var parts = new Intl.DateTimeFormat('en-US', {
+          timeZone:'America/New_York', year:'numeric', month:'2-digit', day:'2-digit'
+        }).formatToParts(new Date());
+        var values = {};
+        parts.forEach(function(part){ if (part.type !== 'literal') values[part.type] = part.value; });
+        return values.year+'-'+values.month+'-'+values.day;
+      } catch(e){ return null; }
+    }
+    function _rrDaysUntil(releaseDate){
+      var raw = String(releaseDate || '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
+      var today = _rrEasternDay();
+      if (!today) return null;
+      var parts = raw.split('-').map(Number);
+      var target = Date.UTC(parts[0],parts[1]-1,parts[2]);
+      if (new Date(target).toISOString().slice(0,10) !== raw) return null;
+      var current = today.split('-').map(Number);
+      return Math.round((target - Date.UTC(current[0],current[1]-1,current[2])) / 86400000);
+    }
     function _rrCountdownLabels(days){
       var n = Number(days);
       if (!isFinite(n)) return null;
       if (n === 0) return {en:'Releases today',zh:'今日发布'};
       if (n === 1) return {en:'Releases tomorrow',zh:'明日发布'};
       if (n > 1) return {en:n+' days away',zh:n+'天后'};
-      return {en:Math.abs(n)+' days since release',zh:'已发布'+Math.abs(n)+'天'};
+      return {en:Math.abs(n)+(n === -1 ? ' day since release' : ' days since release'),zh:'已发布'+Math.abs(n)+'天'};
     }
     function _rrMetaChip(labels, primary, prefix){
       if (!labels || (!labels.en && !labels.zh)) return '';
@@ -1376,8 +1569,13 @@
         +'</span>';
     }
 
-    function openModal(item){
+    function openModal(item, refreshing){
       if (!RR_OVERLAY || !RR_MODAL_INNER) return;
+      _rrOpenItem = item;
+      var previousTab = refreshing && RR_TAB_STRIP && RR_TAB_STRIP.querySelector('.rr-tab.active');
+      var restoreTabFocus = refreshing && RR_TAB_STRIP && (RR_TAB_STRIP.contains(document.activeElement) ||
+        RR_MODAL_INNER.contains(document.activeElement));
+      var scrollTop = RR_MODAL_INNER.scrollTop;
       var rel = item.release || '';
       var rt = item.release_type || '';
       var proj = item.projection || {};
@@ -1393,17 +1591,22 @@
       var hasDue = captureHealth && captureHealth.past_due_unscored && captureHealth.past_due_unscored.length;
       var periodLabels = _rrPeriodLabels(item.period);
       var dateLabels = item.release_date ? _rrDateLabels(item.release_date) : null;
-      var countdownLabels = item.days_to != null ? _rrCountdownLabels(item.days_to) : null;
+      var currentDays = _rrDaysUntil(item.release_date);
+      var countdownLabels = currentDays === null ? null : _rrCountdownLabels(currentDays);
       var cutoff = item.cutoff_label ? String(item.cutoff_label).replace(/-/g,'−') : '';
       var cutoffLabels = cutoff ? {en:'Data through '+cutoff,zh:'数据截至 '+cutoff} : null;
       var titleHTML = '<div class="rr-modal-title">'+relName(rel, rt)+'</div>'
         +'<div class="rr-modal-sub">'
         +_rrMetaChip(periodLabels,true,hasDue?'<span class="rr-health-dot" title="Capture health: past-due score"></span>':'')
         +_rrMetaChip(dateLabels,false,'')
-        +_rrMetaChip(countdownLabels,false,'')
+        +'<span class="rr-countdown">'+_rrMetaChip(countdownLabels,false,'')+'</span>'
         +_rrMetaChip(cutoffLabels,false,'')
         +'</div>';
-      if (RR_TITLE_BLOCK) RR_TITLE_BLOCK.innerHTML = titleHTML;
+      if (RR_TITLE_BLOCK){
+        RR_TITLE_BLOCK.innerHTML = titleHTML;
+        RR_TITLE_BLOCK.setAttribute('data-rr-date', item.release_date || '');
+      }
+      _rrUpdateSnapshotNotice();
 
       var tabs = renderModal(item, captureHealth);
 
@@ -1444,6 +1647,16 @@
         return '<div class="rr-pane'+(i===0?' active':'')+'" data-tab="'+esc(t.id)+'">'+t.content+'</div>';
       }).join('');
 
+      if (refreshing){
+        if (previousTab){
+          var selected = RR_TAB_STRIP.querySelector('[data-tab="'+previousTab.getAttribute('data-tab')+'"]');
+          if (selected) selected.click();
+        }
+        var activeTab = RR_TAB_STRIP && RR_TAB_STRIP.querySelector('.rr-tab.active');
+        if (restoreTabFocus && activeTab) activeTab.focus({preventScroll:true});
+        RR_MODAL_INNER.scrollTop = scrollTop;
+        return;
+      }
       RR_OVERLAY.classList.add('open');
       document.body.style.overflow = 'hidden';
       var lang = (document.documentElement.getAttribute('data-lang') || 'en');
@@ -1457,9 +1670,12 @@
     function closeModal(){
       if (!RR_OVERLAY) return;
       RR_OVERLAY.classList.remove('open');
+      _rrOpenItem = null;
       document.body.style.overflow = '';
       /* INT-03: restore invoker focus */
-      try{ if(_rrModalInvoker && _rrModalInvoker.focus) _rrModalInvoker.focus(); }catch(e){}
+      var invoker = _rrModalInvoker && _rrModalInvoker.isConnected ? _rrModalInvoker :
+        document.querySelector('#dlg-events .mx5-dlg-cal-card.rr-active');
+      if (invoker) invoker.focus();
       _rrModalInvoker = null;
     }
 
@@ -1584,6 +1800,7 @@
         if (token !== _rrInlineSwapToken) return;
         body.innerHTML = bodyHTML;
         _rrInlineSignature = signature;
+        _rrUpdateSnapshotNotice();
         _setInlineHeader(dateStr, covered);
         if (covered){
           body.querySelectorAll('.rr-card').forEach(function(el, idx){
@@ -1628,10 +1845,21 @@
       var cards = document.querySelectorAll('#dlg-events .mx5-dlg-cal-card[data-cal-date]');
       var firstSelect = null;
       cards.forEach(function(card){
-        if (card._rrWired) return;
-        card._rrWired = true;
         var dateStr = card.getAttribute('data-cal-date');
         var calType = (card.getAttribute('data-cal-type') || '').toUpperCase();
+        var hasCoverage = calType !== 'FOMC' && _itemsForDate(dateStr).length > 0;
+        var coverageChip = card.querySelector('.mx5-dlg-cal-radar');
+        if (!hasCoverage && coverageChip) coverageChip.remove();
+        if (hasCoverage && !firstSelect) firstSelect = card;
+        if (hasCoverage && !coverageChip){
+          var dot = document.createElement('div');
+          dot.className = 'mx5-dlg-cal-radar';
+          dot.innerHTML = '<span class="mx5-dlg-cal-dot" aria-hidden="true"></span>'
+            +'<span class="l-en">Release Radar</span><span class="l-zh">数据发布雷达</span>';
+          card.appendChild(dot);
+        }
+        if (card._rrWired) return;
+        card._rrWired = true;
         /* FOMC (policy rate decision) → Fed Path Forward Board, not inline radar. */
         if (calType === 'FOMC'){
           card.classList.add('rr-fed');
@@ -1640,7 +1868,7 @@
           card.setAttribute('aria-haspopup','dialog');
           var fedChip = document.createElement('div');
           fedChip.className = 'mx5-dlg-cal-fed';
-          fedChip.innerHTML = '<span class="l-en">Fed Path &#8594;</span><span class="l-zh">联储路径 &#8594;</span>';
+          fedChip.innerHTML = '<span class="l-en">Fed Path →</span><span class="l-zh">联储路径 →</span>';
           card.appendChild(fedChip);
           var goFed = function(){ if (window.mx5OpenDlg) window.mx5OpenDlg('dlg-fed'); };
           card.addEventListener('click', goFed);
@@ -1653,15 +1881,6 @@
         card.setAttribute('tabindex','0');
         card.setAttribute('aria-controls','rr-inline-body');
         card.setAttribute('aria-pressed','false');
-        var hasCoverage = _itemsForDate(dateStr).length > 0;
-        if (hasCoverage){
-          var dot = document.createElement('div');
-          dot.className = 'mx5-dlg-cal-radar';
-          dot.innerHTML = '<span class="mx5-dlg-cal-dot" aria-hidden="true"></span>'
-            +'<span class="l-en">Release Radar</span><span class="l-zh">数据发布雷达</span>';
-          card.appendChild(dot);
-          if (!firstSelect) firstSelect = card;
-        }
         card.addEventListener('click', function(){ selectInlineDate(dateStr, card); });
         card.addEventListener('keydown', function(e){
           if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); selectInlineDate(dateStr, card); }
@@ -1669,7 +1888,12 @@
       });
       /* default selection: nearest covered date's own card if visible, else the
          first covered calendar card, else the earliest calendar card. */
-      if (!_rrInlineDate){
+      if (_rrInlineDate){
+        if (_inlineItemsSignature(_rrInlineDate, _itemsForDate(_rrInlineDate)) !== _rrInlineSignature){
+          var selected = document.querySelector('#dlg-events .mx5-dlg-cal-card.rr-active');
+          selectInlineDate(_rrInlineDate, selected, true);
+        }
+      } else {
         var def = _defaultCoveredDate();
         var defCard = def ? document.querySelector('#dlg-events .mx5-dlg-cal-card[data-cal-date="'+def+'"].rr-select') : null;
         if (!defCard) defCard = firstSelect;
@@ -1699,6 +1923,19 @@
       }).observe(document.documentElement, {attributes:true, attributeFilter:['data-lang']});
     }
 
+    function _rrRefreshOpenDetail(){
+      if (!_rrOpenItem) return;
+      var current = _rrItems.find(function(item){
+        return item.release === _rrOpenItem.release && item.release_type === _rrOpenItem.release_type &&
+          item.period === _rrOpenItem.period && item.release_date === _rrOpenItem.release_date;
+      });
+      if (current) openModal(current, true);
+      else {
+        RR_TAB_STRIP.textContent = '';
+        RR_MODAL_INNER.innerHTML = '<div class="rr-empty"><span class="l-en">This release is no longer in the latest forecast.</span><span class="l-zh">最新预测已不再包含此项发布。</span></div>';
+      }
+    }
+
     /* main render */
     function renderRadar(d){
       if (!d || typeof d !== 'object') {
@@ -1723,6 +1960,7 @@
       }
       _rrItems = Array.isArray(d.upcoming) ? d.upcoming : [];
       _captureHealth = d.capture_health || null;
+      _rrTrackRecord = (d && d.track_record && typeof d.track_record === 'object') ? d.track_record : null;
       var lastScored = Array.isArray(d.last_scored) ? d.last_scored : [];
       var asof = d.asof || '';
 
@@ -1830,13 +2068,15 @@
           smBtn.closest('[data-lang]') || void 0;
         });
       }
-      /* MRI-R39a: populate track-record overlay with scoreboardBlock data */
+      /* MRI-R39a: populate track-record overlay from track_record summary */
       var RR_TR_BODY = document.getElementById('rr-tr-body');
       if (RR_TR_BODY) {
-        RR_TR_BODY.innerHTML = scoreboardBlock(lastScored);
+        RR_TR_BODY.innerHTML = rrTrackRecordBlock(_rrTrackRecord);
       }
       /* wire dlg-events calendar cards as the inline radar selector + auto-select default */
       wireCalendarCards();
+      _rrRefreshOpenDetail();
+      _rrUpdateSnapshotNotice();
     }
 
     /* MRI-R39a: track-record overlay open/close */
@@ -1859,11 +2099,61 @@
       if (e.target === RR_TR_OVERLAY) closeTrackRecord();
     });
 
-    /* fetch — pattern mirrors sector_central.html.j2:670 */
-    fetch('macrodata/release_forecast.json', { cache: 'no-cache' })
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .catch(function(){ return null; })
-      .then(renderRadar);
+    /* Forecast snapshot is auth-gated and separately produced from the
+       official live release feed. Coalesce visible-page reloads, preserve
+       last-good facts through errors, and never run a second data writer. */
+    var _rrForecastSignature = null;
+    var _rrForecastFetching = false;
+    function _rrRefreshForecast(){
+      if (_rrForecastFetching || document.hidden) return;
+      _rrForecastFetching = true;
+      var controller = typeof AbortController === 'function' ? new AbortController() : null;
+      var watchdog = setTimeout(function(){ if (controller) controller.abort(); }, 10000);
+      fetch('macrodata/release_forecast.json', {
+        cache:'no-store',
+        signal:controller ? controller.signal : undefined
+      })
+        .then(function(response){
+          if (!response.ok) throw new Error('forecast_snapshot_unavailable');
+          return response.json();
+        })
+        .then(function(payload){
+          if (!payload || !Array.isArray(payload.upcoming)) {
+            throw new Error('invalid_forecast_snapshot');
+          }
+          _rrForecastAsOf = payload.asof || '';
+          _rrForecastFailed = false;
+          var signature = JSON.stringify(payload);
+          if (signature !== _rrForecastSignature){
+            _rrForecastSignature = signature;
+            renderRadar(payload);
+          }
+          _rrUpdateCountdowns();
+          _rrUpdateSnapshotNotice();
+        })
+        .catch(function(){
+          _rrForecastFailed = true;
+          if (_rrForecastSignature === null) renderRadar(null);
+          _rrUpdateSnapshotNotice();
+        })
+        .finally(function(){
+          clearTimeout(watchdog);
+          _rrForecastFetching = false;
+        });
+    }
+    _rrRefreshForecast();
+    setInterval(function(){
+      if (document.hidden) return;
+      _rrUpdateCountdowns();
+      _rrUpdateSnapshotNotice();
+      _rrRefreshForecast();
+    }, 60000);
+    document.addEventListener('visibilitychange', function(){
+      if (!document.hidden){ _rrUpdateCountdowns(); _rrRefreshForecast(); }
+    });
+    window.addEventListener('focus', function(){
+      if (!document.hidden) _rrRefreshForecast();
+    });
 
     /* Deep-link hook: jump the inline Release Radar panel to its default covered date
        (the "Open Release Radar" button was retired — the panel is always visible in
