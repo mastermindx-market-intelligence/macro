@@ -1,0 +1,10 @@
+{
+  "revision": "R23",
+  "source_sha256": "991dc0095a40e18199b9c4b12f041f71304edd396c464a491161b3a37637be5c",
+  "runner_blob": "b3816a9dcad3370de8c1d9e10a50e3c0868382cc",
+  "total": 12,
+  "detected": 12,
+  "variants": ["redraw_revalidation_removed", "auxclick_guard_removed", "contextmenu_guard_removed", "destination_focus_removed", "withdrawal_latch_removed", "duplicate_mount", "context_erased", "svg_handler_copied", "changed_target_ignored", "server_disabled_ignored", "unsafe_origin_accepted", "ime_filters_early"],
+  "result": "Each variant returned exit 1 with named test failures; SIGKILL is explicitly excluded from valid detection.",
+  "kind": "source-level behavioral probes, not browser proof"
+}

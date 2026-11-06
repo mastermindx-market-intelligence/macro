@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T13:39:45Z",
+ "accession": "0001652535-26-000012",
+ "cik": "0001652535",
+ "doc_byte_length": 1626154,
+ "doc_sha256": "98470118276c3c81461545eab8705a2bc6da818216de8364b63db95c7625238e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-26",
+ "primary_document": "ichr-20251226.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 494716,
+  "byte_start": 494166,
+  "normalized": "Our customers are a significant component of this consolidation, resulting in our sales being concentrated in a few customers. For 2025, two customers with individual sales over 10%, Lam Research and Applied Materials, accounted for a combined 76% of total sales. Our customers often require reduced prices or other pricing, quality, or delivery commitments as a condition to their purchasing from us or increasing their purchase volume, which can, among other things, result in reduced gross margins in order to maintain or expand our market share.",
+  "normalized_sha256": "7bb49fa4c35e5332740c8cde7a47c6ff6c25a09974942ba3442f9077a4fdc9da",
+  "raw": " Our customers are a significant component of this consolidation, resulting in our sales being concentrated in a few customers. For 2025, two customers with individual sales over 10%, Lam Research and Applied Materials, accounted for a combined 76% of total sales. Our customers often require reduced prices or other pricing, quality, or delivery commitments as a condition to their purchasing from us or increasing their purchase volume, which can, among other things, result in reduced gross margins in order to maintain or expand our market share.",
+  "raw_sha256": "1a28ca64dd8d3c54a64104476bec3ec697a5af0e492a068f70cdf2628b855b7c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1652535/000165253526000012/ichr-20251226.htm",
+ "xbrl_contexts": []
+}

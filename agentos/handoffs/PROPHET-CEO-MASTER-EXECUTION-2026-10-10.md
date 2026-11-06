@@ -1,3 +1,67 @@
+---
+workstream: WS:PROPHET-US-V4-RECOVERY
+session: prophet-ceo-master-handoff-20261010-sol-001
+model: sol
+ended_because: ci_handoff
+prs: [8759]
+mission: >-
+  Preserve the original October 10 Prophet CEO execution plan as dated continuity
+  on its existing carrier. Repair the record schema without restarting the plan,
+  transferring programme custody or asserting product or scientific acceptance.
+state_before: >-
+  PR 8759 added a 231-line handoff without leading YAML frontmatter. Its original
+  fence reported that exact record as unparseable. The author subsequently
+  released the original workspace and retained the published branch history.
+changed:
+  - path: agentos/handoffs/PROPHET-CEO-MASTER-EXECUTION-2026-10-10.md
+    what: Prepend archival handoff metadata and preserve the complete original body verbatim.
+verified:
+  - claim: The original source and release receipt were read at their immutable identities.
+    command: >-
+      GitHub connector fetch_file at 48ee616394fa6af60e2a113927de762e6b5df498
+      and original PR 8759 comment 6104527062.
+    result: >-
+      Original blob 4c1f294ef0acf045e6e826f796415810d3448741 contains 231 lines.
+      The original owner recorded APPLIED / REMOVED / dirty=false /
+      HEAD_PUBLISHED_TO_ORIGIN_BRANCH; this is retained source custody evidence,
+      not new product execution or a fleet-wide absence claim.
+  - claim: The original fence identifies an attributable missing-frontmatter defect.
+    command: GitHub workflow job log read for original fence 114366838867 in run 38104444451.
+    result: >-
+      The canonical validator reported no YAML frontmatter block for this exact
+      path, with 1602 records, one error and 593 warnings. Other historical fence
+      findings are not erased or claimed repaired by this metadata change.
+  - claim: The existing programme owner record and target-path inventory were read.
+    command: >-
+      GitHub connector reads at bdbc7b72af77ddb2b715d2354e86c7b3d21483d7 for
+      agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md and its handoff tree.
+    result: >-
+      Workstream blob 99deb83bf66c2095bb23130b167e17795de1aec5 remains unchanged.
+      This handoff is absent from the complete 829-entry main handoff inventory.
+      Current programme delegation, accepted releases and owner restrictions are
+      independent of this historical source repair.
+unverified:
+  - claim: The broader Prophet product and prospective scientific programme satisfy their original acceptance.
+    what_would_verify: >-
+      Current canonical owners must provide the original source, rights, clocks,
+      scientific admission and real signed-in production-journey evidence.
+      This archive repair performs none of those actions.
+unresolved:
+  - Preserve all existing source, review, scientific, Paper, browser and publication restrictions and uncertain effects on their original carriers.
+next_actions:
+  - Complete this documentation PR's natural new-head CI and source-release qualification on the original 8759 carrier.
+  - Before programme execution, reconcile current WS:PROPHET-US-V4-RECOVERY and issues 6817 and 6805; the original task graph below is an October snapshot, not a new dispatch.
+do_not_redo:
+  - Preserve accepted historical science, original source releases and the existing P1a, R6, B1, B4, earnings and other implementation carriers.
+  - Do not recreate a detector, ranker, Plan, database, signal authority, runtime, queue or source owner from this planning document.
+  - Do not retry any action-specific refusal or replace any active writer or uncertain effect.
+danger_areas:
+  - Historical source pins, model routes, review instructions and PR states remain dated evidence subordinate to current Chairman intent and protected source law.
+  - Documentation publication is not receiver acknowledgment, worker START, custody transfer, scientific validation, deployment, trade authority or product completion.
+---
+
+> Historical planning archive. The complete original October 10, 2026 body is preserved verbatim below. Archival metadata was added on November 6 for PR #8759. Use current owner records for execution; this repair does not restart the plan or clear its original source, effect or release restrictions.
+
 # Prophet CEO — Master Direction, Critical Path and End-to-End Execution Handoff
 
 **Status:** CHAIRMAN-COMMISSIONED / EXECUTABLE PLAN; MISSION_COMPLETE: false.

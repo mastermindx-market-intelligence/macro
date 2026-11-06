@@ -189,6 +189,8 @@ def test_native_empty_and_unverified_results_are_not_physical_missing_or_unknown
         assert s.read_raw_lines(path, missing_ok=False) == []
         text, label = s.read_tracked_claims_text(tmp_path, Path(p.BASE_PATH), legacy_reader=lambda *a: pytest.fail("native fallback"))
         assert text == "" and label.startswith("qledger-native:fixture:")
+        from scripts import build_intelligence_registry as builder
+        assert builder._load_qledger(tmp_path) == builder.QLedgerRead({}, {}, label, 0, 0)
     bad = RetainedBinding(path, {"complete": True})
     with s._synthetic_claims_binding(path, bad):
         with pytest.raises(p.SnapshotIntegrityError):
@@ -439,3 +441,39 @@ def test_native_backfill_rejects_changed_root_before_replacement(tmp_path, limit
         assert caught.value.outcome.status == "failed_before_root"
         assert binding.last_outcome == caught.value.outcome and not registrar
         assert q.load_claims(root) == [old, {"claim_id": "external"}]
+
+
+
+def test_t1_complete_stream_reuses_selected_generation_and_receipt(tmp_path, limits, monkeypatch):
+    from scripts import build_intelligence_registry as builder
+
+    path = tmp_path / p.BASE_PATH
+    raw = b'{"desk":"one","horizon_d":5}\n{bad\n{"desk":"one","horizon_d":126}\n'
+    first, later = verified(raw, limits), verified(b'{"desk":"later"}\n', limits)
+    binding = RetainedBinding(path, first, later)
+    monkeypatch.setattr(builder, "_load_legacy_qledger", lambda *a: pytest.fail("native legacy fallback"))
+    monkeypatch.setattr(s, "read_tracked_claims_text", lambda *a, **k: pytest.fail("eager native text"))
+    with s._synthetic_claims_binding(path, binding), s.ClaimsReadScope(tmp_path):
+        actual = builder._load_qledger(tmp_path)
+        assert actual.rows == {"one": 2} and actual.horizons == {"one": [5, 126]}
+        assert (actual.considered, actual.unparseable) == (3, 1)
+        assert actual.source == "qledger-native:" + first.receipt.source_id + ":" + first.receipt.root_digest
+        assert builder._load_qledger(tmp_path) == actual
+        assert binding.reads == 1
+    with s._synthetic_claims_binding(path, binding):
+        assert builder._load_qledger(tmp_path).rows == {"later": 1}
+    assert binding.reads == 2
+
+
+def test_t1_failed_native_snapshot_is_unreadable_without_legacy_fallback(tmp_path, monkeypatch):
+    from scripts import build_intelligence_registry as builder
+
+    path = tmp_path / p.BASE_PATH
+    error = p.SnapshotIntegrityError("HASH_MISMATCH", "synthetic incomplete generation")
+    binding = RetainedBinding(path, error)
+    monkeypatch.setattr(builder, "_load_legacy_qledger", lambda *a: pytest.fail("native legacy fallback"))
+    with s._synthetic_claims_binding(path, binding):
+        actual = builder._load_qledger(tmp_path)
+    assert actual.rows is actual.horizons is None
+    assert actual.source == f"qledger-native-unreadable: {error}"
+    assert (actual.considered, actual.unparseable) == (0, 0)
