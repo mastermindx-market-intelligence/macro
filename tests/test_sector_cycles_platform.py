@@ -354,6 +354,29 @@ def test_sheet_close_is_a_one_line_labelled_pill():
     assert 'x.textContent = L("Close", "关闭")' in js
 
 
+def _rule(block, selector):
+    at = block.index(selector + " {")
+    return block[at + len(selector) + 2:block.index("}", at)]
+
+
+def test_mobile_chart_controls_stay_off_the_today_guide():
+    # SIC L6.17d: at 390px the top-right full-screen button sat on the Today guide and the 当前 /
+    # TODAY label in every window, and the first hint pill covered the top label. The button moves
+    # to the y-axis gutter, the hint clears it, and the hero card flattens so the chart gets the width.
+    mob = _mobile_block(_text("sector_cycles_platform.css"))
+    btn = _rule(mob, ".sc-plat .sc-chart-fs-btn")
+    assert "left: 2px" in btn and "right: auto" in btn and "top: 8px" in btn
+    assert not re.search(r"(?<![-\w])right:\s*\d", btn), "the right edge holds the Today guide"
+    fs = _rule(mob, ".sc-plat .sc-chartwrap.sc-fs .sc-chart-fs-btn")
+    assert "left: 12px" in fs and "right: auto" in fs and "env(safe-area-inset-top)" in fs
+    hint = _rule(mob, ".sc-plat .sc-chartwrap .sc-hint-tap")
+    assert "top: 22px" in hint and "left: 56px" in hint
+    hero = _rule(mob, ".sc-plat .cyc-hero")
+    for decl in ("border: 0", "background: transparent", "box-shadow: none"):
+        assert decl in hero, decl
+    assert ".sc-plat .cyc-hero::before { content: none; }" in mob
+
+
 def test_zh_hazard_line_carries_no_latin_probability_symbol():
     # The ZH face uses the copy-deck form 转折≤1月 (cycles.hz_1m_chip.zh); the
     # Latin P( reading stays on the EN face and in the % cells' meaning.
