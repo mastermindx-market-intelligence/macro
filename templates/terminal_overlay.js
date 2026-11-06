@@ -190,7 +190,7 @@
          root's `hidden`. `opacity:0` is the one hide a descendant can never
          escape — the compositor applies it to the whole subtree. Both are kept,
          and no child may own the closed state. */
-      '#mm-terminal-overlay{--mmto-x:50vw;--mmto-y:18vh;position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;',
+      '#mm-terminal-overlay{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;',
         'visibility:hidden;opacity:0;pointer-events:none;isolation:isolate;overflow:hidden;background:var(--bg);',
         'font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f7ff}',
       '#mm-terminal-overlay.is-open{visibility:visible;opacity:1;pointer-events:auto}',
