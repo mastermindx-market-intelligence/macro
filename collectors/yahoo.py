@@ -49,7 +49,9 @@ from lib import config, delisted_symbols, store
 from lib.ticker_aliases import fetch_symbol
 from lib.yahoo_runtime_profile import (
     SECTOR_CLOSE_TICKERS, MIN_SECTOR_HISTORY_SESSIONS, capture_sector_history,
-    YahooRuntimeBindingError,
+    YahooRuntimeBindingError, YahooRuntimeOwnershipError, YahooRuntimeProfileError,
+    assert_legacy_write_allowed, bound_snapshot_for, parse_profile,
+    partition_legacy_symbols, runtime_owns,
 )
 
 log = logging.getLogger(__name__)
@@ -236,7 +238,9 @@ class YahooAdapter(Adapter):
         # the store are untouched — see _drop_delisted). `maintained_tickers()` is
         # the un-filtered view for the store-tip audit, which must still see those
         # stores; every other caller of all_tickers() wants the fetch list.
-        return _drop_delisted(list(dict.fromkeys(out)))
+        candidates = _drop_delisted(list(dict.fromkeys(out)))
+        profile = parse_profile(config.load().get("yahoo"))
+        return list(partition_legacy_symbols(profile, candidates).allowed)
 
     def maintained_tickers(self) -> list[str]:
         """Every ticker whose data/yahoo store this group owns — the fetch list PLUS
@@ -247,7 +251,9 @@ class YahooAdapter(Adapter):
         invisible to the one check that reads stores rather than fetch results, and
         an invisible store is how a wrong ledger row (or a ticker reused by a new
         issuer) would never be caught."""
-        return list(dict.fromkeys(self.all_tickers() + sorted(delisted_symbols.tickers())))
+        candidates = list(dict.fromkeys(self.all_tickers() + sorted(delisted_symbols.tickers())))
+        profile = parse_profile(config.load().get("yahoo"))
+        return list(partition_legacy_symbols(profile, candidates).allowed)
 
     def fetch(self, full_history: bool = False, *,
               capture_source_metadata: bool = False) -> dict[str, pd.DataFrame]:
@@ -266,7 +272,8 @@ class YahooAdapter(Adapter):
             self.__dict__.pop("_wti_temporal_source", None)
         self._capture_temporal_metadata = capture_source_metadata
         self._wti_download_context = None
-        tickers = self.all_tickers()
+        profile = parse_profile(config.load().get("yahoo"))
+        tickers = list(partition_legacy_symbols(profile, self.all_tickers()).allowed)
         _report_delisted_exclusions(self.maintained_tickers())
         period = "max" if full_history else "1mo"
         # Keep intraday High/Low for the volatility group (^VIX etc.) — the daily
@@ -302,6 +309,7 @@ class YahooAdapter(Adapter):
         # spends a request per night probing a security that stopped existing.
         extras = _drop_delisted(
             config.load().get("stock_search", {}).get("extra_tickers", []) or [])
+        extras = list(partition_legacy_symbols(profile, extras).allowed)
         self._fill_missing_extras(frames, [t for t in extras if t not in deferred])
         # M3: `deferred` names WERE returned this run (yfinance served real data for
         # them) — they were pulled out of `frames` only because `_rebase_shifted`'s
@@ -683,6 +691,9 @@ class YahooAdapter(Adapter):
         fails is DROPPED from this run — never spliced — leaving the store
         untouched so the guard re-flags it the next night. Returns the tickers
         dropped without a heal (the caller keeps them away from the Stooq refill)."""
+        profile = parse_profile(config.load().get("yahoo"))
+        for ticker in frames:
+            assert_legacy_write_allowed(profile, group="yahoo", symbol=ticker)
         tol = float(self.cfg.get("upsert_basis_tol", 1e-3))
         shifted = [t for t, f in frames.items()
                    if store.basis_shifted(self.group, t, f, tol=tol)]
@@ -704,7 +715,9 @@ class YahooAdapter(Adapter):
             batch = shifted[i:i + bs]
             try:
                 df = self._download([fetch_symbol(t) for t in batch], "max")
-            except Exception as e:  # noqa: BLE001 — degrade: skip tonight, re-flag next run
+            except (YahooRuntimeBindingError, YahooRuntimeOwnershipError, YahooRuntimeProfileError):
+                raise
+            except Exception as e:  # noqa: BLE001 — legacy provider failures stay deferred
                 log.warning("yahoo: basis refetch failed for %d name(s) (%s) — kept out "
                             "of this run; the guard retries next night", len(batch), e)
                 continue
@@ -726,6 +739,8 @@ class YahooAdapter(Adapter):
         US symbols Stooq's ``.us`` feed understands, not crypto/futures/indices)
         and never fatal — Stooq is IP-gated, so a block just leaves the name
         missing, no worse than before."""
+        profile = parse_profile(config.load().get("yahoo"))
+        extras = list(partition_legacy_symbols(profile, extras).allowed)
         missing = [t for t in extras if not str(t).startswith("^") and t not in frames]
         if not missing:
             return frames
@@ -746,6 +761,9 @@ class YahooAdapter(Adapter):
     def _download(self, batch: list[str], period: str, *,
                   request_settings: YahooRequestSettings | None = None) -> pd.DataFrame:
         if request_settings is None:
+            profile = parse_profile(config.load().get("yahoo"))
+            for ticker in batch:
+                assert_legacy_write_allowed(profile, group="yahoo", symbol=ticker)
             self._wti_download_context = None
         retries = self.cfg["retries"] if request_settings is None else request_settings.retries
         last_exc: Exception | None = None
@@ -865,6 +883,19 @@ ENGINE_CRITICAL_SERIES: tuple[str, ...] = (
 )
 
 
+def _diagnostic_partition(tickers, *, group="yahoo"):
+    """An unbound legacy audit cannot judge the transferred runtime histories."""
+    if group != "yahoo":
+        return list(tickers), []
+    profile = parse_profile(config.load().get("yahoo"))
+    allowed, excluded = [], []
+    for ticker in tickers:
+        owned = runtime_owns(profile, group=group, symbol=ticker)
+        bound = bound_snapshot_for(group=group, symbol=ticker) is not None
+        (excluded if owned and not bound else allowed).append(ticker)
+    return allowed, excluded
+
+
 def check_yahoo_freshness(max_lag_sessions: int = 3, min_rows: int = 1000) -> list[dict]:
     """NYSE-calendar freshness + row-floor check on the engine-critical yahoo names.
 
@@ -880,7 +911,11 @@ def check_yahoo_freshness(max_lag_sessions: int = 3, min_rows: int = 1000) -> li
 
     expected = nyse_calendar.expected_last_session()
     problems: list[dict] = []
-    for series in ENGINE_CRITICAL_SERIES:
+    checked, excluded = _diagnostic_partition(ENGINE_CRITICAL_SERIES)
+    if excluded:
+        log.info("yahoo freshness: runtime-owned names excluded from legacy audit: %s",
+                 ", ".join(excluded))
+    for series in checked:
         df = store.read("yahoo", series)
         rows = 0 if df is None else len(df)
         last = None if (df is None or df.empty) else pd.Timestamp(df.index.max()).date()
@@ -911,7 +946,7 @@ def check_yahoo_freshness(max_lag_sessions: int = 3, min_rows: int = 1000) -> li
         _write_stale_series(problems)
     else:
         log.info("yahoo freshness: all %d engine-critical series fresh "
-                 "(last expected session %s)", len(ENGINE_CRITICAL_SERIES), expected)
+                 "(last expected session %s)", len(checked), expected)
     return problems
 
 
@@ -944,6 +979,11 @@ def audit_store_freshness(tickers: list[str], group: str = "yahoo") -> dict:
     {"ref": <ISO date str | None>, "stale": {ticker: tip}, "stub": {ticker: rows},
     "missing": [ticker, ...], "delisted": {ticker: tip}} so a caller/test can
     assert on the classification."""
+    tickers, runtime_excluded = _diagnostic_partition(tickers, group=group)
+    if runtime_excluded:
+        print(f"::notice title={group} store audit runtime owner::"
+              f"{len(runtime_excluded)} transferred name(s) excluded from this legacy audit: "
+              f"{', '.join(runtime_excluded)}", flush=True)
     tips: dict[str, pd.Timestamp] = {}
     rows_by: dict[str, int] = {}
     missing: list[str] = []
@@ -1023,5 +1063,8 @@ def audit_store_freshness(tickers: list[str], group: str = "yahoo") -> dict:
         if _behind_wall > _STALE_CAL_DAYS:
             print(f"::warning title={group} store audit tip stale::group ref tip {ref} "
                   f"is >{_STALE_CAL_DAYS}d behind today — possible collector outage", flush=True)
-    return {"ref": ref, "stale": stale, "stub": stub, "missing": missing,
-            "delisted": delisted}
+    result = {"ref": ref, "stale": stale, "stub": stub, "missing": missing,
+              "delisted": delisted}
+    if runtime_excluded:
+        result["excluded_runtime"] = runtime_excluded
+    return result

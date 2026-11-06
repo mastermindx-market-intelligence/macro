@@ -3,7 +3,7 @@
   "root_id": "macro-always-on-shared-shell-20261105-c3",
   "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
   "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
-  "recorded_at": "2026-11-06T06:13:48.494493+00:00",
+  "recorded_at": "2026-11-06T06:31:01.720298+00:00",
   "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
   "entries": [
     {
@@ -818,6 +818,49 @@
       "source_targets_unchanged": [
         ".github/ci/legacy-jobs.yml",
         "tests/test_ci_pack.py"
+      ]
+    },
+    "runtime_read_write_binding": {
+      "base_sha": "2a946654f3f31cf38e5fdb90160656c6d02db6e9",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_RUNTIME_BINDING_FENCES_2026-11-06.md",
+      "proof": {
+        "command": "python -m pytest -q tests/test_yahoo_runtime_profile.py tests/test_dual_basis_store.py tests/test_upsert_basis_guard.py tests/test_basket_index_recency_guard.py tests/test_yahoo_freshness.py tests/test_yahoo_availability_capture.py tests/test_yahoo_cycle_acquisition.py tests/test_collector_freshness_disclosure.py tests/test_circuit_breaker_recovery.py",
+        "passed": 283,
+        "warnings": 15,
+        "exit_code": 0,
+        "log": "/tmp/mmx-runtime-binding-final-20261106.log",
+        "log_sha256": "874e8be0d6c49bb87e4675f30974e1a4c7bd4dc10247c9d0c68dcf03a8268421"
+      },
+      "behavior": [
+        "One existing ContextVar permits explicit read-only shadow/runtime binding without global profile mutation.",
+        "Bound store and basket reads precede configuration/path/cache; unbound runtime reads refuse without fallback; engine.inputs inherits store basis behavior.",
+        "Upsert and legacy initial/rebase/Stooq paths fenced; typed control refusals propagate and runner marks blocked.",
+        "Legacy diagnostics disclose runtime exclusions; old availability-capture cohort remains unchanged."
+      ],
+      "remaining": [
+        "private coherent input publication and process bootstrap bindings",
+        "legacy consumer retirement/transfer drain and anti-downgrade",
+        "source updater recovery and first-install proof",
+        "broad/member/board inputs",
+        "complete native core/history and Terminal binding",
+        "CI capability resolution, protected release and authenticated beta acceptance"
+      ]
+    },
+    "terminal_queue_latest": {
+      "pr": 1311,
+      "head": "847af34df5f811fa4a9152936e42d199b8a45b08",
+      "state": "OPEN",
+      "merged": false,
+      "queue_entry_id": "MQE_lQDOTOzwKM8AAAABNMUtA84ABTs-zgPEicQ",
+      "position": 61,
+      "estimated_time_to_merge_seconds": 4713,
+      "evidence": "read-only original GitHub GraphQL queue response, Studio PID28076 exit0; ETA is an observation, not a completion promise",
+      "mutation": "none; original carrier retained",
+      "recorded_at": "2026-11-06T06:31:01.721091+00:00",
+      "observation_window_utc": [
+        "2026-11-06T06:17:16Z",
+        "2026-11-06T06:29:24Z"
       ]
     }
   }

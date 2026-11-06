@@ -474,7 +474,30 @@ def _path(group: str, name: str) -> Path:
     return p
 
 
+def read_runtime_history(group: str, name: str) -> pd.DataFrame | None:
+    """Bound-first read admission shared by store and direct member readers.
+
+    None permits the ordinary legacy path. Runtime-owned missing binding raises;
+    it is never represented by None and cannot fall back to checkout data.
+    """
+    from lib.yahoo_runtime_profile import (
+        bound_snapshot_for, cohort_covers, parse_profile, require_snapshot, runtime_owns,
+    )
+    if not cohort_covers(group=group, symbol=name):
+        return None
+    snapshot = bound_snapshot_for(group=group, symbol=name)
+    if snapshot is not None:
+        return snapshot.frame(name)
+    profile = parse_profile(config.load().get("yahoo"))
+    if runtime_owns(profile, group=group, symbol=name):
+        return require_snapshot(profile).frame(name)
+    return None
+
+
 def read(group: str, name: str) -> pd.DataFrame | None:
+    runtime_frame = read_runtime_history(group, name)
+    if runtime_frame is not None:
+        return runtime_frame
     p = _path(group, name)
     if not p.exists():
         return None
@@ -582,6 +605,12 @@ def upsert(group: str, name: str, new: pd.DataFrame, outlier_col: str | None = N
     cache rather than splice a stale adjustment basis against newer stored rows.
     Reaching that timestamp still allows complete overlap replacement, including
     omitted interior bars. See research/ENGINE_FIX_MASTERPLAN.md §W6-CN fix 2."""
+    from lib.yahoo_runtime_profile import (
+        assert_legacy_write_allowed, cohort_covers, parse_profile,
+    )
+    if cohort_covers(group=group, symbol=name):
+        assert_legacy_write_allowed(
+            parse_profile(config.load().get("yahoo")), group=group, symbol=name)
     if new is None or new.empty:
         raise ValueError(f"upsert called with empty frame for {group}/{name}")
     new = _normalise_merge_frame(new, normalize_index=normalize_index)
@@ -721,18 +750,24 @@ def basis_shifted(group: str, name: str, new: pd.DataFrame, col: str = "close",
     Compares ``col`` on the overlap dates; a relative diff > ``tol`` is a shift.
     NO overlap at all (stored series ended before the window starts) also
     returns True — the basis is unverifiable and a splice would leave a bar gap.
-    False when nothing is stored yet (fresh name — nothing to corrupt). Never
-    raises: on a comparison error it logs and returns False (old splice
+    False when nothing is stored yet (fresh name — nothing to corrupt). Typed
+    ownership/profile/binding refusals propagate. Ordinary comparison errors
+    log and return False (old splice
     behavior). Callers respond by discarding the window and refetching
     period='max' for the flagged name — ported from the odds-store guard in
     scripts/build_odds.ensure_store.
 
     The comparison itself is the PURE ``compare_basis``; this wrapper adds the
     store read, the log lines and the boolean this contract has always returned."""
+    from lib.yahoo_runtime_profile import (
+        YahooRuntimeBindingError, YahooRuntimeOwnershipError, YahooRuntimeProfileError,
+    )
     try:
         old = read(group, name)
         comparison = compare_basis(old, new, col=col, tol=tol)
-    except Exception as e:  # noqa: BLE001 — a guard must never kill the collect
+    except (YahooRuntimeBindingError, YahooRuntimeOwnershipError, YahooRuntimeProfileError):
+        raise  # Ownership/binding refusal is not a harmless comparison failure.
+    except Exception as e:  # noqa: BLE001 — legacy comparison failure remains permissive
         log.warning("basis guard %s/%s: comparison failed (%s) — treating as unshifted",
                     group, name, e)
         return False

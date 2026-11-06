@@ -356,3 +356,213 @@ def test_yahoo_donor_requires_binding_and_returns_bound_copy(runtime_config, mon
     with bind_snapshot(profile, cohort()):
         result = heal._read_donor(tmp_path, "data/yahoo", "SPY")
         assert result.iloc[0]["close_price"] == 110
+
+
+@pytest.mark.parametrize("mode", ["shadow", "runtime"])
+def test_bound_snapshot_precedes_configuration_store_and_basket_cache(monkeypatch, mode):
+    from engine import basket_index, inputs
+    from lib import config, store
+    selected = cohort()
+    marker = frame(900)
+    monkeypatch.setitem(basket_index._CACHE, "SPY", marker)
+    monkeypatch.setattr(config, "load", fail)
+    monkeypatch.setattr(config, "data_dir", fail)
+    monkeypatch.setattr(store, "_path", fail)
+    monkeypatch.setattr(pd, "read_parquet", fail)
+    profile = YahooRuntimeProfile(mode=mode)
+    with bind_snapshot(profile, selected):
+        first = store.read("yahoo", "SPY")
+        assert first.iloc[0]["close"] == 100
+        first.iloc[0, 0] = 888
+        assert store.read("yahoo", "SPY").iloc[0]["close"] == 100
+        tr = inputs._yahoo_close("SPY", basis="tr")
+        price = inputs._yahoo_close("SPY", basis="price")
+        assert tr.iloc[0] == 100 and price.iloc[0] == 110
+        assert tr.attrs["price_basis"] == "tr"
+        assert price.attrs["price_basis"] == "price"
+        candle = basket_index._load_member_ohlcv("SPY")
+        assert candle.iloc[0]["close"] == 100
+        assert candle.iloc[0]["open"] == 100
+        candle.iloc[0, 0] = 999
+        assert basket_index._load_member_ohlcv("SPY").iloc[0]["open"] == 100
+        assert basket_index._CACHE["SPY"] is marker
+        assert require_snapshot(profile).generation_id == "generation-a"
+    assert basket_index._CACHE["SPY"] is marker
+    with pytest.raises(YahooRuntimeBindingError):
+        require_snapshot(profile)
+
+
+def test_explicit_shadow_scope_does_not_activate_global_ownership(monkeypatch):
+    from lib import config, store
+    cfg = {"yahoo": {"sector_runtime": profile_config("legacy")}}
+    monkeypatch.setattr(config, "load", lambda: cfg)
+    monkeypatch.setattr(store, "_path", fail)
+    monkeypatch.setattr(store, "_guard_outliers", fail)
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", fail)
+    with bind_snapshot(YahooRuntimeProfile(mode="shadow"), cohort()):
+        assert parse_profile(cfg["yahoo"]).mode == "legacy"
+        with pytest.raises(YahooRuntimeOwnershipError):
+            store.upsert("yahoo", "SPY", frame())
+        partition = partition_legacy_symbols(parse_profile(cfg["yahoo"]), ["SPY", "AAPL"])
+        assert partition.allowed == ("AAPL",) and partition.excluded == ("SPY",)
+    assert parse_profile(cfg["yahoo"]).mode == "legacy"
+    assert partition_legacy_symbols(parse_profile(cfg["yahoo"]), ["SPY"]).allowed == ("SPY",)
+
+
+def test_legacy_profile_cannot_open_a_verified_binding():
+    with pytest.raises(YahooRuntimeBindingError, match="PROFILE_NOT_ACTIVE"):
+        with bind_snapshot(YahooRuntimeProfile(mode="legacy"), cohort()):
+            pass
+
+
+@pytest.mark.parametrize("consumer", ["store", "inputs", "basket", "basis_guard"])
+def test_unbound_runtime_read_refuses_before_even_a_poisoned_cache(runtime_config, monkeypatch, consumer):
+    from engine import basket_index, inputs
+    from lib import config, store
+    monkeypatch.setitem(basket_index._CACHE, "SPY", frame(999))
+    monkeypatch.setattr(store, "_path", fail)
+    monkeypatch.setattr(config, "data_dir", fail)
+    monkeypatch.setattr(pd, "read_parquet", fail)
+    call = {
+        "store": lambda: store.read("yahoo", "SPY"),
+        "inputs": lambda: inputs._yahoo_close("SPY"),
+        "basket": lambda: basket_index._load_member_ohlcv("SPY"),
+        "basis_guard": lambda: store.basis_shifted("yahoo", "SPY", frame()),
+    }[consumer]
+    with pytest.raises(YahooRuntimeBindingError):
+        call()
+
+
+def test_bound_candle_preserves_supplied_ohlc_without_reading_donors(monkeypatch):
+    from engine import basket_index
+    from lib import config
+    selected = cohort()
+    for value in selected.frames.values():
+        value["open"] = value["close"] - .2
+        value["high"] = value["close"] + .3
+        value["low"] = value["close"] - .4
+    monkeypatch.setattr(config, "load", fail)
+    monkeypatch.setattr(config, "data_dir", fail)
+    with bind_snapshot(YahooRuntimeProfile(mode="shadow"), selected):
+        candle = basket_index._load_member_ohlcv("SPY")
+        assert candle.iloc[0]["open"] == pytest.approx(99.8)
+        assert candle.iloc[0]["high"] == pytest.approx(100.3)
+        assert candle.iloc[0]["low"] == pytest.approx(99.6)
+
+
+def test_runtime_upsert_refuses_before_read_quarantine_path_or_write(runtime_config, monkeypatch):
+    from lib import store
+    monkeypatch.setattr(store, "read", fail)
+    monkeypatch.setattr(store, "_guard_outliers", fail)
+    monkeypatch.setattr(store, "_path", fail)
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", fail)
+    with pytest.raises(YahooRuntimeOwnershipError):
+        store.upsert("yahoo", "SPY", frame())
+
+
+def test_legacy_fetch_excludes_transferred_names_from_initial_rebase_and_stooq(monkeypatch):
+    from collectors import yahoo
+    from lib import config, delisted_symbols, store, stooq
+    cfg = {"yahoo": {"sector_runtime": profile_config(), "batch_size": 50,
+           "retries": 1, "backoff_base_s": 0,
+           "tickers": {"core": ["SPY", "AAPL"], "vol": []}},
+           "stock_search": {"extra_tickers": ["IWM", "NVDA"]}, "themes": {}}
+    monkeypatch.setattr(config, "load", lambda: cfg)
+    monkeypatch.setattr(delisted_symbols, "tickers", lambda: set())
+    monkeypatch.setattr(delisted_symbols, "ledger", lambda: {})
+    adapter = yahoo.YahooAdapter()
+    requests, compared, fallback = [], [], []
+    def download(batch, period):
+        requests.append((tuple(batch), period))
+        data = pd.DataFrame({"Close": [110, 111], "Adj Close": [100, 101],
+                             "Volume": [1000, 1100]},
+                            index=pd.date_range("2026-11-02", periods=2))
+        return pd.concat({"AAPL": data}, axis=1)
+    monkeypatch.setattr(adapter, "_download", download)
+    monkeypatch.setattr(store, "basis_shifted",
+                        lambda group, ticker, df, **kw: compared.append(ticker) or True)
+    monkeypatch.setattr(stooq, "stooq_daily", lambda ticker: fallback.append(ticker) or frame())
+    result = adapter.fetch()
+    assert set(result) == {"AAPL", "NVDA"}
+    assert requests == [(("AAPL", "NVDA"), "1mo"), (("AAPL",), "max")]
+    assert compared == ["AAPL"] and fallback == ["NVDA"]
+    assert adapter.maintained_tickers() == ["AAPL", "NVDA"]
+
+
+@pytest.mark.parametrize("entry", ["download", "rebase"])
+def test_defensive_legacy_provider_guard_precedes_request_and_sleep(runtime_config, monkeypatch, entry):
+    from collectors import yahoo
+    from lib import store
+    adapter = yahoo.YahooAdapter(yahoo_config={"batch_size": 14, "retries": 2, "backoff_base_s": 0})
+    monkeypatch.setattr(yahoo.yf, "download", fail)
+    monkeypatch.setattr(yahoo.time, "sleep", fail)
+    monkeypatch.setattr(store, "basis_shifted", fail)
+    with pytest.raises(YahooRuntimeOwnershipError):
+        if entry == "download":
+            adapter._download(["SPY"], "max")
+        else:
+            adapter._rebase_shifted({"SPY": frame()}, set())
+
+
+def test_rebase_cannot_swallow_an_ownership_refusal(monkeypatch):
+    from collectors import yahoo
+    from lib import config, store
+    monkeypatch.setattr(config, "load", lambda: {"yahoo": {}})
+    adapter = yahoo.YahooAdapter(yahoo_config={"batch_size": 14})
+    monkeypatch.setattr(store, "basis_shifted", lambda *a, **kw: True)
+    def denied(*args, **kwargs):
+        raise YahooRuntimeOwnershipError()
+    monkeypatch.setattr(adapter, "_download", denied)
+    with pytest.raises(YahooRuntimeOwnershipError):
+        adapter._rebase_shifted({"AAPL": frame()}, set())
+
+
+def test_legacy_diagnostics_disclose_transfer_without_reading_it(runtime_config, monkeypatch, capsys, caplog):
+    from collectors import yahoo
+    from lib import delisted_symbols, store
+    reads = []
+    def read(group, ticker):
+        assert ticker not in SECTOR_CLOSE_TICKERS
+        reads.append(ticker)
+        return frame()
+    monkeypatch.setattr(store, "read", read)
+    monkeypatch.setattr(delisted_symbols, "ledger", lambda: {})
+    with caplog.at_level("INFO"):
+        assert yahoo.check_yahoo_freshness() == []
+    assert "SPY" not in reads
+    assert "excluded from legacy audit" in caplog.text
+    reads.clear()
+    audit = yahoo.audit_store_freshness(["SPY", "IWM", "AAPL"])
+    assert reads == ["AAPL"] and audit["excluded_runtime"] == ["SPY", "IWM"]
+    assert audit["missing"] == [] and not audit["stale"] and not audit["stub"]
+    assert "transferred name(s) excluded" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("kind,code", [
+    ("owner", "YAHOO_RUNTIME_OWNER"),
+    ("binding", "YAHOO_RUNTIME_BINDING_REQUIRED"),
+    ("profile", "YAHOO_RUNTIME_PROFILE_INVALID"),
+])
+def test_runner_classifies_runtime_admission_as_blocked(monkeypatch, kind, code):
+    from collectors import base, yahoo
+    monkeypatch.setattr(base, "_breaker_state", lambda: {})
+    adapter = yahoo.YahooAdapter(yahoo_config={})
+    def denied(**kwargs):
+        if kind == "owner":
+            raise YahooRuntimeOwnershipError()
+        if kind == "binding":
+            raise YahooRuntimeBindingError()
+        raise YahooRuntimeProfileError("private diagnostic")
+    monkeypatch.setattr(adapter, "fetch", denied)
+    result = base.run_adapter(adapter)
+    assert result.status == "blocked" and result.error == code and result.rows == 0
+
+
+def test_empty_legacy_capture_does_not_report_transferred_names_as_missing(runtime_config, monkeypatch):
+    from collectors import base, yahoo
+    monkeypatch.setattr(base, "_breaker_state", lambda: {})
+    adapter = yahoo.YahooAdapter(yahoo_config={})
+    monkeypatch.setattr(adapter, "fetch", lambda **kwargs: {})
+    result = base.run_adapter(adapter, capture_yahoo_receipts=True)
+    assert result.status == "ok" and result.rows == 0 and result.last_date is None
+    assert not any("no qualified returned observation" in note for note in result.notes)

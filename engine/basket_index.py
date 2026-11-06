@@ -41,7 +41,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from lib import config
+from lib import config, store as data_store
 
 log = logging.getLogger(__name__)
 
@@ -171,6 +171,16 @@ def _load_member_ohlcv(ticker: str) -> pd.DataFrame | None:
     Deep store preferred, but all existing fallback stores are recency-probed
     (index-only read); the freshest usable tail wins, preserving provider order
     on equal timestamps. A stale/empty deep tape is healed without misdating it."""
+    runtime_frame = data_store.read_runtime_history("yahoo", ticker)
+    if runtime_frame is not None:
+        # Preserve the existing Yahoo close-only candle representation, but use
+        # this verified generation before any global cache or fallback store.
+        for column in ("open", "high", "low"):
+            if column not in runtime_frame.columns:
+                runtime_frame[column] = runtime_frame["close"]
+        if "volume" not in runtime_frame.columns:
+            runtime_frame["volume"] = np.nan
+        return runtime_frame[OHLCV_COLS].copy(deep=True)
     if ticker in _CACHE:
         return _CACHE[ticker]
     out: pd.DataFrame | None = None

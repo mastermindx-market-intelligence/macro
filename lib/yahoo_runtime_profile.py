@@ -87,11 +87,13 @@ def parse_profile(yahoo_config: Mapping[str, Any] | None) -> YahooRuntimeProfile
     return YahooRuntimeProfile(mode=raw["mode"], declared=True)
 
 
+def cohort_covers(*, group: str, symbol: str) -> bool:
+    return (group == "yahoo" and isinstance(symbol, str)
+            and symbol.strip().upper() in SECTOR_CLOSE_TICKERS)
+
+
 def runtime_owns(profile: YahooRuntimeProfile, *, group: str, symbol: str) -> bool:
-    return (
-        profile.mode == "runtime" and group == "yahoo"
-        and isinstance(symbol, str) and symbol.strip().upper() in SECTOR_CLOSE_TICKERS
-    )
+    return profile.mode == "runtime" and cohort_covers(group=group, symbol=symbol)
 
 
 def partition_legacy_symbols(
@@ -105,7 +107,8 @@ def partition_legacy_symbols(
     for symbol in symbols:
         if not isinstance(symbol, str):
             raise TypeError("Symbols must be strings")
-        (excluded if runtime_owns(profile, group="yahoo", symbol=symbol)
+        (excluded if (runtime_owns(profile, group="yahoo", symbol=symbol)
+                      or bound_snapshot_for(group="yahoo", symbol=symbol) is not None)
          else allowed).append(symbol)
     return SymbolPartition(tuple(allowed), tuple(excluded))
 
@@ -113,7 +116,8 @@ def partition_legacy_symbols(
 def assert_legacy_write_allowed(
     profile: YahooRuntimeProfile, *, group: str, symbol: str
 ) -> None:
-    if runtime_owns(profile, group=group, symbol=symbol):
+    if (runtime_owns(profile, group=group, symbol=symbol)
+            or bound_snapshot_for(group=group, symbol=symbol) is not None):
         raise YahooRuntimeOwnershipError()
 
 
@@ -149,6 +153,16 @@ class YahooSnapshot:
 _BOUND_SNAPSHOT: ContextVar[YahooSnapshot | None] = ContextVar(
     "sector_yahoo_verified_snapshot", default=None
 )
+
+
+def bound_snapshot_for(*, group: str, symbol: str) -> YahooSnapshot | None:
+    """Observe only this calculation's existing binding, never resolve latest.
+
+    An explicit verified binding may be used for a shadow calculation while
+    global ownership remains legacy. It is a read-only scope for the cohort;
+    it does not change the global transfer profile.
+    """
+    return _BOUND_SNAPSHOT.get() if cohort_covers(group=group, symbol=symbol) else None
 
 
 def capture_sector_history(
@@ -238,7 +252,7 @@ def bind_snapshot(
     profile: YahooRuntimeProfile, verified_cohort: VerifiedYahooCohort
 ) -> Iterator[YahooSnapshot]:
     """Pin one verified generation for the entire synchronous/async context."""
-    if profile.mode != "runtime":
+    if profile.mode not in ("shadow", "runtime"):
         raise YahooRuntimeBindingError("YAHOO_RUNTIME_PROFILE_NOT_ACTIVE")
     snapshot = _capture(verified_cohort)
     current = _BOUND_SNAPSHOT.get()
@@ -265,6 +279,6 @@ def bind_snapshot(
 def require_snapshot(profile: YahooRuntimeProfile) -> YahooSnapshot:
     """Never resolve latest, read a checkout or restart a provider as fallback."""
     snapshot = _BOUND_SNAPSHOT.get()
-    if profile.mode != "runtime" or snapshot is None:
+    if profile.mode not in ("shadow", "runtime") or snapshot is None:
         raise YahooRuntimeBindingError()
     return snapshot
