@@ -3885,53 +3885,53 @@
     "health": {
       "valuation": {
         "table": "valuation",
-        "asof": "2026-11-04",
+        "asof": "2026-11-06",
         "lag_days": 0,
         "state": "fresh",
         "lag_sessions": 0,
-        "expected_session": "2026-11-04",
+        "expected_session": "2026-11-06",
         "calendar_verified": true
       },
       "margin": {
         "table": "margin",
-        "asof": "2026-11-03",
+        "asof": "2026-11-05",
         "lag_days": 1,
         "state": "fresh",
         "lag_sessions": 1,
-        "expected_session": "2026-11-04",
+        "expected_session": "2026-11-06",
         "calendar_verified": true
       },
       "moneyflow": {
         "table": "moneyflow",
-        "asof": "2026-11-04",
+        "asof": "2026-11-06",
         "lag_days": 0,
         "state": "fresh",
         "lag_sessions": 0,
-        "expected_session": "2026-11-04",
+        "expected_session": "2026-11-06",
         "calendar_verified": true
       },
       "chips": {
         "table": "chips",
-        "asof": "2026-11-04",
+        "asof": "2026-11-06",
         "lag_days": 0,
         "state": "fresh",
         "lag_sessions": 0,
-        "expected_session": "2026-11-04",
+        "expected_session": "2026-11-06",
         "calendar_verified": true
       },
       "broker": {
         "table": "broker",
-        "asof": "2026-11-04",
+        "asof": "2026-11-06",
         "lag_days": 0,
         "state": "fresh"
       },
       "forecast": {
         "table": "forecast",
         "asof": "2026-11-02",
-        "lag_days": 2,
+        "lag_days": 4,
         "state": "fresh"
       }
     },
-    "asof": "2026-11-04 16:33:59.456052+00:00"
+    "asof": "2026-11-06 15:20:23.642828+00:00"
   }
 }
