@@ -1,5 +1,43 @@
 # Validation evidence
 
+## Current-main recovery — 2026-11-06
+
+The unchanged original adapter was tested with the first new regression set:
+**43 failures / 106 passes / zero errors or skips** across149 cases. A separate
+actual subprocess CLI packet with `coverage_by_era=[]` reproduced an
+`AttributeError` and no structured report. These failures preceded source repair.
+
+The repair validates nonblank textual receipt metadata, nonempty list/tuple
+evidence references, coverage mapping shape and actual canonical calendar
+intervals for peers. Interval membership remains start-inclusive/end-exclusive,
+with only `None` denoting an open end. Scientific thresholds and all original
+source/detector/identity contracts remain unchanged.
+
+Current-main verification of the three original focused targets now passes
+**625 tests**, zero failures, errors or skips, in13.10s pytest execution
+(14.301s parent wall time), using Python3.14.7 on the admitted host.
+The default data guard obtained zero initial dirty entries; the default module
+guard recorded zero leaks. Neither guard was disabled or modified. Hosted
+Python3.12 execution remains separately owed.
+
+Adapter SHA256:
+`e62fde6b06c0cdff76036802ce2345b4f099b7f65d9840816cb490093b474eb6`.
+Test module SHA256:
+`21ea28ddc8f82762d833e86bf9153059122e4fc70e8787b48627b98df1e422fd`.
+Current source receipt SHA256:
+`2f4bd25c3d4237e751871268d22751e803a8a2b434d5b136fdf78f68b95238a2`.
+
+The previous actual-data result and October test/review artifacts are preserved
+unchanged. New synthetic success does not alter NOT_ADMITTED, grant source rights,
+prove population parity, produce scientific estimates or complete the original r2.
+Current source-only engineering self-check is not represented as independent review.
+
+## Retained October validation evidence
+
+The counts, revisions and procedures below describe the historical candidate.
+Current delivery requirements and the unstarted r2 disposition are recorded in
+`EXACT_NEXT_ACTION.md` and the original PR.
+
 Test-first RED: the adapter was absent; F01 failed with the explicit
 `research adapter not implemented` assertion. An earlier fixture-import attempt
 produced setup errors, was corrected, and is not counted as the behavioral RED.

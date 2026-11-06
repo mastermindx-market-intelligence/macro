@@ -96,12 +96,24 @@ def qualify(result: SourceQualificationResult, source_object: Any,
                 'evidence_refs')
     for field in required:
         value = getattr(result, field)
-        if value is None or value == '' or value == () or value == {}:
+        if value is None or value == '' or value == () or value == [] or value == {}:
             unknown.append('MISSING_' + field.upper())
-    if result.source_sha and not re.fullmatch('[0-9a-f]{40}', result.source_sha):
+    for field in ('source_owner_interface', 'dataset_designation',
+                  'license_or_permission_receipt_ref'):
+        value = getattr(result, field)
+        if value is not None and (not isinstance(value, str) or not value.strip()):
+            failures.append('INVALID_' + field.upper())
+    refs = result.evidence_refs
+    if refs is not None and (not isinstance(refs, (list, tuple))
+                            or any(not isinstance(ref, str) or not ref.strip() for ref in refs)):
+        failures.append('INVALID_EVIDENCE_REFS')
+    if result.source_sha and (not isinstance(result.source_sha, str)
+                              or not re.fullmatch('[0-9a-f]{40}', result.source_sha)):
         failures.append('INVALID_SOURCE_REF')
     if result.coverage_by_era is not None:
-        if any(type(n) is not int or n < 0 for n in result.coverage_by_era.values()):
+        if not isinstance(result.coverage_by_era, dict):
+            failures.append('INVALID_COVERAGE_COUNTS')
+        elif any(type(n) is not int or n < 0 for n in result.coverage_by_era.values()):
             failures.append('INVALID_COVERAGE_COUNTS')
         elif not any(n > 0 for n in result.coverage_by_era.values()):
             unknown.append('NO_OBSERVED_COVERAGE')
@@ -249,6 +261,22 @@ def check_benchmark_inception(on: str, first_session: str) -> None:
         raise NotQualified('BENCHMARK_NOT_LISTED')
 
 
+def _peer_identity_valid_at(row: dict, on: date) -> bool:
+    """Require a real, ordered [start, end) interval; None alone means open end."""
+    try:
+        start_value = row.get('valid_from')
+        start = date.fromisoformat(start_value)
+        if start.isoformat() != start_value:
+            return False
+        end_value = row.get('valid_to')
+        end = date.fromisoformat(end_value) if end_value is not None else None
+        if end is not None and (end.isoformat() != end_value or end <= start):
+            return False
+        return start <= on and (end is None or on < end)
+    except (TypeError, ValueError):
+        return False
+
+
 def freeze_peers(rows: list[dict], subject_issuer: str, sector: str,
                  lagged_session: str, *, decision_at: str | None = None) -> tuple[list[dict], dict[str, int]]:
     """Freeze at an explicit instant; absent cutoff uses conservative UTC midnight.
@@ -283,8 +311,7 @@ def freeze_peers(rows: list[dict], subject_issuer: str, sector: str,
             elif (row.get('historical_identity_basis') != 'OWNER_VALID_TIME'
                   or not row.get('evidence_ref') or not row.get('known_at')):
                 reason = 'HISTORICAL_IDENTITY_UNKNOWN'
-            elif (not row.get('valid_from') or row['valid_from'] > lagged_session
-                  or (row.get('valid_to') and lagged_session >= row['valid_to'])):
+            elif not _peer_identity_valid_at(row, cutoff.date()):
                 reason = 'IDENTITY_NOT_VALID'
             elif _utc(row['known_at']) > cutoff:
                 reason = 'IDENTITY_NOT_KNOWN'

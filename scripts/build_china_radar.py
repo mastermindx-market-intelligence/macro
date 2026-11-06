@@ -30,6 +30,16 @@ def _site_dir() -> Path:
     return sd if sd.is_absolute() else (config.ROOT / sd)
 
 
+def _load_radar_ic() -> dict:
+    """Read the committed data/china_hub/radar_ic.json. Display-only, never raises."""
+    try:
+        path = config.data_dir() / "china_hub" / "radar_ic.json"
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        return doc if isinstance(doc, dict) else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
 def build() -> dict | None:
     from engine import china_radar as cr
     from engine import china_radar_ledger as ledger
@@ -44,7 +54,8 @@ def build() -> dict | None:
         loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=False)
     from engine import i18n
     env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
-    html = env.get_template("china_radar.html.j2").render(radar=radar, ledger=track)
+    html = env.get_template("china_radar.html.j2").render(
+        radar=radar, ledger=track, ic=_load_radar_ic())
     write_page(site / "china_radar.html", html)
     for a in ASSETS:
         src = config.ROOT / "templates" / a

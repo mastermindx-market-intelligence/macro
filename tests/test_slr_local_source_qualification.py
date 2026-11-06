@@ -558,3 +558,137 @@ def test_review_final_vintage_vendor_date_is_not_local_first_possession(q):
     r,p=evidence(q,knowledge_basis='FINAL_VINTAGE_VALID_TIME_ONLY',
                  observed_ingested_at='2026-10-08T00:00:00Z',vendor_asof_date='2026-10-08')
     assert q.qualify(r,p,'2014-01-02T20:00:00Z').status == 'PASS'
+
+
+# Current-main recovery regressions: source receipts and peer intervals must
+# survive the actual JSON boundary without granting scientific admission.
+@pytest.mark.parametrize('refs', [
+    [], None, '', 'fixture:source', {}, [None], [''], ['   '],
+    [0], [False], ['fixture:source', {}], ['fixture:source', ''],
+])
+def test_c4_empty_or_malformed_evidence_refs_never_pass(q, refs):
+    receipt, payload = evidence(q, evidence_refs=refs)
+    result = q.qualify(receipt, payload, '2014-01-02T20:00:00Z')
+    assert result.status != 'PASS'
+    assert any(code.endswith('EVIDENCE_REFS') for code in result.exclusion_codes)
+
+
+@pytest.mark.parametrize('refs', [
+    ('fixture:source',), ['fixture:source'],
+    ('fixture:first', 'fixture:second'), ['fixture:first', 'fixture:second'],
+])
+def test_c4_nonempty_string_evidence_lists_and_tuples_are_supported(q, refs):
+    receipt, payload = evidence(q, evidence_refs=refs)
+    assert q.qualify(receipt, payload, '2014-01-02T20:00:00Z').status == 'PASS'
+
+
+@pytest.mark.parametrize('field', [
+    'source_owner_interface', 'dataset_designation', 'license_or_permission_receipt_ref',
+])
+@pytest.mark.parametrize('value', [7, False, [], {}, ['fixture:ref'], '   '])
+def test_c4_required_source_references_are_nonempty_text(q, field, value):
+    receipt, payload = evidence(q, **{field: value})
+    assert q.qualify(receipt, payload, '2014-01-02T20:00:00Z').status != 'PASS'
+
+
+def test_c4_real_cli_blocks_one_empty_evidence_list_in_otherwise_complete_packet(q):
+    from dataclasses import asdict
+    from pathlib import Path
+    import subprocess
+    import sys
+
+    sources = []
+    for family in q.FAMILIES:
+        receipt, payload = evidence(q, family)
+        sources.append({'receipt': asdict(receipt), 'source_object': payload})
+    packet = {'decision_at': '2014-01-02T20:00:00Z',
+              'sources': sources, 'synthetic': True}
+
+    def run():
+        result = subprocess.run(
+            [sys.executable, '-m',
+             'research.structural_leadership_shock_resilience.local_source_qualification.adapter',
+             '--stdin'],
+            input=json.dumps(packet), text=True, capture_output=True,
+            cwd=Path(__file__).resolve().parents[1], timeout=20, check=False,
+        )
+        assert not result.stderr
+        return result.returncode, json.loads(result.stdout)
+
+    code, report = run()
+    assert code == 0
+    assert report['RESULT'] == 'SOURCE_QUALIFIED_FOR_INDEPENDENT_REVIEW'
+    assert report['admission_granted'] is False
+
+    packet['sources'][0]['receipt']['evidence_refs'] = []
+    code, report = run()
+    assert code == 2
+    assert report['RESULT'] == 'NOT_ADMITTED'
+    assert 'MISSING_EVIDENCE_REFS' in report['BLOCKERS']
+    assert report['source_results'][0]['status'] == 'UNKNOWN'
+    assert all(row['status'] == 'PASS' for row in report['source_results'][1:])
+    assert report['admission_granted'] is False
+    assert report['qualified_event_count'] is None
+    assert report['primary_estimate'] is None
+    assert report['REAL_DATA_READ'] is False
+    assert report['OUTCOMES_READ'] is False
+
+
+@pytest.mark.parametrize('field,value', [
+    ('valid_from', '2013-99-99'), ('valid_from', '2013-02-29'),
+    ('valid_from', '2013-1-1'), ('valid_from', '20130101'),
+    ('valid_from', '2013-W01-1'), ('valid_from', '2013-01-01 '),
+    ('valid_from', '2013-01-01T00:00:00Z'), ('valid_from', True),
+    ('valid_from', 20130101), ('valid_from', None),
+    ('valid_to', '2014-99-99'), ('valid_to', '2014-02-30'),
+    ('valid_to', '2014-1-03'), ('valid_to', '20150103'),
+    ('valid_to', '2015-W01-1'), ('valid_to', ''),
+    ('valid_to', False), ('valid_to', {}), ('valid_to', 20150101),
+])
+def test_c4_peer_intervals_require_real_canonical_calendar_dates(q, field, value):
+    rows = [peer(1, **{field: value}), peer(2)]
+    chosen, excluded = q.freeze_peers(
+        rows, 'ISS:US-XNYS-SUBJECT', 'Information Technology', '2014-01-02')
+    assert [row['security_id'] for row in chosen] == ['SEC:US-XNYS-S2']
+    assert excluded == {'IDENTITY_NOT_VALID': 1}
+
+
+@pytest.mark.parametrize('start,end,eligible', [
+    ('2014-01-02', None, True),
+    ('2014-01-01', '2014-01-02', False),
+    ('2014-01-02', '2014-01-03', True),
+    ('2014-01-03', '2015-01-01', False),
+    ('2014-01-02', '2014-01-02', False),
+    ('2014-01-03', '2014-01-02', False),
+    ('2012-02-29', None, True),
+])
+def test_c4_peer_valid_time_is_start_inclusive_end_exclusive(q, start, end, eligible):
+    chosen, excluded = q.freeze_peers(
+        [peer(1, valid_from=start, valid_to=end)], 'ISS:US-XNYS-SUBJECT',
+        'Information Technology', '2014-01-02')
+    assert bool(chosen) is eligible
+    assert excluded == ({} if eligible else {'IDENTITY_NOT_VALID': 1})
+
+
+@pytest.mark.parametrize('coverage', [[], [1], '2014', 1, True])
+def test_c4_malformed_coverage_is_a_bounded_failed_receipt(q, coverage):
+    receipt, payload = evidence(q, coverage_by_era=coverage)
+    result = q.qualify(receipt, payload, '2014-01-02T20:00:00Z')
+    assert result.status == 'FAIL'
+    assert 'INVALID_COVERAGE_COUNTS' in result.exclusion_codes
+
+
+def test_c4_cli_malformed_coverage_returns_not_admitted(q, monkeypatch, capsys):
+    from dataclasses import asdict
+    receipt, payload = evidence(q, coverage_by_era=[])
+    code, report = cli(q, monkeypatch, capsys, packet={
+        'decision_at': '2014-01-02T20:00:00Z',
+        'sources': [{'receipt': asdict(receipt), 'source_object': payload}],
+        'synthetic': True,
+    })
+    assert code == 2
+    assert report['RESULT'] == 'NOT_ADMITTED'
+    assert 'INVALID_COVERAGE_COUNTS' in report['BLOCKERS']
+    assert report['admission_granted'] is False
+    assert report['qualified_event_count'] is None
+    assert report['primary_estimate'] is None

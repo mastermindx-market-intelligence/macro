@@ -1,5 +1,36 @@
 # CI registration authorized and applied
 
+## Current-main registration — 2026-11-06
+
+The original named `slr-local-source-qualification` code job now registers only
+the whole `tests/test_slr_local_source_qualification.py` module. The incumbent
+`tests/test_winner_autopsy.py` remains in `synapse-read-gate`, and
+`tests/test_dataos_identity.py` remains in `dataos-foundation`. No incumbent
+job definition, gate, budget or test selection is changed.
+
+The new job retains Python3.12, its eight-minute timeout and the explicit
+pytest/numpy/pandas/PyYAML/PyArrow dependency set. Its ordinary inferred scope
+retains the canonical dependency closure and conservative data/lib subprocess
+fallback. It is not an exclusive-scope exception.
+
+An evaluated alternative appended this module to `synapse-read-gate`; canonical
+weight increased46→48. That owner is already selected at the exact weight ceiling
+in all three retained canonical probes, so the alternative was rejected without
+raising any budget. The dedicated job keeps the source-specific execution surface
+and avoids duplicating the incumbent detector/identity suites.
+
+Current qualification receipts and exact-head hosted plan/fragment results are
+recorded on #8665. Local current-main verification of the new module together with
+both incumbent compatibility suites passed625 cases; this is distinct from the
+historical418-case receipts below and does not admit scientific inputs.
+
+## Retained historical registration evidence
+
+The following declaration and results describe the original October registration,
+not the current manifest topology. Historical independent-review wording is
+governed by the current policy and explicit PR disposition described in
+`EXACT_NEXT_ACTION.md`.
+
 The Chairman directly authorized `.github/ci/legacy-jobs.yml` solely to register
 this suite in the continuation handoff. The entry below is now applied; no other
 job, baseline, workflow or waiver was changed.

@@ -478,3 +478,311 @@ def test_parent_edge_endpoints_are_minted_and_tier_typed(populated_view):
         assert destination_node["kind"] == "theme"
         assert ((source_node["tier"], destination_node["tier"])
                 in {("macro_category", "theme"), ("theme", "micro_theme")})
+
+
+def sub(node_id="theme:hierarchy_sub", asserted_on=EPOCH,
+        nominated_from=VALID_NOMINATOR, **overrides):
+    row = {"id": node_id, "name_en": "Hierarchy sub",
+           "name_zh": "层级子主题", "asserted_on": asserted_on,
+           "nominated_from": nominated_from}
+    row.update(overrides)
+    return row
+
+
+def hierarchy_with_sub_themes(categories=None, sub_themes=None, micro_themes=None,
+                              parents=None):
+    """Legacy hierarchy document plus a present ``sub_themes`` key."""
+    document = hierarchy_doc(
+        categories=categories, micro_themes=micro_themes, parents=parents)
+    document["sub_themes"] = [] if sub_themes is None else sub_themes
+    return document
+
+
+def _build_view(tree, belief_time=AFTER):
+    return materialize.build(
+        era="reconstruction", belief_time=belief_time,
+        computed_at=f"{belief_time}T00:00:00Z",
+        data_dir=tree[0], crosswalk_path=tree[1],
+        raw_snapshot=(belief_time, {}),
+        ths_history=pd.DataFrame(
+            columns=["snapshot_date", "suite", "basket_id", "ticker", "source_shape"]))
+
+
+def _refuses_hierarchy(tree, expected_reason, hierarchy):
+    write_document(tree, hierarchy)
+    with pytest.raises(ThemeHierarchyError) as caught:
+        materialize.validate_theme_hierarchy(
+            yaml.safe_load(tree[1].read_text(encoding="utf-8")))
+    assert caught.value.reason == expected_reason
+    assert str(caught.value).startswith(expected_reason)
+    return caught.value
+
+
+def _parent_pairs(view):
+    return {(row["src"], row["dst"])
+            for row in view.edges if row["type"] == "PARENT_OF"}
+
+
+def _legacy_nominated_source_meta() -> str:
+    return json.dumps({"nominated_from": VALID_NOMINATOR},
+                      ensure_ascii=False, sort_keys=True)
+
+
+def test_sub_theme_chain_validates_and_emits_node_and_parent_edges(tree):
+    write_document(tree, hierarchy_with_sub_themes(
+        categories=[category()],
+        sub_themes=[sub(value_chain_position="upstream")],
+        micro_themes=[micro()],
+        parents=[
+            parent(),
+            parent("theme:solar", "theme:hierarchy_sub"),
+            parent("theme:hierarchy_sub", "theme:hierarchy_micro"),
+        ],
+    ))
+    loaded = yaml.safe_load(tree[1].read_text(encoding="utf-8"))
+    validated = materialize.validate_theme_hierarchy(loaded)
+    assert [row["tier"] for row in validated["sub_themes"]] == ["sub_theme"]
+    assert validated["sub_themes"][0]["id"] == "theme:hierarchy_sub"
+
+    view = _build_view(tree)
+    sub_node = nodes_by_id(view)["theme:hierarchy_sub"]
+    assert sub_node["kind"] == "theme"
+    assert sub_node["tier"] == "sub_theme"
+    assert sub_node["market_scope"] == "global"
+    assert sub_node["provenance"] == "crosswalk:config/theme_crosswalk.yml"
+    assert sub_node["external_ids"] == "{}"
+    assert sub_node["birth_date"] == EPOCH
+    assert sub_node["name_en"] == "Hierarchy sub"
+    assert sub_node["name_zh"] == "层级子主题"
+    assert sub_node["source_meta"] == json.dumps(
+        {"nominated_from": VALID_NOMINATOR, "value_chain_position": "upstream"},
+        ensure_ascii=False, sort_keys=True)
+    assert _parent_pairs(view) >= {
+        ("theme:solar", "theme:hierarchy_sub"),
+        ("theme:hierarchy_sub", "theme:hierarchy_micro"),
+    }
+    for row in view.edges:
+        if row["type"] in {"EXPRESSES", "MEMBER_OF"}:
+            assert "theme:hierarchy_sub" not in (row["src"], row["dst"])
+    edge = next(row for row in view.edges
+                if row["type"] == "PARENT_OF" and row["src"] == "theme:hierarchy_sub")
+    assert edge["source_class"] == "curated"
+    assert edge["date_provenance"] == "crosswalk"
+    evidence = {row["evidence_id"]: row for row in view.evidence}[edge["evidence_refs"][0]]
+    assert evidence["kind"] == "operator_curation"
+    assert evidence["source_ref"] == "config/theme_crosswalk.yml"
+    internal, display, redistribution = materialize._licensing("mastermind_curated")
+    assert evidence["licensing_internal_ok"] is bool(internal)
+    assert evidence["licensing_display_ok"] is bool(display)
+    assert evidence["licensing_redistribution_ok"] is bool(redistribution)
+
+
+def test_theme_to_micro_without_sub_theme_still_emitted(tree):
+    write_document(tree, hierarchy_doc(
+        categories=[category()],
+        micro_themes=[micro()],
+        parents=[parent(), parent("theme:solar", "theme:hierarchy_micro")],
+    ))
+    loaded = yaml.safe_load(tree[1].read_text(encoding="utf-8"))
+    assert set(materialize.validate_theme_hierarchy(loaded)) == {
+        "categories", "micro_themes", "parents"}
+    view = _build_view(tree)
+    assert nodes_by_id(view)["theme:hierarchy_micro"]["tier"] == "micro_theme"
+    assert _parent_pairs(view) == {
+        ("theme:hierarchy_cat", "theme:solar"),
+        ("theme:solar", "theme:hierarchy_micro"),
+    }
+
+    write_document(tree, hierarchy_with_sub_themes(
+        categories=[category()],
+        sub_themes=[],
+        micro_themes=[micro()],
+        parents=[parent(), parent("theme:solar", "theme:hierarchy_micro")],
+    ))
+    view = _build_view(tree)
+    assert nodes_by_id(view)["theme:hierarchy_micro"]["tier"] == "micro_theme"
+    assert ("theme:solar", "theme:hierarchy_micro") in _parent_pairs(view)
+    assert "theme:hierarchy_sub" not in nodes_by_id(view)
+
+
+def test_value_chain_position_refused_on_sub_and_micro_not_on_category_key(tree):
+    sub_error = _refuses_hierarchy(tree, "VALUE_CHAIN_POSITION", hierarchy_with_sub_themes(
+        sub_themes=[sub(value_chain_position="sideways")]))
+    assert "sideways" in str(sub_error)
+    assert "upstream|midstream|downstream|enabler" in str(sub_error)
+
+    micro_error = _refuses_hierarchy(tree, "VALUE_CHAIN_POSITION", hierarchy_with_sub_themes(
+        micro_themes=[micro(value_chain_position="not_a_position")]))
+    assert "not_a_position" in str(micro_error)
+    assert str(micro_error).startswith("VALUE_CHAIN_POSITION: micro_theme 1:")
+
+    category_error = _refuses_hierarchy(tree, "BLOCK_SHAPE", hierarchy_doc(
+        categories=[category(value_chain_position="upstream")]))
+    assert "value_chain_position" in str(category_error)
+
+
+@pytest.mark.parametrize("position", ["upstream", "midstream", "downstream", "enabler"])
+def test_value_chain_position_accepts_the_four_display_values(position):
+    validated = materialize.validate_theme_hierarchy({
+        "hierarchy": hierarchy_with_sub_themes(
+            sub_themes=[sub(value_chain_position=position)],
+            micro_themes=[micro(value_chain_position=position)],
+        ),
+        "themes": [],
+    })
+    assert validated["sub_themes"][0]["row"]["value_chain_position"] == position
+    assert validated["micro_themes"][0]["row"]["value_chain_position"] == position
+
+
+def test_duplicate_sub_id_and_legacy_theme_reused_as_sub_id(tree):
+    duplicate = _refuses_hierarchy(tree, "DUPLICATE_ID", hierarchy_with_sub_themes(
+        sub_themes=[sub("theme:shared_node")],
+        micro_themes=[micro("theme:shared_node")]))
+    assert "theme:shared_node" in str(duplicate)
+
+    reused = _refuses_hierarchy(tree, "CROSS_TIER_REUSE", hierarchy_with_sub_themes(
+        sub_themes=[sub("theme:solar")]))
+    assert "theme:solar" in str(reused)
+
+
+@pytest.mark.parametrize("case", [
+    "macro_category_to_sub_theme",
+    "sub_theme_to_theme",
+    "sub_theme_to_sub_theme",
+    "micro_theme_to_sub_theme",
+])
+def test_non_adjacent_tiers_involving_sub_theme(tree, case):
+    if case == "macro_category_to_sub_theme":
+        hierarchy = hierarchy_with_sub_themes(
+            categories=[category()],
+            sub_themes=[sub()],
+            parents=[parent("theme:hierarchy_cat", "theme:hierarchy_sub")])
+    elif case == "sub_theme_to_theme":
+        hierarchy = hierarchy_with_sub_themes(
+            sub_themes=[sub()],
+            parents=[parent("theme:hierarchy_sub", "theme:solar")])
+    elif case == "sub_theme_to_sub_theme":
+        hierarchy = hierarchy_with_sub_themes(
+            sub_themes=[sub("theme:sub_a"), sub("theme:sub_b")],
+            parents=[parent("theme:sub_a", "theme:sub_b")])
+    else:
+        hierarchy = hierarchy_with_sub_themes(
+            sub_themes=[sub()],
+            micro_themes=[micro()],
+            parents=[parent("theme:hierarchy_micro", "theme:hierarchy_sub")])
+    error = _refuses_hierarchy(tree, "NON_ADJACENT_TIERS", hierarchy)
+    assert "->" in str(error)
+
+
+def test_sub_theme_vendor_nominator_and_missing_nominated_from(tree):
+    finviz = _refuses_hierarchy(tree, "VENDOR_NOMINATOR", hierarchy_with_sub_themes(
+        sub_themes=[sub(nominated_from="research:finviz_themes")]))
+    assert "finviz_themes" in str(finviz)
+    _refuses_hierarchy(tree, "VENDOR_NOMINATOR", hierarchy_with_sub_themes(
+        sub_themes=[sub(nominated_from="research:ths_concepts/board")]))
+
+    row = sub()
+    del row["nominated_from"]
+    missing = _refuses_hierarchy(tree, "BLOCK_SHAPE", hierarchy_with_sub_themes(
+        sub_themes=[row]))
+    assert "nominated_from" in str(missing)
+
+
+def test_expresses_map_referencing_sub_id_refused(tree):
+    write_document(
+        tree,
+        hierarchy_with_sub_themes(
+            sub_themes=[sub()],
+            parents=[parent("theme:solar", "theme:hierarchy_sub")],
+        ),
+        basket_ids=["theme:hierarchy_sub"],
+    )
+    with pytest.raises(ThemeHierarchyError) as caught:
+        materialize.validate_theme_hierarchy(
+            yaml.safe_load(tree[1].read_text(encoding="utf-8")))
+    assert caught.value.reason == "NEW_TIER_IN_EXPRESSES_MAP"
+    assert str(caught.value).startswith("NEW_TIER_IN_EXPRESSES_MAP")
+
+
+def test_sub_themes_key_is_present_only_when_the_block_declares_it():
+    legacy = materialize.validate_theme_hierarchy({
+        "hierarchy": hierarchy_doc(categories=[category()]),
+        "themes": [],
+    })
+    assert set(legacy) == {"categories", "micro_themes", "parents"}
+
+    absent = materialize.validate_theme_hierarchy({"themes": []})
+    assert absent == {"categories": [], "micro_themes": [], "parents": []}
+
+    present_document = hierarchy_doc()
+    present_document["sub_themes"] = []
+    present = materialize.validate_theme_hierarchy({
+        "hierarchy": present_document, "themes": []})
+    assert set(present) == {"categories", "sub_themes", "micro_themes", "parents"}
+    assert present["sub_themes"] == []
+
+    with pytest.raises(ThemeHierarchyError) as caught:
+        materialize.validate_theme_hierarchy({
+            "hierarchy": {
+                "categories": [], "sub_themes": "nope",
+                "micro_themes": [], "parents": [],
+            },
+            "themes": [],
+        })
+    assert caught.value.reason == "BLOCK_SHAPE"
+    assert "hierarchy.sub_themes must be a list" in str(caught.value)
+
+
+def test_sub_theme_asserted_after_belief_date_is_not_emitted(tree):
+    write_document(tree, hierarchy_with_sub_themes(
+        sub_themes=[sub(asserted_on=AFTER)],
+        parents=[parent("theme:solar", "theme:hierarchy_sub", asserted_on=AFTER)],
+    ))
+    view = _build_view(tree, belief_time=EPOCH)
+    assert "theme:hierarchy_sub" not in {row["node_id"] for row in view.nodes}
+    assert not [row for row in view.edges
+                if row["type"] == "PARENT_OF"
+                and "theme:hierarchy_sub" in (row["src"], row["dst"])]
+
+
+def test_micro_without_value_chain_position_keeps_legacy_source_meta(tree):
+    expected = _legacy_nominated_source_meta()
+    write_document(tree, hierarchy_doc(
+        micro_themes=[micro()],
+        parents=[parent("theme:solar", "theme:hierarchy_micro")],
+    ))
+    legacy_meta = nodes_by_id(_build_view(tree))["theme:hierarchy_micro"]["source_meta"]
+    assert legacy_meta == expected
+
+    write_document(tree, hierarchy_with_sub_themes(
+        sub_themes=[sub()],
+        micro_themes=[micro()],
+        parents=[
+            parent("theme:solar", "theme:hierarchy_sub"),
+            parent("theme:hierarchy_sub", "theme:hierarchy_micro"),
+        ],
+    ))
+    mixed_meta = nodes_by_id(_build_view(tree))["theme:hierarchy_micro"]["source_meta"]
+    assert mixed_meta == expected
+
+
+def test_same_sub_theme_document_builds_identical_frames(tree):
+    write_document(tree, hierarchy_with_sub_themes(
+        categories=[category()],
+        sub_themes=[sub(value_chain_position="enabler")],
+        micro_themes=[micro(value_chain_position="midstream")],
+        parents=[
+            parent(),
+            parent("theme:solar", "theme:hierarchy_sub"),
+            parent("theme:hierarchy_sub", "theme:hierarchy_micro"),
+        ],
+    ))
+    first = _build_view(tree)
+    second = _build_view(tree)
+    assert pd.DataFrame(first.nodes).equals(pd.DataFrame(second.nodes))
+    assert pd.DataFrame(first.edges).equals(pd.DataFrame(second.edges))
+    assert pd.DataFrame(first.evidence).equals(pd.DataFrame(second.evidence))
+    assert write_views(first, tree[0]) == write_views(second, tree[0])
+    assert nodes_by_id(first)["theme:hierarchy_micro"]["source_meta"] == json.dumps(
+        {"nominated_from": VALID_NOMINATOR, "value_chain_position": "midstream"},
+        ensure_ascii=False, sort_keys=True)

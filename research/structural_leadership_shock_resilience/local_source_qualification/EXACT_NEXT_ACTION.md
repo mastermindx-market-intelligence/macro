@@ -1,5 +1,46 @@
 # Exact owned frontier
 
+## Current source-integration frontier — 2026-11-06
+
+The assigned C4 sweep owns the existing #8665 source carrier under
+[Mastermind #2028](https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028#issuecomment-6682010652).
+This recovery composes the isolated adapter with current Macro main and repairs
+required evidence shapes, malformed coverage metadata and peer calendar intervals.
+It changes no scientific threshold, production consumer, provider access or outcome gate.
+
+The repaired adapter and original detector/identity compatibility suites passed
+**625 tests**, with zero failures, errors or skips. The default data guard obtained
+an empty baseline, and the module guard recorded zero leaks. Original twelve-case
+review coverage remains intact. Current exact-head hosted CI and the original PR's
+explicit release disposition are still separate requirements; local passes are not
+merge or scientific acceptance.
+
+Current attended Web engineering self-check follows Chairman §5A and protected
+[session-local review policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/3551bf914bc3cab6117f93377ba89ac1d9c3c30a/docs/SESSION_LOCAL_REVIEW_POLICY.md).
+It is SELF_REVIEWED, not independent approval and not a result for the historical
+r2 assignment. That original r2 remains NONE/no_pool_available, NOT_FOUND, with no
+worker, lease, START or result; it has not been retried or replaced. Any historical
+engineering-wait disposition must be explicit on the original PR and preserve
+actual native approval rules and separately binding scientific/security holds.
+
+Source admission remains **NOT_ADMITTED**, 0/10 source families, with event counts
+and estimates null. Independent field-evidence review, original historical rights,
+identities/clocks, population parity and feasibility census remain owed before
+empirical outcomes may open. Parent #8645, frozen v1.0.1/v1.1 and all prior refused
+host/private-row/checker-publication operations remain untouched.
+
+Next code action: consume the new original-head hosted plan, semantic fragment,
+contract/fence/authority and concluded binding CI; repair concrete failures on the
+same carrier. Then assess current native rules and record the source-only hold
+disposition before any individual controller admission. No heartbeat, runner,
+review or source-data operation is started by this document.
+
+## Retained historical frontier
+
+The record below preserves the original dated receipts and admission observations.
+Its historical model/review/watcher procedure does not replace current protected
+law or authorize replay of an unstarted/refused operation.
+
 The local implementation lead owns completion of the source-qualification work.
 There is no missing human Data OS owner to await.
 
