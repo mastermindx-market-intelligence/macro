@@ -40,6 +40,86 @@ PAGE_ASSETS = ("sector_cycles.css", "sector_cycles.js")
 SHARED_ASSETS = ("mm_charts.js", "cycle.css")
 
 
+def backtest_turn_record(scorecard_path: Path) -> dict | None:
+    """Pooled BACKTEST turn grades, or None when the file is not that record."""
+    try:
+        raw = json.loads(Path(scorecard_path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
+        return None
+    if not isinstance(raw, dict):
+        return None
+    cohorts = raw.get("cohorts")
+    if not isinstance(cohorts, dict):
+        return None
+    back = cohorts.get("BACKTEST")
+    if not isinstance(back, dict) or back.get("cohort") != "BACKTEST":
+        return None
+    turn_pr = back.get("turn_pr")
+    if not isinstance(turn_pr, dict):
+        return None
+    rows = turn_pr.get("per_instrument")
+    if not isinstance(rows, dict) or len(rows) == 0:
+        return None
+    turns = met = right = n_false = 0
+    tau: int | None = None
+    count_keys = ("tp", "fp", "fn", "n_truth_turns", "tau_months")
+    for row in rows.values():
+        if not isinstance(row, dict):
+            return None
+        vals: dict[str, int] = {}
+        for key in count_keys:
+            val = row.get(key)
+            # A bool is an int subclass, and it is not a count.
+            if type(val) is not int or val < 0:
+                return None
+            vals[key] = val
+        if vals["fn"] > vals["n_truth_turns"]:
+            return None
+        if tau is None:
+            tau = vals["tau_months"]
+        elif vals["tau_months"] != tau:
+            return None
+        turns += vals["n_truth_turns"]
+        met += vals["n_truth_turns"] - vals["fn"]
+        right += vals["tp"]
+        n_false += vals["fp"]
+    if type(tau) is not int:
+        return None
+    if "pooled" in turn_pr:
+        pooled = turn_pr.get("pooled")
+        if not isinstance(pooled, dict):
+            return None
+        got = (pooled.get("tp"), pooled.get("fp"), pooled.get("fn"))
+        if got != (right, n_false, turns - met):
+            return None
+    as_of = raw.get("as_of")
+    if not isinstance(as_of, str) or len(as_of) < 10:
+        return None
+    parts = as_of[:10].split("-")
+    if len(parts) != 3:
+        return None
+    if not all(ch in "0123456789" for ch in "".join(parts)):
+        return None
+    if (len(parts[0]), len(parts[1]), len(parts[2])) != (4, 2, 2):
+        return None
+    year = int(parts[0])
+    month = int(parts[1])
+    day = int(parts[2])
+    leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+    month_days = (31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+    if month < 1 or month > 12 or day < 1 or day > month_days[month - 1]:
+        return None
+    return {
+        "as_of": as_of[:10],
+        "tau_months": tau,
+        "funds": sorted(rows),
+        "turns": turns,
+        "met": met,
+        "right": right,
+        "false": n_false,
+    }
+
+
 def _load_narratives(root: Path) -> dict:
     """NARR keyed by the chart's series id: sectors by ticker.lower() (xlk…), baskets
     by the engine's "b-"+membership-key (b-mag7…). Merges the file's sectors+baskets.
@@ -66,6 +146,96 @@ def _load_dna(root: Path) -> dict:
         log.warning("sector_cycles: cycle_dna stale-quarantined (epoch %s) — rendering without DNA",
                     res["epoch"])
     return res["map"]
+
+
+def _stamp_rotation_context(payload: dict, *, site_root=None, today=None) -> None:
+    """SIC-D-B02: stamp a backend-stamped, guarded rotation context into the cycles payload.
+
+    Adds top-level ``rotation_context`` (schema sector_cycles.rotation_context.v1) and
+    ``rotation_alignment_version``; every other payload byte is untouched.  The page
+    receiver (templates/sector_cycles.js loadRotation) can consume this block; its
+    raw marketdata read path is unchanged until the receiver is switched over, so
+    the stamp is additive, not a replacement (RB02 #3).
+
+    Events (site/marketdata/rotation_events.json): schema must be rotation_events.v1
+    and ok is True, else invalid_payload; alignment compares the payload's top-level
+    ``as_of`` — the SAME field the Central measured adapter compares
+    (engine/leadership_rotation_context.py, measured_group_read:
+    rotation_payload["as_of"] != session_end).  ``active`` is copied only when
+    aligned and list-typed.
+
+    Fragmentation (site/marketdata/sector_fragmentation.json): alignment compares its
+    top-level ``as_of`` (written by engine/sector_fragmentation.py compute() as the
+    max per-sector ``asof`` bar date); per-sector rows are copied only when aligned.
+
+    Missing files → missing_input.  Any exception in here degrades the whole block
+    to {"schema", "status": "unavailable", "reason": "projection_error"} — never
+    breaks the rest of the cycles build.
+    """
+    import datetime as _dt
+
+    def _aligned_copy(align: dict, ok_payload, data_key) -> dict:
+        out = dict(align)
+        out[data_key] = None
+        if align["status"] == "aligned" and isinstance(ok_payload.get(data_key), (list, tuple)):
+            out[data_key] = list(ok_payload[data_key])
+        return out
+
+    try:
+        from engine import sector_generation_guard as _sgg
+
+        root = Path(site_root) if site_root is not None else (
+            config.ROOT / config.load().get("storage", {}).get("site_dir", "site"))
+        today = today if today is not None else _dt.datetime.now(_dt.timezone.utc).date()
+        consumer = (payload.get("meta") or {}).get("asOf")
+
+        ctx: dict = {"schema": "sector_cycles.rotation_context.v1"}
+
+        # --- events ---
+        ev_path = root / "marketdata" / "rotation_events.json"
+        try:
+            ev = json.loads(ev_path.read_text(encoding="utf-8")) if ev_path.exists() else None
+        except Exception:  # noqa: BLE001 — unreadable is missing, not fatal
+            ev = None
+        if ev is None:
+            ctx["events"] = {"status": "missing_input", "reason": "missing_input",
+                             "artifact_session": None,
+                             "consumer_session": _sgg.parse_session(consumer).isoformat()
+                             if _sgg.parse_session(consumer) else None,
+                             "clock": "settled_daily_session", "active": None}
+        elif ev.get("schema") != "rotation_events.v1" or ev.get("ok") is not True:
+            ctx["events"] = {"status": "invalid_payload", "reason": "invalid_payload",
+                             "artifact_session": None,
+                             "consumer_session": _sgg.parse_session(consumer).isoformat()
+                             if _sgg.parse_session(consumer) else None,
+                             "clock": "settled_daily_session", "active": None}
+        else:
+            ctx["events"] = _aligned_copy(
+                _sgg.session_alignment(ev.get("as_of"), consumer, today=today), ev, "active")
+
+        # --- fragmentation ---
+        fr_path = root / "marketdata" / "sector_fragmentation.json"
+        try:
+            fr = json.loads(fr_path.read_text(encoding="utf-8")) if fr_path.exists() else None
+        except Exception:  # noqa: BLE001
+            fr = None
+        if fr is None:
+            ctx["fragmentation"] = {"status": "missing_input", "reason": "missing_input",
+                                    "artifact_session": None,
+                                    "consumer_session": _sgg.parse_session(consumer).isoformat()
+                                    if _sgg.parse_session(consumer) else None,
+                                    "clock": "settled_daily_session", "sectors": None}
+        else:
+            ctx["fragmentation"] = _aligned_copy(
+                _sgg.session_alignment(fr.get("as_of"), consumer, today=today), fr, "sectors")
+
+        payload["rotation_context"] = ctx
+        payload["rotation_alignment_version"] = 1
+    except Exception as e:  # noqa: BLE001 — projection never breaks the build
+        log.warning("sector_cycles: rotation_context projection failed (%s) — stamped unavailable", e)
+        payload["rotation_context"] = {"schema": "sector_cycles.rotation_context.v1",
+                                       "status": "unavailable", "reason": "projection_error"}
+        payload["rotation_alignment_version"] = 1
 
 
 def main() -> int:
@@ -105,6 +275,11 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         log.warning("sector_cycles: TTL enrichment skipped: %s", e)
 
+    # SIC-D-B02: backend-stamped, guarded rotation context — added before the
+    # split so it rides the CORE payload; receiver-side raw-file trust can be
+    # retired only once the receiver reads this block (RB02 #3).
+    _stamp_rotation_context(data)
+
     # data JS split for lazy loading:
     #   sector_cycles_data.js        -> SECTOR_CYCLES (CORE — light, loaded at boot)
     #   sector_cycles_series_data.js -> SECTOR_CYCLES_SERIES (heavy per-entity arrays,
@@ -115,6 +290,10 @@ def main() -> int:
     # price everywhere and osc/turns from baskets/nasdaq/russell — see split_cycles_payload.
     from scripts._cycles_payload import split_cycles_payload
     core, series = split_cycles_payload(data)   # does not mutate `data` (features json stays full)
+    turn_rec = backtest_turn_record(
+        root / "data" / "sector_cycles" / "scorecards" / "promises_price_v1_zz14_v0.json")
+    if turn_rec is not None:
+        core["turn_record"] = turn_rec
     (site / "sector_cycles_data.js").write_text(
         "window.SECTOR_CYCLES=" + json.dumps(core, separators=(",", ":")) + ";\n",
         encoding="utf-8")

@@ -1,0 +1,77 @@
+{
+  "retained_response_only": true,
+  "new_native_or_network_calls": false,
+  "current_source_query": {
+    "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/main",
+    "sha": "3e31f5dc8b770d371eb859e2de3df0362fc7fa57",
+    "committer_date": "2026-10-18T09:06:52Z",
+    "tree": "e9aca1d228451b2315fc5d0ffb99bac804801a5a",
+    "parents": [
+      "e76e7804fff0d567e42fc9bfc8ccea47b0552dee"
+    ],
+    "message": "data: nightly timings tech_lab_offrender 2026-10-18"
+  },
+  "source_retrievals": [
+    {
+      "path": "engine/grey_deer_pullback_forward.py",
+      "pin": "3e31f5dc8b770d371eb859e2de3df0362fc7fa57",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/3e31f5dc8b770d371eb859e2de3df0362fc7fa57/engine/grey_deer_pullback_forward.py",
+      "captured_content": true
+    },
+    {
+      "path": "scripts/grey_deer_pullback_nightly.py",
+      "pin": "3e31f5dc8b770d371eb859e2de3df0362fc7fa57",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/3e31f5dc8b770d371eb859e2de3df0362fc7fa57/scripts/grey_deer_pullback_nightly.py",
+      "captured_content": true
+    },
+    {
+      "path": "scripts/ci/daily_engine_regional_desk_builders.sh",
+      "pin": "3e31f5dc8b770d371eb859e2de3df0362fc7fa57",
+      "url": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/3e31f5dc8b770d371eb859e2de3df0362fc7fa57/scripts/ci/daily_engine_regional_desk_builders.sh",
+      "captured_content": true
+    }
+  ],
+  "prior_9128_files_metadata": {
+    "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/9128/files?per_page=100",
+    "selection": [
+      {
+        "filename": "engine/grey_deer_pullback_forward.py",
+        "status": "added",
+        "blob_sha": "bbb7ce83113bdbe6c65147beec4ca4fd896cfdbd",
+        "additions": 943,
+        "deletions": 0
+      },
+      {
+        "filename": "scripts/ci/daily_engine_regional_desk_builders.sh",
+        "status": "modified",
+        "blob_sha": "c46ded27a832c0d3052342bc12e126978cef1858",
+        "additions": 7,
+        "deletions": 1
+      },
+      {
+        "filename": "scripts/grey_deer_pullback_nightly.py",
+        "status": "added",
+        "blob_sha": "0460443c1a756627535a2d0026cf0d5db0d3d499",
+        "additions": 142,
+        "deletions": 0
+      }
+    ],
+    "source_merge_metadata_not_returned": true
+  },
+  "natural_artifact_queries": [
+    {
+      "path": "data/grey_deer_pullback/forward_log.jsonl",
+      "pin": "3e31f5dc8b770d371eb859e2de3df0362fc7fa57",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/data/grey_deer_pullback/forward_log.jsonl?ref=3e31f5dc8b770d371eb859e2de3df0362fc7fa57",
+      "response_was_decoded_content": true,
+      "raw_git_api_blob_metadata_not_returned": true
+    },
+    {
+      "path": "data/grey_deer_pullback/forward_log_refusals.jsonl",
+      "pin": "3e31f5dc8b770d371eb859e2de3df0362fc7fa57",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/data/grey_deer_pullback/forward_log_refusals.jsonl?ref=3e31f5dc8b770d371eb859e2de3df0362fc7fa57",
+      "response_was_decoded_content": true,
+      "raw_git_api_blob_metadata_not_returned": true
+    }
+  ]
+}

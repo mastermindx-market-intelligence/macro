@@ -46,3 +46,24 @@ Everything else in the packet (do-not-redo list, capability ledger classificatio
 - Delivered by: Astra research session (ChatGPT), prepared not sent, verified `2026-09-16T07:12:46Z`.
 - Published by: Fable seat `e701365e-da9a-4e84-a06d-755f25d46bae` / Claude6, Macro branch `claude/astra-fabric-packet-20260916`.
 - Root carrier: `#agent-dispatch` `C0BSBM78V1N` / `1789324397.992989`, operation `agent-fabric-end-to-end-fable-integration-20260913-sol-001`, program `WS:EXECUTIVE-CAPACITY-FABRIC`.
+
+## Merge provenance (added 2026-09-16 ~08:40Z)
+
+- PR #7203 was squash-merged as `d8a2487e374d8f33ac5bb8cfc80ae7f40845f4a2` at 2026-09-16T08:27:45Z through
+  the GitHub API by the shared fleet identity (`chriswong6031-creator`), 36 s after `fence-pack` concluded and
+  before the PR's own `ci.yml` proof run had registered its late jobs. It was **not** the `merge-on-green`
+  sweeper: every sweeper instance in the 08:26–08:29Z window (`35073746544`, `35073760786`, `35073777740`,
+  `35073778708`, `35073822035`) had exited by 08:27:26Z, and the three that evaluated #7203 each logged
+  "source main baseline is red; leaving it armed behind the circuit breaker". It was not this seat's hand-merge
+  command either (08:29Z, after the fact). The actor is another fleet session acting on the armed label; it is
+  not identified.
+- That proof run (`35073695150`) therefore reports `trusted-ci / trusted-executor-hosted-plan` FAILURE at the
+  step "resolve the immutable same-repository PR candidate" (08:28:52Z, 67 s after the merge):
+  `scripts/resolve_ci_canary_ref.py` refuses a pull request whose state is not `open`. It is a merge-timing
+  artifact, not a content defect: the packs were skipped (docs-only) and `ci-plan`, `fence-pack`,
+  `trusted-executor-main-admission`, `ci-authority` and `ci-authority/main` were green at that head. A rerun
+  cannot clear it because the PR stays closed.
+- This follow-up carries the identical packet through a proof run that is allowed to conclude before the
+  merge. Lesson for docs-only PRs here: do not arm `merge-on-green` (the label invites any fleet actor to merge on
+  the visible green set, which for a pack-less PR concludes about a minute before `ci.yml`'s late jobs register);
+  hand-merge on a concluded run.

@@ -1,0 +1,111 @@
+{
+  "started_at": "2026-10-19T12:06:37.422084+00:00",
+  "head": "0905751badd88752cbab19ffedac51e610488035",
+  "incoming": "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd",
+  "index_tree": "584015252eddaf9ec25a74da2fb2e0afe136b9ef",
+  "checks": [
+    {
+      "name": "injection",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_shared_shell_injection.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 6.451,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/merge-validation-injection.log",
+      "log_sha256": "856e350f43688093d189aee24ed6c9e8d4cd22297417c77c77de32b4198d213b",
+      "summary": "..................................                                       [100%]\n=============================== warnings summary ===============================\n../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-ed169537-ba7d-4b34-965c-c66aae73545c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-ed169537-ba7d-4b34-965c-c66aae73545c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'\n    warnings.warn(\n\n../../../../../../Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-ed169537-ba7d-4b34-965c-c66aae73545c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-ed169537-ba7d-4b34-965c-c66aae73545c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n34 passed, 2 warnings in 4.66s\n"
+    },
+    {
+      "name": "navigation",
+      "argv": [
+        "node",
+        "--test",
+        "tests/js/shared_shell_navigation_adapters.test.cjs",
+        "tests/js/shared_shell_owner_adapters.test.cjs"
+      ],
+      "exit": 0,
+      "duration_seconds": 0.241,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/merge-validation-navigation.log",
+      "log_sha256": "929d0688bffb9c27eb863ef237f64ea80b218ad8d695635f44d4d3385149a098",
+      "summary": "ipt (1.952875ms)\n\u2714 standalone _mmOpenOnboard keeps the legacy sheet route and lazy-load fallback (3.273708ms)\n\u2714 _openSDash is the single settings seam: 'settings' intent only, section never forwarded, dash never built; exactly one intent per entry (3.902ms)\n\u2714 standalone _openSDash still builds and shows the dashboard (3.018916ms)\n\u2714 theme.js guard topology: seam count is exact and public auth/settings exports stay guard-free (0.549208ms)\n\u2714 account.js helpers exist and carry NO presented-state prerequisite (0.944ms)\n\u2714 late account hydration never overrides a qualified parent context (pre-INIT included) (0.513625ms)\n\u2714 standalone applyPrefs still hydrates exactly as before (0.453667ms)\n\u2714 persistPref queues NOTHING during a bridge apply (initial window included) but keeps the user-edit queue (0.4905ms)\n\u2714 claimsPref stays exactly symmetric with the persistPref guard (single-owner handshake) (0.4085ms)\n\u2714 account.js guard wiring and the untouched MMAccount export (0.112458ms)\n\u2714 onboard _mmShellHandoff: existence-keyed, fixed tokens only, false without a candidate, no presented read (3.498791ms)\n\u2714 openSheet is the single sheet seam: every opener hands off, opts never cross, no in-frame build, upgrade lane unreachable (0.588ms)\n\u2714 standalone openSheet keeps the exact legacy modes/opts flow (sign-in/sign-up/upgrade routing intact) (0.585ms)\n\u2714 onboard guards are centralized: exactly two _mmShellHandoff sites, export line byte-identical (0.19375ms)\n\u2714 storage hygiene: nowhere does the adapter introduce a parallel preference key (1.712334ms)\n\u2714 adapter adds no browser/runtime requirements: extracted seams never reference fetch/XHR/cookie/timer APIs beyond the incumbent ones (0.647625ms)\n\u2139 tests 78\n\u2139 suites 0\n\u2139 pass 78\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 173.531084\n"
+    },
+    {
+      "name": "pairs",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 1.582,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/merge-validation-pairs.log",
+      "log_sha256": "66f2c3439a152ba48501fb7430a52091923a07c1213bcf4baa683326db3c8695",
+      "summary": "template\u2194site sync OK (129 pairs checked)\n"
+    },
+    {
+      "name": "asset_references",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_site_asset_refs.py"
+      ],
+      "exit": 0,
+      "duration_seconds": 68.154,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/merge-validation-asset_references.log",
+      "log_sha256": "f81665991a8ff188dec690772ac58380a0e07e84cee13a8fcb6752eaa96e2a63",
+      "summary": "check_site_asset_refs: OK \u2014 every template-decided href/src under site resolves (0 pre-existing gap(s) pinned, 0 unrendered ticker link(s) reported).\n"
+    },
+    {
+      "name": "ci_inventory",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/run_ci_pack.py",
+        "--workflow",
+        ".github/ci/legacy-jobs.yml",
+        "--validate-only"
+      ],
+      "exit": 0,
+      "duration_seconds": 1.799,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/merge-validation-ci_inventory.log",
+      "log_sha256": "541a74c953458a9e370dad2cff9bdbb6ae3e7aa17fdbc6c60f18f4f4af821460",
+      "summary": ", collect-identity, research-vault-api, biocatalyst-worker, biocatalyst-deploy-integration, biocatalyst-regulatory, marketing-media-pipeline, marketing-scoring-optional, portfolio-ctx, quant-q15-noise-robust-rv, free-content-estate, calculator-input-integrity, public-render-fastlane, unrun-vector-dsr, crypto-vector-r2-organs, unrun-marketing-desk, unrun-intl-libraries, quant-q16-delayed-aci, geo-enrich-credential-boundary, unrun-builders-render, unrun-nav-chrome, unrun-site-surfaces, unrun-release-forecast, unrun-brain-desks, unrun-register-honesty, unrun-neuralweb-cortex, unrun-vector-baskets, washout-turn-organ, prophet-anticipation-intake, coiled-mtf-anchor-era, unrun-page-guards, quant-q18-async-session-cov, healthcare-fda-supply, earnings-economic-source-selection, unrun-russell-breadth, unrun-brain-gateway, quant-q19-first-passage-ambiguity, unrun-import-hygiene, unrun-template-chips, unrun-hk-board, unrun-subsector-themes, research-price-panel, entry-radar-identity-snapshot, zh-filing-term, group-pulse, leadership-rotation-countercases, fif-saved-research-notifications, falsifier-tripwires, options-nbbo-cohort, product-experience-capture, reference-integrity, dataos-acceptance, dataos-foundation, dataos-identity-seams, no-client-supplied-identity, unrun-cell-b-v2-buyback-census, market-os-macro-workspaces, recurring-briefs, skew-accrual-lane, industrials-result-cash, house-law-registry-code, company-relationship-candidates, news-impact-contracts, site20-s4-chart-brief-js, single-name-coverage-profiles, grey-deer-pullback-forward, sni-s1-residual, sni-shared-and-drafts, sni-public-exposure-scan, sni-acceptance-evidence, ric-f0-a10-canonical-calendar, c19-wp24-superseded-generations, c19-wp24-dtc-map, c19-wp15-operating-driver-pins, c19-short-pressure-availability\n"
+    },
+    {
+      "name": "ui_evidence",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/shared-shell-css-visual-20261019T1107/merged-ui.diff"
+      ],
+      "exit": 0,
+      "duration_seconds": 2.853,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/merge-validation-ui_evidence.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": ""
+    },
+    {
+      "name": "whitespace",
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd"
+      ],
+      "exit": 0,
+      "duration_seconds": 1.421,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/merge-validation-whitespace.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": ""
+    }
+  ],
+  "programme_complete": false,
+  "completed_at": "2026-10-19T12:07:45.828230+00:00",
+  "index_tree_after": "584015252eddaf9ec25a74da2fb2e0afe136b9ef",
+  "unstaged_after": "",
+  "unmerged_after": "",
+  "pass": true
+}

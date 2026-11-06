@@ -40,6 +40,7 @@ import numpy as np
 import pandas as pd
 
 from lib import config
+from lib.market_observations import observation_date_allowed
 
 log = logging.getLogger(__name__)
 
@@ -96,7 +97,7 @@ def fetch_snapshot(*, persist: bool = True, retries: int = 4, timeout: int = 25,
     """Latest per-stock southbound holdings cross-section, indexed by our ticker
     (e.g. ``0700.HK``). Rows are sorted HOLD_DATE-desc, so the latest date's full
     cross-section comes first; we collect pages until the date rolls back. Best-effort
-    — returns None (never raises) when the backend is unreachable."""
+    — retains the last stored cross-section when the backend is empty or invalid."""
     rows: list[dict] = []
     hold_date: str | None = None
     for page in range(1, max_pages + 1):
@@ -111,7 +112,12 @@ def fetch_snapshot(*, persist: bool = True, retries: int = 4, timeout: int = 25,
             break
     if not rows or not hold_date:
         log.warning("hk_southbound: no rows returned")
-        return None
+        return latest_holdings(allow_fetch=False)
+
+    if not observation_date_allowed(hold_date[:10], "CONNECT"):
+        log.warning("hk_southbound: rejected non-session/future/invalid HOLD_DATE %s; "
+                    "last-good holdings retained", hold_date)
+        return latest_holdings(allow_fetch=False)
 
     def f(x, k):
         v = x.get(k)
@@ -125,10 +131,13 @@ def fetch_snapshot(*, persist: bool = True, retries: int = 4, timeout: int = 25,
         t = _normalize(x.get("SECUCODE") or "")
         if not t or t in recs:                  # keep the first (each ticker once/date)
             continue
+        shares = f(x, "HOLD_SHARES")
+        if not np.isfinite(shares) or shares < 0:
+            continue
         recs[t] = {
             "name": x.get("SECURITY_NAME"),
             "hold_mktcap": f(x, "HOLD_MARKET_CAP"),     # mainland holding value (HKD)
-            "hold_shares": f(x, "HOLD_SHARES"),
+            "hold_shares": shares,
             "own_pct": f(x, "HOLD_SHARES_RATIO"),       # % of issued shares (ownership level)
             "free_pct": f(x, "FREE_SHARES_RATIO"),      # % of free float (often null)
             "chg5_v": f(x, "HOLD_MARKETCAP_CHG5"),      # 5d holding-VALUE change (HKD, abs)
@@ -137,13 +146,17 @@ def fetch_snapshot(*, persist: bool = True, retries: int = 4, timeout: int = 25,
             "close": f(x, "CLOSE_PRICE"),
         }
     if not recs:
-        return None
+        log.warning("hk_southbound: no valid holdings values; last-good holdings retained")
+        return latest_holdings(allow_fetch=False)
     df = pd.DataFrame.from_dict(recs, orient="index")
     df.index.name = "ticker"
     df["date"] = pd.Timestamp(hold_date[:10])
     if persist:
         _persist(df)
     log.info("hk_southbound: %d names as of %s", len(df), hold_date[:10])
+    latest = latest_holdings(allow_fetch=False)
+    if latest is not None and latest["date"].max() > df["date"].max():
+        return latest
     return df
 
 
