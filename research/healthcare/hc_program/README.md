@@ -127,3 +127,41 @@ cross-theme lifecycle legend ("7/18 themes have a glut read", "estimates catchin
 none is a D1 regression; a successor running an unscoped grep must not report them as one.
 
 Recorded as `DSC:FDA-UNAVAILABLE-CHIP-IS-CORRECT-THE-DRIP-NEVER-QUALIFIED` (with falsifier).
+
+## Amendment (2026-09-28, same day) — the upstream condition was DIAGNOSED AND FIXED
+
+`R-D1-FALS-01` stands on its narrow holding: the `UNAVAILABLE` leaf was CORRECT, and the seam was
+performing the refusal D1 added. **Two sentences above are now superseded** and are quoted here
+rather than deleted, because they were published on `main` and a reader must not act on them:
+
+> "it belongs to that collector's owner: **Healthcare consumes this feed and mints no part of it**,
+> so no Healthcare release changes the sweep."
+
+That disposition was wrong on the facts, and it was reached without attempting the diagnosis. The
+condition is NOT an upstream outage. Measured against the live endpoint 2026-09-28: openFDA is
+healthy (`total: 1601`, `last_updated: 2026-09-26`, page 0 → HTTP 200). The failure was
+**first-party arithmetic** in `collect_shortage_sweep`: the completeness test compared the
+POST-deduplication `unique_count` against the source's RAW `reported_total`. Four
+`(package_ndc, initial_posting_date)` pairs are served twice, capping `unique_count` at 1597, so
+`unique_count >= reported_total` (1597 >= 1601) never held; the sweep paged past the end of the
+feed, openFDA answered `skip >= total` with **HTTP 404**, and the sweep recorded `PAGE_FAILED`.
+One duplicate key anywhere was sufficient. No qualified generation could ever have been produced.
+
+Fixed by comparing `raw_count` at both the loop exit and `complete`: completeness asks "did we
+observe every record the source reported", which is a raw-row question, while deduplication
+governs what is STORED (1597 of 1601). Pinned by
+`tests/test_fda_sweep_duplicate_key_completeness.py`, including two falsifier probes asserting a
+genuinely truncated feed still refuses to qualify. Live post-fix receipt: `qualified: True`,
+`failure_code: None`, `raw_count: 1601`, `unique_count: 1597`, `complete: True`, `pages: 17`,
+`source_generation: 2026-09-26` — the first qualified generation this feed has ever produced.
+
+**A third instrument correction, superseding one published above.** The claim
+`partial_rows_observed: 0` means "page 1 parsed cleanly and yielded nothing" is WRONG:
+`collectors/fda_shortages.py:257` returns `[] if failure_code else list(rows_by_key.values())`, so
+`rows` is emptied by construction on ANY failure. `PAGE_FAILED` means only `pages >= 1`.
+
+**What this does NOT change.** The chip's `UNAVAILABLE` rendering was correct for its input and
+is still not a display defect; D1's shipped vocabulary is unchanged; no ranking, entry, sizing or
+trading policy moved; Healthcare still mints no shell/evidence/rights vocabulary and no part of
+the #7870 shared base. Recorded as
+`DSC:FDA-SWEEP-COMPARED-A-DEDUPED-COUNT-TO-A-RAW-TOTAL` (with falsifier).

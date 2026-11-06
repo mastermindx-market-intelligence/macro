@@ -17,7 +17,13 @@
    A name with no fresh cross (downtrending / topped / a HOLD) renders a muted dash. #}
 {% macro signal(r) -%}
 {%- if r.sig_tier and r.sig_en -%}
-<span class="sgchip {{ r.sig_css }}" data-tip-en="{{ 'Confirmed entry signal — it fired in the last few days and is still building (not overbought, not rolling over).' if r.sig_tier in ('T1','T2') else 'Expected to fire within the next day or two. Earlier, and less certain, than a confirmed one.' }} The board only labels a name buyable when this fires — never off trend/momentum alone.{% if r.sig_prov %} PROVISIONAL — read off a bar that has not closed yet; measured, 9.4% of these disappear once it does.{% endif %}" data-tip-zh="{{ '入场信号已确认：最近几天刚触发，还在往上走（没超买，也没回落）。' if r.sig_tier in ('T1','T2') else '预计未来一两天内触发。比已确认的更早，也更不确定。' }}{% if r.sig_prov %} 暂定 — 这是从还没走完的K线上读出来的；实测有 9.4% 会在K线走完后消失。{% endif %}">{{ t(r.sig_en, r.sig_zh) }}{% if r.sig_tier == 'T3' and r.sig_btc is not none %} <span class="xs">~{{ r.sig_btc }}d</span>{% endif %}</span>{% if r.sig_prov %}<span class="prov-flag" data-tip-en="Provisional — may change. This grade is read off a bar that has not closed yet; measured, 9.4% of these disappear within four sessions once it does." data-tip-zh="暂定 — 可能会变。这个评级是从还没走完的K线上读出来的；实测有 9.4% 会在K线走完后的四个交易日内消失。"><span class="l-en">prov</span><span class="l-zh">暂定</span></span>{% endif %}
+<span class="sgchip {{ r.sig_css }}" data-tip-en="{{ 'Confirmed entry signal — it fired in the last few days and is still building (not overbought, not rolling over).' if r.sig_tier in ('T1','T2') else 'Expected to fire within the next day or two. Earlier, and less certain, than a confirmed one.' }} The board only labels a name buyable when this fires — never off trend/momentum alone.{% if r.sig_prov %} PROVISIONAL — read off a bar that has not closed yet; measured, 9.4% of these disappear once it does.{% endif %}" data-tip-zh="{{ '入场信号已确认：最近几天刚触发，还在往上走（没超买，也没回落）。' if r.sig_tier in ('T1','T2') else '预计未来一两天内触发。比已确认的更早，也更不确定。' }}{% if r.sig_prov %} 暂定 — 这是从还没走完的K线上读出来的；实测有 9.4% 会在K线走完后消失。{% endif %}">{{ t(r.sig_en, r.sig_zh) }}{% if r.sig_tier == 'T3' and r.sig_btc is not none %} <span class="xs">~{{ r.sig_btc }}d</span>{% endif %}
+{%- if r.sig_tier in ('T1','T2') and r.sig_ticks is number %} <span class="xs">
+{%- if r.sig_ticks == 0 -%}{{ t('just fired', '刚刚触发') }}{%- elif r.sig_ticks == 1 -%}
+{{ t('fired 1 bar ago', '1 根K线前触发') }}{%- else -%}
+{{ t('fired ' ~ r.sig_ticks ~ ' bars ago', r.sig_ticks ~ ' 根K线前触发') }}{%- endif -%}
+</span>{%- endif -%}
+</span>{% if r.sig_prov %}<span class="prov-flag" data-tip-en="Provisional — may change. This grade is read off a bar that has not closed yet; measured, 9.4% of these disappear within four sessions once it does." data-tip-zh="暂定 — 可能会变。这个评级是从还没走完的K线上读出来的；实测有 9.4% 会在K线走完后的四个交易日内消失。"><span class="l-en">prov</span><span class="l-zh">暂定</span></span>{% endif %}
 {%- else -%}
 <span class="sgchip sg-none" data-tip-en="No fresh entry signal — not a buy today. A strong name can still be a hold, or be rolling over." data-tip-zh="没有新的入场信号 — 今天不是买点。强势股也可能只是持有，或者已经在回落。">—</span>
 {%- endif -%}
@@ -47,6 +53,18 @@
 <span class="cchip {{ 'up' if r.legs[leg] >= 0 else 'down' }}" title="{{ leg }} z {{ '%+.1f'|format(r.legs[leg]) }}">{{ t(LEG_LBL[leg][0], LEG_LBL[leg][1]) }} {{ '%+.1f'|format(r.legs[leg]) }}</span>
 {%- endfor -%}
 {%- if r.ins_buyers and r.ins_buyers >= 2 and (r.ins_bps or 0) > 0 -%}<span class="cchip ins">👤{{ r.ins_buyers }}</span>{%- endif -%}
+{%- if r.ins_sellers and r.ins_sellers >= 2 and (r.ins_bps or 0) < 0 -%}
+{%- set isnet = r.ins_net_mn is number and r.ins_net_mn < 0 -%}
+{%- set isamt = ('$%.1fM'|format(-r.ins_net_mn)) if isnet else '' -%}
+{%- set isen = 'Form-4 open-market sales by ' ~ r.ins_sellers ~ ' insiders over the ' -%}
+{%- set isen = isen ~ 'trailing 6-month window' ~ (', net -' ~ isamt if isnet else '') -%}
+{%- set isen = isen ~ '. Counts and dollars only; the filings record no reason for the sales.' -%}
+{%- set iszh = '近6个月内 ' ~ r.ins_sellers ~ ' 名内部人在公开市场卖出（Form-4）' -%}
+{%- set iszh = ((iszh ~ '，净卖出 ' ~ isamt) if isnet else iszh) ~ '。仅统计人数与金额，文件未记录卖出原因。' -%}
+<span class="cchip down" data-tip-en="{{ isen }}" data-tip-zh="{{ iszh }}">{{-
+ t(r.ins_sellers ~ ' sellers', r.ins_sellers ~ ' 名卖出') -}}
+ {%- if isnet %} {{ '-$%.1fM'|format(-r.ins_net_mn) }}{%- endif -%}</span>
+{%- endif -%}
 {%- if r.val_label -%}<span class="vchip {{ r.val_css }}" data-tip-en="Earnings yield at the {{ r.ey_pctile }}th percentile of this name's OWN ~3-year history — {{ 'cheaper than its own norm (re-rating headroom)' if r.val_label=='cheap' else 'near the richest multiple it has carried in 3 years (stretched-valuation caution — the kind price extension alone can miss)' }}. Coarse (annual earnings), display-only, never scored." data-tip-zh="市盈收益率处于该股近3年自身历史的第 {{ r.ey_pctile }} 百分位；仅作展示，不计入评分。">{{ t(r.val_en, r.val_zh) }}</span>{%- endif -%}
 {%- if r.attn_z is not none and r.attn_z >= (attn_threshold|default(2.0)) -%}<span class="cchip attn" data-tip-en="Abnormal en.wikipedia attention (offshore), z {{ '%+.1f'|format(r.attn_z) }} — Da-Engelberg-Gao: attention precedes short-horizon reversal; over-extension / fade caution, not a buy." data-tip-zh="维基百科异常关注度（境外），z {{ '%+.1f'|format(r.attn_z) }} — 关注度领先短期反转；过度/回吐风险提示，非买入信号。">👁 {{ t('Attn','关注') }} {{ '%+.1f'|format(r.attn_z) }}σ{%- if r.ticker.endswith('.SS') or r.ticker.endswith('.SZ') or r.ticker.endswith('.HK') %} {{ t('· intl only','· 仅境外') }}{%- endif -%}</span>{%- endif -%}
 </span>
@@ -55,7 +73,12 @@
 <tr data-grade="{{ r.grade }}">
   <td class="rk">{{ i }}</td>
   <td><a href="stock.html#{{ r.ticker }}"><b>{{ r.ticker }}</b></a> <span class="muted sm">{{ r.name[:18] }}</span><br><span class="muted xs">{{ td(r.sector) }}</span></td>
-  <td><div class="scorecell">{{ sbar(r.top_score) }}<span class="znum band-{{ r.band }}">{{ '%+.2f'|format(r.top_score) }}</span></div></td>
+  <td><div class="scorecell">{{ sbar(r.top_score) }}<span class="znum band-{{ r.band }}">{{-
+    '%+.2f'|format(r.top_score) -}}</span>{%- if r.n_legs is number and r.n_legs < 2 -%}
+    <span class="xs" data-tip-en="Fewer than 2 of the 5 confirming legs have data, so
+    conviction counts as 0 and this score is the alpha part alone."
+    data-tip-zh="5个确认因子中有数据的少于2个，信念按0计，该评分只含阿尔法部分。">{{-
+    t('α only', '仅阿尔法') -}}</span>{%- endif -%}</div></td>
   <td>{{ signal(r) }}</td>
   <td>{{ stretch(r) }}</td>
   <td>{{ entry(r) }}</td>
@@ -67,7 +90,12 @@
 {% macro srow(r) -%}
 <tr data-grade="{{ r.grade }}">
   <td><a href="stock.html#{{ r.ticker }}"><b>{{ r.ticker }}</b></a> <span class="muted sm">{{ r.name[:18] }}</span></td>
-  <td><div class="scorecell">{{ sbar(r.top_score) }}<span class="znum band-{{ r.band }}">{{ '%+.2f'|format(r.top_score) }}</span></div></td>
+  <td><div class="scorecell">{{ sbar(r.top_score) }}<span class="znum band-{{ r.band }}">{{-
+    '%+.2f'|format(r.top_score) -}}</span>{%- if r.n_legs is number and r.n_legs < 2 -%}
+    <span class="xs" data-tip-en="Fewer than 2 of the 5 confirming legs have data, so
+    conviction counts as 0 and this score is the alpha part alone."
+    data-tip-zh="5个确认因子中有数据的少于2个，信念按0计，该评分只含阿尔法部分。">{{-
+    t('α only', '仅阿尔法') -}}</span>{%- endif -%}</div></td>
   <td>{{ signal(r) }}</td>
   <td>{{ stretch(r) }}</td>
   <td>{{ entry(r) }}</td>
@@ -193,7 +221,16 @@
     "两件事，我们有意分开说。信念（排名）说的是这只股票本身好不好：主要看它跑赢自己所在行业多少，再用价值、质量、盈利能力、低波动和内部人买入来确认。买入（单独一列）说的是今天能不能动手——只有入场信号真的触发了、或者马上要触发，才会显示“买入区”。一只信念很高但已经在回落的领涨股不是买点，那里会显示一个灰色破折号。“趋势”标签只告诉你该冒多大风险，不代表买卖，也完全不参与排名——我们测过，把择时折进排名反而更差。这套组合在我们测过的每个时间跨度上都好于只看动量，但优势有限、也很拥挤：它是一个带入场检查的研究视角，不是保证赚钱的买入清单。") }}</p>
   <p class="muted sm" style="margin:6px 0 0">{{ t('As of', '截至') }} {{ as_of }} · {{ n }} {{ t('names', '只') }} ·
     {{ t('score', '评分') }} {{ alpha_w }}·α + {{ tilt_w }}·{{ t('conviction', '信念') }} ·
-    {{ t('betas', '贝塔') }} {{ windows.beta_win }}d · {{ t('formation', '形成窗口') }} {{ windows.form }}-{{ windows.skip }}d</p>
+    {{ t('betas', '贝塔') }} {{ windows.beta_win }}d · {{ t('formation', '形成窗口') }} {{ windows.form }}-{{ windows.skip }}d
+    {%- if gate_validity is mapping and gate_validity.source_session %}
+    · {{ t('entry signals from session', '入场信号取自交易日') }} {{ gate_validity.source_session }}
+    {%- set glag = gate_validity.lag_sessions | int -%}
+    {%- if gate_validity.lag_sessions is number and gate_validity.lag_sessions >= 1 %}
+    · {{ t(glag ~ ' session behind' if glag == 1 else glag ~ ' sessions behind',
+    '落后 ' ~ glag ~ ' 个交易日') }}{%- endif -%}
+    {%- if gate_validity.expiry_session %} · {{ t('valid through ' ~
+    gate_validity.expiry_session, '有效至 ' ~ gate_validity.expiry_session) }}{%- endif -%}
+    {%- endif %}</p>
 </div>
 
 {% if banner and banner.state and banner.state != 'na' %}

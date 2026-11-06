@@ -1,0 +1,40 @@
+{
+  "original_head": "8f705cb32a77987f7e5c025e99194f3b479a6382",
+  "integrated_protected_main": "785295e9cda5a4a9b5ec2edcb303c5b55aaa266d",
+  "cause": "CI merge included the SNI absolute-path prune; existing protected repairs 9227 and 9234 fix it. Controller refused inherited proof signature, so corrective source integration is required.",
+  "merge_conflicts": 0,
+  "press_source_hashes_unchanged": 24,
+  "main_job_count_preserved": 313,
+  "only_job_delta_from_main": "press-lane includes the three existing Press suite additions",
+  "existing_repair_9288_consumed": true,
+  "pages": [
+    {
+      "path": "blog/index.html",
+      "before_sha256": "2b5efaa610549f7d5f5e438e6eda5c91f4a97bcee32765aa55dd0b20ab2466f8",
+      "after_sha256": "acfaafc944d42a378405a93737e733e666e3f8a6d6ffc261f4b3d0f4363128bd",
+      "only_shared_cache_refs_changed": true
+    },
+    {
+      "path": "learn/index.html",
+      "before_sha256": "22120fc98543ce0465d8f2ebeb43d84b5ac249716000f7a3f56e5af26d8844b2",
+      "after_sha256": "63c94b58d2b1b1ac0a62c0b15d63f841b337a598e3687fbb0881106b36825ae3",
+      "only_shared_cache_refs_changed": true
+    },
+    {
+      "path": "tools/calculators/position-size.html",
+      "before_sha256": "be34f6882a73ba104e45ddda631c0bb7225913dca5ae1f80acc08e2f53df8d46",
+      "after_sha256": "de2ec9db310eaeb9b147747803b0a307914d24987acf2b4c5b7e2fd25e3408ee",
+      "only_shared_cache_refs_changed": true
+    }
+  ],
+  "shared_dependencies_reviewed": {
+    "theme.css": "Two retained-evidence tokens; no new rule on these pages",
+    "theme.js": "Preserve valid same-origin ret in lazy sign-in fallback",
+    "onboard.js": "Preserve same-origin OAuth ret and wait for session exchange before navigation",
+    "source_commit": "eb7cae75aa7f7c6633bdd4fc843c34fecc2197d2",
+    "focused_node_tests_pass": 17
+  },
+  "new_browser_check_required": true,
+  "installation": false,
+  "publication": false
+}
