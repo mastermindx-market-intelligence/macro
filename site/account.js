@@ -51,6 +51,27 @@
   // theme.js applies the signed-in account's saved theme/lang on SIGNED_IN (setTheme/setLang
   // inside the 'mdx-auth' dispatch). Those are not user edits, so they must not echo a save.
   var _authApplying = false;
+  // Shared Shell bridge: consulted at call time inside the synchronous event
+  // dispatch, never mirrored into a locally-lifted async fence (unlike
+  // _authApplying above, which keeps its original SIGNED_IN scope). There is no
+  // presented-state prerequisite: the bridge applies the parent's initial
+  // context synchronously BEFORE it marks itself presenting, so gating on that
+  // flag would leak legacy preference writes during the first apply.
+  // Candidate EXISTENCE is the qualified-embed signal — the bridge installs
+  // window.MMXSharedShell only behind its parent/frame-generation/referrer
+  // guards and deletes it on teardown — and the frozen `applyingContext` getter
+  // is true exactly while a bridge invocation of setTheme/setLang is running.
+  // No candidate => both helpers falsy => this file behaves exactly as before.
+  function _mmShellPresent() {
+    try {
+      var s = window.MMXSharedShell;
+      return !!(s && typeof s.openAuth === 'function');
+    } catch (e) { return false; }
+  }
+  function _mmShellApplying() {
+    if (!_mmShellPresent()) return false;
+    try { return !!window.MMXSharedShell.applyingContext; } catch (e) { return false; }
+  }
   // Pending-pref owner key. /api/account carries the stable Supabase user id, so the
   // fence keys on it; the email is the fallback only when the id is absent.
   function _acctKey(a) {
@@ -158,6 +179,7 @@
     al_what: ['What to send', '发送哪些提醒'],
     al_cat_hold: ['A position I hold moves on real news', '我持有的仓位因真实消息出现变动'],
     al_cat_thes: ['A market view I’m watching starts or ends', '我关注的市场观点开始或结束'],
+    al_cat_rot: ['Defensive leadership changes', '防御板块领导力变化'],
     al_none: ["No alert types chosen yet — you won't get any alert emails.",
       '尚未选择提醒类型 — 你不会收到提醒邮件。'],
     al_tz: ['Your time zone', '你的时区'],
@@ -384,13 +406,22 @@
   // --------------------------------------------------- preference sync -------
   function applyPrefs(a) {
     if (!a || !a.authenticated || !a.prefs) return;
+    // Shared Shell candidate exists: late /api/account prefs must not override
+    // the theme or locale the native identity/Settings surface owns — before
+    // and after the first parent apply alike; the parent context is
+    // authoritative the moment the frame is qualified.
+    if (_mmShellPresent()) return;
     _hydrating = true;
     try {
       if (a.prefs.theme && (a.prefs.theme === 'light' || a.prefs.theme === 'dark') &&
           a.prefs.theme !== curTheme() && window.setTheme) window.setTheme(a.prefs.theme);
       var lg = document.documentElement.getAttribute('data-lang') || 'en';
       if (a.prefs.lang && (a.prefs.lang === 'en' || a.prefs.lang === 'zh') &&
-          a.prefs.lang !== lg && window.setLang) window.setLang(a.prefs.lang);
+          a.prefs.lang !== lg && window.setLang) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(a.prefs.lang, window.setLang);
+        } else window.setLang(a.prefs.lang);
+      }
     } catch (e) {}
     _hydrating = false;
   }
@@ -398,7 +429,7 @@
   // sent single-flight; each field is marked queued -> sent -> acked|failed on the root.
   function _setPrefState(key, s) { _prefState[key] = s; if (_root) _root.setAttribute('data-pref-' + key, s); }
   function persistPref(key, val) {
-    if (_hydrating || _authApplying || !state.acct || !state.acct.authenticated) return;
+    if (_hydrating || _authApplying || _mmShellApplying() || !state.acct || !state.acct.authenticated) return;
     var owner = _acctKey(state.acct);
     if (_prefOwner !== owner) { _prefPending = {}; _prefOwner = owner; }
     _prefPending[key] = val; _setPrefState(key, 'queued');
@@ -650,6 +681,7 @@
           '<div class="mmacc-sublabel">' + esc(T('al_what')) + '</div>' +
           alertCatRow('holdings_material_change', T('al_cat_hold'), cats.indexOf('holdings_material_change') !== -1) +
           alertCatRow('thesis_window', T('al_cat_thes'), cats.indexOf('thesis_window') !== -1) +
+          alertCatRow('sector_rotation_relative', T('al_cat_rot'), cats.indexOf('sector_rotation_relative') !== -1) +
           (cats.length === 0 ? '<div class="mmacc-hint mmacc-hint-none">' + esc(T('al_none')) + '</div>' : '') +
           '<div class="mmacc-sublabel">' + esc(T('al_tz')) + '</div>' +
           '<select class="mmacc-input mmacc-select" id="mmacc-tz" data-act="alert-tz" data-prev="' + esc(tz || '') + '" aria-label="' + esc(T('al_tz')) + '">' + _tzOptions(tz) + '</select>' +
@@ -929,9 +961,17 @@
     var was = btn.getAttribute('aria-checked') === 'true';
     var next = !was;
     btn.setAttribute('aria-checked', next ? 'true' : 'false');
-    var cats = [];
-    document.querySelectorAll('[data-act="alert-cat"]').forEach(function (b) {
-      if (b.getAttribute('aria-checked') === 'true') cats.push(b.getAttribute('data-cat'));
+    var controls = document.querySelectorAll('[data-act="alert-cat"]');
+    var represented = [];
+    controls.forEach(function (b) { represented.push(b.getAttribute('data-cat')); });
+    // Some categories are managed by their own product surface. Toggling this
+    // panel must not silently unsubscribe an acknowledged, unrepresented one.
+    var cats = (_ackedAlerts().alert_categories || []).filter(function (c, i, all) {
+      return represented.indexOf(c) < 0 && all.indexOf(c) === i;
+    });
+    controls.forEach(function (b) {
+      var c = b.getAttribute('data-cat');
+      if (b.getAttribute('aria-checked') === 'true' && cats.indexOf(c) < 0) cats.push(c);
     });
     persistAlertPref('alert_categories', cats, function () {
       setMsg('mmacc-alert-msg', T('al_saved'), 'ok');
@@ -1117,12 +1157,13 @@
   }
   // Single-owner handshake for the shared theme/lang atomics (see the header). True
   // exactly when persistPref would queue a write for `key`: the panel is mounted, the
-  // account read settled as signed-in, and no hydration or auth-apply fence is up.
+  // account read settled as signed-in, no hydration or auth-apply fence is up, and no
+  // Shared Shell bridge apply is in flight.
   // theme.js consults this before its own updateUser save and leaves those keys here.
   function claimsPref(key) {
     if (!_mounted) return false;
     if (key !== 'theme' && key !== 'lang') return false;
-    if (_hydrating || _authApplying) return false;
+    if (_hydrating || _authApplying || _mmShellApplying()) return false;
     return !!(state.loaded && !state.unavail && state.acct && state.acct.authenticated);
   }
   window.MMAccount = {
@@ -1249,7 +1290,7 @@
     var s = document.createElement('script');
     // nav_market.js owns the runtime menu composition, so it must never inherit
     // a stale year-cached response after a navigation release.
-    s.src = pfx + 'nav_market.js?v=20261011-account-identity';
+    s.src = pfx + 'nav_market.js?v=20261101-expectation-surface-nav';
     s.async = true;
     (document.head || document.documentElement).appendChild(s);
   })();

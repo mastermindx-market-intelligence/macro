@@ -32,10 +32,12 @@ TIMESTAMP_QUALITY_EVENT_DATE = "EVENT_DATE"
 
 
 def split_tokens(stock_code) -> list[str]:
-    """Exact '<br/>' tokens of a stock_code cell, stripped, order preserved."""
+    """Exact '<br/>' tokens of a stock_code cell, stripped, order preserved.
+    Tokens that are empty after strip are dropped ("" -> []; "a<br/>" -> ["a"]).
+    None stays []."""
     if stock_code is None:
         return []
-    return [tok.strip() for tok in str(stock_code).split("<br/>")]
+    return [tok.strip() for tok in str(stock_code).split("<br/>") if tok.strip()]
 
 
 def select_rows_for_counter(tokens_by_row: dict[int, list[str]],

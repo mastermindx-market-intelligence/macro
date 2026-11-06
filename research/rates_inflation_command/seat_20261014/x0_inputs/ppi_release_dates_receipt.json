@@ -1,0 +1,1434 @@
+{
+ "fetched_at_utc": "2026-10-14T05:20:32Z",
+ "realtime_start_param": "2007-01-01",
+ "rights": {
+  "licensing": "public_domain",
+  "registry_id": "macro.fred.vintages",
+  "source": "FRED/ALFRED (St. Louis Fed)"
+ },
+ "rows": [
+  {
+   "agree": null,
+   "period": "2007-01-01",
+   "ppiaco_first_realtime_start": "2007-02-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-02-01",
+   "ppiaco_first_realtime_start": "2007-03-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-03-01",
+   "ppiaco_first_realtime_start": "2007-04-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-04-01",
+   "ppiaco_first_realtime_start": "2007-05-11",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-05-01",
+   "ppiaco_first_realtime_start": "2007-06-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-06-01",
+   "ppiaco_first_realtime_start": "2007-07-17",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-07-01",
+   "ppiaco_first_realtime_start": "2007-08-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-08-01",
+   "ppiaco_first_realtime_start": "2007-09-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-09-01",
+   "ppiaco_first_realtime_start": "2007-10-12",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-10-01",
+   "ppiaco_first_realtime_start": "2007-11-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-11-01",
+   "ppiaco_first_realtime_start": "2007-12-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2007-12-01",
+   "ppiaco_first_realtime_start": "2008-01-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-01-01",
+   "ppiaco_first_realtime_start": "2008-02-26",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-02-01",
+   "ppiaco_first_realtime_start": "2008-03-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-03-01",
+   "ppiaco_first_realtime_start": "2008-04-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-04-01",
+   "ppiaco_first_realtime_start": "2008-05-20",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-05-01",
+   "ppiaco_first_realtime_start": "2008-06-17",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-06-01",
+   "ppiaco_first_realtime_start": "2008-07-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-07-01",
+   "ppiaco_first_realtime_start": "2008-08-19",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-08-01",
+   "ppiaco_first_realtime_start": "2008-09-12",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-09-01",
+   "ppiaco_first_realtime_start": "2008-10-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-10-01",
+   "ppiaco_first_realtime_start": "2008-11-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-11-01",
+   "ppiaco_first_realtime_start": "2008-12-12",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2008-12-01",
+   "ppiaco_first_realtime_start": "2009-01-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-01-01",
+   "ppiaco_first_realtime_start": "2009-02-19",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-02-01",
+   "ppiaco_first_realtime_start": "2009-03-17",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-03-01",
+   "ppiaco_first_realtime_start": "2009-04-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-04-01",
+   "ppiaco_first_realtime_start": "2009-05-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-05-01",
+   "ppiaco_first_realtime_start": "2009-06-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-06-01",
+   "ppiaco_first_realtime_start": "2009-07-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-07-01",
+   "ppiaco_first_realtime_start": "2009-08-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-08-01",
+   "ppiaco_first_realtime_start": "2009-09-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-09-01",
+   "ppiaco_first_realtime_start": "2009-10-20",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-10-01",
+   "ppiaco_first_realtime_start": "2009-11-17",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-11-01",
+   "ppiaco_first_realtime_start": "2009-12-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2009-12-01",
+   "ppiaco_first_realtime_start": "2010-01-20",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-01-01",
+   "ppiaco_first_realtime_start": "2010-02-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-02-01",
+   "ppiaco_first_realtime_start": "2010-03-17",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-03-01",
+   "ppiaco_first_realtime_start": "2010-04-22",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-04-01",
+   "ppiaco_first_realtime_start": "2010-05-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-05-01",
+   "ppiaco_first_realtime_start": "2010-06-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-06-01",
+   "ppiaco_first_realtime_start": "2010-07-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-07-01",
+   "ppiaco_first_realtime_start": "2010-08-17",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-08-01",
+   "ppiaco_first_realtime_start": "2010-09-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-09-01",
+   "ppiaco_first_realtime_start": "2010-10-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-10-01",
+   "ppiaco_first_realtime_start": "2010-11-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-11-01",
+   "ppiaco_first_realtime_start": "2010-12-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2010-12-01",
+   "ppiaco_first_realtime_start": "2011-01-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-01-01",
+   "ppiaco_first_realtime_start": "2011-02-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-02-01",
+   "ppiaco_first_realtime_start": "2011-03-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-03-01",
+   "ppiaco_first_realtime_start": "2011-04-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-04-01",
+   "ppiaco_first_realtime_start": "2011-05-12",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-05-01",
+   "ppiaco_first_realtime_start": "2011-06-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-06-01",
+   "ppiaco_first_realtime_start": "2011-07-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-07-01",
+   "ppiaco_first_realtime_start": "2011-08-17",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-08-01",
+   "ppiaco_first_realtime_start": "2011-09-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-09-01",
+   "ppiaco_first_realtime_start": "2011-10-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-10-01",
+   "ppiaco_first_realtime_start": "2011-11-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-11-01",
+   "ppiaco_first_realtime_start": "2011-12-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2011-12-01",
+   "ppiaco_first_realtime_start": "2012-01-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-01-01",
+   "ppiaco_first_realtime_start": "2012-02-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-02-01",
+   "ppiaco_first_realtime_start": "2012-03-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-03-01",
+   "ppiaco_first_realtime_start": "2012-04-12",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-04-01",
+   "ppiaco_first_realtime_start": "2012-05-11",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-05-01",
+   "ppiaco_first_realtime_start": "2012-06-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-06-01",
+   "ppiaco_first_realtime_start": "2012-07-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-07-01",
+   "ppiaco_first_realtime_start": "2012-08-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-08-01",
+   "ppiaco_first_realtime_start": "2012-09-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-09-01",
+   "ppiaco_first_realtime_start": "2012-10-12",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-10-01",
+   "ppiaco_first_realtime_start": "2012-11-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-11-01",
+   "ppiaco_first_realtime_start": "2012-12-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2012-12-01",
+   "ppiaco_first_realtime_start": "2013-01-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-01-01",
+   "ppiaco_first_realtime_start": "2013-02-20",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-02-01",
+   "ppiaco_first_realtime_start": "2013-03-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-03-01",
+   "ppiaco_first_realtime_start": "2013-04-12",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-04-01",
+   "ppiaco_first_realtime_start": "2013-05-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-05-01",
+   "ppiaco_first_realtime_start": "2013-06-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-06-01",
+   "ppiaco_first_realtime_start": "2013-07-12",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-07-01",
+   "ppiaco_first_realtime_start": "2013-08-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-08-01",
+   "ppiaco_first_realtime_start": "2013-09-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-09-01",
+   "ppiaco_first_realtime_start": "2013-10-29",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-10-01",
+   "ppiaco_first_realtime_start": "2013-11-21",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-11-01",
+   "ppiaco_first_realtime_start": "2013-12-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2013-12-01",
+   "ppiaco_first_realtime_start": "2014-01-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-01-01",
+   "ppiaco_first_realtime_start": "2014-02-19",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-02-01",
+   "ppiaco_first_realtime_start": "2014-03-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-03-01",
+   "ppiaco_first_realtime_start": "2014-04-11",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-04-01",
+   "ppiaco_first_realtime_start": "2014-05-14",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-05-01",
+   "ppiaco_first_realtime_start": "2014-06-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-06-01",
+   "ppiaco_first_realtime_start": "2014-07-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-07-01",
+   "ppiaco_first_realtime_start": "2014-08-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-08-01",
+   "ppiaco_first_realtime_start": "2014-09-16",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-09-01",
+   "ppiaco_first_realtime_start": "2014-10-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-10-01",
+   "ppiaco_first_realtime_start": "2014-11-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-11-01",
+   "ppiaco_first_realtime_start": "2014-12-12",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2014-12-01",
+   "ppiaco_first_realtime_start": "2015-01-15",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2015-01-01",
+   "ppiaco_first_realtime_start": "2015-02-18",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": null,
+   "period": "2015-02-01",
+   "ppiaco_first_realtime_start": "2015-03-13",
+   "wpsfd49207_first_realtime_start": null
+  },
+  {
+   "agree": true,
+   "period": "2015-03-01",
+   "ppiaco_first_realtime_start": "2015-04-14",
+   "wpsfd49207_first_realtime_start": "2015-04-14"
+  },
+  {
+   "agree": true,
+   "period": "2015-04-01",
+   "ppiaco_first_realtime_start": "2015-05-14",
+   "wpsfd49207_first_realtime_start": "2015-05-14"
+  },
+  {
+   "agree": true,
+   "period": "2015-05-01",
+   "ppiaco_first_realtime_start": "2015-06-12",
+   "wpsfd49207_first_realtime_start": "2015-06-12"
+  },
+  {
+   "agree": true,
+   "period": "2015-06-01",
+   "ppiaco_first_realtime_start": "2015-07-15",
+   "wpsfd49207_first_realtime_start": "2015-07-15"
+  },
+  {
+   "agree": true,
+   "period": "2015-07-01",
+   "ppiaco_first_realtime_start": "2015-08-14",
+   "wpsfd49207_first_realtime_start": "2015-08-14"
+  },
+  {
+   "agree": true,
+   "period": "2015-08-01",
+   "ppiaco_first_realtime_start": "2015-09-11",
+   "wpsfd49207_first_realtime_start": "2015-09-11"
+  },
+  {
+   "agree": true,
+   "period": "2015-09-01",
+   "ppiaco_first_realtime_start": "2015-10-14",
+   "wpsfd49207_first_realtime_start": "2015-10-14"
+  },
+  {
+   "agree": true,
+   "period": "2015-10-01",
+   "ppiaco_first_realtime_start": "2015-11-13",
+   "wpsfd49207_first_realtime_start": "2015-11-13"
+  },
+  {
+   "agree": true,
+   "period": "2015-11-01",
+   "ppiaco_first_realtime_start": "2015-12-11",
+   "wpsfd49207_first_realtime_start": "2015-12-11"
+  },
+  {
+   "agree": true,
+   "period": "2015-12-01",
+   "ppiaco_first_realtime_start": "2016-01-15",
+   "wpsfd49207_first_realtime_start": "2016-01-15"
+  },
+  {
+   "agree": true,
+   "period": "2016-01-01",
+   "ppiaco_first_realtime_start": "2016-02-17",
+   "wpsfd49207_first_realtime_start": "2016-02-17"
+  },
+  {
+   "agree": true,
+   "period": "2016-02-01",
+   "ppiaco_first_realtime_start": "2016-03-15",
+   "wpsfd49207_first_realtime_start": "2016-03-15"
+  },
+  {
+   "agree": true,
+   "period": "2016-03-01",
+   "ppiaco_first_realtime_start": "2016-04-13",
+   "wpsfd49207_first_realtime_start": "2016-04-13"
+  },
+  {
+   "agree": true,
+   "period": "2016-04-01",
+   "ppiaco_first_realtime_start": "2016-05-13",
+   "wpsfd49207_first_realtime_start": "2016-05-13"
+  },
+  {
+   "agree": true,
+   "period": "2016-05-01",
+   "ppiaco_first_realtime_start": "2016-06-15",
+   "wpsfd49207_first_realtime_start": "2016-06-15"
+  },
+  {
+   "agree": true,
+   "period": "2016-06-01",
+   "ppiaco_first_realtime_start": "2016-07-14",
+   "wpsfd49207_first_realtime_start": "2016-07-14"
+  },
+  {
+   "agree": true,
+   "period": "2016-07-01",
+   "ppiaco_first_realtime_start": "2016-08-12",
+   "wpsfd49207_first_realtime_start": "2016-08-12"
+  },
+  {
+   "agree": true,
+   "period": "2016-08-01",
+   "ppiaco_first_realtime_start": "2016-09-15",
+   "wpsfd49207_first_realtime_start": "2016-09-15"
+  },
+  {
+   "agree": true,
+   "period": "2016-09-01",
+   "ppiaco_first_realtime_start": "2016-10-14",
+   "wpsfd49207_first_realtime_start": "2016-10-14"
+  },
+  {
+   "agree": true,
+   "period": "2016-10-01",
+   "ppiaco_first_realtime_start": "2016-11-16",
+   "wpsfd49207_first_realtime_start": "2016-11-16"
+  },
+  {
+   "agree": true,
+   "period": "2016-11-01",
+   "ppiaco_first_realtime_start": "2016-12-14",
+   "wpsfd49207_first_realtime_start": "2016-12-14"
+  },
+  {
+   "agree": true,
+   "period": "2016-12-01",
+   "ppiaco_first_realtime_start": "2017-01-13",
+   "wpsfd49207_first_realtime_start": "2017-01-13"
+  },
+  {
+   "agree": true,
+   "period": "2017-01-01",
+   "ppiaco_first_realtime_start": "2017-02-14",
+   "wpsfd49207_first_realtime_start": "2017-02-14"
+  },
+  {
+   "agree": true,
+   "period": "2017-02-01",
+   "ppiaco_first_realtime_start": "2017-03-14",
+   "wpsfd49207_first_realtime_start": "2017-03-14"
+  },
+  {
+   "agree": true,
+   "period": "2017-03-01",
+   "ppiaco_first_realtime_start": "2017-04-13",
+   "wpsfd49207_first_realtime_start": "2017-04-13"
+  },
+  {
+   "agree": true,
+   "period": "2017-04-01",
+   "ppiaco_first_realtime_start": "2017-05-11",
+   "wpsfd49207_first_realtime_start": "2017-05-11"
+  },
+  {
+   "agree": true,
+   "period": "2017-05-01",
+   "ppiaco_first_realtime_start": "2017-06-13",
+   "wpsfd49207_first_realtime_start": "2017-06-13"
+  },
+  {
+   "agree": true,
+   "period": "2017-06-01",
+   "ppiaco_first_realtime_start": "2017-07-13",
+   "wpsfd49207_first_realtime_start": "2017-07-13"
+  },
+  {
+   "agree": true,
+   "period": "2017-07-01",
+   "ppiaco_first_realtime_start": "2017-08-10",
+   "wpsfd49207_first_realtime_start": "2017-08-10"
+  },
+  {
+   "agree": true,
+   "period": "2017-08-01",
+   "ppiaco_first_realtime_start": "2017-09-13",
+   "wpsfd49207_first_realtime_start": "2017-09-13"
+  },
+  {
+   "agree": true,
+   "period": "2017-09-01",
+   "ppiaco_first_realtime_start": "2017-10-12",
+   "wpsfd49207_first_realtime_start": "2017-10-12"
+  },
+  {
+   "agree": true,
+   "period": "2017-10-01",
+   "ppiaco_first_realtime_start": "2017-11-14",
+   "wpsfd49207_first_realtime_start": "2017-11-14"
+  },
+  {
+   "agree": true,
+   "period": "2017-11-01",
+   "ppiaco_first_realtime_start": "2017-12-12",
+   "wpsfd49207_first_realtime_start": "2017-12-12"
+  },
+  {
+   "agree": true,
+   "period": "2017-12-01",
+   "ppiaco_first_realtime_start": "2018-01-11",
+   "wpsfd49207_first_realtime_start": "2018-01-11"
+  },
+  {
+   "agree": true,
+   "period": "2018-01-01",
+   "ppiaco_first_realtime_start": "2018-02-15",
+   "wpsfd49207_first_realtime_start": "2018-02-15"
+  },
+  {
+   "agree": true,
+   "period": "2018-02-01",
+   "ppiaco_first_realtime_start": "2018-03-14",
+   "wpsfd49207_first_realtime_start": "2018-03-14"
+  },
+  {
+   "agree": true,
+   "period": "2018-03-01",
+   "ppiaco_first_realtime_start": "2018-04-10",
+   "wpsfd49207_first_realtime_start": "2018-04-10"
+  },
+  {
+   "agree": true,
+   "period": "2018-04-01",
+   "ppiaco_first_realtime_start": "2018-05-09",
+   "wpsfd49207_first_realtime_start": "2018-05-09"
+  },
+  {
+   "agree": true,
+   "period": "2018-05-01",
+   "ppiaco_first_realtime_start": "2018-06-13",
+   "wpsfd49207_first_realtime_start": "2018-06-13"
+  },
+  {
+   "agree": true,
+   "period": "2018-06-01",
+   "ppiaco_first_realtime_start": "2018-07-11",
+   "wpsfd49207_first_realtime_start": "2018-07-11"
+  },
+  {
+   "agree": true,
+   "period": "2018-07-01",
+   "ppiaco_first_realtime_start": "2018-08-09",
+   "wpsfd49207_first_realtime_start": "2018-08-09"
+  },
+  {
+   "agree": true,
+   "period": "2018-08-01",
+   "ppiaco_first_realtime_start": "2018-09-12",
+   "wpsfd49207_first_realtime_start": "2018-09-12"
+  },
+  {
+   "agree": true,
+   "period": "2018-09-01",
+   "ppiaco_first_realtime_start": "2018-10-10",
+   "wpsfd49207_first_realtime_start": "2018-10-10"
+  },
+  {
+   "agree": true,
+   "period": "2018-10-01",
+   "ppiaco_first_realtime_start": "2018-11-09",
+   "wpsfd49207_first_realtime_start": "2018-11-09"
+  },
+  {
+   "agree": true,
+   "period": "2018-11-01",
+   "ppiaco_first_realtime_start": "2018-12-11",
+   "wpsfd49207_first_realtime_start": "2018-12-11"
+  },
+  {
+   "agree": true,
+   "period": "2018-12-01",
+   "ppiaco_first_realtime_start": "2019-01-15",
+   "wpsfd49207_first_realtime_start": "2019-01-15"
+  },
+  {
+   "agree": true,
+   "period": "2019-01-01",
+   "ppiaco_first_realtime_start": "2019-02-14",
+   "wpsfd49207_first_realtime_start": "2019-02-14"
+  },
+  {
+   "agree": true,
+   "period": "2019-02-01",
+   "ppiaco_first_realtime_start": "2019-03-13",
+   "wpsfd49207_first_realtime_start": "2019-03-13"
+  },
+  {
+   "agree": true,
+   "period": "2019-03-01",
+   "ppiaco_first_realtime_start": "2019-04-11",
+   "wpsfd49207_first_realtime_start": "2019-04-11"
+  },
+  {
+   "agree": true,
+   "period": "2019-04-01",
+   "ppiaco_first_realtime_start": "2019-05-09",
+   "wpsfd49207_first_realtime_start": "2019-05-09"
+  },
+  {
+   "agree": true,
+   "period": "2019-05-01",
+   "ppiaco_first_realtime_start": "2019-06-11",
+   "wpsfd49207_first_realtime_start": "2019-06-11"
+  },
+  {
+   "agree": true,
+   "period": "2019-06-01",
+   "ppiaco_first_realtime_start": "2019-07-12",
+   "wpsfd49207_first_realtime_start": "2019-07-12"
+  },
+  {
+   "agree": true,
+   "period": "2019-07-01",
+   "ppiaco_first_realtime_start": "2019-08-09",
+   "wpsfd49207_first_realtime_start": "2019-08-09"
+  },
+  {
+   "agree": true,
+   "period": "2019-08-01",
+   "ppiaco_first_realtime_start": "2019-09-11",
+   "wpsfd49207_first_realtime_start": "2019-09-11"
+  },
+  {
+   "agree": true,
+   "period": "2019-09-01",
+   "ppiaco_first_realtime_start": "2019-10-08",
+   "wpsfd49207_first_realtime_start": "2019-10-08"
+  },
+  {
+   "agree": true,
+   "period": "2019-10-01",
+   "ppiaco_first_realtime_start": "2019-11-14",
+   "wpsfd49207_first_realtime_start": "2019-11-14"
+  },
+  {
+   "agree": true,
+   "period": "2019-11-01",
+   "ppiaco_first_realtime_start": "2019-12-12",
+   "wpsfd49207_first_realtime_start": "2019-12-12"
+  },
+  {
+   "agree": true,
+   "period": "2019-12-01",
+   "ppiaco_first_realtime_start": "2020-01-15",
+   "wpsfd49207_first_realtime_start": "2020-01-15"
+  },
+  {
+   "agree": true,
+   "period": "2020-01-01",
+   "ppiaco_first_realtime_start": "2020-02-19",
+   "wpsfd49207_first_realtime_start": "2020-02-19"
+  },
+  {
+   "agree": true,
+   "period": "2020-02-01",
+   "ppiaco_first_realtime_start": "2020-03-12",
+   "wpsfd49207_first_realtime_start": "2020-03-12"
+  },
+  {
+   "agree": true,
+   "period": "2020-03-01",
+   "ppiaco_first_realtime_start": "2020-04-09",
+   "wpsfd49207_first_realtime_start": "2020-04-09"
+  },
+  {
+   "agree": true,
+   "period": "2020-04-01",
+   "ppiaco_first_realtime_start": "2020-05-13",
+   "wpsfd49207_first_realtime_start": "2020-05-13"
+  },
+  {
+   "agree": true,
+   "period": "2020-05-01",
+   "ppiaco_first_realtime_start": "2020-06-11",
+   "wpsfd49207_first_realtime_start": "2020-06-11"
+  },
+  {
+   "agree": true,
+   "period": "2020-06-01",
+   "ppiaco_first_realtime_start": "2020-07-10",
+   "wpsfd49207_first_realtime_start": "2020-07-10"
+  },
+  {
+   "agree": true,
+   "period": "2020-07-01",
+   "ppiaco_first_realtime_start": "2020-08-11",
+   "wpsfd49207_first_realtime_start": "2020-08-11"
+  },
+  {
+   "agree": true,
+   "period": "2020-08-01",
+   "ppiaco_first_realtime_start": "2020-09-10",
+   "wpsfd49207_first_realtime_start": "2020-09-10"
+  },
+  {
+   "agree": true,
+   "period": "2020-09-01",
+   "ppiaco_first_realtime_start": "2020-10-14",
+   "wpsfd49207_first_realtime_start": "2020-10-14"
+  },
+  {
+   "agree": true,
+   "period": "2020-10-01",
+   "ppiaco_first_realtime_start": "2020-11-13",
+   "wpsfd49207_first_realtime_start": "2020-11-13"
+  },
+  {
+   "agree": true,
+   "period": "2020-11-01",
+   "ppiaco_first_realtime_start": "2020-12-11",
+   "wpsfd49207_first_realtime_start": "2020-12-11"
+  },
+  {
+   "agree": true,
+   "period": "2020-12-01",
+   "ppiaco_first_realtime_start": "2021-01-15",
+   "wpsfd49207_first_realtime_start": "2021-01-15"
+  },
+  {
+   "agree": true,
+   "period": "2021-01-01",
+   "ppiaco_first_realtime_start": "2021-02-17",
+   "wpsfd49207_first_realtime_start": "2021-02-17"
+  },
+  {
+   "agree": true,
+   "period": "2021-02-01",
+   "ppiaco_first_realtime_start": "2021-03-12",
+   "wpsfd49207_first_realtime_start": "2021-03-12"
+  },
+  {
+   "agree": true,
+   "period": "2021-03-01",
+   "ppiaco_first_realtime_start": "2021-04-09",
+   "wpsfd49207_first_realtime_start": "2021-04-09"
+  },
+  {
+   "agree": true,
+   "period": "2021-04-01",
+   "ppiaco_first_realtime_start": "2021-05-13",
+   "wpsfd49207_first_realtime_start": "2021-05-13"
+  },
+  {
+   "agree": true,
+   "period": "2021-05-01",
+   "ppiaco_first_realtime_start": "2021-06-15",
+   "wpsfd49207_first_realtime_start": "2021-06-15"
+  },
+  {
+   "agree": true,
+   "period": "2021-06-01",
+   "ppiaco_first_realtime_start": "2021-07-14",
+   "wpsfd49207_first_realtime_start": "2021-07-14"
+  },
+  {
+   "agree": true,
+   "period": "2021-07-01",
+   "ppiaco_first_realtime_start": "2021-08-12",
+   "wpsfd49207_first_realtime_start": "2021-08-12"
+  },
+  {
+   "agree": true,
+   "period": "2021-08-01",
+   "ppiaco_first_realtime_start": "2021-09-10",
+   "wpsfd49207_first_realtime_start": "2021-09-10"
+  },
+  {
+   "agree": true,
+   "period": "2021-09-01",
+   "ppiaco_first_realtime_start": "2021-10-14",
+   "wpsfd49207_first_realtime_start": "2021-10-14"
+  },
+  {
+   "agree": true,
+   "period": "2021-10-01",
+   "ppiaco_first_realtime_start": "2021-11-09",
+   "wpsfd49207_first_realtime_start": "2021-11-09"
+  },
+  {
+   "agree": true,
+   "period": "2021-11-01",
+   "ppiaco_first_realtime_start": "2021-12-14",
+   "wpsfd49207_first_realtime_start": "2021-12-14"
+  },
+  {
+   "agree": true,
+   "period": "2021-12-01",
+   "ppiaco_first_realtime_start": "2022-01-13",
+   "wpsfd49207_first_realtime_start": "2022-01-13"
+  },
+  {
+   "agree": true,
+   "period": "2022-01-01",
+   "ppiaco_first_realtime_start": "2022-02-15",
+   "wpsfd49207_first_realtime_start": "2022-02-15"
+  },
+  {
+   "agree": true,
+   "period": "2022-02-01",
+   "ppiaco_first_realtime_start": "2022-03-15",
+   "wpsfd49207_first_realtime_start": "2022-03-15"
+  },
+  {
+   "agree": true,
+   "period": "2022-03-01",
+   "ppiaco_first_realtime_start": "2022-04-13",
+   "wpsfd49207_first_realtime_start": "2022-04-13"
+  },
+  {
+   "agree": true,
+   "period": "2022-04-01",
+   "ppiaco_first_realtime_start": "2022-05-12",
+   "wpsfd49207_first_realtime_start": "2022-05-12"
+  },
+  {
+   "agree": true,
+   "period": "2022-05-01",
+   "ppiaco_first_realtime_start": "2022-06-14",
+   "wpsfd49207_first_realtime_start": "2022-06-14"
+  },
+  {
+   "agree": true,
+   "period": "2022-06-01",
+   "ppiaco_first_realtime_start": "2022-07-14",
+   "wpsfd49207_first_realtime_start": "2022-07-14"
+  },
+  {
+   "agree": true,
+   "period": "2022-07-01",
+   "ppiaco_first_realtime_start": "2022-08-11",
+   "wpsfd49207_first_realtime_start": "2022-08-11"
+  },
+  {
+   "agree": true,
+   "period": "2022-08-01",
+   "ppiaco_first_realtime_start": "2022-09-14",
+   "wpsfd49207_first_realtime_start": "2022-09-14"
+  },
+  {
+   "agree": true,
+   "period": "2022-09-01",
+   "ppiaco_first_realtime_start": "2022-10-12",
+   "wpsfd49207_first_realtime_start": "2022-10-12"
+  },
+  {
+   "agree": true,
+   "period": "2022-10-01",
+   "ppiaco_first_realtime_start": "2022-11-15",
+   "wpsfd49207_first_realtime_start": "2022-11-15"
+  },
+  {
+   "agree": true,
+   "period": "2022-11-01",
+   "ppiaco_first_realtime_start": "2022-12-09",
+   "wpsfd49207_first_realtime_start": "2022-12-09"
+  },
+  {
+   "agree": true,
+   "period": "2022-12-01",
+   "ppiaco_first_realtime_start": "2023-01-18",
+   "wpsfd49207_first_realtime_start": "2023-01-18"
+  },
+  {
+   "agree": true,
+   "period": "2023-01-01",
+   "ppiaco_first_realtime_start": "2023-02-16",
+   "wpsfd49207_first_realtime_start": "2023-02-16"
+  },
+  {
+   "agree": true,
+   "period": "2023-02-01",
+   "ppiaco_first_realtime_start": "2023-03-15",
+   "wpsfd49207_first_realtime_start": "2023-03-15"
+  },
+  {
+   "agree": true,
+   "period": "2023-03-01",
+   "ppiaco_first_realtime_start": "2023-04-13",
+   "wpsfd49207_first_realtime_start": "2023-04-13"
+  },
+  {
+   "agree": true,
+   "period": "2023-04-01",
+   "ppiaco_first_realtime_start": "2023-05-11",
+   "wpsfd49207_first_realtime_start": "2023-05-11"
+  },
+  {
+   "agree": true,
+   "period": "2023-05-01",
+   "ppiaco_first_realtime_start": "2023-06-14",
+   "wpsfd49207_first_realtime_start": "2023-06-14"
+  },
+  {
+   "agree": true,
+   "period": "2023-06-01",
+   "ppiaco_first_realtime_start": "2023-07-13",
+   "wpsfd49207_first_realtime_start": "2023-07-13"
+  },
+  {
+   "agree": true,
+   "period": "2023-07-01",
+   "ppiaco_first_realtime_start": "2023-08-11",
+   "wpsfd49207_first_realtime_start": "2023-08-11"
+  },
+  {
+   "agree": true,
+   "period": "2023-08-01",
+   "ppiaco_first_realtime_start": "2023-09-14",
+   "wpsfd49207_first_realtime_start": "2023-09-14"
+  },
+  {
+   "agree": true,
+   "period": "2023-09-01",
+   "ppiaco_first_realtime_start": "2023-10-11",
+   "wpsfd49207_first_realtime_start": "2023-10-11"
+  },
+  {
+   "agree": true,
+   "period": "2023-10-01",
+   "ppiaco_first_realtime_start": "2023-11-15",
+   "wpsfd49207_first_realtime_start": "2023-11-15"
+  },
+  {
+   "agree": true,
+   "period": "2023-11-01",
+   "ppiaco_first_realtime_start": "2023-12-13",
+   "wpsfd49207_first_realtime_start": "2023-12-13"
+  },
+  {
+   "agree": true,
+   "period": "2023-12-01",
+   "ppiaco_first_realtime_start": "2024-01-12",
+   "wpsfd49207_first_realtime_start": "2024-01-12"
+  },
+  {
+   "agree": true,
+   "period": "2024-01-01",
+   "ppiaco_first_realtime_start": "2024-02-16",
+   "wpsfd49207_first_realtime_start": "2024-02-16"
+  },
+  {
+   "agree": true,
+   "period": "2024-02-01",
+   "ppiaco_first_realtime_start": "2024-03-14",
+   "wpsfd49207_first_realtime_start": "2024-03-14"
+  },
+  {
+   "agree": true,
+   "period": "2024-03-01",
+   "ppiaco_first_realtime_start": "2024-04-11",
+   "wpsfd49207_first_realtime_start": "2024-04-11"
+  },
+  {
+   "agree": true,
+   "period": "2024-04-01",
+   "ppiaco_first_realtime_start": "2024-05-14",
+   "wpsfd49207_first_realtime_start": "2024-05-14"
+  },
+  {
+   "agree": true,
+   "period": "2024-05-01",
+   "ppiaco_first_realtime_start": "2024-06-13",
+   "wpsfd49207_first_realtime_start": "2024-06-13"
+  },
+  {
+   "agree": true,
+   "period": "2024-06-01",
+   "ppiaco_first_realtime_start": "2024-07-12",
+   "wpsfd49207_first_realtime_start": "2024-07-12"
+  },
+  {
+   "agree": true,
+   "period": "2024-07-01",
+   "ppiaco_first_realtime_start": "2024-08-13",
+   "wpsfd49207_first_realtime_start": "2024-08-13"
+  },
+  {
+   "agree": true,
+   "period": "2024-08-01",
+   "ppiaco_first_realtime_start": "2024-09-12",
+   "wpsfd49207_first_realtime_start": "2024-09-12"
+  },
+  {
+   "agree": true,
+   "period": "2024-09-01",
+   "ppiaco_first_realtime_start": "2024-10-11",
+   "wpsfd49207_first_realtime_start": "2024-10-11"
+  },
+  {
+   "agree": true,
+   "period": "2024-10-01",
+   "ppiaco_first_realtime_start": "2024-11-14",
+   "wpsfd49207_first_realtime_start": "2024-11-14"
+  },
+  {
+   "agree": true,
+   "period": "2024-11-01",
+   "ppiaco_first_realtime_start": "2024-12-12",
+   "wpsfd49207_first_realtime_start": "2024-12-12"
+  },
+  {
+   "agree": true,
+   "period": "2024-12-01",
+   "ppiaco_first_realtime_start": "2025-01-14",
+   "wpsfd49207_first_realtime_start": "2025-01-14"
+  },
+  {
+   "agree": true,
+   "period": "2025-01-01",
+   "ppiaco_first_realtime_start": "2025-02-13",
+   "wpsfd49207_first_realtime_start": "2025-02-13"
+  },
+  {
+   "agree": true,
+   "period": "2025-02-01",
+   "ppiaco_first_realtime_start": "2025-03-13",
+   "wpsfd49207_first_realtime_start": "2025-03-13"
+  },
+  {
+   "agree": true,
+   "period": "2025-03-01",
+   "ppiaco_first_realtime_start": "2025-04-11",
+   "wpsfd49207_first_realtime_start": "2025-04-11"
+  },
+  {
+   "agree": true,
+   "period": "2025-04-01",
+   "ppiaco_first_realtime_start": "2025-05-15",
+   "wpsfd49207_first_realtime_start": "2025-05-15"
+  },
+  {
+   "agree": true,
+   "period": "2025-05-01",
+   "ppiaco_first_realtime_start": "2025-06-12",
+   "wpsfd49207_first_realtime_start": "2025-06-12"
+  },
+  {
+   "agree": true,
+   "period": "2025-06-01",
+   "ppiaco_first_realtime_start": "2025-07-16",
+   "wpsfd49207_first_realtime_start": "2025-07-16"
+  },
+  {
+   "agree": true,
+   "period": "2025-07-01",
+   "ppiaco_first_realtime_start": "2025-08-14",
+   "wpsfd49207_first_realtime_start": "2025-08-14"
+  },
+  {
+   "agree": true,
+   "period": "2025-08-01",
+   "ppiaco_first_realtime_start": "2025-09-10",
+   "wpsfd49207_first_realtime_start": "2025-09-10"
+  },
+  {
+   "agree": true,
+   "period": "2025-09-01",
+   "ppiaco_first_realtime_start": "2025-11-25",
+   "wpsfd49207_first_realtime_start": "2025-11-25"
+  },
+  {
+   "agree": true,
+   "period": "2025-10-01",
+   "ppiaco_first_realtime_start": "2026-01-14",
+   "wpsfd49207_first_realtime_start": "2026-01-14"
+  },
+  {
+   "agree": true,
+   "period": "2025-11-01",
+   "ppiaco_first_realtime_start": "2026-01-14",
+   "wpsfd49207_first_realtime_start": "2026-01-14"
+  },
+  {
+   "agree": true,
+   "period": "2025-12-01",
+   "ppiaco_first_realtime_start": "2026-01-30",
+   "wpsfd49207_first_realtime_start": "2026-01-30"
+  },
+  {
+   "agree": true,
+   "period": "2026-01-01",
+   "ppiaco_first_realtime_start": "2026-02-27",
+   "wpsfd49207_first_realtime_start": "2026-02-27"
+  },
+  {
+   "agree": true,
+   "period": "2026-02-01",
+   "ppiaco_first_realtime_start": "2026-03-18",
+   "wpsfd49207_first_realtime_start": "2026-03-18"
+  },
+  {
+   "agree": true,
+   "period": "2026-03-01",
+   "ppiaco_first_realtime_start": "2026-04-14",
+   "wpsfd49207_first_realtime_start": "2026-04-14"
+  },
+  {
+   "agree": true,
+   "period": "2026-04-01",
+   "ppiaco_first_realtime_start": "2026-05-13",
+   "wpsfd49207_first_realtime_start": "2026-05-13"
+  },
+  {
+   "agree": true,
+   "period": "2026-05-01",
+   "ppiaco_first_realtime_start": "2026-06-11",
+   "wpsfd49207_first_realtime_start": "2026-06-11"
+  },
+  {
+   "agree": true,
+   "period": "2026-06-01",
+   "ppiaco_first_realtime_start": "2026-07-15",
+   "wpsfd49207_first_realtime_start": "2026-07-15"
+  },
+  {
+   "agree": true,
+   "period": "2026-07-01",
+   "ppiaco_first_realtime_start": "2026-08-13",
+   "wpsfd49207_first_realtime_start": "2026-08-13"
+  },
+  {
+   "agree": true,
+   "period": "2026-08-01",
+   "ppiaco_first_realtime_start": "2026-09-10",
+   "wpsfd49207_first_realtime_start": "2026-09-10"
+  }
+ ],
+ "rule": "PPI release date for month P = first realtime_start of P in ALFRED initial-release output; fills the 2010-01..2014-01 gap before PPIFIS vintages begin (E0 H3 tier-1 exclusion input only)",
+ "schema": "ric_ppi_release_dates_receipt.v1",
+ "series": [
+  "PPIACO",
+  "WPSFD49207"
+ ],
+ "source": "FRED/ALFRED series/observations output_type=4 (initial release per period) via collectors.fred.FredAdapter._fetch_vintage_one"
+}

@@ -18,6 +18,7 @@
     "catalogue_state",
     "fields",
     "checks",
+    "reason_codes",
     "type",
     "additionalProperties"
   ],
@@ -58,6 +59,11 @@
       "type": "array",
       "items": {"$ref": "#/$defs/catalogueCheck"}
     },
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/reasonCode"}
+    },
     "type": {"const": "object"},
     "additionalProperties": {"const": false}
   },
@@ -70,7 +76,8 @@
       "then": {
         "properties": {
           "fields": {"maxItems": 0},
-          "checks": {"maxItems": 0}
+          "checks": {"maxItems": 0},
+          "reason_codes": {"maxItems": 0}
         }
       }
     },
@@ -81,7 +88,8 @@
       },
       "then": {
         "properties": {
-          "fields": {"minItems": 1}
+          "fields": {"minItems": 1},
+          "reason_codes": {"minItems": 1}
         }
       }
     }
@@ -147,6 +155,16 @@
           "type": "array",
           "items": {"type": "string"}
         }
+      }
+    },
+    "reasonCode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "parameter", "meaning"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "maxLength": 64},
+        "parameter": {"enum": [null, "concept", "prefix"]},
+        "meaning": {"type": "string", "minLength": 1, "maxLength": 512}
       }
     }
   }

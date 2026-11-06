@@ -49,6 +49,7 @@ confidence: high
 reversibility: easy
 decided_by: coo-fable
 decided_at: 2026-08-12
+superseded_by: DEC:SESSION-OWNED-REVIEW-20261103
 ---
 
 ## Grounds
@@ -66,3 +67,8 @@ The sweeper repeatedly failing a class of PR it should clear (see the disarming 
 economics changing (per-session tokens). Related: `DEC:MERGE-ON-CONCLUDED-CHECKS-ONLY`
 (what "concluded" means), `DEC:GITHUB-QUOTA-IS-ONE-SHARED-BUCKET` (why polling is the
 scarce resource).
+
+
+## Successor ruling — 2026-11-03
+
+This historical unconditional `CI_HANDOFF` stop is superseded by `DEC:SESSION-OWNED-REVIEW-20261103` under direct Chairman authority. The sweeper still owns its existing real CI/merge wait. A receipted handoff is not merged/accepted proof; sessions must repair red/held source, preserve the original PR and ensure a real return path or reachable owner. Do not poll unchanged CI, fabricate running workers, bypass HOLD or duplicate the sweeper.

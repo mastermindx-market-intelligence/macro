@@ -11,7 +11,7 @@ from surprise_skew.sigma, with no revision-field substitute and no fallback."""
 from __future__ import annotations
 
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 
 import pytest
 
@@ -146,3 +146,63 @@ def test_n5_missing_sigma_has_no_fallback(tmp_path):
     assert r["sigma_surprise"] is None
     assert r["available"] is False
     assert r["sigma_scale_pp"] == pytest.approx(0.2)
+
+# ---------------------------------------------------------------- N4 (vintage gate)
+_NOW = datetime(2026, 10, 12, 14, 0, tzinfo=timezone.utc)
+
+
+def _v2_asof(asof, upcoming=None, drop_asof=False):
+    payload = {"schema": "release_forecast.v2", "asof": asof,
+               "upcoming": upcoming if upcoming is not None else [_el("cpi_headline", "2026-10-20")]}
+    if drop_asof:
+        del payload["asof"]
+    return payload
+
+
+@pytest.mark.parametrize("asof", ["2026-10-11T22:05:00Z", "2026-10-12T14:00:00Z", "2026-10-12T22:00:00+08:00"])
+def test_n4_instant_asof_at_or_before_now_is_admitted(tmp_path, asof):
+    p = _write(tmp_path, _v2_asof(asof))
+    r = ew._read_mri_surprise_dispersion("CPI", today=_TODAY, paths=[p], now=_NOW)
+    assert r is not None
+    assert r["asof_precision"] == "instant"
+    assert r["consumed_asof"] == asof
+
+
+@pytest.mark.parametrize("asof", ["2026-10-12T14:00:01Z", "2026-10-12T23:00:00+08:00"])
+def test_n4_instant_asof_after_now_is_refused(tmp_path, asof):
+    p = _write(tmp_path, _v2_asof(asof))
+    assert ew._read_mri_surprise_dispersion("CPI", today=_TODAY, paths=[p], now=_NOW) is None
+
+
+def test_n4_date_only_asof_same_day_is_refused(tmp_path):
+    p = _write(tmp_path, _v2_asof("2026-10-12"))
+    assert ew._read_mri_surprise_dispersion("CPI", today=_TODAY, paths=[p], now=_NOW) is None
+
+
+def test_n4_date_only_asof_prior_day_is_admitted(tmp_path):
+    p = _write(tmp_path, _v2_asof("2026-10-11"))
+    r = ew._read_mri_surprise_dispersion("CPI", today=_TODAY, paths=[p], now=_NOW)
+    assert r is not None
+    assert r["asof_precision"] == "date"
+    assert r["consumed_asof"] == "2026-10-11"
+
+
+@pytest.mark.parametrize(
+    "asof,drop",
+    [(None, True), (None, False), ("", False), ("not-a-date", False), ("2026-10-11T22:05:00", False), (20261011, False)],
+    ids=["key-absent", "null", "empty", "unparseable", "naive-instant", "non-string"],
+)
+def test_n4_missing_or_unusable_asof_is_refused(tmp_path, asof, drop):
+    p = _write(tmp_path, _v2_asof(asof, drop_asof=drop))
+    assert ew._read_mri_surprise_dispersion("CPI", today=_TODAY, paths=[p], now=_NOW) is None
+
+
+def test_n4_now_kwarg_sets_the_consumption_instant(tmp_path):
+    p = _write(tmp_path, _v2_asof("2026-10-12T10:00:00Z"))
+    day = date(2026, 10, 12)
+    before = datetime(2026, 10, 12, 9, 0, tzinfo=timezone.utc)
+    after = datetime(2026, 10, 12, 11, 0, tzinfo=timezone.utc)
+    assert ew._read_mri_surprise_dispersion("CPI", today=day, paths=[p], now=before) is None
+    r = ew._read_mri_surprise_dispersion("CPI", today=day, paths=[p], now=after)
+    assert r is not None and r["asof_precision"] == "instant"
+    assert ew._read_mri_surprise_dispersion("CPI", today=day, paths=[p], now=datetime(2026, 10, 12, 11, 0)) is None
