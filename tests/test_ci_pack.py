@@ -5101,6 +5101,8 @@ CURATED_EXCLUSIVE = {
     # packing probe (5,824 > 5,822); its own exclusive job keeps the static
     # import closure, the engine/pick_lab package imports and ancestor inits.
     "pick-lab-cn-render",
+    # D03 T38: real publication/recovery inputs, no unrelated page fallback.
+    "pick-lab-publication",
     # 2026-10-20 W28G-L31: the THS basket browser notes suite renders the factorwatch
     # template and its five includes with jinja2 and the new pure helper alone. As an
     # ordinary job its inferred scope would ride the shared template packing probes;
@@ -5197,6 +5199,39 @@ def _inferred_as_if_not_exclusive() -> dict[str, PACK.LegacyJob]:
     lives in exactly one place (see the import block above).
     """
     return inferred_as_if_not_exclusive(MANIFEST)
+
+
+def test_pick_lab_publication_scope_keeps_real_render_inputs() -> None:
+    """Caller recovery remains code-gated without unrelated page ownership."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
+    job = jobs["pick-lab-publication"]
+    assert job.exclusive
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    assert "python -m pytest tests/test_pick_lab_publication.py -q" in commands  # ci-trigger-closure: data
+    for dependency in (
+        "tests/test_pick_lab_publication.py",  # ci-trigger-closure: data
+        "scripts/build_pick_lab.py",  # ci-trigger-closure: data
+        "engine/pick_lab/render.py",  # ci-trigger-closure: data
+        "engine/pick_lab/ledger.py",  # ci-trigger-closure: data
+        "engine/pick_lab/snapshot.py",  # ci-trigger-closure: data
+        "lib/pages.py",  # ci-trigger-closure: data
+        "lib/shared_shell.py",  # ci-trigger-closure: data
+        "templates/us_stocks_lab.html.j2",  # ci-trigger-closure: data
+        "templates/_site_nav.html.j2",  # ci-trigger-closure: data
+        "templates/_navlinks.html.j2",  # ci-trigger-closure: data
+        "templates/data_base.js",  # ci-trigger-closure: data
+        "templates/shared_shell.css",  # ci-trigger-closure: data
+        "templates/shared_shell_bridge.js",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    for unrelated in (
+        "templates/index.html",  # ci-trigger-closure: data
+        "scripts/build_free_content.py",  # ci-trigger-closure: data
+        "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs([job], [unrelated])
+        assert not selected, (unrelated, reason)
 
 
 def test_the_curated_exclusive_set_is_actually_declared() -> None:

@@ -1275,8 +1275,12 @@ def _write_site_artifact(path: Path, payload: dict) -> None:
 # ------------------------------------------------------------------ main -------
 
 
-def _build() -> None:
-    """Core build logic (all exceptions propagate to main's try/except)."""
+def _build() -> bool:
+    """Build artifacts; True confirms HTML publication, False leaves it unconfirmed.
+
+    No snapshot is an honest no-op. Non-render exceptions still propagate to
+    main; its PL-R10 exit-zero contract remains separate from publication proof.
+    """
     from engine.pick_lab import snapshot as snap_mod
     from engine.pick_lab.ledger import (
         append_fires,
@@ -1294,7 +1298,7 @@ def _build() -> None:
             "build_stock_library produces one)",
             snap_mod.SNAPSHOT_DIR,
         )
-        return
+        return False
 
     log.info("pick_lab: snapshot asof=%s, %d rows", asof, len(snap))
 
@@ -1516,8 +1520,16 @@ def _build() -> None:
             fires_dict=fires_payload,
         )
         render_page(vm, site)
+        return True
     except Exception as exc:  # noqa: BLE001
         log.warning("pick_lab: page render failed (%s) — data artifacts are good", exc)
+        # A logging prefix hides GitHub annotations. Do not imply the old page
+        # is intact: a writer may have failed after changing some HTML bytes.
+        print("::warning title=pick_lab::HTML publication failed (non-fatal); "
+              "Pick Lab JSON artifacts were written, but publication of "
+              "site/us_stocks_lab.html did not complete. JSON and page may "
+              "be different vintages.", flush=True)
+        return False
 
 
 def main() -> int:
