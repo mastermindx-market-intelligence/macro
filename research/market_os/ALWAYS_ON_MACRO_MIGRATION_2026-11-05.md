@@ -495,3 +495,20 @@ shared-shell consumer through their existing owners. The original CI capability
 denial, unresolved holdings commission and browser capability failure remain local
 fences; none has been bypassed or silently retried. Authenticated two-generation
 open-tab refresh and remaining estate family migrations are still required.
+
+## Document-completion value seams — 2026-11-06
+
+The cycles rotation stamp, Central self-grader and publication/crowding metadata now
+have explicit-value entry points under their existing owners. Legacy builders share
+those calculations. Rotation/guard tests passed 64; grader/publication neighbors
+passed 253. The latter retain 232 flat-fixture correlation warnings. Literal source
+parity, frozen-only grading, score-version segmentation and legacy acquisition failure
+semantics are proven in the [contract](SECTOR_DOCUMENT_COMPLETION_INPUTS_2026-11-06.md)
+and [receipt](SECTOR_DOCUMENT_COMPLETION_SOURCE_REVIEW_2026-11-06.json).
+
+Runtime grading will consume the captured pre-append log; it does not advance any
+ledger. Native metadata explicitly declines legacy HTML/premium-write claims and
+discloses that the raw research-handoff receiver is unbound. These facts must survive
+the fixed-five composer, source capture and eventual native journey integration.
+The next source step is that composer; no data-writer transfer or Macro release has
+occurred. Existing CI, holdings and browser fences remain unchanged.
