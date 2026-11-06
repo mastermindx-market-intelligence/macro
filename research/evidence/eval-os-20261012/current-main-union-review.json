@@ -1,0 +1,110 @@
+{
+  "schema": "eval_os_independent_current_main_union_review.v1",
+  "adjudication": "ACCEPTED_BOUNDED_TWO_FILE_UNION_PENDING_ROOT_AFFECTED_CONTROLS",
+  "observed_at": "2026-10-13T23:45:58.560155+00:00",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "source_context": {
+    "base": "595a89279c50bf8d697fa9eb068d15308c4d38ce",
+    "ours": "847a530c5ac6fadfdfc3d44e0057a5bc2c0ee773",
+    "theirs": "398c40c4787c97da1c6f4ecd72aabc11b34844cc",
+    "stage_blob_ids": {
+      "manifest": [
+        "af05f307edee2f010471b009d866dd12450503d9",
+        "fec0671b77236afd9ee8bef434277ef42ab6045b",
+        "e78f3daa4ab63d2c1911e4f74de2713685d90ea3"
+      ],
+      "updater": [
+        "f6d18ed7083c5366ddaf27a483a2c65aea6a4700",
+        "f02db69ecc89a9e33a31b0a31745f0495faf1503",
+        "300b4cd04345f1de5cc9cf82a5cbe2c13f71faf0"
+      ]
+    }
+  },
+  "failed_frontier": {
+    "CI": 38387357496,
+    "log_sha256": "8c78f0b8e5c888f302131423e12356141900333f7c6a4979ae13d8e37b845563",
+    "failure": "Sole pack0 packing-curation check: templates5813>5800/free_content5618>5600;610passes. Contractdelta+11packs passed perroot currentread."
+  },
+  "manifest": {
+    "sha256": "19bf4b23803719387204689967df9cb39ed42b5603c3f80ab6167ca931f5f38e",
+    "jobs": 299,
+    "same_incoming_job_ids": true,
+    "incoming_only_fields_preserved": true,
+    "accepted_only_fields_preserved": true,
+    "neural_web_equal_ours": true,
+    "two_shared_jobs": [
+      {
+        "job": "fif-kernel-guards",
+        "incoming_fields_equal": true,
+        "path_union_equal": true,
+        "ours_added_paths": [
+          "engine/k3e_eval1_forward.py",
+          "engine/pick_forward_dist.py",
+          "engine/seasonality/multiplicity.py"
+        ],
+        "incoming_added_paths": [
+          "engine/neuralweb/market_memory_lineage.py",
+          "lib/dataos/price_views.py",
+          "lib/dataos/read_contract.py"
+        ]
+      },
+      {
+        "job": "ticker-news-qbus",
+        "incoming_fields_equal": true,
+        "path_union_equal": true,
+        "ours_added_paths": [
+          "engine/k3e_eval1_forward.py",
+          "engine/pick_forward_dist.py",
+          "engine/seasonality/multiplicity.py"
+        ],
+        "incoming_added_paths": [
+          "engine/neuralweb/market_memory_lineage.py",
+          "lib/dataos/price_views.py",
+          "lib/dataos/read_contract.py"
+        ]
+      }
+    ],
+    "new_incoming_jobs": [
+      "c19-short-pressure-availability",
+      "c19-wp24-consumer-states",
+      "c19-wp24-superseded-generations",
+      "crypto-assistant-context"
+    ],
+    "existing_current_main_packing_heal_retained": {
+      "research-price-panel": true,
+      "washout-turn-organ": true,
+      "crypto-assistant-context": true
+    },
+    "no_scope_or_gate_or_ceiling_weakening": "Resolution adopts actual main curation/steps unchanged and unions only exact16acceptedpaths in affected7jobs; no A1 command change."
+  },
+  "updater": {
+    "sha256": "d7f68951f9e549bb5a7a82cc7609b9df5c9b50b5113486b51e58be76b4da9d74",
+    "exact_ours_plus_main_two_dataos_alternatives": true,
+    "addition": [
+      "lib/dataos/price_views.py",
+      "lib/dataos/read_contract.py"
+    ],
+    "A1_theme_calendar_qledger_grade_triggers_preserved": true,
+    "all_non_adminregex_bytes_equal_ours": true,
+    "other_main_updater_bytes_identical_base_except_adminregex": true,
+    "meaning": "Expanded adoption trigger preserves both acceptedA1reader closure andnewmainimport-cached DataOS readers; service restart procedure/order unchanged."
+  },
+  "qualified_hash_changes_excluding_manifest": {
+    "app/deploy/update.sh": {
+      "prior_sha256": "b500602352592acf23e28da910d00c520f09aca3d22fdc33372c8d053efdf18d",
+      "actual_sha256": "d7f68951f9e549bb5a7a82cc7609b9df5c9b50b5113486b51e58be76b4da9d74"
+    }
+  },
+  "preservation_findings": [],
+  "impact": "Accepted unchanged application/browser/resource proof remains reusable. Updater trigger requires currentrootaffectedclosure/order/restart controls; merged dependency/packing selection requires currentrootfocused packing/curation proof andnew exact-headCI. No performance orproduction acceptance inferred.",
+  "pending": [
+    "Rootexec93985 packing/adminclosure/order controls",
+    "Committed/published integration head andexactheadCI",
+    "Hold/release,normalowner-run,install/authprod/operator proof; zoom/motion only qualified by actualreceipt"
+  ],
+  "reviewer_tests_run": false,
+  "CI_queries": false,
+  "source_writes": false,
+  "new_delegation_operations": false
+}

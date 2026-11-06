@@ -35,6 +35,92 @@
   var API = (CFG.api || '').replace(/\/$/, '');
   var DOC = document;
 
+  /* Optional native presentation assets come from THIS widget's origin, including
+     when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
+  var visualAssetBase = new URL('./', (DOC.currentScript && DOC.currentScript.src) || DOC.baseURI).href;
+  var visualScriptVersion = '2e3ce3a5';
+  var visualStyleVersion = 'b9f2e195';
+  var visualAssetPromise = null;
+  var presentationVersion = '88e1f94b';
+  var presentationPromise = null;
+  function loadPresentationAssets() {
+    if (window.MMBrainPresentation) return Promise.resolve(window.MMBrainPresentation);
+    if (presentationPromise) return presentationPromise;
+    presentationPromise = new Promise(function (resolve, reject) {
+      var script = DOC.createElement('script'); script.async = true; script.charset = 'utf-8';
+      script.src = visualAssetBase + 'mm_brain_presentation.js?v=' + presentationVersion;
+      var timer = setTimeout(function () { script.remove(); reject(new Error('presentation timeout')); }, 10000);
+      script.onload = function () { clearTimeout(timer); if (window.MMBrainPresentation) resolve(window.MMBrainPresentation); else reject(new Error('presentation unavailable')); };
+      script.onerror = function () { clearTimeout(timer); script.remove(); reject(new Error('presentation unavailable')); };
+      DOC.head.appendChild(script);
+    }).catch(function (error) { presentationPromise = null; throw error; });
+    return presentationPromise;
+  }
+  function requestMath(host) {
+    setTimeout(function () {
+      if (!host || !host.isConnected || !host.querySelector('[data-mmb-math]')) return;
+      loadPresentationAssets().then(function (presentation) { return presentation.renderMath(host); }).catch(function () {});
+    }, 0);
+  }
+  function loadVisualAssets() {
+    if (visualAssetPromise) return visualAssetPromise;
+    visualAssetPromise = new Promise(function (resolve, reject) {
+      var link = DOC.createElement('link'); link.rel = 'stylesheet';
+      link.href = visualAssetBase + 'mm_brain_visuals.css?v=' + visualStyleVersion;
+      var script = DOC.createElement('script'); script.async = true; script.charset = 'utf-8';
+      script.src = visualAssetBase + 'mm_brain_visuals.js?v=' + visualScriptVersion;
+      var styleReady = false, scriptReady = false;
+      function ready() { if (styleReady && scriptReady && window.MMBrainVisuals) resolve(window.MMBrainVisuals); }
+      link.onload = function () { styleReady = true; ready(); };
+      script.onload = function () { scriptReady = true; if (!window.MMBrainVisuals) reject(new Error('visual module unavailable')); else ready(); };
+      link.onerror = script.onerror = function () { reject(new Error('visual assets unavailable')); };
+      DOC.head.appendChild(link); DOC.head.appendChild(script);
+    });
+    return visualAssetPromise;
+  }
+  function clearVisuals(host) {
+    if (!host) return;
+    host._visualEpoch = (host._visualEpoch || 0) + 1;
+    host.querySelectorAll('.mmb-cx').forEach(function (e) { if (e._chartDispose) e._chartDispose(); e.remove(); });
+    if (window.MMBrainPresentation) window.MMBrainPresentation.clear(host);
+    else if (window.MMBrainVisuals) window.MMBrainVisuals.clear(host);
+    host.querySelectorAll('[data-pending-visual],.mmb-visual-notice').forEach(function (e) { e.remove(); });
+  }
+  function mountVisualNotices(host, notices) {
+    if (!host || !Array.isArray(notices) || !notices.slice(0, 4).some(function (n) {
+      return n && n.type === 'membership_required' && n.template === 'transcript';
+    })) return;
+    host = host.querySelector('.mmb-visuals') || host;
+    if (host.querySelector('.mmb-visual-notice')) return;
+    var en = 'Some saved transcript evidence requires membership and is unavailable for this account.';
+    var cn = '部分已保存的电话会证据需要会员权限，当前账户暂不可查看。';
+    var note = el('p', 'mmb-meta mmb-l mmb-visual-notice');
+    note.dataset.en = en; note.dataset.zh = cn; note.textContent = L(en, cn);
+    note.setAttribute('role', 'status'); host.appendChild(note);
+  }
+  function mountNativeVisual(host, wire) {
+    if (!wire || !/^[a-f0-9]{24}$/.test(wire.visual_id || '')) return;
+    var bubble = host.closest('.mmb-bub');
+    host = (bubble && bubble.querySelector('.mmb-visuals')) || host;
+    if (host.querySelector('[data-visual-id="' + wire.visual_id + '"],[data-pending-visual="' + wire.visual_id + '"]')) return;
+    var epochHost = bubble || host, epoch = epochHost._visualEpoch || 0;
+    var pending = el('p', 'mmb-meta'); pending.dataset.pendingVisual = wire.visual_id;
+    pending.textContent = L('Preparing visual…', '正在准备图解…'); host.appendChild(pending);
+    var assets = wire.visual && wire.visual.version === 2 ? loadPresentationAssets() : loadVisualAssets();
+    assets.then(function (renderer) {
+      if (!pending.isConnected || epoch !== (epochHost._visualEpoch || 0)) return;
+      pending.remove();
+      return Promise.resolve(renderer.mount(host, wire, {
+        onExpand: function () { if (window.MMBrain) window.MMBrain.expand(); }
+      })).then(function (mounted) {
+        if (!host.isConnected || epoch !== (epochHost._visualEpoch || 0)) return;
+        if (!mounted && (!wire.visual || wire.visual.version !== 2)) { var note = el('p', 'mmb-meta'); note.textContent = L('Visual unavailable: invalid or unsupported data.', '图解不可用：数据无效或暂不支持。'); host.appendChild(note); }
+        stickAfter();
+      });
+    }).catch(function () { if (pending.isConnected) pending.textContent = L('Visual could not load. Your text answer is still available.', '图解加载失败，文字回答仍可查看。'); });
+  }
+
+
   function captureCompanySourceSpan() {
     try { return (typeof CFG.getCompanySourceSpan === 'function') ? CFG.getCompanySourceSpan() : null; }
     catch (e) { return null; }
@@ -146,6 +232,9 @@
     --mmb-fab-glow-h:0 20px 46px -14px rgba(24,52,140,.48),0 8px 20px -8px rgba(24,52,140,.32),
       0 0 36px -6px color-mix(in srgb,var(--mmb-info) 56%,transparent),inset 0 1px 0 #fff;
     --mmb-rim-w:1.75px;--mmb-rim-o:1}
+  /* Reading surfaces reuse the widget's portable dark/light palette. */
+  #mmb-root{--mmb-reading-plane:var(--mmb-plate)}
+  html[data-theme="light"] #mmb-root{--mmb-reading-plane:var(--mmb-panel)}
   #mmb-root *{box-sizing:border-box}
   /* ── launcher (bottom-right) ────────────────────────────────────────────────
      Presence is this control's whole job, and a glass pill dissolves on a white
@@ -221,7 +310,8 @@
     .mmb-sugg .mmb-sug{animation:none}
     #mmb-panel{transition:opacity .18s ease!important}
     .mmb-chip,.mmb-chip::after,.mmb-cardp,.mmb-cardp .ci svg,.mmb-seg button,
-    .mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}}
+    .mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}
+    .mmb-threads{transition:none!important}}
   #mmb-launch .ll{font:650 13.5px/1 var(--mmb-font);color:var(--mmb-text);white-space:nowrap}
   #mmb-launch .lk{font:600 11px/1 var(--mmb-font);color:var(--mmb-muted);margin-top:3px;white-space:nowrap}
   #mmb-launch .lt{display:flex;flex-direction:column}
@@ -241,7 +331,7 @@
   #mmb-scrim.open.max{opacity:var(--mmb-scrim-o-max);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
   #mmb-panel{position:fixed;z-index:2147483002;display:flex;flex-direction:column;overflow:hidden;font-family:var(--mmb-font);color:var(--mmb-text);
     right:18px;bottom:18px;width:min(440px,calc(100vw - 36px));height:min(720px,calc(100vh - 96px));
-    border-radius:22px;border:1px solid var(--mmb-line);background:color-mix(in srgb,var(--mmb-panel) 82%,transparent);
+    border-radius:var(--r-panel,20px);border:1px solid var(--mmb-line);background:var(--mmb-reading-plane);
     -webkit-backdrop-filter:blur(26px) saturate(1.15);backdrop-filter:blur(26px) saturate(1.15);
     box-shadow:var(--mmb-shadow-panel),inset 0 1px 0 var(--mmb-sheen);
     transform:translateY(16px) scale(.98);opacity:0;pointer-events:none;visibility:hidden;transform-origin:bottom right;
@@ -335,7 +425,9 @@
   .mmb-scroll::-webkit-scrollbar-thumb,.mmb-threads::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--mmb-violet) 34%,transparent);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
   .mmb-scroll::-webkit-scrollbar-thumb:hover,.mmb-threads::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--mmb-violet) 52%,transparent);background-clip:padding-box}
   .mmb-scroll::-webkit-scrollbar-track,.mmb-threads::-webkit-scrollbar-track{background:transparent}
-  #mmb-panel.max .mmb-scroll{padding:26px clamp(24px,10%,120px)}
+  /* The expanded conversation and composer share one measured reading column.
+     Keep the native history owner and the compact host's layout intact. */
+  #mmb-panel.max .mmb-scroll{padding:36px max(28px,calc((100% - 760px)/2));gap:24px}
   .mmb-empty{flex:1;display:flex;flex-direction:column;justify-content:center}
   .mmb-hero h1{margin:0;font:800 clamp(22px,3vw,38px)/1.1 var(--mmb-font);letter-spacing:-.02em}
   #mmb-panel:not(.max) .mmb-hero h1{font-size:22px}
@@ -382,25 +474,29 @@
   .mmb-msg.assistant{align-self:flex-start;align-items:flex-start;max-width:100%;width:100%}
   @keyframes mmb-pop{from{opacity:0;transform:translateY(14px) scale(.94)}60%{opacity:1}to{opacity:1;transform:none}}
   @media(prefers-reduced-motion:reduce){.mmb-msg.user{animation:none}}
-  .mmb-bub{font:14.5px/1.62 var(--mmb-font);word-break:break-word}
+  .mmb-bub{font:15.5px/1.7 var(--mmb-font);word-break:break-word}
+  #mmb-panel.max .mmb-bub{font-size:17px;line-height:1.75}
   /* USER: keep the violet-tinted gradient bubble */
-  .mmb-msg.user .mmb-bub{padding:12px 15px;border-radius:16px;background:linear-gradient(180deg,color-mix(in srgb,var(--mmb-info) 92%,#fff),var(--mmb-info));color:#fff;border-bottom-right-radius:5px;box-shadow:0 8px 22px -10px color-mix(in srgb,var(--mmb-info) 70%,transparent)}
+  .mmb-msg.user .mmb-bub{padding:12px 16px;border-radius:var(--r-card,16px);background:var(--mmb-panel2);color:var(--mmb-text);border:1px solid var(--mmb-line);box-shadow:none;font-size:14px;line-height:1.55}
   /* ASSISTANT: ghost block — NO per-message background/border/blur (the panel blurs once,
      so a per-bubble backdrop-filter is a needless repaint). Orb glyph anchors top-left. */
   .mmb-msg.assistant .mmb-bub{position:relative;width:100%;padding:2px 0 0 28px;background:none;border:none;box-shadow:none}
   .mmb-orbmark{position:absolute;left:0;top:1px;width:18px;height:18px;display:grid;place-items:center;pointer-events:none}
   .mmb-orbmark svg{width:18px;height:18px;fill:color-mix(in srgb,var(--mmb-violet) 85%,transparent)}
-  .mmb-bub p{margin:0 0 9px}.mmb-bub p:last-child{margin-bottom:0}
+  .mmb-bub p{margin:0 0 16px}.mmb-bub p:last-child{margin-bottom:0}
   .mmb-bub ul,.mmb-bub ol{margin:7px 0 9px 20px;padding:0}.mmb-bub li{margin:4px 0}
   .mmb-bub strong{font-weight:700;color:color-mix(in srgb,var(--mmb-text) 92%,var(--mmb-hi))}
   .mmb-bub em{font-style:italic;color:color-mix(in srgb,var(--mmb-text) 88%,var(--mmb-muted))}
-  .mmb-bub h4{margin:14px 0 6px;font:700 15.5px/1.3 var(--mmb-font);color:color-mix(in srgb,var(--mmb-text) 95%,var(--mmb-hi))}
-  .mmb-bub h5{margin:12px 0 5px;font:700 14.5px/1.3 var(--mmb-font);color:color-mix(in srgb,var(--mmb-text) 92%,var(--mmb-hi))}
-  .mmb-bub h4:first-child,.mmb-bub h5:first-child{margin-top:0}
+  .mmb-bub h2{margin:28px 0 14px;font:650 26px/1.23 var(--mmb-font);letter-spacing:-.035em;color:var(--mmb-hi);text-wrap:balance}
+  #mmb-panel.max .mmb-bub h2{font-size:32px}
+  .mmb-bub h3{margin:25px 0 11px;font:650 21px/1.35 var(--mmb-font);letter-spacing:-.02em;color:var(--mmb-hi)}
+  .mmb-bub h4{margin:22px 0 10px;font:650 18px/1.4 var(--mmb-font);color:var(--mmb-hi)}
+  .mmb-bub h5,.mmb-bub h6{margin:18px 0 8px;font:650 16px/1.45 var(--mmb-font);color:var(--mmb-hi)}
+  .mmb-bub :is(h2,h3,h4,h5,h6):first-child{margin-top:0}
   .mmb-bub code{font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:color-mix(in srgb,var(--mmb-ink) 7%,transparent);border-radius:6px;padding:1.5px 6px}
   .mmb-bub a{color:var(--mmb-info);text-decoration:none}.mmb-bub a:hover{text-decoration:underline}
   .mmb-hr{border:none;border-top:1px solid color-mix(in srgb,var(--mmb-ink) 8%,transparent);margin:12px 0}
-  .mmb-bq{margin:8px 0;padding:2px 0 2px 12px;border-left:2px solid var(--mmb-violet);color:var(--mmb-muted)}
+  .mmb-bq{margin:8px 0;padding:12px 14px;border:1px solid var(--mmb-line);border-radius:var(--r-ctl,8px);color:var(--mmb-muted)}
   /* fenced code block */
   .mmb-code{margin:10px 0;border-radius:10px;border:1px solid color-mix(in srgb,var(--mmb-ink) 8%,transparent);background:color-mix(in srgb,var(--mmb-ink) 5%,transparent);overflow:hidden}
   .mmb-code-bar{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;border-bottom:1px solid color-mix(in srgb,var(--mmb-ink) 7%,transparent)}
@@ -467,11 +563,15 @@
   .mmb-cx-chg.up{color:var(--mmb-up)}.mmb-cx-chg.dn{color:var(--mmb-dn)}
   .mmb-cx-read b{font-weight:700;color:color-mix(in srgb,var(--mmb-text) 88%,var(--mmb-muted))}
   .mmb-cx svg{display:block;width:100%;height:auto;touch-action:pan-y}
-  .mmb-cx-foot{display:flex;align-items:center;gap:10px;padding:0 14px 10px;font:10.5px/1.3 var(--mmb-font);color:var(--mmb-muted)}
+  .mmb-cx-ranges{display:flex;flex-wrap:wrap;gap:4px;padding:0 10px 6px}
+  .mmb-cx-ranges button{min-width:44px;min-height:44px;padding:8px;border:1px solid var(--mmb-line);border-radius:var(--r-ctl,8px);background:var(--mmb-panel);color:var(--mmb-text);font:600 12px/1 var(--mmb-font);cursor:pointer}
+  .mmb-cx-ranges button[aria-pressed=true]{background:var(--mmb-panel2);border-color:var(--mmb-text)}
+  .mmb-cx-ranges button:focus-visible{outline:2px solid var(--mmb-info);outline-offset:2px}
+  .mmb-cx-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:0 14px 10px;font:12px/1.4 var(--mmb-font);color:var(--mmb-muted)}
   .mmb-cx-key{display:inline-flex;align-items:center;gap:4px}
   .mmb-cx-key i{width:11px;height:2px;border-radius:2px;display:inline-block;background:currentColor}
   .mmb-cx-foot .sp{flex:1}
-  .mmb-cx-src{opacity:.75;font:10px/1.3 var(--mmb-mono)}
+  .mmb-cx-src{flex-basis:100%;font:11px/1.5 var(--mmb-mono);overflow-wrap:anywhere}
   /* build sequence — candles rise from their own base, lines draw themselves, panes
      resolve after the price. One gesture, ~1.3s end to end, then it is a static chart. */
   .mmb-cx .cndl,.mmb-cx .vbar,.mmb-cx .hbar{transform-box:fill-box;transform-origin:center bottom;
@@ -492,6 +592,11 @@
     .mmb-cx,.mmb-cx .cndl,.mmb-cx .vbar,.mmb-cx .hbar,.mmb-cx .draw,.mmb-cx .fade,.mmb-cx .pop{animation:none}
     .mmb-cx .draw{stroke-dashoffset:0}}
   .mmb-txt:empty,.mmb-charts:empty{display:none}
+  .mmb-math{display:inline-block;vertical-align:middle;max-width:100%;overflow-x:auto}
+  .mmb-math[data-mmb-math="display"]{display:block;padding:12px 0}
+  .mmb-math-block{max-width:100%;margin:12px 0}
+  .mmb-math math{font-size:1.08em}
+  .mmb-math-fallback{font-family:var(--mmb-mono);white-space:pre-wrap}
   /* assistant action row (copy · regenerate · timestamp) — space always reserved */
   .mmb-actions{display:flex;align-items:center;gap:6px;height:22px;margin-top:5px;opacity:0;transition:opacity .14s ease}
   .mmb-msg.assistant:hover .mmb-actions,.mmb-msg.assistant:focus-within .mmb-actions{opacity:1}
@@ -613,13 +718,13 @@
   .mmb-upgrade a{color:var(--mmb-info);font-weight:700;text-decoration:underline}
   /* composer */
   .mmb-comp{position:relative;flex:none;padding:14px clamp(18px,6%,64px) 14px}
-  #mmb-panel.max .mmb-comp{padding:14px clamp(24px,10%,120px) 16px}
+  #mmb-panel.max .mmb-comp{padding:16px max(28px,calc((100% - 760px)/2)) 20px}
   /* overflow is VISIBLE, deliberately. Nothing inside the box bleeds to its edge — the
      slash palette is inset by its own padding, the textarea and tool row are transparent —
      but the depth control's tip has to escape upward, and the old clip swallowed its first
      two lines. The palette's top corners are pinned below so losing the clip cannot square
      them off. */
-  .mmb-box{border-radius:18px;border:1px solid var(--mmb-line);background:var(--mmb-boxbg);overflow:visible;
+  .mmb-box{border-radius:var(--r-panel,18px);border:1px solid var(--mmb-line);background:var(--mmb-panel2);overflow:visible;
     -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:var(--mmb-shadow-box);
     transition:border-color .2s var(--mmb-ease-tint),box-shadow .2s var(--mmb-ease-tint)}
   .mmb-slash{border-radius:17px 17px 0 0}
@@ -844,13 +949,32 @@
   .mmb-gate p{margin:0;color:var(--mmb-muted);font:400 13.5px/1.5 var(--mmb-font);max-width:340px}
   .mmb-signin{margin-top:6px;padding:12px 26px;border:none;border-radius:12px;cursor:pointer;color:#fff;font:700 14px/1 var(--mmb-font);
     background:linear-gradient(180deg,color-mix(in srgb,var(--mmb-info) 92%,#fff),var(--mmb-info));box-shadow:0 10px 28px -8px color-mix(in srgb,var(--mmb-info) 70%,transparent)}
-  @media(max-width:560px){#mmb-panel,#mmb-panel.max,#mmb-panel.mmb-top{right:0;left:0;bottom:0;top:auto;margin:0;transform-origin:bottom center;transform:translateY(20px);width:100vw;height:88vh;border-radius:20px 20px 0 0}
+  /* Tablets retain a full reading column; history opens over the conversation. */
+  @media(max-width:960px){
+    #mmb-panel.max .mmb-rail{display:none}
+    #mmb-panel.max .mmb-menu{display:grid}
+    /* A desktop-expanded chat can survive a resize or device rotation. Its
+       retained history must become the same explicit history drawer. */
+    #mmb-panel.max .mmb-threads{position:absolute;left:0;top:0;bottom:0;width:min(300px,calc(100% - 54px));z-index:6;display:block;
+      background:var(--mmb-panel);border-right:1px solid var(--mmb-line);transform:translateX(-101%);visibility:hidden;transition:transform .26s var(--mmb-ease)}
+    #mmb-panel.max.show-side .mmb-threads{transform:none;visibility:visible;box-shadow:var(--mmb-shadow-side)}
+    #mmb-panel.max .mmb-sidescrim{display:block;position:absolute;inset:0;z-index:5;background:var(--mmb-sidescrim);opacity:0;pointer-events:none}
+    #mmb-panel.max.show-side .mmb-sidescrim{opacity:1;pointer-events:auto}
+  }
+  @media(max-width:560px){#mmb-panel,#mmb-panel.max,#mmb-panel.mmb-top{inset:0;margin:0;transform-origin:bottom center;transform:translateY(20px);width:100%;height:100vh;height:100dvh;border-radius:0}
+    .mmb-head{padding-top:max(12px,env(safe-area-inset-top))}
+    .mmb-scroll,#mmb-panel.max .mmb-scroll{padding:24px 18px;gap:22px}
+    .mmb-msg.assistant .mmb-bub{padding:0}
+    .mmb-msg.assistant .mmb-orbmark{display:none}
+    .mmb-bub,#mmb-panel.max .mmb-bub{font-size:16px;line-height:1.72}
+    .mmb-bub h2,#mmb-panel.max .mmb-bub h2{font-size:27px;line-height:1.23}
+    .mmb-bub h3{font-size:21px}
+    .mmb-comp,#mmb-panel.max .mmb-comp{padding:12px 14px calc(12px + env(safe-area-inset-bottom))}
     #mmb-panel.open{transform:none} .mmb-cards,#mmb-panel.max .mmb-cards{grid-template-columns:1fr}
-    /* mobile is compact-only: no large mode (the overlay isn't responsive there) */
+    /* Phones already use the full screen, so an expansion control is redundant. */
     .mmb-icon[data-act="max"]{display:none!important}
     .mmb-head .mmb-icon,.mmb-abtn,.mmb-ti-act,.mmb-ti-yes,.mmb-ti-no{min-width:44px;min-height:44px}
     .mmb-actions{height:auto;min-height:44px}
-    #mmb-panel.max .mmb-rail,#mmb-panel.max .mmb-threads{display:none}
     /* iOS: composer font MUST be ≥16px or Safari zooms the viewport on focus */
     .mmb-ta{font-size:16px}
     /* no hardware modifier on a phone — the hint would be a lie AND a squeeze */
@@ -947,7 +1071,7 @@
     read_theme_asymmetry: 'theme', read_theme_options_witness: 'theme', read_theme_clinical: 'theme',
     get_market_events: 'notes', search_research: 'notes', context_search: 'notes',
     context_open: 'notes', read_artifact: 'notes', read_special_situations: 'notes',
-    render_inline_chart: 'chart', annotate_chart: 'chart', chart_digest: 'chart',
+    render_inline_visual: 'chart', render_inline_chart: 'chart', annotate_chart: 'chart', chart_digest: 'chart',
     read_chart_state: 'chart', measure_line: 'chart', set_chart_symbol: 'chart',
     set_chart_timeframe: 'chart', toggle_chart_indicator: 'chart', run_chart_detection: 'chart',
     emit_chart_command: 'chart',
@@ -1143,7 +1267,15 @@
      looks byte-identical whether it streamed live or was rehydrated from a thread. */
 
   /* inline: **bold**, *italic*, `code`, [text](url) (https/http only). Appends to `parent`. */
-  var MD_INLINE = /(\*\*([^*]+)\*\*)|(\*([^*\n]+)\*)|(`([^`]+)`)|(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\))/;
+  var MD_INLINE = /(\*\*([^*]+)\*\*)|(\*([^*\n]+)\*)|(`([^`]+)`)|(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\))|(\\\(([\s\S]*?)\\\))|(\\\[([\s\S]*?)\\\])|(\$\$([\s\S]*?)\$\$)/;
+  /* Explicit delimiters only: dollar prices remain literal, and code wins before
+     math inside its backticks. Formulas are typeset from text, never executed. */
+  function mdMath(parent, formula, display, literal) {
+    if (!formula.trim() || formula.length > 4000) { parent.appendChild(DOC.createTextNode(literal)); return; }
+    var node = el('span', 'mmb-math');
+    node.dataset.mmbMath = display ? 'display' : 'inline';
+    node.textContent = formula; parent.appendChild(node); requestMath(parent);
+  }
   function mdInline(parent, text) {
     text = String(text == null ? '' : text);
     var m;
@@ -1153,6 +1285,7 @@
       else if (m[3]) { var it = el('em'); it.textContent = m[4]; parent.appendChild(it); }
       else if (m[5]) { var c = el('code'); c.textContent = m[6]; parent.appendChild(c); }
       else if (m[7]) { var a = el('a'); a.textContent = m[8]; a.href = m[9]; a.target = '_blank'; a.rel = 'noopener noreferrer'; parent.appendChild(a); }
+      else if (m[10] || m[12] || m[14]) mdMath(parent, m[11] || m[13] || m[15] || '', !m[10], m[0]);
       text = text.slice(m.index + m[0].length);
     }
     if (text) parent.appendChild(DOC.createTextNode(text));
@@ -1184,6 +1317,12 @@
       });
       wrap.appendChild(bar); wrap.appendChild(pre); return wrap;
     }
+    var displayMath = block.trim().match(/^(?:\\\[([\s\S]*?)\\\]|\$\$([\s\S]*?)\$\$)$/);
+    if (displayMath) {
+      var mathBlock = el('div', 'mmb-math-block');
+      mdMath(mathBlock, displayMath[1] || displayMath[2] || '', true, block);
+      return mathBlock;
+    }
     /* horizontal rule */
     if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(block)) return el('hr', 'mmb-hr');
     /* table — needs a header row + a separator line under it */
@@ -1207,9 +1346,9 @@
       var qt = lines.map(function (l) { return l.replace(/^\s*>\s?/, ''); }).join('\n');
       mdInline(bq, qt); return bq;
     }
-    /* heading — ## → h4, ###+ → h5 */
-    var hm = first.match(/^(#{2,6})\s+(.*)/);
-    if (hm && lines.length === 1) { var h = el(hm[1].length <= 2 ? 'h4' : 'h5'); mdInline(h, hm[2]); return h; }
+    /* The conversation owns its heading outline; model headings remain text-only. */
+    var hm = first.match(/^(#{1,6})\s+(.*)/);
+    if (hm && lines.length === 1) { var h = el('h' + Math.max(2, hm[1].length)); mdInline(h, hm[2]); return h; }
     /* ordered list */
     if (/^\s*\d+\.\s+/.test(first)) {
       var ol = el('ol');
@@ -1240,17 +1379,29 @@
   }
   /* Split raw markdown into block strings on blank lines, respecting ``` fences and
      kind transitions. A fenced block stays whole even across blanks. Returns block texts. */
-  function mdSplit(text) {
-    var lines = String(text || '').split('\n'), blocks = [], cur = [], inFence = false, curKind = null;
+  function mdSplit(text, state) {
+    var lines = String(text || '').split('\n'), blocks = [], cur = [], inFence = false, inMath = '', curKind = null;
     function push() { if (cur.length) { blocks.push(cur.join('\n')); cur = []; curKind = null; } }
     for (var i = 0; i < lines.length; i++) {
       var ln = lines[i];
+      if (inMath) {
+        cur.push(ln);
+        if (ln.indexOf(inMath) !== -1) { push(); inMath = ''; }
+        continue;
+      }
       if (/^```/.test(ln)) {
         if (!inFence) { push(); inFence = true; cur.push(ln); }
         else { cur.push(ln); push(); inFence = false; }
         continue;
       }
       if (inFence) { cur.push(ln); continue; }
+      var trimmed = ln.trim(), mathStart = trimmed.match(/^(\\\[|\$\$)/);
+      if (mathStart) {
+        push(); cur.push(ln);
+        var closeMath = mathStart[1] === '$$' ? '$$' : '\\]';
+        if (trimmed.indexOf(closeMath, 2) !== -1) push(); else inMath = closeMath;
+        continue;
+      }
       if (!ln.trim()) { push(); continue; }
       var k = lineKind(ln);
       /* break when kind changes (text→list, list→text, heading→anything, etc.); a heading
@@ -1258,6 +1409,7 @@
       if (cur.length && (k !== curKind || curKind === 'head' || curKind === 'rule' || k === 'head' || k === 'rule')) push();
       cur.push(ln); curKind = k;
     }
+    if (state) state.open = inFence || !!inMath;
     push(); return blocks;
   }
   /* Full render of `text` into `container` (cleared first). History + final correctness. */
@@ -1304,8 +1456,8 @@
     function paint(freshChunk) {
       var tail = revealed.slice(committedLen);
       // find the last blank-line boundary that is NOT inside an open fence
-      var fences = (tail.match(/```/g) || []).length;
-      var openFence = (fences % 2) === 1;
+      var blockState = {}; mdSplit(tail, blockState);
+      var openFence = blockState.open;
       var lastBlank = -1;
       if (!openFence) {
         var mBlank = /\n[ \t]*\n/g, mm;
@@ -1439,30 +1591,84 @@
     var b = CFG.dataBase || window.DATA_BASE || DATA_FALLBACK;
     return String(b).replace(/\/+$/, '');
   }
-  var barCache = {};
+  var barCache = Object.create(null), BAR_TTL_MS = 60000;
+  function barNumber(v) {
+    if (typeof v !== 'number' && (typeof v !== 'string' || !v.trim())) return null;
+    var n = Number(v); return isFinite(n) ? n : null;
+  }
+  function barDate(v) {
+    if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return null;
+    var d = new Date(v + 'T00:00:00Z');
+    return isFinite(d.getTime()) && d.toISOString().slice(0, 10) === v ? v : null;
+  }
+  function normalizedBars(raw) {
+    if (!Array.isArray(raw) || !raw.length || raw.length > 5000) return null;
+    var dates = Object.create(null);
+    raw.forEach(function (b) {
+      if (!Array.isArray(b) || b.length < 5) return;
+      var d = barDate(b[0]), o = barNumber(b[1]), h = barNumber(b[2]);
+      var lo = barNumber(b[3]), c = barNumber(b[4]), v = barNumber(b[5]);
+      if (!d || o === null || h === null || lo === null || c === null ||
+          lo > Math.min(o, c) || h < Math.max(o, c) || lo > h) return;
+      /* Last valid source row wins a duplicate date. Missing volume stays missing. */
+      dates[d] = { d: d, o: o, h: h, l: lo, c: c, v: v !== null && v >= 0 ? v : null };
+    });
+    var out = Object.keys(dates).sort().map(function (d) { return dates[d]; });
+    return out.length ? out : null;
+  }
   function fetchBars(ticker) {
-    var key = String(ticker || '').toUpperCase();
-    if (barCache[key]) return barCache[key];
-    var url = chartBase() + '/' + chartStore(key) + '/' + encodeURIComponent(key) + '.json';
-    barCache[key] = fetch(url, { credentials: 'omit' })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    var symbol = String(ticker || '').toUpperCase(), base = chartBase();
+    var key = base + '/' + symbol, cached = barCache[key];
+    if (cached && (cached.pending || cached.expires > Date.now())) return cached.promise;
+    var keys = Object.keys(barCache);
+    if (keys.length >= 32) delete barCache[keys[0]];
+    var entry = { pending: true, expires: 0, promise: null };
+    barCache[key] = entry;
+    var url = base + '/' + chartStore(symbol) + '/' + encodeURIComponent(symbol) + '.json';
+    var controller = typeof AbortController === 'function' ? new AbortController() : null, timeoutId;
+    entry.promise = Promise.race([
+      fetch(url, { credentials: 'omit', signal: controller ? controller.signal : undefined }),
+      new Promise(function (resolve) { timeoutId = setTimeout(function () { if (controller) controller.abort(); resolve(null); }, 10000); })
+    ]).then(function (r) { return r && r.ok ? r.json() : null; })
       .then(function (d) {
-        var bars = d && d.bars;
-        if (!bars || !bars.length) return null;
-        /* [date, o, h, l, c, v] — reject rows that are not a full OHLC bar rather than
-           drawing a candle out of nulls. */
-        var out = [];
-        for (var i = 0; i < bars.length; i++) {
-          var b = bars[i];
-          if (!b || b.length < 5) continue;
-          var o = +b[1], h = +b[2], lo = +b[3], c = +b[4];
-          if (!isFinite(o) || !isFinite(h) || !isFinite(lo) || !isFinite(c)) continue;
-          out.push({ d: String(b[0]), o: o, h: h, l: lo, c: c, v: isFinite(+b[5]) ? +b[5] : 0 });
-        }
-        return out.length >= 30 ? out : null;
-      })
-      .catch(function () { return null; });
-    return barCache[key];
+        clearTimeout(timeoutId);
+        var bars = normalizedBars(d && d.bars);
+        entry.pending = false; entry.expires = Date.now() + BAR_TTL_MS;
+        if (!bars && barCache[key] === entry) delete barCache[key];
+        return bars;
+      }).catch(function () {
+        clearTimeout(timeoutId);
+        if (barCache[key] === entry) delete barCache[key];
+        return null;
+      });
+    return entry.promise;
+  }
+  function chartResolution(bars, tf) {
+    if (tf === 'daily') return bars;
+    var out = [], prior = null;
+    bars.forEach(function (b) {
+      var d = new Date(b.d + 'T00:00:00Z'), key;
+      if (tf === 'monthly') key = b.d.slice(0, 7);
+      else { d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7); key = d.toISOString().slice(0, 10); }
+      if (key !== prior) {
+        out.push({ d: b.d, start: b.d, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
+        prior = key;
+      } else {
+        var last = out[out.length - 1];
+        last.d = b.d; last.h = Math.max(last.h, b.h); last.l = Math.min(last.l, b.l); last.c = b.c;
+        last.v = last.v === null || b.v === null ? null : last.v + b.v;
+      }
+    });
+    return out;
+  }
+  function chartCutoff(lastDate, range) {
+    if (range === 'MAX') return '';
+    var d = new Date(lastDate + 'T00:00:00Z');
+    if (range === 'YTD') return d.getUTCFullYear() + '-01-01';
+    var months = { '1M': 1, '3M': 3, '6M': 6, '1Y': 12 }[range] || 12;
+    var day = d.getUTCDate(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() - months);
+    var end = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+    d.setUTCDate(Math.min(day, end)); return d.toISOString().slice(0, 10);
   }
 
   /* ── indicator math (full-history, so the visible window is always warm) ── */
@@ -1533,6 +1739,7 @@
     return v.toFixed(4);
   }
   function fmtVol(v) {
+    if (v === null || v === undefined) return '—';
     if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
     if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
     if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
@@ -1548,14 +1755,12 @@
   /* ── the renderer ────────────────────────────────────────────────────────────
      One pass builds the whole SVG; the animation is CSS on the pieces, so a resize or a
      theme flip is a plain re-render and never a half-played sequence. */
-  function drawChart(box, ticker, tf, bars) {
+  function drawChart(box, ticker, tf, bars, range) {
     var reduced = reduceMotion();
     var W = Math.max(280, Math.min(1100, Math.round(box.clientWidth || 420)));
     var H = Math.round(Math.max(330, Math.min(560, W * 0.72)));
     var PAD_R = 54, PAD_L = 8, X0 = PAD_L, X1 = W - PAD_R;
     var plotW = X1 - X0;
-    /* one bar every ~6.4px, so a wide panel shows more history instead of fatter candles */
-    var VIS = Math.max(52, Math.min(200, Math.floor(plotW / 5.6)));
     var TOP = 10, XAXIS = 20;
     var priceH = Math.round((H - TOP - XAXIS) * 0.62);
     var rsiH = Math.round((H - TOP - XAXIS) * 0.14);
@@ -1568,9 +1773,12 @@
     var ema20 = emaSeries(close, 20), sma50 = smaSeries(close, 50);
     var rsi = rsiSeries(close, 14), mac = macdSeries(close);
 
-    var i0 = Math.max(0, bars.length - VIS);
+    /* Resolution uses full history for indicator warm-up; range is date-based and
+       independent of viewport width. Boundary aggregate bars disclose their real start. */
+    var cutoff = chartCutoff(bars[bars.length - 1].d, range), i0 = 0;
+    while (i0 < bars.length - 1 && bars[i0].d < cutoff) i0++;
     var view = bars.slice(i0), n = view.length;
-    var step = plotW / n, cw = Math.max(1.5, Math.min(11, step * 0.66));
+    var step = plotW / n, cw = Math.max(0.25, Math.min(11, step * 0.66));
     function cx(k) { return X0 + step * (k + 0.5); }
 
     /* price scale spans the bars AND the overlays, so a moving average never leaves the pane */
@@ -1586,7 +1794,9 @@
 
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H,
                              preserveAspectRatio: 'xMidYMid meet', role: 'img' });
-    svg.setAttribute('aria-label', ticker + ' ' + (tf || 'daily') + ' price chart');
+    svg.setAttribute('aria-label', ticker + ' ' + (tf || 'daily') + ' price chart, ' + view[0].d + ' to ' + view[n - 1].d);
+    svg.dataset.start = view[0].start || view[0].d; svg.dataset.end = view[n - 1].d;
+    svg.dataset.bars = n; svg.dataset.range = range;
     var GRID = 'color-mix(in srgb, var(--mmb-cx-grid) 9%, transparent)';
     var AXIS = 'var(--mmb-muted)';
     function delay(ms) { return reduced ? null : ms + 'ms'; }
@@ -1612,6 +1822,7 @@
     var volTop = pY1 - (pY1 - pY0) * 0.20;
     var gVol = svgEl('g', { opacity: .34 });
     for (k = 0; k < n && vmax > 0; k++) {
+      if (view[k].v === null || view[k].v === 0) continue;
       var vh = Math.max(0.6, (view[k].v / vmax) * (pY1 - volTop));
       var vb = svgEl('rect', { x: cx(k) - cw / 2, y: pY1 - vh, width: cw, height: vh,
                                fill: view[k].c >= view[k].o ? 'var(--mmb-up)' : 'var(--mmb-dn)',
@@ -1622,8 +1833,13 @@
     svg.appendChild(gVol);
 
     /* ── candles ── */
-    var gC = svgEl('g');
-    for (k = 0; k < n; k++) {
+    var gC = svgEl('g', { class: 'mmb-cx-prices' });
+    /* Dense history uses every measured close in one path; no synthetic candles. */
+    if (n > 400) {
+      var closePath = view.map(function (b, idx) { return (idx ? 'L' : 'M') + cx(idx).toFixed(2) + ' ' + py(b.c).toFixed(2); }).join(' ');
+      gC.appendChild(svgEl('path', { d: closePath, fill: 'none', stroke: 'var(--mmb-text)', 'stroke-width': 1.2 }));
+    }
+    for (k = 0; k < n && n <= 400; k++) {
       var b = view[k], up = b.c >= b.o, col = up ? 'var(--mmb-up)' : 'var(--mmb-dn)';
       var g1 = svgEl('g', { class: reduced ? '' : 'cndl' });
       if (!reduced) g1.style.animationDelay = (110 + k * (640 / n)) + 'ms';
@@ -1777,12 +1993,13 @@
     /* ── date axis: one label per month change ── */
     var gX = svgEl('g', { class: reduced ? '' : 'fade' });
     if (!reduced) gX.style.animationDelay = '780ms';
-    var lastMon = '';
+    var lastMon = '', lastLabelX = -Infinity;
     for (k = 0; k < n; k++) {
       var mo = String(view[k].d).slice(0, 7);
       if (mo === lastMon) continue;
       lastMon = mo;
-      if (cx(k) < X0 + 14 || cx(k) > X1 - 18) continue;
+      if (cx(k) < X0 + 14 || cx(k) > X1 - 18 || cx(k) - lastLabelX < 56) continue;
+      lastLabelX = cx(k);
       var xt = svgEl('text', { x: cx(k), y: H - 6, fill: AXIS, 'font-size': 9.5, 'text-anchor': 'middle',
                                'font-family': 'ui-monospace,SFMono-Regular,Menlo,monospace' });
       xt.textContent = monLabel(view[k].d);
@@ -1811,14 +2028,18 @@
 
     return { svg: svg, view: view, n: n, cx: cx, py: py, X0: X0, X1: X1, W: W, H: H,
              xh: { g: gXh, v: vx, h: hy, dot: dot, pxR: pxR, pxT: pxT, dtR: dtR, dtT: dtT },
-             last: lastBar, prev: view[n - 2] || view[n - 1] };
+             last: lastBar, prev: bars[bars.length - 2] || lastBar };
   }
 
   /* ── mount: shell first (so the reply never waits on a fetch), then the live draw ── */
   function mountChart(host, j) {
+    if (j && j.visual) { mountNativeVisual(host, j); return; }
     var ticker = String(j.ticker || '').toUpperCase().slice(0, 12);
     var tf = String(j.timeframe || 'DAILY').toLowerCase();
+    if (['daily', 'weekly', 'monthly'].indexOf(tf) < 0) tf = 'daily';
+    var range = '1Y', disposed = false, cleanup = function () {};
     var box = el('div', 'mmb-cx');
+    box._chartDispose = function () { disposed = true; cleanup(); };
     var head = el('div', 'mmb-cx-h');
     var sym = el('span', 'mmb-cx-sym'); sym.textContent = ticker || '—';
     var tfc = el('span', 'mmb-cx-tf'); tfc.textContent = zh() ? (tf === 'daily' ? '日线' : tf) : tf;
@@ -1831,6 +2052,7 @@
     host.appendChild(box);
 
     function fallback() {
+      if (disposed || !box.isConnected) return;
       /* the server's picture, when we have no bars of our own for this symbol */
       if (!j.svg) {
         box.removeChild(body);
@@ -1845,15 +2067,37 @@
     }
 
     fetchBars(ticker).then(function (bars) {
+      if (disposed || !box.isConnected) return;
       if (!bars) { fallback(); return; }
-      var built = null;
+      bars = chartResolution(bars, tf);
+      var built = null, src = null, renderedWidth = 0;
+      var ranges = el('div', 'mmb-cx-ranges'); ranges.setAttribute('role', 'group');
+      ['1M', '3M', '6M', 'YTD', '1Y', 'MAX'].forEach(function (value) {
+        var button = el('button'); button.type = 'button'; button.textContent = value;
+        button.dataset.range = value;
+        button.addEventListener('click', function () { if (range !== value) { range = value; render(); } });
+        ranges.appendChild(button);
+      });
+      box.insertBefore(ranges, body);
+      function sourceLabel() {
+        if (!src || !built) return;
+        src.textContent = (built.view[0].start || built.view[0].d) + ' – ' + built.last.d + ' · ' + built.n +
+          L(' bars', ' 根K线') + ' · ' + (tf === 'daily' ? L('Daily data', '日线数据') : L('Aggregated from daily data', '由日线数据聚合')) +
+          (built.n > 400 ? L(' · Close-price overview', ' · 收盘价概览') : '');
+      }
       function render() {
+        if (disposed || !box.isConnected) return;
         body.textContent = '';
-        built = drawChart(body, ticker, tf, bars);
+        tfc.textContent = zh() ? ({ daily: '日线', weekly: '周线', monthly: '月线' }[tf]) : tf;
+        ranges.setAttribute('aria-label', L('Chart date range', '图表日期范围'));
+        ranges.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.range === range)); });
+        built = drawChart(body, ticker, tf, bars, range);
+        renderedWidth = body.clientWidth;
         box.classList.toggle('narrow', built.W < 470);
         body.appendChild(built.svg);
         paintRead(null);
         wireCrosshair();
+        sourceLabel();
         stickAfter();
       }
       /* header readout: last close + day change at rest, the hovered bar while tracking */
@@ -1918,8 +2162,8 @@
           s.appendChild(tx); foot.appendChild(s);
         });
       foot.appendChild(el('div', 'sp'));
-      var src = el('span', 'mmb-cx-src');
-      src.textContent = built.view[built.n - 1].d + ' · ' + built.n + (zh() ? ' 根K线' : ' bars');
+      src = el('span', 'mmb-cx-src');
+      sourceLabel();
       foot.appendChild(src);
       box.appendChild(foot);
 
@@ -1927,11 +2171,23 @@
       var rt = 0;
       function relayout() { if (rt) clearTimeout(rt); rt = setTimeout(function () { if (box.isConnected) render(); }, 120); }
       if (typeof ResizeObserver === 'function') {
-        var ro = new ResizeObserver(relayout);
+        var ro = new ResizeObserver(function () {
+          // Initial and height-only notifications do not change drawing geometry.
+          // Replacing the SVG here would clear a live hover without a pointer exit.
+          if (body.clientWidth !== renderedWidth) relayout();
+        });
         ro.observe(box);
       }
       DOC.addEventListener('themechange', relayout);
       DOC.addEventListener('langchange', relayout);
+      window.addEventListener('mm:lang', relayout);
+      cleanup = function () {
+        if (rt) clearTimeout(rt);
+        if (ro) ro.disconnect();
+        DOC.removeEventListener('themechange', relayout);
+        DOC.removeEventListener('langchange', relayout);
+        window.removeEventListener('mm:lang', relayout);
+      };
     });
   }
 
@@ -2009,7 +2265,7 @@
     var tm = el('div', 'tm'); tm.textContent = (t.lane || 'fast') + ' · ' + date;
     body.appendChild(tt); body.appendChild(tm);
     /* row-open (guarded so action clicks don't also open the thread) */
-    body.addEventListener('click', function () { openThread(t.id); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); });
+    body.addEventListener('click', function () { openThread(t.id); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); });
     d.appendChild(body);
 
     var acts = el('div', 'mmb-ti-acts');
@@ -2116,7 +2372,9 @@
         d.messages.forEach(function (m) {
           var ms = 0; try { ms = m.created_at ? new Date(m.created_at).getTime() : 0; } catch (e) {}
           if (ms) { var dk = new Date(ms).toDateString(); if (dk !== lastDay) { addDaySep(ms); lastDay = dk; } }
-          appendMsg(m.role, m.content, ms || undefined);
+          var restored = appendMsg(m.role, m.content, ms || undefined);
+          if (m.role === 'assistant' && Array.isArray(m.visuals)) m.visuals.slice(0, 4).forEach(function (v) { if (v && v.visual) mountChart(restored.querySelector('.mmb-charts') || restored, v); });
+          if (m.role === 'assistant') mountVisualNotices(restored, m.visual_notices);
         });
         markLastAssistant(); pinned = true; scroll.scrollTop = scroll.scrollHeight;
         ta.value = ''; autosize(); syncSend(); updateCounter(); restoreDraft();
@@ -2131,7 +2389,7 @@
   }
 
   /* ── messages ── */
-  function clearMsgs() { scroll.textContent = ''; renderEmpty(); pinned = true; hideJump(); }
+  function clearMsgs() { clearVisuals(scroll); scroll.textContent = ''; renderEmpty(); pinned = true; hideJump(); }
   /* Relative timestamp (11px muted). now/2m/1h/Yesterday/date. */
   function relTime(ms) {
     var d = ms ? new Date(ms) : new Date(), now = Date.now(), diff = Math.floor((now - d.getTime()) / 1000);
@@ -2193,6 +2451,7 @@
       var orb = el('span', 'mmb-orbmark'); orb.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg>'; b.appendChild(orb);
       var charts = el('div', 'mmb-charts'); b.appendChild(charts);
       var txt = el('div', 'mmb-txt'); if (content) renderMdInto(txt, content); b.appendChild(txt);
+      b.appendChild(el('div', 'mmb-visuals'));  /* answer first; same chart dispatcher */
       b._raw = content || '';
       b.appendChild(buildActions(b, ts));
     }
@@ -2353,7 +2612,7 @@
     try {
       runStore.setItem(key, JSON.stringify({
         id: T.runId, cursor: T.cursor, thread: T.threadId || threadId || null,
-        q: (T.payload && T.payload.text) || '', ts: Date.now()
+        q: (T.payload && T.payload.text) || '', ts: Date.now(), chart_handed: !!T.chartHanded
       }));
     } catch (e) {}
   }
@@ -2535,7 +2794,8 @@
        screen and never a row that belongs to an earlier exchange. */
     return { epoch: historyEpoch, payload: payload, typing: typing, bub: null, ub: null, stream: null, tl: null,
              suggestions: null, sawDelta: false, doneSeen: false, stopped: false, retracted: false,
-             runId: null, threadId: null, cursor: 0, tries: 0, parks: 0 };
+             runId: null, threadId: null, cursor: 0, tries: 0, parks: 0,
+             chartHanded: false, chartBatches: [], chartUnscoped: false, chartReplay: false, chartNote: null };
   }
   function ensureBub(T) {
     if (!T.bub) {
@@ -2555,9 +2815,34 @@
     setBusy(false); syncSend();
   }
 
+  /* The turn owns delivery bookkeeping; only the existing Terminal host executes or
+     cancels chart operations. Record a handoff before invoking an effectful callback. */
+  function chartEffectNote(T, message) {
+    ensureBub(T);
+    if (!T.chartNote) { T.chartNote = el('p', 'mmb-stopped'); T.bub.appendChild(T.chartNote); }
+    T.chartNote.textContent = message;
+  }
+  function handChartEvent(j, T) {
+    if (T.chartReplay) {
+      chartEffectNote(T, L('Recovered answer. Chart actions were not replayed. Check the chart for their current state.',
+        '已恢复回复。图表操作未重新执行；请检查图表的当前状态。'));
+      return;
+    }
+    var forward = j.type === 'command' ? CFG.onCommand : CFG.onAnnotate;
+    if (typeof forward !== 'function') return;
+    T.chartHanded = true;
+    if (typeof j.batch_id === 'string' && j.batch_id.length > 0 && j.batch_id.length <= 128) {
+      if (T.chartBatches.indexOf(j.batch_id) < 0) {
+        if (T.chartBatches.length < 128) T.chartBatches.push(j.batch_id);
+        else T.chartUnscoped = true;
+      }
+    } else T.chartUnscoped = true;
+    saveRun(T);
+    try { forward(j); } catch (e) { /* a throwing callback does not prove no effect */ }
+  }
   /* Parse one SSE event. Returns false for the `run` envelope (cursor must not move). */
   function handleEvent(j, T) {
-    if (T.stopped || T.epoch !== historyEpoch) return false;
+    if (!T || T.stopped || T.doneSeen || T.epoch !== historyEpoch) return false;
     if (j.type === 'run') { T.runId = j.run_id; if (j.thread_id) T.threadId = j.thread_id; saveRun(T); return false; }
     T.tries = 0;   /* bytes are flowing again — reset the reconnect backoff */
     if (j.type === 'meta') { if (j.thread_id) { threadId = j.thread_id; T.threadId = j.thread_id; } if (j.quota) { quotas[j.quota.lane] = j.quota; renderQuota(); } }
@@ -2571,7 +2856,7 @@
     /* A chart event no longer means "paste this picture": the widget draws the symbol
        itself from the published daily bars and keeps j.svg only as the fallback, so an
        older gateway (svg, no ticker) still renders exactly as before. */
-    else if (j.type === 'chart' && (j.ticker || j.svg)) {
+    else if (j.type === 'chart' && !T.doneSeen && (j.ticker || j.svg || j.visual)) {
       ensureBub(T);
       mountChart(T.bub.querySelector('.mmb-charts') || T.bub, j);
       stickAfter();
@@ -2591,7 +2876,7 @@
        mid-sentence and the retry needing a clean sheet (empty text = wipe only). Nothing
        to do with retractTurn(), which is the user taking their own prompt back. */
     else if (j.type === 'retract') {
-      ensureBub(T); thinkCollapse(T.tl, T.bub);
+      ensureBub(T); clearVisuals(T.bub); thinkCollapse(T.tl, T.bub);
       var rt = j.text == null ? '' : String(j.text);
       T.stream.reset(rt); T.bub._raw = rt; T.sawDelta = !!rt;
       if (!T.sawDelta) T.stream.startCaret();   /* wiped for a retry — the writer is back */
@@ -2600,8 +2885,7 @@
     else if (j.type === 'suggest') { if (j.items && j.items.length) T.suggestions = j.items.slice(0, 3); }
     /* host bridges (Terminal): chart-command + annotate events are executed by the
        host page, not the widget — forward them to the CFG callbacks when provided. */
-    else if (j.type === 'command') { try { if (CFG.onCommand) CFG.onCommand(j); } catch (e) {} }
-    else if (j.type === 'annotate') { try { if (CFG.onAnnotate) CFG.onAnnotate(j); } catch (e) {} }
+    else if (j.type === 'command' || j.type === 'annotate') { handChartEvent(j, T); }
     else if (j.type === 'done') { finalizeDone(j, T); }
     else if (j.type === 'error') {
       if (!T.sawDelta && !(T.bub && T.bub._raw)) { failTurn(T, j.message || ''); }
@@ -2620,6 +2904,8 @@
        still applies it exactly the same gated way. */
     if (j && j.context_receipt) handleContextReceipt(j.context_receipt);
     ensureBub(T); thinkTeardown(T.tl);
+    if (j && (j.filtered || j.degraded)) clearVisuals(T.bub);
+    else if (j && Array.isArray(j.charts)) j.charts.slice(0, 4).forEach(function (v) { if (v && v.visual) mountChart(T.bub.querySelector('.mmb-charts') || T.bub, v); });
     T.stream.finalize(function () {
       if (j && j.citations && j.citations.length) addCites(T.bub, j.citations);
       if (T.suggestions && T.suggestions.length) addSuggest(T.bub, T.suggestions);
@@ -2731,7 +3017,9 @@
         if (q && !(prev && prev.role === 'user' && String(prev.content || '').indexOf(q) === 0)) { failTurn(T, ''); return; }
         clearRun(); T.doneSeen = true;
         ensureBub(T); thinkTeardown(T.tl);
-        T.bub._raw = last.content; T.stream.push(last.content);
+        T.bub._raw = last.content; T.stream.reset(last.content);
+        if (Array.isArray(last.visuals)) last.visuals.slice(0, 4).forEach(function (v) { if (v && v.visual) mountChart(T.bub.querySelector('.mmb-charts') || T.bub, v); });
+        mountVisualNotices(T.bub, last.visual_notices);
         T.stream.finalize(function () { bumpTime(T.bub); stickAfter(); });
         endTurn(T); loadThreads(); announceDone();
       })
@@ -2815,7 +3103,16 @@
   function stopStream() {
     if (!streaming) return;
     var a = activeStream;
-    if (a) a.stopped = true;
+    if (a && a.doneSeen) { endTurn(a); return; } // completion already won this race
+    if (a) { a.stopped = true; if (a.bub) clearVisuals(a.bub); }
+    var chartStop = null;
+    if (a && a.chartHanded && a.chartBatches.length && typeof CFG.onChartStop === 'function') {
+      try {
+        var result = CFG.onChartStop({ scope: 'received_batches', batch_ids: a.chartBatches.slice() });
+        if (result && result.scope === 'received_batches' && Number.isSafeInteger(result.cancelled) && result.cancelled >= 0)
+          chartStop = result;
+      } catch (e) { /* cancellation is unconfirmed; already-applied changes remain */ }
+    }
     parked = null;
     /* the strip stops with the stream; a receipt chip (delta already landed) stays put */
     if (a) thinkTeardown(a.tl);
@@ -2827,10 +3124,19 @@
     /* "landed" = at least one delta made it into a real bubble; a bubble that holds only
        the reasoning strip is not an answer and is retracted with the rest. */
     var landed = !!(a && a.bub && a.stream && (a.sawDelta || a.bub._raw));
+    if (a && a.chartHanded && !landed) { ensureBub(a); landed = true; }
     if (landed) {
       a.stream.stop();
-      var txt = a.bub.querySelector('.mmb-txt') || a.bub;
-      var s = el('span', 'mmb-stopped'); s.textContent = L(' · stopped', ' · 已停止'); txt.appendChild(s);
+      if (a.chartHanded) {
+        chartEffectNote(a, chartStop && !a.chartUnscoped
+          ? L('Response stopped. Chart changes already applied remain. Pending actions in this response\'s received batches were cancelled (' + chartStop.cancelled + ').',
+              '回复已停止。已应用的图表更改仍然保留。已取消本回复已接收批次中待执行的操作（' + chartStop.cancelled + '）。')
+          : L('Response stopped. Chart actions may already have applied; pending cancellation could not be confirmed. Check the chart before continuing.',
+              '回复已停止。图表操作可能已生效；无法确认待执行操作是否取消。继续前请检查图表。'));
+      } else {
+        var txt = a.bub.querySelector('.mmb-txt') || a.bub;
+        var s = el('span', 'mmb-stopped'); s.textContent = L(' · stopped', ' · 已停止'); txt.appendChild(s);
+      }
       bumpTime(a.bub); markLastAssistant();
     } else if (a) {
       retractTurn(a);
@@ -2845,6 +3151,7 @@
   function retractTurn(T) {
     if (!T || T.retracted) return;
     T.retracted = true;
+    if (T.bub) clearVisuals(T.bub);
     retractedAt = Date.now();
     if (T.stream) { try { T.stream.cancel(); } catch (e) {} }   /* drop the caret + any pending rAF */
     thinkTeardown(T.tl);                                        /* belt and braces: never leak the 1s clock */
@@ -2935,6 +3242,12 @@
     /* replayed status events fast-forward the strip to the run's live stage */
     T.tl = thinkInit(typing.querySelector('.mmb-bub'), status.mode);
     T.runId = status.run_id; T.threadId = status.thread_id || null; T.cursor = cursor || 0;
+    // A reconstructed reply restores text/visuals, never chart execution authority.
+    var priorRun = loadRun();
+    T.chartReplay = true;
+    T.chartHanded = !!(priorRun && priorRun.id === status.run_id && priorRun.chart_handed);
+    if (T.chartHanded) chartEffectNote(T, L('Recovered answer. Chart actions were not replayed. Check the chart for their current state.',
+      '已恢复回复。图表操作未重新执行；请检查图表的当前状态。'));
     saveRun(T);   /* re-arm immediately — openThread() cleared the record on its way in */
     attachRun(T);
   }
@@ -3295,7 +3608,7 @@
     });
   }
   function toggleSide() { panel.classList.toggle('show-side'); }
-  function newChat() { stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max')) panel.classList.remove('show-side'); }
+  function newChat() { stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); }
 
   /* ── auth wiring ── */
   function onAuth(user) {
@@ -3358,7 +3671,9 @@
   function paintGuestThreads() {
     if (!tlist) return;
     tlist.innerHTML = '<div class="mmb-th-empty" style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">' +
-      '<span>' + LB('Sign in to save your conversations.', '登录后可保存对话记录。') + '</span>' +
+      '<span>' + (ANCHOR === 'top'
+        ? LB('Sign in to connect this chart and save your conversations.', '登录后可连接此图表并保存对话记录。')
+        : LB('Sign in to save your conversations.', '登录后可保存对话记录。')) + '</span>' +
       '<button class="mmb-signin" data-act="signin" style="margin-top:0;padding:9px 18px;font-size:13px">' + LB('Sign in', '登录') + '</button></div>';
   }
 
@@ -3376,7 +3691,7 @@
     var a = t.dataset.act;
     if (a === 'close') close(); else if (a === 'max') toggleMax(); else if (a === 'side') toggleSide();
     else if (a === 'new') newChat();
-    else if (a === 'home') location.href = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
+    else if (a === 'home') { var _d = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html'; var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; } }
     else if (a === 'search') toggleSearch();
     else if (a === 'history-retry') { loadThreads(); }
     else if (a === 'search-clear') { searchIn.value = ''; paintThreads(); searchIn.focus(); }

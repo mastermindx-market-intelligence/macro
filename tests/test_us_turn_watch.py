@@ -1004,7 +1004,8 @@ def test_beyond_cap_rows_carry_their_reason_not_a_bare_ticker(tmp_path):
     json.loads(json.dumps(art, default=str))
 
 
-def test_compute_deck_with_candidates_keeps_private_uncapped_rows_out_of_public_artifact(tmp_path):
+def test_compute_deck_with_candidates_keeps_private_uncapped_rows_out_of_public_artifact(
+        tmp_path, monkeypatch, capsys):
     """A cap must hide full rows only from the public document, never from the intake.
 
     MUTATION CHECK: returning ``deck`` here, or adding ``all_triggered`` to the public
@@ -1034,10 +1035,23 @@ def test_compute_deck_with_candidates_keeps_private_uncapped_rows_out_of_public_
         "test_theme": {"state": "TURNING", "days_in_state": 3, "data_session": _FIXTURE_END}}}))
 
     _write_universe_contract(root)
+    from types import SimpleNamespace
+    from scripts.build_turn_watch import write_candidate_episode_input
+
+    slow_runtime = TW.RUNTIME_WARN_SECONDS + 0.25
+    clock = iter([1000.0, 1066.58, 2000.0, 2000.0 + slow_runtime])
+    monkeypatch.setattr(TW, "time", SimpleNamespace(time=lambda: next(clock)))
     artifact, rows = TW.compute_deck_with_candidates(root, site, cap=2, lane_floor=1)
     public = TW.compute_deck(root, site, cap=2, lane_floor=1)
-    assert {key: value for key, value in artifact.items() if key != "runtime_seconds"} == {
-        key: value for key, value in public.items() if key != "runtime_seconds"}
+    assert artifact["runtime_seconds"] == 66.58
+    assert public["runtime_seconds"] == slow_runtime
+    assert "::warning title=us-turn-watch-runtime::" in capsys.readouterr().out
+    assert TW.artifact_bytes(artifact) == TW.artifact_bytes(public)
+    first_public = TW.write_artifact(artifact, site).read_bytes()
+    first_input = write_candidate_episode_input(artifact, rows, root).read_bytes()
+    assert "runtime_seconds" not in json.loads(first_public)
+    assert TW.write_artifact(public, site).read_bytes() == first_public
+    assert write_candidate_episode_input(public, rows, root).read_bytes() == first_input
     assert len(rows) == artifact["coverage"]["triggered"] == 6
     assert len(artifact["deck"]) == 2
     assert {row["ticker"] for row in rows} == {f"SIDE{i}" for i in range(6)}
