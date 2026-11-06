@@ -1,0 +1,326 @@
+FFFFFFFF...F.                                                            [100%]
+=================================== FAILURES ===================================
+____ test_json_and_render_failure_report_unconfirmed_contents[False-before] ____
+tests/test_build_foresight_vintage.py:163: in test_json_and_render_failure_report_unconfirmed_contents
+    warning = _render_failure_warning(capsys)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_build_foresight_vintage.py:127: in _render_failure_warning
+    assert "last-committed" not in warning
+E   assert 'last-committed' not in "::warning t...ment block')"
+E
+E     'last-committed' is contained here:
+E       ys on its last-committed vintage (note: site/basketdata/foresight_cascade.json was already refreshed above, so page and JSON now disagree) (TemplateSyntaxError: Expected an expression, got 'end of statement block')
+E     ?           ++++++++++++++
+------------------------------ Captured log call -------------------------------
+WARNING  build_foresight:build_foresight.py:335 foresight_cascade.json emit failed: synthetic JSON write failure: before
+WARNING  build_foresight:build_foresight.py:365 foresight template render failed — skipping: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23/scripts/build_foresight.py", line 340, in main
+    html = env.get_template("foresight.html.j2").render(
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1142/test_json_and_render_failure_r0/templates/foresight.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+___ test_json_and_render_failure_report_unconfirmed_contents[False-partial] ____
+tests/test_build_foresight_vintage.py:163: in test_json_and_render_failure_report_unconfirmed_contents
+    warning = _render_failure_warning(capsys)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_build_foresight_vintage.py:127: in _render_failure_warning
+    assert "last-committed" not in warning
+E   assert 'last-committed' not in "::warning t...ment block')"
+E
+E     'last-committed' is contained here:
+E       ys on its last-committed vintage (note: site/basketdata/foresight_cascade.json was already refreshed above, so page and JSON now disagree) (TemplateSyntaxError: Expected an expression, got 'end of statement block')
+E     ?           ++++++++++++++
+------------------------------ Captured log call -------------------------------
+WARNING  build_foresight:build_foresight.py:335 foresight_cascade.json emit failed: synthetic JSON write failure: partial
+WARNING  build_foresight:build_foresight.py:365 foresight template render failed — skipping: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23/scripts/build_foresight.py", line 340, in main
+    html = env.get_template("foresight.html.j2").render(
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1142/test_json_and_render_failure_r1/templates/foresight.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+____ test_json_and_render_failure_report_unconfirmed_contents[True-before] _____
+tests/test_build_foresight_vintage.py:163: in test_json_and_render_failure_report_unconfirmed_contents
+    warning = _render_failure_warning(capsys)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_build_foresight_vintage.py:127: in _render_failure_warning
+    assert "last-committed" not in warning
+E   assert 'last-committed' not in "::warning t...ment block')"
+E
+E     'last-committed' is contained here:
+E       ys on its last-committed vintage (note: site/basketdata/foresight_cascade.json was already refreshed above, so page and JSON now disagree) (TemplateSyntaxError: Expected an expression, got 'end of statement block')
+E     ?           ++++++++++++++
+------------------------------ Captured log call -------------------------------
+WARNING  build_foresight:build_foresight.py:335 foresight_cascade.json emit failed: synthetic JSON write failure: before
+WARNING  build_foresight:build_foresight.py:365 foresight template render failed — skipping: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23/scripts/build_foresight.py", line 340, in main
+    html = env.get_template("foresight.html.j2").render(
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1142/test_json_and_render_failure_r2/templates/foresight.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+____ test_json_and_render_failure_report_unconfirmed_contents[True-partial] ____
+tests/test_build_foresight_vintage.py:163: in test_json_and_render_failure_report_unconfirmed_contents
+    warning = _render_failure_warning(capsys)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_build_foresight_vintage.py:127: in _render_failure_warning
+    assert "last-committed" not in warning
+E   assert 'last-committed' not in "::warning t...ment block')"
+E
+E     'last-committed' is contained here:
+E       ys on its last-committed vintage (note: site/basketdata/foresight_cascade.json was already refreshed above, so page and JSON now disagree) (TemplateSyntaxError: Expected an expression, got 'end of statement block')
+E     ?           ++++++++++++++
+------------------------------ Captured log call -------------------------------
+WARNING  build_foresight:build_foresight.py:335 foresight_cascade.json emit failed: synthetic JSON write failure: partial
+WARNING  build_foresight:build_foresight.py:365 foresight template render failed — skipping: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23/scripts/build_foresight.py", line 340, in main
+    html = env.get_template("foresight.html.j2").render(
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1142/test_json_and_render_failure_r3/templates/foresight.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage[False-False] _
+tests/test_build_foresight_vintage.py:189: in test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage
+    warning = _render_failure_warning(capsys)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_build_foresight_vintage.py:127: in _render_failure_warning
+    assert "last-committed" not in warning
+E   assert 'last-committed' not in "::warning t...ment block')"
+E
+E     'last-committed' is contained here:
+E       ys on its last-committed vintage (note: site/basketdata/foresight_cascade.json was already refreshed above, so page and JSON now disagree) (TemplateSyntaxError: Expected an expression, got 'end of statement block')
+E     ?           ++++++++++++++
+------------------------------ Captured log call -------------------------------
+WARNING  build_foresight:build_foresight.py:365 foresight template render failed — skipping: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23/scripts/build_foresight.py", line 340, in main
+    html = env.get_template("foresight.html.j2").render(
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1142/test_completed_json_write_does0/templates/foresight.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage[False-True] _
+tests/test_build_foresight_vintage.py:189: in test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage
+    warning = _render_failure_warning(capsys)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_build_foresight_vintage.py:127: in _render_failure_warning
+    assert "last-committed" not in warning
+E   assert 'last-committed' not in "::warning t...ment block')"
+E
+E     'last-committed' is contained here:
+E       ys on its last-committed vintage (note: site/basketdata/foresight_cascade.json was already refreshed above, so page and JSON now disagree) (TemplateSyntaxError: Expected an expression, got 'end of statement block')
+E     ?           ++++++++++++++
+------------------------------ Captured log call -------------------------------
+WARNING  build_foresight:build_foresight.py:365 foresight template render failed — skipping: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23/scripts/build_foresight.py", line 340, in main
+    html = env.get_template("foresight.html.j2").render(
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1142/test_completed_json_write_does1/templates/foresight.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage[True-False] _
+tests/test_build_foresight_vintage.py:189: in test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage
+    warning = _render_failure_warning(capsys)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_build_foresight_vintage.py:127: in _render_failure_warning
+    assert "last-committed" not in warning
+E   assert 'last-committed' not in "::warning t...ment block')"
+E
+E     'last-committed' is contained here:
+E       ys on its last-committed vintage (note: site/basketdata/foresight_cascade.json was already refreshed above, so page and JSON now disagree) (TemplateSyntaxError: Expected an expression, got 'end of statement block')
+E     ?           ++++++++++++++
+------------------------------ Captured log call -------------------------------
+WARNING  build_foresight:build_foresight.py:365 foresight template render failed — skipping: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23/scripts/build_foresight.py", line 340, in main
+    html = env.get_template("foresight.html.j2").render(
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1142/test_completed_json_write_does2/templates/foresight.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage[True-True] _
+tests/test_build_foresight_vintage.py:189: in test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage
+    warning = _render_failure_warning(capsys)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_build_foresight_vintage.py:127: in _render_failure_warning
+    assert "last-committed" not in warning
+E   assert 'last-committed' not in "::warning t...ment block')"
+E
+E     'last-committed' is contained here:
+E       ys on its last-committed vintage (note: site/basketdata/foresight_cascade.json was already refreshed above, so page and JSON now disagree) (TemplateSyntaxError: Expected an expression, got 'end of statement block')
+E     ?           ++++++++++++++
+------------------------------ Captured log call -------------------------------
+WARNING  build_foresight:build_foresight.py:365 foresight template render failed — skipping: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23/scripts/build_foresight.py", line 340, in main
+    html = env.get_template("foresight.html.j2").render(
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1142/test_completed_json_write_does3/templates/foresight.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+__________ test_each_run_observes_its_own_json_write_and_can_recover ___________
+tests/test_build_foresight_vintage.py:230: in test_each_run_observes_its_own_json_write_and_can_recover
+    warning = _render_failure_warning(capsys)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_build_foresight_vintage.py:127: in _render_failure_warning
+    assert "last-committed" not in warning
+E   assert 'last-committed' not in "::warning t...ment block')"
+E
+E     'last-committed' is contained here:
+E       ys on its last-committed vintage (note: site/basketdata/foresight_cascade.json was already refreshed above, so page and JSON now disagree) (TemplateSyntaxError: Expected an expression, got 'end of statement block')
+E     ?           ++++++++++++++
+------------------------------ Captured log call -------------------------------
+WARNING  build_foresight:build_foresight.py:335 foresight_cascade.json emit failed: synthetic JSON write failure: partial
+WARNING  build_foresight:build_foresight.py:365 foresight template render failed — skipping: Expected an expression, got 'end of statement block'
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23/scripts/build_foresight.py", line 340, in main
+    html = env.get_template("foresight.html.j2").render(
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/private/tmp/pytest-of-chriswong/pytest-1142/test_each_run_observes_its_own0/templates/foresight.html.j2", line 1, in template
+    {% if %}
+jinja2.exceptions.TemplateSyntaxError: Expected an expression, got 'end of statement block'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data, site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_build_foresight_vintage.py::test_json_and_render_failure_report_unconfirmed_contents[False-before]
+FAILED tests/test_build_foresight_vintage.py::test_json_and_render_failure_report_unconfirmed_contents[False-partial]
+FAILED tests/test_build_foresight_vintage.py::test_json_and_render_failure_report_unconfirmed_contents[True-before]
+FAILED tests/test_build_foresight_vintage.py::test_json_and_render_failure_report_unconfirmed_contents[True-partial]
+FAILED tests/test_build_foresight_vintage.py::test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage[False-False]
+FAILED tests/test_build_foresight_vintage.py::test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage[False-True]
+FAILED tests/test_build_foresight_vintage.py::test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage[True-False]
+FAILED tests/test_build_foresight_vintage.py::test_completed_json_write_does_not_claim_fresh_data_or_changed_vintage[True-True]
+FAILED tests/test_build_foresight_vintage.py::test_each_run_observes_its_own_json_write_and_can_recover
+9 failed, 4 passed in 3.91s

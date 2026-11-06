@@ -1,0 +1,113 @@
+{
+  "source_pin": "124df8d533dd01400a7dc514ac98b92b2d63186e",
+  "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "branch": "claude/ssd-d03-foresight-vintage-t38-20261104-c2-7cae207aaf1d9b23",
+  "source_files": {
+    "scripts/build_foresight.py": {
+      "bytes": 19200,
+      "sha256": "0338cbbb3ca04fbbee63e05e4c70fc853114acbf0629695c87adf5eeb3f30d58"
+    },
+    "tests/test_build_foresight_vintage.py": {
+      "bytes": 9996,
+      "sha256": "5286f0e85a21cb3bb08e2f16ae43f17302becc23b278e2ec8190232741778925"
+    },
+    ".github/ci/legacy-jobs.yml": {
+      "bytes": 2589092,
+      "sha256": "faaf63525889e86bec3c8a63dc0557239e0ab22f0ce86a537241e996f0cb7287"
+    }
+  },
+  "evidence_files": {
+    "CONTINUATION.md": {
+      "bytes": 6173,
+      "sha256": "13070282ea279d8adb699ba57220b516c2250125e306c0e3b84d946b7e5366bf"
+    },
+    "MAIN_COMPARISON.json": {
+      "bytes": 1866,
+      "sha256": "3e69eab9c443b1dfa4d7f54847c6eb0e57bd8fe34baa0687c834360a8bb8cf65"
+    },
+    "README.md": {
+      "bytes": 9885,
+      "sha256": "3ea7ac7bc867172dac62d00208046ec660033b53c024d1e07a4c91d04d052afc"
+    },
+    "SOURCE_PIN_REFRESH.json": {
+      "bytes": 1615,
+      "sha256": "7ea70e4ce0845030fa6be49dbd3d20577a214e482a834ee349acbd5e4ffc4093"
+    },
+    "ci-job-scope.json": {
+      "bytes": 1762,
+      "sha256": "6e77fb1e23ce8dc594f7b212da057d45d19024c934e6699478b1411d3a216345"
+    },
+    "ci-manifest-final.txt": {
+      "bytes": 4881,
+      "sha256": "02a0e6adeee6279b73b0bff5105a230283083e5c1683b9d8ff2bf04c1525d4a0"
+    },
+    "ci-weight-repair.json": {
+      "bytes": 406,
+      "sha256": "19a514862a427ea5cb2758433feb5a8484e73a876200bbc12d86869ba403d14b"
+    },
+    "contract-delta-candidate.json": {
+      "bytes": 322,
+      "sha256": "1d99e42493368e07f69d199f9b9745bfeac3ffcd01769de02ef724189332289a"
+    },
+    "contract-delta-candidate.txt": {
+      "bytes": 753,
+      "sha256": "ceaaac56bdfec2918c7b2428cb7207e12d98f0a1fc5768f78e7413b8ed9412bf"
+    },
+    "diagnostics/ci-catalog-scan-interrupted.txt": {
+      "bytes": 281,
+      "sha256": "1a77e3a9a4dd457e2b670cfda33860158908418c07181ab47b50678a79ab830b"
+    },
+    "diagnostics/ci-curated-job-scope-probe.json": {
+      "bytes": 6095,
+      "sha256": "12a91a8534bdd391e42b14f290bacde9ad12d930d48c79fdacdbc87c2b07387c"
+    },
+    "diagnostics/ci-manifest-initial-placement.txt": {
+      "bytes": 4776,
+      "sha256": "85936fed5a65c5ecf6e51b24910bfd83fe5759e899ba57d16a46f004db1797ce"
+    },
+    "diagnostics/ci-package-trigger-probe.json": {
+      "bytes": 1777,
+      "sha256": "f9d562d833d899b94f8bb4a1e9484dc7c9d26d912cd41a680d69a0ec0c50f415"
+    },
+    "diagnostics/ci-registration-path-probe.txt": {
+      "bytes": 197,
+      "sha256": "b4819116cea9b4e178bf43b73967f980f00b745bf203995da88d1e693ccb5638"
+    },
+    "diagnostics/contract-delta-initial.json": {
+      "bytes": 322,
+      "sha256": "1233d2d61488345af0725498921b941555db9225c16fcaa5ab06fe700eada334"
+    },
+    "diagnostics/contract-delta-initial.txt": {
+      "bytes": 2569,
+      "sha256": "9f7ebcc16df5679cdab8cbefc654d0f3a0455033e68ddd2ac0b27e791ebddf1c"
+    },
+    "diagnostics/pytest-green-before-fixture-hardening.txt": {
+      "bytes": 99,
+      "sha256": "da6208654e5e7b8bd95a55c4c4eef00a453534df5b40840fcc9f3a1a04bd912f"
+    },
+    "pytest-combined-ci.txt": {
+      "bytes": 100,
+      "sha256": "2f9e07fdc96951aacece2bcce0228e28e8a5a668a98fc51006589191c77c068c"
+    },
+    "pytest-final.txt": {
+      "bytes": 99,
+      "sha256": "3125ef599b863346cbb82f811c2cbd0111b0035ae97fc25e7e9e4dbf3c7268d6"
+    },
+    "pytest-red.txt": {
+      "bytes": 27225,
+      "sha256": "100270de3a9df4bc066e94805136d4db57ee1e799776dfd3cd9feb3505611941"
+    }
+  },
+  "red_log_normalization": "nine trailing-whitespace-only lines; assertions/outcomes unchanged",
+  "runtime_python": "3.14.7",
+  "publication_policy": "Draft/HOLD; no release effects",
+  "continuation_source_pin": "cb8fa9132770b1967d585e323dd72b145c580601",
+  "current_source_pin": "cb8fa9132770b1967d585e323dd72b145c580601",
+  "qualified_differential_candidate": "b0712e8db8fa51060242190e3907ba5efd3b2bc5",
+  "differential_gate": {
+    "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+    "exit_code": 0,
+    "seconds": 605.82,
+    "log_sha256": "ceaaac56bdfec2918c7b2428cb7207e12d98f0a1fc5768f78e7413b8ed9412bf"
+  }
+}

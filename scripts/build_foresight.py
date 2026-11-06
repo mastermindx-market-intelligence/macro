@@ -323,6 +323,7 @@ def main() -> int:
 
     site = config.ROOT / "site"
     # also emit the JSON for any client consumer (health included so any consumer can read it)
+    json_write_completed = False
     try:
         bd = site / "basketdata"
         bd.mkdir(parents=True, exist_ok=True)
@@ -331,6 +332,7 @@ def main() -> int:
             cascade_out["health"] = health
         (bd / "foresight_cascade.json").write_text(
             json.dumps(cascade_out, separators=(",", ":"), default=str))
+        json_write_completed = True
     except Exception as e:  # noqa: BLE001
         log.warning("foresight_cascade.json emit failed: %s", e)
 
@@ -363,10 +365,15 @@ def main() -> int:
         )
     except Exception as e:  # noqa: BLE001
         log.warning("foresight template render failed — skipping: %s", e, exc_info=True)
-        _annotate(f"template render failed — site/foresight.html was NOT rewritten this run "
-                  f"and stays on its last-committed vintage (note: "
-                  f"site/basketdata/foresight_cascade.json was already refreshed above, so "
-                  f"page and JSON now disagree) ({type(e).__name__}: {e})")
+        json_receipt = (
+            "site/basketdata/foresight_cascade.json write completed this run; "
+            "HTML/JSON alignment is unconfirmed."
+            if json_write_completed else
+            "site/basketdata/foresight_cascade.json write did not complete; "
+            "current JSON contents are unconfirmed."
+        )
+        _annotate(f"template render failed — site/foresight.html was NOT rewritten this run. "
+                  f"{json_receipt} ({type(e).__name__}: {e})")
         return 0
 
     site.mkdir(exist_ok=True)

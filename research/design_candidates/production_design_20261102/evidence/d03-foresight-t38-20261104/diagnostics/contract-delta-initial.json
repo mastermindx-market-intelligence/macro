@@ -1,0 +1,9 @@
+{
+  "stage": "COMPLETE",
+  "candidate": "1e9931e0a78e0e15b8714b3a11465440f508e4fa",
+  "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "exit_code": 1,
+  "seconds": 534.35,
+  "log_sha256": "9f7ebcc16df5679cdab8cbefc654d0f3a0455033e68ddd2ac0b27e791ebddf1c",
+  "head_after": "1e9931e0a78e0e15b8714b3a11465440f508e4fa"
+}

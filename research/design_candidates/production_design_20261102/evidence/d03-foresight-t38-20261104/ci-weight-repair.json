@@ -1,0 +1,17 @@
+{
+  "job": "unrun-template-chips",
+  "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "baseline_owner_numbers": {
+    "ordinal": 299,
+    "weight": 31,
+    "exclusive": false
+  },
+  "candidate_owner_numbers": {
+    "ordinal": 299,
+    "weight": 31,
+    "exclusive": false
+  },
+  "equal": true,
+  "unchanged_filters": "HK exclusion remains a separate untouched command",
+  "combined_ci": "40 passed"
+}

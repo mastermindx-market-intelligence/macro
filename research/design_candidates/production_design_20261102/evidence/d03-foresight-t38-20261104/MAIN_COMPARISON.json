@@ -1,0 +1,62 @@
+{
+  "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "compared_main": "88612c9b9ef0406b9a092b9ae6d9ecdfd240f433",
+  "status": "ahead",
+  "ahead_by": 6,
+  "total_commits": 6,
+  "complete_file_count": 10,
+  "files": [
+    {
+      "path": "data/factordata/factor_state_history.jsonl",
+      "sha": "bd879a8281bfd3dee1c0132acebb3ed201d949dc",
+      "status": "modified"
+    },
+    {
+      "path": "data/factordata/fire_coordinates.jsonl",
+      "sha": "6d47eb4c7ff25dfa13b8b0842c9acc53f4f3b9af",
+      "status": "modified"
+    },
+    {
+      "path": "data/neuralweb/factor_intelligence_state.json",
+      "sha": "669707434e2f73db15dd1f2d5295363704f0099c",
+      "status": "modified"
+    },
+    {
+      "path": "data/ops/nightly_timings/capital_structure.jsonl",
+      "sha": "23aa7821c390d019fda25be90c07ceae7cc0fae4",
+      "status": "modified"
+    },
+    {
+      "path": "data/ops/nightly_timings/factor_panel.jsonl",
+      "sha": "dca8ea8866fa66633ea1c25d407a42c0b36a3a81",
+      "status": "modified"
+    },
+    {
+      "path": "data/ops/nightly_timings/factor_series.jsonl",
+      "sha": "dc05afb9311865229b1f2c3fc1ae8e952801c613",
+      "status": "modified"
+    },
+    {
+      "path": "data/whitehouse/health.json",
+      "sha": "8dddc56b5315608615f2a5b1517abb70ecca1c45",
+      "status": "modified"
+    },
+    {
+      "path": "site/factordata/dna_class.json",
+      "sha": "b9431a18e66eedbf4ef1a1df4db55ae1e4bed789",
+      "status": "modified"
+    },
+    {
+      "path": "site/factordata/factor_series.json",
+      "sha": "3db9b22acad1c6d272a21eb285d1860d02cc1dae",
+      "status": "modified"
+    },
+    {
+      "path": "site/neuralwebdata/factor_intelligence_state.json",
+      "sha": "669707434e2f73db15dd1f2d5295363704f0099c",
+      "status": "modified"
+    }
+  ],
+  "source_test_ci_dependency_changes": [],
+  "checked_at_utc": "2026-11-04 09:36:07 UTC"
+}

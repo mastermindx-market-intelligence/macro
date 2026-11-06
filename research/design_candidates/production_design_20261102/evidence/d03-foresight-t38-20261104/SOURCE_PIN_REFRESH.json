@@ -1,0 +1,40 @@
+{
+  "pin": "cb8fa9132770b1967d585e323dd72b145c580601",
+  "protected": true,
+  "previous": "124df8d533dd01400a7dc514ac98b92b2d63186e",
+  "schema": "mastermind.sol_skillpack.v1",
+  "version": "1.0.1",
+  "bootstrapMajor": 1,
+  "reason": "Material account-authority / continuity / session-review updates observed in live D03 recovery; INDEX, kernel and changed companions read, unchanged companion Git blobs verified at the same pin.",
+  "paths": [
+    "docs/sol_skills/COLD_START.md",
+    "docs/sol_skills/ACTIVE_EXECUTION.md",
+    "docs/sol_skills/SESSION_RELIABILITY.md",
+    "docs/sol_skills/WEB_CEO_DELEGATION.md",
+    "docs/sol_skills/CLOSEOUT.md",
+    "docs/CEO_PROJECT_PLAN_CONTINUITY.md",
+    "docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md",
+    "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+    "skills/paper-design-workflow/SKILL.md",
+    "skills/paper-design-workflow/references/connection.md",
+    "docs/PAPER_DESIGN_INTEGRATION.md",
+    "docs/SESSION_LOCAL_REVIEW_POLICY.md",
+    "docs/SOL_CEO_ACCOUNT_INSTRUCTIONS.md"
+  ],
+  "changed": [
+    {
+      "path": "docs/CEO_PROJECT_PLAN_CONTINUITY.md",
+      "sha": "728ba3e500dbba375a55a01a39698b1ca50d0fe0"
+    },
+    {
+      "path": "docs/SESSION_LOCAL_REVIEW_POLICY.md",
+      "sha": "a3e4b6fb9724ded52d77af0dedcbac002fc1a356"
+    },
+    {
+      "path": "docs/SOL_CEO_ACCOUNT_INSTRUCTIONS.md",
+      "sha": "3de5a2dac51932e5a5612d3f463b640101edf26b"
+    }
+  ],
+  "carrier": "Original Studio Direct C2 Personal / m2studio; no permission or release expansion",
+  "holds": "Explicit Draft/HOLD, live sibling writers and uncertain R8/UX effects retained"
+}

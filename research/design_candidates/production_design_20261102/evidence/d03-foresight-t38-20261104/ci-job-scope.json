@@ -1,0 +1,57 @@
+{
+  "job": "unrun-template-chips",
+  "gate": "code",
+  "method": "unchanged run_ci_pack.infer_job_scopes([job]) then select_jobs for each changed/runtime dependency path",
+  "note": "derived scopes for 1/1 jobs",
+  "is_scoped": true,
+  "owned_path_count": 1085,
+  "fallback_path_count": 113,
+  "changed_jobs": [
+    "unrun-template-chips"
+  ],
+  "curated_jobs_changed": [],
+  "selection": {
+    "scripts/build_foresight.py": {
+      "selected": [
+        "unrun-template-chips"
+      ],
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)"
+    },
+    "tests/test_build_foresight_vintage.py": {
+      "selected": [
+        "unrun-template-chips"
+      ],
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)"
+    },
+    "lib/pages.py": {
+      "selected": [
+        "unrun-template-chips"
+      ],
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)"
+    },
+    "lib/shared_shell.py": {
+      "selected": [
+        "unrun-template-chips"
+      ],
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)"
+    },
+    "lib/site_assets.py": {
+      "selected": [
+        "unrun-template-chips"
+      ],
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)"
+    },
+    "scripts/__init__.py": {
+      "selected": [
+        "unrun-template-chips"
+      ],
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)"
+    },
+    "tests/__init__.py": {
+      "selected": [
+        "unrun-template-chips"
+      ],
+      "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)"
+    }
+  }
+}
