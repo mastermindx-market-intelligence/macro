@@ -678,6 +678,44 @@ def _ew_probability(value: Any) -> bool:
         return False
 
 
+def ew_bootstrap_bound_agreement(samples: list[float], *, alpha: float) -> dict:
+    """Report both frozen finite-draw predicates without equating them.
+
+    Counted nonnegative tails and the incumbent interpolated quantile can
+    disagree near a discrete 2,000-draw threshold. This diagnostic preserves
+    both literal results. Its conjunction is numerical information only: it
+    neither changes the preregistration nor grants a scientific verdict, a
+    look, power, source/epoch qualification, or any financial authority.
+    """
+    if not _ew_probability(alpha) or alpha not in (.05, .05 / 6, .05 / 3):
+        raise ValueError("registered_alpha_required")
+    def unavailable(reason):
+        return {"status": "UNAVAILABLE", "reasons": [reason],
+                "both_numerical_conditions_met": False, **_ew_statistics_boundary()}
+    if not isinstance(samples, (list, tuple)) or len(samples) != 2000:
+        return unavailable("registered_draw_count_required")
+    try:
+        if any(isinstance(value, bool) or not isinstance(value, (int, float))
+               or not math.isfinite(value) or not -1 <= value <= 1 for value in samples):
+            return unavailable("finite_brier_difference_means_required")
+    except (ValueError, OverflowError):
+        return unavailable("finite_brier_difference_means_required")
+    count = sum(value >= 0 for value in samples)
+    tail = count / 2000
+    upper = _quantile(samples, 1 - alpha)
+    counted, interpolated = tail <= alpha, upper < 0
+    agreement = counted == interpolated
+    return {"status": "COMPUTED", "sample_count": 2000, "alpha": alpha,
+            "nonnegative_count": count, "tail_fraction": tail,
+            "upper_quantile": 1 - alpha, "upper_bound": upper,
+            "counted_tail_rejected": counted,
+            "interpolated_bound_negative": interpolated,
+            "predicates_agree": agreement,
+            "both_numerical_conditions_met": counted and interpolated,
+            "disagreement_reason": None if agreement else "finite_draw_tail_quantile_disagreement",
+            **_ew_statistics_boundary()}
+
+
 def ew_paired_brier_statistics(outcomes: list[int], candidate: list[float],
                                comparators: dict[str, list[float]], *, horizon: int) -> dict:
     """Pure registered EW inference arithmetic on caller-qualified aligned rows.
@@ -726,6 +764,10 @@ def ew_paired_brier_statistics(outcomes: list[int], candidate: list[float],
             "upper_bound_base": _quantile(means, .95),
             "upper_bound_strict_look": _quantile(means, 1 - .05 / 6),
             "upper_bound_stepdown_look": _quantile(means, 1 - .05 / 3),
+            "finite_draw_checks": {
+                "strict_look": ew_bootstrap_bound_agreement(means, alpha=.05 / 6),
+                "stepdown_look": ew_bootstrap_bound_agreement(means, alpha=.05 / 3),
+            },
         }
     residuals = [float(p) - y for p, y in zip(candidate, outcomes)]
     calibration_means = _moving_block_mean_samples(residuals, horizon, seed, draws)

@@ -1166,3 +1166,69 @@ def test_ew_complete_absence_is_not_evidence_of_no_effect():
 def test_ew_support_does_not_activate_registered_reader():
     from scripts import grey_deer_ew_forecast_reader as reader
     assert reader.SCORER_IMPLEMENTED is False
+
+
+@pytest.mark.parametrize('count,alpha', [(17, .05/6), (34, .05/3)])
+def test_ew_finite_bootstrap_disagreement_cannot_masquerade_as_joint_support(count, alpha):
+    samples = [-.1] * (2000-count) + [0.] * count
+    out = sc.ew_bootstrap_bound_agreement(samples, alpha=alpha)
+    assert out['status'] == 'COMPUTED'
+    assert out['nonnegative_count'] == count
+    assert out['tail_fraction'] == count/2000
+    assert out['counted_tail_rejected'] is False
+    assert out['interpolated_bound_negative'] is True
+    assert out['predicates_agree'] is False
+    assert out['both_numerical_conditions_met'] is False
+    assert out['disagreement_reason'] == 'finite_draw_tail_quantile_disagreement'
+    assert out['scientific_acceptance'] is False
+
+
+def test_ew_finite_bootstrap_agreement_is_not_a_validation_verdict():
+    out = sc.ew_bootstrap_bound_agreement([-.1]*2000, alpha=.05/6)
+    assert out['predicates_agree'] and out['both_numerical_conditions_met']
+    assert out['disagreement_reason'] is None
+    assert out['scientific_acceptance'] is False and out['maturity_checked'] is False
+    assert out['source_qualification_checked'] is False
+    assert all(v is False for v in out['authority'].values())
+
+
+def test_ew_zero_bound_is_not_negative_and_cannot_reject():
+    out = sc.ew_bootstrap_bound_agreement([0.]*2000, alpha=.05/3)
+    assert out['upper_bound'] == 0
+    assert not out['interpolated_bound_negative'] and not out['counted_tail_rejected']
+    assert out['predicates_agree'] and not out['both_numerical_conditions_met']
+
+
+@pytest.mark.parametrize('samples', [[], [-.1]*1999, [-.1]*2001,
+    [False]+[-.1]*1999, [float('nan')]+[-.1]*1999, [float('inf')]+[-.1]*1999,
+    ['-.1']+[-.1]*1999, [1.1]+[-.1]*1999, None])
+def test_ew_bound_diagnostic_refuses_incomplete_nonfinite_or_non_brier_draws(samples):
+    out = sc.ew_bootstrap_bound_agreement(samples, alpha=.05/6)
+    assert out['status'] == 'UNAVAILABLE'
+    assert out['both_numerical_conditions_met'] is False
+    assert out['scientific_acceptance'] is False
+
+
+@pytest.mark.parametrize('alpha', [0, .01, .1, True, None, float('nan')])
+def test_ew_bound_diagnostic_cannot_select_a_friendlier_level(alpha):
+    with pytest.raises(ValueError, match='registered_alpha_required'):
+        sc.ew_bootstrap_bound_agreement([-.1]*2000, alpha=alpha)
+
+
+def test_ew_paired_report_carries_diagnostic_at_both_registered_look_levels():
+    out = sc.ew_paired_brier_statistics(*_ew_input(), horizon=21)
+    for row in out['comparisons'].values():
+        for key, alpha in [('strict_look',.05/6),('stepdown_look',.05/3)]:
+            diagnostic = row['finite_draw_checks'][key]
+            assert diagnostic == sc.ew_bootstrap_bound_agreement(row['bootstrap_means'], alpha=alpha)
+            assert diagnostic['tail_fraction'] == row['tail_fraction_nonnegative']
+            assert diagnostic['upper_bound'] == row['upper_bound_'+key]
+            assert not diagnostic['scientific_acceptance']
+
+
+def test_ew_finite_diagnostic_does_not_read_inputs_or_change_samples(monkeypatch):
+    def forbidden(*args, **kwargs): raise AssertionError('no data access for numerical checks')
+    monkeypatch.setattr('builtins.open', forbidden)
+    samples = [-.1]*1983 + [0.]*17;before=list(samples)
+    sc.ew_bootstrap_bound_agreement(samples, alpha=.05/6)
+    assert samples == before
