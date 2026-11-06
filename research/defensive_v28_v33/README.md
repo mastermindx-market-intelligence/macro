@@ -13,7 +13,7 @@ This stage tests your proposed **two-day RSI-MACD bullish crossover with a daily
 - **V32:** With audited SPY reserve while waiting, core first2D ~16.66% CAGR and daily Stoch ~16.40% versus strict daily then2D ~15.30%. This is *historical*, factor-exposed and not selection-adjusted.
 - **V33:** Paired differences (daily Stoch minus2D) average +0.11pp across51 core original watches and +1.85pp across35 watches with 126-session spacing; exploratory intervals include zero. Strict daily then2D has -5.39pp versus first2D all watches and -3.21pp with spacing; intervals remain negative, but the whole historical program has already been searched.
 
-The most useful distinction is that **recent oscillator confluence does not guarantee good entry timing or a safe stop path**, and all-watch coverage matters more than an accepted-trade hit rate alone. See [full report](./RESEARCH_V28_V33.md).
+The most useful distinction is that **recent oscillator confluence does not guarantee good entry timing or a safe stop path**, and all-watch coverage matters more than an accepted-trade hit rate alone. See [full report](./RESEARCH_REPORT.md).
 
 ## Reproduction
 
