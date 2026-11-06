@@ -211,3 +211,35 @@ For #9428's current-main integration, the wider selection initially returned567p
 Old head d2826053 passed all26 binding hosted checks. The controller required a main refresh and deferred it under its workload cap (17 indexed proofs vs cap8). A subsequently reproduced consumer defect materially invalidated integration readiness; the current session [explicitly disarmed its own PR](https://github.com/mastermindx-market-intelligence/macro/pull/10782#issuecomment-6673408881) before source changes and retains ownership through repair/requalification/release. This is not an empty refresh or a capacity-gate workaround.
 
 New-head tests and release qualification remain required. #9428 must consume the accepted freshness repair on its original carrier before combined acceptance. Browser currently reports missing originating browser context; verified server access does not substitute for the authenticated UI path. No merged/deployed/customer-accepted outcome is asserted at this boundary.
+
+## November 6 C4 required-quote expiry repair
+
+The earlier consumer-time checks were incomplete when required inputs had different quote clocks. With a 15:05 build, QQQ at 14:45:30, other required quotes at 14:50, and a 20-minute quote budget, QQQ expires at 15:05:30. At 15:06 the newest aggregate source clock and the carrying artifact are still within their budgets. They cannot certify the older required leg.
+
+C4 recorded this material counterexample in [HOLD6679754341](https://github.com/mastermindx-market-intelligence/Macro/pull/10782#issuecomment-6679754341), removed its earlier admission, and recovered the original C3 workspace with unchanged c2180b76 local/remote head, no tracked changes or active merge/rebase/lock, while preserving ignored historical proof artifacts. The historical production investigation above was not rerun.
+
+### One producer deadline through the existing consumers
+
+The producer records clocks only when its existing `clocked()` eligibility check accepts an already-required input. An active payload's absolute `stale_after` is the earliest of those clocks plus the existing configured quote budget, capped at the same whole-second `built` stamp plus five minutes. Inactive payloads have no live deadline. Optional/carried quotes gain no veto. The newest `source_event_time`, full clock provenance, VIX selection/percentile computation and historical fallback retain their original roles.
+
+The existing risk-state browser gate requires that deadline. The live-envelope wrapper also requires it and passes it through the existing composer, shortened further by a stricter configured carrying-artifact horizon when applicable. Rebuilding the envelope never renews the underlying inputs. The envelope browser's existing `active()` gate checks the carried expiry and its existing tick precheck withdraws a cached envelope even while a request remains pending. Both consumers refuse missing, malformed or timezone-naive live deadlines and expire at equality. No new timer, required-symbol policy, risk factor, state machine or publication owner was introduced.
+
+The existing `engine/risk_envelope.py` is unchanged; #10795 owns its separate context/engine work. The wrapper, paired browser gates and their test surfaces are source-disjoint from #10795's published changes. Terminal's existing absolute-deadline contract can read the new field, but installation and authenticated consumption are not proved by source compatibility.
+
+### Actual qualification
+
+- On the original producer/client source,35 new cases produced27 behavior failures and8 passes, with zero pytest errors. The first receipt wrapper wrongly required an optional JUnit failure-type attribute. The retained failure messages were reconciled by process 44702, exit0, without rerunning tests; the failures were7 missing-field KeyErrors and20 consumer assertions.
+- On the unchanged envelope wrapper and paired browser source,24 additional cases produced20 behavior failures and4 valid controls. Process 65703 completed exit0 after qualifying those expected failures.
+- The producer/client repair first passed all 116 session-floor cases. The final coherent producer/envelope/paired-browser repair passed the original nine-module affected selection with **373 passed, zero failures, zero skips**, including 59 new cases. Process 82074 completed exit0; pytest 15.76 seconds, five existing dependency deprecation warnings.
+- Both JavaScript pairs were emitted with `lib.site_assets.copy_asset`, compared by exact Git blobs, and passed Node syntax checks. Real producer output was consumed by the actual envelope builder and both shipped envelope JavaScript copies. Cached-feed expiry, pending fetch, exact boundaries, stricter envelope horizons and lack of renewal were exercised with deterministic temporary fixtures.
+- Existing shared-helper arithmetic tests remain intact. The old wrapper assertions requiring a null expiry and byte equality with a no-expiry implementation were updated for this material contract change. Settled bundle identity, provenance clocks, future-clock refusal, dwell law, source/consumer copy and release-parser tests remain in the passing selection.
+
+The exact command, process receipts and eight source blobs are recorded in `qualification.json`. This is controlled software qualification. It is not authenticated-browser, production or customer acceptance.
+
+### Integration and release boundary
+
+At the compared main 075445df snapshot, all eight original modified paths and the inspected envelope/emitter companions are byte-identical to the original main parent 9531f6b1. Preserve the complete current-main tree and the original 17-file incident investigation when publishing the repair.
+
+#9428 remains on original Draft head e935c61023fd646a29dbeb2774152927a4a33b1b. Its source explicitly assigns freshness eligibility to #10782. Its `active()` and `market_freshness()` insertion surfaces were unchanged; its distinct foreground/action synchronization, publication-order fences and native Radar-asof preservation must survive when it consumes this repair. This PR does not import or replace those unmerged foreground changes. #9435's separate uncertain review and the forecast/portfolio holds remain separate.
+
+Fresh CI and explicit hold disposition remain required before re-admission. The original authenticated production-browser path remains unproved. No replay of the denied production-snapshot transfer, new serving-tier write, deployment or final product acceptance is claimed.

@@ -53,5 +53,70 @@
     },
     "observed_at": "2026-11-06T00:54:20.522519+00:00",
     "production_acceptance": false
+  },
+  "november_6_required_quote_expiry": {
+    "source_head": "c2180b76a91dc039dedd27092a25e8bf053f214c",
+    "compared_main": "075445df2872a877fe11049da4d35245068c3a08",
+    "operation_id": "macro-market-stress-20261105-c3",
+    "original_required_clock_regressions": {
+      "tests": 35,
+      "failed": 27,
+      "passed": 8,
+      "errors": 0,
+      "pytest_process_pid": 29275,
+      "receipt_reconciliation_pid": 44702,
+      "receipt_sha256": "a2cb92391003a750daf49a3ac5fb0ce038aead88eba5d20cb0003e6b4fc2d223",
+      "rerun": false
+    },
+    "original_envelope_regressions": {
+      "tests": 24,
+      "failed": 20,
+      "passed": 4,
+      "errors": 0,
+      "process_pid": 65703,
+      "exit_code": 0
+    },
+    "intermediate_producer_client_proof": {
+      "process_pid": 47334,
+      "exit_code": 0,
+      "passed": 116,
+      "failed": 0,
+      "skipped": 0
+    },
+    "final_affected_selection": {
+      "process_pid": 82074,
+      "exit_code": 0,
+      "passed": 373,
+      "failed": 0,
+      "skipped": 0,
+      "warnings": 5,
+      "pytest_elapsed_seconds": 15.76,
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 -B -m pytest tests/test_official_release_parsers.py tests/test_vps_live_orchestration.py tests/test_release_actuals.py tests/test_release_publications_live_client.py tests/test_status_error_leak.py tests/test_risk_state_live_session_floor.py tests/test_risk_state_live_copy_sync.py tests/test_risk_state_live_participation_copy.py tests/test_live_risk_envelope.py -q --tb=short"
+    },
+    "source_blobs": {
+      "scripts/build_risk_state.py": "7fecb93e524ac21fc7dab996ea4646a6dcf068b6",
+      "templates/risk_state_live.js": "6acf107e873ff24af447f2739fc676996161978d",
+      "site/risk_state_live.js": "6acf107e873ff24af447f2739fc676996161978d",
+      "scripts/build_live_risk_envelope.py": "099a1ed6ae18766e52964b7872730a20f082a6de",
+      "templates/risk_envelope_live.js": "f7626ec36c88ee426f80d7e21cef07014d7e743c",
+      "tests/test_risk_state_live_session_floor.py": "aeb77aec12a5b8cbb89ca5f83284e315e57769f8",
+      "tests/test_live_risk_envelope.py": "b27ed9b5d6eb2d9eb4b1b7acb4c0325f4f46c686",
+      "site/risk_envelope_live.js": "f7626ec36c88ee426f80d7e21cef07014d7e743c"
+    },
+    "paired_asset_emitter": "lib.site_assets.copy_asset",
+    "node_syntax": "passed for both risk_state_live.js and risk_envelope_live.js template/site pairs",
+    "deadline_contract": {
+      "source": "earliest already-admitted required quote deadline; configured quote budget; serialized built plus five-minute artifact cap",
+      "optional_or_carried_inputs_add_veto": false,
+      "source_event_time": "newest provenance clock unchanged",
+      "envelope": "same upstream deadline bounded by existing carrying-artifact horizon; no rebuild renewal",
+      "consumer_boundary": "expired when now >= stale_after; missing, malformed and timezone-naive live deadlines refused"
+    },
+    "original_receipts_preserved": true,
+    "source_disjoint_with_10795_engine": true,
+    "risk_response_9428_integration_required": true,
+    "terminal_contract_compatibility_only": true,
+    "production_acceptance": false,
+    "authenticated_browser_acceptance": false
   }
 }

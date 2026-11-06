@@ -62,7 +62,7 @@ import copy
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -371,10 +371,17 @@ def build(offline: bool = False) -> dict:
     # is source eligibility, not a new risk factor or policy. Keep partial
     # computations available for diagnosis, but every consumer of live_active
     # (including the canonical envelope) must see the same unavailable state.
+    required_quote_times = {}
+
     def clocked(name):
         event = _source_event_time({name: quote_clocks.get(name)}, now)
-        return bool(name in spliced and event and
-                    (now - datetime.fromisoformat(event)).total_seconds() <= stale_after * 60)
+        if name not in spliced or not event:
+            return False
+        quote_time = datetime.fromisoformat(event)
+        eligible = (now - quote_time).total_seconds() <= stale_after * 60
+        if eligible:
+            required_quote_times[name] = quote_time
+        return eligible
 
     fast_inputs = {
         "trend": {name: clocked(name) for name in ("SPY", "QQQ", "IWM")},
@@ -387,6 +394,17 @@ def build(offline: bool = False) -> dict:
     critical_missing = [name for inputs in fast_inputs.values()
                         for name, available in inputs.items() if not available]
     live_active = bool(live_ms) and not critical_missing
+
+    # Consumers must expire when the first required input does, not when the
+    # newest provenance clock does. Reuse the clocks that certified this exact
+    # assessment so optional/carried legs do not gain a freshness veto. Match
+    # the whole-second built stamp when applying the existing artifact TTL.
+    live_stale_after = None
+    if live_active:
+        deadlines = [now.replace(microsecond=0) + timedelta(minutes=5)]
+        deadlines.extend(event + timedelta(minutes=stale_after)
+                         for event in required_quote_times.values())
+        live_stale_after = min(deadlines).isoformat()
 
     live_blk = _verdict_block(live_ms)
     # GD-3R1: the source event clock — the real source-market quote clock(s) behind
@@ -485,6 +503,7 @@ def build(offline: bool = False) -> dict:
         "session": session,
         "live_active": live_active,
         "stale": (not live_active),
+        "stale_after": live_stale_after,
         "stale_reason": (None if live_active else
                          "market closed" if not session["open"] else
                          "critical inputs unavailable" if critical_missing else

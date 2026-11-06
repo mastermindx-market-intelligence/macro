@@ -94,6 +94,10 @@
         typeof disp.score !== "number" || !isFinite(disp.score) ||
         disp.score < 0 || disp.score > 100) return "unavailable";
     if (d.live_active === true) {
+      // The producer derives this deadline from all required admitted quotes.
+      // A fresh build or newest provenance clock cannot renew an expired leg.
+      var expiry = clockMs(d.stale_after);
+      if (!isFinite(expiry) || now >= expiry) return "expired";
       var event = clockMs((d.live || {}).source_event_time);
       var budget = d.quote_stale_after_min === undefined ? 20 : d.quote_stale_after_min;
       if (d.stale === true || typeof budget !== "number" || !isFinite(budget) || budget <= 0 ||
