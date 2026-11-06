@@ -367,11 +367,20 @@ def priority(tier: str, band: str, age_days: float | None, ca_tag: str) -> tuple
     return max(0, min(100, score)), comp
 
 
+# The page's pill for a BTC leg the radar's re-check scores zero (btc_alerts._apply_leg_gate).
+_LEG_GATE_VERDICT = {"demoted": "no_edge", "insufficient_n": "underpowered"}
+
+
 def _validation(source: str, type_: str, engine_edge: str, engine_edge_zh: str,
-                reg: dict, rule_sc: dict | None = None, detail: str = "") -> dict:
+                reg: dict, rule_sc: dict | None = None, detail: str = "",
+                leg_gate: str | None = None) -> dict:
     """Honest edge block. Precedence: (1) the rule's OWN event-study backtest
     (rule_scorecard.json) — most direct; (2) a Signal-Lab row backing the family;
     (3) the engine's calibrated edge note; (4) documented-only.
+
+    A gated BTC leg comes first: the re-check is the measurement now, so the row must not
+    keep the CALIBRATED pill of the note it replaced. A status with no pill of its own
+    falls to "not backtested", never to CALIBRATED.
 
     Always returns the SAME key set (None / [] / {} where absent) so the template
     can read v.hit / v.dsr / v.horizons without tripping Jinja's missing-key
@@ -380,6 +389,10 @@ def _validation(source: str, type_: str, engine_edge: str, engine_edge_zh: str,
             "hit": None, "dsr": None, "ic": None, "n": None, "horizon": None,
             "extra": [], "report": None, "link": "signal_lab.html",
             "horizons": {}, "note": "", "note_zh": ""}
+
+    if leg_gate:
+        return {**base, "verdict": _LEG_GATE_VERDICT.get(leg_gate, "documented"),
+                "note": engine_edge, "note_zh": engine_edge_zh or engine_edge}
 
     # (1) the alert rule's own forward-SPY event study (scripts/alert_rules_phase0)
     rk = _rule_key(source, type_, detail)
@@ -661,6 +674,7 @@ def _jsonl_raw(source: str, today: date, cutoff: date,
                 "detail_zh": e.get("detail_zh") or e.get("detail", ""),
                 "anchor": e.get("anchor") or "#timeline",
                 "edge": e.get("edge", ""), "edge_zh": e.get("edge_zh", ""),
+                **({"leg_gate": e["leg_gate"]} if e.get("leg_gate") else {}),
             })
     except Exception as ex:  # noqa: BLE001
         log.warning("triage: %s feed unavailable (%s)", source, ex)
@@ -1215,7 +1229,8 @@ def build_triage(days: int = 30, today: date | None = None,
         band, ic_note = ic_severity_cap(rep["source"], rep["type"], band)
         ca_tag = cross_asset_tag(rep["type"], ca_verdict)
         validation = _validation(rep["source"], rep["type"], rep.get("edge", ""),
-                                 rep.get("edge_zh", ""), reg, rule_sc, rep.get("detail", ""))
+                                 rep.get("edge_zh", ""), reg, rule_sc, rep.get("detail", ""),
+                                 leg_gate=rep.get("leg_gate"))
         # v2: DEMOTE-ONLY corroboration cap — an isolated, unvalidated one-off can't
         # sit at the same volume as a confirmed / backtested signal.  Bare recurrence is
         # NOT a corroborator (2026-08-20): a transition log cannot show a state held.
