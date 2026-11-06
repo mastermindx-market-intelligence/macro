@@ -1,0 +1,1 @@
+NONE reason=no eligible remote mode satisfying required_modes blockers=_thermal_headroom_change_20261013:telemetry-source,ubuntu0:disk,ubuntu1:disk,ubuntu2:disk,ubuntu3:disk
