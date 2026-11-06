@@ -144,3 +144,88 @@ def test_public_calendar_api_present(name: str):
     is present AND callable at runtime, which the static sweep cannot see.
     """
     assert callable(getattr(cal, name, None)), f"lib.nyse_calendar.{name} missing"
+
+
+_W2C_CALENDAR_OWNER_SHA256 = "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce"
+
+
+@pytest.mark.parametrize("version", ["v1", "v2"])
+def test_w2c_registrations_load_against_immutable_legacy_calendar(version):
+    """Both real registrations retain the actual immutable owner file."""
+    from hashlib import sha256
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    if version == "v1":
+        from engine.neuralweb.market_memory_experience_accrual import load_registration
+
+        registration = load_registration(root).value
+    else:
+        from scripts.accrue_market_memory_spy_experience_v2 import load_registration_v2
+
+        registration = load_registration_v2(root)
+    assert registration["schema"] == f"market_memory.spy_experience_registration.{version}"
+    owner = registration["spec"]["calendar"]
+    assert owner["owner_path"] == "lib/nyse_calendar.py"
+    assert owner["owner_sha256"] == _W2C_CALENDAR_OWNER_SHA256
+    # The v2 loader checks schema/spec, so independently check its actual owner too.
+    assert sha256((root / owner["owner_path"]).read_bytes()).hexdigest() == owner["owner_sha256"]
+
+
+def test_w2c_real_owner_guard_refuses_a_modified_calendar_copy(tmp_path):
+    """A byte-only edit must still fail the existing v1 guard without a mock."""
+    from pathlib import Path
+
+    from engine.neuralweb.market_memory_experience_accrual import (
+        MarketMemoryExperienceRegistrationError, load_registration,
+    )
+
+    root = Path(__file__).resolve().parents[1]
+    registration = "config/market_memory_spy_experience_registration.v1.json"
+    (tmp_path / "config").mkdir()
+    (tmp_path / "lib").mkdir()
+    (tmp_path / registration).write_bytes((root / registration).read_bytes())
+    (tmp_path / "lib/nyse_calendar.py").write_bytes(
+        (root / "lib/nyse_calendar.py").read_bytes() + b"\n# unregistered calendar edit\n"
+    )
+    with pytest.raises(MarketMemoryExperienceRegistrationError, match="calendar owner bytes differ"):
+        load_registration(tmp_path)
+
+
+def test_us_cash_early_close_is_isolated_from_the_registered_legacy_clock():
+    from hashlib import sha256
+    from pathlib import Path
+
+    from lib import market_session, us_cash_calendar
+
+    day = date(2026, 11, 27)
+    previous = date(2026, 11, 25)  # Thanksgiving closes the intervening Thursday.
+    before = datetime(2026, 11, 27, 13, 59, tzinfo=cal.ET)
+    at = datetime(2026, 11, 27, 14, tzinfo=cal.ET)
+    assert us_cash_calendar.expected_last_session(before) == previous
+    assert us_cash_calendar.expected_last_session(at) == day
+    assert market_session.expected_session("US", at) == day
+    assert cal.expected_last_session(before) == previous
+    assert cal.expected_last_session(at) == previous
+    assert cal.expected_last_session(at.replace(hour=17)) == day
+    assert sha256(Path(cal.__file__).read_bytes()).hexdigest() == _W2C_CALENDAR_OWNER_SHA256
+
+
+def test_us_cash_announced_slate_drives_its_own_session_helpers(monkeypatch):
+    """An adapter must not re-export helpers closed over the legacy globals."""
+    from lib import us_cash_calendar
+
+    announced = us_cash_calendar.announced_holidays
+    extra_closure = date(2026, 7, 6)
+    slate = dict(announced("US", 2026))
+    slate[extra_closure] = "Synthetic announced closure"
+    monkeypatch.setattr(
+        us_cash_calendar, "announced_holidays",
+        lambda market, year: slate if (market, year) == ("US", 2026) else announced(market, year),
+    )
+    assert cal.is_session(extra_closure)
+    assert not us_cash_calendar.is_session(extra_closure)
+    assert us_cash_calendar.last_session_on_or_before(extra_closure) == date(2026, 7, 2)
+    assert us_cash_calendar.sessions_between(date(2026, 7, 2), date(2026, 7, 7)) == [
+        date(2026, 7, 2), date(2026, 7, 7),
+    ]

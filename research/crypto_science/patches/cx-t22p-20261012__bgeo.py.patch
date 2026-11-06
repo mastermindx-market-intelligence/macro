@@ -1,0 +1,26 @@
+diff --git a/collectors/bgeo.py b/collectors/bgeo.py
+--- a/collectors/bgeo.py
++++ b/collectors/bgeo.py
+@@ -87,10 +87,22 @@
+                 self.remaining_hour = 0
+             except Exception as e:  # noqa: BLE001 — one metric must not kill the rest
+                 log.warning("bgeo metric %s failed: %s", endpoint, e)
++                if endpoint == "funding-rate":
++                    self.source_capture_status.append({
++                        "status": "unavailable",
++                        "error_type": type(e).__name__,
++                        "source_id": "bgeo_funding",
++                    })
+ 
+         if skipped:
+             log.info("bgeo skipped (quota/budget): %s — will self-heal next run",
+                      ",".join(skipped))
++            if "funding-rate" in skipped:
++                self.source_capture_status.append({
++                    "status": "unavailable",
++                    "error_type": "SkippedBeforeRequest",
++                    "source_id": "bgeo_funding",
++                })
+         if not out:
+             raise ValueError(f"bgeo fetched nothing (spent={spent}, skipped={skipped})")
+         return out

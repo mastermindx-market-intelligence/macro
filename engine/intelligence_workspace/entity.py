@@ -7,7 +7,10 @@ only an input convenience; it never becomes historical symbol evidence.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from datetime import date
+from dataclasses import dataclass
+from datetime import date, datetime, timezone
+import hashlib
+import io
 import json
 from pathlib import Path
 from typing import Any
@@ -19,8 +22,14 @@ from lib.dataos.identity import (
     XASE,
     XNAS,
     XNYS,
+    AliasRow,
+    _CLOCKED_ALIAS_VENDORS,
+    _aware_utc,
+    option_underlying_kind,
     parse_id,
+    parse_listing_key,
 )
+from engine.entry_radar.replay.identity_observation_snapshot import read_reference_generation
 
 from .contracts import CanonicalEntity, EntityRequest
 
@@ -37,7 +46,181 @@ class IdentityResolutionError(ValueError):
     """Canonical identity could not be proved from current owner artifacts."""
 
 
+@dataclass(frozen=True)
+class IdentityArtifactRead:
+    """Exact bytes and an externally retained read observation, never a grant.
+
+    The assigning input reader must bind the digest and actual completion clock.
+    These caller-supplied values prove neither provenance nor authentication here.
+    No path, mutable-head lookup, new store or implicit current time is used.
+    """
+
+    body: bytes
+    sha256: str
+    read_at: datetime | str
+
+
+@dataclass(frozen=True)
+class OptionUnderlyingIdentity:
+    """Current-record identity in captured inputs, not historical issuer lineage.
+
+    This value grants no Options/IW2 admission, entitlement or Save permission.
+    Index records require a separate existing canonical reader; no coercion to SEC.
+    """
+
+    binding: AliasRow
+    listing_key: str
+    master_sha256: str
+    aliases_sha256: str
+    available_at: datetime
+
+
+_IDENTITY_MAX_BYTES = 16 * 1024 * 1024
+_IDENTITY_MAX_ROWS = 200_000
+
+
+def _identity_evidence_clock(value: object) -> datetime:
+    # Preserve nanoseconds through the existing conservative ceiling. Storage
+    # timestamp timezone interpretation occurs only after schema validation below.
+    if isinstance(value, datetime):
+        value = value.isoformat()
+    return _aware_utc(value, "known_at")
+
+
+def _identity_read(read: IdentityArtifactRead, cutoff: datetime) -> datetime:
+    if not isinstance(read, IdentityArtifactRead):
+        raise IdentityResolutionError("captured identity artifact read required")
+    if type(read.body) is not bytes or not 0 < len(read.body) <= _IDENTITY_MAX_BYTES:
+        raise IdentityResolutionError("identity artifact bytes missing or exceed bound")
+    if (type(read.sha256) is not str or len(read.sha256) != 64
+            or hashlib.sha256(read.body).hexdigest() != read.sha256):
+        raise IdentityResolutionError("identity artifact digest mismatch")
+    observed = _identity_evidence_clock(read.read_at)
+    if observed > cutoff:
+        raise IdentityResolutionError("identity artifact read is after decision cutoff")
+    return observed
+
+
+def _identity_parquet(read: IdentityArtifactRead, required: frozenset[str],
+                      clocks: frozenset[str], optional: frozenset[str] = frozenset()) -> list[dict[str, Any]]:
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    try:
+        source = pq.ParquetFile(io.BytesIO(read.body))
+        schema = source.schema_arrow
+        if len(schema.names) != len(set(schema.names)) or not required <= set(schema.names):
+            raise IdentityResolutionError("identity artifact columns missing or duplicated")
+        if source.metadata.num_rows > _IDENTITY_MAX_ROWS:
+            raise IdentityResolutionError("identity artifact exceeds row bound")
+        selected = required | (optional & set(schema.names))
+        for name in selected:
+            typ = schema.field(name).type
+            if name in clocks:
+                # The existing producer explicitly writes naive UTC datetime64[ns]
+                # under the registry's timezone: UTC. String clocks do not get
+                # this storage interpretation, nor do arbitrary timezone types.
+                valid = pa.types.is_timestamp(typ) and typ.tz in (None, "UTC")
+            elif name in ("valid_from", "valid_to"):
+                valid = pa.types.is_date(typ) or pa.types.is_null(typ)
+            else:
+                valid = pa.types.is_string(typ) or pa.types.is_large_string(typ) or pa.types.is_null(typ)
+            if not valid:
+                raise IdentityResolutionError(f"identity artifact invalid column type: {name}")
+        rows = source.read(columns=sorted(selected), use_threads=False).to_pylist()
+        for row in rows:
+            for name in clocks:
+                value = row[name]
+                if value is not None and value.tzinfo is None:
+                    row[name] = value.replace(tzinfo=timezone.utc)
+        return rows
+    except IdentityResolutionError:
+        raise
+    except Exception as exc:
+        raise IdentityResolutionError("identity artifact is not readable Parquet") from exc
+
+
+def _captured_option_security_target(security_id, on, *, decision_at, security_master):
+    """Validate an existing canonical target; resolves no vendor/root or alias."""
+    cutoff = _aware_utc(decision_at, "decision_at")
+    master_at = _identity_read(security_master, cutoff)
+    fields = frozenset({"security_id", "listing_key", "country", "mic", "inception_code",
+                        "effective_at", "ingested_at", "security_state", "superseded_by"})
+    records = _identity_parquet(security_master, fields,
+                                frozenset({"effective_at", "ingested_at"}))
+    ids = [r["security_id"] for r in records]
+    if any(not isinstance(s, str) or option_underlying_kind(s) != "security" for s in ids):
+        raise IdentityResolutionError("master contains noncanonical security ids")
+    if len(ids) != len(set(ids)):
+        raise IdentityResolutionError("master contains duplicate security ids")
+    master = IssuerMaster.from_records(records)
+    by_id = dict(zip(ids, records, strict=True))
+    state = _security_state(security_id, master, by_id)
+    row = by_id[security_id]
+    if state != "active" or row["security_state"] is not None or row["superseded_by"] is not None:
+        raise IdentityResolutionError("option underlying is retired or superseded")
+    listing = parse_listing_key(row["listing_key"])
+    if (listing.render() != row["listing_key"] or "SEC:" + listing.render() != security_id
+            or master.listing_key_of_security(security_id) != listing.render()
+            or (row["country"], row["mic"], row["inception_code"]) !=
+               (listing.country, listing.mic, listing.code)):
+        raise IdentityResolutionError("canonical security listing fields conflict")
+    effective = _identity_evidence_clock(row["effective_at"])
+    ingested = _identity_evidence_clock(row["ingested_at"])
+    if not effective <= ingested <= master_at or effective.date() > on:
+        raise IdentityResolutionError("canonical security evidence clocks conflict")
+    return listing.render(), master_at
+
+
+def resolve_option_underlying_security(
+    vendor: str, root: str, on: date, *, decision_at: datetime | str,
+    aliases: IdentityArtifactRead, security_master: IdentityArtifactRead,
+    root_evidence: IdentityArtifactRead,
+) -> OptionUnderlyingIdentity | None:
+    """Join an explicit root relation to one active canonical SEC record.
+
+    Uses the existing VendorAliasTable and IssuerMaster readers on the same
+    byte-bound input bodies. Their observation clocks must precede the decision.
+    Row ingested_at alone cannot prove availability of later amended bytes.
+    Root evidence semantics and capture authenticity remain the source intake's
+    responsibility; this is an offline integrity/consistency composition only.
+    """
+    try:
+        cutoff = _aware_utc(decision_at, "decision_at")
+        aliases_at = _identity_read(aliases, cutoff)
+        master_at = _identity_read(security_master, cutoff)
+        source_at = _identity_read(root_evidence, cutoff)
+        alias_fields = frozenset({"alias_kind", "vendor", "vendor_symbol", "security_id",
+                                 "valid_from", "valid_to", "known_at", "evidence_sha256",
+                                 "binding_sha256", "ingested_at"})
+        alias_rows = _identity_parquet(aliases, alias_fields, frozenset({"ingested_at"}),
+                                       frozenset({"attempt_id", "alias_family_id", "alias_revision_id"}))
+        table = VendorAliasTable.from_records(alias_rows)
+        binding = table.resolve_option_underlying(vendor, root, on,
+                                                  decision_at=cutoff,
+                                                  evidence_bytes=root_evidence.body)
+        if binding is None:
+            return None
+        if binding.underlying_kind != "security":
+            raise IdentityResolutionError("index underlying canonical record reader unavailable")
+        position = table.rows.index(binding)
+        alias_ingested = _identity_evidence_clock(alias_rows[position]["ingested_at"])
+        # Writer ingested_at is second-precision UTC. Do not invent subsecond
+        # ordering between it and source known_at; both must be observed by the
+        # exact alias read, while source bytes must also be available independently.
+        if max(binding.known_at, alias_ingested) > aliases_at or binding.known_at > source_at:
+            raise IdentityResolutionError("option alias/source availability clocks conflict")
+
+        listing_key, master_at = _captured_option_security_target(binding.security_id, on,
+            decision_at=cutoff, security_master=security_master)
+        return OptionUnderlyingIdentity(binding, listing_key, security_master.sha256,
+                                        aliases.sha256, max(aliases_at, master_at, source_at))
+    except IdentityError as exc:
+        raise IdentityResolutionError(f"option identity contract invalid: {exc}") from exc
+
+
 def _records(path: Path) -> list[dict[str, Any]]:
+    """Compatibility reader for existing non-IW callers; no coherent-set claim."""
     if not path.is_file():
         raise IdentityResolutionError(f"required Data OS identity artifact missing: {path}")
     try:
@@ -49,16 +232,24 @@ def _records(path: Path) -> list[dict[str, Any]]:
 
 
 def _security_sources(root: Path) -> tuple[IssuerMaster, VendorAliasTable, dict[str, dict[str, Any]]]:
-    master_rows = _records(root / SECURITY_MASTER)
+    """One coherent LEGACY acquisition for this call, with no process cache.
+
+    Explicitly project whole unrelated clocked namespaces through their owner's
+    legacy API; never strip revision keys to reinterpret their rows as legacy.
+    This does not provide native resolution or cross-adapter request pinning.
+    """
+    try:
+        captured = read_reference_generation(root / SECURITY_MASTER.parent)
+        master_rows = captured.records(SECURITY_MASTER.name)
+        alias_rows = captured.records(VENDOR_ALIASES.name)
+        legacy_rows = VendorAliasTable.legacy_only_records(alias_rows)
+        issuer_master = IssuerMaster.from_records(master_rows)
+        aliases = VendorAliasTable.from_records(legacy_rows)
+    except IdentityError as exc:
+        raise IdentityResolutionError(f"Data OS identity contract invalid: {exc}") from exc
     ids = [str(row.get("security_id") or "") for row in master_rows]
     if not all(ids) or len(ids) != len(set(ids)):
         raise IdentityResolutionError("security master contains missing or duplicate security_id")
-    alias_rows = _records(root / VENDOR_ALIASES)
-    try:
-        issuer_master = IssuerMaster.from_records(master_rows)
-        aliases = VendorAliasTable.from_records(alias_rows)
-    except IdentityError as exc:
-        raise IdentityResolutionError(f"Data OS identity contract invalid: {exc}") from exc
     return issuer_master, aliases, {security_id: row for security_id, row in zip(ids, master_rows, strict=True)}
 
 
@@ -117,12 +308,9 @@ def load_current_symbol_map(
     deliberately carries no process cache: W1-A owns no cross-request identity or
     value cache.
     """
-    root_path = Path(root)
-    rows = _records(root_path / VENDOR_ALIASES)
-    try:
-        table = VendorAliasTable.from_records(rows)
-    except IdentityError as exc:
-        raise IdentityResolutionError(f"Data OS alias table invalid: {exc}") from exc
+    if vendor in _CLOCKED_ALIAS_VENDORS:
+        raise IdentityResolutionError("clocked alias vendor requires native observation proof")
+    _issuer_master, table, _master_rows = _security_sources(Path(root))
     current = on or date.today()
     security_ids = sorted({row.security_id for row in table.rows if row.vendor == vendor})
     result: dict[str, str] = {}

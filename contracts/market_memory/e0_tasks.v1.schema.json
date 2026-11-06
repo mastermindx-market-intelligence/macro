@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/e0_tasks.v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "research_factory.market_memory_e0_tasks.v1"
+    },
+    "object_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "authority": {
+      "const": "display_only"
+    },
+    "protocol_sha256": {
+      "const": "5821074f0ad1564780759a7e5d7ca6595cd8d411f119629f31ee431f2a481ca6"
+    },
+    "annotation_guide_sha256": {
+      "const": "4efc664f6c86f5af6a62ac4fd8b98ae37ae130fa18ecfa7bdf0a88b399a71696"
+    },
+    "membership_sha256": {
+      "const": "76de9522d40c65c33de0dcde59f581a5c493f4be218df3221adb9c3af1495c8f"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "query_id": {
+            "type": "string",
+            "pattern": "^mmquery_[a-f0-9]{64}$"
+          },
+          "context_id": {
+            "type": "string",
+            "pattern": "^mmctx_[a-f0-9]{64}$"
+          },
+          "capture_id": {
+            "type": "string",
+            "pattern": "^mmcapture_[a-f0-9]{64}$"
+          },
+          "packet_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "subject_id": {
+            "type": "string",
+            "pattern": "^mmsecurity_[a-f0-9]{64}$"
+          },
+          "analysis_cutoff": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "mode": {
+            "enum": [
+              "historical_hypothetical",
+              "current_contextual_support"
+            ]
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8192
+          },
+          "question_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "required_facet_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "minItems": 1,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "k": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "original_evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "query_id": {
+                  "type": "string",
+                  "pattern": "^mmquery_[a-f0-9]{64}$"
+                },
+                "context_id": {
+                  "type": "string",
+                  "pattern": "^mmctx_[a-f0-9]{64}$"
+                },
+                "capture_id": {
+                  "type": "string",
+                  "pattern": "^mmcapture_[a-f0-9]{64}$"
+                },
+                "packet_sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$",
+                  "minLength": 64,
+                  "maxLength": 64
+                }
+              },
+              "required": [
+                "query_id",
+                "context_id",
+                "capture_id",
+                "packet_sha256"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 109,
+            "uniqueItems": true
+          },
+          "instrument_id": {
+            "type": "string",
+            "pattern": "^mmsecurity_[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "task_id",
+          "query_id",
+          "context_id",
+          "capture_id",
+          "packet_sha256",
+          "subject_id",
+          "instrument_id",
+          "analysis_cutoff",
+          "mode",
+          "question",
+          "question_sha256",
+          "required_facet_ids",
+          "k",
+          "original_evidence"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 512
+    }
+  },
+  "required": [
+    "schema",
+    "object_id",
+    "authority",
+    "protocol_sha256",
+    "annotation_guide_sha256",
+    "membership_sha256",
+    "tasks"
+  ],
+  "additionalProperties": false,
+  "description": "Pure supplied task metadata. Identity and question byte binding do not establish actual task selection, answerability, usefulness, source rights, independent samples or study admission. Array limits are resource bounds only."
+}

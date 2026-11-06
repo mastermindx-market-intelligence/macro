@@ -92,3 +92,76 @@ discharge them. Missing private-runtime proof may hold live admission while auth
 synthetic source work proceeds.
 
 Recorded as `DSC:D2-WAITS-ON-A-BUILT-V1-1-NOT-ONLY-ON-THE-BASE-MERGE` (with falsifier).
+
+## D1 falsifier verdict (2026-09-28)
+
+D1 shipped with a published falsifier on carrier #7788: *after the first post-merge nightly
+writes the FDA observation sidecar and a later render bakes it, the live chip MUST leave
+`UNAVAILABLE` and carry a real `source generation <gen>`; if it still reads "source unavailable"
+then the cause is NOT sequencing and this seat owns a live data-availability defect.*
+
+**Verdict: the antecedent never fired, and the chip is correct.** The post-merge nightly
+(`daily.yml` `36367461114`) concluded **success** at 2026-09-28T01:49:36Z and advanced no
+sidecar — `last_refresh.attempted_at` stayed at 2026-09-27T06:08:08Z. The sidecar on `main`
+carries `failure_code: "PAGE_FAILED"`, `qualified: false`, `partial_rows_observed: 0`,
+`selected_capture: null`, `parquet_sha256: null`: no qualified generation has ever been
+selected. `qualified is False` drives `summarize_supply` to `_UNAVAILABLE`
+(`engine/fda_scarcity.py:243`) and, with no generation on file, `_label` selects exactly the
+leaf the live page shows. Re-captured 2026-09-28T06:0xZ — 43 `fx-chip` anchors, one medical
+chip, EN+ZH both present, zero pill glyphs, banned substrings zero inside the chip.
+
+**`R-D1-FALS-01`.** The `UNAVAILABLE` leaf is adjudicated CORRECT and is **not** re-opened as a
+defect. The public seam is performing the refusal D1 was built to add — never assert supply from
+an unqualified capture (`NO_SOURCE_GENERATION`). The open condition is upstream in the openFDA
+sweep (`collectors/fda_shortages.py`), it is non-fatal by design, and it belongs to that
+collector's owner: **Healthcare consumes this feed and mints no part of it**, so no Healthcare
+release changes the sweep. Two instrument corrections are binding on any successor lane: the
+sidecar is `data/fda/shortages.observation.json` (never `<parquet>.observation.json`), and a
+green `daily.yml` conclusion is **not** evidence the drip ran, because the drip's `except` is
+explicitly non-fatal and `RENDER_NO_DRIP=1` skips it outright.
+
+**Scope note for the banned-substring gate.** D1's ban is CHIP-scoped. A page-wide grep of the
+served `foresight.html` returns `glut` ×2 and `catching up` ×2 — all four in the pre-existing
+cross-theme lifecycle legend ("7/18 themes have a glut read", "estimates catching up — runway",
+"supply catching up — exit clock") and the page methodology prose. None is healthcare copy and
+none is a D1 regression; a successor running an unscoped grep must not report them as one.
+
+Recorded as `DSC:FDA-UNAVAILABLE-CHIP-IS-CORRECT-THE-DRIP-NEVER-QUALIFIED` (with falsifier).
+
+## Amendment (2026-09-28, same day) — the upstream condition was DIAGNOSED AND FIXED
+
+`R-D1-FALS-01` stands on its narrow holding: the `UNAVAILABLE` leaf was CORRECT, and the seam was
+performing the refusal D1 added. **Two sentences above are now superseded** and are quoted here
+rather than deleted, because they were published on `main` and a reader must not act on them:
+
+> "it belongs to that collector's owner: **Healthcare consumes this feed and mints no part of it**,
+> so no Healthcare release changes the sweep."
+
+That disposition was wrong on the facts, and it was reached without attempting the diagnosis. The
+condition is NOT an upstream outage. Measured against the live endpoint 2026-09-28: openFDA is
+healthy (`total: 1601`, `last_updated: 2026-09-26`, page 0 → HTTP 200). The failure was
+**first-party arithmetic** in `collect_shortage_sweep`: the completeness test compared the
+POST-deduplication `unique_count` against the source's RAW `reported_total`. Four
+`(package_ndc, initial_posting_date)` pairs are served twice, capping `unique_count` at 1597, so
+`unique_count >= reported_total` (1597 >= 1601) never held; the sweep paged past the end of the
+feed, openFDA answered `skip >= total` with **HTTP 404**, and the sweep recorded `PAGE_FAILED`.
+One duplicate key anywhere was sufficient. No qualified generation could ever have been produced.
+
+Fixed by comparing `raw_count` at both the loop exit and `complete`: completeness asks "did we
+observe every record the source reported", which is a raw-row question, while deduplication
+governs what is STORED (1597 of 1601). Pinned by
+`tests/test_fda_sweep_duplicate_key_completeness.py`, including two falsifier probes asserting a
+genuinely truncated feed still refuses to qualify. Live post-fix receipt: `qualified: True`,
+`failure_code: None`, `raw_count: 1601`, `unique_count: 1597`, `complete: True`, `pages: 17`,
+`source_generation: 2026-09-26` — the first qualified generation this feed has ever produced.
+
+**A third instrument correction, superseding one published above.** The claim
+`partial_rows_observed: 0` means "page 1 parsed cleanly and yielded nothing" is WRONG:
+`collectors/fda_shortages.py:257` returns `[] if failure_code else list(rows_by_key.values())`, so
+`rows` is emptied by construction on ANY failure. `PAGE_FAILED` means only `pages >= 1`.
+
+**What this does NOT change.** The chip's `UNAVAILABLE` rendering was correct for its input and
+is still not a display defect; D1's shipped vocabulary is unchanged; no ranking, entry, sizing or
+trading policy moved; Healthcare still mints no shell/evidence/rights vocabulary and no part of
+the #7870 shared base. Recorded as
+`DSC:FDA-SWEEP-COMPARED-A-DEDUPED-COUNT-TO-A-RAW-TOTAL` (with falsifier).

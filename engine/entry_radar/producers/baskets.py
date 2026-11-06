@@ -56,6 +56,7 @@ from typing import Any
 
 from engine.entry_radar.contracts import Nomination, NominationError, ProducerRead, parse_ts, utcnow
 from engine.entry_radar.producers.base import (
+    finite_or_none,
     clamp_asof,
     grade_staleness,
     read_json,
@@ -137,11 +138,7 @@ def read_group_pulse(path: Path, *, now: datetime | None = None,
             sym = str(block.get("ticker") or "").strip().upper()
             if not sym:
                 continue
-            value = block.get("ret")
-            try:
-                value = float(value) if value is not None else None
-            except (TypeError, ValueError):
-                value = None
+            value = finite_or_none(block.get("ret"))
             safe_asof, clamped = clamp_asof(basket_asof, stamp)
             row_q = row_quality if quality != "unknown" else "degraded"
             try:
@@ -231,7 +228,7 @@ def read_linked_outsiders(path: Path, *, now: datetime | None = None,
                     reason_text=text,
                     observed_at=stamp,
                     source_asof=safe_asof or stamp,
-                    source_value=float(edge_n) if edge_n is not None else None,
+                    source_value=finite_or_none(edge_n),
                     source_horizon=("event" if filed is None
                                     else f"event@{filed.date().isoformat()}"),
                     ttl_until=ttl,

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="1.975" timestamp="2026-10-14T10:39:17.674953-07:00" hostname="m2studio"><testcase classname="tests.test_response_eval" name="test_historical_text_case_uses_bound_source_and_explicit_runners[benchmark_snb_floor_rate_2015-01-15.json]" time="1.139"><failure message="assert False is True">name = 'benchmark_snb_floor_rate_2015-01-15.json'
+
+    @pytest.mark.parametrize("name", HISTORICAL_TEXT_CASES)
+    def test_historical_text_case_uses_bound_source_and_explicit_runners(name):
+        case = ev.load_benchmark(name)
+        seen = []
+        judge = _fake_judge(_judge_reply("max"))
+        def answer(system, user):
+            seen.append((system, user))
+            return case["gold_standard_sentence"]
+        result = ev.run_benchmark(ROOT, judge, answer, name=name)
+&gt;       assert result["ok"] is True
+E       assert False is True
+
+tests/test_response_eval.py:1114: AssertionError</failure></testcase><testcase classname="tests.test_response_eval" name="test_historical_text_case_missing_metadata_cannot_fall_back_to_live_models[benchmark_snb_floor_rate_2015-01-15.json]" time="0.006"><failure message="Failed: malformed named historical case fell through to live defaults">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x10bb2abe0&gt;
+name = 'benchmark_snb_floor_rate_2015-01-15.json'
+
+    @pytest.mark.parametrize("name", HISTORICAL_TEXT_CASES)
+    def test_historical_text_case_missing_metadata_cannot_fall_back_to_live_models(monkeypatch, name):
+        import copy
+        case = copy.deepcopy(ev.load_benchmark(name))
+        del case["historical_case"]
+        monkeypatch.setattr(ev, "load_benchmark", lambda name: case)
+        def forbidden(*args): pytest.fail("malformed named historical case fell through to live defaults")
+        monkeypatch.setattr(ev, "answer_via_llm_auth", forbidden)
+        monkeypatch.setattr(ev, "judge_via_llm_auth", forbidden)
+        monkeypatch.setattr(ev, "benchmark_system_prompt", forbidden)
+&gt;       result = ev.run_benchmark(ROOT, name=name)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_response_eval.py:1199: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+engine/neuralweb/response_eval.py:1215: in run_benchmark
+    system = benchmark_system_prompt(question, lane)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('Using only the supplied announcement, distinguish the exchange-rate quotation and withdrawn commitment from future i...-rate and Libor-interval changes in basis points, identify the deposit scope, and state what remains unknown.', 'fast')
+
+&gt;   def forbidden(*args): pytest.fail("malformed named historical case fell through to live defaults")
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: malformed named historical case fell through to live defaults
+
+tests/test_response_eval.py:1195: Failed</failure></testcase></testsuite></testsuites>

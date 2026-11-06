@@ -377,6 +377,11 @@ var main = attach(makeNode('main', { id: 'fi-main', class: 'fi-shell' }));
 main.setAttribute('data-fi-mount', 'shell');
 body.appendChild(main);
 
+// the contents' Evidence link: an evidence trigger that carries no list
+var tocEvidence = attach(makeNode('button', { type: 'button', class: 'fi-toc-evidence', 'aria-controls': 'evidence-drawer' }));
+tocEvidence.innerHTML = '<span class="l-en">Evidence</span><span class="l-zh">证据</span>';
+main.appendChild(tocEvidence);
+
 // hero mounts
 [
   'hero-asof', 'hero-asof-zh', 'hero-cutoff', 'hero-cutoff-zh',
@@ -456,7 +461,7 @@ var drawer = attach(makeNode('aside', { id: 'evidence-drawer', class: 'fi-drawer
 drawer.setAttribute('role', 'dialog');
 drawer.setAttribute('aria-modal', 'true');
 body.appendChild(drawer);
-['evidence-empty', 'evidence-private-notice', 'evidence-fields'].forEach(function (m) {
+['evidence-empty', 'evidence-missing', 'evidence-none', 'evidence-private-notice', 'evidence-fields'].forEach(function (m) {
   var tag = m === 'evidence-fields' ? 'dl' : 'p';
   var el = attach(makeNode(tag, { 'data-fi-mount': m }));
   el.hidden = true;
@@ -525,7 +530,16 @@ global.Node = function () {};
 // runtime JS resolves FI_READ_URL from <main data-fi-read-url>; bind the
 // stub URL the harness's fetch table can resolve (the shipped page binds nothing
 // until integration and renders the not-connected notice instead).
-(function () { var m = document.getElementById('fi-main'); if (m) m.setAttribute('data-fi-read-url', '/__fi_stub__'); })();
+(function () { var m = document.getElementById('fi-main'); if (!m) return;
+  var has = Object.prototype.hasOwnProperty.call(scenario, 'readUrl');
+  var url = has && typeof scenario.readUrl === 'string' ? scenario.readUrl : '/__fi_stub__';
+  m.setAttribute('data-fi-read-url', url); })();
+// scenario.sectionHtml: {sectionId: markup} — committed, data-free markup parsed into
+// the END of that section before the runtime evals (so it is DOM, but not an htmlWrite).
+Object.keys(scenario.sectionHtml || {}).forEach(function (sid) {
+  var sec = document.getElementById(sid);
+  if (sec) parseHtmlInto(sec, String(scenario.sectionHtml[sid]));
+});
 eval(runtimeJs);
 
 function snapshot() {
@@ -585,6 +599,16 @@ function snapshot() {
     sliceOptions: (function () {
       var sel = sliceSel || byId['fi-slice-select'];
       return sel ? sel.childNodes.filter(function (c) { return c.tagName === 'OPTION'; }).length : 0;
+    })(),
+    displayNone: (function () {
+      var hits = [];
+      walk(html, function (node) {
+        if (node.nodeType === 1 && node.style && node.style.display === 'none') {
+          hits.push({ id: node.id || '', className: node.className || '',
+                      mount: node.getAttribute('data-fi-mount') || '' });
+        }
+      });
+      return hits;
     })(),
     fetchCalls: fetchCalls.slice(),
     // The whole live document, serialised, plus every painter write — the
@@ -658,6 +682,10 @@ function runActions(actions) {
 function settled() {
   // Settled = fetch was made AND either the notice was populated OR the
   // hydrated document landed in the DOM. Either signal terminates the wait.
+  if (scenario.readUrl === '') {
+    var pre = document.querySelector('[data-fi-mount="notice-en"]');
+    return !!(pre && pre.textContent && pre.textContent.length);
+  }
   if (fetchCalls.length === 0) return false;
   var notice = document.querySelector('[data-fi-mount="notice-en"]');
   if (notice && notice.textContent && notice.textContent.length) return true;

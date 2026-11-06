@@ -214,27 +214,126 @@ def test_view_field_list_quotes_shell_field_names_in_order():
 
 
 # ---------------------------------------------------------------------------
-# 2. Round-trip — pinned strict xfail (shell absent on main)
+# 2. Round-trip — exact refusal codes on both shell states (H1 ruling B, #7870)
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(strict=False, raises=ValueError,
-                   reason="§8 sector_profile pending (#7780 5828668393)")
-def test_shared_shell_registration_roundtrip_pinned_to_7870():
-    """§8 sector_profile pending (#7780 comment 5828668393). The shell
-    module ``engine.market_ontology.theme_research_registry`` is NOT on
-    origin/main; the round-trip MUST yield a typed
-    :class:`FinanceRegistrationRefusal` rather than a bare
-    ``ModuleNotFoundError``.
+def _theme_registrable_facts(reg):
+    """A facts double that passes the adapter's pre-construction hold (string
+    anchor, non-empty slices), for tests of the construction branches. The
+    values follow the shell's canonical id grammar (lowercase a-z, 0-9,
+    underscore) so the double is not itself a grammar violation; it still
+    deliberately departs from the real facts' declared ``anchor_theme_id:
+    None``. Every construction-branch test injects a fake registry, so the
+    real shell's guards are never the subject here. The real Finance facts
+    are a ``sector_profile`` and are held before construction (HOLD tests)."""
+    import dataclasses
+    return dataclasses.replace(
+        reg.FINANCE_REGISTRATION_FACTS,
+        anchor_theme_id="finance_test_double",
+        slice_keys=("test_slice",),
+    )
 
-    The marker is ``strict=False`` (R6 amendment): a strict XPASS would
-    turn red whichever carrier lands the §8 fix, and that carrier may
-    belong to another owner. Finance integration removes the marker.
-    ``raises=ValueError`` stays — the marker is shell-type-agnostic,
-    matching R3.
+
+def test_shared_shell_registration_roundtrip_pinned_to_7870():
+    """Checkout-state witness, no marker. Whatever this checkout holds, the
+    round-trip MUST refuse with exactly one of the two typed codes, and the
+    code must match the shell state actually observed — ``shared_shell_unavailable``
+    while ``engine.market_ontology.theme_research_registry`` is absent
+    (origin/main before #7870), ``vertical_registration_held:sector_profile``
+    once it is present (#7870 and after). The inherited marker
+    (``raises=ValueError``) could not tell those two states apart because the
+    adapter's refusal subclasses ``ValueError``; the exact-string assertion
+    below can.
     """
+    import importlib.util
     reg = _import_reg()
-    reg.registration_entry_or_refusal()
+    # Presence is decided by an instrument INDEPENDENT of the resolver under
+    # test, so a resolver that wrongly reports "absent" on a carrier that has
+    # the shell cannot hand this test its own expected answer.
+    shell_present = importlib.util.find_spec(reg._SHELL_REGISTRY_MODULE) is not None
+    with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+        reg.registration_entry_or_refusal()
+    expected = (
+        "vertical_registration_held:sector_profile"
+        if shell_present
+        else "shared_shell_unavailable"
+    )
+    assert str(excinfo.value) == expected
+
+
+def test_shell_present_sector_profile_facts_are_held_before_construction():
+    """With a present shell and the REAL Finance facts (``sector_profile``,
+    ``anchor_theme_id=None``, ``slice_keys=()``), the adapter raises the typed
+    hold and never constructs the shell's record — the hold does not depend
+    on the shell's field count."""
+    reg = _import_reg()
+    constructed: list = []
+
+    class FakeRegistration:
+        def __init__(self, **kwargs: Any) -> None:
+            constructed.append(kwargs)
+
+    fake_registry = types.ModuleType("engine.market_ontology.theme_research_registry")
+    fake_registry.VerticalRegistration = FakeRegistration
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
+        with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+            reg.registration_entry_or_refusal()
+    assert str(excinfo.value) == "vertical_registration_held:sector_profile"
+    assert reg.VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE == str(excinfo.value)
+    assert constructed == []
+
+
+@pytest.mark.parametrize(
+    "anchor_theme_id, slice_keys",
+    [
+        pytest.param("finance_test_double", (), id="string-anchor-empty-slices"),
+        pytest.param(None, ("test_slice",), id="none-anchor-nonempty-slices"),
+    ],
+)
+def test_hold_requires_both_anchor_and_slices(anchor_theme_id, slice_keys):
+    """Each half of the hold predicate is load-bearing on its own: facts that
+    satisfy only one half are still held before construction."""
+    import dataclasses
+    reg = _import_reg()
+    constructed: list = []
+
+    class FakeRegistration:
+        def __init__(self, **kwargs: Any) -> None:
+            constructed.append(kwargs)
+
+    fake_registry = types.ModuleType("engine.market_ontology.theme_research_registry")
+    fake_registry.VerticalRegistration = FakeRegistration
+    facts = dataclasses.replace(
+        reg.FINANCE_REGISTRATION_FACTS,
+        anchor_theme_id=anchor_theme_id,
+        slice_keys=slice_keys,
+    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
+        with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
+            reg.registration_entry_or_refusal(facts=facts)
+    assert str(excinfo.value) == "vertical_registration_held:sector_profile"
+    assert constructed == []
+
+
+def test_real_shell_field_gap_is_exactly_view_keys_and_build_query():
+    """Pins the known share gap instead of hiding it. When the real shell
+    resolves, its record carries exactly two fields beyond the adapter's
+    quoted share — ``view_keys`` and ``build_query`` — and nothing in the
+    share is missing from the shell. When the shell is absent this asserts
+    that absence, so the test is informative on both states."""
+    import dataclasses
+    reg = _import_reg()
+    cls = reg._resolve_vertical_registration_class()
+    if cls is None:
+        assert reg._import_shell_module(reg._SHELL_REGISTRY_MODULE) is None
+        return
+    shell_fields = {f.name for f in dataclasses.fields(cls)}
+    share = set(reg._VERTICAL_REGISTRATION_FIELDS)
+    assert shell_fields - share == {"view_keys", "build_query"}
+    assert share - shell_fields == set()
 
 
 def test_roundtrip_exact_refusal_code_is_shared_shell_unavailable(shell_absent):
@@ -259,7 +358,7 @@ def test_roundtrip_injected_registry_raising_value_error_yields_refusal_with_exc
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
         with pytest.raises(reg.FinanceRegistrationRefusal) as excinfo:
-            reg.registration_entry_or_refusal()
+            reg.registration_entry_or_refusal(facts=_theme_registrable_facts(reg))
     assert str(excinfo.value) == "vertical_registration_refused:ValueError"
 
 
@@ -275,7 +374,7 @@ def test_roundtrip_typeerror_propagates_uncaught():
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
         with pytest.raises(TypeError):
-            reg.registration_entry_or_refusal()
+            reg.registration_entry_or_refusal(facts=_theme_registrable_facts(reg))
 
 
 def test_roundtrip_accepting_shell_returns_entry_with_kwargs_subset():
@@ -291,15 +390,17 @@ def test_roundtrip_accepting_shell_returns_entry_with_kwargs_subset():
     fake_registry.VerticalRegistration = FakeRegistration
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(sys.modules, "engine.market_ontology.theme_research_registry", fake_registry)
-        entry = reg.registration_entry_or_refusal()
+        entry = reg.registration_entry_or_refusal(facts=_theme_registrable_facts(reg))
     assert isinstance(entry, FakeRegistration)
     expected_keys = set(reg._VERTICAL_REGISTRATION_FIELDS)
     assert set(captured) == expected_keys
     assert captured["schema_id"] == reg.PROFILE_ID
     assert captured["evidence_schema_id"] == reg.EVIDENCE_SCHEMA_ID
     assert captured["definition_version"] == reg.DEFINITION_VERSION
-    assert captured["anchor_theme_id"] is None
-    assert captured["slice_keys"] == ()
+    # The adapter forwards the facts it was handed verbatim; anchorless facts
+    # never reach this branch (held before construction, H1 ruling B).
+    assert captured["anchor_theme_id"] == "finance_test_double"
+    assert captured["slice_keys"] == ("test_slice",)
 
 
 # ---------------------------------------------------------------------------
@@ -578,6 +679,19 @@ def test_compose_run_context_unparseable_is_sealed_input_unavailable():
     bundle = _Bundle(native_refs=(bad_ref,))
     code, _ = _refuse_compose(query, bundle, reg)
     assert code == "sealed_input_unavailable:run_context"
+
+
+@pytest.mark.parametrize("clock", ["9999-12-31T23:00:00-05:00", "0001-01-01T01:00:00+05:00"])
+def test_compose_run_context_with_no_instant_is_sealed_input_unavailable(clock):
+    """A seal clock whose offset carries it outside the range of a datetime
+    names no instant. The run context is refused with its typed code; it
+    used to raise OverflowError."""
+    reg = _import_reg()
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+    for field in ("generated_at", "knowledge_cutoff"):
+        ref = dict(_synthetic_run_context_ref(), **{field: clock})
+        code, _ = _refuse_compose(query, _Bundle(native_refs=(ref,)), reg)
+        assert code == "sealed_input_unavailable:run_context", field
 
 
 # ---------------------------------------------------------------------------
@@ -1193,6 +1307,103 @@ def test_compose_assertion_refs_sorted_by_curation_revision(monkeypatch):
     assert revisions == sorted(revisions)
     # And explicit ordering check.
     assert revisions.index(revision_b) < revisions.index(revision_a)
+
+
+def test_an_assertion_retained_past_the_knowledge_cutoff_is_not_consumed(monkeypatch):
+    """The run context's knowledge cutoff binds theme evidence. An assertion
+    whose source was retained a minute after the cutoff instant is not a
+    curation revision the dossier consumed: no assertion ref names it, and
+    ``select_evidence`` refuses it as ``not_available``. Retained on the
+    cutoff instant, the same assertion is named and selectable."""
+    reg = _import_reg()
+    theme_id = "synthetic_theme"
+    known = _assertion(revision="gmirca_" + ("a" * 32), theme_id=theme_id)
+    other_revision = "gmirca_" + ("b" * 32)
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(theme_id, p.get("curation_revision")))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+
+    def named_and_selected(retained_at: str) -> tuple[list[str], str | None]:
+        other = _assertion(revision=other_revision, theme_id=theme_id)
+        other["source"]["retained_at"] = retained_at
+        bundle = _bundle_with_run_context(assertions=(known, other))
+        envelope = reg.compose(query, bundle)
+        named = [entry["curation_revision"] for entry in envelope["assertion_refs"]]
+        query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                            expected_generation=envelope["generation"])
+        try:
+            selected = reg.select_evidence(query_full, bundle, _ref_for(theme_id, other_revision))
+        except ValueError as exc:
+            return named, getattr(exc, "code", None)
+        return named, selected["assertion"]["curation_revision"]
+
+    assert named_and_selected("2026-09-25T07:49:00Z") == (
+        [known["curation_revision"]], "not_available")
+    assert named_and_selected("2026-09-25T07:48:00Z") == (
+        [known["curation_revision"], other_revision], other_revision)
+
+
+def test_a_withheld_assertion_sharing_a_consumed_revision_is_never_named_or_selected(monkeypatch):
+    """A curation revision does not identify one assertion: an assertion ref
+    pairs it with a theme. An assertion the run's knowledge cutoff withholds
+    is not named and not selectable, although an assertion the dossier read
+    carries the same revision. Retained on the cutoff, it is named and
+    selectable beside the other."""
+    reg = _import_reg()
+    revision = "gmirca_" + ("a" * 32)
+    known = _assertion(revision=revision, theme_id="theme_known")
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(p["scope"]["canonical_theme_id"], p.get("curation_revision")))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+
+    def named_and_selected(retained_at: str) -> tuple[list[str], dict[str, str | None]]:
+        other = _assertion(revision=revision, theme_id="theme_other")
+        other["source"]["retained_at"] = retained_at
+        bundle = _bundle_with_run_context(assertions=(known, other))
+        envelope = reg.compose(query, bundle)
+        named = sorted(entry["assertion_ref"] for entry in envelope["assertion_refs"])
+        query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                            expected_generation=envelope["generation"])
+        selected: dict[str, str | None] = {}
+        for theme_id in ("theme_known", "theme_other"):
+            try:
+                evidence = reg.select_evidence(query_full, bundle, _ref_for(theme_id, revision))
+            except ValueError as exc:
+                selected[theme_id] = getattr(exc, "code", None)
+            else:
+                selected[theme_id] = evidence["assertion"]["scope"]["canonical_theme_id"]
+        return named, selected
+
+    assert named_and_selected("2026-09-25T07:49:00Z") == (
+        [_ref_for("theme_known", revision)],
+        {"theme_known": "theme_known", "theme_other": "not_available"})
+    assert named_and_selected("2026-09-25T07:48:00Z") == (
+        sorted([_ref_for("theme_known", revision), _ref_for("theme_other", revision)]),
+        {"theme_known": "theme_known", "theme_other": "theme_other"})
+
+
+def test_theme_evidence_the_cutoff_withholds_entirely_is_marked_absent(monkeypatch):
+    """The limitations read theme evidence as the dossier read it. When the
+    run's knowledge cutoff withholds every assertion, the dossier read no
+    theme evidence, and the envelope says so with
+    ``owner_input_absent:theme_evidence``. Retained on the cutoff, the same
+    assertion is read and named, and the marker is gone."""
+    reg = _import_reg()
+    revision = "gmirca_" + ("a" * 32)
+    theme_id = "synthetic_theme"
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(theme_id, p.get("curation_revision")))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+
+    def absent_and_named(retained_at: str) -> tuple[bool, list[str]]:
+        assertion = _assertion(revision=revision, theme_id=theme_id)
+        assertion["source"]["retained_at"] = retained_at
+        envelope = reg.compose(query, _bundle_with_run_context(assertions=(assertion,)))
+        named = [entry["curation_revision"] for entry in envelope["assertion_refs"]]
+        return "owner_input_absent:theme_evidence" in envelope["limitations"], named
+
+    assert absent_and_named("2026-09-25T07:49:00Z") == (True, [])
+    assert absent_and_named("2026-09-25T07:48:00Z") == (False, [revision])
 
 
 def test_evidence_envelope_assertion_is_deep_copied_and_mutable(monkeypatch):

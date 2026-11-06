@@ -741,6 +741,147 @@ def base_tree_temp_root() -> Path | None:
     return candidate
 
 
+BASE_PREFIX = "contract-delta-base-"
+REAP_HOURS_ENV = "CONTRACT_DELTA_REAP_HOURS"
+NO_REAP_ENV = "CONTRACT_DELTA_NO_REAP"
+
+
+def _git_quiet(*args: str, cwd: Path) -> bool:
+    """Run git, swallow the outcome. Cleanup must never fail the gate."""
+    try:
+        return subprocess.run(
+            ["git", *args], cwd=cwd, capture_output=True, text=True, timeout=300,
+        ).returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
+def _registered_base_trees(repo_root: Path) -> dict[str, bool]:
+    """`contract-delta-base-*` registrations of this clone -> is the directory gone."""
+    try:
+        out = subprocess.run(
+            ["git", "--no-optional-locks", "worktree", "list", "--porcelain"],
+            cwd=repo_root, capture_output=True, text=True, timeout=300,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    if out.returncode != 0:
+        return {}
+    found: dict[str, bool] = {}
+    for line in out.stdout.splitlines():
+        if not line.startswith("worktree "):
+            continue
+        path = line[len("worktree "):]
+        if Path(path).name.startswith(BASE_PREFIX):
+            found[path] = not Path(path).is_dir()
+    return found
+
+
+def reap_stale_base_trees(
+    temp_root: Path | None,
+    *,
+    repo_root: Path = ROOT,
+    max_age_hours: float | None = None,
+    cap: int = 8,
+) -> int:
+    """Remove base trees a previous run leaked, before minting a new one.
+
+    `materialize_base_tree`'s `cleanup()` is the only thing that ever removed
+    these, and it cannot run when the process is SIGKILLed — the docstring there
+    already records the consequence ("every SIGKILLed run left the half-built tree
+    behind; wave-2 freed 184 GB of them; it was gone again in ~9 h"). Nothing else
+    reclaimed them, for two independent reasons measured 2026-09-28:
+
+      * the mint root (`<external volume>/tmp/contract-delta`) is outside every
+        root in `config/worktree_gc.json`, and the sweeper refuses any target
+        "outside configured roots"; and
+      * even added as a root it would still be refused, because
+        `worktree_gc.host_checkouts()` classifies a registration as a session
+        tree only when its path carries a repo-RELATIVE session-root segment
+        (`.claude/worktrees` and siblings). A base tree on an external volume
+        matches none, is therefore taken for a HOST CHECKOUT, and is rejected by
+        the belt behind the belt.
+
+    So the leak has to be collected where it is created. Measured cost of not
+    doing so on this host: 12 registered leaks (43.1 GiB) plus 8 unregistered
+    leftovers (15.7 GiB) accumulated over six days — about 7 GiB/day.
+
+    Deliberately narrow, because this deletes without asking:
+      * only entries whose name starts with `contract-delta-base-` are ever
+        touched, whatever `temp_root` happens to be;
+      * only entries whose own mtime is older than `max_age_hours` (default 6, a
+        gate run takes minutes) — a concurrent run's tree is never a candidate;
+      * at most `cap` per invocation, so a gate run never spends long in rmtree;
+      * every failure is swallowed: a leak that resists collection is not a
+        reason to fail the contract gate.
+    Set `CONTRACT_DELTA_NO_REAP=1` to disable, `CONTRACT_DELTA_REAP_HOURS` to
+    retune the window.
+
+    Exercised against the real mint root on this host 2026-09-28: three leaks aged
+    105-145 h collected (2.64 GiB) and stale registrations drained 13 -> 5 -> 0 over
+    two invocations, the cap behaving as documented rather than stalling one run. Two
+    of those three were registered in OTHER clones
+    (`/Volumes/Mastermind/tmp/sol-7677-reconcile-...`,
+    `/private/tmp/theme7664-current-base....`), so `_registered_base_trees` did not
+    list them and only the `rmtree` fallback reached them -- which is the case that
+    matters, because removing them by hand needs `git -C <owning clone> worktree
+    remove`, a command a worktree-isolated session is correctly forbidden to run. The
+    owning clone keeps a prunable registration; that is the accepted cost of not
+    leaving the bytes.
+    """
+    if os.environ.get(NO_REAP_ENV):
+        return 0
+    if max_age_hours is None:
+        try:
+            max_age_hours = float(os.environ.get(REAP_HOURS_ENV, "6"))
+        except ValueError:
+            max_age_hours = 6.0
+    cutoff = time.time() - max_age_hours * 3600
+    reaped = 0
+    registered = _registered_base_trees(repo_root)
+
+    # A registration whose directory is already gone costs no bytes but is not
+    # self-healing: `git worktree prune` SKIPS a locked worktree, and the external
+    # storage helper stamps every tree it mints, so these accumulate forever (13
+    # such phantoms on this host, all reading `LOCKED:initializing`).
+    stale_regs = [p for p, gone in registered.items() if gone]
+    if stale_regs:
+        for path in stale_regs[:cap]:
+            _git_quiet("worktree", "unlock", path, cwd=repo_root)
+        _git_quiet("worktree", "prune", cwd=repo_root)
+
+    if temp_root is None or not temp_root.is_dir():
+        return 0
+    try:
+        entries = sorted(temp_root.iterdir())
+    except OSError:
+        return 0
+    for entry in entries:
+        if reaped >= cap:
+            break
+        if not entry.name.startswith(BASE_PREFIX) or not entry.is_dir():
+            continue
+        try:
+            if entry.stat().st_mtime > cutoff:
+                continue                      # young enough to be a live run's
+        except OSError:
+            continue
+        path = str(entry)
+        if path in registered:
+            if not _git_quiet("worktree", "remove", "--force", path, cwd=repo_root):
+                _git_quiet("worktree", "unlock", path, cwd=repo_root)
+                _git_quiet("worktree", "remove", "--force", path, cwd=repo_root)
+        if entry.exists():
+            shutil.rmtree(entry, ignore_errors=True)
+        if not entry.exists():
+            reaped += 1
+    if reaped:
+        _git_quiet("worktree", "prune", cwd=repo_root)
+        print(f"::notice title=contract-delta-reaped::removed {reaped} leaked base "
+              f"tree(s) older than {max_age_hours:g}h from {temp_root}", flush=True)
+    return reaped
+
+
 def caller_sparse_cone(repo_root: Path) -> list[str] | None:
     """The calling checkout's cone-mode sparse include set, or None when it is a
     full checkout (or uses non-cone patterns, which we do not try to mirror)."""
@@ -778,7 +919,11 @@ def materialize_base_tree(base_ref: str, *, repo_root: Path = ROOT):
     """
     base_sha = _git("rev-parse", f"{base_ref}^{{commit}}", cwd=repo_root).strip()
     cone = caller_sparse_cone(repo_root)
-    tmpdir = Path(tempfile.mkdtemp(prefix="contract-delta-base-", dir=base_tree_temp_root()))
+    temp_root = base_tree_temp_root()
+    # Collect what earlier SIGKILLed runs leaked BEFORE adding to the pile: this is
+    # the only place that can, see reap_stale_base_trees().
+    reap_stale_base_trees(temp_root, repo_root=repo_root)
+    tmpdir = Path(tempfile.mkdtemp(prefix=BASE_PREFIX, dir=temp_root))
     tmpdir.rmdir()  # `git worktree add` refuses a pre-existing non-empty target
 
     def cleanup() -> None:

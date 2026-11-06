@@ -1,0 +1,35 @@
+{
+  "observed_at": "2026-10-16T02:28:00Z",
+  "surface": "actual signed-in www.mastermind-x.com Government Revenue page",
+  "source_merge": "1c430d9afaeccd20248e3fc50b57c8bba9571456",
+  "installed_byte_comparison": "INSTALLED_SPACE_BYTE_COMPARISON.json",
+  "space": {
+    "known_context_opened": true,
+    "2026Q2": {
+      "sales_USD_million": 2753,
+      "operating_profit_USD_million": 236,
+      "margin_percent": 8.6
+    },
+    "2025Q2": {
+      "sales_USD_million": 2646,
+      "operating_profit_USD_million": 280,
+      "margin_percent": 10.6
+    },
+    "GEM63XL_2026Q2_unfavorable_EAC_USD_million": 91,
+    "research_verdict": "Evidence insufficient",
+    "program_workshare_and_shareholder_capture_not_asserted": true
+  },
+  "pac3": {
+    "program_dossier_count": 2,
+    "selected": "acq-program:pac-3-mse",
+    "announced_target": "displayed separately; seven-year agreement start/end not stated",
+    "installed_capacity": "explicit separate unknown category",
+    "demonstrated_throughput": "620 units",
+    "nonadditivity_disclosure": "Targets describe plans; installed capacity and demonstrated throughput are different observations. Components and whole products cannot be added together."
+  },
+  "acceptance_limits": [
+    "Parent observed browser behavior; not independent acceptance",
+    "Navigation/export follow-up remains PR9498 pending CI and review",
+    "No second-principal tenant proof or complete performance/cost acceptance"
+  ]
+}
