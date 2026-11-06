@@ -701,7 +701,11 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     # W9 stage 1 D73-D74 (O32 natural-run publication proof; Sol 5966828357 scheduler owner).
     am_edition = r["MO-PAID-011"]
     assert am_edition["capability_state_c2"] == "PARTIAL"
-    assert am_edition["state_delta"].startswith("UPDATED 2026-10-03 D73")
+    # W17 records the later source merge without replacing D73's narrower
+    # natural-run publication proof or promoting the incomplete AM Edition.
+    assert am_edition["state_delta"].startswith("UPDATED 2026-10-11 W17")
+    assert "UPDATED 2026-10-03 D73" in am_edition["state_delta"]
+    assert "#8771" in am_edition["state_delta"]
     assert "96db8a19f9f5" in am_edition["state_delta"]
     assert "NOT a weekday premarket producer-build proof" in am_edition["state_delta"]
     assert "natural-run PUBLICATION proof READ 2026-10-03 08:12:01Z" in am_edition["next_bounded_child"]
@@ -731,7 +735,9 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert "stroke-dasharray:none" in sanctions["state_delta"]
     catalyst = r["MO-PAID-077"]
     assert catalyst["capability_state_c2"] == "BUILT_NOT_PROVEN"
-    assert catalyst["next_bounded_child"].startswith("W3-1b consumer ruling NOT RIPE 2026-10-03")
+    assert catalyst["next_bounded_child"].startswith("NOT_RIPE 2026-10-11")
+    assert "three DISTINCT natural session_dates" in catalyst["next_bounded_child"]
+    assert "W3-1b consumer ruling NOT RIPE 2026-10-03" in catalyst["next_bounded_child"]
     assert "session_date 2026-09-25" in catalyst["next_bounded_child"]
 
     f07 = r["MO-DELTA-017"]
@@ -828,3 +834,33 @@ def test_manifest_names_the_single_writer_sources_and_union():
     assert receipt["outside_union_sha256"] == HISTORICAL_OUTSIDE_UNION_SHA256
     assert receipt["source_pr_heads"] == SOURCE_HEADS
     assert receipt["csv_commit"] == "e6ea08107305a95b4eda41782c304206b1cb8439"
+
+
+def test_ceo_a_w13_records_d90_to_d92_without_state_moves():
+    # CEO A W13 (2026-10-05): D90 FIXBIND-01 MERGED (#8464) on 006; D91 #8434 evidence-only note on 027;
+    # D92 CEO B 5987672592 evidence on 003 (#805) and 007 (first natural exercise). No state moves.
+    r = _rows()
+    assert "FIXBIND-01 MERGED" in r["MO-PAID-006"]["adjudication_notes"]
+    assert "#8464" in r["MO-PAID-006"]["adjudication_notes"]
+    assert r["MO-PAID-006"]["capability_state_c2"] == "PROVEN_LIVE"
+    assert "portfolio_changes.v1" in r["MO-PAID-027"]["adjudication_notes"]
+    assert "#805" in r["MO-DELTA-003"]["adjudication_notes"]
+    assert "a885200ff7b3" in r["MO-DELTA-003"]["adjudication_notes"]
+    assert "22:21:55Z" in r["MO-DELTA-007"]["adjudication_notes"]
+    assert "#815" in r["MO-DELTA-007"]["adjudication_notes"]
+    for rid in ("MO-PAID-027", "MO-DELTA-003", "MO-DELTA-007"):
+        assert r[rid]["capability_state_c2"] == "PARTIAL", rid
+
+
+def test_ceo_a_w14_records_d93_without_state_moves():
+    # CEO A W14 (2026-10-05): D93 CEO B 6004683154 F13-WS (#815) natural run 22:38:47Z on 007;
+    # Terminal #820 on 054 and #807 on 003 (rows named by the PR bodies / #805 lineage). No state moves.
+    r = _rows()
+    assert "22:38:47Z" in r["MO-DELTA-007"]["adjudication_notes"]
+    assert "a89ae219cb33" in r["MO-DELTA-007"]["adjudication_notes"]
+    assert "#820" in r["MO-PAID-054"]["adjudication_notes"]
+    assert "61fe025abc5e" in r["MO-PAID-054"]["adjudication_notes"]
+    assert "#807" in r["MO-DELTA-003"]["adjudication_notes"]
+    assert "5dcaf15f320b" in r["MO-DELTA-003"]["adjudication_notes"]
+    for rid in ("MO-DELTA-003", "MO-DELTA-007", "MO-PAID-054"):
+        assert r[rid]["capability_state_c2"] == "PARTIAL", rid

@@ -1,0 +1,241 @@
+{
+  "automatic_retry_permitted": false,
+  "intent": {
+    "expected_current_sha256": null,
+    "expected_current_version": null,
+    "manifest": {
+      "code_version": "82c63351fa8c7dae219f01a833704724bb5aff8f",
+      "computed_at": "2026-10-12T15:20:55.015151+00:00",
+      "dataset_id": "company_intelligence.issuer_disclosure_generations",
+      "decisions": {
+        "adoption": "00f7d8b6665989bf009ed709bbc0c48eb4fa45b462cf3a4eaa1cfc9c6b59ad0b",
+        "purpose": "5b3fc66029456f38d40358496ba308596751ef7ffae0d3711adb1ab5caa84117",
+        "spec": "39c0e86c4bcb649eac2534806a5a20d6c88c44d410d5db82038430d189d04ccc"
+      },
+      "edition": {
+        "byte_length": 506,
+        "schema": "company_intelligence.issuer_disclosure_edition/v1",
+        "sha256": "ba908ad57e030e720d71ea32be950153caa02ff9415f6051e4f9215f8ae08abd"
+      },
+      "fact": {
+        "byte_length": 1121,
+        "schema": "company_intelligence.product_integration_fact/v1",
+        "sha256": "16f463ca97b3a3710a1666e49c0e6f08ecd8114482d45a5744df3edff641e334"
+      },
+      "input_cutoffs": {
+        "fact_known_at": "2026-10-11T17:09:10.298093+00:00",
+        "source_known_at": "2026-10-09T01:38:55.651385+00:00"
+      },
+      "schema": "company_intelligence.issuer_disclosure_generation/v1",
+      "temporal_profile": "DERIVED"
+    },
+    "manifest_reference": {
+      "byte_length": 963,
+      "sha256": "05811e172eda94d6d07e63ad151284317d68af3781c6635150a586dfedbb22d0"
+    },
+    "mode": "STAGE_MEMBERS",
+    "schema": "company_intelligence.native_publication_intent/v1"
+  },
+  "operation_id": "gmi-c01-stage-20261012-001",
+  "producer_preflight": {
+    "api": {
+      "cgroup": "/system.slice/macro-api.service",
+      "invocation_id": "b089efcc7673435ba59f1eae64abe42f",
+      "mountnamespace": "mnt:[4026532332]",
+      "pid": 3919928,
+      "qualified_runtime_source": {
+        "attestation_sha256": "1f6e7335e1f9c269d40b91dc519887dafbfaec4d644fa6d525239c4bcd37d54e",
+        "code_version": "82c63351fa8c7dae219f01a833704724bb5aff8f",
+        "repo": "/opt/macro"
+      },
+      "starttime": 691763859,
+      "unit": "macro-api.service"
+    },
+    "captured_at": "2026-10-12T15:20:52.319611+00:00",
+    "expected_deployment": {
+      "api_census": {
+        "captured_at": "2026-10-12T15:18:45.722134+00:00",
+        "cgroup": "/system.slice/macro-api.service",
+        "digests": {
+          "census_sha256": "56afc6112a8a10ac9e3be3c79d6e1ec4b274b904483aa960ae1a89a3f3d8c0ca"
+        },
+        "invocation_id": "b089efcc7673435ba59f1eae64abe42f",
+        "mountnamespace": "mnt:[4026532332]",
+        "pid": 3919928,
+        "qualified_runtime_source": {
+          "attestation_sha256": "1f6e7335e1f9c269d40b91dc519887dafbfaec4d644fa6d525239c4bcd37d54e",
+          "code_version": "82c63351fa8c7dae219f01a833704724bb5aff8f",
+          "repo": "/opt/macro"
+        },
+        "schema": "company_intelligence.f04_api_census/v1",
+        "starttime": 691763859,
+        "unit": "macro-api.service"
+      },
+      "census_max_age_seconds": 300,
+      "code_version": "82c63351fa8c7dae219f01a833704724bb5aff8f",
+      "mode": "STAGE_MEMBERS",
+      "producer": {
+        "repo": "/opt/macro",
+        "uid": 0
+      },
+      "root": "/var/lib/macro-company-intelligence",
+      "schema": "company_intelligence.expected_deployment/v1"
+    },
+    "intent_binding": {
+      "code_version": "82c63351fa8c7dae219f01a833704724bb5aff8f",
+      "manifest_sha256": "05811e172eda94d6d07e63ad151284317d68af3781c6635150a586dfedbb22d0",
+      "mode": "STAGE_MEMBERS"
+    },
+    "limits": {
+      "census_max_age_seconds": 300,
+      "mount_rw_does_not_promise_future_writes": true
+    },
+    "not_claimed": "exhaustive_loaded_code_attestation",
+    "on_disk_provenance": {
+      "attestation": "on_disk_source_hashes_match_committed_blobs",
+      "head": "82c63351fa8c7dae219f01a833704724bb5aff8f",
+      "kind": "on_disk_provenance",
+      "modules": [
+        {
+          "blob_sha256": "5628369c513b041f534a38dcf99d61d1bd40d5fd39414bce90bf9bb75db5dd84",
+          "module": "engine.company_intelligence.issuer_disclosures",
+          "path": "engine/company_intelligence/issuer_disclosures.py",
+          "sha256": "5628369c513b041f534a38dcf99d61d1bd40d5fd39414bce90bf9bb75db5dd84"
+        },
+        {
+          "blob_sha256": "8b62a375cbb783a116dbc2e3202de31885b0eaf8d7741b3f7eba8001e396c8c0",
+          "module": "engine.company_intelligence.issuer_disclosure_owner",
+          "path": "engine/company_intelligence/issuer_disclosure_owner.py",
+          "sha256": "8b62a375cbb783a116dbc2e3202de31885b0eaf8d7741b3f7eba8001e396c8c0"
+        },
+        {
+          "blob_sha256": "e0791f773b5e1c1a1e2d02c432a09ec890959a0ff5af9a4e911ecb756ead30e2",
+          "module": "engine.company_intelligence.issuer_disclosure_publication",
+          "path": "engine/company_intelligence/issuer_disclosure_publication.py",
+          "sha256": "e0791f773b5e1c1a1e2d02c432a09ec890959a0ff5af9a4e911ecb756ead30e2"
+        },
+        {
+          "blob_sha256": "4023abd088c6f4533ce2daf6626aad3241cf7aa6db95c2c77aeb0f4078c8f6a4",
+          "module": "engine.company_intelligence.issuer_disclosure_preflight",
+          "path": "engine/company_intelligence/issuer_disclosure_preflight.py",
+          "sha256": "4023abd088c6f4533ce2daf6626aad3241cf7aa6db95c2c77aeb0f4078c8f6a4"
+        },
+        {
+          "blob_sha256": "b5a55cdfa5fd3bf15e5f2554b9185fe517671c267bca5dfecfb4d6929276d8bb",
+          "module": "engine.company_intelligence.current_context_runtime",
+          "path": "engine/company_intelligence/current_context_runtime.py",
+          "sha256": "b5a55cdfa5fd3bf15e5f2554b9185fe517671c267bca5dfecfb4d6929276d8bb"
+        },
+        {
+          "blob_sha256": "679ac0fd5c9149f705829c55787302211a2f45d9b203a4571fa8817b2f59ba69",
+          "module": "scripts.publish_company_disclosure",
+          "path": "scripts/publish_company_disclosure.py",
+          "sha256": "679ac0fd5c9149f705829c55787302211a2f45d9b203a4571fa8817b2f59ba69"
+        }
+      ],
+      "not_claimed": "exhaustive_loaded_code_attestation",
+      "premises": [
+        "fresh_trusted_interpreter",
+        "qualified_deployment"
+      ]
+    },
+    "premises": [
+      "fresh_trusted_interpreter",
+      "qualified_deployment"
+    ],
+    "producer": {
+      "cwd": "/opt/macro",
+      "exe": "/usr/bin/python3.12",
+      "mountnamespace": "mnt:[4026531841]",
+      "pid": 3935426,
+      "starttime": 691886489,
+      "uid": 0
+    },
+    "revalidated_at": "2026-10-12T15:20:56.268609+00:00",
+    "root": "/var/lib/macro-company-intelligence",
+    "roots": {
+      ".": {
+        "device": 64769,
+        "gid": 0,
+        "inode": 3680696,
+        "mode": 448,
+        "mount_id": "29",
+        "mountpoint": "/",
+        "options": "rw,relatime",
+        "super_options": "rw,discard,errors=remount-ro,commit=30",
+        "uid": 0
+      },
+      "artifacts": {
+        "device": 64769,
+        "gid": 0,
+        "inode": 3680863,
+        "mode": 448,
+        "mount_id": "29",
+        "mountpoint": "/",
+        "options": "rw,relatime",
+        "super_options": "rw,discard,errors=remount-ro,commit=30",
+        "uid": 0
+      },
+      "publisher": {
+        "device": 64769,
+        "gid": 0,
+        "inode": 3680864,
+        "mode": 448,
+        "mount_id": "29",
+        "mountpoint": "/",
+        "options": "rw,relatime",
+        "super_options": "rw,discard,errors=remount-ro,commit=30",
+        "uid": 0
+      },
+      "publisher/operations": {
+        "device": 64769,
+        "gid": 0,
+        "inode": 3680866,
+        "mode": 448,
+        "mount_id": "29",
+        "mountpoint": "/",
+        "options": "rw,relatime",
+        "super_options": "rw,discard,errors=remount-ro,commit=30",
+        "uid": 0
+      },
+      "publisher/source": {
+        "device": 64769,
+        "gid": 0,
+        "inode": 3680865,
+        "mode": 448,
+        "mount_id": "29",
+        "mountpoint": "/",
+        "options": "rw,relatime",
+        "super_options": "rw,discard,errors=remount-ro,commit=30",
+        "uid": 0
+      },
+      "state": {
+        "device": 64769,
+        "gid": 0,
+        "inode": 3680861,
+        "mode": 448,
+        "mount_id": "29",
+        "mountpoint": "/",
+        "options": "rw,relatime",
+        "super_options": "rw,discard,errors=remount-ro,commit=30",
+        "uid": 0
+      },
+      "state/generations": {
+        "device": 64769,
+        "gid": 0,
+        "inode": 3680862,
+        "mode": 448,
+        "mount_id": "29",
+        "mountpoint": "/",
+        "options": "rw,relatime",
+        "super_options": "rw,discard,errors=remount-ro,commit=30",
+        "uid": 0
+      }
+    },
+    "schema": "company_intelligence.producer_preflight_evidence/v1"
+  },
+  "producer_preflight_sha256": "0710c011296ae32ac01dbdd96269a3b739f6328547f2ea718635019c619aadc0",
+  "schema": "company_intelligence.publication_operation/v1",
+  "started_at": "2026-10-12T15:20:56.269118+00:00",
+  "state": "STARTED"
+}

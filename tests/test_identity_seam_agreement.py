@@ -69,6 +69,11 @@ def alias_table():
                 "security_id": row["security_id"],
                 "valid_from": _as_date(row.get("valid_from")),
                 "valid_to": _as_date(row.get("valid_to")),
+                # Preserve prospective evidence through the canonical reader;
+                # a native alias must never become a date-only projection.
+                "known_at": row.get("known_at"),
+                "evidence_sha256": row.get("evidence_sha256"),
+                "binding_sha256": row.get("binding_sha256"),
             }
         )
     return ident.VendorAliasTable.from_records(records)

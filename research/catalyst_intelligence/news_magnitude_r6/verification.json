@@ -1,0 +1,112 @@
+{
+  "schema": "catalyst.r6_source_verification.v1",
+  "operation_id": "catalyst-news-delta-r4-20261019",
+  "news_base_head": "28f35fd86233cae3a42078966538cd8248c3f738",
+  "proof_date_utc": "2026-10-20",
+  "source_sha256": {
+    "engine/news_impact/thesis.py": "ae862a16afb7e8cc51debabc3c81615f16218b0f66351264c71d2696e64096bd",
+    "engine/news_impact/producer_facts.py": "712796386c750a949ea5e0d1d30ed8e26a27048164a5393b52cb2ed2e6273b17",
+    "tests/test_news_impact_thesis.py": "7159c3d5ba11d23bb0cb1bf031eceb446bedb0660a0fe56ca32e91334ef25df9",
+    "tests/test_news_impact_producer_facts.py": "a3b0de9b446ee951c6e332c3cb1b5dc8baa0db8c59fb1d816f3a51a3cdee8fcc"
+  },
+  "focused": {
+    "command": "python -m pytest -q tests/test_news_impact_thesis.py tests/test_news_impact_producer_facts.py --tb=short",
+    "process_id": 38780,
+    "passed": 138,
+    "failed": 0,
+    "exit_code": 0,
+    "new_regression_cases": 48,
+    "warnings": 2,
+    "warning_scope": "inherited pytest temporary-directory cleanup"
+  },
+  "combined": {
+    "command": "python -m pytest -q tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py tests/test_news_impact_producer.py tests/test_news_impact_producer_facts.py tests/test_news_impact_section11.py tests/test_catalyst_stock_context.py tests/test_prophet_strategy_definition.py tests/test_prophet_daily_brief.py --tb=short",
+    "process_id": 4076,
+    "passed": 1251,
+    "failed": 1,
+    "exit_code": 1,
+    "warnings": 2,
+    "warning_scope": "inherited pytest temporary-directory cleanup",
+    "failed_test": "tests/test_news_impact_section11.py::test_committed_registration_matches_a_rebuild",
+    "failure_reason": "current ni-producer-facts-2 differs from frozen ni-producer-facts-1",
+    "disposition": "INTEGRATION_HELD",
+    "frozen_registration_changed": false,
+    "registration_check_changed": false
+  },
+  "capture": {
+    "process_id": 89448,
+    "exit_code": 0,
+    "cases": 4,
+    "request_bytes_changed": false,
+    "old_r5_fixtures_changed": false,
+    "entry_and_peer_json_preserved": true,
+    "source_manifest": "composition-manifest.json",
+    "receipt": "fixtures/capture-receipt.json",
+    "scope": "COMPOSED_RESEARCH_CHECKOUT_NOT_PUBLISHED_RUNTIME",
+    "positive_quantity_path": "separate producer-adapter plus explicit validated fact-log regressions"
+  },
+  "review": {
+    "reviewer": "C3 signal_science_advisor",
+    "scope": "unchanged final correction comparison, evidence attribution and regression source",
+    "verdict": "SOURCE_CONCURRENCE_INTEGRATION_HELD",
+    "tests_executed_by_reviewer": false,
+    "version_disposition": "keep ni-producer-facts-2; preserve immutable registration and drift failure",
+    "owner_excerpt_sha256": "441725858d0fea97f9fd03dc7802c22894dcd7371408cd9121ded74e81ee5b4f",
+    "tests_excerpt_sha256": "271015301d6fd75b3aa023009f493c2e9ab504c5f0a7625b36023323283e4730"
+  },
+  "replay": {
+    "artifact_name": "Signal_Assessment_Replay.html",
+    "artifact_sha256": "4fb52ae88f5a96cd007f1ba95618859909c2f83cd8f127dca3a7a17f431a0869",
+    "process_id": 59264,
+    "exit_code": 0,
+    "browser": "155.0.8059.80",
+    "behavior_checks": 13,
+    "layout_cases": 32,
+    "browser_errors": 0,
+    "scope": "standalone synthetic captured-engine review artifact; not Paper edits or native application integration",
+    "visual_inspection": "root inspected desktop dark and stable mobile light; no observed overflow or clipping",
+    "normal_motion_behavior_run": {
+      "process_id": 57108,
+      "exit_code": 0,
+      "behavior_checks": 13,
+      "layout_cases": 32,
+      "browser_errors": 0
+    },
+    "capture_motion": "reduced motion for stable screenshots",
+    "repaired_review_findings": [
+      "Evidence navigation preserves the selected scenario and URL, open records and downloaded JSON",
+      "Missing current snapshot labels requested assessment cut without implying evidence freshness",
+      "Separate owner_status is not described as historical"
+    ],
+    "review": {
+      "reviewer": "C3 product_architecture_advisor",
+      "verdict": "CONCUR",
+      "scope": "three identified navigation and truth-of-display paths in exact rendered artifact",
+      "tests_executed_by_reviewer": false,
+      "artifact_sha256": "4fb52ae88f5a96cd007f1ba95618859909c2f83cd8f127dca3a7a17f431a0869"
+    }
+  },
+  "native_correction_classification_established": false,
+  "native_admission_established": false,
+  "scientific_qualification_changed": false,
+  "published_runtime": false,
+  "disposition": "DRAFT_HOLD_FOR_SOL",
+  "source_claim_check": {
+    "command": "python scripts/check_validated_claims.py --scope source",
+    "process_id": 47603,
+    "result": "PASS"
+  },
+  "diff_check": {
+    "command": "git diff --check",
+    "process_id": 47603,
+    "result": "PASS"
+  },
+  "proof_adoption": {
+    "process_id": 46625,
+    "exit_code": 0,
+    "source_hashes_verified": true,
+    "captured_files": 10,
+    "registration_drift": "registration-drift.json",
+    "only_registration_difference": "code_versions.producer_facts"
+  }
+}
