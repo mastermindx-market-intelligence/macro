@@ -4406,6 +4406,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "press-account-claim-consumer",
     # Actual page-query import/read closure; no unrelated fallback ownership.
     "admin-analytics-pages",
     # Paid Fabric source-only guidance and deterministic attribution tests are
