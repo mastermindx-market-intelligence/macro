@@ -149,3 +149,92 @@ This workstream does not replace `research/TOP_ANATOMY_MASTERPLAN_BY_FABLE.md`; 
 current organizational owner for completing the program after W2, Phase-1 and AM-v2. Historical
 research chronology remains in the original masterplan and reports. This record owns current wave
 state, exact next action, collision boundaries and final completion accountability.
+
+## D03 T43 source-date maintenance (2026-11-04 UTC)
+
+The Chairman's D03 implementation continuation repairs the existing Winner Health
+consumer; it does not activate R2-R6, change the frozen OOT ruler, or create a
+separate dashboard. The D03 task tree remains the 78-capability / 53-case Phase 2A
+specification on macro #10617. T43 records the impossible-source-date failure.
+
+Numeric but impossible `asof` dates previously escaped the parser guard and
+aborted the page build, leaving the prior published board untouched. Date
+construction now stays inside that guard so the real loader, builder and CLI
+publish the existing warming state. The >6 calendar-day cutoff, separate
+>5-session tape warning, explicit fixture bypass, template, research populations
+and authority fences are unchanged.
+
+Proof: 34 new deterministic date/loader/build/CLI cases were RED before the fix
+(16 failed / 18 passed); the repair passes 145 focused tests with existing
+maturation, page and design-freeze suites. Register these cases in both the
+existing nightly data owner and the code-gated public-render-fastlane so PRs
+cannot silently omit them. No repository site output or production data was written;
+build publication tests use private temporary roots. The new suite also passes
+34/34 in a clean pytest/PyYAML/Jinja2-only environment; three manifest checks and
+code-gate selection for the suite, builder and template pass.
+
+Continuation receipt: https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6623889088
+Source branch: `claude/ssd-d03-winner-health-source-date-20261104-c2-c1a4065d36e086ff`.
+This is source-level maintenance proof, not merge, deployment, served-page
+acceptance or a new statistical verdict. Preserve Draft/HOLD until the existing
+release gates are lawfully satisfied; after release, verify the normal builder
+and served Winner Health path separately. Original #7073 template work and
+#9495 Prophet work remain untouched.
+
+### CI packing repair (2026-11-04 UTC)
+
+Hosted CI 41785595517 at source head 8b10afa2a0011922354672fc397705e26dc6e230
+found three introduced ordinary-change packing overruns (+5 weight-seconds),
+not a source-date product failure. Related pytest invocations are now combined
+within their existing public-render-fastlane and falsifier-tripwires owners.
+Every existing/new suite, selector, dependency, path scope, gate and ceiling is
+preserved; five duplicate interpreter starts are removed. Computed combined
+weight returns from 71 to its original 66 (34 + 32); no observed-weight override
+or packing-limit change. The actual combined commands pass 368 tests with one
+pre-existing deselection, and 369 tests respectively. Sparse checkout fixtures
+were materialized only from exact HEAD; no generated production artifacts changed.
+Manifest validation still reports 312 logical jobs / 12 packs. Differential
+contract-delta and hosted exact-head results are recorded on the existing D03
+continuation receipt after publication; they are not inferred from weight arithmetic.
+
+### W07 typed availability continuation (2026-11-04 UTC)
+
+The original T43 source-date/CI repair is accepted at
+`f9e62dfbecfcf33579ead45ad27cf7a38de734a7`: exact-head CI 41799365514 and
+fences 41799365457 SUCCESS. The Chairman-authorized D03 continuation extends
+that same Draft #10709 branch with W07 typed source availability; it does not
+replace this research programme, activate R2-R6 or amend the frozen OOT ruler.
+
+Missing, unreadable, malformed, invalid-date, stale and producer-unavailable
+sources no longer share a promise that a nightly read will arrive. The single
+loader read supplies a typed availability receipt, with only a validated source
+day eligible for disclosure. Raw producer reasons remain private diagnostics;
+unavailable context yields no current price/backdrop/count cues and no claim
+that a name failed eligibility. Valid empty, cohort, no-read, unreadable-tier
+and no-analogue states remain distinct. Six-calendar-day admission, the separate
+five-session tape warning, fixture bypass, future-date compatibility, legacy
+payloads, all engines/populations/rankers and authority fences remain unchanged.
+
+Proof in
+`research/design_candidates/production_design_20261102/evidence/d03-winner-health-w07-20261104/`:
+51 additional source cases (85 total), RED 53 failed / 32 passed on the
+predecessor, 196 focused tests passed, and 85 passed in a clean three-dependency
+Python environment with data guard enabled. Final actual-builder Chromium proof:
+144 cases / 148 screenshots across 12 states, three widths, EN/ZH and light/dark;
+minimum measured text contrast 5.8884:1, zero page/asset/response/network failures.
+Native Paper component 11MU-0 has visual self-QA, post-QA JSX and observed finish;
+shared tokens unchanged. Canonical stale-state capture has 16 rest/focus frames
+and a passing visual-evidence gate. These are bounded source/component proofs,
+not whole-D03/shared-shell, research verdict, deployment or production acceptance.
+
+The unchanged combined public code-job command passes 419 tests with one
+pre-existing deselection; the unchanged TOP/Winner Health data-job command passes
+420 tests in an isolated environment with that job's declared dependencies.
+Sparse fixture/asset omissions and a wrong local dependency environment were
+reconciled without changing CI declarations, disabling guards or writing new
+generated data/site bytes.
+
+The current exact delivery hash, actual committed-tree differential gate and
+hosted results belong in the original PR and existing D03 continuation receipt.
+No new CI job, scope narrowing, budget override, lifecycle owner or release effect
+is introduced. Original #9495/T004/R8/Fabric effects remain untouched.

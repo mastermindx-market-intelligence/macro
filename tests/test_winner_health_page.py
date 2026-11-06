@@ -146,13 +146,15 @@ def test_none_mode_renders(tmp_path):
 
 def test_warm_mode_renders_when_artifact_absent(tmp_path):
     html = _render(tmp_path, None)
-    assert "has not landed yet" in html
-    assert "nothing is being withheld" in html.lower()
+    assert "No read is available" in html
+    assert 'data-wh-availability="missing"' in html
+    assert "as soon as the nightly read finishes" not in html
 
 
 def test_warm_mode_on_explicit_null_state(tmp_path):
     html = _render(tmp_path, _ctx(null_state=True, null_reason="store unreadable"))
-    assert "has not landed yet" in html
+    assert "Latest read did not complete" in html
+    assert 'data-wh-availability="producer_unavailable"' in html
     assert "store unreadable" not in html    # the reason is diagnostics, never copy
 
 
@@ -313,7 +315,8 @@ def test_builder_falls_open_to_the_warm_null_when_the_data_root_is_empty(tmp_pat
     root = _throwaway_root(tmp_path)
     monkeypatch.setattr(bwh, "_data_dir", lambda r: r / "data")
     out = bwh.build(root)
-    assert "has not landed yet" in out.read_text()
+    assert "No read is available" in out.read_text()
+    assert 'data-wh-availability="missing"' in out.read_text()
 
 
 # ══════════════════════════════════════════════════════════════════════════

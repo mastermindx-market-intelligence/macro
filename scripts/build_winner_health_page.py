@@ -7,10 +7,10 @@ ships NO fetch, NO chart library and NO page JS of its own — the sparklines ar
 inline SSR SVG and every Tier-2 card is a static LENS block — so there is no
 per-surface JSON to copy into `site/` and no lazy-load step.
 
-Fail-open, and this builder NEVER raises: a missing, stale or malformed artifact
-renders the designed "warming up" null state (spec §4.6 `warm`), which is an
-honest reading rather than a gap. `main()` returns 0 in every case a page was
-written.
+Fail-soft source handling: missing, unreadable, malformed, undated and stale
+artifacts render distinct unavailable states, never a claim that a read will
+finish shortly. Producer null reasons remain diagnostics, not display copy.
+`main()` returns 0 when a page was written and 1 on a render/write failure.
 
 Design contract: research/top_anatomy/W1_SURFACE_DESIGN_SPEC.md (visual law) +
 docs/DESIGN_DOCTRINE.md (content law, wins on conflict). Display tier, zero
@@ -24,10 +24,12 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import logging
 import sys
 from pathlib import Path
+from typing import Literal, TypedDict
 
 from jinja2 import Environment, FileSystemLoader, Undefined
 
@@ -37,10 +39,27 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
 
 _CONTEXT_REL = Path("top_maturation") / "latest.json"
-#: Sessions after which the read is treated as not landed. The page's own as-of
+#: Calendar days after which the read is treated as not landed. The page's own as-of
 #: stamp is the last PRICED bar, so a stale artifact would otherwise print an old
 #: date beside a live-looking board.
 _MAX_AGE_DAYS = 6
+
+AvailabilityCode = Literal["available", "missing", "unreadable",
+                           "invalid_artifact", "invalid_date", "stale",
+                           "producer_unavailable"]
+
+
+class SourceAvailability(TypedDict):
+    """Page-local evidence about loading the source, not a market judgement."""
+
+    code: AvailabilityCode
+    source_asof: str | None
+
+
+def _availability(code: AvailabilityCode,
+                  source_day: datetime.date | None = None) -> SourceAvailability:
+    return {"code": code,
+            "source_asof": source_day.isoformat() if source_day is not None else None}
 
 
 def _data_dir(root: Path) -> Path:
@@ -53,39 +72,72 @@ def _data_dir(root: Path) -> Path:
         return root / "data"
 
 
-def _load_context(data_dir: Path, fixture: Path | None = None) -> dict | None:
-    """Load the winner-health artifact. None on ANY failure -> the `warm` null."""
-    path = fixture.resolve() if fixture is not None else (data_dir / _CONTEXT_REL)
-    if not path.exists():
-        log.info("winner health artifact not found at %s — warm null", path)
-        return None
+def _load_context_result(
+    data_dir: Path, fixture: Path | None = None
+) -> tuple[dict | None, SourceAvailability]:
+    """Read once and keep source failure evidence separate from market states.
+
+    The explicit fixture path retains its existing date-admission bypass.
+    Neither free-form producer null_reason nor exception text is display data.
+    """
     try:
+        path = fixture.resolve() if fixture is not None else (data_dir / _CONTEXT_REL)
         raw = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        # Also covers disappearance between path resolution and the actual read.
+        log.info("winner health source is missing")
+        return None, _availability("missing")
+    except (json.JSONDecodeError, RecursionError):
+        log.warning("winner health source is not usable JSON")
+        return None, _availability("invalid_artifact")
     except Exception as exc:  # noqa: BLE001
-        log.warning("winner health artifact unreadable (%s) — warm null", exc)
-        return None
+        log.warning("winner health source could not be loaded (%s)", exc)
+        return None, _availability("unreadable")
     if not isinstance(raw, dict):
-        log.warning("winner health artifact is not a dict — warm null")
+        log.warning("winner health source is not an object")
+        return None, _availability("invalid_artifact")
+    source_day = _source_date(raw)
+    if fixture is None:
+        if source_day is None:
+            return None, _availability("invalid_date")
+        if (datetime.date.today() - source_day).days > _MAX_AGE_DAYS:
+            return None, _availability("stale", source_day)
+    if raw.get("null_state"):
+        # Existing truthy malformed flags must not turn into an available board.
+        # Do not infer a cause from the producer's raw exception string.
+        code: AvailabilityCode = (
+            "producer_unavailable" if raw["null_state"] is True else "invalid_artifact"
+        )
+        return raw, _availability(code, source_day)
+    return raw, _availability("available", source_day)
+
+
+def _load_context(data_dir: Path, fixture: Path | None = None) -> dict | None:
+    """Compatibility view: return the existing admitted context or None."""
+    return _load_context_result(data_dir, fixture)[0]
+
+
+def _source_date(ctx: dict) -> datetime.date | None:
+    """Preserve the admitted date-prefix parser, including calendar validation."""
+    try:
+        y, m, d = (int(x) for x in str(ctx.get("asof", ""))[:10].split("-"))
+        # Numeric date parts can still describe an impossible calendar day.
+        return datetime.date(y, m, d)
+    except Exception:  # noqa: BLE001
         return None
-    if fixture is None and _is_stale(raw):
-        log.warning("winner health artifact is stale (asof=%s) — warm null", raw.get("asof"))
-        return None
-    return raw
 
 
 def _is_stale(ctx: dict) -> bool:
-    """True when the read is old enough that showing it would misdate the board."""
-    from datetime import date  # noqa: PLC0415
-    try:
-        y, m, d = (int(x) for x in str(ctx.get("asof", ""))[:10].split("-"))
-    except Exception:  # noqa: BLE001
-        return True
-    return (date.today() - date(y, m, d)).days > _MAX_AGE_DAYS
+    """Compatibility predicate: invalid or older than six calendar days."""
+    asof = _source_date(ctx)
+    return asof is None or (datetime.date.today() - asof).days > _MAX_AGE_DAYS
 
 
 def render(root: Path, fixture: Path | None = None) -> str:
     """Render winner_health.html.j2 and return the HTML string."""
-    wh = _load_context(_data_dir(root), fixture)
+    context, availability = _load_context_result(_data_dir(root), fixture)
+    # Failed source payloads must not leak live-looking prices, backdrop or counts.
+    wh = context if availability["code"] == "available" else None
 
     env = Environment(
         loader=FileSystemLoader(str(root / "templates")),
@@ -108,7 +160,9 @@ def render(root: Path, fixture: Path | None = None) -> str:
 
         env.globals.update(td=_td, tr=lambda en: en)
 
-    return env.get_template("winner_health.html.j2").render(wh=wh)
+    return env.get_template("winner_health.html.j2").render(
+        wh=wh, wh_availability=availability
+    )
 
 
 def build(root: Path, fixture: Path | None = None) -> Path:
