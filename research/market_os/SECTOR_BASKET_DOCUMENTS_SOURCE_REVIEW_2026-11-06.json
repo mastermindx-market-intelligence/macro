@@ -1,0 +1,72 @@
+{
+  "base_sha": "b168ff4a498999251e70dc6a0076e422d2689738",
+  "base_source": "Exact pinned GitHub raw files; read back into local scratch and hash checked",
+  "changed_files": [
+    {
+      "path": "engine/sector_pulse.py",
+      "base_sha256": "969a94a79d1f2713e8104fa532b73557e0ab0e2c7492b8773f916f374f94cc9e",
+      "current_sha256": "8955da84168afa916fd3a4d22c5aaca1c5731fe685aff5240a0b460f18bdf692",
+      "diff_lines": 150
+    },
+    {
+      "path": "scripts/build_baskets.py",
+      "base_sha256": "3472f3947bbe138896fefc4df31c48c34ca928ed5ebf5b4ac1e5e939b391a577",
+      "current_sha256": "4d736210ea12e1d9c6c21890e71c6ddfcaf5d59dd4acb42d56101c2b53a36678",
+      "diff_lines": 103
+    },
+    {
+      "path": "tests/test_us_act_now.py",
+      "base_sha256": "6949b8194c0a9c5cbe306c8e7a38ae68c0d1896170ab90b7ab57a8f0d6a0ebfb",
+      "current_sha256": "2c2472c83676cceaafa0082ba8875ca10b488972691e69999c8cf9d48187d97b",
+      "diff_lines": 11
+    }
+  ],
+  "unchanged_pulse_helpers": [
+    "_observation_date",
+    "_archive_through_observation",
+    "_rank_map_at",
+    "_score_map_at",
+    "_heat_tier",
+    "_heat_strength",
+    "_build_theme_row",
+    "build_pulse",
+    "write_pulse",
+    "write_score_snapshot"
+  ],
+  "literal_member_factor_handoff_ast_equal": true,
+  "unchanged_artifact_test_source_sha256": "7150b062cbf3d6cad7d19164d101595ad35c8f40b912208c56a01e0ea728cfb4",
+  "sparse_artifact_assertions": [
+    {
+      "case": "test_redirect_stub_rendered",
+      "args": [
+        "baskets.html",
+        "sector_central.html#actnow-section"
+      ],
+      "result": "MISSING_SPARSE_ARTIFACT_ASSERTION",
+      "detail": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-always-on-shared-shell-20261105-c3/site/baskets.html missing"
+    },
+    {
+      "case": "test_redirect_stub_rendered",
+      "args": [
+        "subsector_rotation.html",
+        "sector_central.html#si-movement"
+      ],
+      "result": "MISSING_SPARSE_ARTIFACT_ASSERTION",
+      "detail": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-always-on-shared-shell-20261105-c3/site/subsector_rotation.html missing"
+    },
+    {
+      "case": "test_generated_forming_narratives_matches_deferred_init_contract",
+      "args": [],
+      "result": "MISSING_SPARSE_ARTIFACT_ASSERTION",
+      "detail": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-always-on-shared-shell-20261105-c3/site/sector_central.html missing"
+    },
+    {
+      "case": "test_scoped_publication_directories_are_real_and_owned_by_the_build",
+      "args": [],
+      "result": "MISSING_SPARSE_ARTIFACT_ASSERTION",
+      "detail": ""
+    }
+  ],
+  "git_diff_check": "Unscoped and scoped repository-index checks each timed out after45s; no successful git diff-check claimed",
+  "scope": "Source review and four exact unchanged precondition assertions; not a protected CI or runtime proof"
+}

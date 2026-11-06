@@ -377,3 +377,26 @@ Next safe source slice: extract the existing Pulse projection and basket/Brief
 handoff assembly over explicit archive, calibration and display inputs, then the
 canonical board and final Sector composer. Source updater recovery, CI capability,
 protected releases and Terminal/authenticated beta remain separate open lanes.
+
+
+## Data-only Pulse and Brief assembly milestone — 2026-11-06
+
+The existing Pulse owner now accepts explicit archive observations and heat verdicts.
+It retains observation-clock, grading and field-precedence semantics; legacy readers
+and writers reuse the same calculator. One data-only basket/Brief assembler retains
+the original chart, bottoming/dual-read fields, factor/flow projections and computed
+member list. It requires a coherent basket/theme/allocation/context baseline and
+keeps older auxiliary dates separate. Legacy builders reuse the extracted helpers.
+
+Pulse verification passed 139 tests, and final document verification passed 24,
+including actual computed basket/context outputs consumed by the native Brief.
+The broader run passed 463 with four sparse-artifact failures and one subsequently
+repaired test receipt enum; four tests skipped. Exact results and limits are in
+[the composition contract](SECTOR_BASKET_DOCUMENTS_2026-11-06.md). These overlapping
+counts do not establish hosted CI, release, production refresh or beta acceptance.
+
+Next safe source slice: canonical action-board preparation, reducer and exact-basket-
+byte envelope, followed by full input-family capture and the final Sector producer.
+Current Terminal queue entries are preserved; no source owner or serving route is
+activated. CI capability, updater/drain, protected release and authenticated beta
+remain distinct open delivery obligations.

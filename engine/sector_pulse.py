@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import json
 import logging
+from copy import deepcopy
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -422,7 +423,8 @@ def _build_theme_row(th: dict, n_themes: int,
 # Public API
 # ---------------------------------------------------------------------------
 
-def _build_pulse_from_theme_intel(ti: dict, region: str) -> dict | None:
+def _project_pulse_from_inputs(ti: dict | None, region: str, *, archive_snapshots: list[dict],
+                               heat_calibration: dict, diagnostics: bool = False) -> dict | None:
     """Shared Sector Pulse projection for readers, enrichment and publication.
 
     Returns a dict with schema/as_of/region/n_themes, plus:
@@ -443,20 +445,21 @@ def _build_pulse_from_theme_intel(ti: dict, region: str) -> dict | None:
 
         as_of = _observation_date(ti.get("as_of"))
         if as_of is None:
-            log.warning("sector_pulse: missing/invalid theme observation date for region=%s", region)
+            if diagnostics:
+                log.warning("sector_pulse: missing/invalid theme observation date for region=%s", region)
             return None
         n = len(themes_raw)
 
         # The theme observation is the reference clock. A newer archive cannot
         # revise an older tape, and repeated writes are not new observations.
-        snapshots = _archive_through_observation(_load_archive_snapshots(region), as_of, region)
+        snapshots = _archive_through_observation(archive_snapshots, as_of, region)
 
         rank_1d = _rank_map_at(snapshots, 1)
         rank_5d = _rank_map_at(snapshots, 5)
         rank_20d = _rank_map_at(snapshots, 20)
         score_5d = _score_map_at(snapshots, 5)
         score_20d = _score_map_at(snapshots, 20)
-        heat_cal = _heat_calibration()
+        heat_cal = heat_calibration
 
         rows: list[dict] = []
         for th in themes_raw:
@@ -465,7 +468,8 @@ def _build_pulse_from_theme_intel(ti: dict, region: str) -> dict | None:
                                        heat_cal)
                 rows.append(row)
             except Exception:  # noqa: BLE001
-                log.debug("sector_pulse: skipping theme %s due to error", th.get("id"), exc_info=True)
+                if diagnostics:
+                    log.debug("sector_pulse: skipping theme %s due to error", th.get("id"), exc_info=True)
                 continue
 
         if not rows:
@@ -507,8 +511,41 @@ def _build_pulse_from_theme_intel(ti: dict, region: str) -> dict | None:
                             for t in ("heating", "hot", "cooling", "broken")} if heat_cal else {},
         }
     except Exception:  # noqa: BLE001
+        if diagnostics:
+            log.warning("sector_pulse.build_pulse failed for region=%s", region, exc_info=True)
+        return None
+
+
+def build_pulse_from_inputs(ti: dict | None, region: str, *, archive_snapshots: list[dict],
+                            heat_calibration: dict) -> dict | None:
+    """Project captured observations and verdict values without acquisition or writes.
+
+    The supplied archive contains decoded ``{asof, themes}`` observations. The
+    calibration is the existing document's ``verdict`` mapping, not its wrapper.
+    Explicit []/{} retain unknown/descriptive behavior and never trigger a loader.
+    """
+    try:
+        return _project_pulse_from_inputs(deepcopy(ti), region,
+            archive_snapshots=deepcopy(archive_snapshots), heat_calibration=deepcopy(heat_calibration))
+    except Exception:  # noqa: BLE001 — preserve the incumbent optional projection
+        return None
+
+
+def _build_pulse_from_theme_intel(ti: dict | None, region: str) -> dict | None:
+    """Legacy acquisition adapter for the same observation projection."""
+    try:
+        if not ti or not ti.get("themes"):
+            return None
+        if _observation_date(ti.get("as_of")) is None:
+            log.warning("sector_pulse: missing/invalid theme observation date for region=%s", region)
+            return None
+        return _project_pulse_from_inputs(ti, region,
+            archive_snapshots=_load_archive_snapshots(region), heat_calibration=_heat_calibration(),
+            diagnostics=True)
+    except Exception:  # noqa: BLE001
         log.warning("sector_pulse.build_pulse failed for region=%s", region, exc_info=True)
         return None
+
 
 
 def build_pulse(region: str = "us") -> dict | None:
@@ -625,6 +662,41 @@ def for_ticker(ticker: str, region: str = "us") -> dict | None:
         return None
 
 
+def _apply_pulse_fields(ti: dict, payload: dict | None) -> None:
+    """Existing additive field application; caller owns the target document."""
+    if payload is None:
+        return
+    themes_raw = ti.get("themes") or []
+    pulse_by_id = {row["id"]: row for row in payload["themes"] if row.get("id")}
+    fields = {
+        "pulse_heat": "heat",
+        "pulse_rank_delta_1d": "rank_delta_1d",
+        "pulse_rank_delta_5d": "rank_delta_5d",
+        "pulse_rank_delta_20d": "rank_delta_20d",
+        "pulse_score_delta_5d": "score_delta_5d",
+    }
+    for th in themes_raw:
+        if not isinstance(th, dict):
+            continue
+        row = pulse_by_id.get(th.get("id"))
+        if row is None:
+            continue
+        # Additive only: never alter the source rank, score or recommendation.
+        for target, source in fields.items():
+            th.setdefault(target, row.get(source))
+        th.setdefault("pulse_heat_grade", (row.get("heat_strength") or {}).get("grade"))
+
+
+def enrich_theme_intel_from_inputs(ti: dict, region: str, *, archive_snapshots: list[dict],
+                                   heat_calibration: dict) -> tuple[dict, dict | None]:
+    """Return detached enrichment and its one computed pulse, retaining field precedence."""
+    enriched = deepcopy(ti)
+    pulse = build_pulse_from_inputs(enriched, region, archive_snapshots=archive_snapshots,
+                                    heat_calibration=heat_calibration)
+    _apply_pulse_fields(enriched, pulse)
+    return enriched, pulse
+
+
 def merge_pulse_into_theme_intel(ti: dict, region: str) -> None:
     """Merge per-theme velocity/heat keys from the pulse into a freshly-computed theme_intel dict.
 
@@ -653,24 +725,7 @@ def merge_pulse_into_theme_intel(ti: dict, region: str) -> None:
         payload = _build_pulse_from_theme_intel(ti, region)
         if payload is None:
             return
-        pulse_by_id = {row["id"]: row for row in payload["themes"] if row.get("id")}
-        fields = {
-            "pulse_heat": "heat",
-            "pulse_rank_delta_1d": "rank_delta_1d",
-            "pulse_rank_delta_5d": "rank_delta_5d",
-            "pulse_rank_delta_20d": "rank_delta_20d",
-            "pulse_score_delta_5d": "score_delta_5d",
-        }
-        for th in themes_raw:
-            if not isinstance(th, dict):
-                continue
-            row = pulse_by_id.get(th.get("id"))
-            if row is None:
-                continue
-            # Additive only: never alter the source rank, score or recommendation.
-            for target, source in fields.items():
-                th.setdefault(target, row.get(source))
-            th.setdefault("pulse_heat_grade", (row.get("heat_strength") or {}).get("grade"))
+        _apply_pulse_fields(ti, payload)
     except Exception:  # noqa: BLE001
         log.warning("merge_pulse_into_theme_intel failed for region=%s", region, exc_info=True)
 
