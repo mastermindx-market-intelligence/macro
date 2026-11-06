@@ -191,13 +191,13 @@ def test_micro_via_sub_theme(hierarchy):
 def test_micro_direct_under_theme(hierarchy):
     nodes, edges = hierarchy
     nodes, edges = _with_edges(
-        nodes, edges, [_edge("e1", "EXPRESSES", "etf:ROBO", "theme:space")]
+        nodes, edges, [_edge("e1", "EXPRESSES", "basket:baskets:robo", "theme:space")]
     )
     env = mod.read_micro_rs_proxy("theme:space_human", nodes=nodes, edges=edges)
     assert env["status"] == "available"
     assert env["value"]["proxy_themes"] == ["theme:space"]
     assert env["value"]["proxy_instruments"] == [
-        {"theme_id": "theme:space", "src_id": "etf:ROBO"}
+        {"theme_id": "theme:space", "src_id": "basket:baskets:robo"}
     ]
     assert env["value"]["path_kind"] == "direct_theme"
 
@@ -216,7 +216,7 @@ def test_both_paths_dedupe():
             _edge("p2", "PARENT_OF", "theme:space_orbital", "theme:twin"),
             _edge("p3", "PARENT_OF", "theme:space", "theme:twin"),
             _edge("e1", "EXPRESSES", "basket:baskets:a", "theme:space"),
-            _edge("e2", "EXPRESSES", "etf:ROBO", "theme:space"),
+            _edge("e2", "EXPRESSES", "basket:baskets:robo", "theme:space"),
         ],
     )
     env = mod.read_micro_rs_proxy("theme:twin", nodes=nodes, edges=edges)
@@ -226,7 +226,7 @@ def test_both_paths_dedupe():
     assert env["value"]["proxy_instrument_count"] == 2
     assert env["value"]["proxy_instruments"] == [
         {"theme_id": "theme:space", "src_id": "basket:baskets:a"},
-        {"theme_id": "theme:space", "src_id": "etf:ROBO"},
+        {"theme_id": "theme:space", "src_id": "basket:baskets:robo"},
     ]
 
 
@@ -305,14 +305,14 @@ def test_closed_expresses_edge_ignored(hierarchy):
         nodes,
         edges,
         [
-            _edge("e_open", "EXPRESSES", "etf:ROBO", "theme:space"),
+            _edge("e_open", "EXPRESSES", "basket:baskets:robo", "theme:space"),
             _edge("e_closed", "EXPRESSES", "etf:OLD", "theme:space", valid_to="2026-09-30"),
         ],
     )
     env = mod.read_micro_rs_proxy("theme:space_human", nodes=nodes, edges=edges)
     assert env["status"] == "available"
     assert env["value"]["proxy_instruments"] == [
-        {"theme_id": "theme:space", "src_id": "etf:ROBO"}
+        {"theme_id": "theme:space", "src_id": "basket:baskets:robo"}
     ]
     assert env["value"]["proxy_instrument_count"] == 1
 
@@ -328,14 +328,14 @@ def test_ltheme_src_filtered_but_ltheme_only_theme_stays_available(hierarchy):
         edges,
         [
             _edge("e1", "EXPRESSES", "ltheme:finviz:robotics", "theme:space"),
-            _edge("e2", "EXPRESSES", "etf:ROBO", "theme:space"),
+            _edge("e2", "EXPRESSES", "basket:baskets:robo", "theme:space"),
             _edge("e3", "EXPRESSES", "ltheme:ths:space", "theme:space"),
         ],
     )
     env = mod.read_micro_rs_proxy("theme:space_human", nodes=nodes, edges=edges)
     assert env["status"] == "available"
     assert env["value"]["proxy_instruments"] == [
-        {"theme_id": "theme:space", "src_id": "etf:ROBO"}
+        {"theme_id": "theme:space", "src_id": "basket:baskets:robo"}
     ]
 
     # A theme whose ONLY instrument sources are vendor-local: empty instruments,
@@ -378,6 +378,47 @@ def test_internal_only_subject_and_instruments_never_emitted():
     env2 = mod.read_micro_rs_proxy("theme:gm", nodes=nodes2, edges=edges2)
     assert env2["status"] == "unknown"
     assert env2["reason_code"] == "value_missing"
+
+
+def test_vendor_derived_instrument_refused_by_rights_registry():
+    """``basket:baskets_china_ths:*`` does not spell its vendor in the id, so
+    only the rights registry knows it is ``ths_concepts`` (internal_only)."""
+    nodes, edges = _frames(
+        [
+            _node("theme:grid", "theme"),
+            _node("theme:grid_micro", "micro_theme"),
+            _node("basket:baskets_china_ths:ths_grid", None, kind="basket"),
+            _node("basket:baskets:ok", None, kind="basket"),
+        ],
+        [
+            _edge("p1", "PARENT_OF", "theme:grid", "theme:grid_micro"),
+            _edge("e1", "EXPRESSES", "basket:baskets_china_ths:ths_grid", "theme:grid"),
+            _edge("e2", "EXPRESSES", "basket:baskets:ok", "theme:grid"),
+        ],
+    )
+    env = mod.read_micro_rs_proxy("theme:grid_micro", nodes=nodes, edges=edges)
+    assert env["value"]["proxy_instruments"] == [
+        {"theme_id": "theme:grid", "src_id": "basket:baskets:ok"}
+    ]
+    assert "ths" not in repr(env)
+
+
+def test_unmapped_instrument_family_fails_closed():
+    nodes, edges = _frames(
+        [
+            _node("theme:grid", "theme"),
+            _node("theme:grid_micro", "micro_theme"),
+            _node("etf:GRID", None, kind="basket"),
+        ],
+        [
+            _edge("p1", "PARENT_OF", "theme:grid", "theme:grid_micro"),
+            _edge("e1", "EXPRESSES", "etf:GRID", "theme:grid"),
+        ],
+    )
+    env = mod.read_micro_rs_proxy("theme:grid_micro", nodes=nodes, edges=edges)
+    assert env["status"] == "available"
+    assert env["value"]["proxy_instruments"] == []
+    assert env["value"]["proxy_instrument_count"] == 0
 
 
 # ---------------------------------------------------------------------------
@@ -445,7 +486,7 @@ def test_retired_and_merged_subject_refusals(hierarchy):
 def test_table_covers_active_micro_and_sub_sorted(hierarchy):
     nodes, edges = hierarchy
     nodes, edges = _with_edges(
-        nodes, edges, [_edge("e1", "EXPRESSES", "etf:ROBO", "theme:space")]
+        nodes, edges, [_edge("e1", "EXPRESSES", "basket:baskets:robo", "theme:space")]
     )
     table = mod.micro_rs_proxy_table(nodes=nodes, edges=edges)
     subjects = [env["subject_id"] for env in table]
@@ -518,7 +559,7 @@ def test_no_forbidden_keys_or_economics_leak_into_output(hierarchy):
         nodes,
         edges,
         [
-            _edge("e1", "EXPRESSES", "etf:ROBO", "theme:space", economics=True),
+            _edge("e1", "EXPRESSES", "basket:baskets:robo", "theme:space", economics=True),
             _edge("p9", "PARENT_OF", "theme:space", "theme:space_orbital"),
         ],
     )
@@ -549,7 +590,7 @@ def test_deterministic_under_shuffled_frames():
         _node("theme:space_human", "micro_theme"),
         _node("theme:grid", "theme"),
         _node("theme:grid_micro", "micro_theme"),
-        _node("etf:ROBO", None, kind="etf"),
+        _node("basket:baskets:robo", None, kind="etf"),
         _node("basket:baskets:space_etf", None, kind="basket"),
     ]
     edges_rows = [
@@ -557,7 +598,7 @@ def test_deterministic_under_shuffled_frames():
         _edge("p2", "PARENT_OF", "theme:space_orbital", "theme:space_launch"),
         _edge("p3", "PARENT_OF", "theme:space", "theme:space_human"),
         _edge("p4", "PARENT_OF", "theme:grid", "theme:grid_micro"),
-        _edge("e1", "EXPRESSES", "etf:ROBO", "theme:space"),
+        _edge("e1", "EXPRESSES", "basket:baskets:robo", "theme:space"),
         _edge("e2", "EXPRESSES", "basket:baskets:space_etf", "theme:space"),
     ]
     nodes_a, edges_a = _frames(nodes_rows, edges_rows)

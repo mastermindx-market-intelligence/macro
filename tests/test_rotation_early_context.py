@@ -688,3 +688,47 @@ def test_t07r2_nonpositive_rows_not_counted():
         assert counts["positive_2s_by_absolute"] == zero
         assert sum(counts["positive_2s_by_absolute"].values()) == counts["positive_2s"]
     assert out["coverage"]["positive_2s_by_absolute"] == zero
+
+
+def test_preregistered_etf_rotation_legs_are_in_active_yahoo_collection():
+    """The existing Yahoo config must request BOTH sides of every named ETF pair.
+
+    Registered Ratio Lens EOD dates are source observations, not authorisation
+    to infer an uncollected Dow ETF from ^DJI. Avoid importing the network-
+    enabled Yahoo provider into the thin, CI-registered ratio-lens test pack:
+    this is a pure registry/config-roster contract.
+    """
+    from lib import config
+
+    # Reuse the already-owned Ratio Lens registry and its typed context groups;
+    # neither a copied ticker list nor a second candidate universe is allowed.
+    registry = RL._load_registry(Path(__file__).resolve().parents[1] / "data")
+    pairs = [row for row in registry["pairs"]
+             if row.get("kind") == "etf" and row.get("context_group")
+             in ("defensive_sector", "broadening_proxy")]
+    assert any(row.get("id") == "dia_vs_qqq" and row.get("num") == "DIA"
+               and row.get("den") == "QQQ" for row in pairs)
+    required = {str(t) for row in pairs for t in (row["num"], row["den"])}
+    roster = [str(t) for members in config.load()["yahoo"]["tickers"].values()
+              for t in members]
+    missing = sorted(required - set(roster))
+    assert missing == [], (
+        "source-clocked, preregistered ETF pairs cannot be evaluated if "
+        f"the incumbent nightly Yahoo configuration omits their legs: {missing}"
+    )
+    assert roster.count("DIA") == 1  # do not silently substitute ^DJI
+
+
+def test_early_context_frontend_executable_contract():
+    """Keep the real pair renderer in this already-registered CI test pack."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node is not None, "Node is required for the rotation UI contract tests"
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [node, str(root / "tests" / "rotation_early_context_ui.test.cjs")],
+        cwd=root, capture_output=True, text=True, timeout=30, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

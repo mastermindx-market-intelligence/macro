@@ -1,0 +1,531 @@
+{
+  "selection_only": "2014-2019",
+  "test_start": "2020-01-01",
+  "selected": [
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1D",
+        "stoch_mode": "price_turn",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "bottom|BASE:price_turn",
+        "filter": "none",
+        "rule_id": "bottom|BASE:price_turn|none"
+      },
+      "selection_reasons": [
+        "validation_overall",
+        "validation_high_only",
+        "simple_baseline"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "deep",
+        "base": "bottom|S1W:curl|M1W:deep",
+        "filter": "none",
+        "rule_id": "bottom|S1W:curl|M1W:deep|none"
+      },
+      "selection_reasons": [
+        "validation_early"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "cross",
+        "base": "bottom|S2W:curl|M1W:cross",
+        "filter": "none",
+        "rule_id": "bottom|S2W:curl|M1W:cross|none"
+      },
+      "selection_reasons": [
+        "validation_cross",
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "bottom|S1W:curl|Mnone",
+        "filter": "aux_weekly_rsi",
+        "rule_id": "bottom|S1W:curl|Mnone|aux:weekly_rsi"
+      },
+      "selection_reasons": [
+        "validation_auxiliary"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "deep_rising",
+        "base": "bottom|S1W:curl|M1W:deep_rising",
+        "filter": "none",
+        "rule_id": "bottom|S1W:curl|M1W:deep_rising|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "cross",
+        "base": "bottom|S1W:curl|M1W:cross",
+        "filter": "none",
+        "rule_id": "bottom|S1W:curl|M1W:cross|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "deep_rising",
+        "base": "bottom|S1W:curl|M2W:deep_rising",
+        "filter": "none",
+        "rule_id": "bottom|S1W:curl|M2W:deep_rising|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "cross",
+        "base": "bottom|S1W:curl|M2W:cross",
+        "filter": "none",
+        "rule_id": "bottom|S1W:curl|M2W:cross|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "deep_rising",
+        "base": "bottom|S2W:curl|M1W:deep_rising",
+        "filter": "none",
+        "rule_id": "bottom|S2W:curl|M1W:deep_rising|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "deep_rising",
+        "base": "bottom|S2W:curl|M2W:deep_rising",
+        "filter": "none",
+        "rule_id": "bottom|S2W:curl|M2W:deep_rising|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "cross",
+        "base": "bottom|S2W:curl|M2W:cross",
+        "filter": "none",
+        "rule_id": "bottom|S2W:curl|M2W:cross|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "deep_rising",
+        "base": "bottom|S1W:curl|M1W:deep_rising",
+        "filter": "lf_1D_both_rising",
+        "rule_id": "bottom|S1W:curl|M1W:deep_rising|1D:both_rising"
+      },
+      "selection_reasons": [
+        "fixed_user_pair"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "bottom|S1W:curl|Mnone",
+        "filter": "none",
+        "rule_id": "bottom|S1W:curl|Mnone|none"
+      },
+      "selection_reasons": [
+        "stoch_only_baseline"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "deep_rising",
+        "base": "bottom|S2W:curl|M2W:deep_rising",
+        "filter": "lf_3D_both_rising",
+        "rule_id": "bottom|S2W:curl|M2W:deep_rising|3D:both_rising"
+      },
+      "selection_reasons": [
+        "fixed_user_pair"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "bottom|S2W:curl|Mnone",
+        "filter": "none",
+        "rule_id": "bottom|S2W:curl|Mnone|none"
+      },
+      "selection_reasons": [
+        "stoch_only_baseline"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1D",
+        "stoch_mode": "rsi_recovery",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "bottom|BASE:rsi_recovery",
+        "filter": "none",
+        "rule_id": "bottom|BASE:rsi_recovery|none"
+      },
+      "selection_reasons": [
+        "simple_baseline"
+      ]
+    },
+    {
+      "rule": {
+        "side": "bottom",
+        "stoch_tf": "1D",
+        "stoch_mode": "stoch_daily",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "bottom|BASE:stoch_daily",
+        "filter": "none",
+        "rule_id": "bottom|BASE:stoch_daily|none"
+      },
+      "selection_reasons": [
+        "simple_baseline"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1D",
+        "stoch_mode": "price_turn",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "top|BASE:price_turn",
+        "filter": "none",
+        "rule_id": "top|BASE:price_turn|none"
+      },
+      "selection_reasons": [
+        "validation_overall",
+        "validation_high_only",
+        "simple_baseline"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "deep_falling",
+        "base": "top|S1W:curl|M1W:deep_falling",
+        "filter": "none",
+        "rule_id": "top|S1W:curl|M1W:deep_falling|none"
+      },
+      "selection_reasons": [
+        "validation_early"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "cross",
+        "base": "top|S2W:curl|M1W:cross",
+        "filter": "none",
+        "rule_id": "top|S2W:curl|M1W:cross|none"
+      },
+      "selection_reasons": [
+        "validation_cross",
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "top|S1W:curl|Mnone",
+        "filter": "aux_weekly_rsi",
+        "rule_id": "top|S1W:curl|Mnone|aux:weekly_rsi"
+      },
+      "selection_reasons": [
+        "validation_auxiliary"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "deep_rising",
+        "base": "top|S1W:curl|M1W:deep_rising",
+        "filter": "none",
+        "rule_id": "top|S1W:curl|M1W:deep_rising|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "cross",
+        "base": "top|S1W:curl|M1W:cross",
+        "filter": "none",
+        "rule_id": "top|S1W:curl|M1W:cross|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "deep_rising",
+        "base": "top|S1W:curl|M2W:deep_rising",
+        "filter": "none",
+        "rule_id": "top|S1W:curl|M2W:deep_rising|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "cross",
+        "base": "top|S1W:curl|M2W:cross",
+        "filter": "none",
+        "rule_id": "top|S1W:curl|M2W:cross|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "deep_rising",
+        "base": "top|S2W:curl|M1W:deep_rising",
+        "filter": "none",
+        "rule_id": "top|S2W:curl|M1W:deep_rising|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "deep_rising",
+        "base": "top|S2W:curl|M2W:deep_rising",
+        "filter": "none",
+        "rule_id": "top|S2W:curl|M2W:deep_rising|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "cross",
+        "base": "top|S2W:curl|M2W:cross",
+        "filter": "none",
+        "rule_id": "top|S2W:curl|M2W:cross|none"
+      },
+      "selection_reasons": [
+        "fixed_timeframe_hypothesis"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "1W",
+        "macd_mode": "deep_rising",
+        "base": "top|S1W:curl|M1W:deep_rising",
+        "filter": "lf_1D_both_rising",
+        "rule_id": "top|S1W:curl|M1W:deep_rising|1D:both_rising"
+      },
+      "selection_reasons": [
+        "fixed_user_pair"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1W",
+        "stoch_mode": "curl",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "top|S1W:curl|Mnone",
+        "filter": "none",
+        "rule_id": "top|S1W:curl|Mnone|none"
+      },
+      "selection_reasons": [
+        "stoch_only_baseline"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "2W",
+        "macd_mode": "deep_rising",
+        "base": "top|S2W:curl|M2W:deep_rising",
+        "filter": "lf_3D_both_rising",
+        "rule_id": "top|S2W:curl|M2W:deep_rising|3D:both_rising"
+      },
+      "selection_reasons": [
+        "fixed_user_pair"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "2W",
+        "stoch_mode": "curl",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "top|S2W:curl|Mnone",
+        "filter": "none",
+        "rule_id": "top|S2W:curl|Mnone|none"
+      },
+      "selection_reasons": [
+        "stoch_only_baseline"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1D",
+        "stoch_mode": "rsi_recovery",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "top|BASE:rsi_recovery",
+        "filter": "none",
+        "rule_id": "top|BASE:rsi_recovery|none"
+      },
+      "selection_reasons": [
+        "simple_baseline"
+      ]
+    },
+    {
+      "rule": {
+        "side": "top",
+        "stoch_tf": "1D",
+        "stoch_mode": "stoch_daily",
+        "macd_tf": "none",
+        "macd_mode": "none",
+        "base": "top|BASE:stoch_daily",
+        "filter": "none",
+        "rule_id": "top|BASE:stoch_daily|none"
+      },
+      "selection_reasons": [
+        "simple_baseline"
+      ]
+    }
+  ],
+  "catalog_sha256": "50e67990a333cc2f3d0626de7b91b71f99a1e7020a41aaabc6823498e9bf7c86",
+  "code_sha256": "278792fb1c40ea2dd916c9959a458dc95453f2808d88e15f79e3c0f7c647fd75",
+  "protocol_sha256": "ed327e1a074a50e7db19466be1575bf8dafabd4c9248d063a0fae6f8c20ec208",
+  "created_at": "2026-10-21T09:26:37.551380+00:00",
+  "trial_accounting": {
+    "owner": "engine.trial_ledger.TrialLedger",
+    "literal_configs": 2434,
+    "effective_n": 2434
+  }
+}

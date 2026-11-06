@@ -1,0 +1,80 @@
+{
+  "schema": "news.private_draft.eligible_slot_finding.v1",
+  "written_at": "2026-10-20 17:07:34 UTC",
+  "reviewer": "/root/news_release_owner",
+  "authority": "Read-only GitHub source/data inspection; live planner and VPS staging counts attributed to /root census",
+  "state": "waiting_for_eligible_ordinary_company_slot",
+  "source_head": "b82af8dae3b05e7eaea198cfe49d61fb9b8ce595",
+  "data_head": "a6bc2a21e5f11e90673a545bd46376c9e2bcb9a1",
+  "as_of": "2026-10-20",
+  "live_census": {
+    "observed_at": "2026-10-20T16:46:00Z",
+    "reported_by": "/root",
+    "planner": "P.plan(['brief','research_desk'], as_of=current UTC date, root=/opt/macro)",
+    "brief_slots": 0,
+    "research_slots": 1,
+    "research_kind": "research_report",
+    "research_subject": "J.P.Morgan Intel Insights macro call",
+    "research_tickers": [],
+    "vps_staging_json_files": 0
+  },
+  "github_census": {
+    "staging_entries": [
+      ".gitkeep"
+    ],
+    "published_ledger_rows": 2,
+    "published_ids": [
+      "press-research_desk-2026-10-19-505a920d05da-revision-3",
+      "press-research_desk-2026-10-19-ef984ccfaaa5-revision-3"
+    ],
+    "published_rows_carry_full_slot": false,
+    "github_code_searches_current_day_slot_id_results": 0,
+    "current_day_workflow_runs": {
+      "schedule": 111,
+      "workflow_dispatch": 39,
+      "press_publish_runs_in_either_event": 0,
+      "coverage": "Both declared press-publish event types; all schedule pages inspected",
+      "source": "GET /repos/mastermindx-market-intelligence/macro/actions/runs with created=2026-10-20 and event filter"
+    }
+  },
+  "contract_assertions": [
+    "Ordinary plan uses current run date and canonical published/staged dedupe.",
+    "Brief uses canonical Chronicle event's explicit tickers, the normal three-day window and ranked candidate budget.",
+    "Research preserves explicit catalog tickers only; no company identity inference from prose.",
+    "Research ordinary flagship cap is one; the configured research-note tier is dark.",
+    "run_press._stage_item preserves the original complete slot under the slot field.",
+    "press-publish uploads data/press/staging as press-staging-<run_id>, including failed/quarantined records, with retention-days 14.",
+    "No eligible October 20 original company slot was found in the inspected carriers."
+  ],
+  "excluded_substitutes": [
+    "Replaying or relabeling the already-published October 19 CNDT ledger row",
+    "Constructing a ticker binding for the current macro slot",
+    "Ad hoc extra_blocked_refs, cap changes, enabling a dark tier, or removing dedupe",
+    "Using held earnings or opt-in official/White House candidate paths",
+    "Constructing a Press slot from licensed news solely to make the demonstration pass"
+  ],
+  "next_act": "Continue normal release and licensed-publisher proof. After normal source intake and updater advance canonical data, rerun the unchanged offline current-day ordinary planner. Proceed only with an original admitted slot carrying exactly one explicit qualified ticker. Alternatively recover an existing current-day full staging record with provenance; none is evidenced here.",
+  "exact_owner_input_needed": "One authentic current-day original ordinary Brief/Research Desk slot with exactly one explicit qualified ticker, admitted under existing source/ranking/cadence/dedupe rules, or a provenance-preserving retained staging record containing that original slot.",
+  "limitations": [
+    "GitHub file endpoint rejected the 3,600,554-byte research catalog; this finding does not claim every underlying item is individually ineligible. The root-reported live planner result is the actual configured-lane admission evidence.",
+    "Github search index can lag; zero code-search hits supplement the concrete staging and workflow census."
+  ],
+  "effects": {
+    "provider_calls": 0,
+    "live_writes": 0,
+    "workflow_dispatches": 0,
+    "github_writes": 0,
+    "slack_messages": 0
+  },
+  "sources": {
+    "planner": "https://github.com/mastermindx-market-intelligence/macro/blob/b82af8dae3b05e7eaea198cfe49d61fb9b8ce595/engine/press/desk_planner.py",
+    "staging_owner": "https://github.com/mastermindx-market-intelligence/macro/blob/b82af8dae3b05e7eaea198cfe49d61fb9b8ce595/scripts/run_press.py",
+    "press_workflow": "https://github.com/mastermindx-market-intelligence/macro/blob/a6bc2a21e5f11e90673a545bd46376c9e2bcb9a1/.github/workflows/press-publish.yml",
+    "intake_owner": "https://github.com/mastermindx-market-intelligence/macro/blob/a6bc2a21e5f11e90673a545bd46376c9e2bcb9a1/.github/workflows/research-ingest.yml",
+    "configuration": "https://github.com/mastermindx-market-intelligence/macro/blob/a6bc2a21e5f11e90673a545bd46376c9e2bcb9a1/config/press.yml",
+    "staging": "https://github.com/mastermindx-market-intelligence/macro/tree/a6bc2a21e5f11e90673a545bd46376c9e2bcb9a1/data/press/staging",
+    "ledger": "https://github.com/mastermindx-market-intelligence/macro/blob/a6bc2a21e5f11e90673a545bd46376c9e2bcb9a1/data/press/published.jsonl",
+    "chronicle_manifest": "https://github.com/mastermindx-market-intelligence/macro/blob/a6bc2a21e5f11e90673a545bd46376c9e2bcb9a1/data/chronicle/manifest.json"
+  }
+}
+

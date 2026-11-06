@@ -651,3 +651,48 @@ def test_read_parquet_native_propagates_missing_file(tmp_path):
         read_parquet_native(missing)
     assert issubclass(type(exc_info.value), OSError)
     assert type(exc_info.value).__name__ == "FileNotFoundError"
+
+
+def test_read_parquet_native_probe_immune_to_read_parquet_monkeypatch(
+        monkeypatch, tmp_path, request):
+    """_has_to_pandas_kwargs signs the pandas DEFINITION SITE
+    (pandas.io.parquet.read_parquet), never the pandas.read_parquet attribute:
+    the probe is lru_cached and fires lazily, so a test that monkeypatches
+    pandas.read_parquet with a (path, **kwargs) spy before the first call would
+    otherwise cache the spy's signature as "no to_pandas_kwargs" for the rest
+    of the process and silently drop the kwarg (isolation-red at 1f231f23:
+    the arrow_pools_idle test only passed when an earlier test warmed the
+    cache first)."""
+    import inspect
+
+    import pandas
+
+    from lib import native_parquet
+
+    # Reset the lazy probe so it fires fresh INSIDE this test, under the spy;
+    # monkeypatch can undo the spy but never a cache, so clear again on the way
+    # out to leave the process exactly as this test found it.
+    native_parquet._has_to_pandas_kwargs.cache_clear()
+    request.addfinalizer(native_parquet._has_to_pandas_kwargs.cache_clear)
+
+    real = "to_pandas_kwargs" in inspect.signature(pandas.read_parquet).parameters
+    real_read_parquet = pandas.read_parquet
+    seen: list[dict] = []
+
+    def spy(path, **kwargs):
+        seen.append(dict(kwargs))
+        return real_read_parquet(path, **kwargs)
+
+    monkeypatch.setattr(pandas, "read_parquet", spy)
+
+    path = tmp_path / "frame.parquet"
+    pandas.DataFrame({"close": [10.0, 11.0]},
+                     index=pandas.Index(["NVDA", "MMC"])).to_parquet(path)
+    out = native_parquet.read_parquet_native(path)
+
+    assert len(seen) == 1
+    if real:
+        assert seen[0]["to_pandas_kwargs"] == {"use_threads": False}
+    else:
+        assert "to_pandas_kwargs" not in seen[0]
+    assert list(out["close"]) == [10.0, 11.0]

@@ -25,10 +25,12 @@ from urllib.parse import unquote, urlparse
 @functools.lru_cache(maxsize=1)
 def _has_to_pandas_kwargs() -> bool:
     """True when this pandas read_parquet accepts to_pandas_kwargs (absent on
-    pandas 2.2, present on 3.x — the only axis that differs across the floor)."""
-    import pandas as pd
+    pandas 2.2, present on 3.x — the only axis that differs across the floor).
+    Signs the definition site, pandas.io.parquet.read_parquet: a monkeypatch of
+    pd.read_parquet before the first call cannot cache the spy's signature."""
+    from pandas.io.parquet import read_parquet
 
-    return "to_pandas_kwargs" in inspect.signature(pd.read_parquet).parameters
+    return "to_pandas_kwargs" in inspect.signature(read_parquet).parameters
 
 
 def read_parquet_native(path, *, columns=None):

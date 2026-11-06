@@ -1,0 +1,10 @@
+{
+  "recorded_at": "2026-10-14T15:56:33.300625+00:00",
+  "head": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+  "base": "50db81266bb88a93d8c0ec318389548c7939d4be",
+  "rc": 0,
+  "tree": "3e1f4265437e1d8dd98d376a0cf7374e476ac6da",
+  "preserved_branch": "claude/ssd-eval-os-a1-preflight-20260922-f75c61cdabe6f12c",
+  "preserved_commit": "26bfb6a0b9928e0463efef9e5904e6cdaeb6e581",
+  "scope": "Local preparation only;15:55 shared CI9/cap8 andPR8920lease prevent publication/new hosted proof. No remote effect."
+}
