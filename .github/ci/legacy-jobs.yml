@@ -30532,6 +30532,9 @@ jobs:
       - tests/js/calculator_input_integrity.test.mjs
       - templates/calculators/cagr.html.j2
       - tests/test_cagr_copy_feedback.py
+      - templates/calculators/net_worth.html.j2
+      - site/tools/calculators/net-worth.html
+      - tests/js/net_worth_input_integrity.test.cjs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30547,6 +30550,10 @@ jobs:
         run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
         run: node --test tests/js/calculator_input_integrity.test.mjs
+      - name: Net Worth invalid amounts and result ownership (source and published artifact)
+        run: |
+          node --test tests/js/net_worth_input_integrity.test.cjs
+          NET_WORTH_SOURCE=site/tools/calculators/net-worth.html node --test tests/js/net_worth_input_integrity.test.cjs
 
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
