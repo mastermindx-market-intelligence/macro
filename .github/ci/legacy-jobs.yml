@@ -15595,6 +15595,7 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - research/signal_engine/confluence.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - "lib/us_cash_calendar.py"
@@ -18754,6 +18755,7 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - research/signal_engine/confluence.py
       - "tests/test_uk_policy_brain.py"
       - "tests/fixtures/uk_policy_govuk_sample.json"
       - ".github/workflows/whitehouse-sentinel.yml"
@@ -39172,7 +39174,7 @@ jobs:
               -o "$native_target"
           done
           MM_FABRIC_GATEWAY_SOURCE_ROOT="$fabric_fixture_root" python -m pytest \
-            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_fabric_commodity_influence.py tests/test_fabric_response_eval.py tests/test_fabric_marketing_review.py tests/test_fabric_marketing_copywriter.py tests/test_fabric_application_deadlines.py tests/test_fabric_marketing_breaking.py tests/test_fabric_marketing_fomc.py tests/test_fabric_marketing_hot_reply.py tests/test_fabric_admin_pool_view.py tests/test_fabric_admin_pool_server.py tests/test_fabric_marketing_cold_read.py tests/test_fabric_press_writer.py tests/test_fabric_uk_policy_brain.py tests/test_fabric_intelligence_desk.py tests/test_publish_time_fabric_composition.py tests/test_native_go_application_recipe.py tests/test_specialty_current_fabric_composition.py tests/test_earnings_current_fabric_composition.py tests/test_cortex_fabric_composition.py tests/test_fabric_diagnostic_scripts.py tests/test_fabric_whitehouse_brain.py \
+            tests/test_fabric_native_application_client.py tests/test_fabric_native_application_composition.py tests/test_fabric_brain_buffered_delivery.py tests/test_fabric_caller_native_composition.py tests/test_fabric_small_consumers.py tests/test_fabric_commodity_influence.py tests/test_fabric_response_eval.py tests/test_fabric_marketing_review.py tests/test_fabric_marketing_copywriter.py tests/test_fabric_application_deadlines.py tests/test_fabric_marketing_breaking.py tests/test_fabric_marketing_fomc.py tests/test_fabric_marketing_hot_reply.py tests/test_fabric_admin_pool_view.py tests/test_fabric_admin_pool_server.py tests/test_fabric_marketing_cold_read.py tests/test_fabric_press_writer.py tests/test_fabric_uk_policy_brain.py tests/test_fabric_intelligence_desk.py tests/test_publish_time_fabric_composition.py tests/test_native_go_application_recipe.py tests/test_specialty_current_fabric_composition.py tests/test_earnings_current_fabric_composition.py tests/test_cortex_fabric_composition.py tests/test_fabric_diagnostic_scripts.py tests/test_fabric_whitehouse_brain.py tests/test_fabric_research_runners.py \
             tests/test_fabric_inference_client.py tests/test_fabric_consumer_composition.py \
             tests/test_fabric_gateway_composition.py tests/test_orchestrator_fabric_composition.py tests/test_fabric_application_binding.py \
             tests/test_fabric_shared_default.py tests/test_master_brain_fabric_composition.py \
