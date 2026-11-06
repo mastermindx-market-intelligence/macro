@@ -301,9 +301,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-06T07:20:24Z",
+    "built_at": "2026-11-06T09:38:53Z",
     "calculation_as_of": "2026-10-16T18:16:51.754201+00:00",
-    "code_version": "3fc4cc0570d00df1d8bcdfd16c5390597b660f8f",
+    "code_version": "2012464520f1da80764b2211ce2637e597e4966a",
     "content_sha256": "e3eac4c37183f103d0375cc95c1e22e41bd5f5075781622fc6055a91406e926f",
     "generation_id": "liquidity_central_banks-US-e3eac4c37183f103",
     "producer": "engine.market_os.macro_workspaces.liquidity_central_banks",

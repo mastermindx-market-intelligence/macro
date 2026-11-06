@@ -10910,5 +10910,5 @@
     ]
   },
   "definition": "sync = 1 \u2212 circ_var(2\u03c0\u00b7pos/100); mean resultant length of phase angles",
-  "updated_at": "2026-11-06T10:00:19Z"
+  "updated_at": "2026-11-06T12:24:49Z"
 }
