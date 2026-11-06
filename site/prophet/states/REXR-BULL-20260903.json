@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "REXR-BULL-20260903",
-  "asof": "2026-11-04",
+  "asof": "2026-11-06",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.9,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 98.0,
+    "validity": 95.6,
     "progress": 0.0,
-    "pace": 27.3,
+    "pace": 24.7,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": 0.985,
+    "dist_to_stop_r": 0.967,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 104.4,
-    "p1": -0.0101,
-    "p2": -0.005,
+    "horizon_pct_used": 108.9,
+    "p1": -0.0219,
+    "p2": -0.011,
     "p3": null,
-    "move_r": -0.015,
+    "move_r": -0.033,
     "mfe_r": 0.045,
     "mae_r": -0.325
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 47,
-  "tau": 1.0444,
+  "days_elapsed": 49,
+  "tau": 1.0889,
   "closed": true,
   "outcome": "EXPIRED"
 }
