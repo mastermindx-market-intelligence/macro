@@ -357,17 +357,32 @@ def main() -> int:
     # HEAD's China payload predates L6.5o (8ada88c9), which made the China producer stamp
     # rs_21d_rank. Re-stamp each family with that producer's own stamper, as compute() does
     # (sectors and baskets ranked apart), so the leadership list sorts on the lens it shows.
-    # The 63d rank it re-derives must equal HEAD's, or the fixture is refused.
+    # The payload carries rs_63d rounded to 0.1, so two records the producer ordered on full
+    # precision can tie here. The 63d rank it re-derives must equal HEAD's except inside such
+    # a tie, and the tied records must hold the same rank set. HEAD's rs_rank is then kept.
     from engine.sector_cycles import _stamp_rs_ranks
-    cn_restamp = {}
+    cn_restamp, cn_tie_swaps, cn_21d_ties = {}, {}, {}
     for fam in ("sectors", "baskets"):
         recs = cn_lab.get(fam) or []
         before = [(r.get("now") or {}).get("rs_rank") for r in recs]
         _stamp_rs_ranks(recs)
-        if [r["now"].get("rs_rank") for r in recs] != before:
-            raise SystemExit(f"rs_rank re-derivation differs from HEAD: {fam}")
+        groups = {}
+        for r, b in zip(recs, before):
+            groups.setdefault(r["now"].get("rs_63d"), []).append((b, r["now"].get("rs_rank")))
+        swaps = 0
+        for v, pairs in groups.items():
+            if sorted(b for b, _ in pairs) != sorted(a for _, a in pairs) or (len(pairs) == 1 and pairs[0][0] != pairs[0][1]):
+                raise SystemExit(f"rs_rank re-derivation differs from HEAD outside a rounded tie: {fam} rs_63d={v}")
+            swaps += sum(1 for b, a in pairs if b != a)
+        for r, b in zip(recs, before):
+            r["now"]["rs_rank"] = b
+        cn_tie_swaps[fam] = swaps
+        v21 = [r["now"].get("rs_21d") for r in recs if r["now"].get("rs_21d") is not None]
+        cn_21d_ties[fam] = sum(1 for v in set(v21) if v21.count(v) > 1)
         cn_restamp[fam] = sum(1 for r in recs if r["now"].get("rs_21d_rank") is not None)
     CHECKS["cn_rs_21d_rank_restamped"] = cn_restamp
+    CHECKS["cn_rs_rank_rounded_tie_swaps_kept_head"] = cn_tie_swaps
+    CHECKS["cn_rs_21d_rounded_tie_values"] = cn_21d_ties
     cl_core, cl_series, _ = split_with_extras(cn_lab, cn_head_core)
     put("sector_cycles_china_data.js", js_payload(P_CORE, cl_core, ensure_ascii=False),
         "HEAD:site/chinasectordata/sector_cycles.json", "label=FIXTURE; rs_21d_rank re-stamped (L6.5o stamper); split_cycles_payload")
