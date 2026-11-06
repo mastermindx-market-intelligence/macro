@@ -211,3 +211,95 @@ unresolved additions:
 - Still open for the seat: F2 adversarial review of the matrix, F3/F4 installed-vertical observation (human sign-in gate), F5 final acceptance, §9.1 seven vertical proofs (none committed), E4 implementation only after B1–B4 are qualified. F05 GAP-RECEIPT remains the Chronicle owner's. C2/C4/C5 not launched (other owners).
 
 Next action: merge #10351 at a3b84009 → W3 F2 (adversarial review of the F1 matrix), §9.1 vertical proofs where no human gate blocks, E4 stays design-blocked until B1–B4 are qualified; F3/F4 real-sign-in observation is a human gate named once; F05 GAP-RECEIPT stays with the Chronicle owner.
+
+## Seventh write 2026-11-01 04:5xZ — E4 census and records r5 merged; W3 F2 negative controls commissioned
+
+- **Correction to the sixth write:** macro #10351 (E4 Brief binding census) is MERGED → f3b17d9e
+  (2026-11-01T04:34:13Z), not "open pinned". Records r5 #10352 MERGED → 6ff08d8e (04:34:34Z).
+- **F2 commissioned (MASTERPLAN §7.F row F2, line 387).** Three path-disjoint Fabric lanes on
+  ubuntu1 (glm-5.3, class review, C2_COMPLEX_BOUNDED, base 6ff08d8e, parent
+  w3-seat-direct-20261031), launched 04:50Z:
+  - `news-w3-f2-time-corrections-r1` — clocks, revisions, corrections, withdrawal, source health (T01–T14).
+  - `news-w3-f2-rights-identity-r1` — rights receipts, read leakage, dated ticker identity, mirror/transport independence, over-merge (R01–R15).
+  - `news-w3-f2-model-context-r1` — injection, uncited claims, numbers/units/periods, sentiment and confidence authority, legacy path default (M01–M15).
+  Each lane writes one evidence doc and one offline synthetic control script under
+  `research/news_intelligence_estate_20261021/` (`F2_*_NEGATIVE_CONTROLS.md`, `f2_controls/nc_*.py`).
+  Lanes author none of the attacked modules and edit no source. The seat accepts a lane only after
+  re-running its script on M2 and reproducing every verdict. A BROKEN control is recorded as
+  evidence; its repair is a separately commissioned build lane, never part of the F2 lane.
+- Spent lane ids (never relaunch): the three ids above.
+
+## Eighth write 2026-11-02 01:28Z — W3 F2 adjudicated; seven repair PRs; nine controls closed on main; §9.1 readiness mapped
+
+- **Leadership continuity (Chairman 2026-10-24 ruling).** Seat 602cd180's session ended after merging #10411 at 2026-11-01 13:13Z with this eighth write drafted but never committed (draft recovered from its scratchpad, verified against main: every PR and merge commit below re-read from GitHub/main by this seat). Seat e3d62d36 (Fable 5.1, the original 2026-10-22 commission seat, resumed 2026-11-02 01:2xZ) is the current receiver: takeover recorded here and in the workstream landmine, no owner wait, no work redone.
+
+- **F2 evidence MERGED.** macro #10366 → c31b2526 (06:16:15Z). The seat re-ran all three lane
+  scripts on M2 and reproduced every verdict before accepting. 52 controls executed:
+  | Family | Executed | HELD | BROKEN | NO_MECHANISM |
+  |---|---|---|---|---|
+  | Time and corrections (T01–T15) | 15 | 13 | 1 (T04) | 1 (T15) |
+  | Rights and identity (R01–R15) | 17 | 16 | 1 (R15) | 0 |
+  | Model context (M01–M15) | 20 | 11 | 5 (M01c, M05, M06a, M06b, M11) | 4 (M04, M07b, M08, M13) |
+- **§9.1 readiness map MERGED.** macro #10369 → a10ceb05 (06:48:41Z), evidence only. No vertical
+  reaches ANON_DEPLOYED without a human. Best rung without a human: V1 and V4 COMMITTED_ARTIFACT;
+  V2, V3, V5 and V7 OFFLINE_FIXTURE; V6 SIGNED_IN_HUMAN_GATE for the read step and NONE for save,
+  follow and propose.
+- **Repairs, each a separately commissioned build with an independent non-author review.** Every
+  review was a native Opus read-only auditor because Fabric admission returned rc=75 on every
+  host; that fallback is the standing rule, not a waiver.
+  | Finding | PR | Review | Merged | Proof on main |
+  |---|---|---|---|---|
+  | M01c, M06a, M06b, M11 | #10372 | FAIL at 34671a0f (M-1 text_safe arrays skipped S14; m-1 slot test; m-2 rate units took currency), repaired, re-review PASS_WITH_NOTES | 6a894b6f (08:39:34Z) | nc_model_context at 1d3f3ae1: all four HELD |
+  | T04 possession bound (B3) | #10378 | FAIL at 8efb17bb (V3 OverflowError not fail-closed), repaired, re-review PASS_WITH_NOTES | 0b167979 (09:15:18Z) | nc_time_corrections at 1d3f3ae1: T04 HELD, r24h=0 daily28d=0 |
+  | T15 provider stamps after receipt | #10386 | PASS_WITH_NOTES at 2fabfa3d | 1d3f3ae1 (09:59:31Z) | T15 HELD, three anomalies flagged; summary held=15 of 15 |
+  | R15 syndicated-copy source count (B4) | #10393 | PASS_WITH_NOTES at 2da2f882 | 5e08c8db (10:07:51Z) | nc_rights_identity on 5e08c8db: R15 HELD (syndicated wire collapsed, source_count=1); held=17 of 17 |
+  | M05b producer fingerprint by fact-key period | #10398 | FAIL at f2458a28 (R3 absence period hashed whole; R3 nit raw period dict; R7 two doc overstatements; R2 unit spellings), repaired at cf0ce682, re-review PASS_WITH_NOTES at cf0ce682 | b114f35c (10:37:13Z) | nc_model_context on b114f35c: M05b HELD (percent, pp and "percentage points" collapse to one fact_revision chain); held=16, broken=1 (M05a), no_mechanism=4, total=21 |
+  | Validator: fold-split role markers and control-split URI schemes (NOTE-A) | #10405 | FAIL at a67a92ff (deleting tab/LF/CR across the whole value refused ordinary prose), r2 FAIL on wording, r3 code PASS with body FAIL fixed in r3b, re-review PASS_WITH_NOTES | f59b3547 (12:38:37Z) | validator rule; tests only, no control maps to it |
+  | M04 fabricated number: quantity grounded against the verified span | #10411 | FAIL at 1d6df1ae (US and European readings both grounded, so a 1000x-off value passed; Decimal overflow raised), repaired at f7970bfb (one reading per numeral; numerals over 64 characters fail closed), re-review PASS_WITH_NOTES at f7970bfb | b15b9405 (2026-11-01 13:13:16Z) | nc_model_context: M04 HELD (stated USD 50m -> emitted capital_allocation_event.v1; fabricated 777 from the same span -> rejected quantity_value_ungrounded); summary held=17, broken=1 (M05a), no_mechanism=3 (M07b, M08, M13), total=21 — re-run by seat e3d62d36 at main f50fc7b7 (descends from b15b9405) |
+  #10386 CI: ci-pack-2 failed on its first attempt; the failed job was rerun once as a principal
+  act and passed. Its cause was not diagnosed. Never rerun it again.
+- **M05a stays BROKEN by contract, not by defect.** The grader's unit map binds `"pp": "percent"`
+  in the frozen endpoints.v1 contract, so a percentage-point answer graded against percent still
+  scores correct. Changing that needs a versioned contract, not an edit under `contracts/`.
+- **NO_MECHANISM triage.** M04 is closed by #10411. M07b (52/53-week and claim-versus-evidence
+  period) remains: the claim-versus-evidence part is an engine candidate that builds on #10398; the
+  52/53-week part changes the fiscal-period token and is a named contract gap. M08
+  (adjusted versus reported basis) and M13 (coalescing, timeout and spend budget before a model
+  call, the E4 B2/B4 bindings) are recorded gaps owned by their contracts, not repaired here.
+- **Review follow-ups queued, none blocking:** from #10411, the grouping sentence is less precise
+  than the code, the newly fail-closed lakh `1,23,456` and `1,234,56` forms are not named, the
+  overflow test case does not pin the overflow, and a two-period numeral is not width-checked
+  (`5.1.3` reads 513; pre-existing); from #10405, the fold-skip and S8 cost note and the vbscript
+  double report; M04 refusal rate on real labels is unmeasured (no producer bundles local); nc_m11 should assert
+  the refusal reason (n-5); a malformed `published_at` raises instead of refusing; "25 index points
+  USD" wording (NOTE-D); the B4 UI verifier checks only the Chinese note (N2).
+- Spent lane ids (never relaunch): news-w3-f2-time-corrections-r1, news-w3-f2-rights-identity-r1,
+  news-w3-f2-model-context-r1, news-w3-f2-review-r1, news-w4-v91-readiness-r1/r2,
+  news-w4-v91-review-r1/r2, news-w4-f2fix-b1-amounts-r1, news-w4-f2fix-b1-review-r1, news-w4-f2fix-notea-r1.
+
+Next action: build the M07b claim-versus-evidence period check as a fresh lane (seat-direct on rc=75)
+after reading each event type's slot-period semantics; then the §9.1 vertical proofs to their best rung without a human. F3/F4 signed-in observation is a
+human gate, named once: a person must sign in to the deployed product for the SIGNED_IN rungs.
+
+## Ninth write 2026-11-02 07:4xZ — M07b repair (validator rule S15) READY and armed, not merged; §9.1 seven proofs built, independently reviewed, repaired and armed; main-side red owned elsewhere
+
+- **Records r7 MERGED.** macro #10478 → 9af0a33e (01:54:53Z): eighth write, W3 done, W4 in progress, takeover recorded.
+- **M07b repaired (F2 N2, claim-versus-evidence period).** macro #10480 head 63f84724 READY + armed `merge-on-green` 02:4xZ, CLEAN/MERGEABLE at 07:29Z and not yet merged (sweeper queue, below). Validator rule S15 refuses a quantity whose own fiscal period cannot evidence the claim slot (three slot pairs; label years more than one apart, or dated ranges disjoint after a seven-day shrink; containment, overlap, absences, dateless within one year, prior_amount, as-of amounts and baselines pass). No contract edit. Independent review: round 1 (fresh non-authoring Opus reviewer, head 16a47932) FAIL — R1 a multi-year period without `end_year` (contract-legal; producer token `FY<year>M`) read as one year and refused real in-horizon amounts; R2 an unplaceable `calendar_end` (`0001-06-30`, schema-legal) raised inside the rule and the per-rule guard silenced every S15 finding for the payload. Both repaired in c9156d0f (open spans bounded below only, multi-year periods label-test only, guarded date arithmetic; three new tests, 103 validate / 225 producer-facts-contracts); the quarterly-versus-annual containment case is recorded as an open Limit tied to the M08 basis gap. Round 2 on the repair diff (fresh Opus reviewer, 620 frozen cases identical across parent/head/repair, kill test 6 of 10 S15 tests fail without the rule): PASS_WITH_NOTES, notes m1/n-c/m2 applied in 63f84724. nc_model_context at the S15 head: held=18 broken=1 no_mechanism=3 of 22 (M07b HELD; the 52/53-week half is control M07c NO_MECHANISM, a contract gap).
+- **§9.1 vertical proofs — built.** ORCH-V91 (Opus suborchestrator, fable-mode, parent run orch-v91-seat-direct-20261102) commissioned 01:52Z for seven executable proofs at their best rung without a human. RETURNED PARTIAL ~06:0xZ after 4 h: seven draft PRs branched from main at or before b394a98b, each tested to merge onto b394a98b in sequence without conflict; shared harness `tests/test_v91_vertical_proofs.py` (no sockets, credential and writer-arming env removed, every proof run twice, every cited path:line resolved, verdicts pinned to `.expected`) and `V91_VERTICAL_PROOFS.md` byte-identical in every PR; a `news-v91-vertical-proofs` legacy job added `if: false`. The orchestrator obtained no independent review: Fabric review admission on ubuntu2 refused `reconciliation_hold_present` by four hold markers its own rc=76 lanes left (fabric-mint fetch=False, donor stale), bailian rc=75; hold clearance + donor health (57 GB promisor packs) routed to the Fabric owner with evidence at seat scratch `orch/v91/packets/ubuntu2_hold_clearance_evidence.txt`.
+- **§9.1 vertical proofs — seat-routed independent review (native Opus read-only reviewers, two at a time, Fabric fallback), repair and arming.** Standard: PROVEN needs producer behaviour on inputs whose answer is known by construction plus a discriminating engine negative; a script-side scan is never producer evidence; a too-narrow scan is a false gap; promotion logic must not be trivially gameable; evidence strings are computed, never fixed. Outcomes at the ARMED heads (every PR READY + `merge-on-green` + seat comment; never re-arm, never re-review these heads):
+  | Proof | PR | Rounds | Armed head | Verdicts proven/partial/absent/human_gate |
+  |---|---|---|---|---|
+  | V7 Quiet, outage, rights loss | #10497 | r1 ACCEPT-WITH-NOTES (five PROVEN confirmed by mutation probes) | 4f087b7d | 5/2/1/1 |
+  | V3 capital allocation / major contract | #10491 | r1 REJECT at e9b561d3 (P2 PROVEN failed P1's own mislabel standard) → repaired → ACCEPT-WITH-NOTES | 1d4a7c88 | 0/5/2/0 |
+  | V5 rumor, denial, confirmation | #10488 | r1 REJECT at 5a2e2095 (P5 as-of replay was script filtering) → 2510bb9a → r3 ACCEPT | a1eb0209 | 1/4/0/1 |
+  | V1 macro release and revision | #10504 | r1 at be8ba1dd (P7 ABSENT came from a top-level `app/*.py` scan; the Brain reads the radar through `ask_brain` → cortex → `inflation_intelligence.json`) → r2 ACCEPT | 24416706 | 2/5/0/1 |
+  | V2 earnings and guidance | #10495 | r1 notes (except narrowed to WorkspaceError, P5 census labelled) → ACCEPT | 135a3454 | 0/6/0/0 |
+  | V4 policy / supply-chain event | #10505 | r1 REJECT at 51955ba0 (nine findings: P2/P5 promotion trivially gameable, fixed evidence strings, P1 proxy undeclared, P4 validator not branch-scoped) → repaired (P1 renders `rule effective in 18d` from a SYNTH final rule, P2 producer half through `compute_policy_calendar`, P4 branch validator + customer_win/incidental_role variants, P5 ast import edges to the policy lane) → r2 ACCEPT-WITH-NOTES | a77768ce | 0/4/1/0 |
+  | V6 user research workflow | #10506 | r1 REJECT at e9f78678 → bb24dd2f r2 ACCEPT-WITH-NOTES → r3 ACCEPT (P2 entitled/non-entitled paywall probe, P3 crosswalk with no_active_membership, P4 route + owner-scoped browser-write scan, P5 word-bounded write verbs, P6 six first-store confirmations, P7 briefcase) | 46a83fd2 | 2/2/2/1 |
+  Totals at the armed heads: 48 properties — 10 PROVEN, 28 PARTIAL, 6 ABSENT, 4 HUMAN_GATE (the orchestrator's own heads claimed 12/24/8/4; two PROVEN claims fell to PARTIAL under review and two ABSENT rows rose to PARTIAL). Producer gaps recorded as ABSENT/PARTIAL, not fixed: V3 P6 (no consumer reads news_impact output), V3 P7 (HKEX collector English-only; company_id must be a SEC CIK), V4 P3 (no alternative/falsifier cascade members), V4 P2 (chips carry no company/product/source member), V6 P5 (no route proposes a thesis), V6 P7 (no news surface saves a briefcase assessment), V7 P7 (AI evidence bundle lacks degraded state); the four HUMAN_GATE properties (V1 P8, V5 P6, V6 P2, V7 P9) are the one signed-in human gate, named once.
+- **Main-side red, owned elsewhere.** #10491's CI is red on two tests the V3 change does not touch: `tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure` (gmi-explorer scope misses `research/theme_graph/gmi_relationships_20261021/m3/describe_premises_v1.json`, from merged GMI 17040f00) and `tests/test_workflow_file_size.py` (daily.yml 488050 > 487000 since 527dc17b). Both fixes are other owners' open carriers — #10525 (`sol/web-release-unblock-gmi-scope-20261102-c3`, label main-red-repair) and #10528 (`claude/ssd-ci-daily-byte-budget-20261102-226de775affbc29a`) — read-only here. Main's own CI on 85d46243 was queued at 07:25Z and is expected red; every UNSTABLE V PR is expected to hit the same two tests. At 07:35:47Z the sweeper's semantic proof refused #10491 on the test_ci_pack failure and applied `merge-blocked` with its one explanatory comment; the `merge-on-green` arm stays. `scripts/merge_on_green.py` applies that label on a refused merge and clears it itself when the head moves or the branch is updated (`clear_blocked`), so no manual label removal, re-arm or new comment is needed. Remedy once both fixes merge: carrier re-read, then `gh pr update-branch` (merge commit, never rebase) one PR at a time starting with #10491 — the head move re-proves the PR and the sweeper drops `merge-blocked` on its next pass; any UNSTABLE V PR refused the same way is handled identically. Test-only drift needs no re-review.
+- **Sweeper state (07:29Z).** `merge-on-green.yml` runs on GitHub-hosted `ubuntu-latest`; since the last successful run (06:57Z) 5 runs are queued and ~35 were cancelled by intended concurrency coalescing, behind a saturated hosted queue (ci x18, ci-authority x17, fences x8). #10480 and #10497 are CLEAN and unmerged only for that reason; a manual dispatch would coalesce into the same queue and was not made. Mac runners are idle except mac-builder-5.
+- **Owned obligation — doc-only follow-up PR after the seven land** (`V91_VERTICAL_PROOFS.md` stays byte-identical until then; until it lands the page's PROVEN counts are not accepted evidence): V1 P7 ABSENT→PARTIAL (drop "No Brain path reads the radar"); V3 P2 row + Summary 0/5/2 + e0c60687 supersession + span-evidence clause (`EVIDENCE_LADDER[T2]`); V5 P5 row + Summary 1/4; V2 notes (harness pins verdicts, not held counts; S15 on main → P3 7 of 8; two design-rule gaps); V4 P1 (next_rule_effective_date is a comments-close proxy, shown to users), P2 (gap is the company/product link), P4 lifecycle_ok note; V6 Summary 2/2/2/1 + Total, P4/P5/P6/P7 rows, P2 title, "no route saves or follows research", rung sentence. Apply script kept at seat scratch `r7/doc_followup_apply.py`; untested against the merged file.
+- Spent lane ids (never relaunch): news-w4-v91-v{1..7}-build-r1, v2-build-r2, v7-build-r2, v1-review-r1/r2, v2-review-r1, v3-review-r1, v4-review-r1/r2, v5-review-r1/r2, v6-review-r1, v7-review-r1/r2/r3 (v6-review-r2 reserved, unlaunched).
+
+Next action: let the sweeper land #10480 and #10497; when #10525 and #10528 are merged, update-branch #10491 and any V PR that went red on the same two tests, one at a time after a carrier re-read; after all seven land, the doc-only follow-up PR with independent review; then W4 remainder — E4 implementation stays blocked until B1–B4 are qualified, F3/F4 signed-in observation is the human gate named once, M08/M13/M07c are contract gaps.

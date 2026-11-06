@@ -811,6 +811,518 @@
         "source_url": "https://data.sec.gov/submissions/CIK0001652044.json"
       },
       "ticker": "GOOGL"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000882095-22-000007",
+          "census_ref": "held_out_contract.json#GILD",
+          "filing_date": "2022-02-23",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000882095-23-000007",
+          "census_ref": "held_out_contract.json#GILD",
+          "filing_date": "2023-02-22",
+          "form": "10-K",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000882095-24-000007",
+          "census_ref": "held_out_contract.json#GILD",
+          "filing_date": "2024-02-23",
+          "form": "10-K",
+          "period_of_report": "2023-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        }
+      ],
+      "cik": "0000882095",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "GILEAD SCIENCES, INC.",
+      "security_master_binding": {
+        "effective_at": "2023-01-03T00:00:00",
+        "issuer_cik": "0000882095",
+        "issuer_id": "ISS:US-XNAS-GILD",
+        "listing_key": "US-XNAS-GILD",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-GILD",
+        "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+        "security_state": null
+      },
+      "sic": "2836",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics_held_out/split3_submissions/GILD.json",
+        "retrieved_at": "2026-11-01T20:23:03Z",
+        "sha256": "40e9ad5bbc8caa202406bcb22066e7ab34bda3e63edf8ce874bbd0f0ddd7dbc0",
+        "sic_description": "Biological Products, (No Diagnostic Substances)",
+        "source_url": "https://data.sec.gov/submissions/CIK0000882095.json"
+      },
+      "ticker": "GILD"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000318154-22-000010",
+          "census_ref": "held_out_contract.json#AMGN",
+          "filing_date": "2022-02-16",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000318154-23-000017",
+          "census_ref": "held_out_contract.json#AMGN",
+          "filing_date": "2023-02-09",
+          "form": "10-K",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000318154-24-000011",
+          "census_ref": "held_out_contract.json#AMGN",
+          "filing_date": "2024-02-14",
+          "form": "10-K",
+          "period_of_report": "2023-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        }
+      ],
+      "cik": "0000318154",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "AMGEN INC",
+      "security_master_binding": {
+        "effective_at": "2023-05-09T00:00:00",
+        "issuer_cik": "0000318154",
+        "issuer_id": "ISS:US-XNAS-AMGN",
+        "listing_key": "US-XNAS-AMGN",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-AMGN",
+        "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+        "security_state": null
+      },
+      "sic": "2836",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics_held_out/split3_submissions/AMGN.json",
+        "retrieved_at": "2026-11-01T20:23:04Z",
+        "sha256": "f789615b25a7a84918e206e42718591c16a6d8e5623e796fe5d24fe436e8f029",
+        "sic_description": "Biological Products, (No Diagnostic Substances)",
+        "source_url": "https://data.sec.gov/submissions/CIK0000318154.json"
+      },
+      "ticker": "AMGN"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000939767-22-000026",
+          "census_ref": "held_out_contract.json#EXEL",
+          "filing_date": "2022-02-18",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000939767-23-000019",
+          "census_ref": "held_out_contract.json#EXEL",
+          "filing_date": "2023-02-07",
+          "form": "10-K",
+          "period_of_report": "2022-12-30",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000939767-24-000028",
+          "census_ref": "held_out_contract.json#EXEL",
+          "filing_date": "2024-02-06",
+          "form": "10-K",
+          "period_of_report": "2023-12-29",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        }
+      ],
+      "cik": "0000939767",
+      "fiscal_year_end": "01-01",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "EXELIXIS, INC.",
+      "security_master_binding": {
+        "effective_at": "2026-08-21T00:00:00",
+        "issuer_cik": "0000939767",
+        "issuer_id": "ISS:US-XNAS-EXEL",
+        "listing_key": "US-XNAS-EXEL",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-EXEL",
+        "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+        "security_state": null
+      },
+      "sic": "2836",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics_held_out/split3_submissions/EXEL.json",
+        "retrieved_at": "2026-11-01T20:23:05Z",
+        "sha256": "068929b48416d427d41b96a5c7a136453b902695c5b76e8618c483dfcbf15691",
+        "sic_description": "Biological Products, (No Diagnostic Substances)",
+        "source_url": "https://data.sec.gov/submissions/CIK0000939767.json"
+      },
+      "ticker": "EXEL"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000914475-22-000013",
+          "census_ref": "held_out_contract.json#NBIX",
+          "filing_date": "2022-02-11",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000914475-23-000011",
+          "census_ref": "held_out_contract.json#NBIX",
+          "filing_date": "2023-02-09",
+          "form": "10-K",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000914475-24-000054",
+          "census_ref": "held_out_contract.json#NBIX",
+          "filing_date": "2024-02-09",
+          "form": "10-K",
+          "period_of_report": "2023-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        }
+      ],
+      "cik": "0000914475",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "NEUROCRINE BIOSCIENCES INC",
+      "security_master_binding": {
+        "effective_at": "2026-10-09T00:00:00",
+        "issuer_cik": "0000914475",
+        "issuer_id": "ISS:US-XNAS-NBIX",
+        "listing_key": "US-XNAS-NBIX",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-NBIX",
+        "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+        "security_state": null
+      },
+      "sic": "2836",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics_held_out/split3_submissions/NBIX.json",
+        "retrieved_at": "2026-11-01T20:23:07Z",
+        "sha256": "efbc2851ce78009c20cd1f5bdfcd2134bd48b54d366f6ac7422a029ae8d39e16",
+        "sic_description": "Biological Products, (No Diagnostic Substances)",
+        "source_url": "https://data.sec.gov/submissions/CIK0000914475.json"
+      },
+      "ticker": "NBIX"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000950170-22-001981",
+          "census_ref": "held_out_contract.json#NTLA",
+          "filing_date": "2022-02-24",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000950170-23-004097",
+          "census_ref": "held_out_contract.json#NTLA",
+          "filing_date": "2023-02-23",
+          "form": "10-K",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000950170-24-018736",
+          "census_ref": "held_out_contract.json#NTLA",
+          "filing_date": "2024-02-22",
+          "form": "10-K",
+          "period_of_report": "2023-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        }
+      ],
+      "cik": "0001652130",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "Intellia Therapeutics, Inc.",
+      "security_master_binding": {
+        "effective_at": "2026-08-21T00:00:00",
+        "issuer_cik": "0001652130",
+        "issuer_id": "ISS:US-XNAS-NTLA",
+        "listing_key": "US-XNAS-NTLA",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-NTLA",
+        "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+        "security_state": null
+      },
+      "sic": "2835",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics_held_out/split3_submissions/NTLA.json",
+        "retrieved_at": "2026-11-01T20:23:08Z",
+        "sha256": "b156985c97b60d7ff413a9390d8f782749d59f9c60bc3948ba4d5594822108be",
+        "sic_description": "In Vitro & In Vivo Diagnostic Substances",
+        "source_url": "https://data.sec.gov/submissions/CIK0001652130.json"
+      },
+      "ticker": "NTLA"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000950170-22-002293",
+          "census_ref": "held_out_contract.json#FATE",
+          "filing_date": "2022-02-28",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000950170-23-005067",
+          "census_ref": "held_out_contract.json#FATE",
+          "filing_date": "2023-02-28",
+          "form": "10-K",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000950170-24-020158",
+          "census_ref": "held_out_contract.json#FATE",
+          "filing_date": "2024-02-26",
+          "form": "10-K",
+          "period_of_report": "2023-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        }
+      ],
+      "cik": "0001434316",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "FATE THERAPEUTICS INC",
+      "security_master_binding": {
+        "effective_at": "2026-08-21T00:00:00",
+        "issuer_cik": "0001434316",
+        "issuer_id": "ISS:US-XNAS-FATE",
+        "listing_key": "US-XNAS-FATE",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-FATE",
+        "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+        "security_state": null
+      },
+      "sic": "2836",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics_held_out/split3_submissions/FATE.json",
+        "retrieved_at": "2026-11-01T20:23:09Z",
+        "sha256": "f82d7346ce100e37d2b9d6a9c289bac52fb0b01304f57fc57fc29f7fde5cceee",
+        "sic_description": "Biological Products, (No Diagnostic Substances)",
+        "source_url": "https://data.sec.gov/submissions/CIK0001434316.json"
+      },
+      "ticker": "FATE"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0000950170-22-001282",
+          "census_ref": "held_out_contract.json#CRSP",
+          "filing_date": "2022-02-15",
+          "form": "10-K",
+          "period_of_report": "2021-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000950170-23-003441",
+          "census_ref": "held_out_contract.json#CRSP",
+          "filing_date": "2023-02-21",
+          "form": "10-K",
+          "period_of_report": "2022-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0000950170-24-017571",
+          "census_ref": "held_out_contract.json#CRSP",
+          "filing_date": "2024-02-21",
+          "form": "10-K",
+          "period_of_report": "2023-12-31",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        }
+      ],
+      "cik": "0001674416",
+      "fiscal_year_end": "12-31",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "CRISPR Therapeutics AG",
+      "security_master_binding": {
+        "effective_at": "2026-08-21T00:00:00",
+        "issuer_cik": "0001674416",
+        "issuer_id": "ISS:US-XNAS-CRSP",
+        "listing_key": "US-XNAS-CRSP",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-CRSP",
+        "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+        "security_state": null
+      },
+      "sic": "2836",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics_held_out/split3_submissions/CRSP.json",
+        "retrieved_at": "2026-11-01T20:23:11Z",
+        "sha256": "e34d05e884034c2d5af74df9231e9caa1a521e8931e11b84964b89569d57337f",
+        "sic_description": "Biological Products, (No Diagnostic Substances)",
+        "source_url": "https://data.sec.gov/submissions/CIK0001674416.json"
+      },
+      "ticker": "CRSP"
+    },
+    {
+      "accessions": [
+        {
+          "accession": "0001564590-21-057888",
+          "census_ref": "held_out_contract.json#ARWR",
+          "filing_date": "2021-11-22",
+          "form": "10-K",
+          "period_of_report": "2021-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0001628280-22-030869",
+          "census_ref": "held_out_contract.json#ARWR",
+          "filing_date": "2022-11-28",
+          "form": "10-K",
+          "period_of_report": "2022-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        },
+        {
+          "accession": "0001628280-23-040219",
+          "census_ref": "held_out_contract.json#ARWR",
+          "filing_date": "2023-11-29",
+          "form": "10-K",
+          "period_of_report": "2023-09-30",
+          "retention_state": "not_retained",
+          "split_decision": 3,
+          "pack_scope": [
+            "PK12"
+          ]
+        }
+      ],
+      "cik": "0000879407",
+      "fiscal_year_end": "09-30",
+      "identity_binding_state": "generic_path_only",
+      "issuer_class": "industrial",
+      "legal_name": "ARROWHEAD PHARMACEUTICALS, INC.",
+      "security_master_binding": {
+        "effective_at": "2026-10-09T00:00:00",
+        "issuer_cik": "0000879407",
+        "issuer_id": "ISS:US-XNAS-ARWR",
+        "listing_key": "US-XNAS-ARWR",
+        "mic": "XNAS",
+        "security_id": "SEC:US-XNAS-ARWR",
+        "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7",
+        "security_state": null
+      },
+      "sic": "2834",
+      "sic_source": {
+        "capture_path": "tests/fixtures/fundamental_forensics_held_out/split3_submissions/ARWR.json",
+        "retrieved_at": "2026-11-01T20:23:12Z",
+        "sha256": "7add3e7208d87bff2b714cd51e60331a7b6406cf3df528fe17b932117b34816e",
+        "sic_description": "Pharmaceutical Preparations",
+        "source_url": "https://data.sec.gov/submissions/CIK0000879407.json"
+      },
+      "ticker": "ARWR"
     }
   ],
   "known_contradictions": [],
@@ -910,6 +1422,26 @@
       "decision": "DEC:FIF-Q0-SPLIT-DECISION-2-SECOND-LABELING-WAVE-20261031",
       "declared_at": "2026-10-31T13:00:00Z",
       "rule": "nine predeclared older-fiscal-year 10-K/10-Q filings per issuer, disjoint from gold, wave one, D0 and g_src"
+    },
+    {
+      "id": 3,
+      "decision": "DEC:FIF-Q0-SPLIT-DECISION-3-PK12-BIOTECH-HELD-OUT",
+      "declared_at": "2026-11-01T20:25:15Z",
+      "rule": "FY2021-2023 10-Ks of SIC 2834-2836 issuers disjoint from every earlier set, PK12-scoped, scored by the unchanged evaluator at the unchanged 0.80 floor",
+      "dropped_before_capture": [
+        {
+          "ticker": "EDIT",
+          "cik": "0001650664",
+          "reason": "no_security_master_row_at_base",
+          "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7"
+        },
+        {
+          "ticker": "IONS",
+          "cik": "0000874015",
+          "reason": "no_security_master_row_at_base",
+          "security_master_blob": "b81544e599a3c0f259bfb102a34828fb119e4de7"
+        }
+      ]
     }
   ]
 }

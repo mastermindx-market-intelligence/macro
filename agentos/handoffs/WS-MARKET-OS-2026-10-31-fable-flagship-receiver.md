@@ -170,6 +170,71 @@ and armed merge-on-green with a visible ARM comment (2026-10-31); the sweeper ow
 update-branch and the merge. Ladder reached: DELIVERED with a non-author ACCEPT at the
 current head, CI pending. Not reached: CI green, MERGED, PRODUCTION_PROOF, ACCEPTANCE.
 
+## Slice 1 merge and beta release (2026-11-01)
+
+Terminal PR 1189 merged as master db6168c2 with all 21 trusted checks green on the merge
+ref; master push checks (CodeQL, Vercel) are green. Charter PR 10230 and records PR 10239
+merged on Macro. Production `terminal.service` was released by another lane at
+2026-10-31 18:49Z to 05686904, which does not contain the slice; the production profile
+strips MMX_SHARED_SHELL, so Today is served only by the beta profile.
+
+Beta release custody: the compatibility lane is the recorded sole beta release owner
+(SHARED_SHELL_CEO_CONTINUATION_2026-10-21, item 3). Its workspace shows no active
+runtime operation or observer since 2026-10-24 and beta was still ec881d5e. Under the
+leadership-continuity rule this seat took the release and records the takeover here. It
+used the owner's only entrance on the provisioned carrier: `terminal-build.sh --target
+beta --target-sha db6168c20ce42217ed99d9fa53e6048683505da5`, launched once at
+2026-11-01 04:41:31Z as PID 3229194 after a check that no other build process ran. The
+owner acquired the shared build lock and runs its own W2A preflight, containment check,
+staged build, swap, health and identity checks, with its own pre-commit rollback.
+Log: `/opt/terminal/deploy-marketos-today-beta-db6168c2-20261101T044131Z.log`.
+
+Release result (observed 2026-11-01 04:53Z): the owner logged `DONE — target=beta live =
+origin/master @ db6168c20ce4`, committed transaction f89a01278f8940f293ed19676fc34203 with a
+CLEAN source preflight, and released the build lock. terminal-beta restarted at 04:52:39Z.
+Served evidence: beta `.deployment-id`, `/api/shared-shell/status` buildId and the `/today`
+`data-dpl-id` all read db6168c20ce42217ed99d9fa53e6048683505da5; `/today` returns 200; an
+anonymous POST to `/api/portfolio-changes` returns 401 `unauthenticated` (it was 404 before).
+Production `terminal.service` kept its PID and the production route still returns 404.
+Rung: DEPLOYED to beta. Not yet signed-in proven, PRODUCTION_PROOF or ACCEPTANCE.
+
+Signed-in proof gate: the built-in browser pane has no beta session (Today shows its
+signed-out gate) and no Claude in Chrome browser is connected. The signed-in proof needs
+Chris to sign in to beta in the pane, or to connect Claude in Chrome with 1Password.
+
+Producer contract dependency: Macro PRs 10199 and 10200 closed unmerged and 10203 is
+still open, so the deployed `portfolio_changes.v1` producer the slice pins is unchanged.
+
+## Signed-in beta proof (2026-11-01)
+
+Records PR 10358 merged as 35bdbef5. Chris signed in to beta in the built-in browser pane,
+and the seat ran the signed-in Today check on https://beta.mastermind-x.com/today at
+db6168c2. Script chunks and the fetched `/today` `data-dpl-id` both read db6168c2.
+
+- First load: the signed-out gate is gone and the "Since your last visit" section reaches
+  `data-today-since-state=ready`. POST `/api/portfolio-changes` returns 200, so the proxy
+  injected the session and the desk answered. The first-visit line renders and the
+  `mmx.today.since.v1` envelope now holds one `account:<uuid>` slot.
+- Second load: the client posted the stored digest and the desk answered 200. The section
+  renders the no-change line with the as-of and population sentence, and no list or
+  "Show N more" control.
+- The seat checked only fixed copy strings, element counts and slot keys. It never read,
+  printed or stored the digest contents or any change line.
+- Not exercised with this account: change lines with the overflow expansion, the free-tier
+  teaser (the account is Pro), and the unavailable state. Unit tests and the crops in
+  terminal#1189 cover these.
+
+Observation: the desk read is dated 2026-10-17 and the Macro command strip reads as of
+16 Oct 2026, so the upstream Macro context the brief composes is about two weeks old. That
+is a producer freshness question for the Macro owner; the slice renders the date honestly.
+
+Rung: real-path signed-in proof on BETA. This is not PRODUCTION_PROOF, because production
+`terminal.service` strips the shared shell and does not carry the slice. Promotion to
+production is a separate shared-shell release decision outside this slice. It is not
+ACCEPTANCE either.
+
+Producer contract dependency is unchanged: Macro PR 10203 is still open.
+
 ## Highest-risk dependencies
 
 1. Signed-in browser proof on beta needs a human sign-in (no saved credential, Chrome not

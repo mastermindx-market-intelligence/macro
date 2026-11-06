@@ -311,3 +311,142 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - Seat merges gb1 after its review; served-journey proof on www.mastermind-x.com/intl.html after the nightly
   renders the views (Scanner / Dossier / Dislocations enabled; Transmission disabled-by-design); §14 PARTIAL
   rows closure.
+
+## Checkpoint 2026-10-31 21:5x–23:0xZ — W2A + records r7 MERGED
+
+- W2A **#10288** IM13 global scanner + coverage view → main 92881169bb888435ab84b40740212a1fb0876a77 at
+  2026-10-31T21:54:40Z (recorded in the previous checkpoint's tail; re-verified 2026-11-01 in one batched
+  `gh api graphql` read). It carried DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031: the
+  `.github/ci/legacy-jobs.yml` international-workspace-browser budget 12→20 min with its paired pack-semantic pin
+  (`tests/test_ci_pack_semantic.py` `== 20`, test renamed …international1200); the international-dislocation-explorer
+  8→15 raise is **#10341**'s (another author, head 51b16608d57592b52d6c4b93877d65b2590a7c95 → dbaf1e07bcccf689a740ad3f1281c59ff1b9d946,
+  2026-10-31T20:08:34Z) and was taken verbatim (amendment c1). Decision record:
+  `agentos/decisions/DEC-INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE.md` (records r8).
+- Records r7 **#10353** (head ed9b641d62ab35ef997307a34a31a6d555ce6905; fabric review INTL-GS-REC7 r1 FAIL on one
+  vanished-pointer row → seat one-row remedy → SEAT_ACCEPT) → main 83a77d8533c6f885f6b061207d017f27cf485a78 at
+  2026-10-31T22:57:30Z. Burned lane ids: rec7-r1, rec7-r2, rec7-review-r1, rec7-review-r2.
+- gb1 lane `intl-gs-w2b-gb1-r2` died at the GLM harness 121-turn cap (`error_max_turns`, nothing pushed) → seat
+  SPLIT the scope into gb1a (builder/chip/footnote + tests, ≤90 turns) and gb1b (pins, defaults walk, recapture,
+  browser assertion) — launched on ubuntu0, the only admitting push-capable host.
+
+## Checkpoint 2026-11-01 01:0x–02:3xZ — gb1 + pin1 MERGED
+
+- gb1a `intl-gs-w2b-gb1a-r1`: commits f96e8456 (chip/footnote/builder + tests T1–T7) and 6b97b94a (six-line
+  paths-only closure widening of the international-workspace-browser job in `.github/ci/legacy-jobs.yml`:
+  +`engine/intl_global_graph_boundary.py`, +`engine/intl_transmission_evidence.py`,
+  +`config/intl_transmission_channels_v1.json` — checker-prescribed; dropping it reds contract-delta).
+  gb1b `intl-gs-w2b-gb1b-r1`: ecbd01fb — b9 CSS-region sha pin, B8 defaults walk, 64/64 evidence cells + 8 crops
+  recaptured both themes, `[data-graph-boundary]` browser assertion; FF-pushed onto the gb1a branch.
+- **#10354** W2B dossier graph-boundary label (head ecbd01fb8cfb36b4972fca4b1b183249a0759d50). Review
+  INTL-GS-W2B-GB1 (lane `intl-gs-w2b-gb1-review-r1`) returned FAIL on the fenced-file class (F1) → seat ruling
+  **DEC:INTL-GS-GB1A-CLOSURE-WIDENING-ACCEPTED-20261031** (the NEVER fence guarded pack budgets, not closure
+  paths; F2 display-registry tokens accepted; F3 pre-existing; F4 chip-row placement tolerated → F12; F5
+  cosmetic) → SEAT_ACCEPT → MERGED to main aba326f385ea19672e1a87f47e97c25e01c3b6d1 at 2026-11-01T01:03:18Z.
+  Production honesty unchanged: `edges=[]`, `edge_basis: "no_admitted_edge_set"` stamped and stated in the footnote.
+  Decision record: `agentos/decisions/DEC-INTL-GS-GB1A-CLOSURE-WIDENING-ACCEPTED.md` (records r8).
+- **#10355** pin1 polish (lane `intl-gs-pin1-r1`, head 89d7be656c772cd051f31269a749df9b2a11684f; review
+  INTL-GS-PIN1 `intl-gs-pin1-review-r1` PASS_WITH_NOTES, 0 blocking): the chip joins the Typed-edges head row
+  (`intl-gs__edges__head` wrapper, 3 CSS lines inside the W2B region, b9 pin refreshed to 14bfdee8…) = F12 DONE;
+  W2A CSS-region sha pin 9d18fbfa… (r4b R-10 DONE); scanner specimen AST scan walks function defaults (r4b R-09
+  DONE) → MERGED to main 4e1ae041040e638028f9b189fe6dfe932f4eb5b1 at 2026-11-01T02:32:05Z. The merge call returned
+  a transient 502; `gh pr view` read MERGED (same-carrier reconciliation, no retry); the seat deleted the leftover
+  lane branch afterwards.
+- All programme view and hardening lanes are on main: W4B #10258, W3U #10265, W2B #10278, W2A #10288, gb1 #10354,
+  pin1 #10355, plus records #10353.
+
+### Served proof (2026-11-01 04:4xZ)
+- `https://www.mastermind-x.com/intl.html` HTTP/2 200, `Last-Modified: Sun, 01 Nov 2026 03:12:25 GMT`, etag
+  `dmjjnurxkzx7dhgu2`, content-length 22649978; served `<span data-graph-boundary="…">` chips = 640
+  (530 structural_research + 110 structural_graph_member) → §14 row 4 **PRODUCTION_PROOF** on the gb1 content
+  (aba326f3; the page carries no commit stamp, attribution by content). pin1 wrapper `intl-gs__edges__head` = 0 at
+  probe time: the 4e1ae041 render was queued behind render run 41259434450 (in_progress 02:3x→04:2xZ, past the
+  usual budget) → pin1 served proof **PENDING**. Render path: `.github/workflows/render.yml` on push to main,
+  single self-hosted runner, serial queue; the daily schedule is a separate lane.
+- §14 recount after the census addendum (`research/INTL_GLOBAL_SURVEILLANCE_W5_CENSUS_2026-10-31.md`
+  "Addendum 2026-11-01"): **15 DONE / 6 PARTIAL / 0 GAP** (row 4 → DONE; row 16 GAP → PARTIAL via #10276; PARTIAL
+  rows 14, 16, 18, 19, 20, 21 with owners listed there). Rung reached: MERGED for every lane, PRODUCTION_PROOF for
+  row 4 content, **not** ACCEPTANCE by the commissioning authority and **not** the entitled-browser journey (row 18).
+
+### Deferred / custody
+- R2-01 scanner-abstain focus-state evidence cell (small follow-up PR).
+- F10 structural CI-budget fix: both international legacy jobs do a full checkout AND a separate ~4-min
+  `git fetch origin main` on hosted runners — shallow/base-only fetch, own PR; not a §14 row.
+- IM08/IM09 custody #8754 untouched; IM18 view surfaces per ORCH-5 F6; Transmission tab `not_built` by design.
+- Fabric admission 2026-11-01 04:41Z: ubuntu0 refused `host_disk_below_staging_reserve` (ubuntu1 temperature,
+  ubuntu2/3 disk floor earlier) → records r8 executed seat-direct under the execution-continuation law (no worker
+  started, lawful tools and custody, no conflicting writer); no disk reclaimed on any host (Chairman 2026-10-31).
+
+### Standing
+- Never re-spawn ORCH-5/ORCH-6 (message only). Never relaunch a used lane run id: w2a-fx5/fx6/fx7/fx7b/um1,
+  w2a review r4/r4b/r4c/r4c2/r5/r6, rec7-r1/r2, rec7-review-r1/r2, w2b-gb1-r1/r2, w2b-gb1a-r1, w2b-gb1b-r1,
+  w2b-gb1-review-r1, pin1-r1, pin1-review-r1, rec8-r1 (admission-refused, burned).
+- DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS asked once, never re-ask; #8754 never touch; #9596 never push;
+  #9513 never touch; Opus cap 2; the 16-child grant is spent — every lane is a zero-child operator.
+
+### Next
+- pin1 served check once the 4e1ae041 render lands (`intl-gs__edges__head` ≥ 1 on intl.html).
+- Row 18 entitled-browser journey proof; row 19 next nightly cycle; row 20 CI-green quote; row 21 served
+  both-themes proof for the remaining boards — each a records-only append to the census.
+
+## Checkpoint 2026-11-01 05:2x–06:4xZ — records r8 MERGED, pin1 SERVED, F10
+
+- Records r8 #10362 reviewed by a native Opus read-only auditor (fabric admission refused on every host):
+  `INTL-GS-REC8-AUDIT: PASS_WITH_NOTES 8dbc2d5cc852599eda988917a7195f8db85385f2`; standards 1–8 PASS; three NITs
+  (F-1 body named two contract-delta bases because origin/main moved mid-run → body edited once; F-2 legend basis
+  → disclosed in the census r9 addendum; F-3 GB1A UTC date → noted there). Seat merge at a Stop boundary:
+  ci-gate / ci-plan / fence-pack SUCCESS, merge-queue-pilot standing X → ready → squash pinned 8dbc2d5c →
+  main `f2a7fe7436a755f47c584a1fcfb37b7ef6a85ba1` 2026-11-01T06:03:02Z.
+- pin1 SERVED: intl.html Last-Modified 05:21:32 GMT, etag dmjmeq11txpydibom, `intl-gs__edges__head` = 640,
+  graph-boundary chips = 640 (seat probe 06:1xZ) → PRODUCTION_PROOF for §14 row 4 in full; F12 closed in
+  production. The earlier render anomaly (run 41259434450 `render` job in_progress >2 h) did not block
+  publication; the production render lane stays fleet-ops custody — the seat cancelled or re-ran nothing.
+- F10: PR #10367 OPEN (draft) on claude/intl-gs-f10-canonical-main: head 5ac89fd395432d688e13e583d1c15591adba58b8 (follow-up to the reviewed 8f1b1d5e; review INTL-GS-F10 PASS_WITH_NOTES with one SHOULD-FIX fixed in the follow-up; re-read INTL-GS-F10-AUDIT-2 PASS_WITH_NOTES at 5ac89fd3 with two test-hygiene NITs N5/N6 deferred to a later test PR), CI rollup pending at 06:4xZ; merge seat-only pinned to 5ac89fd3 after a green rollup including the international-dislocation-explorer check. Built seat-direct by plumbing from the seat tree (hash-object → temporary index → write-tree →
+  commit-tree on main a5a2cbbb → push sha:ref), seat tree left clean; first attempt hard-coded the three guard
+  paths in run_ci_pack.py and moved contract-delta to 245 introduced (the closure checker follows string
+  literals → scripts/build_intl.py import graph into ci-control-plane-contracts); passing them from the manifest
+  step restored 0 / 0.
+- Seat tree: branch reset onto main f2a7fe74 after the squash (clean; sparse state unchanged).
+
+### Next
+- F10 #10367: seat-only squash merge pinned to 5ac89fd3 once the rollup is green (ci-gate / ci-plan / fence-pack
+  SUCCESS incl. the international-dislocation-explorer check); then record the merge (records r10).
+- Row 18 entitled-browser journey proof; row 19 next nightly cycle; row 20 CI-green quote; row 21 served
+  both-themes proof — records-only appends. R2-01 remains the one deferred product follow-up.
+
+## Checkpoint 2026-11-01 (r10) — F10 + hygiene + R2-01 MERGED; records r9 merged; §14 17/4/0
+
+- Records r9 #10368 → main dd24759ec2a9ffe14a91db2e8921a7bba72200d3 (2026-11-01T06:49:49Z), pinned 2d68f618 after
+  review INTL-GS-REC9 `PASS_WITH_NOTES` (nits N1–N3 applied in the pinned follow-up).
+- PR #10367 MERGED → main c133b698b4960f5a2a8b4540e6b164c3c7c23e1b at 2026-11-01T07:40:51Z (squash pinned 5ac89fd3; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed).
+- PR #10376 MERGED → main bacc2d765488de853291dc0f8d7c545d3b3ca29a at 2026-11-01T09:29:37Z (squash pinned d50f5839; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed). Lessons recorded (memory `monkeypatch-delenv-on-absent-key-records-no-teardown`,
+  `stacked-pr-dies-when-parent-branch-is-deleted-on-merge`).
+- R2-01: PR #10384 MERGED → main 3d8ad3eb4c027126174fc2bf9f75c74f5bb04709 at 2026-11-01T09:36:34Z (squash pinned ee5ce58a; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed; review INTL-GS-R2-01 PASS).
+- §14 row 20 → DONE by records (local green quotes 14/14 + 18/18 of the CI-owned cjs suites on a playwright-capable
+  host, same playwright version as CI, system Chrome channel). Row 19 stays PARTIAL (render.yml is path-filtered and not
+  the only publisher; pin1's own render is not a retention cycle; probe after the next nightly). Row 21: DONE on the served pack.
+  Row 18 stays PARTIAL (anonymous half 18/18 green; entitled journey = human sign-in). **Recount: 17 DONE / 4 PARTIAL (rows 14, 16, 18, 19) / 0 GAP.**
+- Review INTL-GS-REC10 AUDIT-1 `FAIL` on dd66d75d; all seven findings applied in the pinned follow-up (census addendum
+  r10 "Audit trail" bullet).
+- Merges performed by the seat's durable pinned-merge watcher (`seat_pinned_merge_watch.sh`: 10-min reads,
+  fail-closed on head move / red / required-not-pass), not by polling.
+
+### Next
+- Row 18 entitled-browser journey proof (human sign-in); rows 14 and 16 per their listed owners. Row 19: probe the
+  served `intl.html` after the next `daily.yml` nightly or an unrelated render (chip + 530/110-style split + GS views
+  retained). row 21 is CLOSED on the served pack. R2-01 is CLOSED (#10384 merged); F10 and its test hygiene are CLOSED.
+  Dislocation job re-measure before touching its 15-min budget: the F10 `ci` run 41280629630 (pull_request, success, #10367 head 5ac89fd3): read its job list in ONE unpaginated page (`per_page=100`, no `--paginate`), outside the read cooldown; the paginated shape was refused by the shared-quota guard and is not to be repeated. No other product lane is open.
+
+## Checkpoint 2026-11-01 (r11) — records r10 MERGED; §14 row 19 DONE; 18 DONE / 3 PARTIAL (rows 14, 16, 18) / 0 GAP
+
+- PR #10388 MERGED → main 24cea4f7dc48e33c6b103567c7813160b093d110 (GitHub mergedAt 2026-11-01T09:28:14Z; squash pinned d2ac0c56; merged by the seat watcher after ci-gate/ci-plan/fence-pack passed; review chain INTL-GS-REC10 AUDIT-1 `FAIL` → AUDIT-2 `FAIL` (wording) → AUDIT-3 `FAIL` (one clause) → confirmation `PASS` at d2ac0c56, all read-only and non-authoring). It carries the served row-21 pack `mockups/evidence/intl-gs-r21-served/` and the r10 addendum (17/4/0).
+- Row 19: Render run 41273744480 on the unrelated main push 886ab694 (Grey Deer risk-radar EW-P4; no intl paths; a scope=all re-render that landed as commits d3ed8141 + a68544cd) completed `success`; the served `https://www.mastermind-x.com/intl.html` (HTTP 200, Last-Modified Sun, 01 Nov 2026 09:27:22 GMT, 22,689,745 bytes) retains the Graph-boundary chip with its source-qualification split — `data-graph-boundary` 640 = 530 `structural_research` + 110 `structural_graph_member`, `intl-gs__edges__head` 640, the same figures as the 03:12:25Z proof — and the GS views: scanner (`intl-gs__table--scanner` ×10, `intl-gs__mcards` ×20), dislocations (`intl-dislocations__table` ×1) and coverage (`view=coverage` links ×60). This is the "normal subsequent publisher cycle" r8 named (a publisher run that shipped no change to the feature), so the row reads DONE. Probe: one read after run completion by the seat watcher `seat_served_proof_watch.sh` (marker `data-graph-boundary`), counts taken from the saved response.
+- Dislocation job: Re-measured on the F10 `ci` run 41280629630 (pull_request, success, #10367 head 5ac89fd3; tested tree 92c10bd5 = that head merged into c31b2526; canonical main dd24759e), job `ci-pack-11` (id 124772193350; the entry sits in pack 11 of the plan — confirmed by a local `--plan-only` re-plan of the same manifest and by the job log). Within the pack the entry ran 06:58:09.7Z → 07:07:21.2Z = 9 min 11 s (its last group, the Chromium TAP, closes at 07:07:21.2; the dependency-environment group that follows, 07:07:24.5 → 07:07:36.0, belongs to the next entry, `international-workspace-foundation` — in this log a dependency-environment group always precedes its own entry): install browser test dependencies 13 s; the F10 canonical-main step (blob-filtered `prepare_canonical_main`) 06:58:22.9 → 06:58:52.5 = 30 s, replacing the ~4-min unrestricted fetch measured on 2026-10-31; pytest "Dislocation explorer view contracts" 27 passed in 256.84 s (4 min 17 s); Chromium "DOM and selection" TAP 10 tests / 10 pass / 0 fail, 07:03:09 → 07:07:21 (4 min 12 s). Against the entry's `timeout-minutes: 15` (raised from 8 on 2026-10-31, "kept until the job's PR-side time is re-measured") the measured PR-side time is ≈9.2 min: 15 holds with margin, 8 would still not; no budget change is proposed here. Read discipline: the job list came in ONE unpaginated page and the pack log in ONE read, both saved to the seat scratchpad; the paginated shape refused by the shared-quota guard was not repeated.
+- Every programme lane is merged; records r10 carries the served row-21 pack and the AUDIT-1/2/3 trail. Merges by the
+  seat's durable pinned-merge watcher, never by polling. Seat tree reset to main after the r10 merge.
+
+- **Erratum (merge times in the r9/r10 addenda; found by the r11 review, INTL-GS-REC11 D3).** The #10376 and #10384 merge times above are copied from GitHub's `mergedAt` field (09:29:37Z and 09:36:34Z). The squash commits themselves are stamped 2026-11-01T08:29:37Z (bacc2d76) and 08:36:34Z (3d8ad3eb), and main's chronology proves the commit times: both are ancestors of the 09:24Z render commits d3ed8141/a68544cd and of the r10 merge 24cea4f7 (09:28:14Z, where `mergedAt` and the commit agree), so a 09:36:34Z merge of #10384 would postdate its own descendant. Read 08:29:37Z and 08:36:34Z; the two `mergedAt` values are one hour late (both merges fell in the repeated 01:xx Pacific hour of the 2026-11-01 DST change). c133b698 (07:40:51Z) and 24cea4f7 (09:28:14Z) are consistent in both sources. Earlier addenda are not edited (append-only).
+
+### Next
+- Row 18 entitled-browser journey proof on the served URL (human sign-in; EXACT_HUMAN_GATE). Rows 14 and 16 per their listed
+  owners. No other product lane is open; a further
+  records commit is warranted only by a material change (a row closing, a regression, or an authority ruling).

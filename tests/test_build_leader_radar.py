@@ -3267,6 +3267,50 @@ def _w19e_render(**over):
     return env.get_template("leader_radar.html.j2").render(leader_radar=p)
 
 
+def _lag_freshness(**over):
+    fresh = {
+        "price_through": "2026-10-30",
+        "breadth_through": "2026-10-30",
+        "rs_series_through": "2026-10-20",
+        "regime_as_of": "2026-10-20",
+        "revisions_asof": "2026-10-21",
+        "state_history_through": "2026-10-20",
+    }
+    fresh.update(over)
+    return fresh
+
+
+def _lag_clock_html(**over):
+    return _w19e_render(
+        freshness=_lag_freshness(**over),
+        coverage={"n_universe": 136},
+    )
+
+
+class TestLaggingFreshnessClocks:
+    """Clocks older than the price date, taken from freshness."""
+
+    def test_lagging_freshness_clocks_are_painted(self):
+        html = _lag_clock_html()
+        assert "Data through Oct 30 close" in html
+        assert "Relative strength through Oct 20" in html
+        assert "相对强度截至10月20日" in html
+        assert "Regime through Oct 20" in html
+        assert "格局截至10月20日" in html
+        assert "Revisions through Oct 21" in html
+        assert "修订截至10月21日" in html
+        assert "State history through Oct 20" in html
+        assert "状态历史截至10月20日" in html
+
+    def test_lagging_clock_does_not_copy_the_price_date(self):
+        html = _lag_clock_html()
+        assert "Relative strength through Oct 30" not in html
+
+    def test_clock_equal_to_price_is_omitted(self):
+        html = _lag_clock_html(rs_series_through="2026-10-30")
+        assert "Relative strength through" not in html
+
+
 def _w19e_readings(vals=(40.0, 0.16, -1.13)):
     return {"covering_analysts": {"value": vals[0], "unit": "count"},
             "eps_estimate_change_30d": {"value": vals[1], "unit": "percent"},
@@ -3519,3 +3563,9 @@ def test_ticker_link_labels_name_the_page_they_open():
     for label in labels:
         assert label == "Open the {{ item.ticker|e }} stock page"
     assert "stocks board" not in src
+
+
+def test_lag_clock_prints_month_and_day_without_a_leading_zero():
+    html = _lag_clock_html(rs_series_through="2026-01-05")
+    assert "Relative strength through Jan 5" in html
+    assert "\u76f8\u5bf9\u5f3a\u5ea6\u622a\u81f31\u67085\u65e5" in html

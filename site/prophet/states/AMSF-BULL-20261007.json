@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AMSF-BULL-20261007",
-  "asof": "2026-10-31",
+  "asof": "2026-11-06",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 19.2,
@@ -14,19 +14,19 @@
     "progress": 60.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 35.8
   },
   "geometry": {
-    "dist_to_stop_r": -6.173,
+    "dist_to_stop_r": -7.404,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 53.3,
-    "p1": -4.7821,
-    "p2": -2.3909,
+    "horizon_pct_used": 66.7,
+    "p1": -5.6027,
+    "p2": -2.8012,
     "p3": null,
-    "move_r": -7.173,
+    "move_r": -8.404,
     "mfe_r": 4.86,
-    "mae_r": -7.173
+    "mae_r": -8.404
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.2899999237060555,
-  "_mae": -3.3800001525878898,
+  "_mae": -3.9600000762939445,
   "_max_p1": 3.239954617580718,
   "_first_trigger_ts": "2026-10-08",
   "_first_t1_ts": "2026-10-20",
   "_first_t2_ts": "2026-10-22",
-  "days_elapsed": 24,
-  "tau": 0.5333,
+  "days_elapsed": 30,
+  "tau": 0.6667,
   "closed": true,
   "outcome": "T1_HIT"
 }

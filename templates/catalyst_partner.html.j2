@@ -154,7 +154,7 @@
       </aside>
     </section>
     <section class="meta-rail" aria-label="Event timing and coverage">
-      <div class="metric"><span class="k">Event time / UTC</span><span class="v">{{ pack.event.event_time_utc }}</span></div>
+      <div class="metric"><span class="k">{% if pack.event.get("event_time_basis") == "SEC_ACCEPTANCE" %}SEC acceptance / UTC{% else %}Event time / UTC{% endif %}</span><span class="v">{{ pack.event.event_time_utc }}</span></div>
       <div class="metric"><span class="k">Evidence as of / UTC</span><span class="v">{{ pack.event.as_of_utc }}</span></div>
       <div class="metric"><span class="k">Correction generation</span><span class="v">{{ pack.event.correction_generation }} / {{ pack.publication_status }}</span></div>
     </section>

@@ -65,7 +65,47 @@ test('stricter id rule: lib-valid rotobs_XYZ stays UI-unreadable', () => {
   const h = render('malformed_id', 'en');
   assert.equal(stateOf(h), 'unreadable');
   assert.ok(h.includes('Rotation record failed checks and is not shown.'));
-  assert.ok(h.includes('data-observation-id="rotobs_XYZ"')); // raw id echoed escaped, still not shown as fact
+  assert.ok(h.includes('data-observation-id=""')); // O06: an invalid view claims no observation id
+  assert.ok(!h.includes('rotobs_XYZ'));
+});
+
+test('O06: a view counts only with its source-owned ledger receipt', () => {
+  const variants = [
+    ['missing', (v) => { delete v.recorded; }],
+    ['null', (v) => { v.recorded = null; }],
+    ['non-object', (v) => { v.recorded = 'macro.rotation_events.ledger'; }],
+    ['array', (v) => { v.recorded = [v.recorded]; }],
+    ['wrong source', (v) => { v.recorded.source = 'macro.rotation_events.cache'; }],
+    ['wrong ledger', (v) => { v.recorded.ledger = 'rotation_events/other.jsonl'; }],
+    ['uppercase hex', (v) => { v.recorded.receipt_sha256 = v.recorded.receipt_sha256.toUpperCase(); }],
+    ['63 chars', (v) => { v.recorded.receipt_sha256 = v.recorded.receipt_sha256.slice(1); }],
+    ['non-string digest', (v) => { v.recorded.receipt_sha256 = 7; }],
+  ];
+  const good = render('journey_b_both_fell', 'en');
+  assert.equal(stateOf(good), 'observed');
+  assert.ok(/data-observation-id="rotobs_[0-9a-f]{40}"/.test(good), 'valid view keeps its id');
+  for (const [label, mutate] of variants) {
+    const view = fixture('journey_b_both_fell');
+    mutate(view);
+    for (const lang of ['en', 'zh']) {
+      const h = fn(view, null, view.notification.event_as_of, lang, NOW);
+      assert.equal(stateOf(h), 'unreadable', label + '/' + lang);
+      assert.ok(h.includes('data-observation-id=""'), label + ' claims no id');
+      assert.ok(!h.includes(view.notification.observation_id), label + ' id never shown');
+    }
+  }
+  const h = render('malformed_missing_recorded', 'zh');
+  assert.ok(h.includes('轮动记录未通过校验，未予显示。'));
+});
+
+test('a lib-valid, receipted view for a later session is unreadable and claims no id', () => {
+  const oid = fixture('malformed_future').notification.observation_id;
+  for (const lang of ['en', 'zh']) {
+    const h = render('malformed_future', lang);
+    assert.equal(stateOf(h), 'unreadable', lang);
+    assert.ok(h.includes('data-observation-id=""'), lang + ' future view claims no id');
+    assert.ok(!h.includes(oid), lang + ' future id never shown');
+  }
 });
 
 test('no observation: missing early_context is unavailable, aged context is stale', () => {
@@ -78,10 +118,10 @@ test('no observation: missing early_context is unavailable, aged context is stal
 
 test('legs withheld when the 2-session window mismatches, shown when only 20s is missing', () => {
   const mismatch = render('partial_window_mismatch', 'en');
-  assert.ok(mismatch.includes('Partial evidence for XLP vs XLK; ratio withheld.'));
+  assert.ok(mismatch.includes('Partial evidence for consumer staples (XLP) vs technology (XLK); ratio withheld.'));
   assert.ok(!mismatch.includes('+2.06%'));
   const missing20 = render('partial_missing_20s', 'en');
-  assert.ok(missing20.includes('Both fell; XLP fell less than XLK.'));
+  assert.ok(missing20.includes('Both sectors fell; consumer staples (XLP) fell less than technology (XLK).'));
   assert.ok(missing20.includes('-1.00%') && missing20.includes('-3.00%') && missing20.includes('+2.06%'));
   assert.ok(missing20.includes('Not supplied') && missing20.includes('未提供'));
 });
@@ -104,7 +144,7 @@ test('dynamic strings are escaped; a script payload in pair_id never appears raw
   badId.notification.observation_id = 'rotobs_"><img src=x onerror=alert(1)>aaaaaaaaaaaaaaaaaaaaaaaaaa';
   const h2 = fn(badId, null, '2026-10-30', 'en', NOW);
   assert.ok(!h2.includes('<img'), 'raw injected element via id');
-  assert.ok(h2.includes('&lt;img'), 'id payload is escaped');
+  assert.ok(h2.includes('data-observation-id=""'), 'a malformed id is never echoed');
 });
 
 test('input is never mutated and the shared escape helper is optional', () => {
@@ -135,7 +175,7 @@ test('correction and withdrawal keep the original in history', () => {
   assert.ok(corrected.includes('Original (rotobs_'));
   assert.ok(corrected.includes('Corrected: n -0.50% · d -3.00% · r +2.58%'));
   const withdrawn = render('withdrawn', 'en');
-  assert.ok(withdrawn.includes('Evidence for XLP vs XLK was withdrawn on Oct 30.'));
+  assert.ok(withdrawn.includes('Evidence for consumer staples (XLP) vs technology (XLK) was withdrawn on Oct 30.'));
   const glanceOnly = withdrawn.slice(0, withdrawn.indexOf('<details')); // the study keeps the original
   assert.ok(!glanceOnly.includes('+2.06%'), 'withdrawn glance must not show stale numbers');
   assert.ok(withdrawn.includes('Original (rotobs_') && withdrawn.includes('n -1.00%'), 'study keeps original values');
@@ -193,11 +233,15 @@ test('the glance is prepended to the early-context output and does not alter it'
 test('the pre-existing rc-ec edge stripe is repaired, rc-ew uses even borders', () => {
   assert.ok(src.includes('.rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle);'));
   assert.ok(!src.includes('.rc-ec-stale,.rc-ec-conflict{border-left:'));
-  const rcEw = src.slice(src.indexOf('.rc-ew{margin'), src.indexOf("var s=document.createElement"));
+  // B1: no runtime-injected glance styles; the governed stylesheet carries them
+  assert.ok(!src.includes('.rc-ew{') && !/\.rc-ew[\w-]*(?::[\w-]+)?\s*[,{]/.test(src));
+  const rcEw = fs.readFileSync(path.join(path.dirname(target), 'rotation_glance.css'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '');
   assert.ok(!/border-(left|right|top|inline-start|inline-end|block-start)\s*:/.test(rcEw));
   assert.ok(!/#[0-9a-fA-F]{3,8}\b/.test(rcEw));
   assert.ok(!rcEw.includes('rgb(') && !rcEw.includes('hsl('));
-  assert.ok(rcEw.includes('.rc-ew-next:focus-visible,.rc-ew-study summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;}'));
+  assert.ok(!/font-size\s*:\s*\d/.test(rcEw));
+  assert.ok(rcEw.includes('.rc-ew-next:focus-visible, .rc-ew-study > summary:focus-visible {outline:2px solid var(--link); outline-offset:2px;'));
 });
 
 test('repair wave B: separator, routes and a single both-fell sentence', () => {
@@ -205,7 +249,7 @@ test('repair wave B: separator, routes and a single both-fell sentence', () => {
   assert.ok(h.includes(' · <span class="rc-ew-built">'), 'quality · built separator');
   assert.ok(!h.includes('#rc-early-context'), 'no unregistered in-page route');
   assert.ok(h.includes('href="#rc-events-mount"'), 'registered SC route');
-  assert.equal(h.split('Both fell; XLP fell less than XLK.').length - 1, 1, 'stated once');
+  assert.equal(h.split('Both sectors fell; consumer staples (XLP) fell less than technology (XLK).').length - 1, 1, 'stated once');
   // JSON.parse makes 2.0 === 2, so the JS glance cannot tell a float session
   // count from an integer one; the Radar (Jinja) path enforces integers.
   assert.equal(JSON.parse('{"s":2.0}').s, 2);
@@ -224,8 +268,7 @@ test('repair wave C: bilingual study rows, separated history, escaped record fie
   const w = fixture('withdrawn');
   w.previous.observation_id = bad;
   w.basis = bad;
-  w.notification.source_as_of = '2026-10-29' + bad;
-  w.notification.observed_at = '2026-10-30' + bad + 'T21:15:00Z';
+  w.notification.source_as_of = '2026-10-29'; // lib _opt_iso_date: a real date; markup there is checked below
   w.coverage = { evaluable_2s: bad, registered_pairs: 8, missing_pair_ids: [] };
   w.lineage_roots = [bad];
   const outs = [
@@ -235,6 +278,22 @@ test('repair wave C: bilingual study rows, separated history, escaped record fie
     fn(null, { as_of: bad }, bad, 'zh', NOW),
   ];
   assert.equal(stateOf(outs[0]), 'withdrawn', 'payloads leave the validated state unchanged');
+  { const s = fixture('withdrawn'); s.notification.source_as_of = '2026-10-29' + bad;
+    const h = fn(s, null, '2026-10-30', 'en', NOW);
+    assert.equal(stateOf(h), 'unreadable', 'markup in a withdrawal source date fails the lib date check');
+    assert.ok(!h.includes('<img'), 'never rendered'); }
+  // lib _aware_utc parity: a stamp the lib rejects is unreadable, never rendered
+  for (const key of ['observed_at', 'not_after']) {
+    for (const st of ['garbage-but-long-enough-Z', '2026-10-30T21:15:00<b>Z', '2026-10-30T21:15:60Z',
+                      '2026-02-30T21:15:00+00:00', '2026-10-30' + bad + 'T21:15:00Z']) {
+      const s = fixture('withdrawn'); s.notification[key] = st;
+      const h = fn(s, null, '2026-10-30', 'en', NOW);
+      assert.equal(stateOf(h), 'unreadable', key + ' ' + st);
+      assert.ok(!h.includes('<img') && !h.includes('<b>'), 'never rendered'); } }
+  for (const sfx of ['+00:00', 'Z']) {
+    const s = fixture('withdrawn'); const n = s.notification;
+    n.observed_at = n.observed_at.replace('+00:00', '.123456' + sfx); n.not_after = n.not_after.replace('+00:00', sfx);
+    assert.equal(stateOf(fn(s, null, '2026-10-30', 'en', NOW)), 'withdrawn', 'producer isoformat stamp ' + sfx); }
   assert.equal(stateOf(outs[2]), 'stale', 'aged context with a malformed session');
   for (const h of outs) {
     assert.ok(!h.includes('<img'), 'raw injected element');
@@ -256,5 +315,33 @@ test('review r1: explicit keys, non-object wrapper, monospace id', () => {
   }
   assert.equal(stateOf(fn(null, null, '2026-10-30', 'en', NOW)), 'unavailable', 'null wrapper stays absent');
   assert.equal(stateOf(fn(undefined, null, '2026-10-30', 'en', NOW)), 'unavailable', 'missing wrapper stays absent');
-  assert.match(src, /\.rc-ew-id\{user-select:all;font-family:var\(--font-mono\);\}/, 'selectable monospace id');
+  const glanceCss = fs.readFileSync(path.join(path.dirname(target), 'rotation_glance.css'), 'utf8');
+  assert.ok(glanceCss.includes('.rc-ew-id {user-select:all; font-family:var(--font-mono);}'), 'selectable monospace id');
+});
+
+test('EW-P4-FU: blank pair_id and calendar-invalid dates are unreadable; real dates pass', () => {
+  const run = (patch, session) => {
+    const v = fixture('observed_rise');
+    Object.assign(v.notification, patch);
+    return stateOf(fn(v, null, session || v.notification.event_as_of, 'en', NOW));
+  };
+  for (const pid of ['   ', '\t', ' \n ', '\x1c', '\x1f', '\x85', '\u3000', '\u2028 \xa0', 'a'.repeat(129), '\u{1F600}'.repeat(129)]) {
+    assert.equal(run({ pair_id: pid }), 'unreadable', JSON.stringify(pid)); }
+  // lib _req_str keeps these: U+FEFF is not Python whitespace; length counts code points
+  for (const pid of ['\ufeff', 'a'.repeat(128), '\u{1F600}'.repeat(128), 'x\u3000']) {
+    assert.notEqual(run({ pair_id: pid }), 'unreadable', JSON.stringify(pid)); }
+  const wd = (src) => { const v = fixture('withdrawn'); v.notification.source_as_of = src;
+    return stateOf(fn(v, null, v.notification.event_as_of, 'en', NOW)); };
+  for (const d of ['2025-13-01', '2026-02-30', '2025-02-29', '0000-01-01', '2026-1-01', 'garbage']) {
+    assert.equal(wd(d), 'unreadable', 'withdrawal source ' + d); }
+  { const ev = fixture('withdrawn').notification.event_as_of;
+    assert.equal(wd(String(+ev.slice(0, 4) - 1) + ev.slice(4)), 'withdrawn'); }
+  for (const d of ['2026-00-10', '2025-13-01', '2026-02-30', '2026-04-31', '2025-02-29', '0000-01-01']) {
+    assert.equal(run({ event_as_of: d, source_as_of: d }, '2026-10-30'), 'unreadable', d);
+  }
+  for (const d of ['2024-02-29', '2026-04-30', '2025-12-31']) {
+    assert.notEqual(run({ event_as_of: d, source_as_of: d }), 'unreadable', d);
+  }
+  assert.equal(stateOf(render('malformed_blank_pair', 'en')), 'unreadable');
+  assert.equal(stateOf(render('malformed_calendar', 'en', '2026-10-30')), 'unreadable');
 });
