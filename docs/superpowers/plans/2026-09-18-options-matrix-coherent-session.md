@@ -1,5 +1,32 @@
 # Options Matrix Coherent Session Repair Implementation Plan
 
+## 2026-11-06 current-main integration
+
+This repair integrates main `aa95b0d1d204dc9fd958afbe22e4be3ed647d806`
+into the original PR #7293 branch. The five existing source/test files were
+composed from `69f902ecdf73b23c0cf939e446f99cff7c4a0e4e` and their Git blob IDs
+were verified unchanged at that newer main. Main already added EOD coherence, the
+five-NYSE-session bound, source-date metadata, finite-positive-spot handling,
+publisher anti-regression rules, and bounded launchd reads. Preserve them.
+The shared resolver now retains those session constraints while keeping the
+original projected-read readiness probe; automatic selection and launchd use
+that owner, and explicit dates retain their existing behavior.
+
+The original standalone `tests/test_options_matrix_runtime_guard.py` was not
+registered in CI and made `ci-contract` fail. Its unchanged guard assertion is
+now in the existing registered `tests/test_options_matrix.py` suite. No new test
+module or CI-manifest exception is needed. All original main tests remain.
+
+The September counts and live SPY observations below are historical evidence,
+not tests of this integrated head. Current focused proof and natural CI must be
+attached to the exact published commit. The attended fixture lacks pytest and
+PyArrow; it cannot claim a full local suite or a real parquet integration run.
+The repository's NYSE calendar is available as immutable stdlib-only source.
+Production launchd and R2 acceptance remain owed after source merge, through
+their existing operational owners.
+
+## Original September plan (historical)
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Prevent the scheduled options-matrix lane from publishing zero-cell payloads when ThetaData OI advances one session ahead of Greeks/EOD during the daily refresh.

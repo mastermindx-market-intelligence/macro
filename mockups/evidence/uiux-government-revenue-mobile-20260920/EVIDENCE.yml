@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/government_revenue.html.j2
+  - site/government_revenue.html
+  - site/assets/css/2823b7e8.css
+manifest: mockups/evidence/uiux-government-revenue-mobile-20260920/manifest.json

@@ -1,0 +1,103 @@
+{
+  "observed_at": "2026-10-20T03:48:42.449262+00:00",
+  "classification": "PRODUCER_ANCESTRY_AND_EXACT_RECIPE_LINEAGE_VERIFIED",
+  "producer": "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa",
+  "approved_writer_merge": "af468522ab6e97b4c15f00c701a5ad6ba6a960b5",
+  "compare": {
+    "status": "ahead",
+    "ahead_by": 1020,
+    "behind_by": 0,
+    "merge_base_commit": {
+      "sha": "af468522ab6e97b4c15f00c701a5ad6ba6a960b5",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/af468522ab6e97b4c15f00c701a5ad6ba6a960b5",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/af468522ab6e97b4c15f00c701a5ad6ba6a960b5"
+    }
+  },
+  "files": [
+    {
+      "path": "engine/grey_deer_pullback_forward.py",
+      "git_blob": "bbb7ce83113bdbe6c65147beec4ca4fd896cfdbd",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa/engine/grey_deer_pullback_forward.py",
+      "bytes": 32655,
+      "sha256": "875eba9e1cd1c0068f478b82eab63c2da8fb2ec58220f6f174e901f2a262ee41",
+      "verified_git_blob": "bbb7ce83113bdbe6c65147beec4ca4fd896cfdbd"
+    },
+    {
+      "path": "scripts/grey_deer_pullback_nightly.py",
+      "git_blob": "0460443c1a756627535a2d0026cf0d5db0d3d499",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa/scripts/grey_deer_pullback_nightly.py",
+      "bytes": 5985,
+      "sha256": "ffff822cdec270f7a1f971a34c31a3cac97b02b8d77774feae3844e6fb75ef42",
+      "verified_git_blob": "0460443c1a756627535a2d0026cf0d5db0d3d499"
+    },
+    {
+      "path": "scripts/ci/daily_engine_regional_desk_builders.sh",
+      "git_blob": "c46ded27a832c0d3052342bc12e126978cef1858",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa/scripts/ci/daily_engine_regional_desk_builders.sh",
+      "bytes": 22737,
+      "sha256": "4ada20301de940695bf6ff38a7cb755738f00b8d43141868b7353cdea13679d0",
+      "verified_git_blob": "c46ded27a832c0d3052342bc12e126978cef1858"
+    },
+    {
+      "path": "scripts/research/grey_deer_pullback_stage1.py",
+      "git_blob": "76d231d6d12c8693cd07a2540b360c24f6c50b42",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa/scripts/research/grey_deer_pullback_stage1.py",
+      "bytes": 133159,
+      "sha256": "47ec425821c7a075dc4667171d9e75e8af213e0f088154c5fdb1cad419413714",
+      "verified_git_blob": "76d231d6d12c8693cd07a2540b360c24f6c50b42"
+    },
+    {
+      "path": "lib/observed_moves.py",
+      "git_blob": "db1b71a3053d3fa294492321b3cfb28b5a209451",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa/lib/observed_moves.py",
+      "bytes": 5456,
+      "sha256": "1bc3447e6c57cc4eaf8aafb51a549b86f901d1e1e36056eeff9b332496d7dd5a",
+      "verified_git_blob": "db1b71a3053d3fa294492321b3cfb28b5a209451"
+    },
+    {
+      "path": "lib/nyse_calendar.py",
+      "git_blob": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa/lib/nyse_calendar.py",
+      "bytes": 29814,
+      "sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+      "verified_git_blob": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3"
+    },
+    {
+      "path": "engine/vol_forecast.py",
+      "git_blob": "e2354c5a8fff803bbe1d4be61c7a57bb43c3b3d5",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa/engine/vol_forecast.py",
+      "bytes": 2638,
+      "sha256": "bcd6ec2cc8c116b469173ab475dc495be7e024b4ea452b9d1cf6de58301e06c0",
+      "verified_git_blob": "e2354c5a8fff803bbe1d4be61c7a57bb43c3b3d5"
+    },
+    {
+      "path": "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md",
+      "git_blob": "49a68b5e9c6543d662044b0aa391c4b6e6e6052e",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa/research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md",
+      "bytes": 29695,
+      "sha256": "b50ab2430b3450900d87f42d71b8accd61c30f0a326a795a9b2856a4115b07ee",
+      "verified_git_blob": "49a68b5e9c6543d662044b0aa391c4b6e6e6052e"
+    }
+  ],
+  "prereg_constants": {
+    "PREREG_PATH": "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md",
+    "PREREG_BLOB": "49a68b5e9c6543d662044b0aa391c4b6e6e6052e"
+  },
+  "recipe_files": [
+    "engine/grey_deer_pullback_forward.py",
+    "engine/vol_forecast.py",
+    "lib/nyse_calendar.py",
+    "lib/observed_moves.py",
+    "research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md",
+    "scripts/research/grey_deer_pullback_stage1.py"
+  ],
+  "recipe_listing": "engine/grey_deer_pullback_forward.py\tbbb7ce83113bdbe6c65147beec4ca4fd896cfdbd\nengine/vol_forecast.py\te2354c5a8fff803bbe1d4be61c7a57bb43c3b3d5\nlib/nyse_calendar.py\t0ece6439ffe4b081ee7a268fe99b69e1de1216a3\nlib/observed_moves.py\tdb1b71a3053d3fa294492321b3cfb28b5a209451\nresearch/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md\t49a68b5e9c6543d662044b0aa391c4b6e6e6052e\nscripts/research/grey_deer_pullback_stage1.py\t76d231d6d12c8693cd07a2540b360c24f6c50b42\nprereg_blob\t49a68b5e9c6543d662044b0aa391c4b6e6e6052e\n",
+  "computed_fingerprint": "9c8b7fe2f572b06b9253affd9a3ca7fb02b8f4d20e7723dd76b46538d235bb8c",
+  "retained_rows_matching_prereg_and_fingerprint": 30,
+  "provider_calls": 0,
+  "first_party_module_imports": 0,
+  "nightly_calls": 0,
+  "grader_calls": 0,
+  "model_fits": 0,
+  "scope": "Standard-library AST and hash checks of retrieved fixed-source bytes; no first-party execution, predictive or action-performance qualification."
+}
