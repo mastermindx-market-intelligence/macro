@@ -42,22 +42,23 @@ __all__ = ["illus", "regime_tape", "session_filmstrip"]
 _VBW = 560.0
 _PAD_T = 8.0     # top breathing room so the end-dot glow isn't clipped
 _PAD_B = 8.0     # bottom breathing room
+_COMPACT_LINE_H = 96  # short lines keep metadata off the plot
 
 
 # --------------------------------------------------------------------------- #
 # helpers
 # --------------------------------------------------------------------------- #
 def _clean(dates, vals):
-    """Zip -> drop pairs where the value is None/NaN, keep order."""
+    """Zip -> omit non-finite observations, keep valid values in order."""
     out = []
     for d, v in zip(dates or [], vals or []):
         if v is None:
             continue
         try:
             fv = float(v)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):
             continue
-        if fv != fv:  # NaN
+        if not math.isfinite(fv):  # NaN and ±inf are not chart coordinates
             continue
         out.append((d, fv))
     return out
@@ -118,6 +119,15 @@ def _fmt(v, value_fmt):
         return f"{v:g}"
 
 
+def _range_fraction(value, lo, hi):
+    """Position in a finite domain without overflowing a wide subtraction."""
+    numerator, denominator = value - lo, hi - lo
+    if math.isfinite(numerator) and math.isfinite(denominator):
+        return numerator / denominator
+    factor = max(abs(value), abs(lo), abs(hi))
+    return (value / factor - lo / factor) / (hi / factor - lo / factor)
+
+
 def _scale(pairs, height, *, baseline=None, reference=None, zero_floor=False):
     """Map (index, value) -> (x, y) in viewBox units. Returns (xy, y0, span, vmin, vmax).
 
@@ -134,9 +144,16 @@ def _scale(pairs, height, *, baseline=None, reference=None, zero_floor=False):
         vmax = max(vmax, 0.0)
         vmin = min(vmin, 0.0)
     if vmax == vmin:
-        vmax = vmin + 1.0
-    pad = (vmax - vmin) * 0.08
-    lo, hi = vmin - pad, vmax + pad
+        step = max(1.0, abs(vmin) * 0.08)
+        if math.isfinite(vmax + step):
+            vmax += step
+        else:
+            vmin -= step
+    width = vmax - vmin
+    pad = (width * 0.08 if math.isfinite(width)
+           else (vmax / 2 - vmin / 2) * 0.16)
+    finite_limit = math.nextafter(math.inf, 0.0)
+    lo, hi = max(-finite_limit, vmin - pad), min(finite_limit, vmax + pad)
     top, bot = _PAD_T, height - _PAD_B
     n = len(pairs)
 
@@ -144,7 +161,7 @@ def _scale(pairs, height, *, baseline=None, reference=None, zero_floor=False):
         return 0.0 if n <= 1 else round(i / (n - 1) * _VBW, 2)
 
     def py(v):
-        return round(bot - (v - lo) / (hi - lo) * (bot - top), 2)
+        return round(bot - _range_fraction(v, lo, hi) * (bot - top), 2)
 
     xy = [(px(i), py(v)) for i, (_d, v) in enumerate(pairs)]
     y0 = py(baseline if baseline is not None else 0.0)
@@ -161,6 +178,84 @@ def _path_len(xy):
 
 def _d_line(xy):
     return "M" + " L".join(f"{x} {y}" for x, y in xy)
+
+
+def _line_geometry_with_gaps(dates, vals, height, *, max_points, reference=None):
+    """Break a display line at missing observations without compressing its x axis.
+
+    Returns None for complete series, preserving the existing fast path byte-for-byte.
+    For sparse series, valid values retain their original ordered slot positions;
+    separate runs become separate SVG subpaths. Long histories are sampled within
+    runs, never joined across absent values.
+    """
+    raw = list(zip(dates or [], vals or []))
+    slots = []
+    missing = 0
+    for idx, (d, v) in enumerate(raw):
+        try:
+            fv = float(v) if v is not None else float("nan")
+        except (TypeError, ValueError, OverflowError):
+            fv = float("nan")
+        if not math.isfinite(fv):
+            slots.append(None)
+            missing += 1
+        else:
+            slots.append((idx, fv, d))
+
+    if not missing:
+        return None
+    valid = [p for p in slots if p is not None]
+    if len(valid) < 4:
+        return None
+
+    runs, current = [], []
+    for point in slots:
+        if point is None:
+            if current:
+                runs.append(current)
+                current = []
+        else:
+            current.append(point)
+    if current:
+        runs.append(current)
+
+    # Sample globally so both extrema and both observed endpoints survive even
+    # when there are more runs than the point budget. Reconstruct the ORIGINAL
+    # run identity afterwards: skipping a whole run must never join its neighbors.
+    # The shared min/max sampler is bounded by limit + two endpoint samples.
+    limit = max(4, int(max_points))
+    run_for_slot = {point[0]: run_id
+                    for run_id, run in enumerate(runs) for point in run}
+    sampled_runs, previous_run = [], None
+    for point in _downsample(valid, limit):
+        run_id = run_for_slot[point[0]]
+        if run_id != previous_run:
+            sampled_runs.append([])
+        sampled_runs[-1].append(point)
+        previous_run = run_id
+
+    # Reuse the ordinary vertical scale, including its explicit reference rule.
+    # Unlike _scale's positional x values, the sparse x coordinate uses the
+    # full original observation slots, leaving a visible hole for absent data.
+    _xy, _y0, (lo, hi, top, bot), _vmin, _vmax = _scale(
+        [(d, v) for _i, v, d in valid], height, reference=reference
+    )
+    last_slot = max(1, len(raw) - 1)
+    xy_runs = [[
+        (round(i / last_slot * _VBW, 2),
+         round(bot - _range_fraction(v, lo, hi) * (bot - top), 2))
+        for i, v, _d in run
+    ] for run in sampled_runs]
+    xy = [point for run in xy_runs for point in run]
+    path_d = " ".join(_d_line(run) for run in xy_runs if run)
+    stroke_len = sum(
+        _path_len(run) for run in xy_runs if len(run) >= 2
+    )
+    # An isolated valid sample is evidence, not a drawable line segment.
+    # Give each interior singleton its own dot; the last one already has
+    # the standard end-of-series settle dot.
+    isolated = [run[0] for run in xy_runs if len(run) == 1 and run[0] != xy[-1]]
+    return xy, path_d, round(stroke_len, 1) or 1.0, missing, isolated
 
 
 def _d_area(xy, y0):
@@ -227,7 +322,7 @@ def _corner_labels(pairs):
             f'<span class="ilx-d ilx-d1">{d1}</span>')
 
 
-def _end_tag(last_v, value_fmt, unit_en, unit_zh):
+def _end_tag(last_v, value_fmt, unit_en, unit_zh, *, last_observed_date=None):
     """End-value tag: last value + unit, bilingual via l-en/l-zh spans."""
     num = escape(_fmt(last_v, value_fmt))
     ue, uz = escape(unit_en or ""), escape(unit_zh if unit_zh is not None else (unit_en or ""))
@@ -235,6 +330,12 @@ def _end_tag(last_v, value_fmt, unit_en, unit_zh):
     if ue or uz:
         unit_html = (f'<span class="ilx-u">'
                      f'<span class="l-en">{ue}</span><span class="l-zh">{uz}</span></span>')
+    if last_observed_date is not None:
+        observed_date = escape(str(last_observed_date))
+        return (f'<span class="ilx-tag ilx-tag-historical">'
+                f'<span class="ilx-tag-value">{num}{unit_html}</span>'
+                f'<span class="ilx-tag-date"><span class="l-en">Last observed</span>'
+                f'<span class="l-zh">最近记录</span> · {observed_date}</span></span>')
     return f'<span class="ilx-tag">{num}{unit_html}</span>'
 
 
@@ -257,9 +358,14 @@ def _null_fragment(accent, height, aria_en):
 # --------------------------------------------------------------------------- #
 # per-kind SVG bodies
 # --------------------------------------------------------------------------- #
-def _svg_line(xy, uid):
-    """Plain single ink stroke + settle dot. (area/baseline/drawdown have own builders.)"""
-    body = f'<path class="ilx-path" d="{_d_line(xy)}"/>'
+def _svg_line(xy, uid, path_d=None, isolated_points=None):
+    """Plain ink stroke + honest isolated samples + settle dot."""
+    body = f'<path class="ilx-path" d="{path_d if path_d is not None else _d_line(xy)}"/>'
+    if isolated_points:
+        body += "".join(
+            f'<circle class="ilx-isolate" cx="{x}" cy="{y}" r="2.4"/>'
+            for x, y in isolated_points
+        )
     dot = f'<circle class="ilx-dot" cx="{xy[-1][0]}" cy="{xy[-1][1]}" r="3.2"/>'
     return "", "", body, dot
 
@@ -639,10 +745,30 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
                              baseline=baseline)
 
     series = series or {}
-    pairs = _downsample(_clean(series.get("dates"), series.get("vals")), max_points)
-    if len(pairs) < 4:
+    dates, vals = series.get("dates"), series.get("vals")
+    if kind == "line":
+        dates, vals = list(dates or []), list(vals or [])
+        # Supplied dates own the observation slots. A short value array leaves
+        # unavailable tail slots; zip alone would silently shorten that window.
+        # Surplus values cannot be assigned dates without inventing alignment.
+        if len(vals) > len(dates):
+            return _null_fragment(accent, height, aria_en)
+        vals.extend([None] * (len(dates) - len(vals)))
+    pairs_all = _clean(dates, vals)
+    pairs = _downsample(pairs_all, max_points)
+    # History eligibility is a property of source observations, not the number
+    # of points a low-detail renderer happens to retain for a flat line.
+    if len(pairs_all if kind == "line" else pairs) < 4:
         return _null_fragment(accent, height, aria_en)
 
+    line_gap = (_line_geometry_with_gaps(dates, vals,
+                                        height, max_points=max_points, reference=reference)
+                if kind == "line" else None)
+    compact_line = kind == "line" and height < _COMPACT_LINE_H
+    raw_slots = (list(zip(dates or [], vals or []))
+                 if line_gap is not None or compact_line else [])
+    trailing_gap = bool(raw_slots and not _clean([raw_slots[-1][0]],
+                                                [raw_slots[-1][1]]))
     uid = _hash_id(kind, pairs, extra=f"{accent}{baseline}{reference}")
 
     if kind == "bars":
@@ -661,7 +787,12 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
             zero_floor=zero_floor,
         )
         plen = _path_len(xy)
-        if kind == "area":
+        if kind == "line" and line_gap is not None:
+            xy, path_d, plen, _gap_count, isolated = line_gap
+            defs, mid, body, dot = _svg_line(
+                xy, uid, path_d=path_d, isolated_points=isolated
+            )
+        elif kind == "area":
             defs, mid, body, dot = _svg_area(xy, height - _PAD_B, uid)
         elif kind == "baseline":
             defs, mid, body, dot = _svg_baseline(xy, y0, uid, height)
@@ -670,8 +801,9 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
             defs, mid, body, dot = _svg_drawdown(xy, y0, uid, height)
         else:  # "line"
             defs, mid, body, dot = _svg_line(xy, uid)
-        end = _end_tag(pairs[-1][1], value_fmt, unit_en, unit_zh)
-        corners = _corner_labels(pairs)
+        end = _end_tag(pairs[-1][1], value_fmt, unit_en, unit_zh,
+                       last_observed_date=pairs_all[-1][0] if trailing_gap else None)
+        corners = _corner_labels(raw_slots if line_gap is not None else pairs)
 
     # reference level marker (e.g. NBS climate neutral=100) as an HTML caption anchored
     # to its y — the SVG carries only a hairline; the number lives in HTML.
@@ -680,7 +812,7 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
         # y of the reference line as a % of height, for CSS top:
         _xy, _y0, (lo, hi, top, bot), _vm, _vx = _scale(
             pairs, height, reference=reference, zero_floor=(kind == "drawdown"))
-        ry = round(bot - (reference - lo) / (hi - lo) * (bot - top), 2)
+        ry = round(bot - _range_fraction(reference, lo, hi) * (bot - top), 2)
         ref_pct = round(ry / height * 100, 1)
         refnum = escape(_fmt(reference, "{:g}"))
         ref_html = (
@@ -699,8 +831,8 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
             he = bd.get("hi")
             le = bd.get("lo")
             tint = bd.get("tint", "var(--muted)")
-            y_hi = bot if he is None else round(bot - (he - lo) / (hi - lo) * (bot - top), 2)
-            y_lo = top if le is None else round(bot - (le - lo) / (hi - lo) * (bot - top), 2)
+            y_hi = bot if he is None else round(bot - _range_fraction(he, lo, hi) * (bot - top), 2)
+            y_lo = top if le is None else round(bot - _range_fraction(le, lo, hi) * (bot - top), 2)
             y_top = min(y_hi, y_lo)
             bh = abs(y_lo - y_hi)
             band_rects += (
@@ -719,15 +851,54 @@ def illus(series, *, kind="line", accent=None, height=190, unit_en="", unit_zh=N
         mid = band_rects + mid  # bands sit UNDER the ink
 
     style = (f"color:{escape(accent)};" if accent else "") + f"--ilx-len:{plen};--ilx-h:{height}px"
-    aria = escape(aria_en or f"{kind} chart")
+    gap_attr = f' data-gap-count="{line_gap[3]}"' if line_gap is not None else ""
+    gap_description = (f"; {line_gap[3]} missing observation"
+                       f"{'' if line_gap[3] == 1 else 's'}, line interrupted"
+                       if line_gap is not None else "")
+    if trailing_gap:
+        gap_description += "; latest observation unavailable"
+    if compact_line:
+        # The compact visual layout hides corner and end-value tags. Preserve
+        # their source window and value/date meaning in the accessible name.
+        gap_description += f"; window {raw_slots[0][0]} to {raw_slots[-1][0]}"
+    if trailing_gap or compact_line:
+        observed_unit = f" {unit_en or unit_zh}" if (unit_en or unit_zh) else ""
+        gap_description += (f"; last observed {_fmt(pairs_all[-1][1], value_fmt)}"
+                            f"{observed_unit} on {pairs_all[-1][0]}")
+    gap_html = ""
+    if line_gap is not None:
+        gap_en, gap_zh = f"Gap: {line_gap[3]} missing", f"缺失 {line_gap[3]} 条"
+        if compact_line:
+            gap_en = f"{line_gap[3]} missing"
+            if trailing_gap:
+                gap_en, gap_zh = "Latest missing", "最新值缺失"
+        gap_html = (f'<span class="ilx-gap-note"><span class="l-en">{gap_en}</span>'
+                    f'<span class="l-zh">{gap_zh}</span></span>')
+    aria = escape((aria_en or f"{kind} chart") + gap_description)
     svg = (
         f'<svg viewBox="0 0 {int(_VBW)} {height}" preserveAspectRatio="none" '
         f'aria-hidden="true"><defs>{defs}</defs>{mid}{body if kind != "bars" else ""}'
         f'{dot if kind != "bars" else ""}</svg>'
     )
+    # Historical metadata gets its own lane. Overlaying a two-line receipt at
+    # top-right would hide a high last-observed point just before the empty tail.
+    # Keep all plot-relative captions inside the same resizing container.
+    content = f"{svg}{band_html}{ref_html}{corners}{end}{gap_html}"
+    variant_classes = " ilx-historical" if trailing_gap else ""
+    if compact_line:
+        # The compact table caller can be only 42px tall and less than 100px
+        # wide, so complete histories need the same caption suppression and
+        # accessible metadata as gaps. Only a gap status adds a separate row;
+        # a complete line keeps the entire plot height and unchanged SVG.
+        variant_classes += " ilx-compact"
+        content = (f'<div class="ilx-plot">{svg}{band_html}{ref_html}'
+                   f'{corners}{end}</div>{gap_html}')
+    elif trailing_gap:
+        content = (f'{end}<div class="ilx-plot">'
+                   f'{svg}{band_html}{ref_html}{corners}{gap_html}</div>')
     return (
-        f'<figure class="ilx ilx-{escape(kind)}" style="{style}" '
-        f'role="img" aria-label="{aria}">{svg}{band_html}{ref_html}{corners}{end}</figure>'
+        f'<figure class="ilx ilx-{escape(kind)}{variant_classes}"{gap_attr} style="{style}" '
+        f'role="img" aria-label="{aria}">{content}</figure>'
     )
 
 

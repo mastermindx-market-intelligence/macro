@@ -55,6 +55,10 @@
 /* soft band zones (fear/euphoria gauge) */
 .ilx-band { opacity: .5; }
 
+/* Interior isolated observations must remain visible without drawing
+   a false line to their neighbors. The last sample uses the settle dot. */
+.ilx-isolate { fill: currentColor; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+
 /* end-of-series dot — the settle point */
 .ilx-dot {
   fill: currentColor;
@@ -82,6 +86,24 @@
 .ilx-d0 { left: 1px; }
 .ilx-d1 { right: 1px; }
 
+/* A missing observation is a visible break, not a silently joined value.
+   Page typography owns the label, never a horizontally stretched SVG glyph. */
+.ilx-gap-note {
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 140px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--text-2, var(--muted));
+  background: var(--panel);
+  pointer-events: none;
+}
+
 .ilx-tag {
   position: absolute;
   top: 2px;
@@ -100,6 +122,38 @@
   pointer-events: none;
 }
 .ilx-tag .ilx-u { font-size: 9.5px; font-weight: 600; opacity: .82; }
+.ilx-historical { display: flex; flex-direction: column; gap: var(--sp-2, 8px); }
+.ilx-historical .ilx-plot { position: relative; flex: 1; min-height: 0; }
+.ilx-tag-historical {
+  position: static;
+  align-self: flex-end;
+  align-items: flex-end;
+  flex-direction: column;
+  max-width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.ilx-tag-value { max-width: 100%; overflow-wrap: anywhere; }
+.ilx-tag-value .ilx-u { margin-inline-start: 2px; }
+.ilx-tag-date { max-width: 100%; overflow-wrap: anywhere; color: var(--text); font-size: var(--fs-micro, 10px); font-weight: 500; }
+
+/* Compact lines keep overlapping value/date captions off the ink. Complete
+   lines retain the full plot height; gaps alone reserve a status row (a 12px
+   label and 4px gap leave a 26px plot at 42px). Value/date/window semantics
+   remain in the figure's accessible name. */
+.ilx-compact { display: flex; flex-direction: column; gap: var(--sp-1, 4px); }
+.ilx-compact .ilx-plot { position: relative; flex: 1; min-height: 0; }
+.ilx-compact .ilx-tag,
+.ilx-compact .ilx-d { display: none; }
+.ilx-compact .ilx-gap-note {
+  position: static;
+  align-self: stretch;
+  flex: 0 0 auto;
+  transform: none;
+  max-width: 100%;
+  line-height: 1.2;
+  text-align: center;
+}
 
 .ilx-reflab {
   position: absolute;

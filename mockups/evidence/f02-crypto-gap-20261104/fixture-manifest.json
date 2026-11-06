@@ -1,0 +1,226 @@
+{
+  "schema": "f02.crypto_gap_proof/v1",
+  "source_head": "6e245059af5870d35eb48e34d641e50f38617cc1",
+  "source_head_role": "base revision; loaded source hashes identify the rendered implementation",
+  "synthetic": true,
+  "collectors": false,
+  "publish": false,
+  "live_data": false,
+  "full_route_proof": false,
+  "generator_sha256": "6d1c1d9bb6a52f8a68d1a87ced97cc6c9edc928abc80d5d8c18da88cf738598b",
+  "presentation_sha256": "2851b9c72af9c5549794b2a02e9229045e3196239be0d2e961862f74c58f3869",
+  "loaded_source_sha256": {
+    "engine": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "engine.alt_cycle": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/alt_cycle.py",
+      "sha256": "f2b1e4471256d822218853e8f474953960d12bacf8270da61ba0dc0698b9f176"
+    },
+    "engine.btc_mtf": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/btc_mtf.py",
+      "sha256": "720a340b79a9461de7d691751e9c85f19d213ad33d04a5c7e94f968eae99f996"
+    },
+    "engine.btc_options": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/btc_options.py",
+      "sha256": "ede40c26ba0b80fb26d979d0c9f7875bd3f05d3b265bd2fe176eb166f84e8b6b"
+    },
+    "engine.btc_signals": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/btc_signals.py",
+      "sha256": "e91c7a39265acda38748f5d589cc341f6f335679eb9c743e2dd01630b0d065a6"
+    },
+    "engine.crypto_market_state": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/crypto_market_state.py",
+      "sha256": "e670c291c2ee6721d1712b1a4681519b6c2932424934e56d215c25d51a8eef05"
+    },
+    "engine.crypto_universe": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/crypto_universe.py",
+      "sha256": "1a70808d11add2c6228b1a572f99893e35d56192bc698a91ee7c2da3877e6a7a"
+    },
+    "engine.cycles": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/cycles.py",
+      "sha256": "679fafe2ef043a67bd390d9d9425bb610831453f76018be49e449294e1d33f56"
+    },
+    "engine.eth_state": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/eth_state.py",
+      "sha256": "7461edb34a02428357f635867199fea05d5f1d8a044c1a91a354f49dd324dddb"
+    },
+    "engine.event_calendar": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/event_calendar.py",
+      "sha256": "b6b65616575bde5a3d3972304bbcfcd9c1034eee2df83dc7d50c13b7333b700e"
+    },
+    "engine.session_anchor": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/session_anchor.py",
+      "sha256": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f"
+    },
+    "engine.technicals": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/engine/technicals.py",
+      "sha256": "83e90996d3f6eb58162cc6005ac292116ae784332700ef5323b381d495269739"
+    },
+    "lib": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lib.config": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/config.py",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    "lib.illus": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/illus.py",
+      "sha256": "6359363cdcada8ab7756f794ebbef2cd4566bf243ce8bb66dbce081e49000359"
+    },
+    "lib.nyse_calendar": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/nyse_calendar.py",
+      "sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce"
+    },
+    "lib.pages": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/pages.py",
+      "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba"
+    },
+    "lib.store": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/lib/store.py",
+      "sha256": "14907e9d2bd6e7ae6498a7cdd3f28a5764433114d10c50681828446ce7764413"
+    },
+    "scripts.build_crypto": {
+      "path": "/workspace/scratch/0638a6b73079/f02-producer-test-deps/scripts/build_crypto.py",
+      "sha256": "38f79e1aafa83cccfd4469411b21c158246c5dc314f4a8c61495d6932c1085b7"
+    },
+    "scripts.render_illus_gap_fixture": {
+      "path": "/workspace/scratch/0638a6b73079/f02-source/scripts/render_illus_gap_fixture.py",
+      "sha256": "2851b9c72af9c5549794b2a02e9229045e3196239be0d2e961862f74c58f3869"
+    }
+  },
+  "fixture_sha256": {
+    "fixtures.json": "cade3168b97bdf2c5f9db60edc8016ef974f094e81b5ab0681dfb88eb2961969",
+    "producer-results.json": "f274ece2c7c57510786607f23c46b49235bb08755e8355029a50e88b32e2a937",
+    "inputs/legacy-invalid-gap/market_f02alt.parquet": "6380bbf67596597f5464cc9ac661696cefd171eb735c0709751703db5df81310"
+  },
+  "asset_sha256": {
+    "illus.css": "f152efb39164cec78295fb335b5061cf8edd9700d50a405edd0f47d47f2279d1",
+    "illus.js": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+    "theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "fonts/Inter-900.woff2": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+  },
+  "page_sha256": {
+    "dark-en.html": "01680a77d22a2f705086ee35d2f6726c5b91cf8a2c28e9d53c7fd588500ba63f",
+    "dark-zh.html": "dfe3ad9646ff0cfc5b99c4fa4da5784a0a6aa952c36040b696c368ed221c33ec",
+    "light-en.html": "4163a6dad68b8c7d0b4edef58b0b66222820dcba79e9d1286765200153d9669f",
+    "light-zh.html": "663924a8d429085a36c196b2c5176ad7b73feec966d4790f389a86fa3db578e3"
+  },
+  "packages": {
+    "pandas": "2.2.3",
+    "numpy": "2.3.5",
+    "jinja2": "3.1.6",
+    "PyYAML": "6.0.3",
+    "pyarrow": "26.0.1"
+  },
+  "cases": [
+    {
+      "id": "deep-internal-gap",
+      "producer": "deep_history",
+      "slots": 93,
+      "observations": 90,
+      "missing": 3,
+      "runs": 2,
+      "tail": false,
+      "first_date": "2026-08-04",
+      "last_date": "2026-11-04",
+      "last_observed_date": "2026-11-04",
+      "missing_dates": [
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09"
+      ],
+      "chart_case_ids": [
+        "deep-internal-gap-96",
+        "deep-internal-gap-140",
+        "deep-internal-gap-240"
+      ]
+    },
+    {
+      "id": "deep-unavailable-tail",
+      "producer": "deep_history",
+      "slots": 94,
+      "observations": 90,
+      "missing": 4,
+      "runs": 1,
+      "tail": true,
+      "first_date": "2026-08-03",
+      "last_date": "2026-11-04",
+      "last_observed_date": "2026-10-31",
+      "missing_dates": [
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-04"
+      ],
+      "chart_case_ids": [
+        "deep-unavailable-tail-96",
+        "deep-unavailable-tail-140",
+        "deep-unavailable-tail-240"
+      ]
+    },
+    {
+      "id": "legacy-invalid-gap",
+      "producer": "legacy_parquet",
+      "slots": 94,
+      "observations": 90,
+      "missing": 4,
+      "runs": 2,
+      "tail": false,
+      "first_date": "2026-08-03",
+      "last_date": "2026-11-04",
+      "last_observed_date": "2026-11-04",
+      "missing_dates": [
+        "2026-09-07",
+        "2026-09-08",
+        "2026-09-09",
+        "2026-09-10"
+      ],
+      "chart_case_ids": [
+        "legacy-invalid-gap-96",
+        "legacy-invalid-gap-140",
+        "legacy-invalid-gap-240"
+      ]
+    },
+    {
+      "id": "complete-baseline",
+      "producer": "deep_history",
+      "slots": 90,
+      "observations": 90,
+      "missing": 0,
+      "runs": 1,
+      "tail": false,
+      "first_date": "2026-08-07",
+      "last_date": "2026-11-04",
+      "last_observed_date": "2026-11-04",
+      "missing_dates": [],
+      "chart_case_ids": [
+        "complete-baseline-96",
+        "complete-baseline-140",
+        "complete-baseline-240"
+      ]
+    }
+  ],
+  "chart_selector": "[data-chart-case]",
+  "chart_widths": [
+    96,
+    140,
+    240
+  ],
+  "chart_height": 42,
+  "required_viewports": [
+    1440,
+    390,
+    320
+  ],
+  "capture_preparation": "Production ilxReveal(document) on load; ?natural=1 retains reveal-on-scroll",
+  "browser_acceptance": "NOT_RUN"
+}

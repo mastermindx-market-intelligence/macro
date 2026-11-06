@@ -31852,6 +31852,9 @@ jobs:
       - "tests/test_crypto_decision_binding.py"
       - "tests/test_crypto_market_state_semantics.py"
       - "tests/test_crypto_universe_dated.py"
+      # F02: both producer-gap suites exercise this job's crypto source closure.
+      - "tests/test_crypto_chart_gaps.py"
+      - "tests/test_crypto_legacy_chart_gaps.py"
       # R2 organs (#8901).
       - "collectors/__init__.py"
       - "collectors/_crypto_observations.py"
@@ -32260,7 +32263,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 markupsafe plotly requests scipy beautifulsoup4 lxml openpyxl scikit-learn fastapi httpx jsonschema
       - name: crypto engine contracts — market-state semantics, dated universe, budget truth, decision binding, consumer states
-        run: python -m pytest tests/test_crypto_market_state_semantics.py tests/test_crypto_universe_dated.py tests/test_crypto_budget_truth.py tests/test_crypto_decision_binding.py tests/test_crypto_consumer_states.py -q
+        run: python -m pytest tests/test_crypto_market_state_semantics.py tests/test_crypto_universe_dated.py tests/test_crypto_budget_truth.py tests/test_crypto_decision_binding.py tests/test_crypto_consumer_states.py tests/test_crypto_chart_gaps.py tests/test_crypto_legacy_chart_gaps.py -q
       - name: R2 organs — vector wave-1 / data boundary / front door, BTC signals / impulse / intraday CVD, crypto collectors
         run: python -m pytest tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_btc_intraday_cvd.py tests/test_crypto_collectors.py -q
       - name: crypto science contracts — causal integrity, look-ahead, prereg invariants, transfer, funding, scoring, eligibility, observations capture, on-chain families, rotation basis, T12/T15 scaffolds, scorecard gaps

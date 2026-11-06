@@ -1,0 +1,32 @@
+{
+  "source_head": "2b1593acd1b1d4e36014f20363ef11cfc71e8634",
+  "synthetic": true,
+  "collectors": false,
+  "publish": false,
+  "input_sha256": {
+    "lib/illus.py": "0d9cc76fd9cfed39e09d001b6424b3e45506ac1e5d0a0acbada68024b474fd2e",
+    "templates/illus.css": "a434a57200b9935b7aa0daade71f32e67c5ff3cbe172e6dedea31b77a07e3e9d",
+    "templates/illus.js": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "templates/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "templates/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "templates/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "templates/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+    "templates/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "templates/fonts/Inter-900.woff2": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+  },
+  "generator_sha256": "2851b9c72af9c5549794b2a02e9229045e3196239be0d2e961862f74c58f3869",
+  "page_sha256": {
+    "dark-en.html": "19ef3b8ad451d5e21c1c032f160eb37d8bb1a9cb9eee420ec0e919d9a36276a9",
+    "dark-zh.html": "7fc1884f1e0aad5ed6e952a0a6917a1a7b91a38063cd63f3314c3216ba17d948",
+    "light-en.html": "538fbc5bfd7229a37e82b75a7c7a7ac3693c91b34bd42d6f79a14953b75fbeb1",
+    "light-zh.html": "f2163de4e888cb3dd45383f6f84dc22a798fe59fa00d3617bc3dda732e3c3ec6"
+  },
+  "required_viewports": [
+    1440,
+    390
+  ],
+  "capture_preparation": "Production ilxReveal(document) on load; ?natural=1 leaves reveal-on-scroll unchanged",
+  "browser_acceptance": "NOT_RUN"
+}
