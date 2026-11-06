@@ -154,9 +154,21 @@ jobs:
     # to a cold runner, so the cap must clear the COLD pace, not the warm one: 240m is
     # ~1.4x the observed 172m. The job still exits as soon as its steps finish; a
     # larger cap costs nothing on a healthy night and buys the commit on a slow one.
-    timeout-minutes: 240
+    # 2026-10-14: the 240m ceiling has now failed its cold-source premise.
+    # Real scheduled run 38495183073/job 115629246223 began at 01:20:35Z,
+    # reached "push market data" only at 05:14:27Z (elapsed 233m52s), and
+    # GitHub cancelled it at 05:25:36Z with the committed 5,927-file/1 GB
+    # market snapshot still unpublished. The hard 240m job window left just
+    # 6m08s at push entry, less than one PUSH_ALARM=420s attempt and without
+    # time for a fetch/rebase/retry. The 300m cap gives that exact observed
+    # entry point 66m08s for the EXISTING fail-closed publisher, without
+    # weakening collision checks, changing data or scheduling another job.
+    # This headroom is not proof of a successfully published future nightly;
+    # producer/runtime efficiency still needs separate evidence.
+    timeout-minutes: 300
     outputs:
       government_revenue_projection_needed: ${{ steps.pushdata.outputs.published }}
+      government_revenue_source_sha: ${{ steps.pushdata.outputs.source_sha }}
       # ── CAPITAL-STRUCTURE HANDOFF CONTRACT (2026-08-06 job split) ──────────
       # The capital-structure chain moved to its own `capital_structure` job. Its
       # INPUT — the source ledger `run collectors` (sec_capital_structure) just
@@ -213,7 +225,10 @@ jobs:
           key: midcap-closes-${{ github.run_id }}
           restore-keys: midcap-closes-
       - name: restore Russell 2000 breadth close cache
-        uses: actions/cache@v4
+        # This is now restore-only: the qualified same-run cache is explicitly
+        # saved immediately after collection, so an unrelated late Git failure
+        # cannot suppress the cache post-step (Oct 16 GH001 reproduction).
+        uses: actions/cache/restore@v4
         with:
           path: data/russell_breadth/_closes_cache.parquet
           key: russell-closes-${{ github.run_id }}
@@ -381,7 +396,79 @@ jobs:
           # sam_gov_opportunities is excluded because government-revenue-live.yml
           # is its sole serialized ledger owner. Two workflows must never merge and
           # overwrite the same revision/document Parquets concurrently.
+          # Existing collector step exposes one run-local time fence; the source
+          # must have been evaluated in THIS execution, not merely earlier on
+          # the same completed market session.
+          echo "started_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
           python -m scripts.collect --exclude-group asia --exclude sam_gov_opportunities --skip-shadow-importance
+      - name: qualify Russell same-run cache handoff
+        # Do not treat a green collectors job, frozen partial cold cache, or a
+        # prior checked_at as proof of current source. Read the incumbent
+        # source status/NYSE owner, then publish a same-run cache ONLY if ready.
+        if: steps.collectors.outcome == 'success'
+        id: russell_cache_ready
+        continue-on-error: true  # this transport must not veto the market checkpoint
+        env:
+          RUSSELL_COLLECT_STARTED_AT: ${{ steps.collectors.outputs.started_at }}
+        run: |
+          python - <<'PY_RUSSELL_HANDOFF'
+          import json
+          import os
+          from datetime import datetime, time, timezone
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          from lib.nyse_calendar import expected_last_session
+
+          expected = expected_last_session()
+          close_utc = datetime.combine(
+              expected, time(16), tzinfo=ZoneInfo("America/New_York")
+          ).astimezone(timezone.utc)
+          receipt = {}
+          try:
+              receipt = json.loads(Path("data/run_status.json").read_text())
+          except (OSError, ValueError, TypeError):
+              pass
+          source = ((receipt.get("sources") or {}).get("russell_breadth") or {})
+          def parse_utc(stamp):
+              if not isinstance(stamp, str):
+                  return None
+              try:
+                  instant = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+                  if instant.tzinfo is None:
+                      instant = instant.replace(tzinfo=timezone.utc)
+                  return instant.astimezone(timezone.utc)
+              except ValueError:
+                  return None
+
+          checked = parse_utc(source.get("checked_at"))
+          finished = parse_utc(receipt.get("last_run"))
+          started = parse_utc(os.environ.get("RUSSELL_COLLECT_STARTED_AT"))
+          now = datetime.now(timezone.utc)
+          cache = Path("data/russell_breadth/_closes_cache.parquet")
+          qualified = (
+              source.get("status") == "ok"
+              and source.get("last_date") == expected.isoformat()
+              and started is not None and finished is not None and checked is not None
+              and close_utc <= started <= finished <= checked <= now
+              and cache.is_file() and cache.stat().st_size > 0
+          )
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"qualified={'true' if qualified else 'false'}\n")
+          if qualified:
+              print("::notice title=Russell cache handoff::qualified completed-session source; ready for same-run save")
+          else:
+              print("::warning title=Russell cache handoff withheld::missing/unqualified current Russell source; engine remains exact-key-only")
+          PY_RUSSELL_HANDOFF
+      - name: save qualified Russell close cache before market git push
+        # The normal late Git push can fail independently (GH001/credentials).
+        # Keep the same-run producer→engine cache authoritative only when the
+        # original Russell collector actually qualified the current session.
+        if: steps.russell_cache_ready.outputs.qualified == 'true'
+        continue-on-error: true  # cache outage cannot hold collected market data
+        uses: actions/cache/save@v4
+        with:
+          path: data/russell_breadth/_closes_cache.parquet
+          key: russell-closes-${{ github.run_id }}
       - name: refresh Finviz themes snapshot (subsector-rotation feed; non-fatal)
         # The only network leg for the themes map + Subsector Rotation. Refreshes
         # data/themes_heatmap/perf_snapshot.json (stamped with asof) so the rotation
@@ -422,7 +509,7 @@ jobs:
         # design; the `||` guard covers an import/interpreter failure it cannot catch.
         timeout-minutes: 12
         run: |
-          python -m scripts.backfill_yahoo_universe --cap 400 --budget-s 480 \
+          python -m scripts.backfill_yahoo_universe --cap 400 --batch-size 160 --refresh-all --budget-s 480 \
             || echo "::warning::yahoo universe backfill failed (non-fatal) — hub price coverage does not advance tonight"
       - name: audit massive_stock_day store (content tripwire — loud, never blocks the night)
         # This lane runs --exclude-group asia, and scripts/collect.py skips the WHOLE
@@ -539,6 +626,15 @@ jobs:
         run: |
           python3 scripts/build_security_master.py --nightly \
             || echo "::warning::build_security_master.py --nightly exited non-zero (unexpected — the function itself always returns 0; see the traceback above)"
+      # C04 (DATA-OS-COMPLETION, DEC-DATAOS-VIEW-CONTRACT-SIDECAR-IS-A-NIGHTLY-EMITTER): describe the
+      # US store for the Terminal's U01 reader. Reads data/reference/{vendor_aliases,security_master}
+      # once + one os.scandir of data/stocks; byte-stable (no timestamp), so an unchanged store is a
+      # no-op. The file rides the existing `git add data/` collect commit below. Non-fatal by design.
+      - name: view contract sidecar — data/stocks/_view_contract.json (C04)
+        continue-on-error: true
+        run: |
+          python3 -m scripts.emit_view_contract \
+            || echo "::warning::emit_view_contract exited non-zero (non-fatal — previous sidecar remains)"
       # Marked AFTER the coherence tripwire above so the tripwire's runtime is not
       # billed to the market-commit-push band it is measuring.
       - name: timings band — market-commit-push (W2)
@@ -589,6 +685,9 @@ jobs:
         #     caches, macro series, ~228 adapters. The only bulk producer here.
         #   site/qledger/track_record.json
         #                              -> `run collectors`  (grade_qledger)   GATES
+        #   data/qledger/**, site/qledger/**  CARVED OUT (unstaged, snapshotted, parked over the push, restored after)
+        #     when any staged qledger blob is within 1 MiB of GitHub's 100 MiB file
+        #     limit — GH001 otherwise rejects the whole market commit (2026-10-16/17).
         #   data/capital_structure/**  -> NOT STAGED HERE. `run collectors`
         #     (sec_capital_structure) rewrites source_manifest.jsonl inside the broad
         #     `data/` add, so it is unstaged again below and belongs to the SECOND
@@ -661,6 +760,57 @@ jobs:
           # its INPUT: reverting it would feed the spine yesterday's manifests every
           # single night. Unstage, do not revert.
           git reset -q -- data/capital_structure site/capital-structure-data 2>/dev/null || true
+          # QLEDGER OVERSIZE CARVE-OUT (2026-10-17). data/qledger/claims.jsonl is an
+          # append-only monolith; once it crossed GitHub's 100 MiB file limit, GH001
+          # rejected this WHOLE commit and the market plane (data/baskets/ohlcv,
+          # data/stocks, breadth, macro) stopped publishing on 2026-10-16 and 10-17
+          # (jobs 116748357565, 117262684428). When any staged qledger blob is within
+          # 1 MiB of the limit (headroom for the rebase onto a moving main), unstage ALL
+          # of data/qledger + site/qledger (one plane: published together or not at
+          # all) and warn. Unstage only, never revert; the ledger's size belongs to the
+          # qledger publication program.
+          qledger_limit=104857600
+          qledger_margin=1048576
+          qledger_over=""
+          while IFS= read -r -d '' qpath; do
+            qsize=$(git cat-file -s ":$qpath" 2>/dev/null || echo unmeasured)
+            case "$qsize" in
+              ''|*[!0-9]*) qledger_over="$qledger_over $qpath=unmeasured" ;;
+              *) if [ "$qsize" -gt $((qledger_limit - qledger_margin)) ]; then qledger_over="$qledger_over $qpath=${qsize}B"; fi ;;
+            esac
+          done < <(git diff --cached --name-only -z --no-renames --diff-filter=d -- data/qledger site/qledger)
+          if [ -n "$qledger_over" ]; then
+            # Custody snapshot BEFORE the unstage: an unreachable, runner-local commit of
+            # the full staged index (parent = this HEAD). No ref names it and nothing
+            # pushes it — the same object class as git's own autostash entry. The push
+            # loop's --autostash can discard dirty bytes on a conflicted re-apply, so
+            # the steps around `push market data` park these paths at HEAD and restore
+            # them from this snapshot afterwards (#9556 review 5566188238).
+            qledger_snapshot=$(git commit-tree "$(git write-tree)" -p HEAD -m "qledger carve custody snapshot (runner-local; never pushed)" 2>/dev/null) || qledger_snapshot=""
+            if [ -z "$qledger_snapshot" ]; then
+              # FAIL CLOSED ON PUBLICATION: with no snapshot, park/restore cannot run and the
+              # push loop's --autostash would carry the dirty qledger bytes unprotected. So
+              # withhold the WHOLE market commit (committed stays false: neither push step
+              # runs), leave index + worktree untouched, and keep collect green.
+              echo "qledger_withheld=true" >> "$GITHUB_OUTPUT"
+              echo "::error title=market publication withheld (qledger carve snapshot failed)::could not snapshot the carved qledger bytes:${qledger_over}; NEITHER market data NOR data/qledger + site/qledger is published by this run (no market commit, no push). The collected bytes are left untouched in this runner workspace (runner-local; gone at the next clean checkout)."
+              if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+                {
+                  echo "### Market publication withheld: qledger carve snapshot failed"
+                  echo ""
+                  echo "- oversize qledger blob(s):${qledger_over}"
+                  echo "- market data: NOT committed and NOT pushed by this run"
+                  echo "- data/qledger + site/qledger: NOT published; collected bytes left untouched in this runner workspace (runner-local)"
+                  echo "- owner: qledger publication program"
+                } >> "$GITHUB_STEP_SUMMARY" || true
+              fi
+              exit 0
+            fi
+            git reset -q -- data/qledger site/qledger
+            echo "qledger_carved=true" >> "$GITHUB_OUTPUT"
+            echo "qledger_snapshot=$qledger_snapshot" >> "$GITHUB_OUTPUT"
+            echo "::warning title=qledger carved out of market commit::staged qledger blob(s) within ${qledger_margin}B of GitHub's ${qledger_limit}B file limit:${qledger_over}; this run's data/qledger + site/qledger are NOT published (owner: qledger publication program); the market commit, if any, excludes them."
+          fi
           if git diff --cached --quiet; then echo "no market data changes to commit"; exit 0; fi
           git commit -m "data: daily collection $(date -u +%F)"
           echo "committed=true" >> "$GITHUB_OUTPUT"
@@ -729,9 +879,47 @@ jobs:
       # the 150m cap killed the step mid-publish; the commit existed only on the runner).
       # Every git network op is alarm-bounded (macOS runners have no GNU timeout;
       # perl alarm survives execve — SIGALRM kills a hung op, the loop retries).
+      # QLEDGER CARVE CUSTODY (#9556 review 5566188238), part 1. The carve-out in
+      # `commit market data` leaves data/qledger + site/qledger DIRTY, and the push
+      # below rebases with --autostash: a conflicted re-apply (e.g. a concurrent
+      # site/qledger/track_record.json, which is not merge=union) makes
+      # push_autostash_ok drop the stash and reset hard — the unpublished claims
+      # append would vanish while the market push still reported success. So those
+      # paths sit the push out at HEAD's committed bytes (the autostash carries what
+      # it carried before the carve-out existed) and part 2 below restores them
+      # byte-identical from commitdata's snapshot. Only when that snapshot exists;
+      # never fails the job. A park it cannot VERIFY (#9556 review 5570764032)
+      # writes parked=false and withholds the push and its cancel salvage: no
+      # fetch, rebase or push may run against dirty carved bytes.
+      - name: park carved qledger bytes outside the push autostash
+        id: park
+        if: always() && steps.commitdata.outputs.committed == 'true' && steps.commitdata.outputs.qledger_snapshot != ''
+        env:
+          QLEDGER_SNAPSHOT: ${{ steps.commitdata.outputs.qledger_snapshot }}
+        run: |
+          if ! git diff --quiet HEAD -- data/qledger site/qledger; then
+            git restore --source=HEAD --worktree -- data/qledger site/qledger || true
+          fi
+          # Verify the parked state itself; a restore exit code is not evidence.
+          if git diff --quiet HEAD -- data/qledger site/qledger && git diff --cached --quiet -- data/qledger site/qledger; then
+            echo "parked=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "parked=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=market publication withheld (qledger park failed)::could not park data/qledger + site/qledger at HEAD before the push; NEITHER market data NOR data/qledger + site/qledger is published by this run. The market commit stays runner-local and unpushed (no fetch, rebase or push runs against the dirty carved bytes); snapshot $QLEDGER_SNAPSHOT and the collected bytes stay in this runner workspace (runner-local; gone at the next clean checkout). Owner: qledger publication program."
+            if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+              {
+                echo "### Market publication withheld: qledger park failed"
+                echo ""
+                echo "- market data: committed locally but NOT pushed by this run"
+                echo "- data/qledger + site/qledger: NOT published; restored from snapshot \`$QLEDGER_SNAPSHOT\` by the restore step (runner-local)"
+                echo "- owner: qledger publication program"
+              } >> "$GITHUB_STEP_SUMMARY" || true
+            fi
+          fi
+      # A carved night publishes only after a verified park (#9556 review 5570764032).
       - name: push market data (survives a job-cap cancel; alarm-bounded git ops)
         id: pushdata
-        if: always() && steps.commitdata.outputs.committed == 'true'
+        if: always() && steps.commitdata.outputs.committed == 'true' && (steps.commitdata.outputs.qledger_carved != 'true' || steps.park.outputs.parked == 'true')
         run: |
           echo "published=false" >> "$GITHUB_OUTPUT"
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -774,8 +962,12 @@ jobs:
             # attempt rather than fail open. Every other fence outcome returns 0.
             if ! push_append_only_fence origin/main; then push_backoff; continue; fi
             if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
+              GOVREV_PUSH_SOURCE_SHA=$(git rev-parse HEAD)
               if push_do; then
                 echo "pushed market data on attempt $PUSH_ATTEMPT"
+                # No caller binding is emitted if the checkout drifted across push.
+                [ "$(git rev-parse HEAD)" = "$GOVREV_PUSH_SOURCE_SHA" ] || exit 75
+                printf 'source_sha=%s\n' "$GOVREV_PUSH_SOURCE_SHA" >> "$GITHUB_OUTPUT"
                 echo "published=true" >> "$GITHUB_OUTPUT"
                 push_won
                 exit 0
@@ -789,8 +981,9 @@ jobs:
       # Last-ditch publish if the job was CANCELLED mid-push (cap timeout): one bounded
       # attempt inside the post-cancel grace window. The commit already exists locally;
       # losing it costs the whole night's collections (2026-07-16 incident).
+      # Same verified-park gate as the push above (#9556 review 5570764032).
       - name: salvage push (job cancelled mid-publish — one bounded attempt)
-        if: cancelled() && steps.commitdata.outputs.committed == 'true'
+        if: cancelled() && steps.commitdata.outputs.committed == 'true' && (steps.commitdata.outputs.qledger_carved != 'true' || steps.park.outputs.parked == 'true')
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           perl -e 'alarm 90; exec @ARGV or die' -- git fetch origin main || true
@@ -806,6 +999,75 @@ jobs:
           perl -e 'alarm 120; exec @ARGV or die' -- git push \
             && echo "salvage push landed the collections" \
             || echo "::warning::salvage push failed — tonight's collections stay uncommitted"
+      # QLEDGER CARVE CUSTODY, part 2: put the carved bytes back exactly as collected
+      # and say loudly that they were NOT published. Runs after the push and its
+      # cancel salvage on every outcome — including the deferred-only night where
+      # nothing was committed. It never stages, commits or pushes: the snapshot is a
+      # runner-local unreachable object and these bytes die with this workspace at
+      # the next clean checkout (durable retention belongs to the qledger
+      # publication program). A path it cannot restore is reported LOST (::error +
+      # step summary), never as success. The step never fails the job:
+      # capital_structure and government_revenue_projection need collect to succeed.
+      - name: restore carved qledger bytes (runner-local, never published here)
+        if: always() && steps.commitdata.outputs.qledger_snapshot != ''
+        env:
+          QLEDGER_SNAPSHOT: ${{ steps.commitdata.outputs.qledger_snapshot }}
+        run: |
+          restored=""
+          lost=""
+          qpaths=$(git -c core.quotePath=false diff --name-only --no-renames "$QLEDGER_SNAPSHOT^" "$QLEDGER_SNAPSHOT" -- data/qledger site/qledger 2>/dev/null) || qpaths=""
+          if [ -z "$qpaths" ]; then lost=" snapshot-unreadable:$QLEDGER_SNAPSHOT"; fi
+          while IFS= read -r qpath; do
+            [ -n "$qpath" ] || continue
+            # Classify against the snapshot TREE, never against a lookup exit code
+            # (#9556 post-merge findings 6285214966 + 6290288707): a readable tree
+            # that lacks the path is a deferred deletion; an unreadable tree
+            # (object store, lock, OOM) is LOST and the surviving bytes stay put.
+            if ! entry=$(git ls-tree --name-only "$QLEDGER_SNAPSHOT" -- "$qpath" 2>/dev/null); then
+              lost="$lost $qpath(lookup-failed)"; continue
+            fi
+            if [ -n "$entry" ]; then
+              want=$(git rev-parse "$QLEDGER_SNAPSHOT:$qpath" 2>/dev/null) || want=""
+              if [ -z "$want" ]; then lost="$lost $qpath(lookup-failed)"; continue; fi
+              have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
+              if [ "$have" != "$want" ]; then
+                # A non-file at the path (a directory) cannot be swapped: POSIX `mv`
+                # would move the temp INTO it and leak the blob. Report LOST, touch nothing.
+                if [ -e "$qpath" ] && [ ! -f "$qpath" ]; then lost="$lost $qpath(not-a-file)"; continue; fi
+                # Read into a sibling temp file and swap in only a hash-verified
+                # copy: a failed blob read must never truncate the surviving file.
+                mkdir -p -- "$(dirname -- "$qpath")" 2>/dev/null || true
+                tmp=$(mktemp "$qpath.restore.XXXXXX" 2>/dev/null) || tmp=""
+                if [ -n "$tmp" ] && git cat-file blob "$QLEDGER_SNAPSHOT:$qpath" > "$tmp" 2>/dev/null \
+                   && [ "$(git hash-object -- "$tmp" 2>/dev/null)" = "$want" ]; then
+                  chmod u=rw,go=r -- "$tmp" 2>/dev/null || true
+                  mv -f -- "$tmp" "$qpath" 2>/dev/null || true
+                fi
+                if [ -n "$tmp" ]; then rm -f -- "$tmp" 2>/dev/null || true; fi
+                have=$(git hash-object -- "$qpath" 2>/dev/null) || have=""
+              fi
+              if [ "$have" = "$want" ]; then restored="$restored $qpath"; else lost="$lost $qpath"; fi
+            else
+              rm -f -- "$qpath" 2>/dev/null || true
+              if [ -e "$qpath" ]; then lost="$lost $qpath(deleted)"; else restored="$restored $qpath(deleted)"; fi
+            fi
+          done <<< "$qpaths"
+          if [ -n "$lost" ]; then
+            echo "::error title=qledger carve custody LOST::carved qledger bytes could not be restored in this workspace:${lost}; they survive only in the unreachable runner-local snapshot $QLEDGER_SNAPSHOT until git gc, and were NOT published (owner: qledger publication program)."
+          fi
+          if [ -n "$restored" ]; then
+            echo "::warning title=qledger carve-out not published::NOT published by this run:${restored} — restored byte-identical in this runner's workspace from snapshot $QLEDGER_SNAPSHOT; runner-local only, gone at the next clean checkout (owner: qledger publication program)."
+          fi
+          if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+            {
+              echo "### QLedger carve-out — NOT published by this run"
+              echo ""
+              echo "- snapshot (runner-local, never pushed): \`$QLEDGER_SNAPSHOT\`"
+              echo "- restored byte-identical in this workspace:${restored:- none}"
+              echo "- LOST (not restorable here):${lost:- none}"
+              echo "- owner: qledger publication program; this job does not durably retain these bytes"
+            } >> "$GITHUB_STEP_SUMMARY" || true
+          fi
       # ── CAPITAL-STRUCTURE HANDOFF (the chain itself moved out 2026-08-06) ───
       # The five capital-structure steps, their diagnostics capture, and their
       # commit/push checkpoint used to run HERE. They now run in the
@@ -849,17 +1111,19 @@ jobs:
           # sound input (#4600's restore-a-clean-ledger self-heal) but it is a
           # DIFFERENT ledger, so the receipt must describe whatever actually survived
           # rather than what the collectors wrote 20 minutes earlier.
-          if command -v shasum >/dev/null 2>&1; then
-            sha="$(shasum -a 256 "$ledger" | cut -d' ' -f1)"
-          else
-            sha="$(sha256sum "$ledger" | cut -d' ' -f1)"
-          fi
-          # JSONL, newline-terminated by contract (decode_source_ledger rejects a
-          # partial final line), so `wc -l` IS the row count.
-          rows="$(wc -l < "$ledger" | tr -d ' ')"
-          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
-          echo "rows=$rows" >> "$GITHUB_OUTPUT"
-          echo "capital-structure handoff stamped: $rows rows, sha256 $sha"
+          #
+          # The ledger is SHARDED byte-exactly: $ledger is part 1 (never rewritten
+          # once sealed) and source_manifest.part-NNNN.jsonl continuation parts hold
+          # later rows, each under GitHub's 100 MiB blob limit -- the single file
+          # crossed it on 2026-09-27 and every nightly through 10-09 compiled a
+          # generation and lost it at push (GH001). The receipt therefore describes
+          # the LOGICAL ledger, the ordered concatenation of every part: `rows` is
+          # still its newline count and `sha256` still its digest (byte-for-byte the
+          # old shasum/wc receipt while no continuation part exists), and ONE script
+          # owns that arithmetic on both sides of the handoff. Appends to
+          # $GITHUB_OUTPUT itself; a part listing it cannot read stamps nothing, so
+          # the verify step refuses as "no ledger receipt".
+          python scripts/capital_structure_ledger_receipt.py stamp --root data/capital_structure
       - name: hand the capital-structure workspace to its own job
         continue-on-error: true
         # actions/upload-artifact v4.6.2 — the pin already used by the diagnostics
@@ -892,6 +1156,7 @@ jobs:
             !data/capital_structure/source_objects
             !data/capital_structure/share_counts
             !data/capital_structure/*.tmp.parquet
+            !data/capital_structure/*.tmp.jsonl
           # An empty handoff is a real defect, not a quiet no-op: fail the upload so
           # the receipt is absent and the other job refuses to compile.
           if-no-files-found: error
@@ -955,7 +1220,7 @@ jobs:
       # still records the night in the grace window (elapsed ≈ cap → the warning fires).
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
-        run: bash scripts/ci/nightly_timings_finish.sh 240
+        run: bash scripts/ci/nightly_timings_finish.sh 300
 
   # ── CAPITAL-STRUCTURE LANE (its own job since 2026-08-06) ─────────────────
   # WHY ITS OWN JOB. This is an all-or-nothing SEC publication protocol. Its
@@ -1082,17 +1347,12 @@ jobs:
             echo "::error title=capital-structure-handoff::$ledger is absent after the artifact download."
             exit 1
           fi
-          if command -v shasum >/dev/null 2>&1; then
-            actual_sha="$(shasum -a 256 "$ledger" | cut -d' ' -f1)"
-          else
-            actual_sha="$(sha256sum "$ledger" | cut -d' ' -f1)"
-          fi
-          actual_rows="$(wc -l < "$ledger" | tr -d ' ')"
-          if [ "$actual_sha" != "$EXPECTED_SHA" ]; then
-            echo "::error title=capital-structure-handoff::ledger mismatch — collect stamped ${EXPECTED_ROWS} rows / ${EXPECTED_SHA}, this tree holds ${actual_rows} rows / ${actual_sha}. The likeliest cause is that the artifact did not land ON TOP of the checkout, leaving the last COMMITTED ledger in place; compiling that would reproduce yesterday byte-for-byte, commit nothing, and freeze the lane green."
-            exit 1
-          fi
-          echo "capital-structure handoff verified: $actual_rows rows, sha256 $actual_sha"
+          # The ledger is sharded byte-exactly across $ledger and its
+          # source_manifest.part-NNNN.jsonl continuation parts; the receipt covers
+          # their ordered concatenation, and the SAME script that stamped it in
+          # `collect` verifies it here, exiting 1 on a mismatch, a missing part, or a
+          # part listing it cannot read (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY).
+          python scripts/capital_structure_ledger_receipt.py verify --root data/capital_structure --expect-sha256 "$EXPECTED_SHA" --expect-rows "$EXPECTED_ROWS"
       - name: timings band — capital-structure (W2)
         run: python3 scripts/nightly_timings.py mark --band capital-structure || echo "::warning::timings band mark failed (non-fatal)"
       - name: materialize authenticated capital-structure share counts (context-only)
@@ -1215,6 +1475,9 @@ jobs:
         # -- round-3 review Major 3.
         continue-on-error: true
         env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           R2_CAPITAL_STRUCTURE_ENDPOINT: ${{ secrets.R2_CAPITAL_STRUCTURE_ENDPOINT }}
           R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID: ${{ secrets.R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID }}
@@ -1242,6 +1505,121 @@ jobs:
         # public twin; terms, capacity, runway, scores, probabilities, and Prophet
         # authority stay absent.
         run: python -m scripts.build_capital_structure_projection
+      - name: capture the previous capital-structure generation (for the change ledger)
+        # SPEC_U2 U2-3 (a): the change-ledger producer below diffs TONIGHT's
+        # state generation against the PREVIOUS published one, so the previous
+        # state bundle and capacity inputs must be copied to $RUNNER_TEMP
+        # BEFORE the state step overwrites them. Absence on a first night (or
+        # after a bundle that refused to publish) is the stated baseline, so
+        # every copy is `|| true` — this step can never red the lane.
+        id: cs_previous_state
+        run: |
+          cp data/capital_structure/state_bundle.json "$RUNNER_TEMP/previous_state_bundle.json" 2>/dev/null || true
+          cp data/capital_structure/capacity_inputs.json "$RUNNER_TEMP/previous_capacity_inputs.json" 2>/dev/null || true
+      - name: build the capital-structure state bundle (registration family; whole generation or nothing)
+        id: cs_state
+        # Reads the same verified generation, the generation-bound health horizon
+        # and the projection.json written immediately above, and publishes one
+        # data/capital_structure/state_bundle.json (one CapitalState per covered
+        # issuer, registration family only) or refuses and leaves the last good
+        # bundle in place. It has no public twin: the state API is entitled-only.
+        # Fatal like the projection — a bundle that does not bind the served
+        # projection must not ride this checkpoint (DEC-CS-V2-STATE-BUNDLE-U1).
+        run: python -m scripts.build_capital_structure_state
+      - name: compile capital-structure instrument candidate terms (best-effort; refusal recorded, never fatal)
+        # The candidate-term compiler reads document_term_observations.parquet plus the
+        # source manifests through the collector-owned source stores — today the main
+        # reason an issuer's instruments family is unavailable is that this compiler is
+        # simply never invoked nightly (DSC:CS-INSTRUMENT-AND-LIFECYCLE-COMPILERS-NOT-
+        # NIGHTLY). A refusal is a NORMAL night (no admissible source store, no rows),
+        # so the step is continue-on-error and the checkpoint gate below carries its
+        # outcome as a RECORDED term, never a fatal one. It owns no provider path and
+        # writes only under data/capital_structure/. The step timeout keeps a slow
+        # compiler night a RECORDED failure: without it a stall would run into the
+        # job's 90-minute timeout and lose tonight's whole capital-structure checkpoint.
+        # build_source_stores() reads the same step-local R2 env as cs_terms; without
+        # it no source store is admissible and every night is a refusal.
+        id: cs_candidates
+        continue-on-error: true
+        timeout-minutes: 20
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_CAPITAL_STRUCTURE_ENDPOINT: ${{ secrets.R2_CAPITAL_STRUCTURE_ENDPOINT }}
+          R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID: ${{ secrets.R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID }}
+          R2_CAPITAL_STRUCTURE_SECRET_ACCESS_KEY: ${{ secrets.R2_CAPITAL_STRUCTURE_SECRET_ACCESS_KEY }}
+          R2_CAPITAL_STRUCTURE_BUCKET: ${{ secrets.R2_CAPITAL_STRUCTURE_BUCKET }}
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
+        run: python -m scripts.compile_capital_structure_instrument_candidate_terms
+      - name: build the capital-structure capacity inputs bundle (one generation or nothing)
+        id: cs_inputs
+        # Reads the state bundle published immediately above plus the same verified
+        # generation, and publishes data/capital_structure/capacity_inputs.json: every
+        # family tonight's run can lawfully produce is bound to its generation, and
+        # every family it cannot is a TYPED unavailability with a reason code — never
+        # a default, never a zero. Fatal like the state step: a failed validation
+        # leaves the previous bundle in place, and a bundle that does not bind the
+        # served state generation must not ride this checkpoint (SPEC_U1B §3).
+        # Financials bind from FIF's published production datasets (§13 F0: bind,
+        # never rebuild): the mode is selected for this step only, never as a
+        # default, and the store is the dedicated R2_RESEARCH family the FIF
+        # publisher writes with. A missing or failing store is a typed unavailable
+        # family, never a failed step.
+        env:
+          FIF_FINANCIAL_DATASET_MODE: production
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
+        run: python -m scripts.build_capital_structure_capacity_inputs
+      - name: build the capital-structure change ledger (one changeset or nothing)
+        # SPEC_U2 U2-3 (b): the typed change desk between the PREVIOUS
+        # published generation (captured by cs_previous_state above) and
+        # tonight's, derived by scripts.build_capital_structure_state_changes
+        # from the two published bundles alone — the same fact the change-desk
+        # API serves, produced once per generation so the monitor and the API
+        # never disagree about what changed. Fatal like the compilers above:
+        # one changeset or nothing — a failed derivation must not ride this
+        # checkpoint, and an absent/unreadable previous bundle is the stated
+        # BASELINE (exit 0), never a synthesized diff.
+        id: cs_changes
+        run: python -m scripts.build_capital_structure_state_changes --root data/capital_structure --previous "$RUNNER_TEMP/previous_state_bundle.json" --previous-inputs "$RUNNER_TEMP/previous_capacity_inputs.json"
+      - name: saved-scenario monitor (typed restore outcomes -> alert outbox; fail-soft)
+        # SPEC_U2 U2-3 (c): the enqueue-only monitor over the users' OWN saved
+        # rows — classified offline against tonight's generation through the
+        # same composition the evaluate route owes, deduped by a frozen
+        # fire_event_id, delivered by the incumbent alert_outbox drain. It
+        # writes NOTHING into the tree (never a staged-path producer). Fail-
+        # soft: absent creds/tables/inputs -> typed unavailable, 0 rows, exit
+        # 0. Dormant unless BOTH CS_SAVED_SCENARIO_ENABLE=1 AND
+        # ALERT_DRAIN_ENABLE=1 (checked before the producer is even imported);
+        # arming the secret is human-only enrollment (SPEC_U2 §3). Runs only
+        # when tonight's change ledger was produced: a failed derivation leaves
+        # no ledger to attribute against, so the monitor stays silent rather
+        # than classify every moved row as unattributed (step-level gate; the
+        # job's coupling to collect is unchanged).
+        id: cs_saved_monitor
+        if: always() && steps.cs_changes.outcome == 'success'
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          # FIF producer precedent (engine job): reuse the incumbent repo
+          # service-role secret; the monitor's SUPABASE_URL has a reviewed
+          # project default, so it is NOT injected here.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          CS_SAVED_SCENARIO_ENABLE: ${{ secrets.CS_SAVED_SCENARIO_ENABLE }}
+          ALERT_DRAIN_ENABLE: ${{ secrets.ALERT_DRAIN_ENABLE }}
+        run: '[ "${{ job.status }}" = "cancelled" ] && { echo "cs saved scenario monitor: job cancelled, skipping"; exit 0; }; python -m scripts.run_capital_structure_saved_scenario_monitor || echo "::warning::cs saved scenario monitor failed (non-fatal)"'
+      - name: summarize the capital-structure change-ledger steps (diagnostics only)
+        # One log line naming all three U2-3 outcomes, so a night's change
+        # ledger and monitor state are greppable without the job log.
+        if: always()
+        run: echo "cs_previous_state=${{ steps.cs_previous_state.outcome }} cs_changes=${{ steps.cs_changes.outcome }} cs_saved_monitor=${{ steps.cs_saved_monitor.outcome }}"
       # Diagnostics only — changes NO behavior. When the compiler above fails, the
       # ledger it rejected is the one artifact that identifies WHY, and today it is
       # unrecoverable: the failure skips every later step, so the post-collect tree
@@ -1271,10 +1649,14 @@ jobs:
           name: capital-structure-ledger-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             data/capital_structure/source_manifest.jsonl
+            data/capital_structure/source_manifest.part-*.jsonl
             data/capital_structure/source_manifest.parquet
             data/capital_structure/telemetry.json
             data/capital_structure/ingestion_run.json
             data/capital_structure/health.json
+            data/capital_structure/state_bundle.json
+            data/capital_structure/instrument_candidate_terms.parquet
+            data/capital_structure/capacity_inputs.json
           if-no-files-found: warn
           retention-days: 14
       # ── THE CAPITAL-STRUCTURE CHECKPOINT ────────────────────────────────────
@@ -1330,6 +1712,10 @@ jobs:
           && steps.cs_terms.outcome == 'success'
           && steps.cs_projection.outcome == 'success'
           && steps.cs_health.outcome == 'success'
+          && steps.cs_state.outcome == 'success'
+          && (steps.cs_candidates.outcome == 'success' || steps.cs_candidates.outcome == 'failure')
+          && steps.cs_inputs.outcome == 'success'
+          && steps.cs_changes.outcome == 'success'
         id: commitcs
         run: |
           echo "committed=false" >> "$GITHUB_OUTPUT"
@@ -1407,8 +1793,10 @@ jobs:
     if: needs.collect.outputs.government_revenue_projection_needed == 'true'
     permissions:
       contents: write
+      actions: read
     uses: ./.github/workflows/government-revenue-live.yml
     with:
+      source_sha: ${{ needs.collect.outputs.government_revenue_source_sha }}
       projection_only: true
 
   # collect_tail: the slow post-adapter accrual band, split out of `collect`
@@ -1625,6 +2013,25 @@ jobs:
         run: |
           python -m engine.theme_trade_flows \
             || echo "::warning::theme_trade_flows rollup failed (non-fatal)"
+      - name: MO-B F09-10 — USGS Mineral Commodity Summaries ingest (non-fatal)
+        timeout-minutes: 5
+        continue-on-error: true
+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}
+        # Keyless ScienceBase NMIC annual release. Off the render path.
+        # Outputs data/usgs_mcs/ staged by this job's `git add data/ … site/basketdata/` commit step.
+        run: |
+          python -m collectors.usgs_mcs \
+            || echo "::warning::usgs_mcs ingest failed (non-fatal)"
+      - name: MO-B F09-10 — critical-minerals supply-concentration rollup (non-fatal)
+        timeout-minutes: 5
+        continue-on-error: true
+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}
+        # Pure in-memory projection of the parquet above. Honest null when absent.
+        # Writes data/neuralweb/critical_minerals_supply.json + site/basketdata/critical_minerals_supply.json
+        # (staged via `git add data/ … site/basketdata/` below).
+        run: |
+          python -m engine.critical_minerals_supply \
+            || echo "::warning::critical_minerals_supply rollup failed (non-fatal)"
       - name: TIL W10 — ClinicalTrials.gov theme pipeline ingest (non-fatal)
         # Cap: measured 6.6s; 10m covers a slow CT.gov night and bounds a stalled fetch.
         timeout-minutes: 10
@@ -1847,6 +2254,8 @@ jobs:
           # circuit_breaker are written solely by collect-core's adapter sweep,
           # present in every job's base) — accepted at the 07-14 split review.
           git add data/ site/basketdata/
+          # GH001 carve (scripts/ci/qledger_carve.sh, #9556 parity): an oversize staged qledger blob sank this whole commit nightly from 10-21; withhold stays green.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 0
           if git diff --cached --quiet; then echo "no tail data changes to commit"; exit 0; fi
           git commit -m "data: collect-tail accrual $(date -u +%F)"
           # best-effort push: same 5-retry rebase loop as the collect job's
@@ -1936,6 +2345,19 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs attention || echo "::warning::attention restore failed (non-fatal — attention chip absent/stale this render)"
+      - name: restore raw daily stock bars from R2 (F08 per-stock liquidity input)
+        timeout-minutes: 20
+        continue-on-error: true
+        # The collect job already owns the full raw store and its gated publish.
+        # Materialize that same store before the stock-library producer reads it;
+        # do not substitute adjusted Yahoo closes or add a collector. Missing,
+        # stale or unqualified inputs produce typed unknown fields in stockdata.
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs massive_stock_day --workers 24 || echo "::warning::raw daily stock restore failed (F08 liquidity remains unqualified where inputs are missing)"
       - name: restore odds desk OHLCV store from R2 (engine hops runners; store is runner-local)
         # data/odds_ohlcv/*.parquet is gitignored + R2-backed (published back by this job's
         # R2 publish step) but was never restored, so every runner hop cold-started the
@@ -1973,8 +2395,9 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs subsectorohlc,subsectorohlc_nasdaq,subsectorohlc_russell || echo "::warning::subsectorohlc R2 restore failed (non-fatal — index_leadership skips loudly and keeps the last committed board)"
-      # restore-keys REMOVED from all five breadth caches below — the SAME defect the
-      # china per-name OHLC store 25 lines down already fixed (CN-SYS W5a).
+      # Historical Aug-06 repair removed prefix restores from five breadth caches.
+      # Sep-16 completes Git authority: tracked US panels are not cache-restored
+      # by readers at all; the separate Russell and HK handoffs remain below.
       #
       # A prefix restore-key matches the newest cache under that prefix from ANY prior run,
       # so this job laid a stale parquet on top of the fresh one `collect` had committed
@@ -2005,21 +2428,10 @@ jobs:
       # key that collect saved. Keep that producer/consumer key byte-identical; the old
       # `russell-closes-engine-*` key was a guaranteed cold-runner miss and cut ~1,220 names
       # from the keep-FIRST name-score stamp (2026-08-10..14 incident).
-      - name: restore breadth close cache (stock search library needs constituent closes)
-        uses: actions/cache@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-engine-${{ github.run_id }}
-      - name: restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)
-        uses: actions/cache@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-engine-${{ github.run_id }}
-      - name: restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)
-        uses: actions/cache@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-engine-${{ github.run_id }}
+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads
+      # their checkout bytes and must never overlay them from Actions cache. Only
+      # daily.collect may seed them because it refreshes and commits the canonical
+      # files. The gitignored Russell same-run handoff remains cache-backed.
       - name: restore Russell 2000 breadth close cache (stock library needs constituent closes)
         uses: actions/cache/restore@v4
         with:
@@ -2157,9 +2569,92 @@ jobs:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: |
           python -m scripts.build_sp500_heatmap --refresh-caps-only || echo "::warning title=sp500 heatmap cap refresh::rc!=0 (non-fatal — previous cache/fallbacks remain)"
+          # Reuse this existing stocks-reference credential binding before stock-library build.
+          python -m scripts.capture_stock_liquidity_currency || echo "::warning::F08 dated currency remains unqualified; prior retained receipt preserved"
+      - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
+        # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
+        # organ's per-name state over the graded universe, evaluated on a run-wide PIT
+        # cross-sectional RS percentile (the organ refuses to reach for one itself, so a
+        # single-name call can never leak a cross-section).
+        #
+        # ORDER IS LOAD-BEARING. engine.us_early_turn resolves the EARLY-TURN starter tier's
+        # LEADER licence from this file at ORIGINATION time. #5007 shipped the organ and #5105
+        # shipped the intake, but nothing published the artifact — so the leader half read {}
+        # on every production run and was structurally incapable of admitting anything, while
+        # the washout half (us_basket_turn) worked. The price-store freshness gate above
+        # settles/heals the only source this publisher reads (data/yahoo), so this runs
+        # BEFORE build_site. That makes the dashboard consume this run's truth instead of
+        # the prior committed artifact. The narrow checkpoint immediately below makes that
+        # truth durable before the long engine/render tail can strand it.
+        #
+        # DISPLAY TIER. Advances NO ledger and writes no data/ path. A degraded input
+        # publishes fewer names with their reasons printed; a RUN-WIDE data failure publishes
+        # nothing and leaves the previous artifact in place, because a board of nulls and a
+        # broken price store look identical from downstream. Measured 2026-08-09: ~39s over
+        # 680 graded names (budget 600s, self-reported and ::warning past it).
+        timeout-minutes: 12
+        continue-on-error: true
+        run: |
+          set +e
+          echo "::group::build_leader_pullback_coverage (EARLY-TURN leader licence)"
+          python -m scripts.build_leader_pullback_coverage > "$RUNNER_TEMP/leader_pullback_coverage.log" 2>&1; rc=$?
+          cat "$RUNNER_TEMP/leader_pullback_coverage.log"
+          echo "::endgroup::"
+          if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
+          exit 0
+      - name: checkpoint leader-pullback source to main (durable before engine tail)
+        id: leader_checkpoint
+        # Same publisher, same artifact, same main branch: this is an early durability
+        # checkpoint for the source build above, not a second source/store/control plane.
+        # It validates the incumbent source contract and publishes ONLY the one existing
+        # leader artifact. A stale/failed source or same-path race is refused fail-closed.
+        continue-on-error: true
+        timeout-minutes: 10
+        run: bash scripts/ci/daily_engine_leader_checkpoint.sh
+      - name: restore accepted leader source for downstream consumers
+        id: leader_accepted_source
+        if: always()
+        timeout-minutes: 3
+        continue-on-error: true
+        # The publisher/checkpoint remains non-fatal to the wider nightly, but no
+        # dashboard or Prophet consumer may read runner-local leader bytes that were
+        # refused, raced, or failed to reach canonical main. Rehydrate this one existing
+        # source from current accepted main after the checkpoint attempt. If the
+        # checkpoint landed, these are its exact bytes; if it did not, these are the
+        # prior/newer accepted bytes. Either way downstream derivation is source-bound.
+        run: |
+          set -euo pipefail
+          LEADER_PATH="site/anticipationdata/us_leader_pullback.json"
+          EVENT_REF="${GITHUB_REF:-}"
+          SOURCE_BRANCH="$(git symbolic-ref --short -q HEAD || true)"
+          if [ "$EVENT_REF" != "refs/heads/main" ] \
+            || [ "$SOURCE_BRANCH" != "main" ]; then
+            echo "::warning title=Leader downstream source withheld::off-main event/checkout cannot advance leader-derived outputs"
+            exit 0
+          fi
+          git fetch origin +refs/heads/main:refs/remotes/origin/main
+          ACCEPTED_LEADER_SHA="$(git rev-parse origin/main)"
+          git checkout "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH"
+          RESTORE_MISMATCH=false
+          if ! git diff --cached --quiet "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH" \
+            || ! git diff --quiet -- "$LEADER_PATH"; then
+            RESTORE_MISMATCH=true
+          fi
+          # Keep accepted bytes in the worktree for downstream readers, but do not
+          # stage them against this job's older checkout-time HEAD.
+          git reset -q -- "$LEADER_PATH"
+          if [ "$RESTORE_MISMATCH" = "true" ]; then
+            echo "::error title=Leader downstream source mismatch::worktree could not be made byte-equivalent to accepted main; leader-derived outputs withheld"
+            exit 1
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "accepted_sha=$ACCEPTED_LEADER_SHA" >> "$GITHUB_OUTPUT"
+          echo "accepted_blob=$(git rev-parse "$ACCEPTED_LEADER_SHA:$LEADER_PATH")" >> "$GITHUB_OUTPUT"
       - name: timings band — engine-core (W2)
         run: python3 scripts/nightly_timings.py mark --band engine-core || echo "::warning::timings band mark failed (non-fatal)"
       - name: run regime engine + build dashboard + daily brief (resilient)
+        id: regime_dashboard
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # Self-diagnosing + deploy-resilient: each builder runs isolated; a failure
         # is surfaced as a ::error:: annotation (readable on the run page + via the
         # public check-runs API) AND appended to the run Summary with its traceback,
@@ -2212,12 +2707,16 @@ jobs:
         run: python -m scripts.close_pass_reconcile
 
       - name: publish Filing Forensics private state
+        id: native_private_publish
         # Publish only after the full workbench build returned. The publisher validates
         # gzip/schema, writes the existing PRIVATE Research Vault bucket, reads it back,
         # and byte-verifies it. Failure is loud but retains the last-good private object;
         # no premium state is ever staged by the broad site/data commit below.
         continue-on-error: true
         env:
+          NATIVE_DIVERGENCE_PAYLOAD_SHA256: ${{ steps.regime_dashboard.outputs.native_divergence_payload_sha256 }}
+          NATIVE_DIVERGENCE_SOURCE_SHA256: ${{ steps.regime_dashboard.outputs.native_divergence_source_sha256 }}
+          NATIVE_DIVERGENCE_PRODUCER_COMMIT: ${{ steps.regime_dashboard.outputs.native_divergence_producer_commit }}
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -2225,7 +2724,23 @@ jobs:
           R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
           R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
           R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
-        run: python -m scripts.build_fundamental_forensics --publish-only
+        run: |
+          set +e
+          python -m scripts.build_fundamental_forensics --publish-only
+          forensics_rc=$?
+          python -m scripts.publish_native_divergence_capture
+          capture_rc=$?
+          if [ "$capture_rc" -ne 0 ]; then echo "::warning title=native divergence::private capture unresolved; retain original journal"; fi
+          exit "$forensics_rc"
+      - name: retain this run's native divergence journal (metadata only)
+        if: ${{ always() && steps.native_private_publish.outputs.native_divergence_journal != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-divergence-journal-${{ github.run_id }}-${{ github.run_attempt }}-engine
+          path: ${{ steps.native_private_publish.outputs.native_divergence_journal }}
+          if-no-files-found: warn
+          retention-days: 14
       - name: backfill regime stamps (nw-macro-rail R5)
         # Calls engine.qledger.backfill_regime_stamps() — stamps regime columns onto qledger
         # rows that have as_of within regime_vector.parquet coverage.  Near-term yield ≈ 2 rows
@@ -2253,38 +2768,35 @@ jobs:
           cat "$RUNNER_TEMP/flip_confirmation.log"
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_flip_confirmation::rc=$rc (non-fatal)"; fi
           exit 0
-      - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
-        # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
-        # organ's per-name state over the graded universe, evaluated on a run-wide PIT
-        # cross-sectional RS percentile (the organ refuses to reach for one itself, so a
-        # single-name call can never leak a cross-section).
-        #
-        # ORDER IS LOAD-BEARING. engine.us_early_turn resolves the EARLY-TURN starter tier's
-        # LEADER licence from this file at ORIGINATION time. #5007 shipped the organ and #5105
-        # shipped the intake, but nothing published the artifact — so the leader half read {}
-        # on every production run and was structurally incapable of admitting anything, while
-        # the washout half (us_basket_turn) worked. Scheduled after build_site (the price
-        # store is settled) and immediately before the Prophet band.
-        #
-        # DISPLAY TIER. Advances NO ledger and writes no data/ path. A degraded input
-        # publishes fewer names with their reasons printed; a RUN-WIDE data failure publishes
-        # nothing and leaves the previous artifact in place, because a board of nulls and a
-        # broken price store look identical from downstream. Measured 2026-08-09: ~39s over
-        # 680 graded names (budget 600s, self-reported and ::warning past it).
-        timeout-minutes: 12
+      - name: Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)
+        # The Prophet hold-leash's earnings arm reads EquityDesk's native
+        # earnings_call_sent from data/earnings_calls/history.parquet. This shim already
+        # ran on this runner — but ~840 lines LOWER, inside cl_stage, i.e. AFTER Prophet
+        # had already originated against an absent store, so every plan carried
+        # ec_source_state=unavailable and the promoted tilt could never become eligible
+        # (production logs, 2026-09-17). Hydrating here is the workflow half of the
+        # repair; the later call stays put and is a content-hash no-op.
+        # READ-ONLY: the shim only get_object/download_file. The Prophet generation step
+        # below still carries NO R2 credentials — that publish boundary is unchanged.
+        # NEVER FATAL: absent creds / absent object exit 0 and Prophet degrades to the
+        # documented honest null (leash 1.0, ec_source_state=unavailable + reason).
+        # Rationale in full: scripts/report_prophet_earnings_source.py.
+        timeout-minutes: 6
         continue-on-error: true
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
-          set +e
-          echo "::group::build_leader_pullback_coverage (EARLY-TURN leader licence)"
-          python -m scripts.build_leader_pullback_coverage > "$RUNNER_TEMP/leader_pullback_coverage.log" 2>&1; rc=$?
-          cat "$RUNNER_TEMP/leader_pullback_coverage.log"
-          echo "::endgroup::"
-          if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
+          python -m scripts.fetch_earnings_scores || echo "::warning title=fetch_earnings_scores::rc≠0 before Prophet (non-fatal — the hold-tilt stays at leash 1.0 and every plan discloses ec_source_state=unavailable)"
+          python3 scripts/report_prophet_earnings_source.py || echo "::warning title=prophet_earnings_source::source report failed (non-fatal)"
           exit 0
       - name: timings band — prophet (W2)
         run: python3 scripts/nightly_timings.py mark --band prophet || echo "::warning::timings band mark failed (non-fatal)"
       - name: Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)
         id: prophet_nightly
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # AFTER build_site: reads site/factordata/us_standouts.json (just written).
         # Originates new prophet.trade_plan/v1 envelopes, runs the management engine
         # for every active plan, advances the forward outcome ledger (nightly is the
@@ -2315,6 +2827,7 @@ jobs:
         run: bash scripts/ci/daily_engine_prophet_nightly.sh
       - name: prophet-board-acceptance (post-publish alarm, never a gate)
         id: prophet_board_acceptance
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # Same job, same runner, same bytes as the "Prophet nightly" step just
         # above — placed immediately after it and BEFORE the checkpoint commit
         # below so there is no cross-job pull race and no window where a later
@@ -2369,175 +2882,8 @@ jobs:
         # "enforce Prophet R2 index tombstone" step below, on every nightly wake
         # regardless of whether this step ran (r2_ready gates ONLY on an index
         # content change, so an unchanged-index night must not skip the tombstone).
-        run: |
-          set -euo pipefail
-          R2_INDEX_FILE="$(mktemp "${RUNNER_TEMP}/prophet-r2-index.XXXXXX.json")"
-          cleanup_prophet_r2() { rm -f -- "$R2_INDEX_FILE"; }
-          trap cleanup_prophet_r2 EXIT
-
-          verify_prophet_checkpoint_current() {
-            git fetch origin +refs/heads/main:refs/remotes/origin/main \
-              || return 1
-            git merge-base --is-ancestor "$PROPHET_CHECKPOINT_SHA" origin/main \
-              || return 1
-            git diff --quiet "$PROPHET_CHECKPOINT_SHA" origin/main -- \
-              data/prophet \
-              data/prophet_arena \
-              site/prophet
-          }
-
-          if ! verify_prophet_checkpoint_current; then
-            echo "::warning title=Prophet R2 publish superseded::checkpoint $PROPHET_CHECKPOINT_SHA is not the current origin/main Prophet projection; preserving the newer R2/main authority"
-            exit 0
-          fi
-          git show "${PROPHET_CHECKPOINT_SHA}:site/prophet/index.json" > "$R2_INDEX_FILE"
-          ACTUAL_SHA256="$(python3 -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1], "rb").read()).hexdigest())' "$R2_INDEX_FILE")"
-          if [ "$ACTUAL_SHA256" != "$PROPHET_INDEX_SHA256" ]; then
-            echo "::error title=Prophet R2 publish hash mismatch::commit bytes do not match the checkpoint output; refusing R2 upload"
-            exit 1
-          fi
-          # Close the fetch/hash window as far as the object store permits. R2
-          # has no compare-and-swap against a Git ref, so a second main proof is
-          # the last action before the single-object upload.
-          if ! verify_prophet_checkpoint_current; then
-            echo "::warning title=Prophet R2 publish superseded::origin/main Prophet state advanced during verification; preserving the newer publication"
-            exit 0
-          fi
-          python3 - "$R2_INDEX_FILE" <<'PY'
-          import json
-          import os
-          import subprocess
-          import sys
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          from scripts.build_prophet import (
-              R2_HEALTH_KEY,
-              _r2_client,
-              build_public_health_projection,
-              guarded_put_object,
-          )
-
-          local_path = Path(sys.argv[1])
-          client = _r2_client()
-          if client is None:
-              print(
-                  "::warning title=Prophet R2 credentials unavailable::"
-                  "guarded Git checkpoint landed; R2 remained unchanged",
-                  flush=True,
-              )
-              raise SystemExit(0)
-          from botocore.exceptions import ClientError
-
-          bucket = os.environ.get("R2_BUCKET") or "mastermindx"
-          expected_sha = os.environ["PROPHET_INDEX_SHA256"]
-          checkpoint_sha = os.environ["PROPHET_CHECKPOINT_SHA"]
-          published_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-          index = json.loads(local_path.read_text(encoding="utf-8"))
-          health_payload = build_public_health_projection(
-              index,
-              checkpoint_sha=checkpoint_sha,
-              index_sha256=expected_sha,
-              published_at=published_at,
-          )
-          health_bytes = json.dumps(
-              health_payload, allow_nan=False, default=str, indent=2,
-          ).encode("utf-8")
-
-          # Snapshot the destination generation first. The conditional put below
-          # makes any concurrent R2 writer win rather than be overwritten.
-          try:
-              current = client.head_object(Bucket=bucket, Key=R2_HEALTH_KEY)
-          except ClientError as exc:
-              response = exc.response or {}
-              status = (response.get("ResponseMetadata") or {}).get("HTTPStatusCode")
-              code = str((response.get("Error") or {}).get("Code") or "")
-              if status == 404 or code in {"404", "NoSuchKey", "NotFound"}:
-                  condition = {"IfNoneMatch": "*"}
-              else:
-                  print(
-                      "::error title=Prophet R2 preflight failed::"
-                      "could not read the current object generation; upload withheld",
-                      flush=True,
-                  )
-                  raise SystemExit(1) from exc
-          else:
-              etag = str(current.get("ETag") or "")
-              metadata = current.get("Metadata") or {}
-              if (
-                  metadata.get("git-checkpoint") == checkpoint_sha
-                  and metadata.get("sha256") == expected_sha
-              ):
-                  print(
-                      "::notice title=Prophet R2 already current::"
-                      "the guarded checkpoint hash is already published",
-                      flush=True,
-                  )
-                  raise SystemExit(0)
-              if not etag:
-                  print(
-                      "::error title=Prophet R2 preflight failed::"
-                      "current object supplied no ETag for a conditional update",
-                      flush=True,
-                  )
-                  raise SystemExit(1)
-              condition = {"IfMatch": etag}
-
-          # Re-prove Git after the R2 generation snapshot. If main or R2 moves
-          # after its respective proof, the conditional put rejects the race.
-          git_checks = (
-              ["git", "fetch", "origin", "+refs/heads/main:refs/remotes/origin/main"],
-              ["git", "merge-base", "--is-ancestor", checkpoint_sha, "origin/main"],
-              [
-                  "git", "diff", "--quiet", checkpoint_sha, "origin/main", "--",
-                  "data/prophet", "data/prophet_arena", "site/prophet",
-              ],
-          )
-          if any(subprocess.run(cmd, check=False).returncode for cmd in git_checks):
-              print(
-                  "::warning title=Prophet R2 publish superseded::"
-                  "current main changed during R2 preflight; upload withheld",
-                  flush=True,
-              )
-              raise SystemExit(0)
-
-          try:
-              guarded_put_object(
-                  client,
-                  bucket=bucket,
-                  key=R2_HEALTH_KEY,
-                  Body=health_bytes,
-                  ContentType="application/json",
-                  Metadata={
-                      "git-checkpoint": checkpoint_sha,
-                      "sha256": expected_sha,
-                  },
-                  **condition,
-              )
-          except ClientError as exc:
-              status = ((exc.response or {}).get("ResponseMetadata") or {}).get(
-                  "HTTPStatusCode"
-              )
-              if status == 412:
-                  print(
-                      "::warning title=Prophet R2 publish superseded::"
-                      "the R2 object advanced concurrently; preserving that writer",
-                      flush=True,
-                  )
-                  raise SystemExit(0) from exc
-              print(
-                  "::error title=Prophet R2 upload failed::"
-                  "guarded Git checkpoint landed but its verified health receipt did not reach R2",
-                  flush=True,
-              )
-              raise SystemExit(1) from exc
-          print(
-              "::notice title=Prophet R2 published::"
-              "uploaded the public health receipt for the guarded Git checkpoint",
-              flush=True,
-          )
-          PY
+        # Body extracted verbatim to scripts/ci/daily_engine_prophet_r2_health_publish.sh (512KB processing-cap diet 2026-11-02 — tests/test_workflow_file_size.py).
+        run: bash scripts/ci/daily_engine_prophet_r2_health_publish.sh
       - name: enforce Prophet R2 index tombstone (unconditional)
         if: ${{ !cancelled() }}
         timeout-minutes: 5
@@ -2651,6 +2997,7 @@ jobs:
           git clean -fd -- \
             site/prophet \
             data/prophet/origination_receipts \
+            data/prophet/origination_sources \
             data/prophet_arena \
             data/prophet_stage_shadow
           RESTORE_MISMATCH=false
@@ -3101,6 +3448,7 @@ jobs:
       - name: timings band — builders-parallel (W2)
         run: python3 scripts/nightly_timings.py mark --band builders-parallel || echo "::warning::timings band mark failed (non-fatal)"
       - name: regional + desk builders (parallelised — independent clusters, barrier before the hub)
+        id: regional_desk_builders
         # The ~22 builders between build_site and the landing hub split into mutually
         # INDEPENDENT clusters (each internally ordered by its own data deps). They used
         # to run strictly serially (~75 min of wall-clock); here each cluster runs in the
@@ -3148,12 +3496,40 @@ jobs:
           COLLECT_LANE: nightly  # lane sentinel: basket_turn_watch.stamp_ledger + other engine
                                  # nightly-only ledger writers check COLLECT_LANE==nightly before
                                  # writing; render/earlyclose/asia-close lanes leave it unset → no-op.
+          # Grey Deer pullback lane: writer + grader refuse unless these pin this job.
+          GREY_DEER_PULLBACK_WRITER_IDENTITY: daily.yml:engine
+          GREY_DEER_PULLBACK_GRADER_IDENTITY: daily.yml:engine
           # FTR W10: build_baskets.py calls notify_turn_events at the end of main().
           # Without these env vars the hook hits dark mode (no webhook → exit 0).
           DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_engine_regional_desk_builders.sh
+      - name: retain this run's Theme Graph generation witness (advisory)
+        if: ${{ always() && steps.regional_desk_builders.outputs.theme_graph_witness != '' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: theme-graph-witness-${{ github.run_id }}-${{ github.run_attempt }}-engine
+          path: ${{ steps.regional_desk_builders.outputs.theme_graph_witness }}
+          if-no-files-found: warn
+          retention-days: 14
+      # Durable core checkpoint (incident run 35547644919): the coherent builder
+      # band completed, but a later best-effort tail exhausted the 300-minute job
+      # cap before the sole broad publisher. Persist the core public tree here;
+      # the existing final publisher remains the second cut for later tail outputs.
+      - name: checkpoint core engine outputs to main (durable before tail desks)
+        if: always()
+        timeout-minutes: 25
+        continue-on-error: true
+        run: bash scripts/ci/daily_engine_commit_outputs.sh
+      # QLEDGER CARVE CUSTODY (scripts/ci/qledger_carve.sh): the committer restores the
+      # carved runner-local ledger bytes from its EXIT trap; the 25m step timeout or a
+      # job cancel can SIGKILL it first, so this always() step restores from the
+      # recorded snapshot (idempotent; never stages, commits or pushes; LOST is ::error).
+      - name: restore carved qledger bytes after the core checkpoint (runner-local, never published)
+        if: always()
+        run: . scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file
       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS
       # run's stamp rather than last night's. The plane it watches can die with every
       # signal green: both snapshot writers are content-deduped, so "membership has not
@@ -3199,7 +3575,27 @@ jobs:
         # cross-phase reasoning as M-CMD below. Never wired into closing-bell: the
         # directional OI leg cannot lawfully settle at 16:05 ET (source-clock law).
         # Additive/non-fatal: on failure the last committed artifact stands.
-        run: python -m scripts.build_options_intel_brief || echo "::warning::build_options_intel_brief non-fatal failure"
+        #
+        # AD-1T2 SINGLE-PRODUCER GUARD. This job runs on `macstudio` — the M2 Studio,
+        # which has NO ThetaData store — so this invocation resolves nothing and takes
+        # the off-host self-skip (exit 0) every night. That is why the brief froze at
+        # built_at_utc=2026-08-22 behind a green step. The real producer is the
+        # `options_intel` job in .github/workflows/options-intel.yml, on the
+        # store-bearing M1. When its activation variable is 'on' this step is skipped,
+        # so exactly ONE producer runs per night and this one can never race it or
+        # overwrite its output. While the variable is unset this step still runs and
+        # behaves exactly as it does today — the cutover and its rollback are both a
+        # single variable flip, owned by W4.
+        #
+        # The echo is the activation tell-tale. `vars.AD1_M1_LANE` must be exactly
+        # 'on'; a plausible-looking 'true'/'1'/'yes' leaves THIS step live and the M1
+        # lane skipped, which would be silent non-production — the precise failure
+        # class this work exists to end. If you flipped the variable and still see
+        # this notice, activation did not take.
+        if: vars.AD1_M1_LANE != 'on'
+        run: |
+          echo "::notice title=ad1-producer::in-engine (M2, store-less) producer is LIVE — AD1_M1_LANE='${{ vars.AD1_M1_LANE }}' (must be exactly 'on' to hand over to the M1 lane)"
+          python -m scripts.build_options_intel_brief || echo "::warning::build_options_intel_brief non-fatal failure"
       - name: OEU M-CMD — the Options workspace (build_options_command)
         # OEU M-CMD: options.html, the canonical options surface (4 modes). It is a
         # pure re-serialisation of stores four OTHER builders write, and those deps
@@ -3301,6 +3697,21 @@ jobs:
         # The extracted helper keeps the five-file candidate unreachable until the
         # metadata replay is accepted, and keeps this workflow below GitHub's cap.
         run: bash scripts/ci/options_signal_nightly.sh publish-episode
+      - name: OIP catalyst links — bind the session's events to earnings/FOMC catalysts (context-only)
+        id: options_catalyst_links
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        # consumes only the date-keyed events stage already read by the episode step
+        # writes site/options_catalyst_links/ only
+        # all authority false
+        # first production caller of engine/options_catalyst_link.py
+        run: python -m scripts.build_options_catalyst_links || echo "::warning::build_options_catalyst_links non-fatal failure"
       - name: OIP campaign v2 — checkpoint the exact three canonical ledgers
         id: options_signal_campaign_publish
         if: >-
@@ -3312,6 +3723,26 @@ jobs:
         # Campaign publication is interruption-safe and exact-path: the helper
         # never advances HEAD before origin/main accepts all three canonical files.
         run: bash scripts/ci/options_signal_nightly.sh publish-campaign
+      - name: Options Alpha — compose and publish the verified candidate pair
+        id: options_alpha_candidate_feed
+        # Existing candidate composer/publisher only; no Git or broad publication path.
+        # A missing activation receipt is a structured inactive success with zero R2 writes.
+        if: >-
+          always() &&
+          steps.options_signal_episode.outcome == 'success' &&
+          steps.options_signal_campaign.outcome == 'success' &&
+          steps.options_signal_episode_publish.outcome == 'success' &&
+          steps.options_signal_campaign_publish.outcome == 'success'
+        timeout-minutes: 5
+        continue-on-error: true
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: >-
+          python -m scripts.build_options_alpha_candidate_feed
+          --publication-lock "$HOME/.local/state/mastermind/options-alpha-candidate/publication.lock"
       - name: XSR W1 — US fast-sector rotation lens (build_us_sector_rotation)
         # XSR W1 (XSR-R2): display-tier fast rotation score for the 11 SPDR sector ETFs and
         # named US thematic baskets. Ported from China #2634. Reads sector_cycles
@@ -3752,7 +4183,20 @@ jobs:
         # landed by the "commit engine outputs" step below (git add data/ site/) — like every
         # sibling forward ledger, the committed store is what lets cohorts accrue night to
         # night. Idempotent per as_of. Resilient.
-        run: python -m scripts.grade_bottom_calls --nightly || true
+        #
+        # NOT `|| true` (2026-09-18). This step stays non-fatal to the nightly — nothing here
+        # gates the dashboard deploy — but a bare `|| true` made failure INVISIBLE, and that is
+        # not a hypothetical: the advancer raised `TypeError: Cannot compare tz-naive and
+        # tz-aware timestamps` on EVERY run from birth, before its first write, so neither
+        # data/bottom_ledger/rows.parquet nor site/factordata/us_bottom_ledger.json ever
+        # existed while this step reported success every night. The advancer now also stamps
+        # site/factordata/us_bottom_ledger.json with `advance.status` ∈ {advanced, read_only,
+        # failed}, so the artifact itself says whether tonight advanced — a failed run can no
+        # longer masquerade as a quiet one. Annotation must start the line (CLAUDE.md).
+        run: |
+          python -m scripts.grade_bottom_calls --nightly || {
+            echo "::error title=bottom-ledger-advance-failed::Bottom Ledger forward advance FAILED — no flag was accrued and no grade was frozen tonight. data/bottom_ledger/rows.parquet is unchanged and site/factordata/us_bottom_ledger.json carries advance.status=failed. Non-fatal to the nightly by design; fix scripts/grade_bottom_calls.py."
+          }
       - name: Options-state stamp on board ledger (Options Alpha W1.3; context-only)
         # Stamps the freshly-graded + accumulated retro_grades.parquet with the eight nullable
         # opt_* options-state columns (PIT: only positioning data with as-of ≤ each fire's as_of).
@@ -4063,6 +4507,20 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           THESIS_MONITOR_ENABLE: ${{ secrets.THESIS_MONITOR_ENABLE }}
         run: python -m scripts.run_thesis_condition_monitor || echo "::warning::thesis condition monitor failed (non-fatal)"
+      - name: recurring briefs producer (F11 — each subscription its brief or an honest miss)
+        # AFTER 'brain briefing tunnel (build_briefing)' and AFTER the thesis
+        # condition monitor (the step whose comment names public.alert_outbox).
+        # Slot = site/intelligence/briefing.json field as_of. Writes
+        # public.brief_deliveries only (insert on conflict do nothing).
+        # Fail-soft: absent creds/tables -> typed miss, 0 rows, exit 0.
+        # Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.
+        env:
+          # Reuse the incumbent repo service-role secret already consumed by
+          # production Supabase jobs. The producer's SUPABASE_URL has a reviewed
+          # project default, so do not inject an absent secret as an empty string.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}
+        run: python -m scripts.build_recurring_briefs --cadence daily_after_us_close || echo "::warning::recurring briefs producer failed (non-fatal)"
       - name: notify (telegram/discord; skips when secrets absent)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -4126,6 +4584,27 @@ jobs:
         # Fail-open: missing source → gaps[] + null block, always exits 0.
         # Output covered by 'git add data/' in 'commit engine outputs' below.
         run: python -m scripts.build_liquidity_plumbing || echo "::warning::build_liquidity_plumbing failed (non-fatal — last committed artifact stands)"
+      - name: Global liquidity transmission state (W-LIQ.1 producer, display-tier, non-fatal)
+        # The frozen v1 producer (#6296) had NO production caller: no workflow ran
+        # it, it was absent from config/dag.yml, and its only .github reference was
+        # the `paths:` filter of the pack-executed CI test lane
+        # `global-liquidity-transmission` (.github/ci/legacy-jobs.yml), which tests
+        # the producer and never publishes. The served state therefore sat at
+        # evidence_available_at 2026-08-28 after the 2026-09-04 manual regeneration
+        # (research/GLOBAL_LIQUIDITY_TRANSMISSION_LIVENESS_2026-10-13.md).
+        # Pure local reads, no network: data/fred/{BUSLOANS,WALCL,ECBASSETSW,
+        # JPNASSETS,DTWEXBGS,DFII10,BAMLH0A0HYM2} + yahoo EURUSD=X/USDJPY=X from
+        # the collect job; data/china_credit/tsf.parquet from the asia lane
+        # (asia-close.yml); data/regime/latest.json from this job (already
+        # consumed by the plumbing step above). Measured 2026-10-13 on the M2:
+        # 2.54 s wall, ~136 MiB peak RSS. Writes site/liquiditydata/
+        # global_liquidity_transmission.json + data/global_liquidity_transmission/
+        # {state_history.parquet,state_history_meta.json,factor_comparison_btc_4w.json};
+        # covered by 'git add data/ site/' in 'commit engine outputs' below.
+        # Display tier, validated=False; this step changes WHEN the producer runs,
+        # never its semantics. A failure leaves the last committed artifact, whose
+        # own evidence clock then ages it stale in every reader.
+        run: python -m scripts.build_global_liquidity_transmission || echo "::warning::build_global_liquidity_transmission failed (non-fatal — last committed artifact stands)"
       - name: Price Pressure lobe (DRL W1, display-tier, non-fatal)
         # Single-name residual shocks: the Dislocation & Recovery lobe's nightly
         # increment. Pure aggregation over committed stores, NO network calls.
@@ -4146,21 +4625,15 @@ jobs:
         # Outputs covered by 'git add data/' in 'commit engine outputs' below —
         # EXCEPT events.parquet, which is gitignored and R2-canonical (see below).
         #
-        # THREE R2 legs live inside this one step, all non-fatal, in order:
+        # THREE R2 legs serve this lobe; the first is shared in the engine preamble.
         #
-        # 1. BAR-STORE COLD-RESTORE. data/massive_stock_day is restored, advanced and
-        #    published by the COLLECT job — in the COLLECT job's own workspace. Workspace
-        #    state cannot cross a job boundary, so when this job lands on a runner whose
-        #    checkout has never held that store (a cold spare), the store is simply
-        #    absent and the builder's staleness gate correctly refuses: run 31440972065
-        #    (2026-08-10) landed on actions-runner-2 and warned
-        #    "price-pressure-store-stale ... artifacts left untouched" — a whole night
-        #    of the lobe lost to a scheduling accident. The existence probe below is a
-        #    `find -print -quit`, not a `ls *.parquet` glob: this store is ~20k files and
-        #    the glob would expand ~800 KB of argv. Warm runner = one stat-ish walk that
-        #    stops at the first hit, ~0 cost, no R2 call at all. Cold runner = a full
-        #    ~617 MB / ~20k-object download (fetch_r2's delta is per FILE — an absent
-        #    file downloads whole; only an already-current file is skipped by md5/ETag).
+        # 1. BAR-STORE RESTORE. The collect workspace cannot cross a job boundary:
+        #    run 31440972065 (2026-08-10) landed on a cold spare and the absent raw
+        #    store correctly refused the whole lobe. The existing fetch_r2 restore
+        #    now runs before the stock-library builder so both consumers share it.
+        #    A cold runner downloads ~617 MB / ~20k objects; the existing md5/ETag
+        #    check skips unchanged files on a warm runner. This step never repeats
+        #    that restore. Missing/stale bars still hit the same builder refusal.
         # 2. LEDGER RESTORE. data/price_pressure/events.parquet is R2-canonical and
         #    gitignored (2026-08-11): the advance + the §10.1 completion pass rewrite
         #    all ~10.8 MB every successful night, which is ~4 GB/yr of binary git churn.
@@ -4187,12 +4660,7 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
-          if [ -z "$(find data/massive_stock_day -maxdepth 1 -name '*.parquet' -print -quit 2>/dev/null)" ]; then
-            echo "price_pressure: bar store has no parquet bars locally (cold runner) — restoring from R2"
-            python -m scripts.fetch_r2 --dirs massive_stock_day --workers 24 || echo "::warning::massive_stock_day restore failed (non-fatal — the builder's staleness gate refuses and leaves artifacts untouched)"
-          else
-            echo "price_pressure: bar store present locally — no R2 restore needed"
-          fi
+          # Raw daily bars are restored once in the shared engine preamble.
           PP_RESTORE=ok
           python -m scripts.fetch_r2 --dirs price_pressure || { PP_RESTORE=failed; echo "::warning::price_pressure ledger restore failed (non-fatal — the builder's freshness gate refuses and leaves artifacts untouched)"; }
           PP_BUILD=ok
@@ -4664,6 +5132,9 @@ jobs:
       - name: commit engine outputs
         if: always()   # commit the freshly-built pages even if a LATER optional builder times out or is cancelled. pages.yml deploys the COMMITTED main tree, so a skipped commit = stale live site. The builders are individually resilient (each leaves the prior page in place on its own error), so partial output is never broken — committing what built beats shipping nothing.
         run: bash scripts/ci/daily_engine_commit_outputs.sh
+      - name: restore carved qledger bytes after the engine commit (runner-local, never published)
+        if: always()
+        run: . scripts/ci/qledger_carve.sh; qledger_carve_restore_from_file
       - name: assemble machine-consumable feeds (site/feeds -> R2)
         if: always()
         # Handoff H4 (2026-07-02 incident): risk_radar snapshot, froth/dislocation
@@ -4685,6 +5156,30 @@ jobs:
         # published there. An engine checkout never holds that store, so listing it here only ever
         # produced a nightly publish_r2 refusal warning (under the _DATA_DIR_MIN_FILES floor).
         run: python -m scripts.publish_r2 --dirs ohlc,intlohlc,canadaohlc,subsectorohlc,subsectorohlc_russell,subsectorohlc_nasdaq,stockdata,intlstockdata,canadastockdata,intraday,feeds,stock_personality,oddsmatrix,odds_ohlcv,seasonalitydata/entities || echo "::warning::R2 publish failed (non-fatal)"
+      - name: publish complete US OHLC generation to the existing site origin
+        if: always()
+        timeout-minutes: 20
+        env:
+          OHLC_DEPLOY_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        # The producer receipt binds this main-branch run before output-commit
+        # rebasing. The publisher verifies it, the pinned SSH host and the
+        # receiver's predecessor fence; missing/partial output is a visible failure.
+        run: |
+          set -euo pipefail
+          umask 077
+          if [ -z "${OHLC_DEPLOY_KEY:-}" ]; then
+            echo "::error::OHLC origin delivery requires the existing VPS deploy key"
+            exit 1
+          fi
+          key_file=$(mktemp "${RUNNER_TEMP}/ohlc-deploy-key.XXXXXX")
+          trap 'rm -f -- "$key_file"' EXIT
+          printf '%s\n' "$OHLC_DEPLOY_KEY" > "$key_file"
+          unset OHLC_DEPLOY_KEY
+          python -m scripts.publish_ohlc publish \
+            --manifest site/_tmp/ohlc-complete.json \
+            --payload-dir site/ohlc \
+            --evidence-dir "${HOME}/.local/state/macro-ohlc-delivery/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --ssh-key "$key_file"
       - name: verify R2 data plane freshness (loud tripwire — the publish above is non-fatal)
         # The publish step swallows every failure (incl. the exit-0 no-op when the R2_*
         # secrets are absent/expired), so the live site would serve stale per-ticker data
@@ -4717,9 +5212,49 @@ jobs:
           OIP_EPISODE_PUBLISH_OUTCOME: ${{ steps.options_signal_episode_publish.outcome }}
           OIP_CAMPAIGN_BUILD_OUTCOME: ${{ steps.options_signal_campaign.outcome }}
           OIP_CAMPAIGN_PUBLISH_OUTCOME: ${{ steps.options_signal_campaign_publish.outcome }}
+          OIP_CANDIDATE_BUILD_OUTCOME: ${{ steps.options_alpha_candidate_feed.outcome }}
         # continue-on-error above lets unrelated rendering finish; this terminal gate
         # makes any missing/failed build or exact-path publication fail the engine job.
         run: bash scripts/ci/options_signal_nightly.sh assert-integrity
+      - name: fif saved research notifications (X2-n — enqueues only; never sends)
+        # Reads the designated "Filing Forensics" Supabase watchlist (the
+        # subscription surface, R2) service-side and LOCAL FIF trigger inputs,
+        # then enqueues public.alert_outbox rows for users watching an issuer
+        # that changed. Enqueue-only: delivery is F08's drain, never this step.
+        # The broad-sec receipt and the production generation pointer exist
+        # only in the private R2 research vault today (census C6) — the
+        # producer never reads R2, so both triggers are "no event" (R5) until
+        # a local mirror is wired; only engine priority=high findings (the FIF
+        # private state written earlier in this job) can fire.
+        # Fail-soft: absent creds/tables/inputs -> typed unavailable, 0 rows,
+        # exit 0. Dormant unless BOTH FIF_SAVED_RESEARCH_ENABLE=1 AND
+        # ALERT_DRAIN_ENABLE=1 (checked before the producer is even imported).
+        # Placed after every render/publish step of the engine job (census
+        # C5) and immediately AHEAD of the W2 timings finish step, which
+        # tests/test_nightly_timings.py requires to stay the job's last
+        # step. A wedged step can never land ahead of the render/publish
+        # path. `if: always()` is the engine delivery-tail law
+        # (tests/test_push_retry.py: every step after "commit engine
+        # outputs" runs even when that push is lost). On a timeout-cancel
+        # night it therefore runs inside the runner's ~5-min post-cancel
+        # grace ahead of the finish step: dormant (the default) it exits in
+        # well under a second; enabled, timeout-minutes: 3 caps it so it can
+        # never consume the whole grace, and a kill mid-run is safe because
+        # every enqueue is deduped by its frozen key (re-minted next night).
+        # timeout-minutes + continue-on-error are load-bearing: a timeout
+        # kill is a step FAILURE the `||` shape cannot absorb, so
+        # continue-on-error is what keeps it non-fatal.
+        if: always()
+        timeout-minutes: 3
+        continue-on-error: true
+        env:
+          # Recurring-briefs precedent (daily.yml:4248-4253): reuse the
+          # incumbent repo service-role secret; the producer's SUPABASE_URL
+          # has a reviewed project default, so it is NOT injected here.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FIF_SAVED_RESEARCH_ENABLE: ${{ secrets.FIF_SAVED_RESEARCH_ENABLE }}
+          ALERT_DRAIN_ENABLE: ${{ secrets.ALERT_DRAIN_ENABLE }}
+        run: '[ "${{ job.status }}" = "cancelled" ] && { echo "fif saved research notifications: job cancelled, skipping"; exit 0; }; python -m scripts.run_fif_saved_research_notifications || echo "::warning::fif saved research notifications failed (non-fatal)"'
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()   # DELIBERATELY AHEAD of the two delivery steps below — this is the ONLY job where the finish step is not last, and the exception is load-bearing. `if: always()` steps DO run after a timeout-cancel, but only inside the runner's ~5-minute force-termination grace, and this job's tail is the most expensive always() tail in the workflow. Evidence, run 31067383446 (2026-08-06): engine started 10:05:45Z, completed 13:30:46Z = 205.0m = the 200m cap + exactly 5m of grace; steps 117-121 (commit engine outputs → feeds → R2 publish → verify → strip) all ran post-cancel, step 122 "upload pages artifact" burned what was left and ended `failure`, and step 123 — this one — WAS NEVER SCHEDULED AT ALL (the GH jobs API step list jumps straight from 122 to the Post steps). Result: data/ops/nightly_timings/engine.jsonl carried ONE row, source `backfill-gh-api`, while all 15 sibling jobs had native rows — the 85% tripwire was structurally dark for the ONE job whose creep caused the Jul31-Aug6 outage, and dark on exactly the nights it existed to pre-announce. Ordering it here costs a healthy night nothing (both steps still run to completion) and on a cancel night trades an artifact upload that is already failing for the telemetry that explains WHY the night died. The row + the ::warning land in this step's first second; only its bounded commit/push can be cut short. Pinned by tests/test_nightly_timings.py::test_finish_step_is_not_stranded_behind_the_pages_artifact_upload — do not move it back below the upload.
         run: bash scripts/ci/nightly_timings_finish.sh 300
@@ -4752,27 +5287,11 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      # build_factor_series._closes() reads these breadth close caches (broad =
-      # breadth+smallcap+midcap, narrow = breadth). Restore-only — the collect job
-      # produces/saves them.
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-fseries-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-fseries-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-fseries-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # build_factor_series._closes() reads the Git-tracked S&P 500/600/400
+      # panels (broad = breadth+smallcap+midcap, narrow = breadth) directly from
+      # checkout. This reader must never overlay them from Actions cache. Only
+      # daily.collect may seed those panels because it refreshes and commits the
+      # canonical files.
       - name: factor return series (build_factor_series)
         run: python -m scripts.build_factor_series || echo "factor series skipped (additive)"
       - name: commit factor series
@@ -4841,12 +5360,9 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-fseries-${{ github.run_id }}
-          restore-keys: breadth-closes-
+      # Factor-panel reads the Git-tracked S&P 500/600/400 panels directly from
+      # checkout. It must never overlay them from Actions cache; only daily.collect
+      # may seed those panels because it refreshes and commits the canonical files.
       # FIX-8 (RULING-C nightly bounds): pin to 10 trading days back so a cold
       # runner never silently rebuilds a year. The one-shot deep backfill
       # (--start 2020-01-01, ~25 min) MUST be run once manually before the panel
@@ -5012,6 +5528,21 @@ jobs:
               line = f"tier {tier}: date_to={dt} ({age}d old)"
               print(f"::error::TM STALE — {line}" if age > 4 else f"TM fresh — {line}")
           PY
+      - name: GMI graph shadow theme state (gate 8 — off-render, non-fatal)
+        # Seat ruling G1-RC1: state-only compose; writes data/theme_graph/shadow_theme_state.v1.json only.
+        # RC1-R1: no engine.result gate — engine ends red on the post-commit OIP PIT fail-closed marker after its commit.
+        timeout-minutes: 12
+        continue-on-error: true
+        env:
+          COLLECT_LANE: nightly
+        run: python -m scripts.build_thematic_state --mode GRAPH_SHADOW_STATE
+      - name: GMI activity membership state (M2 fold — off-render, non-fatal)
+        # GMI M2: activity-history fold in the sole producer; writes data/theme_graph/activity_membership_state.v1.json only.
+        timeout-minutes: 5
+        continue-on-error: true
+        env:
+          COLLECT_LANE: nightly
+        run: python -m scripts.build_thematic_state --mode ACTIVITY_MEMBERSHIP_STATE
       - name: commit oracle Time Machine feed + ratio lens
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -5024,6 +5555,8 @@ jobs:
           # on 2026-07-13 and 2026-07-14). The commit is gated below by `git diff --cached
           # --quiet`, so tolerating the file's absence is safe.
           git add data/oracle/washout_counterread_ledger.jsonl 2>/dev/null || true
+          git add data/theme_graph/shadow_theme_state.v1.json 2>/dev/null || true
+          git add data/theme_graph/activity_membership_state.v1.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "no oracle Time Machine or ratio lens changes"; exit 0; fi
           git commit -m "oracle-tm: nightly Time Machine feed + ratio lens refresh $(date -u +%F)"
           # best-effort push (own files -> rebases clean; no other job writes site/oracledata/)
@@ -5802,27 +6335,23 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      # the per-stock technical-signal leg reads constituent closes; restore-only.
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-briefs-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-briefs-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-briefs-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # Catalyst-stock context is R2-only (site/stockdata is gitignored), so a
+      # clean stock_briefs checkout has no deterministic ladder record to brief.
+      # Restore the EXISTING store before the model leaf runs. Fail this additive
+      # job on a missing/incomplete restore instead of publishing a green batch of
+      # no_context records; publish does not depend on stock_briefs.
+      - name: restore stockdata context for AI stock briefs
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs stockdata
+      # The per-stock technical-signal leg reads the Git-tracked S&P 500/600/400
+      # panels directly from checkout. This reader must never overlay them from
+      # Actions cache; only daily.collect may seed, refresh and commit those files.
       - name: precompute AI stock briefs (build_stock_briefs)
-        run: python -m scripts.build_stock_briefs || echo "stock briefs skipped (additive)"
+        run: python -m scripts.build_stock_briefs
       - name: commit stock briefs
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -5847,6 +6376,8 @@ jobs:
           # data/qledger's one committed-file fence (the CONTROL clock, #5970) is a
           # .gitignore rule, so a plain add here can never re-commit it.
           git add data/qledger 2>/dev/null || true
+          # GH001 carve (scripts/ci/qledger_carve.sh, #9556 parity): an oversize staged qledger blob sank this whole commit nightly from 10-21; withhold stays green.
+          . "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"; qledger_carve_staged || exit 0
           if git diff --cached --quiet; then echo "no stock-brief changes"; exit 0; fi
           git commit -m "stock-briefs: AI research briefs + accountable leans $(date -u +%F)"
           # best-effort push (own files → rebases clean against engine/factor_series)
@@ -6157,6 +6688,7 @@ jobs:
           git add data/neuralweb/causal_feature_inventory.json 2>/dev/null || true
           git add data/neuralweb/causal_edges.jsonl data/neuralweb/causal_nulls.jsonl 2>/dev/null || true
           git add data/neuralweb/causal_mechanisms.jsonl 2>/dev/null || true
+          git add data/neuralweb/causal_filing_budget.jsonl 2>/dev/null || true  # M3 ISO-week filing budget (never trial_ledger.jsonl)
           git add data/neuralweb/causal_frontier.json data/neuralweb/causal_surprise_queue.jsonl 2>/dev/null || true
           git add data/neuralweb/causal_confluence_audit.json 2>/dev/null || true
           git add data/neuralweb/causal_lab_state.json site/neuralwebdata/causal_lab_state.json 2>/dev/null || true

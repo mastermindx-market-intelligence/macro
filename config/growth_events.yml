@@ -11,7 +11,7 @@
 # ----------------------------------------------------------------
 # THE source of truth for the beacon. `app/main.py::_MM_EVENT_TYPES` is DERIVED from
 # this file via lib/growth_registry: the beacon accepts a wire IFF an entry here is
-# `status: live`. Unknown types are still dropped silently at /api/collect, so the way
+# `status: live` AND `source: client`. Unknown types are still dropped silently at /api/collect, so the way
 # an event ships is by flipping its entry live IN THE SAME CARRIER as its producer —
 # never by editing a whitelist. Entries additionally marked `envelope: v1` require the
 # CA1A envelope (stable UUID `eid` seated in the analytics_events.eid unique column
@@ -456,17 +456,23 @@ events:
   - name: checkout.completed
     wire: checkout.completed
     marketing_alias: subscription_created
-    status: planned
+    status: live
+    envelope: v1
     source: server
     funnel: paid
     purpose: >
       Revenue truth. Emitted from the Stripe webhook AFTER the entitlement upsert
-      succeeds, riding that handler's existing idempotency on event.id — a telemetry row
-      must never claim a state the authority does not hold.
+      succeeds, using a deterministic eid from the original Stripe event and wire.
+      Strict analytics acknowledgement precedes handled-event settlement; retries
+      dedupe through the existing eid constraint. This is not cross-table atomicity
+      or an eventual-delivery guarantee. Missing authoritative facts suppress the
+      positive event. Stripe created seats in client_ts; created_at remains observation.
     properties:
       tier: enum:tier
       interval: enum:interval
-      offer_key: string
+      # Null means UNKNOWN, including historical absent/unqualified metadata;
+      # it never asserts that no discount or first-party offer existed.
+      offer_key: string|null
       amount_cents: int
       is_trial: bool
 
@@ -483,7 +489,8 @@ events:
 
   - name: trial.started
     wire: trial.started
-    status: planned
+    status: live
+    envelope: v1
     source: server
     funnel: paid
     purpose: Trial volume.

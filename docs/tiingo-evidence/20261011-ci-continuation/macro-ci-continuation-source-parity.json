@@ -1,0 +1,26 @@
+{
+  "new_base": "8ad47787d83be8625fb387e279220b5a40efc7b2",
+  "original_source_head": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+  "source_byte_parity": {
+    "collectors/tiingo_archive.py": {
+      "same_original": true,
+      "sha256": "54b694af53a940f8ea1148215b0a3ccfcfa5313270286b04a99c72d7dc004fa6"
+    },
+    "lib/dataos/tiingo_reader.py": {
+      "same_original": true,
+      "sha256": "fb7a2834f37f2e1c76e00250ea5c60a9cdbab73c598a855e37e1b8a54672e976"
+    },
+    "scripts/build_ext_quotes.py": {
+      "same_original": true,
+      "sha256": "9d477b0128b744ed1423dd0135b697eb489f11aff156e3eee4f5e2af3febfc66"
+    },
+    "scripts/tiingo_ingest.py": {
+      "same_original": true,
+      "sha256": "ef52fd2f90842c85a362254dae219a2593fed024b340a38fa5333a50e06981e6"
+    },
+    "scripts/tiingo_materialize.py": {
+      "same_original": true,
+      "sha256": "c554f9693cec7287d6953dc5a1a6d28c13012c85000af38fc0b607c0dc411500"
+    }
+  }
+}

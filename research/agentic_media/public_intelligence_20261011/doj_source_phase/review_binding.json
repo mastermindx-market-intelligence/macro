@@ -1,0 +1,11 @@
+{
+  "verdict": "PASS",
+  "source_hashes": {
+    "engine/press/official_feed_candidate.py": "af349f5784bdd0c6484617803e0e221d8fd1d865ceedbe8c9334867b5dcc9e1e",
+    "scripts/stage_official_feed_press.py": "8c3b19d7186e15efc3eb6205ffed24b322b5ae1215801bf394f3a1c98425990a",
+    "tests/test_press_official_feed_candidate.py": "b3747edcb794fd2d4fd79cd8a9abbd87682e5bf4f90109be4ddb179c41a22763",
+    "tests/test_press_official_staging.py": "323019e6048030fc66e8c809e5bdef04e5458dd8ee5c4c00aa93d8da6ba7a0fa"
+  },
+  "scope": "DOJ source route plus consumed import-pin repair; issuer_baseline.py next-phase draft excluded",
+  "provider_calls": 0
+}
