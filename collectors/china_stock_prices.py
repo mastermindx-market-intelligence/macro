@@ -35,6 +35,7 @@ log = logging.getLogger(__name__)
 class ChinaStockPriceAdapter(Adapter):
     name = "china_stocks"
     group = "china_stocks"
+    session_calendar = "CN"  # observation dates follow the cash/Connect session
     overwrite_overlap = True   # adjusted series: fresh window owns its whole overlap span
 
     def __init__(self) -> None:

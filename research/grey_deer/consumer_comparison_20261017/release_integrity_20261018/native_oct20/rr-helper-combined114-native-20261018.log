@@ -1,0 +1,157 @@
+.....F.................................................................. [ 63%]
+..........................................                               [100%]
+=================================== FAILURES ===================================
+___ test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments ____
+
+tmp_path = PosixPath('/private/tmp/rr-helper-combined114-20261018-pytest/test_python_fixture_launcher_p0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10c1f5350>
+
+    def test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments(tmp_path, monkeypatch):
+        import json
+        import sys
+    
+        runtime = tmp_path / "Python runtime's path"
+        runtime.mkdir()
+        interpreter = runtime / "python3"
+        interpreter.symlink_to(sys.executable)
+        monkeypatch.setattr(sys, "executable", str(interpreter))
+        launcher = tmp_path / "transport launcher"
+        _write_python_executable(
+            launcher,
+            'import json\nprint(json.dumps({"interpreter": sys.executable, "argv": sys.argv}))\n',
+        )
+        alias = tmp_path / "invoked alias"
+        alias.symlink_to(launcher)
+        arguments = ["", "two words", "quote'\"value", "$HOME; $(printf forbidden) *", "--flag=value"]
+        empty_path = tmp_path / "empty-path"
+        empty_path.mkdir()
+        result = subprocess.run(
+            [str(alias), *arguments], env=dict(os.environ, PATH=str(empty_path)),
+            text=True, capture_output=True, check=False, timeout=10,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+>       assert json.loads(result.stdout) == {"interpreter": str(interpreter), "argv": [str(alias), *arguments]}
+E       assert {'interpreter...-flag=value']} == {'interpreter...-flag=value']}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'interpreter': '/opt/homebrew/opt/python@3.14/bin/python3.14'} != {'interpreter': "/private/tmp/rr-helper-combined114-20261018-pytest/test_python_fixture_launcher_p0/Python runtime's path/python3"}
+E         Use -v to get more diff
+
+tests/test_deploy_provenance.py:125: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/test_deploy_provenance.py::test_deployed_sha_prefers_valid_marker
+PASSED tests/test_deploy_provenance.py::test_deployed_sha_rejects_marker_and_uses_full_local_head
+PASSED tests/test_deploy_provenance.py::test_deployed_sha_fails_closed_when_both_sources_are_invalid
+PASSED tests/test_deploy_provenance.py::test_health_exposes_exact_full_commit
+PASSED tests/test_deploy_provenance.py::test_non_serve_only_startup_fails_when_scheduler_is_unavailable
+PASSED tests/test_deploy_provenance.py::test_integrity_stops_service_before_source_copy
+PASSED tests/test_deploy_provenance.py::test_integrity_restores_unlisted_and_receiver_deleted_paths
+PASSED tests/test_deploy_provenance.py::test_integrity_snapshot_failure_cannot_authorize_source_mutation
+PASSED tests/test_deploy_provenance.py::test_integrity_failed_restored_health_is_not_complete
+PASSED tests/test_deploy_provenance.py::test_integrity_refused_init_preserves_foreign_marker
+PASSED tests/test_deploy_provenance.py::test_integrity_excluded_descendants_survive_rollback
+PASSED tests/test_deploy_provenance.py::test_integrity_unverified_stop_never_copies_source[FAKE_STOP_FAIL]
+PASSED tests/test_deploy_provenance.py::test_integrity_unverified_stop_never_copies_source[FAKE_STOP_STAYS_ACTIVE]
+PASSED tests/test_deploy_provenance.py::test_integrity_failed_snapshot_preserves_previous_backup_and_availability
+PASSED tests/test_deploy_provenance.py::test_integrity_failed_restore_never_restarts_partial_tree[copy]
+PASSED tests/test_deploy_provenance.py::test_integrity_failed_restore_never_restarts_partial_tree[health]
+PASSED tests/test_deploy_provenance.py::test_integrity_checksum_restores_same_size_and_mtime_content
+PASSED tests/test_deploy_provenance.py::test_integrity_active_cohort_is_preserved_across_upgrade_and_noop
+PASSED tests/test_deploy_provenance.py::test_integrity_active_cohort_authority_mutation_requires_reconciliation[account.json]
+PASSED tests/test_deploy_provenance.py::test_integrity_active_cohort_authority_mutation_requires_reconciliation[fills.jsonl]
+PASSED tests/test_deploy_provenance.py::test_integrity_disappearing_active_cohort_is_not_reinitialized
+PASSED tests/test_deploy_provenance.py::test_integrity_unknown_cohort_effects_are_retained[FAKE_LOST_INIT_REPLY]
+PASSED tests/test_deploy_provenance.py::test_integrity_unknown_cohort_effects_are_retained[FAKE_LOST_FINALIZE_REPLY]
+PASSED tests/test_deploy_provenance.py::test_integrity_unknown_cohort_effects_are_retained[FAKE_FAIL_STATUS]
+PASSED tests/test_deploy_provenance.py::test_integrity_failed_tag_refresh_restores_exact_preimage[False]
+PASSED tests/test_deploy_provenance.py::test_integrity_failed_tag_refresh_restores_exact_preimage[True]
+PASSED tests/test_deploy_provenance.py::test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[False-False]
+PASSED tests/test_deploy_provenance.py::test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[False-True]
+PASSED tests/test_deploy_provenance.py::test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[True-False]
+PASSED tests/test_deploy_provenance.py::test_deploy_datadog_tag_matches_target_and_restores_prior_bytes[True-True]
+PASSED tests/test_deploy_provenance.py::test_deploy_transfers_and_restores_reasoning_policy_files[False-False]
+PASSED tests/test_deploy_provenance.py::test_deploy_transfers_and_restores_reasoning_policy_files[False-True]
+PASSED tests/test_deploy_provenance.py::test_deploy_transfers_and_restores_reasoning_policy_files[True-False]
+PASSED tests/test_deploy_provenance.py::test_deploy_transfers_and_restores_reasoning_policy_files[True-True]
+PASSED tests/test_deploy_provenance.py::test_healthy_unchanged_code_does_not_skip_cohort_activation[missing]
+PASSED tests/test_deploy_provenance.py::test_healthy_unchanged_code_does_not_skip_cohort_activation[pending_health]
+PASSED tests/test_deploy_provenance.py::test_integrity_sigterm_after_copy_restores_once
+PASSED tests/test_deploy_provenance.py::test_integrity_symlinked_snapshot_root_is_refused
+PASSED tests/test_deploy_provenance.py::test_integrity_failed_target_stop_prevents_rollback_copy
+PASSED tests/test_deploy_provenance.py::test_integrity_receipt_glob_entries_cannot_masquerade_as_empty[directory]
+PASSED tests/test_deploy_provenance.py::test_integrity_receipt_glob_entries_cannot_masquerade_as_empty[dangling_symlink]
+PASSED tests/test_deploy_provenance.py::test_integrity_silent_receipt_scan_failure_never_authorizes_copy
+PASSED tests/test_deploy_provenance.py::test_integrity_new_package_with_excluded_cache_fails_restore_closed
+PASSED tests/test_deploy_provenance.py::test_deploy_writes_expected_marker_before_restart
+PASSED tests/test_deploy_provenance.py::test_activation_gate_order_and_canonical_lock_are_explicit
+PASSED tests/test_deploy_provenance.py::test_deploy_refuses_unresolved_pre_v2_settlement_state[paper_transaction.json]
+PASSED tests/test_deploy_provenance.py::test_deploy_refuses_unresolved_pre_v2_settlement_state[settlement_receipts/old.json]
+PASSED tests/test_deploy_provenance.py::test_activation_rejects_account_or_fills_byte_mutation[FAKE_MUTATE_ACCOUNT_ON_RESTART]
+PASSED tests/test_deploy_provenance.py::test_activation_rejects_account_or_fills_byte_mutation[FAKE_MUTATE_FILLS_ON_RESTART]
+PASSED tests/test_deploy_provenance.py::test_activation_rejects_missing_authority_file
+PASSED tests/test_deploy_provenance.py::test_failed_deploy_restores_code_marker_and_retains_pending_cohort
+PASSED tests/test_deploy_provenance.py::test_partial_rsync_failure_restores_old_tree_and_restarts
+PASSED tests/test_deploy_provenance.py::test_marker_write_failure_uses_post_backup_rollback
+PASSED tests/test_deploy_provenance.py::test_restart_failure_restores_marker_and_attempts_rollback_restart
+PASSED tests/test_deploy_provenance.py::test_deploy_rejects_health_when_scheduler_is_not_running
+PASSED tests/test_deploy_provenance.py::test_partial_copy_rolls_back_shared_runtime_packages[False-common]
+PASSED tests/test_deploy_provenance.py::test_partial_copy_rolls_back_shared_runtime_packages[False-integrations]
+PASSED tests/test_deploy_provenance.py::test_partial_copy_rolls_back_shared_runtime_packages[True-common]
+PASSED tests/test_deploy_provenance.py::test_partial_copy_rolls_back_shared_runtime_packages[True-integrations]
+PASSED tests/test_datadog_vps_install.py::test_rendered_config_correlates_host_logs_and_apm
+PASSED tests/test_datadog_vps_install.py::test_rendered_config_accepts_bounded_overrides
+PASSED tests/test_datadog_vps_install.py::test_render_only_rejects_unbounded_tag_values
+PASSED tests/test_datadog_vps_install.py::test_installer_never_enables_high_authority_datadog_features
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_accepts_supported_datadog_preload_paths[/run/datadog-apm-inject/launcher.preload.so]
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_accepts_supported_datadog_preload_paths[/opt/datadog-packages/datadog-apm-inject/stable/inject/launcher.preload.so]
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_accepts_supported_datadog_preload_paths[/opt/datadog/apm/inject/launcher.preload.so]
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_rejects_unrelated_preload_library
+PASSED tests/test_datadog_vps_install.py::test_rendered_config_tags_exact_release_sha
+PASSED tests/test_datadog_vps_install.py::test_release_tag_refresher_is_optional_and_atomic
+PASSED tests/test_forward_evaluation.py::test_not_started_and_archived_are_strict_no_write
+PASSED tests/test_forward_evaluation.py::test_book_paths_reject_request_controlled_segments[../autonomous]
+PASSED tests/test_forward_evaluation.py::test_book_paths_reject_request_controlled_segments[autonomous/../../escape]
+PASSED tests/test_forward_evaluation.py::test_book_paths_reject_request_controlled_segments[/tmp/escape]
+PASSED tests/test_forward_evaluation.py::test_start_is_create_once_and_corrupt_existing_marker_freezes
+PASSED tests/test_forward_evaluation.py::test_release_cli_override_targets_canonical_live_data_only
+PASSED tests/test_forward_evaluation.py::test_snapshot_filters_baseline_and_is_byte_idempotent
+PASSED tests/test_forward_evaluation.py::test_active_missing_artifacts_never_become_zero
+PASSED tests/test_forward_evaluation.py::test_pending_transaction_admits_only_post_baseline_rows_after_health
+PASSED tests/test_forward_evaluation.py::test_stopped_service_baseline_blocks_legacy_and_admits_target_same_day_rows
+PASSED tests/test_forward_evaluation.py::test_explicit_logical_id_prevents_mutable_legacy_row_resurrection
+PASSED tests/test_forward_evaluation.py::test_same_asof_correction_preserves_prior_revision_and_receipt
+PASSED tests/test_forward_evaluation.py::test_read_only_api_serves_status_without_evaluating_or_writing
+PASSED tests/test_forward_evaluation.py::test_partial_inputs_taint_every_dependent_metric
+PASSED tests/test_forward_evaluation.py::test_duplicate_nav_dates_are_one_partial_session
+PASSED tests/test_forward_evaluation.py::test_latest_is_monotonic_and_future_asof_is_no_write
+PASSED tests/test_forward_evaluation.py::test_stale_latest_weights_fall_back_to_current_account_marks
+PASSED tests/test_forward_evaluation.py::test_malformed_nested_ledgers_are_missing_not_false_zero
+PASSED tests/test_forward_evaluation.py::test_empty_latest_positions_cannot_claim_zero_concentration_with_exposure
+PASSED tests/test_forward_evaluation.py::test_effective_exits_lifecycle_and_failure_status_are_honest
+PASSED tests/test_forward_evaluation.py::test_daily_mark_book_failure_has_visible_step_event
+PASSED tests/test_forward_evaluation.py::test_scheduled_post_mark_evaluation_runs_inside_book_lock[_autonomous_job-bot.autonomous-run_autonomous-autonomous]
+PASSED tests/test_forward_evaluation.py::test_scheduled_post_mark_evaluation_runs_inside_book_lock[_china_job-bot.china-run_china-china]
+PASSED tests/test_forward_evaluation.py::test_scheduled_post_mark_evaluation_runs_inside_book_lock[_hk_job-bot.hk-run_hk-hk]
+PASSED tests/test_portfolio_archival.py::test_registry_keeps_history_but_separates_storage_and_product_defaults
+PASSED tests/test_portfolio_archival.py::test_archived_dashboard_reads_are_frozen_local_and_write_nothing
+PASSED tests/test_portfolio_archival.py::test_archived_risk_without_snapshot_does_not_recompute_or_create_file
+PASSED tests/test_portfolio_archival.py::test_nightly_safety_batch_is_active_only
+PASSED tests/test_portfolio_archival.py::test_direct_legacy_runners_fail_closed_before_work
+PASSED tests/test_portfolio_archival.py::test_archived_desk_mcp_cannot_submit_or_clear_pending_state
+PASSED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[flagship]
+PASSED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[flagship_judgment]
+PASSED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[heavyweight]
+PASSED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[etf]
+PASSED tests/test_portfolio_archival.py::test_archived_module_clis_report_status_and_exit_zero[bot.heavyweight-Heavyweight is archived]
+PASSED tests/test_portfolio_archival.py::test_archived_module_clis_report_status_and_exit_zero[bot.etf-ETF Brain is archived]
+PASSED tests/test_portfolio_archival.py::test_current_firm_exposure_ignores_archived_books
+PASSED tests/test_portfolio_archival.py::test_default_shadow_allocation_eligibility_is_active_only
+PASSED tests/test_portfolio_archival.py::test_us_operational_fanout_contains_only_successor
+PASSED tests/test_portfolio_archival.py::test_direct_archived_execution_and_settlement_are_read_only
+PASSED tests/test_portfolio_archival.py::test_direct_archived_derisk_cutters_are_read_only
+PASSED tests/test_portfolio_archival.py::test_archived_manual_run_routes_return_410
+PASSED tests/test_portfolio_archival.py::test_scheduler_registers_no_archived_book_jobs
+PASSED tests/test_portfolio_archival.py::test_stale_scheduler_wrappers_and_first_runs_fail_closed
+FAILED tests/test_deploy_provenance.py::test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments

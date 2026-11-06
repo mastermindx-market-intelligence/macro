@@ -162,13 +162,14 @@ def render_ticker_page(debt_maturity: dict) -> str:
 
 
 def _write_real_pages(scratch: Path, contexts: dict[str, dict]) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     shutil.copy(TEMPLATES_DIR / "theme.css", scratch / "theme.css")
     shutil.copy(TEMPLATES_DIR / "theme.js", scratch / "theme.js")
     (scratch / "data_base.js").write_text("/* capture stub */\n")
     stocks = scratch / "stocks"
     stocks.mkdir()
     for status, dm in contexts.items():
-        (stocks / f"{status}.html").write_text(render_ticker_page(dm))
+        write_unshimmed_html(stocks / f"{status}.html", render_ticker_page(dm))
 
 
 def _git_head_of_repo() -> tuple[str | None, str | None]:

@@ -1,22 +1,22 @@
 {
   "artifacts": {
     "history": {
-      "artifact_bytes": 1314857,
-      "artifact_sha256": "348837682c0e5d7b7df8c54e0cdabc6bb80b27dd8b1a9d2644717b808f8809e6",
-      "history_hash": "sha256:047f62ae3793675ae7183afdc9406a172ab054f57f8b882fb716e6c0ac68e775",
+      "artifact_bytes": 1318549,
+      "artifact_sha256": "ecf44c93c82428f576d1bc51f86a2bb045ae6bbe11635e0c28e89d04dc948f74",
+      "history_hash": "sha256:e6338102665abd8dfd822c2d8dd973baca285b8db7b626a1d44a057a4bbd0cc7",
       "path": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json"
     },
     "parity": {
       "artifact_bytes": 38472,
-      "artifact_sha256": "c2e3bba5f2488a7604721cede5535a143531bad958bcd6348a91deb82865bb4a",
-      "history_hash": "sha256:047f62ae3793675ae7183afdc9406a172ab054f57f8b882fb716e6c0ac68e775",
+      "artifact_sha256": "29c0303977ad6ac7e936c1bf6ef55a3d81ca93660662f81481a4c16dc6832781",
+      "history_hash": "sha256:e6338102665abd8dfd822c2d8dd973baca285b8db7b626a1d44a057a4bbd0cc7",
       "path": "data/release_forecast/cpi_truth/parity_report.json"
     }
   },
-  "asof": "2026-09-25T09:06:59+00:00",
+  "asof": "2026-10-16T18:18:51+00:00",
   "authority": false,
   "candidate_coverage": {
-    "candidate_period_end": "2026-08",
+    "candidate_period_end": "2026-09",
     "candidate_period_start": "1996-12",
     "coherent_targets_rejected_after_nonpublication": [
       "2025-11"
@@ -30,18 +30,18 @@
       "release_date": "1997-01-14",
       "release_lag_days": 14
     },
-    "target_rows": 710,
+    "target_rows": 712,
     "targets_per_release": {
-      "cpi_core": 355,
-      "cpi_headline": 355
+      "cpi_core": 356,
+      "cpi_headline": 356
     }
   },
-  "candidate_data_asof": "2026-09-25T09:06:59+00:00",
+  "candidate_data_asof": "2026-10-16T18:18:51+00:00",
   "candidate_target_epoch": "alfred_same_release_vintage_proxy_v1",
   "completion_boundary": true,
   "display_only": true,
-  "evidence_available_at": "2026-09-25T09:06:59+00:00",
-  "history_hash": "sha256:047f62ae3793675ae7183afdc9406a172ab054f57f8b882fb716e6c0ac68e775",
+  "evidence_available_at": "2026-10-16T18:18:51+00:00",
+  "history_hash": "sha256:e6338102665abd8dfd822c2d8dd973baca285b8db7b626a1d44a057a4bbd0cc7",
   "official_archive_observation_epoch": {
     "first_print_status": "unverified_retrospective_archive",
     "first_publication_evidence_verified": false,
@@ -58,9 +58,9 @@
   "source_bindings": {
     "alfred_manifest": {
       "artifact_bytes": 3153,
-      "artifact_sha256": "2fbdc464268d3f224607c4433e4228c0931cbfbb804001e3a611c7f4efd88bbc",
-      "collected_at": "2026-09-25T09:05:47+00:00",
-      "completed_at": "2026-09-25T09:06:59+00:00",
+      "artifact_sha256": "76845980ec3e026be1e01f7b468656f24b2968567d4ccfcb36dc69d20df63206",
+      "collected_at": "2026-10-16T18:17:55+00:00",
+      "completed_at": "2026-10-16T18:18:51+00:00",
       "integrity_profile": "release_target_artifact_sha256_bytes.v1",
       "path": "data/fred_vintage/release_targets/manifest.json",
       "schema": "release_target_vintage_collection.v1",

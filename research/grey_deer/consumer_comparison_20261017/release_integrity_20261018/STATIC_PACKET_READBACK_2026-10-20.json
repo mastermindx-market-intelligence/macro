@@ -1,0 +1,299 @@
+{
+  "schema": "grey_deer.static_packet_readback.v1",
+  "completed_at": "2026-10-20T03:18:34.146725+00:00",
+  "archive_sha256": "cd47566e5869c1972ec92a02bb11ca9671a272e3ff29844d816c3bb43158cef8",
+  "archive_bytes": 445436,
+  "files": [
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/DATED_ACTION_MAP_2026-10-16.md",
+      "bytes": 14889,
+      "sha256": "783bf218f9b3797cccaf2b0b40a2fe083beac7d4cd10c83be561861cc0df1f04"
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/EXPOSURE_DAMAGE_2026-10-16.png",
+      "bytes": 163019,
+      "sha256": "c5a43d5eeb224fc24dce365d9323d05db5cb93dde89d09402fb62dc648eb4820"
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/OBSERVED_SNAPSHOT_2026-10-16.json",
+      "bytes": 51139,
+      "sha256": "ab28897bcae098669fb6f2391ce40fadebc64eb417bc2942815a87ba9470ef1d"
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/PRIMARY_SOURCE_CHECK_2026-10-20.json",
+      "bytes": 1733,
+      "sha256": "f28592bc68bbf99c690dfbf25ff6dd74cb2f0d48ca550c95b10c41257884f417"
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/PRIMARY_SOURCE_CHECK_2026-10-20.md",
+      "bytes": 2807,
+      "sha256": "9e1fc56686cf138d727d9569dec911221104a6729d73a02aa51631cbfacfcaf1"
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/action_snapshot_20261020.py.txt",
+      "bytes": 7195,
+      "sha256": "db1e96af04c496f8b04d8bdfe7be0883477cde6b415e011bc09bab9da47de46e"
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/build_report.py.txt",
+      "bytes": 15818,
+      "sha256": "1c17c0b03d98b268913fdda153e2a2dd21616cc734d185b97f54fea0700ae72b"
+    },
+    {
+      "path": "research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_R1_ADJUDICATION_2026-10-20.md",
+      "bytes": 4106,
+      "sha256": "2162adfb72f5bb022175d34ae014b53b360dc23b5ba66f6772101573860bdb4a"
+    },
+    {
+      "path": "research/grey_deer/all_date_census/r1_candidate/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+      "bytes": 27378,
+      "sha256": "2f09526c3501e540d699b3ba69cd5f2866d736a1200dd9787a7c417aa90080ee"
+    },
+    {
+      "path": "research/grey_deer/all_date_census/r1_candidate/PRICE_ONLY_B0_B1_R1_2026-10-18.diff",
+      "bytes": 5340,
+      "sha256": "f47f51a134356b000630596bc518dc3ce1faf2d4831e1f55f9fa650896fd1047"
+    },
+    {
+      "path": "research/grey_deer/all_date_census/r1_candidate/PRICE_ONLY_B0_B1_R1_CHANGE_RECEIPT_2026-10-18.json",
+      "bytes": 1970,
+      "sha256": "7037479a23578175fb6250488c9ccbba9991c1cb95bb61b621ec3acbfd8e9c31"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/CI_CONTRACT_COMPANION_PROPOSAL_2026-10-18.md",
+      "bytes": 22916,
+      "sha256": "cd87033def1e4eed8714a90d97db03c13e508795f19255d55a40eb096d2cf33a"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/CI_CONTRACT_COMPANION_SEMANTIC_REVIEW_2026-10-18.md",
+      "bytes": 12923,
+      "sha256": "318ec1f753d0540af6541e96deb35425f6a117f6c1d39d6f33677ac92f53c3b1"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/CI_CONTRACT_COMPANION_V2_REVISION_2026-10-18.md",
+      "bytes": 8144,
+      "sha256": "743d73329cddabb949a9bf62a8118266c4d9505e9f01f562d8280c9064aecbcf"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/CI_CONTRACT_COMPANION_V2_SEMANTIC_REVIEW_2026-10-18.md",
+      "bytes": 5618,
+      "sha256": "2e2b60b9423432fb42caf82e540045471c3b84ce5ab13a85c2790a20154c00c0"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/CI_CONTRACT_COMPANION_V3_LAUNCHER_REPAIR_2026-10-18.md",
+      "bytes": 7988,
+      "sha256": "d9d8f6ca4b940dc01d6982d7ea5b607dfc233d93f9837586d4c7a5227f2f420c"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/CI_CONTRACT_COMPANION_V4_WITNESS_REPAIR_2026-10-18.md",
+      "bytes": 6679,
+      "sha256": "d4a37a2e9cc7815dd5f2c4f5793ddebccea10184120d972e21752378321f0e81"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/FULL_RELEASE_FIXED_SOURCE_REVIEW_2026-10-18.md",
+      "bytes": 17614,
+      "sha256": "fc2cd6f40727d0535d812eee2d9469e13cd96bc658e528a919a363eec3109924"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/HELPER_V3_INTERPRETER_PATH_REVIEW_2026-10-18.md",
+      "bytes": 6836,
+      "sha256": "e207c090622c41788f34bf9e48b3435fac8cd126c9b91ab5b55fb194171d8033"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/HELPER_V4_INTERPRETER_WITNESS_REVIEW_2026-10-18.md",
+      "bytes": 5068,
+      "sha256": "6f1d5dd03ff06cfa0ea4dc95830c732e99ceae452a9a1ae8e286cea4895b457a"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/PRICE_ONLY_B0_B1_INDEPENDENT_DESIGN_REVIEW_2026-10-18.md",
+      "bytes": 15108,
+      "sha256": "ed6795af0a5e595bcc1a847455f7b2a2f698a61e4ba41ea2088c58fa509ce87d"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/PUBLICATION_MAP_2026-10-20.json",
+      "bytes": 33554,
+      "sha256": "30d096e215b6de46858a435d4df6b4cc9302f60d8acdf06317e57c13629d5797"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/STATIC_SCOPE_CATALOGUE_REVIEW_2026-10-18.md",
+      "bytes": 8918,
+      "sha256": "70d3d03198f15f529ce785efd2096719f810f6261984b7aa4d9c72eb415e9c9e"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/STATIC_SCOPE_V2_FIXTURE_RECEIPT_2026-10-18.json",
+      "bytes": 21725,
+      "sha256": "8f4cdc61230430c1a38e3c181266b6bd0d715142d9ec89ec8a42213df589d34f"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/STATIC_SCOPE_V2_REPAIR_2026-10-18.md",
+      "bytes": 17012,
+      "sha256": "b5c154de5c5cbef1ad00d831bb0e659146c97adeb29db2c562e50101e5a65f93"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/STATIC_SCOPE_V2_REVIEW_2026-10-18.md",
+      "bytes": 6890,
+      "sha256": "c6addd6cbc6cbc587c7e8b1e4b6a5b8808f3bec61ca7cca340d6a5d920bfb652"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/archive_originals_oct20/CI_CONTRACT_COMPANION_PROPOSAL_2026-10-18.md.txt",
+      "bytes": 22900,
+      "sha256": "355a8d4f90d1b62246cddf4f2ec85698fd1bd50e5e2777ceb98a787bf9ab7e60"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/archive_originals_oct20/CI_CONTRACT_COMPANION_V2_REVISION_2026-10-18.md.txt",
+      "bytes": 8128,
+      "sha256": "a82aaee29c3d910cf9f369891d12521bbef31bcd82f729d93860a3569b1da11a"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/archive_originals_oct20/CI_CONTRACT_COMPANION_V3_LAUNCHER_REPAIR_2026-10-18.md.txt",
+      "bytes": 7980,
+      "sha256": "3e8d9404329de4e351c9e0e7af62ea02f3bc9a17418a881a6a9030f405f577b2"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/archive_originals_oct20/CI_CONTRACT_COMPANION_V4_WITNESS_REPAIR_2026-10-18.md.txt",
+      "bytes": 6671,
+      "sha256": "d938167fcb822cfd2b947123112ff19f9f41e6b26f3bfb4e6144f5283e762217"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/archive_originals_oct20/STATIC_SCOPE_V2_REPAIR_2026-10-18.md.txt",
+      "bytes": 17000,
+      "sha256": "07c92d17df45c9a7bc1d0f5cda553041cbf55fb7d297e44cdd65b90c39717205"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/candidate_scope_static.py.txt",
+      "bytes": 16836,
+      "sha256": "1ccb858a4f41ee62e909cc651c64d4ecc5aa525051432b45883854f6d0216c17"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/candidate_scope_static_v2.py.txt",
+      "bytes": 18653,
+      "sha256": "2f1f78e12cac9f6dfc219ba20c5d61d97bed29d4109cc9fc93eb3eea5123e103"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_candidate/tests/test_datadog_vps_install.py.txt",
+      "bytes": 5991,
+      "sha256": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_candidate/tests/test_deploy_provenance.py.txt",
+      "bytes": 46634,
+      "sha256": "90b872cb6de4d7b8b2c53cc91f747c0c24b6e1fc881526081c5369d9805aa59c"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_candidate/tests/test_forward_evaluation.py.txt",
+      "bytes": 31215,
+      "sha256": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_candidate/tests/test_portfolio_archival.py.txt",
+      "bytes": 16993,
+      "sha256": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_candidate_v2/tests/test_deploy_provenance.py.txt",
+      "bytes": 47847,
+      "sha256": "0da8a0d094b3b6f20bdedbdc427481a6425d709736621e7c5554a125cf78cc48"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_candidate_v3/tests/test_deploy_provenance.py.txt",
+      "bytes": 49407,
+      "sha256": "4f91f32c0b81d0038fdcbbe51f1d36d1b975096abd1b47c887ce0ea93f6e701a"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_candidate_v4/tests/test_deploy_provenance.py.txt",
+      "bytes": 50039,
+      "sha256": "80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_source/tests/test_datadog_vps_install.py.txt",
+      "bytes": 6368,
+      "sha256": "83ddabf469c078b7f5132d5dc6b75ab6c330dd385265452971f922120e7230c5"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_source/tests/test_forward_evaluation.py.txt",
+      "bytes": 33519,
+      "sha256": "41a49e87ae003b87716e85fe7bc716081ee41a2fbf732dc8f534b5f96423cbb3"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_contract_source/tests/test_portfolio_archival.py.txt",
+      "bytes": 17984,
+      "sha256": "89147abe92872ff4abd2ead5671a08b0301ac40499f892bfcd73c79ca3b7ad79"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/full_release_fixed_source_focus_20261018.json",
+      "bytes": 76602,
+      "sha256": "ede83fc78f739731d6b42466457274e3c9b030860a1175ffe484c329e07af902"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/full_release_static_extract_20261018.json",
+      "bytes": 15620,
+      "sha256": "aefa7f67580e518b86a5c5b9022ab7425a9d20c7a153a76921dcf935a2e8566f"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/static_scope_v2_fixture_20261018.py.txt",
+      "bytes": 9643,
+      "sha256": "b563134a1ccb51a67031adb2ccbd9b4b8134a4af7888a7dfd569679c76069716"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/FILE_IDENTITIES.json",
+      "bytes": 2867,
+      "sha256": "89723aa89443e6cda677791b9e5cf1185c975beb75959437b754bf7dc900265c"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/INTERRUPTED_REQUEST.json",
+      "bytes": 2513,
+      "sha256": "0250a7046f0a3d6ff9fed64702c659e57eae891f555c9d59bd6861513bb638e2"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/OBSERVATION_METADATA.json",
+      "bytes": 7558,
+      "sha256": "996dcf4dbdf26bac22c958fd57797ccedcca702a393112b69beb52708c3944ae"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/README.md",
+      "bytes": 8278,
+      "sha256": "d887e74b1bb022d634429531043746b8aa0ef257404a50f672cd6f9a3e52b5c3"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/ROOT_DAILY_RUN_39081858131_JOBS_2026-10-18.json",
+      "bytes": 128402,
+      "sha256": "54219356c2d8966147e5ab7b7a06a2996508306680d2ca7b49142d15fb2502a2"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/ROOT_LINEAGE_ADDENDUM_2026-10-18.md",
+      "bytes": 8934,
+      "sha256": "fa4ae6864e31d1c9d726d5af8bcf6832bd0ec34c79a48c3dd2c5c28b045ce81f"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/SOURCE_QUERY_METADATA.json",
+      "bytes": 3274,
+      "sha256": "2f42ef12f410aa4f8e3f3f8b1ff089f3f9f124e95d32a35784ce890385473124"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/evidence/forward_log.snapshot.jsonl",
+      "bytes": 34474,
+      "sha256": "a5a6bd895926aad829c1c09cc6a01f95949744f58e85388fd1c73d38cf679f9e"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/evidence/forward_log_refusals.snapshot.jsonl",
+      "bytes": 2059,
+      "sha256": "ebbded69d2383ff77a40dbd7f8f653d70d8bc234fefa5222edc2687d2e296f70"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/source/engine__grey_deer_pullback_forward.py.txt",
+      "bytes": 32655,
+      "sha256": "875eba9e1cd1c0068f478b82eab63c2da8fb2ec58220f6f174e901f2a262ee41"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/source/scripts__ci__daily_engine_regional_desk_builders.sh.txt",
+      "bytes": 22737,
+      "sha256": "4ada20301de940695bf6ff38a7cb755738f00b8d43141868b7353cdea13679d0"
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/source/scripts__grey_deer_pullback_nightly.py.txt",
+      "bytes": 5985,
+      "sha256": "ffff822cdec270f7a1f971a34c31a3cac97b02b8d77774feae3844e6fb75ef42"
+    }
+  ],
+  "code_execution": false
+}
