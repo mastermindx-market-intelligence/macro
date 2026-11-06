@@ -1,0 +1,111 @@
+{
+ "assets": {
+  "QQQ": {
+   "first": "1999-03-10",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6939
+  },
+  "SPY": {
+   "first": "1993-01-29",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 8481
+  },
+  "XLB": {
+   "first": "1998-12-22",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6991
+  },
+  "XLC": {
+   "first": "2018-06-19",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 2088
+  },
+  "XLE": {
+   "first": "1998-12-22",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6991
+  },
+  "XLF": {
+   "first": "1998-12-22",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6991
+  },
+  "XLI": {
+   "first": "1998-12-22",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6991
+  },
+  "XLK": {
+   "first": "1998-12-22",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6991
+  },
+  "XLP": {
+   "first": "1998-12-22",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6991
+  },
+  "XLRE": {
+   "first": "2015-10-08",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 2766
+  },
+  "XLU": {
+   "first": "1998-12-22",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6991
+  },
+  "XLV": {
+   "first": "1998-12-22",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6991
+  },
+  "XLY": {
+   "first": "1998-12-22",
+   "last": "2026-10-08",
+   "max_abs_diff": 0.0,
+   "n_nan": 2,
+   "nan_pattern_equal": true,
+   "rows": 6991
+  }
+ },
+ "max_abs_diff": 0.0,
+ "nan_pattern_equal": true,
+ "reproduced": true
+}

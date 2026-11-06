@@ -9,7 +9,7 @@ import pandas as pd
 from scripts import alpha_leadership_conditional_continuity as mod
 
 
-class AlphaLeadershipStage2Tests(unittest.TestCase):
+class TestAlphaLeadershipStage2(unittest.TestCase):
     def test_members_union_deduplicates_index_overlap(self):
         membership = pd.DataFrame({
             "ticker": ["A", "A", "B"],

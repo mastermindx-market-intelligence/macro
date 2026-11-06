@@ -1,0 +1,79 @@
+{
+  "operation": "news_readonly_open_sampler_20261020",
+  "recorded_at": "2026-10-20T18:20:06.899999+00:00",
+  "script_sha256": "4e78305bd0e1a00e438b6930036a50a3e2ab2fe672f42a008a249379b4d17f48",
+  "remote_exit": 0,
+  "records": [
+    {
+      "api_pid": 3265686,
+      "article_reads": false,
+      "interval": 0.5,
+      "network_calls": false,
+      "phase": "ready_to_sample",
+      "principal_matches_api": true,
+      "qualified_merge": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+      "route_proof": false,
+      "schema": "news.readonly_open_sampler.v1",
+      "scope": "canonical_readonly_store_open_only",
+      "seconds": 90.0,
+      "service_mutations": false,
+      "source_sha256": {
+        "app/ticker_news.py": "c9a53497f6c042638678a0d662912b66eae783ad97690ce628e8c98736d0901d",
+        "engine/qbus_news_store.py": "7acd4f05573da77422a6d4eafb39b614f86c9c3cbffb72b04fcabf38cc83d5dd"
+      },
+      "started_at": "2026-10-20T18:18:36Z",
+      "user_auth_proof": false
+    },
+    {
+      "api_pid": 3265686,
+      "article_reads": false,
+      "interval": 0.5,
+      "network_calls": false,
+      "phase": "sampling",
+      "principal_matches_api": true,
+      "qualified_merge": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+      "route_proof": false,
+      "schema": "news.readonly_open_sampler.v1",
+      "scope": "canonical_readonly_store_open_only",
+      "seconds": 90.0,
+      "service_mutations": false,
+      "source_sha256": {
+        "app/ticker_news.py": "c9a53497f6c042638678a0d662912b66eae783ad97690ce628e8c98736d0901d",
+        "engine/qbus_news_store.py": "7acd4f05573da77422a6d4eafb39b614f86c9c3cbffb72b04fcabf38cc83d5dd"
+      },
+      "started_at": "2026-10-20T18:18:36Z",
+      "user_auth_proof": false
+    },
+    {
+      "api_pid": 3265686,
+      "article_reads": false,
+      "attempts": 180,
+      "critical_sources_still_pinned": true,
+      "duration_seconds": 90.003,
+      "failure_examples": [],
+      "finished_at": "2026-10-20T18:20:06Z",
+      "interval": 0.5,
+      "max_open_ms": 4.465,
+      "network_calls": false,
+      "outcomes": {
+        "success": 180
+      },
+      "phase": "completed",
+      "principal_matches_api": true,
+      "qualified_merge": "1298ed4281362329c682a1f7c038b932e4ccbb64",
+      "route_proof": false,
+      "schema": "news.readonly_open_sampler.v1",
+      "scope": "canonical_readonly_store_open_only",
+      "seconds": 90.0,
+      "service_mutations": false,
+      "source_sha256": {
+        "app/ticker_news.py": "c9a53497f6c042638678a0d662912b66eae783ad97690ce628e8c98736d0901d",
+        "engine/qbus_news_store.py": "7acd4f05573da77422a6d4eafb39b614f86c9c3cbffb72b04fcabf38cc83d5dd"
+      },
+      "started_at": "2026-10-20T18:18:36Z",
+      "user_auth_proof": false
+    }
+  ],
+  "remote_stderr_present": false,
+  "scope": "canonical_store_open_only; database_binding_from_active_api; exact_effective_principal; no_user_auth_or_SSE_proof"
+}
