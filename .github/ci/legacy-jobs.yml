@@ -12373,6 +12373,15 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # S6: imported ancestor packages must trigger every FIF sibling, not only children.
+      - "collectors/biocatalyst/__init__.py"
+      - "engine/biocatalyst/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/context_index/__init__.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
+      - "engine/oracle/__init__.py"
+      - "engine/seasonality/__init__.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -13591,6 +13600,15 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # S6: imported ancestor packages must trigger every FIF sibling, not only children.
+      - "collectors/biocatalyst/__init__.py"
+      - "engine/biocatalyst/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/context_index/__init__.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
+      - "engine/oracle/__init__.py"
+      - "engine/seasonality/__init__.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -14820,6 +14838,15 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # S6: imported ancestor packages must trigger every FIF sibling, not only children.
+      - "collectors/biocatalyst/__init__.py"
+      - "engine/biocatalyst/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/context_index/__init__.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
+      - "engine/oracle/__init__.py"
+      - "engine/seasonality/__init__.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
