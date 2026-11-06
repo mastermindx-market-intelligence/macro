@@ -1614,7 +1614,9 @@ def build_payoff_lab(payload: dict | None, stores: dict, *,
         # The producer sets both payload dates from the pricing ledger.
         # Compare against the same per-symbol meta date shown by build_indexes.
         card_store = (stores.get("gex") or {}).get(sym) or {}
-        card_session = _day((card_store.get("meta") or {}).get("asof"))
+        card_meta = card_store.get("meta")
+        card_meta = card_meta if isinstance(card_meta, dict) else {}
+        card_session = _day(card_meta.get("asof"))
         ledger_session = _day(ledger_asof)
         card_asof = payload.get("asof")  # Retain the catalyst's pricing clock.
         asof_note_en = ""

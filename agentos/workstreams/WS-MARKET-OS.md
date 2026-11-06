@@ -257,6 +257,23 @@ waves:
     - parity-acceptance
     next_action: Use existing evaluation and learning owners to improve accepted jobs. Unvalidated research,
       sentiment and context remain non-authoritative for ranking, gating, sizing or trade decisions.
+  - id: shared-shell-intelligence-integration
+    title: First-class Macro, Prophet and Sector intelligence in Shared Shell beta
+    status: in_progress
+    depends_on: []
+    next_action: >
+      Current attended receiver owns Terminal PR 1244 under the Chairman's November 2
+      implementation instruction. The original Terminal branch adds first-class
+      navigation, an account-scoped overview and native Prophet/sectors entrances
+      over existing engines; it now preserves merged Today and sector-return work.
+      Macro PR10639 repairs the two registry-classification CI failures with 163
+      local tests passing. The original Fabric source-review request was refused
+      before launch; no independent approval or runtime start is claimed. Complete
+      canonical route projection, browser qualification, independent exact-head
+      review, normal protected landing and
+      beta-only release through the incumbent owner. Preserve neighboring navigation,
+      Today, sector and performance carriers; no production-default shell flip.
+      Source tests and retained-source projections are not authenticated beta acceptance.
 decisions:
   - "DEC:MARKET-OS-B1A-IDENTITY-GATE-OWNER-BACKED-CHAIN"
   - "DEC:MARKET-OS-WATCHLIST-PORTFOLIO-SEPARATE-TRUTH-UNIFIED-EXPERIENCE"
