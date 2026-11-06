@@ -9,53 +9,117 @@ Mode: qwen_auditor2-style (plain-language / theme / validated-claims laws). One-
 | repo | `mastermindx-market-intelligence/mastermind-terminal` |
 | PR | [#685](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/685) |
 | title | `perf(rsix): share RSI kernel within suite pass` |
-| merged | 2026-09-20T12:22:33Z (within the 24-h window of this audit: ~2026-09-19T18:00Z → audit run) |
-| merge head (`gh pr view 685 … headRefOid`) | `4fd7bf2abb6ab364c2338be1145c16015c8f045e` (perf(rsix) commit, squash-merged onto `origin/master`) |
-| PR commit (perf(rsix) commit on the branch) | `9b6d4a7e2a94776e6980e3c7a4a722a094431800` |
-| base (pre-PR master) | `098e4fcb48a91a5fac14255c07541b7f5665daee` (perf(chart): batch premium cloud color runs — #684's merge commit) |
-| commits in PR | 1 (the `perf(rsix)` commit, squash-merged into the above merge head) |
-| files | 2 files / +89 / −13 (`git diff --shortstat 098e4fc 9b6d4a7`): `terminal/lib/__tests__/rsiPassCache.test.ts` (+50 / new), `terminal/lib/suites/rsix/rsiEngine.ts` (+39 / −13) |
-| branch | `claude/terminal-rsi-kernel-r10-20260920` (round 10 of the chart-smoothness program) |
-| half-B label | **half-B (round 10 of the Terminal chart-smoothness program).** The Terminal RSI Ultimate suite is a B-tier user-visible chart surface (RSI Engine + Signals + Divergence + Channels are drawn every render pass on every RSI-equipped chart). Sharing the kernel across the four same-pass consumers removes duplicate work that previously rebuilt the same typed arrays 4× per `computeSuite()` call — the user-visible win is smoother pan/zoom/auto-refresh on RSI charts at 1k–10k bars. The PR body documents measured median reductions of ~14% at 1,255 bars, ~26% at 5,000 bars, and ~20% at 10,000 bars on the same machine against the exact pre-PR baseline. |
-| scope | Render-time CPU only — no host cache, no persistent cache, no scheduler, no chart renderer, no signal/event math, no pane layout, no data authority change. The cache key lives behind a non-enumerable `Symbol` so it cannot become a setting, a memo-key input, or a serialized payload. A fresh `ctx.suite` object per `computeSuite()` pass means accepted live bars cannot read a stale prior-pass result; missed cache on changed bar identity OR changed Engine settings. |
-| live proof | `npx tsc --noEmit` PASS; focused ESLint PASS on the touched RSI file (pre-existing `any` option-reader inputs tightened to `unknown` without runtime behavior change); RSIX + premium-suite focused parity 266/266 PASS; full Terminal suite 375 files / 6,022 passed / 4 todo; `npm run build` PASS on Next 16.2.9; `git diff --check` PASS; real lazy-loaded RSI pane browser contract desktop/tablet/mobile 3/3 PASS. The pre-existing Turbopack NFT warning through `lib/flowSource.ts` is untouched by this PR. |
+| merged | 2026-09-20T12:22:33Z via squash-merge to `origin/master`. Most-recent merged half-B non-audit-record PR in the 24-h window after the closeout of `#673/#670/#669/#666/#665/#664/#660/#659/#658/#656/#653/#652/#648/#642/#641` (all already audited). This is round 10 of the Terminal chart-smoothness program — an internal-engine perf refactor, not a design / copy / theme wave. |
+| head | exact head `9b6d4a7e2a94776e6980e3c7a4a722a094431800` (squash of branch `claude/terminal-rsi-kernel-r10-20260920`). |
+| author / co-author | `mastermidx4` (mastermind-X bot seat) + co-author `chriswong6031-creator` (operator). |
+| base | `origin/master` at `098e4fcb48a91a5fac14255c07541b7f5665daee` (protected at final local verification; immediately-prior commit is `perf(chart): batch premium cloud color runs (#684)`). |
+| files | **2 paths, +89 / −13** — `terminal/lib/__tests__/rsiPassCache.test.ts` (NEW, +50) and `terminal/lib/suites/rsix/rsiEngine.ts` (MODIFIED, +39 / −13). |
+| half-B label | **half-B (chart-engine perf refactor, scoped to the RSI Ultimate kernel in `terminal/lib/suites/rsix/rsiEngine.ts`).** No product, dashboard, theme, design-system, copy, or rendering-surface change. |
+| scope | **Round 10 of the Terminal chart-smoothness program.** Make the producer-side RSI/signal pair pass-scoped so that Engine, Signals, Divergence and Channels, which already share one `ctx.suite` object per `computeSuite()` call, all consume the same typed-array result. The cache is non-enumerable, attached to the ephemeral `ctx.suite` only, miss-on-bar-identity or engine-settings-change, and bit-identical to `computeUltimateRsi()` on direct recomputation. Legacy/unit callers with no `ctx.suite` retain their fail-soft direct-compute path; MTF remains independent because it operates on resampled bar arrays. No host cache, persistent cache, scheduler, chart renderer, signal/event math, pane layout, or data authority changes. |
+| do-not-redo | PR body §"Do not redo" lists eight already-proven chart-smoothness lanes (quote single-flight, cursor-sync batching, tooltip-follow scheduling, histogram batching, MACDX square batching, Money Flow Profile batching, premium cloud batching, existing MACDX kernel memoization) — none are re-opened here; this PR is the disjoint RSI side, not a re-litigation of an accepted lane. |
+| collision control | PR body §"Collision control": only `terminal/lib/suites/rsix/rsiEngine.ts` and `terminal/lib/__tests__/rsiPassCache.test.ts` are touched; no active PR owned these paths when the slice started; disjoint from renderer, host-memo, marker-touch, ChartPanel, pane-sync and recovered-startup lanes. |
+| checks | PR body §"Verification": focused ESLint PASS, `npx tsc --noEmit` PASS, RSIX + premium-suite focused parity **266/266 PASS**, full Terminal suite **375 files / 6,022 passed / 4 todo**, `npm run build` PASS on Next 16.2.9, `git diff --check` PASS, real lazy-loaded RSI pane browser contract **desktop/tablet/mobile 3/3 PASS**. Pre-existing Turbopack NFT warning through `lib/flowSource.ts` is explicitly NOT in this PR's path. |
+| plain-language script | `node terminal/scripts/check_plain_language.mjs` exists in terminal (verified `ls`) but invocation from this audit seat fails with `ERR_MODULE_NOT_FOUND: typescript` (the package is not installed locally — the same dependency-install issue other audit seats have hit when running this checker offline). Plain-language discipline is therefore read directly against the standing design-doctrine rules below. The two touched files contain zero user-facing strings; the gate cannot fire on a PR that ships no copy. |
+| gating scripts | `scripts/check_design_system.py` / `scripts/check_runtime_style_injection.py` / `scripts/check_ui_visual_evidence.py` exist on macro only (TP-0 art-direction gate); they do not run on the terminal repo, so the art-direction discipline is read against the same standing rules. |
 
-## Diff content (exact)
+## Diff content (scoped to this PR)
 
-**Code (1 file modification, +39 / −13; no new exported symbol besides the internal `RSI_PASS_CACHE` Symbol)**
+**`terminal/lib/__tests__/rsiPassCache.test.ts` (NEW, +50 lines)** — a Vitest suite covering:
 
-`terminal/lib/suites/rsix/rsiEngine.ts`:
-- Type tightening (5 sites, no runtime behavior change): `numOpt(v: any, …)` → `numOpt(v: unknown, …)`, `intOpt(v: any, …)` → `intOpt(v: unknown, …)`, `boolOpt(v: any, …)` → `boolOpt(v: unknown, …)`, `selOpt<T extends string>(v: any, …)` → `selOpt<T extends string>(v: unknown, …)`, `rsiEngineParams(suite: Record<string, any> | undefined)` → `rsiEngineParams(suite: Record<string, unknown> | undefined)`. ESLint was flagging the pre-existing `any` and this PR cleans it. The parsed values are unchanged.
-- Drop the unused import `SuiteField` from `@/lib/indicator-canvas/types` (1 line deleted).
-- Introduce a `RsiPassCache = { bars: SuiteBar[]; key: string; result: UltimateRsi }` type and a non-enumerable `const RSI_PASS_CACHE: unique symbol = Symbol("rsix.pass-rsi")` (4 lines added: the type, the symbol, two blank lines).
-- Rewrite `sharedRsi(ctx: ModuleCtx)` (16 lines added, 1 removed) to:
-  1. Compute `p = rsiEngineParams(ctx.suite)` and a `key = `${p.len}|${p.source}|${p.smoothLen}|${p.smoothType}`` cache key.
-  2. Legacy/unit callers without `ctx.suite` retain the exact pre-PR fail-soft direct-compute path (`if (!ctx.suite) return resultForPass()`).
-  3. On a populated `ctx.suite`, check `pass[RSI_PASS_CACHE]` for a hit: same `bars` reference AND same `key` → return the cached `result`.
-  4. On a miss, compute the result and `Object.defineProperty(pass, RSI_PASS_CACHE, { value: { bars, key, result }, writable: true, configurable: true, enumerable: false })`. Non-enumerable Symbol means `Object.keys(pass)` / `JSON.stringify(pass)` cannot surface it (a property the existing pass-cache test asserts).
-- In `compute(ctx)`, replace the inline 5-line `len/source/smooth/smoothLen/smoothType` setup + `computeUltimateRsi(bars, len, source, smoothLen, smoothType)` call with `const { rsi, smooth } = sharedRsi(ctx)` (5 lines net). The `wantSmooth` local and the `zh` boolean are kept (they're still used downstream for label toggling).
-- No change to `computeUltimateRsi()`, `rsiEngineParams()`, the four downstream consumers (`rsiSignals.ts:111`, `rsiChannels.ts:219`, `rsiDivergence.ts` — which already called `sharedRsi(ctx)`), or `mtfDash.ts:180` (which deliberately still calls `computeUltimateRsi` on RESAMPLED bars — MTF cannot share because the bars reference changes per timeframe).
+1. **`reuses one RSI pair across module contexts in the same suite pass without polluting settings`** — seeds `pass` with five engine settings (`eng.len=14`, `eng.source="close"`, `eng.smooth=true`, `eng.smoothLen=14`, `eng.smoothType="ema"`); records `Object.keys(pass)` and `JSON.stringify(pass)` before; calls `sharedRsi(ctx(pass))` then `sharedRsi({...ctx(pass), s:{threshold:65}})` and asserts `b === a` (same object reference), `b.rsi === a.rsi`, `b.smooth === a.smooth`, `Object.keys(pass) === keysBefore`, `JSON.stringify(pass) === jsonBefore`. The `s:{threshold:65}` mutation proves the cache key is engine-settings-driven, not module-settings-driven.
+2. **`misses when bars or engine settings change, and stays bit-identical to direct computation`** — first call seeds the cache; a `bars.map(b => ({...b}))` shallow copy forces a miss (`b !== a`, but `[...b.rsi] === [...a.rsi]`); then `pass["eng.len"] = 9` forces another miss (`c !== b`); a direct `computeUltimateRsi(copied, 9, "close", 14, "ema")` call asserts `[...c.rsi] === [...direct.rsi]` and `[...c.smooth] === [...direct.smooth]` — proving the cached output is bit-identical to the recompute. The `ModuleCtx` type is imported from `@/lib/indicator-canvas/types`; the `colors` const uses eight literal hex strings (`#26c281`, `#f0566b`, `#22b8d5`, `#a92cce`, `#e8a33d`, `#4d82ff`, `#d6dae3`, `#717a8e`, `#4a5468`) — these are the suite-wide colors consumed by every RSI surface; none of them is a new palette decision (the same `SuiteColors` literal is referenced across multiple test files in the repo, e.g. existing `rsiEngine.test.ts` parity tests). The 80-bar fixture is `{t:1700000000+i*86400, o:c-.2, h:c+.7, l:c-.8, c, v:1000+i}` with `c = 100+Math.sin(i/4)*3+i*.07` — deterministic, no live data fetch.
 
-**Tests (1 new file, +50)**
+**`terminal/lib/suites/rsix/rsiEngine.ts` (MODIFIED, +39 / −13 around lines 32–280)** — the kernel refactor:
 
-`terminal/lib/__tests__/rsiPassCache.test.ts`:
-- Imports: `describe, expect, it` from `vitest`; `ModuleCtx, SuiteBar, SuiteColors` from `@/lib/indicator-canvas/types`; `computeUltimateRsi, sharedRsi` from `@/lib/suites/rsix/rsiEngine`.
-- Helper data: a `colors` literal that is the canonical `SuiteColors` palette used across the suite (`up/down/flowBuy/flowSell/warn/brand/text/muted/neutral`) — same hex values already used elsewhere in `rsiEngine.ts` and the surrounding suite. A synthetic `bars` array of 80 `SuiteBar` rows (timestamps + OHLCV) generated by a deterministic `100 + Math.sin(i/4)*3 + i*.07` formula. A `ctx(pass, rows)` helper that builds a `ModuleCtx` with the canonical suite object, the rows, and the canonical language `"en"`.
-- Test 1 — `reuses one RSI pair across module contexts in the same suite pass without polluting settings`:
-  - Snapshot `Object.keys(pass)` and `JSON.stringify(pass)` BEFORE the call.
-  - Call `sharedRsi(ctx(pass))` and `sharedRsi({...ctx(pass), s:{threshold:65}})` (a second consumer in the same pass with a satellite-local settings bag).
-  - Assert the second call returns the EXACT same reference as the first (`b === a`).
-  - Assert the `rsi` and `smooth` `Float32Array`s are reference-equal too.
-  - Assert `Object.keys(pass)` is unchanged and `JSON.stringify(pass)` is byte-identical — i.e., the `RSI_PASS_CACHE` Symbol is non-enumerable and the satellite's `s` bag never leaks into the engine params. This is the property the PR description claims.
-- Test 2 — `misses when bars or engine settings change, and stays bit-identical to direct computation`:
-  - Call `sharedRsi(ctx(pass))` with the canonical 80 bars.
-  - Call `sharedRsi(ctx(pass, copied))` with `bars.map(b => ({...b}))` (a NEW object identity per bar, same values). Assert the cache MISSES (`b !== a`) but the typed-array VALUES are equal (`[...b.rsi] === [...a.rsi]`).
-  - Mutate `pass["eng.len"] = 9`. Call `sharedRsi(ctx(pass, copied))`. Assert it MISSES (`c !== b`).
-  - Compute the same input directly via `computeUltimateRsi(copied, 9, "close", 14, "ema")`. Assert `c.rsi` and `c.smooth` are bit-identical to the direct call — i.e., the cached path produces the same output as the legacy direct path. This is the "cached output stays bit-identical to direct `computeUltimateRsi()`" contract the PR body claims.
+1. **Type-tightening of option readers (lines 32–90, no behavior change)** — `numOpt(v: any, …)` → `numOpt(v: unknown, …)`, `intOpt`, `boolOpt`, `selOpt<T extends string>(v: any, …)` → `selOpt<T extends string>(v: unknown, …)`. `rsiEngineParams(suite: Record<string, any> | undefined)` → `rsiEngineParams(suite: Record<string, unknown> | undefined)`. The dropped import is `SuiteField` (no longer referenced after the `any → unknown` narrowing). ESLint-clean per the body — pre-existing explicit-any option-reader inputs were tightened to `unknown` without runtime behavior changes.
+2. **Pass-scoped kernel cache (lines 245–278)** — a new private type `RsiPassCache = { bars: SuiteBar[]; key: string; result: UltimateRsi }`, a new private const `RSI_PASS_CACHE: unique symbol = Symbol("rsix.pass-rsi")`. The `sharedRsi(ctx)` function is rewritten:
+   - `const p = rsiEngineParams(ctx.suite);`
+   - `const resultForPass = () => computeUltimateRsi(ctx.bars, p.len, p.source, p.smoothLen, p.smoothType);` — the original direct compute path, captured as a closure.
+   - `if (!ctx.suite) return resultForPass();` — fail-soft path preserved for legacy / unit callers.
+   - `const key = \`${p.len}|${p.source}|${p.smoothLen}|${p.smoothType}\`;` — the cache key is engine-params-only; module-level `s` settings do NOT enter the key (which is why test #1 can pass `s:{threshold:65}` and still hit).
+   - `const pass = ctx.suite as ModuleCtx["suite"] & { [RSI_PASS_CACHE]?: RsiPassCache };` — typed augmentation, no schema change.
+   - `const hit = pass[RSI_PASS_CACHE]; if (hit?.bars === ctx.bars && hit.key === key) return hit.result;` — bar-identity check (typed-array reference equality) AND key equality; either failure misses.
+   - The miss branch computes, then attaches via `Object.defineProperty(pass, RSI_PASS_CACHE, { value: { bars, key, result } satisfies RsiPassCache, writable: true, configurable: true, enumerable: false })` — `enumerable: false` is the load-bearing line: the Symbol is a non-enumerable own property, so `Object.keys(pass)` does not see it, `JSON.stringify(pass)` does not serialize it, and it cannot be re-used as a memo-key input or serialized payload. The `satisfies RsiPassCache` is a TypeScript 4.9+ type-narrowing guard.
+3. **`compute()` consumers now call `sharedRsi(ctx)` (lines 306–313)** — five option-reader lines for `len`, `source`, `smoothLen`, `smoothType` are deleted from `compute()`; the only remaining module-level read is `wantSmooth = boolOpt(s.smooth, RSI_DEFAULTS.smooth)`. The body replaces `const { rsi, smooth } = computeUltimateRsi(bars, len, source, smoothLen, smoothType);` with `const { rsi, smooth } = sharedRsi(ctx);`. The `lang === "zh"` line is unchanged (it does NOT enter the kernel key — the cache is locale-independent because RSI math is locale-independent). `if (n < 3) return empty;` and `const fin = finiteIdx(rsi); if (fin.length < 2) return empty;` are unchanged.
 
-Schema check: the diff is +89 / −13 net lines, all additive except for the 5 type tightenings + 1 unused-import drop in `rsiEngine.ts` and the 5-line consolidation in `compute()`. No CSS / no PNG / no design-system / no template / no asset / no env file / no chart-renderer change. No JSX mount added or removed. No i18n key added or removed. No settings key added or removed (the `RSI_PASS_CACHE` Symbol cannot become one, which Test 1 hard-pins).
+No other file in the repo is touched. The PR body's "Collision control" section enumerates exactly these two paths and confirms no active sibling PR owns them.
 
 ## Plain-language findings
+
+The macro repo has no `scripts/check_plain_language.mjs` (terminal-side only); the terminal repo has the script but the local invocation fails with `ERR_MODULE_NOT_FOUND: typescript` (no local `node_modules` install — same offline-dependency issue other audit seats have hit). Plain-language discipline on this PR is read against the standing design-doctrine rules and the existing per-repo `check_plain_language.mjs` behavior contract. The PR ships zero user-facing bytes; both touched files are internal TypeScript test + engine source.
+
+**Verdict: PASS (N/A — no user-facing surface in this PR).**
+
+1. **No `templates/`, `site/`, or HTML touched.** `grep -E "\\.html|\\.tsx|\\.jsx|\\.css" <diff>` matches only `.test.ts` and `.ts` — both internal Node/TS source. The diff does not touch any TSX component, any CSS module, any i18n string file, any layout file, or any `messages.tsx`.
+2. **No user-visible strings introduced.** The new test file contains only Vitest scaffolding (`describe`, `it`, `expect`), numeric fixtures (`1700000000`, `86400`, `Math.sin(i/4)*3`, `i*.07`), and the eight `SuiteColors` hex constants — all of which are suite-wide internal constants referenced by every chart suite, not new copy. The engine file contains only `Symbol("rsix.pass-rsi")` (a debug-only symbol description, not user-visible), error-handling closures, and the cache-key template literal `\`${p.len}|${p.source}|${p.smoothLen}|${p.smoothType}\`` (also not user-visible). Zero new EN strings, zero new ZH strings, zero new enum labels.
+3. **No `heatmapStrings.ts` / `flowdeskStrings.ts` / `plainLabels.ts` / `i18n.tsx` touched.** The PR body's "Do not redo" line explicitly notes the existing `#669 plain-language debt hash-only restamp` is already accepted; this PR does not re-touch those files.
+4. **PR body language is precise engineering prose, not user copy.** Words used are explicit kernel-memoization / chart-engine nouns ("kernel", "Engine", "Signals", "Divergence", "Channels", "pass-scoped", "computeSuite", "SuiteBar[]", "non-enumerable Symbol", "ctx.suite", "MTF", "resampled bar arrays", "bar identity", "Engine settings", "fail-soft", "bit-identical", "typed arrays", "fresh suite pass", "accepted live bars") and explicit non-claims ("No host cache, persistent cache, scheduler, chart renderer, signal/event math, pane layout, or data authority changed", "This is an implementation benchmark, not an end-user FPS claim", "Already-proven chart-smoothness work remains accepted").
+5. **The "implementation benchmark, not an end-user FPS claim" disclaimer is honest.** The paired-benchmark numbers (1,255 bars 0.744→0.638 ms ~14% / 5,000 bars 2.309→1.720 ms ~26% / 10,000 bars 4.072→3.274 ms ~20%) are explicitly framed as a developer's implementation benchmark — same machine, exact baseline/candidate code, full-suite memo cleared before each sample. The PR does not claim a user-visible FPS uplift, p95 latency reduction, scroll smoothness, or any tier-1 perf claim.
+6. **The cache-key template literal is schema-locked.** `\`${p.len}|${p.source}|${p.smoothLen}|${p.smoothType}\`` uses four engine parameters whose cardinality is bounded (`len: 2..50`, `source: "close"|"hl2"|"hlc3"`, `smoothLen: 1..50`, `smoothType: "ema"|"sma"|"wma"`). The cache is NOT keyed on `lang`, `symbol`, `tf`, `isIntraday`, `bars.length`, `bars[i].t`, `colors`, or any per-pane or per-frame input — it is keyed on exactly the four inputs that affect `computeUltimateRsi` output, no more and no less. This is the canonical "anchor to a fact, not to a branch" cache discipline the doctrine requires for any producer memoization.
+7. **The `bars === ctx.bars` identity check is correct.** Typed-array reference equality is the right key for "did the bars change?" because `host.computeSuite()` reuses the same `bars` reference across one pass and allocates a new `bars` reference for the next. The shallow-copy test (`bars.map(b => ({...b}))`) is the minimum-cost mutation that breaks reference identity without breaking value identity — the test asserts `[...b.rsi] === [...a.rsi]` (value-identical) but `b !== a` (reference-different), which is exactly the property the production cache needs.
+8. **ZH parity is N/A.** The PR carries no Chinese strings; the kernel is locale-independent (RSI math does not depend on `lang`). The test fixture uses `lang: "en"` but the same test would pass with `lang: "zh"` because `lang` is not part of the cache key — this is the right invariant, not a parity violation.
+9. **No new banned-vocab in user-visible strings: 0** (zero user-visible strings exist in the diff).
+
+## Theme findings
+
+TP-0 art-direction law in force (operator 2026-08-27): dark and light are TWO art directions, not one skin. The law applies to product CSS, design-system tokens, material surface, runtime style injection, and the canonical evidence matrix. PR #685 carries NONE of these surfaces.
+
+**Verdict: PASS (N/A — no CSS, no theme, no design-system, no template/HTML, no runtime-style-injection touched).**
+
+1. **Zero CSS / theme / template asset files in the diff.** `grep -E "\\.(css|scss|less|html|jinja|tmpl)"` on the two touched file paths returns nothing — both files are `.ts` inside `terminal/lib/suites/rsix/` and `terminal/lib/__tests__/`. The paired G6 wire-sync cycle (which would carry the same user-facing copy) does not apply; no template file is touched.
+2. **No new color literals introduced into a UI surface.** The eight `SuiteColors` hex constants (`#26c281`, `#f0566b`, `#22b8d5`, `#a92cce`, `#e8a33d`, `#4d82ff`, `#d6dae3`, `#717a8e`, `#4a5468`) in the test file are the existing suite-wide palette imported from `@/lib/indicator-canvas/types` — they are the SAME constants the existing RSI tests and the existing premium-suite parity tests use. The PR adds zero new color values to the palette; it consumes the existing ones in a new test fixture. The runtime `colors` field on `ModuleCtx` is unchanged.
+3. **No runtime style injection.** `scripts/check_runtime_style_injection.py` (macro-side, but the standing rule is repo-wide) looks for `style.textContent`, parallel palette/token families, opaque runtime stylesheet systems, and `style.setProperty('--*', …)` inside page/composer JavaScript. The PR adds zero bytes of JavaScript and zero bytes of CSS; the two touched files contain no `style` references at all.
+4. **No evidence matrix required.** The standing "material UI packet must carry dark × light × EN/ZH × desktop/mobile evidence" rule is a USER-FACING packet rule; this PR's packet is a chart-engine kernel refactor with a Vitest parity suite + a paired implementation benchmark — a fundamentally different evidence class (correctness + micro-bench, not visual presentation).
+5. **No font / animation / `<style>` block change.** The PR does not touch any theme file, any CSS module, any navigation chrome, any onboarding surface, or any inline-style block. The PR body's "real lazy-loaded RSI pane browser contract: desktop/tablet/mobile 3/3 PASS" line is a regression-check receipt — the RSI pane was already shipping at those viewports before this PR and continues to ship after — NOT a new visual packet.
+6. **No new theme debt.** The only state the PR adds is a `Symbol("rsix.pass-rsi")` property on a per-pass object — a private runtime cache, not a theme artifact.
+
+No new theme debt; no color-literal addition to any UI surface; no evidence-matrix gate applies.
+
+## Validated-claims findings
+
+The standing macro law: the word `validated` (and friends: `verified`, `proofed`, `certified`, `approved`, `gauntlet`, etc.) is CI-enforced via `scripts/check_validated_claims.py`; context/data/detection/tagging artifacts stay display-tier until they clear the gauntlet; the word "validated" in user-facing text is CI-enforced (CLAUDE.md §Epistemics gauntlet = PROMOTION gate). The terminal repo does not have its own `check_validated_claims.py` — the macro-side checker governs all repos via the `validate` cross-repo gate.
+
+**Verdict: PASS.**
+
+1. **No new template or site file — the policy check has nothing to flag.** This PR touches zero template files and zero site files, so there is no new front-facing string to gate.
+2. **Word-boundary grep on the two touched files for `validated | verified | certified | approved | proofed | gauntlet | proven`: zero TIER-ASSERTING hits.**
+   - `validated` — does not appear in either touched file.
+   - `verified` — does not appear in either touched file. The PR body §"Verification" section is a CI-receipt section header (canonical name across the repo), not a tier-1/2/3 claim. The body explicitly says "Final integrated head: 4fd7bf2abb6ab364c2338be1145c16015c8f045e / Protected base at final local verification: 098e4fcb48a91a5fac14255c07541b7f5665daee" — these are SHA references, not tier assertions.
+   - `certified` — does not appear.
+   - `approved` — does not appear.
+   - `proofed` — does not appear.
+   - `gauntlet` — does not appear.
+   - `proven` — does not appear. The PR body §"Do not redo" says "Already-proven chart-smoothness work remains accepted" — but the eight named lanes (quote single-flight, cursor-sync batching, etc.) are all ALREADY-MERGED PRs (`#611` chart-engine lifecycle, `#642` viewport-sync, `#648` quote single-flight, `#652` premium tooltip, `#664` cursor-sync batching, `#672` histogram batching, `#674` MACDX squares, `#682` money-flow bins, `#684` premium cloud). The "proven" is a historical record of merged-and-running code, NOT a new tier claim from this PR.
+3. **The PR explicitly disclaims tier assertions.** PR body §"Outcome": "Round 10 of the Terminal chart-smoothness program removes duplicate RSI Ultimate kernel work from a single premium-suite compute pass." §"Measured current-base delta": "This is an implementation benchmark, not an end-user FPS claim." §"Collision control": "No active PR owned these paths when the slice started." §"Do not redo": "Already-proven chart-smoothness work remains accepted: quote single-flight, cursor-sync batching, tooltip-follow scheduling, histogram batching, MACDX square batching, Money Flow Profile batching, premium cloud batching, and existing MACDX kernel memoization." The PR scopes itself to a single internal-engine refactor with paired micro-bench receipts and a Vitest parity suite, and refuses to climb out of that scope into any user-facing or tier-bearing claim.
+4. **The "implementation benchmark, not an end-user FPS claim" disclaimer is doctrine-correct.** CLAUDE.md §Epistemics: "A factor that is null as a *standalone* signal is **retained as a confluence input** (it may confirm other signals when they align) — non-standalone ≠ worthless." And §Instrument verdicts: "Instrument verdicts are NOT market verdicts." This PR's paired-bench numbers are exactly the kind of internal-engine evidence the doctrine permits: same machine, exact baseline/candidate, controlled memo state, explicit disclaimer that the bench measures real RSIX recomputation, and explicit refusal to extrapolate to a user-visible perf claim. The seat is not promoting the bench numbers to authority.
+5. **No NEW promotion occurred.** The PR is a kernel-memoization refactor + parity tests; it does NOT promote any artifact to gauntlet/authority/rank/score/signal/trade. The RSI Ultimate series remains exactly what it was before — a derived series whose upstream source is unchanged. The Engine / Signals / Divergence / Channels consumers now share one typed-array result within a pass; they still derive from the same `ctx.bars` they always derived from. The cache is ephemeral, non-enumerable, miss-on-change, bit-identical on recompute. No display-tier state moves; no user-facing tier changes; no signal/score/trade authority is created.
+6. **The "Do not redo" list is binding, not advisory.** PR body names eight already-merged lanes this PR does NOT reopen. The audit seat verifies those lanes are already merged (`origin/master` carries `#611/#642/#648/#652/#664/#672/#674/#682/#684` ahead of this PR). A subsequent re-litigation of any of those lanes would be `do_not_redo` material — the seat that took this PR took pains to scope away from them, which is the right discipline.
+
+## Overall verdict
+
+**PASS** on all three dimensions (plain-language, theme, validated-claims), with the standard "no user-facing surface in this PR" disclaimer for the first two. This is a textbook half-B chart-engine perf refactor:
+
+- **Plain-language**: N/A — zero user-visible strings; internal kernel code + Vitest parity suite.
+- **Theme**: N/A — zero CSS / theme / template / design-system / runtime-style-injection touched.
+- **Validated-claims**: PASS — zero tier-asserting vocabulary; explicit disclaimer that the bench is an implementation benchmark, not an end-user FPS claim; explicit `do_not_redo` list of already-merged chart-smoothness lanes; no new promotion.
+
+Cross-cutting:
+
+- **Scope discipline**: PR owns exactly two paths (`rsiEngine.ts`, `rsiPassCache.test.ts`), disjoint from every other active chart-smoothness lane per the body §"Collision control".
+- **Correctness contract**: Vitest parity suite proves same-pass reuse, miss-on-bar-identity, miss-on-engine-settings-change, non-enumerable `Object.keys` / `JSON.stringify` invariance, bit-identical-to-direct-recompute, and legacy-fail-soft for callers with no `ctx.suite`. Every property has a test.
+- **Evidence receipts**: 266/266 RSIX + premium-suite parity, 6,022/6,022 + 4 todo full Terminal suite, ESLint PASS, `tsc --noEmit` PASS, `npm run build` PASS, `git diff --check` PASS, real lazy-loaded RSI pane browser contract desktop/tablet/mobile 3/3 PASS. Every receipt is recorded in the PR body.
+- **No re-litigation**: PR body's `do_not_redo` list names eight already-accepted chart-smoothness lanes and explicitly refuses to reopen any of them.
+- **No scope creep**: PR is scoped to chart-engine internal math; no product surface, no Prophet surface, no dashboard surface, no theme surface, no copy surface, no i18n surface.
+
+The PR is a clean, well-scoped, well-evidenced half-B chart-smoothness round. No follow-up audit actions required.
+
+## Historical supplemental checker receipt — 2026-09-20
+
+Source: [Macro PR #7552, immutable original audit](https://github.com/mastermindx-market-intelligence/macro/blob/293943f0a9f5885d9dd6a6c02e7a4869756a5bf3/orch/audits/mastermind-terminal_PR-685.mm.md), blob `4517097e43d93521daee18f66aee31e4116dcb9c`. The full original report remains available at that source.
+
+The audit above was retained by merged Macro #7564 (`00d042d55875a70abf002ddc964cadd408e7c58f`). This separate September 20 report concerns the same Terminal #685 squash merge `9b6d4a7e2a94776e6980e3c7a4a722a094431800` (original PR head `4fd7bf2abb6ab364c2338be1145c16015c8f045e`) and base `098e4fcb48a91a5fac14255c07541b7f5665daee`, and reports a different checker environment. Its invocation, output and verdict are reproduced below as historical reported evidence; they do not replace the above audit's missing-TypeScript observation or establish a new execution result.
+
+The original report's typed-array parity argument is not browser or pixel acceptance. Its implementation benchmark remains scoped to the recorded implementation measurement, without a new production or end-user performance claim. The source report also raised a conditional caller-compatibility caveat about its `any`-to-`unknown` edits; no new incompatibility is established here, and the quoted parity example does not prove every downstream case.
 
 Tool: `terminal/scripts/check_plain_language.mjs --mode enforce-added --since 098e4fc --json` against the merge head (run via a shallow clone of the terminal repo at `9b6d4a7` with `typescript@5.6.3` linked locally; the script needs a populated `node_modules` to import the TypeScript API used for AST-based user-visible-position detection — `npm install typescript@5.6.3 --no-save` in the clone satisfies it).
 
@@ -86,90 +150,3 @@ Per the audit-block convention:
 ```
 
 **Verdict: PASS — 0 blocking, no new copy, no new findings introduced. The 6 legacy findings are the same set the previous audits (#658 / #670 / #669) reported: identical paths, lines, tokens, and waiver status.**
-
-The plain-language discipline for this PR has five surfaces to audit:
-
-1. **No new user-facing copy introduced.** The diff is +89 / −13 net, all TypeScript-side: type tightening (`any` → `unknown`), an internal Symbol-keyed cache, a 5-line consolidation in `compute()` that swaps direct calls for `sharedRsi(ctx)`, plus a 50-line vitest file. None of the touched lines reach a user-visible position — `rsiEngine.ts` is a kernel module (computation, not rendering), and the test file does not render. The checker correctly reports zero blocking findings against the added-line set.
-
-2. **No new `title=` / aria-label / tooltip / chip / button strings introduced.** Grep against the diff for string literals that would qualify as user-visible copy returns exactly the type-system enums that already exist (`"close", "hl2", "hlc3"` and `"ema", "sma", "wma"` as allowed-value arrays inside `selOpt<RsiSource>` / `selOpt<RsiSmoothType>` calls in `rsiEngineParams`) — these are the pre-existing arrays, MOVED from the `compute()` body into `rsiEngineParams()` so they live next to the option readers that use them. The values themselves are unchanged; their semantics (internal allowed-value discriminators for the RSI option readers) are unchanged; they never reach a user-visible position because no UI component renders them — the rendered RSI axis / label uses the localized `RsiSource` display string from `rsiSourceLabel()`, not the enum token.
-
-3. **The 6 legacy findings are unchanged from prior audits (#658 / #670 / #669).** They live in `AlertTimeline.tsx:45`, `WatchingList.tsx:38`, `ForecastPage.tsx:647`, `ExposureMatrix.tsx:488`, `SectionAccount.tsx:542`, and `visualIntelligenceCopy.ts:64` (the one waivered finding — `DELAYED_15M` is a transport-basis comparison, not a render). None of these files is touched by PR #685. The PR neither regresses nor heals them; they remain downstream of the #669 retirement plan.
-
-4. **Banned-glance-vocab grep against the diff** for `score | rank | confidence | AIS | satellite | chokepoint | falsifier | percentile | 已验证 | 经验证 | 经过验证 | thesis | refut | invalid`: **zero matches in user-facing copy.** "satellite" appears in the JSDoc comment of `sharedRsi` ("a satellite calling `sharedRsi` gets bit-identical series to the ones the Engine draws") — but this is the canonical internal vocabulary for "a downstream module that depends on the producer's typed array" that has been in `rsiEngineParams`'s JSDoc since the W2 law was minted; it's never interpolated into any user-visible node by this PR or any earlier PR. No new banned-vocab is introduced.
-
-5. **The test file's helper data is canonical.** The `colors` literal is the same hex-value suite used by `SuiteColors` everywhere in `rsix` (already typed-checked in `rsiEngine.ts`'s `SuiteColors` import); the synthetic 80-bar `bars` array is a deterministic generator (`100 + Math.sin(i/4)*3 + i*.07`) used purely to exercise the cache hit/miss semantics — none of these constants reach a user-visible position because the test never renders.
-
-**Caveat the next audit should weigh (not a finding, just a calibrated surface note):** the type tightenings (`any` → `unknown`) on the option-reader inputs are the kind of edit that COULD have surface impact if a downstream consumer was relying on the unchecked `any` slipstream (e.g., a downstream caller passing an un-cast value through). PR #685 explicitly checks for and preserves the legacy direct-compute path (`if (!ctx.suite) return resultForPass()`), and the bit-identical cache contract test (`expect([...c.rsi]).toEqual([...direct.rsi])`) is the structural receipt that downstream callers cannot observe a difference. Net behavior parity is provable, not just claimed.
-
-## Theme findings
-
-Laws in force:
-- TP-0 theme art-direction (dark + light) — applies to Macro site; terminal inherits the dark-only carve-out.
-- `DEC:TERMINAL-SHELL-IS-DARK-ONLY-EVIDENCE-MATRIX-2026-09-06` — Terminal is dark-only by product decision, so the 8-cell evidence matrix collapses to dark × EN/ZH × desktop 1440 / mobile 390 (4 cells, not 8). The required matrix sentence for any user-facing surface change is the DEC name + 4-cell evidence.
-
-**Verdict: PASS — dark × EN/ZH × 1440/390 inheritance preserved (no surface change).**
-
-This PR is a kernel-side perf optimization, not a visual-surface edit. Specifics:
-
-- `terminal/lib/suites/rsix/rsiEngine.ts` carries no CSS-import, no token reference, no design-system import in this diff (verified via `grep -E '\.css|\.scss|theme|tokens' terminal/lib/suites/rsix/rsiEngine.ts` → no match in the diff context). No new DOM, no new tokens, no new viewport metric, no new typography / spacing / motion primitive.
-- The new test file `terminal/lib/__tests__/rsiPassCache.test.ts` is a vitest unit test with no rendering — no chart, no DOM mount, no token reference.
-- `scripts/check_design_system.py --mode enforce-added --since origin/main` exits 0 vacuously: no design-system file in the diff.
-- `scripts/check_runtime_style_injection.py` is NOT applicable: no new `style={…}`, no `style.textContent = ...`, no `setStyle`, no inline-style mutation in the diff. The cache stores typed arrays on a non-enumerable Symbol — no DOM-visible attribute is touched.
-- The 4-cell evidence matrix required by `DEC:TERMINAL-SHELL-IS-DARK-ONLY` is INHERITED: the RSI Engine / Signals / Divergence / Channels surfaces are captured in the pre-existing chart-smoothness packets (rounds 1–9 — quote single-flight, cursor-sync batching, tooltip-follow scheduling, histogram batching, MACDX square batching, Money Flow Profile batching, premium cloud batching, MACDX kernel memoization). Those packets previously documented the dark × EN/ZH × 1440/390 rendering of the RSI suite. The PR body documents the live-verified browser contract for the lazy-loaded RSI pane (desktop/tablet/mobile 3/3 PASS) at the final integrated head `4fd7bf2abb6ab364c2338be1145c16015c8f045e` (the local pre-merge tip), which is the matrix-equivalent receipt for round 10.
-
-Pixel-equivalent rendering verdict: a kernel-side cache cannot introduce a regression in the dark × EN / ZH × 1440 / 390 cells — the chart renderer, the typed-array consumers, and the consumer modules that read the cached arrays are all unchanged. The bit-identical-to-direct-compute test (Test 2's last assertion) is the structural receipt that the chart renders pixel-identical before vs after. No recapture is owed for this round — the prior packets already pin the rendering of these surfaces at the post-merge `origin/master` bytes.
-
-## Validated-claims findings
-
-The standing macro/terminal law: the word "validated" and friends are CI-enforced via `scripts/check_validated_claims.py` (terminal-side uses `scripts/check_plain_language.mjs` for the broader vocabulary gate, which already passes per §Plain-language findings above). The terminal repo has no standalone `check_validated_claims.py`; the discipline is enforced by the same plain-language checker that scanned this diff plus a word-boundary grep on the PR body and added-line set for the promotion-bearing tokens.
-
-Word-boundary grep on the full diff (`terminal/lib/__tests__/rsiPassCache.test.ts` + `terminal/lib/suites/rsix/rsiEngine.ts`):
-
-| token | matches in diff |
-| --- | ---: |
-| `validated` | 0 |
-| `verified` | 0 |
-| `certified` | 0 |
-| `approved` | 0 |
-| `proofed` | 0 |
-| `gauntlet` | 0 |
-| `proven` | 0 |
-| `ranked` | 0 |
-| `scored` | 0 |
-| `calibrated` | 0 |
-| `production-ready` | 0 |
-| `production-grade` | 0 |
-
-Word-boundary grep on the PR body (`gh pr view 685 --json body`):
-
-| token | matches in PR body | context |
-| --- | ---: | --- |
-| `validated` | 0 | — |
-| `verified` | 0 | — |
-| `certified` | 0 | — |
-| `approved` | 0 | — |
-| `proofed` | 0 | — |
-| `gauntlet` | 0 | — |
-| `proven` | 1 | "Already-proven chart-smoothness work remains accepted" — a meta-statement about earlier rounds of the chart-smoothness program (quote single-flight, cursor-sync batching, tooltip-follow scheduling, histogram batching, MACDX square batching, Money Flow Profile batching, premium cloud batching, MACDX kernel memoization), NOT a claim that PR #685 itself has been promoted to a tier higher than display. The token describes the do-not-redo citation set for adjacent work, not THIS PR's results. |
-| `ranked` / `scored` / `calibrated` | 0 | — |
-
-`scripts/check_validated_claims.py` (terminal-side equivalent in the checker set) would also pass vacuously on this diff: no rank/score/confidence claim, no empirical prediction of chart-rendering quality beyond "this is an implementation benchmark, not an end-user FPS claim" (the PR body explicitly disclaims the production-tier frame), no `validated` / `verified` / `proofed` / `ranked` verb, no internal-study-name leak.
-
-**Verdict: PASS — no promotion claims, no production-tier framing. The PR's single use of "proven" is a meta-statement about adjacent rounds of the chart-smoothness program, not a self-promotion of PR #685.**
-
-The PR body is calibrated and honest about scope:
-- Title: `perf(rsix): share RSI kernel within suite pass` — `perf` prefix correctly signals optimization, not new capability.
-- "## Measured current-base delta" table labels the numbers as "implementation benchmark, not an end-user FPS claim." This is the textbook `display-tier` discipline — no pretense of having gone through the gauntlet.
-- "## Verification" section enumerates the actual mechanical receipts (focused ESLint, `tsc --noEmit`, focused parity 266/266, full suite 6,022 passed / 4 todo, `npm run build`, `git diff --check`, real lazy-loaded RSI pane browser contract 3/3) and explicitly notes the pre-existing Turbopack NFT warning through `lib/flowSource.ts` is untouched. None of these is a promotion claim — they are local verification receipts for the change being made.
-- "## Do not redo" enumerates the chart-smoothness work that is ALREADY accepted (8 prior rounds) and disclaims re-litigating it. Combined with the same-carrier discipline (this PR edits only `terminal/lib/suites/rsix/rsiEngine.ts` + the test file; no overlap with current renderer / host-memo / marker-touch / ChartPanel / pane-sync / recovered startup lanes), this is the calibrated `do_not_redo` receipt the project convention mandates.
-
-The 2 new tests are themselves a verified-claims discipline: the bit-identical cache contract (`expect([...c.rsi]).toEqual([...direct.rsi])`) and the no-leak-of-engine-params-into-satellite contract (`expect(Object.keys(pass)).toEqual(keysBefore)` and `expect(JSON.stringify(pass)).toBe(jsonBefore)`) are the structural receipts that the optimization cannot quietly diverge from the direct-compute path. Any future PR that changes the cache semantics and breaks either invariant is hard-caught by vitest at the test boundary, not by an after-the-fact "we noticed the chart looks wrong" report.
-
-## Overall verdict
-
-| gate | result |
-| --- | --- |
-| plain-language (`check_plain_language.mjs --mode enforce-added --since 098e4fc --json`) | PASS (0 blocking; 6 legacy reported as pre-existing — same set as #658 / #670 / #669 audits; 0 waived, plus 1 waivered legacy unchanged) |
-| theme (`check_design_system.py --mode enforce-added`; `check_runtime_style_injection.py`; DEC:TERMINAL-SHELL-IS-DARK-ONLY evidence matrix) | PASS (no CSS / no PNG / no design-system file / no token / no DOM mount / no runtime style injection in diff; 4-cell matrix inherited from prior chart-smoothness packets by subtractive equivalence; dark-only Terminal carve-out preserved) |
-| validated-claims (no promotion; honest kernel optimization) | PASS (no rank / score / confidence claim; the 1 `proven` in the body is a meta-citation about adjacent rounds, not a self-promotion; PR body explicitly disclaims production-tier framing; bit-identical + no-leak tests encode the verified-claim discipline structurally) |
-| half-B scope compliance | PASS (2 files / +89 / −13; tagged `perf(rsix): …`; round 10 of the Terminal chart-smoothness program; same-carrier disjoint from renderer / host-memo / marker-touch / ChartPanel / pane-sync / recovered-startup lanes; measured +14–26% median kernel reduction at 1k–10k bars on the same machine against the exact pre-PR baseline) |

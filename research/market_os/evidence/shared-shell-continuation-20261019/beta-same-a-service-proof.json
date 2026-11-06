@@ -1,0 +1,535 @@
+{
+  "started_at": "2026-10-20T18:48:16.498441+00:00",
+  "state": "EFFECT_RECONCILIATION_REQUIRED",
+  "scope": "One attended stop and start of already accepted terminal-beta.service A. No release transaction, installer, source/pointer mutation, enablement change, Caddy/DNS operation or production service operation.",
+  "accepted_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "boundary_source_sha256": "d5c142c1881a6412402af2df6e94b5003bc4594fe50df2ac8cfcffe35f59684a",
+  "preflight_sha256": "ac58b4d7ed0fb4ca67f296b83230778c10f1ee88d436aa7899c98de38580880c",
+  "operations": [
+    {
+      "action": "stop",
+      "unit": "terminal-beta.service",
+      "started_at": "2026-10-20T18:48:19.342669+00:00",
+      "command": [
+        "ssh",
+        "-i",
+        "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "IdentityAgent=none",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "ConnectTimeout=8",
+        "root@146.190.142.17",
+        "systemctl",
+        "stop",
+        "terminal-beta.service"
+      ],
+      "state": "RETURNED",
+      "exit": 0,
+      "finished_at": "2026-10-20T18:48:20.695173+00:00",
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "phase": "effect-before",
+      "health": {
+        "started_at": "2026-10-20T18:48:16.499125+00:00",
+        "source": "macro-b312-prearm-health-remote-v3.py",
+        "source_sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+        "command": [
+          "ssh",
+          "-i",
+          "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+          "-o",
+          "BatchMode=yes",
+          "-o",
+          "IdentitiesOnly=yes",
+          "-o",
+          "IdentityAgent=none",
+          "-o",
+          "StrictHostKeyChecking=yes",
+          "-o",
+          "ConnectTimeout=8",
+          "root@146.190.142.17",
+          "python3 -I -B -"
+        ],
+        "scope": "Read-only action-boundary observation; no reservation or service effect",
+        "exit": 0,
+        "finished_at": "2026-10-20T18:48:18.236848+00:00",
+        "stdout": {
+          "bytes": 23464,
+          "sha256": "d663ed9d71a9f6fad0d045e89fb5007e5b65ab03300c78051338531f40d9d89e"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "unit": {
+        "started_at": "2026-10-20T18:48:18.239719+00:00",
+        "source": "beta-loaded-unit-root-observer-v2.py",
+        "source_sha256": "09568929c4e580b9a40e71d1ef936c69beed0ac0feafb1b01bbaf4f953c8221c",
+        "command": [
+          "ssh",
+          "-i",
+          "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+          "-o",
+          "BatchMode=yes",
+          "-o",
+          "IdentitiesOnly=yes",
+          "-o",
+          "IdentityAgent=none",
+          "-o",
+          "StrictHostKeyChecking=yes",
+          "-o",
+          "ConnectTimeout=8",
+          "root@146.190.142.17",
+          "python3 -I -B -"
+        ],
+        "scope": "Read-only action-boundary observation; no reservation or service effect",
+        "exit": 0,
+        "finished_at": "2026-10-20T18:48:19.339258+00:00",
+        "stdout": {
+          "bytes": 5905,
+          "sha256": "497ecd3ee1645e1d9db0ea0a16344a69ab9629729c600cf73c391695c0208023"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "phase": "effect-stopped",
+      "health": {
+        "started_at": "2026-10-20T18:48:20.696665+00:00",
+        "source": "macro-b312-prearm-health-remote-v3.py",
+        "source_sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+        "command": [
+          "ssh",
+          "-i",
+          "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+          "-o",
+          "BatchMode=yes",
+          "-o",
+          "IdentitiesOnly=yes",
+          "-o",
+          "IdentityAgent=none",
+          "-o",
+          "StrictHostKeyChecking=yes",
+          "-o",
+          "ConnectTimeout=8",
+          "root@146.190.142.17",
+          "python3 -I -B -"
+        ],
+        "scope": "Read-only action-boundary observation; no reservation or service effect",
+        "exit": 0,
+        "finished_at": "2026-10-20T18:48:23.213930+00:00",
+        "stdout": {
+          "bytes": 22899,
+          "sha256": "21b6c28b2121e3ae509e0109014dd8a5d8653bd920d49bb1453f29a28415ba2f"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "unit": {
+        "started_at": "2026-10-20T18:48:23.215736+00:00",
+        "source": "beta-loaded-unit-root-observer-v2.py",
+        "source_sha256": "09568929c4e580b9a40e71d1ef936c69beed0ac0feafb1b01bbaf4f953c8221c",
+        "command": [
+          "ssh",
+          "-i",
+          "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+          "-o",
+          "BatchMode=yes",
+          "-o",
+          "IdentitiesOnly=yes",
+          "-o",
+          "IdentityAgent=none",
+          "-o",
+          "StrictHostKeyChecking=yes",
+          "-o",
+          "ConnectTimeout=8",
+          "root@146.190.142.17",
+          "python3 -I -B -"
+        ],
+        "scope": "Read-only action-boundary observation; no reservation or service effect",
+        "exit": 0,
+        "finished_at": "2026-10-20T18:48:24.105733+00:00",
+        "stdout": {
+          "bytes": 5891,
+          "sha256": "fdb3805f3b295eb708db3225c530282e9282aa7bf53191345acbb7d408d8999c"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "phase": "exception-reconciliation",
+      "health": {
+        "started_at": "2026-10-20T18:48:24.112367+00:00",
+        "source": "macro-b312-prearm-health-remote-v3.py",
+        "source_sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+        "command": [
+          "ssh",
+          "-i",
+          "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+          "-o",
+          "BatchMode=yes",
+          "-o",
+          "IdentitiesOnly=yes",
+          "-o",
+          "IdentityAgent=none",
+          "-o",
+          "StrictHostKeyChecking=yes",
+          "-o",
+          "ConnectTimeout=8",
+          "root@146.190.142.17",
+          "python3 -I -B -"
+        ],
+        "scope": "Read-only action-boundary observation; no reservation or service effect",
+        "exit": 0,
+        "finished_at": "2026-10-20T18:48:25.299187+00:00",
+        "stdout": {
+          "bytes": 22899,
+          "sha256": "3729827cabecfaae0bb879e7ce34da0b2efb3d376d8504eaeca2926daa4ec411"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "unit": {
+        "started_at": "2026-10-20T18:48:25.301476+00:00",
+        "source": "beta-loaded-unit-root-observer-v2.py",
+        "source_sha256": "09568929c4e580b9a40e71d1ef936c69beed0ac0feafb1b01bbaf4f953c8221c",
+        "command": [
+          "ssh",
+          "-i",
+          "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+          "-o",
+          "BatchMode=yes",
+          "-o",
+          "IdentitiesOnly=yes",
+          "-o",
+          "IdentityAgent=none",
+          "-o",
+          "StrictHostKeyChecking=yes",
+          "-o",
+          "ConnectTimeout=8",
+          "root@146.190.142.17",
+          "python3 -I -B -"
+        ],
+        "scope": "Read-only action-boundary observation; no reservation or service effect",
+        "exit": 0,
+        "finished_at": "2026-10-20T18:48:26.284295+00:00",
+        "stdout": {
+          "bytes": 5891,
+          "sha256": "6c22092f809d552b442a39fc4cf68f05b4232bbaad605831df381cea193bac23"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "full_hostname_withdrawal": false,
+  "A_to_B_to_A": false,
+  "public_acceptance": false,
+  "reservation": false,
+  "before_service": {
+    "MainPID": "2427329",
+    "ExecMainStartTimestampMonotonic": "7560285026653",
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled"
+  },
+  "before_identity": {
+    "beta_source_HEAD": {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "-C",
+        "/opt/terminal/.gitsrc-beta",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "truncated": false,
+      "timed_out": false,
+      "stdout": "e45bde2cac07ac3b29285ff70c40d68900fad62c\n",
+      "stderr": ""
+    },
+    "runtime_pointer": {
+      "path": "/opt/terminal/beta/.runtime-accepted",
+      "exists": true,
+      "resolved": "/var/lib/mastermind-terminal-beta/source-provisioned/runtime-accepted-e45bde2cac07ac3b29285ff70c40d68900fad62c-c62950826aca6fd8.json",
+      "metadata": {
+        "dev": 64769,
+        "ino": 3946428,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o640",
+        "kind": "regular",
+        "nlink": 1,
+        "bytes": 1481,
+        "mtime_ns": 1792459881132101484,
+        "ctime_ns": 1792459881135101501
+      },
+      "bytes": 1481,
+      "sha256": "698204ef4ad72a1bfa896110af875df080bf773687150890e8a2322bd6b452d7",
+      "identity_stable": true,
+      "ancestor_trusted": true,
+      "truncated": false,
+      "read_complete": true,
+      "pointer_metadata": {
+        "dev": 2048,
+        "ino": 1598476,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o777",
+        "kind": "symlink",
+        "nlink": 1,
+        "bytes": 132,
+        "mtime_ns": 1792459881135101501,
+        "ctime_ns": 1792459881135101501
+      },
+      "pointer_stable": true,
+      "target_ancestor_trusted": true,
+      "pointer_ancestor_trusted": true
+    },
+    "source_pointer": {
+      "path": "/opt/terminal/beta/.source-provisioned",
+      "exists": true,
+      "resolved": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+      "metadata": {
+        "dev": 64769,
+        "ino": 3943348,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o640",
+        "kind": "regular",
+        "nlink": 1,
+        "bytes": 1841,
+        "mtime_ns": 1792383936440604014,
+        "ctime_ns": 1792383936443604029
+      },
+      "bytes": 1841,
+      "sha256": "9aac8ec8c132eecf4d2664d8f1e18e8a6bffce5f6d7176e4021b15d6d953cfa4",
+      "identity_stable": true,
+      "ancestor_trusted": true,
+      "truncated": false,
+      "read_complete": true,
+      "pointer_metadata": {
+        "dev": 2048,
+        "ino": 1597725,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o777",
+        "kind": "symlink",
+        "nlink": 1,
+        "bytes": 134,
+        "mtime_ns": 1792383936443604029,
+        "ctime_ns": 1792383936443604029
+      },
+      "pointer_stable": true,
+      "target_ancestor_trusted": true,
+      "pointer_ancestor_trusted": true
+    },
+    "beta_build": [
+      {
+        "path": "/opt/terminal/beta/terminal/.deployment-id",
+        "exists": true,
+        "resolved": "/opt/terminal/beta/terminal/.deployment-id",
+        "metadata": {
+          "dev": 2048,
+          "ino": 1602523,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 41,
+          "mtime_ns": 1792388000692822476,
+          "ctime_ns": 1792388000709822539
+        },
+        "bytes": 41,
+        "sha256": "50b75a482303cb7ee99bd439d6d1a002aa0cc9c2d120e210655cf097c7509675",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true,
+        "text": "e45bde2cac07ac3b29285ff70c40d68900fad62c"
+      },
+      {
+        "path": "/opt/terminal/beta/terminal/.next/BUILD_ID",
+        "exists": true,
+        "resolved": "/opt/terminal/beta/terminal/.next/BUILD_ID",
+        "metadata": {
+          "dev": 2048,
+          "ino": 426044,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 20,
+          "mtime_ns": 1792459828979788577,
+          "ctime_ns": 1792459828979788577
+        },
+        "bytes": 20,
+        "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true,
+        "text": "build-TfctsWXpff2fKS"
+      }
+    ]
+  },
+  "production_baseline": {
+    "service": {
+      "MainPID": "3255147",
+      "ExecMainStartTimestampMonotonic": "7619423343388",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "build": [
+      {
+        "path": "/opt/terminal/terminal/.deployment-id",
+        "exists": true,
+        "resolved": "/opt/terminal/terminal/.deployment-id",
+        "metadata": {
+          "dev": 2048,
+          "ino": 1604351,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 41,
+          "mtime_ns": 1792518919556080947,
+          "ctime_ns": 1792518919565080995
+        },
+        "bytes": 41,
+        "sha256": "37b23db6dea14c0ecf0303669a9542d069738873b31b548f3be3055f4e879a38",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true,
+        "text": "bbc07037aae3e98597945e23448781a091d15281"
+      },
+      {
+        "path": "/opt/terminal/terminal/.next/BUILD_ID",
+        "exists": true,
+        "resolved": "/opt/terminal/terminal/.next/BUILD_ID",
+        "metadata": {
+          "dev": 2048,
+          "ino": 411974,
+          "uid": 0,
+          "gid": 0,
+          "mode": "0o644",
+          "kind": "regular",
+          "nlink": 1,
+          "bytes": 20,
+          "mtime_ns": 1792518916112062617,
+          "ctime_ns": 1792518916112062617
+        },
+        "bytes": 20,
+        "sha256": "5906afd2adf8c7ee74a5032731fef083ad51f4f690d04a57a116ec5aba7b3230",
+        "identity_stable": true,
+        "ancestor_trusted": true,
+        "truncated": false,
+        "read_complete": true,
+        "text": "build-TfctsWXpff2fKS"
+      }
+    ],
+    "owner": {
+      "path": "/opt/terminal/terminal-build.sh",
+      "exists": true,
+      "resolved": "/opt/terminal/terminal-build.sh",
+      "metadata": {
+        "dev": 2048,
+        "ino": 1604272,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o755",
+        "kind": "regular",
+        "nlink": 1,
+        "bytes": 207242,
+        "mtime_ns": 1792519018401599917,
+        "ctime_ns": 1792519018408599954
+      },
+      "bytes": 207242,
+      "sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+      "identity_stable": true,
+      "ancestor_trusted": true,
+      "truncated": false,
+      "read_complete": true
+    },
+    "caddy_file": {
+      "path": "/etc/caddy/Caddyfile",
+      "exists": true,
+      "resolved": "/etc/caddy/Caddyfile",
+      "metadata": {
+        "dev": 64769,
+        "ino": 262161,
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o644",
+        "kind": "regular",
+        "nlink": 1,
+        "bytes": 74183,
+        "mtime_ns": 1792486097602051396,
+        "ctime_ns": 1792486097602051396
+      },
+      "bytes": 74183,
+      "sha256": "881f89bc4d1fc66ecb2a4b6281b332b4ee41d0d812ef5b8b64d6b5bff675190b",
+      "identity_stable": true,
+      "ancestor_trusted": true,
+      "truncated": false,
+      "read_complete": true
+    },
+    "macro_caddy_services": {
+      "macro-api.service": {
+        "MainPID": "3265686",
+        "ExecMainStartTimestampMonotonic": "7620001755229",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "caddy.service": {
+        "MainPID": "2712483",
+        "ExecMainStartTimestampMonotonic": "2918519097212",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    }
+  },
+  "preflight_production_equal": true,
+  "error": "AssertionError()",
+  "pass": false,
+  "recovery_blocker": "Existing unit still transitional; actual state needs reconciliation before another operation",
+  "boundary_source_unchanged": true,
+  "finished_at": "2026-10-20T18:48:26.286748+00:00"
+}

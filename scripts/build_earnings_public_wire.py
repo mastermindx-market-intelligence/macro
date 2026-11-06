@@ -33,6 +33,7 @@ from pathlib import Path
 import re
 import sys
 import tempfile
+import time
 from typing import Any, Callable, Mapping
 from urllib.parse import urlsplit
 import requests
@@ -64,6 +65,12 @@ from engine.earnings_narrative.story_packets import (  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from lib.seo import BRAND_NAME, SITE_BASE, page_url  # noqa: E402
 from engine.neuralweb import company_intelligence_reader as _company_reader  # noqa: E402
+from engine.earnings_narrative.private_economic_stage import (  # noqa: E402
+    PrivateEconomicStageError,
+    assert_public_workspace_admission,
+    augment_private_stage,
+    load_verified_prior,
+)
 
 
 log = logging.getLogger("build_earnings_public_wire")
@@ -95,6 +102,8 @@ MAX_SELECTED_PACKET_COUNT = 10_000
 MAX_SELECTED_PACKET_BYTES = 1024 * 1024 * 1024
 MAX_DEFERRED_PACKET_COUNT = 10_000
 MAX_EXISTING_AGE_SECONDS = 48 * 60 * 60
+HTTP_FETCH_MAX_ATTEMPTS = 3
+HTTP_FETCH_RETRY_BACKOFF_SECONDS = 0.25
 ROUTE_CATALOG_SCHEMA_V1 = "earnings.public_wire_routes/v1"
 ROUTE_CATALOG_SCHEMA_V2 = "earnings.public_wire_routes/v2"
 ROUTE_CATALOG_SCHEMA = ROUTE_CATALOG_SCHEMA_V2
@@ -177,50 +186,81 @@ def _json_bytes(value: bytes, *, label: str) -> Mapping[str, Any]:
     return decoded
 
 
+def _retryable_source_transport_error(exc: requests.RequestException) -> bool:
+    """Return whether one immutable GET may be retried on the same origin."""
+    return isinstance(
+        exc,
+        (
+            requests.ConnectionError,
+            requests.Timeout,
+            requests.exceptions.ChunkedEncodingError,
+            requests.exceptions.ContentDecodingError,
+        ),
+    )
+
+
 def _http_fetch(url: str, *, timeout: float, max_bytes: int) -> bytes:
     """Fetch one immutable-source object without unbounded buffering.
 
     Public packet storage is an input boundary, not a trusted local file.  The
     source never needs redirects, so rejecting them also closes a server-side
     request pivot.  ``max_bytes`` protects both builder memory and CI time.
+    Transient connection/read failures retry only this idempotent immutable GET;
+    source-policy, HTTP-status, size, receipt, and contract failures remain
+    immediate fail-closed errors.
     """
     parsed = urlsplit(url)
     expected_origin = (parsed.scheme.lower(), (parsed.hostname or "").lower(), parsed.port or 443)
     if parsed.scheme.lower() != "https" or not parsed.hostname or parsed.username or parsed.password:
         raise PublicWireBuildError("public story packet source must be a safe https URL")
-    try:
-        response = requests.get(
-            url,
-            headers={"User-Agent": "MastermindX-EarningsWire/1.0 (+https://www.mastermind-x.com)"},
-            timeout=timeout,
-            stream=True,
-            allow_redirects=False,
-        )
-        with response:
-            landed = urlsplit(str(getattr(response, "url", url) or url))
-            landed_origin = (landed.scheme.lower(), (landed.hostname or "").lower(), landed.port or 443)
-            if response.is_redirect or 300 <= response.status_code < 400 or landed_origin != expected_origin:
-                raise PublicWireBuildError("public story packet source redirected or changed origin")
-            response.raise_for_status()
-            content_length = response.headers.get("Content-Length")
-            if content_length:
-                try:
-                    if int(content_length) > max_bytes:
+    for attempt in range(1, HTTP_FETCH_MAX_ATTEMPTS + 1):
+        try:
+            response = requests.get(
+                url,
+                headers={"User-Agent": "MastermindX-EarningsWire/1.0 (+https://www.mastermind-x.com)"},
+                timeout=timeout,
+                stream=True,
+                allow_redirects=False,
+            )
+            with response:
+                landed = urlsplit(str(getattr(response, "url", url) or url))
+                landed_origin = (landed.scheme.lower(), (landed.hostname or "").lower(), landed.port or 443)
+                if response.is_redirect or 300 <= response.status_code < 400 or landed_origin != expected_origin:
+                    raise PublicWireBuildError("public story packet source redirected or changed origin")
+                response.raise_for_status()
+                content_length = response.headers.get("Content-Length")
+                if content_length:
+                    try:
+                        if int(content_length) > max_bytes:
+                            raise PublicWireBuildError("public story packet object exceeds safe size bound")
+                    except ValueError as exc:
+                        raise PublicWireBuildError("public story packet object has invalid Content-Length") from exc
+                chunks: list[bytes] = []
+                used = 0
+                for chunk in response.iter_content(chunk_size=65_536):
+                    if not chunk:
+                        continue
+                    used += len(chunk)
+                    if used > max_bytes:
                         raise PublicWireBuildError("public story packet object exceeds safe size bound")
-                except ValueError as exc:
-                    raise PublicWireBuildError("public story packet object has invalid Content-Length") from exc
-            chunks: list[bytes] = []
-            used = 0
-            for chunk in response.iter_content(chunk_size=65_536):
-                if not chunk:
-                    continue
-                used += len(chunk)
-                if used > max_bytes:
-                    raise PublicWireBuildError("public story packet object exceeds safe size bound")
-                chunks.append(chunk)
-            return b"".join(chunks)
-    except requests.RequestException as exc:
-        raise PublicWireBuildError(f"unable to fetch {url}: {exc}") from exc
+                    chunks.append(chunk)
+                return b"".join(chunks)
+        except PublicWireBuildError:
+            raise
+        except requests.RequestException as exc:
+            if attempt >= HTTP_FETCH_MAX_ATTEMPTS or not _retryable_source_transport_error(exc):
+                raise PublicWireBuildError(f"unable to fetch {url}: {exc}") from exc
+            delay = HTTP_FETCH_RETRY_BACKOFF_SECONDS * attempt
+            log.warning(
+                "retrying immutable source transport read after %s (%d/%d): %s",
+                type(exc).__name__,
+                attempt,
+                HTTP_FETCH_MAX_ATTEMPTS,
+                parsed.path,
+            )
+            if delay > 0:
+                time.sleep(delay)
+    raise AssertionError("unreachable immutable source retry state")
 
 
 def _source_url(base: str, relative: str) -> str:
@@ -1497,6 +1537,31 @@ def _route_path(out_dir: Path, route: Mapping[str, Any]) -> Path:
     return out_dir / name
 
 
+def _resolve_economic_refresh(spec: Mapping[str, Any]) -> dict[str, Any]:
+    """Fill a missing prior from the verified private reader. No store writes."""
+    if not isinstance(spec, Mapping):
+        raise PublicWireBuildError("economic refresh inputs must be a mapping")
+    resolved = dict(spec)
+    if "prior_closure" not in resolved and resolved.get("store") is not None:
+        resolved["prior_closure"] = load_verified_prior(resolved["store"])
+    return resolved
+
+
+def _admit_public_workspaces(spec: Mapping[str, Any]) -> None:
+    workspaces = spec.get("public_workspaces") or ()
+    for workspace in workspaces:
+        try:
+            assert_public_workspace_admission(workspace)
+        except PrivateEconomicStageError as exc:
+            raise PublicWireBuildError(
+                "public workspace admission refused private economic evidence"
+            ) from exc
+
+
+def _economic_stage_requested(spec: Mapping[str, Any]) -> bool:
+    return any(spec.get(key) is not None for key in ("acquisition", "prior_closure", "store"))
+
+
 def publish_public_wire(
     manifest: Mapping[str, Any], *, out_dir: Path,
     private_out_dir: Path | None = None,
@@ -1504,9 +1569,19 @@ def publish_public_wire(
     deferred_packet_keys: set[str] | frozenset[str] = frozenset(),
     company_reader: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
     now: datetime | None = None,
+    economic_refresh: Mapping[str, Any] | None = None,
 ) -> BuildResult:
     """Render a fully verified catalog and atomically replace only wire files."""
     verify_public_wire_manifest(manifest)
+    if economic_refresh is not None:
+        if not isinstance(economic_refresh, Mapping):
+            raise PublicWireBuildError("economic refresh inputs must be a mapping")
+        if _economic_stage_requested(economic_refresh) and private_out_dir is None:
+            raise PublicWireBuildError(
+                "private economic stage requires an off-repository private output directory"
+            )
+        _admit_public_workspaces(economic_refresh)
+        economic_refresh = _resolve_economic_refresh(economic_refresh)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     alignment, company_generation_id = _company_alignment_snapshot(
@@ -1534,6 +1609,14 @@ def publish_public_wire(
         private_destination = _private_output_dir(private_out_dir)
         _write_premium_payloads(views, private_out_dir=private_destination)
         _write_context_manifest(manifest, private_out_dir=private_destination)
+        if economic_refresh is not None:
+            augment_private_stage(
+                private_destination,
+                acquisition=economic_refresh.get("acquisition"),
+                prior_closure=economic_refresh.get("prior_closure"),
+                observed_at=economic_refresh.get("observed_at"),
+                previous_manifest=economic_refresh.get("previous_manifest"),
+            )
     _atomic_write(out_dir / FEED_FILENAME, _feed(views))
     _atomic_write(out_dir / WIRE_SITEMAP_FILENAME, _wire_sitemap(manifest, weekly=weekly))
     verified_at = (now or datetime.now(timezone.utc)).astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -1566,6 +1649,7 @@ def build(
     fetch: Callable[[str], bytes] | None = None,
     company_reader: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
     now: datetime | None = None,
+    economic_refresh: Mapping[str, Any] | None = None,
 ) -> BuildResult:
     """Build from current immutable truth with bounded incremental hydration.
 
@@ -1575,6 +1659,14 @@ def build(
     that floor. Historical backfill never turns the hourly lane into a corpus replay.
     """
     destination = Path(out_dir) if out_dir is not None else _REPO / "site" / OUTPUT_RELATIVE
+    if offline and economic_refresh is not None:
+        raise PublicWireBuildError(
+            "offline public wire build cannot apply an economic refresh"
+        )
+    if economic_refresh is not None and private_out_dir is None:
+        raise PublicWireBuildError(
+            "private economic stage requires an off-repository private output directory"
+        )
     now = now or datetime.now(timezone.utc)
     state = load_public_build_state(destination, strict=True)
     deferred_packet_keys: frozenset[str] = frozenset()
@@ -1591,7 +1683,7 @@ def build(
             raise PublicWireBuildError("current story packet manifest has no packet catalog")
 
         precomputed_selection: PacketSelection | None = None
-        if not force and private_out_dir is None and state is not None and (
+        if not force and private_out_dir is None and economic_refresh is None and state is not None and (
             state["source_generation_id"] == current.generation_id
             and state["source_manifest_sha256"] == current.manifest_sha256
             and state["renderer_version"] == _renderer_version()
@@ -1701,6 +1793,7 @@ def build(
         deferred_packet_keys=deferred_packet_keys,
         company_reader=company_reader,
         now=now,
+        economic_refresh=economic_refresh,
     )
 
 
@@ -1721,17 +1814,44 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--workers", type=int, default=12)
     parser.add_argument("--timeout", type=float, default=30.0)
+    parser.add_argument(
+        "--economic-refresh",
+        type=Path,
+        default=None,
+        help="Local JSON object for the private economic stage. Omitted unless set.",
+    )
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     try:
-        result = build(
-            out_dir=args.out_dir,
-            private_out_dir=args.private_out_dir,
-            source_base=args.source_base, offline=args.offline, force=args.force,
-            workers=args.workers, timeout=args.timeout,
-        )
-    except PublicWireBuildError as exc:
-        log.error("earnings public wire failed: %s", exc)
+        build_kwargs: dict[str, Any] = {
+            "out_dir": args.out_dir,
+            "private_out_dir": args.private_out_dir,
+            "source_base": args.source_base,
+            "offline": args.offline,
+            "force": args.force,
+            "workers": args.workers,
+            "timeout": args.timeout,
+        }
+        if args.economic_refresh is not None:
+            try:
+                loaded = json.loads(Path(args.economic_refresh).read_text(encoding="utf-8"))
+            except OSError as exc:
+                raise PublicWireBuildError(
+                    f"economic refresh file unreadable: {args.economic_refresh}"
+                ) from exc
+            except (UnicodeError, json.JSONDecodeError) as exc:
+                raise PublicWireBuildError(
+                    f"economic refresh file is not valid JSON: {args.economic_refresh}"
+                ) from exc
+            if type(loaded) is not dict:
+                raise PublicWireBuildError("economic refresh inputs must be a mapping")
+            build_kwargs["economic_refresh"] = loaded
+        result = build(**build_kwargs)
+    except (PublicWireBuildError, PrivateEconomicStageError) as exc:
+        # ``PriorClosureUnavailable`` subclasses ``PrivateEconomicStageError``,
+        # so the base entry already covers it; name the concrete type so the
+        # operator sees which stage refused without a traceback.
+        log.error("earnings public wire failed: %s: %s", type(exc).__name__, exc)
         return 1
     print(json.dumps({
         "schema": "earnings.public_wire_build_result/v1", "status": "ready",
