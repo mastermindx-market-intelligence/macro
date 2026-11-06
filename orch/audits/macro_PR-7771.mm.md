@@ -1,3 +1,21 @@
+## 2026-11-06 preservation and source qualification
+
+The accepted narrative below is retained with two narrow conditional-behavior corrections. Protected-main record: `3b1d9a5e368b1ba215b3fa32934153fc68c94019`. Companion [original #7775 audit](https://github.com/mastermindx-market-intelligence/macro/blob/5d574d4e37cc1f588dfc08c5e20f0cdb46acc51a/orch/audits/macro_PR-7771.mm.md): `9758662338711ee6df961a50f58000dc83d76719`. Historical test counts, scanner totals, live probes and PASS statements remain attributed; this record supplies no fresh execution.
+
+Native [#7771](https://github.com/mastermindx-market-intelligence/macro/pull/7771) identifies source `6f6b3cfc1c1a5d539bf69567b6d259bc997fd3ae` and merge `1d784190ee690959cfca62af65ab6eea766f053e` at2026-09-23T06:43:20Z; five files, +316/-18. The inspected engine patch supports these distinctions:
+- A nonempty parsed feed with no in-window items creates `no_new` from the prior record, or from its newest parsed item when there is no prior, without calling the model. Persistence remains conditional on the invocation's `persist` flag.
+- An empty feed warns; with prior data it returns the typed outage record, and without prior data it still writes nothing. Quiet-window behavior is not an unconditional liveness guarantee.
+- `collect(max_age_days, *, window=True)` adds a keyword-only option while retaining existing one-argument calls. The earlier function accepted only one positional argument, so the companion's hypothetical two-positional-argument “regression” is not demonstrated.
+- The companion records two existing test fixtures adding `_in_window` control to retain their intended branch coverage, and the new INFO-level state/headline log. Those are source observations and a possible logging-integration consideration, not new test executions or a new telemetry owner.
+
+The companion's owner-map citation concern is retained as historical provenance. Any clarification belongs in the existing owner record; this audit does not mint another decision or lifecycle. Its unwired-test notice is historical rather than a newly verified current defect. The intended closure remains an actual qualified sentinel record followed by its consuming Policy Watch render; the accepted source merge does not establish those later effects.
+
+Original implementation remains DO_NOT_REDO. No credentialed cycle, model call, publication, browser, provider access or production acceptance is performed or granted here.
+
+---
+
+## Retained September23 audit
+
 # Plain-language / theme / validated-claims audit — macro PR #7771
 
 Auditor: qwen_auditor2-style pass (one-shot, half-B scope). Date: 2026-09-23.
@@ -29,7 +47,7 @@ This PR adds zero user-facing UI text. The full diff is engine Python + CI YAML 
 
 ### Downstream UI consequence — `data-uk-state="no_new"` already rendered
 
-The PR's only user-visible effect is that the next whitehouse-sentinel cycle will write `site/uk_policy.json` with `state: no_new` while the window stays quiet, and the next Policy Watch render will bake `data-uk-state="no_new"` on the existing `.uk-desk` article. The matching copy is **already** in the template (pre-existing, not introduced by this PR):
+The intended user-visible path is that a credentialed whitehouse-sentinel cycle with a reachable nonempty feed but no in-window items persists `site/uk_policy.json` with `state: no_new`, and a subsequent Policy Watch render consumes that state on the existing `.uk-desk` article. Execution and rendered readback require their own receipts. The matching copy is **already** in the template (pre-existing, not introduced by this PR):
 
 | file:line | string |
 |---|---|
@@ -152,7 +170,7 @@ The DSC and the runbook use the standard agentos discovery schema (`scripts/agen
 
 **One non-blocking observation** (informational, not a defect): the new `uk_policy: state=%s headline=%r` INFO log line echoes the verbatim headline (which can include a quoted GOV.UK title with arbitrary characters). The `%r` repr means the log captures it exactly, which is the correct operational behaviour for an audit trail, but a future PR that surfaces the headline to a glance-tier chip must keep using the existing `t(…)` translation pair rather than the raw repr — the template already does this correctly via `templates/policy_watch.html.j2:30`. Recorded for traceability; no action needed for this PR.
 
-**State: PASS, no follow-ups required for the audit scope.** The PR is the "latter half" of A-F02-W2 — it closes the display gap identified in `DSC-UK-DESK-FIRST-CYCLE-WRITES-NOTHING-ON-A-QUIET-WINDOW` by ensuring the sentinel cycle persists a typed state the template already renders, so the Policy Watch card never disappears on a quiet window. The liveness receipt is named in the body (the next whitehouse-sentinel cycle must commit `site/uk_policy.json` with `state: no_new`; the next render bakes `data-uk-state="no_new"`); the audit scope is the merge, not the liveness receipt.
+**State: PASS, no follow-ups required for the audit scope.** The PR is the "latter half" of A-F02-W2 — it closes the display gap identified in `DSC-UK-DESK-FIRST-CYCLE-WRITES-NOTHING-ON-A-QUIET-WINDOW` by ensuring the sentinel cycle persists a typed state the template already renders, so a reachable feed with only out-of-window items can retain a typed quiet-window card. An empty feed without a prior record still returns no record; the source does not promise universal card availability. The liveness receipt is named in the body (the next whitehouse-sentinel cycle must commit `site/uk_policy.json` with `state: no_new`; the next render bakes `data-uk-state="no_new"`); the audit scope is the merge, not the liveness receipt.
 
 ---
 
