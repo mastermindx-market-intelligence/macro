@@ -34059,10 +34059,38 @@ jobs:
     timeout-minutes: 8
     runs-on: ubuntu-latest
     # Additive explicit owner: selectors must not silently skip MR2 changes.
+    # Enumerate every test literally read by this job; no tests/** glob.
+    # Not scope: exclusive; inherited inferred ownership remains intact.
     paths:
       - "engine/market_tide_event_response.py"
       - "scripts/market_tide_event_response.py"
+      - "tests/test_a2_oos_analysis.py"
+      - "tests/test_build_measurement_evidence_gap.py"
+      - "tests/test_construction_divergence_study.py"
+      - "tests/test_expect_drift_panel.py"
+      - "tests/test_f_hz1_study.py"
+      - "tests/test_factor_intelligence_state.py"
+      - "tests/test_falsosc_trial_v1.py"
+      - "tests/test_grade_breadth_divergence.py"
+      - "tests/test_intraday_large_cap_tech_leader_study.py"
+      - "tests/test_long_hold_gap_guard.py"
+      - "tests/test_macro_fire_context.py"
       - "tests/test_market_tide_event_response.py"
+      - "tests/test_measurement_research_implications.py"
+      - "tests/test_measurement_verdict_preservation.py"
+      - "tests/test_no_lookahead.py"
+      - "tests/test_options_history_gauntlet.py"
+      - "tests/test_options_history_retrospective.py"
+      - "tests/test_per_fire_sector_benchmark.py"
+      - "tests/test_pick_forward_dist.py"
+      - "tests/test_pick_forward_dist_phase1.py"
+      - "tests/test_register_factor_hypotheses.py"
+      - "tests/test_research_implication_card.py"
+      - "tests/test_run_w1_sev.py"
+      - "tests/test_run_w2_slq.py"
+      - "tests/test_thesis_funnel_history.py"
+      - "tests/test_verdict_preservation_edge_matrix.py"
+      - "tests/test_w3_fingerprint_stats.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
