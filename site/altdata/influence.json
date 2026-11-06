@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-11-02T19:15:43.864667+00:00",
+  "generated_utc": "2026-11-06T01:08:15.896059+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -749,11 +749,10 @@
       ],
       "n_actors": 6,
       "alt_corroborated": true,
-      "alt_score": 7,
-      "alt_weighted": 2.65,
+      "alt_score": 6,
+      "alt_weighted": 2.4,
       "alt_channels": [
         "affiliation",
-        "cnbc_pick",
         "darkpool_accum",
         "github_momentum",
         "patent_cluster",
@@ -800,12 +799,11 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.15,
+      "alt_score": 3,
+      "alt_weighted": 0.95,
       "alt_channels": [
         "affiliation",
         "lobbying",
-        "special_situation",
         "stocktwits_bull"
       ],
       "top_holder": {
@@ -848,12 +846,14 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.0,
+      "alt_score": 5,
+      "alt_weighted": 1.75,
       "alt_channels": [
         "affiliation",
+        "cnbc_pick",
         "lobbying",
-        "special_situation"
+        "special_situation",
+        "trump"
       ],
       "top_holder": {
         "owner": "BEZOS JEFFREY P",
@@ -999,11 +999,12 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 2.15,
+      "alt_score": 6,
+      "alt_weighted": 2.45,
       "alt_channels": [
         "affiliation",
         "app_demand",
+        "github_momentum",
         "hf_model_momentum",
         "patent_cluster",
         "trump"
@@ -1047,34 +1048,6 @@
       }
     },
     {
-      "ticker": "IEP",
-      "actors": [
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "CONTROLS",
-          "provenance": "FACT",
-          "qualitative": false
-        },
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 2,
-      "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 0.7,
-      "alt_channels": [
-        "affiliation",
-        "special_situation"
-      ],
-      "top_holder": null
-    },
-    {
       "ticker": "GOOGL",
       "actors": [
         {
@@ -1094,10 +1067,11 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.2,
+      "alt_score": 4,
+      "alt_weighted": 1.55,
       "alt_channels": [
         "affiliation",
+        "analyst_upgrade_cluster",
         "app_demand",
         "lobbying"
       ],
@@ -1206,10 +1180,10 @@
       "n_actors": 1,
       "alt_corroborated": true,
       "alt_score": 4,
-      "alt_weighted": 1.55,
+      "alt_weighted": 1.9,
       "alt_channels": [
         "affiliation",
-        "gov_grant",
+        "gov_grant_accel",
         "patent_cluster",
         "stocktwits_bull"
       ],
@@ -1258,12 +1232,13 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 6,
-      "alt_weighted": 2.45,
+      "alt_score": 7,
+      "alt_weighted": 3.25,
       "alt_channels": [
         "affiliation",
         "analyst_upgrade_cluster",
-        "gov_grant",
+        "congress_buy",
+        "gov_grant_accel",
         "insider_mspr",
         "patent_cluster",
         "stocktwits_bull"
@@ -1287,10 +1262,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 1.0,
+      "alt_score": 3,
+      "alt_weighted": 1.15,
       "alt_channels": [
         "affiliation",
+        "stocktwits_bull",
         "trump"
       ],
       "top_holder": {
@@ -1399,10 +1375,10 @@
       }
     },
     {
-      "ticker": "COIN",
+      "ticker": "CVI",
       "actors": [
         {
-          "actor": "Cathie Wood",
+          "actor": "Carl Icahn",
           "kind": "fund",
           "rel": "AFFILIATES_WITH",
           "provenance": "DISCLOSED",
@@ -1412,16 +1388,12 @@
       "n_actors": 1,
       "alt_corroborated": true,
       "alt_score": 2,
-      "alt_weighted": 0.95,
+      "alt_weighted": 0.7,
       "alt_channels": [
         "affiliation",
-        "gov_contract"
+        "special_situation"
       ],
-      "top_holder": {
-        "owner": "LINDEN ADVISORS LP",
-        "title": "Institution",
-        "shares": 384176000
-      }
+      "top_holder": null
     },
     {
       "ticker": "LULU",
@@ -1548,6 +1520,33 @@
       }
     },
     {
+      "ticker": "IEP",
+      "actors": [
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "CONTROLS",
+          "provenance": "FACT",
+          "qualitative": false
+        },
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 2,
+      "alt_corroborated": false,
+      "alt_score": 1,
+      "alt_weighted": 0.5,
+      "alt_channels": [
+        "affiliation"
+      ],
+      "top_holder": null
+    },
+    {
       "ticker": "ASML",
       "actors": [
         {
@@ -1635,10 +1634,10 @@
       "top_holder": null
     },
     {
-      "ticker": "CVI",
+      "ticker": "COIN",
       "actors": [
         {
-          "actor": "Carl Icahn",
+          "actor": "Cathie Wood",
           "kind": "fund",
           "rel": "AFFILIATES_WITH",
           "provenance": "DISCLOSED",
@@ -1652,7 +1651,11 @@
       "alt_channels": [
         "affiliation"
       ],
-      "top_holder": null
+      "top_holder": {
+        "owner": "LINDEN ADVISORS LP",
+        "title": "Institution",
+        "shares": 384176000
+      }
     },
     {
       "ticker": "MOH",
@@ -1678,6 +1681,46 @@
   "recent": [],
   "n_candidates": 0,
   "filings": [
+    {
+      "date": "2026-11-04",
+      "form": "8-K",
+      "company": "Hut 8 Corp.",
+      "ticker": "HUT",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926122347/tm2628741d1_8k.htm"
+    },
+    {
+      "date": "2026-11-04",
+      "form": "8-K",
+      "company": "Hut 8 Corp.",
+      "ticker": "HUT",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926122347/tm2628741d1_ex99-1.htm"
+    },
+    {
+      "date": "2026-11-04",
+      "form": "8-K",
+      "company": "American Bitcoin Corp.",
+      "ticker": "ABTC",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1755953/000119312526447441/abtc-20261104.htm"
+    },
+    {
+      "date": "2026-11-04",
+      "form": "8-K",
+      "company": "American Bitcoin Corp.",
+      "ticker": "ABTC",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1755953/000119312526447441/abtc-ex99_1.htm"
+    },
+    {
+      "date": "2026-11-03",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926034541/djt20261103_425.htm"
+    },
     {
       "date": "2026-10-28",
       "form": "6-K",
@@ -1733,46 +1776,6 @@
       "ticker": "HWKE",
       "items": "7.01,9.01",
       "url": "https://www.sec.gov/Archives/edgar/data/1750777/000168316826007929/hawkeye_ex9901.htm"
-    },
-    {
-      "date": "2026-10-15",
-      "form": "8-K",
-      "company": "New America Acquisition I Corp.",
-      "ticker": null,
-      "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/form8-k.htm"
-    },
-    {
-      "date": "2026-10-15",
-      "form": "8-K",
-      "company": "New America Acquisition I Corp.",
-      "ticker": null,
-      "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/ex10-1.htm"
-    },
-    {
-      "date": "2026-10-01",
-      "form": "425",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031736/djt20261001_425.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020582.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020752.htm"
     }
   ]
 }

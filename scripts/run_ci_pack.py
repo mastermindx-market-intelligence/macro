@@ -5676,10 +5676,10 @@ def execute_pack(
     )
     print("CI_PACK_FAILED_JOBS=" + json.dumps(failed_ids), flush=True)
     if announce_completion:
-        # merge_on_green waives a failed pack only when it carries this notice. A
-        # pack that died mid-loop (OOM, lost runner, an escaped exception) never
-        # prints it, so a job it never ran cannot hide behind an inherited title.
-        # A failure with no job prefix is named ``ci-pack`` rather than dropped.
+        # Diagnostic completion marker, never merge authority: child output can
+        # emit the same workflow command. Canonical semantic evidence decides
+        # whether an exact-base failure is inherited. A failure with no job
+        # prefix is named ``ci-pack`` rather than dropped from the diagnostic.
         completed_ids = sorted(
             {
                 failure.split(":", 1)[0] if ":" in failure else "ci-pack"
@@ -5960,8 +5960,8 @@ def main(argv: list[str] | None = None) -> int:
                 emit_timing_observations=args.emit_timing_observations,
                 enable_base_replay=False,
                 # A replay child writes into the parent pack's log. Only the
-                # parent may say the pack finished; a second notice there
-                # would refuse every inherited-red waiver.
+                # parent reports pack completion for annotation diagnostics;
+                # a second notice would make that diagnostic ambiguous.
                 announce_completion=False,
                 # parse_args already requires --emit-semantic-fragment here,
                 # so this replay always mints evidence and always attests —

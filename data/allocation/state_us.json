@@ -11,17 +11,18 @@
     "mag7",
     "managed_care",
     "non_ai_tech",
-    "obesity_glp1",
     "regional_banks",
     "reshoring",
     "retail",
     "robotics_automation",
+    "travel",
     "us_sector_discretionary",
     "us_sector_energy",
     "us_sector_financials",
     "us_sector_health",
     "us_sector_industrials",
     "us_sector_materials",
+    "us_sector_realestate",
     "us_sector_staples",
     "us_sector_tech"
   ],
@@ -29,7 +30,7 @@
     "energy_complex",
     "us_sector_energy",
     "big_pharma",
-    "cybersecurity"
+    "defensives"
   ],
   "leader": "memory_storage",
   "names": {

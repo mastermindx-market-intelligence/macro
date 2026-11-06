@@ -31,6 +31,7 @@ import scripts.merge_on_green as MOG
 
 ROOT = Path(__file__).resolve().parents[1]
 REAL_IN_FLIGHT_PR_PROOFS = MOG.in_flight_pr_proofs
+REAL_HOSTED_POOL_CENSUS = MOG.hosted_pool_census
 REAL_REFRESH_LEASE_RESERVATION_COUNT = MOG.refresh_lease_reservation_count
 REAL_PREPARE_REFRESH_LEASE = MOG.prepare_refresh_lease
 REAL_SERIALIZED_REFRESH_AUTHORITY = MOG.serialized_refresh_authority
@@ -78,6 +79,10 @@ def _no_unstubbed_http(monkeypatch):
     # The repo-wide Actions census is another main()-only read. Healthy/idle is the
     # neutral default; tests about global refresh backpressure override it.
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 0)
+    # The adaptive-cap census is another main()-only read. Its neutral default is
+    # "unreadable" (the flat cap of 8), so every test written against the flat cap
+    # keeps its numbers; tests about the adaptive cap override it.
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: None)
     monkeypatch.setattr(MOG, "refresh_lease_reservation_count", lambda *_a: 0)
     monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: True)
     monkeypatch.setattr(
@@ -5201,6 +5206,376 @@ def test_existing_owner_only_consumes_extra_capacity_until_its_run_is_indexed(
     assert observed == [(expected_allowance, requires_lease)]
 
 
+def _census(queued_runs=0, sampled_runs=3, refused_jobs=0, served_runs=3, slow_jobs=0):
+    return MOG.HostedPoolCensus(
+        queued_runs, sampled_runs, refused_jobs, served_runs, slow_jobs
+    )
+
+
+@pytest.mark.parametrize(
+    "census,expected_cap,needle",
+    [
+        (None, 8, "census unavailable"),
+        (_census(queued_runs=1), 8, "+0 adaptive: hosted pool refused 1 queued run(s)"),
+        (
+            _census(refused_jobs=2, served_runs=2),
+            8,
+            "+0 adaptive: hosted pool refused 0 queued run(s), 2 waiting hosted job(s)",
+        ),
+        (_census(slow_jobs=1, served_runs=2), 8, "1 slow pickup(s)"),
+        (_census(served_runs=3), 16, "+8 adaptive: 3 of 3 mature run(s) served"),
+        (_census(served_runs=2), 16, "+8 adaptive: 2 of 3 mature run(s) served"),
+        (
+            _census(sampled_runs=1, served_runs=1),
+            12,
+            "+4 adaptive: 1 of 1 mature run(s) served",
+        ),
+        (
+            _census(sampled_runs=0, served_runs=0),
+            8,
+            "+0 adaptive: no mature run witnessed the hosted pool (0 sampled)",
+        ),
+        (_census(sampled_runs=2, served_runs=0), 8, "+0 adaptive: no mature run"),
+    ],
+)
+def test_adaptive_proof_cap_widens_only_on_job_level_service_evidence(
+    census, expected_cap, needle
+):
+    cap, detail = MOG.adaptive_proof_cap(census)
+    assert cap == expected_cap
+    assert needle in detail
+    assert MOG.MAX_IN_FLIGHT_PR_PROOFS <= cap <= MOG.ADAPTIVE_PROOF_CAP_MAX == 16
+
+
+_T0 = dt.datetime(2026, 11, 5, 14, 25, 9, tzinfo=dt.timezone.utc)
+
+
+def _at(seconds):
+    return (_T0 + dt.timedelta(seconds=seconds)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _census_job(name, status, created=0, started=2, labels=("ubuntu-latest",)):
+    job = {"name": name, "status": status, "labels": list(labels), "created_at": _at(created)}
+    if started is not None:
+        job["started_at"] = _at(created + started)
+    return job
+
+
+def _census_jobs(*jobs):
+    return 200, {"total_count": len(jobs), "jobs": list(jobs)}
+
+
+def _first_wave(*extra):
+    return (
+        _census_job("ci-plan", "completed"),
+        _census_job("contract-delta", "in_progress"),
+        _census_job("trusted-ci", "completed", created=216, started=0, labels=()),
+        *extra,
+    )
+
+
+def _packs(status="in_progress", started=2, count=12, offset=0):
+    return [
+        _census_job(f"ci-pack-{i + offset}", status, created=216, started=started)
+        for i in range(count)
+    ]
+
+
+@pytest.mark.parametrize(
+    "jobs,expected",
+    [
+        # Live shape of run 42044812799: packs created 216 s after ci-plan, all served.
+        (_first_wave(*_packs()), (0, 0, True)),
+        # Round-2 MAJOR: only the first wave is running, the packs do not exist yet.
+        (_first_wave(), (0, 0, False)),
+        # Packs finished, ci-gate not yet created, only contract-delta running.
+        (_first_wave(*_packs(status="completed")), (0, 0, False)),
+        # Two packs the pool has not started: refused, never served.
+        (_first_wave(*_packs(count=10), *_packs(status="queued", started=None, count=2, offset=10)), (2, 0, False)),
+        # pending / waiting / requested hosted jobs are refusal evidence too.
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "pending", created=216, started=None)), (1, 0, False)),
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "waiting", created=216, started=None)), (1, 0, False)),
+        # A queued job with no labels at all is refusal evidence, not ignored.
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "queued", created=216, started=None, labels=())), (1, 0, False)),
+        # The pool took 200 s to start one pack: slow pickup, never served.
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "in_progress", created=216, started=200)), (0, 1, False)),
+        # Slow ci-plan pickup in the first wave is pressure evidence as well.
+        ((_census_job("ci-plan", "completed", started=150), *_packs()), (0, 1, False)),
+        # A runner-group label that GitHub does not itself serve can never serve.
+        (_first_wave(*[_census_job(f"ci-pack-{i}", "in_progress", created=216, labels=("ci-linux",)) for i in range(12)]), (0, 0, False)),
+        # Self-hosted render jobs say nothing about the hosted pool.
+        (_first_wave(_census_job("render", "queued", created=216, started=None, labels=("self-hosted", "macstudio"))), (0, 0, False)),
+        # MINOR-1 (round 3): the first wave is a set of JOBS, not a timestamp.
+        # `contract-delta` created one second after `ci-plan` (a second boundary)
+        # with no packs yet is still the first wave.
+        ((_census_job("ci-plan", "in_progress"), _census_job("contract-delta", "in_progress", created=1)), (0, 0, False)),
+        # A re-run of a failed `ci-plan` carries the old `contract-delta` and a
+        # new, much later `ci-plan`; still no pack exists.
+        ((_census_job("contract-delta", "completed"), _census_job("ci-plan", "in_progress", created=900)), (0, 0, False)),
+        # The pc route's trusted-ci gate jobs are hosted and later than ci-plan
+        # but the packs are still blocked behind them.
+        ((_census_job("ci-plan", "completed"), _census_job("trusted-ci / trust-gate", "in_progress", created=30), _census_job("trusted-ci / plan", "in_progress", created=30)), (0, 0, False)),
+        # `ci-gate` running after the packs is later-wave service.
+        (_first_wave(*_packs(status="completed"), _census_job("ci-gate", "in_progress", created=600)), (0, 0, True)),
+        # An empty job list is no evidence either way.
+        ((), (0, 0, False)),
+    ],
+    ids=(
+        "served-live-shape",
+        "before-packs-not-served",
+        "packs-done-first-wave-only-not-served",
+        "queued-packs-refused",
+        "pending-refused",
+        "waiting-refused",
+        "unlabelled-queued-refused",
+        "slow-pack-pickup",
+        "slow-ci-plan-pickup",
+        "runner-group-label-never-serves",
+        "self-hosted-ignored",
+        "contract-delta-a-second-later-not-served",
+        "rerun-ci-plan-later-not-served",
+        "pc-route-trust-gate-not-served",
+        "ci-gate-after-packs-served",
+        "empty",
+    ),
+)
+def test_run_job_evidence_requires_a_served_later_wave_and_no_refusal(jobs, expected):
+    assert MOG._run_job_evidence(list(jobs)) == expected
+
+
+@pytest.mark.parametrize(
+    "jobs",
+    [
+        ["not a job"],
+        [{"name": "ci-plan", "status": "completed", "labels": "ubuntu-latest", "created_at": _at(0)}],
+        [{"name": "ci-plan", "status": "completed", "labels": ["ubuntu-latest"]}],
+        [{"name": "ci-plan", "status": None, "labels": ["ubuntu-latest"], "created_at": _at(0)}],
+        [{"name": "ci-plan", "status": "completed", "labels": ["ubuntu-latest"], "created_at": "yesterday"}],
+        [{"status": "completed", "labels": ["ubuntu-latest"], "created_at": _at(0), "started_at": _at(2)}],
+        # NIT-2 (round 3): a running pack without `started_at` is unclean, not a
+        # fast pickup; so is a garbled one.
+        [*_first_wave(*_packs(count=11)), _census_job("ci-pack-11", "in_progress", created=216, started=None)],
+        [*_first_wave(*_packs(count=11)), {**_census_job("ci-pack-11", "in_progress", created=216), "started_at": "soon"}],
+    ],
+    ids=(
+        "non-dict",
+        "labels-not-a-list",
+        "no-created-at",
+        "status-not-a-string",
+        "bad-timestamp",
+        "no-name",
+        "running-without-started-at",
+        "running-with-bad-started-at",
+    ),
+)
+def test_run_job_evidence_is_unreadable_on_any_unclean_job(jobs):
+    assert MOG._run_job_evidence(jobs) is None
+
+
+def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch):
+    seen: list[str] = []
+    now = dt.datetime(2026, 11, 5, 14, 25, tzinfo=dt.timezone.utc)
+    served = _census_jobs(*_first_wave(*_packs()))
+    refused = _census_jobs(
+        *_first_wave(*_packs(count=10), *_packs(status="queued", started=None, count=2, offset=10))
+    )
+    render_only = _census_jobs(
+        *_first_wave(
+            _census_job("render", "queued", created=216, started=None, labels=("self-hosted", "macstudio")),
+            _census_job("render-light", "queued", created=216, started=None, labels=("self-hosted", "macstudio-light")),
+        )
+    )
+
+    def fake_request(method, url, token, payload=None):
+        seen.append(url)
+        assert method == "GET" and token == "read"
+        if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
+            assert "per_page=1" in url
+            return 200, {"total_count": 0}
+        if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
+            # Mature = created before now - 240 s, newest first, sample of three.
+            assert "per_page=3" in url
+            assert "created=%3C2026-11-05T14%3A21%3A00Z" in url
+            return 200, {"workflow_runs": [{"id": 11}, {"id": 12}, {"id": 13}]}
+        if url.endswith("/runs/11/jobs?filter=latest&per_page=100"):
+            return served
+        if url.endswith("/runs/12/jobs?filter=latest&per_page=100"):
+            return refused
+        if url.endswith("/runs/13/jobs?filter=latest&per_page=100"):
+            return render_only
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now)
+    # Run 11 is served; run 12 has two hosted jobs the pool refused; run 13's only
+    # waiting jobs are self-hosted render jobs, which say nothing about the hosted
+    # pool, and its first wave alone is not served evidence.
+    assert census == MOG.HostedPoolCensus(
+        queued_runs=0, sampled_runs=3, refused_jobs=2, served_runs=1, slow_jobs=0
+    )
+    assert len(seen) == 5
+
+    def failing(step, answer):
+        def request(method, url, token, payload=None):
+            if step == "queued" and "status=queued" in url:
+                return answer
+            if step == "list" and "status=in_progress" in url:
+                return answer
+            if step == "jobs" and "/jobs?" in url:
+                return answer
+            return fake_request(method, url, token, payload)
+
+        return request
+
+    for step, answer in (
+        ("queued", (403, {"message": "rate limited"})),
+        ("queued", (200, {"total_count": True})),
+        ("list", (500, None)),
+        ("list", (200, {"workflow_runs": [{"id": True}]})),
+        ("list", (200, {"total_count": 3})),
+        ("jobs", (403, {"message": "rate limited"})),
+        ("jobs", (200, {"total_count": 101, "jobs": []})),
+        ("jobs", (200, {"jobs": "nope"})),
+        ("jobs", (200, {"total_count": 1, "jobs": ["not a job"]})),
+        # NIT-3 (round 3): a job list shorter than its own total is a short page.
+        ("jobs", (200, {"total_count": 16, "jobs": list(_first_wave(*_packs(count=2)))})),
+    ):
+        monkeypatch.setattr(MOG, "_request", failing(step, answer))
+        assert REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now) is None, (
+            step,
+            answer,
+        )
+
+
+def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
+    def fake_request(method, url, token, payload=None):
+        if "status=queued" in url:
+            return 200, {"total_count": 0}
+        if "status=in_progress" in url:
+            return 200, {"workflow_runs": []}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read")
+    assert census == MOG.HostedPoolCensus(0, 0, 0, 0, 0)
+    assert MOG.adaptive_proof_cap(census)[0] == MOG.MAX_IN_FLIGHT_PR_PROOFS
+
+
+@pytest.mark.parametrize(
+    "census,active,expected_allowance",
+    [
+        (_census(served_runs=3), 8, 8),
+        (_census(served_runs=3), 15, 1),
+        (_census(served_runs=3), 16, 0),
+        (_census(sampled_runs=1, served_runs=1), 10, 2),
+        (_census(refused_jobs=1, served_runs=2), 8, 0),
+        (_census(slow_jobs=1, served_runs=3), 8, 0),
+        (_census(queued_runs=1), 8, 0),
+        (_census(sampled_runs=0, served_runs=0), 8, 0),
+        (None, 8, 0),
+    ],
+    ids=(
+        "served-pool-cap-16",
+        "served-pool-last-slot",
+        "served-pool-full",
+        "one-served-run-cap-12",
+        "refused-job-flat-cap",
+        "slow-pickup-flat-cap",
+        "queued-run-flat-cap",
+        "no-witness-flat-cap",
+        "census-unreadable-flat-cap",
+    ),
+)
+def test_adaptive_cap_widens_update_branch_capacity_only_on_a_served_pool(
+    monkeypatch, capsys, census, active, expected_allowance
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: census)
+    allowances: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        allowances.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert allowances == [expected_allowance]
+    out = capsys.readouterr().out
+    if active >= MOG.ADAPTIVE_PROOF_CAP_MAX:
+        # Nothing could widen past a full widest cap: the census is not even read.
+        assert "global cap 8 (census skipped: flat cap)" in out
+    else:
+        expected_cap, _ = MOG.adaptive_proof_cap(census)
+        assert f"global cap {expected_cap} (" in out
+
+
+@pytest.mark.parametrize(
+    "active,authorized,lease_readable",
+    [(0, True, True), (16, True, True), (20, True, True), (3, False, True), (3, True, False)],
+    ids=(
+        "idle-repo",
+        "widest-cap-already-full",
+        "beyond-widest-cap",
+        "refresh-authority-refused",
+        "lease-unreadable",
+    ),
+)
+def test_adaptive_census_is_not_read_where_it_cannot_widen_anything(
+    monkeypatch, capsys, active, authorized, lease_readable
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: authorized)
+    if not lease_readable:
+        monkeypatch.setattr(
+            MOG,
+            "prepare_refresh_lease",
+            lambda repo, read, write, pulls: (
+                MOG.RefreshLease(repo, read, write, readable=False),
+                pulls,
+            ),
+        )
+
+    def never(*_a, **_k):
+        raise AssertionError("census read although no headroom could be used")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", never)
+    monkeypatch.setattr(MOG, "sweep_pull", lambda *_a: "pending")
+    assert MOG.main() == 0
+    out = capsys.readouterr().out
+    if authorized and lease_readable:
+        assert "global cap 8 (census skipped: flat cap)" in out
+
+
+def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
+    monkeypatch, capsys
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 7)
+
+    def rate_limited(*_a, **_k):
+        raise MOG.RateLimited("core budget exhausted")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", rate_limited)
+    allowances: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        allowances.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert allowances == [1]
+    out = capsys.readouterr().out
+    assert "global cap 8 (census failed (core budget exhausted): flat cap)" in out
+    assert "Sweep deferred" not in out
+
+
 def test_every_update_branch_call_is_behind_the_refresh_admission_gateway():
     tree = ast.parse(
         (ROOT / "scripts" / "merge_on_green.py").read_text(encoding="utf-8")
@@ -6330,7 +6705,7 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
     seen = _main_harness(monkeypatch, armed)
     assert MOG.main() == 0
 
-    funded_cap = 23  # (1000 - 87 fixed - 8 attempts - 260 reserve) // 27
+    funded_cap = 23  # (1000 - 92 fixed - 8 attempts - 260 reserve) // 27
     assert len(seen) == funded_cap, (
         f"expected exactly {funded_cap} pull requests per sweep, "
         f"got {len(seen)}"
@@ -6351,13 +6726,28 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
         assert f"#{number}" in notices[0], f"deferred #{number} must be named"
 
 
-def test_the_live_enterprise_quota_expands_the_window_to_100(monkeypatch, capsys):
-    armed = [_pull(number) for number in range(1, 94)]
+def test_the_live_enterprise_quota_covers_110_armed_pulls(monkeypatch, capsys):
+    armed = [_pull(number) for number in range(1, 111)]
     seen = _main_harness(monkeypatch, armed, readings=(14_904,), limit=15_000)
     assert MOG.main() == 0
-    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 100
-    assert len(seen) == len(armed), "the measured 29-PR deferral must be gone"
+    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 128
+    assert len(seen) == len(armed), "the measured 110-PR backlog must not be cap-deferred"
     assert "Per-sweep cap" not in capsys.readouterr().out
+
+
+def test_enterprise_evaluation_still_defers_beyond_128_without_extra_ci_slots(monkeypatch, capsys):
+    armed = [_pull(number) for number in range(1, 130)]
+    seen = _main_harness(monkeypatch, armed, readings=(14_904,), limit=15_000)
+    assert MOG.main() == 0
+    assert len(seen) == MOG.MAX_PULL_CAP == 128
+    assert MOG.MAX_REFRESHES_PER_SWEEP == MOG.MAX_IN_FLIGHT_PR_PROOFS == 8
+    notices = [line for line in capsys.readouterr().out.splitlines()
+               if "Per-sweep cap" in line]
+    assert len(notices) == 1
+    assert "128 of 129" in notices[0]
+    missing = set(range(1, 130)) - set(seen)
+    assert len(missing) == 1
+    assert f"#{missing.pop()}" in notices[0]
 
 
 def test_the_sweep_stops_cleanly_when_the_budget_runs_out_mid_pass(monkeypatch, capsys):
@@ -6512,7 +6902,7 @@ def test_the_rotation_reaches_every_pull_request_so_none_can_be_starved():
     )
 
 
-@pytest.mark.parametrize("span,cap", [(80, 100), (100, 100), (100, 25), (72, 100), (93, 25)])
+@pytest.mark.parametrize("span,cap", [(80, 100), (100, 100), (100, 25), (72, 100), (93, 25), (110, 128)])
 def test_rotation_reaches_every_first_position_despite_smaller_refresh_budget(span, cap):
     """Evaluation coverage is insufficient when only one refresh slot is free.
 
@@ -6615,7 +7005,7 @@ def test_the_workflow_hands_the_sweeper_the_triggering_CONCLUSION_too():
 
 
 def test_the_dynamic_cap_preserves_the_proven_budget_share():
-    """The old 25/1,000 policy scales with the quota and stays bounded at 100.
+    """The old 25/1,000 policy scales with the quota and stays bounded at 128.
 
     The fixed ceiling includes paginated discovery, main proof/baseline reads, the
     repo-wide workflow census, durable lease state, and the maximum 50 main commits
@@ -6623,7 +7013,7 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     five check pages, five PR-file pages, live authorization, ancestry, and lease
     fences. These are pessimistic admission numbers, not typical measured spend.
     Enterprise gives this repository 15,000;
-    the 100 ceiling drains the whole current backlog, while a partly spent bucket
+    the 128 ceiling drains the measured 110-PR backlog, while a partly spent bucket
     shrinks the window to the work it can actually fund.
     """
     fixed = MOG.FULL_SWEEP_FIXED_REQUESTS
@@ -6637,8 +7027,8 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     # check runs, files, merge, settled and update-branch in the refused worst case.
     assert MOG.pull_cap_for_limit(None) == MOG.FALLBACK_PULL_CAP == 25
     assert MOG.pull_cap_for_limit(1_000) == 25
-    assert MOG.pull_cap_for_limit(5_000) == MOG.MAX_PULL_CAP
-    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 100
+    assert MOG.pull_cap_for_limit(5_000) == 125
+    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 128
 
     worst_case = (
         fixed
@@ -6652,10 +7042,12 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     assert MOG.RATE_LIMIT_RESERVE < MOG.RATE_LIMIT_FLOOR
 
     assert MOG.pull_cap_for_budget(14_904, 15_000) == MOG.MAX_PULL_CAP
-    assert MOG.pull_cap_for_budget(600, 15_000) == 9
+    # (600 - 260 reserve - 92 fixed - 8 attempts) // 27 = 8; the fixed overhead
+    # now carries the up-to-five adaptive hosted-pool census reads.
+    assert MOG.pull_cap_for_budget(600, 15_000) == 8
     affordable_cost = (
         MOG.FULL_SWEEP_FIXED_REQUESTS
-        + 9 * MOG.MAX_REQUESTS_PER_PULL
+        + 8 * MOG.MAX_REQUESTS_PER_PULL
         + MOG.MAX_REFRESHES_PER_SWEEP
         + MOG.RATE_LIMIT_RESERVE
     )
@@ -6775,14 +7167,160 @@ def _govrev_red_pages():
     return {1: pages}, annotations
 
 
-def test_a_live_inherited_red_is_merged_not_blocked(monkeypatch, capsys):
-    """Main's current weather must not hostage every unrelated armed head.
+@pytest.mark.parametrize(
+    ("anchor", "conclusion", "paths"),
+    [
+        (None, None, ("engine/signal_quality.py",)),
+        ("ci-gate", None, ("engine/signal_quality.py",)),
+        ("fence-pack", None, ("engine/signal_quality.py",)),
+        ("ci-gate", "skipped", ("engine/signal_quality.py",)),
+        ("ci-gate", "neutral", ("engine/signal_quality.py",)),
+        ("fence-pack", "skipped", ("engine/signal_quality.py",)),
+        ("fence-pack", "neutral", ("engine/signal_quality.py",)),
+        (None, None, ("scripts/merge_on_green.py",)),
+        (None, None, ("json.py",)),
+    ],
+    ids=[
+        "anchors-present", "gate-missing", "fence-missing", "gate-skipped",
+        "gate-neutral", "fence-skipped", "fence-neutral",
+        "semantic-authority", "import-shadowing-authority",
+    ],
+)
+def test_matching_legacy_annotations_cannot_authorize_merge(
+    monkeypatch, anchor, conclusion, paths
+):
+    """Annotation text, even with a completion notice, is not exact-base proof."""
+    pages, annotations = _govrev_red_pages()
+    runs = [dict(run) for run in pages[1]["check_runs"]]
+    present = {run["name"] for run in runs}
+    for name in sorted(
+        MOG.REQUIRED_CI_ANCHORS | {MOG.REQUIRED_CI_GATE, MOG.REQUIRED_FENCE_ANCHOR}
+    ):
+        if name not in present:
+            runs.append(_run(name, conclusion="success"))
+    if anchor is not None:
+        runs = [run for run in runs if run["name"] != anchor]
+        if conclusion is not None:
+            runs.append(_run(anchor, conclusion=conclusion))
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, annotations=annotations, pr_files=paths
+    )
+    fresh = _freshness()
+    # Exercise the real annotation matcher, including its sparse planner mirror.
+    assert MOG.live_inherited_red(
+        "acme/widgets", _pull(), runs, MOG.failing_check_names(runs),
+        _live_weather_proof(), fresh, "read",
+    )
+    # Pass exact raw runs: _fake_api's neutral anchor supplementation must not
+    # hide an absent or non-successful gate/fence in this regression.
+    verdict = MOG.sweep_pull(
+        "acme/widgets", _pull(), "read", "write", fresh,
+        _live_weather_proof(), _authorized_budget(), check_runs=runs,
+    )
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert not any(
+        call[0] == "DELETE" and "labels/merge-blocked" in call[1] for call in calls
+    )
 
-    Measured 2026-08-13: ci-pack-6/8 were red on main from a nightly data pin,
-    shadow-mode copied that onto every PR, and merge-on-green correctly
-    refused them all. A PR that did not introduce those jobs, and did not
-    touch a CI invalidator, is not a new failure.
-    """
+
+def test_canonical_inherited_semantic_proof_reaches_normal_merge_guards(monkeypatch):
+    """Reconciled exact-base evidence retains the supported full merge path."""
+    P = MOG.semantic_proof
+    job_id, proof_id = "fixture-job", "fixture-proof"
+    identity = {
+        "workflow_run_id": "99", "workflow": "ci", "event": "pull_request",
+        "role": "pr_head", "tested_tree_sha": "c" * 40,
+        "subject_head_sha": EXACT_HEAD_SHA, "base_sha": PROOF_BASE_SHA,
+    }
+    step_digest = P.step_spec_sha256({"run": "pytest -q"})
+    job_digest = P.job_exec_sha256(
+        dependency_install_command=None, timeout_minutes=10,
+        runner_contract="ubuntu/python312",
+    )
+    atoms = ["pytest:failed:tests/test_x.py::test_a"]
+    signature = {"atoms": atoms, "sha256": P.canonical_sha256(atoms)}
+    plan = {
+        "schema": P.PLAN_SCHEMA, **identity, "authority_changed": False,
+        "changed_from": PROOF_BASE_SHA, "scope_mode": "active",
+        "reason": "focused semantic fixture", "scope_summary": "focused semantic fixture",
+        "legacy_job_count": 1, "eligible_job_count": 1, "eligible_jobs": [job_id],
+        "skipped_job_count": 0, "skipped_jobs": [],
+        "changed_files_sha256": "", "changed_files_count": 0,
+        "packs": [
+            {"index": i, "weight": 1 if i == 5 else 0,
+             "jobs": [job_id] if i == 5 else []}
+            for i in range(6)
+        ],
+        "nonempty_pack_indices": [5], "matrix": {"include": [{"pack": 5}]},
+        "has_work": True,
+        "semantic_jobs": [{
+            "logical_job_id": job_id, "pack_index": 5,
+            "job_exec_sha256": job_digest,
+            "steps": [{"proof_id": proof_id, "step_spec_sha256": step_digest}],
+        }],
+        "plan_sha256": "0" * 64,
+    }
+    plan["plan_sha256"] = P.authoritative_plan_sha256(plan)
+    failed_step = {
+        "proof_id": proof_id, "step_spec_sha256": step_digest, "outcome": "failed",
+        "failure_signature": signature,
+    }
+    replay = {
+        "tested_tree_sha": PROOF_BASE_SHA, "job_present": True,
+        "logical_job_id": job_id, "job_exec_sha256": job_digest,
+        "infrastructure": {"outcome": "passed"}, "steps": [dict(failed_step)],
+    }
+    fragment = {
+        "schema": P.FRAGMENT_SCHEMA, **identity,
+        "plan_sha256": plan["plan_sha256"], "pack_index": 5, "infrastructure": [],
+        "jobs": [{
+            "logical_job_id": job_id, "job_exec_sha256": job_digest,
+            "infrastructure": {"outcome": "passed"},
+            "steps": [{**failed_step, "base_replay": replay}],
+        }],
+    }
+    document = P.reconcile_evidence(plan, [fragment])
+    loaded = P.load_semantic_evidence(
+        document, advertised=True, expected_run_id="99",
+        expected_subject_head_sha=EXACT_HEAD_SHA,
+        expected_tested_tree_sha=identity["tested_tree_sha"],
+        expected_base_sha=PROOF_BASE_SHA, expected_role="pr_head",
+        expected_workflow="ci", expected_event="pull_request",
+    )
+    assert document["jobs"][0]["steps"][0]["classification"] == "inherited_base"
+    assert document["status"] == "clear"
+    assert P.semantic_gate_verdict(loaded.evidence).clear
+    runs = [
+        _run("ci-pack-5", conclusion="failure"),
+        _run("ci-gate", conclusion="success"),
+        _run("fence-pack", conclusion="success"),
+    ]
+    calls = _fake_api(
+        monkeypatch, check_pages={1: {"total_count": len(runs), "check_runs": runs}}
+    )
+    monkeypatch.setattr(
+        MOG, "live_inherited_red",
+        lambda *_a, **_k: pytest.fail("canonical proof must not use legacy annotations"),
+    )
+    verdict = MOG.sweep_pull(
+        "acme/widgets", _pull(), "read", "write", _freshness(),
+        semantic_evidence=loaded, check_runs=runs,
+    )
+    assert verdict == "merged"
+    assert any("/compare/" in call[1] for call in calls)
+    assert any(
+        call[0] == "GET" and call[1].endswith("/comments?per_page=100&page=1")
+        for call in calls
+    )
+    merges = [call for call in calls if call[1].endswith("/merge")]
+    assert len(merges) == 1
+    assert merges[0][0] == "PUT"
+    assert merges[0][2] == {"merge_method": "squash", "sha": EXACT_HEAD_SHA}
+
+
+def test_matching_legacy_red_is_blocked_without_canonical_proof(monkeypatch, capsys):
+    """A matching job/step/exit diagnostic cannot authorize a legacy red."""
     pages, annotations = _govrev_red_pages()
     calls = _fake_api(
         monkeypatch, check_pages=pages, annotations=annotations, merge_status=200
@@ -6796,19 +7334,19 @@ def test_a_live_inherited_red_is_merged_not_blocked(monkeypatch, capsys):
         _live_weather_proof(),
         _authorized_budget(),
     )
-    assert verdict == "merged"
-    assert any(call[1].endswith("/merge") for call in calls)
-    assert not any(call[1].endswith("/labels") for call in calls), (
-        "a live-inherited red must not be labeled merge-blocked"
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert any(call[1].endswith("/labels") for call in calls), (
+        "legacy matching annotations cannot remove the blocking verdict"
     )
     out = capsys.readouterr().out
-    assert "live-inherited red" in out
+    assert "legacy annotation match" in out
 
 
-def test_merge_blocked_inherited_red_is_cleared_and_merged_in_the_same_wake(
+def test_legacy_annotation_match_preserves_existing_merge_blocked(
     monkeypatch,
 ):
-    """A packing-leak merge-blocked stamp must not survive a live-inherited red."""
+    """A matching annotation must not clear an existing blocking marker."""
     pages, annotations = _govrev_red_pages()
     calls = _fake_api(
         monkeypatch,
@@ -6833,21 +7371,21 @@ def test_merge_blocked_inherited_red_is_cleared_and_merged_in_the_same_wake(
             _live_weather_proof(),
             _authorized_budget(),
         )
-        == "merged"
+        == "blocked"
     )
-    assert any(call[1].endswith("/merge") for call in calls)
-    assert any(
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert not any(
         call[0] == "DELETE" and "labels/merge-blocked" in call[1] for call in calls
     )
     assert not [
         call
         for call in calls
         if call[0] == "POST" and str(call[1]).endswith("/labels")
-    ], "must not re-apply merge-blocked for a live-inherited red"
+    ], "an existing blocking marker does not need another label write"
 
 
-def test_a_live_inherited_red_survives_pack_rebalance(monkeypatch, capsys):
-    """Pack numbers rebalance on the selected job set; waive on job identity.
+def test_rebalanced_annotation_match_remains_diagnostic_only(monkeypatch, capsys):
+    """Pack numbers rebalance; a matching diagnostic is still not proof.
 
     The same ``unrun-government-revenue`` is pack-7 on a scoped 114-job PR and
     pack-5 on main's full-suite dispatch. Pack-name subset can never match.
@@ -6888,12 +7426,12 @@ def test_a_live_inherited_red_survives_pack_rebalance(monkeypatch, capsys):
         _live_weather_proof(),
         _authorized_budget(),
     )
-    assert verdict == "merged", (
-        "a remapped pack with the same legacy-job-* identities is main's weather"
+    assert verdict == "blocked", (
+        "remapped job/step/exit text cannot prove exact-base inheritance"
     )
-    assert any(call[1].endswith("/merge") for call in calls)
+    assert not any(call[1].endswith("/merge") for call in calls)
     out = capsys.readouterr().out
-    assert "live-inherited red" in out
+    assert "legacy annotation match" in out
     assert "unrun-government-revenue" in out
 
 
@@ -7076,7 +7614,7 @@ def test_a_fence_that_could_not_list_the_diff_never_gets_the_live_inherited_waiv
     )
     assert verdict == "blocked"
     assert not any(call[1].endswith("/merge") for call in calls)
-    assert "live-inherited red" not in capsys.readouterr().out
+    assert "legacy annotation match" not in capsys.readouterr().out
 
 
 def _fence_block_pages():
@@ -7160,21 +7698,21 @@ def test_main_red_on_the_fence_ids_never_waives_a_head_the_fence_failed(
     )
     assert verdict == "blocked"
     assert not any(call[1].endswith("/merge") for call in calls)
-    assert "live-inherited red" not in capsys.readouterr().out
+    assert "legacy annotation match" not in capsys.readouterr().out
 
 
 @pytest.mark.parametrize(
-    ("noise_level", "noise_count", "expected"),
+    ("noise_level", "noise_count", "diagnostic_match"),
     [
-        ("failure", 9, "blocked"),
-        (None, 9, "blocked"),
-        ("failure", 8, "merged"),
-        ("warning", 12, "merged"),
+        ("failure", 9, False),
+        (None, 9, False),
+        ("failure", 8, True),
+        ("warning", 12, True),
     ],
     ids=["at-cap", "at-cap-unlabelled", "below-cap", "warnings-only"],
 )
-def test_a_pack_at_the_step_error_cap_never_gets_the_live_inherited_waiver(
-    monkeypatch, noise_level, noise_count, expected
+def test_step_error_cap_bounds_legacy_annotation_diagnostics(
+    monkeypatch, capsys, noise_level, noise_count, diagnostic_match
 ):
     """GitHub keeps 10 error annotations per step and drops the rest silently.
 
@@ -7219,8 +7757,9 @@ def test_a_pack_at_the_step_error_cap_never_gets_the_live_inherited_waiver(
         _workflow_yaml_weather_proof(),
         _authorized_budget(),
     )
-    assert verdict == expected
-    assert any(call[1].endswith("/merge") for call in calls) == (expected == "merged")
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert ("legacy annotation match" in capsys.readouterr().out) == (diagnostic_match)
 
 
 def _workflow_yaml_pack(messages, *, conclusion="failure", complete=True):
@@ -7293,7 +7832,7 @@ def test_main_red_on_the_same_job_for_another_reason_never_excuses_this_head(
     verdict, calls = _sweep_workflow_yaml_head(monkeypatch, pages, annotations, proof)
     assert verdict == "blocked"
     assert not any(call[1].endswith("/merge") for call in calls)
-    assert "live-inherited red" not in capsys.readouterr().out
+    assert "legacy annotation match" not in capsys.readouterr().out
 
 
 @pytest.mark.parametrize(
@@ -7351,7 +7890,7 @@ def test_a_red_this_head_cannot_name_as_a_step_never_gets_the_live_inherited_wai
     verdict, calls = _sweep_workflow_yaml_head(monkeypatch, pages, annotations, proof)
     assert verdict == "blocked"
     assert not any(call[1].endswith("/merge") for call in calls)
-    assert "live-inherited red" not in capsys.readouterr().out
+    assert "legacy annotation match" not in capsys.readouterr().out
 
 
 @pytest.mark.parametrize(
@@ -7373,7 +7912,7 @@ def test_a_pack_that_did_not_conclude_failure_never_gets_the_live_inherited_waiv
     )
     assert verdict != "merged"
     assert not any(call[1].endswith("/merge") for call in calls)
-    assert "live-inherited red" not in capsys.readouterr().out
+    assert "legacy annotation match" not in capsys.readouterr().out
 
 
 def _complete_notice(message, *, level="notice"):
@@ -7381,11 +7920,11 @@ def _complete_notice(message, *, level="notice"):
 
 
 @pytest.mark.parametrize(
-    ("extra", "expected"),
+    ("extra", "diagnostic_match"),
     [
         (
             [{"message": "Process completed with exit code 137.", "annotation_level": "failure"}],
-            "blocked",
+            False,
         ),
         (
             [
@@ -7397,24 +7936,24 @@ def _complete_notice(message, *, level="notice"):
                     "annotation_level": "failure",
                 }
             ],
-            "blocked",
+            False,
         ),
-        ([_complete_notice('["ci-pack", "workflow-yaml"]')], "blocked"),
-        ([_complete_notice('["unrun-government-revenue"]')], "blocked"),
-        ([_complete_notice("[]")], "blocked"),
+        ([_complete_notice('["ci-pack", "workflow-yaml"]')], False),
+        ([_complete_notice('["unrun-government-revenue"]')], False),
+        ([_complete_notice("[]")], False),
         (
             [
                 _complete_notice('["workflow-yaml"]'),
                 _complete_notice('["workflow-yaml"]'),
             ],
-            "blocked",
+            False,
         ),
-        ([_complete_notice('["workflow-yaml"')], "blocked"),
-        ([_complete_notice('{"workflow-yaml": 1}')], "blocked"),
-        ([_complete_notice('["workflow-yaml", 1]')], "blocked"),
-        ([_complete_notice('["workflow-yaml", "workflow-yaml"]')], "blocked"),
-        ([_complete_notice('["workflow-yaml"]', level="warning")], "blocked"),
-        ([_complete_notice('["workflow-yaml"]')], "merged"),
+        ([_complete_notice('["workflow-yaml"')], False),
+        ([_complete_notice('{"workflow-yaml": 1}')], False),
+        ([_complete_notice('["workflow-yaml", 1]')], False),
+        ([_complete_notice('["workflow-yaml", "workflow-yaml"]')], False),
+        ([_complete_notice('["workflow-yaml"]', level="warning")], False),
+        ([_complete_notice('["workflow-yaml"]')], True),
     ],
     ids=[
         "killed-exit-137",
@@ -7431,15 +7970,15 @@ def _complete_notice(message, *, level="notice"):
         "finished",
     ],
 )
-def test_a_pack_that_did_not_finish_never_gets_the_live_inherited_waiver(
-    monkeypatch, capsys, extra, expected
+def test_completion_notices_never_authorize_merge(
+    monkeypatch, capsys, extra, diagnostic_match
 ):
     """A pack killed mid-loop still concludes ``failure`` with main's titles.
 
     The runner was OOM-killed or lost after printing the ``workflow-yaml``
     title main shares, so a later job, the one this head breaks, never ran
-    and never printed. Only the notice ``run_ci_pack`` prints after its loop,
-    naming exactly the jobs the titles name, says the pack got that far.
+    and never printed. The diagnostic parser requires a well-formed notice,
+    but a child can emit the same text. Even that positive case stays blocked.
     """
     pages, annotations = _workflow_yaml_pack(
         [("legacy-job-workflow-yaml", _WORKFLOW_YAML_STEP)], complete=False
@@ -7448,12 +7987,12 @@ def test_a_pack_that_did_not_finish_never_gets_the_live_inherited_waiver(
     verdict, calls = _sweep_workflow_yaml_head(
         monkeypatch, pages, annotations, _workflow_yaml_weather_proof()
     )
-    assert verdict == expected
-    assert any(call[1].endswith("/merge") for call in calls) == (expected == "merged")
-    assert ("live-inherited red" in capsys.readouterr().out) == (expected == "merged")
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert ("legacy annotation match" in capsys.readouterr().out) == (diagnostic_match)
 
 
-def test_a_base_replay_echo_of_the_same_red_still_gets_the_waiver(
+def test_replay_echo_annotation_match_does_not_authorize_merge(
     monkeypatch, capsys
 ):
     """A plan-backed pack replays each red on main's tree inside its own log.
@@ -7470,18 +8009,18 @@ def test_a_base_replay_echo_of_the_same_red_still_gets_the_waiver(
     verdict, calls = _sweep_workflow_yaml_head(
         monkeypatch, pages, annotations, _workflow_yaml_weather_proof()
     )
-    assert verdict == "merged"
-    assert any(call[1].endswith("/merge") for call in calls)
-    assert "live-inherited red" in capsys.readouterr().out
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert "legacy annotation match" in capsys.readouterr().out
 
 
 @pytest.mark.parametrize(
-    ("bad_names", "waived"),
+    ("bad_names", "matched"),
     [({"ci-pack-1", "ci-gate"}, True), ({"ci-pack-1", "ci-pack-9", "ci-gate"}, False)],
     ids=["every-red-pack-read", "a-red-pack-nobody-read"],
 )
-def test_a_red_pack_the_waiver_did_not_read_is_never_waived(
-    monkeypatch, bad_names, waived
+def test_unread_pack_has_no_legacy_annotation_diagnostic(
+    monkeypatch, bad_names, matched
 ):
     """Every red ``ci-pack-N`` name must be a pack whose annotations were read.
 
@@ -7501,14 +8040,14 @@ def test_a_red_pack_the_waiver_did_not_read_is_never_waived(
         _freshness(),
         "read",
     )
-    assert (reason is not None) == waived
+    assert (reason is not None) == matched
 
 
 @pytest.mark.parametrize(
-    ("warnings", "expected"), [(48, "blocked"), (47, "merged")], ids=["at-cap", "below-cap"]
+    ("warnings", "diagnostic_match"), [(48, False), (47, True)], ids=["at-cap", "below-cap"]
 )
-def test_a_pack_at_the_job_annotation_cap_never_gets_the_live_inherited_waiver(
-    monkeypatch, warnings, expected
+def test_job_annotation_cap_bounds_legacy_annotation_diagnostics(
+    monkeypatch, capsys, warnings, diagnostic_match
 ):
     """GitHub also keeps at most 50 annotations per job, warnings included.
 
@@ -7540,8 +8079,9 @@ def test_a_pack_at_the_job_annotation_cap_never_gets_the_live_inherited_waiver(
     verdict, calls = _sweep_workflow_yaml_head(
         monkeypatch, pages, annotations, _workflow_yaml_weather_proof()
     )
-    assert verdict == expected
-    assert any(call[1].endswith("/merge") for call in calls) == (expected == "merged")
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
+    assert ("legacy annotation match" in capsys.readouterr().out) == (diagnostic_match)
 
 
 # How a legacy job reads this head's diff or history. A job matching any of these
@@ -7580,7 +8120,7 @@ def test_every_legacy_job_that_reads_the_pull_request_is_a_never_waived_fence():
     assert readers - set(_NOT_A_PULL_REQUEST_READ) == MOG._PR_CONTENT_FENCE_JOBS
 
 
-def test_the_same_head_without_its_fence_reds_is_main_weather(monkeypatch, capsys):
+def test_matching_workflow_yaml_annotation_remains_blocked_without_semantic_proof(monkeypatch, capsys):
     """Fleet 2026-08-13 minus the fence pair: workflow-yaml alone is on main.
 
     Pack numbers differ per PR; ci-gate is the aggregate; the packing-contract
@@ -7603,10 +8143,10 @@ def test_the_same_head_without_its_fence_reds_is_main_weather(monkeypatch, capsy
         _workflow_yaml_weather_proof(),
         _authorized_budget(),
     )
-    assert verdict == "merged"
-    assert any(call[1].endswith("/merge") for call in calls)
+    assert verdict == "blocked"
+    assert not any(call[1].endswith("/merge") for call in calls)
     out = capsys.readouterr().out
-    assert "live-inherited red: workflow-yaml already failing on main" in out
+    assert "legacy annotation match: workflow-yaml has matching job/step/exit text on main" in out
     assert "REFUSED" not in out
 
 
@@ -7749,7 +8289,7 @@ def test_a_markers_red_that_could_not_classify_the_diff_is_not_waived(
     )
     assert verdict == "blocked"
     assert not any(call[1].endswith("/merge") for call in calls)
-    assert "live-inherited red" not in capsys.readouterr().out
+    assert "legacy annotation match" not in capsys.readouterr().out
 
 
 def test_a_control_plane_diff_never_gets_the_live_inherited_waiver(monkeypatch):
@@ -7915,12 +8455,12 @@ def test_every_scripts_module_the_sweeper_imports_loads_in_its_sparse_checkout(
     assert probe["missing"] == {}
 
 
-def test_live_inherited_red_can_fire_in_the_sweepers_sparse_checkout(sparse_sweep):
-    """The waiver must be reachable where the sweep runs, not only under pytest.
+def test_legacy_annotation_diagnostics_work_in_the_sweepers_sparse_checkout(sparse_sweep):
+    """Planner diagnostics must work in the actual sparse checkout.
 
     `_touches_ci_control_plane` imported `run_ci_pack`, whose own
     `ci_scope_dependencies` import is outside the sparse list. That ImportError
-    fail-closed to "control plane" for every pull request, so the waiver never fired.
+    fail-closed to "control plane" for every pull request, so every diagnostic was suppressed.
     """
     _modules, probe = sparse_sweep
     assert probe["control_plane"] == {
@@ -9955,7 +10495,7 @@ def test_a_live_inherited_red_is_left_for_the_full_sweep(monkeypatch, capsys):
 
     Pack numbers on the PR need not match main's — they rebalance. Main having
     *any* failed weather is enough for this pass to defer; the full sweep owns
-    the annotation-identity merge-vs-block call.
+    canonical proof classification and the blocking decision.
     """
     pages = {
         1: {"total_count": 1, "check_runs": [_run("ci-pack-7", conclusion="failure")]}
