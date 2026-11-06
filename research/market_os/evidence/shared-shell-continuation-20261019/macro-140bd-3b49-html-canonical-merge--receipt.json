@@ -1,0 +1,81 @@
+{
+  "observed_at": "2026-10-20T14:36:01.774619+00:00",
+  "head": "140bd1ee79a44859915595fdf12c958c07a60e2b",
+  "base": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "incoming": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "owner": "scripts.optimize_assets.make_optimizer",
+  "worktree_or_index_written": false,
+  "rows": [
+    {
+      "path": "site/etfs.html",
+      "parents": {
+        "H": {
+          "raw_bytes": 97333,
+          "raw_sha256": "46ff1753bd2910e959534bb6f62b757719a7b344777583140d8430f69afe161a",
+          "raw_nul_bytes": 0,
+          "normalized_bytes": 97333,
+          "normalized_sha256": "46ff1753bd2910e959534bb6f62b757719a7b344777583140d8430f69afe161a",
+          "file": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_etfs.html.H"
+        },
+        "B": {
+          "raw_bytes": 96880,
+          "raw_sha256": "3cd93daae1f438ff49ce7a898336003e1937f3209e28594370c0be90e1ea2a98",
+          "raw_nul_bytes": 0,
+          "normalized_bytes": 96880,
+          "normalized_sha256": "61cf034158b0a786610e7675a43cfbe222f3014e4b0eaea8311d6e7bcbb79522",
+          "file": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_etfs.html.B"
+        },
+        "M": {
+          "raw_bytes": 96884,
+          "raw_sha256": "78d0ea6aa3e7fbd7419cefc58c762e45e9493ae61b46377cbbce76d91a3af79e",
+          "raw_nul_bytes": 0,
+          "normalized_bytes": 96884,
+          "normalized_sha256": "b742943995977c366048fbfefa076b2772e24a88b0026f729a0b7913ba936f87",
+          "file": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_etfs.html.M"
+        }
+      },
+      "method": "ordinary merge-file on canonical parents",
+      "exit": 0,
+      "stderr": "",
+      "result": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_etfs.html.candidate",
+      "result_bytes": 97337,
+      "result_sha256": "10157cd76547ebb1ee0b3f4ce430617a8b8e0c21f0c98682ad50387fd404d1ec"
+    },
+    {
+      "path": "site/us_stocks.html",
+      "parents": {
+        "H": {
+          "raw_bytes": 742422,
+          "raw_sha256": "d03cc1a99d3c4c56ecb88508963a853b747c333927e3207b6b74fd9bb3923fe4",
+          "raw_nul_bytes": 0,
+          "normalized_bytes": 742422,
+          "normalized_sha256": "d03cc1a99d3c4c56ecb88508963a853b747c333927e3207b6b74fd9bb3923fe4",
+          "file": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_us_stocks.html.H"
+        },
+        "B": {
+          "raw_bytes": 741806,
+          "raw_sha256": "2245fba7927879770a13a108c1f03b185755767c591a29e9dfeb0d2aca4a82e2",
+          "raw_nul_bytes": 0,
+          "normalized_bytes": 741806,
+          "normalized_sha256": "cf3b2d6feb3575ac233f0b51dee8945a0c7caa5a1a005d4f7b004e6278a6af40",
+          "file": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_us_stocks.html.B"
+        },
+        "M": {
+          "raw_bytes": 741806,
+          "raw_sha256": "58f79b6d946691eade3e548993b73c5a628725391daf00cb156354988dd99701",
+          "raw_nul_bytes": 0,
+          "normalized_bytes": 741806,
+          "normalized_sha256": "f740652cb4cbb8cd2fce592b0d195126457b80d8a522b87790d73751bc0c3941",
+          "file": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_us_stocks.html.M"
+        }
+      },
+      "method": "ordinary merge-file on canonical parents",
+      "exit": 0,
+      "stderr": "",
+      "result": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_us_stocks.html.candidate",
+      "result_bytes": 742422,
+      "result_sha256": "95837a723a8a5977f7dbbe5929d9f2ea64c337bd246c26b5d74beef609b6a345"
+    }
+  ],
+  "all_clean": true
+}

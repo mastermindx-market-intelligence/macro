@@ -7,7 +7,7 @@ decomposition (level / slope / curvature, with the Litterman-Scheinkman PCA vari
 the three factors span), every canonical SLOPE + its momentum, the bull/bear ×
 steepener/flattener REGIME with its Fed-cycle phase and asset implications, the
 RECESSION dashboard (near-term forward spread + the NY-Fed 10y-3m probit + the
-un-inversion alarm + the term-premium-adjusted slope), the FORWARD-rate grid with
+un-inversion alarm + the legacy TP10 curve heuristic), the FORWARD-rate grid with
 carry & roll-down, and the REAL curve / breakeven curve.
 
 It then distils four typed SIGNAL families for the rest of the dashboard — core-macro
@@ -417,7 +417,11 @@ def slopes(f: pd.DataFrame) -> dict:
                            "inverted": False}
     if _col(f, "curve_tp_adj") is not None:
         tp = f["curve_tp_adj"]
-        out["tp_adj"] = {"label": _bil("TP-adjusted 2s10s", "期限溢价调整2-10年"),
+        out["tp_adj"] = {"label": _bil("Legacy TP10 curve heuristic", "旧版TP10曲线启发式"),
+                         "method_note": _bil(
+                             "2s10s plus the 10y term-premium model estimate; context only, not a matched-maturity expectations-only decomposition.",
+                             "2年/10年利差加10年期限溢价模型估计；仅作背景，并非期限匹配的纯预期分解。",
+                         ),
                          "value": round(_last(tp), 2) if _last(tp) is not None else None,
                          "pctile": _pctile(tp),
                          "chg_63d_bp": round(_chg(tp) * 100, 0) if _chg(tp) is not None else None,
@@ -534,7 +538,7 @@ def regime(f: pd.DataFrame) -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# 4) RECESSION dashboard — NTFS + NY-Fed probit + un-inversion + TP-adjusted
+# 4) RECESSION dashboard — NTFS + NY-Fed probit + un-inversion + legacy TP10 heuristic
 # --------------------------------------------------------------------------- #
 def recession(f: pd.DataFrame) -> dict:
     bcfg = config.load().get("bonds", {}).get("curve", {})
@@ -652,10 +656,10 @@ def forwards(f: pd.DataFrame) -> dict:
 # --------------------------------------------------------------------------- #
 # the curve drivers in the transmission IC matrix, strongest-first — NTFS and the
 # 2s5s10s curvature carry CONFIRMED split-half forward-IC cells for most equity sleeves
-# (the calibration found them far stronger than the raw TP-adjusted slope, which is
+# (the calibration found them far stronger than the legacy TP10 curve heuristic, which is
 # CONTEXT). A sector tile is tagged MEASURED off the strongest confirmed cell among these.
 CURVE_IC_DRIVERS = ["ntfs", "curvature", "curve_tp_adj", "slope_chg63"]
-_CURVE_DRIVER_LABEL = {"ntfs": "NTFS", "curvature": "curvature", "curve_tp_adj": "TP-curve",
+_CURVE_DRIVER_LABEL = {"ntfs": "NTFS", "curvature": "curvature", "curve_tp_adj": "TP10 heuristic",
                        "slope_chg63": "Δslope"}
 
 

@@ -623,7 +623,7 @@
       if (trend === 'falling' && (r.participation_trend_pp === null || r.participation_trend_pp === undefined || r.participation_trend_pp > -1)) return false;
       if (norm  === 'above'   && (r.participation_z === null || r.participation_z === undefined || r.participation_z < 1))  return false;
       if (norm  === 'below'   && (r.participation_z === null || r.participation_z === undefined || r.participation_z > -1)) return false;
-      if (hiddenRatioZ !== null && (r.ratio_z === null || r.ratio_z === undefined || r.ratio_z < hiddenRatioZ)) return false;
+      if (hiddenRatioZ !== null && (r.short_rate_z === null || r.short_rate_z === undefined || r.short_rate_z < hiddenRatioZ)) return false;
       return true;
     });
   }

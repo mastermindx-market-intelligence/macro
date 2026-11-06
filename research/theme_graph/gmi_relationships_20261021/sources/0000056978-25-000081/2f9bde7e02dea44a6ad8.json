@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2025-11-20T13:50:16Z",
+ "accession": "0000056978-25-000081",
+ "cik": "0000056978",
+ "doc_byte_length": 2327220,
+ "doc_sha256": "2bafd596eda0935fd2c1594aa5b8d795e40413f6d01f50baa983d88c5badf158",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-20",
+ "form": "10-K",
+ "period_of_report": "2025-10-04",
+ "primary_document": "klic-20251004.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2123461,
+  "byte_start": 2121738,
+  "normalized": "Tianshui Huatian Technology Co., Ltd30.3 %17.2 %",
+  "normalized_sha256": "1d093ff6b2d83e24423cf6ed84a3d8bf7a3cea123915cda3c5a3ce6aae4130d2",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">Tianshui Huatian Technology Co., Ltd</span></td><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-243\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1378\">30.3</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-244\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1379\">17.2</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;border-top:1pt solid #000;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">%</span></td><td colspan=\"3\" style=\"display:none\"/><td colspan=\"3\" style=\"display:none\"/></tr>",
+  "raw_sha256": "2f9bde7e02dea44a6ad82476996b3be5d5640775c026391656c7b2bd1c505ca5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/56978/000005697825000081/klic-20251004.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 102520,
+   "byte_start": 101834,
+   "context_ref": "c-243",
+   "raw": "<xbrli:context id=\"c-243\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000056978</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">klic:TianshuiHuatianTechnologyCo.LtdMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-09-29</xbrli:startDate><xbrli:endDate>2025-10-04</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "c3cec11d5c2060c1fac46f969408aa3eba53687a93d83f5300e96ed07d9ca3a6"
+  },
+  {
+   "byte_end": 103206,
+   "byte_start": 102520,
+   "context_ref": "c-244",
+   "raw": "<xbrli:context id=\"c-244\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000056978</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">klic:TianshuiHuatianTechnologyCo.LtdMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-10-01</xbrli:startDate><xbrli:endDate>2024-09-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "1753b3d3a7125ef48a99d23d8f043df67ec89b535a4ad14a5682aa306d2bd237"
+  }
+ ]
+}

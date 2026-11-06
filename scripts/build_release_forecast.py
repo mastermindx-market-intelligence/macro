@@ -78,6 +78,11 @@ _MODEL_EPOCHS = {
     "combined_v1": "combined_v1_legacy_target_v1",
 }
 
+TRACK_RECORD_DISPLAY_MIN_N = 12
+TRACK_RECORD_VERDICT_MIN_N = 24
+FIRST_PRINT_ACTUAL_BASIS = "official_published_metric"
+PROXY_ACTUAL_BASIS = "same_release_vintage_published_proxy"
+
 
 def _target_epoch(release_type: str, model: str | None = None) -> str:
     """Name the target construction without implying unearned clean evidence."""
@@ -141,6 +146,24 @@ _NFP_V3_WARNING = (
     "catastrophic 2020-recovery error — do not read as an improvement "
     "(MRI-R21 shadow, champion keeps the card)"
 )
+
+# RIC-M0 (frozen E0 protocol H1, single run 2026-10-14): a shadow model scored
+# FALSIFIED_UNDER_COHERENT_TARGET has its display claim withdrawn from every
+# consumer. release_forecast.json then carries only this withdrawal block for it,
+# with no point and no interval. The nightly shadow ledger keeps scoring the
+# model forward; that is evaluation, not a claim.
+_WITHDRAWN_SHADOW_CLAIMS: dict[tuple[str, str], dict] = {
+    ("nfp", "v3_factor"): {
+        "verdict": "FALSIFIED_UNDER_COHERENT_TARGET",
+        "task": "RIC-M0",
+        "target": "same-release-vintage first print (coherent target)",
+        "mae_ratio_vs_declared_baseline": 1.373,
+        "trial_family": "ric_mri_coherent_requal_v1",
+        "receipt": "research/rates_inflation_command/seat_20261014/m0_results/m0_requal_2026-10-14.json",
+        "receipt_sha256": "80cf894c1b748280dd3120f28b4f6d8499e34b4ce3c6d82ae0b2cf368387c720",
+        "protocol_sha256": "87b51dcad66c6f84989675e9cce91eb5b46b3888d60b2e599a8736d87e2309df",
+    },
+}
 
 # Releases tracked by MRI v1+v2 (Round 2a: PCE/PPI/retail added MRI-R23)
 _TRACKED_RELEASES = [
@@ -1196,7 +1219,9 @@ def _attach_shadows_to_items(upcoming_block: list[dict], root: Path, today: date
     Only cpi_headline, cpi_core, nfp receive v3_factor; only cpi_headline receives
     cpi_bridge and mf_energy; CPI headline/core receive coherent_ridge_v1.
     pce/ppi/claims/retail do not receive shadows.
-    Each shadow entry is display_only=True.
+    Each shadow entry is display_only=True. A (release, model) pair listed in
+    _WITHDRAWN_SHADOW_CLAIMS (nfp v3_factor, RIC-M0) carries only its
+    claim_withdrawn block — no point, no interval.
     Legacy shadows fail open. coherent_ridge_v1 fails closed and is omitted unless
     its engine and governed artifact receipts pass the full boundary contract.
     """
@@ -1224,7 +1249,16 @@ def _attach_shadows_to_items(upcoming_block: list[dict], root: Path, today: date
         shadows: dict = {}
 
         # v3_factor shadow
-        if rt in _SHADOW_V3_TARGETS:
+        _v3_withdrawn = _WITHDRAWN_SHADOW_CLAIMS.get((rt, "v3_factor"))
+        if rt in _SHADOW_V3_TARGETS and _v3_withdrawn is not None:
+            shadows["v3_factor"] = {
+                "display_only": True,
+                "model_epoch": _MODEL_EPOCHS["v3_factor"],
+                "target_epoch": _target_epoch(rt),
+                "code_receipt": code_receipt,
+                "claim_withdrawn": dict(_v3_withdrawn),
+            }
+        elif rt in _SHADOW_V3_TARGETS:
             try:
                 v3_result = _run_shadow_v3(rt, today, root, period_str, release_date_obj)
             except Exception as _e:
@@ -1246,8 +1280,6 @@ def _attach_shadows_to_items(upcoming_block: list[dict], root: Path, today: date
                     "confidence": v3_result.get("confidence"),
                     "input_completeness": v3_result.get("input_completeness"),
                 }
-                if rt == "nfp":
-                    entry["warning"] = _NFP_V3_WARNING
                 shadows["v3_factor"] = entry
 
         # cpi_bridge shadow (cpi_headline only)
@@ -2968,6 +3000,98 @@ def _load_defect_notices(root: Path | None) -> list[dict]:
         return []
 
 
+def _valid_mae_ci(ci) -> list[float] | None:
+    """A displayable MAE interval is exactly two finite, ordered numbers."""
+    if not isinstance(ci, (list, tuple)) or len(ci) != 2:
+        return None
+    try:
+        lo, hi = float(ci[0]), float(ci[1])
+    except (TypeError, ValueError):
+        return None
+    if not (math.isfinite(lo) and math.isfinite(hi)) or lo > hi:
+        return None
+    return [lo, hi]
+
+
+def _track_record_summary(scoreboard: dict, accuracy_claim: str | None) -> dict:
+    """Pure summary for UI + machine consumers; no I/O."""
+    basis_counts: dict = scoreboard.get("evaluation_basis_counts") or {}
+    by_release: dict = scoreboard.get("by_release") or {}
+    by_shadow: dict = scoreboard.get("by_shadow") or {}
+
+    def _entry_for_key(key: str, counts: dict) -> dict:
+        release, model = key.split(":", 1)
+        stats = by_release.get(release) if model == "champion" else by_shadow.get(key)
+        if stats is None:
+            stats = {}
+        clean_n = int(counts.get("n") or 0)
+        first_print_matched_n = int(counts.get("first_print_matched_n") or 0)
+        proxy_scored_n = int(counts.get("proxy_scored_n") or 0)
+        other_basis_n = int(counts.get("other_basis_n") or 0)
+        target_epochs = list(counts.get("target_epochs") or [])
+
+        if clean_n == 0:
+            display_state = "no_clean_scores"
+        elif stats.get("mae_ours") is None:
+            display_state = "benchmark_only"
+        elif first_print_matched_n != clean_n or len(target_epochs) != 1:
+            display_state = "proxy_or_mixed_target"
+        elif clean_n < TRACK_RECORD_DISPLAY_MIN_N:
+            display_state = "accruing"
+        elif _valid_mae_ci(stats.get("mae_ours_ci")) is None:
+            # E0 §5: a forward MAE is shown only with its CI. The CI is supplied by
+            # the prospective-accrual owner (E1); without it the error stays hidden.
+            display_state = "interval_pending"
+        else:
+            display_state = "display_only"
+
+        shown = display_state == "display_only"
+        mae_ours = stats.get("mae_ours") if shown else None
+        mae_ours_ci = _valid_mae_ci(stats.get("mae_ours_ci")) if shown else None
+        mae_naive_prior = stats.get("mae_naive_prior") if shown else None
+
+        return {
+            "release": release,
+            "model": model,
+            "clean_n": clean_n,
+            "first_print_matched_n": first_print_matched_n,
+            "proxy_scored_n": proxy_scored_n,
+            "other_basis_n": other_basis_n,
+            "target_epochs": target_epochs,
+            "display_state": display_state,
+            "mae_ours": mae_ours,
+            "mae_ours_ci": mae_ours_ci,
+            "mae_naive_prior": mae_naive_prior,
+            "early": shown and clean_n < TRACK_RECORD_VERDICT_MIN_N,
+            "benchmark_only": display_state == "benchmark_only",
+        }
+
+    releases: list[dict] = []
+    shadows: list[dict] = []
+    for key in sorted(basis_counts.keys()):
+        counts = basis_counts[key]
+        ent = _entry_for_key(key, counts)
+        _, model = key.split(":", 1)
+        if model == "champion":
+            releases.append(ent)
+        else:
+            shadows.append(ent)
+    releases.sort(key=lambda e: e["release"])
+
+    return {
+        "schema": "release_forecast_track_record.v1",
+        "accuracy_claim": accuracy_claim,
+        "display_min_n": TRACK_RECORD_DISPLAY_MIN_N,
+        "verdict_min_n": TRACK_RECORD_VERDICT_MIN_N,
+        "evaluation_target": FIRST_PRINT_ACTUAL_BASIS,
+        "evaluation_basis": scoreboard.get("evaluation_basis"),
+        "score_receipts": scoreboard.get("score_receipts"),
+        "excluded_n": (scoreboard.get("evaluation_exclusions") or {}).get("n"),
+        "releases": releases,
+        "shadows": shadows,
+    }
+
+
 def _build_scoreboard(
     ledger: list[dict],
     accrual_start: str,
@@ -3492,6 +3616,45 @@ def _build_scoreboard(
     except Exception as _bsb_e:
         log.warning("block_scoreboard aggregation failed (fail-open): %s", _bsb_e)
 
+    evaluation_basis_counts: dict[str, dict] = {}
+    for row in scored:
+        model_name = str(row.get("model") or "champion")
+        eb_key = f"{row.get('release', 'unknown')}:{model_name}"
+        group = evaluation_basis_counts.setdefault(
+            eb_key,
+            {
+                "n": 0,
+                "by_actual_basis": {},
+                "first_print_matched_n": 0,
+                "proxy_scored_n": 0,
+                "other_basis_n": 0,
+                "_target_epochs": set(),
+            },
+        )
+        group["n"] += 1
+        basis = str(row.get("actual_basis") or "unspecified")
+        group["by_actual_basis"][basis] = group["by_actual_basis"].get(basis, 0) + 1
+        if row.get("actual_basis") == FIRST_PRINT_ACTUAL_BASIS:
+            group["first_print_matched_n"] += 1
+        elif row.get("actual_basis") == PROXY_ACTUAL_BASIS:
+            group["proxy_scored_n"] += 1
+        group["_target_epochs"].add(str(row.get("target_epoch") or "legacy_unspecified"))
+
+    evaluation_basis_counts_out: dict[str, dict] = {}
+    for eb_key in sorted(evaluation_basis_counts.keys()):
+        group = evaluation_basis_counts[eb_key]
+        n = group["n"]
+        first_print = group["first_print_matched_n"]
+        proxy_n = group["proxy_scored_n"]
+        evaluation_basis_counts_out[eb_key] = {
+            "n": n,
+            "by_actual_basis": {k: group["by_actual_basis"][k] for k in sorted(group["by_actual_basis"])},
+            "first_print_matched_n": first_print,
+            "proxy_scored_n": proxy_n,
+            "other_basis_n": n - first_print - proxy_n,
+            "target_epochs": sorted(group["_target_epochs"]),
+        }
+
     return {
         "schema": "release_forecast_scoreboard.v2",
         "asof": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -3511,6 +3674,7 @@ def _build_scoreboard(
             "Like-for-like forward evidence segmented by exact model and target epochs. "
             "The legacy by_shadow aggregate is retained for compatibility and may span epochs."
         ),
+        "evaluation_basis_counts": evaluation_basis_counts_out,
         "promotion_review": promotion_review,  # MRI-R40 §5: annotation, no metric changes
         "all_forward": all_forward_summary,
         "evaluation_exclusions": {
@@ -4298,6 +4462,7 @@ def build(root: Path, dry_run: bool = False) -> dict:
     )
 
     # 10. Assemble latest.json artifact (schema release_forecast.v2)
+    accuracy_claim = "withheld_until_clean_aligned_forward_evidence"
     latest = {
         "schema": "release_forecast.v2",
         "asof": asof_utc,
@@ -4319,7 +4484,7 @@ def build(root: Path, dry_run: bool = False) -> dict:
                 int((scoreboard.get("by_release", {}).get(release_id) or {}).get("n") or 0)
                 for release_id in ("cpi_headline", "cpi_core")
             ),
-            "accuracy_claim": "withheld_until_clean_aligned_forward_evidence",
+            "accuracy_claim": accuracy_claim,
             "street_consensus": "unavailable",
             "note": (
                 "Current model points remain experimental while coherent-target challengers accrue. "
@@ -4338,6 +4503,7 @@ def build(root: Path, dry_run: bool = False) -> dict:
         ],
         "upcoming": upcoming_block,
         "last_scored": last_scored,
+        "track_record": _track_record_summary(scoreboard, accuracy_claim),
         "scoreboard_ref": "data/release_forecast/scoreboard.json",
         # MRI-R32e: capture health strip
         "capture_health": capture_health,

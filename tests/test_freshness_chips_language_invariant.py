@@ -49,7 +49,7 @@ TEMPLATES = ROOT / "templates"
 THEME = TEMPLATES / "theme.css"
 
 TEXT_SUFFIXES = {".j2", ".html", ".css", ".js"}
-FRESHNESS_WORD_RE = re.compile(r"(?<!re)fresh|stale|verified|updated|asof")
+FRESHNESS_WORD_RE = re.compile(r"(?<!re)fresh|stale|verified|updated|asof|(?<![a-z])live$")
 CLASS_RE = re.compile(r"\.([A-Za-z0-9_-]+)")
 VAR_RE = re.compile(r"--[A-Za-z0-9_-]+")
 DECL_RE = re.compile(r"(--[A-Za-z0-9_-]+)\s*:\s*([^;]+)")
@@ -66,6 +66,25 @@ JS_SELECTOR_RE = re.compile(
 
 STATUS_PLANE = ("--ok", "--warn", "--act", "--ink-ok", "--ink-warn", "--ink-act", "--fresh-ok")
 DIRECTION_PLANE = ("--up", "--down", "--ink-up", "--ink-down")
+# Selectors whose class word "live" names a NON-freshness lifecycle: a live price
+# (`.pv-live.cnpl-up`/`.cnpl-down` — direction IS the semantics), a Prophet signal
+# state (`.sg-live` — live/setting_up/ran/basing/blocked, colour = verdict plane
+# `--pv-buy`), and similar. Whitespace-normalised selector is matched exactly —
+# never a substring, so e.g. `.sg-live-dot` still goes through the normal path.
+LIVE_NOT_FRESHNESS_SELECTORS: dict[str, str] = {
+    ".pv-live.cnpl-up": "direction qualifier on a live price — the direction IS the semantics (china.html.j2:1613)",
+    ".pv-live.cnpl-down": "direction qualifier on a live price — the direction IS the semantics (china.html.j2:1614)",
+    ".sg-live": "Prophet signal LIFECYCLE state (live/setting_up/ran/basing/blocked) whose colour is the verdict plane `--pv-buy`, not freshness (dashboard.html.j2:907, hk.html.j2:341)",
+}
+# ── KNOWN OFFENDERS — a RATCHET baseline, not an exemption list (F01 O27, lane 1) ──
+# Key = "<repo-relative path>::<selector exactly as freshness_offenders() reports it>"
+# (line numbers deliberately excluded — they drift). Each entry is a freshness rule
+# that still paints with a token theme.css swaps under html[data-lang="zh"], and
+# each OWES a surface fix in the lane its value names. The invariant fails BOTH when
+# a new offender appears (fix the rule — never add it here) AND when an entry stops
+# offending (delete the entry in the same PR that fixed the surface).
+KNOWN_OFFENDERS: dict[str, str] = {
+}
 SET_VAR_RE = re.compile(
     r"\{%-?\s*set\s+(\w+)\s*=\s*'var\((--[A-Za-z0-9_-]+)\)'",
 )
@@ -103,6 +122,9 @@ def _css_rules(text: str) -> list[tuple[str, str, int]]:
             if open_at is not None:
                 body = text[open_at + 1:pos]
                 selector = text[open_selector_start:open_at].rsplit(";", 1)[-1].strip()
+                # CSS selectors never contain `<`; an inline <style> that follows HTML text
+                # on the same line otherwise returns that HTML as the "selector" of the rule.
+                selector = re.split(r"<[^<>]*>", selector)[-1].strip()
                 line = bisect.bisect_left(newlines, open_at + 1) + 1
                 rules.append((selector, body, line))
                 open_at = None
@@ -334,6 +356,16 @@ def freshness_offenders(
         aliases = collect_aliases(*sources)
     offenders = []
     for selector, body, line in freshness_rules(text):
+        # LIVE_NOT_FRESHNESS_SELECTORS are class-form "live" words whose meaning is
+        # NOT freshness (direction qualifier on a live price, Prophet signal LIFECYCLE
+        # state). Skip the rule ONLY when every whitespace-normalised, comma-split
+        # part of the selector is in the exclusion set — a mixed rule that pairs an
+        # excluded selector with a true freshness chip is still caught on the
+        # freshness half, and substring matches (e.g. ``.sg-live-dot``) still go
+        # through the normal path.
+        parts = [" ".join(p.split()) for p in selector.split(",") if p.strip()]
+        if parts and all(p in LIVE_NOT_FRESHNESS_SELECTORS for p in parts):
+            continue
         used = set(VAR_RE.findall(body))
         hits = resolve_freshness_hits(used, selector, swapped, aliases, remaps)
         if hits:
@@ -377,7 +409,7 @@ def test_no_freshness_rule_references_a_swapped_direction_token():
     swapped = swapped_token_closure(theme)
     remaps = scoped_zh_remaps(theme)
     theme_aliases = collect_aliases(theme)
-    report = []
+    found: dict[str, str] = {}
     total = 0
     for path in _template_files():
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -391,12 +423,19 @@ def test_no_freshness_rule_references_a_swapped_direction_token():
         for line, selector, used in freshness_offenders(
             text, swapped, aliases=aliases, remaps=remaps
         ):
-            report.append(f"  {path.relative_to(ROOT)}:{line}  {selector}  ->  {', '.join(used)}")
+            key = f"{path.relative_to(ROOT).as_posix()}::{selector}"
+            found[key] = f"  {path.relative_to(ROOT)}:{line}  {selector}  ->  {', '.join(used)}"
     assert total >= 10, f"only {total} freshness rules found under templates/ — the matcher is broken"
-    assert not report, (
-        "freshness / provenance rules must paint with the status plane (--ok/--warn/--act + --ink-*), "
-        "never with tokens theme.css swaps under html[data-lang=\"zh\"] "
-        "(local aliases and scoped remaps resolved):\n" + "\n".join(report)
+    new = sorted(k for k in found if k not in KNOWN_OFFENDERS)
+    assert not new, (
+        "NEW freshness / provenance rules paint with tokens theme.css swaps under html[data-lang=\"zh\"] "
+        "— paint with the status plane (--ok/--warn/--act + --ink-*); never add to KNOWN_OFFENDERS:\n"
+        + "\n".join(found[k] for k in new)
+    )
+    stale = sorted(k for k in KNOWN_OFFENDERS if k not in found)
+    assert not stale, (
+        "KNOWN_OFFENDERS entries no longer offend — delete them in the PR that fixed the surface:\n  "
+        + "\n  ".join(stale)
     )
 
 
@@ -419,6 +458,26 @@ def test_matcher_catches_the_original_defect_and_skips_signal_states():
     # Jinja tags inside a <style> block do not break rule extraction
     jinja = '<style>{% if x %}.a{color:red}{% endif %}\n.tp-node.fresh-live{ box-shadow:0 0 0 4px var(--ch,var(--up)); }</style>'
     assert [o[0] for o in freshness_offenders(jinja, swapped)] == [2]
+
+
+def test_dtp_chip_live_is_a_freshness_chip_pinned_by_the_class_form():
+    # Pin the O27 defect: a freshness/provenance chip (".dtp-chip--live") painted with
+    # var(--ink-up) swaps under html[data-lang="zh"] — green in EN, red in ZH. The class
+    # form "live" must name a freshness rule, but bare substrings ("alive", "live-signal",
+    # "deliver") must NOT, otherwise the matcher fans out into unrelated selectors.
+    swapped = {"--up", "--down", "--ink-up", "--ink-down"}
+    defect = '.dtp-chip--live { color: var(--ink-up); }\n'
+    assert freshness_offenders(defect, swapped) == [
+        (1, ".dtp-chip--live", ["--ink-up"])
+    ], "the original O27 defect must be caught under the swapped closure"
+    healed = '.dtp-chip--live { color: var(--ink-ok); }\n'
+    assert freshness_offenders(healed, swapped) == [], (
+        "a freshness chip painted with the status plane (--ink-ok) must NOT be flagged"
+    )
+    # boundary cases that must NOT be flagged as freshness rules
+    assert freshness_offenders('.live-signal { color: var(--ink-up); }\n', swapped) == []
+    assert freshness_offenders('.alive { color: var(--ink-up); }\n', swapped) == []
+    assert freshness_offenders('.deliver { color: var(--ink-up); }\n', swapped) == []
 
 
 def test_matcher_resolves_local_indirection_and_scoped_zh_remaps():
@@ -500,3 +559,79 @@ def test_committee_web_health_status_colours_are_not_direction_tokens():
     assert fallback and fallback.group(1) not in swapped, fallback and fallback.group(0)
     stale_items = re.search(r"d\.what_is_stale, 3, function \(s\) \{\s*return '<div style=\"[^\"]*color:var\((--[\w-]+)", text)
     assert stale_items and stale_items.group(1) not in swapped, stale_items and stale_items.group(0)
+
+
+# ── 4. R2: extractor must resolve the CSS selector after inline HTML; exclusions must stay real ──
+
+def test_inline_style_after_html_text_resolves_the_css_selector():
+    """An inline ``<style>`` that follows HTML text on the same line must yield the
+    CSS selector, not the HTML that preceded it (china.html.j2:1601 ships exactly
+    this shape inside the board-delayed banner). The S2 extractor splits on the
+    last ``</…>`` boundary; the HTML is not a CSS selector.
+    """
+    text = (
+        '<span>Check a live quote.</span><span class="l-zh">实时</span>'
+        '<style>.pv-live.cnpl-up{--plvc:var(--up)}</style>\n'
+    )
+    rules = _css_rules(text)
+    assert len(rules) == 1, rules
+    selector, body, _line = rules[0]
+    assert selector == ".pv-live.cnpl-up", selector
+    assert "--plvc:var(--up)" in body
+
+
+def test_live_exclusions_still_exist_in_the_estate():
+    """Each LIVE_NOT_FRESHNESS_SELECTORS key must still resolve to ≥1 rule across
+    ``templates/``; a stale exclusion (e.g. after the .pv-live.cnpl-up rule moves
+    or is renamed) must fail loudly rather than silently re-introduce the defect.
+    """
+    found: dict[str, list[str]] = {k: [] for k in LIVE_NOT_FRESHNESS_SELECTORS}
+    for path in _template_files():
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for selector, _body, line in _css_rules(text):
+            parts = {" ".join(p.split()) for p in selector.split(",")}
+            for key in parts & set(found):
+                found[key].append(f"{path.relative_to(ROOT)}:{line}")
+    missing = [k for k, hits in found.items() if not hits]
+    assert not missing, (
+        f"LIVE_NOT_FRESHNESS_SELECTORS has stale keys — no rule matches: {missing}. "
+        "Either the selectors moved (update the dict + reason) or the exclusion "
+        "is dead code and the matching rule must now paint with the status plane."
+    )
+
+
+def test_live_exclusion_skips_pv_live_cnpl_and_sg_live_but_not_substrings():
+    """Whitespace-normalised, comma-split selector is matched EXACTLY against
+    LIVE_NOT_FRESHNESS_SELECTORS — substring matches still go through the normal
+    path so e.g. ``.sg-live-dot`` (a hypothetical descendant) is not blanket-excluded.
+    The exclusion applies only when EVERY part of the comma-split selector is an
+    exact key, so a mixed rule that pairs an excluded selector with a true
+    freshness chip is still caught on the freshness half.
+    """
+    swapped = {"--up", "--down", "--ink-up", "--ink-down"}
+    # Exact-key rules: each skipped, no offenders.
+    pv = ".pv-live.cnpl-up { --plvc:var(--up); }\n.pv-live.cnpl-down { --plvc:var(--down); }\n"
+    assert freshness_offenders(pv, swapped) == []
+    assert freshness_offenders(".sg-live { --sgc: var(--pv-buy); }\n", swapped) == []
+    # A comma-combined selector whose EVERY part is excluded is also skipped.
+    combined = ".pv-live.cnpl-up, .pv-live.cnpl-down { --plvc: var(--up); }\n"
+    assert freshness_offenders(combined, swapped) == []
+    # A mixed rule (excluded half + true freshness chip) is still caught on the
+    # freshness half; the excluded half does NOT blank the whole rule. The defect
+    # path on china.html.j2:1613/1614 is the bare form, never comma-combined.
+    combo = ".pv-live.cnpl-up, .imd-chip.fresh { color: var(--ink-up); }\n"
+    out = freshness_offenders(combo, swapped)
+    assert any(".imd-chip.fresh" in s for _l, s, _h in out), out
+    # Substring that ends in -log via the freshness matcher is caught normally:
+    # the substring ``.sg-live`` inside ``.sg-live-dot`` is NOT in the exclusion set
+    # because the whole selector ``.sg-live-dot`` is not whitespace-equal to any key.
+    # The bare freshness matcher only treats ``live`` as a freshness word at the
+    # end of a class name (``(?<![a-z])live$``), so ``.sg-live-dot`` is not itself
+    # a freshness rule and the rule sails through the update. What the test pins
+    # here is the EXCLUSION contract: substring form is not enough — a renamed
+    # selector must be added to the dict explicitly.
+    sub_in_exclusion = ".sg-live-suffix { color: var(--ink-up); }\n"
+    assert freshness_offenders(sub_in_exclusion, swapped) == [], (
+        ".sg-live-suffix is not whitespace-equal to any LIVE_NOT_FRESHNESS_SELECTORS key; "
+        "if it ever becomes a freshness rule, it must be excluded by adding the exact key"
+    )
