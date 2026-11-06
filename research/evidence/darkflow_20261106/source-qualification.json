@@ -1,0 +1,328 @@
+{
+  "access_race_before": {
+    "elapsed_seconds": 6.8,
+    "exit_code": 1,
+    "failure": "access-race-401-late-200: denial remains authoritative",
+    "source_blob": "e7a617f17af50523779909fd924decc1199e579f",
+    "test_blob": "a2e525c8effadefc20266e8e3dcd9d7fc6b38409"
+  },
+  "browser_after": {
+    "artifacts": {
+      "browser-result.json": "d8f7b284a31ae8a0e67392744906537f2229d0569ab13e139115c261c068853c",
+      "darkflow-1440-dark-en.png": "444097281bf38ea94daa801a1daee71d5e0ca10fb4381e0016a74ed3615d4f8f",
+      "darkflow-1440-dark-zh.png": "3f0ed7738ecf3d7c69cc3abf8b3fba89d0bb31d78915fe5c9f07a669787b4010",
+      "darkflow-1440-light-en.png": "bf45a4b25bbb492e48471decf3c8ce214d538fae38ee1889e7d599f079f884a5",
+      "darkflow-1440-light-zh.png": "80e8024b84ed5686043fe74b9fdc1a06f8129f893e3667499fcfd21076fec25d",
+      "darkflow-390-dark-en.png": "732e65341ba1877047eb28e14fe0f9d5cea42a73c8f555e062f6a11bd4e87d38",
+      "darkflow-390-dark-zh.png": "4b83bccf991cdb8afd09612be6d35861930a03aec9b2208f2736867933c0e76b",
+      "darkflow-390-light-en.png": "35257bccefc5cf3f735c5c8093787a2a97f9232bbcc4c8248aa250b487eb8983",
+      "darkflow-390-light-zh.png": "b5491fab0cf8aa683727fed5ef70cab688071f371fecaf74b747ca9f471ea5f3"
+    },
+    "checks": 78,
+    "inputs": {
+      "darkflow_history.json": "ec38bddba9d22d9ec482d23c51e741d359b60416a1fe4fb55f5bff9e85cbc195",
+      "darkflow_latest.json": "0c80cea98dfbf9d641283d3e1eadc40e8994ea6e0e9309b432843f0276c30b83",
+      "templates/_darkflow_panel.html.j2": "75de3b7646fb404bd6eb62bd84dfe83a37c1f0d1eb5ac2e024e4caff195001f1",
+      "templates/darkflow.css": "e5076b8450b3e1413297bfa5d2dafc074558cd734fa8465058862bd3ae94c763",
+      "templates/darkflow.js": "7bc8d528d8e8257e0746a82c46bf19e5c04b41a0f8f10de84db757543261b0f7",
+      "vol_weather.json": "3ba912da10e28e5212a2701b024b5e26b5f7ea0ec251958f9d609015caf3f575"
+    },
+    "page_errors": [],
+    "receipt_sha256": "d8f7b284a31ae8a0e67392744906537f2229d0569ab13e139115c261c068853c",
+    "state": "PASS",
+    "volatility_fixture_head": "a976f2e122bbd4b1ae523f8e47de54156aaa90df"
+  },
+  "coordinator": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028",
+  "data_boundary": {
+    "collector_panel_blob": "24ec4c83259bfeb6cfa04e796f70db5ece345ee1",
+    "frozen_pss_af1_reseal": false,
+    "historical_deep_panel_blob": "32d3def8a94fb0d7ab661675118dff901566f366",
+    "new_first_observation_appends": 0,
+    "new_provider_requests": 0
+  },
+  "formal_github_approval": false,
+  "hosted_current_candidate_ci": "PENDING_PUBLICATION",
+  "limits": [
+    "Source-backed dated component fixtures; not authenticated production acceptance.",
+    "Original October17 evidence is preserved at its historical path; current proof does not relabel it.",
+    "The current browser's Vol Weather fixture is explicitly bound to recovered HEADa976; current-main source changes do not touch these inputs.",
+    "No vendor parity, predictive validation or trade authority is established."
+  ],
+  "main_composition": {
+    "canonical_literal_dependencies": 181,
+    "component_inferred_dependency_changes": [],
+    "dedicated_job_paths": 198,
+    "diff_check_exit": 0,
+    "incumbent_job_definitions_preserved": 388,
+    "main_delta_sha256": "4e7c4e5599950d8e0998b47fa9decf83420d4c1fe34bd7654829841ccb59dec4",
+    "overlap": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "paths": 262
+  },
+  "operation_id": "dark-flow-dix-20261017",
+  "original_published_head": "b2bacdec61b7c963ecbe6b7a921e014ed1441eb9",
+  "paired_packing": {
+    "base_manifest_sha256": "252866ed3ded20ab59644798c44ee76e8afda6bba573f3b5c08f7acaa912a2f4",
+    "base_revision": "52d3350bb78740f465e0b7e7c8c5bfc502c109cf",
+    "breaches": [],
+    "candidate_manifest_sha256": "354831e121f25772dfc0c190a901582a54eec67acbaf2ff83821282280da9ea7",
+    "direct_ownership": {
+      "engine/darkflow_index.py": {
+        "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)",
+        "selected": [
+          "darkflow-index"
+        ]
+      },
+      "scripts/build_darkpool_desk.py": {
+        "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)",
+        "selected": [
+          "darkflow-index"
+        ]
+      },
+      "site/darkflow_history.json": {
+        "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)",
+        "selected": [
+          "darkflow-index"
+        ]
+      },
+      "templates/darkflow.js": {
+        "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)",
+        "selected": [
+          "darkflow-index"
+        ]
+      },
+      "templates/shared_shell_bridge.js": {
+        "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)",
+        "selected": [
+          "darkflow-index"
+        ]
+      },
+      "tests/darkflow_browser.py": {
+        "reason": "scoped to 1 changed file(s): 1/1 jobs (0 unscoped always-on, 1 scoped matches)",
+        "selected": [
+          "darkflow-index"
+        ]
+      }
+    },
+    "probes": [
+      {
+        "added_jobs": [],
+        "base": {
+          "jobs": 137,
+          "packs": 10,
+          "weight": 5912
+        },
+        "candidate": {
+          "jobs": 137,
+          "packs": 10,
+          "weight": 5912
+        },
+        "ceilings": {
+          "max_jobs": 137,
+          "max_packs": 10,
+          "max_weight": 5912
+        },
+        "new_owner_selected": false,
+        "probe": "templates/index.html",
+        "removed_jobs": []
+      },
+      {
+        "added_jobs": [],
+        "base": {
+          "jobs": 137,
+          "packs": 10,
+          "weight": 5927
+        },
+        "candidate": {
+          "jobs": 137,
+          "packs": 10,
+          "weight": 5927
+        },
+        "ceilings": {
+          "max_jobs": 138,
+          "max_packs": 10,
+          "max_weight": 5927
+        },
+        "new_owner_selected": false,
+        "probe": "scripts/build_free_content.py",
+        "removed_jobs": []
+      },
+      {
+        "added_jobs": [],
+        "base": {
+          "jobs": 131,
+          "packs": 10,
+          "weight": 5668
+        },
+        "candidate": {
+          "jobs": 131,
+          "packs": 10,
+          "weight": 5668
+        },
+        "ceilings": {
+          "max_jobs": 131,
+          "max_packs": 10,
+          "max_weight": 5668
+        },
+        "new_owner_selected": false,
+        "probe": "engine/prophet/plan_book.py",
+        "removed_jobs": []
+      }
+    ],
+    "schema": "c4.darkflow.paired-packing.v1",
+    "seconds": 148.438
+  },
+  "production_acceptance": false,
+  "python_tests": {
+    "data_guard": "active; unchanged conftest; no MM_DATA_GUARD override",
+    "driver_elapsed_seconds": 317.41,
+    "errors": 0,
+    "exit_code": 0,
+    "failed": 0,
+    "fixture_gid": 20,
+    "fixture_mode": "0o700",
+    "module_guard": "active; unchanged conftest; no MM_MODULE_GUARD override",
+    "passed": 48,
+    "python_executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "selection": [
+      "tests/test_darkflow_index.py",
+      "tests/test_darkflow_publish.py",
+      "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+      "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+      "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow"
+    ],
+    "skipped": 0,
+    "stderr": "",
+    "stdout": "................................................                         [100%]\n48 passed in 310.54s (0:05:10)\n"
+  },
+  "qualified_protected_base": "52d3350bb78740f465e0b7e7c8c5bfc502c109cf",
+  "recovered_local_head": "a976f2e122bbd4b1ae523f8e47de54156aaa90df",
+  "schema": "darkflow.c4.source_qualification.v1",
+  "self_reviewed": true,
+  "source_files": {
+    ".github/ci/legacy-jobs.yml": {
+      "blob": "bd6fc5300087f2f424ce2564ac57fadd3839ac88",
+      "bytes": 2608499,
+      "sha256": "354831e121f25772dfc0c190a901582a54eec67acbaf2ff83821282280da9ea7"
+    },
+    ".github/workflows/daily.yml": {
+      "blob": "47902f24a2ce9984fead1ce8472f681039421709",
+      "bytes": 483268,
+      "sha256": "0d1ee378e6798c96c63f7f5e6ca791104d01e340d6798f83a40123c173bf65b8"
+    },
+    ".github/workflows/render.yml": {
+      "blob": "07d6118f3c62f0f6922e4f8a6f322021557544d8",
+      "bytes": 110803,
+      "sha256": "26b844bf260f35b4340226c2720f8351e2c5f5ab1def14e2c3f730534ad51639"
+    },
+    "config/synapse.yml": {
+      "blob": "b32789b101706ac06276919caa57f2a4be218a7d",
+      "bytes": 816028,
+      "sha256": "9c105e49b04de83c5c05dba7317ad488559117d1546ecab7293cb7a0b2a72e39"
+    },
+    "data/finra_short_volume/panel_deep.parquet": {
+      "blob": "32d3def8a94fb0d7ab661675118dff901566f366",
+      "bytes": 6669373,
+      "sha256": "c87c3c509703f8aec711363ca7fa81b8e9b2fdcaeb97612dd53634d3d77ca9bc"
+    },
+    "docs/SIGNAL_BUS.md": {
+      "blob": "aebfdf14a06e4b3df251811f15c6fa7d492f23db",
+      "bytes": 126045,
+      "sha256": "1a927c5a9b7e6b977f17b91c78a017e6ff2b277ced63295b71cdac1f058b3ad1"
+    },
+    "engine/darkflow_index.py": {
+      "blob": "8d4d3017c0fd05a531b6d4f5c0aade04598bc070",
+      "bytes": 14242,
+      "sha256": "bbcb1bdb745dcd72abf72200b7ff136ad26a35ced5fd652577ad6d787d792a74"
+    },
+    "engine/darkflow_observations.py": {
+      "blob": "643722ca2f4596373db85931eba0ba5742475b24",
+      "bytes": 3690,
+      "sha256": "8de34353e807579d953fce6de585e2beb453ecd2607e46e0d946688a099aa699"
+    },
+    "engine/darkflow_publish.py": {
+      "blob": "b1434d327f24a89bf18ed797689931a8e6ff6e91",
+      "bytes": 13328,
+      "sha256": "7ee1642721d599bf16a62027e2b335ffb43ef8336313e2187706b3391dfefbfb"
+    },
+    "scripts/backfill_finra_short_volume.py": {
+      "blob": "25fd9cbefba1885e252fca662d81011a5675bb26",
+      "bytes": 15838,
+      "sha256": "10cb1a64bd72881bd7f8d56859e37a179a58535c5e18181bb4072190a7b24feb"
+    },
+    "scripts/build_darkflow_index.py": {
+      "blob": "4a9c6454841d33da6cb31e2634f6ef10c1a0245d",
+      "bytes": 2302,
+      "sha256": "c881bcf9ce652870cd6cdfa5a994726bfaccfa2aef0a87d028feebb54ed3027f"
+    },
+    "scripts/build_darkpool_desk.py": {
+      "blob": "9c2bd483b7daece85837f9e0b851e7535167d15d",
+      "bytes": 35270,
+      "sha256": "9bca75e12192343b021596329ad3e14de7098edfaf25b859e711bfb0112b6a8f"
+    },
+    "scripts/check_surface_freshness.py": {
+      "blob": "a13956b05f5ef532f63d5a02ca572d731dfc3d05",
+      "bytes": 23889,
+      "sha256": "dbed190b9504f03c7dcd4b6780e2a4c1b1bec6992a9aa1faff94fce54da57285"
+    },
+    "site/darkflow_history.json": {
+      "blob": "1c91286e8997f2f8451531adfe9802e3e8f25a39",
+      "bytes": 246022,
+      "sha256": "ec38bddba9d22d9ec482d23c51e741d359b60416a1fe4fb55f5bff9e85cbc195"
+    },
+    "site/darkflow_latest.json": {
+      "blob": "eae6cdb8edc575e01249f8702aba7d7109994477",
+      "bytes": 10475,
+      "sha256": "0c80cea98dfbf9d641283d3e1eadc40e8994ea6e0e9309b432843f0276c30b83"
+    },
+    "templates/_darkflow_panel.html.j2": {
+      "blob": "93dc7d99409b0e57328a1fc6a44441cd460388dd",
+      "bytes": 11543,
+      "sha256": "75de3b7646fb404bd6eb62bd84dfe83a37c1f0d1eb5ac2e024e4caff195001f1"
+    },
+    "templates/darkflow.css": {
+      "blob": "a92df5068bdaa8baf60e6015cb0eb69420ee1d84",
+      "bytes": 10064,
+      "sha256": "e5076b8450b3e1413297bfa5d2dafc074558cd734fa8465058862bd3ae94c763"
+    },
+    "templates/darkflow.js": {
+      "blob": "7b2620115e7fa5f47c39320ccceac5d5bc49dec8",
+      "bytes": 23670,
+      "sha256": "7bc8d528d8e8257e0746a82c46bf19e5c04b41a0f8f10de84db757543261b0f7"
+    },
+    "templates/darkpool.html.j2": {
+      "blob": "81479d0e1d5e12dae3647018a519e988d71975c0",
+      "bytes": 66643,
+      "sha256": "a75bd3857516afcb0343ac4521a23c0936a4a54ec580df933b8ef6eb5058520c"
+    },
+    "templates/dashboard.html.j2": {
+      "blob": "04c4848a576289c5dac2d7be2b6ccb5d84d6bd83",
+      "bytes": 1489283,
+      "sha256": "50512dbc631b751681c2870df2129dd9f237187bf99fac3ab7818217aa4cd173"
+    },
+    "tests/darkflow_browser.py": {
+      "blob": "a2e525c8effadefc20266e8e3dcd9d7fc6b38409",
+      "bytes": 15180,
+      "sha256": "e090f4c516530594e4decd00c32fb97419a7e55af60c07e07021adadcba91d24"
+    },
+    "tests/test_ci_pack.py": {
+      "blob": "f5b460b65bcc9bf28a5ae6dc07f4162ca79a9c55",
+      "bytes": 450716,
+      "sha256": "a90b8a01d02078f1db454c335972efb02a6b4102e9520287d702fe632d6f4daf"
+    },
+    "tests/test_darkflow_index.py": {
+      "blob": "82f83fd205226b718b30cd19b4cb954ce44fc940",
+      "bytes": 7322,
+      "sha256": "007800edd2d0b665368ab676a609f43884050e8e523435b633b13a127b420896"
+    },
+    "tests/test_darkflow_publish.py": {
+      "blob": "6ae084bebd18dda1b3a005b81551e19154e27cae",
+      "bytes": 13862,
+      "sha256": "353b4ffcb0fd4cf9c85a8eab199bffd985bcc7d44d22f83f8d339cad6a05ce26"
+    }
+  },
+  "source_snapshot_tree_before_evidence": "017b8baeb62c52e438456ede31da944e12da255b"
+}

@@ -16,8 +16,8 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | biopharma-seasonality-intelligence | 7 |
 | blocked-entry-override | 2 |
 | btc-vector | 6 |
-| capital-structure-intelligence | 20 |
-| causal-hypothesis-factory | 9 |
+| capital-structure-intelligence | 21 |
+| causal-hypothesis-factory | 10 |
 | cbf | 2 |
 | ccw | 10 |
 | china-alpha | 25 |
@@ -118,7 +118,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | tier | count |
 |---|---|
 | display | 382 |
-| infrastructure | 162 |
+| infrastructure | 164 |
 | scored | 5 |
 | shadow | 103 |
 
@@ -126,7 +126,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 
 | storage | count |
 |---|---|
-| git | 612 |
+| git | 614 |
 | git+r2 | 3 |
 | gitignored-local | 19 |
 | r2 | 18 |
@@ -207,6 +207,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | capital-structure-review-queue | `data/capital_structure/review_queue.parquet` | parquet | collect | infrastructure | 1 | 0 |
 | capital-structure-telemetry | `data/capital_structure/telemetry.json` | json | collect | infrastructure | 1 | 0 |
 | capital-structure-document-term-observations | `data/capital_structure/document_term_observations.parquet` | parquet | collect | infrastructure | 0 | 0 |
+| capital-structure-document-term-parse-receipts | `data/capital_structure/document_term_parse_receipts.jsonl` | jsonl | collect | infrastructure | 0 | 0 |
 | site-capital-structure-projection | `site/capital-structure-data/latest.json` | json | collect | display | 0 | 0 |
 
 ### causal-hypothesis-factory
@@ -216,6 +217,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | causal-confluence-audit | `data/neuralweb/causal_confluence_audit.json` | json | daily-engine | shadow | 2 | 0 |
 | causal-nulls | `data/neuralweb/causal_nulls.jsonl` | jsonl | weekly | display | 2 | 0 |
 | causal-edges | `data/neuralweb/causal_edges.jsonl` | jsonl | weekly | display | 1 | 0 |
+| causal-filing-budget | `data/neuralweb/causal_filing_budget.jsonl` | jsonl | on-demand | infrastructure | 1 | 0 |
 | causal-frontier | `data/neuralweb/causal_frontier.json` | json | daily-engine | display | 1 | 0 |
 | causal-lab-state | `data/neuralweb/causal_lab_state.json` | json | daily-engine | display | 1 | 0 |
 | causal-llm-lane | `data/neuralweb/causal_llm_lane.json` | json | daily-engine | infrastructure | 1 | 0 |

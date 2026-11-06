@@ -3,6 +3,17 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const root=path.resolve(__dirname,'../..');
 const script=n=>fs.readFileSync(path.join(root,'templates',n),'utf8');
 const tick=()=>new Promise(r=>setImmediate(r));
+// The isolated entry points retain their real lexical shell dependencies.
+// Loading the production helpers also exercises candidate ownership instead
+// of assuming that every return/auth test runs outside the Shared Shell.
+function sharedShellHelpers(owner) {
+ const src=script(owner+'.js');
+ const start=owner==='theme'?'  function _mmShellBridge(':'  function _mmShellPresent(';
+ const end=owner==='theme'?'  function curTheme(':'  function _acctKey(';
+ const from=src.indexOf(start),to=src.indexOf(end,from);
+ assert.ok(from>=0&&to>from,owner+' shell helper source boundaries must exist');
+ return src.slice(from,to);
+}
 function setup(query, capsule, legacy) {
  const ids=['mm-macro-state','mm-macro-query','mm-macro-episodes','mm-macro-note','mm-symbol-form','mm-symbol-input','mm-symbol-summary','mm-grid-list'];
  const elements=Object.fromEntries(ids.map(id=>[id,{innerHTML:'',textContent:'',value:'',events:{},addEventListener(t,f){this.events[t]=f;}}]));
@@ -71,12 +82,12 @@ test('Google launcher does not propagate an off-origin return target',async()=>{
 test('signin resume waits for incumbent session exchange before leaving the callback',async()=>{const target='/market_memory.html?mm_context=exact';const x=onboardReturnHarness('?onboard=resume&code=synthetic&ret='+encodeURIComponent(target));const old=x.loc.href;const p=x.ctx.resumeSignin();await tick();assert.equal(x.loc.href,old);x.settle({data:{session:{user:{id:'fixture'}}}});await p;assert.equal(x.loc.pathname,'/market_memory.html');assert.equal(x.loc.searchParams.get('mm_context'),'exact');assert.equal(x.loc.searchParams.has('code'),false);assert.equal(x.opens.length,0);});
 for(const response of [{data:{session:null}},{error:{message:'synthetic failure'},data:{session:{}}}])test('failed provider exchange keeps the callback and exposes signin recovery',async()=>{const x=onboardReturnHarness('?onboard=resume&code=synthetic');const old=x.loc.href;const p=x.ctx.resumeSignin();await tick();x.settle(response);await p;assert.equal(x.loc.href,old);assert.equal(x.opens.length,1);assert.equal(x.opens[0][0],'signin');});
 
-function lazyFallbackHarness(query) {
+function lazyFallbackHarness(query, bridge) {
  const src=script('theme.js'),code=src.slice(src.indexOf('  function _mmOpenOnboard('),src.indexOf('  function _sdWireCta('));
  const loc=new URL('https://macro.example/market_memory.html'+query),timers=[],scripts=[];
  const nav={get href(){return loc.href;},set href(value){loc.href=new URL(value,loc.href).href;},get origin(){return loc.origin;},get pathname(){return loc.pathname;},get search(){return loc.search;}};
- const ctx={URL,location:nav,window:{},_mmSharedAssetRoot:'/',setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{},document:{createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}}};
- vm.createContext(ctx);vm.runInContext(code,ctx);ctx._mmOpenOnboard('signin');return {loc,timers,scripts};
+ const ctx={URL,location:nav,window:{MMXSharedShell:bridge},_mmSharedAssetRoot:'/',setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{},document:{createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}}};
+ vm.createContext(ctx);vm.runInContext(sharedShellHelpers('theme')+code,ctx);ctx._mmOpenOnboard('signin');return {loc,timers,scripts};
 }
 for(const edge of ['error','timeout'])test('shared lazy signin '+edge+' preserves exact Market Memory fallback intent',()=>{
  const target='/market_memory.html?mm_mode=saved&mm_query=exact&mm_issuer_input=&mm_lang=zh';
@@ -86,6 +97,13 @@ for(const edge of ['error','timeout'])test('shared lazy signin '+edge+' preserve
 });
 for(const query of ['?ret='+encodeURIComponent('https://other.invalid/'),'?ret=%2Fone&ret=%2Ftwo'])test('shared signin fallback refuses ambiguous or off-origin target: '+query,()=>{
  const x=lazyFallbackHarness(query);x.scripts[0].onerror();assert.equal(x.loc.pathname,'/index.html');assert.equal(x.loc.searchParams.has('ret'),false);
+});
+for(const outcome of [true,false,'throw'])test('shell auth candidate owns the handoff without a legacy fallback: '+outcome,()=>{
+ const calls=[],bridge={openAuth(intent){calls.push(intent);if(outcome==='throw')throw new Error('synthetic refusal');return outcome;}};
+ const query='?ret='+encodeURIComponent('/market_memory.html?mm_context=exact&mm_lang=zh');
+ const x=lazyFallbackHarness(query,bridge);
+ assert.deepEqual(calls,['signin']);assert.equal(x.scripts.length,0);assert.equal(x.timers.length,0);
+ assert.equal(x.loc.href,'https://macro.example/market_memory.html'+query);
 });
 
 
@@ -102,7 +120,7 @@ function settingsEntryHarness(query, ready) {
  // Preserve an older ordinary SPY intent, then navigate to the exact source.
  const incoming=location.href;location.href='https://macro.example/market_memory.html?ticker=SPY';window.MarketMemoryIntent.syncReturn();location.href=incoming;
  if(ready)window.MMOnboard={open:mode=>opens.push(mode)};
- const theme=script('theme.js');vm.runInContext(theme.slice(theme.indexOf('  function _mmOpenOnboard('),theme.indexOf('  function _sdWireCta(')),ctx);
+ const theme=script('theme.js');vm.runInContext(sharedShellHelpers('theme')+theme.slice(theme.indexOf('  function _mmOpenOnboard('),theme.indexOf('  function _sdWireCta(')),ctx);
  const expected=window.MarketMemoryIntent.target();ctx._mmOpenOnboard('signin');
  return {ctx,window,location,saved,opens,scripts,timers,expected};
 }
@@ -227,7 +245,7 @@ function profileReader(x, owner) {
  const context={window:x.window,document:{documentElement:docEl},docEl,_prefSyncing:false,_hydrating:false,curTheme:()=> 'light',setTheme(){},setThemeAuto(){},setLang:v=>x.setLang(v)};
  const theme=script('theme.js'),account=script('account.js');
  const body=owner==='theme' ? theme.slice(theme.indexOf('function _sharedPref('),theme.indexOf('/* Save ONLY the atomics')) : account.slice(account.indexOf('function applyPrefs('),account.indexOf('// S1-01: theme/lang edits'));
- vm.createContext(context);vm.runInContext(body,context);
+ vm.createContext(context);vm.runInContext(sharedShellHelpers(owner)+body,context);
  return language=>owner==='theme' ? context._applyServerPrefs({user_metadata:{lang:language}}) : context.applyPrefs({authenticated:true,prefs:{lang:language}});
 }
 for(const owner of ['theme','account']) {
@@ -250,6 +268,13 @@ for(const owner of ['theme','account']) {
  test(owner+' profile language behavior is unchanged without the page intent API',async()=>{
   const x=setup('?ticker=SPY');await tick();delete x.window.MarketMemoryIntent;const apply=profileReader(x,owner);
   apply('zh');assert.equal(x.lang,'zh');apply('en');assert.equal(x.lang,'en');
+ });
+ test(owner+' profile hydration defers to an existing shell candidate',async()=>{
+  const x=setup('?ticker=SPY');await tick();
+  x.window.MMXSharedShell={openAuth(){throw new Error('profile hydration must not request auth');}};
+  const apply=profileReader(x,owner),before=x.location.href,writes=x.capsuleWrites,reads=x.pending.length;
+  apply('zh');await tick();
+  assert.equal(x.lang,'en');assert.equal(x.location.href,before);assert.equal(x.capsuleWrites,writes);assert.equal(x.pending.length,reads);
  });
 }
 

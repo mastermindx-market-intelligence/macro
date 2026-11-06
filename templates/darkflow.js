@@ -166,9 +166,11 @@
       text('volatility-status', tr('Loading the existing volatility context…', '正在读取现有波动率背景…'));
       try {
         const incoming = await fetchJSON(new URL('basketdata/vol_weather.json', location.href).href, 60000);
+        if(accessStatus)return;
         if (!incoming || !Array.isArray(incoming.chips) || incoming.chips.length > 30) throw new Error('vol-schema');
-        if(accessStatus)return; volatility = incoming; renderVolatility();
+        volatility = incoming; renderVolatility();
       } catch (error) {
+        if(accessStatus){renderAccess();return;}
         if(error.status===401||error.status===403){denyAccess(error.status);return;}
         text('volatility-status', tr('Volatility context is unavailable. Dark Flow is unaffected.', '波动率背景暂不可用，不影响场外交易读数。'));
         get('volatility-retry').hidden = false;
@@ -197,6 +199,7 @@
       });
     }
     function render() {
+      if (accessStatus) { renderAccess(); return; }
       if (!data) return;
       const d=data.display, r=d.reading, stale=Date.now()>Date.parse(data.next_due_at);
       root.dataset.state=stale?'stale':d.mode;
@@ -262,6 +265,7 @@
           || !Array.isArray(incoming.history)||!Array.isArray(incoming.names))throw new Error('generation');
         history=incoming;drawHistory();renderNames();
       } catch(error) {
+        if(accessStatus){renderAccess();return;}
         if(error.status===401||error.status===403){denyAccess(error.status);return;}
         text('history-status',tr('History is unavailable or belongs to a different publication. The dated summary above is retained. Retry after the publication settles.','历史数据暂不可用或版本不同。上方保留已验证日期的摘要，可在发布完成后重试。'));
         get('history-retry').hidden=false;
@@ -271,11 +275,14 @@
       if(loading||accessStatus)return;loading=true;started=true;get('retry').hidden=true;get('access').hidden=true;
       text('status',tr('Reading the latest source-backed observation…','正在读取最新有来源的观测…'));
       try {
-        const incoming=validate(await fetchJSON(new URL(root.dataset.source,location.href).href,120000));
+        const incoming=await fetchJSON(new URL(root.dataset.source,location.href).href,120000);
+        if(accessStatus)return;
+        validate(incoming);
         if(!data||incoming.generation!==data.generation)history=null;
         data=incoming;render();
         if(get('explore').open)await Promise.all([loadHistory(),loadVolatility()]);
       } catch(error) {
+        if(accessStatus){renderAccess();return;}
         if(error.status===401||error.status===403){denyAccess(error.status);return;}
         root.dataset.state='error';
         text('status',data?tr('Update unavailable. The previously loaded, explicitly dated observation remains below.','更新暂不可用。下方保留此前读取且标明日期的观测。'):tr('Observation unavailable. No market reading has been inferred. Use Retry to check again.','观测暂不可用，未推断市场读数。可点击重新读取。'));

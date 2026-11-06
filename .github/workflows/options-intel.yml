@@ -215,7 +215,46 @@ jobs:
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           git config user.name "dashboard-bot"
           git config user.email "actions@users.noreply.github.com"
+          # NARROW PUBLICATION CHAIN (the #4492 law for lanes that stage site/ HTML;
+          # 9a997e9da3f is the raw-tree P0 it guards against): THIS step stages
+          # site/options.html, so it must normalize what it commits, inside the step
+          # and BEFORE the adds. build_options_command renders raw HTML - inline
+          # <style>, no assets/css/<hash>.css ref, stale ?v= - and nothing between it
+          # and this commit step normalizes the page; without the chain the lane
+          # ships a raw brief page and the standing audit
+          # (test_asset_stamp_lane_order) reds it. Order is load-bearing:
+          # shim -> externalize -> stamp, because externalize rewrites the page the
+          # stamp must then see, and both must precede staging.
+          # Deliberately NON-BLOCKING with honest warnings (commodity-sentinel
+          # precedent): the hard gates of this lane stay SKIP_REASON + the required
+          # producer success outcome on this step - a failing sweep must never
+          # strand a brief the producer actually built; that freeze is the defect
+          # this lane exists to repair. Residual: a swallowed sweep failure leaves
+          # options.html un-normalized only until the next full-tree render re-bakes
+          # it - one render window, not the 527-commit class the audit describes.
+          python -m scripts.inject_data_base || echo "data-base shim inject skipped (additive)"
+          python -m scripts.externalize_css || echo "::warning title=externalize::pre-commit css externalize FAILED - options.html may ship un-externalized (9a997e9da3f)"
+          python -m scripts.optimize_assets || echo "::warning title=stamp::asset optimize FAILED - ?v= stamps may be stale"
           git add site/options_intel_brief.json site/options.html
+          # ...and the content-hashed assets the externalized page now links. This
+          # lane keeps the explicit-path staging law - no broad `git add site`: it
+          # owns only its brief, its page, and the assets that page links. Staging
+          # the page WITHOUT its <link>/<script> targets commits a 404 stylesheet,
+          # strictly worse than the inline block it replaced. --ignore-removal is
+          # load-bearing, not stylistic: this push races the render lanes, and an
+          # asset that reads orphaned from this narrow checkout can be live on a
+          # page this lane never rendered - so add and update, NEVER delete;
+          # pruning stays with the full-tree lanes (#3988/#4042). Separate lines:
+          # `git add a b` exits 128 when either pathspec matches nothing.
+          git add --ignore-removal site/assets/css 2>/dev/null || true
+          git add --ignore-removal site/assets/js 2>/dev/null || true
+          # optimize_assets additionally copies the Shared Shell bridge
+          # (site/shared_shell_bridge.js, at the site root) and injects the
+          # shell text that links it into options.html. The directory add above
+          # covers hashed assets; stage the separate exact emitted bridge
+          # asset too, so the one file the injected shell depends on is pinned by
+          # name in this commit - additive only, --ignore-removal, same law.
+          git add --ignore-removal site/shared_shell_bridge.js 2>/dev/null || true
           if git diff --cached --quiet; then echo "no options intel brief change (semantic no-op)"; exit 0; fi
           git commit -m "ad-1: options intelligence brief $(date -u +%F)"
           PUSH_ALARM=420

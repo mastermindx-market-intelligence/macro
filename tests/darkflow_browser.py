@@ -153,6 +153,55 @@ def check(output: Path) -> dict:
                     page.locator('[data-df="retry"]').wait_for(state='visible')
                     record(case+': no fabricated reading',page.locator('#dark-flow').get_attribute('data-state')=='error')
                 context.close()
+            # A denied detail request latches access loss even if an earlier
+            # summary refresh settles later. Barriers control response order;
+            # no sleep or production request is used for these synthetic cases.
+            for denied_status in [401, 403]:
+                for late_status in [200, 503]:
+                    case=f'access-race-{denied_status}-late-{late_status}'
+                    context=browser.new_context(viewport={'width':390,'height':844})
+                    page=context.new_page()
+                    page.on('pageerror', lambda error: errors.append(str(error)))
+                    stale=copy.deepcopy(payload)
+                    stale['next_due_at']='2000-01-01T00:00:00Z'
+                    context.route('**/darkflow_latest.json', lambda route: route.fulfill(
+                        status=200, content_type='application/json', body=json.dumps(stale)))
+                    page.add_init_script("""
+                        (() => {
+                          const original = window.fetch.bind(window);
+                          const race = window.__dfAccessRace = {summaries: 0};
+                          window.fetch = (input, init) => {
+                            const path = new URL(input, location.href).pathname;
+                            if (path.endsWith('/darkflow_history.json')) {
+                              return new Promise(resolve => { race.history = resolve; });
+                            }
+                            if (path.endsWith('/darkflow_latest.json') && ++race.summaries === 2) {
+                              return new Promise(resolve => { race.latest = resolve; });
+                            }
+                            return original(input, init);
+                          };
+                        })();
+                    """)
+                    page.goto(origin+'/darkflow-compact.html')
+                    page.locator('[data-df="value"]').filter(has_text=expected).wait_for()
+                    page.locator('[data-df="explore"] > summary').click()
+                    page.wait_for_function('Boolean(window.__dfAccessRace.history)')
+                    page.locator('[data-df="retry"]').click()
+                    page.wait_for_function('Boolean(window.__dfAccessRace.latest)')
+                    page.evaluate('(status) => window.__dfAccessRace.history(new Response("access denied", {status}))', denied_status)
+                    page.locator('[data-df="access"]').wait_for(state='visible')
+                    page.evaluate("""async ([status, body]) => {
+                        window.__dfAccessRace.latest(new Response(body, {
+                            status, headers: {'Content-Type': 'application/json'}
+                        }));
+                        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                    }""", [late_status, json.dumps(stale)])
+                    state='sign_in_required' if denied_status==401 else 'access_required'
+                    record(case+': denial remains authoritative',page.locator('#dark-flow').get_attribute('data-state')==state)
+                    record(case+': delayed response cannot reveal readings',page.locator('[data-df="body"]').is_hidden())
+                    record(case+': retained reading cleared',page.locator('[data-df="value"]').inner_text()=='—')
+                    record(case+': no retry after access loss',page.locator('[data-df="retry"]').is_hidden())
+                    context.close()
             browser.close()
         record('no component JavaScript exceptions',not errors)
         return {'state':'PASS','checks':checks,'page_errors':errors,'screenshots':shots,
