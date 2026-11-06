@@ -504,9 +504,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-06T07:20:24Z",
+    "built_at": "2026-11-06T09:38:53Z",
     "calculation_as_of": "2026-11-05",
-    "code_version": "3fc4cc0570d00df1d8bcdfd16c5390597b660f8f",
+    "code_version": "2012464520f1da80764b2211ce2637e597e4966a",
     "content_sha256": "09f503e5adc3f9b9f835d9004d6dc1db00aaf139d0eb317dd1a789d5e4c20ae2",
     "generation_id": "financial_conditions-US-09f503e5adc3f9b9",
     "producer": "engine.market_os.macro_workspaces.financial_conditions",
