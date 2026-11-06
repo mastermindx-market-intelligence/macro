@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:07:27Z",
+ "accession": "0000926326-26-000006",
+ "cik": "0000926326",
+ "doc_byte_length": 2316877,
+ "doc_sha256": "44caadf0c11585a78ca9ecda244e8ca5214da407ef6d68d38b9edeb7137ea6b8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "omcl-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1359837,
+  "byte_start": 1359446,
+  "normalized": "The Company has a supply agreement with one primary supplier for construction and supply of several sub-assemblies and inventory management of sub-assemblies used in its hardware products. There are no minimum purchase requirements.",
+  "normalized_sha256": "f82e97ff9136435d926e2d394d45309facd8c0aee59d9813c0b9bb2932897065",
+  "raw": "The Company has a supply agreement with one primary supplier for construction and supply of several sub-assemblies and inventory management of sub-assemblies used in its hardware products. There are <ix:nonFraction unitRef=\"usd\" contextRef=\"c-56\" decimals=\"INF\" name=\"us-gaap:PurchaseObligation\" format=\"ixt:fixed-zero\" scale=\"0\" id=\"f-496\">no</ix:nonFraction> minimum purchase requirements.",
+  "raw_sha256": "b158c805987485aa362a96a3fd240b1df4b43b29749447499bcfdb0d28aad4c3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/926326/000092632626000006/omcl-20251231.htm",
+ "xbrl_contexts": []
+}

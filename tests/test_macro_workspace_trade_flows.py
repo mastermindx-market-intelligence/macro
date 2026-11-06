@@ -961,6 +961,7 @@ def _prior(method=tf.METHOD_VERSION, trade_balance_level=-68000.0,
            gen="trade_flows-US-deadbeefdeadbeef") -> dict:
     prior = _compose(fred_frames=_populated_frames())
     prior["headline"]["method_version"] = method
+    prior["headline"]["effective_date"] = "2026-01-01"
     prior["generation"]["generation_id"] = gen
     for m in prior["metrics"]["items"]:
         if m["metric_id"] == "trade_balance_level":
@@ -975,7 +976,8 @@ def test_changes_no_prior_yields_warmup() -> None:
 
 
 def test_changes_method_mismatch_refuses_numeric_comparison() -> None:
-    snap = _compose(prior_snapshot=_prior(method="trade_flows.compose.v0"))
+    snap = _compose(fred_frames=_populated_frames(),
+                    prior_snapshot=_prior(method="trade_flows.compose.v0"))
     assert snap["changes"]["comparability"] == "METHOD_CHANGED"
     assert snap["changes"]["deltas"] == []
     assert snap["changes"]["null_reason"] == "COMPUTATION_REFUSED"
@@ -1349,3 +1351,42 @@ def test_series_identity_constants_match_the_orchestrator_config() -> None:
 def test_module_workspace_id_constant() -> None:
     assert tf.WORKSPACE_ID == "trade_flows"
     assert tf.__name__.endswith("trade_flows")
+
+
+def _driver_heading_snapshot(workspace_id: str) -> dict:
+    """Empty axes and one driver in each bucket, using the trade record values."""
+    return {
+        "workspace": {"id": workspace_id},
+        "axes": {"items": []},
+        "drivers": {
+            "rate_side": [{
+                "driver_id": "import_price_index_level",
+                "label": {"en": "Import price index", "zh": "进口价格指数"},
+                "value": 152.2,
+            }],
+            "balance_sheet": [{
+                "driver_id": "trade_balance_level",
+                "label": {"en": "Trade balance", "zh": "贸易差额"},
+                "value": -105572.0,
+            }],
+        },
+    }
+
+
+def test_trade_flows_driver_headings_use_disclosed_nouns() -> None:
+    """Trade headings name prices and dollar flows; liquidity keeps the fallback."""
+    from lib.macro_suite_view import _drivers
+
+    trade = _driver_heading_snapshot("trade_flows")
+    trade_groups = _drivers(trade, trade["axes"]["items"])
+    assert trade_groups[0]["title"]["en"] == "Trade prices"
+    assert trade_groups[0]["title"]["zh"] == "贸易价格"
+    assert trade_groups[1]["title"]["en"] == "Dollar flows"
+    assert trade_groups[1]["title"]["zh"] == "美元流量"
+
+    banks = _driver_heading_snapshot("liquidity_central_banks")
+    bank_groups = _drivers(banks, banks["axes"]["items"])
+    assert bank_groups[0]["title"]["en"] == "Rate-side drivers"
+    assert bank_groups[0]["title"]["zh"] == "利率侧驱动"
+    assert bank_groups[1]["title"]["en"] == "Balance-sheet drivers"
+    assert bank_groups[1]["title"]["zh"] == "资产负债表驱动"

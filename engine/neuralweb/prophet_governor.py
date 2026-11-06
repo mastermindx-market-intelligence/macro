@@ -307,8 +307,21 @@ def _build_us_block(repo: Path) -> dict:
         if d is not None:
             n_matured = d.get("n_matured")
             summ = d.get("summary") or {}
+            # The advancer's own verdict on its last forward advance. Carried verbatim so a
+            # dead advancer surfaces HERE rather than as a ledger that merely looks quiet:
+            # the nightly step is non-fatal by design, and for its whole life a masked crash
+            # meant this file never existed at all while the nightly reported success.
+            adv = d.get("advance") or {}
+            if adv.get("status") == "failed":
+                gaps.append(_data_gap(
+                    "bottom_ledger",
+                    f"bottom ledger forward advance FAILED at as_of={adv.get('as_of')} "
+                    f"({adv.get('error')}) — counts below are the last good state, not tonight's"))
             block["bottom_ledger"] = {
                 "as_of": d.get("as_of"),
+                "advance_status": adv.get("status"),
+                "advance_error": adv.get("error"),
+                "n_newly_graded": adv.get("n_newly_graded"),
                 "n_accruing": d.get("n_accruing"),
                 "n_matured": n_matured,
                 "pin5": summ.get("pin5"),           # null until matured

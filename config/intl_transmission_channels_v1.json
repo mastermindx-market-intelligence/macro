@@ -1,0 +1,366 @@
+{
+  "schema": "intl-transmission-channels-v1",
+  "contract_version": "intl-transmission-evidence-v1",
+  "note": "Typed transmission evidence for International Markets (IM17). Candidate sources are listed with their rights-matrix row or null; a null row means no rights decision exists and every value from that source is withheld. Nothing here is a weight.",
+  "pathways": [
+    {
+      "id": "observed_source_stress",
+      "label_en": "Observed source stress",
+      "label_zh": "已观测源头压力",
+      "definition_en": "A qualified observation records stress at the origin market inside its own session."
+    },
+    {
+      "id": "documented_exposure",
+      "label_en": "Documented exposure",
+      "label_zh": "已记录敞口",
+      "definition_en": "A source document records an exposure measure with its units, denominator and as-of date."
+    },
+    {
+      "id": "statistical_association",
+      "label_en": "Statistical association (directional candidate)",
+      "label_zh": "统计关联（方向候选）",
+      "definition_en": "A frozen statistical model reports a directional candidate association without a documented exposure."
+    },
+    {
+      "id": "hypothetical_scenario",
+      "label_en": "Hypothetical scenario",
+      "label_zh": "假设情景",
+      "definition_en": "A scenario or structural prior states a hypothesized link under stated assumptions."
+    },
+    {
+      "id": "observed_recipient_corroboration",
+      "label_en": "Recipient corroboration (US evidence)",
+      "label_zh": "接收方佐证（美国证据）",
+      "definition_en": "An eligible US recipient response is consistent with the proposed channel. It does not establish that the origin produced the response."
+    }
+  ],
+  "glyph_families": [
+    {
+      "id": "flow",
+      "label_en": "Flow",
+      "label_zh": "资金流",
+      "series_token": "--ser-1",
+      "dash": "solid"
+    },
+    {
+      "id": "lending",
+      "label_en": "Lending",
+      "label_zh": "借贷",
+      "series_token": "--ser-2",
+      "dash": "6 4"
+    },
+    {
+      "id": "credit",
+      "label_en": "Credit",
+      "label_zh": "信用",
+      "series_token": "--ser-3",
+      "dash": "2 3"
+    },
+    {
+      "id": "commodity",
+      "label_en": "Commodity",
+      "label_zh": "大宗商品",
+      "series_token": "--ser-4",
+      "dash": "10 4"
+    }
+  ],
+  "channels": [
+    {
+      "id": "dollar_funding",
+      "order": 1,
+      "label_en": "Dollar funding",
+      "label_zh": "美元融资",
+      "glyph_family": "lending",
+      "masterplan_ref": "§8.1",
+      "source_side_en": "Qualified funding or FX pressure at the origin market.",
+      "structural_link_en": "USD liabilities, refinancing needs and cross-border dollar claims of banks.",
+      "recipient_corroboration_en": "A US or global funding response after an eligible measurement interval.",
+      "candidate_sources": [
+        {
+          "source_id": "bis.statistics",
+          "rights_ref": "bis.statistics",
+          "measure_id": "cross_border_usd_claims",
+          "units": "usd_bn",
+          "denominator": "reporting_bank_usd_claims",
+          "exposure_kind": "direct_financial_claims",
+          "interpretation_en": "Cross-border USD claims of reporting banks on the market.",
+          "interpretation_zh": "报告银行对该市场的跨境美元债权。"
+        },
+        {
+          "source_id": "imf.data",
+          "rights_ref": "imf.data",
+          "measure_id": "external_usd_debt",
+          "units": "usd_bn",
+          "denominator": "external_debt_stock",
+          "exposure_kind": "direct_financial_claims",
+          "interpretation_en": "External USD debt stock of the market.",
+          "interpretation_zh": "该市场的对外美元债务存量。"
+        }
+      ]
+    },
+    {
+      "id": "sovereign_banking",
+      "order": 2,
+      "label_en": "Sovereign / banking",
+      "label_zh": "主权与银行",
+      "glyph_family": "credit",
+      "masterplan_ref": "§8.1",
+      "source_side_en": "Sovereign or bank stress at the origin market.",
+      "structural_link_en": "Qualified cross-border banking claims and documented holdings.",
+      "recipient_corroboration_en": "A US bank or credit response, with global factors retained.",
+      "candidate_sources": [
+        {
+          "source_id": "bis.statistics",
+          "rights_ref": "bis.statistics",
+          "measure_id": "us_bank_consolidated_claims",
+          "units": "usd_bn",
+          "denominator": "us_reporting_bank_claims",
+          "exposure_kind": "direct_financial_claims",
+          "interpretation_en": "US banks' consolidated claims on the market.",
+          "interpretation_zh": "美国银行对该市场的合并债权。"
+        }
+      ]
+    },
+    {
+      "id": "portfolio_fund_ownership",
+      "order": 3,
+      "label_en": "Portfolio / fund ownership",
+      "label_zh": "组合与基金持仓",
+      "glyph_family": "flow",
+      "masterplan_ref": "§8.1",
+      "source_side_en": "Local asset repricing and liquidity pressure.",
+      "structural_link_en": "Shared investor holdings, fund exposures or measured redemptions where available; positions are not treated as observed sales.",
+      "recipient_corroboration_en": "Related US assets or funds respond inside a plausible window.",
+      "candidate_sources": [
+        {
+          "source_id": "us_treasury_tic",
+          "rights_ref": null,
+          "measure_id": "us_holdings_of_securities",
+          "units": "usd_bn",
+          "denominator": "us_portfolio_holdings",
+          "exposure_kind": "fund_holdings",
+          "interpretation_en": "US portfolio holdings of the market's securities.",
+          "interpretation_zh": "美国对该市场证券的组合持仓。"
+        },
+        {
+          "source_id": "ishares_ucits_holdings.legacy_configured_funds",
+          "rights_ref": "ishares_ucits_holdings.legacy_configured_funds",
+          "measure_id": "fund_constituent_weight",
+          "units": "percent_of_fund",
+          "denominator": "fund_net_assets",
+          "exposure_kind": "fund_holdings",
+          "interpretation_en": "Constituent weight of the market inside the configured funds.",
+          "interpretation_zh": "已配置基金中该市场成份股权重。"
+        }
+      ]
+    },
+    {
+      "id": "trade_earnings",
+      "order": 4,
+      "label_en": "Trade / earnings",
+      "label_zh": "贸易与盈利",
+      "glyph_family": "flow",
+      "masterplan_ref": "§8.1",
+      "source_side_en": "A local economic or policy shock at the origin market.",
+      "structural_link_en": "Company revenue, supply-chain and import or export relationships.",
+      "recipient_corroboration_en": "Relevant US sectors or companies respond inside a plausible window.",
+      "candidate_sources": [
+        {
+          "source_id": "licensed_global_feed.us_exposure",
+          "rights_ref": "licensed_global_feed.us_exposure",
+          "measure_id": "us_company_revenue_from_market",
+          "units": "percent_of_revenue",
+          "denominator": "company_revenue",
+          "exposure_kind": "operating_revenue",
+          "interpretation_en": "US company revenue attributable to the market.",
+          "interpretation_zh": "美国公司来自该市场的收入。"
+        },
+        {
+          "source_id": "us_census_trade",
+          "rights_ref": null,
+          "measure_id": "us_imports_from_market",
+          "units": "usd_bn",
+          "denominator": "us_total_imports",
+          "exposure_kind": "production_import",
+          "interpretation_en": "US imports of goods from the market.",
+          "interpretation_zh": "美国自该市场进口的商品金额。"
+        }
+      ]
+    },
+    {
+      "id": "commodity_terms_of_trade",
+      "order": 5,
+      "label_en": "Commodity / terms of trade",
+      "label_zh": "大宗商品与贸易条件",
+      "glyph_family": "commodity",
+      "masterplan_ref": "§8.1",
+      "source_side_en": "A commodity shock or local resource sensitivity at the origin.",
+      "structural_link_en": "Export and import dependence, sector composition and company exposure.",
+      "recipient_corroboration_en": "Receiver earnings, credit or equity sensitivity is consistent with the channel.",
+      "candidate_sources": [
+        {
+          "source_id": "usda_fas",
+          "rights_ref": null,
+          "measure_id": "us_ag_trade_with_market",
+          "units": "usd_bn",
+          "denominator": "us_ag_trade",
+          "exposure_kind": "production_import",
+          "interpretation_en": "US agricultural trade with the market.",
+          "interpretation_zh": "美国与该市场的农产品贸易金额。"
+        }
+      ]
+    },
+    {
+      "id": "leverage_liquidity",
+      "order": 6,
+      "label_en": "Leverage / liquidity",
+      "label_zh": "杠杆与流动性",
+      "glyph_family": "credit",
+      "masterplan_ref": "§8.1",
+      "source_side_en": "Widening spreads, volatility and deteriorating liquidity.",
+      "structural_link_en": "Qualified leverage, collateral or common-position evidence.",
+      "recipient_corroboration_en": "Broader deleveraging evidence beyond a second correlated price chart.",
+      "candidate_sources": []
+    },
+    {
+      "id": "common_global_shock",
+      "order": 7,
+      "label_en": "Common global shock",
+      "label_zh": "共同全球冲击",
+      "glyph_family": null,
+      "masterplan_ref": "§8.1",
+      "source_side_en": "Global rates, broad USD, risk or commodity moves.",
+      "structural_link_en": "Shared factor exposure across markets.",
+      "recipient_corroboration_en": "Simultaneous international weakness may fit this alternative better than a bilateral transmission.",
+      "candidate_sources": []
+    }
+  ],
+  "exposure_kinds": [
+    "operating_revenue",
+    "production_import",
+    "direct_financial_claims",
+    "fund_holdings",
+    "shared_factor_sensitivity"
+  ],
+  "evidence_families": [
+    "equity",
+    "fx",
+    "rates_credit",
+    "funding",
+    "commodity",
+    "positioning"
+  ],
+  "indicator_families": {
+    "equity_index_return": "equity",
+    "equity_etf_return": "equity",
+    "equity_volatility": "equity",
+    "constituent_breadth": "equity",
+    "fx_spot_return": "fx",
+    "fx_volatility": "fx",
+    "sovereign_spread": "rates_credit",
+    "local_rates": "rates_credit",
+    "bank_credit_spread": "rates_credit",
+    "corporate_credit_spread": "rates_credit",
+    "cross_currency_basis": "funding",
+    "usd_funding_spread": "funding",
+    "commodity_price": "commodity",
+    "fund_flows": "positioning"
+  },
+  "receivers": [
+    {
+      "id": "us_broad_equity",
+      "label_en": "US broad equity",
+      "label_zh": "美国大盘股票",
+      "evidence_family": "equity"
+    },
+    {
+      "id": "us_credit",
+      "label_en": "US credit",
+      "label_zh": "美国信用",
+      "evidence_family": "rates_credit"
+    },
+    {
+      "id": "us_funding",
+      "label_en": "US funding",
+      "label_zh": "美国融资",
+      "evidence_family": "funding"
+    }
+  ],
+  "receiver_session": {
+    "tz": "America/New_York",
+    "open": "09:30",
+    "close": "16:00",
+    "basis": "regular session hours; early closes are not modelled"
+  },
+  "global_factors": [
+    {
+      "id": "broad_usd",
+      "label_en": "Broad dollar",
+      "label_zh": "广义美元",
+      "source_id": "intl-global-dollar-credit-v1:broad_dollar",
+      "rights_ref": null
+    },
+    {
+      "id": "us_rates",
+      "label_en": "US real yields",
+      "label_zh": "美国实际利率",
+      "source_id": "intl-global-dollar-credit-v1:us_real_yield_10y",
+      "rights_ref": null
+    },
+    {
+      "id": "global_risk",
+      "label_en": "Global risk appetite",
+      "label_zh": "全球风险偏好",
+      "source_id": null,
+      "rights_ref": null
+    },
+    {
+      "id": "global_commodity",
+      "label_en": "Global commodity prices",
+      "label_zh": "全球大宗商品",
+      "source_id": null,
+      "rights_ref": null
+    }
+  ],
+  "structural_graph": {
+    "model_id": "contagion_links",
+    "structural_version": "structural.v1",
+    "markets": ["us", "cn", "hk", "ca", "kr", "jp", "tw", "in", "au", "gb", "ez"],
+    "access": "read_only",
+    "nature_en": "Hand-authored structural prior; not a measured exposure."
+  },
+  "statistical_model": {
+    "model_id": "contagion_dy_var_14etf",
+    "access": "read_only",
+    "etf_basket": ["EWJ", "EWG", "EWU", "EWC", "EWA", "EWL", "EWZ", "EWW", "INDA", "EIDO", "EZA", "EWY", "EEM", "SPY"],
+    "etf_market": {
+      "EWJ": "JP",
+      "EWG": "DE",
+      "EWU": "GB",
+      "EWC": "CA",
+      "EWA": "AU",
+      "EWL": "CH",
+      "EWZ": "BR",
+      "EWW": "MX",
+      "INDA": "IN",
+      "EIDO": "ID",
+      "EZA": "ZA",
+      "EWY": "KR",
+      "EEM": null,
+      "SPY": "US"
+    },
+    "nature_en": "Frozen 14-ETF connectedness estimate; a statistical association, not a causal map."
+  },
+  "thresholds": {
+    "PERSISTENCE_MIN_SESSIONS": 2,
+    "COMMON_SHOCK_MIN_MARKETS": 3,
+    "COMMON_SHOCK_MIN_REGIONS": 2,
+    "CORROBORATION_MIN_FAMILIES": 2,
+    "threshold_rationale_en": {
+      "PERSISTENCE_MIN_SESSIONS": "Two consecutive outside-range sessions separate a persistent stress read from a single-session move.",
+      "COMMON_SHOCK_MIN_MARKETS": "Three simultaneously stressed markets are the smallest breadth a shared-factor story can plausibly cover.",
+      "COMMON_SHOCK_MIN_REGIONS": "Two regions keep a single-region cluster from standing in for global breadth.",
+      "CORROBORATION_MIN_FAMILIES": "Two independent evidence families are required before any corroboration wording is used."
+    }
+  }
+}
