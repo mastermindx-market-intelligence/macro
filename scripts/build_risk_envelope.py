@@ -821,8 +821,12 @@ def site_path(root: Path | None = None) -> Path:
 def build(root: Path | None = None, now: datetime | None = None) -> dict[str, Any]:
     """Read the settled artifacts and compose the envelope. Returns the envelope dict."""
     root = root or _REPO_ROOT
+    from scripts.risk_envelope_multi_asset import build_multi_asset_context
+
+    multi_asset_context = build_multi_asset_context(root, now=now)
     now = now or datetime.now(timezone.utc)
-    stamp = now.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    # Preserve subsecond capture ordering for the optional read receipt.
+    stamp = now.isoformat().replace("+00:00", "Z")
 
     market_state = _read_json(root / "data" / "market_state" / "latest.json")
     leadership = _read_json(root / "data" / "leadership_crack" / "latest.json")
@@ -858,6 +862,7 @@ def build(root: Path | None = None, now: datetime | None = None) -> dict[str, An
         as_of=session,
         stale_after=None,
         revision="settled",
+        multi_asset_context=multi_asset_context,
     )
 
 

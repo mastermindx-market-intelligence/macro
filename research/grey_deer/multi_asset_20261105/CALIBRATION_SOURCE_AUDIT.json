@@ -1,0 +1,98 @@
+{
+  "baked_minimum_lift": 1.2,
+  "capital_policy_changed": false,
+  "historical_experiments_rerun": false,
+  "market_data_recollected": false,
+  "model_recalibration": false,
+  "overlay_at_revision": {
+    "path": "data/risk_radar/calibration.json",
+    "present": false
+  },
+  "overlay_implementation": {
+    "runtime_overlay_inspected": false,
+    "updates_alert_from": true,
+    "updates_bands": true,
+    "updates_existing_leg_fields": true,
+    "updates_probability_calibration": true,
+    "updates_scare_weights": false
+  },
+  "probability_evidence": {
+    "class": "reconstructed_historical",
+    "declared_hash_matches": true,
+    "limitations": [
+      "Overlapping forward windows are not independent episodes.",
+      "Reconstructed historical states are not genuinely issued forecasts.",
+      "Exact-cell evidence supports a risk gradient, not actuarial precision."
+    ],
+    "path": "data/risk_radar/probability_evidence.json",
+    "precision_grade": false,
+    "sha256": "cdc8fe875225a4aa69a345e38ad8b179e9e970ab5380a5d4d2eec25021476381",
+    "underlying_path": "research/grey_deer/evidence/displayed-probability-audit-20260922/result.json",
+    "underlying_present": true,
+    "underlying_sha256": "eb9d4bfd75a18199789a8306ea948aba17e84693ad24e081134feba0751c09ea",
+    "use": "Display evidence depth only; never calibration, gating, sizing or authority."
+  },
+  "radar_source_sha256": "31668c7fe097cdf631edb6cca6e77990b40afdb3d4cb37d27596336689afe70d",
+  "ruling": "Do not reuse historical docstring performance as effective calibrated forecast evidence. Preserve existing no-promotion results. Reconcile runtime overlay and serving generation before predictive or policy activation.",
+  "schema": "multi_asset.calibration_source_audit.v1",
+  "scope": "immutable_source_only_not_runtime_configuration_or_new_validation",
+  "selected_baked_legs": {
+    "bubble_ext": {
+      "era_robust": false,
+      "lead_d": 10,
+      "lift_2020": 2.34,
+      "lift_full": 1.0,
+      "passes_source_threshold": true,
+      "thr_pct": 0.9
+    },
+    "bubble_leadership": {
+      "era_robust": false,
+      "lead_d": 12,
+      "lift_2020": 0.38,
+      "lift_full": 0.85,
+      "passes_source_threshold": false,
+      "thr_pct": 0.9
+    },
+    "credit_oas_roc": {
+      "era_robust": true,
+      "lead_d": 10,
+      "lift_2020": 1.23,
+      "lift_full": 1.76,
+      "passes_source_threshold": true,
+      "thr_pct": 0.9
+    },
+    "growth_cyc_def": {
+      "era_robust": false,
+      "lead_d": 12,
+      "lift_2020": 1.63,
+      "lift_full": 1.41,
+      "passes_source_threshold": true,
+      "thr_pct": 0.9
+    },
+    "growth_defensives": {
+      "era_robust": false,
+      "lead_d": 12,
+      "lift_2020": 1.62,
+      "lift_full": 0.78,
+      "passes_source_threshold": true,
+      "thr_pct": 0.9
+    },
+    "rates_move": {
+      "era_robust": false,
+      "lead_d": 15,
+      "lift_2020": 1.52,
+      "lift_full": 1.83,
+      "passes_source_threshold": true,
+      "thr_pct": 0.9
+    },
+    "vol_term": {
+      "era_robust": false,
+      "lead_d": 8,
+      "lift_2020": 0.44,
+      "lift_full": 0.85,
+      "passes_source_threshold": false,
+      "thr_pct": 0.9
+    }
+  },
+  "source_revision": "20959c5e8183f44678df4dbfc26ac246665ba2bf"
+}

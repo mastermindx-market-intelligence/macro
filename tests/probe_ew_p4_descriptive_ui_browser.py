@@ -301,7 +301,7 @@ def warning_ink(page, label: str) -> dict:
     return out
 
 
-def run(output: Path) -> dict:
+def run(output: Path, *, browser_channel: str | None = None) -> dict:
     output.mkdir(parents=True, exist_ok=True)
     shots = output / "shots"
     shots.mkdir(exist_ok=True)
@@ -314,6 +314,7 @@ def run(output: Path) -> dict:
     report = {
         "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
         "production_authenticated": False,
+        "browser_channel": browser_channel or "playwright_chromium",
         "source_revision": source_revision,
         "base": BASE,
         "capture_mode": "dialog_unclipped_static_harness",
@@ -330,7 +331,7 @@ def run(output: Path) -> dict:
     journey_c_env = fixture("journey_c_envelope_1d253e1d")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=True, channel=browser_channel)
         try:
             # ── matrix: 3 case-families × lang × theme × 4 widths = 48 shots ──
             families = [
@@ -553,8 +554,9 @@ def run(output: Path) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--output", default="research/evidence/ew_p4_descriptive_ui_20261031")
+    ap.add_argument("--browser-channel", choices=["chrome", "chromium"], default=None)
     args = ap.parse_args()
-    report = run(Path(args.output))
+    report = run(Path(args.output), browser_channel=args.browser_channel)
     print(f"{len(report['cases'])} shots -> {args.output}")
     print(f"keyboard cases: {[ (k, v) for k, v in [(c['surface'] + '@' + str(c['width']), c['keyboard_details']) for c in report['cases'] if c['keyboard_details']] ]}")
     return 0

@@ -1,0 +1,50 @@
+{
+  "base_revision": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
+  "current_main_read": "b6743c6087eae3ac142277783d02318c12b77da1",
+  "fabric": {
+    "accepted": false,
+    "code_returned": false,
+    "rc": 75,
+    "reason": "host_temperature_at_or_above_limit",
+    "redispatched": false,
+    "result_sha256": "acbf7f59c28a58d38d05fcb162c9099323330aef562dcceb712df4a3a7bbe382",
+    "root_id": "multiasset-risk-20261105-sol",
+    "run_id": "multiasset-core-20261105-a",
+    "state": "TERMINAL"
+  },
+  "independent_review_claimed": false,
+  "legacy_visual_receipt": "INVALIDATED_BY_ADDITIVE_RADAR_TEMPLATE_CHANGE; exact-source 68-case recapture is next; guard unchanged",
+  "live_capital_authority": false,
+  "owned_path_drift": "Only disjoint Prophet intake CI enrollment moved; no overlap in Radar/composer/schema/Agent OS paths.",
+  "predictive_qualification": false,
+  "production_acceptance": false,
+  "review_kind": "SELF_REVIEWED",
+  "schema": "multi_asset.local_verification.v1",
+  "source_commit_pending": true,
+  "test_logs": {
+    "browser_verification.log": {
+      "sha256": "0df7362b41b93d780630bdebe0938168e1a1d8cf295a7ee8147809fa6bb5e99c",
+      "summary": [
+        "{\"status\": \"PASS\", \"context_status\": \"STALE\", \"coverage\": {\"requested\": 11, \"observed\": 10, \"comparable\": 9, \"invalid_sources\": 0}, \"browser_cases\": 16, \"screenshots\": 4, \"receipt\": \"/Volumes/Mastermind/agent-workspaces/macro/web/multiasset-risk-20261105-sol/research/grey_deer/multi_asset_20261105/evidence/receipt.json\"}"
+      ]
+    },
+    "contract_ui_tests.log": {
+      "sha256": "0ad98e0224035273145d74e43173d049785e49f6ef37eaa568ab3435c846e924",
+      "summary": [
+        "56 passed, 6 warnings in 6.68s"
+      ]
+    },
+    "focused_tests.log": {
+      "sha256": "4c43ff5afefb6c25769f62045ea3766bf3185e30581997985344a74718be13f6",
+      "summary": [
+        "594 passed, 2 skipped, 6 warnings, 51 subtests passed in 108.92s (0:01:48)"
+      ]
+    },
+    "legacy_receipt_check.log": {
+      "sha256": "590c2ed7061befd68768244ad6b44b3b56c9e7796b27dbb4207816c55b6eb7b6",
+      "summary": [
+        "FAILED tests/test_ew_p4_descriptive_ui.py::test_receipt_shots_depict_the_source_under_test"
+      ]
+    }
+  }
+}

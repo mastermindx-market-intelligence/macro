@@ -584,6 +584,11 @@
             </details>
           </div>
           {% endif %}
+          {# Multi-asset context is settled, descriptive and non-voting. #}
+          {% if _re.get('multi_asset_context') is not none %}
+            {% set multi_asset_context = _re.get('multi_asset_context') %}
+            {% include 'risk_envelope/_multi_asset_context.html.j2' %}
+          {% endif %}
           <div class="gde-tblwrap">
             {# Explicit table roles: below 481 px the cells become block/grid boxes, which
                drops the implicit table semantics in WebKit; the header row stays readable. #}
