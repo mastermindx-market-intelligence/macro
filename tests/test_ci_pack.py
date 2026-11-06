@@ -5473,9 +5473,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_670),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5483,6 +5483,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-06 Shared Shell publication cue (#10609): hosted contract-delta
+    run 42289885144 / job 128140223968 measured tested merge
+    f49d84920b58d84495ee6cc29e8fdd62eff5f803 against exact base
+    f929573ccf1ea8142fa0e6728f70d49f94324457. Each probe retains its selected
+    jobs and adds exactly two estimated-weight units: index 5912 -> 5914,
+    free-content 5927 -> 5929, Prophet 5668 -> 5670; no new selected jobs.
+    All 389 manifest job blocks were compared; only data-base-shim changes,
+    adding tests/test_shared_shell_publication_delta.py to its incumbent
+    command (weight 23 -> 25). Retain every suite, separate semantic step and
+    post-step repository-integrity check. Fund exactly this measured coverage
+    addition; job/pack ceilings, selectors, execution timeouts, observed-weight
+    overrides and admission limits remain unchanged. These are deterministic
+    planner estimates, not measured execution times or final CI acceptance.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
