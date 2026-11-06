@@ -2953,7 +2953,10 @@ def _run_fabric_ask(question, context_ticker, root, budget, *, selected, factory
                 result = {"answer": answer, "citations": citations, "tool_call_census": census,
                           "disclaimer": _DISCLAIMER, "is_context_only": True,
                           "degraded": bool(filtered or leaked), "mode": "live",
-                          "provider": provider["provider"], "model": provider["model"],
+                          **({"provider": response.application_observation.document["routing"]["pool"],
+                              "model": response.application_observation.document["serving_model"]}
+                             if provider.get("_fabric_auto_inspection") is not None else {
+                              "provider": provider["provider"], "model": provider["model"]}),
                           "operation_id": operation_id}
                 break
             batch = _ask_fabric_tool_batch(response, schemas, seen_ids, budget - used)

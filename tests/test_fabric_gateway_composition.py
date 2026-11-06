@@ -354,7 +354,7 @@ def test_admin_auth_and_csrf_refuse_before_gateway(gateway_module, tmp_path,
     assert snapshot["shared_used_in_window"] == 0
 
 
-def configure_owned_application(monkeypatch, root, url):
+def configure_owned_application(monkeypatch, root, url, *, service_mode_id=None):
     """Synthetic qualification; use the real owner, policy and capability broker."""
     import time
     import yaml
@@ -370,20 +370,33 @@ def configure_owned_application(monkeypatch, root, url):
         "fabric:paired-owner", "paired_owner_capability",
         qualified=True, application_allowed=True,
     )
-    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, "paired_fixture_v1", transport)
+    transport_id, record_id = "paired_fixture_v1", "shared_fabric"
+    lanes = ["brain", "admin-orchestrator"]
+    if service_mode_id is not None:
+        from dataclasses import replace
+        transport_id, lane = {
+            "macro_brain_fabric": ("native_go_macro_brain_v1", "brain"),
+            "macro_ask_fabric": ("native_go_macro_ask_v1", "ask-brain"),
+        }[service_mode_id]
+        record_id, lanes = service_mode_id, [lane]
+        # This fixture proves startup identity with the historical HTTP owner;
+        # native B/A protocol is independently exercised by its paired suite.
+        transport = replace(owner._APPLICATION_FABRIC_TRANSPORTS[transport_id],
+            base_url=url, provider_id="fixture-provider", model=MODEL, cost_basis="unknown",
+            protocol="openai_chat_v1", qualified=True, application_allowed=True)
+    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, transport_id, transport)
     document = json.loads((source / "provider_production_modes.v1.json").read_text())
     row = {key: getattr(transport, key) for key in owner._APPLICATION_IDENTITY_FIELDS}
-    row.update(transport_id="paired_fixture_v1", enabled=True, application_allowed=True,
+    row.update(transport_id=transport_id, enabled=True, application_allowed=True,
                qualification=owner.PROFILE_QUALIFIED_CANARY,
                qualification_ref="fixture:paired-source-only", qualified_until=time.time()+3600)
-    document["application_fabric_modes"] = {"shared_fabric": row}
+    document["application_fabric_modes"] = {record_id: row}
     (config / "provider_production_modes.v1.json").write_text(json.dumps(document))
-    manifest = {"capabilities": [{"capability_id": "paired_owner_capability",
-        "secret_ref": "TEST_FABRIC_PROXY_TOKEN", "kill_state": "active",
-        "allowed_lanes": ["brain", "admin-orchestrator"]}]}
+    manifest = {"capabilities": [{"capability_id": transport.capability_id,
+        "secret_ref": transport.secret_ref, "kill_state": "active", "allowed_lanes": lanes}]}
     path = config / "capability_manifest.yml"
     path.write_text(yaml.safe_dump(manifest))
-    monkeypatch.setenv("TEST_FABRIC_PROXY_TOKEN", PROXY_TOKEN)
+    monkeypatch.setenv(transport.secret_ref, PROXY_TOKEN)
     monkeypatch.setenv("MM_PROVIDER_APPLICATION_MODE", "shared_fabric")
     monkeypatch.setenv("MM_PROVIDER_WORKLOAD_PROFILE", "site_interactive")
     return path, manifest
@@ -435,7 +448,7 @@ def test_public_http_startup_owner_composes_real_brain_and_gateway(
     main.app.dependency_overrides[main._brain_user_or_guest] = lambda: user
     try:
         with owner_gateway(gateway_module, tmp_path, [packet(tool=True), packet()]) as (url, calls, wire, asgi):
-            configure_owned_application(monkeypatch, tmp_path, url)
+            configure_owned_application(monkeypatch, tmp_path, url, service_mode_id="macro_brain_fabric")
             main._configure_brain_fabric()
             with TestClient(main.app) as client:
                 route = "/api/brain/stream" if streaming else "/api/brain/chat"

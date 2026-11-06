@@ -303,16 +303,33 @@ def _is_safe_tool_token(value) -> bool:
     return isinstance(value, str) and bool(_FABRIC_TOOL_TOKEN_RE.match(value))
 
 
-def _fabric_binding(descriptor) -> tuple[dict | None, str | None]:
+def _fabric_binding(descriptor, *, owned_factory=False, turn_id=None) -> tuple[dict | None, str | None]:
     """Validate a Fabric descriptor.  Returns (binding, reason).
 
-    A descriptor is a FRESH mapping with EXACTLY client, model, provider,
-    cost_basis and cap_id.  The client must expose a callable messages.create;
-    the three tokens must be bounded safe strings; the cost basis must be one
-    of metered / subscription / local / unknown.
+    Fixed descriptors retain the five-field client/model/provider/cost/cap
+    contract. AUTO is a closed three-field descriptor from the exact owned
+    factory/client, with a validated immutable inspection and null model.
+    A caller cannot grant itself AUTO authority by constructing a mapping.
     """
     if not isinstance(descriptor, Mapping):
         return None, "descriptor_not_a_mapping"
+    if descriptor.get("schema") == "mastermind.fabric_application_binding.v2":
+        from engine.fabric_inference_client import validate_auto_inspection
+        if owned_factory is not True or set(descriptor) != {"schema", "client", "inspection"}:
+            return None, "descriptor_keys_invalid"
+        try:
+            identity = validate_auto_inspection(descriptor["inspection"])
+            client = descriptor["client"]
+            if (type(client) is not _NativeFabricClient or client.auto_inspection != identity
+                    or client.model is not None or client.operation_id != turn_id):
+                return None, "descriptor_client_invalid"
+            return {"client": client, "model": None, "provider": None,
+                "cost_basis": "unknown", "cap_id": identity["cap_id"],
+                "_fabric_request_id": turn_id,
+                "_fabric_auto_inspection": json.dumps(identity, sort_keys=True,
+                    separators=(",", ":"), ensure_ascii=False, allow_nan=False)}, None
+        except Exception:
+            return None, "descriptor_auto_invalid"
     if set(descriptor.keys()) != _FABRIC_DESCRIPTOR_KEYS:
         return None, "descriptor_keys_invalid"
     client = descriptor.get("client")
@@ -353,7 +370,7 @@ class _FabricUsage:
 
     __slots__ = ("rounds", "known_rounds", "known_input", "known_output",
                  "input_tokens", "output_tokens", "state", "invalidated",
-                 "uncertainty", "model_usage")
+                 "uncertainty", "model_usage", "last_observation", "last_serving_model")
 
     def __init__(self):
         self.rounds = 0
@@ -366,8 +383,11 @@ class _FabricUsage:
         self.invalidated = False
         self.uncertainty = None
         self.model_usage = {}
+        self.last_observation = None
+        self.last_serving_model = None
 
-    def add_response(self, input_tokens, output_tokens, *, serving_model=None) -> None:
+    def add_response(self, input_tokens, output_tokens, *, serving_model=None,
+                     observation=None, attribution=None) -> None:
         """Account one VALIDATED, trusted response.
 
         Unknown tokens poison the aggregate: it becomes None and stays None,
@@ -375,13 +395,16 @@ class _FabricUsage:
         known again.  The known subtotals survive.
         """
         self.rounds += 1
+        self.last_observation = observation
+        self.last_serving_model = serving_model
         if input_tokens is None or output_tokens is None:
             self._mark_unknown(_FABRIC_UNCERTAINTY_MISSING_USAGE)
             return
         self.known_rounds += 1
         self.known_input += input_tokens
         self.known_output += output_tokens
-        totals = self.model_usage.setdefault(serving_model, [0, 0])
+        key = (serving_model, attribution) if attribution is not None else serving_model
+        totals = self.model_usage.setdefault(key, [0, 0])
         totals[0] += input_tokens
         totals[1] += output_tokens
         if not self.invalidated and self.known_rounds == self.rounds:
@@ -789,6 +812,8 @@ def _run_loop_fabric(messages: list[dict], binding: dict, repo: Path,
     """
     client = binding["client"]
     model = binding["model"]
+    automatic = binding.get("_fabric_auto_inspection") is not None
+    from engine.llm_auth import _fabric_routed_observation, _fabric_observation_attribution
     answer = ""
     # The caller may pass its own usage object and census so that an
     # unexpected failure outside this function still leaves the completed
@@ -818,10 +843,14 @@ def _run_loop_fabric(messages: list[dict], binding: dict, repo: Path,
             observed = (isinstance(exc, FabricInferenceError)
                         and exc.request_id == request_id
                         and exc.observed_usage is not None
-                        and exc.disposition in {"terminal", "effect_unknown"})
+                        and (native_response_owner or exc.disposition in {"terminal", "effect_unknown"}))
             if observed:
+                observation = _fabric_routed_observation(
+                    binding, exc.application_observation, request_id) if automatic else None
                 usage.add_response(*_response_usage({"usage": exc.observed_usage}),
-                    serving_model=exc.serving_model if _is_safe_token(exc.serving_model) else None)
+                    serving_model=exc.serving_model if _is_safe_token(exc.serving_model) else None,
+                    observation=observation,
+                    attribution=_fabric_observation_attribution(binding, observation) if automatic else None)
             if not observed or exc.effect_unknown:
                 usage.invalidate(_FABRIC_UNCERTAINTY_TRANSPORT)
             raise _FabricRefusal("fabric_inference_failed", usage,
@@ -830,12 +859,19 @@ def _run_loop_fabric(messages: list[dict], binding: dict, repo: Path,
         # correlated terminal receipt. Caller tool-policy rejection cannot
         # erase that already observed usage. Generic injected clients retain
         # their existing validate-before-account contract.
+        observation = _fabric_routed_observation(binding,
+            getattr(resp, "application_observation", None), request_id) if automatic else None
         if native_response_owner:
             usage.add_response(*_response_usage(resp),
-                               serving_model=_obj_field(resp, "model"))
-        # The echoed model must equal the BOUND model before anything is done
-        # with the response.
-        if _obj_field(resp, "model") != model:
+                serving_model=_obj_field(resp, "model"), observation=observation,
+                attribution=_fabric_observation_attribution(binding, observation) if automatic else None)
+        if automatic and observation is None:
+            usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
+            raise _FabricRefusal("fabric_model_mismatch", usage, attempted=True, census=census)
+        expected_model = observation.document["routing"]["selected_model"] if automatic else model
+        # AUTO keeps requested model null; this step's validated selection
+        # supplies the concrete response identity before any tool can execute.
+        if _obj_field(resp, "model") != expected_model:
             if not native_response_owner:
                 usage.invalidate(_FABRIC_UNCERTAINTY_UNTRUSTED)
             raise _FabricRefusal("fabric_model_mismatch", usage,
@@ -1011,7 +1047,7 @@ def _append_chat_log(repo: Path, *, model: str, key_source: str | None,
 def _record_ai_costs(repo: Path, *, lane: str, provider: str, model: str | None,
                      key_id: str | None, input_tokens: int, output_tokens: int,
                      cost_basis: str, est_cost_usd: float | None,
-                     note: str = "") -> None:
+                     note: str = "", fabric_route: dict | None = None) -> None:
     """Call lib.ai_costs.record_usage for the orchestrator-chat lane.  NEVER-RAISE.
 
     `note` is passed through to the EXISTING writer's own note field; it
@@ -1029,6 +1065,7 @@ def _record_ai_costs(repo: Path, *, lane: str, provider: str, model: str | None,
             input_tokens=input_tokens, output_tokens=output_tokens,
             cost_basis=cost_basis, est_cost_usd=est_cost_usd,
             note=note, root=repo,
+            **({"fabric_route": fabric_route} if fabric_route is not None else {}),
         )
     except Exception as exc:  # noqa: BLE001
         log.warning("orchestrator_chat._record_ai_costs: %s", exc)
@@ -1060,7 +1097,13 @@ def _fabric_account_turn(repo: Path, *, binding: dict, usage: _FabricUsage,
     """
     note = "" if usage.fully_known else _FABRIC_PARTIAL_KNOWN_NOTE
     estimates = []
-    for model, (input_tokens, output_tokens) in usage.model_usage.items():
+    automatic = binding.get("_fabric_auto_inspection") is not None
+    for key, (input_tokens, output_tokens) in usage.model_usage.items():
+        model, attribution = (key[0], json.loads(key[1])) if automatic else (key, None)
+        actual_provider = attribution["provider"] if automatic else binding["provider"]
+        route = ({name: attribution[name] for name in ("selected_model", "mode", "protocol",
+            "driver", "profile", "source", "recipe_digest", "selection_digest")}
+            if automatic and "selection_digest" in attribution else None)
         if binding["cost_basis"] == "local":
             estimate = 0.0
         elif model is None or binding["cost_basis"] == "unknown":
@@ -1068,17 +1111,26 @@ def _fabric_account_turn(repo: Path, *, binding: dict, usage: _FabricUsage,
         else:
             estimate = _estimate_chat_cost(model, input_tokens, output_tokens, repo)
         estimates.append(estimate)
-        _record_ai_costs(repo, lane="orchestrator-chat", provider=binding["provider"],
+        _record_ai_costs(repo, lane="orchestrator-chat", provider=actual_provider,
                          model=model, key_id=binding["cap_id"], input_tokens=input_tokens,
                          output_tokens=output_tokens, cost_basis=binding["cost_basis"],
-                         est_cost_usd=estimate, note=note)
+                         est_cost_usd=estimate, note=note,
+                         **({"fabric_route": route} if route is not None else {}))
     est_cost = (sum(estimates) if usage.fully_known and estimates
                 and all(value is not None for value in estimates) else None)
-    _append_chat_log(repo, model=binding["model"], key_source=binding["cap_id"],
+    _append_chat_log(repo, model=_fabric_result_identity(binding, usage)["model"], key_source=binding["cap_id"],
                      input_tokens=usage.input_tokens, output_tokens=usage.output_tokens,
                      est_cost_usd=est_cost, degraded=degraded, tool_call_census=census,
                      usage_state=usage.state, usage_uncertainty=usage.uncertainty)
     return est_cost
+
+
+def _fabric_result_identity(binding, usage):
+    if binding.get("_fabric_auto_inspection") is None:
+        return {"provider": binding["provider"], "model": binding["model"]}
+    observation = usage.last_observation
+    return {"provider": observation.document["routing"]["pool"] if observation is not None else "unknown",
+            "model": usage.last_serving_model}
 
 
 def _fabric_degraded_result(repo: Path, *, reason: str, text: str,
@@ -1100,8 +1152,7 @@ def _fabric_degraded_result(repo: Path, *, reason: str, text: str,
         "est_cost_usd": est_cost,
     }
     if binding is not None:
-        out["model"] = binding["model"]
-        out["provider"] = binding["provider"]
+        out.update(_fabric_result_identity(binding, usage))
         out["cost_basis"] = binding["cost_basis"]
         out["cap_id"] = binding["cap_id"]
     if request_id:
@@ -1166,7 +1217,8 @@ def _chat_fabric(repo: Path, msg: str, history, *, fabric_provider_factory,
                     type(exc).__name__)
         return _fabric_degraded_result(repo, reason="fabric_binding_invalid",
                                        text="fabric binding unavailable")
-    binding, reason = _fabric_binding(descriptor)
+    binding, reason = _fabric_binding(descriptor,
+        owned_factory=type(fabric_provider_factory) is ApplicationFabricFactory, turn_id=turn_id)
     if binding is None:
         return _fabric_degraded_result(repo, reason=reason or "fabric_binding_invalid",
                                        text="fabric binding invalid")
@@ -1224,11 +1276,11 @@ def _chat_fabric(repo: Path, msg: str, history, *, fabric_provider_factory,
         est_cost = _fabric_account_turn(repo, binding=binding, usage=usage,
                                         census=census, degraded=False)
         result = _live_result(answer=answer, was_filtered=was_filtered, census=census,
-                              model=binding["model"], key_source=binding["cap_id"],
+                              model=_fabric_result_identity(binding, usage)["model"], key_source=binding["cap_id"],
                               input_tok=usage.input_tokens,
                               output_tok=usage.output_tokens, est_cost=est_cost)
         result.update({
-            "provider": binding["provider"],
+            "provider": _fabric_result_identity(binding, usage)["provider"],
             "cost_basis": binding["cost_basis"],
             "cap_id": binding["cap_id"],
             "usage_state": usage.state,

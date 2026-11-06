@@ -210,6 +210,19 @@ def test_stream_close_after_provider_stops_handlers_and_settles_once(selected_as
 def configure_api(state, monkeypatch):
     import app.main as main
     monkeypatch.setattr(main, "REPO", state.root)
+    # Keep the generic direct-call fixture, and qualify the exact Ask startup
+    # identity separately. No service may silently inherit Admin's record.
+    selected = dataclasses.replace(owner._APPLICATION_FABRIC_TRANSPORTS["native_go_macro_ask_v1"],
+        base_url=state.row["base_url"], provider_id="fixture-provider", model=MODEL,
+        qualified=True, application_allowed=True)
+    monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, "native_go_macro_ask_v1", selected)
+    row = dict(state.row, **{key: getattr(selected, key) for key in owner._APPLICATION_IDENTITY_FIELDS},
+               transport_id="native_go_macro_ask_v1")
+    state.document["application_fabric_modes"]["macro_ask_fabric"] = row
+    state.manifest["capabilities"].append({"capability_id": selected.capability_id,
+        "secret_ref": selected.secret_ref, "kill_state": "active", "allowed_lanes": ["ask-brain"]})
+    monkeypatch.setenv(selected.secret_ref, "synthetic-ask-startup-token")
+    state.save()
     # Both entries are inert recipes, owned by the original app container.
     main._configure_brain_fabric()
     assert main.app.state.ask_fabric_provider_factory.lane == "ask-brain"
