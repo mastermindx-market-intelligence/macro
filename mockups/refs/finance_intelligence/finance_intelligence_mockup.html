@@ -1,0 +1,1795 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../../templates/theme.css">
+<title>Finance Intelligence — dossier (static mockup)</title>
+<meta name="fi-mockup-purpose" content="static visual snapshot for the D1 audit; not product code">
+<!-- No network, no localStorage. The only external asset is the repo's own theme.css (relative link) — it owns the base tokens this file only references. -->
+<style>
+/* =========================================================================
+   Finance Intelligence dossier — static mockup
+   CSS lifted VERBATIM from research/finance/implementation/FINANCE_DOSSIER_
+   DESIGN_SPEC_2026-09-24.md §C.3–§C.11 (round-4, audit #5 frozen head
+   2e5c3df64b8). Tokens only — zero hex/rgb literals. theme.css is not
+   modified by this file.
+   ========================================================================= */
+
+/* ---- C.2 common tokens (always inherited from theme.css) ---- */
+.fi-shell { font-family: var(--font-ui); font-feature-settings: "tnum" 1, "cv11" 1; }
+
+/* ---- C.3 dark block (default) ---- */
+:root,
+html[data-theme="dark"] {
+  --fi-canvas:        var(--bg);
+  --fi-panel:         var(--panel);
+  --fi-panel2:        var(--panel2);
+  --fi-line:          var(--line);
+  --fi-text:          var(--text);
+  --fi-muted:         var(--muted);
+  --fi-link:          var(--link);
+  --fi-spine:         color-mix(in srgb, var(--line) 90%, transparent);
+  --fi-step-fill:     color-mix(in srgb, var(--link) 14%, var(--panel));
+  --fi-step-ring:     color-mix(in srgb, var(--link) 30%, transparent);
+  --fi-chip-observed: color-mix(in srgb, var(--ok)   18%, var(--panel));
+  --fi-chip-watch:    color-mix(in srgb, var(--warn) 18%, var(--panel));
+  --fi-chip-caution:  color-mix(in srgb, var(--info) 14%, var(--panel));
+  --fi-chip-missing:  color-mix(in srgb, var(--muted) 18%, var(--panel));
+  --fi-chip-stale:    color-mix(in srgb, var(--act)  16%, var(--panel));
+  --fi-chip-regime:   color-mix(in srgb, var(--act)  22%, var(--panel));
+}
+/* ---- C.4 light block (own art direction, not a swap) ---- */
+html[data-theme="light"] {
+  --fi-canvas:        var(--bg);
+  --fi-panel:         var(--panel);
+  --fi-panel2:        var(--panel2);
+  --fi-line:          var(--line);
+  --fi-text:          var(--text);
+  --fi-muted:         var(--muted);
+  --fi-link:          var(--link);
+  --fi-spine:         color-mix(in srgb, var(--line) 90%, transparent);
+  --fi-step-fill:     color-mix(in srgb, var(--link) 12%, var(--panel));
+  --fi-step-ring:     var(--link);
+  --fi-chip-observed: color-mix(in srgb, var(--ok)   10%, var(--panel));
+  --fi-chip-watch:    color-mix(in srgb, var(--warn) 10%, var(--panel));
+  --fi-chip-caution:  color-mix(in srgb, var(--info)  8%, var(--panel));
+  --fi-chip-missing:  color-mix(in srgb, var(--muted)  8%, var(--panel));
+  --fi-chip-stale:    color-mix(in srgb, var(--act)   8%, var(--panel));
+  --fi-chip-regime:   color-mix(in srgb, var(--act)  12%, var(--panel));
+}
+
+/* ---- C.5(1) tiered panel elevation — dark vs light ---- */
+.fi-panel,
+.fi-toc {
+  background: var(--fi-panel);
+  border: 1px solid var(--fi-line);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 7%, transparent);
+}
+.fi-panel2,
+.fi-domain,
+.fi-slice,
+.fi-conflict-card,
+.fi-macro-card,
+.fi-exposure-card,
+.fi-falsifier,
+.fi-constraint-row,
+.fi-conflict-side {
+  background: var(--fi-panel2);
+  border: 1px solid var(--fi-line);
+  border-radius: 10px;
+}
+html[data-theme="light"] .fi-panel,
+html[data-theme="light"] .fi-toc {
+  background: var(--fi-panel);
+  border: 1px solid var(--fi-line);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
+    0 6px 20px color-mix(in srgb, var(--text) 5%, transparent);
+}
+html[data-theme="light"] .fi-panel2,
+html[data-theme="light"] .fi-domain,
+html[data-theme="light"] .fi-slice,
+html[data-theme="light"] .fi-conflict-card,
+html[data-theme="light"] .fi-macro-card,
+html[data-theme="light"] .fi-exposure-card,
+html[data-theme="light"] .fi-falsifier,
+html[data-theme="light"] .fi-constraint-row,
+html[data-theme="light"] .fi-conflict-side {
+  background: color-mix(in srgb, var(--panel) 92%, var(--bg));
+  border: 1px solid var(--fi-line);
+  box-shadow: none;
+}
+
+/* ---- C.5(2) freshness rail / pip (attribute-only) ---- */
+.fi-section-head[data-state-freshness]:not([data-state-freshness=""])::before {
+  content: ""; float: left; width: 8px; height: 8px; border-radius: 50%;
+  margin: .5em 8px 0 0; background: var(--fi-fresh-colour);
+}
+.fi-section-head[data-state-freshness="FRESH"] { --fi-fresh-colour: var(--fresh-ok); }
+.fi-section-head[data-state-freshness="FRESH"]::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--fresh-ok) 25%, transparent); }
+.fi-section-head[data-state-freshness="AGING"] { --fi-fresh-colour: var(--warn); }
+.fi-section-head[data-state-freshness="AGING"]::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 25%, transparent); }
+.fi-section-head[data-state-freshness="SOURCE_STALE"] { --fi-fresh-colour: var(--act); }
+.fi-section-head[data-state-freshness="SOURCE_STALE"]::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--act) 25%, transparent); }
+.fi-section-head[data-state-freshness="NO_EVIDENCE"] { --fi-fresh-colour: var(--line); }
+.fi-section-head[data-state-freshness="NO_EVIDENCE"]::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--line) 25%, transparent); }
+html[data-theme="light"] .fi-section-head::before { display: none; }
+html[data-theme="light"] .fi-section-head[data-state-freshness="FRESH"] { border-left: 3px solid var(--fresh-ok); padding-left: 12px; box-shadow: none; }
+html[data-theme="light"] .fi-section-head[data-state-freshness="AGING"] { border-left: 3px solid var(--warn); padding-left: 12px; box-shadow: none; }
+html[data-theme="light"] .fi-section-head[data-state-freshness="SOURCE_STALE"] { border-left: 3px solid var(--act); padding-left: 12px; box-shadow: none; }
+html[data-theme="light"] .fi-section-head[data-state-freshness="NO_EVIDENCE"] { border-left: 3px solid var(--line); padding-left: 12px; box-shadow: none; }
+
+/* ---- C.5(3) focus ring ---- */
+.fi-shell *:focus-visible,
+.fi-drawer *:focus-visible {
+  outline: 1px solid var(--fi-link);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--fi-link) 30%, transparent);
+  border-radius: 6px;
+}
+html[data-theme="light"] .fi-shell *:focus-visible,
+html[data-theme="light"] .fi-drawer *:focus-visible {
+  outline: 2px solid var(--fi-link);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* ---- C.5(4) drawer / scrim ---- */
+.fi-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 92vw);
+  background: var(--fi-panel); border-left: 1px solid var(--fi-line);
+  transform: translateX(100%);
+  transition: transform .22s cubic-bezier(.2,.7,.3,1);
+  display: flex; flex-direction: column; z-index: 80;
+}
+.fi-drawer[hidden] { display: none; }
+.fi-drawer:not([hidden]) { transform: none; }
+html[data-theme="light"] .fi-drawer {
+  border-left: 0;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
+    0 12px 32px color-mix(in srgb, var(--text) 8%, transparent);
+}
+.fi-scrim { background: color-mix(in srgb, var(--bg) 70%, transparent); }
+html[data-theme="light"] .fi-scrim { background: color-mix(in srgb, var(--text) 35%, transparent); }
+
+/* ---- C.5(5) stepper rail / dot ---- */
+.fi-rerating-step[data-active="true"] .fi-step-dot {
+  box-shadow: 0 0 0 4px var(--fi-step-ring);
+  border-color: var(--fi-link);
+}
+.fi-rerating-steps::before {
+  content: ""; position: absolute; left: 5%; right: 5%; top: 7px; height: 2px;
+  background: color-mix(in srgb, var(--text) 14%, transparent);
+  border-radius: 2px; z-index: 0;
+}
+html[data-theme="light"] .fi-rerating-step[data-active="true"] .fi-step-dot {
+  box-shadow: 0 0 0 2px var(--fi-step-ring);
+  background: var(--fi-step-fill);
+  border-color: var(--fi-link);
+}
+html[data-theme="light"] .fi-rerating-steps::before { background: var(--line); }
+
+/* ---- C.5(6) chip base rule ---- */
+.fi-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 8px;
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid var(--fi-line);
+  background: var(--fi-panel);
+  color: var(--fi-text);
+}
+html[data-theme="light"] .fi-chip { background: var(--fi-panel); }
+</style>
+<style>
+/* =========================================================================
+   chunk 2 — shell/layout/stepper/chip-states/responsive (continuation)
+   ========================================================================= */
+
+/* ---- C.6 shell + layout ---- */
+.fi-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 36px) clamp(16px, 3vw, 28px) 80px;
+  background: var(--fi-canvas);
+  color: var(--fi-text);
+}
+.fi-hero { padding: 28px 0 22px; border-bottom: 1px solid var(--fi-line); }
+.fi-kicker { font-size: var(--fs-label); letter-spacing: .09em; text-transform: uppercase; color: var(--fi-muted); margin: 0 0 8px; font-weight: 700; }
+.fi-hero h1 { font-size: var(--fs-h1); font-weight: 800; letter-spacing: -.02em; margin: 0; }
+.fi-deck { font-size: var(--fs-md); line-height: 1.55; margin: 8px 0 0; max-width: 70ch; color: var(--fi-text); }
+.fi-meta { font-size: var(--fs-sm); color: var(--fi-muted); margin: 10px 0 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.fi-meta [aria-hidden] { color: var(--fi-muted); }
+.fi-outer-dossier { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--fi-line); }
+.fi-toc { margin: 18px 0 8px; padding: 12px 16px; border: 1px solid var(--fi-line); border-radius: 12px; background: var(--fi-panel); }
+.fi-toc ol { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+.fi-toc a, .fi-toc-evidence { color: var(--fi-text); text-decoration: none; padding: 4px 8px; border-radius: 7px; background: transparent; border: 0; cursor: pointer; font: inherit; }
+.fi-toc a:hover, .fi-toc-evidence:hover { background: var(--fi-panel2); }
+.fi-section { margin-top: 40px; padding: 20px 24px; }
+.fi-section-title { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.01em; margin: 0 0 4px; }
+.fi-section-title-answer { font-size: var(--fs-h1); font-weight: 800; letter-spacing: -.02em; }
+.fi-section-eyebrow { display: block; font-size: var(--fs-sm); color: var(--fi-muted); font-weight: 400; margin-top: 2px; }
+.fi-section-foot { font-size: var(--fs-sm); color: var(--fi-muted); margin: 12px 0 0; max-width: 75ch; }
+.fi-section-head { padding: 4px 0; }
+
+/* D1 disclosure ("See all N") */
+.fi-disc { margin: 12px 0 0; padding-top: 8px; border-top: 1px solid var(--fi-line); }
+.fi-disc > summary { list-style: none; cursor: pointer; padding: 4px 0; font-size: var(--fs-sm); color: var(--fi-link); }
+.fi-disc > summary::-webkit-details-marker { display: none; }
+.fi-disc > summary::before { content: "+"; display: inline-block; width: 1em; margin-right: 6px; color: var(--fi-muted); }
+.fi-disc[open] > summary::before { content: "\2013"; }
+.fi-disc > summary:focus-visible { outline: 2px solid var(--fi-link); outline-offset: 2px; }
+.fi-disc > table, .fi-disc > ul { margin-top: 8px; }
+
+/* ---- C.7 rerating stepper (primary visual) ---- */
+.fi-slice-picker { margin: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: var(--fs-sm); }
+.fi-slice-select { font: inherit; padding: 4px 8px; border-radius: 7px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); max-width: 100%; min-width: 0; }
+.fi-rerating-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 18px 0 0; padding: 0; list-style: none; position: relative; }
+.fi-rerating-step { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 6px; gap: 6px; }
+.fi-step-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--fi-step-fill); border: 2px solid var(--fi-line); margin-bottom: 4px; }
+.fi-step-label { font-size: var(--fs-sm); font-weight: 600; color: var(--fi-text); }
+.fi-step-metric { font-size: var(--fs-sm); color: var(--fi-muted); font-variant-numeric: tabular-nums; min-height: 1.4em; }
+.fi-step-chip { display: inline-block; font-size: var(--fs-sm); font-weight: 600; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); }
+.fi-step-clock { font-size: var(--fs-sm); color: var(--fi-muted); font-variant-numeric: tabular-nums; }
+.fi-anchor-chip, .fi-history-chip, .fi-valuation-chip, .fi-price-chip, .fi-comparability-chip { display: inline-block; font-size: var(--fs-sm); font-weight: 600; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); }
+.fi-step-evidence { background: transparent; border: 1px solid var(--fi-line); width: 22px; height: 22px; border-radius: 6px; color: var(--fi-muted); cursor: pointer; font-size: var(--fs-sm); }
+.fi-step-evidence:hover { color: var(--fi-text); border-color: var(--fi-muted); }
+.fi-rerating-bridge { font-size: var(--fs-md); color: var(--fi-text); margin: 16px 0 0; max-width: 75ch; }
+
+/* falsifiers list */
+.fi-falsifiers { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+.fi-falsifier { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 6px 10px; font-size: var(--fs-sm); }
+.fi-falsifier-chip { font-size: var(--fs-sm); padding: 1px 7px; border-radius: 999px; border: 1px solid var(--fi-line); }
+.fi-falsifier-statement { color: var(--fi-text); }
+.fi-falsifier-window { color: var(--fi-muted); font-variant-numeric: tabular-nums; }
+
+/* conflicts sub-block */
+.fi-conflicts { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--fi-line); }
+.fi-conflicts-title { font-size: var(--fs-h3); font-weight: 700; margin: 0 0 8px; }
+.fi-conflict-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+.fi-conflict-card { padding: 12px 16px; }
+.fi-conflict-label { font-size: var(--fs-sm); font-weight: 700; display: block; margin-bottom: 6px; }
+.fi-conflict-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fi-conflict-side { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel2); font-size: var(--fs-sm); }
+.fi-conflict-side-statement { display: block; }
+.fi-conflict-side-evidence { margin-top: 4px; font-size: var(--fs-sm); }
+.fi-conflict-foot { font-size: var(--fs-sm); color: var(--fi-muted); margin: 8px 0 0; }
+
+/* stepper chip state colours */
+.fi-step-chip[data-state="OBSERVED"]    { background: var(--fi-chip-observed); }
+.fi-step-chip[data-state="INFERRED"]    { background: var(--fi-chip-watch); }
+.fi-step-chip[data-state="MISSING"]     { background: var(--fi-chip-missing); }
+.fi-step-chip[data-state="CONFLICTING"] { background: var(--fi-chip-caution); }
+.fi-step-chip[data-state="STALE"]       { background: var(--fi-chip-stale); }
+.fi-step-chip[data-state="REGIME_BREAK"],
+.fi-step-chip[data-state="VALUATION_ANCHOR_UNAVAILABLE"],
+.fi-step-chip[data-state="PRICE_BASIS_UNQUALIFIED"] { background: var(--fi-chip-regime); }
+.fi-step-chip[data-state="NOT_APPLICABLE"] { background: var(--fi-panel2); color: var(--fi-muted); }
+</style>
+<style>
+/* =========================================================================
+   chunk 3 — atlas/tables/drawer/responsive (continuation)
+   ========================================================================= */
+
+/* ---- C.8 atlas grid, exposure + macro tables, constraints, system map ---- */
+.fi-domain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
+.fi-domain { padding: 16px 16px 10px; }
+.fi-domain-title { font-size: var(--fs-h3); font-weight: 700; margin: 0 0 8px; }
+.fi-slice-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.fi-slice { display: grid; grid-template-columns: 1fr auto auto; gap: 6px 8px; align-items: center; padding: 6px 8px; border-radius: 8px; background: var(--fi-panel2); }
+.fi-slice-name { font-size: var(--fs-sm); font-weight: 600; color: var(--fi-text); }
+.fi-slice-chip { font-size: var(--fs-sm); font-weight: 600; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); }
+.fi-slice-chip[data-state-slice="SEMANTIC_ONLY"] { background: var(--fi-chip-missing); }
+.fi-slice-chip[data-state-slice="MEASURABLE"]   { background: var(--fi-chip-observed); }
+.fi-slice-chip[data-state-slice="STALE"]        { background: var(--fi-chip-stale); }
+.fi-slice-chip[data-state-slice="HELD_FOR_REVIEW"] { background: var(--fi-chip-watch); }
+.fi-membership-chip[data-state-membership="CURRENT_MEMBERSHIP_ONLY"],
+.fi-membership-chip[data-state-membership="PIT_MEMBERSHIP_INCOMPLETE"] { background: var(--fi-chip-regime); }
+.fi-posture-chip[data-state-posture="SEMANTIC_ONLY"] { background: var(--fi-chip-missing); }
+.fi-posture-chip[data-state-posture="RESEARCH_CANDIDATE"] { background: var(--fi-chip-caution); }
+.fi-posture-chip[data-state-posture="CANDIDATE_READY_FOR_OWNER_REVIEW"] { background: var(--fi-chip-watch); }
+.fi-posture-chip[data-state-posture="ADMITTED"] { background: var(--fi-chip-observed); }
+.fi-price-basis-chip[data-state-price-basis="PRICE_BASIS_UNQUALIFIED"] { background: var(--fi-chip-regime); }
+.fi-weighting-chip { font-size: var(--fs-sm); padding: 1px 7px; border-radius: 999px; border: 1px solid var(--fi-line); }
+.fi-atlas-gap { font-size: var(--fs-sm); color: var(--fi-muted); margin: 10px 0 0; }
+
+.fi-exposure-table-wrap { overflow-x: auto; margin-top: 16px; }
+.fi-exposure-table { border-collapse: separate; border-spacing: 0; font-size: var(--fs-sm); width: 100%; }
+.fi-exposure-table th, .fi-exposure-table td { border-bottom: 1px solid var(--fi-line); padding: 8px 10px; text-align: left; vertical-align: top; }
+.fi-exposure-table thead th { position: sticky; top: 0; background: var(--fi-panel); z-index: 2; font-weight: 600; color: var(--fi-muted); font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .04em; }
+.fi-exposure-table .fi-col-company { position: sticky; left: 0; background: var(--fi-panel); z-index: 1; font-weight: 600; }
+.fi-exposure-table thead th.fi-col-company { z-index: 3; }
+.fi-cell { min-width: 0; }
+.fi-cell-role { display: block; font-weight: 600; }
+.fi-cell-basis { display: block; font-size: var(--fs-sm); color: var(--fi-muted); }
+.fi-cell-materiality { display: block; font-size: var(--fs-sm); color: var(--fi-text); }
+.fi-cell[data-state-materiality="MATERIAL"] .fi-cell-materiality { color: var(--fi-text); font-weight: 700; }
+.fi-cell[data-state-materiality="PARTIAL"] .fi-cell-materiality { color: var(--fi-text); }
+.fi-cell[data-state-materiality="IMMATERIAL"] .fi-cell-materiality { color: var(--fi-text); }
+.fi-cell[data-state-materiality="UNMEASURED"] .fi-cell-materiality { color: var(--fi-text); }
+.fi-cell-risk { display: block; font-size: var(--fs-sm); color: var(--fi-muted); margin-top: 2px; }
+.fi-cell-evidence-date { display: block; font-size: var(--fs-sm); color: var(--fi-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.fi-company-unresolved { color: var(--fi-muted); font-style: italic; }
+.fi-exposure-cards { display: none; list-style: none; margin: 16px 0 0; padding: 0; gap: 10px; }
+.fi-exposure-card { padding: 12px 16px; }
+.fi-exposure-cards-more { display: none; }
+
+.fi-macro-table-wrap { overflow-x: auto; margin-top: 16px; }
+.fi-macro-table { border-collapse: separate; border-spacing: 0; font-size: var(--fs-sm); width: 100%; }
+.fi-macro-table th, .fi-macro-table td { border-bottom: 1px solid var(--fi-line); padding: 8px 10px; text-align: left; vertical-align: top; }
+.fi-macro-table thead th { position: sticky; top: 0; background: var(--fi-panel); z-index: 2; font-weight: 600; color: var(--fi-muted); font-size: var(--fs-sm); }
+.fi-macro-table .fi-col-slice { position: sticky; left: 0; background: var(--fi-panel); z-index: 1; font-weight: 600; }
+.fi-macro-cell-state { display: inline-block; font-size: var(--fs-sm); padding: 1px 7px; border-radius: 999px; border: 1px solid var(--fi-line); }
+.fi-macro-cell-state[data-state="CAUSAL_EFFECT_UNMEASURED"] { background: var(--fi-chip-caution); }
+.fi-macro-cell-state[data-state="NOT_APPLICABLE"] { background: var(--fi-panel2); color: var(--fi-muted); }
+.fi-macro-cell-state[data-state="DESCRIBED"] { background: var(--fi-chip-observed); }
+.fi-macro-cards { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
+
+.fi-constraint-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.fi-constraint-row { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 8px 10px; font-size: var(--fs-sm); }
+.fi-constraint-chip { font-size: var(--fs-sm); font-weight: 600; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--fi-line); }
+
+.fi-view-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 16px; }
+.fi-view-tab { font: inherit; font-size: var(--fs-sm); font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--fi-line); background: var(--fi-panel); color: var(--fi-text); cursor: pointer; }
+.fi-view-tab[aria-selected="true"] { background: var(--fi-step-fill); border-color: var(--fi-link); }
+.fi-view-panel[hidden] { display: none; }
+.fi-system-svg { width: 100%; max-width: 100%; height: auto; background: var(--fi-panel2); border-radius: 12px; border: 1px solid var(--fi-line); display: block; }
+.fi-system-edges { margin-top: 12px; }
+.fi-system-edge-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: var(--fs-sm); }
+.fi-system-edge { padding: 4px 0; border-bottom: 1px dashed var(--fi-line); display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.fi-system-edge-statement { color: var(--fi-text); }
+
+/* ---- C.9 evidence drawer + scrim ---- */
+.fi-drawer-head { padding: 16px 18px 10px; border-bottom: 1px solid var(--fi-line); display: flex; gap: 12px; align-items: flex-start; }
+.fi-drawer-head .fi-kicker { margin: 0; }
+.fi-drawer-head h2 { font-size: var(--fs-h2); margin: 4px 0 0; }
+.fi-drawer-close { margin-left: auto; background: transparent; border: 1px solid var(--fi-line); border-radius: 6px; color: var(--fi-muted); width: 28px; height: 28px; cursor: pointer; font: inherit; }
+.fi-drawer-body { padding: 12px 18px 24px; overflow-y: auto; font-size: var(--fs-sm); }
+.fi-evidence-fields { display: grid; gap: 8px; margin: 0; }
+.fi-evidence-fields > div { display: grid; grid-template-columns: 36% 64%; gap: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--fi-line); }
+.fi-evidence-fields dt { color: var(--fi-muted); font-weight: 600; }
+.fi-evidence-fields dd { margin: 0; color: var(--fi-text); }
+.fi-evidence-private-notice { font-size: var(--fs-sm); color: var(--fi-muted); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--fi-line); background: var(--fi-panel2); margin: 0 0 10px; }
+.fi-evidence-identity[data-identity="IDENTITY_UNRESOLVED"] { color: var(--fi-muted); font-style: italic; }
+.fi-evidence-rights[data-rights="SOURCE_RIGHTS_HELD"] { background: var(--fi-chip-regime); }
+.fi-scrim { position: fixed; inset: 0; z-index: 70; }
+.fi-evidence-empty { color: var(--fi-muted); font-size: var(--fs-sm); }
+
+/* identity + fresh + outer-dossier chips used in non-rerating surfaces */
+.fi-identity-chip[data-identity="IDENTITY_UNRESOLVED"] { background: var(--fi-chip-regime); }
+.fi-freshness-chip[data-state-freshness="FRESH"] { background: var(--fi-chip-observed); }
+.fi-freshness-chip[data-state-freshness="AGING"] { background: var(--fi-chip-watch); }
+.fi-freshness-chip[data-state-freshness="SOURCE_STALE"] { background: var(--fi-chip-stale); }
+.fi-freshness-chip[data-state-freshness="NO_EVIDENCE"] { background: var(--fi-chip-missing); color: var(--fi-muted); }
+.fi-outer-dossier-chip[data-state-outer-dossier="AVAILABLE"] { background: var(--fi-chip-observed); }
+.fi-outer-dossier-chip[data-state-outer-dossier="OUTER_CONTRACT_NOT_ACCEPTED"] { background: var(--fi-chip-watch); }
+.fi-outer-dossier-chip[data-state-outer-dossier="UNAVAILABLE"] { background: var(--fi-chip-stale); }
+
+/* ---- C.10 responsive (3 breakpoints) ---- */
+@media (min-width: 1200px) {
+  .fi-shell { max-width: 1200px; }
+  .fi-domain-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+  .fi-rerating-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .fi-rerating-steps::before { display: none; }
+  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel2); border: 1px solid var(--fi-line); flex-wrap: wrap; }
+  .fi-step-dot { margin: 0 6px 0 0; }
+}
+@media (max-width: 767px) {
+  .fi-rerating-steps { grid-template-columns: 1fr; gap: 6px; }
+  .fi-rerating-steps::before { display: none; }
+  .fi-rerating-step { flex-direction: row; align-items: center; text-align: left; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--fi-panel2); border: 1px solid var(--fi-line); flex-wrap: wrap; }
+  .fi-step-dot { margin: 0 6px 0 0; }
+  .fi-domain-grid { grid-template-columns: 1fr; }
+  .fi-exposure-table-wrap { display: none; }
+  .fi-exposure-more { display: none; }
+  .fi-exposure-cards { display: grid; }
+  .fi-exposure-cards-more { display: block; }
+  .fi-section { padding: 16px; }
+  .fi-macro-table-wrap { display: none; }
+  .fi-macro-more { display: none; }
+  .fi-macro-cards { display: grid; }
+  .fi-conflict-pair { grid-template-columns: 1fr; }
+  .fi-toc ol { flex-direction: column; gap: 4px; }
+  .fi-shell { padding-left: 16px; padding-right: 16px; }
+  .fi-hero h1 { font-size: var(--fs-h2); }
+  .fi-exposure-cards { gap: 8px; }
+}
+
+/* ---- C.11 reduced motion + long-word wrapping ---- */
+@media (prefers-reduced-motion: reduce) {
+  .fi-drawer { transition: none; }
+  .fi-rerating-steps::before { animation: none; }
+}
+.fi-section-title, .fi-step-label, .fi-cell-role { overflow-wrap: anywhere; word-break: break-word; }
+.fi-slice-name { overflow-wrap: anywhere; }
+
+/* ---- EN/ZH visibility toggled by html[data-lang] ---- */
+html[data-lang="en"] .l-zh { display: none; }
+html[data-lang="zh"] .l-en { display: none; }
+
+/* ---- controls bar (mockup-only) ---- */
+.fi-mockup-controls {
+  position: fixed; bottom: 12px; right: 12px; z-index: 90;
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 8px; border-radius: 10px;
+  background: var(--fi-panel); border: 1px solid var(--fi-line);
+  font-size: var(--fs-sm);
+  max-width: calc(100vw - 32px);
+}
+.fi-mockup-controls button {
+  font: inherit; font-size: var(--fs-sm); font-weight: 600;
+  padding: 4px 8px; border-radius: 6px;
+  background: transparent; border: 1px solid var(--fi-line); color: var(--fi-text); cursor: pointer;
+}
+.fi-mockup-controls button[aria-pressed="true"] {
+  background: var(--fi-step-fill); border-color: var(--fi-link); color: var(--fi-text);
+}
+
+/* visually-hidden (used for table caption + skipped links) */
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+</style>
+</head>
+<body>
+<!-- Lightweight controls panel — mockup only (lives outside <main> per spec E.4 §drawer focus trap). -->
+<div class="fi-mockup-controls" role="group" aria-label="Mockup toggles" data-aria-en="Mockup toggles" data-aria-zh="示例切换">
+  <button type="button" id="fi-mockup-theme" aria-pressed="true"><span class="l-en">Dark</span><span class="l-zh">深色</span></button>
+  <button type="button" id="fi-mockup-lang" aria-pressed="false"><span class="l-en">EN</span><span class="l-zh">中</span></button>
+  <button type="button" id="fi-mockup-open" aria-pressed="false"><span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button>
+</div>
+<main id="fi-main" class="fi-shell" data-fi-mount="shell">
+  <header class="fi-hero" aria-labelledby="fi-hero-title">
+    <p class="fi-kicker"><span class="l-en">Finance Intelligence</span><span class="l-zh">金融情报</span></p>
+    <h1 id="fi-hero-title"><span class="l-en">Finance Intelligence</span><span class="l-zh">金融情报</span></h1>
+    <p class="fi-deck"><span class="l-en">Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.</span><span class="l-zh">阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。</span></p>
+    <p class="fi-meta">
+      <span class="l-en"><span data-tip-en="As of 2026-09-19" data-tip-zh="截至 2026-09-19">As of 2026-09-19</span></span><span class="l-zh">截至 2026-09-19</span>
+      <span aria-hidden="true">·</span>
+      <span class="l-en"><span data-tip-en="Knowledge cutoff 2026-09-12" data-tip-zh="知识截止 2026-09-12">Knowledge cutoff 2026-09-12</span></span><span class="l-zh">知识截止 2026-09-12</span>
+      <span class="fi-chip fi-freshness-chip" data-state-freshness="AGING"><span class="l-en">Aging</span><span class="l-zh">趋于陈旧</span></span>
+      <span class="fi-chip fi-outer-dossier-chip" data-state-outer-dossier="OUTER_CONTRACT_NOT_ACCEPTED"><span class="l-en">Outer dossier not accepted</span><span class="l-zh">外部报告尚未接入</span></span>
+    </p>
+  </header>
+
+  <nav class="fi-toc" aria-label="Section navigation" data-aria-en="Section navigation" data-aria-zh="章节导航">
+    <ol>
+      <li><a href="#what-changed"><span class="l-en">What changed</span><span class="l-zh">近期变化</span></a></li>
+      <li><a href="#rerating-map"><span class="l-en">Rerating map</span><span class="l-zh">重估链路</span></a></li>
+      <li><a href="#system-map"><span class="l-en">System map</span><span class="l-zh">系统图</span></a></li>
+      <li><a href="#subtheme-atlas"><span class="l-en">Subtheme atlas</span><span class="l-zh">子主题图谱</span></a></li>
+      <li><a href="#company-exposure"><span class="l-en">Company exposure</span><span class="l-zh">公司敞口</span></a></li>
+      <li><a href="#macro-matrix"><span class="l-en">Macro matrix</span><span class="l-zh">宏观矩阵</span></a></li>
+      <li><a href="#constraint-map"><span class="l-en">Constraint map</span><span class="l-zh">约束图</span></a></li>
+      <li><button type="button" class="fi-toc-evidence fi-evidence-trigger" aria-controls="evidence-drawer"><span class="l-en">Evidence</span><span class="l-zh">证据</span></button></li>
+    </ol>
+  </nav>
+
+  <!-- =================== B.1 what-changed (Tier 1, support) =================== -->
+  <section id="what-changed" class="fi-section fi-panel fi-changes" aria-labelledby="fi-changes-title"
+           data-fi-mount="what-changed">
+    <header class="fi-section-head" data-state-freshness="AGING">
+      <h2 id="fi-changes-title" class="fi-section-title">
+        <span class="l-en">What changed</span>
+        <span class="l-zh">近期变化</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Material observations, plain words</span>
+        <span class="l-zh">重要观察，直白表述</span>
+      </span>
+    </header>
+    <ul class="fi-change-list" role="list" data-fi-mount="what-changed-list">
+      <li class="fi-change-row mx-chg-row" data-state-freshness="AGING" data-change-id="mc_001" data-state-marker="AGING">
+        <span class="l-en">
+          <strong>Card networks</strong> — Synthetic Filing Co. reported interchange-cap disclosure update; per-transaction economics unchanged.
+        </span>
+        <span class="l-zh">
+          <strong>银行卡网络</strong> — Synthetic Filing Co. 报告交换费上限披露更新；单笔经济性未变。
+        </span>
+        <span class="fi-chip fi-freshness-chip" data-state-freshness="AGING"><span class="l-en">Aging</span><span class="l-zh">趋于陈旧</span></span>
+        <button type="button" class="fi-evidence-trigger" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>
+      </li>
+      <li class="fi-change-row mx-chg-row" data-state-freshness="SOURCE_STALE" data-change-id="mc_002" data-state-marker="SOURCE_STALE">
+        <span class="l-en">
+          <strong>Merchant acquiring</strong> — Synthetic Filing Co. issuer processing file references a withdrawn bulletin (source stale).
+        </span>
+        <span class="l-zh">
+          <strong>商户收单</strong> — Synthetic Filing Co. 发行人处理档案引用了一份已撤回的公告（来源已陈旧）。
+        </span>
+        <span class="fi-chip fi-freshness-chip" data-state-freshness="SOURCE_STALE"><span class="l-en">Source is stale</span><span class="l-zh">来源已陈旧</span></span>
+        <button type="button" class="fi-evidence-trigger" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>
+      </li>
+      <li class="fi-change-row mx-chg-row" data-state-freshness="FRESH" data-change-id="mc_003" data-state-marker="FRESH">
+        <span class="l-en">
+          <strong>Exchanges &amp; trading venues</strong> — Synthetic Filing Co. published Q3 clearing-volume disclosure; on-time.
+        </span>
+        <span class="l-zh">
+          <strong>交易所与交易场所</strong> — Synthetic Filing Co. 发布第三季度清算量披露；准时。
+        </span>
+        <span class="fi-chip fi-freshness-chip" data-state-freshness="FRESH"><span class="l-en">Fresh</span><span class="l-zh">新鲜</span></span>
+        <button type="button" class="fi-evidence-trigger" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>
+      </li>
+    </ul>
+    <p class="fi-section-foot">
+      <span class="l-en">Read the underlying receipts before acting on any line.</span>
+      <span class="l-zh">请先查阅原始凭据再行判断。</span>
+    </p>
+  </section>
+
+  <!-- =================== B.2 rerating-map (Tier 2, answer tier) =================== -->
+  <section id="rerating-map" class="fi-section fi-panel fi-rerating" aria-labelledby="fi-rerating-title"
+           data-fi-mount="rerating-map">
+    <header class="fi-section-head" data-state-freshness="AGING">
+      <h2 id="fi-rerating-title" class="fi-section-title fi-section-title-answer">
+        <span class="l-en">Rerating map</span>
+        <span class="l-zh">重估链路</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">How a slice reaches per-share value</span>
+        <span class="l-zh">一个子主题如何抵达每股价值</span>
+      </span>
+    </header>
+
+    <div class="fi-slice-picker">
+      <label for="fi-slice-select"><span class="l-en">Slice</span><span class="l-zh">切片</span></label>
+      <select id="fi-slice-select" class="fi-slice-select" data-fi-mount="slice-select">
+        <option value="card_networks">Card networks / 银行卡网络</option>
+        <option value="merchant_acquiring_processing">Merchant acquiring &amp; processing / 商户收单与处理</option>
+        <option value="issuer_processing">Issuer processing / 发卡行处理</option>
+        <option value="exchanges_trading_venues">Exchanges &amp; trading venues / 交易所与交易场所</option>
+        <option value="custody_asset_servicing">Custody &amp; asset servicing / 托管与资产服务</option>
+        <option value="market_reference_data">Market reference data / 市场参考数据</option>
+        <option value="ratings_credit_information">Ratings &amp; credit information / 评级与信用信息</option>
+        <option value="indices_benchmarks_etf_plumbing">Indices, benchmarks &amp; ETF plumbing / 指数、基准与ETF机制</option>
+      </select>
+    </div>
+
+    <ol class="fi-rerating-steps" role="list" data-fi-mount="rerating-steps">
+      <!-- Operating -->
+      <li class="fi-rerating-step fi-node-operating" data-active="false" data-plane="operating">
+        <span class="fi-step-dot" aria-hidden="true"></span>
+        <span class="fi-step-label"><span class="l-en">Operating</span><span class="l-zh">经营</span></span>
+        <span class="fi-step-metric"><span class="l-en">Net revenue per synthetic filing (synthetic test value)</span><span class="l-zh">每股合成报告净收入（合成测试值）</span></span>
+        <span class="fi-step-chip" data-state="OBSERVED"><span class="l-en">On file — observed</span><span class="l-zh">已观察，有据可查</span></span>
+        <span class="fi-step-clock"><span class="l-en">2026 Q3 · quarter</span><span class="l-zh">2026 Q3 · 季</span></span>
+        <span class="fi-comparability-chip" data-comparability="COMPARABLE"><span class="l-en">Comparable to history</span><span class="l-zh">与历史可比</span></span>
+        <button type="button" class="fi-step-evidence fi-evidence-trigger" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>
+      </li>
+      <!-- Expectations -->
+      <li class="fi-rerating-step fi-node-expectations" data-active="true" data-plane="expectations">
+        <span class="fi-step-dot" aria-hidden="true"></span>
+        <span class="fi-step-label"><span class="l-en">Expectations</span><span class="l-zh">市场预期</span></span>
+        <span class="fi-step-metric"><span class="l-en">No dated expectations on file (synthetic test value)</span><span class="l-zh">暂无可追溯的预期（合成测试值）</span></span>
+        <span class="fi-step-chip" data-state="MISSING"><span class="l-en">No dated reading on file</span><span class="l-zh">暂无可追溯的读数</span></span>
+        <span class="fi-history-chip" data-history="NO_HISTORICAL_CONSENSUS" data-state-marker="NO_HISTORICAL_CONSENSUS"><span class="l-en">No dated consensus on file</span><span class="l-zh">暂无可追溯的市场预期</span></span>
+        <span class="fi-step-clock"><span class="l-en">synthetic · —</span><span class="l-zh">合成 · —</span></span>
+        <button type="button" class="fi-step-evidence fi-evidence-trigger" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>
+      </li>
+      <!-- Valuation -->
+      <li class="fi-rerating-step fi-node-valuation" data-active="false" data-plane="valuation">
+        <span class="fi-step-dot" aria-hidden="true"></span>
+        <span class="fi-step-label"><span class="l-en">Valuation</span><span class="l-zh">估值</span></span>
+        <span class="fi-step-metric"><span class="l-en">P/E multiple (synthetic test value)</span><span class="l-zh">市盈率（合成测试值）</span></span>
+        <span class="fi-step-chip" data-state="VALUATION_ANCHOR_UNAVAILABLE"><span class="l-en">No valuation anchor on file</span><span class="l-zh">暂无估值锚</span></span>
+        <span class="fi-anchor-chip" data-anchor-state="VALUATION_ANCHOR_UNAVAILABLE" data-state-marker="VALUATION_ANCHOR_UNAVAILABLE"><span class="l-en">No valuation anchor on file</span><span class="l-zh">暂无估值锚</span></span>
+        <span class="fi-step-clock"><span class="l-en">2026 Q3 · quarter</span><span class="l-zh">2026 Q3 · 季</span></span>
+        <button type="button" class="fi-step-evidence fi-evidence-trigger" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>
+      </li>
+      <!-- Price -->
+      <li class="fi-rerating-step fi-node-price" data-active="false" data-plane="price">
+        <span class="fi-step-dot" aria-hidden="true"></span>
+        <span class="fi-step-label"><span class="l-en">Price</span><span class="l-zh">价格</span></span>
+        <span class="fi-step-metric"><span class="l-en">Price basis not qualified (synthetic test value)</span><span class="l-zh">价格口径未达合格（合成测试值）</span></span>
+        <span class="fi-price-chip" data-price-state="PRICE_BASIS_UNQUALIFIED" data-state-marker="PRICE_BASIS_UNQUALIFIED"><span class="l-en">No qualified price basis</span><span class="l-zh">价格口径未达合格</span></span>
+        <span class="fi-step-clock"><span class="l-en">2026-09-19 · day</span><span class="l-zh">2026-09-19 · 日</span></span>
+        <span class="fi-comparability-chip" data-comparability="REGIME_BREAK_NOT_COMPARABLE" data-state-marker="REGIME_BREAK_NOT_COMPARABLE"><span class="l-en">Regime break — not comparable</span><span class="l-zh">制度断裂 — 不可比</span></span>
+        <button type="button" class="fi-step-evidence fi-evidence-trigger" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">↗</button>
+      </li>
+    </ol>
+
+    <p class="fi-rerating-bridge" data-fi-mount="rerating-bridge">
+      <span class="l-en">From observed operating economics into a missing consensus, with no valuation anchor on file — the chain holds but each link is short.</span>
+      <span class="l-zh">从已观察到的经营经济性，进入缺失的市场预期，且无估值锚在册 — 链路成立，但每一节都短。</span>
+    </p>
+
+    <!-- falsifiers — "What we're watching" -->
+    <ul class="fi-falsifiers" role="list" data-fi-mount="falsifiers" aria-label="What we are watching" data-aria-en="What we are watching" data-aria-zh="我们正在观察">
+      <li class="fi-falsifier" data-state-falsifier="WATCHING">
+        <span class="fi-falsifier-chip" data-state-falsifier="WATCHING"><span class="l-en">Watching</span><span class="l-zh">观察中</span></span>
+        <span class="fi-falsifier-statement"><span class="l-en">A dated consensus reading appears for card networks within the next 30 days (synthetic test window).</span><span class="l-zh">未来 30 日内，卡网络切片出现可追溯的市场预期读数（合成测试窗口）。</span></span>
+        <span class="fi-falsifier-window"><span class="l-en">30d</span><span class="l-zh">30 日</span></span>
+      </li>
+      <li class="fi-falsifier" data-state-falsifier="NOT_YET_EVALUABLE">
+        <span class="fi-falsifier-chip" data-state-falsifier="NOT_YET_EVALUABLE"><span class="l-en">Not yet evaluable</span><span class="l-zh">暂无法评估</span></span>
+        <span class="fi-falsifier-statement"><span class="l-en">Valuation anchor remains unavailable until a per-share anchor is filed.</span><span class="l-zh">在每股锚点上报前，估值锚仍不可用。</span></span>
+        <span class="fi-falsifier-window"><span class="l-en">—</span><span class="l-zh">—</span></span>
+      </li>
+    </ul>
+
+    <!-- conflicts sub-block (inside rerating-map, not a section) -->
+    <div class="fi-conflicts" data-fi-mount="conflicts" aria-labelledby="fi-conflicts-title">
+      <h3 id="fi-conflicts-title" class="fi-conflicts-title">
+        <span class="l-en">Where the planes disagree</span>
+        <span class="l-zh">各维度之间的分歧</span>
+        <span class="fi-section-eyebrow">
+          <span class="l-en">Surfaced, never averaged</span>
+          <span class="l-zh">显示差异，而非取均值</span>
+        </span>
+      </h3>
+      <ul class="fi-conflict-list" role="list" data-fi-mount="conflict-list">
+        <li class="fi-conflict-card fi-panel2" data-conflict-label="EARNINGS_UP_P_E_DOWN" data-state-marker="EARNINGS_UP_P_E_DOWN">
+          <p class="fi-conflict-label"><span class="l-en">Earnings up, multiple down</span><span class="l-zh">盈利上升，倍数下降</span></p>
+          <div class="fi-conflict-pair">
+            <div class="fi-conflict-side fi-panel2" data-side="left">
+              <span class="l-en"><strong>Operating</strong></span><span class="l-zh"><strong>经营</strong></span>
+              <p class="fi-conflict-side-statement"><span class="l-en">Synthetic filing shows operating earnings improving quarter-on-quarter (test value).</span><span class="l-zh">合成报告显示经营盈利环比改善（测试值）。</span></p>
+              <button type="button" class="fi-evidence-trigger fi-conflict-side-evidence" data-evidence-ids="rec_eupd_left">↗ <span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button>
+            </div>
+            <div class="fi-conflict-side fi-panel2" data-side="right">
+              <span class="l-en"><strong>Valuation</strong></span><span class="l-zh"><strong>估值</strong></span>
+              <p class="fi-conflict-side-statement"><span class="l-en">P/E multiple moved down over the same window despite the earnings print (test value).</span><span class="l-zh">同期市盈率倍数下行，与盈利读数相悖（测试值）。</span></p>
+              <button type="button" class="fi-evidence-trigger fi-conflict-side-evidence" data-evidence-ids="rec_eupd_right">↗ <span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button>
+            </div>
+          </div>
+          <p class="fi-conflict-foot"><span class="l-en">Left unresolved by design — both statements stand.</span><span class="l-zh">有意不作裁决 — 两项陈述并存。</span></p>
+        </li>
+        <li class="fi-conflict-card fi-panel2" data-conflict-label="NII_UP_CREDIT_WORSE" data-state-marker="NII_UP_CREDIT_WORSE">
+          <p class="fi-conflict-label"><span class="l-en">Net interest income up, credit worsening</span><span class="l-zh">净利息收入上升，信贷恶化</span></p>
+          <div class="fi-conflict-pair">
+            <div class="fi-conflict-side fi-panel2" data-side="left">
+              <span class="l-en"><strong>Operating</strong></span><span class="l-zh"><strong>经营</strong></span>
+              <p class="fi-conflict-side-statement"><span class="l-en">Net interest income rose on the synthetic bank filing (test value).</span><span class="l-zh">合成银行报告显示净利息收入上升（测试值）。</span></p>
+              <button type="button" class="fi-evidence-trigger fi-conflict-side-evidence" data-evidence-ids="rec_ni_left">↗ <span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button>
+            </div>
+            <div class="fi-conflict-side fi-panel2" data-side="right">
+              <span class="l-en"><strong>Regime</strong></span><span class="l-zh"><strong>制度环境</strong></span>
+              <p class="fi-conflict-side-statement"><span class="l-en">Loss provisions rose faster than net interest income, signalling credit worsening.</span><span class="l-zh">拨备增速快于净利息收入，提示信贷恶化。</span></p>
+              <button type="button" class="fi-evidence-trigger fi-conflict-side-evidence" data-evidence-ids="rec_ni_right">↗ <span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button>
+            </div>
+          </div>
+          <p class="fi-conflict-foot"><span class="l-en">Left unresolved by design — both statements stand.</span><span class="l-zh">有意不作裁决 — 两项陈述并存。</span></p>
+        </li>
+        <li class="fi-conflict-card fi-panel2" data-conflict-label="POLICY_SUPPORT_NIM_PRESSURE" data-state-marker="POLICY_SUPPORT_NIM_PRESSURE">
+          <p class="fi-conflict-label"><span class="l-en">Policy supports demand, margins under pressure</span><span class="l-zh">政策支撑需求，息差承压</span></p>
+          <div class="fi-conflict-pair">
+            <div class="fi-conflict-side fi-panel2" data-side="left">
+              <span class="l-en"><strong>Policy</strong></span><span class="l-zh"><strong>政策</strong></span>
+              <p class="fi-conflict-side-statement"><span class="l-en">Policy signal supports credit demand per the synthetic macro report (test value).</span><span class="l-zh">合成宏观报告显示政策信号支撑信贷需求（测试值）。</span></p>
+              <button type="button" class="fi-evidence-trigger fi-conflict-side-evidence" data-evidence-ids="rec_pol_left">↗ <span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button>
+            </div>
+            <div class="fi-conflict-side fi-panel2" data-side="right">
+              <span class="l-en"><strong>Operating</strong></span><span class="l-zh"><strong>经营</strong></span>
+              <p class="fi-conflict-side-statement"><span class="l-en">Net interest margin compresses on the same synthetic filing (test value).</span><span class="l-zh">同一份合成报告净息差收窄（测试值）。</span></p>
+              <button type="button" class="fi-evidence-trigger fi-conflict-side-evidence" data-evidence-ids="rec_pol_right">↗ <span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button>
+            </div>
+          </div>
+          <p class="fi-conflict-foot"><span class="l-en">Left unresolved by design — both statements stand.</span><span class="l-zh">有意不作裁决 — 两项陈述并存。</span></p>
+        </li>
+        <li class="fi-conflict-card fi-panel2" data-conflict-label="PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN" data-state-marker="PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN">
+          <p class="fi-conflict-label"><span class="l-en">Price up, causal effect not proven</span><span class="l-zh">价格上升，因果效应未证实</span></p>
+          <div class="fi-conflict-pair">
+            <div class="fi-conflict-side fi-panel2" data-side="left">
+              <span class="l-en"><strong>Price</strong></span><span class="l-zh"><strong>价格</strong></span>
+              <p class="fi-conflict-side-statement"><span class="l-en">Synthetic price series for the slice ticked up over the window (test value).</span><span class="l-zh">该切片合成价格序列在本窗口内上行（测试值）。</span></p>
+              <button type="button" class="fi-evidence-trigger fi-conflict-side-evidence" data-evidence-ids="rec_pcu_left">↗ <span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button>
+            </div>
+            <div class="fi-conflict-side fi-panel2" data-side="right">
+              <span class="l-en"><strong>Regime</strong></span><span class="l-zh"><strong>制度环境</strong></span>
+              <p class="fi-conflict-side-statement"><span class="l-en">The named causal event's effect on the slice has not been measured (test value).</span><span class="l-zh">所述因果事件对该切片的影响尚未量化（测试值）。</span></p>
+              <button type="button" class="fi-evidence-trigger fi-conflict-side-evidence" data-evidence-ids="rec_pcu_right">↗ <span class="l-en">Open evidence</span><span class="l-zh">打开证据</span></button>
+            </div>
+          </div>
+          <p class="fi-conflict-foot"><span class="l-en">Left unresolved by design — both statements stand.</span><span class="l-zh">有意不作裁决 — 两项陈述并存。</span></p>
+        </li>
+      </ul>
+      <p class="fi-section-foot"><span class="l-en">3 more conflicts on other slices</span><span class="l-zh">其他切片另有 3 项冲突</span></p>
+    </div>
+
+    <p class="fi-section-foot">
+      <span class="l-en">Each step shows what is on file and how recent it is.</span>
+      <span class="l-zh">每一步显示现有证据及其时效。</span>
+    </p>
+  </section>
+
+  <!-- =================== B.3 system-map (three selectable views) =================== -->
+  <section id="system-map" class="fi-section fi-panel fi-system" aria-labelledby="fi-system-title"
+           data-fi-mount="system-map">
+    <header class="fi-section-head">
+      <h2 id="fi-system-title" class="fi-section-title">
+        <span class="l-en">System map</span><span class="l-zh">系统图</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Three views, never blended</span><span class="l-zh">三种视图，永不混用</span>
+      </span>
+    </header>
+
+    <div class="fi-view-tabs" role="tablist" data-aria-en="Choose a system view" data-aria-zh="选择系统视图">
+      <button role="tab" id="tab-contractual-flow" aria-controls="panel-contractual-flow" aria-selected="true" class="fi-view-tab" data-view="contractual-flow" tabindex="0">
+        <span class="l-en">Money &amp; risk flow</span><span class="l-zh">资金与风险流动</span>
+      </button>
+      <button role="tab" id="tab-infrastructure-access" aria-controls="panel-infrastructure-access" aria-selected="false" class="fi-view-tab" data-view="infrastructure-access" tabindex="-1">
+        <span class="l-en">Infrastructure &amp; access</span><span class="l-zh">基础设施与接入</span>
+      </button>
+      <button role="tab" id="tab-public-equity-economics" aria-controls="panel-public-equity-economics" aria-selected="false" class="fi-view-tab" data-view="public-equity-economics" tabindex="-1">
+        <span class="l-en">Public-equity economics</span><span class="l-zh">公开市场经济学</span>
+      </button>
+    </div>
+
+    <div role="tabpanel" id="panel-contractual-flow" class="fi-view-panel" data-view="contractual-flow" aria-labelledby="tab-contractual-flow">
+      <svg class="fi-system-svg" role="img" data-aria-en="Money and risk flow" data-aria-zh="资金与风险流动" viewBox="0 0 620 152" preserveAspectRatio="xMidYMid meet" style="aspect-ratio: 620 / 152;">
+        <title>Money and risk flow</title>
+        <g class="fi-svg-node">
+          <rect x="20" y="40" width="120" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="80" y="60" text-anchor="middle" fill="currentColor">Synthetic Filing Co. (Payer)</text>
+        </g>
+        <g class="fi-svg-node">
+          <rect x="180" y="40" width="120" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="240" y="60" text-anchor="middle" fill="currentColor">Synthetic Acquirer</text>
+        </g>
+        <g class="fi-svg-node">
+          <rect x="340" y="40" width="120" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="400" y="60" text-anchor="middle" fill="currentColor">Synthetic Issuer Bank</text>
+        </g>
+        <g class="fi-svg-node">
+          <rect x="500" y="40" width="120" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="560" y="60" text-anchor="middle" fill="currentColor">Synthetic Cardholder</text>
+        </g>
+        <g class="fi-svg-node">
+          <rect x="260" y="120" width="140" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="330" y="140" text-anchor="middle" fill="currentColor">Synthetic Clearing Venue</text>
+        </g>
+      </svg>
+      <details class="fi-system-edges" open>
+        <summary><span class="l-en">Edge list (step view)</span><span class="l-zh">边的步骤视图</span></summary>
+        <ol class="fi-system-edge-list" role="list">
+          <li class="fi-system-edge" data-state-evidence="OBSERVED">
+            <span class="fi-system-edge-statement"><span class="l-en">Synthetic Filing Co. pays Synthetic Acquirer</span><span class="l-zh">Synthetic Filing Co. 支付 Synthetic Acquirer</span></span>
+            <span class="fi-chip" data-state="OBSERVED"><span class="l-en">On file — observed</span><span class="l-zh">已观察，有据可查</span></span>
+          </li>
+          <li class="fi-system-edge" data-state-evidence="INFERRED">
+            <span class="fi-system-edge-statement"><span class="l-en">Synthetic Acquirer settles Synthetic Issuer Bank</span><span class="l-zh">Synthetic Acquirer 与 Synthetic Issuer Bank 结算</span></span>
+            <span class="fi-chip" data-state="INFERRED"><span class="l-en">On file — inferred</span><span class="l-zh">有据，推断得出</span></span>
+          </li>
+          <li class="fi-system-edge" data-state-evidence="MISSING">
+            <span class="fi-system-edge-statement"><span class="l-en">Synthetic Issuer Bank clears via Synthetic Clearing Venue (test edge)</span><span class="l-zh">Synthetic Issuer Bank 通过 Synthetic Clearing Venue 清算（测试边）</span></span>
+            <span class="fi-chip" data-state="MISSING"><span class="l-en">No dated reading on file</span><span class="l-zh">暂无可追溯的读数</span></span>
+          </li>
+        </ol>
+      </details>
+    </div>
+
+    <div role="tabpanel" id="panel-infrastructure-access" class="fi-view-panel" data-view="infrastructure-access" aria-labelledby="tab-infrastructure-access" hidden>
+      <svg class="fi-system-svg" role="img" data-aria-en="Infrastructure and access" data-aria-zh="基础设施与接入" viewBox="0 0 520 72" preserveAspectRatio="xMidYMid meet" style="aspect-ratio: 520 / 72;">
+        <title>Infrastructure and access</title>
+        <g class="fi-svg-node">
+          <rect x="20" y="40" width="140" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="90" y="60" text-anchor="middle" fill="currentColor">Synthetic Supervisor</text>
+        </g>
+        <g class="fi-svg-node">
+          <rect x="200" y="40" width="140" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="270" y="60" text-anchor="middle" fill="currentColor">Synthetic Benchmark Provider</text>
+        </g>
+        <g class="fi-svg-node">
+          <rect x="380" y="40" width="140" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="450" y="60" text-anchor="middle" fill="currentColor">Synthetic Member Firm</text>
+        </g>
+      </svg>
+      <details class="fi-system-edges" open>
+        <summary><span class="l-en">Edge list (step view)</span><span class="l-zh">边的步骤视图</span></summary>
+        <ol class="fi-system-edge-list" role="list">
+          <li class="fi-system-edge" data-state-evidence="OBSERVED">
+            <span class="fi-system-edge-statement"><span class="l-en">Synthetic Supervisor licenses Synthetic Member Firm (test edge)</span><span class="l-zh">Synthetic Supervisor 许可 Synthetic Member Firm（测试边）</span></span>
+            <span class="fi-chip" data-state="OBSERVED"><span class="l-en">On file — observed</span><span class="l-zh">已观察，有据可查</span></span>
+          </li>
+        </ol>
+      </details>
+    </div>
+
+    <div role="tabpanel" id="panel-public-equity-economics" class="fi-view-panel" data-view="public-equity-economics" aria-labelledby="tab-public-equity-economics" hidden>
+      <svg class="fi-system-svg" role="img" data-aria-en="Public equity economics" data-aria-zh="公开市场经济学" viewBox="0 0 580 72" preserveAspectRatio="xMidYMid meet" style="aspect-ratio: 580 / 72;">
+        <title>Public equity economics</title>
+        <g class="fi-svg-node">
+          <rect x="20" y="40" width="160" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="100" y="60" text-anchor="middle" fill="currentColor">Synthetic Listed Issuer</text>
+        </g>
+        <g class="fi-svg-node">
+          <rect x="220" y="40" width="160" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="300" y="60" text-anchor="middle" fill="currentColor">Synthetic Fee Earner</text>
+        </g>
+        <g class="fi-svg-node">
+          <rect x="420" y="40" width="160" height="32" rx="6" fill="none" stroke="currentColor"></rect>
+          <text x="500" y="60" text-anchor="middle" fill="currentColor">Synthetic Volume Source</text>
+        </g>
+      </svg>
+      <details class="fi-system-edges" open>
+        <summary><span class="l-en">Edge list (step view)</span><span class="l-zh">边的步骤视图</span></summary>
+        <ol class="fi-system-edge-list" role="list">
+          <li class="fi-system-edge" data-state-evidence="INFERRED">
+            <span class="fi-system-edge-statement"><span class="l-en">Synthetic Fee Earner earns fee from Synthetic Volume Source (test edge)</span><span class="l-zh">Synthetic Fee Earner 向 Synthetic Volume Source 收取费用（测试边）</span></span>
+            <span class="fi-chip" data-state="INFERRED"><span class="l-en">On file — inferred</span><span class="l-zh">有据，推断得出</span></span>
+          </li>
+        </ol>
+      </details>
+    </div>
+  </section>
+
+  <!-- =================== B.4 subtheme-atlas (payload-driven grid) =================== -->
+  <section id="subtheme-atlas" class="fi-section fi-panel fi-atlas" aria-labelledby="fi-atlas-title"
+           data-fi-mount="subtheme-atlas">
+    <header class="fi-section-head">
+      <h2 id="fi-atlas-title" class="fi-section-title">
+        <span class="l-en">Subtheme atlas</span><span class="l-zh">子主题图谱</span>
+      </h2>
+      <span class="fi-section-eyebrow fi-atlas-eyebrow"
+            data-fi-mount="coverage-eyebrow"
+            data-state-coverage=""
+            data-aria-en="Domains and slices mapped" data-aria-zh="已映射的子域与切片">
+        <span class="l-en">6 of 7 domains · 8 of 8 slices mapped</span>
+        <span class="l-zh">7 个子域中 6 个 · 8 个切片全部映射</span>
+      </span>
+    </header>
+
+    <div class="fi-domain-grid" data-fi-mount="domain-grid">
+      <!-- Markets & infrastructure -->
+      <section class="fi-domain fi-panel2">
+        <h3 class="fi-domain-title"><span class="l-en">Markets &amp; infrastructure</span><span class="l-zh">市场与基础设施</span></h3>
+        <ul class="fi-slice-list" role="list">
+          <li class="fi-slice fi-panel2" data-state-slice="MEASURABLE" data-state-membership="PIT_MEMBERSHIP_INCOMPLETE" data-state-posture="CANDIDATE_READY_FOR_OWNER_REVIEW" data-basket-state="PIT_MEMBERSHIP_INCOMPLETE" data-state-marker="PIT_MEMBERSHIP_INCOMPLETE">
+            <span class="fi-slice-name"><span class="l-en">Exchanges &amp; trading venues</span><span class="l-zh">交易所与交易场所</span></span>
+            <span class="fi-chip fi-slice-chip" data-state-slice="MEASURABLE"><span class="l-en">Measurable today</span><span class="l-zh">当前可量化</span></span>
+            <span class="fi-chip fi-membership-chip" data-state-membership="PIT_MEMBERSHIP_INCOMPLETE" data-state-marker="PIT_MEMBERSHIP_INCOMPLETE"><span class="l-en">Point-in-time membership incomplete</span><span class="l-zh">时点成员数据不完整</span></span>
+            <span class="fi-chip fi-posture-chip" data-state-posture="CANDIDATE_READY_FOR_OWNER_REVIEW"><span class="l-en">Under owner review</span><span class="l-zh">待负责人复核</span></span>
+            <span class="fi-chip fi-price-basis-chip" data-state-price-basis="PRICE_BASIS_UNQUALIFIED" data-state-marker="PRICE_BASIS_UNQUALIFIED"><span class="l-en">Price basis not qualified</span><span class="l-zh">价格口径未达合格</span></span>
+            <span class="fi-chip fi-weighting-chip" data-state-weighting="EQUAL_WEIGHT"><span class="l-en">Equal weight</span><span class="l-zh">等权重</span></span>
+          </li>
+          <li class="fi-slice fi-panel2" data-state-slice="MEASURABLE" data-state-membership="CURRENT_MEMBERSHIP_ONLY" data-state-posture="ADMITTED" data-basket-state="CURRENT_MEMBERSHIP_ONLY" data-state-marker="CURRENT_MEMBERSHIP_ONLY">
+            <span class="fi-slice-name"><span class="l-en">Custody &amp; asset servicing</span><span class="l-zh">托管与资产服务</span></span>
+            <span class="fi-chip fi-slice-chip" data-state-slice="MEASURABLE"><span class="l-en">Measurable today</span><span class="l-zh">当前可量化</span></span>
+            <span class="fi-chip fi-membership-chip" data-state-membership="CURRENT_MEMBERSHIP_ONLY" data-state-marker="CURRENT_MEMBERSHIP_ONLY"><span class="l-en">Current membership only — not a history</span><span class="l-zh">仅为当前成员 — 非历史口径</span></span>
+            <span class="fi-chip fi-posture-chip" data-state-posture="ADMITTED"><span class="l-en">Admitted price basket</span><span class="l-zh">已收录价格组合</span></span>
+            <span class="fi-chip fi-weighting-chip" data-state-weighting="FLOAT_CAP_CONTEXT"><span class="l-en">Float-cap context</span><span class="l-zh">流通上限背景</span></span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Payments -->
+      <section class="fi-domain fi-panel2">
+        <h3 class="fi-domain-title"><span class="l-en">Payments</span><span class="l-zh">支付</span></h3>
+        <ul class="fi-slice-list" role="list">
+          <li class="fi-slice fi-panel2" data-state-slice="MEASURABLE" data-state-membership="PIT_MEMBERSHIP_VALIDATED" data-state-posture="ADMITTED" data-basket-state="PIT_MEMBERSHIP_VALIDATED">
+            <span class="fi-slice-name"><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span></span>
+            <span class="fi-chip fi-slice-chip" data-state-slice="MEASURABLE"><span class="l-en">Measurable today</span><span class="l-zh">当前可量化</span></span>
+            <span class="fi-chip fi-membership-chip" data-state-membership="PIT_MEMBERSHIP_VALIDATED"><span class="l-en">Point-in-time membership validated</span><span class="l-zh">时点成员数据已校验</span></span>
+            <span class="fi-chip fi-posture-chip" data-state-posture="ADMITTED"><span class="l-en">Admitted price basket</span><span class="l-zh">已收录价格组合</span></span>
+            <span class="fi-chip fi-weighting-chip" data-state-weighting="EQUAL_WEIGHT"><span class="l-en">Equal weight</span><span class="l-zh">等权重</span></span>
+          </li>
+          <li class="fi-slice fi-panel2" data-state-slice="SEMANTIC_ONLY" data-state-membership="NONE" data-state-posture="SEMANTIC_ONLY" data-basket-state="NONE">
+            <span class="fi-slice-name"><span class="l-en">Merchant acquiring &amp; processing</span><span class="l-zh">商户收单与处理</span></span>
+            <span class="fi-chip fi-slice-chip" data-state-slice="SEMANTIC_ONLY"><span class="l-en">Definition only</span><span class="l-zh">仅完成定义</span></span>
+            <span class="fi-chip fi-membership-chip" data-state-membership="NONE"><span class="l-en">No membership recorded</span><span class="l-zh">未记录成员</span></span>
+            <span class="fi-chip fi-posture-chip" data-state-posture="SEMANTIC_ONLY"><span class="l-en">No price basket yet</span><span class="l-zh">暂无价格组合</span></span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Issuer processing -->
+      <section class="fi-domain fi-panel2">
+        <h3 class="fi-domain-title"><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span></h3>
+        <ul class="fi-slice-list" role="list">
+          <li class="fi-slice fi-panel2" data-state-slice="MEASURABLE" data-state-membership="PIT_MEMBERSHIP_INCOMPLETE" data-state-posture="RESEARCH_CANDIDATE" data-basket-state="PIT_MEMBERSHIP_INCOMPLETE" data-state-marker="PIT_MEMBERSHIP_INCOMPLETE">
+            <span class="fi-slice-name"><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span></span>
+            <span class="fi-chip fi-slice-chip" data-state-slice="MEASURABLE"><span class="l-en">Measurable today</span><span class="l-zh">当前可量化</span></span>
+            <span class="fi-chip fi-membership-chip" data-state-membership="PIT_MEMBERSHIP_INCOMPLETE" data-state-marker="PIT_MEMBERSHIP_INCOMPLETE"><span class="l-en">Point-in-time membership incomplete</span><span class="l-zh">时点成员数据不完整</span></span>
+            <span class="fi-chip fi-posture-chip" data-state-posture="RESEARCH_CANDIDATE"><span class="l-en">Research candidate</span><span class="l-zh">研究候选</span></span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Ratings + indices — kept short to stay within budget -->
+      <section class="fi-domain fi-panel2">
+        <h3 class="fi-domain-title"><span class="l-en">Ratings &amp; data</span><span class="l-zh">评级与数据</span></h3>
+        <ul class="fi-slice-list" role="list">
+          <li class="fi-slice fi-panel2" data-state-slice="MEASURABLE" data-state-membership="NONE" data-state-posture="RESEARCH_CANDIDATE" data-basket-state="NONE">
+            <span class="fi-slice-name"><span class="l-en">Market reference data</span><span class="l-zh">市场参考数据</span></span>
+            <span class="fi-chip fi-slice-chip" data-state-slice="MEASURABLE"><span class="l-en">Measurable today</span><span class="l-zh">当前可量化</span></span>
+            <span class="fi-chip fi-posture-chip" data-state-posture="RESEARCH_CANDIDATE"><span class="l-en">Research candidate</span><span class="l-zh">研究候选</span></span>
+          </li>
+          <li class="fi-slice fi-panel2" data-state-slice="STALE" data-state-membership="NONE" data-state-posture="RESEARCH_CANDIDATE" data-basket-state="NONE">
+            <span class="fi-slice-name"><span class="l-en">Ratings &amp; credit information</span><span class="l-zh">评级与信用信息</span></span>
+            <span class="fi-chip fi-slice-chip" data-state-slice="STALE"><span class="l-en">Stale</span><span class="l-zh">已陈旧</span></span>
+            <span class="fi-chip fi-posture-chip" data-state-posture="RESEARCH_CANDIDATE"><span class="l-en">Research candidate</span><span class="l-zh">研究候选</span></span>
+          </li>
+          <li class="fi-slice fi-panel2" data-state-slice="HELD_FOR_REVIEW" data-state-membership="NONE" data-state-posture="RESEARCH_CANDIDATE" data-basket-state="NONE">
+            <span class="fi-slice-name"><span class="l-en">Indices, benchmarks &amp; ETF plumbing</span><span class="l-zh">指数、基准与 ETF 机制</span></span>
+            <span class="fi-chip fi-slice-chip" data-state-slice="HELD_FOR_REVIEW"><span class="l-en">Held for review</span><span class="l-zh">待复核</span></span>
+            <span class="fi-chip fi-posture-chip" data-state-posture="RESEARCH_CANDIDATE"><span class="l-en">Research candidate</span><span class="l-zh">研究候选</span></span>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <p class="fi-atlas-gap" data-fi-mount="atlas-gap">
+      <span class="l-en">0 slices not yet mapped</span><span class="l-zh">尚有 0 个切片未映射</span>
+    </p>
+  </section>
+
+  <!-- =================== B.5 company-exposure (sticky table + mobile cards) =================== -->
+  <section id="company-exposure" class="fi-section fi-panel fi-exposure" aria-labelledby="fi-exposure-title"
+           data-fi-mount="company-exposure">
+    <header class="fi-section-head">
+      <h2 id="fi-exposure-title" class="fi-section-title">
+        <span class="l-en">Company exposure</span><span class="l-zh">公司敞口</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Role, basis, materiality — never a hidden score</span>
+        <span class="l-zh">角色、口径、重要性 — 绝无暗藏分数</span>
+      </span>
+    </header>
+
+    <div class="fi-exposure-table-wrap">
+      <table class="fi-exposure-table" aria-describedby="fi-exposure-desc">
+        <caption id="fi-exposure-desc" class="visually-hidden">
+          <span class="l-en">Company exposure matrix. Rows are companies. Columns are slices.</span>
+          <span class="l-zh">公司敞口矩阵。行为公司，列为切片。</span>
+        </caption>
+        <thead>
+          <tr>
+            <th class="fi-col-company" scope="col"><span class="l-en">Company</span><span class="l-zh">公司</span></th>
+            <th class="fi-col-slice" scope="col"><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span></th>
+            <th class="fi-col-slice" scope="col"><span class="l-en">Merchant acquiring</span><span class="l-zh">商户收单</span></th>
+            <th class="fi-col-slice" scope="col"><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span></th>
+            <th class="fi-col-slice" scope="col"><span class="l-en">Exchanges &amp; venues</span><span class="l-zh">交易所与场所</span></th>
+          </tr>
+        </thead>
+        <tbody data-fi-mount="exposure-rows">
+          <tr data-row-id="v" data-state-identity="IDENTITY_VALIDATED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">V (Synthetic Filing Co.)</span><span class="l-zh">V（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="PARTIAL" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">Enabler or toll collector</span><span class="l-zh">基础设施或收费方</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Partial</span><span class="l-zh">部分</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="IMMATERIAL" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">Proxy or adjacency</span><span class="l-zh">代理或邻近</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Immaterial</span><span class="l-zh">不重大</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="QUALITATIVE_ONLY" data-state-materiality="UNMEASURED" data-state-marker="" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Qualitative read</span><span class="l-zh">定性读数</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="QUALITATIVE_ONLY"><span class="l-en">Qualitative only</span><span class="l-zh">仅作定性</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="ma" data-state-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">MA (Synthetic Filing Co.)</span><span class="l-zh">MA（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity unresolved</span><span class="l-zh">身份尚未确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="DIRECT_DIVERSIFIED" data-state-materiality="PARTIAL" data-state-marker="" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">Direct, diversified</span><span class="l-zh">直接，多元化</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Transaction volume (synthetic test value)</span><span class="l-zh">交易笔数（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Partial</span><span class="l-zh">部分</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="DIRECT_DIVERSIFIED"><span class="l-en">Direct, diversified</span><span class="l-zh">直接，多元化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="PARTIAL" data-state-marker="" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">Enabler or toll collector</span><span class="l-zh">基础设施或收费方</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Partial</span><span class="l-zh">部分</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">Proxy or adjacency</span><span class="l-zh">代理或邻近</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="fi" data-state-identity="IDENTITY_VALIDATED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">FI (Synthetic Filing Co.)</span><span class="l-zh">FI（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">Second-order beneficiary</span><span class="l-zh">间接受益方</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">Enabler or toll collector</span><span class="l-zh">基础设施或收费方</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Transaction volume (synthetic test value)</span><span class="l-zh">交易笔数（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="PARTIAL" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">Proxy or adjacency</span><span class="l-zh">代理或邻近</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Partial</span><span class="l-zh">部分</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="fis" data-state-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">FIS (Synthetic Filing Co.)</span><span class="l-zh">FIS（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity unresolved</span><span class="l-zh">身份尚未确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">Enabler or toll collector</span><span class="l-zh">基础设施或收费方</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">At risk or disrupted</span><span class="l-zh">承压或被颠覆</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="cme" data-state-identity="IDENTITY_VALIDATED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">CME (Synthetic Filing Co.)</span><span class="l-zh">CME（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="IMMATERIAL" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">Proxy or adjacency</span><span class="l-zh">代理或邻近</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Immaterial</span><span class="l-zh">不重大</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="QUALITATIVE_ONLY" data-state-materiality="UNMEASURED" data-state-marker="" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Qualitative read</span><span class="l-zh">定性读数</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="QUALITATIVE_ONLY"><span class="l-en">Qualitative only</span><span class="l-zh">仅作定性</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="ice" data-state-identity="IDENTITY_VALIDATED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">ICE (Synthetic Filing Co.)</span><span class="l-zh">ICE（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">Proxy or adjacency</span><span class="l-zh">代理或邻近</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="ndaq" data-state-identity="IDENTITY_VALIDATED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">NDAQ (Synthetic Filing Co.)</span><span class="l-zh">NDAQ（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">Proxy or adjacency</span><span class="l-zh">代理或邻近</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="PARTIAL" data-state-marker="" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">Enabler or toll collector</span><span class="l-zh">基础设施或收费方</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Transaction volume (synthetic test value)</span><span class="l-zh">交易笔数（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Partial</span><span class="l-zh">部分</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="bk" data-state-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">BK (Synthetic Filing Co.)</span><span class="l-zh">BK（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity unresolved</span><span class="l-zh">身份尚未确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="DIRECT_DIVERSIFIED" data-state-materiality="PARTIAL" data-state-marker="" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">Direct, diversified</span><span class="l-zh">直接，多元化</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Assets under custody (synthetic test value)</span><span class="l-zh">在管资产规模（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Partial</span><span class="l-zh">部分</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="DIRECT_DIVERSIFIED"><span class="l-en">Direct, diversified</span><span class="l-zh">直接，多元化</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">Proxy or adjacency</span><span class="l-zh">代理或邻近</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="PARTIAL" data-state-marker="" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">Enabler or toll collector</span><span class="l-zh">基础设施或收费方</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Partial</span><span class="l-zh">部分</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="stt" data-state-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">STT (Synthetic Filing Co.)</span><span class="l-zh">STT（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity unresolved</span><span class="l-zh">身份尚未确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Assets under custody (synthetic test value)</span><span class="l-zh">在管资产规模（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="spgi" data-state-identity="IDENTITY_VALIDATED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">SPGI (Synthetic Filing Co.)</span><span class="l-zh">SPGI（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+          </tr>
+          <tr data-row-id="mco" data-state-identity="IDENTITY_VALIDATED">
+            <th class="fi-col-company" scope="row">
+              <span class="l-en">MCO (Synthetic Filing Co.)</span><span class="l-zh">MCO（Synthetic Filing Co.）</span>
+              <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+                <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+              </button>
+            </th>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="card_networks">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="merchant_acquiring_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-state-materiality="UNMEASURED" data-state-marker="EXPOSURE_NOT_SEPARATELY_DISCLOSED" data-slice="issuer_processing">
+              <span class="fi-cell-role"><span class="l-en">No role recorded</span><span class="l-zh">未记录角色</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Not separately disclosed</span><span class="l-zh">未单独披露</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span>
+            </td>
+            <td class="fi-cell" data-state-exposure="MEASURED" data-state-materiality="MATERIAL" data-state-marker="" data-slice="exchanges_trading_venues">
+              <span class="fi-cell-role"><span class="l-en">Direct, high exposure</span><span class="l-zh">直接且高敞口</span></span>
+              <span class="fi-cell-basis"><span class="l-en">Segment revenue (synthetic test value)</span><span class="l-zh">分部收入（合成测试值）</span></span>
+              <span class="fi-cell-materiality"><span class="l-en">Material</span><span class="l-zh">重要</span></span>
+              <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <details class="fi-disc fi-exposure-more" data-fi-mount="exposure-more" hidden>
+      <summary>
+        <span class="l-en">See all 8 companies</span>
+        <span class="l-zh">查看全部 8 家</span>
+      </summary>
+    </details>
+    <ul class="fi-exposure-cards" data-fi-mount="exposure-cards">
+      <li class="fi-exposure-card fi-panel2">
+        <p><span class="l-en">V (Synthetic Filing Co.)</span><span class="l-zh">V（Synthetic Filing Co.）</span></p>
+        <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+          <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+        </button>
+        <p><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+        <p><span class="l-en">Merchant acquiring</span><span class="l-zh">商户收单</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Partial</span><span class="l-zh">部分</span></p>
+        <p><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Immaterial</span><span class="l-zh">不重大</span></p>
+        <p><span class="l-en">Exchanges &amp; venues</span><span class="l-zh">交易所与场所</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="QUALITATIVE_ONLY"><span class="l-en">Qualitative only</span><span class="l-zh">仅作定性</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+      </li>
+      <li class="fi-exposure-card fi-panel2">
+        <p><span class="l-en">MA (Synthetic Filing Co.)</span><span class="l-zh">MA（Synthetic Filing Co.）</span></p>
+        <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+          <span class="l-en">Identity unresolved</span><span class="l-zh">身份尚未确认</span>
+        </button>
+        <p><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="DIRECT_DIVERSIFIED"><span class="l-en">Direct, diversified</span><span class="l-zh">直接，多元化</span></span> — <span class="l-en">Partial</span><span class="l-zh">部分</span></p>
+        <p><span class="l-en">Merchant acquiring</span><span class="l-zh">商户收单</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+        <p><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Partial</span><span class="l-zh">部分</span></p>
+        <p><span class="l-en">Exchanges &amp; venues</span><span class="l-zh">交易所与场所</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+      </li>
+      <li class="fi-exposure-card fi-panel2">
+        <p><span class="l-en">FI (Synthetic Filing Co.)</span><span class="l-zh">FI（Synthetic Filing Co.）</span></p>
+        <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+          <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+        </button>
+        <p><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+        <p><span class="l-en">Merchant acquiring</span><span class="l-zh">商户收单</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+        <p><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+        <p><span class="l-en">Exchanges &amp; venues</span><span class="l-zh">交易所与场所</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Partial</span><span class="l-zh">部分</span></p>
+      </li>
+      <li class="fi-exposure-card fi-panel2">
+        <p><span class="l-en">FIS (Synthetic Filing Co.)</span><span class="l-zh">FIS（Synthetic Filing Co.）</span></p>
+        <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+          <span class="l-en">Identity unresolved</span><span class="l-zh">身份尚未确认</span>
+        </button>
+        <p><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+        <p><span class="l-en">Merchant acquiring</span><span class="l-zh">商户收单</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+        <p><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+        <p><span class="l-en">Exchanges &amp; venues</span><span class="l-zh">交易所与场所</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+      </li>
+      <li class="fi-exposure-card fi-panel2">
+        <p><span class="l-en">CME (Synthetic Filing Co.)</span><span class="l-zh">CME（Synthetic Filing Co.）</span></p>
+        <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+          <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+        </button>
+        <p><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Immaterial</span><span class="l-zh">不重大</span></p>
+        <p><span class="l-en">Merchant acquiring</span><span class="l-zh">商户收单</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="QUALITATIVE_ONLY"><span class="l-en">Qualitative only</span><span class="l-zh">仅作定性</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+        <p><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+        <p><span class="l-en">Exchanges &amp; venues</span><span class="l-zh">交易所与场所</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+      </li>
+      <li class="fi-exposure-card fi-panel2">
+        <p><span class="l-en">ICE (Synthetic Filing Co.)</span><span class="l-zh">ICE（Synthetic Filing Co.）</span></p>
+        <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+          <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+        </button>
+        <p><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+        <p><span class="l-en">Merchant acquiring</span><span class="l-zh">商户收单</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+        <p><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+        <p><span class="l-en">Exchanges &amp; venues</span><span class="l-zh">交易所与场所</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+      </li>
+      <li class="fi-exposure-card fi-panel2">
+        <p><span class="l-en">NDAQ (Synthetic Filing Co.)</span><span class="l-zh">NDAQ（Synthetic Filing Co.）</span></p>
+        <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_VALIDATED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+          <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+        </button>
+        <p><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+        <p><span class="l-en">Merchant acquiring</span><span class="l-zh">商户收单</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Partial</span><span class="l-zh">部分</span></p>
+        <p><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+        <p><span class="l-en">Exchanges &amp; venues</span><span class="l-zh">交易所与场所</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Material</span><span class="l-zh">重要</span></p>
+      </li>
+      <li class="fi-exposure-card fi-panel2">
+        <p><span class="l-en">BK (Synthetic Filing Co.)</span><span class="l-zh">BK（Synthetic Filing Co.）</span></p>
+        <button type="button" class="fi-chip fi-identity-chip fi-evidence-trigger" data-identity="IDENTITY_UNRESOLVED" data-state-marker="IDENTITY_UNRESOLVED" aria-label="Open evidence" data-aria-en="Open evidence" data-aria-zh="打开证据">
+          <span class="l-en">Identity unresolved</span><span class="l-zh">身份尚未确认</span>
+        </button>
+        <p><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="DIRECT_DIVERSIFIED"><span class="l-en">Direct, diversified</span><span class="l-zh">直接，多元化</span></span> — <span class="l-en">Partial</span><span class="l-zh">部分</span></p>
+        <p><span class="l-en">Merchant acquiring</span><span class="l-zh">商户收单</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+        <p><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="EXPOSURE_NOT_SEPARATELY_DISCLOSED"><span class="l-en">Exposure not separately disclosed</span><span class="l-zh">敞口未单独披露</span></span> — <span class="l-en">Not yet measured</span><span class="l-zh">尚未量化</span></p>
+        <p><span class="l-en">Exchanges &amp; venues</span><span class="l-zh">交易所与场所</span> — <span class="fi-chip fi-exposure-chip" data-state-exposure="MEASURED"><span class="l-en">Measured</span><span class="l-zh">已量化</span></span> — <span class="l-en">Partial</span><span class="l-zh">部分</span></p>
+      </li>
+    </ul>
+    <details class="fi-disc fi-exposure-cards-more" data-fi-mount="exposure-cards-more" hidden>
+      <summary>
+        <span class="l-en">See all 8 companies</span>
+        <span class="l-zh">查看全部 8 家</span>
+      </summary>
+      <ul class="fi-exposure-cards">
+      </ul>
+    </details>
+  </section>
+
+  <!-- =================== B.6 macro-matrix (flat mechanism + lag grid) =================== -->
+  <section id="macro-matrix" class="fi-section fi-panel fi-macro" aria-labelledby="fi-macro-title"
+           data-fi-mount="macro-matrix">
+    <header class="fi-section-head">
+      <h2 id="fi-macro-title" class="fi-section-title">
+        <span class="l-en">Macro matrix</span><span class="l-zh">宏观矩阵</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Mechanism and lag, never a stock verdict</span><span class="l-zh">机制与时滞 — 非个股结论</span>
+      </span>
+    </header>
+    <div class="fi-macro-table-wrap">
+      <table class="fi-macro-table" aria-describedby="fi-macro-desc">
+        <caption id="fi-macro-desc" class="visually-hidden">
+          <span class="l-en">Macro driver matrix. Rows are slices. Columns are macro drivers.</span>
+          <span class="l-zh">宏观驱动矩阵。行为切片，列为宏观驱动。</span>
+        </caption>
+        <thead>
+          <tr>
+            <th class="fi-col-slice" scope="col"><span class="l-en">Slice</span><span class="l-zh">切片</span></th>
+            <th scope="col"><span class="l-en">Policy rates</span><span class="l-zh">政策利率</span></th>
+            <th scope="col"><span class="l-en">Yield curve</span><span class="l-zh">收益率曲线</span></th>
+            <th scope="col"><span class="l-en">Deposit funding</span><span class="l-zh">存款融资</span></th>
+            <th scope="col"><span class="l-en">Credit growth</span><span class="l-zh">信贷增长</span></th>
+            <th scope="col"><span class="l-en">Losses &amp; defaults</span><span class="l-zh">损失与违约</span></th>
+            <th scope="col"><span class="l-en">Equity levels</span><span class="l-zh">股市水平</span></th>
+            <th scope="col"><span class="l-en">Volatility</span><span class="l-zh">波动率</span></th>
+            <th scope="col"><span class="l-en">Regulation</span><span class="l-zh">监管</span></th>
+          </tr>
+        </thead>
+        <tbody data-fi-mount="macro-rows">
+          <tr data-slice-id="card_networks">
+            <th class="fi-col-slice" scope="row"><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span></th>
+            <td><span class="l-en">Spending volume tied to policy rate path</span><span class="l-zh">消费体量随政策利率走向变化</span><span class="fi-macro-cell-state" data-state="DESCRIBED"><span class="l-en">Mechanism described</span><span class="l-zh">已描述机制</span></span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Interchange caps bind the per-transaction economics</span><span class="l-zh">交换费上限约束单笔经济性</span><span class="fi-macro-cell-state" data-state="DESCRIBED"><span class="l-en">Mechanism described</span><span class="l-zh">已描述机制</span></span></td>
+          </tr>
+          <tr data-slice-id="exchanges_trading_venues">
+            <th class="fi-col-slice" scope="row"><span class="l-en">Exchanges &amp; trading venues</span><span class="l-zh">交易所与交易场所</span></th>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Trading swings drive fee revenue with a one-quarter lag</span><span class="l-zh">交易起伏以约 1 个季度滞后驱动手续费收入</span><span class="fi-macro-cell-state" data-state="CAUSAL_EFFECT_UNMEASURED" data-state-marker="CAUSAL_EFFECT_UNMEASURED"><span class="l-en">Causal effect not measured</span><span class="l-zh">因果影响未测量</span></span></td>
+            <td><span class="l-en">Volume regime moves with swings in market mood</span><span class="l-zh">成交量随市场情绪起伏即时变化</span><span class="fi-macro-cell-state" data-state="DESCRIBED"><span class="l-en">Mechanism described</span><span class="l-zh">已描述机制</span></span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+          </tr>
+          <tr data-slice-id="merchant_acquiring_processing">
+            <th class="fi-col-slice" scope="row"><span class="l-en">Merchant acquiring &amp; processing</span><span class="l-zh">商户收单与处理</span></th>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></td>
+            <td><span class="l-en">Not applicable</span><span class="l-zh">不适用</span><span class="fi-macro-cell-state" data-state="NOT_APPLICABLE"><span class="l-en">Not applicable</span><span class="l-zh">不适用</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <details class="fi-disc fi-macro-more" data-fi-mount="macro-more" hidden>
+      <summary>
+        <span class="l-en">See all 8 slices</span>
+        <span class="l-zh">查看全部 8 个切片</span>
+      </summary>
+    </details>
+    <ul class="fi-macro-cards" data-fi-mount="macro-cards">
+      <li class="fi-macro-card fi-panel2">
+        <p><span class="l-en">Card networks</span><span class="l-zh">银行卡网络</span></p>
+        <p><span class="l-en">Policy rates</span><span class="l-zh">政策利率</span> — <span class="l-en">Spending volume tied to policy rate path</span><span class="l-zh">消费体量随政策利率走向变化</span> <span class="fi-macro-cell-state" data-state="DESCRIBED"><span class="l-en">Mechanism described</span><span class="l-zh">已描述机制</span></span></p>
+        <p><span class="l-en">Regulation</span><span class="l-zh">监管</span> — <span class="l-en">Interchange caps bind the per-transaction economics</span><span class="l-zh">交换费上限约束单笔经济性</span> <span class="fi-macro-cell-state" data-state="DESCRIBED"><span class="l-en">Mechanism described</span><span class="l-zh">已描述机制</span></span></p>
+      </li>
+      <li class="fi-macro-card fi-panel2">
+        <p><span class="l-en">Merchant acquiring &amp; processing</span><span class="l-zh">商户收单与处理</span></p>
+        <p><span class="l-en">Regulation</span><span class="l-zh">监管</span> — <span class="l-en">Not applicable</span><span class="l-zh">不适用</span> <span class="fi-macro-cell-state" data-state="NOT_APPLICABLE"><span class="l-en">Not applicable</span><span class="l-zh">不适用</span></span></p>
+      </li>
+      <li class="fi-macro-card fi-panel2">
+        <p><span class="l-en">Issuer processing</span><span class="l-zh">发卡行处理</span></p>
+        <p><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></p>
+      </li>
+      <li class="fi-macro-card fi-panel2">
+        <p><span class="l-en">Exchanges &amp; trading venues</span><span class="l-zh">交易所与交易场所</span></p>
+        <p><span class="l-en">Equity levels</span><span class="l-zh">股市水平</span> — <span class="l-en">Trading swings drive fee revenue with a one-quarter lag</span><span class="l-zh">交易起伏以约 1 个季度滞后驱动手续费收入</span> <span class="fi-macro-cell-state" data-state="CAUSAL_EFFECT_UNMEASURED" data-state-marker="CAUSAL_EFFECT_UNMEASURED"><span class="l-en">Causal effect not measured</span><span class="l-zh">因果影响未测量</span></span></p>
+        <p><span class="l-en">Volatility</span><span class="l-zh">波动率</span> — <span class="l-en">Volume regime moves with swings in market mood</span><span class="l-zh">成交量随市场情绪起伏即时变化</span> <span class="fi-macro-cell-state" data-state="DESCRIBED"><span class="l-en">Mechanism described</span><span class="l-zh">已描述机制</span></span></p>
+      </li>
+      <li class="fi-macro-card fi-panel2">
+        <p><span class="l-en">Custody &amp; asset servicing</span><span class="l-zh">托管与资产服务</span></p>
+        <p><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></p>
+      </li>
+      <li class="fi-macro-card fi-panel2">
+        <p><span class="l-en">Market reference data</span><span class="l-zh">市场参考数据</span></p>
+        <p><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></p>
+      </li>
+      <li class="fi-macro-card fi-panel2">
+        <p><span class="l-en">Ratings &amp; credit information</span><span class="l-zh">评级与信贷信息</span></p>
+        <p><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></p>
+      </li>
+      <li class="fi-macro-card fi-panel2">
+        <p><span class="l-en">Indices, benchmarks &amp; ETF plumbing</span><span class="l-zh">指数、基准与 ETF 基础设施</span></p>
+        <p><span class="l-en">Not mapped</span><span class="l-zh">未映射</span></p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- =================== B.7 constraint-map =================== -->
+  <section id="constraint-map" class="fi-section fi-panel fi-constraint" aria-labelledby="fi-constraint-title"
+           data-fi-mount="constraint-map">
+    <header class="fi-section-head">
+      <h2 id="fi-constraint-title" class="fi-section-title">
+        <span class="l-en">Constraint map</span><span class="l-zh">约束图</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">Every constraint links to its economic effect</span>
+        <span class="l-zh">每条约束都对应一个经济效应</span>
+      </span>
+    </header>
+    <ul class="fi-constraint-list" role="list" data-fi-mount="constraint-list">
+      <li class="fi-constraint-row fi-panel2" data-constraint="regulatory_permission" data-slice-id="card_networks">
+        <span class="fi-chip fi-constraint-chip" data-constraint="regulatory_permission" data-state-marker="REGULATORY_PERMISSION"><span class="l-en">Regulatory permission</span><span class="l-zh">监管许可</span></span>
+        <span class="fi-constraint-effect"><span class="l-en">Interchange caps bind the per-transaction economics (synthetic test value).</span><span class="l-zh">交换费上限约束单笔经济性（合成测试值）。</span></span>
+        <button type="button" class="fi-constraint-evidence fi-evidence-trigger" data-evidence-ids="rec_reg_permission" aria-label="Open evidence for this constraint" data-aria-en="Open evidence for this constraint" data-aria-zh="打开该约束的证据">↗</button>
+      </li>
+      <li class="fi-constraint-row fi-panel2" data-constraint="capital" data-slice-id="card_networks">
+        <span class="fi-chip fi-constraint-chip" data-constraint="capital" data-state-marker="CAPITAL"><span class="l-en">Capital adequacy</span><span class="l-zh">资本充足</span></span>
+        <span class="fi-constraint-effect"><span class="l-en">Capital ratios shape the issuer-side dividend envelope (synthetic test value).</span><span class="l-zh">资本充足率决定发卡端可分配股息空间（合成测试值）。</span></span>
+        <button type="button" class="fi-constraint-evidence fi-evidence-trigger" data-evidence-ids="rec_capital" aria-label="Open evidence for this constraint" data-aria-en="Open evidence for this constraint" data-aria-zh="打开该约束的证据">↗</button>
+      </li>
+      <li class="fi-constraint-row fi-panel2" data-constraint="network_access" data-slice-id="exchanges_trading_venues">
+        <span class="fi-chip fi-constraint-chip" data-constraint="network_access" data-state-marker="NETWORK_ACCESS"><span class="l-en">Network access</span><span class="l-zh">网络接入</span></span>
+        <span class="fi-constraint-effect"><span class="l-en">Membership rules gate who can clear trades (synthetic test value).</span><span class="l-zh">会员资格决定谁可参与清算（合成测试值）。</span></span>
+        <button type="button" class="fi-constraint-evidence fi-evidence-trigger" data-evidence-ids="rec_net_access" aria-label="Open evidence for this constraint" data-aria-en="Open evidence for this constraint" data-aria-zh="打开该约束的证据">↗</button>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Provenance footer (per E.5, populates from input_receipts whose state ≠ READ) -->
+  <footer class="fi-provenance fi-panel" data-fi-mount="provenance" aria-label="Input receipts" data-aria-en="Input receipts" data-aria-zh="输入凭据">
+    <p class="fi-kicker"><span class="l-en">Provenance</span><span class="l-zh">出处说明</span></p>
+    <p class="fi-receipt-line"><span class="l-en">Expectations revisions — degraded · overnight file dropped</span><span class="l-zh">预期修订 — 已降级 · 隔夜文件已掉线</span></p>
+    <p class="fi-receipt-line"><span class="l-en">Private publication — not accepted · upstream vendor gate</span><span class="l-zh">私有发布 — 未接入 · 上游厂商未开通</span></p>
+  </footer>
+
+</main>
+
+<!-- Mockup-only evidence: the §G degraded states, shown OUTSIDE the shell so <main> carries exactly the seven L1 sections. -->
+<div class="fi-shell fi-mockup-showcase-wrap" aria-label="Degraded states (mockup only)">
+  <!-- =================== Degraded-state showcase (per §G — public shell only) =================== -->
+  <section id="fi-degraded-states" class="fi-section fi-panel fi-mockup-showcase" aria-labelledby="fi-degraded-states-title">
+    <header class="fi-section-head">
+      <h2 id="fi-degraded-states-title" class="fi-section-title">
+        <span class="l-en">Degraded-state copies</span><span class="l-zh">降级文案</span>
+      </h2>
+      <span class="fi-section-eyebrow">
+        <span class="l-en">The public shell would show one of these when the read-model refuses</span>
+        <span class="l-zh">当读模型拒绝时，公开发布外壳将展示以下之一</span>
+      </span>
+    </header>
+
+    <ul class="fi-falsifiers" role="list">
+      <li class="fi-falsifier"><span class="fi-falsifier-chip" data-state-falsifier="NOT_YET_EVALUABLE"><span class="l-en">503</span><span class="l-zh">503</span></span>
+        <span class="fi-falsifier-statement"><span class="l-en">Private evidence store unavailable</span><span class="l-zh">私有证据库暂不可用</span></span>
+        <span class="fi-falsifier-window"><span class="l-en">typed refusal</span><span class="l-zh">类型化拒绝</span></span>
+      </li>
+      <li class="fi-falsifier"><span class="fi-falsifier-chip" data-state-falsifier="NOT_YET_EVALUABLE"><span class="l-en">503</span><span class="l-zh">503</span></span>
+        <span class="fi-falsifier-statement"><span class="l-en">No evidence generation published yet — re-drawn after the next nightly</span><span class="l-zh">尚未发布证据版本，夜间更新后重绘</span></span>
+        <span class="fi-falsifier-window"><span class="l-en">no generation yet</span><span class="l-zh">暂无生成</span></span>
+      </li>
+      <li class="fi-falsifier"><span class="fi-falsifier-chip" data-state-falsifier="NOT_YET_EVALUABLE"><span class="l-en">503</span><span class="l-zh">503</span></span>
+        <span class="fi-falsifier-statement"><span class="l-en">Generation interrupted — partial context only</span><span class="l-zh">生成中断 — 仅展示部分背景</span></span>
+        <span class="fi-falsifier-window"><span class="l-en">partial context</span><span class="l-zh">部分背景</span></span>
+      </li>
+      <li class="fi-falsifier"><span class="fi-falsifier-chip" data-state-falsifier="NOT_YET_EVALUABLE"><span class="l-en">503</span><span class="l-zh">503</span></span>
+        <span class="fi-falsifier-statement"><span class="l-en">Contract mismatch — showing public shell only</span><span class="l-zh">契约不一致 — 仅展示公开外壳</span></span>
+        <span class="fi-falsifier-window"><span class="l-en">contract mismatch</span><span class="l-zh">契约不一致</span></span>
+      </li>
+      <li class="fi-falsifier"><span class="fi-falsifier-chip" data-state-falsifier="NOT_YET_EVALUABLE"><span class="l-en">401</span><span class="l-zh">401</span></span>
+        <span class="fi-falsifier-statement"><span class="l-en">Sign in to read current research</span><span class="l-zh">请登录以查阅当前研究</span></span>
+        <span class="fi-falsifier-window"><span class="l-en">signed out</span><span class="l-zh">未登录</span></span>
+      </li>
+      <li class="fi-falsifier"><span class="fi-falsifier-chip" data-state-falsifier="NOT_YET_EVALUABLE"><span class="l-en">402</span><span class="l-zh">402</span></span>
+        <span class="fi-falsifier-statement"><span class="l-en">This dossier is part of the research tier</span><span class="l-zh">此报告为研究层内容</span></span>
+        <span class="fi-falsifier-window"><span class="l-en">research tier only</span><span class="l-zh">仅研究层</span></span>
+      </li>
+      <li class="fi-falsifier"><span class="fi-falsifier-chip" data-state-falsifier="NOT_YET_EVALUABLE"><span class="l-en">net</span><span class="l-zh">网络</span></span>
+        <span class="fi-falsifier-statement"><span class="l-en">Couldn't load — try again</span><span class="l-zh">未能加载 — 请重试</span></span>
+        <span class="fi-falsifier-window"><span class="l-en">network error</span><span class="l-zh">网络错误</span></span>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<!-- =================== Evidence drawer aside (single instance, dialog role) =================== -->
+<aside id="evidence-drawer" class="fi-drawer" role="dialog" aria-modal="true"
+       aria-labelledby="fi-evidence-title" hidden tabindex="-1">
+  <header class="fi-drawer-head">
+    <div>
+      <p class="fi-kicker"><span class="l-en">Source receipt</span><span class="l-zh">来源凭据</span></p>
+      <h2 id="fi-evidence-title"><span class="l-en">Evidence</span><span class="l-zh">证据</span></h2>
+    </div>
+    <button class="fi-drawer-close" id="fi-close-evidence" type="button"
+            aria-label="Close evidence drawer" data-aria-en="Close evidence drawer" data-aria-zh="关闭证据抽屉">×</button>
+  </header>
+  <div class="fi-drawer-body" id="fi-evidence-body" data-fi-mount="evidence-body">
+    <p class="fi-evidence-empty" data-fi-mount="evidence-empty" hidden>
+      <span class="l-en">Choose an evidence action in any section</span>
+      <span class="l-zh">请在任一板块选择证据操作</span>
+    </p>
+    <p class="fi-evidence-private-notice" hidden>
+      <span class="l-en">Private evidence — source rights restrict display.</span>
+      <span class="l-zh">私有证据 — 来源权利限制展示。</span>
+    </p>
+    <dl class="fi-evidence-fields" data-fi-mount="evidence-fields">
+      <div>
+        <dt><span class="l-en">Publisher</span><span class="l-zh">发布方</span></dt>
+        <dd><span class="l-en">Synthetic Filing Co. (test publisher)</span><span class="l-zh">Synthetic Filing Co.（测试发布方）</span></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Source family</span><span class="l-zh">来源类别</span></dt>
+        <dd><span class="l-en">Disclosure (test family)</span><span class="l-zh">信息披露（测试类别）</span></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Locator</span><span class="l-zh">定位符</span></dt>
+        <dd><a href="https://example.invalid/finance/test-001" rel="noopener">https://example.invalid/finance/test-001</a></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Published at</span><span class="l-zh">发布时间</span></dt>
+        <dd><span class="l-en">2026-09-19 day</span><span class="l-zh">2026-09-19 日</span></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Observed at</span><span class="l-zh">观察时间</span></dt>
+        <dd><span class="l-en">2026-09-19 day</span><span class="l-zh">2026-09-19 日</span></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Business scope</span><span class="l-zh">业务范围</span></dt>
+        <dd><span class="l-en">Card networks / interchange-cap update (test scope)</span><span class="l-zh">银行卡网络 / 交换费上限更新（测试范围）</span></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Metric</span><span class="l-zh">指标</span></dt>
+        <dd><span class="l-en">Per-transaction revenue (synthetic test value)</span><span class="l-zh">单笔收入（合成测试值）</span></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Statement mode</span><span class="l-zh">陈述方式</span></dt>
+        <dd><span class="l-en">Reported fact</span><span class="l-zh">报告事实</span></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Reported / derived</span><span class="l-zh">原始 / 推算</span></dt>
+        <dd><span class="l-en">reported</span><span class="l-zh">原始报告</span></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Limitations</span><span class="l-zh">局限说明</span></dt>
+        <dd><span class="l-en">Synthetic test value only — never a real-world reading.</span><span class="l-zh">仅合成测试值 — 非任何真实读数。</span></dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Identity</span><span class="l-zh">身份</span></dt>
+        <dd class="fi-evidence-identity" data-identity="IDENTITY_VALIDATED">
+          <span class="l-en">Identity validated</span><span class="l-zh">身份已确认</span>
+        </dd>
+      </div>
+      <div>
+        <dt><span class="l-en">Source rights</span><span class="l-zh">来源权利</span></dt>
+        <dd class="fi-evidence-rights fi-chip" data-rights="SOURCE_RIGHTS_HELD" data-state-marker="SOURCE_RIGHTS_HELD">
+          <span class="l-en">Source rights restrict display</span><span class="l-zh">来源权利限制展示</span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</aside>
+<div class="fi-scrim" id="fi-scrim" hidden></div>
+
+<!-- =================== Inline JS — theme/lang/view toggle + drawer (mockup only) =================== -->
+<script>
+(function(){
+  'use strict';
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('fi-mockup-theme');
+  var langBtn = document.getElementById('fi-mockup-lang');
+
+  // ---- Theme toggle ----
+  function setTheme(next){
+    root.setAttribute('data-theme', next);
+    themeBtn.setAttribute('aria-pressed', next === 'light' ? 'false' : 'true');
+    themeBtn.querySelector('.l-en').textContent = next === 'light' ? 'Light' : 'Dark';
+    themeBtn.querySelector('.l-zh').textContent = next === 'light' ? '浅色' : '深色';
+  }
+  themeBtn.addEventListener('click', function(){
+    setTheme(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+  });
+
+  // ---- Lang toggle (toggles html[data-lang]; .l-en/.l-zh visible/hidden via CSS) ----
+  function setLang(next){
+    root.setAttribute('data-lang', next);
+    root.setAttribute('lang', next);
+    langBtn.setAttribute('aria-pressed', next === 'zh' ? 'true' : 'false');
+    document.dispatchEvent(new CustomEvent('langchange'));
+  }
+  langBtn.addEventListener('click', function(){
+    setLang(root.getAttribute('data-lang') === 'zh' ? 'en' : 'zh');
+  });
+
+  // ---- Page-local ARIA swapper (per §E.3) ----
+  function applyAria(){
+    var lang = root.getAttribute('data-lang') || 'en';
+    document.querySelectorAll('[data-aria-en]').forEach(function(el){
+      el.setAttribute('aria-label', lang === 'zh'
+        ? (el.getAttribute('data-aria-zh') || el.getAttribute('data-aria-en'))
+        : el.getAttribute('data-aria-en'));
+    });
+  }
+  document.addEventListener('langchange', applyAria);
+  applyAria();
+
+  // ---- System-view tabs (roving tabindex, ArrowLeft/Right/Home/End) ----
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.fi-view-tab'));
+  function selectTab(id){
+    tabs.forEach(function(t){
+      var on = t.id === id;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.setAttribute('tabindex', on ? '0' : '-1');
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      if (panel) panel.hidden = !on;
+    });
+  }
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){ selectTab(tab.id); });
+    tab.addEventListener('keydown', function(ev){
+      var i = tabs.indexOf(tab);
+      if (ev.key === 'ArrowLeft') { ev.preventDefault(); var prev = tabs[(i - 1 + tabs.length) % tabs.length]; selectTab(prev.id); prev.focus(); }
+      else if (ev.key === 'ArrowRight') { ev.preventDefault(); var nxt = tabs[(i + 1) % tabs.length]; selectTab(nxt.id); nxt.focus(); }
+      else if (ev.key === 'Home') { ev.preventDefault(); selectTab(tabs[0].id); tabs[0].focus(); }
+      else if (ev.key === 'End') { ev.preventDefault(); selectTab(tabs[tabs.length - 1].id); tabs[tabs.length - 1].focus(); }
+    });
+  });
+
+  // ---- Drawer open/close (focus trap, restore, Escape) ----
+  var drawer = document.getElementById('evidence-drawer');
+  var scrim = document.getElementById('fi-scrim');
+  var opener = null;
+  function focusables(){
+    return Array.prototype.slice.call(
+      drawer.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+    );
+  }
+  function openDrawer(trigger){
+    opener = trigger || document.activeElement;
+    drawer.hidden = false;
+    scrim.hidden = false;
+    document.getElementById('fi-main').inert = true;
+    var nav = document.querySelector('nav.site-nav'); if (nav) nav.inert = true;
+    var first = focusables()[0];
+    if (first) first.focus();
+  }
+  function closeDrawer(){
+    drawer.hidden = true;
+    scrim.hidden = true;
+    document.getElementById('fi-main').inert = false;
+    var nav = document.querySelector('nav.site-nav'); if (nav) nav.inert = false;
+    if (opener && typeof opener.focus === 'function') opener.focus();
+  }
+  document.querySelectorAll('.fi-evidence-trigger').forEach(function(b){
+    b.addEventListener('click', function(){ openDrawer(b); });
+  });
+  document.getElementById('fi-close-evidence').addEventListener('click', closeDrawer);
+  scrim.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function(ev){
+    if (drawer.hidden) return;
+    if (ev.key === 'Escape') { ev.preventDefault(); closeDrawer(); return; }
+    if (ev.key === 'Tab') {
+      var f = focusables();
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    }
+  });
+
+  // mockup controls-bar opener
+  var ctrlOpen = document.getElementById('fi-mockup-open');
+  ctrlOpen.addEventListener('click', function(){
+    if (drawer.hidden) { openDrawer(this); this.setAttribute('aria-pressed', 'true'); }
+    else { closeDrawer(); this.setAttribute('aria-pressed', 'false'); }
+  });
+})();
+</script>
+</body>
+</html>

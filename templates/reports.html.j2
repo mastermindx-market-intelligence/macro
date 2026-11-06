@@ -282,6 +282,11 @@
       <span><b>{{ stats.n_topics }}</b> {{ t('topics covered', '个覆盖主题') }}</span>
       <span class="sep">·</span>
       <span>~<b>{{ stats.total_min }}</b> {{ t('min of reading', '分钟阅读') }}</span>
+      {% if stats and stats.oldest %}
+      <span class="sep">·</span>
+      <span>{{ t('span', '跨度') }} {{ stats.oldest.mon }} {{ stats.oldest.day }} –
+        {{ stats.latest.mon }} {{ stats.latest.day }}, {{ stats.latest.year }}</span>
+      {% endif %}
     </div>
     {% endif %}
   </header>

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-30T18:41:42Z",
+ "accession": "0001193125-26-325872",
+ "cik": "0000108516",
+ "doc_byte_length": 8064657,
+ "doc_sha256": "4da193fcec877967869ebc8729fb82c7bec4e9a5ef021af900e10e2c4e4c40eb",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-30",
+ "form": "10-K",
+ "period_of_report": "2026-05-31",
+ "primary_document": "wor-20260531.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 7818466,
+  "byte_start": 7818249,
+  "normalized": "Trademark License Agreement, dated November 30, 2023, between Worthington Enterprises, Inc. and Worthington Steel, Inc.",
+  "normalized_sha256": "5d425c1d4e37159e4ff857369e27a1f42260364c8e0d43150470412c69d57914",
+  "raw": "Trademark License Agreement, dated November 30, 2023, between Worthington Enterprises, Inc. and Worthington Steel, Inc.</span><span style=\"color:#0000ff;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"> ",
+  "raw_sha256": "5c9fa58b484bc72b194cf4f69513b721c0be69a462b3b027e5466852f90e6f74"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/108516/000119312526325872/wor-20260531.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,186 @@
+[
+ {
+  "file": "scanner-table__dark__en__1440.png",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "lang": "en",
+  "variant": "served",
+  "route": "/intl.html?view=scanner&market=JP",
+  "selector": "table.intl-gs__table--scanner",
+  "selector_matches": 10,
+  "visible_index": 0,
+  "applied": {
+   "theme": "dark",
+   "lang": "en"
+  },
+  "box": {
+   "x": 115,
+   "y": -117.171875,
+   "width": 794,
+   "height": 1134.203125
+  },
+  "captured": true,
+  "what": "served scanner market table (desktop) / market cards (phone, the table is display:none at <=900): signed direction, severity/qualifier chips and labels"
+ },
+ {
+  "file": "scanner-table__light__en__1440.png",
+  "viewport": "1440x900",
+  "theme": "light",
+  "lang": "en",
+  "variant": "served",
+  "route": "/intl.html?view=scanner&market=JP",
+  "selector": "table.intl-gs__table--scanner",
+  "selector_matches": 10,
+  "visible_index": 0,
+  "applied": {
+   "theme": "light",
+   "lang": "en"
+  },
+  "box": {
+   "x": 115,
+   "y": -117.171875,
+   "width": 794,
+   "height": 1134.203125
+  },
+  "captured": true,
+  "what": "served scanner market table (desktop) / market cards (phone, the table is display:none at <=900): signed direction, severity/qualifier chips and labels"
+ },
+ {
+  "file": "scanner-table__dark__zh__390.png",
+  "viewport": "390x844",
+  "theme": "dark",
+  "lang": "zh",
+  "variant": "served",
+  "route": "/intl.html?view=scanner&market=JP",
+  "selector": ".intl-gs__mcards",
+  "selector_matches": 10,
+  "visible_index": 0,
+  "applied": {
+   "theme": "dark",
+   "lang": "zh"
+  },
+  "box": {
+   "x": 78,
+   "y": -265.390625,
+   "width": 234,
+   "height": 1375.734375
+  },
+  "captured": true,
+  "what": "served scanner market table (desktop) / market cards (phone, the table is display:none at <=900): signed direction, severity/qualifier chips and labels"
+ },
+ {
+  "file": "scanner-table__light__zh__390.png",
+  "viewport": "390x844",
+  "theme": "light",
+  "lang": "zh",
+  "variant": "served",
+  "route": "/intl.html?view=scanner&market=JP",
+  "selector": ".intl-gs__mcards",
+  "selector_matches": 10,
+  "visible_index": 0,
+  "applied": {
+   "theme": "light",
+   "lang": "zh"
+  },
+  "box": {
+   "x": 78,
+   "y": -265.390625,
+   "width": 234,
+   "height": 1375.734375
+  },
+  "captured": true,
+  "what": "served scanner market table (desktop) / market cards (phone, the table is display:none at <=900): signed direction, severity/qualifier chips and labels"
+ },
+ {
+  "file": "dislocations-table__dark__en__1440.png",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "lang": "en",
+  "variant": "served",
+  "route": "/intl.html?view=dislocations",
+  "selector": "table.intl-dislocations__table",
+  "selector_matches": 1,
+  "visible_index": 0,
+  "applied": {
+   "theme": "dark",
+   "lang": "en"
+  },
+  "box": {
+   "x": 115,
+   "y": 214.21875,
+   "width": 1210,
+   "height": 472.296875
+  },
+  "captured": true,
+  "what": "served dislocation ranking table: signed divergence, fragility qualifiers and reason labels"
+ },
+ {
+  "file": "dislocations-table__light__en__1440.png",
+  "viewport": "1440x900",
+  "theme": "light",
+  "lang": "en",
+  "variant": "served",
+  "route": "/intl.html?view=dislocations",
+  "selector": "table.intl-dislocations__table",
+  "selector_matches": 1,
+  "visible_index": 0,
+  "applied": {
+   "theme": "light",
+   "lang": "en"
+  },
+  "box": {
+   "x": 115,
+   "y": 214.21875,
+   "width": 1210,
+   "height": 472.296875
+  },
+  "captured": true,
+  "what": "served dislocation ranking table: signed divergence, fragility qualifiers and reason labels"
+ },
+ {
+  "file": "dislocations-table__dark__zh__390.png",
+  "viewport": "390x844",
+  "theme": "dark",
+  "lang": "zh",
+  "variant": "served",
+  "route": "/intl.html?view=dislocations",
+  "selector": "table.intl-dislocations__table",
+  "selector_matches": 1,
+  "visible_index": 0,
+  "applied": {
+   "theme": "dark",
+   "lang": "zh"
+  },
+  "box": {
+   "x": 78,
+   "y": -659.375,
+   "width": 234,
+   "height": 2162.09375
+  },
+  "captured": true,
+  "what": "served dislocation ranking table: signed divergence, fragility qualifiers and reason labels"
+ },
+ {
+  "file": "dislocations-table__light__zh__390.png",
+  "viewport": "390x844",
+  "theme": "light",
+  "lang": "zh",
+  "variant": "served",
+  "route": "/intl.html?view=dislocations",
+  "selector": "table.intl-dislocations__table",
+  "selector_matches": 1,
+  "visible_index": 0,
+  "applied": {
+   "theme": "light",
+   "lang": "zh"
+  },
+  "box": {
+   "x": 78,
+   "y": -659.375,
+   "width": 234,
+   "height": 2162.09375
+  },
+  "captured": true,
+  "what": "served dislocation ranking table: signed divergence, fragility qualifiers and reason labels"
+ }
+]

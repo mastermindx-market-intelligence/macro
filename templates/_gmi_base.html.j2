@@ -1,0 +1,39 @@
+{% from "_gmi_macros.html.j2" import t %}
+{#- GMI explorer page shell — the ontology head pattern, one lens-hash script
+    added. No inline style attributes, no colour literals, no :root: gmi.css
+    and theme.css own every visual token. The lens comes from #lens= in the
+    URL hash so one file renders both census lenses (specimen HASH_JS subset). -#}
+<!DOCTYPE html>
+<html lang="en" data-gmi-lens="coverage">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% include "_interfonts.html.j2" %}
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
+<script>try{var g=new URLSearchParams(location.hash.slice(1)).get('lens');if(g==='chain'||g==='coverage')document.documentElement.setAttribute('data-gmi-lens',g)}catch(e){}</script>
+<title>{% block title %}GMI Explorer — Mastermind{% endblock %}</title>
+{% block seo %}{% set seo_title = 'GMI Explorer — Mastermind' %}{% set seo_desc = 'Which companies are admitted to which micro-themes, from admitted filings only — coverage, receipts and documented relationships.' %}{% set seo_path = 'gmi.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% block head_extra %}{% endblock %}
+<link rel="stylesheet" href="{{ nav_prefix }}theme.css">
+<link rel="stylesheet" href="{{ nav_prefix }}gmi.css">
+<style>
+/* The canvas is this page's own responsibility. theme.css defines the palette
+   but never paints <body>, so a page that omits this rule ships dark panels on
+   the browser's white default — visible only by sampling pixels, not by eye. */
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
+  font-size:var(--fs-body);line-height:1.5;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:var(--r-ctl,8px)}
+</style>
+</head>
+<body class="page-macro gmi-page">
+{% include "_site_nav.html.j2" %}
+
+<main class="gmi-wrap" id="main">
+{% block body %}{% endblock %}
+</main>
+
+<script src="{{ nav_prefix }}supabase.js" defer></script>
+<script src="{{ nav_prefix }}theme.js" defer></script>
+<script defer src="{{ nav_prefix }}gmi.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "observed_at": "2026-10-15T07:22:42.800024+00:00",
+  "run_id": "eval-a1-tested-closure-review-01a1333d-c1",
+  "root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "parent": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "result_sha256": "3898c1790b2257b8ac0e847131892fa6207f6c90c912e8de423c5211317e8148",
+  "result_bytes": 4737,
+  "verdict": "ACCEPTED_WITH_REPORT_CORRECTIONS",
+  "corrections": [
+    "Verdict mistakenly names qledger-cluster-honest-ci; actual patched job is eval-os-a1, verified in exact source and hunk context.",
+    "A hash format cannot verify patch shape; assigning parent independently hashed the retained patch and compared the actual YAML preservation.",
+    "Remaining deterministic local checks/admission are owner obligations, not inherently C2/C3 complexity. No higher-tier worker or extra authority gate is implied."
+  ],
+  "accepted_scope": "Independent packet review found no material defect in the exact nine-path additive declaration and required tested-merge qualification. Parent confirms set, actual job identity and full YAML preservation.",
+  "limits": "Local qualification still running. Does not grant hosted checks, publication admission, merge or production acceptance."
+}
