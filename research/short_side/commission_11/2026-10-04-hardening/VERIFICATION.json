@@ -1,0 +1,58 @@
+{
+  "schema": "c11.document_verification.v1",
+  "verified_at_utc": "2026-10-04T07:53:06.302335+00:00",
+  "scope": "Document structure, provenance and synthetic arithmetic only. Not production integration tests or empirical validation.",
+  "checks": {
+    "a_to_l_sections": true,
+    "40_acceptance_cases": true,
+    "28_audit_findings": true,
+    "internal_refs_defined": true,
+    "public_refs_defined": true,
+    "markdown_fences_balanced": true,
+    "no_opaque_chat_citations": true,
+    "no_trailing_whitespace": true,
+    "json_manifest_valid": true,
+    "explicit_no_new_empirical_readout": true,
+    "input_hash_verified": true,
+    "hypothesis_budget_arithmetic": true,
+    "synthetic_arithmetic_oracles": true
+  },
+  "all_passed": true,
+  "artifacts": {
+    "README.md": {
+      "bytes": 3347,
+      "words": 387,
+      "sha256": "77c010a12bc164c42f37db806935f88bff78b5d88b8e44f922dd9a8bbcb4e7c8",
+      "git_blob_sha1": "e9e4937a0156ec68bb57ad790eca4b534a4287f5"
+    },
+    "REPORT.md": {
+      "bytes": 64551,
+      "words": 8498,
+      "sha256": "7a77e66f60d1d8e2f09e618d909a213286f5eeed71eca871e7c94f748d2dd219",
+      "git_blob_sha1": "97568b47da92336bb55d3ac558cda3f553cdbd1f"
+    },
+    "SOURCES_AND_AUDIT.md": {
+      "bytes": 26655,
+      "words": 2619,
+      "sha256": "4161f20b666f4271e06d36d98cb686ac27738312a1c52b5237aa9e87c548a8d4",
+      "git_blob_sha1": "3d22ffc60441f6d1b7f99fc33ff5aaab9616395e"
+    },
+    "ACCEPTANCE_CASEBOOK.md": {
+      "bytes": 9962,
+      "words": 1493,
+      "sha256": "c99dcd1770f566bb64bc3d773e7043bd7fa154dd623727ccc6c30e215a8de79a",
+      "git_blob_sha1": "19a158883a938b49f8934a6d312f40d0337535a1"
+    },
+    "source_manifest.json": {
+      "bytes": 14235,
+      "words": 1205,
+      "sha256": "f2abf7cdc426c2240b9cd5f8de01528bd414f2fb6a111bdc1822c7e25616a6ac",
+      "git_blob_sha1": "0ff9ae0c4ce610b849a7782a0895f6561fdc34ce"
+    }
+  },
+  "audit_findings": 28,
+  "acceptance_scenarios": 40,
+  "no_new_market_outcome_run": true,
+  "no_production_implementation": true,
+  "publication_base": "59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc"
+}
