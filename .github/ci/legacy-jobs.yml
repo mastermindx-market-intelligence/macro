@@ -62021,6 +62021,50 @@ jobs:
     scope: exclusive
     runs-on: ubuntu-latest
     paths:
+      - ".claude/hooks/model_routing_guard.py"
+      - ".claude/hooks/ship_loop_guard.py"
+      - ".claude/settings.json"
+      - "collectors/base.py"
+      - "config/codex_lane.yml"
+      - "config/compiled_kill_registry.yml"
+      - "config/context_index.yml"
+      - "config/fable_mode_core.md"
+      - "config/grader_manifest.yml"
+      - "config/mastermind_programs.yml"
+      - "config/metabolism_anomaly.yml"
+      - "config/metabolism_attention.yml"
+      - "config/metabolism_context_sla.yml"
+      - "config/metabolism_immune.yml"
+      - "config/metabolism_schedule.yml"
+      - "config/metabolism_surface_rules.yml"
+      - "config/nw_information_domains.yml"
+      - "config/nw_mission.yml"
+      - "config/pr_linkage_rules.v1.json"
+      - "config/ruling_graph.yml"
+      - "config/standout_review.yml"
+      - "config/synapse.yml"
+      - "config/ux_simplicity_rules.yml"
+      - "engine/china_standout_audit.py"
+      - "engine/context_index/fusion.py"
+      - "engine/context_index/gitinfo.py"
+      - "engine/context_index/lexical.py"
+      - "engine/context_index/packet.py"
+      - "engine/context_index/structured.py"
+      - "engine/metabolism/tap.py"
+      - "engine/standout_audit.py"
+      - "engine/standout_review.py"
+      - "lib/config.py"
+      - "lib/exchange_holidays.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pr_linkage_validator.py"
+      - "lib/procutil.py"
+      - "research/AUTONOMIC_LOOP_MASTERPLAN_BY_FABLE.md"
+      - "scripts/agentos.py"
+      - "scripts/agentos_ship_capture.py"
+      - "scripts/audit_stranded_work.py"
+      - "scripts/check_self_mod_fence.py"
+      - "scripts/replay_standout_books.py"
+      - "scripts/ship_loop_hold_wrapper.py"
       - "collectors/edgar.py"
       - "collectors/edgar_13f.py"
       - "collectors/edgar_flow_quality.py"
@@ -63844,3 +63888,28 @@ jobs:
         run: pip install pytest numpy scipy
       - name: P08 synthetic composition and adoption boundaries
         run: python -m pytest tests/test_p08_synthetic_composition.py -q
+
+  earnings-worker-systemd:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - ops/bootstrap_earnings_worker_linux.sh
+      - ops/systemd/mastermind-earnings-worker.service
+      - ops/systemd/mastermind-earnings-worker.timer
+      - ops/launchd/run_earnings_worker.sh
+      - ops/launchd/run_with_env.sh
+      - ops/earnings_worker_requirements.txt
+      - tests/test_earnings_worker_systemd.py
+      - tests/__init__.py
+    timeout-minutes: 4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install test dependency
+        run: pip install pytest
+      - name: earnings worker service and simulated bootstrap contracts
+        run: python -m pytest tests/test_earnings_worker_systemd.py -q
