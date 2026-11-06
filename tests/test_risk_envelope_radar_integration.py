@@ -1542,3 +1542,147 @@ def test_pro_briefing_resolves_house_radius_when_legacy_theme_omits_aliases():
     assert 'border-radius:var(--r-card, 12px)' in css
     assert 'border-radius:var(--r-ctl, 8px)' in css
     assert ':root' not in css
+
+
+# November 5 incident: exact selected foreground fields from accepted source
+# f1fc8efbed084af73d14b82f93247703e6fa018e, site/riskdata/risk_envelope.json
+# Git blob 2e79abf49ad545b320ecd8913cb0a43a569c040f. This projection omits
+# unrelated research payloads; it preserves native dates, state and authority.
+_NOV05_PREOPEN_FOREGROUND = json.loads(r'''{
+  "schema": "mastermind.risk_envelope/v1",
+  "market": "US",
+  "as_of": "2026-11-04",
+  "source_session": "2026-11-04",
+  "measured_state": {
+    "as_of": "2026-11-04",
+    "role": "slow_confirmed_trend",
+    "score": 57,
+    "source_artifact": "market-state-latest",
+    "usable": true,
+    "verdict": "MIXED"
+  },
+  "hazard_summary": {
+    "active_episode_count": 0,
+    "capped_sources": [],
+    "contributing_sources": [
+      "leadership-crack-latest",
+      "risk-radar-us"
+    ],
+    "display_only": true,
+    "primary_episode_id": null,
+    "stage": "FRAGILE",
+    "stage_reason": "observed_settled_evidence",
+    "stage_since": null,
+    "stage_since_basis": "no_episode_lifecycle_in_v0",
+    "unmapped_required_sources": [],
+    "unreadable_sources": []
+  },
+  "provenance": {
+    "sources": [
+      {
+        "source_id": "market-state-latest",
+        "role": "measured_state",
+        "label_en": "Market state",
+        "label_zh": "市场状态",
+        "as_of": "2026-11-04",
+        "coverage": "FRESH",
+        "state": "MIXED",
+        "required": true,
+        "hazard_stage": null,
+        "score": 57,
+        "detail": {}
+      },
+      {
+        "source_id": "leadership-crack-latest",
+        "role": "hazard_evidence",
+        "label_en": "Leadership cohort",
+        "label_zh": "龙头股群体",
+        "as_of": "2026-11-04",
+        "coverage": "FRESH",
+        "state": "BROKEN",
+        "required": true,
+        "hazard_stage": "FRAGILE",
+        "score": null,
+        "detail": {
+          "cohort_role": "tracked_ai_hardware_damage_monitor"
+        }
+      },
+      {
+        "source_id": "risk-radar-us",
+        "role": "hazard_evidence",
+        "label_en": "Cross-asset scares",
+        "label_zh": "跨资产风险扫描",
+        "as_of": "2026-11-04",
+        "coverage": "FRESH",
+        "state": "caution",
+        "required": false,
+        "hazard_stage": "FRAGILE",
+        "score": 82,
+        "detail": {
+          "label_en": "Growth scare / defensive rotation",
+          "label_zh": "增长恐慌/防御轮动"
+        }
+      },
+      {
+        "source_id": "site-marketdata-rotation-events",
+        "role": "context",
+        "label_en": "Relative leadership",
+        "label_zh": "相对领导变化",
+        "as_of": "2026-11-03",
+        "coverage": "STALE",
+        "state": "MIXED_ROTATION",
+        "required": false,
+        "hazard_stage": null,
+        "score": null,
+        "detail": {}
+      }
+    ]
+  },
+  "policy_summary": {
+    "active_policy_ids": [],
+    "basis": "zero_active_policies",
+    "display_only": true,
+    "policy_count": 0,
+    "posture": "NORMAL"
+  },
+  "authority": {
+    "envelope_may_execute": false,
+    "envelope_may_gate": false,
+    "envelope_may_rank": false,
+    "envelope_may_size": false,
+    "policy_actions_require_individual_authority": true
+  }
+}''')
+
+
+@pytest.mark.parametrize('expected_session', ['2026-11-04', '2026-11-05'])
+def test_nov05_preopen_57_mixed_does_not_hide_broken_leadership(expected_session):
+    e = deepcopy(_NOV05_PREOPEN_FOREGROUND)
+    vm = _vm(risk_envelope=e)
+    vm['market_state'].update(asof='2026-11-04', score=57, raw_score=56.86,
+        verdict='MIXED', color='yellow', label_en='Mixed', label_zh='混合',
+        participation_scope=None,
+        freshness={'data_asof':'2026-11-04','expected_asof':expected_session,
+                   'stale':expected_session != '2026-11-04'})
+    before = deepcopy(vm)
+    html = _render(vm)
+    summary = _foreground_fragment(html)
+    primary = _wtd_action_fragment(html)
+    assert '<span class="mx5-big-score">57</span>' in html
+    assert html.index('id="risk-response-summary"') < html.index('class="mx5-sc-left"')
+    if expected_session == '2026-11-04':
+        assert 'data-state="warning"' in summary
+        assert 'AI-hardware leaders: damaged' in summary
+        assert '2026-11-04' in summary
+        assert 'Review exposure. Respect existing stops.' in primary
+    else:
+        assert 'data-state="unavailable"' in summary
+        assert 'Verify conditions before adding risk.' in primary
+        assert 'AI-hardware leaders: damaged' not in summary
+    assert 'Trade small. Stay selective.' not in primary
+    assert 'Add where setups confirm.' not in primary
+    assert vm == before
+    assert e['measured_state']['score'] == 57
+    assert e['hazard_summary']['stage'] == 'FRAGILE'
+    assert e['policy_summary']['posture'] == 'NORMAL'
+    assert e['authority']['envelope_may_size'] is False
