@@ -75,8 +75,23 @@ def _available(source: Mapping[str, Any] | None, cutoff: datetime,
 
 
 def _safe_ref(source: Mapping[str, Any]) -> dict:
-    return {name: source[name] for name in
-            ("source_ref", "revision", "observed_at", "usable_at", "rights_ref", "status")}
+    out = {name: source[name] for name in
+           ("source_ref", "revision", "observed_at", "usable_at", "rights_ref", "status")}
+    if isinstance(source.get("return_window_ref"), str):
+        out["return_window_ref"] = source["return_window_ref"]
+    return out
+
+
+def _same_return_window(*sources: Mapping[str, Any]) -> bool:
+    """Separate price feeds may enter one factor equation only on one exact window.
+
+    The upstream admitted price owner must establish what each window reference
+    means; identical symbols or dates do not themselves prove aligned returns.
+    """
+    if not all(isinstance(source, Mapping) for source in sources):
+        return False
+    names = [source.get("return_window_ref") for source in sources]
+    return all(isinstance(name, str) and bool(name.strip()) for name in names) and len(set(names)) == 1
 
 
 def compose(request: Mapping[str, Any]) -> dict:
@@ -198,7 +213,14 @@ def compose(request: Mapping[str, Any]) -> dict:
                 factor_clock = _clock(fit_time, "factor_fit_known_at")
                 event_start = _clock(raw.get("event_start_at"), "event_start_at")
                 factor_ready = factor_clock <= min(event_start, decision)
-            if (market_ok and factor_ready and sector_return is not None
+            # Sector returns are an independent economic input. A bare number
+            # cannot enter a pre-event attribution unless its source is admitted
+            # by the same cutoff, fresh and aligned with stock and market windows.
+            sector_source = raw.get("sector_source")
+            sector_ok, _sector_reason = _available(sector_source, decision, max_age)
+            aligned = (sector_ok and market_ok and _same_return_window(
+                raw["source"], benchmark, sector_source))
+            if (aligned and factor_ready and sector_return is not None
                     and market_beta is not None and sector_beta is not None):
                 market_part = market_beta * market_return
                 sector_part = sector_beta * (sector_return - market_return)
@@ -209,6 +231,11 @@ def compose(request: Mapping[str, Any]) -> dict:
                     "unexplained_pct": round(residual, 6),
                     "method": "market_plus_sector_excess/v1",
                     "causal_attribution": False,
+                }
+                result["factor_receipts"] = {
+                    "market": _safe_ref(benchmark),
+                    "sector": _safe_ref(sector_source),
+                    "return_window_ref": raw["source"]["return_window_ref"],
                 }
                 modeled_count += 1
         rows.append(result)
