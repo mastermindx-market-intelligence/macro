@@ -3454,11 +3454,12 @@ def _tested_tree_ancestry_ready(
 ) -> bool:
     """Return whether the tested tree exposes all ancestry current consumers need.
 
-    Pull-request runs execute a synthetic two-parent merge. The six current
-    fetch-depth-0 consumers need the merge parents to be visible and need a real
+    Pull-request runs execute a synthetic two-parent merge. Generic
+    fetch-depth-0 preparation needs the merge parents to be visible and a real
     merge base between those parents so PR commit trailers and diff-scoped
     guards can walk to the branch point. They do not need unrelated refs/tags or
-    history older than that merge base. Main/workflow-dispatch runs use a normal
+    history older than that merge base. Ruling Graph uses its narrower exact
+    first-parent preparation instead. Main/workflow-dispatch runs use a normal
     zero/one-parent commit, where making the immediate parent visible is enough:
     each consumer explicitly fetches its canonical base before its own guard.
     """
@@ -3673,6 +3674,126 @@ def prepare_canonical_main(
     )
 
 
+def _prepare_ruling_history(root: Path, tested_tree_sha: str) -> None:
+    """Prepare the existing ruling guard's exact-base diff, without branch history.
+
+    The manifest still owns admission and runs its unchanged identity guard.
+    Only a tested HEAD that is itself shallow needs acquisition: expose one
+    relative generation, then prove the required diff entirely offline. Do not
+    enter the generic branch-point or legacy all-ref fallback on any failure.
+    """
+    if not isinstance(tested_tree_sha, str) or not re.fullmatch(
+        r"[0-9a-f]{40}", tested_tree_sha
+    ):
+        raise RuntimeError("ruling-graph preparation requires an exact tested-tree SHA")
+
+    git_env = _trusted_git_environment(root)
+    git_env.update(GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="")
+
+    def required(*args: str) -> str:
+        result = _git_cmd(root, git_env, *args)
+        if result.returncode != 0:
+            raise RuntimeError(f"ruling-graph required local Git operation failed: {args[0]}")
+        return result.stdout.strip()
+
+    def check_head() -> None:
+        if required("rev-parse", "--verify", "HEAD") != tested_tree_sha:
+            raise RuntimeError("ruling-graph preparation changed/mismatched tested HEAD")
+        if required("cat-file", "-t", tested_tree_sha) != "commit":
+            raise RuntimeError("ruling-graph tested object is not a commit")
+
+    check_head()
+    raw = required("cat-file", "-p", tested_tree_sha)
+    parents = [
+        line.removeprefix("parent ")
+        for line in raw.split("\n\n", 1)[0].splitlines()
+        if line.startswith("parent ")
+    ]
+    if any(not re.fullmatch(r"[0-9a-f]{40}", parent) for parent in parents):
+        raise RuntimeError("ruling-graph tested commit has invalid parents")
+
+    # Mirror only the existing manifest's base selection, never infer a moving
+    # origin/main or accept an unbound self-baseline to avoid missing history.
+    base = os.environ.get("TESTED_BASE_SHA", "")
+    replay = (
+        os.environ.get("CI_DISABLE_BASE_REPLAY") == "1"
+        and os.environ.get("CI_SEMANTIC_ROLE") == "main"
+        and os.environ.get("CI_BASE_SHA") == tested_tree_sha
+        and os.environ.get("CI_TESTED_TREE_SHA") == tested_tree_sha
+    )
+    if not base:
+        if (os.environ.get("CI_DISABLE_BASE_REPLAY") == "1"
+                or os.environ.get("CI_SEMANTIC_ROLE") == "main"):
+            if not replay:
+                raise RuntimeError("ruling-graph invalid base-replay identity")
+            base = tested_tree_sha
+        else:
+            if len(parents) != 2:
+                raise RuntimeError("ruling-graph PC fallback requires a two-parent tested merge")
+            base = parents[0]
+    if not re.fullmatch(r"[0-9a-f]{40}", base):
+        raise RuntimeError("ruling-graph preparation requires an exact tested-base SHA")
+    if base == tested_tree_sha:
+        main_baseline = (
+            os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+            and os.environ.get("GITHUB_REF") == "refs/heads/main"
+            and os.environ.get("TESTED_TREE_SHA") == tested_tree_sha
+        )
+        if not (replay or main_baseline):
+            raise RuntimeError("ruling-graph refuses an unbound self-baseline")
+    elif not parents or base != parents[0]:
+        raise RuntimeError("ruling-graph tested base does not match the first parent")
+
+    if base != tested_tree_sha:
+        visible = required("rev-list", "--parents", "-n", "1", tested_tree_sha).split()
+        if visible != [tested_tree_sha, *parents]:
+            shallow_path = Path(required("rev-parse", "--git-path", "shallow"))
+            if not shallow_path.is_absolute():
+                shallow_path = root / shallow_path
+            try:
+                boundaries = shallow_path.read_text(encoding="ascii").splitlines()
+            except (OSError, UnicodeError) as exc:
+                raise RuntimeError("ruling-graph cannot prove the tested shallow boundary") from exc
+            if visible != [tested_tree_sha] or tested_tree_sha not in boundaries:
+                raise RuntimeError("ruling-graph immediate tested parents are unavailable")
+            fetch_env = _trusted_git_environment(root)
+            fetch_env.update({
+                "GIT_CONFIG_COUNT": "2",
+                "GIT_CONFIG_KEY_0": "remote.origin.promisor",
+                "GIT_CONFIG_VALUE_0": "true",
+                "GIT_CONFIG_KEY_1": "remote.origin.partialclonefilter",
+                "GIT_CONFIG_VALUE_1": "blob:none",
+            })
+            subprocess.run(
+                ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                 "--filter=blob:none", "--deepen=1", "origin", tested_tree_sha],
+                cwd=root, env=fetch_env, check=True,
+            )
+            check_head()
+            if required("rev-parse", "--verify", "FETCH_HEAD") != tested_tree_sha:
+                raise RuntimeError("ruling-graph fetched a different tested commit")
+            visible = required("rev-list", "--parents", "-n", "1", tested_tree_sha).split()
+            if visible != [tested_tree_sha, *parents]:
+                raise RuntimeError("ruling-graph first-parent history remains unavailable")
+        if required("rev-parse", "--verify", "HEAD^1") != base:
+            raise RuntimeError("ruling-graph visible first parent does not match tested base")
+
+    if required("cat-file", "-t", base) != "commit":
+        raise RuntimeError("ruling-graph tested base is not a commit")
+    for commit in {base, tested_tree_sha}:
+        required("cat-file", "-e", f"{commit}^{{tree}}")
+    if required("merge-base", base, "HEAD") != base:
+        raise RuntimeError("ruling-graph exact tested base is not an ancestor")
+    # Exercise the actual changed-path operation, including required subtrees.
+    # H1/H2/W1 inspect current files, so rename similarity needs no old blobs.
+    required("diff", "--no-renames", "--name-only", f"{base}...HEAD")
+    check_head()
+    print(
+        "::notice title=run-ci-pack::ruling-graph exact tested-base diff is ready offline",
+        flush=True,
+    )
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,
@@ -3685,10 +3806,10 @@ def _prepare_provided_actions(
     The ordinary checkout is represented by the exact-tree reset. A manifest
     checkout requesting fetch-depth 0 first deepens only the authoritative
     tested tree, in bounded steps, until the synthetic merge parents have a
-    usable merge base. That is the actual history contract of every current
-    fetch-depth-0 consumer: each fetches its canonical base itself, none reads
-    tags/unrelated remote refs, and self-mod-fence needs the PR-commit ancestry
-    only through the branch point.
+    usable merge base. The ruling-graph exception needs only its exact tested
+    first-parent diff (or a bound self-baseline), prepared separately below.
+    Other consumers retain their existing branch-point preparation; in
+    particular, self-mod-fence needs the PR-commit ancestry through that point.
 
     If exact-tree ancestry cannot be established within the bounded ladder, or
     any exact fetch fails, preserve the established all-branches -> main-only
@@ -3708,6 +3829,10 @@ def _prepare_provided_actions(
         raise RuntimeError(
             f"job {job.job_id!r} requires fetch-depth 0 without an exact tested tree"
         )
+
+    if job.job_id == "ruling-graph":
+        _prepare_ruling_history(root, tested_tree_sha)
+        return
 
     git_env = _trusted_git_environment(root)
     # Recheck this exact repository/tree before fetching: a later consumer must

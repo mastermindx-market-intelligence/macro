@@ -3,7 +3,8 @@
 The healthy path must not enumerate the repository's branch/tag namespace or
 walk all history. It deepens the authoritative tested tree through a bounded
 ladder until the synthetic merge exposes both parents and their merge base.
-Current consumers then fetch their canonical base themselves.
+Generic consumers then fetch their canonical base themselves. Ruling Graph
+instead prepares only its exact first-parent diff or bound self-baseline.
 
 If exact tested-tree ancestry cannot be established, the established recovery
 ladder remains available: all branches -> main only -> a 30-day main window.
@@ -552,3 +553,297 @@ def test_complete_history_survives_multiple_consumers_without_refetching(
     run_ci_pack._prepare_provided_actions(job, root=isolated, tested_tree_sha=tested)
     assert len(fetches) > len(first_fetches)
     assert run_ci_pack._tested_tree_ancestry_ready(isolated, env, tested)
+
+
+# Ruling Graph consumes the tested first-parent diff, not the parents' branch point.
+_RULING_IDENTITY_ENV = (
+    "TESTED_BASE_SHA", "TESTED_TREE_SHA", "CI_DISABLE_BASE_REPLAY",
+    "CI_SEMANTIC_ROLE", "CI_BASE_SHA", "CI_TESTED_TREE_SHA",
+    "GITHUB_EVENT_NAME", "GITHUB_REF",
+)
+
+
+def _ruling_history_job() -> run_ci_pack.LegacyJob:
+    return run_ci_pack.LegacyJob(
+        job_id="ruling-graph",
+        definition={"steps": [
+            {"uses": "actions/checkout@v4", "with": {"fetch-depth": 0}},
+        ]},
+        ordinal=0,
+        weight=1,
+    )
+
+
+@pytest.fixture
+def ruling_history_factory(tmp_path, monkeypatch):
+    """Two long-diverged parents; only the tested merge's immediate edge is needed."""
+    for key in _RULING_IDENTITY_ENV:
+        monkeypatch.delenv(key, raising=False)
+    real_run = subprocess.run
+    env = run_ci_pack._trusted_git_environment(tmp_path)
+    env.update(
+        GIT_AUTHOR_NAME="CI fixture", GIT_AUTHOR_EMAIL="ci@example.invalid",
+        GIT_COMMITTER_NAME="CI fixture", GIT_COMMITTER_EMAIL="ci@example.invalid",
+    )
+    remote = tmp_path / "ruling-remote.git"
+
+    def git(*args, cwd=tmp_path, data=None, check=True, extra_env=None):
+        return real_run(
+            ["git", *args], cwd=cwd, env={**env, **(extra_env or {})},
+            input=data, capture_output=True, text=True, check=check,
+        )
+
+    git("init", "--bare", str(remote))
+    git("config", "uploadpack.allowFilter", "true", cwd=remote)
+    tree = git("mktree", cwd=remote, data="").stdout.strip()
+    common = git("commit-tree", tree, cwd=remote, data="common\n").stdout.strip()
+    parents = []
+    for branch in ("left", "right"):
+        parent = common
+        for index in range(20):
+            parent = git(
+                "commit-tree", tree, "-p", parent, cwd=remote,
+                data=f"{branch}-{index}\n",
+            ).stdout.strip()
+        parents.append(parent)
+    merge = git(
+        "commit-tree", tree, "-p", parents[0], "-p", parents[1],
+        cwd=remote, data="tested merge\n",
+    ).stdout.strip()
+    counter = 0
+
+    def checkout(depth=2, single_parent=False, filtered=True):
+        nonlocal counter
+        counter += 1
+        tested = parents[0] if single_parent else merge
+        git("update-ref", "refs/heads/main", tested, cwd=remote)
+        git("symbolic-ref", "HEAD", "refs/heads/main", cwd=remote)
+        root = tmp_path / f"ruling-checkout-{counter}"
+        filter_args = ["--filter=blob:none"] if filtered else []
+        git("clone", "--no-checkout", *filter_args, f"--depth={depth}",
+            remote.as_uri(), str(root))
+        git("checkout", "--detach", tested, cwd=root)
+        return root, tested, parents, git, real_run, env
+
+    return checkout
+
+
+def _record_ruling_fetches(monkeypatch, real_run, *, failure=None, pretend=False):
+    calls = []
+
+    def recording_run(cmd, **kwargs):
+        if list(cmd[:2]) == ["git", "fetch"]:
+            calls.append((list(cmd), dict(kwargs.get("env", {}))))
+            if failure == "exit":
+                raise subprocess.CalledProcessError(1, cmd)
+            if failure == "timeout":
+                raise subprocess.TimeoutExpired(cmd, 1)
+            if pretend:
+                return subprocess.CompletedProcess(cmd, 0)
+        return real_run(cmd, **kwargs)
+
+    monkeypatch.setattr(run_ci_pack.subprocess, "run", recording_run)
+    return calls
+
+
+@pytest.mark.parametrize("explicit_base", [False, True])
+def test_ruling_history_needs_no_parent_branch_point(
+    ruling_history_factory, monkeypatch, explicit_base,
+):
+    root, tested, parents, git, real_run, env = ruling_history_factory()
+    if explicit_base:
+        monkeypatch.setenv("TESTED_BASE_SHA", parents[0])
+    assert not run_ci_pack._tested_tree_ancestry_ready(root, env, tested)
+    calls = _record_ruling_fetches(monkeypatch, real_run)
+    run_ci_pack._prepare_provided_actions(
+        _ruling_history_job(), root=root, tested_tree_sha=tested,
+    )
+    assert calls == []
+    assert git("merge-base", *parents, cwd=root, check=False).returncode != 0
+    assert git("diff", "--no-renames", "--name-only", f"{parents[0]}...HEAD",
+               cwd=root).stdout == ""
+
+
+@pytest.mark.parametrize("filtered", [False, True])
+def test_ruling_history_fetches_one_relative_generation(
+    ruling_history_factory, monkeypatch, filtered,
+):
+    root, tested, parents, git, real_run, env = ruling_history_factory(depth=1, filtered=filtered)
+    before_config = git("config", "--local", "--list", cwd=root).stdout
+    if not filtered:
+        assert "promisor" not in before_config
+        assert "partialclone" not in before_config
+        monkeypatch.setenv("TESTED_BASE_SHA", parents[0])
+    before_refs = git("for-each-ref", "--format=%(refname) %(objectname)", cwd=root).stdout
+    calls = _record_ruling_fetches(monkeypatch, real_run)
+    run_ci_pack._prepare_provided_actions(
+        _ruling_history_job(), root=root, tested_tree_sha=tested,
+    )
+    assert len(calls) == 1
+    command, fetch_env = calls[0]
+    assert command == [
+        "git", "fetch", "--no-recurse-submodules", "--no-tags",
+        "--filter=blob:none", "--deepen=1", "origin", tested,
+    ]
+    assert fetch_env["GIT_CONFIG_KEY_0"] == "remote.origin.promisor"
+    assert fetch_env["GIT_CONFIG_VALUE_0"] == "true"
+    assert fetch_env["GIT_CONFIG_KEY_1"] == "remote.origin.partialclonefilter"
+    assert fetch_env["GIT_CONFIG_VALUE_1"] == "blob:none"
+    assert git("rev-parse", "HEAD", cwd=root).stdout.strip() == tested
+    assert git("rev-parse", "HEAD^1", cwd=root).stdout.strip() == parents[0]
+    assert git("merge-base", *parents, cwd=root, check=False).returncode != 0
+    assert git("config", "--local", "--list", cwd=root).stdout == before_config
+    assert git("for-each-ref", "--format=%(refname) %(objectname)", cwd=root).stdout == before_refs
+    # A second consumer reuses this exact local edge without re-shallowing it.
+    run_ci_pack._prepare_provided_actions(
+        _ruling_history_job(), root=root, tested_tree_sha=tested,
+    )
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("failure", ["exit", "timeout"])
+def test_ruling_history_fetch_failure_has_no_fallback(
+    ruling_history_factory, monkeypatch, failure,
+):
+    root, tested, _parents, _git, real_run, _env = ruling_history_factory(depth=1)
+    calls = _record_ruling_fetches(monkeypatch, real_run, failure=failure)
+    error = subprocess.CalledProcessError if failure == "exit" else subprocess.TimeoutExpired
+    with pytest.raises(error):
+        run_ci_pack._prepare_provided_actions(
+            _ruling_history_job(), root=root, tested_tree_sha=tested,
+        )
+    assert len(calls) == 1
+    assert calls[0][0][-1] == tested
+
+
+def test_ruling_history_rechecks_after_successful_transport(ruling_history_factory, monkeypatch):
+    root, tested, _parents, _git, real_run, _env = ruling_history_factory(depth=1)
+    calls = _record_ruling_fetches(monkeypatch, real_run, pretend=True)
+    with pytest.raises(RuntimeError, match="ruling-graph"):
+        run_ci_pack._prepare_provided_actions(
+            _ruling_history_job(), root=root, tested_tree_sha=tested,
+        )
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("mode", ["replay", "main"])
+def test_ruling_history_bound_self_baseline_needs_no_parents(
+    ruling_history_factory, monkeypatch, mode,
+):
+    root, tested, _parents, _git, real_run, _env = ruling_history_factory(depth=1)
+    if mode == "replay":
+        for key, value in {
+            "CI_DISABLE_BASE_REPLAY": "1", "CI_SEMANTIC_ROLE": "main",
+            "CI_BASE_SHA": tested, "CI_TESTED_TREE_SHA": tested,
+        }.items():
+            monkeypatch.setenv(key, value)
+    else:
+        for key, value in {
+            "TESTED_BASE_SHA": tested, "TESTED_TREE_SHA": tested,
+            "GITHUB_EVENT_NAME": "workflow_dispatch", "GITHUB_REF": "refs/heads/main",
+        }.items():
+            monkeypatch.setenv(key, value)
+    calls = _record_ruling_fetches(monkeypatch, real_run)
+    run_ci_pack._prepare_provided_actions(
+        _ruling_history_job(), root=root, tested_tree_sha=tested,
+    )
+    assert calls == []
+
+
+@pytest.mark.parametrize("case", ["wrong-head", "malformed-head", "wrong-base", "unbound-self"])
+def test_ruling_history_refuses_identity_without_fetch(ruling_history_factory, monkeypatch, case):
+    root, tested, parents, _git, real_run, _env = ruling_history_factory()
+    supplied = tested
+    if case == "wrong-head":
+        supplied = parents[0]
+    elif case == "malformed-head":
+        supplied = "not-an-object-id"
+    elif case == "wrong-base":
+        monkeypatch.setenv("TESTED_BASE_SHA", parents[1])
+    else:
+        monkeypatch.setenv("TESTED_BASE_SHA", tested)
+    calls = _record_ruling_fetches(monkeypatch, real_run, pretend=True)
+    with pytest.raises(RuntimeError, match="ruling-graph"):
+        run_ci_pack._prepare_provided_actions(
+            _ruling_history_job(), root=root, tested_tree_sha=supplied,
+        )
+    assert calls == []
+
+
+def test_ruling_history_refuses_single_parent_pc_candidate(ruling_history_factory, monkeypatch):
+    root, tested, _parents, _git, real_run, _env = ruling_history_factory(single_parent=True)
+    calls = _record_ruling_fetches(monkeypatch, real_run, pretend=True)
+    with pytest.raises(RuntimeError, match="ruling-graph"):
+        run_ci_pack._prepare_provided_actions(
+            _ruling_history_job(), root=root, tested_tree_sha=tested,
+        )
+    assert calls == []
+
+
+def test_ruling_history_failed_diff_is_not_a_reason_to_refetch(ruling_history_factory, monkeypatch):
+    root, tested, _parents, _git, real_run, _env = ruling_history_factory()
+    calls = _record_ruling_fetches(monkeypatch, real_run, pretend=True)
+    real_git = run_ci_pack._git_cmd
+
+    def missing_tree(root_arg, env_arg, *args, **kwargs):
+        if args[:1] == ("diff",):
+            assert env_arg["GIT_NO_LAZY_FETCH"] == "1"
+            assert env_arg["GIT_ALLOW_PROTOCOL"] == ""
+            return subprocess.CompletedProcess(["git", *args], 128, "", "missing tree")
+        return real_git(root_arg, env_arg, *args, **kwargs)
+
+    monkeypatch.setattr(run_ci_pack, "_git_cmd", missing_tree)
+    with pytest.raises(RuntimeError, match="ruling-graph"):
+        run_ci_pack._prepare_provided_actions(
+            _ruling_history_job(), root=root, tested_tree_sha=tested,
+        )
+    assert calls == []
+
+
+def test_ruling_history_missing_nested_tree_fails_without_fetch(tmp_path, monkeypatch):
+    """Root-tree existence alone cannot establish the changed-path closure."""
+    for key in _RULING_IDENTITY_ENV:
+        monkeypatch.delenv(key, raising=False)
+    root = tmp_path / "missing-tree"
+    root.mkdir()
+    real_run = subprocess.run
+    env = run_ci_pack._trusted_git_environment(root)
+    env.update(
+        GIT_AUTHOR_NAME="CI fixture", GIT_AUTHOR_EMAIL="ci@example.invalid",
+        GIT_COMMITTER_NAME="CI fixture", GIT_COMMITTER_EMAIL="ci@example.invalid",
+        GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="",
+    )
+
+    def git(*args):
+        return real_run(
+            ["git", *args], cwd=root, env=env, check=True,
+            capture_output=True, text=True,
+        ).stdout.strip()
+
+    git("init", "-b", "main")
+    nested = root / "nested"
+    nested.mkdir()
+    target = nested / "guarded.txt"
+    target.write_text("old\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "base subtree")
+    base = git("rev-parse", "HEAD")
+    old_subtree = git("rev-parse", "HEAD:nested")
+    target.write_text("new\n", encoding="utf-8")
+    git("add", ".")
+    git("commit", "-m", "changed subtree")
+    tested = git("rev-parse", "HEAD")
+    missing = root / ".git" / "objects" / old_subtree[:2] / old_subtree[2:]
+    assert missing.is_file()
+    missing.unlink()
+    for sha in (base, tested):
+        git("cat-file", "-e", f"{sha}^{{tree}}")
+    assert git("merge-base", base, "HEAD") == base
+    monkeypatch.setenv("TESTED_BASE_SHA", base)
+    calls = _record_ruling_fetches(monkeypatch, real_run)
+    with pytest.raises(RuntimeError, match="ruling-graph.*diff"):
+        run_ci_pack._prepare_provided_actions(
+            _ruling_history_job(), root=root, tested_tree_sha=tested,
+        )
+    assert calls == []
+    assert not missing.exists()
