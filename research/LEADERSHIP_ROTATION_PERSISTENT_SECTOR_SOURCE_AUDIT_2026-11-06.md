@@ -105,22 +105,61 @@ its scheduler/publication work. The legacy default remains unchanged meanwhile.
 ### Terminal
 
 `terminal/lib/sectorIntelligence.ts::sectorMeasuredRead` currently narrows the producer
-object. An additive typed dossier parser can preserve all eleven identities, exact horizons,
-status/null reasons and source metadata. Unknown schema or malformed addendum must render
-an unavailable dossier while leaving the accepted legacy measured panel intact.
+object. The additive typed dossier parser in [Terminal #1332](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1332)
+now preserves all eleven identities, exact horizons, status/null reasons and source metadata.
+Unknown schema or malformed addendum yields an invalid dossier result while leaving the
+accepted legacy measured panel intact. Head `260002504a80e2ce297cec2a82b2f5c73290816c`
+passed 80 focused tests, route type generation, full TypeScript checking and lint.
 
 The existing `terminal/app/api/sector-intelligence/route.ts` gateway already forwards
 the sector payload. No new URL, auth fallback, independent fetch or endpoint is needed.
 Any detail/source-inspector rendering follows accepted design and actual writer custody.
-A parser contract can be qualified independently if its path has no active collision.
+This slice adds only separate parser/tests/fixtures. #1232's shared parser, #1244's gateway
+and #1249's Workspace/cycle UI remain unchanged; #1249's recorded design hold is preserved.
+A source parser and passing local owner-envelope fixture do not prove a signed-in HTTP/UI path.
 
 ### Portfolio intelligence
 
 `brain/portfolio_intelligence.py::sector_rotation(limit=6)` currently projects legacy
 sector/basket rows. Whole-cohort dossier coverage cannot be hidden inside that top-N slice.
-An additive bounded all-eleven field should carry the same source generation, missingness,
-measurement and qualified explanation as Macro/Terminal. Reuse the existing artifact
-reader and market policy owners; do not create a new ranking/sizing or fallback truth source.
+The explicit `projection="sector_dossiers"` now returns a separate bounded all-eleven
+projection through that same reader and `brain/autonomous_mcp.py::get_sector_rotation` in
+[Mastermind #2157](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2157),
+head `21775669516630a183817f1ef334be0ff7d4aba2`. The existing artifact reader and
+`brain/bot_mcp.py::_json` serializer remain the path. Default ranking, limits, `_rotation_row`,
+`market_packet` and the remainder of the portfolio module are byte-identical to the protected
+base. No new ranking/sizing, tool namespace or fallback truth source is introduced.
+
+## Transport qualification and exact source exclusions
+
+The [retained transport receipt](LEADERSHIP_ROTATION_PERSISTENT_SECTOR_TRANSPORT_PROBE_2026-11-06.json)
+records both the rejected raw approach and the qualified alternative.
+
+| Case | Actual decoded result | Ruling |
+|---|---|---|
+| Raw dossier alone, representative partly available fixture | 4,808 characters; 11 sectors | Does not qualify larger/unavailable responses |
+| Raw dossier appended to six legacy sectors and six baskets | 11,353 input characters → 6,490 output; only 3 sectors, declared expected_n still 11 | Inadmissible |
+| Raw unavailable dossier alone | 8,304 input → 7,791 output; only 10 sectors | Inadmissible |
+| Selected compact partly available fixture | 4,323 UTF-8 bytes; 11 sectors; no truncation | Locally qualified |
+| Selected compact unavailable fixture | 4,943 UTF-8 bytes; 11 sectors; no truncation | Locally qualified |
+| Selected compact retained 2026-10-22 native source | 4,298 UTF-8 bytes; all 11 measured, dossier partial, exact values/shared qualifications | Local native-shape parity; not a natural publication or production endpoint |
+
+The selected packet retains shared native qualifications and encodes exact row reasons through
+a reason table. Its 7,200-UTF-8-byte ceiling is below both the current character budget and the
+separate held strict-byte transport proposal. Invalid, unsupported or oversized input yields all
+eleven **expected** identities with null values and `cohort_status=expected_not_admitted`.
+It never labels a truncated subset complete. The actual handler/serializer suite has 65 new
+contract cases; the combined incumbent MCP/common-stock boundary suite has 123 passes and one
+live-vendor skip. No model turn, live portfolio, server, publication or deployment was invoked.
+
+Bounded current custody checks examined relevant named candidates, not every one of the 192
+open Mastermind PRs. #548's refused legacy ID/freshness/view/pagination/correction repair remains
+excluded, along with its tests/plan. #495 and #790 retain generic serializer/own-book work;
+#673 retains receipt-only snapshot capture; #1357/#1831 retain research-snapshot and SDK-retry
+effects; #901 retains the reverse Portfolio→Macro publication seam. #900 aliases the existing
+decorated handler, so the selector is shared read capability; its Advisor composition is unchanged.
+No child provided a formal GitHub approval. Parent self-review and bounded C3 source judgments
+do not substitute for any actually enforced native release requirement.
 
 ## Gates for the next explanation slice
 

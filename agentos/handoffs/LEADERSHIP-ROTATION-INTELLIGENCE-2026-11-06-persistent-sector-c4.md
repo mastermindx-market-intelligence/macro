@@ -37,6 +37,8 @@ changed:
     what: Native evidence/clock/rights and consumer admission audit; precise next contracts and actual cross-session risk mismatch.
   - path: research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_NATIVE_READ_2026-11-06.json
     what: Retained native-shape proof on the 2026-10-22 artifact with source hash, all-eleven output, unchanged input/default and explicit production/freshness limitations.
+  - path: research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_TRANSPORT_PROBE_2026-11-06.json
+    what: Raw passthrough loses sector identities; qualified selected portfolio projection preserves all eleven after the actual unchanged serializer, including unavailable and retained-native cases.
 verified:
   - claim: Protected source law and bootstrap were pinned compatibly before edits.
     command: >-
@@ -83,6 +85,24 @@ verified:
       python3 scripts/agentos.py validate --paths agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md
       agentos/handoffs/LEADERSHIP-ROTATION-INTELLIGENCE-2026-11-06-persistent-sector-c4.md; git diff --check.
     result: 0 errors, two pre-existing prefix-style owns_paths warnings; diff check exit 0.
+  - claim: Terminal preserves the native dossier through a separate qualified parser.
+    command: npm test for sectorDossiers, sectorMeasuredRead and sectorOwnerEnvelope; next typegen; tsc --noEmit --incremental false; eslint.
+    result: >-
+      Terminal PR 1332 Ready at 260002504a80e2ce297cec2a82b2f5c73290816c;
+      80 focused tests, route typegen, full typecheck and lint passed. Five new files only;
+      shared parser, gateway, Workspace and old fixture unchanged. Original publisher clean,
+      local=remote; GitHub code/fixture readback verified. No visible UI or production claim.
+  - claim: Portfolio selected projection preserves all eleven sectors after the actual serializer.
+    command: >-
+      pytest tests/test_portfolio_sector_dossiers.py tests/test_bot_mcp.py
+      tests/test_autonomous_stock_only_boundary.py; actual get_sector_rotation.handler calls.
+    result: >-
+      Mastermind PR 2157 Ready at 21775669516630a183817f1ef334be0ff7d4aba2;
+      65 new cases; combined 123 passed and 1 incumbent live-vendor skip, PID 98650 exit 0.
+      Fixture responses 4323/4943 UTF-8 bytes, all eleven, no truncation.
+      Retained 2026-10-22 native input: 4298 bytes with all values/shared qualifications equal.
+      Original publisher APPLIED local=remote clean; GitHub source/test readback verified.
+      bot_mcp serializer, old tests, dependencies and legacy branch/remainder unchanged.
 unverified:
   - claim: The implementation head has passed hosted required CI.
     what_would_verify: GitHub checks attached to the exact published implementation head.
@@ -96,8 +116,9 @@ unverified:
       admissible source references and falsifiers; then real dated explanation proof.
 unresolved:
   - >-
-    BUILT_NOT_PROVEN. The new object is available only through an explicit Python reader flag;
-    incumbent callers are not activated. Source/CI success cannot complete the product ruler.
+    BUILT_NOT_PROVEN. Macro requires the explicit source flag; Terminal has a dormant typed
+    parser; Mastermind has an explicit existing-tool selector. A naturally published generation,
+    visible UI, deployed tool and source-to-user-to-portfolio production parity remain unproven.
   - >-
     Macro #10780 owns sector_central.py, sector_cycles.py, sector_pulse.py and the shared CI
     manifest. UI #10777 and held #10703/#10707 retain their boundaries. No cross-writer edit.
@@ -109,17 +130,20 @@ unresolved:
     group_earnings basket identity and theme_revisions configured theme identity are not sector
     ETF identity. Their build/latest dates do not supply historical knowledge availability.
   - >-
-    Terminal strips dossier fields and Mastermind sector_rotation uses legacy top-N rows.
-    The existing source gateway and policy owners are reused, not replaced.
+    Terminal #1232 shared parser, #1244 gateway and #1249 Workspace/cycle design retain their
+    source boundaries. Mastermind #548 legacy repair and #495/#790 serializer/own-book effects
+    remain excluded. The selected compact dossier reader leaves default legacy top-N behavior intact.
 next_actions:
   - >-
-    Continue on PR 10806 and its original source workspace: publish/read back the qualified
-    source slice, use the completed native evidence audit and qualify any disjoint consumer parser after
-    a current custody check; fix concrete findings. Inspect exact-head CI once published; do not dispatch an unrelated daily builder.
+    Continue the original PRs: Macro 10806, Terminal 1332 and Mastermind 2157. Qualify current
+    exact-head CI, repair concrete findings on the same carriers, transition locally qualified
+    candidates to Ready and use their actual protected release paths when requirements permit.
+    No duplicate PR, generic review ceremony, unrelated daily builder or polling daemon.
   - >-
-    Reconcile #10780 and accepted UI source custody before consumer activation. If disjoint
-    downstream work is available, use existing Terminal/portfolio readers and preserve all
-    eleven identities, missingness and source clocks; do not create a new endpoint or policy.
+    Reconcile Macro #10780 native generation and accepted UI source custody before activation.
+    Adopt the already-qualified consumers through their incumbent paths and retain natural-generation
+    API/browser/portfolio parity for all eleven identities. Complete the source audit's exact
+    mapping, original-availability and rights obligations before explanation/history admission.
   - >-
     When source and consumer contracts are qualified, follow protected delivery law, formal
     GitHub rules where mandatory, and natural production/API/browser proof. Keep LR-W6
@@ -145,7 +169,9 @@ danger_areas:
     and malformed supplied provenance must remain withheld. Zero and exact native windows survive.
   - >-
     Default measured_group_read bytes and 16 KiB fixture budget remain frozen. The opt-in
-    nominal expanded fixture fits 32 KiB; no production SLA is claimed.
+    nominal expanded fixture fits 32 KiB; no production SLA is claimed. Raw native passthrough
+    fails the existing 8k MCP transport. Preserve the selected 7200 UTF-8-byte projection and
+    all-eleven unavailable fallback; do not replace it with row truncation.
   - >-
     No original_available_at from build/read time; no constituent breadth from ETF proxy counts;
     source-family count is not independence; risk policy has its own authority.
@@ -159,9 +185,11 @@ MISSION_COMPLETE: false
 Capability state: BUILT_NOT_PROVEN.
 
 Before: the system had the accepted measured-sector read but no separately qualified
-persistent-sector dossier contract. After: a caller can opt into a bounded, strictly qualified
-all-eleven dossier through the same measured-group reader, with source-clock limits and disabled
-authority exposed. Default consumers retain the exact existing contract.
+persistent-sector dossier contract. After: Macro has an opt-in all-eleven producer contract,
+Terminal has a strict typed consumer, and the existing portfolio MCP tool has a selected compact
+projection whose actual serialized output preserves identities, measurements and null reasons.
+Source-clock limits and disabled authority remain exposed. Default legacy behavior stays intact.
+These are qualified source slices, not natural production or full product acceptance.
 
 The source task tree is
 [the master plan](../../research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_MASTERPLAN_2026-11-06.md).
@@ -172,7 +200,11 @@ Implementation publication is commit `378e289b180b90ed2902a7689e960932a8a26fe6`.
 The completed [native source audit](../../research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_SOURCE_AUDIT_2026-11-06.md)
 and [native-shape receipt](../../research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_NATIVE_READ_2026-11-06.json)
 preserve the exact source limits and next admission obligations.
-All candidate work stays in [Macro PR #10806](https://github.com/mastermindx-market-intelligence/macro/pull/10806).
+Canonical plan/producer/proofs stay in [Macro PR #10806](https://github.com/mastermindx-market-intelligence/macro/pull/10806).
+Consumer slices are [Terminal #1332](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1332)
+and [Mastermind #2157](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2157).
+The [transport receipt](../../research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_TRANSPORT_PROBE_2026-11-06.json)
+retains the negative raw approach and qualified selected projection.
 
 ## Custody and effects
 
@@ -183,7 +215,16 @@ Use the original Studio publisher and expected-head checks. The initial unqualif
 callback was reconciled by publisher status and the locked worktree receipt; it does not authorize
 another carrier.
 
-Native architecture advice is terminal ACCEPTED / STOP. It was advisory judgment, not source
+Terminal operation: `persistent-sector-dossier-parser-20261106-c4`, base
+`3095319891bb557ba41f6c6fb5ec99a8aeaac0fc`, head `260002504a80e2ce297cec2a82b2f5c73290816c`.
+Mastermind operation: `persistent-sector-portfolio-projection-20261106-c4`, base
+`fa46c271b23902555c5f3c83592edc2cf77069c6`, head `21775669516630a183817f1ef334be0ff7d4aba2`.
+Both unqualified acquire callbacks were reconciled through their original publisher status and
+locked-worktree receipts; no re-acquisition occurred. Mastermind's workspace is
+`/Volumes/Mastermind 2/agent-workspaces/web/persistent-sector-portfolio-projection-20261106-c4`;
+Terminal's is `/Volumes/Mastermind 2/agent-workspaces/terminal/web/persistent-sector-dossier-parser-20261106-c4`.
+
+Native architecture/custody advice is terminal ACCEPTED / STOP. It was advisory judgment, not source
 labor or formal GitHub approval. No workers, reciprocal watchers, background continuations or
 release operations are running on behalf of this source slice. The assigned current receiver owns
 continuation; a historical author name is not an approver or required return destination.
