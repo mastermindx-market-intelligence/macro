@@ -15,6 +15,7 @@ def source(*, observed="2026-11-04T14:29:00Z",
         "source_ref": "synthetic:minute-bar", "revision": "v1",
         "rights_ref": "synthetic:license", "observed_at": observed,
         "usable_at": usable, "status": status,
+        "return_window_ref": "synthetic:2026-11-04T14:20Z..14:29Z",
     }
 
 
@@ -47,7 +48,7 @@ def request():
             {
                 "security_id": "synthetic:US:MCD", "ticker": "MCD",
                 "source": source(), "return_pct": 6.0,
-                "sector_return_pct": 3.0,
+                "sector_source": source(), "sector_return_pct": 3.0,
                 "market_beta": 1.0, "sector_excess_beta": 1.0,
                 "factor_fit_known_at": "2026-11-03T20:00:00Z",
                 "event_start_at": "2026-11-04T03:00:00Z",
@@ -67,7 +68,7 @@ def request():
             {
                 "security_id": "synthetic:US:SEMI", "ticker": "SEMI",
                 "source": source(), "return_pct": -3.0,
-                "sector_return_pct": -2.0,
+                "sector_source": source(), "sector_return_pct": -2.0,
                 "market_beta": 1.0, "sector_excess_beta": 1.0,
                 "factor_fit_known_at": "2026-11-03T20:00:00Z",
                 "event_start_at": "2026-11-04T03:00:00Z",
@@ -163,6 +164,21 @@ class EventResponse(unittest.TestCase):
         out = compose(req)
         self.assertEqual(out["coverage"]["modeled"], 1)
         self.assertIsNone(out["securities"][0]["decomposition"])
+
+    def test_late_sector_source_cannot_enter_factor_decomposition(self):
+        req = request()
+        req["securities"][0]["sector_source"]["usable_at"] = "2026-11-04T14:31:00Z"
+        out = compose(req)
+        self.assertEqual(out["coverage"]["observed"], 2)
+        self.assertEqual(out["coverage"]["modeled"], 1)
+        self.assertIsNone(out["securities"][0]["decomposition"])
+
+    def test_mismatched_return_windows_withhold_residual(self):
+        req = request()
+        req["securities"][1]["sector_source"]["return_window_ref"] = "synthetic:other-window"
+        out = compose(req)
+        self.assertEqual(out["coverage"]["modeled"], 1)
+        self.assertIsNone(out["securities"][1]["decomposition"])
 
     def test_missing_return_is_unavailable_not_zero(self):
         req = request()
