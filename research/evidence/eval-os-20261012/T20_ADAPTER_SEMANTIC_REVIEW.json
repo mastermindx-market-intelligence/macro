@@ -1,0 +1,18 @@
+{
+  "schema": "eval_os.science_semantic_review.v1",
+  "status": "SOURCE_SEMANTICS_ACCEPTED_TEST_RECEIPT_PENDING",
+  "source_sha256": "877b92b28b5338e44390d4f9f8a991bd546f0f59a235c9b6dc4135dc1e3238d5",
+  "test_sha256": "8c7ad9c0037e9fc8401432b0c2d86ca9813bdc9026624896ec7a09f82b592bcc",
+  "blocking_findings": [],
+  "review_scope": [
+    "recorded context and current-unqualified separation",
+    "no response_eval/rubric/internal QA export",
+    "preserve opposite cross-horizon readings as owner annotations",
+    "partial rejected rows and unavailable-vs-empty counts",
+    "exact T4 path binding and side ambiguity",
+    "numeric unavailable absent request-scoped subscriber receipt"
+  ],
+  "owner_compatibility_note": "Existing contradictions producer uses as_of=unknown. Strict ISO-only filtering would change accepted uncertainty semantics; current reader retains recorded string and current_source_qualification unavailable.",
+  "test_execution": "Parent-owned suite running; not repeated or claimed passed by this source review.",
+  "source_edits": false
+}
