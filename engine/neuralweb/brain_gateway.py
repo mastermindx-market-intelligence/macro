@@ -10502,6 +10502,40 @@ def _prepare_financial_widget(result: dict, prior: dict, retained: dict, identit
     return receipt
 
 
+def _schematic_candlestick_request(message: str) -> bool:
+    """Admit only a complete generic diagram request, never an asset/session."""
+    if (not re.search(r"\b(draw|sketch|diagram|illustrate|illustration)\b|绘制|画", message, re.I)
+            or not re.search(r"\b(pivot|setup|pattern|bullish|bearish)\b|形态|转折|枢轴|看涨|看跌", message, re.I)):
+        return False
+    # Symbol-looking words must not become ordinary terms after case folding.
+    if any(word != "OHLC" for word in re.findall(r"\b[A-Z]{2,}\b", message)):
+        return False
+    remaining = message.casefold()
+    # A candle interval is allowed; dates, clock expressions and prices remain.
+    remaining = re.sub(
+        r"(?<![\w:/.])\d{1,3}[\s-]*(?:minutes?|mins?|hours?|hrs?)\b"
+        r"|(?<![\d:/.])\d{1,3}\s*(?:分钟|小时)", " ", remaining)
+    remaining = re.sub(
+        r"\b(?:please|draw|sketch|diagram|illustrate|illustration|show|explain|mark|label|"
+        r"indicate|highlight|a|an|the|me|and|or|with|of|for|to|how|where|is|be|would|"
+        r"should|can|its|it|using|bullish|bearish|pivot|setup|pattern|candlesticks?|"
+        r"candles?|charts?|timeframe|interval|ohlc|open|high|low|close|entry|entries|"
+        r"stop|loss|stoploss|breakouts?|closed|then|later|first|second|third|subsequent|next|after|before|"
+        r"one|two|three|green|red|reversal|above|below|top|bottom|wicks?|bodies|body|"
+        r"lines?|levels?|prices?)\b", " ", remaining)
+    terms = (
+        "绘制", "画出", "画", "一张", "一个", "一幅", "一组", "请", "给我", "帮我",
+        "标明", "标注", "说明", "展示", "看涨", "看跌", "转折", "形态", "枢轴",
+        "蜡烛图", "蜡烛", "k线", "阴线", "阳线", "两根", "一根", "第一根",
+        "第一", "第二", "首次", "随后", "后续", "突破", "入场", "止损", "开盘",
+        "最高", "最低", "收盘", "高点", "低点", "上方", "下方", "实体", "影线",
+        "之后", "之前", "以及", "后", "前", "并", "和", "或", "的",
+    )
+    remaining = re.sub("|".join(re.escape(term) for term in sorted(terms, key=len, reverse=True)),
+                       "", remaining)
+    return not re.sub(r"""[\s.,;:!?，。；：！？、()（）/'"-]+""", "", remaining)
+
+
 def _prepare_inline_visual(result: dict, observations: list, identity: str, charts: list, message: str) -> dict:
     """Compile within the current turn; never refetch or manufacture source receipts."""
     from engine.neuralweb.brain_visuals import MAX_VISUALS, compile_visual
@@ -10514,12 +10548,18 @@ def _prepare_inline_visual(result: dict, observations: list, identity: str, char
         teaching = bool(
             re.search(r"\b(example|illustrative|hypothetical|synthetic|fictional|sample|toy)\b|举例|示例|示意|假设|虚构", message, re.I)
             or (request.get("template") == "candlestick"
-                and re.search(r"\b(draw|sketch|diagram|illustrate|illustration)\b|绘制|画一", message, re.I)
-                and re.search(r"\b(pivot|setup|pattern|bullish|bearish)\b|形态|转折", message, re.I))
+                and _schematic_candlestick_request(message))
         )
         rows = request.get("rows", [])
         has_numbers = isinstance(rows, list) and any(type(c) in (int, float) for r in rows if isinstance(r, list) for c in r)
-        asks_observed = bool(re.search(r"\b(current|latest|today|live|actual|historical|history|yesterday|past|since|last|previous|reported|observed|real)\b|真实|最新|当前|今天|历史|实时|昨天|上周|上月|去年|过去|截至|自从|\b(?:19|20)\d{2}\b", message, re.I))
+        asks_observed = bool(re.search(
+            r"\b(current|latest|today|live|actual|historical|history|yesterday|past|since|last|previous|reported|observed|real)\b"
+            r"|\bthis\s+(?:morning|afternoon|evening|week|month|quarter|year|session)\b"
+            r"|\b(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b"
+            r"|\b\d{1,2}[-/]\d{1,2}(?:[-/]\d{2,4})?\b"
+            r"|真实|最新|当前|今天|历史|实时|昨天|上周|上月|去年|过去|截至|自从"
+            r"|今早|今晨|早盘|午盘|尾盘|本周|本月|本年|(?:周|星期)[一二三四五六日天]"
+            r"|\d{1,2}月\d{1,2}日|\b(?:19|20)\d{2}\b", message, re.I))
         if has_numbers and (not teaching or asks_observed):
             return {"error": "numeric_example_not_requested", "note": "Do not replace missing observed data with an example. Fetch and bind real values, or explain that the chart is unavailable."}
     if sum(bool(c.get("visual")) for c in charts) >= MAX_VISUALS:

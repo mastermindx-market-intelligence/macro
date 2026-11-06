@@ -16,7 +16,7 @@ import re
 from pathlib import Path
 
 import pytest
-from jinja2 import DictLoader, Environment
+from jinja2 import Environment, FileSystemLoader
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = (ROOT / "templates" / "dashboard.html.j2").read_text()
@@ -28,7 +28,7 @@ def _make_row(ticker, lane="bottoming", **kw):
     row = {
         "ticker": ticker,
         "name": f"{ticker} Corp",
-        "sector": "Technology",
+        "sector": "Information Technology",
         "lane": lane,
         "price": 100.0,
         "alpha": 0.25,
@@ -59,8 +59,11 @@ def _make_standouts(rows):
 def _render_us_data_block(us_standouts):
     """Extract and render the W8-R6 JSON data block from dashboard.html.j2."""
     # Locate the stocktable data block for us market
-    start = SRC.index('<script type="application/json" id="us-stocktable-data">')
-    end = SRC.index("</script>", start) + len("</script>")
+    script_start = SRC.index('<script type="application/json" id="us-stocktable-data">')
+    # Keep the real detail presenter imported immediately before the data block.
+    # Extracting only the script omitted this owner and failed on untouched HEAD.
+    start = SRC.rindex('{% import "_prophet_setup_detail.html.j2" as psd_table %}', 0, script_start)
+    end = SRC.index("</script>", script_start) + len("</script>")
     snippet = SRC[start:end]
 
     macros = (
@@ -69,8 +72,8 @@ def _render_us_data_block(us_standouts):
     )
     full = macros + "{% set _su = us_standouts %}\n" + snippet
 
-    env = Environment(loader=DictLoader({"t": full}), autoescape=False)
-    tmpl = env.get_template("t")
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
+    tmpl = env.from_string(full)
     return tmpl.render(us_standouts=us_standouts)
 
 
