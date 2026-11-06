@@ -4463,6 +4463,17 @@ def build(root: Path, dry_run: bool = False) -> dict:
 
     # 10. Assemble latest.json artifact (schema release_forecast.v2)
     accuracy_claim = "withheld_until_clean_aligned_forward_evidence"
+
+    # A1 (macro#6868): additive, display-only per-item diagnostics.  Runs after
+    # every ledger, scoring, scoreboard and latest-clean-score consumer above —
+    # and after the accuracy_claim this build actually publishes — so nothing
+    # numerical can read it back and the subtree self-declares its schema.
+    # Relocated from the pre-accuracy_claim position when main grew
+    # ``accuracy_claim`` between the seam and the artifact assembly.
+    from engine.release_diagnostics import attach_release_diagnostics, snapshot_loader
+    attach_release_diagnostics(
+        upcoming_block, scoreboard=scoreboard, load_snapshot=snapshot_loader(root))
+
     latest = {
         "schema": "release_forecast.v2",
         "asof": asof_utc,

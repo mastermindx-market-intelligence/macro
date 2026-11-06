@@ -5473,9 +5473,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_915),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_930),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_671),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5483,6 +5483,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-05 (Macro PR #7036 Release Radar A1 diagnostic composition,
+    candidate cceb69362e54e7944292644d2a84f66a0bfce509): the retained A1
+    ``gate: data`` step in ``unrun-release-forecast`` — one command and one
+    ``tests/test_release_diagnostics.py`` reference — raises that job's
+    estimated weight 52 -> 55, and that job rides all three probes, so each
+    probe's selected weight rises by exactly three: index 5,912 -> 5,915,
+    free-content 5,927 -> 5,930, Prophet 5,668 -> 5,671. Selected job IDs are
+    unchanged on every probe: no entrant and no exit, ten packs each. Raise
+    only those three estimated-weight ceilings. The CODE enrollment of
+    ``tests/test_release_diagnostics.py`` contributes zero to these three
+    probes, which is a planning weight and not zero runtime. These are
+    planner estimates, not runtime evidence; job-count, pack, timeout and
+    admission bounds remain unchanged.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
