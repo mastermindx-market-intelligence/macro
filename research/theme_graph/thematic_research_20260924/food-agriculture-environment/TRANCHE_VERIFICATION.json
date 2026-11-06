@@ -1,0 +1,153 @@
+{
+  "operation": "gmi-theme-research-food-agriculture-environment-20260924-001",
+  "scope": "Hand-transcribed arithmetic and authored synthetic counterexamples only",
+  "positive_checks_passed": 58,
+  "corrupted_variants_rejected": 11,
+  "failures": 0,
+  "positive_checks": [
+    "Sprouts 2026Q2 gross",
+    "Sprouts 2026Q2 operating bridge",
+    "Sprouts 2025Q2 gross",
+    "Sprouts 2025Q2 operating bridge",
+    "Sprouts 2026H1 gross",
+    "Sprouts 2026H1 operating bridge",
+    "Sprouts 2025H1 gross",
+    "Sprouts 2025H1 operating bridge",
+    "Q2 operating change bridge",
+    "Q2 gross profit increase",
+    "Q2 SGA increase",
+    "Q2 non-COGS DA increase",
+    "Q2 closure cost relief",
+    "Q2 sales rise while operating profit falls",
+    "Sprouts H1 scoped residual 2026",
+    "Sprouts H1 scoped residual 2025",
+    "Sprouts H1 residual change",
+    "Ingredion external segment sales reconcile",
+    "Ingredion excluded intersegment sales",
+    "Intersegment cannot be added as external sales",
+    "Ingredion adjusted operating bridge",
+    "Ingredion GAAP operating bridge",
+    "Ingredion prior adjusted operating bridge",
+    "Ingredion prior GAAP bridge",
+    "Ingredion specialty profit increases",
+    "Ingredion US Canada profit decreases",
+    "Ingredion H1 CFO categories",
+    "Ingredion H1 2025 CFO categories",
+    "Ingredion selected cash residuals",
+    "Ingredion selected cash residual delta",
+    "Sale proceeds do not equal customer cash",
+    "Synthetic chain 0 value added conservation",
+    "Synthetic chain 0 conversion contribution",
+    "Synthetic chain 0 retail gross contribution",
+    "Synthetic chain 1 value added conservation",
+    "Synthetic chain 1 conversion contribution",
+    "Synthetic chain 1 retail gross contribution",
+    "Synthetic cheaper final purchase need not reduce conversion contribution",
+    "Synthetic repeated revenues are not end demand",
+    "Synthetic retained dollars versus percentage",
+    "Synthetic electricity cost 1100000",
+    "Synthetic electricity cost 1000000",
+    "Synthetic electricity cost 975000",
+    "Synthetic electricity cost 950000",
+    "Synthetic electricity cost 900000",
+    "Synthetic electricity cost 700000",
+    "Original reference-year fixed charge sum",
+    "Original reference-year four components sum",
+    "Reference capital and membrane components distinct",
+    "Synthetic joint reserve balance is not unrestricted cash",
+    "Synthetic amount available without eligible draw is zero",
+    "AWARD does not prove accepted service",
+    "SIGNED does not prove accepted service",
+    "LIMITED_NOTICE does not prove accepted service",
+    "CONSTRUCTION does not prove accepted service",
+    "COMMISSIONING does not prove accepted service",
+    "Explicit accepted-operation example",
+    "Compatible gross-margin pair"
+  ],
+  "rejected_variants": [
+    "mixed currency/scale",
+    "mixed quarter and half year",
+    "borrowed issuer denominator",
+    "borrowed segment population",
+    "zero denominator",
+    "future forecast versus observed period",
+    "electricity formula without eligibility proof",
+    "negative synthetic electric cost",
+    "zero guaranteed cost",
+    "negative payment cap",
+    "GOV divided by broader Total Orders population"
+  ],
+  "sprouts_source_and_rows": {
+    "source": "https://investors.sprouts.com/news/news-details/2026/Sprouts-Farmers-Market-Inc--Reports-Second-Quarter-2026-Results/default.aspx",
+    "unit": "USD_thousands",
+    "2026Q2": [
+      2325804,
+      1425156,
+      900648,
+      682633,
+      43081,
+      760,
+      174174
+    ],
+    "2025Q2": [
+      2220602,
+      1358002,
+      862600,
+      645127,
+      36606,
+      1511,
+      179356
+    ],
+    "2026H1": [
+      4654983,
+      2837059,
+      1817924,
+      1341414,
+      85108,
+      1921,
+      389481
+    ],
+    "2025H1": [
+      4457038,
+      2708075,
+      1748963,
+      1268353,
+      71705,
+      3217,
+      405688
+    ],
+    "cash_26weeks": {
+      "2026": [
+        368995,
+        189907
+      ],
+      "2025": [
+        410337,
+        120319
+      ]
+    }
+  },
+  "ingredion_source": "https://ir.ingredionincorporated.com/news-releases/news-release-details/ingredion-incorporated-reports-second-quarter-2026-results",
+  "derived_values": {
+    "sprouts_operating_change_USD_millions": "-5.182",
+    "sprouts_26week_CFO_less_gross_PPE_USD_millions": [
+      "179.088",
+      "290.018"
+    ],
+    "ingredion_H1_CFO_less_capex_and_mechanical_stores_net_USD_millions": [
+      -87,
+      69
+    ],
+    "original_reference_year_water_components_USD": 2721919
+  },
+  "limitations": [
+    "Synthetic electricity calculation is not the full agreement, current invoice, legal opinion or forecast.",
+    "Cash residuals are not standardized free cash flow, segment cash or distributable shareholder cash.",
+    "Company samples are not a proven supplier-customer chain.",
+    "No live source admission, automated extraction, native code, independent review, market backtest or browser proof."
+  ],
+  "native_tests": 0,
+  "independent_review": false,
+  "trade_authority": false,
+  "script_sha256": "45bb6700e497c1fe08a8fda3c63a0380c809a57bd52577f6fe168da0065ac7b2"
+}
